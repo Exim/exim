@@ -394,6 +394,7 @@ extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
 extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
+extern uschar *smtp_cmd_hist(void);
 extern int     smtp_connect(host_item *, int, uschar *, int,
 	       	 transport_instance *);
 extern int     smtp_sock_connect(host_item *, int, int, uschar *,

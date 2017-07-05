@@ -12793,6 +12793,15 @@ argument, that is, the text that follows the command name, with leading white
 space removed. Following the introduction of &$smtp_command$&, this variable is
 somewhat redundant, but is retained for backwards compatibility.
 
+.new
+.vitem &$smtp_command_history$&
+.cindex SMTP "command history"
+.vindex "&$smtp_command_history$&"
+A comma-separated list (with no whitespace) of the most-recent SMTP commands
+received, in time-order left to right.  Only a limited number of commands
+are remembered.
+.wen
+
 .vitem &$smtp_count_at_connection_start$&
 .vindex "&$smtp_count_at_connection_start$&"
 This variable is set greater than zero only in processes spawned by the Exim

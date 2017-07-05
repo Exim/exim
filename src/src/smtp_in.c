@@ -1795,12 +1795,32 @@ for (i = 0; i < smtp_ch_index; i++)
   sep = US",";
   }
 
-if (s != NULL) s[ptr] = 0; else s = US"";
+if (s) s[ptr] = 0; else s = US"";
 log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
   host_and_ident(FALSE),
   readconf_printtime( (int) ((long)time(NULL) - (long)smtp_connection_start)),
   s);
 }
+
+
+/* Return list of recent smtp commands */
+
+uschar *
+smtp_cmd_hist(void)
+{
+uschar * list = NULL;
+int size = 0, len = 0, i;
+
+for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+  if (smtp_connection_had[i] != SCH_NONE)
+    list = string_append_listele(list, &size, &len, ',',
+      smtp_names[smtp_connection_had[i]]);
+for (i = 0; i < smtp_ch_index; i++)
+  list = string_append_listele(list, &size, &len, ',',
+    smtp_names[smtp_connection_had[i]]);
+return list ? list : US"";
+}
+
 
 
 

@@ -41,6 +41,9 @@ Version 4.90
  9. New option modifier "no_check" for quota and quota_filecount
     appendfile transport.
 
+10. Variable $smtp_command_history returning a comma-sep list of recent
+    SMTP commands.
+
 
 Version 4.89
 ------------

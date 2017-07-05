@@ -67,7 +67,7 @@ mail:
 rcpt:
   accept senders = +ok_senders
          sender_domains = +ok_sender_domains
-         logwrite = :panic: rcpt accepted
+         logwrite = :panic: rcpt accepted C=$smtp_command_history
 
 # ----- Routers -----
 
