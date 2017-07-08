@@ -71,6 +71,19 @@ auth_spa_options_block auth_spa_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_spa_init(auth_instance *ablock) {}
+int auth_spa_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_spa_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
+
 /*************************************************
 *          Initialization entry point            *
 *************************************************/
@@ -360,4 +373,5 @@ if (errno != 0 || buffer[0] != '3')
 return FAIL;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of spa.c */

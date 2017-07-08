@@ -182,7 +182,7 @@ const pcre *regex_UTF8         = NULL;
 incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
-#ifndef STAND_ALONE
+#if !defined(STAND_ALONE) && !defined(MACRO_PREDEF)
 int (*lwr_receive_getc)(unsigned) = stdin_getc;
 uschar * (*lwr_receive_getbuf)(unsigned *) = NULL;
 int (*lwr_receive_ungetc)(int) = stdin_ungetc;
@@ -939,9 +939,6 @@ uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;
 uschar *lookup_value           = NULL;
 
-macro_item  *macros            = NULL;
-macro_item  *mlast             = NULL;
-BOOL    macros_builtin_created = FALSE;
 uschar *mailstore_basename     = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *malware_name           = NULL;  /* Virus Name */

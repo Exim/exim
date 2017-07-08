@@ -1,0 +1,17 @@
+/*************************************************
+*     Exim - an Internet mail transport agent    *
+*************************************************/
+
+/* Copyright (c) Jeremy Harris 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
+/* Global functions */
+
+extern void builtin_macro_create(const uschar *);
+extern void options_from_list(optionlist *, unsigned, const uschar *, uschar *);
+
+extern void options_main(void);
+extern void options_routers(void);
+extern void options_transports(void);
+extern void options_auths(void);
+

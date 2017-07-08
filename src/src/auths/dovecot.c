@@ -71,6 +71,19 @@ auth_dovecot_options_block auth_dovecot_option_defaults = {
 };
 
 
+
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_dovecot_init(auth_instance *ablock) {}
+int auth_dovecot_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_dovecot_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Static variables for reading from the socket */
 
 static uschar sbuffer[256];
@@ -495,3 +508,6 @@ if (fd >= 0)
 /* Expand server_condition as an authorization check */
 return ret == OK ? auth_check_serv_cond(ablock) : ret;
 }
+
+
+#endif   /*!MACRO_PREDEF*/

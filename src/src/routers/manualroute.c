@@ -34,6 +34,21 @@ address can appear in the tables drtables.c. */
 int manualroute_router_options_count =
   sizeof(manualroute_router_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+manualroute_router_options_block manualroute_router_option_defaults = {0};
+void manualroute_router_init(router_instance *rblock) {}
+int manualroute_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
 /* Default private options block for the manualroute router. */
 
 manualroute_router_options_block manualroute_router_option_defaults = {
@@ -474,4 +489,5 @@ addr->transport = transport;
 return OK;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/manualroute.c */

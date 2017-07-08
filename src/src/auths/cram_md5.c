@@ -47,6 +47,17 @@ auth_cram_md5_options_block auth_cram_md5_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_cram_md5_init(auth_instance *ablock) {}
+int auth_cram_md5_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_cram_md5_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else	/*!MACRO_PREDEF*/
+
+
 /*************************************************
 *          Initialization entry point            *
 *************************************************/
@@ -68,10 +79,12 @@ if (ob->client_secret != NULL)
   }
 }
 
+#endif	/*!MACRO_PREDEF*/
 #endif  /* STAND_ALONE */
 
 
 
+#ifndef MACRO_PREDEF
 /*************************************************
 *      Perform the CRAM-MD5 algorithm            *
 *************************************************/
@@ -348,4 +361,5 @@ return 0;
 
 #endif
 
+#endif	/*!MACRO_PREDEF*/
 /* End of cram_md5.c */

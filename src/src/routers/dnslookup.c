@@ -44,6 +44,22 @@ address can appear in the tables drtables.c. */
 int dnslookup_router_options_count =
   sizeof(dnslookup_router_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+dnslookup_router_options_block dnslookup_router_option_defaults = {0};
+void dnslookup_router_init(router_instance *rblock) {}
+int dnslookup_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
+
 /* Default private options block for the dnslookup router. */
 
 dnslookup_router_options_block dnslookup_router_option_defaults = {
@@ -446,6 +462,7 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
   OK : DEFER;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/dnslookup.c */
 /* vi: aw ai sw=2
 */

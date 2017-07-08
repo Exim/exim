@@ -95,6 +95,17 @@ address can appear in the tables drtables.c. */
 int pipe_transport_options_count =
   sizeof(pipe_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+pipe_transport_options_block pipe_transport_option_defaults = {0};
+void pipe_transport_init(transport_instance *tblock) {}
+BOOL pipe_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the pipe transport. */
 
 pipe_transport_options_block pipe_transport_option_defaults = {
@@ -1152,4 +1163,5 @@ if (addr->transport_return != OK)
 return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/pipe.c */

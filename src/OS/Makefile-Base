@@ -36,7 +36,7 @@ FE       = $(FULLECHO)
 # are set up, and finally it goes to the main Exim target.
 
 all:       utils exim
-config:    $(EDITME) checklocalmake Makefile os.c config.h version.h
+config:    $(EDITME) checklocalmake Makefile os.c config.h version.h macro.c
 
 checklocalmake: 
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
@@ -109,6 +109,29 @@ os.c:   ../src/os.c \
 config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 	$(SHELL) $(SCRIPTS)/Configure-config.h "$(MAKE)"
 
+# Build the builtin-macros data struct
+
+MACRO_CSRC = macro_predef.c globals.c readconf.c route.c transport.c \
+	drtables.c \
+	transports/appendfile.c transports/autoreply.c transports/lmtp.c \
+	transports/pipe.c transports/queuefile.c transports/smtp.c \
+	routers/accept.c routers/dnslookup.c routers/ipliteral.c \
+	routers/iplookup.c routers/manualroute.c routers/queryprogram.c \
+	routers/redirect.c \
+	auths/auth-spa.c auths/cram_md5.c auths/cyrus_sasl.c auths/dovecot.c \
+	auths/gsasl_exim.c auths/heimdal_gssapi.c auths/plaintext.c auths/spa.c \
+	auths/tls.c
+MACRO_HSRC = macro_predef.h os.h globals.h config.h \
+	routers/accept.h routers/dnslookup.h routers/ipliteral.h \
+	routers/iplookup.h routers/manualroute.h routers/queryprogram.h \
+	routers/redirect.h
+
+macro_predef: $(MACRO_CSRC) $(MACRO_HSRC)
+	@echo "$(CC) -DMACRO_PREDEF macro_predef.c"
+	$(FE)$(CC) $(CFLAGS) -DMACRO_PREDEF -o macro_predef $(MACRO_CSRC)
+
+macro.c: macro_predef
+	./macro_predef > macro.c
 
 # This target is recognized specially by GNU make. It records those targets
 # that do not correspond to files that are being built and which should
@@ -337,7 +360,7 @@ OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
-        environment.o \
+        environment.o macro.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)

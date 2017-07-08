@@ -186,6 +186,18 @@ address can appear in the tables drtables.c. */
 int smtp_transport_options_count =
   sizeof(smtp_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+smtp_transport_options_block smtp_transport_option_defaults = {0};
+void smtp_transport_init(transport_instance *tblock) {}
+BOOL smtp_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+void smtp_transport_closedown(transport_instance *tblock) {}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the smtp transport. */
 
 smtp_transport_options_block smtp_transport_option_defaults = {
@@ -4609,6 +4621,7 @@ DEBUG(D_transport) debug_printf("Leaving %s transport\n", tblock->name);
 return TRUE;   /* Each address has its status */
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of transport/smtp.c */

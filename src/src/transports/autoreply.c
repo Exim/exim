@@ -62,6 +62,17 @@ address can appear in the tables drtables.c. */
 int autoreply_transport_options_count =
   sizeof(autoreply_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+autoreply_transport_options_block autoreply_transport_option_defaults = {0};
+void autoreply_transport_init(transport_instance *tblock) {}
+BOOL autoreply_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the autoreply transport. */
 
 autoreply_transport_options_block autoreply_transport_option_defaults = {
@@ -879,4 +890,5 @@ DEBUG(D_transport) debug_printf("%s transport succeeded\n", tblock->name);
 return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/autoreply.c */

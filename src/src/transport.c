@@ -11,25 +11,6 @@ transports. */
 
 #include "exim.h"
 
-/* Structure for keeping list of addresses that have been added to
-Envelope-To:, in order to avoid duplication. */
-
-struct aci {
-  struct aci *next;
-  address_item *ptr;
-  };
-
-
-/* Static data for write_chunk() */
-
-static uschar *chunk_ptr;           /* chunk pointer */
-static uschar *nl_check;            /* string to look for at line start */
-static int     nl_check_length;     /* length of same */
-static uschar *nl_escape;           /* string to insert */
-static int     nl_escape_length;    /* length of same */
-static int     nl_partial_match;    /* length matched at chunk end */
-
-
 /* Generic options for transports, all of which live inside transport_instance
 data blocks and which therefore have the opt_public flag set. Note that there
 are other options living inside this structure which can be set only from
@@ -106,20 +87,46 @@ optionlist optionlist_transports[] = {
 
 int optionlist_transports_size = nelem(optionlist_transports);
 
+#ifdef MACRO_PREDEF
+
+# include "macro_predef.h"
 
 void
-readconf_options_transports(void)
+options_transports(void)
 {
 struct transport_info * ti;
+uschar buf[64];
 
-readconf_options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
+options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
 
 for (ti = transports_available; ti->driver_name[0]; ti++)
   {
-  macro_create(string_sprintf("_DRIVER_TRANSPORT_%T", ti->driver_name), US"y", FALSE, TRUE);
-  readconf_options_from_list(ti->options, (unsigned)*ti->options_count, US"TRANSPORT", ti->driver_name);
+  snprintf(buf, sizeof(buf), "_DRIVER_TRANSPORT_%T", ti->driver_name);
+  builtin_macro_create(buf);
+  options_from_list(ti->options, (unsigned)*ti->options_count, US"TRANSPORT", ti->driver_name);
   }
 }
+
+#else	/*!MACRO_PREDEF*/
+
+/* Structure for keeping list of addresses that have been added to
+Envelope-To:, in order to avoid duplication. */
+
+struct aci {
+  struct aci *next;
+  address_item *ptr;
+  };
+
+
+/* Static data for write_chunk() */
+
+static uschar *chunk_ptr;           /* chunk pointer */
+static uschar *nl_check;            /* string to look for at line start */
+static int     nl_check_length;     /* length of same */
+static uschar *nl_escape;           /* string to insert */
+static int     nl_escape_length;    /* length of same */
+static int     nl_partial_match;    /* length matched at chunk end */
+
 
 /*************************************************
 *             Initialize transport list           *
@@ -2267,6 +2274,7 @@ if (expand_arguments)
 return TRUE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of transport.c */

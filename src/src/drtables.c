@@ -424,6 +424,9 @@ transport_info transports_available[] = {
 { US"", NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, FALSE }
 };
 
+
+#ifndef MACRO_PREDEF
+
 struct lookupmodulestr
 {
   void *dl;
@@ -721,4 +724,5 @@ init_lookup_list(void)
   lookupmodules = NULL;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of drtables.c */

@@ -63,6 +63,19 @@ auth_cyrus_sasl_options_block auth_cyrus_sasl_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_cyrus_sasl_init(auth_instance *ablock) {}
+int auth_cyrus_sasl_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_cyrus_sasl_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
+
 /*************************************************
 *          Initialization entry point            *
 *************************************************/
@@ -525,6 +538,7 @@ auth_cyrus_sasl_client(
 return FAIL;
 }
 
+#endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_CYRUS_SASL */
 
 /* End of cyrus_sasl.c */

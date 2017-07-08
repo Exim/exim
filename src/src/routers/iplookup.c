@@ -44,6 +44,20 @@ address can appear in the tables drtables.c. */
 int iplookup_router_options_count =
   sizeof(iplookup_router_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+iplookup_router_options_block iplookup_router_option_defaults = {0};
+void iplookup_router_init(router_instance *rblock) {}
+int iplookup_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the iplookup router. */
 
 iplookup_router_options_block iplookup_router_option_defaults = {
@@ -402,4 +416,5 @@ if (rc != OK) return rc;
 return OK;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/iplookup.c */

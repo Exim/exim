@@ -32,6 +32,18 @@ accept_router_options_block accept_router_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+void accept_router_init(router_instance *rblock) {}
+int accept_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {}
+
+#else	/*!MACRO_PREDEF*/
+
+
 
 /*************************************************
 *          Initialization entry point            *
@@ -125,4 +137,5 @@ addr->prop.remove_headers = remove_headers;
 return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)? OK : DEFER;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of routers/accept.c */

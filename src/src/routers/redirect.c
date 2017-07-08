@@ -133,6 +133,21 @@ address can appear in the tables drtables.c. */
 int redirect_router_options_count =
   sizeof(redirect_router_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+redirect_router_options_block redirect_router_option_defaults = {0};
+void redirect_router_init(router_instance *rblock) {}
+int redirect_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
 /* Default private options block for the redirect router. */
 
 redirect_router_options_block redirect_router_option_defaults = {
@@ -921,4 +936,5 @@ addr->next = *addr_succeed;
 return yield;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/redirect.c */

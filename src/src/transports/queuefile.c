@@ -20,11 +20,24 @@ optionlist queuefile_transport_options[] = {
     (void *)offsetof(queuefile_transport_options_block, dirname) },
 };
 
+
 /* Size of the options list. An extern variable has to be used so that its
 address can appear in the tables drtables.c. */
 
 int queuefile_transport_options_count =
   sizeof(queuefile_transport_options) / sizeof(optionlist);
+
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+queuefile_transport_options_block queuefile_transport_option_defaults = {0};
+void queuefile_transport_init(transport_instance *tblock) {}
+BOOL queuefile_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 
 /* Default private options block for the appendfile transport. */
 
@@ -254,3 +267,5 @@ if (sdfd >= 0) (void) close(sdfd);
 put in the first address of a batch. */
 return FALSE;
 }
+
+#endif /*!MACRO_PREDEF*/

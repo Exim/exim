@@ -78,6 +78,19 @@ auth_gsasl_options_block auth_gsasl_option_defaults = {
   FALSE                     /* server_channelbinding */
 };
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_gsasl_init(auth_instance *ablock) {}
+int auth_gsasl_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_gsasl_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
 /* "Globals" for managing the gsasl interface. */
 
 static Gsasl *gsasl_ctx = NULL;
@@ -614,6 +627,7 @@ auth_gsasl_version_report(FILE *f)
           GSASL_VERSION, runtime);
 }
 
+#endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_GSASL */
 
 /* End of gsasl_exim.c */

@@ -40,6 +40,17 @@ address can appear in the tables drtables.c. */
 int lmtp_transport_options_count =
   sizeof(lmtp_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+lmtp_transport_options_block lmtp_transport_option_defaults = {0};
+void lmtp_transport_init(transport_instance *tblock) {}
+BOOL lmtp_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the lmtp transport. */
 
 lmtp_transport_options_block lmtp_transport_option_defaults = {
@@ -791,4 +802,5 @@ MINUS_N:
   return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/lmtp.c */

@@ -76,6 +76,19 @@ auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults = {
   US"smtp",                 /* server_service */
 };
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_heimdal_init(auth_instance *ablock) {}
+int auth_heimdal_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_heimdal_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
 /* "Globals" for managing the heimdal_gssapi interface. */
 
 /* Utility functions */
@@ -590,6 +603,7 @@ auth_heimdal_gssapi_version_report(FILE *f)
           heimdal_version, heimdal_long_version);
 }
 
+#endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_HEIMDAL_GSSAPI */
 
 /* End of heimdal_gssapi.c */

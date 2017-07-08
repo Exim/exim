@@ -35,6 +35,18 @@ auth_plaintext_options_block auth_plaintext_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_plaintext_init(auth_instance *ablock) {}
+int auth_plaintext_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_plaintext_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
 /*************************************************
 *          Initialization entry point            *
 *************************************************/
@@ -294,4 +306,5 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)))
 return FAIL;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of plaintext.c */

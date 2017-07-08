@@ -14,22 +14,6 @@
 #endif
 
 
-/* Encodings for mailbox formats, and their names. MBX format is actually
-supported only if SUPPORT_MBX is set. */
-
-enum { mbf_unix, mbf_mbx, mbf_smail, mbf_maildir, mbf_mailstore };
-
-static const char *mailbox_formats[] = {
-  "unix", "mbx", "smail", "maildir", "mailstore" };
-
-
-/* Check warn threshold only if quota size set or not a percentage threshold
-   percentage check should only be done if quota > 0 */
-
-#define THRESHOLD_CHECK  (ob->quota_warn_threshold_value > 0 && \
-  (!ob->quota_warn_threshold_is_percent || ob->quota_value > 0))
-
-
 /* Options specific to the appendfile transport. They must be in alphabetic
 order (note that "_" comes before the lower case letters). Some of them are
 stored in the publicly visible instance block - these are flagged with the
@@ -170,6 +154,16 @@ address can appear in the tables drtables.c. */
 int appendfile_transport_options_count =
   sizeof(appendfile_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+appendfile_transport_options_block appendfile_transport_option_defaults = {0};
+void appendfile_transport_init(transport_instance *tblock) {}
+BOOL appendfile_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else	/*!MACRO_PREDEF*/
+
 /* Default private options block for the appendfile transport. */
 
 appendfile_transport_options_block appendfile_transport_option_defaults = {
@@ -238,6 +232,22 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   FALSE,          /* quota_no_check */
   FALSE           /* quota_filecount_no_check */
 };
+
+
+/* Encodings for mailbox formats, and their names. MBX format is actually
+supported only if SUPPORT_MBX is set. */
+
+enum { mbf_unix, mbf_mbx, mbf_smail, mbf_maildir, mbf_mailstore };
+
+static const char *mailbox_formats[] = {
+  "unix", "mbx", "smail", "maildir", "mailstore" };
+
+
+/* Check warn threshold only if quota size set or not a percentage threshold
+   percentage check should only be done if quota > 0 */
+
+#define THRESHOLD_CHECK  (ob->quota_warn_threshold_value > 0 && \
+  (!ob->quota_warn_threshold_is_percent || ob->quota_value > 0))
 
 
 
@@ -3407,4 +3417,5 @@ put in the first address of a batch. */
 return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/appendfile.c */
