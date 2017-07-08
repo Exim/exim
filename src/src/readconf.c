@@ -395,7 +395,7 @@ options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", N
 
 for (ai = auths_available; ai->driver_name[0]; ai++)
   {
-  snprintf(buf, sizeof(buf), "_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
+  spf(buf, sizeof(buf), "_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
   builtin_macro_create(buf);
   options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
   }

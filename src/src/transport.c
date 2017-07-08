@@ -101,7 +101,7 @@ options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSP
 
 for (ti = transports_available; ti->driver_name[0]; ti++)
   {
-  snprintf(buf, sizeof(buf), "_DRIVER_TRANSPORT_%T", ti->driver_name);
+  spf(buf, sizeof(buf), "_DRIVER_TRANSPORT_%T", ti->driver_name);
   builtin_macro_create(buf);
   options_from_list(ti->options, (unsigned)*ti->options_count, US"TRANSPORT", ti->driver_name);
   }

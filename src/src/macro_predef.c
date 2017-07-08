@@ -29,11 +29,11 @@ if (mp_index == 0)
 else
   printf("&p%d,", mp_index-1);
 
-printf(" FALSE, %d, \"%s\", \"y\" };\n", Ustrlen(name), name);
+printf(" FALSE, %d, \"%s\", \"y\" };\n", Ustrlen(name), CS name);
 mp_index++;
 }
 
-static void
+void
 spf(uschar * buf, int len, const uschar * fmt, ...)
 {
 va_list ap;
@@ -73,9 +73,9 @@ expansion. */
 for (i = 0; i < nopt; i++)  if (*(s = US opts[i].name) && *s != '*')
   {
   if (group)
-    spf(buf, sizeof(buf), "_OPT_%T_%T_%T", section, group, s);
+    spf(buf, sizeof(buf), CUS"_OPT_%T_%T_%T", section, group, s);
   else
-    spf(buf, sizeof(buf), "_OPT_%T_%T", section, s);
+    spf(buf, sizeof(buf), CUS"_OPT_%T_%T", section, s);
   builtin_macro_create(buf);
   }
 }
@@ -273,4 +273,5 @@ options();
 
 printf("macro_item * macros = &p%d;\n", mp_index-1);
 printf("macro_item * mlast = &p0;\n");
+exit(0);
 }
