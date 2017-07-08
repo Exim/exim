@@ -2457,7 +2457,7 @@ for (i = 1; i < argc; i++)
           exit(EXIT_FAILURE);
           }
 
-      m = macro_create(name, s, TRUE, FALSE);
+      m = macro_create(string_copy(name), string_copy(s), TRUE, FALSE);
 
       if (clmacro_count >= MAX_CLMACROS)
         {

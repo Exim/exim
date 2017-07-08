@@ -561,18 +561,21 @@ return US"";
 *       Deal with an assignment to a macro       *
 *************************************************/
 
-/* We have a new definition. The macro_item structure includes a final vector
-called "name" which is one byte long. Thus, adding "namelen" gives us enough
-room to store the "name" string.
+/* We have a new definition.
 If a builtin macro we place at head of list, else tail.  This lets us lazy-create
-builtins. */
+builtins.
+
+Args:
+ name	Name of the macro.  Must be in storage persistent past the call
+ val	Expansion result for the macro.  Ditto persistence.
+*/
 
 macro_item *
 macro_create(const uschar * name, const uschar * val,
   BOOL command_line, BOOL builtin)
 {
 unsigned namelen = Ustrlen(name);
-macro_item * m = store_get(sizeof(macro_item) + namelen);
+macro_item * m = store_get(sizeof(macro_item));
 
 /* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val) */
 if (!macros)
@@ -594,8 +597,8 @@ else
   }
 m->command_line = command_line;
 m->namelen = namelen;
-m->replacement = string_copy(val);
-Ustrcpy(m->name, name);
+m->name = name;
+m->replacement = val;
 return m;
 }
 
@@ -689,7 +692,7 @@ if (redef)
 
 /* We have a new definition. */
 else
-  (void) macro_create(name, s, FALSE, FALSE);
+  (void) macro_create(string_copy(name), string_copy(s), FALSE, FALSE);
 }
 
 

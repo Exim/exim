@@ -28,11 +28,11 @@ struct router_info;
 /* Structure for remembering macros for the configuration file */
 
 typedef struct macro_item {
-  struct   macro_item *next;
-  BOOL     command_line;
-  unsigned namelen;
-  uschar * replacement;
-  uschar   name[1];
+  struct  macro_item * next;
+  BOOL     	command_line;
+  unsigned	namelen;
+  const uschar * name;
+  const uschar * replacement;
 } macro_item;
 
 /* Structure for bit tables for debugging and logging */
