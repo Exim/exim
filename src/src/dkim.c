@@ -104,7 +104,7 @@ int rc;
 
 store_pool = POOL_PERM;
 if (  dkim_collect_input
-   && (rc = pdkim_feed(dkim_verify_ctx, CS data, len)) != PDKIM_OK)
+   && (rc = pdkim_feed(dkim_verify_ctx, data, len)) != PDKIM_OK)
   {
   dkim_collect_error = pdkim_errstr(rc);
   log_write(0, LOG_MAIN,
@@ -475,7 +475,7 @@ pdkim_signature *signature;
 int pdkim_canon;
 int pdkim_rc;
 int sread;
-char buf[4096];
+uschar buf[4096];
 int save_errno = 0;
 int old_pool = store_pool;
 

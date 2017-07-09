@@ -7077,7 +7077,7 @@ phase, to minimize cases of half-done things. */
 
 DEBUG(D_deliver)
   debug_printf(">>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>\n");
-cancel_cutthrough_connection(TRUE, "deliveries are done");
+cancel_cutthrough_connection(TRUE, US"deliveries are done");
 
 /* Root privilege is no longer needed */
 
@@ -8507,7 +8507,7 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
   }
 else
   {
-  cancel_cutthrough_connection(TRUE, "non-continued delivery");
+  cancel_cutthrough_connection(TRUE, US"non-continued delivery");
   (void) child_exec_exim(exec_type, FALSE, NULL, FALSE, 2, US"-Mc", message_id);
   }
 /* Control does not return here. */

@@ -148,7 +148,7 @@ if (!spool_mbox_ok)
     if (!spool_file_wireformat || source_file_override)
       j = fread(buffer, 1, sizeof(buffer), data_file);
     else						/* needs CRLF -> NL */
-      if ((s = fgets(buffer, sizeof(buffer), data_file)))
+      if ((s = US fgets(CS buffer, sizeof(buffer), data_file)))
 	{
 	uschar * p = s + Ustrlen(s) - 1;
 

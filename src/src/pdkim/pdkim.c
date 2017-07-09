@@ -155,7 +155,7 @@ switch(status)
   case PDKIM_ERR_BUFFER_TOO_SMALL:	return US"BUFFER_TOO_SMALL";
   case PDKIM_SIGN_PRIVKEY_WRAP:	return US"PRIVKEY_WRAP";
   case PDKIM_SIGN_PRIVKEY_B64D:	return US"PRIVKEY_B64D";
-  default: return "(unknown)";
+  default: return US"(unknown)";
   }
 }
 
@@ -999,7 +999,7 @@ return PDKIM_OK;
 #define HEADER_BUFFER_FRAG_SIZE 256
 
 DLLEXPORT int
-pdkim_feed(pdkim_ctx *ctx, char *data, int len)
+pdkim_feed(pdkim_ctx * ctx, uschar * data, int len)
 {
 int p, rc;
 
