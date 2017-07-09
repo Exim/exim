@@ -391,7 +391,7 @@ it gets statted to see if it has been cycled. With a datestamp, the datestamp
 will be compared. The static slot for saving it is the same size as buffer,
 and the text has been checked above to fit, so this use of strcpy() is OK. */
 
-if (type == lt_main)
+if (type == lt_main && string_datestamp_offset >= 0)
   {
   Ustrcpy(mainlog_name, buffer);
   mainlog_datestamp = mainlog_name + string_datestamp_offset;
@@ -399,7 +399,7 @@ if (type == lt_main)
 
 /* Ditto for the reject log */
 
-else if (type == lt_reject)
+else if (type == lt_reject && string_datestamp_offset >= 0)
   {
   Ustrcpy(rejectlog_name, buffer);
   rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
@@ -1000,7 +1000,7 @@ if (  flags & LOG_MAIN
     operation. This happens at midnight, at which point we want to roll over
     the file. Closing it has the desired effect. */
 
-    if (mainlog_datestamp != NULL)
+    if (mainlog_datestamp)
       {
       uschar *nowstamp = tod_stamp(string_datestamp_type);
       if (Ustrncmp (mainlog_datestamp, nowstamp, Ustrlen(nowstamp)) != 0)
