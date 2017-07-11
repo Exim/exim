@@ -91,7 +91,7 @@ int rc, save_errno;
 BOOL read_only = flags == O_RDONLY;
 BOOL created = FALSE;
 flock_t lock_data;
-uschar buffer[256];
+uschar dirname[256], filename[256];
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
@@ -106,19 +106,20 @@ make the directory as well, just in case. We won't be doing this many times
 unnecessarily, because usually the lock file will be there. If the directory
 exists, there is no error. */
 
-sprintf(CS buffer, "%s/db/%s.lockfile", spool_directory, name);
+snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
+snprintf(CS filename, sizeof(filename), "%s/%s.lockfile", dirname, name);
 
-if ((dbblock->lockfd = Uopen(buffer, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
+if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
   {
   created = TRUE;
   (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, TRUE);
-  dbblock->lockfd = Uopen(buffer, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
+  dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
   }
 
 if (dbblock->lockfd < 0)
   {
   log_write(0, LOG_MAIN, "%s",
-    string_open_failed(errno, "database lock file %s", buffer));
+    string_open_failed(errno, "database lock file %s", filename));
   errno = 0;      /* Indicates locking failure */
   return NULL;
   }
@@ -130,7 +131,7 @@ lock_data.l_type = read_only? F_RDLCK : F_WRLCK;
 lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
 
 DEBUG(D_hints_lookup|D_retry|D_route|D_deliver)
-  debug_printf("locking %s\n", buffer);
+  debug_printf("locking %s\n", filename);
 
 sigalrm_seen = FALSE;
 alarm(EXIMDB_LOCK_TIMEOUT);
@@ -141,14 +142,14 @@ if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "Failed to get %s lock for %s: %s",
-    read_only ? "read" : "write", buffer,
+    read_only ? "read" : "write", filename,
     errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   errno = 0;       /* Indicates locking failure */
   return NULL;
   }
 
-DEBUG(D_hints_lookup) debug_printf("locked  %s\n", buffer);
+DEBUG(D_hints_lookup) debug_printf("locked  %s\n", filename);
 
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. If we are
@@ -159,17 +160,17 @@ databases - often this is caused by non-matching db.h and the library. To make
 it easy to pin this down, there are now debug statements on either side of the
 open call. */
 
-sprintf(CS buffer, "%s/db/%s", spool_directory, name);
-DEBUG(D_hints_lookup) debug_printf("EXIM_DBOPEN(%s)\n", buffer);
-EXIM_DBOPEN(buffer, flags, EXIMDB_MODE, &(dbblock->dbptr));
+snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
+DEBUG(D_hints_lookup) debug_printf("EXIM_DBOPEN(%s)\n", filename);
+EXIM_DBOPEN(filename, dirname, flags, EXIMDB_MODE, &(dbblock->dbptr));
 DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
 
 if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
   DEBUG(D_hints_lookup)
-    debug_printf("%s appears not to exist: trying to create\n", buffer);
+    debug_printf("%s appears not to exist: trying to create\n", filename);
   created = TRUE;
-  EXIM_DBOPEN(buffer, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
+  EXIM_DBOPEN(filename, dirname, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
   DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
   }
 
@@ -193,22 +194,22 @@ if (created && geteuid() == root_uid)
   {
   DIR *dd;
   struct dirent *ent;
-  uschar *lastname = Ustrrchr(buffer, '/') + 1;
+  uschar *lastname = Ustrrchr(filename, '/') + 1;
   int namelen = Ustrlen(name);
 
   *lastname = 0;
-  dd = opendir(CS buffer);
+  dd = opendir(CS filename);
 
   while ((ent = readdir(dd)))
     if (Ustrncmp(ent->d_name, name, namelen) == 0)
       {
       struct stat statbuf;
       Ustrcpy(lastname, ent->d_name);
-      if (Ustat(buffer, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
+      if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
-        DEBUG(D_hints_lookup) debug_printf("ensuring %s is owned by exim\n", buffer);
-        if (Uchown(buffer, exim_uid, exim_gid))
-          DEBUG(D_hints_lookup) debug_printf("failed setting %s to owned by exim\n", buffer);
+        DEBUG(D_hints_lookup) debug_printf("ensuring %s is owned by exim\n", filename);
+        if (Uchown(filename, exim_uid, exim_gid))
+          DEBUG(D_hints_lookup) debug_printf("failed setting %s to owned by exim\n", filename);
         }
       }
 
@@ -223,18 +224,18 @@ if (!dbblock->dbptr)
   if (save_errno != ENOENT)
     if (lof)
       log_write(0, LOG_MAIN, "%s", string_open_failed(save_errno, "DB file %s",
-        buffer));
+        filename));
     else
       DEBUG(D_hints_lookup)
         debug_printf("%s", CS string_open_failed(save_errno, "DB file %s\n",
-          buffer));
+          filename));
   (void)close(dbblock->lockfd);
   errno = save_errno;
   return NULL;
   }
 
 DEBUG(D_hints_lookup)
-  debug_printf("opened hints database %s: flags=%s\n", buffer,
+  debug_printf("opened hints database %s: flags=%s\n", filename,
     flags == O_RDONLY ? "O_RDONLY"
     : flags == O_RDWR ? "O_RDWR"
     : flags == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"

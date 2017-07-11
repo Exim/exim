@@ -39,7 +39,7 @@ tdb_traverse to be called) */
 /* Access functions */
 
 /* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed */
-#define EXIM_DBOPEN(name, flags, mode, dbpp) \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
        *(dbpp) = tdb_open(CS name, 0, TDB_DEFAULT, flags, mode)
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
@@ -130,7 +130,7 @@ definition of DB_VERSION_STRING, which is present in versions 2.x onwards. */
 API changed for DB 4.1. */
 
 #if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
-#define EXIM_DBOPEN(name, flags, mode, dbpp) \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
        if (db_create(dbpp, NULL, 0) != 0 || \
          ((*dbpp)->set_errcall(*dbpp, dbfn_bdb_error_callback), \
          ((*dbpp)->open)(*dbpp, NULL, CS name, NULL, \
@@ -138,7 +138,7 @@ API changed for DB 4.1. */
          ((flags) == O_RDONLY)? DB_RDONLY : DB_CREATE, \
          mode)) != 0) *(dbpp) = NULL
 #else
-#define EXIM_DBOPEN(name, flags, mode, dbpp) \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
        if (db_create(dbpp, NULL, 0) != 0 || \
          ((*dbpp)->set_errcall(*dbpp, dbfn_bdb_error_callback), \
          ((*dbpp)->open)(*dbpp, CS name, NULL, \
@@ -215,7 +215,7 @@ before use, but we don't have to free anything after reading data. */
 /* Access functions */
 
 /* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed */
-#define EXIM_DBOPEN(name, flags, mode, dbpp)         \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp)         \
        if ((errno = db_open(CS name, DB_HASH,           \
          ((flags) == O_RDONLY)? DB_RDONLY : DB_CREATE, \
          mode, NULL, NULL, dbpp)) != 0) *(dbpp) = NULL
@@ -312,7 +312,7 @@ before been able to pass successfully. */
 /* Access functions */
 
 /* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed */
-#define EXIM_DBOPEN(name, flags, mode, dbpp) \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
        *(dbpp) = dbopen(CS name, flags, mode, DB_HASH, NULL)
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */
@@ -389,7 +389,7 @@ typedef struct {
 /* Access functions */
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
-#define EXIM_DBOPEN(name, flags, mode, dbpp) \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
      { (*(dbpp)) = (EXIM_DB *) malloc(sizeof(EXIM_DB));\
        if (*(dbpp) != NULL) { \
          (*(dbpp))->lkey.dptr = NULL;\
@@ -478,7 +478,7 @@ interface */
 /* Access functions */
 
 /* EXIM_DBOPEN - returns a EXIM_DB *, NULL if failed */
-#define EXIM_DBOPEN(name, flags, mode, dbpp) \
+#define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
        *(dbpp) = dbm_open(CS name, flags, mode)
 
 /* EXIM_DBGET - returns TRUE if successful, FALSE otherwise */

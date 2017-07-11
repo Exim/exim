@@ -253,18 +253,19 @@ dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof)
 int rc;
 struct flock lock_data;
 BOOL read_only = flags == O_RDONLY;
-uschar buffer[256];
+uschar dirname[256], filename[256];
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
-sprintf(CS buffer, "%s/db/%.200s.lockfile", spool_directory, name);
+snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
+snprintf(CS filename, sizeof(filename), "%s/%.200s.lockfile", dirname, name);
 
-dbblock->lockfd = Uopen(buffer, flags, 0);
+dbblock->lockfd = Uopen(filename, flags, 0);
 if (dbblock->lockfd < 0)
   {
-  printf("** Failed to open database lock file %s: %s\n", buffer,
+  printf("** Failed to open database lock file %s: %s\n", filename,
     strerror(errno));
   return NULL;
   }
@@ -286,7 +287,7 @@ if (rc < 0)
   {
   printf("** Failed to get %s lock for %s: %s",
     flags & O_WRONLY ? "write" : "read",
-    buffer,
+    filename,
     errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   return NULL;
@@ -295,12 +296,12 @@ if (rc < 0)
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. */
 
-sprintf(CS buffer, "%s/db/%s", spool_directory, name);
-EXIM_DBOPEN(buffer, flags, 0, &(dbblock->dbptr));
+sprintf(CS filename, "%s/%s", dirname, name);
+EXIM_DBOPEN(filename, dirname, flags, 0, &(dbblock->dbptr));
 
 if (dbblock->dbptr == NULL)
   {
-  printf("** Failed to open DBM file %s for %s:\n   %s%s\n", buffer,
+  printf("** Failed to open DBM file %s for %s:\n   %s%s\n", filename,
     read_only? "reading" : "writing", strerror(errno),
     #ifdef USE_DB
     " (or Berkeley DB error while opening)"

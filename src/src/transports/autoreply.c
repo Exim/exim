@@ -495,7 +495,11 @@ if (oncelog != NULL && *oncelog != 0 && to != NULL)
   else
     {
     EXIM_DATUM key_datum, result_datum;
-    EXIM_DBOPEN(oncelog, O_RDWR|O_CREAT, ob->mode, &dbm_file);
+    uschar * dirname = string_copy(oncelog);
+    uschar * s;
+
+    if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
+    EXIM_DBOPEN(oncelog, dirname, O_RDWR|O_CREAT, ob->mode, &dbm_file);
     if (!dbm_file)
       {
       addr->transport_return = DEFER;

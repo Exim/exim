@@ -18,8 +18,12 @@
 static void *
 dbmdb_open(uschar *filename, uschar **errmsg)
 {
+uschar * dirname = string_copy(filename);
+uschar * s;
 EXIM_DB *yield = NULL;
-EXIM_DBOPEN(filename, O_RDONLY, 0, &yield);
+
+if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
+EXIM_DBOPEN(filename, dirname, O_RDONLY, 0, &yield);
 if (yield == NULL)
   {
   int save_errno = errno;
