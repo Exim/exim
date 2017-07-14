@@ -800,6 +800,10 @@ tls_retry_connection:
 	  {
 	  case PENDING_OK:
 	    new_domain_record.random_result = ccache_accept;
+	    /* Nothing else to do, mark the verification as successful
+        and go to end for closing the connection. */
+        done = TRUE;
+        goto no_conn;
 	    break;
 	  case FAIL:
 	    new_domain_record.random_result = ccache_reject;
