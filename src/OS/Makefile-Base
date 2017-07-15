@@ -128,7 +128,7 @@ MACRO_HSRC = macro_predef.h os.h globals.h config.h \
 
 macro_predef: $(MACRO_CSRC) $(MACRO_HSRC)
 	@echo "$(CC) -DMACRO_PREDEF macro_predef.c"
-	$(FE)$(CC) $(CFLAGS) -DMACRO_PREDEF -o macro_predef $(MACRO_CSRC)
+	$(FE)$(CC) $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o macro_predef $(MACRO_CSRC)
 
 macro.c: macro_predef
 	./macro_predef > macro.c

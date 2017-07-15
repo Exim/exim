@@ -2577,7 +2577,7 @@ static uschar * corked = NULL;
 static int c_size = 0, c_len = 0;
 
 DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
-  buff, (ulong)len, more ? ", more" : "");
+  buff, (unsigned long)len, more ? ", more" : "");
 
 /* Lacking a CORK or MSG_MORE facility (such as GnuTLS has) we copy data when
 "more" is notified.  This hack is only ok if small amounts are involved AND only
