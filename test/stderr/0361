@@ -86,8 +86,9 @@ Delivery address list:
   kilos@recurse.test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex
@@ -122,8 +123,9 @@ rewrite_one_header: type=F:
 re-routed to kilos@recurse.test.ex.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
@@ -161,8 +163,9 @@ routed by r3 router
   transport: <none>
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
@@ -209,8 +212,9 @@ search_tidyup called
 --------> kilos@recurse.test.ex.test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to kilos <kilos@recurse.test.ex.test.ex> transport=t2

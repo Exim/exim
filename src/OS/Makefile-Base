@@ -557,7 +557,8 @@ exim_tidydb.o:   $(HDRS) exim_dbutil.c
 
 exim_dbmbuild.o: $(HDRS) exim_dbmbuild.c
 	@echo "$(CC) exim_dbmbuild.c"
-	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -o exim_dbmbuild.o exim_dbmbuild.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY \
+		-o exim_dbmbuild.o exim_dbmbuild.c
 
 # Utilities use special versions of some modules - typically with debugging
 # calls cut out.

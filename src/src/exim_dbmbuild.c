@@ -30,6 +30,7 @@ characters. */
 
 #include "exim.h"
 
+uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
 
 #define max_insize   20000
 #define max_outsize 100000
@@ -151,6 +152,7 @@ uschar *bptr;
 uschar  keybuffer[256];
 uschar  temp_dbmname[512];
 uschar  real_dbmname[512];
+uschar  dirname[512];
 uschar *buffer = malloc(max_outsize);
 uschar *line = malloc(max_insize);
 
@@ -205,10 +207,14 @@ if (strlen(argv[arg+1]) > sizeof(temp_dbmname) - 20)
 Ustrcpy(temp_dbmname, argv[arg+1]);
 Ustrcat(temp_dbmname, ".dbmbuild_temp");
 
+Ustrcpy(dirname, temp_dbmname);
+if ((bptr = Ustrrchr(dirname, '/')))
+  *bptr = '\0';
+
 /* It is apparently necessary to open with O_RDWR for this to work
 with gdbm-1.7.3, though no reading is actually going to be done. */
 
-EXIM_DBOPEN(temp_dbmname, O_RDWR|O_CREAT|O_EXCL, 0644, &d);
+EXIM_DBOPEN(temp_dbmname, dirname, O_RDWR|O_CREAT|O_EXCL, 0644, &d);
 
 if (d == NULL)
   {
