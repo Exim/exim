@@ -68,9 +68,7 @@ int length, expire;
 time_t now;
 dbdata_callout_cache *cache_record;
 
-cache_record = dbfn_read_with_length(dbm_file, key, &length);
-
-if (cache_record == NULL)
+if (!(cache_record = dbfn_read_with_length(dbm_file, key, &length)))
   {
   HDEBUG(D_verify) debug_printf("callout cache: no %s record found for %s\n", type, key);
   return NULL;
@@ -797,12 +795,12 @@ tls_retry_connection:
       if (smtp_write_mail_and_rcpt_cmds(&sx, &yield) == 0)
 	switch(addr->transport_return)
 	  {
-	  case PENDING_OK:
+	  case PENDING_OK:	/* random was accepted, unfortunately */
 	    new_domain_record.random_result = ccache_accept;
-	    yield = OK;		/* Only usable result we can return */
+	    yield = OK;		/* Only usable verify result we can return */
 	    done = TRUE;
 	    goto no_conn;
-	  case FAIL:		/* the preferred result */
+	  case FAIL:		/* rejected: the preferred result */
 	    new_domain_record.random_result = ccache_reject;
 	    sx.avoid_option = 0;
 
@@ -836,6 +834,8 @@ tls_retry_connection:
 	    sx.send_rset = TRUE;
 	    sx.completed_addr = FALSE;
 	    goto tls_retry_connection;
+	  case DEFER:		/* 4xx response to random */
+	    break;		/* Just to be clear. ccache_unknown, !done. */
 	  }
 
       /* Re-setup for main verify, or for the error message when failing */
@@ -993,7 +993,7 @@ no_conn:
 	if (*sx.buffer == 0) Ustrcpy(sx.buffer, US"connection dropped");
 
 	/*XXX test here is ugly; seem to have a split of responsibility for
-	building this message.  Need to reationalise.  Where is it done
+	building this message.  Need to rationalise.  Where is it done
 	before here, and when not?
 	Not == 5xx resp to MAIL on main-verify
 	*/
