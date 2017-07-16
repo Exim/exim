@@ -116,13 +116,19 @@ definition of DB_VERSION_STRING, which is present in versions 2.x onwards. */
 #if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 1)
 # define EXIM_DB       DB_ENV
 /* Cursor type, for scanning */
-#define EXIM_CURSOR   DBC
+# define EXIM_CURSOR   DBC
 
 /* The datum type used for queries */
-#define EXIM_DATUM    DBT
+# define EXIM_DATUM    DBT
 
 /* Some text for messages */
-#define EXIM_DBTYPE   "db (v4.1+)"
+# define EXIM_DBTYPE   "db (v4.1+)"
+
+/* Only more-recent versions.  5+ ? */
+# ifndef DB_FORCESYNC
+#  define DB_FORCESYNC 0
+# endif
+
 
 /* Access functions */
 
