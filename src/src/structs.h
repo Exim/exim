@@ -31,6 +31,7 @@ typedef struct macro_item {
   struct  macro_item * next;
   BOOL     	command_line;
   unsigned	namelen;
+  unsigned	replen;
   const uschar * name;
   const uschar * replacement;
 } macro_item;

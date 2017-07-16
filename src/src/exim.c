@@ -1443,10 +1443,9 @@ for (m = macros; m; m = m->next) if (m->command_line)
       }
   if (!found)
     return FALSE;
-  if (m->replacement == NULL)
+  if (!m->replacement)
     continue;
-  len = Ustrlen(m->replacement);
-  if (len == 0)
+  if ((len = m->replen) == 0)
     continue;
   n = pcre_exec(regex_whitelisted_macro, NULL, CS m->replacement, len,
    0, PCRE_EOPT, NULL, 0);

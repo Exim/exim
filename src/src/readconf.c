@@ -604,13 +604,13 @@ Args:
 macro_item *
 macro_create(const uschar * name, const uschar * val, BOOL command_line)
 {
-unsigned namelen = Ustrlen(name);
 macro_item * m = store_get(sizeof(macro_item));
 
 /* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val); */
 m->next = NULL;
 m->command_line = command_line;
-m->namelen = namelen;
+m->namelen = Ustrlen(name);
+m->replen = Ustrlen(val);
 m->name = name;
 m->replacement = val;
 mlast->next = m;
@@ -701,7 +701,10 @@ if (m && m->command_line) return;
 
 if (redef)
   if (m)
+    {
+    m->replen = Ustrlen(s);
     m->replacement = string_copy(s);
+    }
   else
     log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "can't redefine an undefined macro "
       "\"%s\"", name);
@@ -825,24 +828,28 @@ for (;;)
     if (*s != '=') s = ss;          /* Not a macro definition */
     }
 
+  /* Skip leading chars which cannot start a macro name, to avoid multiple
+  pointless rescans in Ustrstr calls. */
+
+  while (*s && !isupper(*s) && *s != '_') s++;
+
   /* For each defined macro, scan the line (from after XXX= if present),
   replacing all occurrences of the macro. */
 
   macro_found = FALSE;
   for (m = macros; m; m = m->next)
     {
-    uschar *p, *pp;
-    uschar *t = s;
+    uschar * p, *pp;
+    uschar * t = s;
 
     while ((p = Ustrstr(t, m->name)) != NULL)
       {
       int moveby;
-      int replen = Ustrlen(m->replacement);
 
-/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, t); */
+/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss); */
       /* Expand the buffer if necessary */
 
-      while (newlen - m->namelen + replen + 1 > big_buffer_size)
+      while (newlen - m->namelen + m->replen + 1 > big_buffer_size)
         {
         int newsize = big_buffer_size + BIG_BUFFER_SIZE;
         uschar *newbuffer = store_malloc(newsize);
@@ -861,13 +868,14 @@ for (;;)
       same macro. */
 
       pp = p + m->namelen;
-      if ((moveby = replen - m->namelen) != 0)
+      if ((moveby = m->replen - m->namelen) != 0)
         {
-        memmove(p + replen, pp, (big_buffer + newlen) - pp + 1);
+        memmove(p + m->replen, pp, (big_buffer + newlen) - pp + 1);
         newlen += moveby;
         }
-      Ustrncpy(p, m->replacement, replen);
-      t = p + replen;
+      Ustrncpy(p, m->replacement, m->replen);
+      t = p + m->replen;
+      while (*t && !isupper(*t) && *t != '_') t++;
       macro_found = TRUE;
       }
     }
