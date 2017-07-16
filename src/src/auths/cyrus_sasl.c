@@ -70,6 +70,7 @@ void auth_cyrus_sasl_init(auth_instance *ablock) {}
 int auth_cyrus_sasl_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_cyrus_sasl_client(auth_instance *ablock, smtp_inblock *inblock,
   smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+void auth_cyrus_sasl_version_report(FILE *f) {}
 
 #else   /*!MACRO_PREDEF*/
 
