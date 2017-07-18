@@ -128,6 +128,10 @@ JH/19 Bug 2141: Use the full-complex API for Berkeley DB rather than the legacy-
       file in the working directory redirecting the DB files, possibly correpting
       some existing file.
 
+JH/20 Bug 2147: Do not defer for a verify-with-callout-and-random which is not
+      cache-hot.  Previously, although the result was properly cached, the
+      initial verify call returned a defer.
+
 
 Exim version 4.89
 -----------------

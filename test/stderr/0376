@@ -323,10 +323,6 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP(close)>>
 wrote callout cache domain record for otherhost3:
   result=1 postmaster=0 random=1
-LOG: MAIN REJECT
-  H=[V4NET.0.0.3] U=root sender verify defer for <ok@otherhost3>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : response to "RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>" was: 250 OK
-LOG: MAIN REJECT
-  H=[V4NET.0.0.3] U=root F=<ok@otherhost3> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -373,10 +369,6 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP(close)>>
 wrote callout cache domain record for otherhost4:
   result=1 postmaster=0 random=1
-LOG: MAIN REJECT
-  H=[V4NET.0.0.4] U=root sender verify defer for <ok@otherhost4>: Could not complete sender verify callout: 127.0.0.1 [127.0.0.1] : response to "RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost4>" was: 250 OK
-LOG: MAIN REJECT
-  H=[V4NET.0.0.4] U=root F=<ok@otherhost4> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
