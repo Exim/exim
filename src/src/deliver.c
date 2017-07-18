@@ -4465,7 +4465,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
       {
       smtp_transport_options_block * ob;
 
-      if (  !(  tp->info->driver_name == US"smtp"
+      if (  !(  Ustrcmp(tp->info->driver_name, "smtp") == 0
 	     && (ob = (smtp_transport_options_block *)tp->options_block)
 	     && ob->hosts_override && ob->hosts
 	     )
