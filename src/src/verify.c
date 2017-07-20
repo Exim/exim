@@ -729,6 +729,25 @@ tls_retry_connection:
       goto no_conn;
       }
 
+    /* We cannot use SIZE in MAIL FROM in a callout. */
+    if (sx.peer_offered & PEER_OFFERED_SIZE)
+    {
+      HDEBUG(D_verify) debug_printf("callout: peer offered SIZE\n");
+    }
+    else
+    {
+      HDEBUG(D_verify) debug_printf("callout: peer did not offer SIZE\n");
+    }
+    sx.peer_offered &= ~PEER_OFFERED_SIZE;
+    if (sx.peer_offered & PEER_OFFERED_SIZE)
+    {
+      HDEBUG(D_verify) debug_printf("callout: will use SIZE\n");
+    }
+    else
+    {
+      HDEBUG(D_verify) debug_printf("callout: will not use SIZE\n");
+    }
+
     /* If we needed to authenticate, smtp_setup_conn() did that.  Copy
     the AUTH info for logging */
 
