@@ -26,7 +26,7 @@ cmd buf flush ddd bytes
          250 HELP
 using PIPELINING
 not using DSN
-  SMTP>> MAIL FROM:<usera@ok.example> SIZE=ssss
+  SMTP>> MAIL FROM:<usera@ok.example>
   SMTP>> RCPT TO:<userb@test.ex>
 cmd buf flush ddd bytes
   SMTP<< 250 OK

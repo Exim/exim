@@ -972,14 +972,14 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 
 /* Codes for ESMTP facilities offered by peer */
 
-#define PEER_OFFERED_TLS	BIT(0)
-#define PEER_OFFERED_IGNQ	BIT(1)
-#define PEER_OFFERED_PRDR	BIT(2)
-#define PEER_OFFERED_UTF8	BIT(3)
-#define PEER_OFFERED_DSN	BIT(4)
-#define PEER_OFFERED_PIPE	BIT(5)
-#define PEER_OFFERED_SIZE	BIT(6)
-#define PEER_OFFERED_CHUNKING	BIT(7)
+#define OPTION_TLS	BIT(0)
+#define OPTION_IGNQ	BIT(1)
+#define OPTION_PRDR	BIT(2)
+#define OPTION_UTF8	BIT(3)
+#define OPTION_DSN	BIT(4)
+#define OPTION_PIPE	BIT(5)
+#define OPTION_SIZE	BIT(6)
+#define OPTION_CHUNKING	BIT(7)
 
 /* Argument for *_getc */
 

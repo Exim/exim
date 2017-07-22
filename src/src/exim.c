@@ -2738,7 +2738,7 @@ for (i = 1; i < argc; i++)
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
 
-	case 'D': smtp_peer_options |= PEER_OFFERED_DSN; break;
+	case 'D': smtp_peer_options |= OPTION_DSN; break;
 
     /* -MCG: set the queue name, to a non-default value */
 
@@ -2748,12 +2748,12 @@ for (i = 1; i < argc; i++)
 
     /* -MCK: the peer offered CHUNKING.  Must precede -MC */
 
-	case 'K': smtp_peer_options |= PEER_OFFERED_CHUNKING; break;
+	case 'K': smtp_peer_options |= OPTION_CHUNKING; break;
 
     /* -MCP: set the smtp_use_pipelining flag; this is useful only when
     it preceded -MC (see above) */
 
-	case 'P': smtp_peer_options |= PEER_OFFERED_PIPE; break;
+	case 'P': smtp_peer_options |= OPTION_PIPE; break;
 
     /* -MCQ: pass on the pid of the queue-running process that started
     this chain of deliveries and the fd of its synchronizing pipe; this
@@ -2768,7 +2768,7 @@ for (i = 1; i < argc; i++)
     /* -MCS: set the smtp_use_size flag; this is useful only when it
     precedes -MC (see above) */
 
-	case 'S': smtp_peer_options |= PEER_OFFERED_SIZE; break;
+	case 'S': smtp_peer_options |= OPTION_SIZE; break;
 
 #ifdef SUPPORT_TLS
     /* -MCt: similar to -MCT below but the connection is still open
@@ -2788,7 +2788,7 @@ for (i = 1; i < argc; i++)
     precedes -MC (see above). The flag indicates that the host to which
     Exim is connected has offered TLS support. */
 
-	case 'T': smtp_peer_options |= PEER_OFFERED_TLS; break;
+	case 'T': smtp_peer_options |= OPTION_TLS; break;
 #endif
 
 	default:  badarg = TRUE; break;

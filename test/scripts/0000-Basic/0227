@@ -12,11 +12,13 @@ RCPT TO
 QUIT
 250 OK
 ****
+# sender
 sudo exim -v -bs -oMa V4NET.0.0.1
 MAIL FROM:<ok@localhost>
 RCPT TO:<z@test.ex>
 QUIT
 ****
+# sender, no callout
 sudo exim -v -bs -oMa V4NET.0.0.2
 MAIL FROM:<unchecked@localhost>
 RCPT TO:<z@test.ex>
@@ -33,6 +35,7 @@ RCPT TO
 QUIT
 250 OK
 ****
+# sender, refused
 sudo exim -v -bs -oMa V4NET.0.0.1
 MAIL FROM:<bad@localhost>
 RCPT TO:<z@test.ex>
@@ -49,6 +52,7 @@ RCPT TO
 QUIT
 250 OK
 ****
+# sender, tmperr
 sudo exim -v -bs -oMa V4NET.0.0.1
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@test.ex>
@@ -63,6 +67,7 @@ MAIL FROM
 QUIT
 250 OK
 ****
+# sender, err on mailfrom
 sudo exim -v -bs -oMa V4NET.0.0.1
 MAIL FROM:<uncheckable2@localhost1>
 RCPT TO:<z@test.ex>
@@ -78,6 +83,7 @@ MAIL FROM
 QUIT
 250 OK
 ****
+# sender, err on mailfrom
 sudo exim -v -bs -oMa V4NET.0.0.1
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@test.ex>
@@ -94,6 +100,7 @@ RCPT TO
 QUIT
 250 OK
 ****
+# recipient, refused
 sudo exim -v -bs -oMa V4NET.0.0.3
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
@@ -111,11 +118,13 @@ RCPT TO
 QUIT
 250 OK
 ****
+# recipient, refused
 sudo exim -v -bs -oMa V4NET.0.0.3
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
 QUIT
 ****
+# recipient, no conneect
 sudo exim -v -bs -oMa V4NET.0.0.3
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
@@ -207,20 +216,91 @@ QUIT
 server PORT_S
 220 Server ready
 EHLO
-250- wotcher
+250- wotcher sverifier
 250-SIZE
 250 OK
-MAIL FROM
+MAIL FROM:<>
 250 OK
 RCPT TO
 250 OK
 QUIT
 250 OK
 ****
+# sender, size known, tgt supports sixe
 sudo exim -v -bs -oMa V4NET.0.0.6
 EHLO me
 MAIL FROM:<ok@localhost1> SIZE=420000
 RCPT TO:<z@test.ex>
+QUIT
+****
+#
+server PORT_S
+220 Server ready
+EHLO
+250- wotcher rverifier
+250-SIZE
+250 OK
+MAIL FROM:<> SIZE=
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+# receipient, size known, tgt supports size
+sudo exim -v -bs -oMa V4NET.0.0.3
+EHLO me
+MAIL FROM:<ok@localhost1> SIZE=420000
+RCPT TO:<z@remote.domain>
+QUIT
+****
+#
+server PORT_S
+220 Server ready
+EHLO
+250- wotcher rverifier
+250-SIZE
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+# receipient, size unknown, tgt supports size
+sudo exim -v -bs -oMa V4NET.0.0.3
+EHLO me
+MAIL FROM:<ok@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+#
+server PORT_S
+220 Server ready
+EHLO
+250- wotcher rverifier
+250-SIZE
+250 OK
+MAIL FROM:<ok@localhost1>
+250 OK
+RCPT TO:<myhost.test.ex-
+550 RANDOM NOT OK
+RSET
+250 OK
+MAIL FROM:<ok@localhost1> SIZE=
+250 OK
+RCPT TO:<z@remote.domain>
+250 OK
+QUIT
+250 OK
+****
+# receipient, size known, tgt supports size, use_sender, w/random
+# stdout should see SIZE on the main but not on the random receipient's MAIL FROM
+sudo exim -v -bs -oMa V4NET.0.0.7
+EHLO me
+MAIL FROM:<ok@localhost1> SIZE=420000
+RCPT TO:<z@remote.domain>
 QUIT
 ****
 #

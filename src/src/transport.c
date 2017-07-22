@@ -1866,12 +1866,12 @@ but we have a number of extras that may be added. */
 argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
 if (smtp_authenticated)				argv[i++] = US"-MCA";
-if (smtp_peer_options & PEER_OFFERED_CHUNKING)	argv[i++] = US"-MCK";
-if (smtp_peer_options & PEER_OFFERED_DSN)	argv[i++] = US"-MCD";
-if (smtp_peer_options & PEER_OFFERED_PIPE)	argv[i++] = US"-MCP";
-if (smtp_peer_options & PEER_OFFERED_SIZE)	argv[i++] = US"-MCS";
+if (smtp_peer_options & OPTION_CHUNKING)	argv[i++] = US"-MCK";
+if (smtp_peer_options & OPTION_DSN)		argv[i++] = US"-MCD";
+if (smtp_peer_options & OPTION_PIPE)		argv[i++] = US"-MCP";
+if (smtp_peer_options & OPTION_SIZE)		argv[i++] = US"-MCS";
 #ifdef SUPPORT_TLS
-if (smtp_peer_options & PEER_OFFERED_TLS)
+if (smtp_peer_options & OPTION_TLS)
   if (tls_out.active >= 0 || continue_proxy_cipher)
     {
     argv[i++] = US"-MCt";

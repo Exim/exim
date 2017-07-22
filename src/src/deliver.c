@@ -8474,7 +8474,7 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
 #ifdef SUPPORT_TLS
   if (cutthrough.is_tls)
     {
-    smtp_peer_options |= PEER_OFFERED_TLS;
+    smtp_peer_options |= OPTION_TLS;
     sending_ip_address = cutthrough.snd_ip;
     sending_port = cutthrough.snd_port;
 
