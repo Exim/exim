@@ -1977,12 +1977,12 @@ if ((pid = fork()) == 0)
 
   if (smtp_authenticated) argv[i++] = US"-MCA";
 
-  if (smtp_peer_options & PEER_OFFERED_CHUNKING) argv[i++] = US"-MCK";
-  if (smtp_peer_options & PEER_OFFERED_DSN) argv[i++] = US"-MCD";
-  if (smtp_peer_options & PEER_OFFERED_PIPE) argv[i++] = US"-MCP";
-  if (smtp_peer_options & PEER_OFFERED_SIZE) argv[i++] = US"-MCS";
+  if (smtp_peer_options & OPTION_CHUNKING) argv[i++] = US"-MCK";
+  if (smtp_peer_options & OPTION_DSN) argv[i++] = US"-MCD";
+  if (smtp_peer_options & OPTION_PIPE) argv[i++] = US"-MCP";
+  if (smtp_peer_options & OPTION_SIZE) argv[i++] = US"-MCS";
 #ifdef SUPPORT_TLS
-  if (smtp_peer_options & PEER_OFFERED_TLS) argv[i++] = US"-MCT";
+  if (smtp_peer_options & OPTION_TLS) argv[i++] = US"-MCT";
 #endif
 
   if (queue_run_pid != (pid_t)0)

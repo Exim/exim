@@ -53,9 +53,9 @@ MUNGED: ::1 will be omitted in what follows
 >>>          250 HELP
 >>> ip4.ip4.ip4.ip4 in hosts_avoid_pipelining? no (option unset)
 >>> ip4.ip4.ip4.ip4 in hosts_require_auth? no (option unset)
->>>   SMTP>> MAIL FROM:<> SIZE=ssss
+>>>   SMTP>> MAIL FROM:<>
 >>>   SMTP>> RCPT TO:<rcptuser@dane256ee.test.ex>
->>> cmd buf flush 62 bytes
+>>> cmd buf flush 52 bytes
 >>>   SMTP<< 250 OK
 >>>   SMTP<< 250 Accepted
 >>>   SMTP>> QUIT

@@ -779,7 +779,11 @@ tls_retry_connection:
       postmaster-verify.
       The sync_responses() would need to be taught about it and we'd
       need another return code filtering out to here.
+
+      Avoid using a SIZE option on the MAIL for all randon-rcpt checks.
       */
+
+      sx.avoid_option = OPTION_SIZE;
 
       /* Remember when we last did a random test */
       new_domain_record.random_stamp = time(NULL);
@@ -792,8 +796,9 @@ tls_retry_connection:
 	    yield = OK;		/* Only usable result we can return */
 	    done = TRUE;
 	    goto no_conn;
-	  case FAIL:
+	  case FAIL:		/* the preferred result */
 	    new_domain_record.random_result = ccache_reject;
+	    sx.avoid_option = 0;
 
 	    /* Between each check, issue RSET, because some servers accept only
 	    one recipient after MAIL FROM:<>.
@@ -838,12 +843,14 @@ tls_retry_connection:
     else
       done = TRUE;
 
-    /* Main verify. If the host is accepting all local parts, as determined
-    by the "random" check, we don't need to waste time doing any further
-    checking. */
+    /* Main verify.  For rcpt-verify use SIZE if we know it and we're not cacheing;
+    for sndr-verify never use it. */
 
     if (done)
       {
+      if (!(options & vopt_is_recipient  &&  options & vopt_callout_no_cache))
+	sx.avoid_option = OPTION_SIZE;
+
       done = FALSE;
       switch(smtp_write_mail_and_rcpt_cmds(&sx, &yield))
 	{
@@ -852,12 +859,12 @@ tls_retry_connection:
 		    case PENDING_OK:  done = TRUE;
 				      new_address_record.result = ccache_accept;
 				      break;
-		    case FAIL:	      done = TRUE;
+		    case FAIL:	    done = TRUE;
 				      yield = FAIL;
 				      *failure_ptr = US"recipient";
 				      new_address_record.result = ccache_reject;
 				      break;
-		    default:	      break;
+		    default:	    break;
 		    }
 		  break;
 
@@ -910,6 +917,7 @@ tls_retry_connection:
 	sx.ok = FALSE;
 	sx.send_rset = TRUE;
 	sx.completed_addr = FALSE;
+	sx.avoid_option = OPTION_SIZE;
 
 	if(  smtp_write_mail_and_rcpt_cmds(&sx, &yield) == 0
 	  && addr->transport_return == PENDING_OK

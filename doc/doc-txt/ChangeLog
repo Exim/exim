@@ -34,6 +34,10 @@ JH/20 Bug 2147: Do not defer for a verify-with-callout-and-random which is not
       cache-hot.  Previously, although the result was properly cached, the
       initial verify call returned a defer.
 
+JH/21 Bug 2151 (partial):
+                Avoid using SIZE on the MAIL for a callout verify, on any but
+      the main verify for receipient in uncached-mode.
+
 
 Exim version 4.89
 -----------------
