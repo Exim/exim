@@ -518,6 +518,9 @@ new_domain_record.result = ccache_unknown;
 new_domain_record.postmaster_result = ccache_unknown;
 new_domain_record.random_result = ccache_unknown;
 
+recipient_verify_message = "";
+sender_verify_message = "";
+
 memset(&new_address_record, 0, sizeof(new_address_record));
 
 /* For a recipient callout, the key used for the address cache record must
