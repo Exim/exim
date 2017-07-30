@@ -147,7 +147,7 @@ int linecount = 0;
 
 if (running_in_test_harness) return;
 
-if (!syslog_timestamp) s += log_timezone? 26 : 20;
+if (!syslog_timestamp) s += log_timezone ? 26 : 20;
 if (!syslog_pid && LOGGING(pid))
     memmove(s + pid_position[0], s + pid_position[1], pid_position[1] - pid_position[0]);
 
@@ -223,10 +223,10 @@ Returns:     The function does not return
 static void
 die(uschar *s1, uschar *s2)
 {
-if (s1 != NULL)
+if (s1)
   {
   write_syslog(LOG_CRIT, s1);
-  if (debug_file != NULL) debug_printf("%s\n", s1);
+  if (debug_file) debug_printf("%s\n", s1);
   if (log_stderr != NULL && log_stderr != debug_file)
     fprintf(log_stderr, "%s\n", s1);
   }
@@ -272,7 +272,7 @@ if (fd < 0 && errno == ENOENT)
   *lastslash = 0;
   created = directory_make(NULL, name, LOG_DIRECTORY_MODE, FALSE);
   DEBUG(D_any) debug_printf("%s log directory %s\n",
-    created? "created" : "failed to create", name);
+    created ? "created" : "failed to create", name);
   *lastslash = '/';
   if (created) fd = Uopen(name,
 #ifdef O_CLOEXEC
@@ -446,10 +446,8 @@ else if (string_datestamp_offset >= 0)
 /* If the file name is too long, it is an unrecoverable disaster */
 
 if (!ok)
-  {
   die(US"exim: log file path too long: aborting",
       US"Logging failure; please try later");
-  }
 
 /* We now have the file name. Try to open an existing file. After a successful
 open, arrange for automatic closure on exec(), and then return. */
@@ -559,10 +557,7 @@ if ((flags & (LOG_CONFIG_FOR & ~LOG_CONFIG)) != 0)
   }
 
 if ((flags & (LOG_CONFIG_IN & ~LOG_CONFIG)) != 0)
-  {
-  sprintf(CS ptr, " in line %d of %s", config_lineno, config_filename);
-  while (*ptr) ptr++;
-  }
+  ptr += sprintf(CS ptr, " in line %d of %s", config_lineno, config_filename);
 
 Ustrcpy(ptr, ":\n  ");
 return ptr + 4;
@@ -736,7 +731,7 @@ Returns:    nothing
 void
 log_write(unsigned int selector, int flags, const char *format, ...)
 {
-uschar *ptr;
+uschar * ptr;
 int length;
 int paniclogfd;
 ssize_t written_len;
@@ -903,22 +898,17 @@ if (!write_rejectlog) flags &= ~LOG_REJECT;
 when called by a utility. */
 
 ptr = log_buffer;
-sprintf(CS ptr, "%s ", tod_stamp(tod_log));
-while(*ptr) ptr++;
+ptr += sprintf(CS ptr, "%s ", tod_stamp(tod_log));
 
 if (LOGGING(pid))
   {
-  sprintf(CS ptr, "[%d] ", (int)getpid());
   if (!syslog_pid) pid_position[0] = ptr - log_buffer;	/* remember begin … */
-  while (*ptr) ptr++;
+  ptr += sprintf(CS ptr, "[%d] ", (int)getpid());
   if (!syslog_pid) pid_position[1] = ptr - log_buffer;	/*  … and end+1 of the PID */
   }
 
 if (really_exim && message_id[0] != 0)
-  {
-  sprintf(CS ptr, "%s ", message_id);
-  while(*ptr) ptr++;
-  }
+  ptr += sprintf(CS ptr, "%s ", message_id);
 
 if ((flags & LOG_CONFIG) != 0) ptr = log_config_info(ptr, flags);
 
@@ -933,10 +923,7 @@ this way because it kind of fits with LOG_RECIPIENTS. */
 
 if ((flags & LOG_SENDER) != 0 &&
     ptr < log_buffer + LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
-  {
-  sprintf(CS ptr, " from <%s>", raw_sender);
-  while (*ptr) ptr++;
-  }
+  ptr += sprintf(CS ptr, " from <%s>", raw_sender);
 
 /* Add list of recipients to the message if required; the raw list,
 before rewriting, was saved in raw_recipients. There may be none, if an ACL
@@ -946,19 +933,16 @@ if ((flags & LOG_RECIPIENTS) != 0 && ptr < log_buffer + LOG_BUFFER_SIZE - 6 &&
      raw_recipients_count > 0)
   {
   int i;
-  sprintf(CS ptr, " for");
-  while (*ptr) ptr++;
+  ptr += sprintf(CS ptr, " for");
   for (i = 0; i < raw_recipients_count; i++)
     {
-    uschar *s = raw_recipients[i];
+    uschar * s = raw_recipients[i];
     if (log_buffer + LOG_BUFFER_SIZE - ptr < Ustrlen(s) + 3) break;
-    sprintf(CS ptr, " %s", s);
-    while (*ptr) ptr++;
+    ptr += sprintf(CS ptr, " %s", s);
     }
   }
 
-sprintf(CS  ptr, "\n");
-while(*ptr) ptr++;
+ptr += sprintf(CS  ptr, "\n");
 length = ptr - log_buffer;
 
 /* Handle loggable errors when running a utility, or when address testing.
@@ -1084,11 +1068,9 @@ if ((flags & LOG_REJECT) != 0)
 
     /* A header with a NULL text is an unfilled in Received: header */
 
-    for (h = header_list; h != NULL; h = h->next)
+    for (h = header_list; h; h = h->next) if (h->text)
       {
-      BOOL fitted;
-      if (h->text == NULL) continue;
-      fitted = string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
+      BOOL fitted = string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
         "%c %s", h->type, h->text);
       while(*ptr) ptr++;
       if (!fitted)         /* Buffer is full; truncate */
@@ -1118,7 +1100,7 @@ if ((flags & LOG_REJECT) != 0)
     {
     struct stat statbuf;
 
-    if (rejectlog_datestamp != NULL)
+    if (rejectlog_datestamp)
       {
       uschar *nowstamp = tod_stamp(string_datestamp_type);
       if (Ustrncmp (rejectlog_datestamp, nowstamp, Ustrlen(nowstamp)) != 0)
@@ -1175,9 +1157,7 @@ if ((flags & LOG_PANIC) != 0)
     fprintf(log_stderr, "%s", CS log_buffer);
 
   if ((logging_mode & LOG_MODE_SYSLOG) != 0)
-    {
     write_syslog(LOG_ALERT, log_buffer);
-    }
 
   /* If this panic logging was caused by a failure to open the main log,
   the original log line is in panic_save_buffer. Make an attempt to write it. */

@@ -36118,6 +36118,7 @@ selection marked by asterisks:
 &` incoming_interface         `&  local interface on <= and => lines
 &` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
+&` millisec                   `&  millisecond timestamps
 &` outgoing_interface         `&  local interface on => lines
 &` outgoing_port              `&  add remote port to => lines
 &`*queue_run                  `&  start and end queue runs
@@ -36281,6 +36282,14 @@ important with the widening use of NAT (see RFC 2505).
 .cindex "log" "dropped connection"
 &%lost_incoming_connection%&: A log line is written when an incoming SMTP
 connection is unexpectedly dropped.
+.next
+.new
+.cindex "log" "millisecond timestamps"
+.cindex millisecond logging
+.cindex timstamps "millisecond, in logs"
+&%millisec%&: Timestamps have a period and three decimal places of finer granularity
+appended to the seconds value.
+.wen
 .next
 .cindex "log" "outgoing interface"
 .cindex "log" "local interface"

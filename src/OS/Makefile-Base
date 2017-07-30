@@ -487,7 +487,7 @@ OBJ_MONBIN = util-spool_in.o \
 	     util-store.o \
 	     util-string.o \
 	     util-queue.o \
-	     tod.o \
+	     util-tod.o \
 	     tree.o \
 	     $(MONBIN)
 
@@ -613,6 +613,10 @@ util-string.o:   $(HDRS) string.c
 util-queue.o:   $(HDRS) queue.c
 	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-queue.o queue.c
+
+util-tod.o:   $(HDRS) tod.c
+	@echo "$(CC) -DCOMPILE_UTILITY tod.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-tod.o tod.c
 
 util-os.o:       $(HDRS) os.c
 	@echo "$(CC) -DCOMPILE_UTILITY os.c"

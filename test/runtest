@@ -487,7 +487,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     /Tue, 2 Mar 1999 09:44:33 +0000/gx;
 
   # Date/time in logs and in one instance of a filter test
-  s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d(\s[+-]\d\d\d\d)?/1999-03-02 09:44:33/gx;
+  s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d(\s[+-]\d\d\d\d)?\s/1999-03-02 09:44:33 /gx;
+  s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\.\d{3}(\s[+-]\d\d\d\d)?\s/2017-07-30 18:51:05.712 /gx;
   s/^Logwrite\s"\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Logwrite "1999-03-02 09:44:33/gx;
 
   # Date/time in message separators

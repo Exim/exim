@@ -1,4 +1,4 @@
-# log_selector = +pid
+# log_selector = +pid , +millisec
 #
 exim -odi userx@test.ex usery@test.ex
 Message 1
@@ -6,7 +6,7 @@ Message 1
 exim -odi userx@test.ex userz@test.ex
 Message 2
 ****
-exim -DLOG_SELECTOR= -odi userx@test.ex
+exim -DLOG_SELECTOR=+millisec -odi userx@test.ex
 Message 3
 ****
 exigrep userx

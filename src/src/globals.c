@@ -893,6 +893,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, incoming_interface),
   BIT_TABLE(L, incoming_port),
   BIT_TABLE(L, lost_incoming_connection),
+  BIT_TABLE(L, millisec),
   BIT_TABLE(L, outgoing_interface),
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),

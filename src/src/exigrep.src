@@ -45,7 +45,7 @@ use POSIX qw(mktime);
 
 sub seconds {
 my($year,$month,$day,$hour,$min,$sec,$tzs,$tzh,$tzm) =
-  $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?>\s([+-])(\d\d)(\d\d))?/o;
+  $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?:.\d+)?(?>\s([+-])(\d\d)(\d\d))?/o;
 
 my $seconds = mktime $sec, $min, $hour, $day, $month - 1, $year - 1900;
 
@@ -83,7 +83,7 @@ sub do_line {
 if (!/^\d{4}-/o) { $_ =~ s/^.*? exim\b.*?: //o; }
 
 return unless
-  my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(?:\[\d+\] )?(\w{6}\-\w{6}\-\w{2})?/o;
+  my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?(\w{6}\-\w{6}\-\w{2})?/o;
 
 # Handle the case when the log line belongs to a specific message. We save
 # lines for specific messages until the message is complete. Then either print
@@ -124,7 +124,7 @@ if (defined $id)
   if (index($_, 'Completed') != -1 ||
       index($_, 'SMTP data timeout') != -1 ||
         (index($_, 'rejected') != -1 &&
-          /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(?:\[\d+\] )?\w{6}\-\w{6}\-\w{2} rejected/o))
+          /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d(?:\.\d+)? (?:[+-]\d{4} )?)(?:\[\d+\] )?\w{6}\-\w{6}\-\w{2} rejected/o))
     {
     if ($queue_time != -1 &&
         $saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)/o)

@@ -467,6 +467,7 @@ enum {
   Li_ident_timeout,
   Li_incoming_interface,
   Li_incoming_port,
+  Li_millisec,
   Li_outgoing_interface,
   Li_outgoing_port,
   Li_pid,
