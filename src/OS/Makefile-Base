@@ -79,29 +79,41 @@ Makefile: ../OS/Makefile-Base ../OS/Makefile-Default \
 
 # Build (link) the os.h file
 
+#os.h:	$(SCRIPTS)/Configure-os.h \
+#	$(O)/os.h-AIX		$(O)/os.h-BSDI	$(O)/os.h-cygwin \
+#	$(O)/os.h-Darwin	$(O)/os.h-DGUX	$(O)/os.h-DragonFly \
+#	$(O)/os.h-FreeBSD	$(O)/os.h-GNU	$(O)/os.h-GNUkFreeBSD \
+#	$(O)/os.h-GNUkNetBSD	$(O)/os.h-HI-OSF \
+#	$(O)/os.h-HI-UX		$(O)/os.h-HP-UX	$(O)/os.h-HP-UX-9 \
+#	$(O)/os.h-IRIX		$(O)/os.h-IRIX6	$(O)/os.h-IRIX632 \
+#	$(O)/os.h-IRIX65	$(O)/os.h-Linux	$(O)/os.h-mips \
+#	$(O)/os.h-NetBSD	$(O)/os.h-NetBSD-a.out \
+#	$(O)/os.h-OpenBSD	$(O)/os.h-OpenUNIX	$(O)/os.h-OSF1 \
+#	$(O)/os.h-QNX		$(O)/os.h-SCO		$(O)/os.h-SCO_SV \
+#	$(O)/os.h-SunOS4	$(O)/os.h-SunOS5	$(O)/os.h-SunOS5-hal \
+#	$(O)/os.h-ULTRIX	$(O)/os.h-UNIX_SV \
+#	$(O)/os.h-Unixware7	$(O)/os.h-USG
+#	$(SHELL) $(SCRIPTS)/Configure-os.h
+
 os.h:	$(SCRIPTS)/Configure-os.h \
-	$(O)/os.h-AIX		$(O)/os.h-BSDI	$(O)/os.h-cygwin \
-	$(O)/os.h-Darwin	$(O)/os.h-DGUX	$(O)/os.h-DragonFly \
-	$(O)/os.h-FreeBSD	$(O)/os.h-GNU	$(O)/os.h-GNUkFreeBSD \
-	$(O)/os.h-GNUkNetBSD	$(O)/os.h-HI-OSF \
-	$(O)/os.h-HI-UX		$(O)/os.h-HP-UX	$(O)/os.h-HP-UX-9 \
-	$(O)/os.h-IRIX		$(O)/os.h-IRIX6	$(O)/os.h-IRIX632 \
-	$(O)/os.h-IRIX65	$(O)/os.h-Linux	$(O)/os.h-mips \
-	$(O)/os.h-NetBSD	$(O)/os.h-NetBSD-a.out \
-	$(O)/os.h-OpenBSD	$(O)/os.h-OpenUNIX	$(O)/os.h-OSF1 \
-	$(O)/os.h-QNX		$(O)/os.h-SCO		$(O)/os.h-SCO_SV \
-	$(O)/os.h-SunOS4	$(O)/os.h-SunOS5	$(O)/os.h-SunOS5-hal \
-	$(O)/os.h-ULTRIX	$(O)/os.h-UNIX_SV \
-	$(O)/os.h-Unixware7	$(O)/os.h-USG
+	$(O)/os.h-FreeBSD	\
+	$(O)/os.h-Linux		\
+	$(O)/os.h-OpenBSD	\
+	$(O)/os.h-SunOS5
 	$(SHELL) $(SCRIPTS)/Configure-os.h
 
 # Build the os.c file
 
+#os.c:   ../src/os.c \
+#	$(SCRIPTS)/Configure-os.c \
+#	$(O)/os.c-cygwin	$(O)/os.c-GNU	$(O)/os.c-HI-OSF \
+#	$(O)/os.c-IRIX		$(O)/os.c-IRIX6	$(O)/os.c-IRIX632 \
+#	$(O)/os.c-IRIX65	$(O)/os.c-Linux	$(O)/os.c-OSF1
+#	$(SHELL) $(SCRIPTS)/Configure-os.c
+
 os.c:   ../src/os.c \
 	$(SCRIPTS)/Configure-os.c \
-	$(O)/os.c-cygwin	$(O)/os.c-GNU	$(O)/os.c-HI-OSF \
-	$(O)/os.c-IRIX		$(O)/os.c-IRIX6	$(O)/os.c-IRIX632 \
-	$(O)/os.c-IRIX65	$(O)/os.c-Linux	$(O)/os.c-OSF1
+	$(O)/os.c-Linux
 	$(SHELL) $(SCRIPTS)/Configure-os.c
 
 # Build the config.h file.
