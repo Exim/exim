@@ -317,10 +317,7 @@ for (p = big_buffer; *p; ) p++;
 *p++ = ' ';
 
 for (i = 0; i < 16; i++)
-  {
-  sprintf(CS p, "%02x", digest[i]);
-  p += 2;
-  }
+  p += sprintf(CS p, "%02x", digest[i]);
 
 /* Send the response, in base 64, and check the result. The response is
 in big_buffer, but b64encode() returns its result in working store,

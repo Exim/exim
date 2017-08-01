@@ -1160,10 +1160,7 @@ tt--;   /* lose final separator */
 if (mask < 0)
   *tt = 0;
 else
-  {
-  sprintf(CS tt, "/%d", mask);
-  while (*tt) tt++;
-  }
+  tt += sprintf(CS tt, "/%d", mask);
 
 return tt - buffer;
 }

@@ -184,15 +184,13 @@ if (debug_ptr == debug_buffer)
     {
     time_t now = time(NULL);
     struct tm *t = timestamps_utc? gmtime(&now) : localtime(&now);
-    (void) sprintf(CS debug_ptr, "%02d:%02d:%02d ", t->tm_hour, t->tm_min,
+    debug_ptr += sprintf(CS debug_ptr, "%02d:%02d:%02d ", t->tm_hour, t->tm_min,
       t->tm_sec);
-    while(*debug_ptr != 0) debug_ptr++;
     }
 
   DEBUG(D_pid)
     {
-    sprintf(CS debug_ptr, "%5d ", (int)getpid());
-    while(*debug_ptr != 0) debug_ptr++;
+    debug_ptr += sprintf(CS debug_ptr, "%5d ", (int)getpid());
     }
 
   /* Set up prefix if outputting for host checking and not debugging */

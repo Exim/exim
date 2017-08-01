@@ -1355,20 +1355,18 @@ while (*fp != 0)
     switch(length)
       {
       case L_SHORT:
-      case L_NORMAL:   sprintf(CS p, newformat, va_arg(ap, int)); break;
-      case L_LONG:     sprintf(CS p, newformat, va_arg(ap, long int)); break;
-      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, LONGLONG_T)); break;
-      case L_SIZE:     sprintf(CS p, newformat, va_arg(ap, size_t)); break;
+      case L_NORMAL:   p += sprintf(CS p, newformat, va_arg(ap, int)); break;
+      case L_LONG:     p += sprintf(CS p, newformat, va_arg(ap, long int)); break;
+      case L_LONGLONG: p += sprintf(CS p, newformat, va_arg(ap, LONGLONG_T)); break;
+      case L_SIZE:     p += sprintf(CS p, newformat, va_arg(ap, size_t)); break;
       }
-    while (*p) p++;
     break;
 
     case 'p':
     if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp - item_start] = 0;
-    sprintf(CS p, newformat, va_arg(ap, void *));
-    while (*p) p++;
+    p += sprintf(CS p, newformat, va_arg(ap, void *));
     break;
 
     /* %f format is inherently insecure if the numbers that it may be
@@ -1388,10 +1386,9 @@ while (*fp != 0)
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp-item_start] = 0;
     if (length == L_LONGDOUBLE)
-      sprintf(CS p, newformat, va_arg(ap, long double));
+      p += sprintf(CS p, newformat, va_arg(ap, long double));
     else
-      sprintf(CS p, newformat, va_arg(ap, double));
-    while (*p) p++;
+      p += sprintf(CS p, newformat, va_arg(ap, double));
     break;
 
     /* String types */

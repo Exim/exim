@@ -331,8 +331,7 @@ cp3 = cp2 = store_get(len*3+1);
 
 while(len)
   {
-  sprintf(CS cp2, "%.2x ", *cp1++);
-  cp2 += 3;
+  cp2 += sprintf(CS cp2, "%.2x ", *cp1++);
   len--;
   }
 cp2[-1] = '\0';

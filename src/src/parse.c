@@ -913,8 +913,7 @@ for (; len > 0; len--)
       }
     else
       {
-      sprintf(CS t, "=%02X", ch);
-      while (*t != 0) t++;
+      t += sprintf(CS t, "=%02X", ch);
       coded = TRUE;
       first_byte = !first_byte;
       }

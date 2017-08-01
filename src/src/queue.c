@@ -405,28 +405,18 @@ if (!recurse)
   *p = 0;
 
   p = big_buffer;
-  sprintf(CS p, "pid=%d", (int)queue_run_pid);
-  while (*p != 0) p++;
+  p += sprintf(CS p, "pid=%d", (int)queue_run_pid);
 
   if (extras[0] != 0)
-    {
-    sprintf(CS p, " -q%s", extras);
-    while (*p != 0) p++;
-    }
+    p += sprintf(CS p, " -q%s", extras);
 
-  if (deliver_selectstring != NULL)
-    {
-    sprintf(CS p, " -R%s %s", deliver_selectstring_regex? "r" : "",
+  if (deliver_selectstring)
+    p += sprintf(CS p, " -R%s %s", deliver_selectstring_regex? "r" : "",
       deliver_selectstring);
-    while (*p != 0) p++;
-    }
 
-  if (deliver_selectstring_sender != NULL)
-    {
-    sprintf(CS p, " -S%s %s", deliver_selectstring_sender_regex? "r" : "",
+  if (deliver_selectstring_sender)
+    p += sprintf(CS p, " -S%s %s", deliver_selectstring_sender_regex? "r" : "",
       deliver_selectstring_sender);
-    while (*p != 0) p++;
-    }
 
   log_detail = string_copy(big_buffer);
   if (*queue_name)
@@ -438,10 +428,10 @@ if (!recurse)
 
 /* If deliver_selectstring is a regex, compile it. */
 
-if (deliver_selectstring != NULL && deliver_selectstring_regex)
+if (deliver_selectstring && deliver_selectstring_regex)
   selectstring_regex = regex_must_compile(deliver_selectstring, TRUE, FALSE);
 
-if (deliver_selectstring_sender != NULL && deliver_selectstring_sender_regex)
+if (deliver_selectstring_sender && deliver_selectstring_sender_regex)
   selectstring_regex_sender =
     regex_must_compile(deliver_selectstring_sender, TRUE, FALSE);
 

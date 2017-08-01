@@ -271,10 +271,7 @@ else
     {
     int j;
     for (j = 0; j < 32; j += 4)
-      {
-      sprintf(CS pp, "%x.", (v6[i] >> j) & 15);
-      pp += 2;
-      }
+      pp += sprintf(CS pp, "%x.", (v6[i] >> j) & 15);
     }
   Ustrcpy(pp, "ip6.arpa.");
 

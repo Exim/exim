@@ -2619,10 +2619,7 @@ if (!sender_host_unknown)
             Ustrcat(p, "[ ");
             p += 2;
             for (i = 0; i < opt[1]; i++)
-              {
-              sprintf(CS p, "%2.2x ", opt[i]);
-              p += 3;
-              }
+              p += sprintf(CS p, "%2.2x ", opt[i]);
             *p++ = ']';
             }
           opt += opt[1];

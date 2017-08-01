@@ -857,13 +857,12 @@ DEBUG(D_any|D_v)
       }
     }
 
-  sprintf(CS ptr, "%s%s%s%s\n  ",
+  ptr += sprintf(CS ptr, "%s%s%s%s\n  ",
     ((flags & LOG_MAIN) != 0)?    " MAIN"   : "",
     ((flags & LOG_PANIC) != 0)?   " PANIC"  : "",
     ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE)? " DIE" : "",
     ((flags & LOG_REJECT) != 0)?  " REJECT" : "");
 
-  while(*ptr) ptr++;
   if ((flags & LOG_CONFIG) != 0) ptr = log_config_info(ptr, flags);
 
   va_start(ap, format);

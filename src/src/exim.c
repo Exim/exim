@@ -4132,9 +4132,8 @@ if (((debug_selector & D_any) != 0 || LOGGING(arguments))
       quote = US"";
       while (*pp != 0) if (isspace(*pp++)) { quote = US"\""; break; }
       }
-    sprintf(CS p, " %s%.*s%s", quote, (int)(big_buffer_size -
+    p += sprintf(CS p, " %s%.*s%s", quote, (int)(big_buffer_size -
       (p - big_buffer) - 4), printing, quote);
-    while (*p) p++;
     }
 
   if (LOGGING(arguments))

@@ -182,8 +182,8 @@ if ((ret = gnutls_x509_crt_get_serial((gnutls_x509_crt_t)cert,
     bin, &sz)))
   return g_err("gs0", __FUNCTION__, ret);
 
-for(dp = txt, sp = bin; sz; dp += 2, sp++, sz--)
-  sprintf(CS dp, "%.2x", *sp);
+for(dp = txt, sp = bin; sz; sz--)
+  dp += sprintf(CS dp, "%.2x", *sp++);
 for(sp = txt; sp[0]=='0' && sp[1]; ) sp++;	/* leading zeroes */
 return string_copy(sp);
 }
@@ -205,8 +205,8 @@ cp1 = store_get(len*4+1);
 if (gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, CS cp1, &len) != 0)
   return g_err("gs1", __FUNCTION__, ret);
 
-for(cp3 = cp2 = cp1+len; cp1 < cp2; cp3 += 3, cp1++)
-  sprintf(CS cp3, "%.2x ", *cp1);
+for(cp3 = cp2 = cp1+len; cp1 < cp2; cp1++)
+  cp3 += sprintf(CS cp3, "%.2x ", *cp1);
 cp3[-1]= '\0';
 
 return cp2;
@@ -269,8 +269,8 @@ if (ret < 0)
 /* binary data, DER encoded */
 
 /* just dump for now */
-for(cp3 = cp2 = cp1+siz; cp1 < cp2; cp3 += 3, cp1++)
-  sprintf(CS cp3, "%.2x ", *cp1);
+for(cp3 = cp2 = cp1+siz; cp1 < cp2; cp1++)
+  cp3 += sprintf(CS cp3, "%.2x ", *cp1);
 cp3[-1]= '\0';
 
 return cp2;
@@ -459,8 +459,8 @@ cp = store_get(siz*3+1);
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
   return g_err("gf1", __FUNCTION__, ret);
 
-for (cp3 = cp2 = cp+siz; cp < cp2; cp++, cp3+=2)
-  sprintf(CS cp3, "%02X",*cp);
+for (cp3 = cp2 = cp+siz; cp < cp2; cp++)
+  cp3 += sprintf(CS cp3, "%02X", *cp);
 return cp2;
 }
 
