@@ -1743,9 +1743,9 @@ message id creation below. */
 
 /* For other uses of the received time we can operate with granularity of one
 second, and for that we use the global variable received_time. This is for
-things like ultimate message timeouts. */
+things like ultimate message timeouts.XXX */
 
-received_time = message_id_tv.tv_sec;
+received_time = message_id_tv;
 
 /* If SMTP input, set the special handler for timeouts. The alarm() calls
 happen in the smtp_getc() function when it refills its buffer. */

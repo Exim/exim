@@ -2298,10 +2298,10 @@ t /= 24;
 d = t % 7;
 w = t/7;
 
-if (w > 0) { sprintf(CS p, "%dw", w); while (*p) p++; }
-if (d > 0) { sprintf(CS p, "%dd", d); while (*p) p++; }
-if (h > 0) { sprintf(CS p, "%dh", h); while (*p) p++; }
-if (m > 0) { sprintf(CS p, "%dm", m); while (*p) p++; }
+if (w > 0) p += sprintf(CS p, "%dw", w);
+if (d > 0) p += sprintf(CS p, "%dd", d);
+if (h > 0) p += sprintf(CS p, "%dh", h);
+if (m > 0) p += sprintf(CS p, "%dm", m);
 if (s > 0 || p == time_buffer) sprintf(CS p, "%ds", s);
 
 return time_buffer;

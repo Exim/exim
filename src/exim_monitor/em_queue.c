@@ -204,7 +204,7 @@ if it's there. */
 
 else
   {
-  q->update_time = q->input_time = received_time;
+  q->update_time = q->input_time = received_time.tv_sec;
   if ((p = strstric(sender_address+1, qualify_domain, FALSE)) != NULL &&
     *(--p) == '@') *p = 0;
   }

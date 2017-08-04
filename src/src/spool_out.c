@@ -154,26 +154,28 @@ fprintf(f, "%s-H\n", message_id);
 fprintf(f, "%.63s %ld %ld\n", originator_login, (long int)originator_uid,
   (long int)originator_gid);
 fprintf(f, "<%s>\n", sender_address);
-fprintf(f, "%d %d\n", received_time, warning_count);
+fprintf(f, "%d %d\n", received_time.tv_sec, warning_count);
+
+fprintf(f, "-received_time_usec .%06d\n", received_time.tv_usec);
 
 /* If there is information about a sending host, remember it. The HELO
 data can be set for local SMTP as well as remote. */
 
-if (sender_helo_name != NULL)
+if (sender_helo_name)
   fprintf(f, "-helo_name %s\n", sender_helo_name);
 
-if (sender_host_address != NULL)
+if (sender_host_address)
   {
   fprintf(f, "-host_address %s.%d\n", sender_host_address, sender_host_port);
-  if (sender_host_name != NULL)
+  if (sender_host_name)
     fprintf(f, "-host_name %s\n", sender_host_name);
-  if (sender_host_authenticated != NULL)
+  if (sender_host_authenticated)
     fprintf(f, "-host_auth %s\n", sender_host_authenticated);
   }
 
 /* Also about the interface a message came in on */
 
-if (interface_address != NULL)
+if (interface_address)
   fprintf(f, "-interface_address %s.%d\n", interface_address, interface_port);
 
 if (smtp_active_hostname != primary_hostname)
@@ -183,11 +185,11 @@ if (smtp_active_hostname != primary_hostname)
 likely to be the same as originator_login, but will be different if
 the originator was root, forcing a different ident. */
 
-if (sender_ident != NULL) fprintf(f, "-ident %s\n", sender_ident);
+if (sender_ident) fprintf(f, "-ident %s\n", sender_ident);
 
 /* Ditto for the received protocol */
 
-if (received_protocol != NULL)
+if (received_protocol)
   fprintf(f, "-received_protocol %s\n", received_protocol);
 
 /* Preserve any ACL variables that are set. */
@@ -205,9 +207,9 @@ fprintf(f, "-max_received_linelength %d\n", max_received_linelength);
 
 if (body_zerocount > 0) fprintf(f, "-body_zerocount %d\n", body_zerocount);
 
-if (authenticated_id != NULL)
+if (authenticated_id)
   fprintf(f, "-auth_id %s\n", authenticated_id);
-if (authenticated_sender != NULL)
+if (authenticated_sender)
   fprintf(f, "-auth_sender %s\n", authenticated_sender);
 
 if (allow_unqualified_recipient) fprintf(f, "-allow_unqualified_recipient\n");
@@ -261,7 +263,7 @@ if (message_smtputf8)
 
 /* Write the dsn flags to the spool header file */
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_envid %s\n", dsn_envid);
-if (dsn_envid != NULL) fprintf(f, "-dsn_envid %s\n", dsn_envid);
+if (dsn_envid) fprintf(f, "-dsn_envid %s\n", dsn_envid);
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_ret %d\n", dsn_ret);
 if (dsn_ret != 0) fprintf(f, "-dsn_ret %d\n", dsn_ret);
 
@@ -316,7 +318,7 @@ various other headers, or an asterisk for old headers that have been rewritten.
 These are saved as a record for debugging. Don't included them in the message's
 size. */
 
-for (h = header_list; h != NULL; h = h->next)
+for (h = header_list; h; h = h->next)
   {
   fprintf(f, "%03d%c %s", h->slen, h->type, h->text);
   size_correction += 5;

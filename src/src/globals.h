@@ -721,7 +721,7 @@ extern int     received_count;         /* Count of Received: headers */
 extern uschar *received_for;           /* For "for" field */
 extern uschar *received_header_text;   /* Definition of Received: header */
 extern int     received_headers_max;   /* Max count of Received: headers */
-extern int     received_time;          /* Time the message was received */
+extern struct timeval received_time;   /* Time the message was received */
 extern uschar *recipient_data;         /* lookup data for recipients */
 extern uschar *recipient_unqualified_hosts; /* Permitted unqualified recipients */
 extern uschar *recipient_verify_failure; /* What went wrong */

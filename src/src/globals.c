@@ -383,6 +383,7 @@ address_item address_defaults = {
   { 0 },                /* localpart_cache - ditto */
   -1,                   /* mode */
   0,                    /* more_errno */
+  0,			/* delivery_usec */
   ERRNO_UNKNOWNERROR,   /* basic_errno */
   0,                    /* child_count */
   -1,                   /* return_file */
@@ -1107,7 +1108,7 @@ uschar *received_header_text   = US
 
 int     received_headers_max   = 30;
 uschar *received_protocol      = NULL;
-int     received_time          = 0;
+struct timeval received_time   = { 0, 0 };
 uschar *recipient_data         = NULL;
 uschar *recipient_unqualified_hosts = NULL;
 uschar *recipient_verify_failure = NULL;

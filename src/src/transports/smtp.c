@@ -2714,7 +2714,7 @@ address_item *addr;
 int yield = OK;
 int save_errno;
 int rc;
-time_t start_delivery_time = time(NULL);
+struct timeval start_delivery_time;
 
 BOOL pass_message = FALSE;
 uschar *message = NULL;
@@ -2723,6 +2723,7 @@ uschar *p;
 
 smtp_context sx;
 
+gettimeofday(&start_delivery_time, NULL);
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 *message_defer = FALSE;
 
@@ -3036,10 +3037,11 @@ else
   if (sx.ok)
     {
     int flag = '=';
-    int delivery_time = (int)(time(NULL) - start_delivery_time);
+    struct timeval delivery_time;
     int len;
-    uschar *conf = NULL;
+    uschar * conf = NULL;
 
+    timesince(&delivery_time, &start_delivery_time);
     sx.send_rset = FALSE;
     pipelining_active = FALSE;
 
@@ -3114,7 +3116,8 @@ else
       actual host that was used. */
 
       addr->transport_return = OK;
-      addr->more_errno = delivery_time;
+      addr->more_errno = delivery_time.tv_sec;
+      addr->delivery_usec = delivery_time.tv_usec;
       addr->host_used = host;
       addr->special_action = flag;
       addr->message = conf;
@@ -4160,7 +4163,7 @@ for (cutoff_retry = 0;
       {
       if (  !host->address
          || host->status != hstatus_unusable_expired
-	 || host->last_try > received_time)
+	 || host->last_try > received_time.tv_sec)
         continue;
       DEBUG(D_transport) debug_printf("trying expired host %s [%s]%s\n",
           host->name, host->address, pistring);
@@ -4480,7 +4483,7 @@ for (cutoff_retry = 0;
         for (last_rule = retry->rules;
              last_rule->next;
              last_rule = last_rule->next);
-        timedout = time(NULL) - received_time > last_rule->timeout;
+        timedout = time(NULL) - received_time.tv_sec > last_rule->timeout;
         }
       else timedout = TRUE;    /* No rule => timed out */
 

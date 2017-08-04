@@ -7,6 +7,7 @@
 CALLER UID GID
 <CALLER@myhost.test.ex>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 1

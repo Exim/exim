@@ -345,7 +345,7 @@ Arguments:
 Returns:      -1, 0, or +1
 */
 
-int
+static int
 exim_tvcmp(struct timeval *t1, struct timeval *t2)
 {
 if (t1->tv_sec > t2->tv_sec) return +1;
@@ -4537,8 +4537,9 @@ if (test_retry_arg >= 0)
       }
     }
 
-  yield = retry_find_config(s1, s2, basic_errno, more_errno);
-  if (yield == NULL) printf("No retry information found\n"); else
+  if (!(yield = retry_find_config(s1, s2, basic_errno, more_errno)))
+    printf("No retry information found\n");
+  else
     {
     retry_rule *r;
     more_errno = yield->more_errno;
@@ -4570,7 +4571,7 @@ if (test_retry_arg >= 0)
       printf("auth_failed  ");
     else printf("*  ");
 
-    for (r = yield->rules; r != NULL; r = r->next)
+    for (r = yield->rules; r; r = r->next)
       {
       printf("%c,%s", r->rule, readconf_printtime(r->timeout)); /* Do not */
       printf(",%s", readconf_printtime(r->p1));                 /* amalgamate */

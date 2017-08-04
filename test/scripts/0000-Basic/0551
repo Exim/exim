@@ -3,10 +3,10 @@
 exim -odi userx@test.ex usery@test.ex
 Message 1
 ****
-exim -odi userx@test.ex userz@test.ex
+exim -DLOG_SELECTOR=+pid+queue_time -odi userx@test.ex userz@test.ex
 Message 2
 ****
-exim -DLOG_SELECTOR=+millisec -odi userx@test.ex
+exim -DLOG_SELECTOR=+queue_time+queue_time_overall+deliver_time+millisec -odi userx@test.ex
 Message 3
 ****
 exigrep userx

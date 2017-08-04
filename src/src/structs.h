@@ -631,6 +631,7 @@ typedef struct address_item {
   int     mode;                   /* mode for local transporting to a file */
   int     more_errno;             /* additional error information */
                                   /* (may need to hold a timestamp) */
+  unsigned int delivery_usec;	  /* subsecond part of delivery time */
 
   short int basic_errno;          /* status after failure */
   unsigned short child_count;     /* number of child addresses */

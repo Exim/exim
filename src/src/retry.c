@@ -54,8 +54,8 @@ if (retry != NULL && retry->rules != NULL)
        last_rule = last_rule->next);
   DEBUG(D_retry)
     debug_printf("  received_time=%d diff=%d timeout=%d\n",
-      received_time, (int)(now - received_time), last_rule->timeout);
-  address_timeout = (now - received_time > last_rule->timeout);
+      received_time.tv_sec, (int)(now - received_time.tv_sec), last_rule->timeout);
+  address_timeout = (now - received_time.tv_sec > last_rule->timeout);
   }
 else
   {
@@ -754,7 +754,7 @@ for (i = 0; i < 3; i++)
         this is a small bit of code, and it does no harm to leave it in place,
         just in case. */
 
-        if (  received_time <= retry_record->first_failed
+        if (  received_time.tv_sec <= retry_record->first_failed
 	   && addr == endaddr
 	   && !retry_record->expired
 	   && rule)
@@ -762,7 +762,7 @@ for (i = 0; i < 3; i++)
           retry_rule *last_rule;
           for (last_rule = rule; last_rule->next; last_rule = last_rule->next)
 	    ;
-          if (now - received_time > last_rule->timeout)
+          if (now - received_time.tv_sec > last_rule->timeout)
             {
             DEBUG(D_retry) debug_printf("on queue longer than maximum retry\n");
             timedout_count++;

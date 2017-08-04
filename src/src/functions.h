@@ -184,7 +184,6 @@ extern const uschar * exim_errstr(int);
 extern void    exim_exit(int);
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
-extern int     exim_tvcmp(struct timeval *, struct timeval *);
 extern void    exim_wait_tick(struct timeval *, int);
 extern int     exp_bool(address_item *addr,
   uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
@@ -474,9 +473,10 @@ extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
+extern void    timesince(struct timeval * diff, struct timeval * then);
+extern void    tls_modify_variables(tls_support *);
 extern uschar *tod_stamp(int);
 
-extern void    tls_modify_variables(tls_support *);
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,
                  BOOL *, oicf, void*);
 extern void    transport_init(void);

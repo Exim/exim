@@ -642,7 +642,7 @@ static var_entry var_table[] = {
   { "received_ip_address", vtype_stringptr,   &interface_address },
   { "received_port",       vtype_int,         &interface_port },
   { "received_protocol",   vtype_stringptr,   &received_protocol },
-  { "received_time",       vtype_int,         &received_time },
+  { "received_time",       vtype_int,         &received_time.tv_sec },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_string_func, &fn_recipients },
@@ -1484,9 +1484,7 @@ while (*s != 0)
 /* If value2 is unset, just compute one number */
 
 if (value2 < 0)
-  {
   s = string_sprintf("%d", total % value1);
-  }
 
 /* Otherwise do a div/mod hash */
 

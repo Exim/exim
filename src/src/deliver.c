@@ -382,6 +382,7 @@ for (addr2 = addr->next; addr2; addr2 = addr2->next)
   addr2->transport_return = addr->transport_return;
   addr2->basic_errno =	    addr->basic_errno;
   addr2->more_errno =	    addr->more_errno;
+  addr2->delivery_usec =    addr->delivery_usec;
   addr2->special_action =   addr->special_action;
   addr2->message =	    addr->message;
   addr2->user_message =	    addr->user_message;
@@ -1029,6 +1030,43 @@ return str;
 }
 
 
+
+void
+timesince(struct timeval * diff, struct timeval * then)
+{
+gettimeofday(diff, NULL);
+diff->tv_sec -= then->tv_sec;
+if ((diff->tv_usec -= then->tv_usec) < 0)
+  {
+  diff->tv_sec--;
+  diff->tv_usec += 1000*1000;
+  }
+}
+
+
+
+static uschar *
+string_timediff(struct timeval * diff)
+{
+static uschar buf[sizeof("0.000s")];
+
+if (diff->tv_sec >= 5 || !LOGGING(millisec))
+  return readconf_printtime((int)diff->tv_sec);
+
+sprintf(CS buf, "%d.%03ds", (int)diff->tv_sec, (int)diff->tv_usec/1000);
+return buf;
+}
+
+
+static uschar *
+string_timesince(struct timeval * then)
+{
+struct timeval diff;
+
+timesince(&diff, then);
+return string_timediff(&diff);
+}
+
 /******************************************************************************/
 
 
@@ -1191,11 +1229,13 @@ if (  LOGGING(smtp_confirmation)
 
 if (LOGGING(queue_time))
   s = string_append(s, &size, &ptr, 2, US" QT=",
-    readconf_printtime( (int) ((long)time(NULL) - (long)received_time)) );
+    string_timesince(&received_time));
 
 if (LOGGING(deliver_time))
-  s = string_append(s, &size, &ptr, 2, US" DT=",
-    readconf_printtime(addr->more_errno));
+  {
+  struct timeval diff = {addr->more_errno, addr->delivery_usec};
+  s = string_append(s, &size, &ptr, 2, US" DT=", string_timediff(&diff));
+  }
 
 /* string_cat() always leaves room for the terminator. Release the
 store we used to build the line after writing it. */
@@ -2347,6 +2387,7 @@ if ((pid = fork()) == 0)
       || (ret = write(pfd[pipe_write], &addr2->flags, sizeof(addr2->flags))) != sizeof(addr2->flags)
       || (ret = write(pfd[pipe_write], &addr2->basic_errno,    sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->more_errno,     sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &addr2->delivery_usec,  sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->special_action, sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->transport,
         sizeof(transport_instance *))) != sizeof(transport_instance *)
@@ -2414,6 +2455,7 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
     len = read(pfd[pipe_read], &addr2->flags, sizeof(addr2->flags));
     len = read(pfd[pipe_read], &addr2->basic_errno,    sizeof(int));
     len = read(pfd[pipe_read], &addr2->more_errno,     sizeof(int));
+    len = read(pfd[pipe_read], &addr2->delivery_usec,  sizeof(int));
     len = read(pfd[pipe_read], &addr2->special_action, sizeof(int));
     len = read(pfd[pipe_read], &addr2->transport,
       sizeof(transport_instance *));
@@ -2639,8 +2681,8 @@ time_t now = time(NULL);
 
 while (addr_local)
   {
-  time_t delivery_start;
-  int deliver_time;
+  struct timeval delivery_start;
+  struct timeval deliver_time;
   address_item *addr2, *addr3, *nextaddr;
   int logflags = LOG_MAIN;
   int logchar = dont_deliver? '*' : '=';
@@ -2936,9 +2978,10 @@ while (addr_local)
   single delivery. */
 
   deliver_set_expansions(addr);
-  delivery_start = time(NULL);
+
+  gettimeofday(&delivery_start, NULL);
   deliver_local(addr, FALSE);
-  deliver_time = (int)(time(NULL) - delivery_start);
+  timesince(&deliver_time, &delivery_start);
 
   /* If a shadow transport (which must perforce be another local transport), is
   defined, and its condition is met, we must pass the message to the shadow
@@ -3075,7 +3118,11 @@ while (addr_local)
 
     /* Done with this address */
 
-    if (result == OK) addr2->more_errno = deliver_time;
+    if (result == OK)
+      {
+      addr2->more_errno = deliver_time.tv_sec;
+      addr2->delivery_usec = deliver_time.tv_usec;
+      }
     post_process_one(addr2, result, logflags, DTYPE_TRANSPORT, logchar);
 
     /* If a pipe delivery generated text to be sent back, the result may be
@@ -3417,9 +3464,9 @@ while (!done)
 	r->flags = *ptr++;
 	r->key = string_copy(ptr);
 	while (*ptr++);
-	memcpy(&(r->basic_errno), ptr, sizeof(r->basic_errno));
+	memcpy(&r->basic_errno, ptr, sizeof(r->basic_errno));
 	ptr += sizeof(r->basic_errno);
-	memcpy(&(r->more_errno), ptr, sizeof(r->more_errno));
+	memcpy(&r->more_errno, ptr, sizeof(r->more_errno));
 	ptr += sizeof(r->more_errno);
 	r->message = *ptr ? string_copy(ptr) : NULL;
 	DEBUG(D_deliver|D_retry) debug_printf("  added %s item\n",
@@ -3561,11 +3608,13 @@ while (!done)
 	  DEBUG(D_deliver) debug_printf("A0 %s tret %d\n", addr->address, *ptr);
 	  addr->transport_return = *ptr++;
 	  addr->special_action = *ptr++;
-	  memcpy(&(addr->basic_errno), ptr, sizeof(addr->basic_errno));
+	  memcpy(&addr->basic_errno, ptr, sizeof(addr->basic_errno));
 	  ptr += sizeof(addr->basic_errno);
-	  memcpy(&(addr->more_errno), ptr, sizeof(addr->more_errno));
+	  memcpy(&addr->more_errno, ptr, sizeof(addr->more_errno));
 	  ptr += sizeof(addr->more_errno);
-	  memcpy(&(addr->flags), ptr, sizeof(addr->flags));
+	  memcpy(&addr->delivery_usec, ptr, sizeof(addr->delivery_usec));
+	  ptr += sizeof(addr->delivery_usec);
+	  memcpy(&addr->flags, ptr, sizeof(addr->flags));
 	  ptr += sizeof(addr->flags);
 	  addr->message = *ptr ? string_copy(ptr) : NULL;
 	  while(*ptr++);
@@ -4815,9 +4864,9 @@ for (delivery_count = 0; addr_remote; delivery_count++)
         {
         sprintf(CS big_buffer, "%c%.500s", r->flags, r->key);
         ptr = big_buffer + Ustrlen(big_buffer+2) + 3;
-        memcpy(ptr, &(r->basic_errno), sizeof(r->basic_errno));
+        memcpy(ptr, &r->basic_errno, sizeof(r->basic_errno));
         ptr += sizeof(r->basic_errno);
-        memcpy(ptr, &(r->more_errno), sizeof(r->more_errno));
+        memcpy(ptr, &r->more_errno, sizeof(r->more_errno));
         ptr += sizeof(r->more_errno);
         if (!r->message) *ptr++ = 0; else
           {
@@ -4866,11 +4915,13 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
       sprintf(CS big_buffer, "%c%c", addr->transport_return, addr->special_action);
       ptr = big_buffer + 2;
-      memcpy(ptr, &(addr->basic_errno), sizeof(addr->basic_errno));
+      memcpy(ptr, &addr->basic_errno, sizeof(addr->basic_errno));
       ptr += sizeof(addr->basic_errno);
-      memcpy(ptr, &(addr->more_errno), sizeof(addr->more_errno));
+      memcpy(ptr, &addr->more_errno, sizeof(addr->more_errno));
       ptr += sizeof(addr->more_errno);
-      memcpy(ptr, &(addr->flags), sizeof(addr->flags));
+      memcpy(ptr, &addr->delivery_usec, sizeof(addr->delivery_usec));
+      ptr += sizeof(addr->delivery_usec);
+      memcpy(ptr, &addr->flags, sizeof(addr->flags));
       ptr += sizeof(addr->flags);
 
       if (!addr->message) *ptr++ = 0; else
@@ -4883,7 +4934,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
         {
         ptr += sprintf(CS ptr, "%.256s", addr->host_used->name) + 1;
         ptr += sprintf(CS ptr, "%.64s", addr->host_used->address) + 1;
-        memcpy(ptr, &(addr->host_used->port), sizeof(addr->host_used->port));
+        memcpy(ptr, &addr->host_used->port, sizeof(addr->host_used->port));
         ptr += sizeof(addr->host_used->port);
 
         /* DNS lookup status */
@@ -5559,14 +5610,15 @@ give up; if the message has been around for sufficiently long, remove it. */
 
     if (rc != spool_read_hdrerror)
       {
-      received_time = 0;
+      received_time.tv_sec = received_time.tv_usec = 0;
+      /*XXX subsec precision?*/
       for (i = 0; i < 6; i++)
-	received_time = received_time * BASE_62 + tab62[id[i] - '0'];
+	received_time.tv_sec = received_time.tv_sec * BASE_62 + tab62[id[i] - '0'];
       }
 
     /* If we've had this malformed message too long, sling it. */
 
-    if (now - received_time > keep_malformed)
+    if (now - received_time.tv_sec > keep_malformed)
       {
       Uunlink(spool_fname(US"msglog", message_subdir, id, US""));
       Uunlink(spool_fname(US"input", message_subdir, id, US"-D"));
@@ -7792,7 +7844,7 @@ wording. */
       if (rc != 0)
         {
         uschar *s = US"";
-        if (now - received_time < retry_maximum_timeout && !addr_defer)
+        if (now - received_time.tv_sec < retry_maximum_timeout && !addr_defer)
           {
           addr_defer = (address_item *)(+1);
           deliver_freeze = TRUE;
@@ -7878,7 +7930,7 @@ if (!addr_defer)
 
   if (LOGGING(queue_time_overall))
     log_write(0, LOG_MAIN, "Completed QT=%s",
-      readconf_printtime( (int) ((long)time(NULL) - (long)received_time)) );
+      string_timesince(&received_time));
   else
     log_write(0, LOG_MAIN, "Completed");
 
@@ -8016,7 +8068,7 @@ else if (addr_defer != (address_item *)(+1))
     {
     int count;
     int show_time;
-    int queue_time = time(NULL) - received_time;
+    int queue_time = time(NULL) - received_time.tv_sec;
 
     /* When running in the test harness, there's an option that allows us to
     fudge this time so as to get repeatability of the tests. Take the first

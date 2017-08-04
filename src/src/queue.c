@@ -880,7 +880,7 @@ for (reset_point = store_get(0); f; f = f->next)
 
     if (Ustat(fname, &statbuf) == 0)
       size = message_size + statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
-    i = (now - received_time)/60;  /* minutes on queue */
+    i = (now - received_time.tv_sec)/60;  /* minutes on queue */
     if (i > 90)
       {
       i = (i + 30)/60;
