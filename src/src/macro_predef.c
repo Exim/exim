@@ -29,7 +29,7 @@ if (mp_index == 0)
 else
   printf("&p%d,", mp_index-1);
 
-printf(" FALSE, %d, 1, \"%s\", \"y\" };\n", Ustrlen(name), CS name);
+printf(" FALSE, %d, 1, US\"%s\", US\"y\" };\n", Ustrlen(name), CS name);
 mp_index++;
 }
 
