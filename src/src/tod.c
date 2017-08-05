@@ -112,8 +112,10 @@ switch(type)
     break;
 
   case tod_log_datestamp_monthly:
+#ifndef COMPILE_UTILITY
     off = sprintf(CS timebuf, "%04d%02d",
       1900 + t->tm_year, 1 + t->tm_mon);
+#endif
     break;
 #endif
 
@@ -162,7 +164,7 @@ switch(type)
 	    (void) sprintf(CS timebuf,
 	      "%04d-%02d-%02d %02d:%02d:%02d.%03d %+03d%02d",
 	      1900 + local.tm_year, 1 + local.tm_mon, local.tm_mday,
-	      local.tm_hour, local.tm_min, local.tm_sec, now.tv_usec/1000,
+	      local.tm_hour, local.tm_min, local.tm_sec, (int)(now.tv_usec/1000),
 	      diff_hour, diff_min);
 	  else
 #endif
@@ -212,7 +214,9 @@ switch(type)
 
 #ifndef COMPILE_UTILITY
 if (LOGGING(millisec) && off > 0)
-  (void) sprintf(CS timebuf + off, ".%03d", now.tv_usec/1000);
+  (void) sprintf(CS timebuf + off, ".%03d", (int)(now.tv_usec/1000));
+#else
+off = off;	/* Compiler quietening */
 #endif
 
 return timebuf;

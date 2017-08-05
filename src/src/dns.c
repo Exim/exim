@@ -1016,7 +1016,7 @@ switch (type)
   assertion field. */
   case T_CSA:
     {
-    uschar *srvname, *namesuff, *tld, *p;
+    uschar *srvname, *namesuff, *tld;
     int priority, weight, port;
     int limit, rc, i;
     BOOL ipv6;

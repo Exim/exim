@@ -54,7 +54,7 @@ if (retry != NULL && retry->rules != NULL)
        last_rule = last_rule->next);
   DEBUG(D_retry)
     debug_printf("  received_time=%d diff=%d timeout=%d\n",
-      received_time.tv_sec, (int)(now - received_time.tv_sec), last_rule->timeout);
+      (int)received_time.tv_sec, (int)(now - received_time.tv_sec), last_rule->timeout);
   address_timeout = (now - received_time.tv_sec > last_rule->timeout);
   }
 else

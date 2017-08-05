@@ -1133,7 +1133,7 @@ switch(action)
   {
   case MSG_SHOW_COPY:
     {
-    transport_ctx tctx = {0};
+    transport_ctx tctx = {{0}};
     deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
     deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
     tctx.u.fd = 1;

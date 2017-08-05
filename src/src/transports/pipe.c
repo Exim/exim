@@ -563,7 +563,7 @@ const uschar *envlist = ob->environment;
 uschar *cmd, *ss;
 uschar *eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
-  0,
+  {0},
   tblock,
   addr,
   ob->check_string,

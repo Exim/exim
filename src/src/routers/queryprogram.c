@@ -49,7 +49,7 @@ void queryprogram_router_init(router_instance *rblock) {}
 int queryprogram_router_entry(router_instance *rblock, address_item *addr,
   struct passwd *pw, int verify, address_item **addr_local,
   address_item **addr_remote, address_item **addr_new,
-  address_item **addr_succeed) {}
+  address_item **addr_succeed) {return 0;}
 
 #else   /*!MACRO_PREDEF*/
 

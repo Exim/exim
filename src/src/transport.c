@@ -101,7 +101,7 @@ options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSP
 
 for (ti = transports_available; ti->driver_name[0]; ti++)
   {
-  spf(buf, sizeof(buf), "_DRIVER_TRANSPORT_%T", ti->driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", ti->driver_name);
   builtin_macro_create(buf);
   options_from_list(ti->options, (unsigned)*ti->options_count, US"TRANSPORT", ti->driver_name);
   }
@@ -374,7 +374,7 @@ Returns:      the yield of transport_write_block()
 BOOL
 transport_write_string(int fd, const char *format, ...)
 {
-transport_ctx tctx = {0};
+transport_ctx tctx = {{0}};
 va_list ap;
 va_start(ap, format);
 if (!string_vformat(big_buffer, big_buffer_size, format, ap))
@@ -1175,7 +1175,6 @@ BOOL save_spool_file_wireformat = spool_file_wireformat;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
-static transport_ctx dummy_tctx = {0};
 
 transport_filter_timed_out = FALSE;
 
@@ -1381,6 +1380,7 @@ if (write_pid > 0)
 	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_usec, sizeof(int));
+	dummy = dummy;		/* compiler quietening */
         yield = FALSE;
         }
       }

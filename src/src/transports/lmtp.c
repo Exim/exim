@@ -621,7 +621,7 @@ if (send_data)
   {
   BOOL ok;
   transport_ctx tctx = {
-    fd_in,
+    {fd_in},
     tblock,
     addrlist,
     US".", US"..",

@@ -694,7 +694,7 @@ if (return_message)
     :
     US"------ This is a copy of the message, including all the headers.\n";
   transport_ctx tctx = {
-    fileno(f),
+    {fileno(f)},
     tblock,
     addr,
     NULL, NULL,

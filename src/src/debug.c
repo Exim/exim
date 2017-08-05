@@ -191,7 +191,7 @@ if (debug_ptr == debug_buffer)
     t = timestamps_utc ? gmtime(&tmp) : localtime(&tmp);
     debug_ptr += sprintf(CS debug_ptr,
       LOGGING(millisec) ? "%02d:%02d:%02d.%03d " : "%02d:%02d:%02d ",
-      t->tm_hour, t->tm_min, t->tm_sec, now.tv_usec/1000);
+      t->tm_hour, t->tm_min, t->tm_sec, (int)(now.tv_usec/1000));
     }
 
   DEBUG(D_pid)

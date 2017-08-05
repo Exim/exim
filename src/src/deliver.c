@@ -7266,7 +7266,7 @@ if (addr_senddsn)
     FILE *f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
     uschar * bound;
-    transport_ctx tctx = {0};
+    transport_ctx tctx = {{0}};
 
     DEBUG(D_deliver)
       debug_printf("sending error message to: %s\n", sender_address);
@@ -7804,7 +7804,7 @@ wording. */
       transport_filter_argv = NULL;   /* Just in case */
       return_path = sender_address;   /* In case not previously set */
 	{			      /* Dummy transport for headers add */
-	transport_ctx tctx = {0};
+	transport_ctx tctx = {{0}};
 	transport_instance tb = {0};
 
 	tctx.u.fd = fileno(f);
@@ -8126,7 +8126,7 @@ else if (addr_defer != (address_item *)(+1))
         FILE *wmf = NULL;
         FILE *f = fdopen(fd, "wb");
 	uschar * bound;
-	transport_ctx tctx = {0};
+	transport_ctx tctx = {{0}};
 
         if (warn_message_file)
           if (!(wmf = Ufopen(warn_message_file, "rb")))
@@ -8514,7 +8514,7 @@ return new_sender_address;
 void
 delivery_re_exec(int exec_type)
 {
-uschar * s;
+uschar * where;
 
 if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
   {
@@ -8530,11 +8530,11 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
     sending_ip_address = cutthrough.snd_ip;
     sending_port = cutthrough.snd_port;
 
-    s = US"socketpair";
+    where = US"socketpair";
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) != 0)
       goto fail;
 
-    s = US"fork";
+    where = US"fork";
     if ((pid = fork()) < 0)
       goto fail;
 
@@ -8562,12 +8562,12 @@ else
   cancel_cutthrough_connection(TRUE, US"non-continued delivery");
   (void) child_exec_exim(exec_type, FALSE, NULL, FALSE, 2, US"-Mc", message_id);
   }
-/* Control does not return here. */
+return;		/* compiler quietening; control does not reach here. */
 
 fail:
   log_write(0,
     LOG_MAIN | (exec_type == CEE_EXEC_EXIT ? LOG_PANIC : LOG_PANIC_DIE),
-    "delivery re-exec failed: %s", strerror(errno));
+    "delivery re-exec %s failed: %s", where, strerror(errno));
 
   /* Get here if exec_type == CEE_EXEC_EXIT.
   Note: this must be _exit(), not exit(). */

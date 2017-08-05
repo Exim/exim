@@ -154,9 +154,9 @@ fprintf(f, "%s-H\n", message_id);
 fprintf(f, "%.63s %ld %ld\n", originator_login, (long int)originator_uid,
   (long int)originator_gid);
 fprintf(f, "<%s>\n", sender_address);
-fprintf(f, "%d %d\n", received_time.tv_sec, warning_count);
+fprintf(f, "%d %d\n", (int)received_time.tv_sec, warning_count);
 
-fprintf(f, "-received_time_usec .%06d\n", received_time.tv_usec);
+fprintf(f, "-received_time_usec .%06d\n", (int)received_time.tv_usec);
 
 /* If there is information about a sending host, remember it. The HELO
 data can be set for local SMTP as well as remote. */

@@ -372,7 +372,9 @@ static optionlist optionlist_config[] = {
   { "write_rejectlog",          opt_bool,        &write_rejectlog }
 };
 
+#ifndef MACRO_PREDEF
 static int optionlist_config_size = nelem(optionlist_config);
+#endif
 
 
 #ifdef MACRO_PREDEF
@@ -395,7 +397,7 @@ options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", N
 
 for (ai = auths_available; ai->driver_name[0]; ai++)
   {
-  spf(buf, sizeof(buf), "_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
   builtin_macro_create(buf);
   options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
   }
@@ -4390,6 +4392,7 @@ save_config_position(const uschar *file, int line)
 this operates on a global (static) list that holds all the pre-parsed
 config lines, we do no further processing here, output formatting and
 honouring of <hide> or macros will be done during output */
+
 static void
 save_config_line(const uschar* line)
 {

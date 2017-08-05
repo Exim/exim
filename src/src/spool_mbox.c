@@ -216,8 +216,7 @@ if (spool_mbox_ok && !no_mbox_unspool)
 
   mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
 
-  tempdir = opendir(CS mbox_path);
-  if (!tempdir)
+  if (!(tempdir = opendir(CS mbox_path)))
     {
     debug_printf("Unable to opendir(%s): %s\n", mbox_path, strerror(errno));
     /* Just in case we still can: */
@@ -225,7 +224,7 @@ if (spool_mbox_ok && !no_mbox_unspool)
     return;
     }
   /* loop thru dir & delete entries */
-  while((entry = readdir(tempdir)) != NULL)
+  while((entry = readdir(tempdir)))
     {
     uschar *name = US entry->d_name;
     int dummy;
@@ -233,7 +232,7 @@ if (spool_mbox_ok && !no_mbox_unspool)
 
     file_path = string_sprintf("%s/%s", mbox_path, name);
     debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
-    dummy = unlink(CS file_path);
+    dummy = unlink(CS file_path); dummy = dummy;	/* compiler quietening */
     }
 
   closedir(tempdir);

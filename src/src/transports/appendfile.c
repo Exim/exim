@@ -941,7 +941,7 @@ copy_mbx_message(int to_fd, int from_fd, off_t saved_size)
 int used;
 off_t size;
 struct stat statbuf;
-transport_ctx tctx = {0};
+transport_ctx tctx = {{0}};
 
 tctx.u.fd = to_fd;
 
@@ -2917,7 +2917,7 @@ at initialization time. */
 if (yield == OK)
   {
   transport_ctx tctx = {
-    fd,
+    {fd},
     tblock,
     addr,
     ob->check_string,

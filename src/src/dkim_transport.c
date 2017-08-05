@@ -200,7 +200,7 @@ int dkim_fd;
 int save_errno = 0;
 BOOL rc;
 uschar * dkim_spool_name, * dkim_signature;
-int sread = 0, wwritten = 0, siglen = 0, options;
+int siglen = 0, options;
 off_t k_file_size;
 const uschar * errstr;
 

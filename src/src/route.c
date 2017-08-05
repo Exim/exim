@@ -157,7 +157,7 @@ options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NU
 
 for (ri = routers_available; ri->driver_name[0]; ri++)
   {
-  spf(buf, sizeof(buf), "_DRIVER_ROUTER_%T", ri->driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", ri->driver_name);
   builtin_macro_create(buf);
   options_from_list(ri->options, (unsigned)*ri->options_count, US"ROUTER", ri->driver_name);
   }

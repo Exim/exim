@@ -1018,7 +1018,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
     If one is found, attempt to authenticate by calling its client function.
     */
 
-    for (au = auths; !smtp_authenticated && au != NULL; au = au->next)
+    for (au = auths; !smtp_authenticated && au; au = au->next)
       {
       uschar *p = names;
       if (!au->client ||
@@ -1035,7 +1035,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 
       /* Loop to scan supported server mechanisms */
 
-      while (*p != 0)
+      while (*p)
 	{
 	int rc;
 	int len = Ustrlen(au->public_name);
@@ -2719,7 +2719,6 @@ struct timeval start_delivery_time;
 BOOL pass_message = FALSE;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
-uschar *p;
 
 smtp_context sx;
 
@@ -2890,7 +2889,7 @@ if (!(sx.peer_offered & OPTION_CHUNKING) && !sx.ok)
 else
   {
   transport_ctx tctx = {
-    sx.inblock.sock,
+    {sx.inblock.sock},
     tblock,
     addrlist,
     US".", US"..",    /* Escaping strings */

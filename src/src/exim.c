@@ -212,8 +212,7 @@ int fd;
 
 os_restarting_signal(sig, usr1_handler);
 
-fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE);
-if (fd < 0)
+if ((fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE)) < 0)
   {
   /* If we are already running as the Exim user, try to create it in the
   current process (assuming spool_directory exists). Otherwise, if we are
@@ -4154,6 +4153,7 @@ if (Uchdir(spool_directory) != 0)
   int dummy;
   (void)directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
   dummy = /* quieten compiler */ Uchdir(spool_directory);
+  dummy = dummy;	/* yet more compiler quietening, sigh */
   }
 
 /* Handle calls with the -bi option. This is a sendmail option to rebuild *the*
