@@ -1,0 +1,305 @@
+14:07:56  7857 Exim version x.yz uid=CALLER_UID gid=CALLER_GID pid=pppp D=fffdffff
+14:07:56  7857 Total 20 lookups
+14:07:56  7857 changed uid/gid: forcing real = effective
+14:07:56  7857   uid=uuuu gid=CALLER_GID pid=pppp
+14:07:56.452  7857 configuration file is TESTSUITE/test-config
+14:07:56.452  7857 log selectors = 00000ffc 0c64c60a
+14:07:56.452  7857 cwd=TESTSUITE 8 args: TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d+all -DLOG_SELECTOR=+queue_time+queue_time_overall+deliver_time+millisec -odi userx@test.ex
+14:07:56.452  7857 admin user
+14:07:56.453  7857 changed uid/gid: privilege not needed
+14:07:56.453  7857   uid=EXIM_UID gid=EXIM_GID pid=pppp
+14:07:56.453  7857 DSN: r1 propagating DSN
+14:07:56.453  7857 seeking password data for user "CALLER": cache not available
+14:07:56.453  7857 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+14:07:56.453  7857 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+14:07:56.453  7857 sender address = CALLER@myhost.test.ex
+14:07:56.453  7857 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+14:07:56.453  7857 spool directory space = 157852648K inodes = 26802407 check_space = 10240K inodes = 100 msg_size = 0
+14:07:56.453  7857 log directory space = 157852648K inodes = 26802407 check_space = 10240K inodes = 100
+14:07:56.453  7857 Sender: CALLER@myhost.test.ex
+14:07:56.453  7857 Recipients:
+14:07:56.453  7857   userx@test.ex
+14:07:56.453  7857 search_tidyup called
+14:07:56.453  7857 >>Headers received:
+14:07:56.453  7857 
+14:07:56.453  7857 rewrite_one_header: type=F:
+14:07:56.453  7857   From: CALLER_NAME <CALLER@myhost.test.ex>
+14:07:56.453  7857 search_tidyup called
+14:07:56.453  7857 >>Headers after rewriting and local additions:
+14:07:56.453  7857 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+14:07:56.453  7857 F From: CALLER_NAME <CALLER@myhost.test.ex>
+14:07:56.453  7857   Date: Tue, 2 Mar 1999 09:44:33 +0000
+14:07:56.453  7857 
+14:07:56.453  7857 Data file name: TESTSUITE/spool//input//10HmaZ-0005vi-00-D
+14:07:56.455  7857 Data file written for message 10HmaZ-0005vi-00
+14:07:56.455  7857  ┌considering: ${tod_full}
+14:07:56.455  7857  ├──expanding: ${tod_full}
+14:07:56.455  7857  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+14:07:56.455  7857  ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+14:07:56.455  7857  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857  	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857  	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857  	for $received_for}}
+14:07:56.455  7857  ├──condition: def:sender_rcvhost
+14:07:56.455  7857  ├─────result: false
+14:07:56.455  7857   ┌───scanning: from $sender_rcvhost
+14:07:56.455  7857   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857   	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857   	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857   	for $received_for}}
+14:07:56.455  7857   ├──expanding: from $sender_rcvhost
+14:07:56.455  7857   	
+14:07:56.455  7857   ├─────result: from 
+14:07:56.455  7857   	
+14:07:56.455  7857   └───skipping: result is not used
+14:07:56.455  7857   ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857   	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857   	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857   	for $received_for}}
+14:07:56.455  7857   ├──condition: def:sender_ident
+14:07:56.455  7857   ├─────result: true
+14:07:56.455  7857    ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857    	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857    	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857    	for $received_for}}
+14:07:56.455  7857    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857    ╎}} (Exim $version_number)
+14:07:56.455  7857    ╎	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857    ╎	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857    ╎	for $received_for}}
+14:07:56.455  7857    ╎├──expanding: $sender_ident
+14:07:56.455  7857    ╎└─────result: CALLER
+14:07:56.455  7857    ├──expanding: from ${quote_local_part:$sender_ident} 
+14:07:56.455  7857    └─────result: from CALLER 
+14:07:56.455  7857   ├──condition: def:sender_helo_name
+14:07:56.455  7857   ├─────result: false
+14:07:56.455  7857    ┌───scanning: (helo=$sender_helo_name)
+14:07:56.455  7857    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857    	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857    	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857    	for $received_for}}
+14:07:56.455  7857    ├──expanding: (helo=$sender_helo_name)
+14:07:56.455  7857    	
+14:07:56.455  7857    ├─────result: (helo=)
+14:07:56.455  7857    	
+14:07:56.455  7857    └───skipping: result is not used
+14:07:56.455  7857   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857   	}}
+14:07:56.455  7857   └─────result: from CALLER 
+14:07:56.455  7857  ├──condition: def:received_protocol
+14:07:56.455  7857  ├─────result: true
+14:07:56.455  7857   ┌considering: with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857   	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857   	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857   	for $received_for}}
+14:07:56.455  7857   ├──expanding: with $received_protocol
+14:07:56.455  7857   └─────result: with local
+14:07:56.455  7857  ├──condition: def:tls_cipher
+14:07:56.455  7857  ├─────result: false
+14:07:56.455  7857   ┌───scanning: ($tls_cipher)
+14:07:56.455  7857   	}}(Exim $version_number)
+14:07:56.455  7857   	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857   	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857   	for $received_for}}
+14:07:56.455  7857   ├──expanding: ($tls_cipher)
+14:07:56.455  7857   	
+14:07:56.455  7857   ├─────result: ()
+14:07:56.455  7857   	
+14:07:56.455  7857   └───skipping: result is not used
+14:07:56.455  7857  ├──condition: def:sender_address
+14:07:56.455  7857  ├─────result: true
+14:07:56.455  7857   ┌considering: (envelope-from <$sender_address>)
+14:07:56.455  7857   	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857   	for $received_for}}
+14:07:56.455  7857   ├──expanding: (envelope-from <$sender_address>)
+14:07:56.455  7857   	
+14:07:56.455  7857   └─────result: (envelope-from <CALLER@myhost.test.ex>)
+14:07:56.455  7857   	
+14:07:56.455  7857  ├──condition: def:received_for
+14:07:56.455  7857  ├─────result: true
+14:07:56.455  7857   ┌considering: 
+14:07:56.455  7857   	for $received_for}}
+14:07:56.455  7857   ├──expanding: 
+14:07:56.455  7857   	for $received_for
+14:07:56.455  7857   └─────result: 
+14:07:56.455  7857   	for userx@test.ex
+14:07:56.455  7857  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+14:07:56.455  7857  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+14:07:56.455  7857  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol14:07:56.455  7857}} (Exim $version_number)
+14:07:56.455  7857  	${if def:sender_address {(envelope-from <$sender_address>)
+14:07:56.455  7857  	}}id $message_exim_id${if def:received_for {
+14:07:56.455  7857  	for $received_for}}
+14:07:56.455  7857  └─────result: Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+14:07:56.455  7857  	(envelope-from <CALLER@myhost.test.ex>)
+14:07:56.455  7857  	id 10HmaZ-0005vi-00
+14:07:56.455  7857  	for userx@test.ex
+14:07:56.455  7857 >>Generated Received: header line
+14:07:56.455  7857 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+14:07:56.455  7857 	(envelope-from <CALLER@myhost.test.ex>)
+14:07:56.455  7857 	id 10HmaZ-0005vi-00
+14:07:56.455  7857 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+14:07:56.455  7857 calling local_scan(); timeout=300
+14:07:56.455  7857 local_scan() returned 0 NULL
+14:07:56.455  7857  ┌considering: ${tod_full}
+14:07:56.455  7857  ├──expanding: ${tod_full}
+14:07:56.455  7857  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+14:07:56.455  7857 Writing spool header file: TESTSUITE/spool//input//hdr.7857
+14:07:56.455  7857 DSN: Write SPOOL :-dsn_envid NULL
+14:07:56.455  7857 DSN: Write SPOOL :-dsn_ret 0
+14:07:56.455  7857 DSN: Flags :0
+14:07:56.455  7857 DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+14:07:56.457  7857 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
+14:07:56.459  7857 Size of headers = sss
+14:07:56.459  7857 LOG: MAIN
+14:07:56.459  7857   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+14:07:56.459  7857 search_tidyup called
+14:07:56.459  7858 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DLOG_SELECTOR=+queue_time+queue_time_overall+deliver_time+millisec -C TESTSUITE/test-config -d=0xfffdffff -odi -Mc 10HmaZ-0005vi-00
+14:07:56  7858 Exim version x.yz uid=EXIM_UID gid=EXIM_GID pid=pppp D=fffdffff
+14:07:56  7858 Total 20 lookups
+14:07:56  7858 changed uid/gid: forcing real = effective
+14:07:56  7858   uid=uuuu gid=EXIM_GID pid=pppp
+14:07:56.565  7858 configuration file is TESTSUITE/test-config
+14:07:56.565  7858 log selectors = 00000ffc 0c64c60a
+14:07:56.565  7858 cwd=TESTSUITE/spool 9 args: TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DLOG_SELECTOR=+queue_time+queue_time_overall+deliver_time+millisec -C TESTSUITE/test-config -d=0xfffdffff -odi -Mc 10HmaZ-0005vi-00
+14:07:56.565  7858 trusted user
+14:07:56.565  7858 admin user
+14:07:56.565  7858 DSN: r1 propagating DSN
+14:07:56.565  7858 seeking password data for user "CALLER": cache not available
+14:07:56.565  7858 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
+14:07:56.565  7858 set_process_info: pppp delivering specified messages
+14:07:56.565  7858 set_process_info: pppp delivering 10HmaZ-0005vi-00
+14:07:56.565  7858 Trying spool file TESTSUITE/spool//input//10HmaZ-0005vi-00-D
+14:07:56.565  7858 reading spool file 10HmaZ-0005vi-00-H
+14:07:56.565  7858 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@myhost.test.ex
+14:07:56.565  7858 sender_local=1 ident=CALLER
+14:07:56.565  7858 Non-recipients:
+14:07:56.565  7858 Empty Tree
+14:07:56.565  7858 ---- End of tree ----
+14:07:56.565  7858 recipients_count=1
+14:07:56.565  7858 **** SPOOL_IN - No additional fields
+14:07:56.565  7858 body_linecount=1 message_linecount=7
+14:07:56.565  7858 DSN: set orcpt: NULL  flags: 0
+14:07:56.565  7858 Delivery address list:
+14:07:56.565  7858   userx@test.ex 
+14:07:56.566  7858 locking TESTSUITE/spool/db/retry.lockfile
+14:07:56.566  7858 locked  TESTSUITE/spool/db/retry.lockfile
+14:07:56.566  7858 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+14:07:56.566  7858 returned from EXIM_DBOPEN: (nil)
+14:07:56.566  7858 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+14:07:56.566  7858 no retry data available
+14:07:56.566  7858 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+14:07:56.566  7858 Considering: userx@test.ex
+14:07:56.566  7858 unique = userx@test.ex
+14:07:56.566  7858 no domain retry record
+14:07:56.566  7858 no address retry record
+14:07:56.566  7858 userx@test.ex: queued for routing
+14:07:56.566  7858 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+14:07:56.566  7858 routing userx@test.ex
+14:07:56.566  7858 --------> r1 router <--------
+14:07:56.566  7858 local_part=userx domain=test.ex
+14:07:56.566  7858 calling r1 router
+14:07:56.566  7858 r1 router called for userx@test.ex
+14:07:56.566  7858   domain = test.ex
+14:07:56.566  7858 set transport t1
+14:07:56.566  7858 queued for t1 transport: local_part = userx
+14:07:56.566  7858 domain = test.ex
+14:07:56.566  7858   errors_to=NULL
+14:07:56.566  7858   domain_data=NULL localpart_data=NULL
+14:07:56.566  7858 routed by r1 router
+14:07:56.566  7858   envelope to: userx@test.ex
+14:07:56.566  7858   transport: t1
+14:07:56.566  7858 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+14:07:56.566  7858 After routing:
+14:07:56.566  7858   Local deliveries:
+14:07:56.566  7858     userx@test.ex
+14:07:56.566  7858   Remote deliveries:
+14:07:56.566  7858   Failed addresses:
+14:07:56.566  7858   Deferred addresses:
+14:07:56.566  7858 search_tidyup called
+14:07:56.566  7858 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+14:07:56.566  7858 --------> userx@test.ex <--------
+14:07:56.566  7858 locking TESTSUITE/spool/db/retry.lockfile
+14:07:56.566  7858 locked  TESTSUITE/spool/db/retry.lockfile
+14:07:56.566  7858 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+14:07:56.566  7858 returned from EXIM_DBOPEN: (nil)
+14:07:56.566  7858 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+14:07:56.566  7858 no retry data available
+14:07:56.566  7858 search_tidyup called
+14:07:56.566  7859 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
+14:07:56.566  7859   uid=CALLER_UID gid=CALLER_GID pid=pppp
+14:07:56.566  7859   home=NULL current=/
+14:07:56.566  7859 set_process_info: pppp delivering 10HmaZ-0005vi-00 to userx using t1
+14:07:56.566  7859 appendfile transport entered
+14:07:56.566  7859  ┌considering: TESTSUITE/test-mail/$local_part
+14:07:56.566  7859  ├──expanding: TESTSUITE/test-mail/$local_part
+14:07:56.566  7859  └─────result: TESTSUITE/test-mail/userx
+14:07:56.566  7859 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+14:07:56.566  7859   file=TESTSUITE/test-mail/userx format=unix
+14:07:56.566  7859   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+14:07:56.566  7859   message_suffix=\n
+14:07:56.566  7859   maildir_use_size_file=no
+14:07:56.566  7859   locking by lockfile fcntl 
+14:07:56.566  7859 lock name: TESTSUITE/test-mail/userx.lock
+14:07:56.566  7859 hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
+14:07:56.566  7859 lock file created
+14:07:56.566  7859 mailbox TESTSUITE/test-mail/userx is locked
+14:07:56.566  7859 writing to file TESTSUITE/test-mail/userx
+14:07:56.566  7859  ┌considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+14:07:56.566  7859  
+14:07:56.566  7859  ├──condition: def:return_path
+14:07:56.566  7859  ├─────result: true
+14:07:56.566  7859   ┌considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+14:07:56.566  7859   
+14:07:56.566  7859   ├──expanding: $return_path
+14:07:56.566  7859   └─────result: CALLER@myhost.test.ex
+14:07:56.566  7859   ┌───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
+14:07:56.566  7859   
+14:07:56.566  7859   ├──expanding: MAILER-DAEMON
+14:07:56.566  7859   ├─────result: MAILER-DAEMON
+14:07:56.566  7859   └───skipping: result is not used
+14:07:56.566  7859  ├──expanding: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+14:07:56.566  7859  
+14:07:56.566  7859  └─────result: From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+14:07:56.566  7859  
+14:07:56.566  7859 writing data block fd=6 size=sss timeout=0
+14:07:56.567  7859 cannot use sendfile for body: spoolfile not wireformat
+14:07:56.567  7859 writing data block fd=6 size=sss timeout=0
+14:07:56.567  7859 writing data block fd=6 size=sss timeout=0
+14:07:56.568  7859 appendfile yields 0 with errno=dd more_errno=dd
+14:07:56.568  7859 search_tidyup called
+14:07:56.868  7858 journalling userx@test.ex
+14:07:56.871  7858 t1 transport returned OK for userx@test.ex
+14:07:56.871  7858 post-process userx@test.ex (0)
+14:07:56.871  7858 userx@test.ex delivered
+14:07:56.871  7858 LOG: MAIN
+14:07:56.871  7858   => userx <userx@test.ex> R=r1 T=t1 QT=q.qqqs DT=q.qqqs
+14:07:56.871  7858 >>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+14:07:56.871  7858 changed uid/gid: post-delivery tidying
+14:07:56.871  7858   uid=EXIM_UID gid=EXIM_GID pid=pppp
+14:07:56.871  7858 set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
+14:07:56.871  7858 Processing retry items
+14:07:56.871  7858 Succeeded addresses:
+14:07:56.871  7858  userx@test.ex: no retry items
+14:07:56.871  7858 Failed addresses:
+14:07:56.871  7858 Deferred addresses:
+14:07:56.871  7858 end of retry processing
+14:07:56.871  7858 DSN: processing router : r1
+14:07:56.871  7858 DSN: processing successful delivery address: userx@test.ex
+14:07:56.871  7858 DSN: Sender_address: CALLER@myhost.test.ex
+14:07:56.871  7858 DSN: orcpt: NULL  flags: 0
+14:07:56.871  7858 DSN: envid: NULL  ret: 0
+14:07:56.871  7858 DSN: Final recipient: userx@test.ex
+14:07:56.871  7858 DSN: Remote SMTP server supports DSN: 0
+14:07:56.871  7858 DSN: not sending DSN success message
+14:07:56.871  7858 LOG: MAIN
+14:07:56.871  7858   Completed QT=q.qqqs
+14:07:56.871  7858 end delivery of 10HmaZ-0005vi-00
+14:07:56.871  7858 search_tidyup called
+14:07:56.871  7858 search_tidyup called
+14:07:56.871  7858 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+14:07:56.871  7857 search_tidyup called
+14:07:56.871  7857 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

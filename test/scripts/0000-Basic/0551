@@ -6,9 +6,10 @@ Message 1
 exim -DLOG_SELECTOR=+pid+queue_time -odi userx@test.ex userz@test.ex
 Message 2
 ****
-exim -DLOG_SELECTOR=+queue_time+queue_time_overall+deliver_time+millisec -odi userx@test.ex
+exim -d+all -DLOG_SELECTOR=+queue_time+queue_time_overall+deliver_time+millisec -odi userx@test.ex
 Message 3
 ****
 exigrep userx
 eximstats -ne -nr -nt -tnl -q0 -h0 -t0
 no_msglog_check
+no_stderr_check
