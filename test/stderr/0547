@@ -8,7 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> rhu.barb in helo_lookup_domains? no (end of list)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
-LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=0s C=...HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,QUIT
+LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=qqs C=...HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,QUIT
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -20,6 +20,6 @@ LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=0s C=...HELP,RSET,N
 >>> rhu.barb in helo_lookup_domains? no (end of list)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 LOG: SMTP call from (rhu.barb) [10.9.8.7] dropped: too many nonmail commands (last was "HELP")
-LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=0s C=HELO,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP
+LOG: no MAIL in SMTP connection from (rhu.barb) [10.9.8.7] D=qqs C=HELO,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP,HELP,RSET,NOOP
 
 ******** SERVER ********

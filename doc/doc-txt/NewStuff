@@ -44,7 +44,8 @@ Version 4.90
 10. Variable $smtp_command_history returning a comma-sep list of recent
     SMTP commands.
 
-11. Millisecond timetamps in logs, on log_selector "millisec".
+11. Millisecond timetamps in logs, on log_selector "millisec".  Also affects
+    log elements QT, DT and D, and timstamps in debug output.
 
 
 Version 4.89

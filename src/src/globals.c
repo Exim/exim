@@ -1308,7 +1308,7 @@ BOOL    smtp_check_spool_space = TRUE;
 int     smtp_ch_index          = 0;
 uschar *smtp_cmd_argument      = NULL;
 uschar *smtp_cmd_buffer        = NULL;
-time_t  smtp_connection_start  = 0;
+struct timeval smtp_connection_start  = {0,0};
 uschar  smtp_connection_had[SMTP_HBUFF_SIZE];
 int     smtp_connect_backlog   = 20;
 double  smtp_delay_mail        = 0.0;

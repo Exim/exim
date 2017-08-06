@@ -820,7 +820,7 @@ extern BOOL    smtp_check_spool_space; /* TRUE to check SMTP SIZE value */
 extern int     smtp_ch_index;          /* Index in smtp_connection_had */
 extern uschar *smtp_cmd_argument;      /* For all SMTP commands */
 extern uschar *smtp_cmd_buffer;        /* SMTP command buffer */
-extern time_t  smtp_connection_start;  /* Start time of SMTP connection */
+extern struct timeval smtp_connection_start; /* Start time of SMTP connection */
 extern uschar  smtp_connection_had[];  /* Recent SMTP commands */
 extern int     smtp_connect_backlog;   /* Max backlog permitted */
 extern double  smtp_delay_mail;        /* Current MAIL delay */

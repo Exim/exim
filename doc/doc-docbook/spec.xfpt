@@ -36118,7 +36118,7 @@ selection marked by asterisks:
 &` incoming_interface         `&  local interface on <= and => lines
 &` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
-&` millisec                   `&  millisecond timestamps and QT/DT times
+&` millisec                   `&  millisecond timestamps and QT,DT,D times
 &` outgoing_interface         `&  local interface on => lines
 &` outgoing_port              `&  add remote port to => lines
 &`*queue_run                  `&  start and end queue runs

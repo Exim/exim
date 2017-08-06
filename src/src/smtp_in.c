@@ -1797,9 +1797,7 @@ for (i = 0; i < smtp_ch_index; i++)
 
 if (s) s[ptr] = 0; else s = US"";
 log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
-  host_and_ident(FALSE),
-  readconf_printtime( (int) ((long)time(NULL) - (long)smtp_connection_start)),
-  s);
+  host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
 }
 
 
@@ -2353,7 +2351,7 @@ uschar *user_msg, *log_msg;
 uschar *code, *esc;
 uschar *p, *s, *ss;
 
-smtp_connection_start = time(NULL);
+gettimeofday(&smtp_connection_start, NULL);
 for (smtp_ch_index = 0; smtp_ch_index < SMTP_HBUFF_SIZE; smtp_ch_index++)
   smtp_connection_had[smtp_ch_index] = SCH_NONE;
 smtp_ch_index = 0;

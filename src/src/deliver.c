@@ -1058,7 +1058,7 @@ return buf;
 }
 
 
-static uschar *
+uschar *
 string_timesince(struct timeval * then)
 {
 struct timeval diff;
