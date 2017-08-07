@@ -17,6 +17,7 @@ are other options living inside this structure which can be set only from
 certain transports. */
 
 optionlist optionlist_transports[] = {
+  /*	name		type					value */
   { "*expand_group",    opt_stringptr|opt_hidden|opt_public,
                  (void *)offsetof(transport_instance, expand_gid) },
   { "*expand_user",     opt_stringptr|opt_hidden|opt_public,

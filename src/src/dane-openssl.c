@@ -84,6 +84,7 @@ typedef int CRYPTO_ONCE;
 #ifndef OPENSSL_NO_ERR
 #define	DANESSL_F_PLACEHOLDER		0		/* FIRST! Value TBD */
 static ERR_STRING_DATA dane_str_functs[] = {
+    /*	error				string */
     {DANESSL_F_PLACEHOLDER,		"DANE library"},	/* FIRST!!! */
     {DANESSL_F_ADD_SKID,		"add_skid"},
     {DANESSL_F_ADD_TLSA,		"DANESSL_add_tlsa"},
@@ -101,6 +102,7 @@ static ERR_STRING_DATA dane_str_functs[] = {
     {0,					NULL}
 };
 static ERR_STRING_DATA dane_str_reasons[] = {
+    /*	error				string */
     {DANESSL_R_BAD_CERT,	"Bad TLSA record certificate"},
     {DANESSL_R_BAD_CERT_PKEY,	"Bad TLSA record certificate public key"},
     {DANESSL_R_BAD_DATA_LENGTH,	"Bad TLSA record digest length"},

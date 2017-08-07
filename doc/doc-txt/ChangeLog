@@ -141,6 +141,9 @@ JH/22 Retire historical build files to an "unsupported" subdir.  These are
 JH/23 DKIM: enforce the DNS pubkey record "h" permitted-hashes optional field,
       if present.  Previously it was ignored.
 
+JH/24 Start using specified-initialisers in C structure init coding.  This is
+      a C99 feature (it's 2017, so now considered safe).
+
 
 Exim version 4.89
 -----------------

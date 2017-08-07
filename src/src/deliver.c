@@ -1233,7 +1233,7 @@ if (LOGGING(queue_time))
 
 if (LOGGING(deliver_time))
   {
-  struct timeval diff = {addr->more_errno, addr->delivery_usec};
+  struct timeval diff = {.tv_sec = addr->more_errno, .tv_usec = addr->delivery_usec};
   s = string_append(s, &size, &ptr, 2, US" DT=", string_timediff(&diff));
   }
 

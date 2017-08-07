@@ -1667,6 +1667,9 @@ Symbolic links to the sources are installed in this directory, which is where
 the actual building takes place. In most cases, Exim can discover the machine
 architecture and operating system for itself, but the defaults can be
 overridden if necessary.
+.cindex compiler requirements
+.cindex compiler version
+A C99-capable compiler will be required for the build.
 
 
 .section "PCRE library" "SECTpcre"

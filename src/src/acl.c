@@ -22,13 +22,14 @@ enum { ACL_ACCEPT, ACL_DEFER, ACL_DENY, ACL_DISCARD, ACL_DROP, ACL_REQUIRE,
 /* ACL verbs */
 
 static uschar *verbs[] = {
-    US"accept",
-    US"defer",
-    US"deny",
-    US"discard",
-    US"drop",
-    US"require",
-    US"warn" };
+    [ACL_ACCEPT] =	US"accept",
+    [ACL_DEFER] =	US"defer",
+    [ACL_DENY] =	US"deny",
+    [ACL_DISCARD] =	US"discard",
+    [ACL_DROP] =	US"drop",
+    [ACL_REQUIRE] =	US"require",
+    [ACL_WARN] =	US"warn"
+};
 
 /* For each verb, the conditions for which "message" or "log_message" are used
 are held as a bitmap. This is to avoid expanding the strings unnecessarily. For
@@ -36,13 +37,13 @@ are held as a bitmap. This is to avoid expanding the strings unnecessarily. For
 the code. */
 
 static int msgcond[] = {
-  (1<<OK) | (1<<FAIL) | (1<<FAIL_DROP),  /* accept */
-  (1<<OK),                               /* defer */
-  (1<<OK),                               /* deny */
-  (1<<OK) | (1<<FAIL) | (1<<FAIL_DROP),  /* discard */
-  (1<<OK),                               /* drop */
-  (1<<FAIL) | (1<<FAIL_DROP),            /* require */
-  (1<<OK)                                /* warn */
+  [ACL_ACCEPT] =	(1<<OK) | (1<<FAIL) | (1<<FAIL_DROP),
+  [ACL_DEFER] =		(1<<OK),
+  [ACL_DENY] =		(1<<OK),
+  [ACL_DISCARD] =	(1<<OK) | (1<<FAIL) | (1<<FAIL_DROP),
+  [ACL_DROP] =		(1<<OK),
+  [ACL_REQUIRE] =	(1<<FAIL) | (1<<FAIL_DROP),
+  [ACL_WARN] =		(1<<OK)
   };
 
 /* ACL condition and modifier codes - keep in step with the table that
@@ -132,213 +133,210 @@ times. */
 } condition_def;
 
 static condition_def conditions[] = {
-  { US"acl",		FALSE, FALSE,	0 },
+  [ACLC_ACL] =			{ US"acl",		FALSE, FALSE,	0 },
 
-  { US"add_header",	TRUE, TRUE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  [ACLC_ADD_HEADER] =		{ US"add_header",	TRUE, TRUE,
+				  (unsigned int)
+				  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+				    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
 #ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				    (1<<ACL_WHERE_PRDR)|
 #endif
-      (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_DKIM)|
-      (1<<ACL_WHERE_NOTSMTP_START)),
+				    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_DKIM)|
+				    (1<<ACL_WHERE_NOTSMTP_START)),
   },
 
-  { US"authenticated",	FALSE, FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_NOTSMTP_START)|
-      (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO),
+  [ACLC_AUTHENTICATED] =	{ US"authenticated",	FALSE, FALSE,
+				  (1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_NOTSMTP_START)|
+				    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO),
   },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  { US"bmi_optin",	TRUE, TRUE,
-    (1<<ACL_WHERE_AUTH)|
-      (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-      (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
+  [ACLC_BMI_OPTIN] =		{ US"bmi_optin",	TRUE, TRUE,
+				  (1<<ACL_WHERE_AUTH)|
+				    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+				    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
 # ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				    (1<<ACL_WHERE_PRDR)|
 # endif
-      (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-      (1<<ACL_WHERE_MAILAUTH)|
-      (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-      (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA)|
-      (1<<ACL_WHERE_NOTSMTP_START),
+				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+				    (1<<ACL_WHERE_MAILAUTH)|
+				    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+				    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA)|
+				    (1<<ACL_WHERE_NOTSMTP_START),
   },
 #endif
-  { US"condition",	TRUE, FALSE,	0 },
-  { US"continue",	TRUE, TRUE,	0 },
+  [ACLC_CONDITION] =		{ US"condition",	TRUE, FALSE,	0 },
+  [ACLC_CONTINUE] =		{ US"continue",	TRUE, TRUE,	0 },
 
   /* Certain types of control are always allowed, so we let it through
   always and check in the control processing itself. */
-  { US"control",	TRUE, TRUE,	0 },
+  [ACLC_CONTROL] =		{ US"control",	TRUE, TRUE,	0 },
 
 #ifdef EXPERIMENTAL_DCC
-  { US"dcc",		TRUE, FALSE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_DATA)|
+  [ACLC_DCC] =			{ US"dcc",		TRUE, FALSE,
+				  (unsigned int)
+				  ~((1<<ACL_WHERE_DATA)|
 # ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				  (1<<ACL_WHERE_PRDR)|
 # endif
-      (1<<ACL_WHERE_NOTSMTP)),
+				  (1<<ACL_WHERE_NOTSMTP)),
   },
 #endif
 #ifdef WITH_CONTENT_SCAN
-  { US"decode",		TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_MIME) },
+  [ACLC_DECODE] =		{ US"decode",		TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_MIME) },
 
 #endif
-  { US"delay",		TRUE, TRUE, (1<<ACL_WHERE_NOTQUIT) },
+  [ACLC_DELAY] =		{ US"delay",		TRUE, TRUE, (1<<ACL_WHERE_NOTQUIT) },
 #ifndef DISABLE_DKIM
-  { US"dkim_signers",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DKIM) },
-  { US"dkim_status",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DKIM) },
+  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DKIM) },
+  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DKIM) },
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  { US"dmarc_status",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DATA) },
+  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DATA) },
 #endif
 
   /* Explicit key lookups can be made in non-smtp ACLs so pass
   always and check in the verify processing itself. */
-  { US"dnslists",	TRUE, FALSE,	0 },
+  [ACLC_DNSLISTS] =		{ US"dnslists",	TRUE, FALSE,	0 },
 
-  { US"domains",	FALSE, FALSE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_RCPT)
-      |(1<<ACL_WHERE_VRFY)
+  [ACLC_DOMAINS] =		{ US"domains",	FALSE, FALSE,
+				  (unsigned int)
+				  ~((1<<ACL_WHERE_RCPT)
+				    |(1<<ACL_WHERE_VRFY)
 #ifndef DISABLE_PRDR
-      |(1<<ACL_WHERE_PRDR)
+				  |(1<<ACL_WHERE_PRDR)
 #endif
       ),
   },
-  { US"encrypted",	FALSE, FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_CONNECT)|
-      (1<<ACL_WHERE_NOTSMTP_START)|
-      (1<<ACL_WHERE_HELO),
+  [ACLC_ENCRYPTED] =		{ US"encrypted",	FALSE, FALSE,
+				  (1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_CONNECT)|
+				    (1<<ACL_WHERE_NOTSMTP_START)|
+				    (1<<ACL_WHERE_HELO),
   },
 
-  { US"endpass",	TRUE, TRUE,	0 },
+  [ACLC_ENDPASS] =		{ US"endpass",	TRUE, TRUE,	0 },
 
-  { US"hosts",		FALSE, FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_NOTSMTP_START),
+  [ACLC_HOSTS] =		{ US"hosts",		FALSE, FALSE,
+				  (1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_NOTSMTP_START),
   },
-  { US"local_parts",	FALSE, FALSE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_RCPT)
-      |(1<<ACL_WHERE_VRFY)
-    #ifndef DISABLE_PRDR
-      |(1<<ACL_WHERE_PRDR)
-    #endif
+  [ACLC_LOCAL_PARTS] =		{ US"local_parts",	FALSE, FALSE,
+				  (unsigned int)
+				  ~((1<<ACL_WHERE_RCPT)
+				    |(1<<ACL_WHERE_VRFY)
+#ifndef DISABLE_PRDR
+				  |(1<<ACL_WHERE_PRDR)
+#endif
       ),
   },
 
-  { US"log_message",	TRUE, TRUE,	0 },
-  { US"log_reject_target", TRUE, TRUE,	0 },
-  { US"logwrite",	TRUE, TRUE,	0 },
+  [ACLC_LOG_MESSAGE] =		{ US"log_message",	TRUE, TRUE,	0 },
+  [ACLC_LOG_REJECT_TARGET] =		{ US"log_reject_target", TRUE, TRUE,	0 },
+  [ACLC_LOGWRITE] =		{ US"logwrite",	TRUE, TRUE,	0 },
 
 #ifdef WITH_CONTENT_SCAN
-  { US"malware",	TRUE, FALSE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_DATA)|
+  [ACLC_MALWARE] =		{ US"malware",	TRUE, FALSE,
+				  (unsigned int)
+				    ~((1<<ACL_WHERE_DATA)|
 # ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				    (1<<ACL_WHERE_PRDR)|
 # endif
-      (1<<ACL_WHERE_NOTSMTP)),
+				    (1<<ACL_WHERE_NOTSMTP)),
   },
 #endif
 
-  { US"message",	TRUE, TRUE,	0 },
+  [ACLC_MESSAGE] =		{ US"message",	TRUE, TRUE,	0 },
 #ifdef WITH_CONTENT_SCAN
-  { US"mime_regex",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_MIME) },
+  [ACLC_MIME_REGEX] =		{ US"mime_regex",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_MIME) },
 #endif
 
-  { US"queue",		TRUE, TRUE,
-    (1<<ACL_WHERE_NOTSMTP)|
+  [ACLC_QUEUE] =		{ US"queue",		TRUE, TRUE,
+				  (1<<ACL_WHERE_NOTSMTP)|
 #ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				  (1<<ACL_WHERE_PRDR)|
 #endif
-      (1<<ACL_WHERE_DATA),
+				  (1<<ACL_WHERE_DATA),
   },
 
-  { US"ratelimit",	TRUE, FALSE,	0 },
-  { US"recipients",	FALSE, FALSE, (unsigned int) ~(1<<ACL_WHERE_RCPT) },
+  [ACLC_RATELIMIT] =		{ US"ratelimit",	TRUE, FALSE,	0 },
+  [ACLC_RECIPIENTS] =		{ US"recipients",	FALSE, FALSE, (unsigned int) ~(1<<ACL_WHERE_RCPT) },
 
 #ifdef WITH_CONTENT_SCAN
-  { US"regex",		TRUE, FALSE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_DATA)|
+  [ACLC_REGEX] =		{ US"regex",		TRUE, FALSE,
+				  (unsigned int)
+				  ~((1<<ACL_WHERE_DATA)|
 # ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				    (1<<ACL_WHERE_PRDR)|
 # endif
-      (1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_MIME)),
+				    (1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_MIME)),
   },
 
 #endif
-  { US"remove_header",	TRUE, TRUE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+  [ACLC_REMOVE_HEADER] =	{ US"remove_header",	TRUE, TRUE,
+				  (unsigned int)
+				  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+				    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
 #ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				    (1<<ACL_WHERE_PRDR)|
 #endif
-      (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_NOTSMTP_START)),
+				    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_NOTSMTP_START)),
   },
-  { US"sender_domains",	FALSE, FALSE,
-    (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-      (1<<ACL_WHERE_HELO)|
-      (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-      (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-      (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
+  [ACLC_SENDER_DOMAINS] =	{ US"sender_domains",	FALSE, FALSE,
+				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
+				    (1<<ACL_WHERE_HELO)|
+				    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
   },
-  { US"senders",	FALSE, FALSE,
-    (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-      (1<<ACL_WHERE_HELO)|
-      (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-      (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-      (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
+  [ACLC_SENDERS] =		{ US"senders",	FALSE, FALSE,
+				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
+				    (1<<ACL_WHERE_HELO)|
+				    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
   },
 
-  { US"set",		TRUE, TRUE,	0 },
+  [ACLC_SET] =			{ US"set",		TRUE, TRUE,	0 },
 
 #ifdef WITH_CONTENT_SCAN
-  { US"spam",		TRUE, FALSE,
-    (unsigned int)
-    ~((1<<ACL_WHERE_DATA)|
+  [ACLC_SPAM] =			{ US"spam",		TRUE, FALSE,
+				  (unsigned int) ~((1<<ACL_WHERE_DATA)|
 # ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				  (1<<ACL_WHERE_PRDR)|
 # endif
-      (1<<ACL_WHERE_NOTSMTP)),
+				  (1<<ACL_WHERE_NOTSMTP)),
   },
 #endif
 #ifdef EXPERIMENTAL_SPF
-  { US"spf",		TRUE, FALSE,
-    (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-      (1<<ACL_WHERE_HELO)|
-      (1<<ACL_WHERE_MAILAUTH)|
-      (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-      (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
-      (1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_NOTSMTP_START),
+  [ACLC_SPF] =			{ US"spf",		TRUE, FALSE,
+				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
+				    (1<<ACL_WHERE_HELO)|
+				    (1<<ACL_WHERE_MAILAUTH)|
+				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
+				    (1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_NOTSMTP_START),
   },
-  { US"spf_guess",	TRUE, FALSE,
-    (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-      (1<<ACL_WHERE_HELO)|
-      (1<<ACL_WHERE_MAILAUTH)|
-      (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-      (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
-      (1<<ACL_WHERE_NOTSMTP)|
-      (1<<ACL_WHERE_NOTSMTP_START),
+  [ACLC_SPF_GEUSS] =		{ US"spf_guess",	TRUE, FALSE,
+				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
+				    (1<<ACL_WHERE_HELO)|
+				    (1<<ACL_WHERE_MAILAUTH)|
+				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
+				    (1<<ACL_WHERE_NOTSMTP)|
+				    (1<<ACL_WHERE_NOTSMTP_START),
   },
 #endif
-  { US"udpsend",	TRUE, TRUE,	0 },
+  [ACLC_UDPSEND] =		{ US"udpsend",		TRUE, TRUE,	0 },
 
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
-  { US"verify",		TRUE, FALSE,
-    0
-  },
+  [ACLC_VERIFY] =		{ US"verify",		TRUE, FALSE, 0 },
 };
 
 
@@ -399,116 +397,142 @@ typedef struct control_def {
 } control_def;
 
 static control_def controls_list[] = {
+  /*	name			has_option	forbids */
+[CONTROL_AUTH_UNADVERTISED] =
   { US"allow_auth_unadvertised", FALSE,
-    (unsigned)
-    ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO))
+				  (unsigned)
+				  ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO))
   },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  { US"bmi_run",                 FALSE, 0 },
+[CONTROL_BMI_RUN] =
+  { US"bmi_run",                 FALSE,		0 },
 #endif
+[CONTROL_CASEFUL_LOCAL_PART] =
   { US"caseful_local_part",      FALSE, (unsigned) ~(1<<ACL_WHERE_RCPT) },
+[CONTROL_CASELOWER_LOCAL_PART] =
   { US"caselower_local_part",    FALSE, (unsigned) ~(1<<ACL_WHERE_RCPT) },
-  { US"cutthrough_delivery",     TRUE, 0 },
-  { US"debug",                   TRUE, 0 },
+[CONTROL_CUTTHROUGH_DELIVERY] =
+  { US"cutthrough_delivery",     TRUE,		0 },
+[CONTROL_DEBUG] =
+  { US"debug",                   TRUE,		0 },
 
 #ifndef DISABLE_DKIM
+[CONTROL_DKIM_VERIFY] =
   { US"dkim_disable_verify",     FALSE,
-    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|
+				  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|
 # ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+				  (1<<ACL_WHERE_PRDR)|
 # endif
-      (1<<ACL_WHERE_NOTSMTP_START)
+				  (1<<ACL_WHERE_NOTSMTP_START)
   },
 #endif
 
 #ifdef EXPERIMENTAL_DMARC
+[CONTROL_DMARC_DISABLE_VERIFY] =
   { US"dmarc_disable_verify",    FALSE,
-    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
+[CONTROL_ENABLE_FORENSIC] =
   { US"dmarc_enable_forensic",   FALSE,
-    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
 #endif
 
+[CONTROL_DSCP] =
   { US"dscp",                    TRUE,
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)|(1<<ACL_WHERE_NOTQUIT)
+	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)|(1<<ACL_WHERE_NOTQUIT)
   },
+[CONTROL_ENFORCE_SYNC] =
   { US"enforce_sync",            FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
 
   /* Pseudo-value for decode errors */
+[CONTROL_ERROR] =
   { US"error",                   FALSE, 0 },
 
+[CONTROL_FAKEDEFER] =
   { US"fakedefer",               TRUE,
-    (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	  (unsigned)
+	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
 #ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+	    (1<<ACL_WHERE_PRDR)|
 #endif
-      (1<<ACL_WHERE_MIME))
+	    (1<<ACL_WHERE_MIME))
   },
+[CONTROL_FAKEREJECT] =
   { US"fakereject",              TRUE,
-    (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	  (unsigned)
+	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
 #ifndef DISABLE_PRDR
-      (1<<ACL_WHERE_PRDR)|
+	  (1<<ACL_WHERE_PRDR)|
 #endif
-      (1<<ACL_WHERE_MIME))
+	  (1<<ACL_WHERE_MIME))
   },
+[CONTROL_FREEZE] =
   { US"freeze",                  TRUE,
-    (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-      // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-      (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
+	  (unsigned)
+	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
+	    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
   },
 
+[CONTROL_NO_CALLOUT_FLUSH] =
   { US"no_callout_flush",        FALSE,
-    (1<<ACL_WHERE_NOTSMTP)| (1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_NOTSMTP)| (1<<ACL_WHERE_NOTSMTP_START)
   },
+[CONTROL_NO_DELAY_FLUSH] =
   { US"no_delay_flush",          FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
   
+[CONTROL_NO_ENFORCE_SYNC] =
   { US"no_enforce_sync",         FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
 #ifdef WITH_CONTENT_SCAN
+[CONTROL_NO_MBOX_UNSPOOL] =
   { US"no_mbox_unspool",         FALSE,
-    (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-      // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-      (1<<ACL_WHERE_MIME))
+	(unsigned)
+	~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+	  (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	  // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
+	  (1<<ACL_WHERE_MIME))
   },
 #endif
+[CONTROL_NO_MULTILINE] =
   { US"no_multiline_responses",  FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
+[CONTROL_NO_PIPELINING] =
   { US"no_pipelining",           FALSE,
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
 
+[CONTROL_QUEUE_ONLY] =
   { US"queue_only",              FALSE,
-    (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-      (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-      // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-      (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
+	  (unsigned)
+	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
+	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
+	    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
   },
+[CONTROL_SUBMISSION] =
   { US"submission",              TRUE,
-    (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA))
+	  (unsigned)
+	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA))
   },
+[CONTROL_SUPPRESS_LOCAL_FIXUPS] =
   { US"suppress_local_fixups",   FALSE,
     (unsigned)
     ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
       (1<<ACL_WHERE_NOTSMTP_START))
   },
 #ifdef SUPPORT_I18N
+[CONTROL_UTF8_DOWNCONVERT] =
   { US"utf8_downconvert",        TRUE, 0 }
 #endif
 };
@@ -532,24 +556,36 @@ further ACL conditions to distinguish ok, unknown, and defer if required, but
 the aim is to make the usual configuration simple. */
 
 static int csa_return_code[] = {
-  OK, OK, OK, OK,
-  FAIL, FAIL, FAIL, FAIL
+  [CSA_UNKNOWN] =	OK,
+  [CSA_OK] =		OK,
+  [CSA_DEFER_SRV] =	OK,
+  [CSA_DEFER_ADDR] =	OK,
+  [CSA_FAIL_EXPLICIT] =	FAIL,
+  [CSA_FAIL_DOMAIN] =	FAIL,
+  [CSA_FAIL_NOADDR] =	FAIL,
+  [CSA_FAIL_MISMATCH] =	FAIL
 };
 
 static uschar *csa_status_string[] = {
-  US"unknown", US"ok", US"defer", US"defer",
-  US"fail", US"fail", US"fail", US"fail"
+  [CSA_UNKNOWN] =	US"unknown",
+  [CSA_OK] =		US"ok",
+  [CSA_DEFER_SRV] =	US"defer",
+  [CSA_DEFER_ADDR] =	US"defer",
+  [CSA_FAIL_EXPLICIT] =	US"fail",
+  [CSA_FAIL_DOMAIN] =	US"fail",
+  [CSA_FAIL_NOADDR] =	US"fail",
+  [CSA_FAIL_MISMATCH] =	US"fail"
 };
 
 static uschar *csa_reason_string[] = {
-  US"unknown",
-  US"ok",
-  US"deferred (SRV lookup failed)",
-  US"deferred (target address lookup failed)",
-  US"failed (explicit authorization required)",
-  US"failed (host name not authorized)",
-  US"failed (no authorized addresses)",
-  US"failed (client address mismatch)"
+  [CSA_UNKNOWN] =	US"unknown",
+  [CSA_OK] =		US"ok",
+  [CSA_DEFER_SRV] =	US"deferred (SRV lookup failed)",
+  [CSA_DEFER_ADDR] =	US"deferred (target address lookup failed)",
+  [CSA_FAIL_EXPLICIT] =	US"failed (explicit authorization required)",
+  [CSA_FAIL_DOMAIN] =	US"failed (host name not authorized)",
+  [CSA_FAIL_NOADDR] =	US"failed (no authorized addresses)",
+  [CSA_FAIL_MISMATCH] =	US"failed (client address mismatch)"
 };
 
 /* Options for the ratelimit condition. Note that there are two variants of
@@ -567,8 +603,15 @@ enum {
   (((var) == RATE_PER_WHAT) ? ((var) = RATE_##new) : ((var) = RATE_PER_CLASH))
 
 static uschar *ratelimit_option_string[] = {
-  US"?", US"!", US"per_addr", US"per_byte", US"per_cmd",
-  US"per_conn", US"per_mail", US"per_rcpt", US"per_rcpt"
+  [RATE_PER_WHAT] =	US"?",
+  [RATE_PER_CLASH] =	US"!",
+  [RATE_PER_ADDR] =	US"per_addr",
+  [RATE_PER_BYTE] =	US"per_byte",
+  [RATE_PER_CMD] =	US"per_cmd",
+  [RATE_PER_CONN] =	US"per_conn",
+  [RATE_PER_MAIL] =	US"per_mail",
+  [RATE_PER_RCPT] =	US"per_rcpt",
+  [RATE_PER_ALLRCPTS] =	US"per_rcpt"
 };
 
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
@@ -1482,6 +1525,7 @@ typedef struct {
   unsigned alt_opt_sep;		/* >0 Non-/ option separator (custom parser) */
   } verify_type_t;
 static verify_type_t verify_type_list[] = {
+    /*	name			value			where	no-opt opt-sep */
     { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	FALSE, 0 },
     { US"certificate",	  	VERIFY_CERT,	 	~0,	TRUE, 0 },
     { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE, 0 },
@@ -1510,6 +1554,7 @@ typedef struct {
   BOOL     timeval;	/* Has a time value */
   } callout_opt_t;
 static callout_opt_t callout_opt_list[] = {
+    /*	name			value			flag		has-opt		has-time */
     { US"defer_ok",   	  CALLOUT_DEFER_OK,	 0,				FALSE, FALSE },
     { US"no_cache",   	  CALLOUT_NOCACHE,	 vopt_callout_no_cache,		FALSE, FALSE },
     { US"random",	  CALLOUT_RANDOM,	 vopt_callout_random,		FALSE, FALSE },

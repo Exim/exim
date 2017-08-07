@@ -25,11 +25,13 @@ builtin_macro_create(const uschar * name)
 {
 printf ("static macro_item p%d = { ", mp_index);
 if (mp_index == 0)
-  printf("NULL,");
+  printf(".next=NULL,");
 else
-  printf("&p%d,", mp_index-1);
+  printf(".next=&p%d,", mp_index-1);
 
-printf(" FALSE, %d, 1, US\"%s\", US\"y\" };\n", Ustrlen(name), CS name);
+printf(" .command_line=FALSE, .namelen=%d, .replen=1,"
+	" .name=US\"%s\", .replacement=US\"y\" };\n",
+	Ustrlen(name), CS name);
 mp_index++;
 }
 

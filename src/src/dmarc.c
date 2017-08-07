@@ -44,6 +44,7 @@ typedef struct dmarc_exim_p {
 } dmarc_exim_p;
 
 static dmarc_exim_p dmarc_policy_description[] = {
+  /* name		value */
   { US"",           DMARC_RECORD_P_UNSPECIFIED },
   { US"none",       DMARC_RECORD_P_NONE },
   { US"quarantine", DMARC_RECORD_P_QUARANTINE },

@@ -5592,7 +5592,7 @@ while (more)
 
     if (!receive_timeout)
       {
-      struct timeval t = { 30*60, 0 };	/* 30 minutes */
+      struct timeval t = { .tv_sec = 30*60, .tv_usec = 0 };	/* 30 minutes */
       fd_set r;
 
       FD_ZERO(&r); FD_SET(0, &r);

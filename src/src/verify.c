@@ -1789,16 +1789,16 @@ while (addr_new)
       transport. */
 
       transport_feedback tf = {
-        NULL,                       /* interface (=> any) */
-        US"smtp",                   /* port */
-        US"smtp",                   /* protocol */
-        NULL,                       /* hosts */
-        US"$smtp_active_hostname",  /* helo_data */
-        FALSE,                      /* hosts_override */
-        FALSE,                      /* hosts_randomize */
-        FALSE,                      /* gethostbyname */
-        TRUE,                       /* qualify_single */
-        FALSE                       /* search_parents */
+        .interface =		NULL,                       /* interface (=> any) */
+        .port =			US"smtp",
+        .protocol =		US"smtp",
+        .hosts =		NULL,
+        .helo_data =		US"$smtp_active_hostname",
+        .hosts_override =	FALSE,
+        .hosts_randomize =	FALSE,
+        .gethostbyname =	FALSE,
+        .qualify_single =	TRUE,
+        .search_parents =	FALSE
         };
 
       /* If verification yielded a remote transport, we want to use that

@@ -139,16 +139,45 @@ typedef struct exim_gnutls_state {
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
-  NULL, NULL, NULL, VERIFY_NONE, -1, -1, FALSE, FALSE, FALSE,
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL,
+  .session =		NULL,
+  .x509_cred =		NULL,
+  .priority_cache =	NULL,
+  .verify_requirement =	VERIFY_NONE,
+  .fd_in =		-1,
+  .fd_out =		-1,
+  .peer_cert_verified =	FALSE,
+  .trigger_sni_changes =FALSE,
+  .have_set_peerdn =	FALSE,
+  .host =		NULL,
+  .peercert =		NULL,
+  .peerdn =		NULL,
+  .ciphersuite =	NULL,
+  .received_sni =	NULL,
+
+  .tls_certificate =	NULL,
+  .tls_privatekey =	NULL,
+  .tls_sni =		NULL,
+  .tls_verify_certificates = NULL,
+  .tls_crl =		NULL,
+  .tls_require_ciphers =NULL,
+
+  .exp_tls_certificate = NULL,
+  .exp_tls_privatekey =	NULL,
+  .exp_tls_verify_certificates = NULL,
+  .exp_tls_crl =	NULL,
+  .exp_tls_require_ciphers = NULL,
+  .exp_tls_ocsp_file =	NULL,
+  .exp_tls_verify_cert_hostnames = NULL,
 #ifndef DISABLE_EVENT
-                                            NULL,
+  .event_action =	NULL,
 #endif
-  NULL,
-  NULL, 0, 0, 0, 0,
+  .tlsp =		NULL,
+
+  .xfer_buffer =	NULL,
+  .xfer_buffer_lwm =	0,
+  .xfer_buffer_hwm =	0,
+  .xfer_eof =		0,
+  .xfer_error =		0,
 };
 
 /* Not only do we have our own APIs which don't pass around state, assuming

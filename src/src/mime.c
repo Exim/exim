@@ -16,6 +16,7 @@ FILE *mime_stream = NULL;
 uschar *mime_current_boundary = NULL;
 
 static mime_header mime_header_list[] = {
+  /*	name			namelen		value */
   { US"content-type:",              13, &mime_content_type },
   { US"content-disposition:",       20, &mime_content_disposition },
   { US"content-transfer-encoding:", 26, &mime_content_transfer_encoding },
@@ -26,6 +27,7 @@ static mime_header mime_header_list[] = {
 static int mime_header_list_size = nelem(mime_header_list);
 
 static mime_parameter mime_parameter_list[] = {
+  /*	name	namelen	 value */
   { US"name=",     5, &mime_filename },
   { US"filename=", 9, &mime_filename },
   { US"charset=",  8, &mime_charset  },

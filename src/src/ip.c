@@ -492,7 +492,7 @@ if (time_left <= 0)
 
 do
   {
-  struct timeval tv = { time_left, 0 };
+  struct timeval tv = { .tv_sec = time_left, .tv_usec = 0 };
   FD_ZERO (&select_inset);
   FD_SET (fd, &select_inset);
 

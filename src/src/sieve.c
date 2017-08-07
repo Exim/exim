@@ -414,7 +414,7 @@ static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item
 {
 const uschar *start;
 struct String to, hname;
-struct String hvalue = {NULL, 0};
+struct String hvalue = {.character = NULL, .length = 0};
 int capacity;
 string_item *new;
 
@@ -3390,7 +3390,7 @@ while (*filter->pc)
             }
           else
             {
-            struct String qp = { NULL, 0 };  /* Keep compiler happy (PH) */
+            struct String qp = { .character = NULL, .length = 0 };  /* Keep compiler happy (PH) */
 
             capacity = 0;
             start = reason.length;

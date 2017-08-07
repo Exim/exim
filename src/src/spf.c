@@ -15,16 +15,17 @@
 
 /* must be kept in numeric order */
 static spf_result_id spf_result_id_list[] = {
-  { US"invalid", 0},
-  { US"neutral", 1 },
-  { US"pass", 2 },
-  { US"fail", 3 },
-  { US"softfail", 4 },
-  { US"none", 5 },
-  { US"err_temp", 6 },  /* Deprecated Apr 2014 */
-  { US"err_perm", 7 },  /* Deprecated Apr 2014 */
-  { US"temperror", 6 }, /* RFC 4408 defined */
-  { US"permerror", 7 }  /* RFC 4408 defined */
+  /* name		value */
+  { US"invalid",	0},
+  { US"neutral",	1 },
+  { US"pass",		2 },
+  { US"fail",		3 },
+  { US"softfail",	4 },
+  { US"none",		5 },
+  { US"err_temp",	6 },  /* Deprecated Apr 2014 */
+  { US"err_perm",	7 },  /* Deprecated Apr 2014 */
+  { US"temperror",	6 }, /* RFC 4408 defined */
+  { US"permerror",	7 }  /* RFC 4408 defined */
 };
 
 SPF_server_t    *spf_server = NULL;

@@ -21,7 +21,7 @@ typedef struct smtp_slot {
 /* An empty slot for initializing (Standard C does not allow constructor
 expressions in assignments except as initializers in declarations). */
 
-static smtp_slot empty_smtp_slot = { 0, NULL };
+static smtp_slot empty_smtp_slot = { .pid = 0, .host_address = NULL };
 
 
 
