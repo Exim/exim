@@ -336,10 +336,10 @@ return relaxed;
 /* -------------------------------------------------------------------------- */
 #define PDKIM_QP_ERROR_DECODE -1
 
-static uschar *
-pdkim_decode_qp_char(uschar *qp_p, int *c)
+static const uschar *
+pdkim_decode_qp_char(const uschar *qp_p, int *c)
 {
-uschar *initial_pos = qp_p;
+const uschar *initial_pos = qp_p;
 
 /* Advance one char */
 qp_p++;
@@ -362,11 +362,11 @@ return initial_pos;
 /* -------------------------------------------------------------------------- */
 
 static uschar *
-pdkim_decode_qp(uschar * str)
+pdkim_decode_qp(const uschar * str)
 {
 int nchar = 0;
 uschar * q;
-uschar * p = str;
+const uschar * p = str;
 uschar * n = store_get(Ustrlen(str)+1);
 
 *n = '\0';
@@ -394,7 +394,7 @@ return n;
 /* -------------------------------------------------------------------------- */
 
 static void
-pdkim_decode_base64(uschar *str, blob * b)
+pdkim_decode_base64(const uschar * str, blob * b)
 {
 int dlen;
 dlen = b64decode(str, &b->data);
@@ -598,84 +598,38 @@ return sig;
 static pdkim_pubkey *
 pdkim_parse_pubkey_record(pdkim_ctx *ctx, const uschar *raw_record)
 {
-pdkim_pubkey *pub;
-const uschar *p;
-uschar * cur_tag = NULL; int ts = 0, tl = 0;
-uschar * cur_val = NULL; int vs = 0, vl = 0;
-int where = PDKIM_HDR_LIMBO;
+const uschar * ele;
+int sep = ';';
+pdkim_pubkey * pub;
 
 pub = store_get(sizeof(pdkim_pubkey));
 memset(pub, 0, sizeof(pdkim_pubkey));
 
-for (p = raw_record; ; p++)
+while ((ele = string_nextinlist(&raw_record, &sep, NULL, 0)))
+  {
+  const uschar * val;
+
+  if ((val = Ustrchr(ele, '=')))
     {
-    uschar c = *p;
+    int taglen = val++ - ele;
 
-    /* Ignore FWS */
-    if (c != '\r' && c != '\n') switch (where)
+    DEBUG(D_acl) debug_printf(" %.*s=%s\n", taglen, ele, val);
+    switch (ele[0])
       {
-      case PDKIM_HDR_LIMBO:		/* In limbo, just wait for a tag-char to appear */
-	if (!(c >= 'a' && c <= 'z'))
-	  break;
-	where = PDKIM_HDR_TAG;
-	/*FALLTHROUGH*/
-
-      case PDKIM_HDR_TAG:
-	if (c >= 'a' && c <= 'z')
-	  cur_tag = string_catn(cur_tag, &ts, &tl, p, 1);
-
-	if (c == '=')
-	  {
-	  cur_tag[tl] = '\0';
-	  where = PDKIM_HDR_VALUE;
-	  }
-	break;
-
-      case PDKIM_HDR_VALUE:
-	if (c == ';' || c == '\0')
-	  {
-	  if (tl && vl)
-	    {
-	    cur_val[vl] = '\0';
-	    pdkim_strtrim(cur_val);
-	    DEBUG(D_acl) debug_printf(" %s=%s\n", cur_tag, cur_val);
-
-	    switch (cur_tag[0])
-	      {
-	      case 'v':
-		pub->version = string_copy(cur_val); break;
-	      case 'h':
-		pub->hashes = string_copy(cur_val); break;
-	      case 'k':
+      case 'v': pub->version = val;			break;
+      case 'h': pub->hashes = val;			break;
+      case 'k': break;
+      case 'g': pub->granularity = val;			break;
+      case 'n': pub->notes = pdkim_decode_qp(val);	break;
+      case 'p': pdkim_decode_base64(val, &pub->key);	break;
+      case 's': pub->srvtype = val;			break;
+      case 't': if (Ustrchr(val, 'y')) pub->testing = 1;
+		if (Ustrchr(val, 's')) pub->no_subdomaining = 1;
 		break;
-	      case 'g':
-		pub->granularity = string_copy(cur_val); break;
-	      case 'n':
-		pub->notes = pdkim_decode_qp(cur_val); break;
-	      case 'p':
-		pdkim_decode_base64(US cur_val, &pub->key); break;
-	      case 's':
-		pub->srvtype = string_copy(cur_val); break;
-	      case 't':
-		if (Ustrchr(cur_val, 'y') != NULL) pub->testing = 1;
-		if (Ustrchr(cur_val, 's') != NULL) pub->no_subdomaining = 1;
-		break;
-	      default:
-		DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
-		break;
-	      }
-	    }
-	  tl = 0;
-	  vl = 0;
-	  where = PDKIM_HDR_LIMBO;
-	  }
-	else
-	  cur_val = string_catn(cur_val, &vs, &vl, p, 1);
-	break;
+      default:  DEBUG(D_acl) debug_printf(" Unknown tag encountered\n"); break;
       }
-
-    if (c == '\0') break;
     }
+  }
 
 /* Set fallback defaults */
 if (!pub->version    ) pub->version     = string_copy(PDKIM_PUB_RECORD_VERSION);
@@ -685,11 +639,11 @@ else if (Ustrcmp(pub->version, PDKIM_PUB_RECORD_VERSION) != 0)
   return NULL;
   }
 
-if (!pub->granularity) pub->granularity = string_copy(US"*");
+if (!pub->granularity) pub->granularity = US"*";
 /*
-if (!pub->keytype    ) pub->keytype     = string_copy(US"rsa");
+if (!pub->keytype    ) pub->keytype     = US"rsa";
 */
-if (!pub->srvtype    ) pub->srvtype     = string_copy(US"*");
+if (!pub->srvtype    ) pub->srvtype     = US"*";
 
 /* p= is required */
 if (pub->key.data)

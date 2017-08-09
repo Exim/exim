@@ -104,7 +104,7 @@ extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
 extern uschar *b64encode(uschar *, int);
-extern int     b64decode(uschar *, uschar **);
+extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);
 extern int     bdat_ungetc(int);

@@ -98,14 +98,14 @@ typedef struct sha2_context sha2_context;
 /* -------------------------------------------------------------------------- */
 /* Public key as (usually) fetched from DNS */
 typedef struct pdkim_pubkey {
-  uschar *version;                /* v=  */
-  uschar *granularity;            /* g=  */
+  const uschar * version;         /* v=  */
+  const uschar *granularity;      /* g=  */
 
-  uschar *hashes;                 /* h=  */
+  const uschar * hashes;          /* h=  */
 #ifdef notdef
   uschar *keytype;                /* k=  */
 #endif
-  uschar *srvtype;                /* s=  */
+  const uschar *srvtype;          /* s=  */
   uschar *notes;                  /* n=  */
 
   blob  key;                      /* p=  */
