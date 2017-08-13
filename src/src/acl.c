@@ -322,7 +322,7 @@ static condition_def conditions[] = {
 				    (1<<ACL_WHERE_NOTSMTP)|
 				    (1<<ACL_WHERE_NOTSMTP_START),
   },
-  [ACLC_SPF_GEUSS] =		{ US"spf_guess",	TRUE, FALSE,
+  [ACLC_SPF_GUESS] =		{ US"spf_guess",	TRUE, FALSE,
 				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
 				    (1<<ACL_WHERE_HELO)|
 				    (1<<ACL_WHERE_MAILAUTH)|
