@@ -339,8 +339,10 @@ int fd, rc;
 fd_set fds;
 struct timeval tzero;
 
+#ifdef SUPPORT_TLS
 if (tls_in.active >= 0)
  return !tls_could_read();
+#endif
 
 if (smtp_inptr < smtp_inend)
   return FALSE;
