@@ -28,7 +28,7 @@ JH/07 Fix smtp transport use of limited max_rcpt under mua_wrapper. Previously
 JH/19 Bug 2141: Use the full-complex API for Berkeley DB rather than the legacy-
       compatible one, to avoid the (poorly documented) possibility of a config
       file in the working directory redirecting the DB files, possibly correpting
-      some existing file.
+      some existing file.  CVE-2017-10140 assigned for BDB.
 
 JH/20 Bug 2147: Do not defer for a verify-with-callout-and-random which is not
       cache-hot.  Previously, although the result was properly cached, the
