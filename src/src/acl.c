@@ -428,11 +428,11 @@ static control_def controls_list[] = {
 #endif
 
 #ifdef EXPERIMENTAL_DMARC
-[CONTROL_DMARC_DISABLE_VERIFY] =
+[CONTROL_DMARC_VERIFY] =
   { US"dmarc_disable_verify",    FALSE,
 	  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
-[CONTROL_ENABLE_FORENSIC] =
+[CONTROL_DMARC_FORENSIC] =
   { US"dmarc_enable_forensic",   FALSE,
 	  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
   },
