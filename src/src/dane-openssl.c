@@ -253,12 +253,12 @@ for (matched = 0; !matched && slist; slist = slist->next)
     {
     case DANESSL_SELECTOR_CERT:
       len = i2d_X509(cert, NULL);
-      buf2 = buf = (unsigned char *) OPENSSL_malloc(len);
+      buf2 = buf = US  OPENSSL_malloc(len);
       if(buf) i2d_X509(cert, &buf2);
       break;
     case DANESSL_SELECTOR_SPKI:
       len = i2d_X509_PUBKEY(X509_get_X509_PUBKEY(cert), NULL);
-      buf2 = buf = (unsigned char *) OPENSSL_malloc(len);
+      buf2 = buf = US  OPENSSL_malloc(len);
       if(buf) i2d_X509_PUBKEY(X509_get_X509_PUBKEY(cert), &buf2);
       break;
     }
@@ -824,7 +824,7 @@ if (gn->type != GEN_DNS)
   return 0;
 if (ASN1_STRING_type(gn->d.ia5) != V_ASN1_IA5STRING)
   return 0;
-return check_name((const char *) ASN1_STRING_get0_data(gn->d.ia5),
+return check_name(CCS  ASN1_STRING_get0_data(gn->d.ia5),
 		  ASN1_STRING_length(gn->d.ia5));
 }
 
@@ -848,12 +848,12 @@ if (!(entry_str = X509_NAME_ENTRY_get_data(entry)))
 
 if ((len = ASN1_STRING_to_UTF8(&namebuf, entry_str)) < 0)
   return 0;
-if (len <= 0 || check_name((char *) namebuf, len) == 0)
+if (len <= 0 || check_name(CS  namebuf, len) == 0)
   {
   OPENSSL_free(namebuf);
   return 0;
   }
-return (char *) namebuf;
+return CS  namebuf;
 }
 
 static int

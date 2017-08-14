@@ -393,7 +393,7 @@ fprintf(f, "VERSION\t%d\t%d\r\nSERVICE\tSMTP\r\nCPID\t%d\r\n"
        "AUTH\t%d\t%s\trip=%s\tlip=%s\tresp=%s\r\n",
        VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
        ablock->public_name, sender_host_address, interface_address,
-       data ? (char *) data : "");
+       data ? CS  data : "");
 
 Subsequently, the command was modified to add "secured" and "valid-client-
 cert" when relevant.

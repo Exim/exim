@@ -28,7 +28,7 @@ uschar *
 auth_xtextencode(uschar *clear, int len)
 {
 uschar *code;
-uschar *p = (uschar *)clear;
+uschar *p = US clear;
 uschar *pp;
 int c = len;
 int count = 1;
@@ -42,7 +42,7 @@ while (c -- > 0)
 
 pp = code = store_get(count);
 
-p = (uschar *)clear;
+p = US clear;
 c = len;
 while (c-- > 0)
   if ((x = *p++) < 33 || x > 127 || x == '+' || x == '=')

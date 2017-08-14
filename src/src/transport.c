@@ -2051,7 +2051,7 @@ while (*s != 0 && argcount < max_args)
   while (isspace(*s)) s++;
   }
 
-argv[argcount] = (uschar *)0;
+argv[argcount] = US 0;
 
 /* If *s != 0 we have run out of argument slots. */
 
@@ -2087,7 +2087,7 @@ $recipients. */
 DEBUG(D_transport)
   {
   debug_printf("direct command:\n");
-  for (i = 0; argv[i] != (uschar *)0; i++)
+  for (i = 0; argv[i] != US 0; i++)
     debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
   }
 
@@ -2097,7 +2097,7 @@ if (expand_arguments)
     addr->parent != NULL &&
     Ustrcmp(addr->parent->address, "system-filter") == 0;
 
-  for (i = 0; argv[i] != (uschar *)0; i++)
+  for (i = 0; argv[i] != US 0; i++)
     {
 
     /* Handle special fudge for passing an address list */
@@ -2181,7 +2181,7 @@ if (expand_arguments)
         while (isspace(*s)) s++; /* strip space after arg */
         }
 
-      address_pipe_argv[address_pipe_argcount] = (uschar *)0;
+      address_pipe_argv[address_pipe_argcount] = US 0;
 
       /* If *s != 0 we have run out of argument slots. */
       if (*s != 0)
@@ -2229,7 +2229,7 @@ if (expand_arguments)
        * [argv 0][argv 1][argv 2=pipeargv[0]][argv 3=pipeargv[1]][old argv 3][0]
        */
       for (address_pipe_i = 0;
-           address_pipe_argv[address_pipe_i] != (uschar *)0;
+           address_pipe_argv[address_pipe_i] != US 0;
            address_pipe_i++)
         {
         argv[i++] = address_pipe_argv[address_pipe_i];
@@ -2270,7 +2270,7 @@ if (expand_arguments)
   DEBUG(D_transport)
     {
     debug_printf("direct command after expansion:\n");
-    for (i = 0; argv[i] != (uschar *)0; i++)
+    for (i = 0; argv[i] != US 0; i++)
       debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
     }
   }

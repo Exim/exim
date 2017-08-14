@@ -630,7 +630,7 @@ if (h || message_id)
     parse_allow_group = FALSE;
     while (*s != 0 && (s = parse_message_id(s, &id, &error)) != NULL)
       {
-      if (reference_count == sizeof(referenced_ids)/sizeof(uschar *))
+      if (reference_count == nelem(referenced_ids))
         {
         memmove(referenced_ids + 1, referenced_ids + 2,
            sizeof(referenced_ids) - 2*sizeof(uschar *));

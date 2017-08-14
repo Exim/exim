@@ -3055,7 +3055,7 @@ else
       {
       const uschar *s = string_printing(sx.buffer);
       /* deconst cast ok here as string_printing was checked to have alloc'n'copied */
-      conf = (s == sx.buffer)? (uschar *)string_copy(s) : US s;
+      conf = (s == sx.buffer)? US string_copy(s) : US s;
       }
 
     /* Process all transported addresses - for LMTP or PRDR, read a status for

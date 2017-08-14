@@ -1499,9 +1499,9 @@ if (!RAND_status())
   gettimeofday(&r.tv, NULL);
   r.p = getpid();
 
-  RAND_seed((uschar *)(&r), sizeof(r));
-  RAND_seed((uschar *)big_buffer, big_buffer_size);
-  if (addr != NULL) RAND_seed((uschar *)addr, sizeof(addr));
+  RAND_seed(US (&r), sizeof(r));
+  RAND_seed(US big_buffer, big_buffer_size);
+  if (addr != NULL) RAND_seed(US addr, sizeof(addr));
 
   if (!RAND_status())
     return tls_error(US"RAND_status", host,
@@ -2819,7 +2819,7 @@ if (!RAND_status())
   gettimeofday(&r.tv, NULL);
   r.p = getpid();
 
-  RAND_seed((uschar *)(&r), sizeof(r));
+  RAND_seed(US (&r), sizeof(r));
   }
 /* We're after pseudo-random, not random; if we still don't have enough data
 in the internal PRNG then our options are limited.  We could sleep and hope

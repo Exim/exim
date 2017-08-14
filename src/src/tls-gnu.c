@@ -1680,7 +1680,7 @@ int ret;
 if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
   {
   DEBUG(D_tls) debug_printf("Failed to load ocsp stapling file %s\n",
-			      (char *)ptr);
+			      CS ptr);
   tls_in.ocsp = OCSP_NOT_RESP;
   return GNUTLS_E_NO_CERTIFICATE_STATUS;
   }

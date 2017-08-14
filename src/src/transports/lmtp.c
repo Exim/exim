@@ -675,7 +675,7 @@ if (send_data)
         {
         const uschar *s = string_printing(buffer);
 	/* de-const safe here as string_printing known to have alloc'n'copied */
-        addr->message = (s == buffer)? (uschar *)string_copy(s) : US s;
+        addr->message = (s == buffer)? US string_copy(s) : US s;
         }
       }
     /* If the response has failed badly, use it for all the remaining pending

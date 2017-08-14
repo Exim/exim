@@ -157,7 +157,7 @@ auth_gsasl_init(auth_instance *ablock)
               ablock->name,  gsasl_strerror_name(rc), gsasl_strerror(rc));
   HDEBUG(D_auth) debug_printf("GNU SASL supports: %s\n", p);
 
-  supported = gsasl_client_support_p(gsasl_ctx, (const char *)ob->server_mech);
+  supported = gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech);
   if (!supported)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
               "GNU SASL does not support mechanism \"%s\"",
@@ -258,7 +258,7 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
     debug_printf("GNU SASL: initialising session for %s, mechanism %s.\n",
         ablock->name, ob->server_mech);
 
-  rc = gsasl_server_start(gsasl_ctx, (const char *)ob->server_mech, &sctx);
+  rc = gsasl_server_start(gsasl_ctx, CCS ob->server_mech, &sctx);
   if (rc != GSASL_OK) {
     auth_defer_msg = string_sprintf("GNU SASL: session start failure: %s (%s)",
         gsasl_strerror_name(rc), gsasl_strerror(rc));
@@ -308,7 +308,7 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
       HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
           ablock->name);
       gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE,
-          (const char *) tls_channelbinding_b64);
+          CCS  tls_channelbinding_b64);
     } else {
       HDEBUG(D_auth)
         debug_printf("Auth %s: Not enabling channel-binding (data available)\n",
@@ -369,7 +369,7 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
     if ((rc == GSASL_NEEDS_MORE) ||
         (to_send && *to_send))
       exim_error =
-        auth_get_no64_data((uschar **)&received, (uschar *)to_send);
+        auth_get_no64_data((uschar **)&received, US to_send);
 
     if (to_send) {
       free(to_send);
@@ -449,11 +449,11 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
   switch (prop) {
     case GSASL_VALIDATE_SIMPLE:
       /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHID);
+      propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
+      propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_PASSWORD);
+      propval = US  gsasl_property_fast(sctx, GSASL_PASSWORD);
       auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
       expand_nmax = 3;
       for (i = 1; i <= 3; ++i)
@@ -469,7 +469,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
         cbrc = GSASL_AUTHENTICATION_ERROR;
         break;
       }
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
+      propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
       /* We always set $auth1, even if only to empty string. */
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
       expand_nlength[1] = Ustrlen(expand_nstring[1]);
@@ -486,7 +486,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
         cbrc = GSASL_AUTHENTICATION_ERROR;
         break;
       }
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
+      propval = US  gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
       /* We always set $auth1, even if only to empty string. */
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
       expand_nlength[1] = Ustrlen(expand_nstring[1]);
@@ -507,9 +507,9 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
       First coding, we had these values swapped, but for consistency and prior
       to the first release of Exim with this authenticator, they've been
       switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
+      propval = US  gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
+      propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
       expand_nmax = 2;
       for (i = 1; i <= 2; ++i)
@@ -542,11 +542,11 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
       a new mechanism is added to the library.  It *shouldn't* result in us
       needing to add more glue, since avoiding that is a large part of the
       point of SASL. */
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHID);
+      propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
+      propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_fast(sctx, GSASL_REALM);
+      propval = US  gsasl_property_fast(sctx, GSASL_REALM);
       auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
       expand_nmax = 3;
       for (i = 1; i <= 3; ++i)

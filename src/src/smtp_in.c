@@ -2420,7 +2420,7 @@ else
 /* Set up the buffer for inputting using direct read() calls, and arrange to
 call the local functions instead of the standard C ones. */
 
-if (!(smtp_inbuffer = (uschar *)malloc(IN_BUFFER_SIZE)))
+if (!(smtp_inbuffer = US malloc(IN_BUFFER_SIZE)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
 
 receive_getc = smtp_getc;
@@ -2526,7 +2526,7 @@ if (!sender_host_unknown)
 
     DEBUG(D_receive) debug_printf("checking for IP options\n");
 
-    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, (uschar *)(ipopt),
+    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US (ipopt),
           &optlen) < 0)
       {
       if (errno != ENOPROTOOPT)
@@ -2552,11 +2552,11 @@ if (!sender_host_unknown)
       struct in_addr addr;
 
       #if OPTSTYLE == 1
-      uschar *optstart = (uschar *)(ipopt->__data);
+      uschar *optstart = US (ipopt->__data);
       #elif OPTSTYLE == 2
-      uschar *optstart = (uschar *)(ipopt->ip_opts);
+      uschar *optstart = US (ipopt->ip_opts);
       #else
-      uschar *optstart = (uschar *)(ipopt->ipopt_list);
+      uschar *optstart = US (ipopt->ipopt_list);
       #endif
 
       DEBUG(D_receive) debug_printf("IP options exist\n");
@@ -2565,7 +2565,7 @@ if (!sender_host_unknown)
       p += Ustrlen(p);
 
       for (opt = optstart; opt != NULL &&
-           opt < (uschar *)(ipopt) + optlen;)
+           opt < US (ipopt) + optlen;)
         {
         switch (*opt)
           {

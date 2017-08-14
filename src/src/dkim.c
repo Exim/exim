@@ -48,7 +48,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       uschar len = rr->data[rr_offset++];
       snprintf(answer + answer_offset,
 		PDKIM_DNS_TXT_MAX_RECLEN - answer_offset,
-		"%.*s", (int)len, (char *) (rr->data + rr_offset));
+		"%.*s", (int)len, CS  (rr->data + rr_offset));
       rr_offset += len;
       answer_offset += len;
       if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN)

@@ -281,12 +281,8 @@ if (LOG != NULL)
     if (strstric(buffer, US"frozen", FALSE) != NULL)
       {
       queue_item *qq = find_queue(id, queue_noop, 0);
-      if (qq != NULL)
-        {
-        if (strstric(buffer, US"unfrozen", FALSE) != NULL)
-          qq->frozen = FALSE;
-        else qq->frozen = TRUE;
-        }
+      if (qq)
+        qq->frozen = strstric(buffer, US"unfrozen", FALSE) == NULL;
       }
 
     /* Notice defer messages, and add the destination if it

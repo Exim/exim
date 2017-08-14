@@ -919,21 +919,21 @@ if (type < 0)
   if (family == AF_INET6)
     {
     struct sockaddr_in6 *sk = (struct sockaddr_in6 *)arg;
-    yield = (uschar *)inet_ntop(family, &(sk->sin6_addr), CS addr_buffer,
+    yield = US inet_ntop(family, &(sk->sin6_addr), CS addr_buffer,
       sizeof(addr_buffer));
     if (portptr != NULL) *portptr = ntohs(sk->sin6_port);
     }
   else
     {
     struct sockaddr_in *sk = (struct sockaddr_in *)arg;
-    yield = (uschar *)inet_ntop(family, &(sk->sin_addr), CS addr_buffer,
+    yield = US inet_ntop(family, &(sk->sin_addr), CS addr_buffer,
       sizeof(addr_buffer));
     if (portptr != NULL) *portptr = ntohs(sk->sin_port);
     }
   }
 else
   {
-  yield = (uschar *)inet_ntop(type, arg, CS addr_buffer, sizeof(addr_buffer));
+  yield = US inet_ntop(type, arg, CS addr_buffer, sizeof(addr_buffer));
   }
 
 /* If the result is a mapped IPv4 address, show it in V4 format. */
@@ -1584,7 +1584,7 @@ if (hosts->h_name == NULL || hosts->h_name[0] == 0 || hosts->h_name[0] == '.')
 /* Copy and lowercase the name, which is in static storage in many systems.
 Put it in permanent memory. */
 
-s = (uschar *)hosts->h_name;
+s = US hosts->h_name;
 len = Ustrlen(s) + 1;
 t = sender_host_name = store_get_perm(len);
 while (*s != 0) *t++ = tolower(*s++);
@@ -1739,7 +1739,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
         truncated and dn_expand may fail. */
 
         if (dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen,
-             (uschar *)(rr->data), (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
+             US (rr->data), (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
           {
           log_write(0, LOG_MAIN, "host name alias list truncated for %s",
             sender_host_address);
@@ -2096,7 +2096,7 @@ for (i = 1; i <= times;
 
   if (hostdata->h_name[0] != 0 &&
       Ustrcmp(host->name, hostdata->h_name) != 0)
-    host->name = string_copy_dnsdomain((uschar *)hostdata->h_name);
+    host->name = string_copy_dnsdomain(US hostdata->h_name);
   if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
 
   /* Get the list of addresses. IPv4 and IPv6 addresses can be distinguished

@@ -6655,19 +6655,19 @@ while (*s != 0)
 	    char * cp;
 	    char tok[3];
 	    tok[0] = sep; tok[1] = ':'; tok[2] = 0;
-	    while ((cp= strpbrk((const char *)item, tok)))
+	    while ((cp= strpbrk(CCS item, tok)))
 	      {
-              yield = string_catn(yield, &size, &ptr, item, cp-(char *)item);
+              yield = string_catn(yield, &size, &ptr, item, cp-CS item);
 	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
 	        {
                 yield = string_catn(yield, &size, &ptr, US"::", 2);
-	        item = (uschar *)cp;
+	        item = US cp;
 		}
 	      else		/* sep in item; should already be doubled; emit once */
 	        {
-                yield = string_catn(yield, &size, &ptr, (uschar *)tok, 1);
+                yield = string_catn(yield, &size, &ptr, US tok, 1);
 		if (*cp == sep) cp++;
-	        item = (uschar *)cp;
+	        item = US cp;
 		}
 	      }
 	    }

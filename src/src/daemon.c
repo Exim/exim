@@ -1411,7 +1411,7 @@ if (daemon_listen && !inetd_wait_mode)
 
 #ifdef IPV6_V6ONLY
     if (af == AF_INET6 && wildcard &&
-        setsockopt(listen_sockets[sk], IPPROTO_IPV6, IPV6_V6ONLY, (char *)(&on),
+        setsockopt(listen_sockets[sk], IPPROTO_IPV6, IPV6_V6ONLY, CS (&on),
           sizeof(on)) < 0)
       log_write(0, LOG_MAIN, "Setting IPV6_V6ONLY on daemon's IPv6 wildcard "
         "socket failed (%s): carrying on without it", strerror(errno));
@@ -1422,7 +1422,7 @@ if (daemon_listen && !inetd_wait_mode)
     smtp port for listening. */
 
     if (setsockopt(listen_sockets[sk], SOL_SOCKET, SO_REUSEADDR,
-                   (uschar *)(&on), sizeof(on)) < 0)
+                   US (&on), sizeof(on)) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "setting SO_REUSEADDR on socket "
         "failed when starting daemon: %s", strerror(errno));
 
@@ -1430,7 +1430,7 @@ if (daemon_listen && !inetd_wait_mode)
     disable this because it breaks some broken clients. */
 
     if (tcp_nodelay) setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_NODELAY,
-      (uschar *)(&on), sizeof(on));
+      US (&on), sizeof(on));
 
     /* Now bind the socket to the required port; if Exim is being restarted
     it may not always be possible to bind immediately, even with SO_REUSEADDR

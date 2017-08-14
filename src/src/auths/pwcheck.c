@@ -113,7 +113,7 @@ return PWCHECK_FAIL;
      s = socket(AF_UNIX, SOCK_STREAM, 0);
      if (s == -1) { return PWCHECK_FAIL; }
 
-     memset((char *)&srvaddr, 0, sizeof(srvaddr));
+     memset(CS &srvaddr, 0, sizeof(srvaddr));
      srvaddr.sun_family = AF_UNIX;
      strncpy(srvaddr.sun_path, CYRUS_PWCHECK_SOCKET, sizeof(srvaddr.sun_path));
      r = connect(s, (struct sockaddr *)&srvaddr, sizeof(srvaddr));
@@ -124,9 +124,9 @@ return PWCHECK_FAIL;
        return PWCHECK_FAIL;
      }
 
-     iov[0].iov_base = (char *)userid;
+     iov[0].iov_base = CS userid;
      iov[0].iov_len = strlen(userid)+1;
-     iov[1].iov_base = (char *)passwd;
+     iov[1].iov_base = CS passwd;
      iov[1].iov_len = strlen(passwd)+1;
 
      retry_writev(s, iov, 2);
@@ -200,7 +200,7 @@ int saslauthd_verify_password(const uschar *userid,
        return PWCHECK_FAIL;
     }
 
-    memset((char *)&srvaddr, 0, sizeof(srvaddr));
+    memset(CS &srvaddr, 0, sizeof(srvaddr));
     srvaddr.sun_family = AF_UNIX;
     strncpy(srvaddr.sun_path, CYRUS_SASLAUTHD_SOCKET,
             sizeof(srvaddr.sun_path));
@@ -343,7 +343,7 @@ static int retry_read(int fd, void *inbuf, unsigned nbyte)
 {
     int n;
     int nread = 0;
-    char *buf = (char *)inbuf;
+    char *buf = CS inbuf;
 
     if (nbyte == 0) return 0;
 
@@ -432,7 +432,7 @@ retry_writev (
 
        for (i = 0; i < iovcnt; i++) {
            if (iov[i].iov_len > (unsigned) n) {
-               iov[i].iov_base = (char *)iov[i].iov_base + n;
+               iov[i].iov_base = CS iov[i].iov_base + n;
                iov[i].iov_len -= n;
                break;
            }

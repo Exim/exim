@@ -776,7 +776,7 @@ int main(void)
 sha1 base;
 int j;
 int i = 0x01020304;
-uschar *ctest = (uschar *)(&i);
+uschar *ctest = US (&i);
 uschar buffer[256];
 uschar digest[20];
 uschar s[41];

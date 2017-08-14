@@ -103,10 +103,10 @@ int spf_process(const uschar **listptr, uschar *spf_envelope_sender, int action)
     SPF_request_query_mailfrom(spf_request, &spf_response);
 
   /* set up expansion items */
-  spf_header_comment     = (uschar *)SPF_response_get_header_comment(spf_response);
-  spf_received           = (uschar *)SPF_response_get_received_spf(spf_response);
-  spf_result             = (uschar *)SPF_strresult(SPF_response_result(spf_response));
-  spf_smtp_comment       = (uschar *)SPF_response_get_smtp_comment(spf_response);
+  spf_header_comment     = US SPF_response_get_header_comment(spf_response);
+  spf_received           = US SPF_response_get_received_spf(spf_response);
+  spf_result             = US SPF_strresult(SPF_response_result(spf_response));
+  spf_smtp_comment       = US SPF_response_get_smtp_comment(spf_response);
 
   rc = SPF_response_result(spf_response);
 

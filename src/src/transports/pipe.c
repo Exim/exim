@@ -527,7 +527,7 @@ if (expand_arguments)
   }
 else argv[2] = cmd;
 
-argv[3] = (uschar *)0;
+argv[3] = US 0;
 return TRUE;
 }
 
@@ -696,10 +696,9 @@ if (envlist)
     }
   }
 
-while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size))
-       != NULL)
+while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size)))
    {
-   if (envcount > sizeof(envp)/sizeof(uschar *) - 2)
+   if (envcount > nelem(envp) - 2)
      {
      addr->transport_return = DEFER;
      addr->message = string_sprintf("too many environment settings for "

@@ -83,8 +83,8 @@ int main (int argc, char ** argv)
 
        challenge_str = argv [3];
 
-       if (spa_base64_to_bits ((char *)&challenge, sizeof(challenge),
-                (const char *)(challenge_str))<0)
+       if (spa_base64_to_bits (CS &challenge, sizeof(challenge),
+                CCS (challenge_str))<0)
        {
                 printf("bad base64 data in challenge: %s\n", challenge_str);
                 exit (1);
@@ -229,10 +229,10 @@ extern int DEBUGLEVEL;
 */
 
 /* get single value from an SMB buffer */
-#  define SVAL(buf,pos) (*(uint16x *)((char *)(buf) + (pos)))
-#  define IVAL(buf,pos) (*(uint32x *)((char *)(buf) + (pos)))
-#  define SVALS(buf,pos) (*(int16x *)((char *)(buf) + (pos)))
-#  define IVALS(buf,pos) (*(int32x *)((char *)(buf) + (pos)))
+#  define SVAL(buf,pos) (*(uint16x *)(CS (buf) + (pos)))
+#  define IVAL(buf,pos) (*(uint32x *)(CS (buf) + (pos)))
+#  define SVALS(buf,pos) (*(int16x *)(CS (buf) + (pos)))
+#  define IVALS(buf,pos) (*(int32x *)(CS (buf) + (pos)))
 
 /* store single value in an SMB buffer */
 #  define SSVAL(buf,pos,val) SVAL(buf,pos)=((uint16x)(val))
@@ -856,18 +856,18 @@ spa_smb_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 
   memset (p21, '\0', 21);
   memset (p14, '\0', 14);
-  StrnCpy ((char *) p14, (char *) passwd, 14);
+  StrnCpy (CS  p14, CS  passwd, 14);
 
-  strupper ((char *) p14);
+  strupper (CS  p14);
   E_P16 (p14, p21);
 
   SMBOWFencrypt (p21, c8, p24);
 
 #ifdef DEBUG_PASSWORD
   DEBUG_X (100, ("spa_smb_encrypt: lm#, challenge, response\n"));
-  dump_data (100, (char *) p21, 16);
-  dump_data (100, (char *) c8, 8);
-  dump_data (100, (char *) p24, 24);
+  dump_data (100, CS  p21, 16);
+  dump_data (100, CS  c8, 8);
+  dump_data (100, CS  p24, 24);
 #endif
 }
 
@@ -917,7 +917,7 @@ E_md4hash (uschar * passwd, uschar * p16)
   int16x wpwd[129];
 
   /* Password cannot be longer than 128 characters */
-  len = strlen ((char *) passwd);
+  len = strlen (CS  passwd);
   if (len > 128)
     len = 128;
   /* Password must be converted to NT unicode */
@@ -945,7 +945,7 @@ nt_lm_owf_gen (char *pwd, uschar nt_p16[16], uschar p16[16])
 #ifdef DEBUG_PASSWORD
   DEBUG_X (100, ("nt_lm_owf_gen: pwd, nt#\n"));
   dump_data (120, passwd, strlen (passwd));
-  dump_data (100, (char *) nt_p16, 16);
+  dump_data (100, CS  nt_p16, 16);
 #endif
 
   /* Mangle the passwords into Lanman format */
@@ -960,7 +960,7 @@ nt_lm_owf_gen (char *pwd, uschar nt_p16[16], uschar p16[16])
 #ifdef DEBUG_PASSWORD
   DEBUG_X (100, ("nt_lm_owf_gen: pwd, lm#\n"));
   dump_data (120, passwd, strlen (passwd));
-  dump_data (100, (char *) p16, 16);
+  dump_data (100, CS  p16, 16);
 #endif
   /* clear out local copy of user's password (just being paranoid). */
   memset (passwd, '\0', sizeof (passwd));
@@ -991,9 +991,9 @@ NTLMSSPOWFencrypt (uschar passwd[8], uschar * ntlmchalresp, uschar p24[24])
   E_P24 (p21, ntlmchalresp, p24);
 #ifdef DEBUG_PASSWORD
   DEBUG_X (100, ("NTLMSSPOWFencrypt: p21, c8, p24\n"));
-  dump_data (100, (char *) p21, 21);
-  dump_data (100, (char *) ntlmchalresp, 8);
-  dump_data (100, (char *) p24, 24);
+  dump_data (100, CS  p21, 21);
+  dump_data (100, CS  ntlmchalresp, 8);
+  dump_data (100, CS  p24, 24);
 #endif
 }
 
@@ -1012,9 +1012,9 @@ spa_smb_nt_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 
 #ifdef DEBUG_PASSWORD
   DEBUG_X (100, ("spa_smb_nt_encrypt: nt#, challenge, response\n"));
-  dump_data (100, (char *) p21, 16);
-  dump_data (100, (char *) c8, 8);
-  dump_data (100, (char *) p24, 24);
+  dump_data (100, CS  p21, 16);
+  dump_data (100, CS  c8, 8);
+  dump_data (100, CS  p24, 24);
 #endif
 }
 
@@ -1261,7 +1261,7 @@ spa_bytes_add(ptr, header, b, len*2); \
 #define GetUnicodeString(structPtr, header) \
 unicodeToString(((char*)structPtr) + IVAL(&structPtr->header.offset,0) , SVAL(&structPtr->header.len,0)/2)
 #define GetString(structPtr, header) \
-toString((((char *)structPtr) + IVAL(&structPtr->header.offset,0)), SVAL(&structPtr->header.len,0))
+toString(((CS structPtr) + IVAL(&structPtr->header.offset,0)), SVAL(&structPtr->header.len,0))
 
 #ifdef notdef
 
@@ -1503,8 +1503,8 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
     }
 
   else domain = d = strdup((cf & 0x1)?
-    (const char *)GetUnicodeString(challenge, uDomain) :
-    (const char *)GetString(challenge, uDomain));
+    CCS GetUnicodeString(challenge, uDomain) :
+    CCS GetString(challenge, uDomain));
 
   spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
   spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);

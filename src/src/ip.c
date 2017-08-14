@@ -457,7 +457,7 @@ ip_keepalive(int sock, const uschar *address, BOOL torf)
 {
 int fodder = 1;
 if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE,
-    (uschar *)(&fodder), sizeof(fodder)) != 0)
+    US (&fodder), sizeof(fodder)) != 0)
   log_write(0, LOG_MAIN, "setsockopt(SO_KEEPALIVE) on connection %s %s "
     "failed: %s", torf? "to":"from", address, strerror(errno));
 }

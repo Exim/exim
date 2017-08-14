@@ -91,7 +91,7 @@ static const char *mailargs[] = {  /* "to" must be first, and */
 
 /* The count of string arguments */
 
-#define MAILARGS_STRING_COUNT (sizeof(mailargs)/sizeof(uschar *))
+#define MAILARGS_STRING_COUNT (nelem(mailargs))
 
 /* The count of string arguments that are actually passed over as strings
 (once_repeat is converted to an int). */
@@ -185,7 +185,7 @@ static const char *cond_words[] = {
    "match",
    "matches"};
 
-static int cond_word_count = (sizeof(cond_words)/sizeof(uschar *));
+static int cond_word_count = nelem(cond_words);
 
 static int cond_types[] = { cond_BEGINS, cond_BEGINS, cond_CONTAINS,
   cond_CONTAINS, cond_ENDS, cond_ENDS, cond_IS, cond_MATCHES, cond_MATCHES,
@@ -207,7 +207,7 @@ static const char *command_list[] = {
   "noerror", "pipe",    "save",    "seen", "testprint", "unseen",   "vacation"
 };
 
-static int command_list_count = sizeof(command_list)/sizeof(uschar *);
+static int command_list_count = nelem(command_list);
 
 /* This table contains the number of expanded arguments in the bottom 4 bits.
 If the top bit is set, it means that the default for the command is "seen". */

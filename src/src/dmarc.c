@@ -84,7 +84,7 @@ int dmarc_init()
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
 char *tld_file = (dmarc_tld_file == NULL) ?
-		 DMARC_TLD_FILE : (char *)dmarc_tld_file;
+		 DMARC_TLD_FILE : CS dmarc_tld_file;
 
 /* Set some sane defaults.  Also clears previous results when
  * multiple messages in one connection. */
@@ -308,7 +308,7 @@ if (!dmarc_abort && !sender_host_authenticated)
 			    sr == SPF_RESULT_PERMERROR ? ARES_RESULT_PERMERROR :
 			    ARES_RESULT_UNKNOWN;
     origin = DMARC_POLICY_SPF_ORIGIN_MAILFROM;
-    spf_human_readable = (uschar *)spf_response->header_comment;
+    spf_human_readable = US spf_response->header_comment;
     DEBUG(D_receive)
       debug_printf("DMARC using SPF sender domain = %s\n", spf_sender_domain);
     }
@@ -336,7 +336,7 @@ if (!dmarc_abort && !sender_host_authenticated)
 		  vs == PDKIM_VERIFY_FAIL ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
 		  vs == PDKIM_VERIFY_INVALID ? DMARC_POLICY_DKIM_OUTCOME_TMPFAIL :
 		  DMARC_POLICY_DKIM_OUTCOME_NONE;
-    libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, (uschar *)sig->domain,
+    libdm_status = opendmarc_policy_store_dkim(dmarc_pctx, US sig->domain,
 					       dkim_result, US"");
     DEBUG(D_receive)
       debug_printf("DMARC adding DKIM sender domain = %s\n", sig->domain);
@@ -400,7 +400,7 @@ if (!dmarc_abort && !sender_host_authenticated)
   /* Can't use exim's string manipulation functions so allocate memory
    * for libopendmarc using its max hostname length definition. */
 
-  uschar *dmarc_domain = (uschar *)calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
+  uschar *dmarc_domain = US calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
   libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx,
     dmarc_domain, DMARC_MAXHOSTNAMELEN-1);
   dmarc_used_domain = string_copy(dmarc_domain);

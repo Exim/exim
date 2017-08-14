@@ -1140,7 +1140,7 @@ if (log_message != NULL && log_message != user_message)
     int length = Ustrlen(text) + 1;
     log_write(0, LOG_MAIN, "%s", text);
     logged = store_malloc(sizeof(string_item) + length);
-    logged->text = (uschar *)logged + sizeof(string_item);
+    logged->text = US logged + sizeof(string_item);
     memcpy(logged->text, text, length);
     logged->next = acl_warn_logged;
     acl_warn_logged = logged;
@@ -1625,13 +1625,13 @@ if (ss == NULL) goto BAD_VERIFY;
 /* Handle name/address consistency verification in a separate function. */
 
 for (vp= verify_type_list;
-     (char *)vp < (char *)verify_type_list + sizeof(verify_type_list);
+     CS vp < CS verify_type_list + sizeof(verify_type_list);
      vp++
     )
   if (vp->alt_opt_sep ? strncmpic(ss, vp->name, vp->alt_opt_sep) == 0
                       : strcmpic (ss, vp->name) == 0)
    break;
-if ((char *)vp >= (char *)verify_type_list + sizeof(verify_type_list))
+if (CS vp >= CS verify_type_list + sizeof(verify_type_list))
   goto BAD_VERIFY;
 
 if (vp->no_options && slash != NULL)

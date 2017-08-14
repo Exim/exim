@@ -123,7 +123,7 @@ ablock->server = ob->spa_serverpassword != NULL;
 
 /* For interface, see auths/README */
 
-#define CVAL(buf,pos) (((unsigned char *)(buf))[pos])
+#define CVAL(buf,pos) ((US (buf))[pos])
 #define PVAL(buf,pos) ((unsigned)CVAL(buf,pos))
 #define SVAL(buf,pos) (PVAL(buf,pos)|PVAL(buf,(pos)+1)<<8)
 #define IVAL(buf,pos) (SVAL(buf,pos)|SVAL(buf,(pos)+2)<<16)
@@ -151,7 +151,7 @@ if ((*data == '\0') &&
   return FAIL;
   }
 
-if (spa_base64_to_bits((char *)(&request), sizeof(request), (const char *)(data)) < 0)
+if (spa_base64_to_bits(CS (&request), sizeof(request), CCS (data)) < 0)
   {
   DEBUG(D_auth) debug_printf("auth_spa_server(): bad base64 data in "
   "request: %s\n", data);
@@ -171,7 +171,7 @@ if (auth_get_no64_data(&data, msgbuf) != OK)
   }
 
 /* dump client response */
-if (spa_base64_to_bits((char *)(&response), sizeof(response), (const char *)(data)) < 0)
+if (spa_base64_to_bits(CS (&response), sizeof(response), CCS (data)) < 0)
   {
   DEBUG(D_auth) debug_printf("auth_spa_server(): bad base64 data in "
   "response: %s\n", data);
@@ -324,7 +324,7 @@ if (smtp_write_command(outblock, SCMD_FLUSH, "AUTH %s\r\n",
   return FAIL_SEND;
 
 /* wait for the 3XX OK message */
-if (!smtp_read_response(inblock, (uschar *)buffer, buffsize, '3', timeout))
+if (!smtp_read_response(inblock, US buffer, buffsize, '3', timeout))
   return FAIL;
 
 DSPA("\n\n%s authenticator: using domain %s\n\n", ablock->name, domain);
@@ -340,12 +340,12 @@ if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)
   return FAIL_SEND;
 
 /* wait for the auth challenge */
-if (!smtp_read_response(inblock, (uschar *)buffer, buffsize, '3', timeout))
+if (!smtp_read_response(inblock, US buffer, buffsize, '3', timeout))
   return FAIL;
 
 /* convert the challenge into the challenge struct */
 DSPA("\n\n%s authenticator: challenge (%s)\n\n", ablock->name, buffer + 4);
-spa_base64_to_bits ((char *)(&challenge), sizeof(challenge), (const char *)(buffer + 4));
+spa_base64_to_bits (CS (&challenge), sizeof(challenge), CCS (buffer + 4));
 
 spa_build_auth_response (&challenge, &response, CS username, CS password);
 spa_bits_to_base64 (US msgbuf, (unsigned char*)&response,

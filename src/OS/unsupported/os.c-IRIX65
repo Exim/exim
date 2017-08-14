@@ -82,7 +82,7 @@ for (nextaddr = buf; nextaddr < lim; nextaddr += ifm->ifm_msglen)
 
     if ((ifam->ifam_addrs & RTA_IFA) != 0)
       {
-      char *cp = (char *)mask;
+      char *cp = CS mask;
       struct sockaddr *sa = (struct sockaddr *)mask;
       ADVANCE(cp, sa);
       addr = (struct sockaddr_in *)cp;

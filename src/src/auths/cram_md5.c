@@ -121,8 +121,8 @@ and use that. */
 if (len > 64)
   {
   md5_start(&base);
-  md5_end(&base, (uschar *)secret, len, md5secret);
-  secret = (uschar *)md5secret;
+  md5_end(&base, US secret, len, md5secret);
+  secret = US md5secret;
   len = 16;
   }
 
@@ -143,7 +143,7 @@ for (i = 0; i < 64; i++)
 
 md5_start(&base);
 md5_mid(&base, isecret);
-md5_end(&base, (uschar *)challenge, Ustrlen(challenge), md5secret);
+md5_end(&base, US challenge, Ustrlen(challenge), md5secret);
 
 /* Compute the outer MD5 digest */
 
@@ -327,7 +327,7 @@ buffer[0] = 0;
 if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", b64encode(big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
-return smtp_read_response(inblock, (uschar *)buffer, buffsize, '2', timeout)
+return smtp_read_response(inblock, US buffer, buffsize, '2', timeout)
   ? OK : FAIL;
 }
 #endif  /* STAND_ALONE */

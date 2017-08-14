@@ -565,7 +565,7 @@ for (r = routers; r; r = r->next)
   for (i = 0; i < *ri->options_count; i++)
     {
     if ((ri->options[i].type & opt_mask) != opt_stringptr) continue;
-    if (p == (char *)(r->options_block) + (long int)(ri->options[i].value))
+    if (p == CS (r->options_block) + (long int)(ri->options[i].value))
       return US ri->options[i].name;
     }
   }
@@ -578,8 +578,8 @@ for (t = transports; t; t = t->next)
     optionlist * op = &ti->options[i];
     if ((op->type & opt_mask) != opt_stringptr) continue;
     if (p == (  op->type & opt_public
-	     ? (char *)t
-	     : (char *)t->options_block
+	     ? CS t
+	     : CS t->options_block
 	     )
 	     + (long int)op->value)
 	return US op->name;
@@ -1274,7 +1274,7 @@ ol = find_option(name2, oltop, last);
 if (ol == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
   "Exim internal error: missing set flag for %s", name);
 return (data_block == NULL)? (BOOL *)(ol->value) :
-  (BOOL *)((uschar *)data_block + (long int)(ol->value));
+  (BOOL *)(US data_block + (long int)(ol->value));
 }
 
 
@@ -1747,8 +1747,8 @@ switch (type)
         }
       else
         {
-        chain = (rewrite_rule **)((uschar *)data_block + (long int)(ol2->value));
-        flagptr = (int *)((uschar *)data_block + (long int)(ol3->value));
+        chain = (rewrite_rule **)(US data_block + (long int)(ol2->value));
+        flagptr = (int *)(US data_block + (long int)(ol3->value));
         }
 
       while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
@@ -1780,7 +1780,7 @@ switch (type)
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = ss;
       else
-        *((uschar **)((uschar *)data_block + (long int)(ol2->value))) = ss;
+        *((uschar **)(US data_block + (long int)(ol2->value))) = ss;
 
       if (ss != NULL)
         {
@@ -1799,7 +1799,7 @@ switch (type)
     if (data_block == NULL)
       *((uid_t *)(ol->value)) = uid;
     else
-      *((uid_t *)((uschar *)data_block + (long int)(ol->value))) = uid;
+      *((uid_t *)(US data_block + (long int)(ol->value))) = uid;
 
     /* Set the flag indicating a fixed value is set */
 
@@ -1821,7 +1821,7 @@ switch (type)
         if (data_block == NULL)
           *((gid_t *)(ol2->value)) = pw->pw_gid;
         else
-          *((gid_t *)((uschar *)data_block + (long int)(ol2->value))) = pw->pw_gid;
+          *((gid_t *)(US data_block + (long int)(ol2->value))) = pw->pw_gid;
         *set_flag = TRUE;
         }
       }
@@ -1843,7 +1843,7 @@ switch (type)
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = ss;
       else
-        *((uschar **)((uschar *)data_block + (long int)(ol2->value))) = ss;
+        *((uschar **)(US data_block + (long int)(ol2->value))) = ss;
 
       if (ss != NULL)
         {
@@ -1861,7 +1861,7 @@ switch (type)
     if (data_block == NULL)
       *((gid_t *)(ol->value)) = gid;
     else
-      *((gid_t *)((uschar *)data_block + (long int)(ol->value))) = gid;
+      *((gid_t *)(US data_block + (long int)(ol->value))) = gid;
     *(get_set_flag(name, oltop, last, data_block)) = TRUE;
     break;
 
@@ -1891,7 +1891,7 @@ switch (type)
       if (data_block == NULL)
         *((uid_t **)(ol->value)) = list;
       else
-        *((uid_t **)((uschar *)data_block + (long int)(ol->value))) = list;
+        *((uid_t **)(US data_block + (long int)(ol->value))) = list;
 
       p = op;
       while (count-- > 1)
@@ -1932,7 +1932,7 @@ switch (type)
       if (data_block == NULL)
         *((gid_t **)(ol->value)) = list;
       else
-        *((gid_t **)((uschar *)data_block + (long int)(ol->value))) = list;
+        *((gid_t **)(US data_block + (long int)(ol->value))) = list;
 
       p = op;
       while (count-- > 1)
@@ -1968,7 +1968,7 @@ switch (type)
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = sptr;
       else
-        *((uschar **)((uschar *)data_block + (long int)(ol2->value))) = sptr;
+        *((uschar **)(US data_block + (long int)(ol2->value))) = sptr;
       freesptr = FALSE;
       break;
       }
@@ -2006,7 +2006,7 @@ switch (type)
     int bit = 1 << ((ol->type >> 16) & 31);
     int *ptr = (data_block == NULL)?
       (int *)(ol->value) :
-      (int *)((uschar *)data_block + (long int)ol->value);
+      (int *)(US data_block + (long int)ol->value);
     if (boolvalue) *ptr |= bit; else *ptr &= ~bit;
     break;
     }
@@ -2016,7 +2016,7 @@ switch (type)
   if (data_block == NULL)
     *((BOOL *)(ol->value)) = boolvalue;
   else
-    *((BOOL *)((uschar *)data_block + (long int)(ol->value))) = boolvalue;
+    *((BOOL *)(US data_block + (long int)(ol->value))) = boolvalue;
 
   /* Verify fudge */
 
@@ -2029,7 +2029,7 @@ switch (type)
       if (data_block == NULL)
         *((BOOL *)(ol2->value)) = boolvalue;
       else
-        *((BOOL *)((uschar *)data_block + (long int)(ol2->value))) = boolvalue;
+        *((BOOL *)(US data_block + (long int)(ol2->value))) = boolvalue;
       }
     }
 
@@ -2044,7 +2044,7 @@ switch (type)
       if (data_block == NULL)
         *((BOOL *)(ol2->value)) = TRUE;
       else
-        *((BOOL *)((uschar *)data_block + (long int)(ol2->value))) = TRUE;
+        *((BOOL *)(US data_block + (long int)(ol2->value))) = TRUE;
       }
     }
   break;
@@ -2107,7 +2107,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M
@@ -2157,7 +2157,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /*  Fixed-point number: held to 3 decimal places. */
@@ -2198,7 +2198,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /* There's a special routine to read time values. */
@@ -2211,7 +2211,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /* A time list is a list of colon-separated times, with the first
@@ -2223,7 +2223,7 @@ switch (type)
     int count = 0;
     int *list = (data_block == NULL)?
       (int *)(ol->value) :
-      (int *)((uschar *)data_block + (long int)(ol->value));
+      (int *)(US data_block + (long int)(ol->value));
 
     if (*s != 0) for (count = 1; count <= list[0] - 2; count++)
       {
@@ -2373,7 +2373,7 @@ if (options_block != NULL)
   {
   if ((ol->type & opt_public) == 0)
     options_block = (void *)(((driver_instance *)options_block)->options_block);
-  value = (void *)((uschar *)options_block + (long int)value);
+  value = (void *)(US options_block + (long int)value);
   }
 
 switch(ol->type & opt_mask)
@@ -2462,7 +2462,7 @@ switch(ol->type & opt_mask)
       {
       void *value2 = ol2->value;
       if (options_block != NULL)
-        value2 = (void *)((uschar *)options_block + (long int)value2);
+        value2 = (void *)(US options_block + (long int)value2);
       s = *((uschar **)value2);
       if (!no_labels) printf("%s = ", name);
       printf("%s\n", (s == NULL)? US"" : string_printing(s));
@@ -2496,7 +2496,7 @@ switch(ol->type & opt_mask)
       {
       void *value2 = ol2->value;
       if (options_block != NULL)
-        value2 = (void *)((uschar *)options_block + (long int)value2);
+        value2 = (void *)(US options_block + (long int)value2);
       s = *((uschar **)value2);
       if (!no_labels) printf("%s = ", name);
       printf("%s\n", (s == NULL)? US"" : string_printing(s));
@@ -2591,7 +2591,7 @@ switch(ol->type & opt_mask)
     {
     void *value2 = ol2->value;
     if (options_block != NULL)
-      value2 = (void *)((uschar *)options_block + (long int)value2);
+      value2 = (void *)(US options_block + (long int)value2);
     s = *((uschar **)value2);
     if (s != NULL)
       {
@@ -3644,7 +3644,7 @@ init_driver(driver_instance *d, driver_info *drivers_available,
 driver_info *dd;
 
 for (dd = drivers_available; dd->driver_name[0] != 0;
-     dd = (driver_info *)(((uschar *)dd) + size_of_info))
+     dd = (driver_info *)((US dd) + size_of_info))
   {
   if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
     {
@@ -3857,7 +3857,7 @@ for (ol = d->info->options; ol < d->info->options + count; ol++)
   int type = ol->type & opt_mask;
   if (type != opt_stringptr) continue;
   options_block = ((ol->type & opt_public) == 0)? d->options_block : (void *)d;
-  value = *(uschar **)((uschar *)options_block + (long int)(ol->value));
+  value = *(uschar **)(US options_block + (long int)(ol->value));
   if (value != NULL && (ss = Ustrstr(value, s)) != NULL)
     {
     if (ss <= value || (ss[-1] != '$' && ss[-1] != '{') ||
@@ -3933,14 +3933,14 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
     static int values[] =
       { 'A',   'M',    RTEF_CTOUT,  RTEF_CTOUT|'A', RTEF_CTOUT|'M' };
 
-    for (i = 0; i < sizeof(extras)/sizeof(uschar *); i++)
+    for (i = 0; i < nelem(extras); i++)
       if (strncmpic(x, extras[i], xlen) == 0)
         {
         *more_errno = values[i];
         break;
         }
 
-    if (i >= sizeof(extras)/sizeof(uschar *))
+    if (i >= nelem(extras))
       if (strncmpic(x, US"DNS", xlen) == 0)
         log_write(0, LOG_MAIN|LOG_PANIC, "\"timeout_dns\" is no longer "
           "available in retry rules (it has never worked) - treated as "
@@ -4336,7 +4336,7 @@ while(next_section[0] != 0)
   {
   int bit;
   int first = 0;
-  int last = sizeof(section_list) / sizeof(uschar *);
+  int last = nelem(section_list);
   int mid = last/2;
   int n = Ustrlen(next_section);
 
