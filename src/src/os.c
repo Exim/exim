@@ -6,9 +6,14 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 #ifdef STAND_ALONE
-#include <signal.h>
-#include <stdio.h>
-#include <time.h>
+# include <signal.h>
+# include <stdio.h>
+# include <time.h>
+#endif
+
+#ifndef CS
+# define CS (char *)
+# define US (unsigned char *)
 #endif
 
 /* This source file contains "default" system-dependent functions which
