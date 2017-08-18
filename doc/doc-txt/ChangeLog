@@ -148,6 +148,9 @@ JH/25 Use one-bit bitfields for flags in the "addr" data structure.  Previously
       if was a fixed-sized field and bitmask ops via macros; it is now more
       extensible.
 
+PP/07 GitHub PR 56: Apply MariaDB build fix.
+      Patch provided by Jaroslav Škarvada.
+
 
 Exim version 4.89
 -----------------

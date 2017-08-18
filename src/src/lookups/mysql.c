@@ -13,6 +13,7 @@ functions. */
 #include "lf_functions.h"
 
 #include <mysql.h>       /* The system header */
+#include <mysql_version.h>
 
 
 /* Structure and anchor for caching connections. */
