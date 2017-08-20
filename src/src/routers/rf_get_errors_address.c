@@ -60,7 +60,7 @@ if (s == NULL)
 
 if (*s == 0)
   {
-  setflag(addr, af_ignore_error);      /* For locally detected errors */
+  addr->prop.ignore_error = TRUE;   /* For locally detected errors */
   *errors_to = US"";                   /* Return path for SMTP */
   return OK;
   }

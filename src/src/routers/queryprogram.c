@@ -123,12 +123,14 @@ add_generated(router_instance *rblock, address_item **addr_new,
 {
 while (generated != NULL)
   {
+  BOOL ignore_error = addr->prop.ignore_error;
   address_item *next = generated;
+
   generated = next->next;
 
   next->parent = addr;
-  orflag(next, addr, af_propagate);
   next->prop = *addr_prop;
+  next->prop.ignore_error |= ignore_error;
   next->start_router = rblock->redirect_router;
 
   next->next = *addr_new;

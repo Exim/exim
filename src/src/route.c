@@ -1365,7 +1365,7 @@ new->prop.errors_address = parent->prop.errors_address;
 
 /* Copy the propagated flags and address_data from the original. */
 
-copyflag(new, addr, af_propagate);
+new->prop.ignore_error = addr->prop.ignore_error;
 new->prop.address_data = addr->prop.address_data;
 new->dsn_flags = addr->dsn_flags;
 new->dsn_orcpt = addr->dsn_orcpt;

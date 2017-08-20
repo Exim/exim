@@ -41,7 +41,7 @@ addr->prop.localpart_data = deliver_localpart_data;   /* use in the transport */
 
 /* Handle a local transport */
 
-if (addr->transport != NULL && addr->transport->info->local)
+if (addr->transport && addr->transport->info->local)
   {
   ugid_block ugid;
 
@@ -50,11 +50,13 @@ if (addr->transport != NULL && addr->transport->info->local)
   When getting the home directory out of the password information, set the
   flag that prevents expansion later. */
 
-  if (pw != NULL)
+  if (pw)
     {
     addr->uid = pw->pw_uid;
     addr->gid = pw->pw_gid;
-    setflag(addr, af_uid_set|af_gid_set|af_home_expanded);
+    setflag(addr, af_uid_set);
+    setflag(addr, af_gid_set);
+    setflag(addr, af_home_expanded);
     addr->home_dir = string_copy(US pw->pw_dir);
     }
 
@@ -65,12 +67,12 @@ if (addr->transport != NULL && addr->transport->info->local)
   otherwise use the expanded value of router_home_directory. The flag also
   tells the transport not to re-expand it. */
 
-  if (rblock->home_directory != NULL)
+  if (rblock->home_directory)
     {
     addr->home_dir = rblock->home_directory;
     clearflag(addr, af_home_expanded);
     }
-  else if (addr->home_dir == NULL && testflag(addr, af_home_expanded))
+  else if (!addr->home_dir && testflag(addr, af_home_expanded))
     addr->home_dir = deliver_home;
 
   addr->current_dir = rblock->current_directory;

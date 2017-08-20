@@ -1046,30 +1046,33 @@ Arguments:
 Returns:      nothing
 */
 
-static void add_addr(address_item **generated, uschar *addr, int file, int maxage, int maxmessages, int maxstorage)
+static void
+add_addr(address_item **generated, uschar *addr, int file, int maxage, int maxmessages, int maxstorage)
 {
 address_item *new_addr;
 
 for (new_addr=*generated; new_addr; new_addr=new_addr->next)
-  {
-  if (Ustrcmp(new_addr->address,addr)==0 && (file ? testflag(new_addr, af_pfr|af_file) : 1))
+  if (  Ustrcmp(new_addr->address,addr) == 0
+     && (  !file
+	|| testflag(new_addr, af_pfr)
+	|| testflag(new_addr, af_file)
+	)
+     )
     {
     if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-      {
       debug_printf("Repeated %s `%s' ignored.\n",file ? "fileinto" : "redirect", addr);
-      }
+
     return;
     }
-  }
 
 if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-  {
   debug_printf("%s `%s'\n",file ? "fileinto" : "redirect", addr);
-  }
-new_addr=deliver_make_addr(addr,TRUE);
+
+new_addr = deliver_make_addr(addr,TRUE);
 if (file)
   {
-  setflag(new_addr, af_pfr|af_file);
+  setflag(new_addr, af_pfr);
+  setflag(new_addr, af_file);
   new_addr->mode = 0;
   }
 new_addr->prop.errors_address = NULL;
@@ -3346,7 +3349,7 @@ while (*filter->pc)
 
           addr = deliver_make_addr(string_sprintf(">%.256s", sender_address), FALSE);
           setflag(addr, af_pfr);
-          setflag(addr, af_ignore_error);
+          addr->prop.ignore_error = TRUE;
           addr->next = *generated;
           *generated = addr;
           addr->reply = store_get(sizeof(reply_item));

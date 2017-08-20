@@ -27,20 +27,16 @@ a string as a text string. This is sometimes useful for debugging output. */
   (running_in_test_harness? (test_harness_load_avg += 10) : os_getloadavg())
 
 
-/* The address_item structure has a word full of 1-bit flags. These macros
+/* The address_item structure has a struct full of 1-bit flags. These macros
 manipulate them. */
 
-#define setflag(addr,flag)    addr->flags |= (flag)
-#define clearflag(addr,flag)  addr->flags &= ~(flag)
+#define setflag(addr, flagname)    addr->flags.flagname = TRUE
+#define clearflag(addr, flagname)  addr->flags.flagname = FALSE
 
-#define testflag(addr,flag)       ((addr->flags & (flag)) != 0)
-#define testflagsall(addr,flag)   ((addr->flags & (flag)) == (flag))
+#define testflag(addr, flagname)   (addr->flags.flagname)
 
-#define copyflag(addrnew,addrold,flag) \
-  addrnew->flags = (addrnew->flags & ~(flag)) | (addrold->flags & (flag))
-
-#define orflag(addrnew,addrold,flag) \
-  addrnew->flags |= addrold->flags & (flag)
+#define copyflag(addrnew, addrold, flagname) \
+  addrnew->flags.flagname = addrold->flags.flagname
 
 
 /* For almost all calls to convert things to printing characters, we want to

@@ -144,6 +144,10 @@ JH/23 DKIM: enforce the DNS pubkey record "h" permitted-hashes optional field,
 JH/24 Start using specified-initialisers in C structure init coding.  This is
       a C99 feature (it's 2017, so now considered safe).
 
+JH/25 Use one-bit bitfields for flags in the "addr" data structure.  Previously
+      if was a fixed-sized field and bitmask ops via macros; it is now more
+      extensible.
+
 
 Exim version 4.89
 -----------------

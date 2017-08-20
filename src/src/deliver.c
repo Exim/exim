@@ -1195,11 +1195,11 @@ else
     }
 
 #ifndef DISABLE_PRDR
-  if (addr->flags & af_prdr_used)
+  if (testflag(addr, af_prdr_used))
     s = string_catn(s, &size, &ptr, US" PRDR", 5);
 #endif
 
-  if (addr->flags & af_chunking_used)
+  if (testflag(addr, af_chunking_used))
     s = string_catn(s, &size, &ptr, US" K", 2);
   }
 
@@ -1657,7 +1657,7 @@ else
   later (with a log entry). */
 
   if (!*sender_address && message_age >= ignore_bounce_errors_after)
-    setflag(addr, af_ignore_error);
+    addr->prop.ignore_error = TRUE;
 
   /* Freeze the message if requested, or if this is a bounce message (or other
   message with null sender) and this address does not have its own errors
@@ -1665,7 +1665,7 @@ else
   to ignore occurs later, instead of sending a message. Logging of freezing
   occurs later, just before writing the -H file. */
 
-  if (  !testflag(addr, af_ignore_error)
+  if (  !addr->prop.ignore_error
      && (  addr->special_action == SPECIAL_FREEZE
         || (sender_address[0] == 0 && !addr->prop.errors_address)
      )  )
@@ -2777,7 +2777,8 @@ while (addr_local)
       BOOL ok =
            tp == next->transport
 	&& !previously_transported(next, TRUE)
-	&& (addr->flags & (af_pfr|af_file)) == (next->flags & (af_pfr|af_file))
+	&& testflag(addr, af_pfr) == testflag(next, af_pfr)
+	&& testflag(addr, af_file) == testflag(next, af_file)
 	&& (!uses_lp  || Ustrcmp(next->local_part, addr->local_part) == 0)
 	&& (!uses_dom || Ustrcmp(next->domain, addr->domain) == 0)
 	&& same_strings(next->prop.errors_address, addr->prop.errors_address)
@@ -3551,12 +3552,12 @@ while (!done)
 
 #ifndef DISABLE_PRDR
     case 'P':
-      addr->flags |= af_prdr_used;
+      setflag(addr, af_prdr_used);
       break;
 #endif
 
     case 'K':
-      addr->flags |= af_chunking_used;
+      setflag(addr, af_chunking_used);
       break;
 
     case 'D':
@@ -4848,11 +4849,11 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 	}
 
 #ifndef DISABLE_PRDR
-      if (addr->flags & af_prdr_used)
+      if (testflag(addr, af_prdr_used))
 	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
 #endif
 
-      if (addr->flags & af_chunking_used)
+      if (testflag(addr, af_chunking_used))
 	rmt_dlv_checked_write(fd, 'K', '0', NULL, 0);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
@@ -6013,11 +6014,11 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
         uschar *type;
         p->uid = uid;
         p->gid = gid;
-        setflag(p, af_uid_set |
-                   af_gid_set |
-                   af_allow_file |
-                   af_allow_pipe |
-                   af_allow_reply);
+        setflag(p, af_uid_set);
+        setflag(p, af_gid_set);
+        setflag(p, af_allow_file);
+        setflag(p, af_allow_pipe);
+        setflag(p, af_allow_reply);
 
         /* Find the name of the system filter's appropriate pfr transport */
 
@@ -6336,8 +6337,8 @@ while (addr_new)           /* Loop until all addresses dealt with */
         addr->local_part = addr->address;
         addr->message =
           US"filter autoreply generated syntactically invalid recipient";
-        setflag(addr, af_ignore_error);
-        (void)post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+        addr->prop.ignore_error = TRUE;
+        (void) post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
         continue;   /* with the next new address */
         }
 
@@ -6831,15 +6832,14 @@ while (addr_new)           /* Loop until all addresses dealt with */
         addr2->host_list = addr->host_list;
         addr2->fallback_hosts = addr->fallback_hosts;
         addr2->prop.errors_address = addr->prop.errors_address;
-        copyflag(addr2, addr, af_hide_child | af_local_host_removed);
+        copyflag(addr2, addr, af_hide_child);
+        copyflag(addr2, addr, af_local_host_removed);
 
         DEBUG(D_deliver|D_route)
-          {
           debug_printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
                        "routing %s\n"
                        "Routing for %s copied from %s\n",
             addr2->address, addr2->address, addr->address);
-          }
         }
       }
     }  /* Continue with routing the next address. */
@@ -7404,19 +7404,18 @@ while (addr_failed)
   if (sender_address[0] == 0 && !addr_failed->prop.errors_address)
     {
     if (  !testflag(addr_failed, af_retry_timedout)
-       && !testflag(addr_failed, af_ignore_error))
-      {
+       && !addr_failed->prop.ignore_error)
       log_write(0, LOG_MAIN|LOG_PANIC, "internal error: bounce message "
         "failure is neither frozen nor ignored (it's been ignored)");
-      }
-    setflag(addr_failed, af_ignore_error);
+
+    addr_failed->prop.ignore_error = TRUE;
     }
 
   /* If the first address on the list has af_ignore_error set, just remove
   it from the list, throw away any saved message file, log it, and
   mark the recipient done. */
 
-  if (  testflag(addr_failed, af_ignore_error)
+  if (  addr_failed->prop.ignore_error
      || (  addr_failed->dsn_flags & rf_dsnflags
         && (addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure
      )  )

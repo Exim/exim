@@ -393,7 +393,6 @@ the chain of new addressess. */
 new_addr = deliver_make_addr(reroute, TRUE);
 new_addr->parent = addr;
 
-copyflag(new_addr, addr, af_propagate);
 new_addr->prop = addr->prop;
 
 if (addr->child_count == USHRT_MAX)

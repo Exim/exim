@@ -3121,9 +3121,9 @@ else
       addr->special_action = flag;
       addr->message = conf;
 #ifndef DISABLE_PRDR
-      if (sx.prdr_active) addr->flags |= af_prdr_used;
+      if (sx.prdr_active) setflag(addr, af_prdr_used);
 #endif
-      if (sx.peer_offered & OPTION_CHUNKING) addr->flags |= af_chunking_used;
+      if (sx.peer_offered & OPTION_CHUNKING) setflag(addr, af_chunking_used);
       flag = '-';
 
 #ifndef DISABLE_PRDR
