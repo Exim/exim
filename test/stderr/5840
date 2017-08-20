@@ -65,7 +65,7 @@
 >>> ----------- end verify ------------
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
-LOG: unexpected disconnection while reading SMTP command from [127.0.0.1]
+LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### TLSA (2 0 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA

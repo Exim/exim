@@ -5460,14 +5460,17 @@ while (done <= 0)
     */
 
     if (sender_address != NULL || recipients_count > 0)
-      log_write(L_lost_incoming_connection,
-          LOG_MAIN,
-          "unexpected %s while reading SMTP command from %s%s",
-          sender_host_unknown? "EOF" : "disconnection",
-          host_and_ident(FALSE), smtp_read_error);
+      log_write(L_lost_incoming_connection, LOG_MAIN,
+          "unexpected %s while reading SMTP command from %s%s D=%s",
+          sender_host_unknown ? "EOF" : "disconnection",
+          host_and_ident(FALSE), smtp_read_error,
+	  string_timesince(&smtp_connection_start)
+	  );
 
-    else log_write(L_smtp_connection, LOG_MAIN, "%s lost%s",
-      smtp_get_connection_info(), smtp_read_error);
+    else
+      log_write(L_smtp_connection, LOG_MAIN, "%s lost%s D=%s",
+        smtp_get_connection_info(), smtp_read_error,
+	string_timesince(&smtp_connection_start));
 
     done = 1;
     break;
