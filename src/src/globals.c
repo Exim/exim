@@ -399,6 +399,7 @@ address_item address_defaults = {
 #ifdef EXPERIMENTAL_SRS
     .srs_sender =	NULL,
 #endif
+    .ignore_error =	FALSE,
 #ifdef SUPPORT_I18N
     .utf8_msg =		FALSE,
     .utf8_downcvt =	FALSE,

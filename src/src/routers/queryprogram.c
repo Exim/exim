@@ -130,7 +130,7 @@ while (generated != NULL)
 
   next->parent = addr;
   next->prop = *addr_prop;
-  next->prop.ignore_error |= ignore_error;
+  next->prop.ignore_error = next->prop.ignore_error || ignore_error;
   next->start_router = rblock->redirect_router;
 
   next->next = *addr_new;

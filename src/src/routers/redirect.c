@@ -390,7 +390,7 @@ while (generated)
     {
     BOOL ignore_error = next->prop.ignore_error;
     next->prop = *addr_prop;
-    next->prop.ignore_error |= ignore_error;
+    next->prop.ignore_error = ignore_error || addr->prop.ignore_error;
     }
   if (errors_address) next->prop.errors_address = errors_address;
 
