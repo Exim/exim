@@ -36040,6 +36040,7 @@ the following table:
 &`SNI `&        server name indication from TLS client hello
 &`ST  `&        shadow transport name
 &`T   `&        on &`<=`& lines: message subject (topic)
+&`TFO `&        connection took advantage of TCP Fast Open
 &`    `&        on &`=>`& &`**`& and &`==`& lines: transport name
 &`U   `&        local user or RFC 1413 identity
 &`X   `&        TLS cipher suite

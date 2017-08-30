@@ -1,0 +1,39 @@
+# TCP Fast Open
+#
+# Linux:
+# Both server and client-side TFO support must be enabled in the
+# kernel, 'sudo sh -c "echo 3 > /proc/sys/net/ipv4/tcp_fastopen"'.
+#
+# A packet capture on the loopback interface will show the TFO
+# option on the SYN, but the fast-output SMTP banner will not
+# be seen unless you also deliberately emulate a long path:
+# 'sudo tc qdisc add dev lo root netem delay 100ms'
+#
+# First time runs will see a TFO request option only; subsequent
+# ones should see the TFO cookie and fast-output SMTP banner
+# (currently on a separate packet after the server SYN,ACK but before
+# the client ACK).
+#
+# The log <= line should have a "TFO" element.
+#
+# If the client-side is disabled in the kernel, Exim logs
+# will become noisy.
+#
+#
+# FreeBSD: it looks like you have to compile a custom kernel, with
+# 'options TCP_RFC7413' in the config.  Also set
+# 'net.inet.tcp.fastopen.enabled=1' in /etc/sysctl.conf
+# Untested.
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim a@test.ex
+Testing
+****
+sleep 3
+exim b@test.ex
+Testing
+****
+sleep 3
+killdaemon
+no_msglog_check

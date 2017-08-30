@@ -1303,7 +1303,7 @@ add_host_info_for_log(uschar * s, int * sizeptr, int * ptrptr)
 if (sender_fullhost)
   {
   if (LOGGING(dnssec) && sender_host_dnssec)	/*XXX sender_helo_dnssec? */
-    s = string_cat(s, sizeptr, ptrptr, US" DS");
+    s = string_catn(s, sizeptr, ptrptr, US" DS", 3);
   s = string_append(s, sizeptr, ptrptr, 2, US" H=", sender_fullhost);
   if (LOGGING(incoming_interface) && interface_address != NULL)
     {
@@ -1311,9 +1311,14 @@ if (sender_fullhost)
       string_sprintf(" I=[%s]:%d", interface_address, interface_port));
     }
   }
-if (sender_ident != NULL)
+if (tcp_in_fastopen && !tcp_in_fastopen_logged)
+  {
+  s = string_catn(s, sizeptr, ptrptr, US" TFO", 4);
+  tcp_in_fastopen_logged = TRUE;
+  }
+if (sender_ident)
   s = string_append(s, sizeptr, ptrptr, 2, US" U=", sender_ident);
-if (received_protocol != NULL)
+if (received_protocol)
   s = string_append(s, sizeptr, ptrptr, 2, US" P=", received_protocol);
 return s;
 }

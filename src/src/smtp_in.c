@@ -1798,7 +1798,8 @@ for (i = 0; i < smtp_ch_index; i++)
   }
 
 if (s) s[ptr] = 0; else s = US"";
-log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
+log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
+  tcp_in_fastopen ? US"TFO " : US"",
   host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
 }
 
@@ -1941,17 +1942,17 @@ while (v > smtp_cmd_data && *v != '=' && !isspace(*v))
 
 n = v;
 if (*v == '=')
-{
+  {
   while(isalpha(n[-1])) n--;
   /* RFC says SP, but TAB seen in wild and other major MTAs accept it */
   if (!isspace(n[-1])) return FALSE;
   n[-1] = 0;
-}
+  }
 else
-{
+  {
   n++;
   if (v == smtp_cmd_data) return FALSE;
-}
+  }
 *v++ = 0;
 *name = n;
 *value = v;
@@ -2329,6 +2330,28 @@ if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
 log_write(0, LOG_MAIN, "TLS error on %s %s", conn_info, errstr);
 return FALSE;
 }
+
+
+
+
+#ifdef TCP_FASTOPEN
+static void
+tfo_in_check(void)
+{
+# ifdef TCP_INFO
+struct tcp_info tinfo;
+socklen_t len = sizeof(tinfo);
+
+if (  getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
+   && tinfo.tcpi_state == TCP_SYN_RECV
+   )
+  {
+  DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection\n");
+  tcp_in_fastopen = TRUE;
+  }
+# endif
+}
+#endif
 
 
 /*************************************************
@@ -2923,6 +2946,14 @@ if (!check_sync())
 /* Now output the banner */
 
 smtp_printf("%s", FALSE, ss);
+
+/* Attempt to see if we sent the banner before the last ACK of the 3-way
+handshake arrived.  If so we must have managed a TFO. */
+
+#ifdef TCP_FASTOPEN
+tfo_in_check();
+#endif
+
 return TRUE;
 }
 
@@ -5459,18 +5490,22 @@ while (done <= 0)
     just drop the call rather than sending QUIT, and it clutters up the logs.
     */
 
-    if (sender_address != NULL || recipients_count > 0)
+    if (sender_address || recipients_count > 0)
       log_write(L_lost_incoming_connection, LOG_MAIN,
-          "unexpected %s while reading SMTP command from %s%s D=%s",
-          sender_host_unknown ? "EOF" : "disconnection",
-          host_and_ident(FALSE), smtp_read_error,
-	  string_timesince(&smtp_connection_start)
-	  );
+	"unexpected %s while reading SMTP command from %s%s%s D=%s",
+	sender_host_unknown ? "EOF" : "disconnection",
+	tcp_in_fastopen && !tcp_in_fastopen_logged ? US"TFO " : US"",
+	host_and_ident(FALSE), smtp_read_error,
+	string_timesince(&smtp_connection_start)
+	);
 
     else
-      log_write(L_smtp_connection, LOG_MAIN, "%s lost%s D=%s",
-        smtp_get_connection_info(), smtp_read_error,
-	string_timesince(&smtp_connection_start));
+      log_write(L_smtp_connection, LOG_MAIN, "%s %slost%s D=%s",
+        smtp_get_connection_info(),
+	tcp_in_fastopen && !tcp_in_fastopen_logged ? US"TFO " : US"",
+	smtp_read_error,
+	string_timesince(&smtp_connection_start)
+	);
 
     done = 1;
     break;

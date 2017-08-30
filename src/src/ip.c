@@ -235,14 +235,15 @@ connect in FASTOPEN mode but with zero data.
 
 if (fastopen)
   {
-  if (  (rc = sendto(sock, NULL, 0, MSG_FASTOPEN, s_ptr, s_len)) < 0
-     && errno == EOPNOTSUPP
-     )
-    {
-    DEBUG(D_transport)
-      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
-    rc = connect(sock, s_ptr, s_len);
-    }
+  if ((rc = sendto(sock, NULL, 0, MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) < 0)
+    if (errno == EINPROGRESS)		/* the expected case */
+      rc = 0;
+    else if(errno == EOPNOTSUPP)
+      {
+      DEBUG(D_transport)
+	debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
+      rc = connect(sock, s_ptr, s_len);
+      }
   }
 else
 #endif

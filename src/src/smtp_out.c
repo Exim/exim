@@ -140,6 +140,30 @@ return TRUE;
 
 
 
+#ifdef TCP_FASTOPEN
+static void
+tfo_out_check(int sock)
+{
+# ifdef TCP_INFO
+struct tcp_info tinfo;
+socklen_t len = sizeof(tinfo);
+
+if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
+  {
+  /* This is a somewhat dubious detection method; totally undocumented so likely
+  to fail in future kernels.  There seems to be no documented way. */
+
+  if (tinfo.tcpi_unacked > 1)
+    {
+    DEBUG(D_transport|D_v) debug_printf("TCP_FASTOPEN mode connection\n");
+    tcp_out_fastopen = TRUE;
+    }
+  }
+# endif
+}
+#endif
+
+
 int
 smtp_sock_connect(host_item * host, int host_af, int port, uschar * interface,
   transport_instance * tb, int timeout)
@@ -239,6 +263,9 @@ else
     return -1;
     }
   if (ob->keepalive) ip_keepalive(sock, host->address, TRUE);
+#ifdef TCP_FASTOPEN
+  tfo_out_check(sock);
+#endif
   return sock;
   }
 }

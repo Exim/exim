@@ -752,7 +752,12 @@ if (LOGGING(proxy) && proxy_local_address)
   }
 #endif
 
-return d_log_interface(s, sp, pp);
+s = d_log_interface(s, sp, pp);
+
+if (testflag(addr, af_tcp_fastopen))
+  s = string_catn(s, sp, pp, US" TFO", 4);
+
+return s;
 }
 
 
@@ -3560,6 +3565,10 @@ while (!done)
       setflag(addr, af_chunking_used);
       break;
 
+    case 'T':
+      setflag(addr, af_tcp_fastopen);
+      break;
+
     case 'D':
       if (!addr) goto ADDR_MISMATCH;
       memcpy(&(addr->dsn_aware), ptr, sizeof(addr->dsn_aware));
@@ -3979,7 +3988,6 @@ for (;;)   /* Normally we do not repeat this loop */
         {
         readycount--;
         if (par_read_pipe(poffset, FALSE))    /* Finished with this pipe */
-          {
           for (;;)                            /* Loop for signals */
             {
             pid_t endedpid = waitpid(pid, &status, 0);
@@ -3989,7 +3997,6 @@ for (;;)   /* Normally we do not repeat this loop */
                 "%d (errno = %d) from waitpid() for process %d",
                 (int)endedpid, errno, (int)pid);
             }
-          }
         }
       }
 
@@ -4855,6 +4862,9 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 
       if (testflag(addr, af_chunking_used))
 	rmt_dlv_checked_write(fd, 'K', '0', NULL, 0);
+
+      if (testflag(addr, af_tcp_fastopen))
+	rmt_dlv_checked_write(fd, 'T', '0', NULL, 0);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));

@@ -2504,6 +2504,9 @@ for (addr = sx->first_addr, address_count = 0;
   BOOL no_flush;
   uschar * rcpt_addr;
 
+  if (tcp_out_fastopen && !tcp_out_fastopen_logged)
+    setflag(addr, af_tcp_fastopen);
+
   addr->dsn_aware = sx->peer_offered & OPTION_DSN
     ? dsn_support_yes : dsn_support_no;
 
@@ -2557,6 +2560,7 @@ for (addr = sx->first_addr, address_count = 0;
     }
   }      /* Loop for next address */
 
+tcp_out_fastopen_logged = TRUE;
 sx->next_addr = addr;
 return 0;
 }

@@ -47,6 +47,10 @@ Version 4.90
 11. Millisecond timetamps in logs, on log_selector "millisec".  Also affects
     log elements QT, DT and D, and timstamps in debug output.
 
+12. TCP Fast Open logging.  As a server, logs when the SMTP banner was sent
+    while still in SYN_RECV state; as a client logs when the connection
+    is opened with a TFO cookie.
+
 
 Version 4.89
 ------------
