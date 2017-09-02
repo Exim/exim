@@ -49,7 +49,8 @@ Version 4.90
 
 12. TCP Fast Open logging.  As a server, logs when the SMTP banner was sent
     while still in SYN_RECV state; as a client logs when the connection
-    is opened with a TFO cookie.
+    is opened with a TFO cookie.  Support varies between platforms
+    (Linux does both. FreeBSD server only, others unknown).
 
 
 Version 4.89

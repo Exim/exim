@@ -144,7 +144,7 @@ return TRUE;
 static void
 tfo_out_check(int sock)
 {
-# ifdef TCP_INFO
+# if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
