@@ -291,7 +291,6 @@ for (pass=0; pass<=1; ++pass)
       else
         {		/* encoded char */
         new += sprintf(CS new,"=%02X",ch);
-        new+=3;
         }
       line+=3;
       }

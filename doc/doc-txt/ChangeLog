@@ -151,6 +151,10 @@ JH/25 Use one-bit bitfields for flags in the "addr" data structure.  Previously
 PP/07 GitHub PR 56: Apply MariaDB build fix.
       Patch provided by Jaroslav Škarvada.
 
+PP/08 Bug 2161: Fix regression in sieve quoted-printable handling introduced
+      during Coverity cleanups [4.87 JH/47]
+      Diagnosis and fix provided by Michael Fischer v. Mollard.
+
 
 Exim version 4.89
 -----------------
