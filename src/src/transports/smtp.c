@@ -201,87 +201,87 @@ void smtp_transport_closedown(transport_instance *tblock) {}
 /* Default private options block for the smtp transport. */
 
 smtp_transport_options_block smtp_transport_option_defaults = {
-  NULL,                /* hosts */
-  NULL,                /* fallback_hosts */
-  NULL,                /* hostlist */
-  NULL,                /* fallback_hostlist */
-  NULL,                /* authenticated_sender */
-  US"$primary_hostname", /* helo_data */
-  NULL,                /* interface */
-  NULL,                /* port */
-  US"smtp",            /* protocol */
-  NULL,                /* DSCP */
-  NULL,                /* serialize_hosts */
-  NULL,                /* hosts_try_auth */
-  NULL,                /* hosts_require_auth */
-  US"*",               /* hosts_try_chunking */
+  .hosts =			NULL,
+  .hosts =			NULL,
+  .hostlist =			NULL,
+  .fallback_hostlist =		NULL,
+  .authenticated_sender =	NULL,
+  .helo_data =			US"$primary_hostname",
+  .interface =			NULL,
+  .port =			NULL,
+  .protocol =			US"smtp",
+  .dscp =			NULL,
+  .serialize_hosts =		NULL,
+  .hosts_try_auth =		NULL,
+  .hosts_require_auth =		NULL,
+  .hosts_try_chunking =		US"*",
 #ifdef EXPERIMENTAL_DANE
-  NULL,                /* hosts_try_dane */
-  NULL,                /* hosts_require_dane */
+  .hosts_try_dane =		NULL,
+  .hosts_require_dane =		NULL,
 #endif
-  NULL,                /* hosts_try_fastopen */
+  .hosts_try_fastopen =		NULL,
 #ifndef DISABLE_PRDR
-  US"*",               /* hosts_try_prdr */
+  .hosts_try_prdr =		US"*",
 #endif
 #ifndef DISABLE_OCSP
-  US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
-  NULL,                /* hosts_require_ocsp */
+  .hosts_request_ocsp =		US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
+  .hosts_require_ocsp =		NULL,
 #endif
-  NULL,                /* hosts_require_tls */
-  NULL,                /* hosts_avoid_tls */
-  NULL,                /* hosts_verify_avoid_tls */
-  NULL,                /* hosts_avoid_pipelining */
-  NULL,                /* hosts_avoid_esmtp */
+  .hosts_require_tls =		NULL,
+  .hosts_avoid_tls =		NULL,
+  .hosts_verify_avoid_tls =	NULL,
+  .hosts_avoid_pipelining =	NULL,
+  .hosts_avoid_esmtp =		NULL,
 #ifdef SUPPORT_TLS
-  NULL,                /* hosts_nopass_tls */
-  US"*",	       /* hosts_noproxy_tls */
+  .hosts_nopass_tls =		NULL,
+  .hosts_noproxy_tls =		US"*",
 #endif
-  5*60,                /* command_timeout */
-  5*60,                /* connect_timeout; shorter system default overrides */
-  5*60,                /* data timeout */
-  10*60,               /* final timeout */
-  1024,                /* size_addition */
-  5,                   /* hosts_max_try */
-  50,                  /* hosts_max_try_hardlimit */
-  TRUE,                /* address_retry_include_sender */
-  FALSE,               /* allow_localhost */
-  FALSE,               /* authenticated_sender_force */
-  FALSE,               /* gethostbyname */
-  TRUE,                /* dns_qualify_single */
-  FALSE,               /* dns_search_parents */
-  { NULL, NULL },      /* dnssec_domains {request,require} */
-  TRUE,                /* delay_after_cutoff */
-  FALSE,               /* hosts_override */
-  FALSE,               /* hosts_randomize */
-  TRUE,                /* keepalive */
-  FALSE,               /* lmtp_ignore_quota */
-  NULL,		       /* expand_retry_include_ip_address */
-  TRUE                 /* retry_include_ip_address */
+  .command_timeout =		5*60,
+  .connect_timeout =		5*60,
+  .data_timeout =		5*60,
+  .final_timeout =		10*60,
+  .size_addition =		1024,
+  .hosts_max_try =		5,
+  .hosts_max_try_hardlimit =	50,
+  .address_retry_include_sender = TRUE,
+  .allow_localhost =		FALSE,
+  .authenticated_sender_force =	FALSE,
+  .gethostbyname =		FALSE,
+  .dns_qualify_single =		TRUE,
+  .dns_search_parents =		FALSE,
+  .dnssec = { .request=NULL, .require=NULL },
+  .delay_after_cutoff =		TRUE,
+  .hosts_override =		FALSE,
+  .hosts_randomize =		FALSE,
+  .keepalive =			TRUE,
+  .lmtp_ignore_quota =		FALSE,
+  .expand_retry_include_ip_address =	NULL,
+  .retry_include_ip_address =	TRUE,
 #ifdef SUPPORT_SOCKS
- ,NULL                 /* socks_proxy */
+  .socks_proxy =		NULL,
 #endif
 #ifdef SUPPORT_TLS
- ,NULL,                /* tls_certificate */
-  NULL,                /* tls_crl */
-  NULL,                /* tls_privatekey */
-  NULL,                /* tls_require_ciphers */
-  NULL,                /* tls_sni */
-  US"system",          /* tls_verify_certificates */
-  EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
-                       /* tls_dh_min_bits */
-  TRUE,                /* tls_tempfail_tryclear */
-  NULL,                /* tls_verify_hosts */
-  US"*",               /* tls_try_verify_hosts */
-  US"*"                /* tls_verify_cert_hostnames */
+  .tls_certificate =		NULL,
+  .tls_crl =			NULL,
+  .tls_privatekey =		NULL,
+  .tls_require_ciphers =	NULL,
+  .tls_sni =			NULL,
+  .tls_verify_certificates =	US"system",
+  .tls_dh_min_bits =		EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
+  .tls_tempfail_tryclear =	TRUE,
+  .tls_verify_hosts =		NULL,
+  .tls_try_verify_hosts =	US"*",
+  .tls_verify_cert_hostnames =	US"*",
 #endif
 #ifndef DISABLE_DKIM
- , {NULL,              /* dkim_canon */
-    NULL,              /* dkim_domain */
-    NULL,              /* dkim_private_key */
-    NULL,              /* dkim_selector */
-    NULL,              /* dkim_sign_headers */
-    NULL,              /* dkim_strict */
-    FALSE}	       /* dot_stuffed */
+ .dkim =
+   {.dkim_domain =		NULL,
+    .dkim_private_key =		NULL,
+    .dkim_selector =		NULL,
+    .dkim_canon =		NULL,
+    .dkim_sign_headers =	 NULL,
+    .dkim_strict =		NULL,
+    .dot_stuffed =		FALSE},
 #endif
 };
 
