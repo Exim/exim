@@ -289,7 +289,7 @@ found:
 /* Performs "relaxed" canonicalization of a header. */
 
 static uschar *
-pdkim_relax_header(const uschar * header, int crlf)
+pdkim_relax_header(const uschar * header, BOOL append_crlf)
 {
 BOOL past_field_name = FALSE;
 BOOL seen_wsp = FALSE;
@@ -300,8 +300,8 @@ uschar * q = relaxed;
 for (p = header; *p; p++)
   {
   uschar c = *p;
-  /* Ignore CR & LF */
-  if (c == '\r' || c == '\n')
+
+  if (c == '\r' || c == '\n')	/* Ignore CR & LF */
     continue;
   if (c == '\t' || c == ' ')
     {
@@ -313,8 +313,8 @@ for (p = header; *p; p++)
   else
     if (!past_field_name && c == ':')
       {
-      if (seen_wsp) q--;	/* This removes WSP before the colon */
-      seen_wsp = TRUE;		/* This removes WSP after the colon */
+      if (seen_wsp) q--;	/* This removes WSP immediately before the colon */
+      seen_wsp = TRUE;		/* This removes WSP immediately after the colon */
       past_field_name = TRUE;
       }
     else
@@ -327,7 +327,7 @@ for (p = header; *p; p++)
 
 if (q > relaxed && q[-1] == ' ') q--; /* Squash eventual trailing SP */
 
-if (crlf) { *q++ = '\r'; *q++ = '\n'; }
+if (append_crlf) { *q++ = '\r'; *q++ = '\n'; }
 *q = '\0';
 return relaxed;
 }
@@ -1253,11 +1253,23 @@ if (sig->bodylength >= 0)
   }
 
 /* Preliminary or final version? */
-base64_b = final ? pdkim_encode_base64(&sig->sighash) : US"";
-hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"b=", base64_b);
+if (final)
+  {
+  base64_b = pdkim_encode_base64(&sig->sighash);
+  hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"b=", base64_b);
 
-/* add trailing semicolon: I'm not sure if this is actually needed */
-hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, NULL, US";", US"");
+  /* add trailing semicolon: I'm not sure if this is actually needed */
+  hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, NULL, US";", US"");
+  }
+else
+  {
+  /* To satisfy the rule "all surrounding whitespace [...] deleted"
+  ( RFC 6376 section 3.7 ) we ensure there is no whitespace here.  Otherwise
+  the headcat routine could insert a linebreak which the relaxer would reduce
+  to a single space preceding the terminating semicolon, resulting in an
+  incorrect header-hash. */
+  hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"b=;", US"");
+  }
 
 hdr[hdr_len] = '\0';
 return hdr;
@@ -1403,7 +1415,7 @@ while (sig)
 			p->value, (q - US p->value) + (p->next ? 1 : 0));
 
 	rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	  ? pdkim_relax_header(p->value, 1) /* cook header for relaxed canon */
+	  ? pdkim_relax_header(p->value, TRUE) /* cook header for relaxed canon */
 	  : string_copy(CUS p->value);      /* just copy it for simple canon */
 
 	/* Feed header to the hash algorithm */
@@ -1464,7 +1476,7 @@ while (sig)
 	    /* cook header for relaxed canon, or just copy it for simple  */
 
 	    uschar * rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	      ? pdkim_relax_header(hdrs->value, 1)
+	      ? pdkim_relax_header(hdrs->value, TRUE)
 	      : string_copy(CUS hdrs->value);
 
 	    /* Feed header to the hash algorithm */
@@ -1488,7 +1500,7 @@ while (sig)
 
   /* Relax header if necessary */
   if (sig->canon_headers == PDKIM_CANON_RELAXED)
-    sig_hdr = pdkim_relax_header(sig_hdr, 0);
+    sig_hdr = pdkim_relax_header(sig_hdr, FALSE);
 
   DEBUG(D_acl)
     {

@@ -155,6 +155,11 @@ PP/08 Bug 2161: Fix regression in sieve quoted-printable handling introduced
       during Coverity cleanups [4.87 JH/47]
       Diagnosis and fix provided by Michael Fischer v. Mollard.
 
+JH/26 Fix DKIM bug: when the pseudoheader generated for signing was exactly
+      the right size to place the terminating semicolon on its own folded
+      line, the header hash was calculated to an incorrect value thanks to
+      the (relaxed) space the fold became.
+
 
 Exim version 4.89
 -----------------
