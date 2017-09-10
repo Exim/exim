@@ -38,6 +38,11 @@ JH/21 Bug 2151 (partial):
                 Avoid using SIZE on the MAIL for a callout verify, on any but
       the main verify for receipient in uncached-mode.
 
+JH/26 Fix DKIM bug: when the pseudoheader generated for signing was exactly
+      the right size to place the terminating semicolon on its own folded
+      line, the header hash was calculated to an incorrect value thanks to
+      the (relaxed) space the fold became.
+
 
 Exim version 4.89
 -----------------
