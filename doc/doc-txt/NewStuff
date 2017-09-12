@@ -52,7 +52,8 @@ Version 4.90
     is opened with a TFO cookie.  Support varies between platforms
     (Linux does both. FreeBSD server only, others unknown).
 
-13. DKIM support for multiple hashes.
+13. DKIM support for multiple signing, by domain and/or key-selector.
+    DKIM support for multiple hashes.
 
 
 Version 4.89

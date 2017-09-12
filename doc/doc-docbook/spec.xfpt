@@ -38526,13 +38526,15 @@ while expanding the remaining signing options.
 .wen
 If it is empty after expansion, DKIM signing is not done.
 
-.option dkim_selector smtp string&!! unset
+.option dkim_selector smtp string list&!! unset
 This sets the key selector string.
-You can use the &%$dkim_domain%& expansion variable to look up a matching selector.
-The result is put in the expansion
+.new
+After expansion, which can use &$dkim_domain$&, this can be a list.
+Each element in turn is put in the expansion
 variable &%$dkim_selector%& which may be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
-If the option is empty after expansion, DKIM signing is not done.
+If the option is empty after expansion, DKIM signing is not done for this domain.
+.wen
 
 .option dkim_private_key smtp string&!! unset
 This sets the private key to use.
@@ -38585,7 +38587,7 @@ Verification of DKIM signatures in SMTP incoming email is implemented via the
 syntactically(!) correct signature in the incoming message.
 A missing ACL definition defaults to accept.
 If any ACL call does not accept, the message is not accepted.
-If a cutthrough delivery was in progress for the message it is
+If a cutthrough delivery was in progress for the message, that is
 summarily dropped (having wasted the transmission effort).
 
 To evaluate the signature in the ACL a large number of expansion variables

@@ -25,6 +25,7 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
 PDKIM (checking verify key)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+ sel_bad._domainkey.test.ex.
  Raw record: v=DKIM1\;{SP}p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB
  v=DKIM1\
  p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB
@@ -34,13 +35,16 @@ WARNING: bad dkim key in dns
 PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 content{CR}{LF}
 PDKIM [test.ex] Body bytes hashed: 9
-PDKIM [test.ex] Body hash computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
+PDKIM [test.ex] Body sha256 computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
+PDKIM >> Headers to be signed:                            >>>>>>>>>>>>
+ From
 PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>
-sender:CALLER_NAME{SP}<CALLER@myhost.test.ex>{CR}{LF}
-message-id:<E10HmbD-0005vi-00@myhost.test.ex>{CR}{LF}
 from:nobody@example.com{CR}{LF}
+PDKIM >> Signed DKIM-Signature header, pre-canonicalized >>>>>>>>>>>>>
+DKIM-Signature:{SP}v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{CR}{LF}{TB}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
 PDKIM >> Signed DKIM-Signature header, canonicalized >>>>>>>>>>>>>>>>>
-dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{SP}s=sel_bad;{SP}h=Date:Sender:Message-Id:From:Reply-To:Subject:To:Cc:MIME-Version:{SP}Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:{SP}Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:{SP}In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:{SP}List-Post:List-Owner:List-Archive;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
+dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{SP}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
+PDKIM [test.ex] Header sha256 computed: 241e16230df5723d899cfae9474c6b376a2ab1f81d1094e358f50ffd0e0067b3
   SMTP<< 250 OK id=10HmbE-0005vi-00
   SMTP>> QUIT
 cmd buf flush ddd bytes

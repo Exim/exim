@@ -113,6 +113,7 @@ typedef struct pdkim_pubkey {
 /* -------------------------------------------------------------------------- */
 /* Signature as it appears in a DKIM-Signature header */
 typedef struct pdkim_signature {
+  struct pdkim_signature * next;
 
   /* Bits stored in a DKIM signature header --------------------------- */
 
@@ -166,7 +167,7 @@ typedef struct pdkim_signature {
   /* (bh=) Raw body hash data, along with its length in bytes */
   blob bodyhash;
 
-  /* Folded DKIM-Signature: header. Singing only, NULL for verifying.
+  /* Folded DKIM-Signature: header. Signing only, NULL for verifying.
      Ready for insertion into the message. Note: Folded using CRLFTB,
      but final line terminator is NOT included. Note2: This buffer is
      free()d when you call pdkim_free_ctx(). */
@@ -223,17 +224,15 @@ typedef struct pdkim_signature {
      Caution: is NULL if signing or if no record was retrieved. */
   pdkim_pubkey *pubkey;
 
-  /* Pointer to the next pdkim_signature signature. NULL if signing or if
-     this is the last signature. */
-  void *next;
-
   /* Properties below this point are used internally only ------------- */
 
   /* Per-signature helper variables ----------------------------------- */
   hctx         body_hash_ctx;
 
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
+  int num_buffered_blanklines;
   pdkim_stringlist *headers; /* Raw headers included in the sig         */
+
   /* Signing specific ------------------------------------------------- */
   uschar * privkey;	     /* Private key                                 */
   uschar * sign_headers;    /* To-be-signed header names                   */
@@ -265,7 +264,6 @@ typedef struct pdkim_ctx {
   int        cur_header_len;
   char      *linebuf;
   int        linebuf_offset;
-  int        num_buffered_crlf;
   int        num_headers;
   pdkim_stringlist *headers; /* Raw headers for verification         */
 } pdkim_ctx;
@@ -282,15 +280,18 @@ extern "C" {
 
 void	   pdkim_init         (void);
 
+void	   pdkim_init_context (pdkim_ctx *, BOOL, int(*)(char *, char *));
+
 DLLEXPORT
-pdkim_ctx *pdkim_init_sign    (uschar *, uschar *, uschar *, uschar *,
-			      BOOL, int(*)(char *, char *), const uschar **);
+pdkim_signature *pdkim_init_sign    (pdkim_ctx *,
+			       uschar *, uschar *, uschar *, uschar *,
+			       const uschar **);
 
 DLLEXPORT
 pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *), BOOL);
 
 DLLEXPORT
-int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
+void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
                                long,
                                unsigned long,
                                unsigned long);
@@ -306,7 +307,7 @@ void       pdkim_free_ctx     (pdkim_ctx *);
 
 const uschar *	pdkim_errstr(int);
 
-uschar *	dkim_sig_to_a_tag(pdkim_signature * sig);
+uschar *	dkim_sig_to_a_tag(const pdkim_signature * sig);
 
 #ifdef __cplusplus
 }

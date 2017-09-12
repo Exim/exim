@@ -587,6 +587,7 @@ return NULL;
 void
 exim_dkim_init(void)
 {
+ERR_load_crypto_strings();
 }
 
 
@@ -618,7 +619,7 @@ return NULL;
 OR
 sign hash.
 
-Return: NULL for success, or an error string */
+Return: NULL for success with the signaature in the sig blob, or an error string */
 
 const uschar *
 exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
@@ -644,10 +645,13 @@ if (  (ctx = EVP_PKEY_CTX_new(sign_ctx->key, NULL))
   {
   /* Allocate mem for signature */
   sig->data = store_get(siglen);
-  sig->len = siglen;
 
   if (EVP_PKEY_sign(ctx, sig->data, &siglen, data->data, data->len) > 0)
-    { EVP_PKEY_CTX_free(ctx); return NULL; }
+    {
+    EVP_PKEY_CTX_free(ctx);
+    sig->len = siglen;
+    return NULL;
+    }
   }
 
 if (ctx) EVP_PKEY_CTX_free(ctx);

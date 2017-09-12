@@ -2377,8 +2377,10 @@ switch(cond_type)
       case 3: return NULL;
       }
 
-    *resetok = FALSE;	/* eval_acl() might allocate; do not reclaim */
-    if (yield != NULL) switch(eval_acl(sub, nelem(sub), &user_msg))
+    if (yield != NULL)
+      {
+      *resetok = FALSE;	/* eval_acl() might allocate; do not reclaim */
+      switch(eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
 	  cond = TRUE;
@@ -2399,6 +2401,7 @@ switch(cond_type)
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
 	  return NULL;
 	}
+      }
     return s;
     }
 

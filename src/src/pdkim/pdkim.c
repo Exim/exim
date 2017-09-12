@@ -110,9 +110,11 @@ pdkim_combined_canon_entry pdkim_combined_canons[] = {
 };
 
 
+static blob lineending = {.data = US"\r\n", .len = 2};
+
 /* -------------------------------------------------------------------------- */
 uschar *
-dkim_sig_to_a_tag(pdkim_signature * sig)
+dkim_sig_to_a_tag(const pdkim_signature * sig)
 {
 if (  sig->keytype < 0  || sig->keytype > nelem(pdkim_keytypes)
    || sig->hashtype < 0 || sig->hashtype > nelem(pdkim_hashes))
@@ -426,7 +428,7 @@ return b64encode(b->data, b->len);
 #define PDKIM_HDR_VALUE 2
 
 static pdkim_signature *
-pdkim_parse_sig_header(pdkim_ctx *ctx, uschar * raw_hdr)
+pdkim_parse_sig_header(pdkim_ctx * ctx, uschar * raw_hdr)
 {
 pdkim_signature * sig;
 uschar *p, *q;
@@ -675,87 +677,87 @@ return NULL;
 
 /* -------------------------------------------------------------------------- */
 
-static int
-pdkim_update_bodyhash(pdkim_ctx * ctx, const char * data, int len)
+/* Update the bodyhash for one sig, with some additional data.
+If we have to relax the data for this sig, return our copy of it. */
+
+/*XXX Currently we calculate a hash for each sig.  But it is possible
+that multi-signing will be wanted using different signing algos
+(rsa, ec) using the same hash and canonicalization.  Consider in future
+hanging the hash+cacnon from the ctx and only referencing from the sig,
+so that it can be calculated only once - being over the body this
+caould be meagbytes, hence expensive. */
+
+static blob *
+pdkim_update_sig_bodyhash(pdkim_signature * sig, blob * orig_data, blob * relaxed_data)
 {
-pdkim_signature * sig;
-uschar * relaxed_data = NULL;	/* Cache relaxed version of data */
-int relaxed_len = 0;
+blob * canon_data = orig_data;
+/* Defaults to simple canon (no further treatment necessary) */
 
-/* Traverse all signatures, updating their hashes. */
-for (sig = ctx->sig; sig; sig = sig->next)
+if (sig->canon_body == PDKIM_CANON_RELAXED)
   {
-  /* Defaults to simple canon (no further treatment necessary) */
-  const uschar *canon_data = CUS data;
-  int           canon_len = len;
-
-  if (sig->canon_body == PDKIM_CANON_RELAXED)
+  /* Relax the line if not done already */
+  if (!relaxed_data)
     {
-    /* Relax the line if not done already */
-    if (!relaxed_data)
+    BOOL seen_wsp = FALSE;
+    const char *p;
+    int q = 0;
+
+    /* We want to be able to free this else we allocate
+    for the entire message which could be many MB. Since
+    we don't know what allocations the SHA routines might
+    do, not safe to use store_get()/store_reset(). */
+
+    relaxed_data = store_malloc(sizeof(blob) + orig_data->len+1);
+    relaxed_data->data = US (relaxed_data+1);
+
+    for (p = orig_data->data; *p; p++)
       {
-      BOOL seen_wsp = FALSE;
-      const char *p;
-      int q = 0;
-
-      /* We want to be able to free this else we allocate
-      for the entire message which could be many MB. Since
-      we don't know what allocations the SHA routines might
-      do, not safe to use store_get()/store_reset(). */
-
-      relaxed_data = store_malloc(len+1);
-
-      for (p = data; *p; p++)
-        {
-	char c = *p;
-	if (c == '\r')
-	  {
-	  if (q > 0 && relaxed_data[q-1] == ' ')
-	    q--;
-	  }
-	else if (c == '\t' || c == ' ')
-	  {
-	  c = ' '; /* Turns WSP into SP */
-	  if (seen_wsp)
-	    continue;
-	  seen_wsp = TRUE;
-	  }
-	else
-	  seen_wsp = FALSE;
-	relaxed_data[q++] = c;
+      char c = *p;
+      if (c == '\r')
+	{
+	if (q > 0 && relaxed_data->data[q-1] == ' ')
+	  q--;
 	}
-      relaxed_data[q] = '\0';
-      relaxed_len = q;
+      else if (c == '\t' || c == ' ')
+	{
+	c = ' '; /* Turns WSP into SP */
+	if (seen_wsp)
+	  continue;
+	seen_wsp = TRUE;
+	}
+      else
+	seen_wsp = FALSE;
+      relaxed_data->data[q++] = c;
       }
-    canon_data = relaxed_data;
-    canon_len  = relaxed_len;
+    relaxed_data->data[q] = '\0';
+    relaxed_data->len = q;
     }
-
-  /* Make sure we don't exceed the to-be-signed body length */
-  if (  sig->bodylength >= 0
-     && sig->signed_body_bytes + (unsigned long)canon_len > sig->bodylength
-     )
-    canon_len = sig->bodylength - sig->signed_body_bytes;
-
-  if (canon_len > 0)
-    {
-    exim_sha_update(&sig->body_hash_ctx, CUS canon_data, canon_len);
-    sig->signed_body_bytes += canon_len;
-    DEBUG(D_acl) pdkim_quoteprint(canon_data, canon_len);
-    }
+  canon_data = relaxed_data;
   }
 
-if (relaxed_data) store_free(relaxed_data);
-return PDKIM_OK;
+/* Make sure we don't exceed the to-be-signed body length */
+if (  sig->bodylength >= 0
+   && sig->signed_body_bytes + (unsigned long)canon_data->len > sig->bodylength
+   )
+  canon_data->len = sig->bodylength - sig->signed_body_bytes;
+
+if (canon_data->len > 0)
+  {
+  exim_sha_update(&sig->body_hash_ctx, CUS canon_data->data, canon_data->len);
+  sig->signed_body_bytes += canon_data->len;
+  DEBUG(D_acl) pdkim_quoteprint(canon_data->data, canon_data->len);
+  }
+
+return relaxed_data;
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 static void
-pdkim_finish_bodyhash(pdkim_ctx *ctx)
+pdkim_finish_bodyhash(pdkim_ctx * ctx)
 {
-pdkim_signature *sig;
+pdkim_signature * sig;
 
 /* Traverse all signatures */
 for (sig = ctx->sig; sig; sig = sig->next)
@@ -767,8 +769,9 @@ for (sig = ctx->sig; sig; sig = sig->next)
   DEBUG(D_acl)
     {
     debug_printf("PDKIM [%s] Body bytes hashed: %lu\n"
-		 "PDKIM [%s] Body hash computed: ",
-		sig->domain, sig->signed_body_bytes, sig->domain);
+		 "PDKIM [%s] Body %s computed: ",
+		sig->domain, sig->signed_body_bytes,
+		sig->domain, pdkim_hashes[sig->hashtype].dkim_hashname);
     pdkim_hexprint(CUS bh.data, bh.len);
     }
 
@@ -807,10 +810,10 @@ for (sig = ctx->sig; sig; sig = sig->next)
 
 
 
-static int
+static void
 pdkim_body_complete(pdkim_ctx * ctx)
 {
-pdkim_signature * sig = ctx->sig;	/*XXX assumes only one sig */
+pdkim_signature * sig;
 
 /* In simple body mode, if any empty lines were buffered,
 replace with one. rfc 4871 3.4.3 */
@@ -818,15 +821,15 @@ replace with one. rfc 4871 3.4.3 */
 it indicates that all linebreaks should be buffered, including
 the one terminating a text line */
 
-if (  sig && sig->canon_body == PDKIM_CANON_SIMPLE
-   && sig->signed_body_bytes == 0
-   && ctx->num_buffered_crlf > 0
-   )
-  pdkim_update_bodyhash(ctx, "\r\n", 2);
+for (sig = ctx->sig; sig; sig = sig->next)
+  if (  sig->canon_body == PDKIM_CANON_SIMPLE
+     && sig->signed_body_bytes == 0
+     && sig->num_buffered_blanklines > 0
+     )
+    (void) pdkim_update_sig_bodyhash(sig, &lineending, NULL);
 
 ctx->flags |= PDKIM_SEEN_EOD;
 ctx->linebuf_offset = 0;
-return PDKIM_OK;
 }
 
 
@@ -834,70 +837,78 @@ return PDKIM_OK;
 /* -------------------------------------------------------------------------- */
 /* Call from pdkim_feed below for processing complete body lines */
 
-static int
-pdkim_bodyline_complete(pdkim_ctx *ctx)
+static void
+pdkim_bodyline_complete(pdkim_ctx * ctx)
 {
-char *p = ctx->linebuf;
-int   n = ctx->linebuf_offset;
-pdkim_signature *sig = ctx->sig;	/*XXX assumes only one sig */
+blob line = {.data = ctx->linebuf, .len = ctx->linebuf_offset};
+pdkim_signature * sig;
+blob * rnl = NULL;
+blob * rline = NULL;
 
 /* Ignore extra data if we've seen the end-of-data marker */
-if (ctx->flags & PDKIM_SEEN_EOD) goto BAIL;
+if (ctx->flags & PDKIM_SEEN_EOD) goto all_skip;
 
 /* We've always got one extra byte to stuff a zero ... */
-ctx->linebuf[ctx->linebuf_offset] = '\0';
+ctx->linebuf[line.len] = '\0';
 
 /* Terminate on EOD marker */
 if (ctx->flags & PDKIM_DOT_TERM)
   {
-  if (memcmp(p, ".\r\n", 3) == 0)
-    return pdkim_body_complete(ctx);
+  if (memcmp(line.data, ".\r\n", 3) == 0)
+    { pdkim_body_complete(ctx); return; }
 
   /* Unstuff dots */
-  if (memcmp(p, "..", 2) == 0)
-    {
-    p++;
-    n--;
-    }
+  if (memcmp(line.data, "..", 2) == 0)
+    { line.data++; line.len--; }
   }
 
 /* Empty lines need to be buffered until we find a non-empty line */
-if (memcmp(p, "\r\n", 2) == 0)
+if (memcmp(line.data, "\r\n", 2) == 0)
   {
-  ctx->num_buffered_crlf++;
-  goto BAIL;
+  for (sig = ctx->sig; sig; sig = sig->next) sig->num_buffered_blanklines++;
+  goto all_skip;
   }
 
-if (sig && sig->canon_body == PDKIM_CANON_RELAXED)
+/* Process line for each sig separately */
+for (sig = ctx->sig; sig; sig = sig->next)
   {
-  /* Lines with just spaces need to be buffered too */
-  char *check = p;
-  while (memcmp(check, "\r\n", 2) != 0)
+  if (sig->canon_body == PDKIM_CANON_RELAXED)
     {
-    char c = *check;
+    /* Lines with just spaces need to be buffered too */
+    char * cp = line.data;
+    char c;
 
-    if (c != '\t' && c != ' ')
-      goto PROCESS;
-    check++;
+    while ((c = *cp))
+      {
+      if (c == '\r' && cp[1] == '\n') break;
+      if (c != ' ' && c != '\t') goto sig_process;
+      cp++;
+      }
+
+    sig->num_buffered_blanklines++;
+    goto sig_skip;
     }
 
-  ctx->num_buffered_crlf++;
-  goto BAIL;
-}
+sig_process:
+  /* At this point, we have a non-empty line, so release the buffered ones. */
 
-PROCESS:
-/* At this point, we have a non-empty line, so release the buffered ones. */
-while (ctx->num_buffered_crlf)
-  {
-  pdkim_update_bodyhash(ctx, "\r\n", 2);
-  ctx->num_buffered_crlf--;
+  while (sig->num_buffered_blanklines)
+    {
+    rnl = pdkim_update_sig_bodyhash(sig, &lineending, rnl);
+    sig->num_buffered_blanklines--;
+    }
+
+  rline = pdkim_update_sig_bodyhash(sig, &line, rline);
+sig_skip: ;
   }
 
-pdkim_update_bodyhash(ctx, p, n);
+if (rnl) store_free(rnl);
+if (rline) store_free(rline);
 
-BAIL:
+all_skip:
+
 ctx->linebuf_offset = 0;
-return PDKIM_OK;
+return;
 }
 
 
@@ -1002,8 +1013,7 @@ else for (p = 0; p<len; p++)
     else if (c == '\n')
       {
       ctx->flags &= ~PDKIM_SEEN_CR;
-      if ((rc = pdkim_bodyline_complete(ctx)) != PDKIM_OK)
-	return rc;
+      pdkim_bodyline_complete(ctx);
       }
 
     if (ctx->linebuf_offset == PDKIM_MAX_BODY_LINE_LEN-1)
@@ -1183,7 +1193,7 @@ return str;
 /* -------------------------------------------------------------------------- */
 
 static uschar *
-pdkim_create_header(pdkim_signature *sig, BOOL final)
+pdkim_create_header(pdkim_signature * sig, BOOL final)
 {
 uschar * base64_bh;
 uschar * base64_b;
@@ -1324,7 +1334,9 @@ DEBUG(D_acl)
   {
   debug_printf(
     "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n"
-    " Raw record: ");
+    " %s\n"
+    " Raw record: ",
+    dns_txt_name);
   pdkim_quoteprint(CUS dns_txt_reply, Ustrlen(dns_txt_reply));
   }
 
@@ -1369,16 +1381,22 @@ DLLEXPORT int
 pdkim_feed_finish(pdkim_ctx * ctx, pdkim_signature ** return_signatures,
   const uschar ** err)
 {
-pdkim_signature *sig = ctx->sig;
+pdkim_signature * sig;
 
 /* Check if we must still flush a (partial) header. If that is the
    case, the message has no body, and we must compute a body hash
    out of '<CR><LF>' */
 if (ctx->cur_header && ctx->cur_header_len)
   {
-  int rc = pdkim_header_complete(ctx);
-  if (rc != PDKIM_OK) return rc;
-  pdkim_update_bodyhash(ctx, "\r\n", 2);
+  blob * rnl = NULL;
+  int rc;
+
+  if ((rc = pdkim_header_complete(ctx)) != PDKIM_OK)
+    return rc;
+
+  for (sig = ctx->sig; sig; sig = sig->next)
+    rnl = pdkim_update_sig_bodyhash(sig, &lineending, rnl);
+  if (rnl) store_free(rnl);
   }
 else
   DEBUG(D_acl) debug_printf(
@@ -1387,7 +1405,7 @@ else
 /* Build (and/or evaluate) body hash */
 pdkim_finish_bodyhash(ctx);
 
-while (sig)
+for (sig = ctx->sig; sig; sig = sig->next)
   {
   hctx hhash_ctx;
   uschar * sig_hdr = US"";
@@ -1405,8 +1423,15 @@ while (sig)
     break;
     }
 
+  if (ctx->flags & PDKIM_MODE_SIGN)
+    DEBUG(D_acl) debug_printf(
+	"PDKIM >> Headers to be signed:                            >>>>>>>>>>>>\n"
+	" %s\n",
+	sig->sign_headers);
+
   DEBUG(D_acl) debug_printf(
       "PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>\n");
+
 
   /* SIGNING ---------------------------------------------------------------- */
   /* When signing, walk through our header list and add them to the hash. As we
@@ -1416,26 +1441,26 @@ while (sig)
 
   if (ctx->flags & PDKIM_MODE_SIGN)
     {
-    uschar * headernames = NULL;	/* Collected signed header names */
     int hs = 0, hl = 0;
     pdkim_stringlist *p;
     const uschar * l;
     uschar * s;
     int sep = 0;
 
+    sig->headernames = NULL;		/* Collected signed header names */
+
     for (p = sig->headers; p; p = p->next)
-      if (header_name_match(p->value, sig->sign_headers) == PDKIM_OK)
+      {
+      uschar * rh = p->value;
+
+      if (header_name_match(rh, sig->sign_headers) == PDKIM_OK)
 	{
-	uschar * rh;
 	/* Collect header names (Note: colon presence is guaranteed here) */
-	uschar * q = Ustrchr(p->value, ':');
+	sig->headernames = string_append_listele_n(sig->headernames, &hs, &hl,
+				':', rh, Ustrchr(rh, ':') - rh);
 
-	headernames = string_catn(headernames, &hs, &hl,
-			p->value, (q - US p->value) + (p->next ? 1 : 0));
-
-	rh = sig->canon_headers == PDKIM_CANON_RELAXED
-	  ? pdkim_relax_header(p->value, TRUE) /* cook header for relaxed canon */
-	  : string_copy(CUS p->value);      /* just copy it for simple canon */
+	if (sig->canon_headers == PDKIM_CANON_RELAXED)
+	  rh = pdkim_relax_header(rh, TRUE);	/* cook header for relaxed canon */
 
 	/* Feed header to the hash algorithm */
 	exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
@@ -1445,20 +1470,14 @@ while (sig)
 
 	DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
 	}
+      }
 
+    /* Any headers we wanted to sign but were not present must also be listed */
     l = sig->sign_headers;
     while((s = string_nextinlist(&l, &sep, NULL, 0)))
       if (*s != '_')
-	{			/*SSS string_append_listele() */
-	if (hl > 0 && headernames[hl-1] != ':')
-	  headernames = string_catn(headernames, &hs, &hl, US":", 1);
-
-	headernames = string_cat(headernames, &hs, &hl, s);
-	}
-    headernames[hl] = '\0';
-
-    /* Copy headernames to signature struct */
-    sig->headernames = headernames;
+	sig->headernames = string_append_listele(sig->headernames, &hs, &hl, ':', s);
+    sig->headernames[hl] = '\0';
 
     /* Create signature header with b= omitted */
     sig_hdr = pdkim_create_header(sig, FALSE);
@@ -1517,6 +1536,15 @@ while (sig)
   DEBUG(D_acl) debug_printf(
 	    "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
+  DEBUG(D_acl)
+    {
+    debug_printf(
+	    "PDKIM >> Signed DKIM-Signature header, pre-canonicalized >>>>>>>>>>>>>\n");
+    pdkim_quoteprint(CUS sig_hdr, Ustrlen(sig_hdr));
+    debug_printf(
+	    "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+    }
+
   /* Relax header if necessary */
   if (sig->canon_headers == PDKIM_CANON_RELAXED)
     sig_hdr = pdkim_relax_header(sig_hdr, FALSE);
@@ -1536,12 +1564,13 @@ while (sig)
 
   DEBUG(D_acl)
     {
-    debug_printf("PDKIM [%s] Header hash computed: ", sig->domain);
+    debug_printf("PDKIM [%s] Header %s computed: ",
+      sig->domain, pdkim_hashes[sig->hashtype].dkim_hashname);
     pdkim_hexprint(hhash.data, hhash.len);
     }
 
-  /* Remember headers block for signing (when the library cannot do incremental)  */
-/*XXX is this assuing algo == RSA? */
+  /* Remember headers block for signing (when the signing library cannot do
+  incremental)  */
   if (ctx->flags & PDKIM_MODE_SIGN)
     (void) exim_dkim_data_append(&hdata, &hdata_alloc, US sig_hdr);
 
@@ -1621,6 +1650,12 @@ while (sig)
       goto NEXT_VERIFY;
       }
 
+    DEBUG(D_acl)
+      {
+      debug_printf( "PDKIM [%s] b from mail: ", sig->domain);
+      pdkim_hexprint(sig->sighash.data, sig->sighash.len);
+      }
+
     if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx, err)))
       goto NEXT_VERIFY;
 
@@ -1675,8 +1710,6 @@ NEXT_VERIFY:
 	debug_printf("\n");
       }
     }
-
-  sig = sig->next;
   }
 
 /* If requested, set return pointer to signature(s) */
@@ -1709,31 +1742,23 @@ return ctx;
 
 /*XXX ? needs extension to cover non-RSA algo?  */
 
-DLLEXPORT pdkim_ctx *
-pdkim_init_sign(uschar * domain, uschar * selector, uschar * privkey,
-  uschar * hashname, BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *),
-  const uschar ** errstr)
+DLLEXPORT pdkim_signature *
+pdkim_init_sign(pdkim_ctx * ctx,
+  uschar * domain, uschar * selector, uschar * privkey,
+  uschar * hashname, const uschar ** errstr)
 {
 int hashtype;
-pdkim_ctx * ctx;
 pdkim_signature * sig;
 
 if (!domain || !selector || !privkey)
   return NULL;
 
-ctx = store_get(sizeof(pdkim_ctx) + PDKIM_MAX_BODY_LINE_LEN + sizeof(pdkim_signature));
-memset(ctx, 0, sizeof(pdkim_ctx));
+/* Allocate & init one signature struct */
 
-ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;
-ctx->linebuf = CS (ctx+1);
-
-DEBUG(D_acl) ctx->dns_txt_callback = dns_txt_callback;
-
-sig = (pdkim_signature *)(ctx->linebuf + PDKIM_MAX_BODY_LINE_LEN);
+sig = store_get(sizeof(pdkim_signature));
 memset(sig, 0, sizeof(pdkim_signature));
 
 sig->bodylength = -1;
-ctx->sig = sig;
 
 sig->domain = string_copy(US domain);
 sig->selector = string_copy(US selector);
@@ -1767,24 +1792,22 @@ DEBUG(D_acl)
     debug_printf("WARNING: bad dkim key in dns\n");
   debug_printf("PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
-return ctx;
+return sig;
 }
 
 
 /* -------------------------------------------------------------------------- */
 
-DLLEXPORT int
-pdkim_set_optional(pdkim_ctx *ctx,
-                       char *sign_headers,
-                       char *identity,
+DLLEXPORT void
+pdkim_set_optional(pdkim_signature * sig,
+                       char * sign_headers,
+                       char * identity,
                        int canon_headers,
                        int canon_body,
                        long bodylength,
                        unsigned long created,
                        unsigned long expires)
 {
-pdkim_signature * sig = ctx->sig;
-
 if (identity)
   sig->identity = string_copy(US identity);
 
@@ -1797,7 +1820,19 @@ sig->bodylength = bodylength;
 sig->created = created;
 sig->expires = expires;
 
-return PDKIM_OK;
+return;
+}
+
+
+
+void
+pdkim_init_context(pdkim_ctx * ctx, BOOL dot_stuffed,
+  int(*dns_txt_callback)(char *, char *))
+{
+memset(ctx, 0, sizeof(pdkim_ctx));
+ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;
+ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN);
+DEBUG(D_acl) ctx->dns_txt_callback = dns_txt_callback;
 }
 
 

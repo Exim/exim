@@ -117,8 +117,9 @@ dkt_direct(transport_ctx * tctx, struct ob_dkim * dkim,
 int save_fd = tctx->u.fd;
 int save_options = tctx->options;
 BOOL save_wireformat = spool_file_wireformat;
-uschar * hdrs, * dkim_signature;
-int siglen = 0, hsize;
+uschar * hdrs;
+blob * dkim_signature;
+int hsize;
 const uschar * errstr;
 BOOL rc;
 
@@ -143,14 +144,13 @@ if (!rc) return FALSE;
 
 dkim->dot_stuffed = !!(save_options & topt_end_dot);
 
-if ((dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
+if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
 				    hdrs, dkim, &errstr)))
-  siglen = Ustrlen(dkim_signature);
-else if (!(rc = dkt_sign_fail(dkim, &errno)))
-  {
-  *err = errstr;
-  return FALSE;
-  }
+  if (!(rc = dkt_sign_fail(dkim, &errno)))
+    {
+    *err = errstr;
+    return FALSE;
+    }
 
 /* Write the signature and headers into the deliver-out-buffer.  This should
 mean they go out in the same packet as the MAIL, RCPT and (first) BDAT commands
@@ -162,8 +162,12 @@ temporarily set the marker for possible already-CRLF input. */
 tctx->options &= ~topt_escape_headers;
 spool_file_wireformat = TRUE;
 transport_write_reset(0);
-if (  siglen > 0 && !write_chunk(tctx, dkim_signature, siglen)
-   || !write_chunk(tctx, hdrs, hsize))
+if (  (  dkim_signature
+      && dkim_signature->len > 0
+      && !write_chunk(tctx, dkim_signature->data, dkim_signature->len)
+      )
+   || !write_chunk(tctx, hdrs, hsize)
+   )
   return FALSE;
 
 spool_file_wireformat = save_wireformat;
@@ -199,8 +203,9 @@ dkt_via_kfile(transport_ctx * tctx, struct ob_dkim * dkim, const uschar ** err)
 int dkim_fd;
 int save_errno = 0;
 BOOL rc;
-uschar * dkim_spool_name, * dkim_signature;
-int siglen = 0, options;
+uschar * dkim_spool_name;
+blob * dkim_signature;
+int options, dlen;
 off_t k_file_size;
 const uschar * errstr;
 
@@ -243,13 +248,17 @@ if (!rc)
 /* Feed the file to the goats^W DKIM lib */
 
 dkim->dot_stuffed = !!(options & topt_end_dot);
-if ((dkim_signature = dkim_exim_sign(dkim_fd, 0, NULL, dkim, &errstr)))
-  siglen = Ustrlen(dkim_signature);
-else if (!(rc = dkt_sign_fail(dkim, &save_errno)))
+if (!(dkim_signature = dkim_exim_sign(dkim_fd, 0, NULL, dkim, &errstr)))
   {
-  *err = errstr;
-  goto CLEANUP;
+  dlen = 0;
+  if (!(rc = dkt_sign_fail(dkim, &save_errno)))
+    {
+    *err = errstr;
+    goto CLEANUP;
+    }
   }
+else
+  dlen = dkim_signature->len;
 
 #ifndef OS_SENDFILE
 if (options & topt_use_bdat)
@@ -266,24 +275,26 @@ if (options & topt_use_bdat)
   MAIL & RCPT commands flushed, then reap the responses so we can
   error out on RCPT rejects before sending megabytes. */
 
-  if (siglen + k_file_size > DELIVER_OUT_BUFFER_SIZE && siglen > 0)
+  if (  dlen + k_file_size > DELIVER_OUT_BUFFER_SIZE
+     && dlen > 0)
     {
-    if (  tctx->chunk_cb(tctx, siglen, 0) != OK
-       || !transport_write_block(tctx, dkim_signature, siglen, FALSE)
+    if (  tctx->chunk_cb(tctx, dlen, 0) != OK
+       || !transport_write_block(tctx,
+		    dkim_signature->data, dlen, FALSE)
        || tctx->chunk_cb(tctx, 0, tc_reap_prev) != OK
        )
       goto err;
-    siglen = 0;
+    dlen = 0;
     }
 
   /* Send the BDAT command for the entire message, as a single LAST-marked
   chunk. */
 
-  if (tctx->chunk_cb(tctx, siglen + k_file_size, tc_chunk_last) != OK)
+  if (tctx->chunk_cb(tctx, dlen + k_file_size, tc_chunk_last) != OK)
     goto err;
   }
 
-if(siglen > 0 && !transport_write_block(tctx, dkim_signature, siglen, TRUE))
+if(dlen > 0 && !transport_write_block(tctx, dkim_signature->data, dlen, TRUE))
   goto err;
 
 if (!dkt_send_file(tctx->u.fd, dkim_fd, 0, k_file_size))
