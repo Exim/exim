@@ -32,11 +32,11 @@
 
 #include "crypt_ver.h"
 
-#ifdef RSA_OPENSSL
+#ifdef SIGN_OPENSSL
 # include <openssl/rsa.h>
 # include <openssl/ssl.h>
 # include <openssl/err.h>
-#elif defined(RSA_GNUTLS)
+#elif defined(SIGN_GNUTLS)
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
 #endif
@@ -73,26 +73,24 @@ const uschar * pdkim_querymethods[] = {
   US"dns/txt",
   NULL
 };
-const uschar * pdkim_algos[] = {
-  US"rsa-sha256",
-  US"rsa-sha1",
-  NULL
-};
 const uschar * pdkim_canons[] = {
   US"simple",
   US"relaxed",
   NULL
 };
-/*XXX currently unused */
-const uschar * pdkim_hashes[] = {
-  US"sha256",
-  US"sha1",
-  NULL
+
+typedef struct {
+  const uschar * dkim_hashname;
+  hashmethod	 exim_hashmethod;
+} pdkim_hashtype;
+static const pdkim_hashtype pdkim_hashes[] = {
+  { US"sha1",   HASH_SHA1 },
+  { US"sha256", HASH_SHA2_256 },
+  { US"sha512", HASH_SHA2_512 }
 };
-/*XXX currently unused */
+
 const uschar * pdkim_keytypes[] = {
-  US"rsa",
-  NULL
+  US"rsa"
 };
 
 typedef struct pdkim_combined_canon_entry {
@@ -113,6 +111,17 @@ pdkim_combined_canon_entry pdkim_combined_canons[] = {
 
 
 /* -------------------------------------------------------------------------- */
+uschar *
+dkim_sig_to_a_tag(pdkim_signature * sig)
+{
+if (  sig->keytype < 0  || sig->keytype > nelem(pdkim_keytypes)
+   || sig->hashtype < 0 || sig->hashtype > nelem(pdkim_hashes))
+  return US"err";
+return string_sprintf("%s-%s",
+  pdkim_keytypes[sig->keytype], pdkim_hashes[sig->hashtype].dkim_hashname);
+}
+
+
 
 const char *
 pdkim_verify_status_str(int status)
@@ -433,8 +442,9 @@ memset(sig, 0, sizeof(pdkim_signature));
 sig->bodylength = -1;
 
 /* Set so invalid/missing data error display is accurate */
-sig->algo = -1;
 sig->version = 0;
+sig->keytype = -1;
+sig->hashtype = -1;
 
 q = sig->rawsig_no_b_val = store_get(Ustrlen(raw_hdr)+1);
 
@@ -507,14 +517,18 @@ for (p = raw_hdr; ; p++)
 	      Ustrcmp(cur_val, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
 	    break;
 	  case 'a':
-/*XXX this searches a list of combined (algo + hash-method)s */
-	    for (i = 0; pdkim_algos[i]; i++)
-	      if (Ustrcmp(cur_val, pdkim_algos[i]) == 0)
-	        {
-		sig->algo = i;
-		break;
-		}
+	    {
+	    uschar * s = Ustrchr(cur_val, '-');
+
+	    for(i = 0; i < nelem(pdkim_keytypes); i++)
+	      if (Ustrncmp(cur_val, pdkim_keytypes[i], s - cur_val) == 0)
+		{ sig->keytype = i; break; }
+	    for (++s, i = 0; i < nelem(pdkim_hashes); i++)
+	      if (Ustrcmp(s, pdkim_hashes[i].dkim_hashname) == 0)
+		{ sig->hashtype = i; break; }
 	    break;
+	    }
+
 	  case 'c':
 	    for (i = 0; pdkim_combined_canons[i].str; i++)
 	      if (Ustrcmp(cur_val, pdkim_combined_canons[i].str) == 0)
@@ -588,9 +602,10 @@ DEBUG(D_acl)
 
 /*XXX hash method: extend for sha512 */
 if (!exim_sha_init(&sig->body_hash_ctx,
-	       sig->algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256))
+	       pdkim_hashes[sig->hashtype].exim_hashmethod))
   {
-  DEBUG(D_acl) debug_printf("PDKIM: hash init internal error\n");
+  DEBUG(D_acl)
+    debug_printf("PDKIM: hash init error, possibly nonhandled hashtype\n");
   return NULL;
   }
 return sig;
@@ -1189,8 +1204,7 @@ col = hdr_len;
 
 /* Required and static bits */
 hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"a=",
-/*XXX this is a combo of algo and hash-method */
-		    pdkim_algos[sig->algo]);
+		    dkim_sig_to_a_tag(sig));
 hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"q=",
 		    pdkim_querymethods[sig->querymethod]);
 hdr = pdkim_headcat(&col, hdr, &hdr_size, &hdr_len, US";", US"c=",
@@ -1375,8 +1389,6 @@ pdkim_finish_bodyhash(ctx);
 
 while (sig)
   {
-/*XXX bool probably not enough */
-  BOOL is_sha1 = sig->algo == PDKIM_ALGO_RSA_SHA1;
   hctx hhash_ctx;
   uschar * sig_hdr = US"";
   blob hhash;
@@ -1386,9 +1398,10 @@ while (sig)
   hdata.data = NULL;
   hdata.len = 0;
 
-  if (!exim_sha_init(&hhash_ctx, is_sha1 ? HASH_SHA1 : HASH_SHA256))
+  if (!exim_sha_init(&hhash_ctx, pdkim_hashes[sig->hashtype].exim_hashmethod))
     {
-    DEBUG(D_acl) debug_printf("PDKIM: hask setup internal error\n");
+    DEBUG(D_acl)
+      debug_printf("PDKIM: hash setup error, possibly nonhandled hashtype\n");
     break;
     }
 
@@ -1537,9 +1550,9 @@ while (sig)
     {
     es_ctx sctx;
 
-    /* Import private key */
+    /* Import private key, including the keytype */
 /*XXX extend for non-RSA algos */
-    if ((*err = exim_dkim_signing_init(US sig->rsa_privkey, &sctx)))
+    if ((*err = exim_dkim_signing_init(US sig->privkey, &sctx)))
       {
       DEBUG(D_acl) debug_printf("signing_init: %s\n", *err);
       return PDKIM_ERR_RSA_PRIVKEY;
@@ -1549,15 +1562,14 @@ while (sig)
     calculated, with GnuTLS we have to sign an entire block of headers
     (due to available interfaces) and it recalculates the hash internally. */
 
-#if defined(RSA_OPENSSL) || defined(RSA_GCRYPT)
+#if defined(SIGN_OPENSSL) || defined(SIGN_GCRYPT)
     hdata = hhash;
 #endif
 
 /*XXX extend for non-RSA algos */
-/*XXX oddly the dkim rfc does _not_ say what variant (sha1 or sha256) of
-RSA signing should be done.  We use the same variant as the hash-method. */
-
-    if ((*err = exim_dkim_sign(&sctx, is_sha1, &hdata, &sig->sighash)))
+    if ((*err = exim_dkim_sign(&sctx,
+		  pdkim_hashes[sig->hashtype].exim_hashmethod,
+		  &hdata, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("signing: %s\n", *err);
       return PDKIM_ERR_RSA_SIGNING;
@@ -1583,7 +1595,8 @@ RSA signing should be done.  We use the same variant as the hash-method. */
 	 && sig->headernames   && *sig->headernames
 	 && sig->bodyhash.data
 	 && sig->sighash.data
-	 && sig->algo > -1
+	 && sig->keytype >= 0
+	 && sig->hashtype >= 0
 	 && sig->version
        ) )
       {
@@ -1619,11 +1632,13 @@ RSA signing should be done.  We use the same variant as the hash-method. */
       const uschar * list = sig->pubkey->hashes, * ele;
       int sep = ':';
       while ((ele = string_nextinlist(&list, &sep, NULL, 0)))
-	if (Ustrcmp(ele, pdkim_algos[sig->algo] + 4) == 0) break;
+	if (Ustrcmp(ele, pdkim_hashes[sig->hashtype].dkim_hashname) == 0) break;
       if (!ele)
 	{
-	DEBUG(D_acl) debug_printf("pubkey h=%s vs sig a=%s\n",
-				sig->pubkey->hashes, pdkim_algos[sig->algo]);
+	DEBUG(D_acl) debug_printf("pubkey h=%s vs. sig a=%s_%s\n",
+	  sig->pubkey->hashes,
+	  pdkim_keytypes[sig->keytype],
+	  pdkim_hashes[sig->hashtype].dkim_hashname);
 	sig->verify_status =      PDKIM_VERIFY_FAIL;
 	sig->verify_ext_status =  PDKIM_VERIFY_FAIL_SIG_ALGO_MISMATCH;
 	goto NEXT_VERIFY;
@@ -1632,7 +1647,9 @@ RSA signing should be done.  We use the same variant as the hash-method. */
 
     /* Check the signature */
 /*XXX needs extension for non-RSA */
-    if ((*err = exim_dkim_verify(&vctx, is_sha1, &hhash, &sig->sighash)))
+    if ((*err = exim_dkim_verify(&vctx,
+		  pdkim_hashes[sig->hashtype].exim_hashmethod,
+		  &hhash, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("headers verify: %s\n", *err);
       sig->verify_status =      PDKIM_VERIFY_FAIL;
@@ -1690,18 +1707,18 @@ return ctx;
 
 /* -------------------------------------------------------------------------- */
 
-/*XXX ? needs extension to cover non-RSA algo?  Currently the "algo" is actually
-the combo of algo and hash-method */
+/*XXX ? needs extension to cover non-RSA algo?  */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_sign(char * domain, char * selector, char * rsa_privkey, int algo,
-  BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *),
+pdkim_init_sign(uschar * domain, uschar * selector, uschar * privkey,
+  uschar * hashname, BOOL dot_stuffed, int(*dns_txt_callback)(char *, char *),
   const uschar ** errstr)
 {
+int hashtype;
 pdkim_ctx * ctx;
 pdkim_signature * sig;
 
-if (!domain || !selector || !rsa_privkey)
+if (!domain || !selector || !privkey)
   return NULL;
 
 ctx = store_get(sizeof(pdkim_ctx) + PDKIM_MAX_BODY_LINE_LEN + sizeof(pdkim_signature));
@@ -1720,14 +1737,23 @@ ctx->sig = sig;
 
 sig->domain = string_copy(US domain);
 sig->selector = string_copy(US selector);
-sig->rsa_privkey = string_copy(US rsa_privkey);
-sig->algo = algo;
+sig->privkey = string_copy(US privkey);
+/*XXX no keytype yet; comes from privkey */
 
-/*XXX extend for sha512 */
-if (!exim_sha_init(&sig->body_hash_ctx,
-	       algo == PDKIM_ALGO_RSA_SHA1 ? HASH_SHA1 : HASH_SHA256))
+for (hashtype = 0; hashtype < nelem(pdkim_hashes); hashtype++)
+  if (Ustrcmp(hashname, pdkim_hashes[hashtype].dkim_hashname) == 0)
+  { sig->hashtype = hashtype; break; }
+if (hashtype >= nelem(pdkim_hashes))
   {
-  DEBUG(D_acl) debug_printf("PDKIM: hash setup internal error\n");
+  DEBUG(D_acl)
+    debug_printf("PDKIM: unrecognised hashname '%s'\n", hashname);
+  return NULL;
+  }
+
+if (!exim_sha_init(&sig->body_hash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
+  {
+  DEBUG(D_acl)
+    debug_printf("PDKIM: hash setup error, possibly nonhandled hashtype\n");
   return NULL;
   }
 

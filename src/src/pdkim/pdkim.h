@@ -63,14 +63,11 @@
 /* Some parameter values */
 #define PDKIM_QUERYMETHOD_DNS_TXT 0
 
-#define PDKIM_ALGO_RSA_SHA256     0
-#define PDKIM_ALGO_RSA_SHA1       1
-
 #define PDKIM_CANON_SIMPLE        0
 #define PDKIM_CANON_RELAXED       1
 
-#define PDKIM_HASH_SHA256         0
-#define PDKIM_HASH_SHA1           1
+/*XXX change to enums */
+#define PDKIM_HASH_SHA256         1
 
 #define PDKIM_KEYTYPE_RSA         0
 
@@ -122,9 +119,8 @@ typedef struct pdkim_signature {
   /* (v=) The version, as an integer. Currently, always "1" */
   int version;
 
-  /* (a=) The signature algorithm. Either PDKIM_ALGO_RSA_SHA256
-     or PDKIM_ALGO_RSA_SHA1 */
-  int algo;
+  int keytype;	/* PDKIM_KEYTYPE_RSA */
+  int hashtype;	/* pdkim_hashes index */
 
   /* (c=x/) Header canonicalization method. Either PDKIM_CANON_SIMPLE
      or PDKIM_CANON_RELAXED */
@@ -239,7 +235,7 @@ typedef struct pdkim_signature {
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
   pdkim_stringlist *headers; /* Raw headers included in the sig         */
   /* Signing specific ------------------------------------------------- */
-  uschar * rsa_privkey;     /* Private RSA key                             */
+  uschar * privkey;	     /* Private key                                 */
   uschar * sign_headers;    /* To-be-signed header names                   */
   uschar * rawsig_no_b_val; /* Original signature header w/o b= tag value. */
 } pdkim_signature;
@@ -287,7 +283,7 @@ extern "C" {
 void	   pdkim_init         (void);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int,
+pdkim_ctx *pdkim_init_sign    (uschar *, uschar *, uschar *, uschar *,
 			      BOOL, int(*)(char *, char *), const uschar **);
 
 DLLEXPORT
@@ -309,6 +305,8 @@ void       pdkim_free_ctx     (pdkim_ctx *);
 
 
 const uschar *	pdkim_errstr(int);
+
+uschar *	dkim_sig_to_a_tag(pdkim_signature * sig);
 
 #ifdef __cplusplus
 }

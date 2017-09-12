@@ -6461,7 +6461,7 @@ while (*s != 0)
 	  blob b;
 	  char st[3];
 
-	  if (!exim_sha_init(&h, HASH_SHA256))
+	  if (!exim_sha_init(&h, HASH_SHA2_256))
 	    {
 	    expand_string_message = US"unrecognised sha256 variant";
 	    goto EXPAND_FAILED;

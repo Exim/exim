@@ -3,11 +3,7 @@
  *
  *  Copyright (C) 2016  Exim maintainers
  *
- *  RSA signing/verification interface
-XXX rename interfaces to cover all signature methods.
-the method (algo) needs to be extracted from the supplied private-key
-and not only stashed as needed in the sign- or verify- context, but
-indicated to caller for protocol tag construction.
+ *  signing/verification interface
  */
 
 #include "../exim.h"
@@ -23,7 +19,7 @@ indicated to caller for protocol tag construction.
 
 
 /******************************************************************************/
-#ifdef RSA_GNUTLS
+#ifdef SIGN_GNUTLS
 
 void
 exim_dkim_init(void)
@@ -55,8 +51,8 @@ int rc;
 k.data = privkey_pem;
 k.size = strlen(privkey_pem);
 
-if (  (rc = gnutls_x509_privkey_init(&sign_ctx->rsa)) != GNUTLS_E_SUCCESS
-   || (rc = gnutls_x509_privkey_import(sign_ctx->rsa, &k,
+if (  (rc = gnutls_x509_privkey_init(&sign_ctx->key)) != GNUTLS_E_SUCCESS
+   || (rc = gnutls_x509_privkey_import(sign_ctx->key, &k,
 	  GNUTLS_X509_FMT_PEM)) != GNUTLS_E_SUCCESS
    )
   return gnutls_strerror(rc);
@@ -74,33 +70,38 @@ sign hash.
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
+exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
 {
+gnutls_digest_algorithm_t dig;
 gnutls_datum_t k;
 size_t sigsize = 0;
 int rc;
 const uschar * ret = NULL;
 
+switch (hash)
+  {
+  case HASH_SHA1:	dig = GNUTLS_DIG_SHA1; break;
+  case HASH_SHA2_256:	dig = GNUTLS_DIG_SHA256; break;
+  case HASH_SHA2_512:	dig = GNUTLS_DIG_SHA512; break;
+  default:		return US"nonhandled hash type";
+  }
+
 /* Allocate mem for signature */
 k.data = data->data;
 k.size = data->len;
-(void) gnutls_x509_privkey_sign_data(sign_ctx->rsa,
-  is_sha1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
+(void) gnutls_x509_privkey_sign_data(sign_ctx->key, dig,
   0, &k, NULL, &sigsize);
 
 sig->data = store_get(sigsize);
 sig->len = sigsize;
 
 /* Do signing */
-/*XXX will need extension for hash type; looks ok for non-RSA algos
-so long as the privkey_import stage got them. */
-if ((rc = gnutls_x509_privkey_sign_data(sign_ctx->rsa,
-	    is_sha1 ? GNUTLS_DIG_SHA1 : GNUTLS_DIG_SHA256,
+if ((rc = gnutls_x509_privkey_sign_data(sign_ctx->key, dig,
 	    0, &k, sig->data, &sigsize)) != GNUTLS_E_SUCCESS
    )
   ret = gnutls_strerror(rc);
 
-gnutls_x509_privkey_deinit(sign_ctx->rsa);
+gnutls_x509_privkey_deinit(sign_ctx->key);
 return ret;
 }
 
@@ -116,12 +117,12 @@ gnutls_datum_t k;
 int rc;
 const uschar * ret = NULL;
 
-gnutls_pubkey_init(&verify_ctx->rsa);
+gnutls_pubkey_init(&verify_ctx->key);
 
 k.data = pubkey_der->data;
 k.size = pubkey_der->len;
 
-if ((rc = gnutls_pubkey_import(verify_ctx->rsa, &k, GNUTLS_X509_FMT_DER))
+if ((rc = gnutls_pubkey_import(verify_ctx->key, &k, GNUTLS_X509_FMT_DER))
        != GNUTLS_E_SUCCESS)
   ret = gnutls_strerror(rc);
 return ret;
@@ -132,31 +133,39 @@ return ret;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, BOOL is_sha1, blob * data_hash, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
 {
+gnutls_sign_algorithm_t algo;
 gnutls_datum_t k, s;
 int rc;
 const uschar * ret = NULL;
+
+/*XXX needs extension for non-rsa */
+switch (hash)
+  {
+  case HASH_SHA1:	algo = GNUTLS_SIGN_RSA_SHA1;   break;
+  case HASH_SHA2_256:	algo = GNUTLS_SIGN_RSA_SHA256; break;
+  case HASH_SHA2_512:	algo = GNUTLS_SIGN_RSA_SHA512; break;
+  default:		return US"nonhandled hash type";
+  }
 
 k.data = data_hash->data;
 k.size = data_hash->len;
 s.data = sig->data;
 s.size = sig->len;
-if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->rsa,
-/*XXX needs extension for SHA512 */
-	    is_sha1 ? GNUTLS_SIGN_RSA_SHA1 : GNUTLS_SIGN_RSA_SHA256,
-	    0, &k, &s)) < 0)
+if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo, 0, &k, &s)) < 0)
   ret = gnutls_strerror(rc);
 
-gnutls_pubkey_deinit(verify_ctx->rsa);
+gnutls_pubkey_deinit(verify_ctx->key);
 return ret;
 }
 
 
 
 
-#elif defined(RSA_GCRYPT)
+#elif defined(SIGN_GCRYPT)
 /******************************************************************************/
+/* This variant is used under pre-3.0.0 GnuTLS.  Only rsa-sha1 and rsa-sha256 */
 
 
 /* Internal service routine:
@@ -364,8 +373,9 @@ sign hash.
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
+exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
 {
+BOOL is_sha1;
 gcry_sexp_t s_hash = NULL, s_key = NULL, s_sig = NULL;
 gcry_mpi_t m_sig;
 uschar * errstr;
@@ -373,10 +383,17 @@ gcry_error_t gerr;
 
 /*XXX will need extension for hash types (though, possibly, should
 be re-specced to not rehash but take an already-hashed value? Actually
-current impl looks WRONG - it _is_ given a has so should not be
+current impl looks WRONG - it _is_ given a hash so should not be
 re-hashing.  Has this been tested?
 
 Will need extension for non-RSA sugning algos. */
+
+switch (hash)
+  {
+  case HASH_SHA1:	is_sha1 = TRUE; break;
+  case HASH_SHA2_256:	is_sha1 = FALSE; break;
+  default:		return US"nonhandled hash type";
+  }
 
 #define SIGSPACE 128
 sig->data = store_get(SIGSPACE);
@@ -512,7 +529,7 @@ DEBUG(D_acl) return string_sprintf("%s: %s", stage, asn1_strerror(rc));
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, BOOL is_sha1, blob * data_hash, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
 {
 /*
 cf. libgnutls 2.8.5 _wrap_gcry_pk_verify()
@@ -521,6 +538,13 @@ gcry_mpi_t m_sig;
 gcry_sexp_t s_sig = NULL, s_hash = NULL, s_pkey = NULL;
 gcry_error_t gerr;
 uschar * stage;
+
+switch (hash)
+  {
+  case HASH_SHA1:	is_sha1 = TRUE; break;
+  case HASH_SHA2_256:	is_sha1 = FALSE; break;
+  default:		return US"nonhandled hash type";
+  }
 
 if (  (stage = US"pkey sexp build",
        gerr = gcry_sexp_build (&s_pkey, NULL, "(public-key(rsa(n%m)(e%m)))",
@@ -557,7 +581,7 @@ return NULL;
 
 
 
-#elif defined(RSA_OPENSSL)
+#elif defined(SIGN_OPENSSL)
 /******************************************************************************/
 
 void
@@ -580,30 +604,10 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_dkim_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
 {
-uschar * p, * q;
-int len;
+BIO * bp = BIO_new_mem_buf(privkey_pem, -1);
 
-/*XXX maybe use PEM_read_bio_PrivateKey() ??? 
-The sign_ctx would need to have an EVP_PKEY* */
-
-/* Convert PEM to DER */
-if (  !(p = Ustrstr(privkey_pem, "-----BEGIN RSA PRIVATE KEY-----"))
-   || !(q = Ustrstr(p+=31,       "-----END RSA PRIVATE KEY-----"))
-   )
-  return US"Bad PEM wrapping";
-
-*q = '\0';
-if ((len = b64decode(p, &p)) < 0)
-  return US"b64decode failed";
-
-if (!(sign_ctx->rsa = d2i_RSAPrivateKey(NULL, CUSS &p, len)))
-  {
-  char ssl_errstring[256];
-  ERR_load_crypto_strings();	/*XXX move to a startup routine */
-  ERR_error_string(ERR_get_error(), ssl_errstring);
-  return string_copy(US ssl_errstring);
-  }
-
+if (!(sign_ctx->key = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL)))
+  return ERR_error_string(ERR_get_error(), NULL);
 return NULL;
 }
 
@@ -617,32 +621,37 @@ sign hash.
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_sign(es_ctx * sign_ctx, BOOL is_sha1, blob * data, blob * sig)
+exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
 {
-uint len;
-const uschar * ret = NULL;
+const EVP_MD * md;
+EVP_PKEY_CTX * ctx;
+size_t siglen;
 
-/*XXX will need extension for non-RSA signing algo.  Maybe use
-https://www.openssl.org/docs/man1.0.2/crypto/EVP_PKEY_sign.html  ???  */
-
-/* Allocate mem for signature */
-len = RSA_size(sign_ctx->rsa);
-sig->data = store_get(len);
-sig->len = len;
-
-/* Do signing */
-if (RSA_sign(is_sha1 ? NID_sha1 : NID_sha256,
-      CUS data->data, data->len,
-      US sig->data, &len, sign_ctx->rsa) != 1)
+switch (hash)
   {
-  char ssl_errstring[256];
-  ERR_load_crypto_strings();	/*XXX move to a startup routine */
-  ERR_error_string(ERR_get_error(), ssl_errstring);
-  ret = string_copy(US ssl_errstring);
+  case HASH_SHA1:	md = EVP_sha1();   break;
+  case HASH_SHA2_256:	md = EVP_sha256(); break;
+  case HASH_SHA2_512:	md = EVP_sha512(); break;
+  default:		return US"nonhandled hash type";
   }
 
-RSA_free(sign_ctx->rsa);
-return ret;;
+if (  (ctx = EVP_PKEY_CTX_new(sign_ctx->key, NULL))
+   && EVP_PKEY_sign_init(ctx) > 0
+   && EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0
+   && EVP_PKEY_CTX_set_signature_md(ctx, md) > 0
+   && EVP_PKEY_sign(ctx, NULL, &siglen, data->data, data->len) > 0
+   )
+  {
+  /* Allocate mem for signature */
+  sig->data = store_get(siglen);
+  sig->len = siglen;
+
+  if (EVP_PKEY_sign(ctx, sig->data, &siglen, data->data, data->len) > 0)
+    { EVP_PKEY_CTX_free(ctx); return NULL; }
+  }
+
+if (ctx) EVP_PKEY_CTX_free(ctx);
+return ERR_error_string(ERR_get_error(), NULL);
 }
 
 
@@ -653,19 +662,13 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_dkim_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
 {
-const uschar * p = CUS pubkey_der->data;
-const uschar * ret = NULL;
+const uschar * s = pubkey_der->data;
 
-/*XXX d2i_X509_PUBKEY, X509_get_pubkey(), and an EVP_PKEY* in verify_ctx. */
+/*XXX hmm, we never free this */
 
-if (!(verify_ctx->rsa = d2i_RSA_PUBKEY(NULL, &p, (long) pubkey_der->len)))
-  {
-  char ssl_errstring[256];
-  ERR_load_crypto_strings();	/*XXX move to a startup routine */
-  ERR_error_string(ERR_get_error(), ssl_errstring);
-  ret = string_copy(CUS ssl_errstring);
-  }
-return ret;
+if ((verify_ctx->key = d2i_PUBKEY(NULL, &s, pubkey_der->len)))
+  return NULL;
+return ERR_error_string(ERR_get_error(), NULL);
 }
 
 
@@ -675,29 +678,32 @@ return ret;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, BOOL is_sha1, blob * data_hash, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
 {
-const uschar * ret = NULL;
+const EVP_MD * md;
+EVP_PKEY_CTX * ctx;
 
-/*XXX needs extension for SHA512, Possibly EVP_PKEY_verify() is all we need???  */
-/* with EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) 
-- see example code at https://www.openssl.org/docs/man1.0.2/crypto/EVP_PKEY_verify.html
-and maybe also EVP_PKEY_CTX_set_signature_md(ctx, EVP_sha256()) though unclear
-if that only sets a pad/type field byte value, or sets up for an actual hash operation...
-Same on the signing side.
-https://www.openssl.org/docs/manmaster/man3/EVP_PKEY_CTX_set_rsa_padding.html says it does what we want. */
-
-if (RSA_verify(is_sha1 ? NID_sha1 : NID_sha256,
-      CUS data_hash->data, data_hash->len,
-      US sig->data, (uint) sig->len, verify_ctx->rsa) != 1)
+switch (hash)
   {
-  char ssl_errstring[256];
-  ERR_load_crypto_strings();	/*XXX move to a startup routine */
-  ERR_error_string(ERR_get_error(), ssl_errstring);
-  ret = string_copy(US ssl_errstring);
+  case HASH_SHA1:	md = EVP_sha1();   break;
+  case HASH_SHA2_256:	md = EVP_sha256(); break;
+  case HASH_SHA2_512:	md = EVP_sha512(); break;
+  default:		return US"nonhandled hash type";
   }
-return ret;
+
+if (  (ctx = EVP_PKEY_CTX_new(verify_ctx->key, NULL))
+   && EVP_PKEY_verify_init(ctx) > 0
+   && EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0
+   && EVP_PKEY_CTX_set_signature_md(ctx, md) > 0
+   && EVP_PKEY_verify(ctx, sig->data, sig->len,
+	data_hash->data, data_hash->len) == 1
+   )
+  { EVP_PKEY_CTX_free(ctx); return NULL; }
+
+if (ctx) EVP_PKEY_CTX_free(ctx);
+return ERR_error_string(ERR_get_error(), NULL);
 }
+
 
 
 #endif

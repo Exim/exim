@@ -872,6 +872,7 @@ struct ob_dkim {
   uschar *dkim_canon;
   uschar *dkim_sign_headers;
   uschar *dkim_strict;
+  uschar *dkim_hash;
   BOOL    dot_stuffed;
 };
 

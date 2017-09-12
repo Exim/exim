@@ -36,9 +36,11 @@ exim_sha_init(hctx * h, hashmethod m)
 /*XXX extend for sha512 */
 switch (h->method = m)
   {
-  case HASH_SHA1:   h->hashlen = 20; SHA1_Init  (&h->u.sha1); break;
-  case HASH_SHA256: h->hashlen = 32; SHA256_Init(&h->u.sha2); break;
-  default:	    h->hashlen = 0; return FALSE;
+  case HASH_SHA1:     h->hashlen = 20; SHA1_Init  (&h->u.sha1);     break;
+  case HASH_SHA2_256: h->hashlen = 32; SHA256_Init(&h->u.sha2_256); break;
+  case HASH_SHA2_384: h->hashlen = 48; SHA384_Init(&h->u.sha2_512); break;
+  case HASH_SHA2_512: h->hashlen = 64; SHA512_Init(&h->u.sha2_512); break;
+  default:	      h->hashlen = 0; return FALSE;
   }
 return TRUE;
 }
@@ -49,8 +51,10 @@ exim_sha_update(hctx * h, const uschar * data, int len)
 {
 switch (h->method)
   {
-  case HASH_SHA1:   SHA1_Update  (&h->u.sha1, data, len); break;
-  case HASH_SHA256: SHA256_Update(&h->u.sha2, data, len); break;
+  case HASH_SHA1:     SHA1_Update  (&h->u.sha1,     data, len); break;
+  case HASH_SHA2_256: SHA256_Update(&h->u.sha2_256, data, len); break;
+  case HASH_SHA2_384: SHA384_Update(&h->u.sha2_512, data, len); break;
+  case HASH_SHA2_512: SHA512_Update(&h->u.sha2_512, data, len); break;
   /* should be blocked by init not handling these, but be explicit to
   guard against accidents later (and hush up clang -Wswitch) */
   default: assert(0);
@@ -64,8 +68,10 @@ exim_sha_finish(hctx * h, blob * b)
 b->data = store_get(b->len = h->hashlen);
 switch (h->method)
   {
-  case HASH_SHA1:   SHA1_Final  (b->data, &h->u.sha1); break;
-  case HASH_SHA256: SHA256_Final(b->data, &h->u.sha2); break;
+  case HASH_SHA1:     SHA1_Final  (b->data, &h->u.sha1);     break;
+  case HASH_SHA2_256: SHA256_Final(b->data, &h->u.sha2_256); break;
+  case HASH_SHA2_384: SHA384_Final(b->data, &h->u.sha2_512); break;
+  case HASH_SHA2_512: SHA512_Final(b->data, &h->u.sha2_512); break;
   default: assert(0);
   }
 }
@@ -81,10 +87,14 @@ exim_sha_init(hctx * h, hashmethod m)
 /*XXX extend for sha512 */
 switch (h->method = m)
   {
-  case HASH_SHA1:     h->hashlen = 20; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA1); break;
-  case HASH_SHA256:   h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA256); break;
+  case HASH_SHA1:     h->hashlen = 20; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA1);   break;
+  case HASH_SHA2_256: h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA256); break;
+  case HASH_SHA2_384: h->hashlen = 48; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA384); break;
+  case HASH_SHA2_512: h->hashlen = 64; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA512); break;
 #ifdef EXIM_HAVE_SHA3
   case HASH_SHA3_256: h->hashlen = 32; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA3_256); break;
+  case HASH_SHA3_384: h->hashlen = 48; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA3_384); break;
+  case HASH_SHA3_512: h->hashlen = 64; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA3_512); break;
 #endif
   default: h->hashlen = 0; return FALSE;
   }
@@ -117,8 +127,13 @@ exim_sha_init(hctx * h, hashmethod m)
 /*XXX extend for sha512 */
 switch (h->method = m)
   {
-  case HASH_SHA1:   h->hashlen = 20; gcry_md_open(&h->sha, GCRY_MD_SHA1, 0); break;
-  case HASH_SHA256: h->hashlen = 32; gcry_md_open(&h->sha, GCRY_MD_SHA256, 0); break;
+  case HASH_SHA1:     h->hashlen = 20; gcry_md_open(&h->sha, GCRY_MD_SHA1, 0);   break;
+  case HASH_SHA2_256: h->hashlen = 32; gcry_md_open(&h->sha, GCRY_MD_SHA256, 0); break;
+  case HASH_SHA2_384: h->hashlen = 48; gcry_md_open(&h->sha, GCRY_MD_SHA384, 0); break;
+  case HASH_SHA2_512: h->hashlen = 64; gcry_md_open(&h->sha, GCRY_MD_SHA512, 0); break;
+  case HASH_SHA3_256: h->hashlen = 32; gcry_md_open(&h->sha, GCRY_MD_SHA3_256, 0); break;
+  case HASH_SHA3_384: h->hashlen = 48; gcry_md_open(&h->sha, GCRY_MD_SHA3_384, 0); break;
+  case HASH_SHA3_512: h->hashlen = 64; gcry_md_open(&h->sha, GCRY_MD_SHA3_512, 0); break;
   default:	    h->hashlen = 0; return FALSE;
   }
 return TRUE;
@@ -152,7 +167,7 @@ exim_sha_init(hctx * h, hashmethod m)
 switch (h->method = m)
   {
   case HASH_SHA1:   h->hashlen = 20; sha1_starts(&h->u.sha1);    break;
-  case HASH_SHA256: h->hashlen = 32; sha2_starts(&h->u.sha2, 0); break;
+  case HASH_SHA2_256: h->hashlen = 32; sha2_starts(&h->u.sha2, 0); break;
   default:	    h->hashlen = 0; return FALSE;
   }
 return TRUE;
@@ -165,7 +180,7 @@ exim_sha_update(hctx * h, const uschar * data, int len)
 switch (h->method)
   {
   case HASH_SHA1:   sha1_update(h->u.sha1, US data, len); break;
-  case HASH_SHA256: sha2_update(h->u.sha2, US data, len); break;
+  case HASH_SHA2_256: sha2_update(h->u.sha2, US data, len); break;
   }
 }
 
@@ -177,7 +192,7 @@ b->data = store_get(b->len = h->hashlen);
 switch (h->method)
   {
   case HASH_SHA1:   sha1_finish(h->u.sha1, b->data); break;
-  case HASH_SHA256: sha2_finish(h->u.sha2, b->data); break;
+  case HASH_SHA2_256: sha2_finish(h->u.sha2, b->data); break;
   }
 }
 
@@ -421,16 +436,6 @@ native_sha1_end(&h->sha1, NULL, 0, b->data);
 
 
 #endif
-/******************************************************************************/
-
-/* Common to all library versions */
-int
-exim_sha_hashlen(hctx * h)
-{
-return h->method == HASH_SHA1 ? 20
-     : h->method == HASH_SHA256 ? 32
-     : 0;
-}
 
 
 /******************************************************************************/

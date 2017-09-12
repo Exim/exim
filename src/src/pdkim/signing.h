@@ -12,15 +12,15 @@
 
 #include "crypt_ver.h"
 
-#ifdef RSA_OPENSSL
+#ifdef SIGN_OPENSSL
 # include <openssl/rsa.h>
 # include <openssl/ssl.h>
 # include <openssl/err.h>
-#elif defined(RSA_GNUTLS)
+#elif defined(SIGN_GNUTLS)
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
 #  include <gnutls/abstract.h>
-#elif defined(RSA_GCRYPT)
+#elif defined(SIGN_GCRYPT)
 #  include <gcrypt.h>
 #  include <libtasn1.h>
 #endif
@@ -28,29 +28,30 @@
 #include "../blob.h"
 
 
-#ifdef RSA_OPENSSL
+#ifdef SIGN_OPENSSL
 
 typedef struct {
-  RSA * rsa;
+  EVP_PKEY * key;
 } es_ctx;
 
 typedef struct {
-  RSA * rsa;
+  EVP_PKEY * key;
 } ev_ctx;
 
-#elif defined(RSA_GNUTLS)
+#elif defined(SIGN_GNUTLS)
 
 typedef struct {
-  gnutls_x509_privkey_t rsa;
+  gnutls_x509_privkey_t key;
 } es_ctx;
 
 typedef struct {
-  gnutls_pubkey_t rsa;
+  gnutls_pubkey_t key;
 } ev_ctx;
 
-#elif defined(RSA_GCRYPT)
+#elif defined(SIGN_GCRYPT)
 
 typedef struct {
+  int	keytype;
   gcry_mpi_t n;
   gcry_mpi_t e;
   gcry_mpi_t d;
@@ -62,6 +63,7 @@ typedef struct {
 } es_ctx;
 
 typedef struct {
+  int	keytype;
   gcry_mpi_t n;
   gcry_mpi_t e;
 } ev_ctx;

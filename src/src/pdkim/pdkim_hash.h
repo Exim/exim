@@ -19,11 +19,11 @@
 #include "../blob.h"
 #include "../hash.h"
 
-#ifdef RSA_OPENSSL
+#ifdef SIGN_OPENSSL
 # include <openssl/rsa.h>
 # include <openssl/ssl.h>
 # include <openssl/err.h>
-#elif defined(RSA_GNUTLS)
+#elif defined(SIGN_GNUTLS)
 # include <gnutls/gnutls.h>
 # include <gnutls/x509.h>
 #endif

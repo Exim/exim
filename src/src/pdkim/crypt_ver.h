@@ -5,7 +5,7 @@
 /* Copyright (c) Jeremy Harris 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-/* RSA and SHA routine selection for PDKIM */
+/* Signing and hashing routine selection for PDKIM */
 
 #include "../exim.h"
 #include "../sha_ver.h"
@@ -15,12 +15,12 @@
 # include <gnutls/gnutls.h>
 
 # if GNUTLS_VERSION_NUMBER >= 0x30000
-#  define RSA_GNUTLS
+#  define SIGN_GNUTLS
 # else
-#  define RSA_GCRYPT
+#  define SIGN_GCRYPT
 # endif
 
 #else
-# define RSA_OPENSSL
+# define SIGN_OPENSSL
 #endif
 

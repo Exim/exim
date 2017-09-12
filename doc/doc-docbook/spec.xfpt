@@ -23799,6 +23799,7 @@ of the message. Its value must not be zero. See also &%final_timeout%&.
 .option dkim_canon smtp string&!! unset
 .option dkim_strict smtp string&!! unset
 .option dkim_sign_headers smtp string&!! unset
+.option dkim_hash smtp string&!! sha256
 DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
 
 
@@ -38568,6 +38569,12 @@ If set, this option must expand to (or be specified as) a colon-separated
 list of header names. Headers with these names will be included in the message
 signature.
 When unspecified, the header names recommended in RFC4871 will be used.
+
+.new
+.option dkim_hash smtp string&!! sha256
+Can be set alternatively to &"sha1"& to use an alternate hash
+method.  Note that sha1 is now condidered insecure, and deprecated.
+.wen
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECID514"

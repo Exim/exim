@@ -46,5 +46,8 @@ send_to_server:
 .ifndef HEADERS_MAXSIZE
   dkim_sign_headers =	OPT
 .endif
+.ifdef VALUE
+  dkim_hash =		VALUE
+.endif
 
 # End

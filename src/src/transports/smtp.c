@@ -43,6 +43,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dkim.dkim_canon) },
   { "dkim_domain", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dkim.dkim_domain) },
+  { "dkim_hash", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_hash) },
   { "dkim_private_key", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dkim.dkim_private_key) },
   { "dkim_selector", opt_stringptr,
@@ -281,6 +283,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
     .dkim_canon =		NULL,
     .dkim_sign_headers =	 NULL,
     .dkim_strict =		NULL,
+    .dkim_hash =		US"sha256",
     .dot_stuffed =		FALSE},
 #endif
 };

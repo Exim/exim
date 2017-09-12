@@ -20,6 +20,12 @@ pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
 static const uschar * dkim_collect_error = NULL;
 
+
+
+/*XXX the caller only uses the first record if we return multiple.
+Could we hand back an allocated string?
+*/
+
 static int
 dkim_exim_query_dns_txt(char *name, char *answer)
 {
@@ -164,9 +170,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
   logmsg = string_append(logmsg, &size, &ptr, 7, 
 	" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 	"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-	" a=", sig->algo == PDKIM_ALGO_RSA_SHA256
-		? "rsa-sha256"
-		: sig->algo == PDKIM_ALGO_RSA_SHA1 ? "rsa-sha1" : "err",
+	" a=", dkim_sig_to_a_tag(sig),
 	string_sprintf(" b=%d",
 			(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
   if ((s= sig->identity)) logmsg = string_append(logmsg, &size, &ptr, 2, " i=", s);
@@ -338,12 +342,7 @@ if (!dkim_verify_ctx || dkim_disable_verify || !dkim_cur_sig)
 switch (what)
   {
   case DKIM_ALGO:
-    switch (dkim_cur_sig->algo)
-      {
-      case PDKIM_ALGO_RSA_SHA1:	return US"rsa-sha1";
-      case PDKIM_ALGO_RSA_SHA256:
-      default:			return US"rsa-sha256";
-      }
+    return dkim_sig_to_a_tag(dkim_cur_sig);
 
   case DKIM_BODYLENGTH:
     return dkim_cur_sig->bodylength >= 0
@@ -466,6 +465,7 @@ int seen_items_offset = 0;
 uschar *dkim_canon_expanded;
 uschar *dkim_sign_headers_expanded;
 uschar *dkim_private_key_expanded;
+uschar *dkim_hash_expanded;
 pdkim_ctx *ctx = NULL;
 uschar *rc = NULL;
 uschar *sigbuf = NULL;
@@ -608,15 +608,20 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
     dkim_private_key_expanded = big_buffer;
     }
 
-/*XXX so we currently nail signing to RSA + SHA256.  Need to extract algo
-from privkey, and provide means for selecting hash-method.
-Check for disallowed combos.
-Will need new dkim_ transport option for hash. */
+  if (!(dkim_hash_expanded = expand_string(dkim->dkim_hash)))
+    {
+    log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
+	       "dkim_hash: %s", expand_string_message);
+    goto bad;
+    }
 
-  if (!(ctx = pdkim_init_sign(CS dkim_signing_domain,
-			CS dkim_signing_selector,
-			CS dkim_private_key_expanded,
-			PDKIM_ALGO_RSA_SHA256,
+/*XXX so we currently nail signing to RSA + given hash.
+Need to extract algo from privkey and check for disallowed combos. */
+
+  if (!(ctx = pdkim_init_sign(dkim_signing_domain,
+			dkim_signing_selector,
+			dkim_private_key_expanded,
+			dkim_hash_expanded,
 			dkim->dot_stuffed,
 			&dkim_exim_query_dns_txt,
 			errstr
