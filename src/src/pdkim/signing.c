@@ -338,6 +338,7 @@ if (  (s1 = as_mpi(&der, &sign_ctx->n))
    )
   return s1;
 
+#ifdef extreme_debug
 DEBUG(D_acl) debug_printf_indent("rsa_signing_init:\n");
   {
   uschar * s;
@@ -358,6 +359,7 @@ DEBUG(D_acl) debug_printf_indent("rsa_signing_init:\n");
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, sign_ctx->qp);
   debug_printf_indent(" QP: %s\n", s);
   }
+#endif
 return NULL;
 
 asn_err: return US asn1_strerror(rc);
@@ -375,7 +377,7 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
 {
-BOOL is_sha1;
+char * sexp_hash;
 gcry_sexp_t s_hash = NULL, s_key = NULL, s_sig = NULL;
 gcry_mpi_t m_sig;
 uschar * errstr;
@@ -390,8 +392,8 @@ Will need extension for non-RSA sugning algos. */
 
 switch (hash)
   {
-  case HASH_SHA1:	is_sha1 = TRUE; break;
-  case HASH_SHA2_256:	is_sha1 = FALSE; break;
+  case HASH_SHA1:	sexp_hash = "(data(flags pkcs1)(hash sha1 %b))"; break;
+  case HASH_SHA2_256:	sexp_hash = "(data(flags pkcs1)(hash sha256 %b))"; break;
   default:		return US"nonhandled hash type";
   }
 
@@ -409,10 +411,7 @@ if (  (gerr = gcry_sexp_build (&s_key, NULL,
 		sign_ctx->n, sign_ctx->e,
 		sign_ctx->d, sign_ctx->p,
 		sign_ctx->q, sign_ctx->qp))
-   || (gerr = gcry_sexp_build (&s_hash, NULL,
-		is_sha1
-		? "(data(flags pkcs1)(hash sha1 %b))"
-		: "(data(flags pkcs1)(hash sha256 %b))",
+   || (gerr = gcry_sexp_build (&s_hash, NULL, sexp_hash,
 		(int) data->len, CS data->data))
    ||  (gerr = gcry_pk_sign (&s_sig, s_hash, s_key))
    )
@@ -426,12 +425,14 @@ if (  !(s_sig = gcry_sexp_find_token(s_sig, "s", 0))
 
 m_sig = gcry_sexp_nth_mpi(s_sig, 1, GCRYMPI_FMT_USG);
 
+#ifdef extreme_debug
 DEBUG(D_acl)
   {
   uschar * s;
   gcry_mpi_aprint (GCRYMPI_FMT_HEX, &s, NULL, m_sig);
   debug_printf_indent(" SG: %s\n", s);
   }
+#endif
 
 gerr = gcry_mpi_print(GCRYMPI_FMT_USG, sig->data, SIGSPACE, &sig->len, m_sig);
 if (gerr)
@@ -508,6 +509,7 @@ if (  (errstr = as_mpi(pubkey_der, &verify_ctx->n))
    )
   return errstr;
 
+#ifdef extreme_debug
 DEBUG(D_acl) debug_printf_indent("rsa_verify_init:\n");
 	{
 	uschar * s;
@@ -517,6 +519,7 @@ DEBUG(D_acl) debug_printf_indent("rsa_verify_init:\n");
 	debug_printf_indent(" E : %s\n", s);
 	}
 
+#endif
 return NULL;
 
 asn_err:
@@ -534,27 +537,25 @@ exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * 
 /*
 cf. libgnutls 2.8.5 _wrap_gcry_pk_verify()
 */
+char * sexp_hash;
 gcry_mpi_t m_sig;
 gcry_sexp_t s_sig = NULL, s_hash = NULL, s_pkey = NULL;
 gcry_error_t gerr;
 uschar * stage;
 
+/*XXX needs extension for SHA512 */
 switch (hash)
   {
-  case HASH_SHA1:	is_sha1 = TRUE; break;
-  case HASH_SHA2_256:	is_sha1 = FALSE; break;
-  default:		return US"nonhandled hash type";
+  case HASH_SHA1:     sexp_hash = "(data(flags pkcs1)(hash sha1 %b))"; break;
+  case HASH_SHA2_256: sexp_hash = "(data(flags pkcs1)(hash sha256 %b))"; break;
+  default:	      return US"nonhandled hash type";
   }
 
 if (  (stage = US"pkey sexp build",
        gerr = gcry_sexp_build (&s_pkey, NULL, "(public-key(rsa(n%m)(e%m)))",
 		        verify_ctx->n, verify_ctx->e))
    || (stage = US"data sexp build",
-       gerr = gcry_sexp_build (&s_hash, NULL,
-/*XXX needs extension for SHA512 */
-		is_sha1
-		? "(data(flags pkcs1)(hash sha1 %b))"
-		: "(data(flags pkcs1)(hash sha256 %b))",
+       gerr = gcry_sexp_build (&s_hash, NULL, sexp_hash,
 		(int) data_hash->len, CS data_hash->data))
    || (stage = US"sig mpi scan",
        gerr = gcry_mpi_scan(&m_sig, GCRYMPI_FMT_USG, sig->data, sig->len, NULL))
