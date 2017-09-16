@@ -3326,7 +3326,7 @@ while (!done)
   ssize_t got;
 
   DEBUG(D_deliver) debug_printf(
-    "expect %lu bytes (pipeheader) from tpt process %d\n", (ulong)required, pid);
+    "expect %lu bytes (pipeheader) from tpt process %d\n", (u_long)required, pid);
 
   /* We require(!) all the PIPE_HEADER_SIZE bytes here, as we know,
   they're written in a timely manner, so waiting for the write shouldn't hurt a lot.
@@ -3365,7 +3365,7 @@ while (!done)
 
   DEBUG(D_deliver)
     debug_printf("expect %lu bytes (pipedata) from transport process %d\n",
-      (ulong)required, pid);
+      (u_long)required, pid);
 
   /* Same as above, the transport process will write the bytes announced
   in a timely manner, so we can just wait for the bytes, getting less than expected
