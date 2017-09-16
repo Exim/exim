@@ -77,7 +77,7 @@ extern blob * exim_dkim_data_append(blob *, int *, uschar *);
 extern const uschar * exim_dkim_signing_init(uschar *, es_ctx *);
 extern const uschar * exim_dkim_sign(es_ctx *, BOOL, blob *, blob *);
 extern const uschar * exim_dkim_verify_init(blob *, ev_ctx *);
-extern const uschar * exim_dkim_verify(ev_ctx *, BOOL, blob *, blob *);
+extern const uschar * exim_dkim_verify(ev_ctx *, hashmethod, blob *, blob *);
 
 #endif	/*DISABLE_DKIM*/
 /* End of File */
