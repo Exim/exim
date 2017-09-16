@@ -596,5 +596,9 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # undef DISABLE_DNSSEC
 #endif
 
+/* Wrapper around read(2) to read all the data we requested (BLOCKING) */
+ssize_t
+readn(int fd, void *buffer, size_t len);
+
 #endif
 /* End of exim.h */
