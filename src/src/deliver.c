@@ -3291,11 +3291,9 @@ address_item *addrlist = p->addrlist;
 address_item *addr = p->addr;
 pid_t pid = p->pid;
 int fd = p->fd;
-int required = PIPE_HEADER_SIZE; /* size including id, subid and length */
 
 uschar *msg = p->msg;
 BOOL done = p->done;
-BOOL finished = FALSE;
 
 /* Loop through all items, reading from the pipe when necessary. The pipe
 used to be non-blocking. But I do not see a reason for using non-blocking I/O
@@ -3327,12 +3325,14 @@ while (!done)
   size_t required = PIPE_HEADER_SIZE; /* first the pipehaeder, later the data */
   ssize_t got;
 
-  DEBUG(D_deliver) debug_printf("expect %d bytes (pipeheader) from transport process %d\n", required, pid);
+  DEBUG(D_deliver) debug_printf(
+    "expect %lu bytes (pipeheader) from tpt process %d\n", (ulong)required, pid);
 
   /* We require(!) all the PIPE_HEADER_SIZE bytes here, as we know,
   they're written in a timely manner, so waiting for the write shouldn't hurt a lot.
   If we get less, we can assume the subprocess do be done and do not expect any further
   information from it. */
+
   got = readn(fd, pipeheader, required);
   if (got != required)
     {
@@ -3345,13 +3345,14 @@ while (!done)
 
   pipeheader[PIPE_HEADER_SIZE] = '\0';
   DEBUG(D_deliver)
-    debug_printf("got %d bytes (pipeheader) from transport process %d\n", got, pid);
+    debug_printf("got %ld bytes (pipeheader) from transport process %d\n",
+      (long) got, pid);
 
   {
   /* If we can't decode the pipeheader, the subprocess seems to have a
   problem, we do not expect any furher information from it. */
   char *endc;
-  required = strtol(pipeheader+2, &endc, 10);
+  required = Ustrtol(pipeheader+2, &endc, 10);
   if (*endc)
     {
     msg = string_sprintf("failed to read pipe "
@@ -3363,7 +3364,8 @@ while (!done)
   }
 
   DEBUG(D_deliver)
-    debug_printf("expect %d bytes (pipedata) from transport process %d\n", required, pid);
+    debug_printf("expect %lu bytes (pipedata) from transport process %d\n",
+      (ulong)required, pid);
 
   /* Same as above, the transport process will write the bytes announced
   in a timely manner, so we can just wait for the bytes, getting less than expected
@@ -4120,20 +4122,21 @@ if (size > BIG_BUFFER_SIZE-1)
   size = BIG_BUFFER_SIZE;
   }
 
-/* Should we check that we do not write more than PIPE_BUF? What whould
+/* Should we check that we do not write more than PIPE_BUF? What would
 that help? */
 
 /* convert size to human readable string prepended by id and subid */
-if (PIPE_HEADER_SIZE != snprintf(CS pipe_header, PIPE_HEADER_SIZE+1, "%c%c%05d", id, subid, size))
+if (PIPE_HEADER_SIZE != snprintf(CS pipe_header, PIPE_HEADER_SIZE+1, "%c%c%05ld",
+    id, subid, (long)size))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "header snprintf failed\n");
 
-DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%d,final:%s\n",
-                                 id, subid, size, pipe_header);
+DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%ld,final:%s\n",
+                                 id, subid, (long)size, pipe_header);
 
 if ((ret = writev(fd, iov, 2)) != total_len)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed writing transport result to pipe (%d of %d bytes): %s",
-    ret, total_len,
-    ret == -1 ? strerror(errno) : "short write");
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "Failed writing transport result to pipe (%ld of %ld bytes): %s",
+    (long)ret, (long)total_len, ret == -1 ? strerror(errno) : "short write");
 }
 
 /*************************************************

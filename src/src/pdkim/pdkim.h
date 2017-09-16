@@ -262,7 +262,7 @@ typedef struct pdkim_ctx {
   uschar    *cur_header;
   int        cur_header_size;
   int        cur_header_len;
-  char      *linebuf;
+  uschar    *linebuf;
   int        linebuf_offset;
   int        num_headers;
   pdkim_stringlist *headers; /* Raw headers for verification         */

@@ -699,7 +699,7 @@ if (sig->canon_body == PDKIM_CANON_RELAXED)
   if (!relaxed_data)
     {
     BOOL seen_wsp = FALSE;
-    const char *p;
+    const uschar * p;
     int q = 0;
 
     /* We want to be able to free this else we allocate
@@ -875,7 +875,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   if (sig->canon_body == PDKIM_CANON_RELAXED)
     {
     /* Lines with just spaces need to be buffered too */
-    char * cp = line.data;
+    uschar * cp = line.data;
     char c;
 
     while ((c = *cp))

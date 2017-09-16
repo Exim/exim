@@ -609,7 +609,7 @@ exim_dkim_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
 BIO * bp = BIO_new_mem_buf(privkey_pem, -1);
 
 if (!(sign_ctx->key = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL)))
-  return ERR_error_string(ERR_get_error(), NULL);
+  return US ERR_error_string(ERR_get_error(), NULL);
 return NULL;
 }
 
@@ -656,7 +656,7 @@ if (  (ctx = EVP_PKEY_CTX_new(sign_ctx->key, NULL))
   }
 
 if (ctx) EVP_PKEY_CTX_free(ctx);
-return ERR_error_string(ERR_get_error(), NULL);
+return US ERR_error_string(ERR_get_error(), NULL);
 }
 
 
@@ -673,7 +673,7 @@ const uschar * s = pubkey_der->data;
 
 if ((verify_ctx->key = d2i_PUBKEY(NULL, &s, pubkey_der->len)))
   return NULL;
-return ERR_error_string(ERR_get_error(), NULL);
+return US ERR_error_string(ERR_get_error(), NULL);
 }
 
 
@@ -706,7 +706,7 @@ if (  (ctx = EVP_PKEY_CTX_new(verify_ctx->key, NULL))
   { EVP_PKEY_CTX_free(ctx); return NULL; }
 
 if (ctx) EVP_PKEY_CTX_free(ctx);
-return ERR_error_string(ERR_get_error(), NULL);
+return US ERR_error_string(ERR_get_error(), NULL);
 }
 
 
