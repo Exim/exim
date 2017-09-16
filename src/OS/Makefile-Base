@@ -224,7 +224,7 @@ macro-tls.o:		auths/tls.c
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/tls.c
 
 macro_predef: $(OBJ_MACRO)
-	@echo "$(LNCC) -o $<"
+	@echo "$(LNCC) -o $@"
 	$(FE)$(LNCC) -o $@ $(LFLAGS) $(OBJ_MACRO)
 
 macro.c: macro_predef
