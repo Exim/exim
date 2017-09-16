@@ -123,24 +123,109 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 
 # Build the builtin-macros data struct
 
-MACRO_CSRC = macro_predef.c globals.c readconf.c route.c transport.c \
-	drtables.c \
-	transports/appendfile.c transports/autoreply.c transports/lmtp.c \
-	transports/pipe.c transports/queuefile.c transports/smtp.c \
-	routers/accept.c routers/dnslookup.c routers/ipliteral.c \
-	routers/iplookup.c routers/manualroute.c routers/queryprogram.c \
-	routers/redirect.c \
-	auths/auth-spa.c auths/cram_md5.c auths/cyrus_sasl.c auths/dovecot.c \
-	auths/gsasl_exim.c auths/heimdal_gssapi.c auths/plaintext.c auths/spa.c \
-	auths/tls.c
 MACRO_HSRC = macro_predef.h os.h globals.h config.h \
 	routers/accept.h routers/dnslookup.h routers/ipliteral.h \
 	routers/iplookup.h routers/manualroute.h routers/queryprogram.h \
 	routers/redirect.h
 
-macro_predef: $(MACRO_CSRC) $(MACRO_HSRC)
-	@echo "$(CC) -DMACRO_PREDEF macro_predef.c"
-	$(FE)$(CC) $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o macro_predef $(MACRO_CSRC)
+OBJ_MACRO = macro_predef.o \
+	macro-globals.o macro-readconf.o macro-route.o macro-transport.o macro-drtables.o \
+	macro-appendfile.o macro-autoreply.o macro-lmtp.o macro-pipe.o macro-queuefile.o \
+	macro-smtp.o macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
+	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
+	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
+	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-tls.o\
+
+$(OBJ_MACRO):	$(MACRO_HSRC)
+
+macro_predef.o :	macro_predef.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-globals.o :	globals.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-readconf.o :	readconf.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-route.o :		route.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-transport.o:	transport.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-drtables.o :	drtables.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-appendfile.o :	transports/appendfile.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-autoreply.o :	transports/autoreply.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-lmtp.o:		transports/lmtp.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-pipe.o :		transports/pipe.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-queuefile.o :	transports/queuefile.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-smtp.o :		transports/smtp.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-accept.o :	routers/accept.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-dnslookup.o :	routers/dnslookup.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-ipliteral.o :	routers/ipliteral.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-iplookup.o :	routers/iplookup.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-manualroute.o :	routers/manualroute.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-queryprogram.o :	routers/queryprogram.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-redirect.o :	routers/redirect.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-auth-spa.o :	auths/auth-spa.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-cram_md5.o :	auths/cram_md5.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-cyrus_sasl.o :	auths/cyrus_sasl.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-dovecot.o:	auths/dovecot.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-gsasl_exim.o :	auths/gsasl_exim.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-heimdal_gssapi.o:	auths/heimdal_gssapi.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-plaintext.o :	auths/plaintext.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-spa.o :		auths/spa.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro-tls.o:		auths/tls.c
+	@echo "$(CC) -DMACRO_PREDEF $<"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+
+macro_predef: $(OBJ_MACRO)
+	@echo "$(LNCC) -o $<"
+	$(FE)$(LNCC) -o $@ $(LFLAGS) $(OBJ_MACRO)
 
 macro.c: macro_predef
 	./macro_predef > macro.c
