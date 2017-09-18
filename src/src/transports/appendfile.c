@@ -655,7 +655,7 @@ for (h = &host; h; h = h->next)
 
   /* Connect never fails for a UDP socket, so don't set a timeout. */
 
-  (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0, FALSE);
+  (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0, NULL);
   rc = send(sock, buffer, Ustrlen(buffer) + 1, 0);
   (void)close(sock);
 

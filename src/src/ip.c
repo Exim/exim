@@ -175,14 +175,15 @@ Arguments:
   address     the remote address, in text form
   port        the remote port
   timeout     a timeout (zero for indefinite timeout)
-  fastopen    TRUE iff TCP_FASTOPEN can be used
+  fastopen    non-null iff TCP_FASTOPEN can be used; may indicate early-data to
+		be sent in SYN segment
 
 Returns:      0 on success; -1 on failure, with errno set
 */
 
 int
 ip_connect(int sock, int af, const uschar *address, int port, int timeout,
-  BOOL fastopen)
+  const blob * fastopen)
 {
 struct sockaddr_in s_in4;
 struct sockaddr *s_ptr;
@@ -235,19 +236,30 @@ connect in FASTOPEN mode but with zero data.
 
 if (fastopen)
   {
-  if ((rc = sendto(sock, NULL, 0, MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) < 0)
-    if (errno == EINPROGRESS)		/* the expected case */
-      rc = 0;
+  if ((rc = sendto(sock, fastopen->data, fastopen->len,
+		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) < 0)
+    if (errno == EINPROGRESS)		/* expected for nonready peer */
+      {					/* queue the data */
+      if (  (rc = send(sock, fastopen->data, fastopen->len, 0)) < 0
+	 && errno == EINPROGRESS)	/* expected for nonready peer */
+	rc = 0;
+      }
     else if(errno == EOPNOTSUPP)
       {
       DEBUG(D_transport)
 	debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
-      rc = connect(sock, s_ptr, s_len);
+      goto legacy_connect;
       }
   }
 else
 #endif
-  rc = connect(sock, s_ptr, s_len);
+  {
+legacy_connect:
+  if ((rc = connect(sock, s_ptr, s_len)) >= 0)
+    if (  fastopen && fastopen->data && fastopen->len
+       && send(sock, fastopen->data, fastopen->len, 0) < 0)
+	rc = -1;
+  }
 
 save_errno = errno;
 alarm(0);
@@ -292,6 +304,7 @@ Arguments:
   timeout       a timeout
   connhost	if not NULL, host_item filled in with connection details
   errstr        pointer for allocated string on error
+XXX could add early-data support
 
 Return:
   socket fd, or -1 on failure (having allocated an error string)
@@ -304,7 +317,8 @@ int namelen, port;
 host_item shost;
 host_item *h;
 int af = 0, fd, fd4 = -1, fd6 = -1;
-BOOL fastopen = tcp_fastopen_ok && type == SOCK_STREAM;
+blob * fastopen = tcp_fastopen_ok && type == SOCK_STREAM
+  ? &tcp_fastopen_nodata : NULL;
 
 shost.next = NULL;
 shost.address = NULL;

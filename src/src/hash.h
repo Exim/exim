@@ -12,7 +12,6 @@
 #define HASH_H
 
 #include "sha_ver.h"
-#include "blob.h"
 
 #ifdef SHA_OPENSSL
 # include <openssl/sha.h>

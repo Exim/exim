@@ -164,9 +164,15 @@ if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
 #endif
 
 
+/* Arguments as for smtp_connect(), plus
+  early_data	if non-NULL, data to be sent - preferably in the TCP SYN segment
+
+Returns:      connected socket number, or -1 with errno set
+*/
+
 int
 smtp_sock_connect(host_item * host, int host_af, int port, uschar * interface,
-  transport_instance * tb, int timeout)
+  transport_instance * tb, int timeout, const blob * early_data)
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
@@ -176,7 +182,6 @@ int dscp_level;
 int dscp_option;
 int sock;
 int save_errno = 0;
-BOOL fastopen = FALSE;
 
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
@@ -209,10 +214,6 @@ if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
     (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
   }
 
-#ifdef TCP_FASTOPEN
-if (verify_check_given_host (&ob->hosts_try_fastopen, host) == OK) fastopen = TRUE;
-#endif
-
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */
 
@@ -225,10 +226,24 @@ if (interface && ip_bind(sock, host_af, interface, 0) < 0)
   }
 
 /* Connect to the remote host, and add keepalive to the socket before returning
-it, if requested. */
+it, if requested.  If the build supports TFO, request it - and if the caller
+requested some early-data then include that in the TFO request. */
 
-else if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
-  save_errno = errno;
+else
+  {
+  const blob * fastopen = NULL;
+
+#ifdef TCP_FASTOPEN
+  if (verify_check_given_host(&ob->hosts_try_fastopen, host) == OK)
+    fastopen = early_data ? early_data : &tcp_fastopen_nodata;
+#endif
+
+  if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
+    save_errno = errno;
+  else if (early_data && !fastopen && early_data->data && early_data->len)
+    if (send(sock, early_data->data, early_data->len, 0) < 0)
+      save_errno = errno;
+  }
 
 /* Either bind() or connect() failed */
 
@@ -336,7 +351,7 @@ if (ob->socks_proxy)
   return socks_sock_connect(host, host_af, port, interface, tb, timeout);
 #endif
 
-return smtp_sock_connect(host, host_af, port, interface, tb, timeout);
+return smtp_sock_connect(host, host_af, port, interface, tb, timeout, NULL);
 }
 
 

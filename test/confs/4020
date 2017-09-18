@@ -32,11 +32,12 @@ my_main_router:
 begin transports
 
 my_smtp:
-  driver = smtp
-  interface = HOSTIPV4
-  port = PORT_S
-  hide socks_proxy = 127.0.0.1 port=PORT_D OPT
-  debug_print = transport_name <$transport_name>
+  driver =		smtp
+  interface =		HOSTIPV4
+  port =		PORT_S
+  hide socks_proxy =	127.0.0.1 port=PORT_D OPT
+  hosts_try_fastopen =	${if eq {$local_part}{user_tfo} {*}}
+  debug_print =		transport_name <$transport_name>
 
 
 # End

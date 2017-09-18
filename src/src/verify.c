@@ -2682,8 +2682,11 @@ if (ip_bind(sock, host_af, interface_address, 0) < 0)
   goto END_OFF;
   }
 
+/*XXX could take advantage of TFO early-data.  Hmm, what are the
+error returns; can we differentiate connect from data fails?
+Do we need to? */
 if (ip_connect(sock, host_af, sender_host_address, port,
-		rfc1413_query_timeout, TRUE) < 0)
+		rfc1413_query_timeout, &tcp_fastopen_nodata) < 0)
   {
   if (errno == ETIMEDOUT && LOGGING(ident_timeout))
     log_write(0, LOG_MAIN, "ident connection to %s timed out",
@@ -3154,18 +3157,16 @@ verify_check_this_host(const uschar **listptr, unsigned int *cache_bits,
 int rc;
 unsigned int *local_cache_bits = cache_bits;
 const uschar *save_host_address = deliver_host_address;
-check_host_block cb;
-cb.host_name = host_name;
-cb.host_address = host_address;
+check_host_block cb = { .host_name = host_name, .host_address = host_address };
 
-if (valueptr != NULL) *valueptr = NULL;
+if (valueptr) *valueptr = NULL;
 
 /* If the host address starts off ::ffff: it is an IPv6 address in
 IPv4-compatible mode. Find the IPv4 part for checking against IPv4
 addresses. */
 
-cb.host_ipv4 = (Ustrncmp(host_address, "::ffff:", 7) == 0)?
-  host_address + 7 : host_address;
+cb.host_ipv4 = Ustrncmp(host_address, "::ffff:", 7) == 0
+  ? host_address + 7 : host_address;
 
 /* During the running of the check, put the IP address into $host_address. In
 the case of calls from the smtp transport, it will already be there. However,

@@ -254,9 +254,10 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     /* Connect to the remote host, under a timeout. In fact, timeouts can occur
     here only for TCP calls; for a UDP socket, "connect" always works (the
     router will timeout later on the read call). */
+/*XXX could take advantage of TFO */
 
     if (ip_connect(query_socket, host_af, h->address,ob->port, ob->timeout,
-			ob->protocol != ip_udp) < 0)
+		ob->protocol == ip_udp ? NULL : &tcp_fastopen_nodata) < 0)
       {
       close(query_socket);
       DEBUG(D_route)

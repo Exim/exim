@@ -235,7 +235,7 @@ extern uschar *imap_utf7_encode(uschar *, const uschar *,
 extern void    invert_address(uschar *, uschar *);
 extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
-extern int     ip_connect(int, int, const uschar *, int, int, BOOL);
+extern int     ip_connect(int, int, const uschar *, int, int, const blob *);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **);
 extern int     ip_get_address_family(int);
@@ -397,7 +397,7 @@ extern uschar *smtp_cmd_hist(void);
 extern int     smtp_connect(host_item *, int, uschar *, int,
 	       	 transport_instance *);
 extern int     smtp_sock_connect(host_item *, int, int, uschar *,
-		 transport_instance * tb, int);
+		 transport_instance * tb, int, const blob *);
 extern int     smtp_feof(void);
 extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);

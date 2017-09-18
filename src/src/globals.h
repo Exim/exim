@@ -922,6 +922,7 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern BOOL    system_filtering;       /* TRUE when running system filter */
 
 extern BOOL    tcp_fastopen_ok;	       /* appears to be supported by kernel */
+extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
 extern BOOL    tcp_in_fastopen;	       /* conn used fastopen */
 extern BOOL    tcp_in_fastopen_logged; /* one-time logging */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */

@@ -1,8 +1,9 @@
-# socks5 proxy on smtp transport
+# socks5 proxy on smtp transport, TCP Fast Open
 #
 munge loopback
 #
-# auth: null
+#
+# TFO client, not server
 server PORT_D
 <<\x05\x01\x00
 >>\x05\x00
@@ -17,7 +18,7 @@ MAIL FROM
 RCPT TO
 250
 DATA
-354 hit me
+354 do me
 .
 250 accepted OK
 QUIT
@@ -25,15 +26,15 @@ QUIT
 ****
 #
 #
-#
 exim -odi -bs -DOPT=
 ehlo test.ex
 mail from:<>
-rcpt to:<userx@test.ex>
+rcpt to:<user_tfo@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
 Subject: message should be sent
 
+connection trying TFO
 via null-auth proxy
 .
 quit
@@ -41,12 +42,10 @@ quit
 #
 #
 #
-# auth: username/password
-server PORT_D
-<<\x05\x01\x02
->>\x05\x02
-<<\x01\x04fred\x05fubar
->>\x01\x00
+# TFO client and server
+server -tfo PORT_D
+<<\x05\x01\x00
+>>\x05\x00
 <<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
 >>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
 220 Connected OK
@@ -58,7 +57,7 @@ MAIL FROM
 RCPT TO
 250
 DATA
-354 hit me
+354 do me mate
 .
 250 accepted OK
 QUIT
@@ -66,16 +65,16 @@ QUIT
 ****
 #
 #
-#
-exim -odi -bs -DOPT="auth=name name=fred pass=fubar"
+exim -odi -bs -DOPT=
 ehlo test.ex
 mail from:<>
-rcpt to:<userx@test.ex>
+rcpt to:<user_tfo@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
 Subject: message should be sent
 
-via name/pwd-auth proxy
+connection using TFO
+via null-auth proxy
 .
 quit
 ****
