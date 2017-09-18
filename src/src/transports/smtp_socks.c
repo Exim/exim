@@ -285,7 +285,7 @@ for(;;)
   sob = &proxies[idx];
 
   /* bodge up a host struct for the proxy */
-  proxy.address = sob->proxy_host;
+  proxy.address = proxy.name = sob->proxy_host;
   proxy_af = Ustrchr(sob->proxy_host, ':') ? AF_INET6 : AF_INET;
 
   if ((fd = smtp_sock_connect(&proxy, proxy_af, sob->port,

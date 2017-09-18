@@ -163,6 +163,9 @@ JH/26 Fix DKIM bug: when the pseudoheader generated for signing was exactly
 HS/02 Fix Bug 2130: large writes from the transport subprocess where chunked
       and confused the parent.
 
+JH/27 Fix SOCKS bug: an unitialized pointer was deref'd by the transport process
+      which could crash as a result.  This could lead to undeliverable messages.
+
 
 Exim version 4.89
 -----------------
