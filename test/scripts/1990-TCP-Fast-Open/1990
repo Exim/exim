@@ -14,10 +14,13 @@
 # (currently on a separate packet after the server SYN,ACK but before
 # the client ACK).
 #
-# The log <= line should have a "TFO" element.
+# The client log => lint.ex  should have a "TFO" element.
+# Assuming this is the first run since boot, the a@test recipient will not.
 #
-# If the client-side is disabled in the kernel, Exim logs
-# will become noisy.
+# The server log <= line for b@test.ex  should have a "TFO" element, but
+# this will only be obtained when the above delay is inserted into the
+# loopback net path.
+#
 #
 #
 # FreeBSD: it looks like you have to compile a custom kernel, with
@@ -27,13 +30,16 @@
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
+#
 exim a@test.ex
 Testing
 ****
 sleep 3
+#
 exim b@test.ex
 Testing
 ****
 sleep 3
+#
 killdaemon
 no_msglog_check

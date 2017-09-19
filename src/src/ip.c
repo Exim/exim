@@ -229,27 +229,37 @@ if (timeout > 0) alarm(timeout);
 /* TCP Fast Open, if the system has a cookie from a previous call to
 this peer, can send data in the SYN packet.  The peer can send data
 before it gets our ACK of its SYN,ACK - the latter is useful for
-the SMTP banner.  Is there any usage where the former might be?
-We might extend the ip_connect() args for data if so.  For now,
-connect in FASTOPEN mode but with zero data.
-*/
+the SMTP banner.  Other (than SMTP) cases of TCP connections can
+possibly use the data-on-syn, so support that too.  */
 
 if (fastopen)
   {
   if ((rc = sendto(sock, fastopen->data, fastopen->len,
-		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) < 0)
-    if (errno == EINPROGRESS)		/* expected for nonready peer */
-      {					/* queue the data */
-      if (  (rc = send(sock, fastopen->data, fastopen->len, 0)) < 0
-	 && errno == EINPROGRESS)	/* expected for nonready peer */
-	rc = 0;
-      }
-    else if(errno == EOPNOTSUPP)
+		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
+    {
+    DEBUG(D_transport|D_v)
+      debug_printf("TCP_FASTOPEN mode connection, with data\n");
+    tcp_out_fastopen = TRUE;
+    }
+  else if (errno == EINPROGRESS)	/* expected for nonready peer */
+    {
+    if (!fastopen->data)
       {
-      DEBUG(D_transport)
-	debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
-      goto legacy_connect;
+      DEBUG(D_transport|D_v)
+	debug_printf("TCP_FASTOPEN mode connection, no data\n");
+      tcp_out_fastopen = TRUE;
+      rc = 0;
       }
+    else if (  (rc = send(sock, fastopen->data, fastopen->len, 0)) < 0
+	    && errno == EINPROGRESS)	/* expected for nonready peer */
+      rc = 0;
+    }
+  else if(errno == EOPNOTSUPP)
+    {
+    DEBUG(D_transport)
+      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
+    goto legacy_connect;
+    }
   }
 else
 #endif
