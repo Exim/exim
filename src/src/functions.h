@@ -237,7 +237,7 @@ extern int     ip_addr(void *, int, const uschar *, int);
 extern int     ip_bind(int, int, uschar *, int);
 extern int     ip_connect(int, int, const uschar *, int, int, const blob *);
 extern int     ip_connectedsocket(int, const uschar *, int, int,
-                 int, host_item *, uschar **);
+                 int, host_item *, uschar **, const blob *);
 extern int     ip_get_address_family(int);
 extern void    ip_keepalive(int, const uschar *, BOOL);
 extern int     ip_recv(int, uschar *, int, int);

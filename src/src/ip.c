@@ -312,23 +312,22 @@ Arguments:
   address       the remote address, in text form
   portlo,porthi the remote port range
   timeout       a timeout
-  connhost	if not NULL, host_item filled in with connection details
+  connhost	if not NULL, host_item to be filled in with connection details
   errstr        pointer for allocated string on error
-XXX could add early-data support
+  fastopen	with SOCK_STREAM, if non-null, request TCP Fast Open.
+		Additionally, optional early-data to send
 
 Return:
   socket fd, or -1 on failure (having allocated an error string)
 */
 int
 ip_connectedsocket(int type, const uschar * hostname, int portlo, int porthi,
-	int timeout, host_item * connhost, uschar ** errstr)
+      int timeout, host_item * connhost, uschar ** errstr, const blob * fastopen)
 {
 int namelen, port;
 host_item shost;
 host_item *h;
 int af = 0, fd, fd4 = -1, fd6 = -1;
-blob * fastopen = tcp_fastopen_ok && type == SOCK_STREAM
-  ? &tcp_fastopen_nodata : NULL;
 
 shost.next = NULL;
 shost.address = NULL;
@@ -406,6 +405,7 @@ bad:
 }
 
 
+/*XXX TFO? */
 int
 ip_tcpsocket(const uschar * hostport, uschar ** errstr, int tmo)
 {
@@ -426,7 +426,7 @@ if (scan != 3)
   }
 
 return ip_connectedsocket(SOCK_STREAM, hostname, portlow, porthigh,
-			  tmo, NULL, errstr);
+			  tmo, NULL, errstr, NULL);
 }
 
 int

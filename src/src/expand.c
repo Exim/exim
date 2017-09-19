@@ -4708,8 +4708,7 @@ while (*s != 0)
 
       /* Open the file and read it */
 
-      f = Ufopen(sub_arg[0], "rb");
-      if (f == NULL)
+      if (!(f = Ufopen(sub_arg[0], "rb")))
         {
         expand_string_message = string_open_failed(errno, "%s", sub_arg[0]);
         goto EXPAND_FAILED;
@@ -4720,7 +4719,8 @@ while (*s != 0)
       continue;
       }
 
-    /* Handle "readsocket" to insert data from a Unix domain socket */
+    /* Handle "readsocket" to insert data from a socket, either
+    Inet or Unix domain */
 
     case EITEM_READSOCK:
       {
@@ -4728,10 +4728,10 @@ while (*s != 0)
       int timeout = 5;
       int save_ptr = ptr;
       FILE *f;
-      struct sockaddr_un sockun;         /* don't call this "sun" ! */
       uschar *arg;
       uschar *sub_arg[4];
       BOOL do_shutdown = TRUE;
+      blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
         {
@@ -4748,6 +4748,11 @@ while (*s != 0)
         case 2:                             /* Won't occur: no end check */
         case 3: goto EXPAND_FAILED;
         }
+
+      /* Grab the request string, if any */
+
+      reqstr.data = sub_arg[1];
+      reqstr.len = Ustrlen(sub_arg[1]);
 
       /* Sort out timeout, if given.  The second arg is a list with the first element
       being a time value.  Any more are options of form "name=value".  Currently the
@@ -4783,12 +4788,12 @@ while (*s != 0)
         if (Ustrncmp(sub_arg[0], "inet:", 5) == 0)
           {
           int port;
-          uschar *server_name = sub_arg[0] + 5;
-          uschar *port_name = Ustrrchr(server_name, ':');
+          uschar * server_name = sub_arg[0] + 5;
+          uschar * port_name = Ustrrchr(server_name, ':');
 
           /* Sort out the port */
 
-          if (port_name == NULL)
+          if (!port_name)
             {
             expand_string_message =
               string_sprintf("missing port for readsocket %s", sub_arg[0]);
@@ -4810,7 +4815,7 @@ while (*s != 0)
           else
             {
             struct servent *service_info = getservbyname(CS port_name, "tcp");
-            if (service_info == NULL)
+            if (!service_info)
               {
               expand_string_message = string_sprintf("unknown port \"%s\"",
                 port_name);
@@ -4820,17 +4825,20 @@ while (*s != 0)
             }
 
 	  fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
-		  timeout, NULL, &expand_string_message);
+		  timeout, NULL, &expand_string_message, &reqstr);
 	  callout_address = NULL;
 	  if (fd < 0)
               goto SOCK_FAIL;
+	  reqstr.len = 0;
           }
 
         /* Handle a Unix domain socket */
 
         else
           {
+	  struct sockaddr_un sockun;         /* don't call this "sun" ! */
           int rc;
+
           if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
             {
             expand_string_message = string_sprintf("failed to create socket: %s",
@@ -4864,14 +4872,13 @@ while (*s != 0)
 	/* Allow sequencing of test actions */
 	if (running_in_test_harness) millisleep(100);
 
-        /* Write the request string, if not empty */
+        /* Write the request string, if not empty or already done */
 
-        if (sub_arg[1][0] != 0)
+        if (reqstr.len)
           {
-          int len = Ustrlen(sub_arg[1]);
           DEBUG(D_expand) debug_printf_indent("writing \"%s\" to socket\n",
-            sub_arg[1]);
-          if (write(fd, sub_arg[1], len) != len)
+            reqstr.data);
+          if (write(fd, reqstr.data, reqstr.len) != reqstr.len)
             {
             expand_string_message = string_sprintf("request write to socket "
               "failed: %s", strerror(errno));

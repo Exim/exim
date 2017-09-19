@@ -343,6 +343,7 @@ start = time(NULL);
 
     for (;;)
       {
+      /*XXX could potentially use TFO early-data here */
       if (  (spamd_sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0
          || sd->retry <= 0
 	 )

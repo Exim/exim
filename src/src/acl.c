@@ -2771,8 +2771,9 @@ if (r == HOST_FIND_FAILED || r == HOST_FIND_AGAIN)
 HDEBUG(D_acl)
   debug_printf_indent("udpsend [%s]:%d %s\n", h->address, portnum, arg);
 
+/*XXX this could better use sendto */
 r = s = ip_connectedsocket(SOCK_DGRAM, h->address, portnum, portnum,
-		1, NULL, &errstr);
+		1, NULL, &errstr, NULL);
 if (r < 0) goto defer;
 len = Ustrlen(arg);
 r = send(s, arg, len, 0);
