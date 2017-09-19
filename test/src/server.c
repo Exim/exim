@@ -298,7 +298,7 @@ else
       printf("IPv6 socket creation failed: %s\n", strerror(errno));
       exit(1);
       }
-
+#ifdef TCP_FASTOPEN
     if (tfo)
       {
       int backlog = 5;
@@ -306,7 +306,7 @@ else
                     &backlog, sizeof(backlog)))
 	if (debug) printf("setsockopt TCP_FASTOPEN: %s\n", strerror(errno));
       }
-
+#endif
     /* If this is an IPv6 wildcard socket, set IPV6_V6ONLY if that option is
     available. */
 
@@ -330,6 +330,7 @@ else
       printf("IPv4 socket creation failed: %s\n", strerror(errno));
       exit(1);
       }
+#ifdef TCP_FASTOPEN
     if (tfo)
       {
       int backlog = 5;
@@ -337,7 +338,7 @@ else
                     &backlog, sizeof(backlog)))
 	if (debug) printf("setsockopt TCP_FASTOPEN: %s\n", strerror(errno));
       }
-
+#endif
     }
   }
 
