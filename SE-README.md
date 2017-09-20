@@ -119,6 +119,13 @@ This documents the patches applied on the upstream `exim-4_89` branch:
  - Applied [here](https://github.com/SpamExperts/exim/commit/9c88c072edf6946a200d4b4261f46274086d68b8)
  - Internal ticket `#32828` 
 
+### 16. Fix segfaulting of transport at 5XX banner rejection
+
+ - Transport segfaults when destination server rejects with 5XX on banner
+ - [Exim bug](https://bugs.exim.org/show_bug.cgi?id=2166), cherry-picked from upstream. 
+ - Applied [here](https://github.com/SpamExperts/exim/commit/c361bc937fb9d9803497da1e0430d9a89d81d89d)
+ - Internal ticket `#33350`, `#33305`.
+
 ### 16. Read encrypted conf
 
  - Applied [here](https://github.com/SpamExperts/exim/commit/448c95c573b187211ea102e0e811520a64d8aaf1)
