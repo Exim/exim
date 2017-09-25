@@ -52,7 +52,7 @@ Version 4.90
     is opened with a TFO cookie.
 
 13. DKIM support for multiple signing, by domain and/or key-selector.
-    DKIM support for multiple hashes.
+    DKIM support for multiple hashes, and for alternate-identity tags.
 
 14. Exipick understands -C|--config for an alternative Exim
     configuration file.

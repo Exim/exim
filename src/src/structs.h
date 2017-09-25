@@ -867,6 +867,7 @@ typedef BOOL (*oicf) (uschar *message_id, void *data);
 /* DKIM information for transport */
 struct ob_dkim {
   uschar *dkim_domain;
+  uschar *dkim_identity;
   uschar *dkim_private_key;
   uschar *dkim_selector;
   uschar *dkim_canon;

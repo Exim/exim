@@ -23800,6 +23800,7 @@ of the message. Its value must not be zero. See also &%final_timeout%&.
 .option dkim_strict smtp string&!! unset
 .option dkim_sign_headers smtp string&!! unset
 .option dkim_hash smtp string&!! sha256
+.option dkim_identity smtp string&!! unset
 DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
 
 
@@ -38553,6 +38554,19 @@ is set.
 .endlist
 If the option is empty after expansion, DKIM signing is not done.
 
+.new
+.option dkim_hash smtp string&!! sha256
+Can be set alternatively to &"sha1"& to use an alternate hash
+method.  Note that sha1 is now condidered insecure, and deprecated.
+
+.option dkim_identity smtp string&!! unset
+If set after expansion, the value is used to set an "i=" tag in
+the signing header.  The DKIM standards restrict the permissible
+syntax of this optional tag to a mail address, with possibly-empty
+local part, an @, and a domain identical to or subdomain of the "d="
+tag value.  Note that Exim does not check the value.
+.wen
+
 .option dkim_canon smtp string&!! unset
 This option sets the canonicalization method used when signing a message.
 The DKIM RFC currently supports two methods: "simple" and "relaxed".
@@ -38571,12 +38585,6 @@ If set, this option must expand to (or be specified as) a colon-separated
 list of header names. Headers with these names will be included in the message
 signature.
 When unspecified, the header names recommended in RFC4871 will be used.
-
-.new
-.option dkim_hash smtp string&!! sha256
-Can be set alternatively to &"sha1"& to use an alternate hash
-method.  Note that sha1 is now condidered insecure, and deprecated.
-.wen
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECID514"

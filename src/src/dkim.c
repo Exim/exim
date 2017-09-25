@@ -471,18 +471,15 @@ int sread;
 uschar buf[4096];
 int save_errno = 0;
 int old_pool = store_pool;
+uschar * errwhen;
 
 store_pool = POOL_MAIN;
 
 pdkim_init_context(&ctx, dkim->dot_stuffed, &dkim_exim_query_dns_txt);
 
 if (!(dkim_domain = expand_cstring(dkim->dkim_domain)))
-  {
   /* expansion error, do not send message. */
-  log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
-	     "dkim_domain: %s", expand_string_message);
-  goto bad;
-  }
+  { errwhen = US"dkim_domain"; goto expand_bad; }
 
 /* Set $dkim_domain expansion variable to each unique domain in list. */
 
@@ -509,11 +506,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
 
   if (!(dkim_sel = expand_string(dkim->dkim_selector)))
   if (!(dkim_signing_selector = expand_string(dkim->dkim_selector)))
-    {
-    log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
-	       "dkim_selector: %s", expand_string_message);
-    goto bad;
-    }
+    { errwhen = US"dkim_selector"; goto expand_bad; }
 
   while ((dkim_signing_selector = string_nextinlist(&dkim_sel, &sel_sep,
 	  NULL, 0)))
@@ -523,18 +516,14 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
     uschar * dkim_sign_headers_expanded = NULL;
     uschar * dkim_private_key_expanded;
     uschar * dkim_hash_expanded;
+    uschar * dkim_identity_expanded = NULL;
 
     /* Get canonicalization to use */
 
     dkim_canon_expanded = dkim->dkim_canon
       ? expand_string(dkim->dkim_canon) : US"relaxed";
-    if (!dkim_canon_expanded)
-      {
-      /* expansion error, do not send message. */
-      log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
-		 "dkim_canon: %s", expand_string_message);
-      goto bad;
-      }
+    if (!dkim_canon_expanded)	/* expansion error, do not send message. */
+      { errwhen = US"dkim_canon"; goto expand_bad; }
 
     if (Ustrcmp(dkim_canon_expanded, "relaxed") == 0)
       pdkim_canon = PDKIM_CANON_RELAXED;
@@ -548,23 +537,15 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
       pdkim_canon = PDKIM_CANON_RELAXED;
       }
 
-    if (dkim->dkim_sign_headers)
-      if (!(dkim_sign_headers_expanded = expand_string(dkim->dkim_sign_headers)))
-	{
-	log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
-		   "dkim_sign_headers: %s", expand_string_message);
-	goto bad;
-	}
-			  /* else pass NULL, which means default header list */
+    if (  dkim->dkim_sign_headers
+       && !(dkim_sign_headers_expanded = expand_string(dkim->dkim_sign_headers)))
+      { errwhen = US"dkim_sign_header"; goto expand_bad; }
+    /* else pass NULL, which means default header list */
 
     /* Get private key to use. */
 
     if (!(dkim_private_key_expanded = expand_string(dkim->dkim_private_key)))
-      {
-      log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
-		 "dkim_private_key: %s", expand_string_message);
-      goto bad;
-      }
+      { errwhen = US"dkim_private_key"; goto expand_bad; }
 
     if (  Ustrlen(dkim_private_key_expanded) == 0
        || Ustrcmp(dkim_private_key_expanded, "0") == 0
@@ -607,11 +588,13 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
       }
 
     if (!(dkim_hash_expanded = expand_string(dkim->dkim_hash)))
-      {
-      log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand "
-		 "dkim_hash: %s", expand_string_message);
-      goto bad;
-      }
+      { errwhen = US"dkim_hash"; goto expand_bad; }
+
+    if (dkim->dkim_identity)
+      if (!(dkim_identity_expanded = expand_string(dkim->dkim_identity)))
+	{ errwhen = US"dkim_identity"; goto expand_bad; }
+      else if (!*dkim_identity_expanded)
+	dkim_identity_expanded = NULL;
 
   /*XXX so we currently nail signing to RSA + this hash.
   Need to extract algo from privkey and check for disallowed combos. */
@@ -627,7 +610,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
 
     pdkim_set_optional(sig,
 			CS dkim_sign_headers_expanded,
-			NULL,
+			dkim_identity_expanded,
 			pdkim_canon,
 			pdkim_canon, -1, 0, 0);
 
@@ -694,6 +677,11 @@ pk_bad:
 bad:
   sigbuf = NULL;
   goto CLEANUP;
+
+expand_bad:
+  log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand %s: %s",
+	      errwhen, expand_string_message);
+  goto bad;
 }
 
 #endif

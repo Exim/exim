@@ -50,6 +50,8 @@ send_to_server:
 
 .ifndef HEADERS_MAXSIZE
   dkim_sign_headers =	OPT
+.else
+  dkim_identity =	allheaders@$dkim_domain
 .endif
 .ifdef VALUE
   dkim_hash =		VALUE
