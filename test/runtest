@@ -1527,7 +1527,7 @@ $munges =
 
     'optional_config' =>
     { 'stdout' => '/^(
-                  dkim_(canon|domain|private_key|selector|sign_headers|strict|hash)
+                  dkim_(canon|domain|private_key|selector|sign_headers|strict|hash|identity)
                   |gnutls_require_(kx|mac|protocols)
                   |hosts_(requ(est|ire)|try)_(dane|ocsp)
                   |hosts_(avoid|nopass|require|verify_avoid)_tls
