@@ -237,26 +237,28 @@ if (fastopen)
   if ((rc = sendto(sock, fastopen->data, fastopen->len,
 		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
 	/* seen for with-data, experimental TFO option, with-cookie case */
+	/* seen for with-data, proper TFO opt, with-cookie case */
     {
     DEBUG(D_transport|D_v) debug_printf("TFO mode connection attempt, %s data\n",
       fastopen->len > 0 ? "with"  : "no");
     tcp_out_fastopen = fastopen->len > 0 ?  2 : 1;
     }
-  else if (errno == EINPROGRESS)	/* expected for nonready peer */
+  else if (errno == EINPROGRESS)	/* expected if we had no cookie for peer */
 	/* seen for no-data, proper TFO option, both cookie-request and with-cookie cases */
 	/*  apparently no visibility of the diffference at this point */
+	/* seen for with-data, proper TFO opt, cookie-req */
 	/*   with netwk delay, post-conn tcp_info sees unacked 1 for R, 2 for C; code in smtp_out.c */
 	/* ? older Experimental TFO option behaviour ? */
     {					/* queue unsent data */
+    DEBUG(D_transport|D_v) debug_printf("TFO mode sendto, %s data: EINPROGRESS\n",
+      fastopen->len > 0 ? "with"  : "no");
     if (!fastopen->data)
       {
-      tcp_out_fastopen = 1;	/* we tried; unknown if useful yet */
+      tcp_out_fastopen = 1;		/* we tried; unknown if useful yet */
       rc = 0;
       }
-    else if (  (rc = send(sock, fastopen->data, fastopen->len, 0)) < 0
-	    && errno == EINPROGRESS	/* expected for nonready peer */
-	    )
-      rc = 0;
+    else
+      rc = send(sock, fastopen->data, fastopen->len, 0);
     }
   else if(errno == EOPNOTSUPP)
     {

@@ -7,10 +7,14 @@
 # A packet capture on the loopback interface will show the TFO
 # option on the SYN, but the fast-output SMTP banner will not
 # be seen unless you also deliberately emulate a long path:
-# 'sudo tc qdisc add dev lo root netem delay 100ms'
+# 'sudo tc qdisc add dev lo root netem delay 50ms'
 # You'll need kernel-modules-extra installed, or you get
 # an unhelpful error from RTNETLINK.
 # To tidy up:  'sudo tc qdisc delete dev lo root'
+#
+sudo perl
+system ("tc qdisc add dev lo root netem delay 50ms");
+****
 #
 # First time runs will see a TFO request option only; subsequent
 # ones should see the TFO cookie and fast-output SMTP banner
@@ -20,16 +24,14 @@
 # The client log => lint.ex  should have a "TFO" element.
 # Assuming this is the first run since boot, the a@test recipient will not.
 #
+sudo perl
+system ("ip tcp_metrics delete 127.0.0.1");
+****
+#
 # The server log <= line for b@test.ex  should have a "TFO" element, but
 # this will only be obtained when the above delay is inserted into the
 # loopback net path.
 #
-# this attempt to tidy up does not work
-#sudo perl
-#open (my $fh, "/proc/sys/net/ipv4/tcp_fastopen_key");
-#print $fh "00000000-00000000-00000000-00000000";
-#close $fh;
-#****
 #
 #
 # FreeBSD: it looks like you have to compile a custom kernel, with
@@ -49,6 +51,11 @@ exim b@test.ex
 Testing
 ****
 sleep 3
+#
+#
+sudo perl
+system ("tc qdisc delete dev lo root");
+****
 #
 killdaemon
 no_msglog_check
