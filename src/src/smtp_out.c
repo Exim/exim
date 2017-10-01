@@ -140,6 +140,60 @@ return TRUE;
 
 
 
+#ifdef TCP_FASTOPEN
+static void
+tfo_out_check(int sock)
+{
+# if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
+struct tcp_info tinfo;
+socklen_t len = sizeof(tinfo);
+
+if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
+  {
+  switch (tcp_out_fastopen)
+    {
+      /* This is a somewhat dubious detection method; totally undocumented so likely
+      to fail in future kernels.  There seems to be no documented way.  What we really
+      want to know is if the server sent smtp-banner data before our ACK of his SYN,ACK
+      hit him.  What this (possibly?) detects is whether we sent a TFO cookie with our
+      SYN, as distinct from a TFO request.  This gets a false-positive when the server
+      key is rotated; we send the old one (which this test sees) but the server returns
+      the new one and does not send its SMTP banner before we ACK his SYN,ACK.
+       To force that rotation case:
+       '# echo -n "00000000-00000000-00000000-0000000" >/proc/sys/net/ipv4/tcp_fastopen_key'
+      The kernel seems to be counting unack'd packets. */
+
+    case 1:
+      if (tinfo.tcpi_unacked > 1)
+	{
+	DEBUG(D_transport|D_v)
+	  debug_printf("TCP_FASTOPEN tcpi_unacked %d\n", tinfo.tcpi_unacked);
+	tcp_out_fastopen = 2;
+	}
+      break;
+
+#ifdef notdef		/* This seems to always fire, meaning that we cannot tell
+			whether the server accepted data we sent.  For now assume
+			that it did. */
+
+      /* If there was data-on-SYN but we had to retrasnmit it, declare no TFO */
+
+    case 2:
+      if (!(tinfo.tcpi_options & TCPI_OPT_SYN_DATA))
+	{
+	DEBUG(D_transport|D_v) debug_printf("TFO: had to retransmit\n");
+	tcp_out_fastopen = 0;
+	}
+      break;
+#endif
+    }
+
+  }
+# endif
+}
+#endif
+
+
 /* Arguments as for smtp_connect(), plus
   early_data	if non-NULL, data to be sent - preferably in the TCP SYN segment
 
@@ -158,6 +212,8 @@ int dscp_level;
 int dscp_option;
 int sock;
 int save_errno = 0;
+const blob * fastopen = NULL;
+
 
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
@@ -207,8 +263,6 @@ requested some early-data then include that in the TFO request. */
 
 else
   {
-  const blob * fastopen = NULL;
-
 #ifdef TCP_FASTOPEN
   if (verify_check_given_host(&ob->hosts_try_fastopen, host) == OK)
     fastopen = early_data ? early_data : &tcp_fastopen_nodata;
@@ -254,6 +308,9 @@ else
     return -1;
     }
   if (ob->keepalive) ip_keepalive(sock, host->address, TRUE);
+#ifdef TCP_FASTOPEN
+  if (fastopen) tfo_out_check(sock);
+#endif
   return sock;
   }
 }

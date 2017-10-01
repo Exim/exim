@@ -2511,7 +2511,10 @@ for (addr = sx->first_addr, address_count = 0;
   uschar * rcpt_addr;
 
   if (tcp_out_fastopen && !tcp_out_fastopen_logged)
-    setflag(addr, af_tcp_fastopen);
+    {
+    setflag(addr, af_tcp_fastopen_conn);
+    if (tcp_out_fastopen > 1) setflag(addr, af_tcp_fastopen);
+    }
 
   addr->dsn_aware = sx->peer_offered & OPTION_DSN
     ? dsn_support_yes : dsn_support_no;

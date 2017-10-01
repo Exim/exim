@@ -8,6 +8,9 @@
 # option on the SYN, but the fast-output SMTP banner will not
 # be seen unless you also deliberately emulate a long path:
 # 'sudo tc qdisc add dev lo root netem delay 100ms'
+# You'll need kernel-modules-extra installed, or you get
+# an unhelpful error from RTNETLINK.
+# To tidy up:  'sudo tc qdisc delete dev lo root'
 #
 # First time runs will see a TFO request option only; subsequent
 # ones should see the TFO cookie and fast-output SMTP banner
@@ -21,6 +24,12 @@
 # this will only be obtained when the above delay is inserted into the
 # loopback net path.
 #
+# this attempt to tidy up does not work
+#sudo perl
+#open (my $fh, "/proc/sys/net/ipv4/tcp_fastopen_key");
+#print $fh "00000000-00000000-00000000-00000000";
+#close $fh;
+#****
 #
 #
 # FreeBSD: it looks like you have to compile a custom kernel, with

@@ -3535,7 +3535,8 @@ while (!done)
       break;
 
     case 'T':
-      setflag(addr, af_tcp_fastopen);
+      setflag(addr, af_tcp_fastopen_conn);
+      if (*subid > '0') setflag(addr, af_tcp_fastopen);
       break;
 
     case 'D':
@@ -4837,8 +4838,9 @@ all pipes, so I do not see a reason to use non-blocking IO here
       if (testflag(addr, af_chunking_used))
 	rmt_dlv_checked_write(fd, 'K', '0', NULL, 0);
 
-      if (testflag(addr, af_tcp_fastopen))
-	rmt_dlv_checked_write(fd, 'T', '0', NULL, 0);
+      if (testflag(addr, af_tcp_fastopen_conn))
+	rmt_dlv_checked_write(fd, 'T',
+	  testflag(addr, af_tcp_fastopen) ? '1' : '0', NULL, 0);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
