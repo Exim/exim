@@ -74,9 +74,10 @@ Delivery address list:
   nofile@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: nofile@test.ex
@@ -111,8 +112,9 @@ search_tidyup called
 --------> nofile@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to nofile <nofile@test.ex> transport=t1
@@ -149,6 +151,7 @@ delivering in maildir format in TESTSUITE/test-mail/nofile
 writing to tmp/MAILDIR.myhost.test.ex
 Exim quota = 500 old size = sssss this message = sss (included)
   file count quota = 0 count = 0
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 added 'ddd 1' to maildirsize file
 renaming temporary file
@@ -262,8 +265,9 @@ Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -298,8 +302,9 @@ search_tidyup called
 --------> userx@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
@@ -338,6 +343,7 @@ delivering in maildir format in TESTSUITE/test-mail/userx
 writing to tmp/MAILDIR.myhost.test.ex
 Exim quota = 500 old size = sssss this message = sss (included)
   file count quota = 0 count = 0
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 added 'ddd 1' to maildirsize file
 renaming temporary file
@@ -451,8 +457,9 @@ Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -487,8 +494,9 @@ search_tidyup called
 --------> userx@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
@@ -545,8 +553,8 @@ Deferred addresses:
  userx@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
@@ -558,6 +566,7 @@ Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 dbfn_write: key=T:userx@test.ex
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
@@ -649,8 +658,8 @@ Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -661,6 +670,7 @@ dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
 no domain retry record
 no address retry record
 userx@test.ex: queued for routing
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
@@ -689,12 +699,13 @@ search_tidyup called
 --------> userx@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 dbfn_read: key=T:userx@test.ex
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
@@ -738,8 +749,8 @@ Deferred addresses:
  userx@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
@@ -751,6 +762,7 @@ Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 dbfn_write: key=T:userx@test.ex
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0

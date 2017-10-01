@@ -13,7 +13,7 @@
 /* #define TESTING_LOG_DATESTAMP */
 
 
-static uschar timebuf[sizeof("www, dd-mmm-yyyy hh:mm:ss +zzzz")];
+static uschar timebuf[sizeof("www, dd-mmm-yyyy hh:mm:ss.ddd +zzzz")];
 
 
 /*************************************************
@@ -52,158 +52,172 @@ Returns:   pointer to fixed buffer containing the timestamp
 uschar *
 tod_stamp(int type)
 {
-time_t now;
-struct tm *t;
+struct timeval now;
+struct tm * t;
+int off = 0;
 
-if (type == tod_epoch_l)
-  {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  /* Unix epoch/usec format */
-  (void) sprintf(CS timebuf, TIME_T_FMT "%06ld", tv.tv_sec, (long) tv.tv_usec );
-  return timebuf;
-  }
-
-now = time(NULL);
-
-/* Vary log type according to timezone requirement */
-
-if (type == tod_log) type = log_timezone? tod_log_zone : tod_log_bare;
+gettimeofday(&now, NULL);
 
 /* Styles that don't need local time */
 
-else if (type == tod_epoch)
+switch(type)
   {
-  (void) sprintf(CS timebuf, TIME_T_FMT, now);  /* Unix epoch format */
-  return timebuf;	/* NB the above will be wrong if time_t is FP */
+  case tod_epoch:
+    (void) sprintf(CS timebuf, TIME_T_FMT, now.tv_sec);  /* Unix epoch format */
+    return timebuf;	/* NB the above will be wrong if time_t is FP */
+
+  case tod_epoch_l:
+    /* Unix epoch/usec format */
+    (void) sprintf(CS timebuf, TIME_T_FMT "%06ld", now.tv_sec, (long) now.tv_usec );
+    return timebuf;
+
+  case tod_zulu:
+    t = gmtime(&now.tv_sec);
+    (void) sprintf(CS timebuf, "%04d%02d%02d%02d%02d%02dZ",
+      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min,
+      t->tm_sec);
+    return timebuf;
   }
 
-else if (type == tod_zulu)
-  {
-  t = gmtime(&now);
-  (void) sprintf(CS timebuf, "%04d%02d%02d%02d%02d%02dZ",
-    1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min,
-    t->tm_sec);
-  return timebuf;
-  }
+/* Vary log type according to timezone requirement */
+
+if (type == tod_log) type = log_timezone ? tod_log_zone : tod_log_bare;
 
 /* Convert to local time or UTC */
 
-t = timestamps_utc? gmtime(&now) : localtime(&now);
+t = timestamps_utc ? gmtime(&now.tv_sec) : localtime(&now.tv_sec);
 
 switch(type)
   {
   case tod_log_bare:          /* Format used in logging without timezone */
-  (void) sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d",
-    1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday,
-    t->tm_hour, t->tm_min, t->tm_sec);
-  break;
+    off = sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d",
+      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday,
+      t->tm_hour, t->tm_min, t->tm_sec);
+    break;
 
-  /* Format used as suffix of log file name when 'log_datestamp' is active. For
-  testing purposes, it changes the file every second. */
+    /* Format used as suffix of log file name when 'log_datestamp' is active. For
+    testing purposes, it changes the file every second. */
 
-  #ifdef TESTING_LOG_DATESTAMP
+#ifdef TESTING_LOG_DATESTAMP
   case tod_log_datestamp_daily:
   case tod_log_datestamp_monthly:
-  (void) sprintf(CS timebuf, "%04d%02d%02d%02d%02d",
-    1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min);
-  break;
+    off = sprintf(CS timebuf, "%04d%02d%02d%02d%02d",
+      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min);
+    break;
 
-  #else
+#else
   case tod_log_datestamp_daily:
-  (void) sprintf(CS timebuf, "%04d%02d%02d",
-    1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday);
-  break;
+    off = sprintf(CS timebuf, "%04d%02d%02d",
+      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday);
+    break;
 
   case tod_log_datestamp_monthly:
-  (void) sprintf(CS timebuf, "%04d%02d",
-    1900 + t->tm_year, 1 + t->tm_mon);
-  break;
-  #endif
+#ifndef COMPILE_UTILITY
+    off = sprintf(CS timebuf, "%04d%02d",
+      1900 + t->tm_year, 1 + t->tm_mon);
+#endif
+    break;
+#endif
 
-  /* Format used in BSD inbox separator lines. Sort-of documented in RFC 976
-  ("UUCP Mail Interchange Format Standard") but only by example, not by
-  explicit definition. The examples show no timezone offsets, and some MUAs
-  appear to be sensitive to this, so Exim has been changed to remove the
-  timezone offsets that originally appeared. */
+    /* Format used in BSD inbox separator lines. Sort-of documented in RFC 976
+    ("UUCP Mail Interchange Format Standard") but only by example, not by
+    explicit definition. The examples show no timezone offsets, and some MUAs
+    appear to be sensitive to this, so Exim has been changed to remove the
+    timezone offsets that originally appeared. */
 
   case tod_bsdin:
-    {
-    int len = Ustrftime(timebuf, sizeof(timebuf), "%a %b %d %H:%M:%S", t);
-    Ustrftime(timebuf + len, sizeof(timebuf) - len, " %Y", t);
-    }
-  break;
+      {
+      int len = Ustrftime(timebuf, sizeof(timebuf), "%a %b %d %H:%M:%S", t);
+      Ustrftime(timebuf + len, sizeof(timebuf) - len, " %Y", t);
+      }
+    break;
 
-  /* Other types require the GMT offset to be calculated, or just set up in the
-  case of UTC timestamping. We need to take a copy of the local time first. */
+    /* Other types require the GMT offset to be calculated, or just set up in the
+    case of UTC timestamping. We need to take a copy of the local time first. */
 
   default:
-    {
-    int diff_hour, diff_min;
-    struct tm local;
-    memcpy(&local, t, sizeof(struct tm));
-
-    if (timestamps_utc)
       {
-      diff_hour = diff_min = 0;
+      int diff_hour, diff_min;
+      struct tm local;
+      memcpy(&local, t, sizeof(struct tm));
+
+      if (timestamps_utc)
+	diff_hour = diff_min = 0;
+      else
+	{
+	struct tm * gmt = gmtime(&now.tv_sec);
+
+	diff_min = 60*(local.tm_hour - gmt->tm_hour) + local.tm_min - gmt->tm_min;
+	if (local.tm_year != gmt->tm_year)
+	  diff_min += (local.tm_year > gmt->tm_year)? 1440 : -1440;
+	else if (local.tm_yday != gmt->tm_yday)
+	  diff_min += (local.tm_yday > gmt->tm_yday)? 1440 : -1440;
+	diff_hour = diff_min/60;
+	diff_min  = abs(diff_min - diff_hour*60);
+	}
+
+      switch(type)
+	{
+	case tod_log_zone:          /* Format used in logging with timezone */
+#ifndef COMPILE_UTILITY
+	  if (LOGGING(millisec))
+	    (void) sprintf(CS timebuf,
+	      "%04d-%02d-%02d %02d:%02d:%02d.%03d %+03d%02d",
+	      1900 + local.tm_year, 1 + local.tm_mon, local.tm_mday,
+	      local.tm_hour, local.tm_min, local.tm_sec, (int)(now.tv_usec/1000),
+	      diff_hour, diff_min);
+	  else
+#endif
+	    (void) sprintf(CS timebuf,
+	      "%04d-%02d-%02d %02d:%02d:%02d %+03d%02d",
+	      1900 + local.tm_year, 1 + local.tm_mon, local.tm_mday,
+	      local.tm_hour, local.tm_min, local.tm_sec,
+	      diff_hour, diff_min);
+	  break;
+
+	case tod_zone:              /* Just the timezone offset */
+	  (void) sprintf(CS timebuf, "%+03d%02d", diff_hour, diff_min);
+	  break;
+
+	/* tod_mbx: format used in MBX mailboxes - subtly different to tod_full */
+
+	  #ifdef SUPPORT_MBX
+	case tod_mbx:
+	    {
+	    int len;
+	    (void) sprintf(CS timebuf, "%02d-", local.tm_mday);
+	    len = Ustrlen(timebuf);
+	    len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b-%Y %H:%M:%S",
+	      &local);
+	    (void) sprintf(CS timebuf + len, " %+03d%02d", diff_hour, diff_min);
+	    }
+	  break;
+	  #endif
+
+	/* tod_full: format used in Received: headers (use as default just in case
+	called with a junk type value) */
+
+	default:
+	    {
+	    int len = Ustrftime(timebuf, sizeof(timebuf), "%a, ", &local);
+	    (void) sprintf(CS timebuf + len, "%02d ", local.tm_mday);
+	    len += Ustrlen(timebuf + len);
+	    len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b %Y %H:%M:%S",
+	      &local);
+	    (void) sprintf(CS timebuf + len, " %+03d%02d", diff_hour, diff_min);
+	    }
+	  break;
+	}
       }
-    else
-      {
-      struct tm *gmt = gmtime(&now);
-      diff_min = 60*(local.tm_hour - gmt->tm_hour) + local.tm_min - gmt->tm_min;
-      if (local.tm_year != gmt->tm_year)
-        diff_min += (local.tm_year > gmt->tm_year)? 1440 : -1440;
-      else if (local.tm_yday != gmt->tm_yday)
-        diff_min += (local.tm_yday > gmt->tm_yday)? 1440 : -1440;
-      diff_hour = diff_min/60;
-      diff_min  = abs(diff_min - diff_hour*60);
-      }
-
-    switch(type)
-      {
-      case tod_log_zone:          /* Format used in logging with timezone */
-      (void) sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d %+03d%02d",
-        1900 + local.tm_year, 1 + local.tm_mon, local.tm_mday,
-        local.tm_hour, local.tm_min, local.tm_sec,
-        diff_hour, diff_min);
-      break;
-
-      case tod_zone:              /* Just the timezone offset */
-      (void) sprintf(CS timebuf, "%+03d%02d", diff_hour, diff_min);
-      break;
-
-      /* tod_mbx: format used in MBX mailboxes - subtly different to tod_full */
-
-      #ifdef SUPPORT_MBX
-      case tod_mbx:
-        {
-        int len;
-        (void) sprintf(CS timebuf, "%02d-", local.tm_mday);
-        len = Ustrlen(timebuf);
-        len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b-%Y %H:%M:%S",
-          &local);
-        (void) sprintf(CS timebuf + len, " %+03d%02d", diff_hour, diff_min);
-        }
-      break;
-      #endif
-
-      /* tod_full: format used in Received: headers (use as default just in case
-      called with a junk type value) */
-
-      default:
-        {
-        int len = Ustrftime(timebuf, sizeof(timebuf), "%a, ", &local);
-        (void) sprintf(CS timebuf + len, "%02d ", local.tm_mday);
-        len += Ustrlen(timebuf + len);
-        len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b %Y %H:%M:%S",
-          &local);
-        (void) sprintf(CS timebuf + len, " %+03d%02d", diff_hour, diff_min);
-        }
-      break;
-      }
-    }
-  break;
+    break;
   }
+
+#ifndef COMPILE_UTILITY
+if (LOGGING(millisec) && off > 0)
+  (void) sprintf(CS timebuf + off, ".%03d", (int)(now.tv_usec/1000));
+#else
+off = off;	/* Compiler quietening */
+#endif
 
 return timebuf;
 }

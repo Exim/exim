@@ -1,0 +1,56 @@
+# callout lazy-close, defers
+need_ipv4
+#
+# a recipient verify and continued-delivery
+# cmdline -bs send, rcpt-time defer
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+451 not right now
+QUIT
+221 Bye
+****
+#
+exim -bs
+mail from:<userg@ok.example>
+rcpt to:<userg@test.ex>
+quit
+****
+sleep 1
+#
+# cmdline -bs send, data-time defer
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+451 not right now
+QUIT
+221 Bye
+****
+#
+exim -bs
+mail from:<userh@ok.example>
+rcpt to:<userh@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+#
+#
+no_stdout_check
+no_msglog_check

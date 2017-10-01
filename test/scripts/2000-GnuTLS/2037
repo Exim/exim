@@ -1,0 +1,31 @@
+# client: callout lazy-close, defers
+gnutls
+need_ipv4
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+# cmdline -bs send, rcpt-time defer
+exim -bs
+mail from:<>
+rcpt to:<rcpt_defer@test.ex>
+quit
+****
+sleep 3
+#
+# cmdline -bs send, data-time defer
+exim -bs
+mail from:<>
+rcpt to:<data_defer@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 3
+killdaemon
+#
+#
+no_stdout_check
+no_msglog_check

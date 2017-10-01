@@ -620,8 +620,8 @@ parse_extract_address(uschar *mailbox, uschar **errorptr, int *start, int *end,
 {
 uschar *yield = store_get(Ustrlen(mailbox) + 1);
 uschar *startptr, *endptr;
-uschar *s = (uschar *)mailbox;
-uschar *t = (uschar *)yield;
+uschar *s = US mailbox;
+uschar *t = US yield;
 
 *domain = 0;
 
@@ -745,7 +745,7 @@ if (*s == '<')
     *errorptr = s[-1] == 0
       ? US"'>' missing at end of address"
       : string_sprintf("malformed address: %.32s may not follow %.*s",
-	  s-1, s - (uschar *)mailbox - 1, mailbox);
+	  s-1, s - US mailbox - 1, mailbox);
     goto PARSE_FAILED;
     }
 
@@ -798,13 +798,13 @@ if (*s != 0)
   else
     {
     *errorptr = string_sprintf("malformed address: %.32s may not follow %.*s",
-      s, s - (uschar *)mailbox, mailbox);
+      s, s - US mailbox, mailbox);
     goto PARSE_FAILED;
     }
   }
-*start = startptr - (uschar *)mailbox;      /* Return offsets */
+*start = startptr - US mailbox;      /* Return offsets */
 while (isspace(endptr[-1])) endptr--;
-*end = endptr - (uschar *)mailbox;
+*end = endptr - US mailbox;
 
 /* Although this code has no limitation on the length of address extracted,
 other parts of Exim may have limits, and in any case, RFC 2821 limits local
@@ -913,8 +913,7 @@ for (; len > 0; len--)
       }
     else
       {
-      sprintf(CS t, "=%02X", ch);
-      while (*t != 0) t++;
+      t += sprintf(CS t, "=%02X", ch);
       coded = TRUE;
       first_byte = !first_byte;
       }

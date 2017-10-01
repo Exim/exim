@@ -11,136 +11,12 @@ implementation of the conditional .ifdef etc. */
 
 #include "exim.h"
 
-extern char **environ;
+#ifdef MACRO_PREDEF
+# include "macro_predef.h"
+#endif
 
-static void fn_smtp_receive_timeout(const uschar * name, const uschar * str);
-static void save_config_line(const uschar* line);
-static void save_config_position(const uschar *file, int line);
-static void print_config(BOOL admin, BOOL terse);
-static void readconf_options_auths(void);
-
-
-#define CSTATE_STACK_SIZE 10
-
-const uschar *config_directory = NULL;
-
-
-/* Structure for chain (stack) of .included files */
-
-typedef struct config_file_item {
-  struct config_file_item *next;
-  const uschar *filename;
-  const uschar *directory;
-  FILE *file;
-  int lineno;
-} config_file_item;
-
-/* Structure for chain of configuration lines (-bP config) */
-
-typedef struct config_line_item {
-  struct config_line_item *next;
-  uschar *line;
-} config_line_item;
-
-static config_line_item* config_lines;
-
-/* Structure of table of conditional words and their state transitions */
-
-typedef struct cond_item {
-  uschar *name;
-  int    namelen;
-  int    action1;
-  int    action2;
-  int    pushpop;
-} cond_item;
-
-/* Structure of table of syslog facility names and values */
-
-typedef struct syslog_fac_item {
-  uschar *name;
-  int    value;
-} syslog_fac_item;
-
-/* constants */
-static const char * const hidden = "<value not displayable>";
-
-/* Static variables */
-
-static config_file_item *config_file_stack = NULL;  /* For includes */
-
-static uschar *syslog_facility_str  = NULL;
-static uschar next_section[24];
-static uschar time_buffer[24];
-
-/* State variables for conditional loading (.ifdef / .else / .endif) */
-
-static int cstate = 0;
-static int cstate_stack_ptr = -1;
-static int cstate_stack[CSTATE_STACK_SIZE];
-
-/* Table of state transitions for handling conditional inclusions. There are
-four possible state transitions:
-
-  .ifdef true
-  .ifdef false
-  .elifdef true  (or .else)
-  .elifdef false
-
-.endif just causes the previous cstate to be popped off the stack */
-
-static int next_cstate[3][4] =
-  {
-  /* State 0: reading from file, or reading until next .else or .endif */
-  { 0, 1, 2, 2 },
-  /* State 1: condition failed, skipping until next .else or .endif */
-  { 2, 2, 0, 1 },
-  /* State 2: skipping until .endif */
-  { 2, 2, 2, 2 },
-  };
-
-/* Table of conditionals and the states to set. For each name, there are four
-values: the length of the name (to save computing it each time), the state to
-set if a macro was found in the line, the state to set if a macro was not found
-in the line, and a stack manipulation setting which is:
-
-  -1   pull state value off the stack
-   0   don't alter the stack
-  +1   push value onto stack, before setting new state
-*/
-
-static cond_item cond_list[] = {
-  { US"ifdef",    5, 0, 1,  1 },
-  { US"ifndef",   6, 1, 0,  1 },
-  { US"elifdef",  7, 2, 3,  0 },
-  { US"elifndef", 8, 3, 2,  0 },
-  { US"else",     4, 2, 2,  0 },
-  { US"endif",    5, 0, 0, -1 }
-};
-
-static int cond_list_size = sizeof(cond_list)/sizeof(cond_item);
-
-/* Table of syslog facility names and their values */
-
-static syslog_fac_item syslog_list[] = {
-  { US"mail",   LOG_MAIL },
-  { US"user",   LOG_USER },
-  { US"news",   LOG_NEWS },
-  { US"uucp",   LOG_UUCP },
-  { US"local0", LOG_LOCAL0 },
-  { US"local1", LOG_LOCAL1 },
-  { US"local2", LOG_LOCAL2 },
-  { US"local3", LOG_LOCAL3 },
-  { US"local4", LOG_LOCAL4 },
-  { US"local5", LOG_LOCAL5 },
-  { US"local6", LOG_LOCAL6 },
-  { US"local7", LOG_LOCAL7 },
-  { US"daemon", LOG_DAEMON }
-};
-
-static int syslog_list_size = sizeof(syslog_list)/sizeof(syslog_fac_item);
-
-
-
+static uschar * syslog_facility_str;
+static void fn_smtp_receive_timeout(const uschar *, const uschar *);
 
 /*************************************************
 *           Main configuration options           *
@@ -217,6 +93,7 @@ static optionlist optionlist_config[] = {
   { "check_spool_inodes",       opt_int,         &check_spool_inodes },
   { "check_spool_space",        opt_Kint,        &check_spool_space },
   { "chunking_advertise_hosts", opt_stringptr,	 &chunking_advertise_hosts },
+  { "commandline_checks_require_admin", opt_bool,&commandline_checks_require_admin },
   { "daemon_smtp_port",         opt_stringptr|opt_hidden, &daemon_smtp_port },
   { "daemon_smtp_ports",        opt_stringptr,   &daemon_smtp_port },
   { "daemon_startup_retries",   opt_int,         &daemon_startup_retries },
@@ -432,6 +309,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },
   { "spool_directory",          opt_stringptr,   &spool_directory },
+  { "spool_wireformat",         opt_bool,        &spool_wireformat },
 #ifdef LOOKUP_SQLITE
   { "sqlite_lock_timeout",      opt_int,         &sqlite_lock_timeout },
 #endif
@@ -494,7 +372,166 @@ static optionlist optionlist_config[] = {
   { "write_rejectlog",          opt_bool,        &write_rejectlog }
 };
 
+#ifndef MACRO_PREDEF
 static int optionlist_config_size = nelem(optionlist_config);
+#endif
+
+
+#ifdef MACRO_PREDEF
+
+static void fn_smtp_receive_timeout(const uschar * name, const uschar * str) {/*Dummy*/}
+
+void
+options_main(void)
+{
+options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
+}
+
+void
+options_auths(void)
+{
+struct auth_info * ai;
+uschar buf[64];
+
+options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
+
+for (ai = auths_available; ai->driver_name[0]; ai++)
+  {
+  spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
+  builtin_macro_create(buf);
+  options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
+  }
+}
+
+
+#else	/*!MACRO_PREDEF*/
+
+extern char **environ;
+
+static void save_config_line(const uschar* line);
+static void save_config_position(const uschar *file, int line);
+static void print_config(BOOL admin, BOOL terse);
+
+
+#define CSTATE_STACK_SIZE 10
+
+const uschar *config_directory = NULL;
+
+
+/* Structure for chain (stack) of .included files */
+
+typedef struct config_file_item {
+  struct config_file_item *next;
+  const uschar *filename;
+  const uschar *directory;
+  FILE *file;
+  int lineno;
+} config_file_item;
+
+/* Structure for chain of configuration lines (-bP config) */
+
+typedef struct config_line_item {
+  struct config_line_item *next;
+  uschar *line;
+} config_line_item;
+
+static config_line_item* config_lines;
+
+/* Structure of table of conditional words and their state transitions */
+
+typedef struct cond_item {
+  uschar *name;
+  int    namelen;
+  int    action1;
+  int    action2;
+  int    pushpop;
+} cond_item;
+
+/* Structure of table of syslog facility names and values */
+
+typedef struct syslog_fac_item {
+  uschar *name;
+  int    value;
+} syslog_fac_item;
+
+/* constants */
+static const char * const hidden = "<value not displayable>";
+
+/* Static variables */
+
+static config_file_item *config_file_stack = NULL;  /* For includes */
+
+static uschar *syslog_facility_str  = NULL;
+static uschar next_section[24];
+static uschar time_buffer[24];
+
+/* State variables for conditional loading (.ifdef / .else / .endif) */
+
+static int cstate = 0;
+static int cstate_stack_ptr = -1;
+static int cstate_stack[CSTATE_STACK_SIZE];
+
+/* Table of state transitions for handling conditional inclusions. There are
+four possible state transitions:
+
+  .ifdef true
+  .ifdef false
+  .elifdef true  (or .else)
+  .elifdef false
+
+.endif just causes the previous cstate to be popped off the stack */
+
+static int next_cstate[3][4] =
+  {
+  /* State 0: reading from file, or reading until next .else or .endif */
+  { 0, 1, 2, 2 },
+  /* State 1: condition failed, skipping until next .else or .endif */
+  { 2, 2, 0, 1 },
+  /* State 2: skipping until .endif */
+  { 2, 2, 2, 2 },
+  };
+
+/* Table of conditionals and the states to set. For each name, there are four
+values: the length of the name (to save computing it each time), the state to
+set if a macro was found in the line, the state to set if a macro was not found
+in the line, and a stack manipulation setting which is:
+
+  -1   pull state value off the stack
+   0   don't alter the stack
+  +1   push value onto stack, before setting new state
+*/
+
+static cond_item cond_list[] = {
+  { US"ifdef",    5, 0, 1,  1 },
+  { US"ifndef",   6, 1, 0,  1 },
+  { US"elifdef",  7, 2, 3,  0 },
+  { US"elifndef", 8, 3, 2,  0 },
+  { US"else",     4, 2, 2,  0 },
+  { US"endif",    5, 0, 0, -1 }
+};
+
+static int cond_list_size = sizeof(cond_list)/sizeof(cond_item);
+
+/* Table of syslog facility names and their values */
+
+static syslog_fac_item syslog_list[] = {
+  { US"mail",   LOG_MAIL },
+  { US"user",   LOG_USER },
+  { US"news",   LOG_NEWS },
+  { US"uucp",   LOG_UUCP },
+  { US"local0", LOG_LOCAL0 },
+  { US"local1", LOG_LOCAL1 },
+  { US"local2", LOG_LOCAL2 },
+  { US"local3", LOG_LOCAL3 },
+  { US"local4", LOG_LOCAL4 },
+  { US"local5", LOG_LOCAL5 },
+  { US"local6", LOG_LOCAL6 },
+  { US"local7", LOG_LOCAL7 },
+  { US"daemon", LOG_DAEMON }
+};
+
+static int syslog_list_size = sizeof(syslog_list)/sizeof(syslog_fac_item);
+
 
 
 
@@ -528,7 +565,7 @@ for (r = routers; r; r = r->next)
   for (i = 0; i < *ri->options_count; i++)
     {
     if ((ri->options[i].type & opt_mask) != opt_stringptr) continue;
-    if (p == (char *)(r->options_block) + (long int)(ri->options[i].value))
+    if (p == CS (r->options_block) + (long int)(ri->options[i].value))
       return US ri->options[i].name;
     }
   }
@@ -541,8 +578,8 @@ for (t = transports; t; t = t->next)
     optionlist * op = &ti->options[i];
     if ((op->type & opt_mask) != opt_stringptr) continue;
     if (p == (  op->type & opt_public
-	     ? (char *)t
-	     : (char *)t->options_block
+	     ? CS t
+	     : CS t->options_block
 	     )
 	     + (long int)op->value)
 	return US op->name;
@@ -559,41 +596,27 @@ return US"";
 *       Deal with an assignment to a macro       *
 *************************************************/
 
-/* We have a new definition. The macro_item structure includes a final vector
-called "name" which is one byte long. Thus, adding "namelen" gives us enough
-room to store the "name" string.
-If a builtin macro we place at head of list, else tail.  This lets us lazy-create
-builtins. */
+/* We have a new definition; append to the list.
+
+Args:
+ name	Name of the macro.  Must be in storage persistent past the call
+ val	Expansion result for the macro.  Ditto persistence.
+*/
 
 macro_item *
-macro_create(const uschar * name, const uschar * val,
-  BOOL command_line, BOOL builtin)
+macro_create(const uschar * name, const uschar * val, BOOL command_line)
 {
-unsigned namelen = Ustrlen(name);
-macro_item * m = store_get(sizeof(macro_item) + namelen);
+macro_item * m = store_get(sizeof(macro_item));
 
-/* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val) */
-if (!macros)
-  {
-  macros = m;
-  mlast = m;
-  m->next = NULL;
-  }
-else if (builtin)
-  {
-  m->next = macros;
-  macros = m;
-  }
-else
-  {
-  mlast->next = m;
-  mlast = m;
-  m->next = NULL;
-  }
+/* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val); */
+m->next = NULL;
 m->command_line = command_line;
-m->namelen = namelen;
-m->replacement = string_copy(val);
-Ustrcpy(m->name, name);
+m->namelen = Ustrlen(name);
+m->replen = Ustrlen(val);
+m->name = name;
+m->replacement = val;
+mlast->next = m;
+mlast = m;
 return m;
 }
 
@@ -680,228 +703,21 @@ if (m && m->command_line) return;
 
 if (redef)
   if (m)
+    {
+    m->replen = Ustrlen(s);
     m->replacement = string_copy(s);
+    }
   else
     log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "can't redefine an undefined macro "
       "\"%s\"", name);
 
 /* We have a new definition. */
 else
-  (void) macro_create(name, s, FALSE, FALSE);
+  (void) macro_create(string_copy(name), string_copy(s), FALSE);
 }
 
 
 
-
-
-/*************************************************/
-/* Create compile-time feature macros */
-static void
-readconf_features(void)
-{
-/* Probably we could work out a static initialiser for wherever
-macros are stored, but this will do for now. Some names are awkward
-due to conflicts with other common macros. */
-
-#ifdef SUPPORT_CRYPTEQ
-  macro_create(US"_HAVE_CRYPTEQ", US"y", FALSE, TRUE);
-#endif
-#if HAVE_ICONV
-  macro_create(US"_HAVE_ICONV", US"y", FALSE, TRUE);
-#endif
-#if HAVE_IPV6
-  macro_create(US"_HAVE_IPV6", US"y", FALSE, TRUE);
-#endif
-#ifdef HAVE_SETCLASSRESOURCES
-  macro_create(US"_HAVE_SETCLASSRESOURCES", US"y", FALSE, TRUE);
-#endif
-#ifdef SUPPORT_PAM
-  macro_create(US"_HAVE_PAM", US"y", FALSE, TRUE);
-#endif
-#ifdef EXIM_PERL
-  macro_create(US"_HAVE_PERL", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPAND_DLFUNC
-  macro_create(US"_HAVE_DLFUNC", US"y", FALSE, TRUE);
-#endif
-#ifdef USE_TCP_WRAPPERS
-  macro_create(US"_HAVE_TCPWRAPPERS", US"y", FALSE, TRUE);
-#endif
-#ifdef SUPPORT_TLS
-  macro_create(US"_HAVE_TLS", US"y", FALSE, TRUE);
-# ifdef USE_GNUTLS
-  macro_create(US"_HAVE_GNUTLS", US"y", FALSE, TRUE);
-# else
-  macro_create(US"_HAVE_OPENSSL", US"y", FALSE, TRUE);
-# endif
-#endif
-#ifdef SUPPORT_TRANSLATE_IP_ADDRESS
-  macro_create(US"_HAVE_TRANSLATE_IP_ADDRESS", US"y", FALSE, TRUE);
-#endif
-#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  macro_create(US"_HAVE_MOVE_FROZEN_MESSAGES", US"y", FALSE, TRUE);
-#endif
-#ifdef WITH_CONTENT_SCAN
-  macro_create(US"_HAVE_CONTENT_SCANNING", US"y", FALSE, TRUE);
-#endif
-#ifndef DISABLE_DKIM
-  macro_create(US"_HAVE_DKIM", US"y", FALSE, TRUE);
-#endif
-#ifndef DISABLE_DNSSEC
-  macro_create(US"_HAVE_DNSSEC", US"y", FALSE, TRUE);
-#endif
-#ifndef DISABLE_EVENT
-  macro_create(US"_HAVE_EVENT", US"y", FALSE, TRUE);
-#endif
-#ifdef SUPPORT_I18N
-  macro_create(US"_HAVE_I18N", US"y", FALSE, TRUE);
-#endif
-#ifndef DISABLE_OCSP
-  macro_create(US"_HAVE_OCSP", US"y", FALSE, TRUE);
-#endif
-#ifndef DISABLE_PRDR
-  macro_create(US"_HAVE_PRDR", US"y", FALSE, TRUE);
-#endif
-#ifdef SUPPORT_PROXY
-  macro_create(US"_HAVE_PROXY", US"y", FALSE, TRUE);
-#endif
-#ifdef SUPPORT_SOCKS
-  macro_create(US"_HAVE_SOCKS", US"y", FALSE, TRUE);
-#endif
-#ifdef TCP_FASTOPEN
-  macro_create(US"_HAVE_TCP_FASTOPEN", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_LMDB
-  macro_create(US"_HAVE_LMDB", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_SPF
-  macro_create(US"_HAVE_SPF", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_SRS
-  macro_create(US"_HAVE_SRS", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  macro_create(US"_HAVE_BRIGHTMAIL", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_DANE
-  macro_create(US"_HAVE_DANE", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_DCC
-  macro_create(US"_HAVE_DCC", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_DMARC
-  macro_create(US"_HAVE_DMARC", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_DSN_INFO
-  macro_create(US"_HAVE_DSN_INFO", US"y", FALSE, TRUE);
-#endif
-
-#ifdef LOOKUP_LSEARCH
-  macro_create(US"_HAVE_LOOKUP_LSEARCH", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_CDB
-  macro_create(US"_HAVE_LOOKUP_CDB", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_DBM
-  macro_create(US"_HAVE_LOOKUP_DBM", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_DNSDB
-  macro_create(US"_HAVE_LOOKUP_DNSDB", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_DSEARCH
-  macro_create(US"_HAVE_LOOKUP_DSEARCH", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_IBASE
-  macro_create(US"_HAVE_LOOKUP_IBASE", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_LDAP
-  macro_create(US"_HAVE_LOOKUP_LDAP", US"y", FALSE, TRUE);
-#endif
-#ifdef EXPERIMENTAL_LMDB
-  macro_create(US"_HAVE_LOOKUP_LMDB", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_MYSQL
-  macro_create(US"_HAVE_LOOKUP_MYSQL", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_NIS
-  macro_create(US"_HAVE_LOOKUP_NIS", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_NISPLUS
-  macro_create(US"_HAVE_LOOKUP_NISPLUS", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_ORACLE
-  macro_create(US"_HAVE_LOOKUP_ORACLE", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_PASSWD
-  macro_create(US"_HAVE_LOOKUP_PASSWD", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_PGSQL
-  macro_create(US"_HAVE_LOOKUP_PGSQL", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_REDIS
-  macro_create(US"_HAVE_LOOKUP_REDIS", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_SQLITE
-  macro_create(US"_HAVE_LOOKUP_SQLITE", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_TESTDB
-  macro_create(US"_HAVE_LOOKUP_TESTDB", US"y", FALSE, TRUE);
-#endif
-#ifdef LOOKUP_WHOSON
-  macro_create(US"_HAVE_LOOKUP_WHOSON", US"y", FALSE, TRUE);
-#endif
-
-#ifdef TRANSPORT_APPENDFILE
-# ifdef SUPPORT_MAILDIR
-  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILDIR", US"y", FALSE, TRUE);
-# endif
-# ifdef SUPPORT_MAILSTORE
-  macro_create(US"_HAVE_TRANSPORT_APPEND_MAILSTORE", US"y", FALSE, TRUE);
-# endif
-# ifdef SUPPORT_MBX
-  macro_create(US"_HAVE_TRANSPORT_APPEND_MBX", US"y", FALSE, TRUE);
-# endif
-#endif
-}
-
-
-void
-readconf_options_from_list(optionlist * opts, unsigned nopt, const uschar * section, uschar * group)
-{
-int i;
-const uschar * s;
-
-/* The 'previously-defined-substring' rule for macros in config file
-lines is done so for these builtin macros: we know that the table
-we source from is in strict alpha order, hence the builtins portion
-of the macros list is in reverse-alpha (we prepend them) - so longer
-macros that have substrings are always discovered first during
-expansion. */
-
-for (i = 0; i < nopt; i++)  if (*(s = US opts[i].name) && *s != '*')
-  if (group)
-    macro_create(string_sprintf("_OPT_%T_%T_%T", section, group, s), US"y", FALSE, TRUE);
-  else
-    macro_create(string_sprintf("_OPT_%T_%T", section, s), US"y", FALSE, TRUE);
-}
-
-
-static void
-readconf_options(void)
-{
-readconf_options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
-readconf_options_routers();
-readconf_options_transports();
-readconf_options_auths();
-}
-
-static void
-macros_create_builtin(void)
-{
-readconf_features();
-readconf_options();
-macros_builtin_created = TRUE;
-}
 
 
 /*************************************************
@@ -1014,22 +830,10 @@ for (;;)
     if (*s != '=') s = ss;          /* Not a macro definition */
     }
 
-  /* If the builtin macros are not yet defined, and the line contains an
-  underscrore followed by an one of the three possible chars used by
-  builtins, create them. */
+  /* Skip leading chars which cannot start a macro name, to avoid multiple
+  pointless rescans in Ustrstr calls. */
 
-  if (!macros_builtin_created)
-    {
-    const uschar * t, * p;
-    uschar c;
-    for (t = s; (p = CUstrchr(t, '_')); t = p+1)
-      if (c = p[1], c == 'O' || c == 'D' || c == 'H')
-	{
-/* fprintf(stderr, "%s: builtins create triggered by '%s'\n", __FUNCTION__, s); */
-	macros_create_builtin();
-	break;
-	}
-    }
+  while (*s && !isupper(*s) && *s != '_') s++;
 
   /* For each defined macro, scan the line (from after XXX= if present),
   replacing all occurrences of the macro. */
@@ -1037,18 +841,17 @@ for (;;)
   macro_found = FALSE;
   for (m = macros; m; m = m->next)
     {
-    uschar *p, *pp;
-    uschar *t = s;
+    uschar * p, *pp;
+    uschar * t = s;
 
     while ((p = Ustrstr(t, m->name)) != NULL)
       {
       int moveby;
-      int replen = Ustrlen(m->replacement);
 
-/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, t) */
+/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss); */
       /* Expand the buffer if necessary */
 
-      while (newlen - m->namelen + replen + 1 > big_buffer_size)
+      while (newlen - m->namelen + m->replen + 1 > big_buffer_size)
         {
         int newsize = big_buffer_size + BIG_BUFFER_SIZE;
         uschar *newbuffer = store_malloc(newsize);
@@ -1067,13 +870,14 @@ for (;;)
       same macro. */
 
       pp = p + m->namelen;
-      if ((moveby = replen - m->namelen) != 0)
+      if ((moveby = m->replen - m->namelen) != 0)
         {
-        memmove(p + replen, pp, (big_buffer + newlen) - pp + 1);
+        memmove(p + m->replen, pp, (big_buffer + newlen) - pp + 1);
         newlen += moveby;
         }
-      Ustrncpy(p, m->replacement, replen);
-      t = p + replen;
+      Ustrncpy(p, m->replacement, m->replen);
+      t = p + m->replen;
+      while (*t && !isupper(*t) && *t != '_') t++;
       macro_found = TRUE;
       }
     }
@@ -1470,7 +1274,7 @@ ol = find_option(name2, oltop, last);
 if (ol == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
   "Exim internal error: missing set flag for %s", name);
 return (data_block == NULL)? (BOOL *)(ol->value) :
-  (BOOL *)((uschar *)data_block + (long int)(ol->value));
+  (BOOL *)(US data_block + (long int)(ol->value));
 }
 
 
@@ -1896,9 +1700,13 @@ switch (type)
       const uschar * list = sptr;
       uschar * s;
       uschar * list_o = *str_target;
+      int size = 0, len = 0;
+
+      if (list_o)
+	size = (len = Ustrlen(list_o)) + 1;
 
       while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
-	list_o = string_append_listele(list_o, sep_o, s);
+	list_o = string_append_listele(list_o, &size, &len, sep_o, s);
       if (list_o)
 	*str_target = string_copy_malloc(list_o);
       }
@@ -1939,8 +1747,8 @@ switch (type)
         }
       else
         {
-        chain = (rewrite_rule **)((uschar *)data_block + (long int)(ol2->value));
-        flagptr = (int *)((uschar *)data_block + (long int)(ol3->value));
+        chain = (rewrite_rule **)(US data_block + (long int)(ol2->value));
+        flagptr = (int *)(US data_block + (long int)(ol3->value));
         }
 
       while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
@@ -1972,7 +1780,7 @@ switch (type)
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = ss;
       else
-        *((uschar **)((uschar *)data_block + (long int)(ol2->value))) = ss;
+        *((uschar **)(US data_block + (long int)(ol2->value))) = ss;
 
       if (ss != NULL)
         {
@@ -1991,7 +1799,7 @@ switch (type)
     if (data_block == NULL)
       *((uid_t *)(ol->value)) = uid;
     else
-      *((uid_t *)((uschar *)data_block + (long int)(ol->value))) = uid;
+      *((uid_t *)(US data_block + (long int)(ol->value))) = uid;
 
     /* Set the flag indicating a fixed value is set */
 
@@ -2013,7 +1821,7 @@ switch (type)
         if (data_block == NULL)
           *((gid_t *)(ol2->value)) = pw->pw_gid;
         else
-          *((gid_t *)((uschar *)data_block + (long int)(ol2->value))) = pw->pw_gid;
+          *((gid_t *)(US data_block + (long int)(ol2->value))) = pw->pw_gid;
         *set_flag = TRUE;
         }
       }
@@ -2035,7 +1843,7 @@ switch (type)
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = ss;
       else
-        *((uschar **)((uschar *)data_block + (long int)(ol2->value))) = ss;
+        *((uschar **)(US data_block + (long int)(ol2->value))) = ss;
 
       if (ss != NULL)
         {
@@ -2053,7 +1861,7 @@ switch (type)
     if (data_block == NULL)
       *((gid_t *)(ol->value)) = gid;
     else
-      *((gid_t *)((uschar *)data_block + (long int)(ol->value))) = gid;
+      *((gid_t *)(US data_block + (long int)(ol->value))) = gid;
     *(get_set_flag(name, oltop, last, data_block)) = TRUE;
     break;
 
@@ -2083,7 +1891,7 @@ switch (type)
       if (data_block == NULL)
         *((uid_t **)(ol->value)) = list;
       else
-        *((uid_t **)((uschar *)data_block + (long int)(ol->value))) = list;
+        *((uid_t **)(US data_block + (long int)(ol->value))) = list;
 
       p = op;
       while (count-- > 1)
@@ -2124,7 +1932,7 @@ switch (type)
       if (data_block == NULL)
         *((gid_t **)(ol->value)) = list;
       else
-        *((gid_t **)((uschar *)data_block + (long int)(ol->value))) = list;
+        *((gid_t **)(US data_block + (long int)(ol->value))) = list;
 
       p = op;
       while (count-- > 1)
@@ -2160,7 +1968,7 @@ switch (type)
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = sptr;
       else
-        *((uschar **)((uschar *)data_block + (long int)(ol2->value))) = sptr;
+        *((uschar **)(US data_block + (long int)(ol2->value))) = sptr;
       freesptr = FALSE;
       break;
       }
@@ -2198,7 +2006,7 @@ switch (type)
     int bit = 1 << ((ol->type >> 16) & 31);
     int *ptr = (data_block == NULL)?
       (int *)(ol->value) :
-      (int *)((uschar *)data_block + (long int)ol->value);
+      (int *)(US data_block + (long int)ol->value);
     if (boolvalue) *ptr |= bit; else *ptr &= ~bit;
     break;
     }
@@ -2208,7 +2016,7 @@ switch (type)
   if (data_block == NULL)
     *((BOOL *)(ol->value)) = boolvalue;
   else
-    *((BOOL *)((uschar *)data_block + (long int)(ol->value))) = boolvalue;
+    *((BOOL *)(US data_block + (long int)(ol->value))) = boolvalue;
 
   /* Verify fudge */
 
@@ -2221,7 +2029,7 @@ switch (type)
       if (data_block == NULL)
         *((BOOL *)(ol2->value)) = boolvalue;
       else
-        *((BOOL *)((uschar *)data_block + (long int)(ol2->value))) = boolvalue;
+        *((BOOL *)(US data_block + (long int)(ol2->value))) = boolvalue;
       }
     }
 
@@ -2236,7 +2044,7 @@ switch (type)
       if (data_block == NULL)
         *((BOOL *)(ol2->value)) = TRUE;
       else
-        *((BOOL *)((uschar *)data_block + (long int)(ol2->value))) = TRUE;
+        *((BOOL *)(US data_block + (long int)(ol2->value))) = TRUE;
       }
     }
   break;
@@ -2299,7 +2107,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M
@@ -2349,7 +2157,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /*  Fixed-point number: held to 3 decimal places. */
@@ -2390,7 +2198,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /* There's a special routine to read time values. */
@@ -2403,7 +2211,7 @@ switch (type)
   if (data_block == NULL)
     *((int *)(ol->value)) = value;
   else
-    *((int *)((uschar *)data_block + (long int)(ol->value))) = value;
+    *((int *)(US data_block + (long int)(ol->value))) = value;
   break;
 
   /* A time list is a list of colon-separated times, with the first
@@ -2415,7 +2223,7 @@ switch (type)
     int count = 0;
     int *list = (data_block == NULL)?
       (int *)(ol->value) :
-      (int *)((uschar *)data_block + (long int)(ol->value));
+      (int *)(US data_block + (long int)(ol->value));
 
     if (*s != 0) for (count = 1; count <= list[0] - 2; count++)
       {
@@ -2492,10 +2300,10 @@ t /= 24;
 d = t % 7;
 w = t/7;
 
-if (w > 0) { sprintf(CS p, "%dw", w); while (*p) p++; }
-if (d > 0) { sprintf(CS p, "%dd", d); while (*p) p++; }
-if (h > 0) { sprintf(CS p, "%dh", h); while (*p) p++; }
-if (m > 0) { sprintf(CS p, "%dm", m); while (*p) p++; }
+if (w > 0) p += sprintf(CS p, "%dw", w);
+if (d > 0) p += sprintf(CS p, "%dd", d);
+if (h > 0) p += sprintf(CS p, "%dh", h);
+if (m > 0) p += sprintf(CS p, "%dm", m);
 if (s > 0 || p == time_buffer) sprintf(CS p, "%ds", s);
 
 return time_buffer;
@@ -2565,7 +2373,7 @@ if (options_block != NULL)
   {
   if ((ol->type & opt_public) == 0)
     options_block = (void *)(((driver_instance *)options_block)->options_block);
-  value = (void *)((uschar *)options_block + (long int)value);
+  value = (void *)(US options_block + (long int)value);
   }
 
 switch(ol->type & opt_mask)
@@ -2654,7 +2462,7 @@ switch(ol->type & opt_mask)
       {
       void *value2 = ol2->value;
       if (options_block != NULL)
-        value2 = (void *)((uschar *)options_block + (long int)value2);
+        value2 = (void *)(US options_block + (long int)value2);
       s = *((uschar **)value2);
       if (!no_labels) printf("%s = ", name);
       printf("%s\n", (s == NULL)? US"" : string_printing(s));
@@ -2688,7 +2496,7 @@ switch(ol->type & opt_mask)
       {
       void *value2 = ol2->value;
       if (options_block != NULL)
-        value2 = (void *)((uschar *)options_block + (long int)value2);
+        value2 = (void *)(US options_block + (long int)value2);
       s = *((uschar **)value2);
       if (!no_labels) printf("%s = ", name);
       printf("%s\n", (s == NULL)? US"" : string_printing(s));
@@ -2783,7 +2591,7 @@ switch(ol->type & opt_mask)
     {
     void *value2 = ol2->value;
     if (options_block != NULL)
-      value2 = (void *)((uschar *)options_block + (long int)value2);
+      value2 = (void *)(US options_block + (long int)value2);
     s = *((uschar **)value2);
     if (s != NULL)
       {
@@ -3038,7 +2846,6 @@ else if (Ustrcmp(type, "macro") == 0)
     fprintf(stderr, "exim: permission denied\n");
     exit(EXIT_FAILURE);
     }
-  if (!macros_builtin_created) macros_create_builtin();
   for (m = macros; m; m = m->next)
     if (!name || Ustrcmp(name, m->name) == 0)
       {
@@ -3466,6 +3273,11 @@ a macro definition. */
 
 while ((s = get_config_line()) != NULL)
   {
+
+  if (config_lineno == 1 && Ustrstr(s, "\xef\xbb\xbf") == s)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+      "found unexpected BOM (Byte Order Mark)");
+
   if (isupper(s[0])) read_macro_assignment(s);
 
   else if (Ustrncmp(s, "domainlist", 10) == 0)
@@ -3784,14 +3596,14 @@ if (tls_dh_max_bits < 1024)
       "tls_dh_max_bits is too small, must be at least 1024 for interop");
 
 /* If openssl_options is set, validate it */
-if (openssl_options != NULL)
+if (openssl_options)
   {
 # ifdef USE_GNUTLS
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "openssl_options is set but we're using GnuTLS");
 # else
   long dummy;
-  if (!(tls_openssl_options_parse(openssl_options, &dummy)))
+  if (!tls_openssl_options_parse(openssl_options, &dummy))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "openssl_options parse error: %s", openssl_options);
 # endif
@@ -3832,7 +3644,7 @@ init_driver(driver_instance *d, driver_info *drivers_available,
 driver_info *dd;
 
 for (dd = drivers_available; dd->driver_name[0] != 0;
-     dd = (driver_info *)(((uschar *)dd) + size_of_info))
+     dd = (driver_info *)((US dd) + size_of_info))
   {
   if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
     {
@@ -4045,7 +3857,7 @@ for (ol = d->info->options; ol < d->info->options + count; ol++)
   int type = ol->type & opt_mask;
   if (type != opt_stringptr) continue;
   options_block = ((ol->type & opt_public) == 0)? d->options_block : (void *)d;
-  value = *(uschar **)((uschar *)options_block + (long int)(ol->value));
+  value = *(uschar **)(US options_block + (long int)(ol->value));
   if (value != NULL && (ss = Ustrstr(value, s)) != NULL)
     {
     if (ss <= value || (ss[-1] != '$' && ss[-1] != '{') ||
@@ -4121,14 +3933,14 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
     static int values[] =
       { 'A',   'M',    RTEF_CTOUT,  RTEF_CTOUT|'A', RTEF_CTOUT|'M' };
 
-    for (i = 0; i < sizeof(extras)/sizeof(uschar *); i++)
+    for (i = 0; i < nelem(extras); i++)
       if (strncmpic(x, extras[i], xlen) == 0)
         {
         *more_errno = values[i];
         break;
         }
 
-    if (i >= sizeof(extras)/sizeof(uschar *))
+    if (i >= nelem(extras))
       if (strncmpic(x, US"DNS", xlen) == 0)
         log_write(0, LOG_MAIN|LOG_PANIC, "\"timeout_dns\" is no longer "
           "available in retry rules (it has never worked) - treated as "
@@ -4347,21 +4159,6 @@ while ((p = get_config_line()))
 *         Initialize authenticators              *
 *************************************************/
 
-static void
-readconf_options_auths(void)
-{
-struct auth_info * ai;
-
-readconf_options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
-
-for (ai = auths_available; ai->driver_name[0]; ai++)
-  {
-  macro_create(string_sprintf("_DRIVER_AUTHENTICATOR_%T", ai->driver_name), US"y", FALSE, TRUE);
-  readconf_options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
-  }
-}
-
-
 /* Read the authenticators section of the configuration file.
 
 Arguments:   none
@@ -4539,7 +4336,7 @@ while(next_section[0] != 0)
   {
   int bit;
   int first = 0;
-  int last = sizeof(section_list) / sizeof(uschar *);
+  int last = nelem(section_list);
   int mid = last/2;
   int n = Ustrlen(next_section);
 
@@ -4595,6 +4392,7 @@ save_config_position(const uschar *file, int line)
 this operates on a global (static) list that holds all the pre-parsed
 config lines, we do no further processing here, output formatting and
 honouring of <hide> or macros will be done during output */
+
 static void
 save_config_line(const uschar* line)
 {
@@ -4693,6 +4491,7 @@ for (i = config_lines; i; i = i->next)
   }
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of readconf.c */

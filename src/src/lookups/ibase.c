@@ -291,35 +291,35 @@ has the password removed. This copy is also used for debugging output. */
                 (char *) store_get(sizeof(char) * var->sqllen);
             break;
         case SQL_SHORT:
-            var->sqldata = (char *) store_get(sizeof(short));
+            var->sqldata = CS  store_get(sizeof(short));
             break;
         case SQL_LONG:
-            var->sqldata = (char *) store_get(sizeof(ISC_LONG));
+            var->sqldata = CS  store_get(sizeof(ISC_LONG));
             break;
 #ifdef SQL_INT64
         case SQL_INT64:
-            var->sqldata = (char *) store_get(sizeof(ISC_INT64));
+            var->sqldata = CS  store_get(sizeof(ISC_INT64));
             break;
 #endif
         case SQL_FLOAT:
-            var->sqldata = (char *) store_get(sizeof(float));
+            var->sqldata = CS  store_get(sizeof(float));
             break;
         case SQL_DOUBLE:
-            var->sqldata = (char *) store_get(sizeof(double));
+            var->sqldata = CS  store_get(sizeof(double));
             break;
 #ifdef SQL_TIMESTAMP
         case SQL_DATE:
-            var->sqldata = (char *) store_get(sizeof(ISC_QUAD));
+            var->sqldata = CS  store_get(sizeof(ISC_QUAD));
             break;
 #else
         case SQL_TIMESTAMP:
-            var->sqldata = (char *) store_get(sizeof(ISC_TIMESTAMP));
+            var->sqldata = CS  store_get(sizeof(ISC_TIMESTAMP));
             break;
         case SQL_TYPE_DATE:
-            var->sqldata = (char *) store_get(sizeof(ISC_DATE));
+            var->sqldata = CS  store_get(sizeof(ISC_DATE));
             break;
         case SQL_TYPE_TIME:
-            var->sqldata = (char *) store_get(sizeof(ISC_TIME));
+            var->sqldata = CS  store_get(sizeof(ISC_TIME));
             break;
 #endif
         }

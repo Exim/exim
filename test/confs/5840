@@ -61,10 +61,10 @@ begin transports
 send_to_server:
   driver = smtp
   allow_localhost
-  port = PORT_D
+  port = ${if match {$host}{\Ntest.ex$\N} {PORT_D}{25}}
 
   hosts_try_dane =     *
-  hosts_require_dane = !thishost.test.ex
+  hosts_require_dane = HOSTIPV4
   tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
   tls_try_verify_hosts = thishost.test.ex
   tls_verify_certificates = CDIR2/ca_chain.pem

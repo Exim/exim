@@ -155,6 +155,7 @@ End of script
 EXIMUSER EXIM_UID EXIM_GID
 <username@myhost.test.ex>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -181,6 +182,7 @@ dddS Sender: username@myhost.test.ex
 EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -205,6 +207,7 @@ dddF From: username@myhost.test.ex
 EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -229,6 +232,7 @@ dddF From: username@another.domain
 EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -253,6 +257,7 @@ dddF From: username@auth.id.domain
 EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1

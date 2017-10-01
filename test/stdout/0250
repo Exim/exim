@@ -2,6 +2,7 @@
 CALLER UID GID
 <CALLER-rewritten@test.ex>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 0
@@ -32,6 +33,7 @@ ddd* X-rewrote-sender: CALLER@test.ex
 CALLER UID GID
 <CALLER-rewritten@test.ex>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 0
@@ -62,6 +64,7 @@ ddd* X-rewrote-sender: CALLER@test.ex
 CALLER UID GID
 <CALLER-rewritten@test.ex>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 0

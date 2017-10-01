@@ -23,6 +23,43 @@ Version 4.90
 
  4. A malware connection type for the FPSCAND protocol.
 
+ 5. An option for recipient verify callouts to hold the connection open for
+    further recipients and for delivery.
+
+ 6. The reproducible build $SOURCE_DATE_EPOCH environment variable is now
+    supported.
+
+ 7. Optionally, an alternate format for spool data-files which matches the
+    wire format - meaning more efficient reception and transmission (at the
+    cost of difficulty with standard Unix tools).  Only used for messages
+    received using the ESMTP CHUNKING option, and when a new main-section
+    option "spool_wireformat" (false by default) is set.
+
+ 8. New main configuration option "commandline_checks_require_admin" to
+    restrict who can use various introspection options.
+
+ 9. New option modifier "no_check" for quota and quota_filecount
+    appendfile transport.
+
+10. Variable $smtp_command_history returning a comma-sep list of recent
+    SMTP commands.
+
+11. Millisecond timetamps in logs, on log_selector "millisec".  Also affects
+    log elements QT, DT and D, and timstamps in debug output.
+
+12. TCP Fast Open logging.  As a server, logs when the SMTP banner was sent
+    while still in SYN_RECV state; as a client logs when the connection
+    is opened with a TFO cookie.
+
+13. DKIM support for multiple signing, by domain and/or key-selector.
+    DKIM support for multiple hashes, and for alternate-identity tags.
+
+14. Exipick understands -C|--config for an alternative Exim
+    configuration file.
+
+15. TCP Fast Open used, with data-on-SYN, for client SMTP via SOCKS5 proxy,
+    for ${readsocket } expansions, and for ClamAV.
+
 
 Version 4.89
 ------------
@@ -382,7 +419,8 @@ Version 4.82
     It adds new expansion variables $dmarc_ar_header, $dmarc_status,
     $dmarc_status_text, and $dmarc_used_domain.  It adds a new acl modifier
     dmarc_status.  It adds new control flags dmarc_disable_verify and
-    dmarc_enable_forensic.
+    dmarc_enable_forensic. The default for the dmarc_tld_file option is
+    "/etc/exim/opendmarc.tlds" and can be changed via EDITME.
 
 22. Add expansion variable $authenticated_fail_id, which is the username
     provided to the authentication method which failed.  It is available

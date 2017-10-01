@@ -1,0 +1,156 @@
+# callout lazy-close, -bs send
+need_ipv4
+#
+# a recipient verify and continued-delivery
+# cmdline -bs send
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -bs
+mail from:<userx@ok.example>
+rcpt to:<usery@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+#
+#
+# multiple recipients
+# 1st callout result is cached (above); should not activate LCC
+server PORT_S 2
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+221 Bye
+*eof
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -bs
+mail from:<userx@ok.example>
+rcpt to:<usery@test.ex>
+rcpt to:<usery2@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+#
+#
+# 2nd callout result is cached (above); should not activate LCC
+server PORT_S 2
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+221 Bye
+*eof
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -bs
+mail from:<userx@ok.example>
+rcpt to:<usery3@test.ex>
+rcpt to:<usery@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+#
+#
+# no cache hits; should do LCC
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+354 hit me
+.
+250 yeah got that message
+QUIT
+221 Bye
+****
+#
+exim -bs
+mail from:<userx@ok.example>
+rcpt to:<usery4@test.ex>
+rcpt to:<usery5@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+#
+#
+no_stdout_check
+no_msglog_check

@@ -1,0 +1,4 @@
+# check for BOM in an included config file (0908)
+#
+1
+exim -bP config

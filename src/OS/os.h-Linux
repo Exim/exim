@@ -5,6 +5,7 @@ does not pull in <features.h>.  Best to just pull it in now and have done
 with the issue. */
 
 #include <features.h>
+#include <sys/types.h>
 
 
 #define CRYPT_H
@@ -15,12 +16,14 @@ with the issue. */
 #define NO_IP_VAR_H
 #define SIG_IGN_WORKS
 
-/* When using the DKIM, setting HAVE_LINUX_SENDFILE can increase
+/* When using DKIM, setting OS_SENDFILE can increase
 performance on outgoing mail a bit. Note: With older glibc versions
 this setting will conflict with the _FILE_OFFSET_BITS=64 setting
-defined as part of the Linux CFLAGS. */
+defined as part of the Linux CFLAGS.  As of 2017 those are declared
+to be too old to build by default. */
 
-/* #define HAVE_LINUX_SENDFILE */
+#define OS_SENDFILE
+extern ssize_t os_sendfile(int, int, off_t *, size_t);
 
 #define F_FREESP     O_TRUNC
 typedef struct flock flock_t;
@@ -29,8 +32,8 @@ typedef struct flock flock_t;
 #define OS_STRSIGNAL
 
 #if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__NetBSD_kernel__)
-#define SIOCGIFCONF_GIVES_ADDR
-#define HAVE_SYS_MOUNT_H
+# define SIOCGIFCONF_GIVES_ADDR
+# define HAVE_SYS_MOUNT_H
 #endif
 
 #if defined(__linux__)
@@ -68,6 +71,8 @@ then change the 0 to 1 in the next block. */
 #if _POSIX_C_SOURCE >= 200809L || _ATFILE_SOUCE
 # define EXIM_HAVE_OPENAT
 #endif
+
+/* TCP Fast Open support */
 
 #include <netinet/tcp.h>	/* for TCP_FASTOPEN */
 #include <sys/socket.h>		/* for MSG_FASTOPEN */

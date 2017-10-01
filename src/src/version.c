@@ -40,6 +40,16 @@ version_cnumber_format = US"%d\0<<eximcnumber>>";
 sprintf(CS version_cnumber, CS version_cnumber_format, cnumber);
 version_string = US EXIM_VERSION_STR "\0<<eximversion>>";
 
+#ifdef EXIM_BUILD_DATE_OVERRIDE
+/* Reproducible build support; build tooling should have given us something looking like
+ * "25-Feb-2017 20:15:40" in EXIM_BUILD_DATE_OVERRIDE based on $SOURCE_DATE_EPOCH in environ
+ * per <https://reproducible-builds.org/specs/source-date-epoch/>
+ */
+version_date = date_buffer;
+version_date[0] = 0;
+Ustrncat(version_date, EXIM_BUILD_DATE_OVERRIDE, sizeof(date_buffer));
+
+#else
 Ustrcpy(today, __DATE__);
 if (today[4] == ' ') today[4] = '0';
 today[3] = today[6] = '-';
@@ -51,6 +61,7 @@ Ustrncat(version_date, today, 4);
 Ustrncat(version_date, today+7, 4);
 Ustrcat(version_date, " ");
 Ustrcat(version_date, __TIME__);
+#endif
 }
 
 /* End of version.c */

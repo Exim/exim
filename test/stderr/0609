@@ -45,7 +45,7 @@ ppppp delay cancelled by peer close
 ppppp accept: condition test succeeded in ACL "delay4_accept"
 ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: lost_incoming_connection MAIN
-ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1]
+ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ppppp child ppppp ended: status=0x100
 ppppp   normal exit, 1
 ppppp 0 SMTP accept processes now running

@@ -16,6 +16,7 @@ FILE *mime_stream = NULL;
 uschar *mime_current_boundary = NULL;
 
 static mime_header mime_header_list[] = {
+  /*	name			namelen		value */
   { US"content-type:",              13, &mime_content_type },
   { US"content-disposition:",       20, &mime_content_disposition },
   { US"content-transfer-encoding:", 26, &mime_content_transfer_encoding },
@@ -26,6 +27,7 @@ static mime_header mime_header_list[] = {
 static int mime_header_list_size = nelem(mime_header_list);
 
 static mime_parameter mime_parameter_list[] = {
+  /*	name	namelen	 value */
   { US"name=",     5, &mime_filename },
   { US"filename=", 9, &mime_filename },
   { US"charset=",  8, &mime_charset  },
@@ -157,24 +159,16 @@ while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
 	{
 	/* Error from decoder. ipos is unchanged. */
 	mime_set_anomaly(MIME_ANOMALY_BROKEN_QP);
-	*opos = '=';
-	++opos;
+	*opos++ = '=';
 	++ipos;
 	}
       else if (decode_qp_result == -1)
 	break;
       else if (decode_qp_result >= 0)
-	{
-	*opos = decode_qp_result;
-	++opos;
-	}
+	*opos++ = decode_qp_result;
       }
     else
-      {
-      *opos = *ipos;
-      ++opos;
-      ++ipos;
-      }
+      *opos++ = *ipos++;
     }
   /* something to write? */
   len = opos - obuf;
@@ -225,9 +219,8 @@ mime_decode(const uschar **listptr)
 {
 int sep = 0;
 const uschar *list = *listptr;
-uschar *option;
-uschar option_buffer[1024];
-uschar decode_path[1024];
+uschar * option;
+uschar * decode_path;
 FILE *decode_file = NULL;
 long f_pos = 0;
 ssize_t size_counter = 0;
@@ -237,12 +230,10 @@ if (!mime_stream || (f_pos = ftell(mime_stream)) < 0)
   return FAIL;
 
 /* build default decode path (will exist since MBOX must be spooled up) */
-(void)string_format(decode_path,1024,"%s/scan/%s",spool_directory,message_id);
+decode_path = string_sprintf("%s/scan/%s", spool_directory, message_id);
 
 /* try to find 1st option */
-if ((option = string_nextinlist(&list, &sep,
-				option_buffer,
-				sizeof(option_buffer))) != NULL)
+if ((option = string_nextinlist(&list, &sep, NULL, 0)))
   {
   /* parse 1st option */
   if ((Ustrcmp(option,"false") == 0) || (Ustrcmp(option,"0") == 0))

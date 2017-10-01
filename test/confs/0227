@@ -24,6 +24,8 @@ check_recipient:
          !verify   = sender/callout=no_cache
   deny    hosts    = V4NET.0.0.3
          !verify   = recipient/callout=no_cache
+  deny    hosts    = V4NET.0.0.7
+         !verify   = recipient/callout=no_cache,use_sender,random
   deny    hosts    = V4NET.0.0.5
          !verify   = sender/callout=no_cache/check_postmaster
   deny    hosts    = V4NET.0.0.6

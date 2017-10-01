@@ -36,7 +36,7 @@ FE       = $(FULLECHO)
 # are set up, and finally it goes to the main Exim target.
 
 all:       utils exim
-config:    $(EDITME) checklocalmake Makefile os.c config.h version.h
+config:    $(EDITME) checklocalmake Makefile os.c config.h version.h macro.c
 
 checklocalmake: 
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
@@ -79,29 +79,41 @@ Makefile: ../OS/Makefile-Base ../OS/Makefile-Default \
 
 # Build (link) the os.h file
 
+#os.h:	$(SCRIPTS)/Configure-os.h \
+#	$(O)/os.h-AIX		$(O)/os.h-BSDI	$(O)/os.h-cygwin \
+#	$(O)/os.h-Darwin	$(O)/os.h-DGUX	$(O)/os.h-DragonFly \
+#	$(O)/os.h-FreeBSD	$(O)/os.h-GNU	$(O)/os.h-GNUkFreeBSD \
+#	$(O)/os.h-GNUkNetBSD	$(O)/os.h-HI-OSF \
+#	$(O)/os.h-HI-UX		$(O)/os.h-HP-UX	$(O)/os.h-HP-UX-9 \
+#	$(O)/os.h-IRIX		$(O)/os.h-IRIX6	$(O)/os.h-IRIX632 \
+#	$(O)/os.h-IRIX65	$(O)/os.h-Linux	$(O)/os.h-mips \
+#	$(O)/os.h-NetBSD	$(O)/os.h-NetBSD-a.out \
+#	$(O)/os.h-OpenBSD	$(O)/os.h-OpenUNIX	$(O)/os.h-OSF1 \
+#	$(O)/os.h-QNX		$(O)/os.h-SCO		$(O)/os.h-SCO_SV \
+#	$(O)/os.h-SunOS4	$(O)/os.h-SunOS5	$(O)/os.h-SunOS5-hal \
+#	$(O)/os.h-ULTRIX	$(O)/os.h-UNIX_SV \
+#	$(O)/os.h-Unixware7	$(O)/os.h-USG
+#	$(SHELL) $(SCRIPTS)/Configure-os.h
+
 os.h:	$(SCRIPTS)/Configure-os.h \
-	$(O)/os.h-AIX		$(O)/os.h-BSDI	$(O)/os.h-cygwin \
-	$(O)/os.h-Darwin	$(O)/os.h-DGUX	$(O)/os.h-DragonFly \
-	$(O)/os.h-FreeBSD	$(O)/os.h-GNU	$(O)/os.h-GNUkFreeBSD \
-	$(O)/os.h-GNUkNetBSD	$(O)/os.h-HI-OSF \
-	$(O)/os.h-HI-UX		$(O)/os.h-HP-UX	$(O)/os.h-HP-UX-9 \
-	$(O)/os.h-IRIX		$(O)/os.h-IRIX6	$(O)/os.h-IRIX632 \
-	$(O)/os.h-IRIX65	$(O)/os.h-Linux	$(O)/os.h-mips \
-	$(O)/os.h-NetBSD	$(O)/os.h-NetBSD-a.out \
-	$(O)/os.h-OpenBSD	$(O)/os.h-OpenUNIX	$(O)/os.h-OSF1 \
-	$(O)/os.h-QNX		$(O)/os.h-SCO		$(O)/os.h-SCO_SV \
-	$(O)/os.h-SunOS4	$(O)/os.h-SunOS5	$(O)/os.h-SunOS5-hal \
-	$(O)/os.h-ULTRIX	$(O)/os.h-UNIX_SV \
-	$(O)/os.h-Unixware7	$(O)/os.h-USG
+	$(O)/os.h-FreeBSD	\
+	$(O)/os.h-Linux		\
+	$(O)/os.h-OpenBSD	\
+	$(O)/os.h-SunOS5
 	$(SHELL) $(SCRIPTS)/Configure-os.h
 
 # Build the os.c file
 
+#os.c:   ../src/os.c \
+#	$(SCRIPTS)/Configure-os.c \
+#	$(O)/os.c-cygwin	$(O)/os.c-GNU	$(O)/os.c-HI-OSF \
+#	$(O)/os.c-IRIX		$(O)/os.c-IRIX6	$(O)/os.c-IRIX632 \
+#	$(O)/os.c-IRIX65	$(O)/os.c-Linux	$(O)/os.c-OSF1
+#	$(SHELL) $(SCRIPTS)/Configure-os.c
+
 os.c:   ../src/os.c \
 	$(SCRIPTS)/Configure-os.c \
-	$(O)/os.c-cygwin	$(O)/os.c-GNU	$(O)/os.c-HI-OSF \
-	$(O)/os.c-IRIX		$(O)/os.c-IRIX6	$(O)/os.c-IRIX632 \
-	$(O)/os.c-IRIX65	$(O)/os.c-Linux	$(O)/os.c-OSF1
+	$(O)/os.c-Linux
 	$(SHELL) $(SCRIPTS)/Configure-os.c
 
 # Build the config.h file.
@@ -109,6 +121,114 @@ os.c:   ../src/os.c \
 config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 	$(SHELL) $(SCRIPTS)/Configure-config.h "$(MAKE)"
 
+# Build the builtin-macros data struct
+
+MACRO_HSRC = macro_predef.h os.h globals.h config.h \
+	routers/accept.h routers/dnslookup.h routers/ipliteral.h \
+	routers/iplookup.h routers/manualroute.h routers/queryprogram.h \
+	routers/redirect.h
+
+OBJ_MACRO = macro_predef.o \
+	macro-globals.o macro-readconf.o macro-route.o macro-transport.o macro-drtables.o \
+	macro-appendfile.o macro-autoreply.o macro-lmtp.o macro-pipe.o macro-queuefile.o \
+	macro-smtp.o macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
+	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
+	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
+	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-tls.o\
+
+$(OBJ_MACRO):	$(MACRO_HSRC)
+
+macro_predef.o :	macro_predef.c
+	@echo "$(CC) -DMACRO_PREDEF macro_predef.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ macro_predef.c
+macro-globals.o :	globals.c
+	@echo "$(CC) -DMACRO_PREDEF globals.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ globals.c
+macro-readconf.o :	readconf.c
+	@echo "$(CC) -DMACRO_PREDEF readconf.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ readconf.c
+macro-route.o :		route.c
+	@echo "$(CC) -DMACRO_PREDEF route.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ route.c
+macro-transport.o:	transport.c
+	@echo "$(CC) -DMACRO_PREDEF transport.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transport.c
+macro-drtables.o :	drtables.c
+	@echo "$(CC) -DMACRO_PREDEF drtables.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ drtables.c
+macro-appendfile.o :	transports/appendfile.c
+	@echo "$(CC) -DMACRO_PREDEF transports/appendfile.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/appendfile.c
+macro-autoreply.o :	transports/autoreply.c
+	@echo "$(CC) -DMACRO_PREDEF transports/autoreply.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/autoreply.c
+macro-lmtp.o:		transports/lmtp.c
+	@echo "$(CC) -DMACRO_PREDEF transports/lmtp.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/lmtp.c
+macro-pipe.o :		transports/pipe.c
+	@echo "$(CC) -DMACRO_PREDEF transports/pipe.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/pipe.c
+macro-queuefile.o :	transports/queuefile.c
+	@echo "$(CC) -DMACRO_PREDEF transports/queuefile.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/queuefile.c
+macro-smtp.o :		transports/smtp.c
+	@echo "$(CC) -DMACRO_PREDEF transports/smtp.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/smtp.c
+macro-accept.o :	routers/accept.c
+	@echo "$(CC) -DMACRO_PREDEF routers/accept.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/accept.c
+macro-dnslookup.o :	routers/dnslookup.c
+	@echo "$(CC) -DMACRO_PREDEF routers/dnslookup.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/dnslookup.c
+macro-ipliteral.o :	routers/ipliteral.c
+	@echo "$(CC) -DMACRO_PREDEF routers/ipliteral.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/ipliteral.c
+macro-iplookup.o :	routers/iplookup.c
+	@echo "$(CC) -DMACRO_PREDEF routers/iplookup.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/iplookup.c
+macro-manualroute.o :	routers/manualroute.c
+	@echo "$(CC) -DMACRO_PREDEF routers/manualroute.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/manualroute.c
+macro-queryprogram.o :	routers/queryprogram.c
+	@echo "$(CC) -DMACRO_PREDEF routers/queryprogram.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/queryprogram.c
+macro-redirect.o :	routers/redirect.c
+	@echo "$(CC) -DMACRO_PREDEF routers/redirect.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/redirect.c
+macro-auth-spa.o :	auths/auth-spa.c
+	@echo "$(CC) -DMACRO_PREDEF auths/auth-spa.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/auth-spa.c
+macro-cram_md5.o :	auths/cram_md5.c
+	@echo "$(CC) -DMACRO_PREDEF auths/cram_md5.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/cram_md5.c
+macro-cyrus_sasl.o :	auths/cyrus_sasl.c
+	@echo "$(CC) -DMACRO_PREDEF auths/cyrus_sasl.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/cyrus_sasl.c
+macro-dovecot.o:	auths/dovecot.c
+	@echo "$(CC) -DMACRO_PREDEF auths/dovecot.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/dovecot.c
+macro-gsasl_exim.o :	auths/gsasl_exim.c
+	@echo "$(CC) -DMACRO_PREDEF auths/gsasl_exim.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/gsasl_exim.c
+macro-heimdal_gssapi.o:	auths/heimdal_gssapi.c
+	@echo "$(CC) -DMACRO_PREDEF auths/heimdal_gssapi.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/heimdal_gssapi.c
+macro-plaintext.o :	auths/plaintext.c
+	@echo "$(CC) -DMACRO_PREDEF auths/plaintext.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/plaintext.c
+macro-spa.o :		auths/spa.c
+	@echo "$(CC) -DMACRO_PREDEF auths/spa.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/spa.c
+macro-tls.o:		auths/tls.c
+	@echo "$(CC) -DMACRO_PREDEF auths/tls.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/tls.c
+
+macro_predef: $(OBJ_MACRO)
+	@echo "$(LNCC) -o $@"
+	$(FE)$(LNCC) -o $@ $(LFLAGS) $(OBJ_MACRO)
+
+macro.c: macro_predef
+	./macro_predef > macro.c
 
 # This target is recognized specially by GNU make. It records those targets
 # that do not correspond to files that are being built and which should
@@ -331,13 +451,13 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o dkim.o hash.o \
+        filtertest.o globals.o dkim.o dkim_transport.o hash.o \
         header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
-        environment.o \
+        environment.o macro.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)
@@ -452,7 +572,7 @@ OBJ_MONBIN = util-spool_in.o \
 	     util-store.o \
 	     util-string.o \
 	     util-queue.o \
-	     tod.o \
+	     util-tod.o \
 	     tree.o \
 	     $(MONBIN)
 
@@ -557,7 +677,8 @@ exim_tidydb.o:   $(HDRS) exim_dbutil.c
 
 exim_dbmbuild.o: $(HDRS) exim_dbmbuild.c
 	@echo "$(CC) exim_dbmbuild.c"
-	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -o exim_dbmbuild.o exim_dbmbuild.c
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY \
+		-o exim_dbmbuild.o exim_dbmbuild.c
 
 # Utilities use special versions of some modules - typically with debugging
 # calls cut out.
@@ -577,6 +698,10 @@ util-string.o:   $(HDRS) string.c
 util-queue.o:   $(HDRS) queue.c
 	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-queue.o queue.c
+
+util-tod.o:   $(HDRS) tod.c
+	@echo "$(CC) -DCOMPILE_UTILITY tod.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-tod.o tod.c
 
 util-os.o:       $(HDRS) os.c
 	@echo "$(CC) -DCOMPILE_UTILITY os.c"
@@ -602,7 +727,7 @@ crypt16.o:       $(HDRS) crypt16.c
 daemon.o:        $(HDRS) daemon.c
 dbfn.o:          $(HDRS) dbfn.c
 debug.o:         $(HDRS) debug.c
-deliver.o:       $(HDRS) deliver.c
+deliver.o:       $(HDRS) transports/smtp.h deliver.c
 directory.o:     $(HDRS) directory.c
 dns.o:           $(HDRS) dns.c
 enq.o:           $(HDRS) enq.c
@@ -647,6 +772,7 @@ transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) transports/smtp.h verify.c
 dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
+dkim_transport.o: $(HDRS) dkim_transport.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 

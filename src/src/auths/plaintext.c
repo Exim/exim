@@ -35,6 +35,18 @@ auth_plaintext_options_block auth_plaintext_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_plaintext_init(auth_instance *ablock) {}
+int auth_plaintext_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_plaintext_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
+
 /*************************************************
 *          Initialization entry point            *
 *************************************************/
@@ -173,7 +185,7 @@ int auth_var_idx = 0;
 sent one by one. The first one is sent with the AUTH command; the remainder are
 sent in response to subsequent prompts. Each is expanded before being sent. */
 
-while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL)
+while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)))
   {
   int i, len, clear_len;
   uschar *ss = expand_string(s);
@@ -184,12 +196,12 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
   sending a line containing "*". Save the failed expansion string, because it
   is in big_buffer, and that gets used by the sending function. */
 
-  if (ss == NULL)
+  if (!ss)
     {
     uschar *ssave = string_copy(s);
     if (!first)
       {
-      if (smtp_write_command(outblock, FALSE, "*\r\n") >= 0)
+      if (smtp_write_command(outblock, SCMD_FLUSH, "*\r\n") >= 0)
         (void) smtp_read_response(inblock, US buffer, buffsize, '2', timeout);
       }
     if (expand_string_forcedfail)
@@ -208,17 +220,15 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
   needed for the PLAIN mechanism. It must be doubled if really needed. */
 
   for (i = 0; i < len; i++)
-    {
     if (ss[i] == '^')
-      {
-      if (ss[i+1] != '^') ss[i] = 0; else
+      if (ss[i+1] != '^')
+	ss[i] = 0;
+      else
         {
         i++;
         len--;
         memmove(ss + i, ss + i + 1, len - i);
         }
-      }
-    }
 
   /* The first string is attached to the AUTH command; others are sent
   unembellished. */
@@ -226,14 +236,14 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
   if (first)
     {
     first = FALSE;
-    if (smtp_write_command(outblock, FALSE, "AUTH %s%s%s\r\n",
+    if (smtp_write_command(outblock, SCMD_FLUSH, "AUTH %s%s%s\r\n",
          ablock->public_name, (len == 0)? "" : " ",
          b64encode(ss, len)) < 0)
       return FAIL_SEND;
     }
   else
     {
-    if (smtp_write_command(outblock, FALSE, "%s\r\n",
+    if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n",
           b64encode(ss, len)) < 0)
       return FAIL_SEND;
     }
@@ -255,7 +265,7 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
 
   if (text == NULL)
     {
-    if (smtp_write_command(outblock, FALSE, "*\r\n") >= 0)
+    if (smtp_write_command(outblock, SCMD_FLUSH, "*\r\n") >= 0)
       (void)smtp_read_response(inblock, US buffer, buffsize, '2', timeout);
     string_format(buffer, buffsize, "Too few items in client_send in %s "
       "authenticator", ablock->name);
@@ -277,7 +287,7 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
     uschar *save_bad = string_copy(buffer);
     if (!ob->client_ignore_invalid_base64)
       {
-      if (smtp_write_command(outblock, FALSE, "*\r\n") >= 0)
+      if (smtp_write_command(outblock, SCMD_FLUSH, "*\r\n") >= 0)
         (void)smtp_read_response(inblock, US buffer, buffsize, '2', timeout);
       string_format(buffer, buffsize, "Invalid base64 string in server "
         "response \"%s\"", save_bad);
@@ -296,4 +306,5 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
 return FAIL;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of plaintext.c */

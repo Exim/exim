@@ -137,7 +137,7 @@ sub flavour {
 
 sub flavours {
     my %h = map { /\.(\S+)$/, 1 }
-            glob('stdout/*.*'), glob('stderr/*.*');
+            grep { !/\.orig$/ } glob('stdout/*.*'), glob('stderr/*.*');
     return sort keys %h;
 }
 

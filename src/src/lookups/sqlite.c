@@ -23,7 +23,7 @@ sqlite_open(uschar *filename, uschar **errmsg)
 sqlite3 *db = NULL;
 int ret;
 
-ret = sqlite3_open((char *)filename, &db);
+ret = sqlite3_open(CS filename, &db);
 if (ret != 0)
   {
   *errmsg = (void *)sqlite3_errmsg(db);
@@ -86,7 +86,7 @@ sqlite_find(void *handle, uschar *filename, const uschar *query, int length,
 int ret;
 struct strbuf res = { NULL, 0, 0 };
 
-ret = sqlite3_exec(handle, (char *)query, sqlite_callback, &res, (char **)errmsg);
+ret = sqlite3_exec(handle, CS query, sqlite_callback, &res, (char **)errmsg);
 if (ret != SQLITE_OK)
   {
   debug_printf("sqlite3_exec failed: %s\n", *errmsg);

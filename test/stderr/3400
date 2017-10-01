@@ -440,6 +440,13 @@ host in "10.0.0.1"? no (end of list)
 host in "10.0.0.4"? no (end of list)
 host in "10.0.0.3 : 10.0.0.4"? no (end of list)
 host in auth_advertise_hosts? yes (matched "10.0.0.5")
+Evaluating advertise_condition for mylogin athenticator
+Evaluating advertise_condition for PLAIN athenticator
+Evaluating advertise_condition for EXPLAIN athenticator
+Evaluating advertise_condition for EXPANDED athenticator
+Evaluating advertise_condition for EXPANDFAIL athenticator
+Evaluating advertise_condition for DEFER athenticator
+Evaluating advertise_condition for LOGIN athenticator
 host in chunking_advertise_hosts? no (end of list)
 SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
 250-SIZE 52428800

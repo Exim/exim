@@ -233,6 +233,7 @@ socks_opts proxies[32];			/* max #proxies handled */
 unsigned nproxies;
 socks_opts * sob;
 unsigned size;
+blob early_data;
 
 if (!timeout) timeout = 24*60*60;	/* use 1 day for "indefinite" */
 tmo = time(NULL) + timeout;
@@ -268,6 +269,14 @@ for (nproxies = 0;
     socks_option(sob, option);
   }
 
+/* Set up the socks protocol method-selection message,
+for sending on connection */
+
+state = US"method select";
+buf[0] = 5; buf[1] = 1; buf[2] = sob->auth_type;
+early_data.data = buf;
+early_data.len = 3;
+
 /* Try proxies until a connection succeeds */
 
 for(;;)
@@ -285,11 +294,11 @@ for(;;)
   sob = &proxies[idx];
 
   /* bodge up a host struct for the proxy */
-  proxy.address = sob->proxy_host;
+  proxy.address = proxy.name = sob->proxy_host;
   proxy_af = Ustrchr(sob->proxy_host, ':') ? AF_INET6 : AF_INET;
 
   if ((fd = smtp_sock_connect(&proxy, proxy_af, sob->port,
-	      interface, tb, sob->timeout)) >= 0)
+	      interface, tb, sob->timeout, &early_data)) >= 0)
     {
     proxy_local_address = string_copy(proxy.address);
     proxy_local_port = sob->port;
@@ -301,13 +310,8 @@ for(;;)
   }
 
 /* Do the socks protocol stuff */
-/* Send method-selection */
 
-state = US"method select";
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SOCKS>> 05 01 %02x\n", sob->auth_type);
-buf[0] = 5; buf[1] = 1; buf[2] = sob->auth_type;
-if (send(fd, buf, 3, 0) < 0)
-  goto snd_err;
 
 /* expect method response */
 

@@ -15,16 +15,17 @@
 
 /* must be kept in numeric order */
 static spf_result_id spf_result_id_list[] = {
-  { US"invalid", 0},
-  { US"neutral", 1 },
-  { US"pass", 2 },
-  { US"fail", 3 },
-  { US"softfail", 4 },
-  { US"none", 5 },
-  { US"err_temp", 6 },  /* Deprecated Apr 2014 */
-  { US"err_perm", 7 },  /* Deprecated Apr 2014 */
-  { US"temperror", 6 }, /* RFC 4408 defined */
-  { US"permerror", 7 }  /* RFC 4408 defined */
+  /* name		value */
+  { US"invalid",	0},
+  { US"neutral",	1 },
+  { US"pass",		2 },
+  { US"fail",		3 },
+  { US"softfail",	4 },
+  { US"none",		5 },
+  { US"err_temp",	6 },  /* Deprecated Apr 2014 */
+  { US"err_perm",	7 },  /* Deprecated Apr 2014 */
+  { US"temperror",	6 }, /* RFC 4408 defined */
+  { US"permerror",	7 }  /* RFC 4408 defined */
 };
 
 SPF_server_t    *spf_server = NULL;
@@ -102,10 +103,10 @@ int spf_process(const uschar **listptr, uschar *spf_envelope_sender, int action)
     SPF_request_query_mailfrom(spf_request, &spf_response);
 
   /* set up expansion items */
-  spf_header_comment     = (uschar *)SPF_response_get_header_comment(spf_response);
-  spf_received           = (uschar *)SPF_response_get_received_spf(spf_response);
-  spf_result             = (uschar *)SPF_strresult(SPF_response_result(spf_response));
-  spf_smtp_comment       = (uschar *)SPF_response_get_smtp_comment(spf_response);
+  spf_header_comment     = US SPF_response_get_header_comment(spf_response);
+  spf_received           = US SPF_response_get_received_spf(spf_response);
+  spf_result             = US SPF_strresult(SPF_response_result(spf_response));
+  spf_smtp_comment       = US SPF_response_get_smtp_comment(spf_response);
 
   rc = SPF_response_result(spf_response);
 

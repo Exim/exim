@@ -189,7 +189,7 @@ if (pam_error == PAM_SUCCESS)
   return OK;
   }
 
-*errptr = (uschar *)pam_strerror(pamh, pam_error);
+*errptr = US pam_strerror(pamh, pam_error);
 DEBUG(D_auth) debug_printf("PAM error: %s\n", *errptr);
 
 if (pam_error == PAM_USER_UNKNOWN ||

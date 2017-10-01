@@ -105,11 +105,10 @@ cscope.files: FRC
 	echo "-q" > $@
 	echo "-p3" >> $@
 	find src Local OS exim_monitor -name "*.[cshyl]" -print \
-		    -o -name "os.h*" -print \
+		    -o -name "os.[ch]*" -print \
 		    -o -name "*akefile*" -print \
 		    -o -name config.h.defaults -print \
 		    -o -name EDITME -print >> $@
-	ls OS/* >> $@
 
 FRC:
 

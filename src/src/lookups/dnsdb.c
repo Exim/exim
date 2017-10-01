@@ -410,7 +410,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
         if (outsep2 == NULL)
           {
           /* output only the first item of data */
-          yield = string_catn(yield, &size, &ptr, (uschar *)(rr->data+1),
+          yield = string_catn(yield, &size, &ptr, US (rr->data+1),
             (rr->data)[0]);
           }
         else

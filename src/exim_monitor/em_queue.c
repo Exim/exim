@@ -63,7 +63,8 @@ if it is dest_remove, remove if present and return NULL. The
 address is lowercased to start with, unless it begins with
 "*", which it does for error messages. */
 
-dest_item *find_dest(queue_item *q, uschar *name, int action, BOOL caseless)
+dest_item *
+find_dest(queue_item *q, uschar *name, int action, BOOL caseless)
 {
 dest_item *dd;
 dest_item **d = &(q->destinations);
@@ -108,7 +109,8 @@ return dd;
 *            Clean up a dead queue item          *
 *************************************************/
 
-static void clean_up(queue_item *p)
+static void
+clean_up(queue_item *p)
 {
 dest_item *dd = p->destinations;
 while (dd != NULL)
@@ -149,7 +151,8 @@ return node;
 *             Set up new queue item              *
 *************************************************/
 
-static queue_item *set_up(uschar *name, int dir_char)
+static queue_item *
+set_up(uschar *name, int dir_char)
 {
 int i, rc, save_errno;
 struct stat statdata;
@@ -162,7 +165,7 @@ uschar buffer[256];
 
 q->next = q->prev = NULL;
 q->destinations = NULL;
-Ustrcpy(q->name, name);
+Ustrncpy(q->name, name, sizeof(q->name));
 q->seen = TRUE;
 q->frozen = FALSE;
 q->dir_char = dir_char;
@@ -201,7 +204,7 @@ if it's there. */
 
 else
   {
-  q->update_time = q->input_time = received_time;
+  q->update_time = q->input_time = received_time.tv_sec;
   if ((p = strstric(sender_address+1, qualify_domain, FALSE)) != NULL &&
     *(--p) == '@') *p = 0;
   }
@@ -331,7 +334,8 @@ while (p != NULL)
 
 
 
-queue_item *find_queue(uschar *name, int action, int dir_char)
+queue_item *
+find_queue(uschar *name, int action, int dir_char)
 {
 int first = 0;
 int last = queue_index_size - 1;

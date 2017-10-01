@@ -642,7 +642,7 @@ static var_entry var_table[] = {
   { "received_ip_address", vtype_stringptr,   &interface_address },
   { "received_port",       vtype_int,         &interface_port },
   { "received_protocol",   vtype_stringptr,   &received_protocol },
-  { "received_time",       vtype_int,         &received_time },
+  { "received_time",       vtype_int,         &received_time.tv_sec },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_string_func, &fn_recipients },
@@ -680,6 +680,7 @@ static var_entry var_table[] = {
   { "smtp_active_hostname", vtype_stringptr,  &smtp_active_hostname },
   { "smtp_command",        vtype_stringptr,   &smtp_cmd_buffer },
   { "smtp_command_argument", vtype_stringptr, &smtp_cmd_argument },
+  { "smtp_command_history", vtype_string_func, &smtp_cmd_hist },
   { "smtp_count_at_connection_start", vtype_int, &smtp_accept_count },
   { "smtp_notquit_reason", vtype_stringptr,   &smtp_notquit_reason },
   { "sn0",                 vtype_filter_int,  &filter_sn[0] },
@@ -1483,9 +1484,7 @@ while (*s != 0)
 /* If value2 is unset, just compute one number */
 
 if (value2 < 0)
-  {
   s = string_sprintf("%d", total % value1);
-  }
 
 /* Otherwise do a div/mod hash */
 
@@ -1554,11 +1553,9 @@ for (i = 0; i < 2; i++)
   int size = 0;
   header_line *h;
 
-  for (h = header_list; size < header_insert_maxlen && h != NULL; h = h->next)
-    {
-    if (h->type != htype_old && h->text != NULL)  /* NULL => Received: placeholder */
-      {
-      if (name == NULL || (len <= h->slen && strncmpic(name, h->text, len) == 0))
+  for (h = header_list; size < header_insert_maxlen && h; h = h->next)
+    if (h->type != htype_old && h->text)  /* NULL => Received: placeholder */
+      if (!name || (len <= h->slen && strncmpic(name, h->text, len) == 0))
         {
         int ilen;
         uschar *t;
@@ -1580,7 +1577,7 @@ for (i = 0; i < 2; i++)
         that contains an address list, except when asked for raw headers. Only
         need to do this once. */
 
-        if (!want_raw && name != NULL && comma == 0 &&
+        if (!want_raw && name && comma == 0 &&
             Ustrchr("BCFRST", h->type) != NULL)
           comma = 1;
 
@@ -1613,8 +1610,6 @@ for (i = 0; i < 2; i++)
             }
           }
         }
-      }
-    }
 
   /* At end of first pass, return NULL if no header found. Then truncate size
   if necessary, and get the buffer to hold the data, returning the buffer size.
@@ -1632,9 +1627,7 @@ for (i = 0; i < 2; i++)
 /* That's all we do for raw header expansion. */
 
 if (want_raw)
-  {
   *ptr = 0;
-  }
 
 /* Otherwise, remove a final newline and a redundant added comma. Then we do
 RFC 2047 decoding, translating the charset if requested. The rfc2047_decode2()
@@ -1838,7 +1831,7 @@ switch (vp->type)
   case vtype_msgbody:                        /* Pointer to msgbody string */
   case vtype_msgbody_end:                    /* Ditto, the end of the msg */
     ss = (uschar **)(val);
-    if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
+    if (!*ss && deliver_datafile >= 0)  /* Read body when needed */
       {
       uschar *body;
       off_t start_offset = SPOOL_DATA_START_OFFSET;
@@ -1871,7 +1864,7 @@ switch (vp->type)
 	    { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
 	}
       }
-    return (*ss == NULL)? US"" : *ss;
+    return *ss ? *ss : US"";
 
   case vtype_todbsdin:                       /* BSD inbox time of day */
     return tod_stamp(tod_bsdin);
@@ -2384,8 +2377,10 @@ switch(cond_type)
       case 3: return NULL;
       }
 
-    *resetok = FALSE;	/* eval_acl() might allocate; do not reclaim */
-    if (yield != NULL) switch(eval_acl(sub, nelem(sub), &user_msg))
+    if (yield != NULL)
+      {
+      *resetok = FALSE;	/* eval_acl() might allocate; do not reclaim */
+      switch(eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
 	  cond = TRUE;
@@ -2406,6 +2401,7 @@ switch(cond_type)
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
 	  return NULL;
 	}
+      }
     return s;
     }
 
@@ -4712,8 +4708,7 @@ while (*s != 0)
 
       /* Open the file and read it */
 
-      f = Ufopen(sub_arg[0], "rb");
-      if (f == NULL)
+      if (!(f = Ufopen(sub_arg[0], "rb")))
         {
         expand_string_message = string_open_failed(errno, "%s", sub_arg[0]);
         goto EXPAND_FAILED;
@@ -4724,7 +4719,8 @@ while (*s != 0)
       continue;
       }
 
-    /* Handle "readsocket" to insert data from a Unix domain socket */
+    /* Handle "readsocket" to insert data from a socket, either
+    Inet or Unix domain */
 
     case EITEM_READSOCK:
       {
@@ -4732,10 +4728,10 @@ while (*s != 0)
       int timeout = 5;
       int save_ptr = ptr;
       FILE *f;
-      struct sockaddr_un sockun;         /* don't call this "sun" ! */
       uschar *arg;
       uschar *sub_arg[4];
       BOOL do_shutdown = TRUE;
+      blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
         {
@@ -4752,6 +4748,11 @@ while (*s != 0)
         case 2:                             /* Won't occur: no end check */
         case 3: goto EXPAND_FAILED;
         }
+
+      /* Grab the request string, if any */
+
+      reqstr.data = sub_arg[1];
+      reqstr.len = Ustrlen(sub_arg[1]);
 
       /* Sort out timeout, if given.  The second arg is a list with the first element
       being a time value.  Any more are options of form "name=value".  Currently the
@@ -4787,12 +4788,12 @@ while (*s != 0)
         if (Ustrncmp(sub_arg[0], "inet:", 5) == 0)
           {
           int port;
-          uschar *server_name = sub_arg[0] + 5;
-          uschar *port_name = Ustrrchr(server_name, ':');
+          uschar * server_name = sub_arg[0] + 5;
+          uschar * port_name = Ustrrchr(server_name, ':');
 
           /* Sort out the port */
 
-          if (port_name == NULL)
+          if (!port_name)
             {
             expand_string_message =
               string_sprintf("missing port for readsocket %s", sub_arg[0]);
@@ -4814,7 +4815,7 @@ while (*s != 0)
           else
             {
             struct servent *service_info = getservbyname(CS port_name, "tcp");
-            if (service_info == NULL)
+            if (!service_info)
               {
               expand_string_message = string_sprintf("unknown port \"%s\"",
                 port_name);
@@ -4824,17 +4825,20 @@ while (*s != 0)
             }
 
 	  fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
-		  timeout, NULL, &expand_string_message);
+		  timeout, NULL, &expand_string_message, &reqstr);
 	  callout_address = NULL;
 	  if (fd < 0)
               goto SOCK_FAIL;
+	  reqstr.len = 0;
           }
 
         /* Handle a Unix domain socket */
 
         else
           {
+	  struct sockaddr_un sockun;         /* don't call this "sun" ! */
           int rc;
+
           if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
             {
             expand_string_message = string_sprintf("failed to create socket: %s",
@@ -4868,14 +4872,13 @@ while (*s != 0)
 	/* Allow sequencing of test actions */
 	if (running_in_test_harness) millisleep(100);
 
-        /* Write the request string, if not empty */
+        /* Write the request string, if not empty or already done */
 
-        if (sub_arg[1][0] != 0)
+        if (reqstr.len)
           {
-          int len = Ustrlen(sub_arg[1]);
           DEBUG(D_expand) debug_printf_indent("writing \"%s\" to socket\n",
-            sub_arg[1]);
-          if (write(fd, sub_arg[1], len) != len)
+            reqstr.data);
+          if (write(fd, reqstr.data, reqstr.len) != reqstr.len)
             {
             expand_string_message = string_sprintf("request write to socket "
               "failed: %s", strerror(errno));
@@ -5991,7 +5994,9 @@ while (*s != 0)
         {
 	uschar * dstitem;
 	uschar * newlist = NULL;
+	int size = 0, len = 0;
 	uschar * newkeylist = NULL;
+	int ksize = 0, klen = 0;
 	uschar * srcfield;
 
         DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
@@ -6036,33 +6041,33 @@ while (*s != 0)
 	    /* New-item sorts before this dst-item.  Append new-item,
 	    then dst-item, then remainder of dst list. */
 
-	    newlist = string_append_listele(newlist, sep, srcitem);
-	    newkeylist = string_append_listele(newkeylist, sep, srcfield);
+	    newlist = string_append_listele(newlist, &size, &len, sep, srcitem);
+	    newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, srcfield);
 	    srcitem = NULL;
 
-	    newlist = string_append_listele(newlist, sep, dstitem);
-	    newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	    newlist = string_append_listele(newlist, &size, &len, sep, dstitem);
+	    newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, dstfield);
 
 	    while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
 	      {
 	      if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
 		goto sort_mismatch;
-	      newlist = string_append_listele(newlist, sep, dstitem);
-	      newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	      newlist = string_append_listele(newlist, &size, &len, sep, dstitem);
+	      newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, dstfield);
 	      }
 
 	    break;
 	    }
 
-	  newlist = string_append_listele(newlist, sep, dstitem);
-	  newkeylist = string_append_listele(newkeylist, sep, dstfield);
+	  newlist = string_append_listele(newlist, &size, &len, sep, dstitem);
+	  newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, dstfield);
 	  }
 
 	/* If we ran out of dstlist without consuming srcitem, append it */
 	if (srcitem)
 	  {
-	  newlist = string_append_listele(newlist, sep, srcitem);
-	  newkeylist = string_append_listele(newkeylist, sep, srcfield);
+	  newlist = string_append_listele(newlist, &size, &len, sep, srcitem);
+	  newkeylist = string_append_listele(newkeylist, &ksize, &klen, sep, srcfield);
 	  }
 
 	dstlist = newlist;
@@ -6466,7 +6471,7 @@ while (*s != 0)
 	  blob b;
 	  char st[3];
 
-	  if (!exim_sha_init(&h, HASH_SHA256))
+	  if (!exim_sha_init(&h, HASH_SHA2_256))
 	    {
 	    expand_string_message = US"unrecognised sha256 variant";
 	    goto EXPAND_FAILED;
@@ -6660,19 +6665,19 @@ while (*s != 0)
 	    char * cp;
 	    char tok[3];
 	    tok[0] = sep; tok[1] = ':'; tok[2] = 0;
-	    while ((cp= strpbrk((const char *)item, tok)))
+	    while ((cp= strpbrk(CCS item, tok)))
 	      {
-              yield = string_catn(yield, &size, &ptr, item, cp-(char *)item);
+              yield = string_catn(yield, &size, &ptr, item, cp-CS item);
 	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
 	        {
                 yield = string_catn(yield, &size, &ptr, US"::", 2);
-	        item = (uschar *)cp;
+	        item = US cp;
 		}
 	      else		/* sep in item; should already be doubled; emit once */
 	        {
-                yield = string_catn(yield, &size, &ptr, (uschar *)tok, 1);
+                yield = string_catn(yield, &size, &ptr, US tok, 1);
 		if (*cp == sep) cp++;
-	        item = (uschar *)cp;
+	        item = US cp;
 		}
 	      }
 	    }

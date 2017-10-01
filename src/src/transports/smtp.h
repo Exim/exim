@@ -130,6 +130,7 @@ typedef struct {
   int		cmd_count;
 
   uschar	peer_offered;
+  uschar	avoid_option;
   uschar *	igquotstr;
   uschar *	helo_data;
 #ifdef EXPERIMENTAL_DSN_INFO

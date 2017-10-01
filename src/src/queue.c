@@ -405,28 +405,18 @@ if (!recurse)
   *p = 0;
 
   p = big_buffer;
-  sprintf(CS p, "pid=%d", (int)queue_run_pid);
-  while (*p != 0) p++;
+  p += sprintf(CS p, "pid=%d", (int)queue_run_pid);
 
   if (extras[0] != 0)
-    {
-    sprintf(CS p, " -q%s", extras);
-    while (*p != 0) p++;
-    }
+    p += sprintf(CS p, " -q%s", extras);
 
-  if (deliver_selectstring != NULL)
-    {
-    sprintf(CS p, " -R%s %s", deliver_selectstring_regex? "r" : "",
+  if (deliver_selectstring)
+    p += sprintf(CS p, " -R%s %s", deliver_selectstring_regex? "r" : "",
       deliver_selectstring);
-    while (*p != 0) p++;
-    }
 
-  if (deliver_selectstring_sender != NULL)
-    {
-    sprintf(CS p, " -S%s %s", deliver_selectstring_sender_regex? "r" : "",
+  if (deliver_selectstring_sender)
+    p += sprintf(CS p, " -S%s %s", deliver_selectstring_sender_regex? "r" : "",
       deliver_selectstring_sender);
-    while (*p != 0) p++;
-    }
 
   log_detail = string_copy(big_buffer);
   if (*queue_name)
@@ -438,10 +428,10 @@ if (!recurse)
 
 /* If deliver_selectstring is a regex, compile it. */
 
-if (deliver_selectstring != NULL && deliver_selectstring_regex)
+if (deliver_selectstring && deliver_selectstring_regex)
   selectstring_regex = regex_must_compile(deliver_selectstring, TRUE, FALSE);
 
-if (deliver_selectstring_sender != NULL && deliver_selectstring_sender_regex)
+if (deliver_selectstring_sender && deliver_selectstring_sender_regex)
   selectstring_regex_sender =
     regex_must_compile(deliver_selectstring_sender, TRUE, FALSE);
 
@@ -890,7 +880,7 @@ for (reset_point = store_get(0); f; f = f->next)
 
     if (Ustat(fname, &statbuf) == 0)
       size = message_size + statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
-    i = (now - received_time)/60;  /* minutes on queue */
+    i = (now - received_time.tv_sec)/60;  /* minutes on queue */
     if (i > 90)
       {
       i = (i + 30)/60;
@@ -1142,10 +1132,14 @@ if (action != MSG_SHOW_COPY) printf("Message %s ", id);
 switch(action)
   {
   case MSG_SHOW_COPY:
-  deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
-  deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
-  transport_write_message(1, NULL, 0);
-  break;
+    {
+    transport_ctx tctx = {{0}};
+    deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
+    deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
+    tctx.u.fd = 1;
+    transport_write_message(&tctx, 0);
+    break;
+    }
 
 
   case MSG_FREEZE:

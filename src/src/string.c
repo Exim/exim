@@ -42,7 +42,7 @@ int yield = 4;
 /* If an optional mask is permitted, check for it. If found, pass back the
 offset. */
 
-if (maskptr != NULL)
+if (maskptr)
   {
   const uschar *ss = s + Ustrlen(s);
   *maskptr = 0;
@@ -79,7 +79,7 @@ if (Ustrchr(s, ':') != NULL)
     if we hit the / that introduces a mask or the % that introduces the
     interface specifier (scope id) of a link-local address. */
 
-    if (*s == 0 || *s == '%' || *s == '/') return had_double_colon? yield : 0;
+    if (*s == 0 || *s == '%' || *s == '/') return had_double_colon ? yield : 0;
 
     /* If a component starts with an additional colon, we have hit a double
     colon. This is permitted to appear once only, and counts as at least
@@ -135,13 +135,16 @@ if (Ustrchr(s, ':') != NULL)
 
 for (i = 0; i < 4; i++)
   {
+  long n;
+  uschar * end;
+
   if (i != 0 && *s++ != '.') return 0;
-  if (!isdigit(*s++)) return 0;
-  if (isdigit(*s) && isdigit(*(++s))) s++;
+  n = strtol(CCS s, CSS &end, 10);
+  if (n > 255 || n < 0 || end <= s || end > s+3) return 0;
+  s = end;
   }
 
-return (*s == 0 || (*s == '/' && maskptr != NULL && *maskptr != 0))?
-  yield : 0;
+return !*s || (*s == '/' && maskptr && *maskptr != 0) ? yield : 0;
 }
 #endif  /* COMPILE_UTILITY */
 
@@ -965,50 +968,6 @@ else
 *listptr = s;
 return buffer;
 }
-#endif  /* COMPILE_UTILITY */
-
-
-#ifndef COMPILE_UTILITY
-/************************************************
-*	Add element to separated list           *
-************************************************/
-/* This function is used to build a list, returning
-an allocated null-terminated growable string. The
-given element has any embedded separator characters
-doubled.
-
-Arguments:
-  list	points to the start of the list that is being built, or NULL
-	if this is a new list that has no contents yet
-  sep	list separator character
-  ele	new element to be appended to the list
-
-Returns:  pointer to the start of the list, changed if copied for expansion.
-*/
-
-uschar *
-string_append_listele(uschar * list, uschar sep, const uschar * ele)
-{
-uschar * new = NULL;
-int sz = 0, off = 0;
-uschar * sp;
-
-if (list)
-  {
-  new = string_cat (new, &sz, &off, list);
-  new = string_catn(new, &sz, &off, &sep, 1);
-  }
-
-while((sp = Ustrchr(ele, sep)))
-  {
-  new = string_catn(new, &sz, &off, ele, sp-ele+1);
-  new = string_catn(new, &sz, &off, &sep, 1);
-  ele = sp+1;
-  }
-new = string_cat(new, &sz, &off, ele);
-new[off] = '\0';
-return new;
-}
 
 
 static const uschar *
@@ -1029,36 +988,73 @@ while (siz)
 return NULL;
 }
 
+
+/************************************************
+*	Add element to separated list           *
+************************************************/
+/* This function is used to build a list, returning an allocated null-terminated
+growable string. The given element has any embedded separator characters
+doubled.
+
+Despite having the same growable-string interface as string_cat() the list is
+always returned null-terminated.
+
+Arguments:
+  list	points to the start of the list that is being built, or NULL
+	if this is a new list that has no contents yet
+  sz    (ptr to) amount of memory allocated for list; zero for a new list
+  off   (ptr to) current list length in chars (insert point for next addition),
+        zero for a new list
+  sep	list separator character
+  ele	new element to be appended to the list
+
+Returns:  pointer to the start of the list, changed if copied for expansion.
+*/
+
 uschar *
-string_append_listele_n(uschar * list, uschar sep, const uschar * ele,
-  unsigned len)
+string_append_listele(uschar * list, int * sz, int * off,
+  uschar sep, const uschar * ele)
 {
-uschar * new = NULL;
-int sz = 0, off = 0;
+uschar * sp;
+
+if (list)
+  list = string_catn(list, sz, off, &sep, 1);
+
+while((sp = Ustrchr(ele, sep)))
+  {
+  list = string_catn(list, sz, off, ele, sp-ele+1);
+  list = string_catn(list, sz, off, &sep, 1);
+  ele = sp+1;
+  }
+list = string_cat(list, sz, off, ele);
+list[*off] = '\0';
+return list;
+}
+
+
+uschar *
+string_append_listele_n(uschar * list, int * sz, int * off,
+  uschar sep, const uschar * ele, unsigned len)
+{
 const uschar * sp;
 
 if (list)
-  {
-  new = string_cat (new, &sz, &off, list);
-  new = string_catn(new, &sz, &off, &sep, 1);
-  }
+  list = string_catn(list, sz, off, &sep, 1);
 
 while((sp = Ustrnchr(ele, sep, &len)))
   {
-  new = string_catn(new, &sz, &off, ele, sp-ele+1);
-  new = string_catn(new, &sz, &off, &sep, 1);
+  list = string_catn(list, sz, off, ele, sp-ele+1);
+  list = string_catn(list, sz, off, &sep, 1);
   ele = sp+1;
   len--;
   }
-new = string_catn(new, &sz, &off, ele, len);
-new[off] = '\0';
-return new;
+list = string_catn(list, sz, off, ele, len);
+list[*off] = '\0';
+return list;
 }
-#endif  /* COMPILE_UTILITY */
 
 
 
-#ifndef COMPILE_UTILITY
 /*************************************************
 *             Add chars to string                *
 *************************************************/
@@ -1078,7 +1074,7 @@ Arguments:
              characters, updated to the new offset
   s        points to characters to add
   count    count of characters to add; must not exceed the length of s, if s
-             is a C string.  If -1 given, strlen(s) is used.
+             is a C string.
 
 If string is given as NULL, *size and *ptr should both be zero.
 
@@ -1359,20 +1355,18 @@ while (*fp != 0)
     switch(length)
       {
       case L_SHORT:
-      case L_NORMAL:   sprintf(CS p, newformat, va_arg(ap, int)); break;
-      case L_LONG:     sprintf(CS p, newformat, va_arg(ap, long int)); break;
-      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, LONGLONG_T)); break;
-      case L_SIZE:     sprintf(CS p, newformat, va_arg(ap, size_t)); break;
+      case L_NORMAL:   p += sprintf(CS p, newformat, va_arg(ap, int)); break;
+      case L_LONG:     p += sprintf(CS p, newformat, va_arg(ap, long int)); break;
+      case L_LONGLONG: p += sprintf(CS p, newformat, va_arg(ap, LONGLONG_T)); break;
+      case L_SIZE:     p += sprintf(CS p, newformat, va_arg(ap, size_t)); break;
       }
-    while (*p) p++;
     break;
 
     case 'p':
     if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp - item_start] = 0;
-    sprintf(CS p, newformat, va_arg(ap, void *));
-    while (*p) p++;
+    p += sprintf(CS p, newformat, va_arg(ap, void *));
     break;
 
     /* %f format is inherently insecure if the numbers that it may be
@@ -1392,10 +1386,9 @@ while (*fp != 0)
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp-item_start] = 0;
     if (length == L_LONGDOUBLE)
-      sprintf(CS p, newformat, va_arg(ap, long double));
+      p += sprintf(CS p, newformat, va_arg(ap, long double));
     else
-      sprintf(CS p, newformat, va_arg(ap, double));
-    while (*p) p++;
+      p += sprintf(CS p, newformat, va_arg(ap, double));
     break;
 
     /* String types */

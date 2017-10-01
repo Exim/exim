@@ -30,6 +30,17 @@ value is present to keep some compilers happy. */
 ipliteral_router_options_block ipliteral_router_option_defaults = { 0 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+void ipliteral_router_init(router_instance *rblock) {}
+int ipliteral_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
 
 /*************************************************
 *          Initialization entry point            *
@@ -190,4 +201,5 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
   OK : DEFER;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/ipliteral.c */

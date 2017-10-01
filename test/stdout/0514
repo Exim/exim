@@ -5,6 +5,7 @@
 CALLER UID GID
 <"spaced user"@myhost.test.ex>
 ddddddddd 0
+-received_time_usec .uuuuuu
 -ident spaced user
 -received_protocol local
 -body_linecount 1

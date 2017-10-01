@@ -1,0 +1,68 @@
+# DKIM, CHUNKING, wireformat-spoolfile
+#
+exim -bd -DSERVER=server -DOPT=dkim -oX PORT_S:PORT_D
+****
+#
+# 1: non-CHUNKING injection; will not be stored as wireformat therefore
+# onward-send will not use sendfile.  Should still be signed, and verify correctly.
+client 127.0.0.1 PORT_S
+??? 220
+EHLO xxx
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<z@test.ex>
+??? 250
+DATA
+??? 354
+Subject: simple test
+
+Line 1: This is a simple test.
+Line 2: This is a simple test.
+..Line 3 has a leading dot
+last line: 4
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+#
+# 2: CHUNKING injection; should be stored as wireformat therefore
+# onward-send should not use sendfile.  Should still be signed, and verify correctly.
+client 127.0.0.1 PORT_S
+??? 220
+EHLO xxx
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<y@test.ex>
+??? 250
+BDAT 129 LAST
+Subject: simple test
+
+Line 1: This is a simple test.
+Line 2: This is a simple test.
+.Line 3 has a leading dot
+last line: 4
+??? 250-
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+#
+killdaemon
+exim -q
+****
+no_msglog_check

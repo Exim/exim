@@ -19,11 +19,17 @@ extern int spam_ok;
 int spool_mbox_ok = 0;
 uschar spooled_message_id[MESSAGE_ID_LENGTH+1];
 
-/* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size
- * normally, source_file_override is NULL */
+/*
+Create an MBOX-style message file from the spooled files.
+
+Returns a pointer to the FILE, and puts the size in bytes into mbox_file_size.
+If mbox_fname is non-null, fill in a pointer to the name.
+Normally, source_file_override is NULL
+*/
 
 FILE *
-spool_mbox(unsigned long *mbox_file_size, const uschar *source_file_override)
+spool_mbox(unsigned long *mbox_file_size, const uschar *source_file_override,
+  uschar ** mbox_fname)
 {
 uschar message_subdir[2];
 uschar buffer[16384];
@@ -35,10 +41,13 @@ FILE *yield = NULL;
 header_line *my_headerlist;
 struct stat statbuf;
 int i, j;
-void *reset_point = store_get(0);
+void *reset_point;
 
-mbox_path = string_sprintf("%s/scan/%s/%s.eml", spool_directory, message_id,
-  message_id);
+mbox_path = string_sprintf("%s/scan/%s/%s.eml",
+  spool_directory, message_id, message_id);
+if (mbox_fname) *mbox_fname = mbox_path;
+
+reset_point = store_get(0);
 
 /* Skip creation if already spooled out as mbox file */
 if (!spool_mbox_ok)
@@ -53,8 +62,8 @@ if (!spool_mbox_ok)
     }
 
   /* open [message_id].eml file for writing */
-  mbox_file = modefopen(mbox_path, "wb", SPOOL_MODE);
-  if (mbox_file == NULL)
+
+  if (!(mbox_file = modefopen(mbox_path, "wb", SPOOL_MODE)))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
       "scan file %s", mbox_path));
@@ -71,33 +80,25 @@ if (!spool_mbox_ok)
     "${if def:sender_address{X-Envelope-From: <${sender_address}>\n}}"
     "${if def:recipients{X-Envelope-To: ${recipients}\n}}");
 
-  if (temp_string != NULL)
-    {
-    i = fwrite(temp_string, Ustrlen(temp_string), 1, mbox_file);
-    if (i != 1)
+  if (temp_string)
+    if (fwrite(temp_string, Ustrlen(temp_string), 1, mbox_file) != 1)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
 	  mailbox headers to %s", mbox_path);
       goto OUT;
       }
-    }
 
-  /* write all header lines to mbox file */
-  my_headerlist = header_list;
-  for (my_headerlist = header_list; my_headerlist != NULL;
-    my_headerlist = my_headerlist->next)
-    {
-    /* skip deleted headers */
-    if (my_headerlist->type == '*') continue;
+  /* write all non-deleted header lines to mbox file */
 
-    i = fwrite(my_headerlist->text, my_headerlist->slen, 1, mbox_file);
-    if (i != 1)
-      {
-      log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
-	  message headers to %s", mbox_path);
-      goto OUT;
-      }
-    }
+  for (my_headerlist = header_list; my_headerlist;
+      my_headerlist = my_headerlist->next)
+    if (my_headerlist->type != '*')
+      if (fwrite(my_headerlist->text, my_headerlist->slen, 1, mbox_file) != 1)
+	{
+	log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
+	    message headers to %s", mbox_path);
+	goto OUT;
+	}
 
   /* End headers */
   if (fwrite("\n", 1, 1, mbox_file) != 1)
@@ -108,7 +109,7 @@ if (!spool_mbox_ok)
     }
 
   /* copy body file */
-  if (source_file_override == NULL)
+  if (!source_file_override)
     {
     message_subdir[1] = '\0';
     for (i = 0; i < 2; i++)
@@ -142,18 +143,32 @@ if (!spool_mbox_ok)
 
   do
     {
-    j = fread(buffer, 1, sizeof(buffer), data_file);
+    uschar * s;
+
+    if (!spool_file_wireformat || source_file_override)
+      j = fread(buffer, 1, sizeof(buffer), data_file);
+    else						/* needs CRLF -> NL */
+      if ((s = US fgets(CS buffer, sizeof(buffer), data_file)))
+	{
+	uschar * p = s + Ustrlen(s) - 1;
+
+	if (*p == '\n' && p[-1] == '\r')
+	  *--p = '\n';
+	else if (*p == '\r')
+	  ungetc(*p--, data_file);
+
+	j = p - buffer;
+	}
+      else
+	j = 0;
 
     if (j > 0)
-      {
-      i = fwrite(buffer, j, 1, mbox_file);
-      if (i != 1)
+      if (fwrite(buffer, j, 1, mbox_file) != 1)
         {
 	log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
 	    message body to %s", mbox_path);
 	goto OUT;
 	}
-      }
     } while (j > 0);
 
   (void)fclose(mbox_file);
@@ -201,8 +216,7 @@ if (spool_mbox_ok && !no_mbox_unspool)
 
   mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
 
-  tempdir = opendir(CS mbox_path);
-  if (!tempdir)
+  if (!(tempdir = opendir(CS mbox_path)))
     {
     debug_printf("Unable to opendir(%s): %s\n", mbox_path, strerror(errno));
     /* Just in case we still can: */
@@ -210,7 +224,7 @@ if (spool_mbox_ok && !no_mbox_unspool)
     return;
     }
   /* loop thru dir & delete entries */
-  while((entry = readdir(tempdir)) != NULL)
+  while((entry = readdir(tempdir)))
     {
     uschar *name = US entry->d_name;
     int dummy;
@@ -218,7 +232,7 @@ if (spool_mbox_ok && !no_mbox_unspool)
 
     file_path = string_sprintf("%s/%s", mbox_path, name);
     debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
-    dummy = unlink(CS file_path);
+    dummy = unlink(CS file_path); dummy = dummy;	/* compiler quietening */
     }
 
   closedir(tempdir);

@@ -21,7 +21,7 @@ domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = check_recipient
 acl_smtp_data = check_data
 
-log_selector = +tls_peerdn
+log_selector = +tls_peerdn +received_recipients
 remote_max_parallel = 1
 
 tls_advertise_hosts = *

@@ -1,0 +1,48 @@
+# Exim test configuration 1990
+# TCP Fast Open
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+log_selector = +received_recipients +millisec
+
+# ----- Routers -----
+
+begin routers
+
+server:
+  driver = redirect
+  condition = ${if eq {SERVER}{server} {yes}{no}}
+  data = :blackhole:
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  transport = send_to_server
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  hosts_try_fastopen = *
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

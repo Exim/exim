@@ -595,12 +595,14 @@ package controlled locations (/usr/include and /usr/lib).
 
 2. Use the following global settings to configure DMARC:
 
-Required:
+Optional:
 dmarc_tld_file      Defines the location of a text file of valid
                     top level domains the opendmarc library uses
                     during domain parsing. Maintained by Mozilla,
                     the most current version can be downloaded
                     from a link at http://publicsuffix.org/list/.
+                    If unset, "/etc/exim/opendmarc.tlds" (hardcoded)
+                    is used.
 
 Optional:
 dmarc_history_file  Defines the location of a file to log results

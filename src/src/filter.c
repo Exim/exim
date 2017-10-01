@@ -91,7 +91,7 @@ static const char *mailargs[] = {  /* "to" must be first, and */
 
 /* The count of string arguments */
 
-#define MAILARGS_STRING_COUNT (sizeof(mailargs)/sizeof(uschar *))
+#define MAILARGS_STRING_COUNT (nelem(mailargs))
 
 /* The count of string arguments that are actually passed over as strings
 (once_repeat is converted to an int). */
@@ -185,7 +185,7 @@ static const char *cond_words[] = {
    "match",
    "matches"};
 
-static int cond_word_count = (sizeof(cond_words)/sizeof(uschar *));
+static int cond_word_count = nelem(cond_words);
 
 static int cond_types[] = { cond_BEGINS, cond_BEGINS, cond_CONTAINS,
   cond_CONTAINS, cond_ENDS, cond_ENDS, cond_IS, cond_MATCHES, cond_MATCHES,
@@ -207,7 +207,7 @@ static const char *command_list[] = {
   "noerror", "pipe",    "save",    "seen", "testprint", "unseen",   "vacation"
 };
 
-static int command_list_count = sizeof(command_list)/sizeof(uschar *);
+static int command_list_count = nelem(command_list);
 
 /* This table contains the number of expanded arguments in the bottom 4 bits.
 If the top bit is set, it means that the default for the command is "seen". */
@@ -1815,7 +1815,7 @@ while (commands != NULL)
       addr = deliver_make_addr(expargs[0], TRUE);  /* TRUE => copy s */
       addr->prop.errors_address = (s == NULL)?
         s : string_copy(s);                        /* Default is NULL */
-      if (commands->noerror) setflag(addr, af_ignore_error);
+      if (commands->noerror) addr->prop.ignore_error = TRUE;
       addr->next = *generated;
       *generated = addr;
       }
@@ -1855,8 +1855,9 @@ while (commands != NULL)
       mode value. */
 
       addr = deliver_make_addr(s, TRUE);  /* TRUE => copy s */
-      setflag(addr, af_pfr|af_file);
-      if (commands->noerror) setflag(addr, af_ignore_error);
+      setflag(addr, af_pfr);
+      setflag(addr, af_file);
+      if (commands->noerror) addr->prop.ignore_error = TRUE;
       addr->mode = mode;
       addr->next = *generated;
       *generated = addr;
@@ -1884,8 +1885,9 @@ while (commands != NULL)
       has been split up into separate arguments. */
 
       addr = deliver_make_addr(s, TRUE);  /* TRUE => copy s */
-      setflag(addr, af_pfr|af_expand_pipe);
-      if (commands->noerror) setflag(addr, af_ignore_error);
+      setflag(addr, af_pfr);
+      setflag(addr, af_expand_pipe);
+      if (commands->noerror) addr->prop.ignore_error = TRUE;
       addr->next = *generated;
       *generated = addr;
 
@@ -2220,7 +2222,7 @@ while (commands != NULL)
       uschar *to = commands->args[mailarg_index_to].u;
       int size = 0;
       int ptr = 0;
-      int badflag = 0;
+      BOOL badflag;
 
       if (to == NULL) to = expand_string(US"$reply_address");
       while (isspace(*to)) to++;
@@ -2292,16 +2294,15 @@ while (commands != NULL)
         while (isspace(*tt)) tt++;
         }
 
-      if (log_addr == NULL)
-        {
+      if ((badflag = !log_addr))
         log_addr = string_sprintf(">**bad-reply**");
-        badflag = af_bad_reply;
-        }
-      else log_addr[ptr] = 0;
+      else
+        log_addr[ptr] = 0;
 
       addr = deliver_make_addr(log_addr, FALSE);
-      setflag(addr, (af_pfr|badflag));
-      if (commands->noerror) setflag(addr, af_ignore_error);
+      setflag(addr, af_pfr);
+      if (badflag) setflag(addr, af_bad_reply);
+      if (commands->noerror) addr->prop.ignore_error = TRUE;
       addr->next = *generated;
       *generated = addr;
       addr->reply = store_get(sizeof(reply_item));

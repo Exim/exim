@@ -28,11 +28,12 @@ struct router_info;
 /* Structure for remembering macros for the configuration file */
 
 typedef struct macro_item {
-  struct   macro_item *next;
-  BOOL     command_line;
-  unsigned namelen;
-  uschar * replacement;
-  uschar   name[1];
+  struct  macro_item * next;
+  BOOL     	command_line;
+  unsigned	namelen;
+  unsigned	replen;
+  const uschar * name;
+  const uschar * replacement;
 } macro_item;
 
 /* Structure for bit tables for debugging and logging */
@@ -230,12 +231,15 @@ typedef struct transport_info {
 #define tc_chunk_last	BIT(1)	/* annotate chunk SMTP cmd as LAST */
 
 struct transport_context;
-typedef int (*tpt_chunk_cmd_cb)(int fd, struct transport_context * tctx,
-				unsigned len, unsigned flags);
+typedef int (*tpt_chunk_cmd_cb)(struct transport_context *, unsigned, unsigned);
 
 /* Structure for information about a delivery-in-progress */
 
 typedef struct transport_context {
+  union {			/* discriminated by option topt_output_string */
+    int			  fd;	/* file descriptor to write message to */
+    uschar *		  msg;	/* allocated string with written message */
+  } u;
   transport_instance	* tblock;		/* transport */
   struct address_item	* addr;
   uschar		* check_string;		/* string replacement */
@@ -245,6 +249,10 @@ typedef struct transport_context {
   /* items below only used with option topt_use_bdat */
   tpt_chunk_cmd_cb	  chunk_cb;		/* per-datachunk callback */
   void			* smtp_context;
+
+  /* items below only used with option topt_output_string */
+  int			  msg_size;
+  int			  msg_ptr;
 } transport_ctx;
 
 
@@ -497,6 +505,7 @@ typedef struct address_item_propagated {
   #ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */
   #endif
+  BOOL    ignore_error:1;	  /* ignore delivery error */
   #ifdef SUPPORT_I18N
   BOOL    utf8_msg:1;		  /* requires SMTPUTF8 processing */
   BOOL	  utf8_downcvt:1;	  /* mandatory downconvert on delivery */
@@ -504,50 +513,6 @@ typedef struct address_item_propagated {
   #endif
 } address_item_propagated;
 
-/* Bits for the flags field below */
-
-#define af_allow_file          0x00000001 /* allow file in generated address */
-#define af_allow_pipe          0x00000002 /* allow pipe in generated address */
-#define af_allow_reply         0x00000004 /* allow autoreply in generated address */
-#define af_dr_retry_exists     0x00000008 /* router retry record exists */
-#define af_expand_pipe         0x00000010 /* expand pipe arguments */
-#define af_file                0x00000020 /* file delivery; always with pfr */
-#define af_gid_set             0x00000040 /* gid field is set */
-#define af_home_expanded       0x00000080 /* home_dir is already expanded */
-#define af_ignore_error        0x00000100 /* ignore delivery error */
-#define af_initgroups          0x00000200 /* use initgroups() for local transporting */
-#define af_local_host_removed  0x00000400 /* local host was backup */
-#define af_lt_retry_exists     0x00000800 /* local transport retry exists */
-#define af_pfr                 0x00001000 /* pipe or file or reply delivery */
-#define af_retry_skipped       0x00002000 /* true if retry caused some skipping */
-#define af_retry_timedout      0x00004000 /* true if retry timed out */
-#define af_uid_set             0x00008000 /* uid field is set */
-#define af_hide_child          0x00010000 /* hide child in bounce/defer msgs */
-#define af_sverify_told        0x00020000 /* sender verify failure notified */
-#define af_verify_pmfail       0x00040000 /* verify failure was postmaster callout */
-#define af_verify_nsfail       0x00080000 /* verify failure was null sender callout */
-#define af_homonym             0x00100000 /* an ancestor has same address */
-#define af_verify_routed       0x00200000 /* for cached sender verify: routed OK */
-#define af_verify_callout      0x00400000 /* for cached sender verify: callout was specified */
-#define af_include_affixes     0x00800000 /* delivered with affixes in RCPT */
-#define af_cert_verified       0x01000000 /* delivered with verified TLS cert */
-#define af_pass_message        0x02000000 /* pass message in bounces */
-#define af_bad_reply           0x04000000 /* filter could not generate autoreply */
-#ifndef DISABLE_PRDR
-# define af_prdr_used          0x08000000 /* delivery used SMTP PRDR */
-#endif
-#define af_chunking_used       0x10000000 /* delivery used SMTP CHUNKING */
-#define af_force_command       0x20000000 /* force_command in pipe transport */
-#ifdef EXPERIMENTAL_DANE
-# define af_dane_verified      0x40000000 /* TLS cert verify done with DANE */
-#endif
-#ifdef SUPPORT_I18N
-# define af_utf8_downcvt       0x80000000 /* downconvert was done for delivery */
-#endif
-
-/* These flags must be propagated when a child is created */
-
-#define af_propagate           (af_ignore_error)
 
 /* The main address structure. Note that fields that are to be copied to
 generated addresses should be put in the address_item_propagated structure (see
@@ -617,12 +582,54 @@ typedef struct address_item {
   uid_t   uid;                    /* uid for transporting */
   gid_t   gid;                    /* gid for transporting */
 
-  unsigned int flags;             /* a row of bits, defined above */
+  				  /* flags */
+  struct {
+    BOOL af_allow_file:1;		/* allow file in generated address */
+    BOOL af_allow_pipe:1;		/* allow pipe in generated address */
+    BOOL af_allow_reply:1;		/* allow autoreply in generated address */
+    BOOL af_dr_retry_exists:1;		/* router retry record exists */
+    BOOL af_expand_pipe:1;		/* expand pipe arguments */
+    BOOL af_file:1;			/* file delivery; always with pfr */
+    BOOL af_gid_set:1;			/* gid field is set */
+    BOOL af_home_expanded:1;		/* home_dir is already expanded */
+    BOOL af_initgroups:1;		/* use initgroups() for local transporting */
+    BOOL af_local_host_removed:1;	/* local host was backup */
+    BOOL af_lt_retry_exists:1;		/* local transport retry exists */
+    BOOL af_pfr:1;			/* pipe or file or reply delivery */
+    BOOL af_retry_skipped:1;		/* true if retry caused some skipping */
+    BOOL af_retry_timedout:1;		/* true if retry timed out */
+    BOOL af_uid_set:1;			/* uid field is set */
+    BOOL af_hide_child:1;		/* hide child in bounce/defer msgs */
+    BOOL af_sverify_told:1;		/* sender verify failure notified */
+    BOOL af_verify_pmfail:1;		/* verify failure was postmaster callout */
+    BOOL af_verify_nsfail:1;		/* verify failure was null sender callout */
+    BOOL af_homonym:1;			/* an ancestor has same address */
+    BOOL af_verify_routed:1;		/* for cached sender verify: routed OK */
+    BOOL af_verify_callout:1;		/* for cached sender verify: callout was specified */
+    BOOL af_include_affixes:1;		/* delivered with affixes in RCPT */
+    BOOL af_cert_verified:1;		/* delivered with verified TLS cert */
+    BOOL af_pass_message:1;		/* pass message in bounces */
+    BOOL af_bad_reply:1;		/* filter could not generate autoreply */
+    BOOL af_tcp_fastopen:1;		/* delivery used TCP Fast Open */
+#ifndef DISABLE_PRDR
+    BOOL af_prdr_used:1;		/* delivery used SMTP PRDR */
+#endif
+    BOOL af_chunking_used:1;		/* delivery used SMTP CHUNKING */
+    BOOL af_force_command:1;		/* force_command in pipe transport */
+#ifdef EXPERIMENTAL_DANE
+    BOOL af_dane_verified:1;		/* TLS cert verify done with DANE */
+#endif
+#ifdef SUPPORT_I18N
+    BOOL af_utf8_downcvt:1;		/* downconvert was done for delivery */
+#endif
+  } flags;
+
   unsigned int domain_cache[(MAX_NAMED_LIST * 2)/32];
   unsigned int localpart_cache[(MAX_NAMED_LIST * 2)/32];
   int     mode;                   /* mode for local transporting to a file */
   int     more_errno;             /* additional error information */
                                   /* (may need to hold a timestamp) */
+  unsigned int delivery_usec;	  /* subsecond part of delivery time */
 
   short int basic_errno;          /* status after failure */
   unsigned short child_count;     /* number of child addresses */
@@ -860,11 +867,13 @@ typedef BOOL (*oicf) (uschar *message_id, void *data);
 /* DKIM information for transport */
 struct ob_dkim {
   uschar *dkim_domain;
+  uschar *dkim_identity;
   uschar *dkim_private_key;
   uschar *dkim_selector;
   uschar *dkim_canon;
   uschar *dkim_sign_headers;
   uschar *dkim_strict;
+  uschar *dkim_hash;
   BOOL    dot_stuffed;
 };
 

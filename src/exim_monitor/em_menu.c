@@ -174,7 +174,7 @@ static void
 bodyAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 int i;
-Widget text = text_create((uschar *)client_data, text_depth);
+Widget text = text_create(US client_data, text_depth);
 FILE *f = NULL;
 
 w = w;      /* Keep picky compilers happy */
@@ -183,7 +183,7 @@ call_data = call_data;
 for (i = 0; i < (spool_is_split? 2:1); i++)
   {
   uschar * fname;
-  message_subdir[0] = i != 0 ? ((uschar *)client_data)[5] : 0;
+  message_subdir[0] = i != 0 ? (US client_data)[5] : 0;
   fname = spool_fname(US"input", message_subdir, US client_data, US"-D");
   if ((f = fopen(CS fname, "r")))
     break;
@@ -334,9 +334,9 @@ if (!delivery)
   if (rc == 0 && Ustrcmp(action + Ustrlen(action) - 4, "-Mes") == 0)
     {
     queue_item *q = find_queue(id, queue_noop, 0);
-    if (q != NULL)
+    if (q)
       {
-      if (q->sender != NULL) store_free(q->sender);
+      if (q->sender) store_free(q->sender);
       q->sender = store_malloc(Ustrlen(address_arg) + 1);
       Ustrcpy(q->sender, address_arg);
       }
@@ -411,7 +411,7 @@ static void deliverAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-ActOnMessage((uschar *)client_data, US"-v -M", US"");
+ActOnMessage(US client_data, US"-v -M", US"");
 }
 
 
@@ -424,7 +424,7 @@ static void freezeAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-ActOnMessage((uschar *)client_data, US"-Mf", US"");
+ActOnMessage(US client_data, US"-Mf", US"");
 }
 
 
@@ -437,7 +437,7 @@ static void thawAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-ActOnMessage((uschar *)client_data, US"-Mt", US"");
+ActOnMessage(US client_data, US"-Mt", US"");
 }
 
 
@@ -624,7 +624,7 @@ static void giveupAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-ActOnMessage((uschar *)client_data, US"-v -Mg", US"");
+ActOnMessage(US client_data, US"-v -Mg", US"");
 }
 
 
@@ -637,7 +637,7 @@ static void removeAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
-ActOnMessage((uschar *)client_data, US"-Mrm", US"");
+ActOnMessage(US client_data, US"-Mrm", US"");
 }
 
 
@@ -650,7 +650,7 @@ static void headersAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 uschar buffer[256];
 header_line *h, *next;
-Widget text = text_create((uschar *)client_data, text_depth);
+Widget text = text_create(US client_data, text_depth);
 void *reset_point;
 
 w = w;      /* Keep picky compilers happy */
@@ -661,7 +661,7 @@ Then use Exim's function to read the header. */
 
 reset_point = store_get(0);
 
-sprintf(CS buffer, "%s-H", (uschar *)client_data);
+sprintf(CS buffer, "%s-H", US client_data);
 if (spool_read_header(buffer, TRUE, FALSE) != spool_read_OK)
   {
   if (errno == ERRNO_SPOOLFORMAT)

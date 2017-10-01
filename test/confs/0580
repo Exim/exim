@@ -1,0 +1,46 @@
+# Exim test configuration 0580
+
+OPT =
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+
+log_selector = +received_recipients
+OPT
+
+# ----- ACLs -----
+
+begin acl
+
+check_rcpt:
+  accept  verify = recipient/callout=use_sender,hold
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = manualroute
+  route_list = * 127.0.0.1
+  self = send
+  transport = t1
+
+
+begin transports
+
+t1:
+  driver = smtp
+  port =   PORT_S
+
+
+# ----- Retry -----
+begin retry
+
+* * F,5d,10s
+# End

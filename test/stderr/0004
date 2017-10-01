@@ -479,4 +479,4 @@ LOG: H=[1.1.1.1] F=<BY@aa.bb> rejected RCPT <x@test.ex>
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
 LOG: H=[1.1.1.1] F=<BlOcKeD@zz.xy> rejected RCPT <x@test.ex>
-LOG: unexpected disconnection while reading SMTP command from [1.1.1.1]
+LOG: unexpected disconnection while reading SMTP command from [1.1.1.1] D=qqs

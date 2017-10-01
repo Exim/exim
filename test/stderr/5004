@@ -78,9 +78,10 @@ Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -116,8 +117,9 @@ routed by r1 router
   transport: <none>
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail
@@ -135,8 +137,9 @@ search_tidyup called
 --------> TESTSUITE/test-mail <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail <TESTSUITE/test-mail> transport=t1
@@ -155,6 +158,7 @@ created directory TESTSUITE/test-mail/new
 created directory TESTSUITE/test-mail/cur
 delivering in maildir format in TESTSUITE/test-mail
 writing to tmp/MAILDIR.mail.test.ex
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex

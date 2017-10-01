@@ -185,10 +185,10 @@ dcc_process(uschar **listptr)
 
   /* If sockip contains an ip, we use a tcp socket, otherwise a UNIX socket */
   if(Ustrcmp(sockip, "")){
-    ipaddress = gethostbyname((char *)sockip);
-    bzero((char *) &serv_addr_in, sizeof(serv_addr_in));
+    ipaddress = gethostbyname(CS sockip);
+    bzero(CS  &serv_addr_in, sizeof(serv_addr_in));
     serv_addr_in.sin_family = AF_INET;
-    bcopy((char *)ipaddress->h_addr, (char *)&serv_addr_in.sin_addr.s_addr, ipaddress->h_length);
+    bcopy(CS ipaddress->h_addr, CS &serv_addr_in.sin_addr.s_addr, ipaddress->h_length);
     serv_addr_in.sin_port = htons(portnr);
     if ((sockfd = socket(AF_INET, SOCK_STREAM,0)) < 0){
       DEBUG(D_acl)

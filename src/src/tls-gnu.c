@@ -60,6 +60,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030014
 # define SUPPORT_SYSDEFAULT_CABUNDLE
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030109
+# define SUPPORT_CORK
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
@@ -136,16 +139,45 @@ typedef struct exim_gnutls_state {
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
-  NULL, NULL, NULL, VERIFY_NONE, -1, -1, FALSE, FALSE, FALSE,
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL,
+  .session =		NULL,
+  .x509_cred =		NULL,
+  .priority_cache =	NULL,
+  .verify_requirement =	VERIFY_NONE,
+  .fd_in =		-1,
+  .fd_out =		-1,
+  .peer_cert_verified =	FALSE,
+  .trigger_sni_changes =FALSE,
+  .have_set_peerdn =	FALSE,
+  .host =		NULL,
+  .peercert =		NULL,
+  .peerdn =		NULL,
+  .ciphersuite =	NULL,
+  .received_sni =	NULL,
+
+  .tls_certificate =	NULL,
+  .tls_privatekey =	NULL,
+  .tls_sni =		NULL,
+  .tls_verify_certificates = NULL,
+  .tls_crl =		NULL,
+  .tls_require_ciphers =NULL,
+
+  .exp_tls_certificate = NULL,
+  .exp_tls_privatekey =	NULL,
+  .exp_tls_verify_certificates = NULL,
+  .exp_tls_crl =	NULL,
+  .exp_tls_require_ciphers = NULL,
+  .exp_tls_ocsp_file =	NULL,
+  .exp_tls_verify_cert_hostnames = NULL,
 #ifndef DISABLE_EVENT
-                                            NULL,
+  .event_action =	NULL,
 #endif
-  NULL,
-  NULL, 0, 0, 0, 0,
+  .tlsp =		NULL,
+
+  .xfer_buffer =	NULL,
+  .xfer_buffer_lwm =	0,
+  .xfer_buffer_hwm =	0,
+  .xfer_eof =		0,
+  .xfer_error =		0,
 };
 
 /* Not only do we have our own APIs which don't pass around state, assuming
@@ -1648,7 +1680,7 @@ int ret;
 if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
   {
   DEBUG(D_tls) debug_printf("Failed to load ocsp stapling file %s\n",
-			      (char *)ptr);
+			      CS ptr);
   tls_in.ocsp = OCSP_NOT_RESP;
   return GNUTLS_E_NO_CERTIFICATE_STATUS;
   }
@@ -1745,7 +1777,7 @@ exim_gnutls_state_st * state = NULL;
 if (tls_in.active >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", "", NULL, errstr);
-  smtp_printf("554 Already in TLS\r\n");
+  smtp_printf("554 Already in TLS\r\n", FALSE);
   return FAIL;
   }
 
@@ -1806,7 +1838,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 
 if (!state->tlsp->on_connect)
   {
-  smtp_printf("220 TLS go ahead\r\n");
+  smtp_printf("220 TLS go ahead\r\n", FALSE);
   fflush(smtp_out);
   }
 
@@ -1885,6 +1917,7 @@ and initialize appropriately. */
 state->xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 
 receive_getc = tls_getc;
+receive_getbuf = tls_getbuf;
 receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
@@ -2154,6 +2187,75 @@ if ((state_server.session == NULL) && (state_client.session == NULL))
 
 
 
+static BOOL
+tls_refill(unsigned lim)
+{
+exim_gnutls_state_st * state = &state_server;
+ssize_t inbytes;
+
+DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
+  state->session, state->xfer_buffer, ssl_xfer_buffer_size);
+
+if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
+  MIN(ssl_xfer_buffer_size, lim));
+alarm(0);
+
+/* Timeouts do not get this far; see command_timeout_handler().
+   A zero-byte return appears to mean that the TLS session has been
+   closed down, not that the socket itself has been closed down. Revert to
+   non-TLS handling. */
+
+if (sigalrm_seen)
+  {
+  DEBUG(D_tls) debug_printf("Got tls read timeout\n");
+  state->xfer_error = 1;
+  return FALSE;
+  }
+
+else if (inbytes == 0)
+  {
+  DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
+
+  receive_getc = smtp_getc;
+  receive_getbuf = smtp_getbuf;
+  receive_get_cache = smtp_get_cache;
+  receive_ungetc = smtp_ungetc;
+  receive_feof = smtp_feof;
+  receive_ferror = smtp_ferror;
+  receive_smtp_buffered = smtp_buffered;
+
+  gnutls_deinit(state->session);
+  gnutls_certificate_free_credentials(state->x509_cred);
+
+  state->session = NULL;
+  state->tlsp->active = -1;
+  state->tlsp->bits = 0;
+  state->tlsp->certificate_verified = FALSE;
+  tls_channelbinding_b64 = NULL;
+  state->tlsp->cipher = NULL;
+  state->tlsp->peercert = NULL;
+  state->tlsp->peerdn = NULL;
+
+  return FALSE;
+  }
+
+/* Handle genuine errors */
+
+else if (inbytes < 0)
+  {
+  record_io_error(state, (int) inbytes, US"recv", NULL);
+  state->xfer_error = 1;
+  return FALSE;
+  }
+#ifndef DISABLE_DKIM
+dkim_exim_verify_feed(state->xfer_buffer, inbytes);
+#endif
+state->xfer_buffer_hwm = (int) inbytes;
+state->xfer_buffer_lwm = 0;
+return TRUE;
+}
+
 /*************************************************
 *            TLS version of getc                 *
 *************************************************/
@@ -2171,76 +2273,40 @@ Returns:    the next character or EOF
 int
 tls_getc(unsigned lim)
 {
-exim_gnutls_state_st *state = &state_server;
+exim_gnutls_state_st * state = &state_server;
+
 if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
-  {
-  ssize_t inbytes;
-
-  DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
-    state->session, state->xfer_buffer, ssl_xfer_buffer_size);
-
-  if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
-    MIN(ssl_xfer_buffer_size, lim));
-  alarm(0);
-
-  /* Timeouts do not get this far; see command_timeout_handler().
-     A zero-byte return appears to mean that the TLS session has been
-     closed down, not that the socket itself has been closed down. Revert to
-     non-TLS handling. */
-
-  if (sigalrm_seen)
-    {
-    DEBUG(D_tls) debug_printf("Got tls read timeout\n");
-    state->xfer_error = 1;
-    return EOF;
-    }
-
-  else if (inbytes == 0)
-    {
-    DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
-
-    receive_getc = smtp_getc;
-    receive_get_cache = smtp_get_cache;
-    receive_ungetc = smtp_ungetc;
-    receive_feof = smtp_feof;
-    receive_ferror = smtp_ferror;
-    receive_smtp_buffered = smtp_buffered;
-
-    gnutls_deinit(state->session);
-    gnutls_certificate_free_credentials(state->x509_cred);
-
-    state->session = NULL;
-    state->tlsp->active = -1;
-    state->tlsp->bits = 0;
-    state->tlsp->certificate_verified = FALSE;
-    tls_channelbinding_b64 = NULL;
-    state->tlsp->cipher = NULL;
-    state->tlsp->peercert = NULL;
-    state->tlsp->peerdn = NULL;
-
-    return smtp_getc(lim);
-    }
-
-  /* Handle genuine errors */
-
-  else if (inbytes < 0)
-    {
-    record_io_error(state, (int) inbytes, US"recv", NULL);
-    state->xfer_error = 1;
-    return EOF;
-    }
-#ifndef DISABLE_DKIM
-  dkim_exim_verify_feed(state->xfer_buffer, inbytes);
-#endif
-  state->xfer_buffer_hwm = (int) inbytes;
-  state->xfer_buffer_lwm = 0;
-  }
+  if (!tls_refill(lim))
+    return state->xfer_error ? EOF : smtp_getc(lim);
 
 /* Something in the buffer; return next uschar */
 
 return state->xfer_buffer[state->xfer_buffer_lwm++];
 }
+
+uschar *
+tls_getbuf(unsigned * len)
+{
+exim_gnutls_state_st * state = &state_server;
+unsigned size;
+uschar * buf;
+
+if (state->xfer_buffer_lwm >= state->xfer_buffer_hwm)
+  if (!tls_refill(*len))
+    {
+    if (!state->xfer_error) return smtp_getbuf(len);
+    *len = 0;
+    return NULL;
+    }
+
+if ((size = state->xfer_buffer_hwm - state->xfer_buffer_lwm) > *len)
+  size = *len;
+buf = &state->xfer_buffer[state->xfer_buffer_lwm];
+state->xfer_buffer_lwm += size;
+*len = size;
+return buf;
+}
+
 
 void
 tls_get_cache()
@@ -2251,6 +2317,14 @@ int n = state->xfer_buffer_hwm - state->xfer_buffer_lwm;
 if (n > 0)
   dkim_exim_verify_feed(state->xfer_buffer+state->xfer_buffer_lwm, n);
 #endif
+}
+
+
+BOOL
+tls_could_read(void)
+{
+return state_server.xfer_buffer_lwm < state_server.xfer_buffer_hwm
+ || gnutls_record_check_pending(state_server.session) > 0;
 }
 
 
@@ -2313,19 +2387,27 @@ Arguments:
   is_server channel specifier
   buff      buffer of data
   len       number of bytes
+  more	    more data expected soon
 
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
 */
 
 int
-tls_write(BOOL is_server, const uschar *buff, size_t len)
+tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
 {
 ssize_t outbytes;
 size_t left = len;
 exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
+#ifdef SUPPORT_CORK
+static BOOL corked = FALSE;
 
-DEBUG(D_tls) debug_printf("tls_do_write(%p, " SIZE_T_FMT ")\n", buff, left);
+if (more && !corked) gnutls_record_cork(state->session);
+#endif
+
+DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
+  buff, left, more ? ", more" : "");
+
 while (left > 0)
   {
   DEBUG(D_tls) debug_printf("gnutls_record_send(SSL, %p, " SIZE_T_FMT ")\n",
@@ -2355,6 +2437,14 @@ if (len > INT_MAX)
         len);
   len = INT_MAX;
   }
+
+#ifdef SUPPORT_CORK
+if (more != corked)
+  {
+  if (!more) (void) gnutls_record_uncork(state->session, 0);
+  corked = more;
+  }
+#endif
 
 return (int) len;
 }

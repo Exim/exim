@@ -896,6 +896,7 @@ sub unformat_time {
 # POSIX::mktime.  We expect the timestamp to be of the form
 # "$year-$mon-$day $hour:$min:$sec", with month going from 1 to 12,
 # and the year to be absolute (we do the necessary conversions). The
+# seconds value can be followed by decimals, which we ignore. The
 # timestamp may be followed with an offset from UTC like "+$hh$mm"; if the
 # offset is not present, and we have not been told that the log is in UTC
 # (with the -utc option), then we adjust the time by the current local
@@ -919,7 +920,7 @@ sub seconds {
   # Is the timestamp the same as the last one?
   return $last_time if ($last_timestamp eq $timestamp);
 
-  return 0 unless ($timestamp =~ /^((\d{4})\-(\d\d)-(\d\d))\s(\d\d):(\d\d):(\d\d)( ([+-])(\d\d)(\d\d))?/o);
+  return 0 unless ($timestamp =~ /^((\d{4})\-(\d\d)-(\d\d))\s(\d\d):(\d\d):(\d\d)(?:\.\d+)?( ([+-])(\d\d)(\d\d))?/o);
 
   unless ($last_date eq $1) {
     $last_date = $1;
@@ -931,7 +932,7 @@ sub seconds {
   my $time = $date_seconds + ($5 * 3600) + ($6 * 60) + $7;
 
   # SC. Use caching. Also note we want seconds not minutes.
-  #my($this_offset) = ($10 * 60 + $11) * ($9 . "1") if defined $8;
+  #my($this_offset) = ($10 * 60 + $12) * ($9 . "1") if defined $8;
   if (defined $8 && ($8 ne $last_offset)) {
     $last_offset = $8;
     $offset_seconds = ($10 * 60 + $11) * 60;
@@ -939,7 +940,7 @@ sub seconds {
   }
 
 
-  if (defined $7) {
+  if (defined $8) {
     #$time -= $this_offset;
     $time -= $offset_seconds;
   } elsif (defined $localtime_offset) {
@@ -1853,12 +1854,23 @@ sub generate_parser {
 
     $length = length($_);
     next if ($length < 38);
-    next unless /^(\\d{4}\\-\\d\\d-\\d\\d\\s(\\d\\d):(\\d\\d):\\d\\d( [-+]\\d\\d\\d\\d)?)( \\[\\d+\\])?/o;
+    next unless /^
+		(\\d{4}\\-\\d\\d-\\d\\d\\s	# 1: YYYYMMDD HHMMSS
+			(\\d\\d)		# 2: HH
+			:
+			(\\d\\d)		# 3: MM
+			:\\d\\d
+		)
+		(\\.\\d+)?			# 4: subseconds
+		(\s[-+]\\d\\d\\d\\d)?		# 5: tz-offset
+		(\s\\[\\d+\\])?			# 6: pid
+		/ox;
 
-    ($tod,$m_hour,$m_min) = ($1,$2,$3);
+    $tod = defined($5) ?  $1 . $5 : $1;
+    ($m_hour,$m_min) = ($2,$3);
 
     # PH - watch for GMT offsets in the timestamp.
-    if (defined($4)) {
+    if (defined($5)) {
       $extra = 6;
       next if ($length < 44);
     }
@@ -1866,9 +1878,15 @@ sub generate_parser {
       $extra = 0;
     }
 
+    # watch for subsecond precision
+    if (defined($4)) {
+      $extra += length($4);
+      next if ($length < 38 + $extra);
+    }
+
     # PH - watch for PID added after the timestamp.
-    if (defined($5)) {
-      $extra += length($5);
+    if (defined($6)) {
+      $extra += length($6);
       next if ($length < 38 + $extra);
     }
 

@@ -26,7 +26,7 @@ content
 ****
 #
 # check that on signing we warn in debug mode about verify problems
-exim -d-all+acl -DHEADERS_MAXSIZE=y -DSELECTOR=sel_bad -odf d@test.ex
+exim -d-all+acl -DOPT=From -DSELECTOR=sel_bad -odf d@test.ex
 From: nobody@example.com
 
 content

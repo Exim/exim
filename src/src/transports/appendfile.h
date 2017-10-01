@@ -70,6 +70,8 @@ typedef struct {
   BOOL  mbx_format;
   BOOL  quota_warn_threshold_is_percent;
   BOOL  quota_is_inclusive;
+  BOOL  quota_no_check;
+  BOOL  quota_filecount_no_check;
 } appendfile_transport_options_block;
 
 /* Restricted creation options */

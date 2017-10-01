@@ -205,7 +205,7 @@ DEBUG(D_memory)
 (void) VALGRIND_MAKE_MEM_UNDEFINED(store_last_get[store_pool], size);
 /* Update next pointer and number of bytes left in the current block. */
 
-next_yield[store_pool] = (void *)((char *)next_yield[store_pool] + size);
+next_yield[store_pool] = (void *)(CS next_yield[store_pool] + size);
 yield_length[store_pool] -= size;
 
 return store_last_get[store_pool];
@@ -273,7 +273,7 @@ int rounded_oldsize = oldsize;
 if (rounded_oldsize % alignment != 0)
   rounded_oldsize += alignment - (rounded_oldsize % alignment);
 
-if ((char *)ptr + rounded_oldsize != (char *)(next_yield[store_pool]) ||
+if (CS ptr + rounded_oldsize != CS (next_yield[store_pool]) ||
     inc > yield_length[store_pool] + rounded_oldsize - oldsize)
   return FALSE;
 
@@ -295,7 +295,7 @@ DEBUG(D_memory)
 #endif  /* COMPILE_UTILITY */
 
 if (newsize % alignment != 0) newsize += alignment - (newsize % alignment);
-next_yield[store_pool] = (char *)ptr + newsize;
+next_yield[store_pool] = CS ptr + newsize;
 yield_length[store_pool] -= newsize - rounded_oldsize;
 (void) VALGRIND_MAKE_MEM_UNDEFINED(ptr + oldsize, inc);
 return TRUE;
@@ -455,7 +455,7 @@ storeblock *b;
 for (b = chainbase[store_pool]; b != NULL; b = b->next)
   {
   storeblock *bb = b->next;
-  if (bb != NULL && (char *)block == (char *)bb + ALIGNED_SIZEOF_STOREBLOCK)
+  if (bb != NULL && CS block == CS bb + ALIGNED_SIZEOF_STOREBLOCK)
     {
     b->next = bb->next;
     pool_malloc -= bb->length + ALIGNED_SIZEOF_STOREBLOCK;

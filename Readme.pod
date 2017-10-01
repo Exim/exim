@@ -19,26 +19,25 @@ wiki document.
 
 =head2 Development Repositories
 
-Exim development is kept within a  git (L<http://git-scm.com/>)
+Exim development is kept within a  git (L<https://git-scm.com/>)
 repository. The master repository is at L<git://git.exim.org/exim.git>
 with a web interface giving change and source visibility at
-L<http://git.exim.org/exim.git>
+L<https://git.exim.org/exim.git>
 
 There is a secondary repository on github at
 L<https://github.com/Exim/exim> managed by the Exim Organisation
-L<https://github.com/Exim> - however this may currently fall out of
-synchronisation with the main one. We intend to manage this better in
-the future, but it is currently early days for our github repo.
+- however this may currently fall out of synchronisation with the
+main one.
 
 =head2 Bug Tracking
 
-Currently this is all done using Bugzilla at L<http://bugs.exim.org/>
+Currently this is all done using Bugzilla at L<https://bugs.exim.org/>
 - please do not use github issue tracking.
 
 =head2 Mailing List
 
 Development issues are normally discussed on the exim-dev mailing list
-- see L<http://www.exim.org/maillist.html>
+- see L<https://www.exim.org/maillist.html>
 
 =head2 Exim Release Process
 
@@ -48,19 +47,19 @@ L<http://wiki.exim.org/EximRelease>.
 =head2 General Exim Information
 
 The best place to get general information is on the website at
-L<http://www.exim.org/>.
+L<https://www.exim.org/>.
 
-You can find Download locations L<http://www.exim.org/mirrors.html>,
-Mailing list info L<http://www.exim.org/maillist.html> and Full
-Documentation L<http://www.exim.org/docs.html> on that website.
+You can find Download locations L<https://www.exim.org/mirrors.html>,
+Mailing list info L<https://www.exim.org/maillist.html> and Full
+Documentation L<https://www.exim.org/docs.html> on that website.
 
 If you are using a Linux or other freely available Unix like operating
 system it is very likely that your system will have Exim packaged for
 it already. In this case it is probably prudent to use these packages
 unless you have specialised requirements.
 
-In any case you can always ask on the 
-Exim Users mailing list L<https://lists.exim.org/mailman/listinfo/exim-users> 
+In any case you can always ask on the
+Exim Users mailing list L<https://lists.exim.org/mailman/listinfo/exim-users>
 for further information.
 
 [End]

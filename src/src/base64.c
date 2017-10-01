@@ -150,7 +150,7 @@ static uschar dec64table[] = {
 };
 
 int
-b64decode(uschar *code, uschar **ptr)
+b64decode(const uschar *code, uschar **ptr)
 {
 int x, y;
 uschar *result = store_get(3*(Ustrlen(code)/4) + 1);

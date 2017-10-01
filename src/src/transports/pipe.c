@@ -95,6 +95,17 @@ address can appear in the tables drtables.c. */
 int pipe_transport_options_count =
   sizeof(pipe_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+pipe_transport_options_block pipe_transport_option_defaults = {0};
+void pipe_transport_init(transport_instance *tblock) {}
+BOOL pipe_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the pipe transport. */
 
 pipe_transport_options_block pipe_transport_option_defaults = {
@@ -516,7 +527,7 @@ if (expand_arguments)
   }
 else argv[2] = cmd;
 
-argv[3] = (uschar *)0;
+argv[3] = US 0;
 return TRUE;
 }
 
@@ -552,6 +563,7 @@ const uschar *envlist = ob->environment;
 uschar *cmd, *ss;
 uschar *eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
+  {0},
   tblock,
   addr,
   ob->check_string,
@@ -684,10 +696,9 @@ if (envlist)
     }
   }
 
-while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size))
-       != NULL)
+while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size)))
    {
-   if (envcount > sizeof(envp)/sizeof(uschar *) - 2)
+   if (envcount > nelem(envp) - 2)
      {
      addr->transport_return = DEFER;
      addr->message = string_sprintf("too many environment settings for "
@@ -739,6 +750,7 @@ if ((pid = child_open(USS argv, envp, ob->umask, &fd_in, &fd_out, TRUE)) < 0)
       strerror(errno));
   return FALSE;
   }
+tctx.u.fd = fd_in;
 
 /* Now fork a process to handle the output that comes down the pipe. */
 
@@ -829,7 +841,7 @@ if (ob->message_prefix != NULL)
       expand_string_message);
     return FALSE;
     }
-  if (!transport_write_block(fd_in, prefix, Ustrlen(prefix)))
+  if (!transport_write_block(&tctx, prefix, Ustrlen(prefix), FALSE))
     goto END_WRITE;
   }
 
@@ -857,7 +869,7 @@ if (ob->use_bsmtp)
 
 /* Now the actual message */
 
-if (!transport_write_message(fd_in, &tctx, 0))
+if (!transport_write_message(&tctx, 0))
     goto END_WRITE;
 
 /* Now any configured suffix */
@@ -873,7 +885,7 @@ if (ob->message_suffix)
       expand_string_message);
     return FALSE;
     }
-  if (!transport_write_block(fd_in, suffix, Ustrlen(suffix)))
+  if (!transport_write_block(&tctx, suffix, Ustrlen(suffix), FALSE))
     goto END_WRITE;
   }
 
@@ -1150,4 +1162,5 @@ if (addr->transport_return != OK)
 return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/pipe.c */

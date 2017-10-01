@@ -1,0 +1,77 @@
+# Exim test configuration 2135
+
+.include DIR/aux-var/tls_conf_prefix
+
+.ifdef SERVER
+tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.chain.pem
+tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+.else
+tls_advertise_hosts =
+.endif
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+.ifdef SERVER
+acl_smtp_rcpt = srvr_rcpt
+acl_smtp_data = srvr_data
+.else
+acl_smtp_rcpt = client_rcpt
+acl_smtp_data = client_data
+.endif
+
+log_selector = +received_recipients +outgoing_port
+
+.ifdef SERVER
+queue_only
+queue_run_in_order = true
+.endif
+
+# ----- ACLs -----
+
+begin acl
+
+client_rcpt:
+  accept
+	verify =	recipient/callout=use_sender,hold
+
+client_data:
+  accept
+
+srvr_rcpt:
+  defer	local_parts =	rcpt_defer
+  accept
+
+srvr_data:
+  defer	condition =	${if eq {data_defer}{${local_part:$recipients}}}
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+target:
+  driver =	redirect
+  condition =	${if or {{eq {SERVER}{server}} {queue_running}}}
+  data =	:blackhole:
+
+client:
+  driver =	manualroute
+  route_list=	* 127.0.0.1::PORT_D
+  self =	send
+  transport =	t1
+  errors_to =	""
+
+begin transports
+
+t1:
+  driver =	smtp
+  tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
+  tls_verify_cert_hostnames =	:
+
+# ----- Retry -----
+begin retry
+
+* * F,5d,10s
+# End

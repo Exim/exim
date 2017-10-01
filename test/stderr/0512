@@ -59,6 +59,7 @@ LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
   ** userx@myhost.test.ex: retry timeout exceeded
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -122,6 +123,7 @@ LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
   ** userx@myhost.test.ex: retry timeout exceeded
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config

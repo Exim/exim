@@ -243,12 +243,12 @@ ehlo tester
 ??? 250-8BITMIME
 ??? 250-CHUNKING
 ??? 250 HELP
-mail from:someone9@some.domain
+MAIL FROM:someone9@some.domain
 ??? 250
-rcpt to:CALLER@test.ex
+RCPT TO:CALLER@test.ex
 ??? 250
-bdat 1\r\nTbdat 87 last
-To: Susan@random.com
+BDAT 1\r\nTBDAT 87 last
+o: Susan@random.com
 From: Sam@random.com
 Subject: This is a bodyless test message
 

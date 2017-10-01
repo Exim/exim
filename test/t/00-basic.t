@@ -45,7 +45,8 @@ subtest 'flavour' => sub {
     is flavour('t/samples/debian.sid/etc'), 'debian' => 'got flavour debian from debian sid w/o VERSION_ID';
     is flavour('t/samples/fedora24/etc'), 'fedora24' => 'got flavour fedora24 from os-release';
     is flavour('t/samples/empty'), undef()           => 'got empty flavour (undef)';
-    is_deeply [flavours()], ['debian8'] => 'got available flavours';
+    # we do not have flavours anymore (2017-03-18)
+    # is_deeply [flavours()], ['debian8'] => 'got available flavours';
 };
 
 done_testing;

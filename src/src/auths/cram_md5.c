@@ -47,6 +47,17 @@ auth_cram_md5_options_block auth_cram_md5_option_defaults = {
 };
 
 
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+void auth_cram_md5_init(auth_instance *ablock) {}
+int auth_cram_md5_server(auth_instance *ablock, uschar *data) {return 0;}
+int auth_cram_md5_client(auth_instance *ablock, smtp_inblock *inblock,
+  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+
+#else	/*!MACRO_PREDEF*/
+
+
 /*************************************************
 *          Initialization entry point            *
 *************************************************/
@@ -68,10 +79,12 @@ if (ob->client_secret != NULL)
   }
 }
 
+#endif	/*!MACRO_PREDEF*/
 #endif  /* STAND_ALONE */
 
 
 
+#ifndef MACRO_PREDEF
 /*************************************************
 *      Perform the CRAM-MD5 algorithm            *
 *************************************************/
@@ -108,8 +121,8 @@ and use that. */
 if (len > 64)
   {
   md5_start(&base);
-  md5_end(&base, (uschar *)secret, len, md5secret);
-  secret = (uschar *)md5secret;
+  md5_end(&base, US secret, len, md5secret);
+  secret = US md5secret;
   len = 16;
   }
 
@@ -130,7 +143,7 @@ for (i = 0; i < 64; i++)
 
 md5_start(&base);
 md5_mid(&base, isecret);
-md5_end(&base, (uschar *)challenge, Ustrlen(challenge), md5secret);
+md5_end(&base, US challenge, Ustrlen(challenge), md5secret);
 
 /* Compute the outer MD5 digest */
 
@@ -280,7 +293,8 @@ if (!secret || !name)
 /* Initiate the authentication exchange and read the challenge, which arrives
 in base 64. */
 
-if (smtp_write_command(outblock, FALSE, "AUTH %s\r\n", ablock->public_name) < 0)
+if (smtp_write_command(outblock, SCMD_FLUSH, "AUTH %s\r\n",
+		       	ablock->public_name) < 0)
   return FAIL_SEND;
 if (!smtp_read_response(inblock, buffer, buffsize, '3', timeout))
   return FAIL;
@@ -303,20 +317,17 @@ for (p = big_buffer; *p; ) p++;
 *p++ = ' ';
 
 for (i = 0; i < 16; i++)
-  {
-  sprintf(CS p, "%02x", digest[i]);
-  p += 2;
-  }
+  p += sprintf(CS p, "%02x", digest[i]);
 
 /* Send the response, in base 64, and check the result. The response is
 in big_buffer, but b64encode() returns its result in working store,
 so calling smtp_write_command(), which uses big_buffer, is OK. */
 
 buffer[0] = 0;
-if (smtp_write_command(outblock, FALSE, "%s\r\n", b64encode(big_buffer,
+if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", b64encode(big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
-return smtp_read_response(inblock, (uschar *)buffer, buffsize, '2', timeout)
+return smtp_read_response(inblock, US buffer, buffsize, '2', timeout)
   ? OK : FAIL;
 }
 #endif  /* STAND_ALONE */
@@ -347,4 +358,5 @@ return 0;
 
 #endif
 
+#endif	/*!MACRO_PREDEF*/
 /* End of cram_md5.c */

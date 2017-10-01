@@ -19,8 +19,6 @@ all described in src/EDITME. */
 lookup_info **lookup_list;
 int lookup_list_count = 0;
 
-static int lookup_list_init_done = 0;
-
 /* Table of information about all possible authentication mechanisms. All
 entries are always present if any mechanism is declared, but the functions are
 set to NULL for those that are not compiled into the binary. */
@@ -63,117 +61,117 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_CRAM_MD5
   {
-  US"cram_md5",                              /* lookup name */
-  auth_cram_md5_options,
-  &auth_cram_md5_options_count,
-  &auth_cram_md5_option_defaults,
-  sizeof(auth_cram_md5_options_block),
-  auth_cram_md5_init,                        /* init function */
-  auth_cram_md5_server,                      /* server function */
-  auth_cram_md5_client,                      /* client function */
-  NULL                                       /* diagnostic function */
+  .driver_name =	US"cram_md5",                              /* lookup name */
+  .options =		auth_cram_md5_options,
+  .options_count =	&auth_cram_md5_options_count,
+  .options_block =	&auth_cram_md5_option_defaults,
+  .options_len =	sizeof(auth_cram_md5_options_block),
+  .init =		auth_cram_md5_init,
+  .servercode =		auth_cram_md5_server,
+  .clientcode =		auth_cram_md5_client,
+  .version_report =	NULL
   },
 #endif
 
 #ifdef AUTH_CYRUS_SASL
   {
-  US"cyrus_sasl",           /* lookup name */
-  auth_cyrus_sasl_options,
-  &auth_cyrus_sasl_options_count,
-  &auth_cyrus_sasl_option_defaults,
-  sizeof(auth_cyrus_sasl_options_block),
-  auth_cyrus_sasl_init,                      /* init function */
-  auth_cyrus_sasl_server,                    /* server function */
-  NULL,                                      /* client function */
-  auth_cyrus_sasl_version_report             /* diagnostic function */
+  .driver_name =	US"cyrus_sasl",
+  .options =		auth_cyrus_sasl_options,
+  .options_count =	&auth_cyrus_sasl_options_count,
+  .options_block =	&auth_cyrus_sasl_option_defaults,
+  .options_len =	sizeof(auth_cyrus_sasl_options_block),
+  .init =		auth_cyrus_sasl_init,
+  .servercode =		auth_cyrus_sasl_server,
+  .clientcode =		NULL,
+  .version_report =	auth_cyrus_sasl_version_report
   },
 #endif
 
 #ifdef AUTH_DOVECOT
   {
-  US"dovecot",                                /* lookup name */
-  auth_dovecot_options,
-  &auth_dovecot_options_count,
-  &auth_dovecot_option_defaults,
-  sizeof(auth_dovecot_options_block),
-  auth_dovecot_init,                          /* init function */
-  auth_dovecot_server,                        /* server function */
-  NULL,                                       /* client function */
-  NULL                                        /* diagnostic function */
+  .driver_name =	US"dovecot",
+  .options =		auth_dovecot_options,
+  .options_count =	&auth_dovecot_options_count,
+  .options_block =	&auth_dovecot_option_defaults,
+  .options_len =	sizeof(auth_dovecot_options_block),
+  .init =		auth_dovecot_init,
+  .servercode =		auth_dovecot_server,
+  .clientcode =		NULL,
+  .version_report =	NULL
   },
 #endif
 
 #ifdef AUTH_GSASL
   {
-  US"gsasl",                                  /* lookup name */
-  auth_gsasl_options,
-  &auth_gsasl_options_count,
-  &auth_gsasl_option_defaults,
-  sizeof(auth_gsasl_options_block),
-  auth_gsasl_init,                            /* init function */
-  auth_gsasl_server,                          /* server function */
-  NULL,                                       /* client function */
-  auth_gsasl_version_report                   /* diagnostic function */
+  .driver_name =	US"gsasl",
+  .options =		auth_gsasl_options,
+  .options_count =	&auth_gsasl_options_count,
+  .options_block =	&auth_gsasl_option_defaults,
+  .options_len =	sizeof(auth_gsasl_options_block),
+  .init =		auth_gsasl_init,
+  .servercode =		auth_gsasl_server,
+  .clientcode =		NULL,
+  .version_report =	auth_gsasl_version_report
   },
 #endif
 
 #ifdef AUTH_HEIMDAL_GSSAPI
   {
-  US"heimdal_gssapi",                         /* lookup name */
-  auth_heimdal_gssapi_options,
-  &auth_heimdal_gssapi_options_count,
-  &auth_heimdal_gssapi_option_defaults,
-  sizeof(auth_heimdal_gssapi_options_block),
-  auth_heimdal_gssapi_init,                   /* init function */
-  auth_heimdal_gssapi_server,                 /* server function */
-  NULL,                                       /* client function */
-  auth_heimdal_gssapi_version_report          /* diagnostic function */
+  .driver_name =	US"heimdal_gssapi",
+  .options =		auth_heimdal_gssapi_options,
+  .options_count 	 &auth_heimdal_gssapi_options_count,
+  .options_block =	&auth_heimdal_gssapi_option_defaults,
+  .options_len =	sizeof(auth_heimdal_gssapi_options_block),
+  .init =		auth_heimdal_gssapi_init,
+  .servercode =		auth_heimdal_gssapi_server,
+  .clientcode =		NULL,
+  .version_report =	auth_heimdal_gssapi_version_report
   },
 #endif
 
 #ifdef AUTH_PLAINTEXT
   {
-  US"plaintext",                             /* lookup name */
-  auth_plaintext_options,
-  &auth_plaintext_options_count,
-  &auth_plaintext_option_defaults,
-  sizeof(auth_plaintext_options_block),
-  auth_plaintext_init,                       /* init function */
-  auth_plaintext_server,                     /* server function */
-  auth_plaintext_client,                     /* client function */
-  NULL                                       /* diagnostic function */
+  .driver_name =	US"plaintext",
+  .options =		auth_plaintext_options,
+  .options_count =	&auth_plaintext_options_count,
+  .options_block =	&auth_plaintext_option_defaults,
+  .options_len =	sizeof(auth_plaintext_options_block),
+  .init =		auth_plaintext_init,
+  .servercode =		auth_plaintext_server,
+  .clientcode =		auth_plaintext_client,
+  .version_report =	NULL
   },
 #endif
 
 #ifdef AUTH_SPA
   {
-  US"spa",                                   /* lookup name */
-  auth_spa_options,
-  &auth_spa_options_count,
-  &auth_spa_option_defaults,
-  sizeof(auth_spa_options_block),
-  auth_spa_init,                             /* init function */
-  auth_spa_server,                           /* server function */
-  auth_spa_client,                           /* client function */
-  NULL                                       /* diagnostic function */
+  .driver_name =	US"spa",
+  .options =		auth_spa_options,
+  .options_count =	&auth_spa_options_count,
+  .options_block =	&auth_spa_option_defaults,
+  .options_len =	sizeof(auth_spa_options_block),
+  .init =		auth_spa_init,
+  .servercode =		auth_spa_server,
+  .clientcode =		auth_spa_client,
+  .version_report =	NULL
   },
 #endif
 
 #ifdef AUTH_TLS
   {
-  US"tls",                                   /* lookup name */
-  auth_tls_options,
-  &auth_tls_options_count,
-  &auth_tls_option_defaults,
-  sizeof(auth_tls_options_block),
-  auth_tls_init,                             /* init function */
-  auth_tls_server,                           /* server function */
-  NULL,                                      /* client function */
-  NULL                                       /* diagnostic function */
+  .driver_name =	US"tls",
+  .options =		auth_tls_options,
+  .options_count =	&auth_tls_options_count,
+  .options_block =	&auth_tls_option_defaults,
+  .options_len =	sizeof(auth_tls_options_block),
+  .init =		auth_tls_init,
+  .servercode =		auth_tls_server,
+  .clientcode =		NULL,
+  .version_report =	NULL
   },
 #endif
 
-{ US"", NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL  }
+{ .driver_name = US"" }		/* end marker */
 };
 
 
@@ -242,96 +240,96 @@ exim binary. */
 router_info routers_available[] = {
 #ifdef ROUTER_ACCEPT
   {
-  US"accept",
-  accept_router_options,
-  &accept_router_options_count,
-  &accept_router_option_defaults,
-  sizeof(accept_router_options_block),
-  accept_router_init,
-  accept_router_entry,
-  NULL,     /* no tidyup entry */
-  ri_yestransport
+  .driver_name =	US"accept",
+  .options =		accept_router_options,
+  .options_count =	&accept_router_options_count,
+  .options_block =	&accept_router_option_defaults,
+  .options_len =	sizeof(accept_router_options_block),
+  .init =		accept_router_init,
+  .code =		accept_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		ri_yestransport
   },
 #endif
 #ifdef ROUTER_DNSLOOKUP
   {
-  US"dnslookup",
-  dnslookup_router_options,
-  &dnslookup_router_options_count,
-  &dnslookup_router_option_defaults,
-  sizeof(dnslookup_router_options_block),
-  dnslookup_router_init,
-  dnslookup_router_entry,
-  NULL,     /* no tidyup entry */
-  ri_yestransport
+  .driver_name =	US"dnslookup",
+  .options =		dnslookup_router_options,
+  .options_count =	&dnslookup_router_options_count,
+  .options_block =	&dnslookup_router_option_defaults,
+  .options_len =	sizeof(dnslookup_router_options_block),
+  .init =		dnslookup_router_init,
+  .code =		dnslookup_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		ri_yestransport
   },
 #endif
 #ifdef ROUTER_IPLITERAL
   {
-  US"ipliteral",
-  ipliteral_router_options,
-  &ipliteral_router_options_count,
-  &ipliteral_router_option_defaults,
-  sizeof(ipliteral_router_options_block),
-  ipliteral_router_init,
-  ipliteral_router_entry,
-  NULL,     /* no tidyup entry */
-  ri_yestransport
+  .driver_name =	US"ipliteral",
+  .options =		ipliteral_router_options,
+  .options_count =	&ipliteral_router_options_count,
+  .options_block =	&ipliteral_router_option_defaults,
+  .options_len =	sizeof(ipliteral_router_options_block),
+  .init =		ipliteral_router_init,
+  .code =		ipliteral_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		ri_yestransport
   },
 #endif
 #ifdef ROUTER_IPLOOKUP
   {
-  US"iplookup",
-  iplookup_router_options,
-  &iplookup_router_options_count,
-  &iplookup_router_option_defaults,
-  sizeof(iplookup_router_options_block),
-  iplookup_router_init,
-  iplookup_router_entry,
-  NULL,     /* no tidyup entry */
-  ri_notransport
+  .driver_name =	US"iplookup",
+  .options =		iplookup_router_options,
+  .options_count =	&iplookup_router_options_count,
+  .options_block =	&iplookup_router_option_defaults,
+  .options_len =	sizeof(iplookup_router_options_block),
+  .init =		iplookup_router_init,
+  .code =		iplookup_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		ri_notransport
   },
 #endif
 #ifdef ROUTER_MANUALROUTE
   {
-  US"manualroute",
-  manualroute_router_options,
-  &manualroute_router_options_count,
-  &manualroute_router_option_defaults,
-  sizeof(manualroute_router_options_block),
-  manualroute_router_init,
-  manualroute_router_entry,
-  NULL,     /* no tidyup entry */
-  0
+  .driver_name =	US"manualroute",
+  .options =		manualroute_router_options,
+  .options_count =	&manualroute_router_options_count,
+  .options_block =	&manualroute_router_option_defaults,
+  .options_len =	sizeof(manualroute_router_options_block),
+  .init =		manualroute_router_init,
+  .code =		manualroute_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		0
   },
 #endif
 #ifdef ROUTER_QUERYPROGRAM
   {
-  US"queryprogram",
-  queryprogram_router_options,
-  &queryprogram_router_options_count,
-  &queryprogram_router_option_defaults,
-  sizeof(queryprogram_router_options_block),
-  queryprogram_router_init,
-  queryprogram_router_entry,
-  NULL,     /* no tidyup entry */
-  0
+  .driver_name =	US"queryprogram",
+  .options =		queryprogram_router_options,
+  .options_count =	&queryprogram_router_options_count,
+  .options_block =	&queryprogram_router_option_defaults,
+  .options_len =	sizeof(queryprogram_router_options_block),
+  .init =		queryprogram_router_init,
+  .code =		queryprogram_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		0
   },
 #endif
 #ifdef ROUTER_REDIRECT
   {
-  US"redirect",
-  redirect_router_options,
-  &redirect_router_options_count,
-  &redirect_router_option_defaults,
-  sizeof(redirect_router_options_block),
-  redirect_router_init,
-  redirect_router_entry,
-  NULL,     /* no tidyup entry */
-  ri_notransport
+  .driver_name =	US"redirect",
+  .options =		redirect_router_options,
+  .options_count =	&redirect_router_options_count,
+  .options_block =	&redirect_router_option_defaults,
+  .options_len =	sizeof(redirect_router_options_block),
+  .init =		redirect_router_init,
+  .code =		redirect_router_entry,
+  .tidyup =		NULL,     /* no tidyup entry */
+  .ri_flags =		ri_notransport
   },
 #endif
-{ US"", NULL, NULL, NULL, 0, NULL, NULL, NULL, 0 }
+{ US"" }
 };
 
 
@@ -339,90 +337,93 @@ router_info routers_available[] = {
 transport_info transports_available[] = {
 #ifdef TRANSPORT_APPENDFILE
   {
-  US"appendfile",                              /* driver name */
-  appendfile_transport_options,                /* local options table */
-  &appendfile_transport_options_count,         /* number of entries */
-  &appendfile_transport_option_defaults,       /* private options defaults */
-  sizeof(appendfile_transport_options_block),  /* size of private block */
-  appendfile_transport_init,                   /* init entry point */
-  appendfile_transport_entry,                  /* main entry point */
-  NULL,                                        /* no tidyup entry */
-  NULL,                                        /* no closedown entry */
-  TRUE,                                        /* local flag */
+  .driver_name =	US"appendfile",
+  .options =		appendfile_transport_options,
+  .options_count =	&appendfile_transport_options_count,
+  .options_block =	&appendfile_transport_option_defaults,       /* private options defaults */
+  .options_len =	sizeof(appendfile_transport_options_block),
+  .init =		appendfile_transport_init,
+  .code =		appendfile_transport_entry,
+  .tidyup =		NULL,
+  .closedown =		NULL,
+  .local =		TRUE
   },
 #endif
 #ifdef TRANSPORT_AUTOREPLY
   {
-  US"autoreply",                               /* driver name */
-  autoreply_transport_options,                 /* local options table */
-  &autoreply_transport_options_count,          /* number of entries */
-  &autoreply_transport_option_defaults,        /* private options defaults */
-  sizeof(autoreply_transport_options_block),   /* size of private block */
-  autoreply_transport_init,                    /* init entry point */
-  autoreply_transport_entry,                   /* main entry point */
-  NULL,                                        /* no tidyup entry */
-  NULL,                                        /* no closedown entry */
-  TRUE                                         /* local flag */
+  .driver_name =	US"autoreply",
+  .options =		autoreply_transport_options,
+  .options_count =	&autoreply_transport_options_count,
+  .options_block =	&autoreply_transport_option_defaults,
+  .options_len =	sizeof(autoreply_transport_options_block),
+  .init =		autoreply_transport_init,
+  .code =		autoreply_transport_entry,
+  .tidyup =		NULL,
+  .closedown =		NULL,
+  .local =		TRUE
   },
 #endif
 #ifdef TRANSPORT_LMTP
   {
-  US"lmtp",                                    /* driver name */
-  lmtp_transport_options,                      /* local options table */
-  &lmtp_transport_options_count,               /* number of entries */
-  &lmtp_transport_option_defaults,             /* private options defaults */
-  sizeof(lmtp_transport_options_block),        /* size of private block */
-  lmtp_transport_init,                         /* init entry point */
-  lmtp_transport_entry,                        /* main entry point */
-  NULL,                                        /* no tidyup entry */
-  NULL,                                        /* no closedown entry */
-  TRUE                                         /* local flag */
+  .driver_name =	US"lmtp",
+  .options =		lmtp_transport_options,
+  .options_count =	&lmtp_transport_options_count,
+  .options_block =	&lmtp_transport_option_defaults,
+  .options_len =	sizeof(lmtp_transport_options_block),
+  .init =		lmtp_transport_init,
+  .code =		lmtp_transport_entry,
+  .tidyup =		NULL,
+  .closedown =		NULL,
+  .local =		TRUE
   },
 #endif
 #ifdef TRANSPORT_PIPE
   {
-  US"pipe",                                    /* driver name */
-  pipe_transport_options,                      /* local options table */
-  &pipe_transport_options_count,               /* number of entries */
-  &pipe_transport_option_defaults,             /* private options defaults */
-  sizeof(pipe_transport_options_block),        /* size of private block */
-  pipe_transport_init,                         /* init entry point */
-  pipe_transport_entry,                        /* main entry point */
-  NULL,                                        /* no tidyup entry */
-  NULL,                                        /* no closedown entry */
-  TRUE                                         /* local flag */
+  .driver_name =	US"pipe",
+  .options =		pipe_transport_options,
+  .options_count =	&pipe_transport_options_count,
+  .options_block =	&pipe_transport_option_defaults,
+  .options_len =	sizeof(pipe_transport_options_block),
+  .init =		pipe_transport_init,
+  .code =		pipe_transport_entry,
+  .tidyup =		NULL,
+  .closedown =		NULL,
+  .local =		TRUE
   },
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   {
-  US"queuefile",                               /* driver name */
-  queuefile_transport_options,                 /* local options table */
-  &queuefile_transport_options_count,          /* number of entries */
-  &queuefile_transport_option_defaults,        /* private options defaults */
-  sizeof(queuefile_transport_options_block),   /* size of private block */
-  queuefile_transport_init,                    /* init entry point */
-  queuefile_transport_entry,                   /* main entry point */
-  NULL,                                        /* no tidyup entry */
-  NULL,                                        /* no closedown entry */
-  TRUE                                         /* local flag */
+  .driver_name =	US"queuefile",
+  .options =		queuefile_transport_options,
+  .options_count =	&queuefile_transport_options_count,
+  .options_block =	&queuefile_transport_option_defaults,
+  .options_len =	sizeof(queuefile_transport_options_block),
+  .init =		queuefile_transport_init,
+  .code =		queuefile_transport_entry,
+  .tidyup =		NULL,
+  .closedown =		NULL,
+  .local =		TRUE
   },
 #endif
 #ifdef TRANSPORT_SMTP
   {
-  US"smtp",                                    /* driver name */
-  smtp_transport_options,                      /* local options table */
-  &smtp_transport_options_count,               /* number of entries */
-  &smtp_transport_option_defaults,             /* private options defaults */
-  sizeof(smtp_transport_options_block),        /* size of private block */
-  smtp_transport_init,                         /* init entry point */
-  smtp_transport_entry,                        /* main entry point */
-  NULL,                                        /* no tidyup entry */
-  smtp_transport_closedown,                    /* close down passed channel */
-  FALSE                                        /* local flag */
+  .driver_name =	US"smtp",
+  .options =		smtp_transport_options,
+  .options_count =	&smtp_transport_options_count,
+  .options_block =	&smtp_transport_option_defaults,
+  .options_len =	sizeof(smtp_transport_options_block),
+  .init =		smtp_transport_init,
+  .code =		smtp_transport_entry,
+  .tidyup =		NULL,
+  .closedown =		smtp_transport_closedown,
+  .local =		FALSE
   },
 #endif
-{ US"", NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, FALSE }
+{ US"" }
 };
+
+
+#ifndef MACRO_PREDEF
 
 struct lookupmodulestr
 {
@@ -545,10 +546,12 @@ init_lookup_list(void)
   int moduleerrors = 0;
 #endif
   struct lookupmodulestr *p;
+  static BOOL lookup_list_init_done = FALSE;
+
 
   if (lookup_list_init_done)
     return;
-  lookup_list_init_done = 1;
+  lookup_list_init_done = TRUE;
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
   addlookupmodule(NULL, &cdb_lookup_module_info);
@@ -721,4 +724,5 @@ init_lookup_list(void)
   lookupmodules = NULL;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of drtables.c */

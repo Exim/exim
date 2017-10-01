@@ -27,7 +27,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
   uschar *verdicts = NULL;
   int i,j;
 
-  err = bmiInitSystem(BMI_VERSION, (char *)bmi_config_file, &system);
+  err = bmiInitSystem(BMI_VERSION, CS bmi_config_file, &system);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
     err_loc = bmiErrorGetLocation(err);
     err_type = bmiErrorGetType(err);
@@ -51,24 +51,24 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     host_address = localhost;
   else
     host_address = sender_host_address;
-  err = bmiProcessConnection((char *)host_address, message);
+  err = bmiProcessConnection(CS host_address, message);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
     err_loc = bmiErrorGetLocation(err);
     err_type = bmiErrorGetType(err);
     log_write(0, LOG_PANIC,
-               "bmi error [loc %d type %d]: bmiProcessConnection() failed (IP %s).", (int)err_loc, (int)err_type, (char *)host_address);
+               "bmi error [loc %d type %d]: bmiProcessConnection() failed (IP %s).", (int)err_loc, (int)err_type, CS host_address);
     bmiFreeMessage(message);
     bmiFreeSystem(system);
     return NULL;
   };
 
   /* Send envelope sender address */
-  err = bmiProcessFROM((char *)sender_address, message);
+  err = bmiProcessFROM(CS sender_address, message);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
     err_loc = bmiErrorGetLocation(err);
     err_type = bmiErrorGetType(err);
     log_write(0, LOG_PANIC,
-               "bmi error [loc %d type %d]: bmiProcessFROM() failed (address %s).", (int)err_loc, (int)err_type, (char *)sender_address);
+               "bmi error [loc %d type %d]: bmiProcessFROM() failed (address %s).", (int)err_loc, (int)err_type, CS sender_address);
     bmiFreeMessage(message);
     bmiFreeSystem(system);
     return NULL;
@@ -86,14 +86,14 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
       err = bmiOptinMset(optin, r->bmi_optin, ':');
       if (bmiErrorIsFatal(err) == BMI_TRUE) {
         log_write(0, LOG_PANIC|LOG_MAIN,
-                   "bmi warning: [loc %d type %d]: bmiOptinMSet() failed (address '%s', string '%s').", (int)err_loc, (int)err_type, (char *)r->address, (char *)r->bmi_optin);
+                   "bmi warning: [loc %d type %d]: bmiOptinMSet() failed (address '%s', string '%s').", (int)err_loc, (int)err_type, CS r->address, CS r->bmi_optin);
         if (optin != NULL)
           bmiOptinFree(optin);
         optin = NULL;
       };
     };
 
-    err = bmiAccumulateTO((char *)r->address, optin, message);
+    err = bmiAccumulateTO(CS r->address, optin, message);
 
     if (optin != NULL)
       bmiOptinFree(optin);
@@ -102,7 +102,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
       err_loc = bmiErrorGetLocation(err);
       err_type = bmiErrorGetType(err);
       log_write(0, LOG_PANIC,
-                 "bmi error [loc %d type %d]: bmiAccumulateTO() failed (address %s).", (int)err_loc, (int)err_type, (char *)r->address);
+                 "bmi error [loc %d type %d]: bmiAccumulateTO() failed (address %s).", (int)err_loc, (int)err_type, CS r->address);
       bmiFreeMessage(message);
       bmiFreeSystem(system);
       return NULL;
@@ -126,7 +126,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
       header_list = header_list->next;
       continue;
     };
-    err = bmiAccumulateHeaders((const char *)header_list->text, header_list->slen, message);
+    err = bmiAccumulateHeaders(CCS header_list->text, header_list->slen, message);
     if (bmiErrorIsFatal(err) == BMI_TRUE) {
       err_loc = bmiErrorGetLocation(err);
       err_type = bmiErrorGetType(err);
@@ -154,7 +154,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
   do {
     j = fread(data_buffer, 1, sizeof(data_buffer), data_file);
     if (j > 0) {
-      err = bmiAccumulateBody((const char *)data_buffer, j, message);
+      err = bmiAccumulateBody(CCS data_buffer, j, message);
       if (bmiErrorIsFatal(err) == BMI_TRUE) {
         err_loc = bmiErrorGetLocation(err);
         err_type = bmiErrorGetType(err);
@@ -328,7 +328,7 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
 
   /* loop through verdicts */
   verdict_ptr = bmi_verdicts;
-  while ((verdict_str = (const char *)string_nextinlist(&verdict_ptr, &sep,
+  while ((verdict_str = CCS string_nextinlist(&verdict_ptr, &sep,
                                           verdict_buffer,
                                           Ustrlen(bmi_verdicts)+1)) != NULL) {
 
@@ -350,7 +350,7 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
       uschar *rcpt_domain;
 
       /* compare address against our subject */
-      rcpt_local_part = (unsigned char *)bmiRecipientAccessAddress(recipient);
+      rcpt_local_part = US bmiRecipientAccessAddress(recipient);
       rcpt_domain = Ustrchr(rcpt_local_part,'@');
       if (rcpt_domain == NULL) {
         rcpt_domain = US"";
@@ -364,7 +364,7 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
            (strcmpic(rcpt_domain, bmi_domain) == 0) ) {
         /* found verdict */
         bmiFreeVerdict(verdict);
-        return (uschar *)verdict_str;
+        return US verdict_str;
       };
     };
 

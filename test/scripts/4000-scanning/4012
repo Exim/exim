@@ -1,0 +1,45 @@
+# content scan interface: sock
+need_ipv4
+munge loopback
+#
+server PORT_S
+/
+>LF>RESULT: OK
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server PORT_S
+/
+>LF>RESULT: BAD
+>LF>NAME: wibble
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+due to the server response (above)
+.
+quit
+****

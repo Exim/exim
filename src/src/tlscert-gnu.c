@@ -182,8 +182,8 @@ if ((ret = gnutls_x509_crt_get_serial((gnutls_x509_crt_t)cert,
     bin, &sz)))
   return g_err("gs0", __FUNCTION__, ret);
 
-for(dp = txt, sp = bin; sz; dp += 2, sp++, sz--)
-  sprintf(CS dp, "%.2x", *sp);
+for(dp = txt, sp = bin; sz; sz--)
+  dp += sprintf(CS dp, "%.2x", *sp++);
 for(sp = txt; sp[0]=='0' && sp[1]; ) sp++;	/* leading zeroes */
 return string_copy(sp);
 }
@@ -205,8 +205,8 @@ cp1 = store_get(len*4+1);
 if (gnutls_x509_crt_get_signature((gnutls_x509_crt_t)cert, CS cp1, &len) != 0)
   return g_err("gs1", __FUNCTION__, ret);
 
-for(cp3 = cp2 = cp1+len; cp1 < cp2; cp3 += 3, cp1++)
-  sprintf(CS cp3, "%.2x ", *cp1);
+for(cp3 = cp2 = cp1+len; cp1 < cp2; cp1++)
+  cp3 += sprintf(CS cp3, "%.2x ", *cp1);
 cp3[-1]= '\0';
 
 return cp2;
@@ -269,8 +269,8 @@ if (ret < 0)
 /* binary data, DER encoded */
 
 /* just dump for now */
-for(cp3 = cp2 = cp1+siz; cp1 < cp2; cp3 += 3, cp1++)
-  sprintf(CS cp3, "%.2x ", *cp1);
+for(cp3 = cp2 = cp1+siz; cp1 < cp2; cp1++)
+  cp3 += sprintf(CS cp3, "%.2x ", *cp1);
 cp3[-1]= '\0';
 
 return cp2;
@@ -280,6 +280,7 @@ uschar *
 tls_cert_subject_altname(void * cert, uschar * mod)
 {
 uschar * list = NULL;
+int lsize = 0, llen = 0;
 int index;
 size_t siz;
 int ret;
@@ -332,7 +333,7 @@ for(index = 0;; index++)
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
     default: continue;        /* ignore unrecognised types */
     }
-  list = string_append_listele(list, sep,
+  list = string_append_listele(list, &lsize, &llen, sep,
           match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 /*NOTREACHED*/
@@ -347,6 +348,7 @@ int ret;
 uschar sep = '\n';
 int index;
 uschar * list = NULL;
+int lsize = 0, llen = 0;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -361,8 +363,8 @@ for(index = 0;; index++)
   if (ret < 0)
     return g_err("gai", __FUNCTION__, ret);
 
-  list = string_append_listele(list, sep,
-	    string_copyn(uri.data, uri.size));
+  list = string_append_listele_n(list, &lsize, &llen, sep,
+	    uri.data, uri.size);
   }
 /*NOTREACHED*/
 
@@ -384,6 +386,7 @@ size_t siz;
 uschar sep = '\n';
 int index;
 uschar * list = NULL;
+int lsize = 0, llen = 0;
 uschar * ele;
 
 if (mod)
@@ -403,13 +406,12 @@ for(index = 0;; index++)
       return g_err("gc0", __FUNCTION__, ret);
     }
 
-  ele = store_get(siz+1);
+  ele = store_get(siz);
   if ((ret = gnutls_x509_crt_get_crl_dist_points(
       (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
     return g_err("gc1", __FUNCTION__, ret);
 
-  ele[siz] = '\0';
-  list = string_append_listele(list, sep, ele);
+  list = string_append_listele_n(list, &lsize, &llen, sep, ele, siz);
   }
 /*NOTREACHED*/
 }
@@ -457,8 +459,8 @@ cp = store_get(siz*3+1);
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
   return g_err("gf1", __FUNCTION__, ret);
 
-for (cp3 = cp2 = cp+siz; cp < cp2; cp++, cp3+=2)
-  sprintf(CS cp3, "%02X",*cp);
+for (cp3 = cp2 = cp+siz; cp < cp2; cp++)
+  cp3 += sprintf(CS cp3, "%02X", *cp);
 return cp2;
 }
 

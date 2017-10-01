@@ -42,6 +42,7 @@ $| = 1; # unbuffer STDOUT
 Getopt::Long::Configure("bundling_override");
 GetOptions(
   'spool=s'     => \$G::spool,      # exim spool dir
+  'C|Config=s'  => \$G::config,     # use alternative Exim configuration file
   'input-dir=s' => \$G::input_dir,  # name of the "input" dir
   'finput'      => \$G::finput,     # same as "--input-dir Finput"
   'bp'          => \$G::mailq_bp,   # List the queue (noop - default)
@@ -115,8 +116,8 @@ $G::msg_ids         = {};                  # short circuit when crit is only MID
 $G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
 @G::recipients_crit = ();                  # holds per-recip criteria
 $spool              = defined $G::spool ? $G::spool
-		      : do { chomp($_ = `$exim -n -bP spool_directory`);
-		        $_ // $spool };
+		      : do { chomp($_ = `$exim @{[defined $G::config ? "-C $G::config" : '']} -n -bP spool_directory`)
+                             and $_ or $spool };
 my $input_dir       = $G::input_dir || ($G::finput ? "Finput" : "input");
 my $count_only      = 1 if ($G::mailq_bpc  || $G::qgrep_c);
 my $unsorted        = 1 if ($G::mailq_bpr  || $G::mailq_bpra ||
@@ -1354,6 +1355,11 @@ Same as '-bpu --unsorted' (exim)
 
 Same as -bp, but only show undelivered messages (exim)
 
+=item -C | --config <config>
+
+Use <config> to determine the proper spool directory. (See C<--spool>
+or C<--input> for alternative ways to specify the directories to operate on.)
+
 =item -c
 
 Show a count of matching messages (exiqgrep)
@@ -1432,8 +1438,7 @@ Same as '$shown_message_size eq <string>' (exiqgrep)
 
 =item --spool <path>
 
-Set the path to the exim spool to use.  This value will have the argument to --input or 'input' appended, or be ignored if --input is a full path. If not specified, exipick uses the value from C<exim -bP spool_directory>, and if this fails, the  F<SPOOL_DIRECTORY>
-from build time (F<Local/Makefile>) is used.
+Set the path to the exim spool to use.  This value will have the argument to --input or 'input' appended, or be ignored if --input is a full path. If not specified, exipick uses the value from C<exim [-C config] -n -bP spool_directory>, and if this call fails, the  F</opt/exim/spool> from build time (F<Local/Makefile>) is used. See also --config.
 
 =item --show-rules
 

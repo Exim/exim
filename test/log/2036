@@ -1,0 +1,14 @@
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <userd@test.ex> R=target
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <userf@test.ex> R=target
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1224
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= userc@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userd@test.ex
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1224
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= usere@ok.example H=(test.ex) [127.0.0.1] P=esmtp S=sss for userf@test.ex

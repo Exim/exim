@@ -27,20 +27,16 @@ a string as a text string. This is sometimes useful for debugging output. */
   (running_in_test_harness? (test_harness_load_avg += 10) : os_getloadavg())
 
 
-/* The address_item structure has a word full of 1-bit flags. These macros
+/* The address_item structure has a struct full of 1-bit flags. These macros
 manipulate them. */
 
-#define setflag(addr,flag)    addr->flags |= (flag)
-#define clearflag(addr,flag)  addr->flags &= ~(flag)
+#define setflag(addr, flagname)    addr->flags.flagname = TRUE
+#define clearflag(addr, flagname)  addr->flags.flagname = FALSE
 
-#define testflag(addr,flag)       ((addr->flags & (flag)) != 0)
-#define testflagsall(addr,flag)   ((addr->flags & (flag)) == (flag))
+#define testflag(addr, flagname)   (addr->flags.flagname)
 
-#define copyflag(addrnew,addrold,flag) \
-  addrnew->flags = (addrnew->flags & ~(flag)) | (addrold->flags & (flag))
-
-#define orflag(addrnew,addrold,flag) \
-  addrnew->flags |= addrold->flags & (flag)
+#define copyflag(addrnew, addrold, flagname) \
+  addrnew->flags.flagname = addrold->flags.flagname
 
 
 /* For almost all calls to convert things to printing characters, we want to
@@ -467,6 +463,7 @@ enum {
   Li_ident_timeout,
   Li_incoming_interface,
   Li_incoming_port,
+  Li_millisec,
   Li_outgoing_interface,
   Li_outgoing_port,
   Li_pid,
@@ -721,7 +718,8 @@ enum { v_none, v_sender, v_recipient, v_expn };
 #define vopt_callout_no_cache     0x0040   /* disable callout cache */
 #define vopt_callout_recipsender  0x0080   /* use real sender to verify recip */
 #define vopt_callout_recippmaster 0x0100   /* use postmaster to verify recip */
-#define vopt_success_on_redirect  0x0200
+#define vopt_callout_hold	  0x0200   /* lazy close connection */
+#define vopt_success_on_redirect  0x0400
 
 /* Values for fields in callout cache records */
 
@@ -853,6 +851,16 @@ enum {
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
 #define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
+#define topt_output_string	0x200  /* create string rather than write to fd */
+#define topt_continuation	0x400  /* do not reset buffer */
+
+/* Options for smtp_write_command */
+
+enum {	
+  SCMD_FLUSH = 0,	/* write to kernel */
+  SCMD_MORE,		/* write to kernel, but likely more soon */
+  SCMD_BUFFER		/* stash in application cmd output buffer */
+};
 
 /* Flags for recipient_block, used in DSN support */
 
@@ -961,14 +969,14 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 
 /* Codes for ESMTP facilities offered by peer */
 
-#define PEER_OFFERED_TLS	BIT(0)
-#define PEER_OFFERED_IGNQ	BIT(1)
-#define PEER_OFFERED_PRDR	BIT(2)
-#define PEER_OFFERED_UTF8	BIT(3)
-#define PEER_OFFERED_DSN	BIT(4)
-#define PEER_OFFERED_PIPE	BIT(5)
-#define PEER_OFFERED_SIZE	BIT(6)
-#define PEER_OFFERED_CHUNKING	BIT(7)
+#define OPTION_TLS	BIT(0)
+#define OPTION_IGNQ	BIT(1)
+#define OPTION_PRDR	BIT(2)
+#define OPTION_UTF8	BIT(3)
+#define OPTION_DSN	BIT(4)
+#define OPTION_PIPE	BIT(5)
+#define OPTION_SIZE	BIT(6)
+#define OPTION_CHUNKING	BIT(7)
 
 /* Argument for *_getc */
 

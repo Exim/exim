@@ -31,7 +31,7 @@ auth_get_no64_data(uschar **aptr, uschar *challenge)
 {
 int c;
 int p = 0;
-smtp_printf("334 %s\r\n", challenge);
+smtp_printf("334 %s\r\n", FALSE, challenge);
 while ((c = receive_getc(GETC_BUFFER_UNLIMITED)) != '\n' && c != EOF)
   {
   if (p >= big_buffer_size - 1) return BAD64;

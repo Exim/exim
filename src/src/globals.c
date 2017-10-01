@@ -101,38 +101,38 @@ cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
 tls_support tls_in = {
- -1,   /* tls_active */
- 0,    /* tls_bits */
- FALSE,/* tls_certificate_verified */
+ .active =		-1,
+ .bits =		0,
+ .certificate_verified = FALSE,
 #ifdef EXPERIMENTAL_DANE
- FALSE,/* dane_verified */
- 0,    /* tlsa_usage */
+ .dane_verified =	FALSE,
+ .tlsa_usage =		0,
 #endif
- NULL, /* tls_cipher */
- FALSE,/* tls_on_connect */
- NULL, /* tls_on_connect_ports */
- NULL, /* tls_ourcert */
- NULL, /* tls_peercert */
- NULL, /* tls_peerdn */
- NULL, /* tls_sni */
- 0     /* tls_ocsp */
+ .cipher =		NULL,
+ .on_connect =		FALSE,
+ .on_connect_ports =	NULL,
+ .ourcert =		NULL,
+ .peercert =		NULL,
+ .peerdn =		NULL,
+ .sni =			NULL,
+ .ocsp =		OCSP_NOT_REQ
 };
 tls_support tls_out = {
- -1,   /* tls_active */
- 0,    /* tls_bits */
- FALSE,/* tls_certificate_verified */
+ .active =		-1,
+ .bits =		0,
+ .certificate_verified = FALSE,
 #ifdef EXPERIMENTAL_DANE
- FALSE,/* dane_verified */
- 0,    /* tlsa_usage */
+ .dane_verified =	FALSE,
+ .tlsa_usage =		0,
 #endif
- NULL, /* tls_cipher */
- FALSE,/* tls_on_connect */
- NULL, /* tls_on_connect_ports */
- NULL, /* tls_ourcert */
- NULL, /* tls_peercert */
- NULL, /* tls_peerdn */
- NULL, /* tls_sni */
- 0     /* tls_ocsp */
+ .cipher =		NULL,
+ .on_connect =		FALSE,
+ .on_connect_ports =	NULL,
+ .ourcert =		NULL,
+ .peercert =		NULL,
+ .peerdn =		NULL,
+ .sni =			NULL,
+ .ocsp =		OCSP_NOT_REQ
 };
 
 uschar *dsn_envid              = NULL;
@@ -182,10 +182,12 @@ const pcre *regex_UTF8         = NULL;
 incoming TCP/IP. The defaults use stdin. We never need these for any
 stand-alone tests. */
 
-#ifndef STAND_ALONE
+#if !defined(STAND_ALONE) && !defined(MACRO_PREDEF)
 int (*lwr_receive_getc)(unsigned) = stdin_getc;
+uschar * (*lwr_receive_getbuf)(unsigned *) = NULL;
 int (*lwr_receive_ungetc)(int) = stdin_ungetc;
 int (*receive_getc)(unsigned)  = stdin_getc;
+uschar * (*receive_getbuf)(unsigned *)  = NULL;
 void (*receive_get_cache)(void)= NULL;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;
@@ -326,78 +328,82 @@ uschar *add_environment        = NULL;
 address_item  *addr_duplicate  = NULL;
 
 address_item address_defaults = {
-  NULL,                 /* next */
-  NULL,                 /* parent */
-  NULL,                 /* first */
-  NULL,                 /* dupof */
-  NULL,                 /* start_router */
-  NULL,                 /* router */
-  NULL,                 /* transport */
-  NULL,                 /* host_list */
-  NULL,                 /* host_used */
-  NULL,                 /* fallback_hosts */
-  NULL,                 /* reply */
-  NULL,                 /* retries */
-  NULL,                 /* address */
-  NULL,                 /* unique */
-  NULL,                 /* cc_local_part */
-  NULL,                 /* lc_local_part */
-  NULL,                 /* local_part */
-  NULL,                 /* prefix */
-  NULL,                 /* suffix */
-  NULL,                 /* domain */
-  NULL,                 /* address_retry_key */
-  NULL,                 /* domain_retry_key */
-  NULL,                 /* current_dir */
-  NULL,                 /* home_dir */
-  NULL,                 /* message */
-  NULL,                 /* user_message */
-  NULL,                 /* onetime_parent */
-  NULL,                 /* pipe_expandn */
-  NULL,                 /* return_filename */
-  NULL,                 /* self_hostname */
-  NULL,                 /* shadow_message */
+  .next =		NULL,
+  .parent =		NULL,
+  .first =		NULL,
+  .dupof =		NULL,
+  .start_router =	NULL,
+  .router =		NULL,
+  .transport =		NULL,
+  .host_list =		NULL,
+  .host_used =		NULL,
+  .fallback_hosts =	NULL,
+  .reply =		NULL,
+  .retries =		NULL,
+  .address =		NULL,
+  .unique =		NULL,
+  .cc_local_part =	NULL,
+  .lc_local_part =	NULL,
+  .local_part =		NULL,
+  .prefix =		NULL,
+  .suffix =		NULL,
+  .domain =		NULL,
+  .address_retry_key =	NULL,
+  .domain_retry_key =	NULL,
+  .current_dir =	NULL,
+  .home_dir =		NULL,
+  .message =		NULL,
+  .user_message =	NULL,
+  .onetime_parent =	NULL,
+  .pipe_expandn =	NULL,
+  .return_filename =	NULL,
+  .self_hostname =	NULL,
+  .shadow_message =	NULL,
 #ifdef SUPPORT_TLS
-  NULL,                 /* cipher */
-  NULL,			/* ourcert */
-  NULL,			/* peercert */
-  NULL,                 /* peerdn */
-  OCSP_NOT_REQ,         /* ocsp */
+  .cipher =		NULL,
+  .ourcert =		NULL,
+  .peercert =		NULL,
+  .peerdn =		NULL,
+  .ocsp =		OCSP_NOT_REQ,
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
-  NULL,			/* smtp_greeting */
-  NULL,			/* helo_response */
+  .smtp_greeting =	NULL,
+  .helo_response =	NULL,
 #endif
-  NULL,			/* authenticator */
-  NULL,			/* auth_id */
-  NULL,			/* auth_sndr */
-  NULL,                 /* dsn_orcpt */
-  0,                    /* dsn_flags */
-  0,                    /* dsn_aware */
-  (uid_t)(-1),          /* uid */
-  (gid_t)(-1),          /* gid */
-  0,                    /* flags */
-  { 0 },                /* domain_cache - any larger array should be zeroed */
-  { 0 },                /* localpart_cache - ditto */
-  -1,                   /* mode */
-  0,                    /* more_errno */
-  ERRNO_UNKNOWNERROR,   /* basic_errno */
-  0,                    /* child_count */
-  -1,                   /* return_file */
-  SPECIAL_NONE,         /* special_action */
-  DEFER,                /* transport_return */
-  {                     /* fields that are propagated to children */
-    NULL,               /* address_data */
-    NULL,               /* domain_data */
-    NULL,               /* localpart_data */
-    NULL,               /* errors_address */
-    NULL,               /* extra_headers */
-    NULL,               /* remove_headers */
+  .authenticator =	NULL,
+  .auth_id =		NULL,
+  .auth_sndr =		NULL,
+  .dsn_orcpt =		NULL,
+  .dsn_flags =		0,
+  .dsn_aware =		0,
+  .uid =		(uid_t)(-1),
+  .gid =		(gid_t)(-1),
+  .flags =		{ 0 },
+  .domain_cache =	{ 0 },                /* domain_cache - any larger array should be zeroed */
+  .localpart_cache =	{ 0 },                /* localpart_cache - ditto */
+  .mode =		-1,
+  .more_errno =		0,
+  .delivery_usec =	0,
+  .basic_errno =	ERRNO_UNKNOWNERROR,
+  .child_count =	0,
+  .return_file =	-1,
+  .special_action =	SPECIAL_NONE,
+  .transport_return =	DEFER,
+  .prop = {					/* fields that are propagated to children */
+    .address_data =	NULL,
+    .domain_data =	NULL,
+    .localpart_data =	NULL,
+    .errors_address =	NULL,
+    .extra_headers =	NULL,
+    .remove_headers =	NULL,
 #ifdef EXPERIMENTAL_SRS
-    NULL,               /* srs_sender */
+    .srs_sender =	NULL,
 #endif
+    .ignore_error =	FALSE,
 #ifdef SUPPORT_I18N
-    FALSE,		/* utf8 */
+    .utf8_msg =		FALSE,
+    .utf8_downcvt =	FALSE,
+    .utf8_downcvt_maybe = FALSE
 #endif
   }
 };
@@ -422,22 +428,22 @@ BOOL    authentication_failed  = FALSE;
 auth_instance  *auths          = NULL;
 uschar *auth_advertise_hosts   = US"*";
 auth_instance auth_defaults    = {
-    NULL,                      /* chain pointer */
-    NULL,                      /* name */
-    NULL,                      /* info */
-    NULL,                      /* private options block pointer */
-    NULL,                      /* driver_name */
-    NULL,                      /* advertise_condition */
-    NULL,                      /* client_condition */
-    NULL,                      /* public_name */
-    NULL,                      /* set_id */
-    NULL,                      /* set_client_id */
-    NULL,                      /* server_mail_auth_condition */
-    NULL,                      /* server_debug_string */
-    NULL,                      /* server_condition */
-    FALSE,                     /* client */
-    FALSE,                     /* server */
-    FALSE                      /* advertised */
+    .next =		NULL,
+    .name =		NULL,
+    .info =		NULL,
+    .options_block =	NULL,
+    .driver_name =	NULL,
+    .advertise_condition = NULL,
+    .client_condition =	NULL,
+    .public_name =	NULL,
+    .set_id =		NULL,
+    .set_client_id =	NULL,
+    .mail_auth_condition = NULL,
+    .server_debug_string = NULL,
+    .server_condition =	NULL,
+    .client =		FALSE,
+    .server =		FALSE,
+    .advertised =	FALSE
 };
 
 uschar *auth_defer_msg         = US"reason not recorded";
@@ -470,6 +476,7 @@ int     bmi_deliver            = 1;
 int     bmi_run                = 0;
 uschar *bmi_verdicts           = NULL;
 #endif
+int     bsmtp_transaction_linecount = 0;
 int     body_8bitmime          = 0;
 int     body_linecount         = 0;
 int     body_zerocount         = 0;
@@ -481,7 +488,7 @@ int     bounce_return_linesize_limit = 998;
 BOOL    bounce_return_message  = TRUE;
 int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;
-int     bsmtp_transaction_linecount = 0;
+uschar *builtin_macros_create_trigger = NULL;
 
 uschar *callout_address        = NULL;
 int     callout_cache_domain_positive_expire = 7*24*60*60;
@@ -508,6 +515,7 @@ uschar *client_authenticated_id = NULL;
 uschar *client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
+BOOL    commandline_checks_require_admin = FALSE;
 BOOL    config_changed         = FALSE;
 FILE   *config_file            = NULL;
 const uschar *config_filename  = NULL;
@@ -529,19 +537,21 @@ uid_t   config_uid             = 0;
 #endif
 
 int     connection_max_messages= -1;
+uschar *continue_proxy_cipher  = NULL;
 uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
 BOOL    continue_more          = FALSE;
 int     continue_sequence      = 1;
-BOOL    continue_proxy	       = FALSE;
 uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;
 cut_t   cutthrough = {
-  FALSE,				/* delivery: when to attempt */
-  FALSE,				/* on defer: spool locally */
-  -1,					/* fd: open connection */
-  0,					/* nrcpt: number of addresses */
+  .callout_hold_only =	FALSE,				/* verify-only: normal delivery */
+  .delivery =		FALSE,				/* when to attempt */
+  .defer_pass =		FALSE,				/* on defer: spool locally */
+  .is_tls =		FALSE,				/* not a TLS conn yet */
+  .fd =			-1,				/* open connection */
+  .nrcpt =		0,				/* number of addresses */
 };
 
 BOOL    daemon_listen          = FALSE;
@@ -757,19 +767,20 @@ int     header_maxsize         = HEADER_MAXSIZE;
 int     header_line_maxsize    = 0;
 
 header_name header_names[] = {
-  { US"bcc",            3, TRUE,  htype_bcc },
-  { US"cc",             2, TRUE,  htype_cc },
-  { US"date",           4, TRUE,  htype_date },
-  { US"delivery-date", 13, FALSE, htype_delivery_date },
-  { US"envelope-to",   11, FALSE, htype_envelope_to },
-  { US"from",           4, TRUE,  htype_from },
-  { US"message-id",    10, TRUE,  htype_id },
-  { US"received",       8, FALSE, htype_received },
-  { US"reply-to",       8, FALSE, htype_reply_to },
-  { US"return-path",   11, FALSE, htype_return_path },
-  { US"sender",         6, TRUE,  htype_sender },
-  { US"subject",        7, FALSE, htype_subject },
-  { US"to",             2, TRUE,  htype_to }
+  /* name		len	allow_resent	htype */
+  { US"bcc",            3,	TRUE,		htype_bcc },
+  { US"cc",             2,	TRUE,		htype_cc },
+  { US"date",           4,	TRUE,		htype_date },
+  { US"delivery-date", 13,	FALSE,		htype_delivery_date },
+  { US"envelope-to",   11,	FALSE,		htype_envelope_to },
+  { US"from",           4,	TRUE,		htype_from },
+  { US"message-id",    10,	TRUE,		htype_id },
+  { US"received",       8,	FALSE,		htype_received },
+  { US"reply-to",       8,	FALSE,		htype_reply_to },
+  { US"return-path",   11,	FALSE,		htype_return_path },
+  { US"sender",         6,	TRUE,		htype_sender },
+  { US"subject",        7,	FALSE,		htype_subject },
+  { US"to",             2,	TRUE,		htype_to }
 };
 
 int header_names_size          = sizeof(header_names)/sizeof(header_name);
@@ -887,6 +898,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, incoming_interface),
   BIT_TABLE(L, incoming_port),
   BIT_TABLE(L, lost_incoming_connection),
+  BIT_TABLE(L, millisec),
   BIT_TABLE(L, outgoing_interface),
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),
@@ -933,9 +945,6 @@ uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;
 uschar *lookup_value           = NULL;
 
-macro_item  *macros            = NULL;
-macro_item  *mlast             = NULL;
-BOOL    macros_builtin_created = FALSE;
 uschar *mailstore_basename     = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *malware_name           = NULL;  /* Virus Name */
@@ -1103,7 +1112,7 @@ uschar *received_header_text   = US
 
 int     received_headers_max   = 30;
 uschar *received_protocol      = NULL;
-int     received_time          = 0;
+struct timeval received_time   = { 0, 0 };
 uschar *recipient_data         = NULL;
 uschar *recipient_unqualified_hosts = NULL;
 uschar *recipient_verify_failure = NULL;
@@ -1146,83 +1155,83 @@ uid_t   root_uid               = ROOT_UID;
 
 router_instance  *routers  = NULL;
 router_instance  router_defaults = {
-    NULL,                      /* chain pointer */
-    NULL,                      /* name */
-    NULL,                      /* info */
-    NULL,                      /* private options block pointer */
-    NULL,                      /* driver name */
+    .next =			NULL,
+    .name =			NULL,
+    .info =			NULL,
+    .options_block =		NULL,
+    .driver_name =		NULL,
 
-    NULL,                      /* address_data */
+    .address_data =		NULL,
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-    NULL,                      /* bmi_rule */
+    .bmi_rule =			NULL,
 #endif
-    NULL,                      /* cannot_route_message */
-    NULL,                      /* condition */
-    NULL,                      /* current_directory */
-    NULL,                      /* debug_string */
-    NULL,                      /* domains */
-    NULL,                      /* errors_to */
-    NULL,                      /* expand_gid */
-    NULL,                      /* expand_uid */
-    NULL,                      /* expand_more */
-    NULL,                      /* expand_unseen */
-    NULL,                      /* extra_headers */
-    NULL,                      /* fallback_hosts */
-    NULL,                      /* home_directory */
-    NULL,                      /* ignore_target_hosts */
-    NULL,                      /* local_parts */
-    NULL,                      /* pass_router_name */
-    NULL,                      /* prefix */
-    NULL,                      /* redirect_router_name */
-    NULL,                      /* remove_headers */
-    NULL,                      /* require_files */
-    NULL,                      /* router_home_directory */
-    US"freeze",                /* self */
-    NULL,                      /* senders */
-    NULL,                      /* suffix */
-    NULL,                      /* translate_ip_address */
-    NULL,                      /* transport_name */
+    .cannot_route_message =	NULL,
+    .condition =		NULL,
+    .current_directory =	NULL,
+    .debug_string =		NULL,
+    .domains =			NULL,
+    .errors_to =		NULL,
+    .expand_gid =		NULL,
+    .expand_uid =		NULL,
+    .expand_more =		NULL,
+    .expand_unseen =		NULL,
+    .extra_headers =		NULL,
+    .fallback_hosts =		NULL,
+    .home_directory =		NULL,
+    .ignore_target_hosts =	NULL,
+    .local_parts =		NULL,
+    .pass_router_name =		NULL,
+    .prefix =			NULL,
+    .redirect_router_name =	NULL,
+    .remove_headers =		NULL,
+    .require_files =		NULL,
+    .router_home_directory =	NULL,
+    .self =			US"freeze",
+    .senders =			NULL,
+    .suffix =			NULL,
+    .translate_ip_address =	NULL,
+    .transport_name =		NULL,
 
-    TRUE,                      /* address_test */
+    .address_test =		TRUE,
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-    FALSE,                     /* bmi_deliver_alternate */
-    FALSE,                     /* bmi_deliver_default */
-    FALSE,                     /* bmi_dont_deliver */
+    .bmi_deliver_alternate =	FALSE,
+    .bmi_deliver_default =	FALSE,
+    .bmi_dont_deliver =		FALSE,
 #endif
-    TRUE,                      /* expn */
-    FALSE,                     /* caseful_local_part */
-    FALSE,                     /* check_local_user */
-    FALSE,                     /* disable_logging */
-    FALSE,                     /* fail_verify_recipient */
-    FALSE,                     /* fail_verify_sender */
-    FALSE,                     /* gid_set */
-    FALSE,                     /* initgroups */
-    TRUE_UNSET,                /* log_as_local */
-    TRUE,                      /* more */
-    FALSE,                     /* pass_on_timeout */
-    FALSE,                     /* prefix_optional */
-    TRUE,                      /* repeat_use */
-    TRUE_UNSET,                /* retry_use_local_part - fudge "unset" */
-    FALSE,                     /* same_domain_copy_routing */
-    FALSE,                     /* self_rewrite */
-    FALSE,                     /* suffix_optional */
-    FALSE,                     /* verify_only */
-    TRUE,                      /* verify_recipient */
-    TRUE,                      /* verify_sender */
-    FALSE,                     /* uid_set */
-    FALSE,                     /* unseen */
-    FALSE,                     /* dsn_lasthop */
+    .expn =			TRUE,
+    .caseful_local_part =	FALSE,
+    .check_local_user =		FALSE,
+    .disable_logging =		FALSE,
+    .fail_verify_recipient =	FALSE,
+    .fail_verify_sender =	FALSE,
+    .gid_set =			FALSE,
+    .initgroups =		FALSE,
+    .log_as_local =		TRUE_UNSET,
+    .more =			TRUE,
+    .pass_on_timeout =		FALSE,
+    .prefix_optional =		FALSE,
+    .repeat_use =		TRUE,
+    .retry_use_local_part =	TRUE_UNSET,
+    .same_domain_copy_routing =	FALSE,
+    .self_rewrite =		FALSE,
+    .suffix_optional =		FALSE,
+    .verify_only =		FALSE,
+    .verify_recipient =		TRUE,
+    .verify_sender =		TRUE,
+    .uid_set =			FALSE,
+    .unseen =			FALSE,
+    .dsn_lasthop =		FALSE,
 
-    self_freeze,               /* self_code */
-    (uid_t)(-1),               /* uid */
-    (gid_t)(-1),               /* gid */
+    .self_code =		self_freeze,
+    .uid =			(uid_t)(-1),
+    .gid =			(gid_t)(-1),
 
-    NULL,                      /* fallback_hostlist */
-    NULL,                      /* transport instance */
-    NULL,                      /* pass_router */
-    NULL,                      /* redirect_router */
+    .fallback_hostlist =	NULL,
+    .transport =		NULL,
+    .pass_router =		NULL,
+    .redirect_router =		NULL,
 
-    { NULL, NULL },            /* dnssec_domains {require,request} */
+    .dnssec =			{ NULL, NULL },            /* dnssec_domains {require,request} */
 };
 
 uschar *router_name            = NULL;
@@ -1303,7 +1312,7 @@ BOOL    smtp_check_spool_space = TRUE;
 int     smtp_ch_index          = 0;
 uschar *smtp_cmd_argument      = NULL;
 uschar *smtp_cmd_buffer        = NULL;
-time_t  smtp_connection_start  = 0;
+struct timeval smtp_connection_start  = {0,0};
 uschar  smtp_connection_had[SMTP_HBUFF_SIZE];
 int     smtp_connect_backlog   = 20;
 double  smtp_delay_mail        = 0.0;
@@ -1360,6 +1369,8 @@ uschar *spf_smtp_comment       = NULL;
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
+BOOL    spool_file_wireformat  = FALSE;
+BOOL    spool_wireformat       = FALSE;
 #ifdef EXPERIMENTAL_SRS
 uschar *srs_config             = NULL;
 uschar *srs_db_address         = NULL;
@@ -1406,7 +1417,12 @@ BOOL    system_filter_uid_set  = FALSE;
 BOOL    system_filtering       = FALSE;
 
 BOOL    tcp_fastopen_ok        = FALSE;
+blob	tcp_fastopen_nodata    = { .data = NULL, .len = 0 };
+BOOL    tcp_in_fastopen        = FALSE;
+BOOL    tcp_in_fastopen_logged = FALSE;
 BOOL    tcp_nodelay            = TRUE;
+BOOL    tcp_out_fastopen       = FALSE;
+BOOL    tcp_out_fastopen_logged= FALSE;
 #ifdef USE_TCP_WRAPPERS
 uschar *tcp_wrappers_daemon_name = US TCP_WRAPPERS_DAEMON_NAME;
 #endif
@@ -1418,59 +1434,59 @@ BOOL    timestamps_utc         = FALSE;
 transport_instance  *transports = NULL;
 
 transport_instance  transport_defaults = {
-    NULL,                     /* chain pointer */
-    NULL,                     /* name */
-    NULL,                     /* info */
-    NULL,                     /* private options block pointer */
-    NULL,                     /* driver name */
-    NULL,                     /* setup entry point */
-    1,                        /* batch_max */
-    NULL,                     /* batch_id */
-    NULL,                     /* home_dir */
-    NULL,                     /* current_dir */
-    NULL,                     /* expand-multi-domain */
-    TRUE,                     /* multi-domain */
-    FALSE,                    /* overrides_hosts */
-    100,                      /* max_addresses */
-    500,                      /* connection_max_messages */
-    FALSE,                    /* deliver_as_creator */
-    FALSE,                    /* disable_logging */
-    FALSE,                    /* initgroups */
-    FALSE,                    /* uid_set */
-    FALSE,                    /* gid_set */
-    (uid_t)(-1),              /* uid */
-    (gid_t)(-1),              /* gid */
-    NULL,                     /* expand_uid */
-    NULL,                     /* expand_gid */
-    NULL,                     /* warn_message */
-    NULL,                     /* shadow */
-    NULL,                     /* shadow_condition */
-    NULL,                     /* filter_command */
-    NULL,                     /* add_headers */
-    NULL,                     /* remove_headers */
-    NULL,                     /* return_path */
-    NULL,                     /* debug_string */
-    NULL,                     /* max_parallel */
-    NULL,                     /* message_size_limit */
-    NULL,                     /* headers_rewrite */
-    NULL,                     /* rewrite_rules */
-    0,                        /* rewrite_existflags */
-    300,                      /* filter_timeout */
-    FALSE,                    /* body_only */
-    FALSE,                    /* delivery_date_add */
-    FALSE,                    /* envelope_to_add */
-    FALSE,                    /* headers_only */
-    FALSE,                    /* rcpt_include_affixes */
-    FALSE,                    /* return_path_add */
-    FALSE,                    /* return_output */
-    FALSE,                    /* return_fail_output */
-    FALSE,                    /* log_output */
-    FALSE,                    /* log_fail_output */
-    FALSE,                    /* log_defer_output */
-    TRUE_UNSET                /* retry_use_local_part: BOOL, but set neither
-                                 1 nor 0 so can detect unset */
+    .next =			NULL,
+    .name =			NULL,
+    .info =			NULL,
+    .options_block =		NULL,
+    .driver_name =		NULL,
+    .setup =			NULL,
+    .batch_max =		1,
+    .batch_id =			NULL,
+    .home_dir =			NULL,
+    .current_dir =		NULL,
+    .expand_multi_domain =	NULL,
+    .multi_domain =		TRUE,
+    .overrides_hosts =		FALSE,
+    .max_addresses =		100,
+    .connection_max_messages =	500,
+    .deliver_as_creator =	FALSE,
+    .disable_logging =		FALSE,
+    .initgroups =		FALSE,
+    .uid_set =			FALSE,
+    .gid_set =			FALSE,
+    .uid =			(uid_t)(-1),
+    .gid =			(gid_t)(-1),
+    .expand_uid =		NULL,
+    .expand_gid =		NULL,
+    .warn_message =		NULL,
+    .shadow =			NULL,
+    .shadow_condition =		NULL,
+    .filter_command =		NULL,
+    .add_headers =		NULL,
+    .remove_headers =		NULL,
+    .return_path =		NULL,
+    .debug_string =		NULL,
+    .max_parallel =		NULL,
+    .message_size_limit =	NULL,
+    .headers_rewrite =		NULL,
+    .rewrite_rules =		NULL,
+    .rewrite_existflags =	0,
+    .filter_timeout =		300,
+    .body_only =		FALSE,
+    .delivery_date_add =	FALSE,
+    .envelope_to_add =		FALSE,
+    .headers_only =		FALSE,
+    .rcpt_include_affixes =	FALSE,
+    .return_path_add =		FALSE,
+    .return_output =		FALSE,
+    .return_fail_output =	FALSE,
+    .log_output =		FALSE,
+    .log_fail_output =		FALSE,
+    .log_defer_output =		FALSE,
+    .retry_use_local_part =	TRUE_UNSET,	/* retry_use_local_part: BOOL, but set neither
+						 1 nor 0 so can detect unset */
 #ifndef DISABLE_EVENT
-   ,NULL		      /* event_action */
+   .event_action =		NULL
 #endif
 };
 

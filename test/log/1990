@@ -1,0 +1,15 @@
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a@test.ex
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 => a@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for b@test.ex
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 => b@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] TFO C="250 OK id=10HmbA-0005vi-00"
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
+
+******** SERVER ********
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex for a@test.ex
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 => :blackhole: <a@test.ex> R=server
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] TFO P=esmtp S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for b@test.ex
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 => :blackhole: <b@test.ex> R=server
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 Completed

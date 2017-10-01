@@ -50,7 +50,7 @@ ptr = *ptrptr = store_get(Ustrlen(string) + 1);  /* No longer than this */
 
 while (*string != 0)
   {
-  register int ch = *string++;
+  int ch = *string++;
 
   if (ch == '_') *ptr++ = ' ';
   else if (ch == '=')
@@ -197,9 +197,9 @@ uschar *mimeword, *q1, *q2, *endword;
 *error = NULL;
 mimeword = decode_mimeword(string, lencheck, &q1, &q2, &endword, &dlen, &dptr);
 
-if (mimeword == NULL)
+if (!mimeword)
   {
-  if (lenptr != NULL) *lenptr = size;
+  if (lenptr) *lenptr = size;
   return string;
   }
 
@@ -210,7 +210,7 @@ string building code. */
 
 yield = store_get(++size);
 
-while (mimeword != NULL)
+while (mimeword)
   {
 
   #if HAVE_ICONV
@@ -317,7 +317,7 @@ while (mimeword != NULL)
 
   string = endword + 2;
   mimeword = decode_mimeword(string, lencheck, &q1, &q2, &endword, &dlen, &dptr);
-  if (mimeword != NULL)
+  if (mimeword)
     {
     uschar *s = string;
     while (isspace(*s)) s++;
@@ -330,8 +330,8 @@ the length as well if requested. */
 
 yield = string_cat(yield, &size, &ptr, string);
 yield[ptr] = 0;
-if (lenptr != NULL) *lenptr = ptr;
-if (sizeptr != NULL) *sizeptr = size;
+if (lenptr) *lenptr = ptr;
+if (sizeptr) *sizeptr = size;
 return yield;
 }
 

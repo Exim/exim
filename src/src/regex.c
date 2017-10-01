@@ -105,7 +105,7 @@ regex_match_string = NULL;
 
 if (!mime_stream)				/* We are in the DATA ACL */
   {
-  if (!(mbox_file = spool_mbox(&mbox_size, NULL)))
+  if (!(mbox_file = spool_mbox(&mbox_size, NULL, NULL)))
     {						/* error while spooling */
     log_write(0, LOG_MAIN|LOG_PANIC,
 	   "regex acl condition: error while creating mbox spool file");

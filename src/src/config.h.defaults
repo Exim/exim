@@ -8,7 +8,10 @@
 /* The default settings for Exim configuration variables. A #define without
 any data just defines the existence of the variable; it won't get included
 in config.h unless some value is defined in Local/Makefile. If there is data,
-it's a default value. */
+it's a default value.
+
+Do not put spaces between # and the 'define'.
+*/
 
 #define ALT_CONFIG_PREFIX
 #define TRUSTED_CONFIG_LIST
@@ -178,10 +181,12 @@ it's a default value. */
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_DMARC
+    #define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
 #define EXPERIMENTAL_LMDB
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
+
 
 /* For developers */
 #define WANT_DEEPER_PRINTF_CHECKS

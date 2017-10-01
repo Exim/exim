@@ -487,8 +487,12 @@ RESET_AFTER_EXTRA_LINE_READ:
     /Tue, 2 Mar 1999 09:44:33 +0000/gx;
 
   # Date/time in logs and in one instance of a filter test
-  s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d(\s[+-]\d\d\d\d)?/1999-03-02 09:44:33/gx;
+  s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d(\s[+-]\d\d\d\d)?\s/1999-03-02 09:44:33 /gx;
+  s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\.\d{3}(\s[+-]\d\d\d\d)?\s/2017-07-30 18:51:05.712 /gx;
   s/^Logwrite\s"\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Logwrite "1999-03-02 09:44:33/gx;
+
+  s/((D|[QD]T)=)\d+s/$1qqs/g;
+  s/((D|[QD]T)=)\d\.\d{3}s/$1q.qqqs/g;
 
   # Date/time in message separators
   s/(?:[A-Z][a-z]{2}\s){2}\d\d\s\d\d:\d\d:\d\d\s\d\d\d\d
@@ -516,9 +520,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # Date/time in exim -bV output
   s/\d\d-[A-Z][a-z]{2}-\d{4}\s\d\d:\d\d:\d\d/07-Mar-2000 12:21:52/g;
-
-  # Time on queue tolerance
-  s/(QT|D)=1s/$1=0s/;
 
   # Eximstats heading
   s/Exim\sstatistics\sfrom\s\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\sto\s
@@ -910,6 +911,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # optional IDN2 variant conversions.  Accept either IDN1 or IDN2
     s/conversion  strasse.de/conversion  xn--strae-oqa.de/;
     s/conversion: german.xn--strae-oqa.de/conversion: german.straße.de/;
+
+    # subsecond timstamp info in reported header-files
+    s/^(-received_time_usec \.)\d{6}$/$1uuuuuu/;
     }
 
   # ======== stderr ========
@@ -1088,6 +1092,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with DKIM enabled
     next if /^PDKIM >> Body data for hash, canonicalized/;
 
+    # Not all platforms have sendfile support
+    next if /^cannot use sendfile for body: no support$/;
+
     #  Parts of DKIM-specific debug output depend on the time/date
     next if /^date:\w+,\{SP\}/;
     next if /^PDKIM \[[^[]+\] (Header hash|b) computed:/;
@@ -1102,6 +1109,10 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
+
+    # Specific pointer values reported for DB operations change from run to run
+    s/^(returned from EXIM_DBOPEN: 0x)[0-9a-f]+/$1AAAAAAAA/;
+    s/^(EXIM_DBCLOSE.0x)[0-9a-f]+/$1AAAAAAAA/;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
@@ -1154,6 +1165,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     {
     # Berkeley DB version differences
     next if / Berkeley DB error: /;
+
+    # CHUNKING: exact sizes depend on hostnames in headers
+    s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
     }
 
   # ======== All files other than stderr ========
@@ -1513,7 +1527,7 @@ $munges =
 
     'optional_config' =>
     { 'stdout' => '/^(
-                  dkim_(canon|domain|private_key|selector|sign_headers|strict)
+                  dkim_(canon|domain|private_key|selector|sign_headers|strict|hash|identity)
                   |gnutls_require_(kx|mac|protocols)
                   |hosts_(requ(est|ire)|try)_(dane|ocsp)
                   |hosts_(avoid|nopass|require|verify_avoid)_tls
@@ -2531,7 +2545,7 @@ GetOptions(
     'keep'     => \$save_output,
     'slow'     => \$slow,
     'valgrind' => \$valgrind,
-    'range=i{2}'       => \my @range_wanted,
+    'range=s{2}'       => \my @range_wanted,
     'test=i@'          => \my @tests_wanted,
     'flavor|flavour=s' => $flavour,
     'help'             => sub { pod2usage(-exit => 0) },
@@ -2711,7 +2725,7 @@ if (defined $parm_trusted_config_list)
   open(TCL, $parm_trusted_config_list) or die "Can't open $parm_trusted_config_list: $!\n";
   my $test_config = getcwd() . '/test-config';
   die "Can't find '$test_config' in TRUSTED_CONFIG_LIST $parm_trusted_config_list."
-  if not grep { /^$test_config$/ } <TCL>;
+  if not grep { /^\Q$test_config\E$/ } <TCL>;
   }
 else
   {
@@ -4067,7 +4081,8 @@ Keep the various output files produced during a test run. (default: don't keep)
 
 =item B<--range> I<n0> I<n1>
 
-Run tests between (including) I<n0> and I<n1>.
+Run tests between (including) I<n0> and I<n1>. A "+" may be used to specify the "last
+test available".
 
 =item B<--slow>
 

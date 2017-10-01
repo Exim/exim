@@ -6,9 +6,14 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 #ifdef STAND_ALONE
-#include <signal.h>
-#include <stdio.h>
-#include <time.h>
+# include <signal.h>
+# include <stdio.h>
+# include <time.h>
+#endif
+
+#ifndef CS
+# define CS (char *)
+# define US (unsigned char *)
 #endif
 
 /* This source file contains "default" system-dependent functions which
@@ -413,7 +418,7 @@ if (avg_kd < 0)
   }
 
 if (lseek (avg_kd, avg_offset, 0) == -1L
-    || read (avg_kd, (char *)(&avg), sizeof (avg)) != sizeof(avg))
+    || read (avg_kd, CS (&avg), sizeof (avg)) != sizeof(avg))
   return -1;
 
 return (int)(((double)avg/FSCALE)*1000.0);
@@ -645,7 +650,7 @@ ifc.V_ifc_family = V_FAMILY_QUERY;
 ifc.V_ifc_flags = 0;
 #endif
 
-if (ioctl(vs, V_GIFCONF, (char *)&ifc) < 0)
+if (ioctl(vs, V_GIFCONF, CS &ifc) < 0)
   log_write(0, LOG_PANIC_DIE, "Unable to get interface configuration: %d %s",
     errno, strerror(errno));
 
@@ -680,7 +685,7 @@ find its length, and then recopy the correct length. */
 
 for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   {
-  memcpy((char *)&ifreq, cp, sizeof(ifreq));
+  memcpy(CS &ifreq, cp, sizeof(ifreq));
 
   #ifndef HAVE_SA_LEN
   len = sizeof(struct V_ifreq);
@@ -710,7 +715,7 @@ for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   interface hasn't been "plumbed" to any protocol (IPv4 or IPv6). Therefore,
   we now just treat this case as "down" as well. */
 
-  if (ioctl(vs, V_GIFFLAGS, (char *)&ifreq) < 0)
+  if (ioctl(vs, V_GIFFLAGS, CS &ifreq) < 0)
     {
     continue;
     /*************
@@ -726,7 +731,7 @@ for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   GIFFLAGS may have wrecked the data. */
 
   #ifndef SIOCGIFCONF_GIVES_ADDR
-  if (ioctl(vs, V_GIFADDR, (char *)&ifreq) < 0)
+  if (ioctl(vs, V_GIFADDR, CS &ifreq) < 0)
     log_write(0, LOG_PANIC_DIE, "Unable to get IP address for %s interface: "
       "%d %s", ifreq.V_ifr_name, errno, strerror(errno));
   addrp = &ifreq.V_ifr_addr;
@@ -846,7 +851,7 @@ os_get_dns_resolver_res(void)
 int
 os_unsetenv(const unsigned char * name)
 {
-return unsetenv((char *)name);
+return unsetenv(CS name);
 }
 #endif
 
@@ -865,7 +870,7 @@ this, for all other systems we provide our own getcwd() */
 unsigned char *
 os_getcwd(unsigned char * buffer, size_t size)
 {
-return (unsigned char *) getcwd((char *)buffer, size);
+return US  getcwd(CS buffer, size);
 }
 #else
 #ifndef PATH_MAX
@@ -874,7 +879,7 @@ return (unsigned char *) getcwd((char *)buffer, size);
 unsigned char *
 os_getcwd(unsigned char * buffer, size_t size)
 {
-char * b = (char *)buffer;
+char * b = CS buffer;
 
 if (!size) size = PATH_MAX;
 if (!b && !(b = malloc(size))) return NULL;

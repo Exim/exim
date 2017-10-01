@@ -100,7 +100,7 @@ smtp_get_port(uschar *rstring, address_item *addr, int *port, uschar *msg)
 {
 uschar *pstring = expand_string(rstring);
 
-if (pstring == NULL)
+if (!pstring)
   {
   addr->transport_return = PANIC;
   addr->message = string_sprintf("failed to expand \"%s\" (\"port\" option) "
@@ -124,7 +124,7 @@ if (isdigit(*pstring))
 else
   {
   struct servent *smtp_service = getservbyname(CS pstring, "tcp");
-  if (smtp_service == NULL)
+  if (!smtp_service)
     {
     addr->transport_return = PANIC;
     addr->message = string_sprintf("TCP port \"%s\" is not defined for %s",
@@ -140,9 +140,15 @@ return TRUE;
 
 
 
+/* Arguments as for smtp_connect(), plus
+  early_data	if non-NULL, data to be sent - preferably in the TCP SYN segment
+
+Returns:      connected socket number, or -1 with errno set
+*/
+
 int
 smtp_sock_connect(host_item * host, int host_af, int port, uschar * interface,
-  transport_instance * tb, int timeout)
+  transport_instance * tb, int timeout, const blob * early_data)
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
@@ -152,7 +158,6 @@ int dscp_level;
 int dscp_option;
 int sock;
 int save_errno = 0;
-BOOL fastopen = FALSE;
 
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
@@ -185,10 +190,6 @@ if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
     (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
   }
 
-#ifdef TCP_FASTOPEN
-if (verify_check_given_host (&ob->hosts_try_fastopen, host) == OK) fastopen = TRUE;
-#endif
-
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */
 
@@ -201,10 +202,24 @@ if (interface && ip_bind(sock, host_af, interface, 0) < 0)
   }
 
 /* Connect to the remote host, and add keepalive to the socket before returning
-it, if requested. */
+it, if requested.  If the build supports TFO, request it - and if the caller
+requested some early-data then include that in the TFO request. */
 
-else if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
-  save_errno = errno;
+else
+  {
+  const blob * fastopen = NULL;
+
+#ifdef TCP_FASTOPEN
+  if (verify_check_given_host(&ob->hosts_try_fastopen, host) == OK)
+    fastopen = early_data ? early_data : &tcp_fastopen_nodata;
+#endif
+
+  if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
+    save_errno = errno;
+  else if (early_data && !fastopen && early_data->data && early_data->len)
+    if (send(sock, early_data->data, early_data->len, 0) < 0)
+      save_errno = errno;
+  }
 
 /* Either bind() or connect() failed */
 
@@ -243,6 +258,24 @@ else
   }
 }
 
+
+
+
+
+void
+smtp_port_for_connect(host_item * host, int port)
+{
+if (host->port != PORT_NONE)
+  {
+  HDEBUG(D_transport|D_acl|D_v)
+    debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n", port,
+      host->port);
+  port = host->port;
+  }
+else host->port = port;    /* Set the port actually used */
+}
+
+
 /*************************************************
 *           Connect to remote host               *
 *************************************************/
@@ -252,15 +285,9 @@ detected by checking for a colon in the address. AF_INET6 is defined even on
 non-IPv6 systems, to enable the code to be less messy. However, on such systems
 host->address will always be an IPv4 address.
 
-The port field in the host item is used if it is set (usually router from SRV
-records or elsewhere). In other cases, the default passed as an argument is
-used, and the host item is updated with its value.
-
 Arguments:
-  host        host item containing name and address (and sometimes port)
+  host        host item containing name and address and port
   host_af     AF_INET or AF_INET6
-  port        default remote port to connect to, in host byte order, for those
-                hosts whose port setting is PORT_NONE
   interface   outgoing interface address or NULL
   timeout     timeout value or 0
   tb          transport
@@ -269,22 +296,14 @@ Returns:      connected socket number, or -1 with errno set
 */
 
 int
-smtp_connect(host_item *host, int host_af, int port, uschar *interface,
+smtp_connect(host_item *host, int host_af, uschar *interface,
   int timeout, transport_instance * tb)
 {
+int port = host->port;
 #ifdef SUPPORT_SOCKS
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
 #endif
-
-if (host->port != PORT_NONE)
-  {
-  HDEBUG(D_transport|D_acl|D_v)
-    debug_printf_indent("Transport port=%d replaced by host-specific port=%d\n", port,
-      host->port);
-  port = host->port;
-  }
-else host->port = port;    /* Set the port actually used */
 
 callout_address = string_sprintf("[%s]:%d", host->address, port);
 
@@ -305,7 +324,7 @@ if (ob->socks_proxy)
   return socks_sock_connect(host, host_af, port, interface, tb, timeout);
 #endif
 
-return smtp_sock_connect(host, host_af, port, interface, tb, timeout);
+return smtp_sock_connect(host, host_af, port, interface, tb, timeout, NULL);
 }
 
 
@@ -319,23 +338,33 @@ pipelining.
 
 Argument:
   outblock   the SMTP output block
+  mode	     further data expected, or plain
 
 Returns:     TRUE if OK, FALSE on error, with errno set
 */
 
 static BOOL
-flush_buffer(smtp_outblock *outblock)
+flush_buffer(smtp_outblock * outblock, int mode)
 {
 int rc;
 int n = outblock->ptr - outblock->buffer;
+BOOL more = mode == SCMD_MORE;
 
-HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes\n", n);
+HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
+  more ? " (more expected)" : "");
+
 #ifdef SUPPORT_TLS
 if (tls_out.active == outblock->sock)
-  rc = tls_write(FALSE, outblock->buffer, n);
+  rc = tls_write(FALSE, outblock->buffer, n, more);
 else
 #endif
-  rc = send(outblock->sock, outblock->buffer, n, 0);
+  rc = send(outblock->sock, outblock->buffer, n,
+#ifdef MSG_MORE
+	    more ? MSG_MORE : 0
+#else
+	    0
+#endif
+	   );
 
 if (rc <= 0)
   {
@@ -359,7 +388,7 @@ any error message.
 
 Arguments:
   outblock   contains buffer for pipelining, and socket
-  noflush    if TRUE, save the command in the output buffer, for pipelining
+  mode       buffer, write-with-more-likely, write
   format     a format, starting with one of
              of HELO, MAIL FROM, RCPT TO, DATA, ".", or QUIT.
 	     If NULL, flush pipeline buffer only.
@@ -371,7 +400,7 @@ Returns:     0 if command added to pipelining buffer, with nothing transmitted
 */
 
 int
-smtp_write_command(smtp_outblock *outblock, BOOL noflush, const char *format, ...)
+smtp_write_command(smtp_outblock * outblock, int mode, const char *format, ...)
 {
 int count;
 int rc = 0;
@@ -393,7 +422,7 @@ if (format)
   if (count > outblock->buffersize - (outblock->ptr - outblock->buffer))
     {
     rc = outblock->cmd_count;                 /* flush resets */
-    if (!flush_buffer(outblock)) return -1;
+    if (!flush_buffer(outblock, SCMD_FLUSH)) return -1;
     }
 
   Ustrncpy(CS outblock->ptr, big_buffer, count);
@@ -423,10 +452,10 @@ if (format)
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> %s\n", big_buffer);
   }
 
-if (!noflush)
+if (mode != SCMD_BUFFER)
   {
   rc += outblock->cmd_count;                /* flush resets */
-  if (!flush_buffer(outblock)) return -1;
+  if (!flush_buffer(outblock, mode)) return -1;
   }
 
 return rc;
@@ -500,8 +529,9 @@ for (;;)
 
   if((rc = ip_recv(sock, inblock->buffer, inblock->buffersize, timeout)) <= 0)
     {
-    if (!errno)
-      DEBUG(D_deliver|D_transport|D_acl) debug_printf_indent("  SMTP(closed)<<\n");
+    DEBUG(D_deliver|D_transport|D_acl)
+      debug_printf_indent(errno ? "  SMTP(%s)<<\n" : "  SMTP(closed)<<\n",
+	strerror(errno));
     break;
     }
 

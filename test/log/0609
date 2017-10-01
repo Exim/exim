@@ -4,4 +4,4 @@
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] closed by QUIT
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
-1999-03-02 09:44:33 unexpected disconnection while reading SMTP command from [127.0.0.1]
+1999-03-02 09:44:33 unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs

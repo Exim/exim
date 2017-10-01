@@ -1,10 +1,13 @@
 # log_selector = +smtp_no_mail
 need_ipv4
 #
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -DLOG_SELECTOR=+millisec -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
 ??? 220
+****
+killdaemon
+exim -DSERVER=server -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
 ??? 220

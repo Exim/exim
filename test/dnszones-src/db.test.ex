@@ -461,9 +461,23 @@ DNSSEC danelazy2            A       127.0.0.1
 DNSSEC _1225._tcp.danelazy  CNAME   test.again.dns.
 DNSSEC _1225._tcp.danelazy2 CNAME   test.again.dns.
 
-; hosts with no TLSA
+; hosts with no TLSA (just missing here, hence the TLSA NXDMAIN is _insecure_; a broken dane config)
+; 1 for dane-required, 2 for merely requested
 DNSSEC dane.no.1            A       HOSTIPV4
 DNSSEC dane.no.2            A       127.0.0.1
+
+; a broken dane config (or under attack) where the TLSA lookup fails (as opposed to there not being one)
+DNSSEC danebroken1          A       127.0.0.1
+_1225._tcp.danebroken1      CNAME   test.fail.dns.
+
+; a good dns config saying there is no dane support, by securely returning NOXDOMAIN for TLSA lookups
+; 3 for dane-required, 4 for merely requested
+; the TLSA data here is dummy; ignored
+DNSSEC dane.no.3            A       HOSTIPV4
+DNSSEC dane.no.4            A       127.0.0.1
+
+DNSSEC NXDOMAIN _1225._tcp.dane.no.3 TLSA 2 0 1 eec923139018c540a344c5191660ecba1ac3708525a98bfc338e17f31d3fa741
+DNSSEC NXDOMAIN _1225._tcp.dane.no.4 TLSA 2 0 1 eec923139018c540a344c5191660ecba1ac3708525a98bfc338e17f31d3fa741
 
 ; ------- Testing delays ------------
 
@@ -477,13 +491,19 @@ DELAY=1500 delay1500 A HOSTIPV4
 ;  openssl rsa -in aux-fixed/dkim/dkim.private -out /dev/stdout -pubout -outform PEM
 ;
 ; Deliberate bad version, having extra backslashes
+; sha256-hash-only version.... appears to be too long, gets truncated
 ;
 ; Another, 512-bit (with a Notes field)
+; 512 requiring sha1 hash
+; 512 requiring sha256 hash
 ;
 sel._domainkey TXT "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
 sel_bad._domainkey TXT "v=DKIM1\; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
+sel_sha256._domainkey TXT "v=DKIM1; h=sha256; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
 
 ses._domainkey TXT "v=DKIM1; n=halfkilo; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
+ses_sha1._domainkey TXT "v=DKIM1; h=sha1; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
+ses_sha256._domainkey TXT "v=DKIM1; h=sha256; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
 
 
 ; End

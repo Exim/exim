@@ -212,8 +212,7 @@ int fd;
 
 os_restarting_signal(sig, usr1_handler);
 
-fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE);
-if (fd < 0)
+if ((fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE)) < 0)
   {
   /* If we are already running as the Exim user, try to create it in the
   current process (assuming spool_directory exists). Otherwise, if we are
@@ -345,7 +344,7 @@ Arguments:
 Returns:      -1, 0, or +1
 */
 
-int
+static int
 exim_tvcmp(struct timeval *t1, struct timeval *t2)
 {
 if (t1->tv_sec > t2->tv_sec) return +1;
@@ -1443,10 +1442,9 @@ for (m = macros; m; m = m->next) if (m->command_line)
       }
   if (!found)
     return FALSE;
-  if (m->replacement == NULL)
+  if (!m->replacement)
     continue;
-  len = Ustrlen(m->replacement);
-  if (len == 0)
+  if ((len = m->replen) == 0)
     continue;
   n = pcre_exec(regex_whitelisted_macro, NULL, CS m->replacement, len,
    0, PCRE_EOPT, NULL, 0);
@@ -2457,7 +2455,7 @@ for (i = 1; i < argc; i++)
           exit(EXIT_FAILURE);
           }
 
-      m = macro_create(name, s, TRUE, FALSE);
+      m = macro_create(string_copy(name), string_copy(s), TRUE);
 
       if (clmacro_count >= MAX_CLMACROS)
         {
@@ -2710,7 +2708,7 @@ for (i = 1; i < argc; i++)
 
       /* Set up $sending_ip_address and $sending_port, unless proxied */
 
-      if (!continue_proxy)
+      if (!continue_proxy_cipher)
 	if (getsockname(fileno(stdin), (struct sockaddr *)(&interface_sock),
 	    &size) == 0)
 	  sending_ip_address = host_ntoa(-1, &interface_sock, NULL,
@@ -2739,7 +2737,7 @@ for (i = 1; i < argc; i++)
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
 
-	case 'D': smtp_peer_options |= PEER_OFFERED_DSN; break;
+	case 'D': smtp_peer_options |= OPTION_DSN; break;
 
     /* -MCG: set the queue name, to a non-default value */
 
@@ -2749,12 +2747,12 @@ for (i = 1; i < argc; i++)
 
     /* -MCK: the peer offered CHUNKING.  Must precede -MC */
 
-	case 'K': smtp_peer_options |= PEER_OFFERED_CHUNKING; break;
+	case 'K': smtp_peer_options |= OPTION_CHUNKING; break;
 
     /* -MCP: set the smtp_use_pipelining flag; this is useful only when
     it preceded -MC (see above) */
 
-	case 'P': smtp_peer_options |= PEER_OFFERED_PIPE; break;
+	case 'P': smtp_peer_options |= OPTION_PIPE; break;
 
     /* -MCQ: pass on the pid of the queue-running process that started
     this chain of deliveries and the fd of its synchronizing pipe; this
@@ -2769,17 +2767,19 @@ for (i = 1; i < argc; i++)
     /* -MCS: set the smtp_use_size flag; this is useful only when it
     precedes -MC (see above) */
 
-	case 'S': smtp_peer_options |= PEER_OFFERED_SIZE; break;
+	case 'S': smtp_peer_options |= OPTION_SIZE; break;
 
 #ifdef SUPPORT_TLS
     /* -MCt: similar to -MCT below but the connection is still open
     via a proxy proces which handles the TLS context and coding.
-    Require two arguments for the proxied local address and port.  */
+    Require three arguments for the proxied local address and port,
+    and the TLS cipher.  */
 
-	case 't': continue_proxy = TRUE;
-		  if (++i < argc) sending_ip_address = argv[i];
+	case 't': if (++i < argc) sending_ip_address = argv[i];
 		  else badarg = TRUE;
 		  if (++i < argc) sending_port = (int)(Uatol(argv[i]));
+		  else badarg = TRUE;
+		  if (++i < argc) continue_proxy_cipher = argv[i];
 		  else badarg = TRUE;
 		  /*FALLTHROUGH*/
 
@@ -2787,7 +2787,7 @@ for (i = 1; i < argc; i++)
     precedes -MC (see above). The flag indicates that the host to which
     Exim is connected has offered TLS support. */
 
-	case 'T': smtp_peer_options |= PEER_OFFERED_TLS; break;
+	case 'T': smtp_peer_options |= OPTION_TLS; break;
 #endif
 
 	default:  badarg = TRUE; break;
@@ -3104,7 +3104,14 @@ for (i = 1; i < argc; i++)
 
       /* -oMr: Received protocol */
 
-      else if (Ustrcmp(argrest, "Mr") == 0) received_protocol = argv[++i];
+      else if (Ustrcmp(argrest, "Mr") == 0)
+
+        if (received_protocol)
+          {
+          fprintf(stderr, "received_protocol is set already\n");
+          exit(EXIT_FAILURE);
+          }
+        else received_protocol = argv[++i];
 
       /* -oMs: Set sender host name */
 
@@ -3200,7 +3207,15 @@ for (i = 1; i < argc; i++)
 
     if (*argrest != 0)
       {
-      uschar *hn = Ustrchr(argrest, ':');
+      uschar *hn;
+
+      if (received_protocol)
+        {
+        fprintf(stderr, "received_protocol is set already\n");
+        exit(EXIT_FAILURE);
+        }
+
+      hn = Ustrchr(argrest, ':');
       if (hn == NULL)
         {
         received_protocol = argrest;
@@ -3809,6 +3824,10 @@ defined) */
 
 readconf_main(checking || list_options);
 
+if (builtin_macros_create_trigger) DEBUG(D_any)
+  debug_printf("Builtin macros created (expensive) due to config line '%.*s'\n",
+    Ustrlen(builtin_macros_create_trigger)-1, builtin_macros_create_trigger);
+
 /* Now in directory "/" */
 
 if (cleanup_environment() == FALSE)
@@ -3828,17 +3847,13 @@ if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
 else
   {
   int i, j;
-  for (i = 0; i < group_count; i++)
-    {
-    if (group_list[i] == exim_gid) admin_user = TRUE;
-    else if (admin_groups != NULL)
-      {
-      for (j = 1; j <= (int)(admin_groups[0]); j++)
+  for (i = 0; i < group_count && !admin_user; i++)
+    if (group_list[i] == exim_gid)
+      admin_user = TRUE;
+    else if (admin_groups)
+      for (j = 1; j <= (int)admin_groups[0] && !admin_user; j++)
         if (admin_groups[j] == group_list[i])
-          { admin_user = TRUE; break; }
-      }
-    if (admin_user) break;
-    }
+          admin_user = TRUE;
   }
 
 /* Another group of privileged users are the trusted users. These are root,
@@ -3852,28 +3867,27 @@ else
   {
   int i, j;
 
-  if (trusted_users != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_users[0]); i++)
+  if (trusted_users)
+    for (i = 1; i <= (int)trusted_users[0] && !trusted_caller; i++)
       if (trusted_users[i] == real_uid)
-        { trusted_caller = TRUE; break; }
-    }
+        trusted_caller = TRUE;
 
-  if (!trusted_caller && trusted_groups != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_groups[0]); i++)
-      {
+  if (trusted_groups)
+    for (i = 1; i <= (int)trusted_groups[0] && !trusted_caller; i++)
       if (trusted_groups[i] == real_gid)
         trusted_caller = TRUE;
-      else for (j = 0; j < group_count; j++)
-        {
+      else for (j = 0; j < group_count && !trusted_caller; j++)
         if (trusted_groups[i] == group_list[j])
-          { trusted_caller = TRUE; break; }
-        }
-      if (trusted_caller) break;
-      }
-    }
+          trusted_caller = TRUE;
   }
+
+/* At this point, we know if the user is privileged and some command-line
+options become possibly imperssible, depending upon the configuration file. */
+
+if (checking && commandline_checks_require_admin && !admin_user) {
+  fprintf(stderr, "exim: those command-line flags are set to require admin\n");
+  exit(EXIT_FAILURE);
+}
 
 /* Handle the decoding of logging options. */
 
@@ -4117,9 +4131,8 @@ if (((debug_selector & D_any) != 0 || LOGGING(arguments))
       quote = US"";
       while (*pp != 0) if (isspace(*pp++)) { quote = US"\""; break; }
       }
-    sprintf(CS p, " %s%.*s%s", quote, (int)(big_buffer_size -
+    p += sprintf(CS p, " %s%.*s%s", quote, (int)(big_buffer_size -
       (p - big_buffer) - 4), printing, quote);
-    while (*p) p++;
     }
 
   if (LOGGING(arguments))
@@ -4140,6 +4153,7 @@ if (Uchdir(spool_directory) != 0)
   int dummy;
   (void)directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
   dummy = /* quieten compiler */ Uchdir(spool_directory);
+  dummy = dummy;	/* yet more compiler quietening, sigh */
   }
 
 /* Handle calls with the -bi option. This is a sendmail option to rebuild *the*
@@ -4350,11 +4364,8 @@ if (!unprivileged &&                      /* originally had root AND */
         (msg_action_arg < 0 ||            /*       and               */
           msg_action != MSG_DELIVER) &&   /* not delivering and      */
         (!checking || !address_test_mode) /* not address checking    */
-        )
-      ))
-  {
+   )  ) )
   exim_setugid(exim_uid, exim_gid, TRUE, US"privilege not needed");
-  }
 
 /* When we are retaining a privileged uid, we still change to the exim gid. */
 
@@ -4368,7 +4379,6 @@ else
   there's no security risk.  For me, it's { exim -bV } on a just-built binary,
   no need to complain then. */
   if (rv == -1)
-    {
     if (!(unprivileged || removed_privilege))
       {
       fprintf(stderr,
@@ -4378,7 +4388,6 @@ else
     else
       DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
           (long int)exim_gid, strerror(errno));
-    }
   }
 
 /* Handle a request to scan a file for malware */
@@ -4528,8 +4537,9 @@ if (test_retry_arg >= 0)
       }
     }
 
-  yield = retry_find_config(s1, s2, basic_errno, more_errno);
-  if (yield == NULL) printf("No retry information found\n"); else
+  if (!(yield = retry_find_config(s1, s2, basic_errno, more_errno)))
+    printf("No retry information found\n");
+  else
     {
     retry_rule *r;
     more_errno = yield->more_errno;
@@ -4561,7 +4571,7 @@ if (test_retry_arg >= 0)
       printf("auth_failed  ");
     else printf("*  ");
 
-    for (r = yield->rules; r != NULL; r = r->next)
+    for (r = yield->rules; r; r = r->next)
       {
       printf("%c,%s", r->rule, readconf_printtime(r->timeout)); /* Do not */
       printf(",%s", readconf_printtime(r->p1));                 /* amalgamate */
@@ -5327,15 +5337,13 @@ if (smtp_input)
 else
   {
   thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
-  if (expand_string_message != NULL)
-    {
+  if (expand_string_message)
     if (thismessage_size_limit == -1)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand "
         "message_size_limit: %s", expand_string_message);
     else
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "invalid value for "
         "message_size_limit: %s", expand_string_message);
-    }
   }
 
 /* Loop for several messages when reading SMTP input. If we fork any child
@@ -5432,6 +5440,7 @@ while (more)
       more = receive_msg(extract_recipients);
       if (message_id[0] == 0)
         {
+	cancel_cutthrough_connection(TRUE, US"receive dropped");
         if (more) goto moreloop;
         smtp_log_no_mail();               /* Log no mail if configured */
         exim_exit(EXIT_FAILURE);
@@ -5439,6 +5448,7 @@ while (more)
       }
     else
       {
+      cancel_cutthrough_connection(TRUE, US"message setup dropped");
       smtp_log_no_mail();               /* Log no mail if configured */
       exim_exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
       }
@@ -5582,7 +5592,7 @@ while (more)
 
     if (!receive_timeout)
       {
-      struct timeval t = { 30*60, 0 };	/* 30 minutes */
+      struct timeval t = { .tv_sec = 30*60, .tv_usec = 0 };	/* 30 minutes */
       fd_set r;
 
       FD_ZERO(&r); FD_SET(0, &r);
@@ -5714,20 +5724,27 @@ while (more)
   not if queue_only is set (case 0). Case 1 doesn't happen here (too many
   connections). */
 
-  if (local_queue_only) switch(queue_only_reason)
+  if (local_queue_only)
     {
-    case 2:
-    log_write(L_delay_delivery,
-              LOG_MAIN, "no immediate delivery: more than %d messages "
-      "received in one connection", smtp_accept_queue_per_connection);
-    break;
+    cancel_cutthrough_connection(TRUE, US"no delivery; queueing");
+    switch(queue_only_reason)
+      {
+      case 2:
+	log_write(L_delay_delivery,
+		LOG_MAIN, "no immediate delivery: more than %d messages "
+	  "received in one connection", smtp_accept_queue_per_connection);
+	break;
 
-    case 3:
-    log_write(L_delay_delivery,
-              LOG_MAIN, "no immediate delivery: load average %.2f",
-              (double)load_average/1000.0);
-    break;
+      case 3:
+	log_write(L_delay_delivery,
+		LOG_MAIN, "no immediate delivery: load average %.2f",
+		(double)load_average/1000.0);
+      break;
+      }
     }
+
+  else if (queue_only_policy || deliver_freeze)
+    cancel_cutthrough_connection(TRUE, US"no delivery; queueing");
 
   /* Else do the delivery unless the ACL or local_scan() called for queue only
   or froze the message. Always deliver in a separate process. A fork failure is
@@ -5737,7 +5754,7 @@ while (more)
   thereby defer the delivery if it tries to use (for example) a cached ldap
   connection that the parent has called unbind on. */
 
-  else if (!queue_only_policy && !deliver_freeze)
+  else
     {
     pid_t pid;
     search_tidyup();
@@ -5753,8 +5770,7 @@ while (more)
 
       if (geteuid() != root_uid && !deliver_drop_privilege && !unprivileged)
         {
-        (void)child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE,
-		2, US"-Mc", message_id);
+	delivery_re_exec(CEE_EXEC_EXIT);
         /* Control does not return here. */
         }
 
@@ -5768,22 +5784,27 @@ while (more)
 
     if (pid < 0)
       {
+      cancel_cutthrough_connection(TRUE, US"delivery fork failed");
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to fork automatic delivery "
         "process: %s", strerror(errno));
       }
-
-    /* In the parent, wait if synchronous delivery is required. This will
-    always be the case in MUA wrapper mode. */
-
-    else if (synchronous_delivery)
+    else
       {
-      int status;
-      while (wait(&status) != pid);
-      if ((status & 0x00ff) != 0)
-        log_write(0, LOG_MAIN|LOG_PANIC,
-          "process %d crashed with signal %d while delivering %s",
-          (int)pid, status & 0x00ff, message_id);
-      if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
+      release_cutthrough_connection(US"msg passed for delivery");
+
+      /* In the parent, wait if synchronous delivery is required. This will
+      always be the case in MUA wrapper mode. */
+
+      if (synchronous_delivery)
+	{
+	int status;
+	while (wait(&status) != pid);
+	if ((status & 0x00ff) != 0)
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+	    "process %d crashed with signal %d while delivering %s",
+	    (int)pid, status & 0x00ff, message_id);
+	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
+	}
       }
     }
 
@@ -5817,5 +5838,51 @@ moreloop:
 exim_exit(EXIT_SUCCESS);   /* Never returns */
 return 0;                  /* To stop compiler warning */
 }
+
+/*************************************************
+*          read as much as requested             *
+*************************************************/
+
+/* The syscall read(2) doesn't always returns as much as we want. For
+several reasons it might get less. (Not talking about signals, as syscalls
+are restartable). When reading from a network or pipe connection the sender
+might send in smaller chunks, with delays between these chunks. The read(2)
+may return such a chunk.
+
+The more the writer writes and the smaller the pipe between write and read is,
+the more we get the chance of reading leass than requested. (See bug 2130)
+
+This function read(2)s until we got all the data we *requested*.
+
+Note: This function may block. Use it only if you're sure about the
+amount of data you will get.
+
+Argument:
+  fd          the file descriptor to read from
+  buffer      pointer to a buffer of size len
+  len         the requested(!) amount of bytes
+
+Returns:      the amount of bytes read
+*/
+ssize_t
+readn(int fd, void *buffer, size_t len)
+{
+  void *next = buffer;
+  void *end = buffer + len;
+
+  while (next < end)
+    {
+    ssize_t got = read(fd, next, end - next);
+
+    /* I'm not sure if there are signals that can interrupt us,
+    for now I assume the worst */
+    if (got == -1 && errno == EINTR) continue;
+    if (got <= 0) return next - buffer;
+    next += got;
+    }
+
+  return len;
+}
+
 
 /* End of exim.c */

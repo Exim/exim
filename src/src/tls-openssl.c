@@ -69,6 +69,7 @@ functions from the OpenSSL library. */
 #ifndef LIBRESSL_VERSION_NUMBER
 # if OPENSSL_VERSION_NUMBER >= 0x010100000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
+#  define EXIM_HAVE_OPENSSL_DH_BITS
 # endif
 # if OPENSSL_VERSION_NUMBER >= 0x010000000L \
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
@@ -383,11 +384,13 @@ dn[sizeof(dn)-1] = '\0';
 
 if (preverify_ok == 0)
   {
-  log_write(0, LOG_MAIN, "[%s] SSL verify error: depth=%d error=%s cert=%s",
-	tlsp == &tls_out ? deliver_host_address : sender_host_address,
-    depth,
-    X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)),
-    dn);
+  uschar * extra = verify_mode ? string_sprintf(" (during %c-verify for [%s])",
+      *verify_mode, sender_host_address)
+    : US"";
+  log_write(0, LOG_MAIN, "[%s] SSL verify error%s: depth=%d error=%s cert=%s",
+    tlsp == &tls_out ? deliver_host_address : sender_host_address,
+    extra, depth,
+    X509_verify_cert_error_string(X509_STORE_CTX_get_error(x509ctx)), dn);
   *calledp = TRUE;
   if (!*optionalp)
     {
@@ -448,7 +451,7 @@ else
 	if (rc < 0)
 	  {
 	  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
-		deliver_host_address);
+	    tlsp == &tls_out ? deliver_host_address : sender_host_address);
 	  name = NULL;
 	  }
 	break;
@@ -458,10 +461,14 @@ else
     if (!tls_is_name_for_cert(verify_cert_hostnames, cert))
 #endif
       {
+      uschar * extra = verify_mode
+        ? string_sprintf(" (during %c-verify for [%s])",
+	  *verify_mode, sender_host_address)
+	: US"";
       log_write(0, LOG_MAIN,
-		"[%s] SSL verify error: certificate name mismatch: "
-		"DN=\"%s\" H=\"%s\"",
-		deliver_host_address, dn, verify_cert_hostnames);
+	"[%s] SSL verify error%s: certificate name mismatch: DN=\"%s\" H=\"%s\"",
+	tlsp == &tls_out ? deliver_host_address : sender_host_address,
+	extra, dn, verify_cert_hostnames);
       *calledp = TRUE;
       if (!*optionalp)
 	{
@@ -595,6 +602,7 @@ BIO *bio;
 DH *dh;
 uschar *dhexpanded;
 const char *pem;
+int dh_bitsize;
 
 if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded, errstr))
   return FALSE;
@@ -635,21 +643,34 @@ if (!(dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)))
   return FALSE;
   }
 
+/* note: our default limit of 2236 is not a multiple of 8; the limit comes from
+ * an NSS limit, and the GnuTLS APIs handle bit-sizes fine, so we went with
+ * 2236.  But older OpenSSL can only report in bytes (octets), not bits.
+ * If someone wants to dance at the edge, then they can raise the limit or use
+ * current libraries. */
+#ifdef EXIM_HAVE_OPENSSL_DH_BITS
+/* Added in commit 26c79d5641d; `git describe --contains` says OpenSSL_1_1_0-pre1~1022
+ * This predates OpenSSL_1_1_0 (before a, b, ...) so is in all 1.1.0 */
+dh_bitsize = DH_bits(dh);
+#else
+dh_bitsize = 8 * DH_size(dh);
+#endif
+
 /* Even if it is larger, we silently return success rather than cause things
  * to fail out, so that a too-large DH will not knock out all TLS; it's a
  * debatable choice. */
-if ((8*DH_size(dh)) > tls_dh_max_bits)
+if (dh_bitsize > tls_dh_max_bits)
   {
   DEBUG(D_tls)
-    debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d",
-        8*DH_size(dh), tls_dh_max_bits);
+    debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d\n",
+        dh_bitsize, tls_dh_max_bits);
   }
 else
   {
   SSL_CTX_set_tmp_dh(sctx, dh);
   DEBUG(D_tls)
     debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
-      dhexpanded ? dhexpanded : US"default", 8*DH_size(dh));
+      dhexpanded ? dhexpanded : US"default", dh_bitsize);
   }
 
 DH_free(dh);
@@ -727,7 +748,7 @@ if (Ustrcmp(exp_curve, "auto") == 0)
 #if OPENSSL_VERSION_NUMBER < 0x10002000L
   DEBUG(D_tls) debug_printf(
     "ECDH OpenSSL < 1.0.2: temp key parameter settings: overriding \"auto\" with \"prime256v1\"\n");
-  exp_curve = "prime256v1";
+  exp_curve = US"prime256v1";
 #else
 # if defined SSL_CTRL_SET_ECDH_AUTO
   DEBUG(D_tls) debug_printf(
@@ -1418,9 +1439,9 @@ tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
 #endif
   address_item *addr, tls_ext_ctx_cb ** cbp, uschar ** errstr)
 {
+SSL_CTX * ctx;
 long init_options;
 int rc;
-BOOL okay;
 tls_ext_ctx_cb * cbinfo;
 
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
@@ -1461,9 +1482,8 @@ when OpenSSL is built without SSLv2 support.
 By disabling with openssl_options, we can let admins re-enable with the
 existing knob. */
 
-*ctxp = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method());
-
-if (!*ctxp) return tls_error(US"SSL_CTX_new", host, NULL, errstr);
+if (!(ctx = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method())))
+  return tls_error(US"SSL_CTX_new", host, NULL, errstr);
 
 /* It turns out that we need to seed the random number generator this early in
 order to get the full complement of ciphers to work. It took me roughly a day
@@ -1479,9 +1499,9 @@ if (!RAND_status())
   gettimeofday(&r.tv, NULL);
   r.p = getpid();
 
-  RAND_seed((uschar *)(&r), sizeof(r));
-  RAND_seed((uschar *)big_buffer, big_buffer_size);
-  if (addr != NULL) RAND_seed((uschar *)addr, sizeof(addr));
+  RAND_seed(US (&r), sizeof(r));
+  RAND_seed(US big_buffer, big_buffer_size);
+  if (addr != NULL) RAND_seed(US addr, sizeof(addr));
 
   if (!RAND_status())
     return tls_error(US"RAND_status", host,
@@ -1491,10 +1511,10 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-DEBUG(D_tls) SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
+DEBUG(D_tls) SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
 
 /* Automatically re-try reads/writes after renegotiation. */
-(void) SSL_CTX_set_mode(*ctxp, SSL_MODE_AUTO_RETRY);
+(void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
 
 /* Apply administrator-supplied work-arounds.
 Historically we applied just one requested option,
@@ -1505,31 +1525,34 @@ grandfathered in the first one as the default value for "openssl_options".
 No OpenSSL version number checks: the options we accept depend upon the
 availability of the option value macros from OpenSSL.  */
 
-okay = tls_openssl_options_parse(openssl_options, &init_options);
-if (!okay)
+if (!tls_openssl_options_parse(openssl_options, &init_options))
   return tls_error(US"openssl_options parsing failed", host, NULL, errstr);
 
 if (init_options)
   {
   DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
-  if (!(SSL_CTX_set_options(*ctxp, init_options)))
+  if (!(SSL_CTX_set_options(ctx, init_options)))
     return tls_error(string_sprintf(
           "SSL_CTX_set_option(%#lx)", init_options), host, NULL, errstr);
   }
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
 
+/* Disable session cache unconditionally */
+
+(void) SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
+
 /* Initialize with DH parameters if supplied */
 /* Initialize ECDH temp key parameter selection */
 
-if (  !init_dh(*ctxp, dhparam, host, errstr)
-   || !init_ecdh(*ctxp, host, errstr)
+if (  !init_dh(ctx, dhparam, host, errstr)
+   || !init_ecdh(ctx, host, errstr)
    )
   return DEFER;
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
-if ((rc = tls_expand_session_files(*ctxp, cbinfo, errstr)) != OK)
+if ((rc = tls_expand_session_files(ctx, cbinfo, errstr)) != OK)
   return rc;
 
 /* If we need to handle SNI or OCSP, do so */
@@ -1552,14 +1575,14 @@ if (host == NULL)		/* server */
   callback is invoked. */
   if (cbinfo->u_ocsp.server.file)
     {
-    SSL_CTX_set_tlsext_status_cb(server_ctx, tls_server_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(server_ctx, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(ctx, tls_server_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
     }
 # endif
   /* We always do this, so that $tls_sni is available even if not used in
   tls_certificate */
-  SSL_CTX_set_tlsext_servername_callback(*ctxp, tls_servername_cb);
-  SSL_CTX_set_tlsext_servername_arg(*ctxp, cbinfo);
+  SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
+  SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
   }
 # ifndef DISABLE_OCSP
 else			/* client */
@@ -1570,8 +1593,8 @@ else			/* client */
       DEBUG(D_tls) debug_printf("failed to create store for stapling verify\n");
       return FAIL;
       }
-    SSL_CTX_set_tlsext_status_cb(*ctxp, tls_client_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(*ctxp, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(ctx, tls_client_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
     }
 # endif
 #endif
@@ -1580,15 +1603,16 @@ cbinfo->verify_cert_hostnames = NULL;
 
 #ifdef EXIM_HAVE_EPHEM_RSA_KEX
 /* Set up the RSA callback */
-SSL_CTX_set_tmp_rsa_callback(*ctxp, rsa_callback);
+SSL_CTX_set_tmp_rsa_callback(ctx, rsa_callback);
 #endif
 
 /* Finally, set the timeout, and we are done */
 
-SSL_CTX_set_timeout(*ctxp, ssl_session_timeout);
+SSL_CTX_set_timeout(ctx, ssl_session_timeout);
 DEBUG(D_tls) debug_printf("Initialized TLS\n");
 
 *cbp = cbinfo;
+*ctxp = ctx;
 
 return OK;
 }
@@ -1699,6 +1723,7 @@ uschar *expcerts, *expcrl;
 
 if (!expand_check(certs, US"tls_verify_certificates", &expcerts, errstr))
   return DEFER;
+DEBUG(D_tls) debug_printf("tls_verify_certificates: %s\n", expcerts);
 
 if (expcerts && *expcerts)
   {
@@ -1871,7 +1896,7 @@ static uschar cipherbuf[256];
 if (tls_in.active >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", NULL, US"", errstr);
-  smtp_printf("554 Already in TLS\r\n");
+  smtp_printf("554 Already in TLS\r\n", FALSE);
   return FAIL;
   }
 
@@ -1955,7 +1980,7 @@ mode, the fflush() happens when smtp_getc() is called. */
 SSL_set_session_id_context(server_ssl, sid_ctx, Ustrlen(sid_ctx));
 if (!tls_in.on_connect)
   {
-  smtp_printf("220 TLS go ahead\r\n");
+  smtp_printf("220 TLS go ahead\r\n", FALSE);
   fflush(smtp_out);
   }
 
@@ -2012,6 +2037,7 @@ ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
 ssl_xfer_eof = ssl_xfer_error = 0;
 
 receive_getc = tls_getc;
+receive_getbuf = tls_getbuf;
 receive_get_cache = tls_get_cache;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
@@ -2348,6 +2374,74 @@ return OK;
 
 
 
+static BOOL
+tls_refill(unsigned lim)
+{
+int error;
+int inbytes;
+
+DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
+  ssl_xfer_buffer, ssl_xfer_buffer_size);
+
+if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
+		  MIN(ssl_xfer_buffer_size, lim));
+error = SSL_get_error(server_ssl, inbytes);
+alarm(0);
+
+/* SSL_ERROR_ZERO_RETURN appears to mean that the SSL session has been
+closed down, not that the socket itself has been closed down. Revert to
+non-SSL handling. */
+
+if (error == SSL_ERROR_ZERO_RETURN)
+  {
+  DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
+
+  receive_getc = smtp_getc;
+  receive_getbuf = smtp_getbuf;
+  receive_get_cache = smtp_get_cache;
+  receive_ungetc = smtp_ungetc;
+  receive_feof = smtp_feof;
+  receive_ferror = smtp_ferror;
+  receive_smtp_buffered = smtp_buffered;
+
+  SSL_free(server_ssl);
+  server_ssl = NULL;
+  tls_in.active = -1;
+  tls_in.bits = 0;
+  tls_in.cipher = NULL;
+  tls_in.peerdn = NULL;
+  tls_in.sni = NULL;
+
+  return FALSE;
+  }
+
+/* Handle genuine errors */
+
+else if (error == SSL_ERROR_SSL)
+  {
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
+  ssl_xfer_error = 1;
+  return FALSE;
+  }
+
+else if (error != SSL_ERROR_NONE)
+  {
+  DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
+  ssl_xfer_error = 1;
+  return FALSE;
+  }
+
+#ifndef DISABLE_DKIM
+dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
+#endif
+ssl_xfer_buffer_hwm = inbytes;
+ssl_xfer_buffer_lwm = 0;
+return TRUE;
+}
+
+
 /*************************************************
 *            TLS version of getc                 *
 *************************************************/
@@ -2365,73 +2459,36 @@ int
 tls_getc(unsigned lim)
 {
 if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
-  {
-  int error;
-  int inbytes;
-
-  DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
-    ssl_xfer_buffer, ssl_xfer_buffer_size);
-
-  if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
-		    MIN(ssl_xfer_buffer_size, lim));
-  error = SSL_get_error(server_ssl, inbytes);
-  alarm(0);
-
-  /* SSL_ERROR_ZERO_RETURN appears to mean that the SSL session has been
-  closed down, not that the socket itself has been closed down. Revert to
-  non-SSL handling. */
-
-  if (error == SSL_ERROR_ZERO_RETURN)
-    {
-    DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
-
-    receive_getc = smtp_getc;
-    receive_get_cache = smtp_get_cache;
-    receive_ungetc = smtp_ungetc;
-    receive_feof = smtp_feof;
-    receive_ferror = smtp_ferror;
-    receive_smtp_buffered = smtp_buffered;
-
-    SSL_free(server_ssl);
-    server_ssl = NULL;
-    tls_in.active = -1;
-    tls_in.bits = 0;
-    tls_in.cipher = NULL;
-    tls_in.peerdn = NULL;
-    tls_in.sni = NULL;
-
-    return smtp_getc(lim);
-    }
-
-  /* Handle genuine errors */
-
-  else if (error == SSL_ERROR_SSL)
-    {
-    ERR_error_string(ERR_get_error(), ssl_errstring);
-    log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
-    ssl_xfer_error = 1;
-    return EOF;
-    }
-
-  else if (error != SSL_ERROR_NONE)
-    {
-    DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
-    ssl_xfer_error = 1;
-    return EOF;
-    }
-
-#ifndef DISABLE_DKIM
-  dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
-#endif
-  ssl_xfer_buffer_hwm = inbytes;
-  ssl_xfer_buffer_lwm = 0;
-  }
+  if (!tls_refill(lim))
+    return ssl_xfer_error ? EOF : smtp_getc(lim);
 
 /* Something in the buffer; return next uschar */
 
 return ssl_xfer_buffer[ssl_xfer_buffer_lwm++];
 }
+
+uschar *
+tls_getbuf(unsigned * len)
+{
+unsigned size;
+uschar * buf;
+
+if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
+  if (!tls_refill(*len))
+    {
+    if (!ssl_xfer_error) return smtp_getbuf(len);
+    *len = 0;
+    return NULL;
+    }
+
+if ((size = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm) > *len)
+  size = *len;
+buf = &ssl_xfer_buffer[ssl_xfer_buffer_lwm];
+ssl_xfer_buffer_lwm += size;
+*len = size;
+return buf;
+}
+
 
 void
 tls_get_cache()
@@ -2443,6 +2500,12 @@ if (n > 0)
 #endif
 }
 
+
+BOOL
+tls_could_read(void)
+{
+return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm || SSL_pending(server_ssl) > 0;
+}
 
 
 /*************************************************
@@ -2497,6 +2560,7 @@ Arguments:
   is_server channel specifier
   buff      buffer of data
   len       number of bytes
+  more	    further data expected soon
 
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
@@ -2505,15 +2569,32 @@ Used by both server-side and client-side TLS.
 */
 
 int
-tls_write(BOOL is_server, const uschar *buff, size_t len)
+tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
 {
-int outbytes;
-int error;
-int left = len;
+int outbytes, error, left;
 SSL *ssl = is_server ? server_ssl : client_ssl;
+static uschar * corked = NULL;
+static int c_size = 0, c_len = 0;
 
-DEBUG(D_tls) debug_printf("tls_do_write(%p, %d)\n", buff, left);
-while (left > 0)
+DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
+  buff, (unsigned long)len, more ? ", more" : "");
+
+/* Lacking a CORK or MSG_MORE facility (such as GnuTLS has) we copy data when
+"more" is notified.  This hack is only ok if small amounts are involved AND only
+one stream does it, in one context (i.e. no store reset).  Currently it is used
+for the responses to the received SMTP MAIL , RCPT, DATA sequence, only. */
+
+if (is_server && (more || corked))
+  {
+  corked = string_catn(corked, &c_size, &c_len, buff, len);
+  if (more)
+    return len;
+  buff = CUS corked;
+  len = c_len;
+  corked = NULL; c_size = c_len = 0;
+  }
+
+for (left = len; left > 0;)
   {
   DEBUG(D_tls) debug_printf("SSL_write(SSL, %p, %d)\n", buff, left);
   outbytes = SSL_write(ssl, CS buff, left);
@@ -2738,7 +2819,7 @@ if (!RAND_status())
   gettimeofday(&r.tv, NULL);
   r.p = getpid();
 
-  RAND_seed((uschar *)(&r), sizeof(r));
+  RAND_seed(US (&r), sizeof(r));
   }
 /* We're after pseudo-random, not random; if we still don't have enough data
 in the internal PRNG then our options are limited.  We could sleep and hope
@@ -2950,7 +3031,7 @@ uschar *s, *end;
 uschar keep_c;
 BOOL adding, item_parsed;
 
-result = 0L;
+result = SSL_OP_NO_TICKET;
 /* Prior to 4.80 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
  * from default because it increases BEAST susceptibility. */
 #ifdef SSL_OP_NO_SSLv2
@@ -2960,7 +3041,7 @@ result |= SSL_OP_NO_SSLv2;
 result |= SSL_OP_SINGLE_DH_USE;
 #endif
 
-if (option_spec == NULL)
+if (!option_spec)
   {
   *results = result;
   return TRUE;

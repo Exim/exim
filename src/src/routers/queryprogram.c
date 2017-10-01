@@ -40,6 +40,20 @@ address can appear in the tables drtables.c. */
 int queryprogram_router_options_count =
   sizeof(queryprogram_router_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+queryprogram_router_options_block queryprogram_router_option_defaults = {0};
+void queryprogram_router_init(router_instance *rblock) {}
+int queryprogram_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the queryprogram router. */
 
 queryprogram_router_options_block queryprogram_router_option_defaults = {
@@ -109,12 +123,14 @@ add_generated(router_instance *rblock, address_item **addr_new,
 {
 while (generated != NULL)
   {
+  BOOL ignore_error = addr->prop.ignore_error;
   address_item *next = generated;
+
   generated = next->next;
 
   next->parent = addr;
-  orflag(next, addr, af_propagate);
   next->prop = *addr_prop;
+  next->prop.ignore_error = next->prop.ignore_error || ignore_error;
   next->start_router = rblock->redirect_router;
 
   next->next = *addr_new;
@@ -539,4 +555,5 @@ return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
   OK : DEFER;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/queryprogram.c */

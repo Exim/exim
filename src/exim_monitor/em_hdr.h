@@ -100,6 +100,7 @@ typedef void hctx;
 
 #include "local_scan.h"
 #include "structs.h"
+#include "blob.h"
 #include "globals.h"
 #include "dbstuff.h"
 #include "functions.h"

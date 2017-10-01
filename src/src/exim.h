@@ -492,6 +492,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #include "macros.h"
 #include "dbstuff.h"
 #include "structs.h"
+#include "blob.h"
 #include "globals.h"
 #include "hash.h"
 #include "functions.h"
@@ -595,6 +596,10 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 #if defined(EXPERIMENTAL_DANE) && defined(DISABLE_DNSSEC)
 # undef DISABLE_DNSSEC
 #endif
+
+/* Wrapper around read(2) to read all the data we requested (BLOCKING) */
+ssize_t
+readn(int fd, void *buffer, size_t len);
 
 #endif
 /* End of exim.h */

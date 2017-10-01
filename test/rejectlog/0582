@@ -1,0 +1,1 @@
+1999-03-02 09:44:33 U=CALLER F=<userg@ok.example> temporarily rejected RCPT <userg@test.ex>: Could not complete recipient verify callout: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<userg@test.ex>: 451 not right now

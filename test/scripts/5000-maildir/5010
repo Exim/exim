@@ -1,0 +1,35 @@
+# quota and maildir with no_check_support (5010, 5011, 5012)
+exim -odi userx@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+exim -odi userx@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+no_msglog_check

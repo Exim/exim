@@ -44,6 +44,20 @@ address can appear in the tables drtables.c. */
 int iplookup_router_options_count =
   sizeof(iplookup_router_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy entries */
+iplookup_router_options_block iplookup_router_option_defaults = {0};
+void iplookup_router_init(router_instance *rblock) {}
+int iplookup_router_entry(router_instance *rblock, address_item *addr,
+  struct passwd *pw, int verify, address_item **addr_local,
+  address_item **addr_remote, address_item **addr_new,
+  address_item **addr_succeed) {return 0;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the iplookup router. */
 
 iplookup_router_options_block iplookup_router_option_defaults = {
@@ -240,9 +254,10 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     /* Connect to the remote host, under a timeout. In fact, timeouts can occur
     here only for TCP calls; for a UDP socket, "connect" always works (the
     router will timeout later on the read call). */
+/*XXX could take advantage of TFO */
 
     if (ip_connect(query_socket, host_af, h->address,ob->port, ob->timeout,
-			ob->protocol != ip_udp) < 0)
+		ob->protocol == ip_udp ? NULL : &tcp_fastopen_nodata) < 0)
       {
       close(query_socket);
       DEBUG(D_route)
@@ -379,7 +394,6 @@ the chain of new addressess. */
 new_addr = deliver_make_addr(reroute, TRUE);
 new_addr->parent = addr;
 
-copyflag(new_addr, addr, af_propagate);
 new_addr->prop = addr->prop;
 
 if (addr->child_count == USHRT_MAX)
@@ -402,4 +416,5 @@ if (rc != OK) return rc;
 return OK;
 }
 
+#endif   /*!MACRO_PREDEF*/
 /* End of routers/iplookup.c */

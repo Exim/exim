@@ -85,7 +85,7 @@ Lmdbstrct * lmdb_p = handle;
 dbkey.mv_data = CS keystring;
 dbkey.mv_size = length;
 
-DEBUG(D_lookup) debug_printf("LMDB: lookup key: %s\n", (char *)keystring);
+DEBUG(D_lookup) debug_printf("LMDB: lookup key: %s\n", CS keystring);
 
 if ((ret = mdb_get(lmdb_p->txn, lmdb_p->db_dbi, &dbkey, &data)) == 0)
   {

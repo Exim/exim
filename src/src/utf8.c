@@ -68,7 +68,7 @@ any mixed-case annotation.  This does not really matter for a domain. */
     break;
     }
   }
-if ((rc = idn2_lookup_u8(CCS s, &s1, IDN2_NFC_INPUT)) != IDN2_OK)
+if ((rc = idn2_lookup_u8((const uint8_t *) s, &s1, IDN2_NFC_INPUT)) != IDN2_OK)
   {
   if (err) *err = US idn2_strerror(rc);
   return NULL;
@@ -98,6 +98,7 @@ string_domain_alabel_to_utf8(const uschar * alabel, uschar ** err)
 const uschar * label;
 int sep = '.';
 uschar * s = NULL;
+int size = 0, len = 0;
 
 while (label = string_nextinlist(&alabel, &sep, NULL, 0))
   if (  string_is_alabel(label)
@@ -105,7 +106,7 @@ while (label = string_nextinlist(&alabel, &sep, NULL, 0))
      )
     return NULL;
   else
-    s = string_append_listele(s, '.', label);
+    s = string_append_listele(s, &size, &len, '.', label);
 return s;
 
 #else

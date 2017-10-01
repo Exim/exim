@@ -265,11 +265,9 @@ if (spam_ok && Ustrcmp(prev_user_name, user_name) == 0)
   return override ? OK : spam_rc;
 
 /* make sure the eml mbox file is spooled up */
-mbox_file = spool_mbox(&mbox_size, NULL);
 
-if (mbox_file == NULL)
-  {
-  /* error while spooling */
+if (!(mbox_file = spool_mbox(&mbox_size, NULL, NULL)))
+  {								/* error while spooling */
   log_write(0, LOG_MAIN|LOG_PANIC,
 	 "%s error while creating mbox spool file", loglabel);
   return DEFER;
@@ -287,8 +285,7 @@ start = time(NULL);
   /* Check how many spamd servers we have
      and register their addresses */
   sep = 0;				/* default colon-sep */
-  while ((address = string_nextinlist(&spamd_address_list_ptr, &sep,
-				      NULL, 0)) != NULL)
+  while ((address = string_nextinlist(&spamd_address_list_ptr, &sep, NULL, 0)))
     {
     const uschar * sublist;
     int sublist_sep = -(int)' ';	/* default space-sep */
@@ -346,6 +343,7 @@ start = time(NULL);
 
     for (;;)
       {
+      /*XXX could potentially use TFO early-data here */
       if (  (spamd_sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0
          || sd->retry <= 0
 	 )
@@ -372,27 +370,30 @@ start = time(NULL);
 (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
 /* now we are connected to spamd on spamd_sock */
 if (sd->is_rspamd)
-  {				/* rspamd variant */
-  uschar *req_str;
-  const uschar * helo;
-  const uschar * fcrdns;
-  const uschar * authid;
+  {
+  uschar * req_str = NULL;
+  int size = 0, len = 0;
+  const uschar * s;
 
-  req_str = string_sprintf("CHECK RSPAMC/1.3\r\nContent-length: %lu\r\n"
-    "Queue-Id: %s\r\nFrom: <%s>\r\nRecipient-Number: %d\r\n",
-    mbox_size, message_id, sender_address, recipients_count);
+  req_str = string_append(req_str, &size, &len, 8,
+    "CHECK RSPAMC/1.3\r\nContent-length: ", string_sprintf("%lu\r\n", mbox_size),
+    "Queue-Id: ", message_id,
+    "\r\nFrom: <", sender_address,
+    ">\r\nRecipient-Number: ", string_sprintf("%d\r\n", recipients_count));
+
   for (i = 0; i < recipients_count; i ++)
-    req_str = string_sprintf("%sRcpt: <%s>\r\n", req_str, recipients_list[i].address);
-  if ((helo = expand_string(US"$sender_helo_name")) != NULL && *helo != '\0')
-    req_str = string_sprintf("%sHelo: %s\r\n", req_str, helo);
-  if ((fcrdns = expand_string(US"$sender_host_name")) != NULL && *fcrdns != '\0')
-    req_str = string_sprintf("%sHostname: %s\r\n", req_str, fcrdns);
-  if (sender_host_address != NULL)
-    req_str = string_sprintf("%sIP: %s\r\n", req_str, sender_host_address);
-  if ((authid = expand_string(US"$authenticated_id")) != NULL && *authid != '\0')
-    req_str = string_sprintf("%sUser: %s\r\n", req_str, authid);
-  req_str = string_sprintf("%s\r\n", req_str);
-  wrote = send(spamd_sock, req_str, Ustrlen(req_str), 0);
+    req_str = string_append(req_str, &size, &len, 3,
+      "Rcpt: <", recipients_list[i].address, ">\r\n");
+  if ((s = expand_string(US"$sender_helo_name")) && *s)
+    req_str = string_append(req_str, &size, &len, 3, "Helo: ", s, "\r\n");
+  if ((s = expand_string(US"$sender_host_name")) && *s)
+    req_str = string_append(req_str, &size, &len, 3, "Hostname: ", s, "\r\n");
+  if (sender_host_address)
+    req_str = string_append(req_str, &size, &len, 3, "IP: ", sender_host_address, "\r\n");
+  if ((s = expand_string(US"$authenticated_id")) && *s)
+    req_str = string_append(req_str, &size, &len, 3, "User: ", s, "\r\n");
+  req_str = string_catn(req_str, &size, &len, "\r\n", 2);
+  wrote = send(spamd_sock, req_str, len, 0);
   }
 else
   {				/* spamassassin variant */

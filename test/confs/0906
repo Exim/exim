@@ -1,0 +1,97 @@
+# Exim test configuration 0906
+SERVER=
+
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts = *
+tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
+
+# ----- Main settings -----
+
+spool_wireformat = true
+
+primary_hostname = testhost.test.ex
+domainlist local_domains = @ : test.ex
+
+acl_smtp_rcpt = acl_r
+log_selector = +received_recipients
+
+.ifdef _OPT_MAIN_TLS_CERTIFICATE
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+.endif
+
+queue_run_in_order = true
+
+# ----- ACL -----
+
+begin acl
+acl_r:
+ accept	condition = ${if != {$received_port}{PORT_S}}
+	control = queue_only
+ accept
+
+# ----- Routers -----
+
+begin routers
+
+to_server:
+  driver = accept
+  condition =	${if = {$received_port}{PORT_S}}
+  transport =	remote_smtp${if eq {OPT}{dkim} {_dkim}}
+  errors_to =	""
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :fail: unrouteable mail domain "$domain"
+
+localuser:
+  driver = accept
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  headers_add = "X-body-linecount: $body_linecount\n\
+                 X-message-linecount: $message_linecount\n\
+                 X-received-count: $received_count"
+  return_path_add
+  user = CALLER
+
+remote_smtp:
+  driver = smtp
+  hosts =	127.0.0.1
+  port =	PORT_D
+  allow_localhost
+
+remote_smtp_dkim:
+  driver = smtp
+  hosts =	127.0.0.1
+  port =	PORT_D
+  allow_localhost
+
+.ifdef OPT
+  dkim_domain =		test.ex
+  dkim_selector =	sel
+  dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
+.ifndef HEADERS_MAXSIZE
+  dkim_sign_headers =	LIST
+.endif
+.endif
+
+# ----- Retry -----
+
+begin retry
+* * F,30m,5m;
+# End

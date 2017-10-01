@@ -143,19 +143,27 @@ optionlist optionlist_routers[] = {
 int optionlist_routers_size = sizeof(optionlist_routers)/sizeof(optionlist);
 
 
+#ifdef MACRO_PREDEF
+
+# include "macro_predef.h"
+
 void
-readconf_options_routers(void)
+options_routers(void)
 {
 struct router_info * ri;
+uschar buf[64];
 
-readconf_options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
+options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
 
 for (ri = routers_available; ri->driver_name[0]; ri++)
   {
-  macro_create(string_sprintf("_DRIVER_ROUTER_%T", ri->driver_name), US"y", FALSE, TRUE);
-  readconf_options_from_list(ri->options, (unsigned)*ri->options_count, US"ROUTER", ri->driver_name);
+  spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", ri->driver_name);
+  builtin_macro_create(buf);
+  options_from_list(ri->options, (unsigned)*ri->options_count, US"ROUTER", ri->driver_name);
   }
 }
+
+#else	/*!MACRO_PREDEF*/
 
 /*************************************************
 *          Set router pointer from name          *
@@ -1357,7 +1365,7 @@ new->prop.errors_address = parent->prop.errors_address;
 
 /* Copy the propagated flags and address_data from the original. */
 
-copyflag(new, addr, af_propagate);
+new->prop.ignore_error = addr->prop.ignore_error;
 new->prop.address_data = addr->prop.address_data;
 new->dsn_flags = addr->dsn_flags;
 new->dsn_orcpt = addr->dsn_orcpt;
@@ -1919,4 +1927,5 @@ disable_logging = FALSE;
 return yield;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of route.c */

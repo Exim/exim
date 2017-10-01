@@ -51,25 +51,23 @@
 
 #define PDKIM_VERIFY_FAIL_BODY                    1
 #define PDKIM_VERIFY_FAIL_MESSAGE                 2
-#define PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE   3
-#define PDKIM_VERIFY_INVALID_BUFFER_SIZE          4
-#define PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD     5
-#define PDKIM_VERIFY_INVALID_PUBKEY_IMPORT        6
-#define PDKIM_VERIFY_INVALID_SIGNATURE_ERROR      7
-#define PDKIM_VERIFY_INVALID_DKIM_VERSION         8
+#define PDKIM_VERIFY_FAIL_SIG_ALGO_MISMATCH	  3
+#define PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE   4
+#define PDKIM_VERIFY_INVALID_BUFFER_SIZE          5
+#define PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD     6
+#define PDKIM_VERIFY_INVALID_PUBKEY_IMPORT        7
+#define PDKIM_VERIFY_INVALID_SIGNATURE_ERROR      8
+#define PDKIM_VERIFY_INVALID_DKIM_VERSION         9
 
 /* -------------------------------------------------------------------------- */
 /* Some parameter values */
 #define PDKIM_QUERYMETHOD_DNS_TXT 0
 
-#define PDKIM_ALGO_RSA_SHA256     0
-#define PDKIM_ALGO_RSA_SHA1       1
-
 #define PDKIM_CANON_SIMPLE        0
 #define PDKIM_CANON_RELAXED       1
 
-#define PDKIM_HASH_SHA256         0
-#define PDKIM_HASH_SHA1           1
+/*XXX change to enums */
+#define PDKIM_HASH_SHA256         1
 
 #define PDKIM_KEYTYPE_RSA         0
 
@@ -97,14 +95,14 @@ typedef struct sha2_context sha2_context;
 /* -------------------------------------------------------------------------- */
 /* Public key as (usually) fetched from DNS */
 typedef struct pdkim_pubkey {
-  uschar *version;                /* v=  */
-  uschar *granularity;            /* g=  */
+  const uschar * version;         /* v=  */
+  const uschar *granularity;      /* g=  */
 
+  const uschar * hashes;          /* h=  */
 #ifdef notdef
-  uschar *hashes;                 /* h=  */
   uschar *keytype;                /* k=  */
 #endif
-  uschar *srvtype;                /* s=  */
+  const uschar *srvtype;          /* s=  */
   uschar *notes;                  /* n=  */
 
   blob  key;                      /* p=  */
@@ -115,15 +113,15 @@ typedef struct pdkim_pubkey {
 /* -------------------------------------------------------------------------- */
 /* Signature as it appears in a DKIM-Signature header */
 typedef struct pdkim_signature {
+  struct pdkim_signature * next;
 
   /* Bits stored in a DKIM signature header --------------------------- */
 
   /* (v=) The version, as an integer. Currently, always "1" */
   int version;
 
-  /* (a=) The signature algorithm. Either PDKIM_ALGO_RSA_SHA256
-     or PDKIM_ALGO_RSA_SHA1 */
-  int algo;
+  int keytype;	/* PDKIM_KEYTYPE_RSA */
+  int hashtype;	/* pdkim_hashes index */
 
   /* (c=x/) Header canonicalization method. Either PDKIM_CANON_SIMPLE
      or PDKIM_CANON_RELAXED */
@@ -169,7 +167,7 @@ typedef struct pdkim_signature {
   /* (bh=) Raw body hash data, along with its length in bytes */
   blob bodyhash;
 
-  /* Folded DKIM-Signature: header. Singing only, NULL for verifying.
+  /* Folded DKIM-Signature: header. Signing only, NULL for verifying.
      Ready for insertion into the message. Note: Folded using CRLFTB,
      but final line terminator is NOT included. Note2: This buffer is
      free()d when you call pdkim_free_ctx(). */
@@ -226,19 +224,17 @@ typedef struct pdkim_signature {
      Caution: is NULL if signing or if no record was retrieved. */
   pdkim_pubkey *pubkey;
 
-  /* Pointer to the next pdkim_signature signature. NULL if signing or if
-     this is the last signature. */
-  void *next;
-
   /* Properties below this point are used internally only ------------- */
 
   /* Per-signature helper variables ----------------------------------- */
   hctx         body_hash_ctx;
 
   unsigned long signed_body_bytes; /* How many body bytes we hashed     */
+  int num_buffered_blanklines;
   pdkim_stringlist *headers; /* Raw headers included in the sig         */
+
   /* Signing specific ------------------------------------------------- */
-  uschar * rsa_privkey;     /* Private RSA key                             */
+  uschar * privkey;	     /* Private key                                 */
   uschar * sign_headers;    /* To-be-signed header names                   */
   uschar * rawsig_no_b_val; /* Original signature header w/o b= tag value. */
 } pdkim_signature;
@@ -266,9 +262,8 @@ typedef struct pdkim_ctx {
   uschar    *cur_header;
   int        cur_header_size;
   int        cur_header_len;
-  char      *linebuf;
+  uschar    *linebuf;
   int        linebuf_offset;
-  int        num_buffered_crlf;
   int        num_headers;
   pdkim_stringlist *headers; /* Raw headers for verification         */
 } pdkim_ctx;
@@ -285,21 +280,24 @@ extern "C" {
 
 void	   pdkim_init         (void);
 
+void	   pdkim_init_context (pdkim_ctx *, BOOL, int(*)(char *, char *));
+
 DLLEXPORT
-pdkim_ctx *pdkim_init_sign    (char *, char *, char *, int,
-			      BOOL, int(*)(char *, char *), const uschar **);
+pdkim_signature *pdkim_init_sign    (pdkim_ctx *,
+			       uschar *, uschar *, uschar *, uschar *,
+			       const uschar **);
 
 DLLEXPORT
 pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *), BOOL);
 
 DLLEXPORT
-int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
+void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
                                long,
                                unsigned long,
                                unsigned long);
 
 DLLEXPORT
-int        pdkim_feed         (pdkim_ctx *, char *, int);
+int        pdkim_feed         (pdkim_ctx *, uschar *, int);
 DLLEXPORT
 int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **, const uschar **);
 
@@ -308,6 +306,8 @@ void       pdkim_free_ctx     (pdkim_ctx *);
 
 
 const uschar *	pdkim_errstr(int);
+
+uschar *	dkim_sig_to_a_tag(const pdkim_signature * sig);
 
 #ifdef __cplusplus
 }

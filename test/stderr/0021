@@ -80,9 +80,10 @@ ok@test1 in "+ok_senders"? yes (matched "+ok_senders")
 check sender_domains = +ok_sender_domains
 test1 in "somewhere : test1 : test3"? yes (matched "test1")
 test1 in "+ok_sender_domains"? yes (matched "+ok_sender_domains")
-check logwrite = :panic: rcpt accepted
+check logwrite = :panic: rcpt accepted C=$smtp_command_history
+               = :panic: rcpt accepted C=MAIL,MAIL,RCPT
 LOG: PANIC
-  rcpt accepted
+  rcpt accepted C=MAIL,MAIL,RCPT
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 using ACL "rcpt"
@@ -94,9 +95,10 @@ ok@test1 in "+ok_senders"? yes (matched "+ok_senders" - cached)
 check sender_domains = +ok_sender_domains
 cached yes match for +ok_sender_domains
 test1 in "+ok_sender_domains"? yes (matched "+ok_sender_domains" - cached)
-check logwrite = :panic: rcpt accepted
+check logwrite = :panic: rcpt accepted C=$smtp_command_history
+               = :panic: rcpt accepted C=MAIL,MAIL,RCPT,RCPT
 LOG: PANIC
-  rcpt accepted
+  rcpt accepted C=MAIL,MAIL,RCPT,RCPT
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 LOG: smtp_connection MAIN
@@ -173,9 +175,10 @@ ok@test3 in "+ok_senders"? yes (matched "+ok_senders")
 check sender_domains = +ok_sender_domains
 test3 in "somewhere : test1 : test3"? yes (matched "test3")
 test3 in "+ok_sender_domains"? yes (matched "+ok_sender_domains")
-check logwrite = :panic: rcpt accepted
+check logwrite = :panic: rcpt accepted C=$smtp_command_history
+               = :panic: rcpt accepted C=MAIL,RCPT
 LOG: PANIC
-  rcpt accepted
+  rcpt accepted C=MAIL,RCPT
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 >>Headers added by MAIL or RCPT ACL:
@@ -197,4 +200,4 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
-1999-03-02 09:44:33 rcpt accepted
+1999-03-02 09:44:33 rcpt accepted C=EHLO,MAIL,RCPT

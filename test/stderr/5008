@@ -25,6 +25,7 @@ delivering in maildir format in TESTSUITE/test-mail/userx
 writing to tmp/MAILDIR.myhost.test.ex
 Exim quota = 1048576 old size = sssss this message = sss (included)
   file count quota = 0 count = -1
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
@@ -64,6 +65,7 @@ delivering in maildir format in TESTSUITE/test-mail/userx
 writing to tmp/MAILDIR.myhost.test.ex
 Exim quota = 1048576 old size = sssss this message = sss (included)
   file count quota = 20 count = 4
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex

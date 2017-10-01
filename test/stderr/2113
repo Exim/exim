@@ -49,7 +49,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK id=10HmbB-0005vi-00
   SMTP(close)>>
 LOG: MAIN
-  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* C="250 OK id=10HmbB-0005vi-00"
+  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 CV=no C="250 OK id=10HmbB-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -70,7 +70,86 @@ cmd buf flush ddd bytes
   SMTP(close)>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* C="250 OK id=10HmbC-0005vi-00"
+  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 CV=no C="250 OK id=10HmbC-0005vi-00"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qqf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qqf
+Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+  SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-8BITMIME
+         250-PIPELINING
+         250-STARTTLS
+         250 HELP
+  SMTP>> STARTTLS
+cmd buf flush ddd bytes
+  SMTP<< 220 TLS go ahead
+  SMTP>> EHLO myhost.test.ex
+cmd buf flush ddd bytes
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-8BITMIME
+         250-PIPELINING
+         250 HELP
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP>> RCPT TO:<usera@test.ex>
+  SMTP>> DATA
+cmd buf flush ddd bytes
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP<< 250 OK id=10HmbG-0005vi-00
+LOG: MAIN
+  => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
+LOG: MAIN
+  Completed
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP>> RCPT TO:<userc@test.ex>
+  SMTP>> DATA
+cmd buf flush ddd bytes
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP<< 250 OK id=10HmbH-0005vi-00
+  SMTP(close)>>
+LOG: MAIN
+  => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 CV=no C="250 OK id=10HmbH-0005vi-00"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP>> RCPT TO:<userb@test.ex>
+  SMTP>> DATA
+cmd buf flush ddd bytes
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP<< 250 OK id=10HmbI-0005vi-00
+  SMTP>> QUIT
+cmd buf flush ddd bytes
+  SMTP(close)>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 CV=no C="250 OK id=10HmbI-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

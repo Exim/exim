@@ -631,7 +631,7 @@ signal(SIGCHLD, sigchld_handler);
 
 /* Get the buffer for storing the string for the log display. */
 
-log_display_buffer = (uschar *)store_malloc(log_buffer_size);
+log_display_buffer = US store_malloc(log_buffer_size);
 log_display_buffer[0] = 0;
 
 /* Initialize the data structures for the stripcharts */

@@ -16,6 +16,7 @@ queue_only
 queue_run_in_order
 
 tls_advertise_hosts = *
+tls_require_ciphers = AES256-SHA
 
 # Set certificate only if server
 

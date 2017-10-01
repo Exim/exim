@@ -26,6 +26,7 @@ on all interfaces, unless the option -noipv6 is given. */
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
 
 #ifdef HAVE_NETINET_IP_VAR_H
 # include <netinet/ip_var.h>
@@ -169,7 +170,7 @@ int connection_count = 1;
 int count;
 int on = 1;
 int timeout = 5;
-int initial_pause = 0;
+int initial_pause = 0, tfo = 0;
 int use_ipv4 = 1;
 int use_ipv6 = 1;
 int debug = 0;
@@ -214,6 +215,7 @@ if (argc > 1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
        "\n\t-noipv6  disable ipv6"
        "\n\t-oP file write PID to file"
        "\n\t-t n     n seconds timeout"
+       "\n\t-tfo     enable TCP Fast Open"
   );
   exit(0);
   }
@@ -221,6 +223,7 @@ if (argc > 1 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
 while (na < argc && argv[na][0] == '-')
   {
   if (strcmp(argv[na], "-d") == 0) debug = 1;
+  else if (strcmp(argv[na], "-tfo") == 0) tfo = 1;
   else if (strcmp(argv[na], "-t") == 0)
     {
     if (tmo_noerror = ((timeout = atoi(argv[++na])) < 0)) timeout = -timeout;
@@ -295,7 +298,15 @@ else
       printf("IPv6 socket creation failed: %s\n", strerror(errno));
       exit(1);
       }
-
+#ifdef TCP_FASTOPEN
+    if (tfo)
+      {
+      int backlog = 5;
+      if (setsockopt(listen_socket[v6n], IPPROTO_TCP, TCP_FASTOPEN,
+                    &backlog, sizeof(backlog)))
+	if (debug) printf("setsockopt TCP_FASTOPEN: %s\n", strerror(errno));
+      }
+#endif
     /* If this is an IPv6 wildcard socket, set IPV6_V6ONLY if that option is
     available. */
 
@@ -319,6 +330,15 @@ else
       printf("IPv4 socket creation failed: %s\n", strerror(errno));
       exit(1);
       }
+#ifdef TCP_FASTOPEN
+    if (tfo)
+      {
+      int backlog = 5;
+      if (setsockopt(listen_socket[v4n], IPPROTO_TCP, TCP_FASTOPEN,
+                    &backlog, sizeof(backlog)))
+	if (debug) printf("setsockopt TCP_FASTOPEN: %s\n", strerror(errno));
+      }
+#endif
     }
   }
 

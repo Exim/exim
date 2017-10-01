@@ -175,14 +175,15 @@ Arguments:
   address     the remote address, in text form
   port        the remote port
   timeout     a timeout (zero for indefinite timeout)
-  fastopen    TRUE iff TCP_FASTOPEN can be used
+  fastopen    non-null iff TCP_FASTOPEN can be used; may indicate early-data to
+		be sent in SYN segment
 
 Returns:      0 on success; -1 on failure, with errno set
 */
 
 int
 ip_connect(int sock, int af, const uschar *address, int port, int timeout,
-  BOOL fastopen)
+  const blob * fastopen)
 {
 struct sockaddr_in s_in4;
 struct sockaddr *s_ptr;
@@ -228,25 +229,47 @@ if (timeout > 0) alarm(timeout);
 /* TCP Fast Open, if the system has a cookie from a previous call to
 this peer, can send data in the SYN packet.  The peer can send data
 before it gets our ACK of its SYN,ACK - the latter is useful for
-the SMTP banner.  Is there any usage where the former might be?
-We might extend the ip_connect() args for data if so.  For now,
-connect in FASTOPEN mode but with zero data.
-*/
+the SMTP banner.  Other (than SMTP) cases of TCP connections can
+possibly use the data-on-syn, so support that too.  */
 
 if (fastopen)
   {
-  if (  (rc = sendto(sock, NULL, 0, MSG_FASTOPEN, s_ptr, s_len)) < 0
-     && errno == EOPNOTSUPP
-     )
+  if ((rc = sendto(sock, fastopen->data, fastopen->len,
+		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
+    {
+    DEBUG(D_transport|D_v)
+      debug_printf("TCP_FASTOPEN mode connection, with data\n");
+    tcp_out_fastopen = TRUE;
+    }
+  else if (errno == EINPROGRESS)	/* expected for nonready peer */
+    {
+    if (!fastopen->data)
+      {
+      DEBUG(D_transport|D_v)
+	debug_printf("TCP_FASTOPEN mode connection, no data\n");
+      tcp_out_fastopen = TRUE;
+      rc = 0;
+      }
+    else if (  (rc = send(sock, fastopen->data, fastopen->len, 0)) < 0
+	    && errno == EINPROGRESS)	/* expected for nonready peer */
+      rc = 0;
+    }
+  else if(errno == EOPNOTSUPP)
     {
     DEBUG(D_transport)
       debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
-    rc = connect(sock, s_ptr, s_len);
+    goto legacy_connect;
     }
   }
 else
 #endif
-  rc = connect(sock, s_ptr, s_len);
+  {
+legacy_connect:
+  if ((rc = connect(sock, s_ptr, s_len)) >= 0)
+    if (  fastopen && fastopen->data && fastopen->len
+       && send(sock, fastopen->data, fastopen->len, 0) < 0)
+	rc = -1;
+  }
 
 save_errno = errno;
 alarm(0);
@@ -289,21 +312,22 @@ Arguments:
   address       the remote address, in text form
   portlo,porthi the remote port range
   timeout       a timeout
-  connhost	if not NULL, host_item filled in with connection details
+  connhost	if not NULL, host_item to be filled in with connection details
   errstr        pointer for allocated string on error
+  fastopen	with SOCK_STREAM, if non-null, request TCP Fast Open.
+		Additionally, optional early-data to send
 
 Return:
   socket fd, or -1 on failure (having allocated an error string)
 */
 int
 ip_connectedsocket(int type, const uschar * hostname, int portlo, int porthi,
-	int timeout, host_item * connhost, uschar ** errstr)
+      int timeout, host_item * connhost, uschar ** errstr, const blob * fastopen)
 {
 int namelen, port;
 host_item shost;
 host_item *h;
 int af = 0, fd, fd4 = -1, fd6 = -1;
-BOOL fastopen = tcp_fastopen_ok && type == SOCK_STREAM;
 
 shost.next = NULL;
 shost.address = NULL;
@@ -381,6 +405,7 @@ bad:
 }
 
 
+/*XXX TFO? */
 int
 ip_tcpsocket(const uschar * hostport, uschar ** errstr, int tmo)
 {
@@ -401,7 +426,7 @@ if (scan != 3)
   }
 
 return ip_connectedsocket(SOCK_STREAM, hostname, portlow, porthigh,
-			  tmo, NULL, errstr);
+			  tmo, NULL, errstr, NULL);
 }
 
 int
@@ -457,7 +482,7 @@ ip_keepalive(int sock, const uschar *address, BOOL torf)
 {
 int fodder = 1;
 if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE,
-    (uschar *)(&fodder), sizeof(fodder)) != 0)
+    US (&fodder), sizeof(fodder)) != 0)
   log_write(0, LOG_MAIN, "setsockopt(SO_KEEPALIVE) on connection %s %s "
     "failed: %s", torf? "to":"from", address, strerror(errno));
 }
@@ -492,7 +517,7 @@ if (time_left <= 0)
 
 do
   {
-  struct timeval tv = { time_left, 0 };
+  struct timeval tv = { .tv_sec = time_left, .tv_usec = 0 };
   FD_ZERO (&select_inset);
   FD_SET (fd, &select_inset);
 

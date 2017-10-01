@@ -137,8 +137,10 @@ extern uschar  *dsn_advertise_hosts;   /* host for which TLS is advertised */
 incoming TCP/IP. */
 
 extern int (*lwr_receive_getc)(unsigned);
+extern uschar * (*lwr_receive_getbuf)(unsigned *);
 extern int (*lwr_receive_ungetc)(int);
 extern int (*receive_getc)(unsigned);
+extern uschar * (*receive_getbuf)(unsigned *);
 extern void (*receive_get_cache)(void);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
@@ -246,6 +248,7 @@ extern int     bmi_deliver;            /* Flag that determines if the message sh
 extern int     bmi_run;                /* Flag that determines if message should be run through Brightmail server */
 extern uschar *bmi_verdicts;           /* BASE64-encoded verdicts with recipient lists */
 #endif
+extern int     bsmtp_transaction_linecount; /* Start of last transaction */
 extern int     body_8bitmime;          /* sender declared BODY= ; 7=7BIT, 8=8BITMIME */
 extern uschar *bounce_message_file;    /* Template file */
 extern uschar *bounce_message_text;    /* One-liner */
@@ -255,7 +258,7 @@ extern int     bounce_return_linesize_limit; /* Max line length in return */
 extern BOOL    bounce_return_message;  /* Include message in bounce */
 extern int     bounce_return_size_limit; /* Max amount to return */
 extern uschar *bounce_sender_authentication; /* AUTH address for bounces */
-extern int     bsmtp_transaction_linecount; /* Start of last transaction */
+extern uschar *builtin_macros_create_trigger; /* config file line causing lazy-create */
 
 extern uschar *callout_address;         /* Address used for a malware/spamd/verify etc. callout */
 extern int     callout_cache_domain_positive_expire; /* Time for positive domain callout cache records to expire */
@@ -279,6 +282,7 @@ extern uschar *client_authenticated_id;     /* "login" name used for SMTP AUTH *
 extern uschar *client_authenticated_sender; /* AUTH option to SMTP MAIL FROM (not yet used) */
 extern int     clmacro_count;          /* Number of command line macros */
 extern uschar *clmacros[];             /* Copy of them, for re-exec */
+extern BOOL    commandline_checks_require_admin; /* belt and braces for insecure setups */
 extern int     connection_max_messages;/* Max down one SMTP connection */
 extern BOOL    config_changed;         /* True if -C used */
 extern FILE   *config_file;            /* Configuration file */
@@ -289,21 +293,27 @@ extern uschar *config_main_filelist;   /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */
 extern uid_t   config_uid;             /* Additional owner */
+extern uschar *continue_proxy_cipher;  /* TLS cipher for proxied continued delivery */
 extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern BOOL    continue_more;          /* Flag more addresses waiting */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
-extern BOOL    continue_proxy;	       /* Continued delivery is proxied for TLS */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 typedef struct {
+  unsigned     callout_hold_only:1;    /* Conn is only for verify callout */
   unsigned     delivery:1;             /* When to attempt */
   unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spooling */
+  unsigned     is_tls:1;	       /* Conn has TLS active */
   int          fd;                     /* Open connection */
   int          nrcpt;                  /* Count of addresses */
+  uschar *     transport;	       /* Name of transport */
   uschar *     interface;              /* (address of) */
+  uschar *     snd_ip;		       /* sending_ip_address */
+  int	       snd_port;	       /* sending_port */
+  unsigned     peer_options;	       /* smtp_peer_options */
   host_item    host;                   /* Host used */
   address_item addr;                   /* (Chain of) addresses */
 } cut_t;
@@ -555,7 +565,6 @@ extern uschar *lookup_value;           /* Value looked up from file */
 
 extern macro_item *macros;             /* Configuration macros */
 extern macro_item *mlast;              /* Last item in macro list */
-extern BOOL    macros_builtin_created; /* Flag for lazy-create */
 extern uschar *mailstore_basename;     /* For mailstore deliveries */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *malware_name;           /* Name of virus or malware ("W32/Klez-H") */
@@ -712,7 +721,7 @@ extern int     received_count;         /* Count of Received: headers */
 extern uschar *received_for;           /* For "for" field */
 extern uschar *received_header_text;   /* Definition of Received: header */
 extern int     received_headers_max;   /* Max count of Received: headers */
-extern int     received_time;          /* Time the message was received */
+extern struct timeval received_time;   /* Time the message was received */
 extern uschar *recipient_data;         /* lookup data for recipients */
 extern uschar *recipient_unqualified_hosts; /* Permitted unqualified recipients */
 extern uschar *recipient_verify_failure; /* What went wrong */
@@ -811,7 +820,7 @@ extern BOOL    smtp_check_spool_space; /* TRUE to check SMTP SIZE value */
 extern int     smtp_ch_index;          /* Index in smtp_connection_had */
 extern uschar *smtp_cmd_argument;      /* For all SMTP commands */
 extern uschar *smtp_cmd_buffer;        /* SMTP command buffer */
-extern time_t  smtp_connection_start;  /* Start time of SMTP connection */
+extern struct timeval smtp_connection_start; /* Start time of SMTP connection */
 extern uschar  smtp_connection_had[];  /* Recent SMTP commands */
 extern int     smtp_connect_backlog;   /* Max backlog permitted */
 extern double  smtp_delay_mail;        /* Current MAIL delay */
@@ -865,6 +874,8 @@ extern uschar *spf_smtp_comment;       /* spf comment to include in SMTP reply *
 #endif
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern uschar *spool_directory;        /* Name of spool directory */
+extern BOOL    spool_file_wireformat;  /* current -D file has CRLF rather than NL */
+extern BOOL    spool_wireformat;       /* can write wireformat -D files */
 #ifdef EXPERIMENTAL_SRS
 extern uschar *srs_config;             /* SRS config secret:max age:hash length:use timestamp:use hash */
 extern uschar *srs_db_address;         /* SRS db address */
@@ -911,7 +922,12 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern BOOL    system_filtering;       /* TRUE when running system filter */
 
 extern BOOL    tcp_fastopen_ok;	       /* appears to be supported by kernel */
+extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
+extern BOOL    tcp_in_fastopen;	       /* conn used fastopen */
+extern BOOL    tcp_in_fastopen_logged; /* one-time logging */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
+extern BOOL    tcp_out_fastopen;       /* conn used fastopen */
+extern BOOL    tcp_out_fastopen_logged; /* one-time logging */
 #ifdef USE_TCP_WRAPPERS
 extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
 #endif

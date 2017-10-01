@@ -284,6 +284,9 @@ sender_ident = NULL;
 sender_local = FALSE;
 sender_set_untrusted = FALSE;
 smtp_active_hostname = primary_hostname;
+#ifndef COMPILE_UTILITY
+spool_file_wireformat = FALSE;
+#endif
 tree_nonrecipients = NULL;
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -394,10 +397,11 @@ sender_address[n-3] = 0;
 
 /* time */
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
-if (sscanf(CS big_buffer, "%d %d", &received_time, &warning_count) != 2)
+if (sscanf(CS big_buffer, TIME_T_FMT " %d", &received_time.tv_sec, &warning_count) != 2)
   goto SPOOL_FORMAT_ERROR;
+received_time.tv_usec = 0;
 
-message_age = time(NULL) - received_time;
+message_age = time(NULL) - received_time.tv_sec;
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver) debug_printf("user=%s uid=%ld gid=%ld sender=%s\n",
@@ -570,7 +574,8 @@ for (;;)
     break;
 
     case 'l':
-    if (Ustrcmp(p, "ocal") == 0) sender_local = TRUE;
+    if (Ustrcmp(p, "ocal") == 0)
+      sender_local = TRUE;
     else if (Ustrcmp(big_buffer, "-localerror") == 0)
       local_error_message = TRUE;
     else if (Ustrncmp(p, "ocal_scan ", 10) == 0)
@@ -590,6 +595,12 @@ for (;;)
     case 'r':
     if (Ustrncmp(p, "eceived_protocol", 16) == 0)
       received_protocol = string_copy(big_buffer + 19);
+    else if (Ustrncmp(p, "eceived_time_usec", 17) == 0)
+      {
+      unsigned usec;
+      if (sscanf(CS big_buffer + 21, "%u", &usec) == 1)
+	received_time.tv_usec = usec;
+      }
     break;
 
     case 's':
@@ -602,6 +613,10 @@ for (;;)
       spam_score = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
+#endif
+#ifndef COMPILE_UTILITY
+    else if (Ustrncmp(p, "pool_file_wireformat", 20) == 0)
+      spool_file_wireformat = TRUE;
 #endif
 #if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
     else if (Ustrncmp(p, "mtputf8", 7) == 0)

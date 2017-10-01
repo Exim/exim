@@ -390,8 +390,8 @@ for (loop = 0; (loop < hash_offlen); ++loop)
   {
   uschar packbuf[8];
 
-  if (lseek(cdbp->fileno, (off_t) cur_offset,SEEK_SET) == -1) return DEFER;
-  if (cdb_bread(cdbp->fileno, packbuf,8) == -1) return DEFER;
+  if (lseek(cdbp->fileno, (off_t) cur_offset, SEEK_SET) == -1) return DEFER;
+  if (cdb_bread(cdbp->fileno, packbuf, 8) == -1) return DEFER;
 
   item_hash = cdb_unpack(packbuf);
   item_posn = cdb_unpack(packbuf + 4);

@@ -1,6 +1,6 @@
 # Make file for building the pdkim library.
 
-OBJ = pdkim.o rsa.o
+OBJ = pdkim.o signing.o
 
 pdkim.a:         $(OBJ)
 		 @$(RM_COMMAND) -f pdkim.a
@@ -13,6 +13,6 @@ pdkim.a:         $(OBJ)
 		 $(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -I. $*.c
 
 pdkim.o: $(HDRS) crypt_ver.h pdkim.h pdkim.c
-rsa.o:   $(HDRS) crypt_ver.h rsa.h rsa.c
+signing.o: $(HDRS) crypt_ver.h signing.h signing.c
 
 # End

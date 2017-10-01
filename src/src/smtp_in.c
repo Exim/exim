@@ -314,10 +314,10 @@ static void smtp_rset_handler(void);
 *************************************************/
 
 /* Synchronization checks can never be perfect because a packet may be on its
-way but not arrived when the check is done. Such checks can in any case only be
-done when TLS is not in use. Normally, the checks happen when commands are
-read: Exim ensures that there is no more input in the input buffer. In normal
-cases, the response to the command will be fast, and there is no further check.
+way but not arrived when the check is done.  Normally, the checks happen when
+commands are read: Exim ensures that there is no more input in the input buffer.
+In normal cases, the response to the command will be fast, and there is no
+further check.
 
 However, for some commands an ACL is run, and that can include delays. In those
 cases, it is useful to do another check on the input just before sending the
@@ -333,15 +333,19 @@ Returns:   TRUE if all is well; FALSE if there is input pending
 */
 
 static BOOL
-check_sync(void)
+wouldblock_reading(void)
 {
 int fd, rc;
 fd_set fds;
 struct timeval tzero;
 
-if (!smtp_enforce_sync || sender_host_address == NULL ||
-    sender_host_notsocket || tls_in.active >= 0)
-  return TRUE;
+#ifdef SUPPORT_TLS
+if (tls_in.active >= 0)
+ return !tls_could_read();
+#endif
+
+if (smtp_inptr < smtp_inend)
+  return FALSE;
 
 fd = fileno(smtp_in);
 FD_ZERO(&fds);
@@ -359,6 +363,29 @@ rc = smtp_inend - smtp_inptr;
 if (rc > 150) rc = 150;
 smtp_inptr[rc] = 0;
 return FALSE;
+}
+
+static BOOL
+check_sync(void)
+{
+if (!smtp_enforce_sync || sender_host_address == NULL || sender_host_notsocket)
+  return TRUE;
+
+return wouldblock_reading();
+}
+
+
+/* If there's input waiting (and we're doing pipelineing) then we can pipeline
+a reponse with the one following. */
+
+static BOOL
+pipeline_response(void)
+{
+if (  !smtp_enforce_sync || !sender_host_address
+   || sender_host_notsocket || !pipelining_advertised)
+  return FALSE;
+
+return !wouldblock_reading();
 }
 
 
@@ -400,6 +427,44 @@ log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
 
 
 
+/* Refill the buffer, and notify DKIM verification code.
+Return false for error or EOF.
+*/
+
+static BOOL
+smtp_refill(unsigned lim)
+{
+int rc, save_errno;
+if (!smtp_out) return FALSE;
+fflush(smtp_out);
+if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+
+/* Limit amount read, so non-message data is not fed to DKIM */
+
+rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
+save_errno = errno;
+alarm(0);
+if (rc <= 0)
+  {
+  /* Must put the error text in fixed store, because this might be during
+  header reading, where it releases unused store above the header. */
+  if (rc < 0)
+    {
+    smtp_had_error = save_errno;
+    smtp_read_error = string_copy_malloc(
+      string_sprintf(" (error: %s)", strerror(save_errno)));
+    }
+  else smtp_had_eof = 1;
+  return FALSE;
+  }
+#ifndef DISABLE_DKIM
+dkim_exim_verify_feed(smtp_inbuffer, rc);
+#endif
+smtp_inend = smtp_inbuffer + rc;
+smtp_inptr = smtp_inbuffer;
+return TRUE;
+}
+
 /*************************************************
 *          SMTP version of getc()                *
 *************************************************/
@@ -417,37 +482,26 @@ int
 smtp_getc(unsigned lim)
 {
 if (smtp_inptr >= smtp_inend)
-  {
-  int rc, save_errno;
-  if (!smtp_out) return EOF;
-  fflush(smtp_out);
-  if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-
-  /* Limit amount read, so non-message data is not fed to DKIM */
-
-  rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
-  save_errno = errno;
-  alarm(0);
-  if (rc <= 0)
-    {
-    /* Must put the error text in fixed store, because this might be during
-    header reading, where it releases unused store above the header. */
-    if (rc < 0)
-      {
-      smtp_had_error = save_errno;
-      smtp_read_error = string_copy_malloc(
-        string_sprintf(" (error: %s)", strerror(save_errno)));
-      }
-    else smtp_had_eof = 1;
+  if (!smtp_refill(lim))
     return EOF;
-    }
-#ifndef DISABLE_DKIM
-  dkim_exim_verify_feed(smtp_inbuffer, rc);
-#endif
-  smtp_inend = smtp_inbuffer + rc;
-  smtp_inptr = smtp_inbuffer;
-  }
 return *smtp_inptr++;
+}
+
+uschar *
+smtp_getbuf(unsigned * len)
+{
+unsigned size;
+uschar * buf;
+
+if (smtp_inptr >= smtp_inend)
+  if (!smtp_refill(*len))
+    { *len = 0; return NULL; }
+
+if ((size = smtp_inend - smtp_inptr) > *len) size = *len;
+buf = smtp_inptr;
+smtp_inptr += size;
+*len = size;
+return buf;
 }
 
 void
@@ -493,6 +547,7 @@ for(;;)
     return lwr_receive_getc(chunking_data_left--);
 
   receive_getc = lwr_receive_getc;
+  receive_getbuf = lwr_receive_getbuf;
   receive_ungetc = lwr_receive_ungetc;
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
@@ -504,12 +559,15 @@ for(;;)
 
   if (!pipelining_advertised && !check_sync())
     {
+    unsigned n = smtp_inend - smtp_inptr;
+    if (n > 32) n = 32;
+
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
       "rejected \"%s\" %s next input=\"%s\"",
       smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(smtp_inptr));
+      string_printing(string_copyn(smtp_inptr, n)));
       (void) synprot_error(L_smtp_protocol_error, 554, NULL,
 	US"SMTP synchronization error");
     goto repeat_until_rset;
@@ -526,7 +584,7 @@ for(;;)
     return EOD;
     }
 
-  smtp_printf("250 %u byte chunk received\r\n", chunking_datasize);
+  smtp_printf("250 %u byte chunk received\r\n", FALSE, chunking_datasize);
   chunking_state = CHUNKING_OFFERED;
   DEBUG(D_receive) debug_printf("chunking state %d\n", (int)chunking_state);
 
@@ -564,7 +622,7 @@ next_cmd:
 
     case NOOP_CMD:
       HAD(SCH_NOOP);
-      smtp_printf("250 OK\r\n");
+      smtp_printf("250 OK\r\n", FALSE);
       goto next_cmd;
 
     case BDAT_CMD:
@@ -594,6 +652,7 @@ next_cmd:
 	  }
 
       receive_getc = bdat_getc;
+      receive_getbuf = bdat_getbuf;
       receive_ungetc = bdat_ungetc;
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
@@ -604,14 +663,28 @@ next_cmd:
   }
 }
 
+uschar *
+bdat_getbuf(unsigned * len)
+{
+uschar * buf;
+
+if (chunking_data_left <= 0)
+  { *len = 0; return NULL; }
+
+if (*len > chunking_data_left) *len = chunking_data_left;
+buf = lwr_receive_getbuf(len);	/* Either smtp_getbuf or tls_getbuf */
+chunking_data_left -= *len;
+return buf;
+}
+
 void
 bdat_flush_data(void)
 {
-while (chunking_data_left > 0)
-  if (lwr_receive_getc(chunking_data_left--) < 0)
-    break;
+unsigned n = chunking_data_left;
+(void) bdat_getbuf(&n);
 
 receive_getc = lwr_receive_getc;
+receive_getbuf = lwr_receive_getbuf;
 receive_ungetc = lwr_receive_ungetc;
 
 if (chunking_state != CHUNKING_LAST)
@@ -725,18 +798,19 @@ they are also picked up later by smtp_fflush().
 
 Arguments:
   format      format string
+  more	      further data expected
   ...         optional arguments
 
 Returns:      nothing
 */
 
 void
-smtp_printf(const char *format, ...)
+smtp_printf(const char *format, BOOL more, ...)
 {
 va_list ap;
 
-va_start(ap, format);
-smtp_vprintf(format, ap);
+va_start(ap, more);
+smtp_vprintf(format, more, ap);
 va_end(ap);
 }
 
@@ -745,7 +819,7 @@ smtp_printf(), bearing in mind that in C a vararg function can't directly
 call another vararg function, only a function which accepts a va_list. */
 
 void
-smtp_vprintf(const char *format, va_list ap)
+smtp_vprintf(const char *format, BOOL more, va_list ap)
 {
 BOOL yield;
 
@@ -791,7 +865,7 @@ if (rcpt_in_progress)
 #ifdef SUPPORT_TLS
 if (tls_in.active >= 0)
   {
-  if (tls_write(TRUE, big_buffer, Ustrlen(big_buffer)) < 0)
+  if (tls_write(TRUE, big_buffer, Ustrlen(big_buffer), more) < 0)
     smtp_write_error = -1;
   }
 else
@@ -1570,7 +1644,7 @@ smtp_closedown(uschar *message)
 {
 if (smtp_in == NULL || smtp_batched_input) return;
 receive_swallow_smtp();
-smtp_printf("421 %s\r\n", message);
+smtp_printf("421 %s\r\n", FALSE, message);
 
 for (;;) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
   {
@@ -1578,16 +1652,16 @@ for (;;) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
   return;
 
   case QUIT_CMD:
-  smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+  smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
   mac_smtp_fflush();
   return;
 
   case RSET_CMD:
-  smtp_printf("250 Reset OK\r\n");
+  smtp_printf("250 Reset OK\r\n", FALSE);
   break;
 
   default:
-  smtp_printf("421 %s\r\n", message);
+  smtp_printf("421 %s\r\n", FALSE, message);
   break;
   }
 }
@@ -1723,12 +1797,31 @@ for (i = 0; i < smtp_ch_index; i++)
   sep = US",";
   }
 
-if (s != NULL) s[ptr] = 0; else s = US"";
-log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
-  host_and_ident(FALSE),
-  readconf_printtime( (int) ((long)time(NULL) - (long)smtp_connection_start)),
-  s);
+if (s) s[ptr] = 0; else s = US"";
+log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
+  tcp_in_fastopen ? US"TFO " : US"",
+  host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
 }
+
+
+/* Return list of recent smtp commands */
+
+uschar *
+smtp_cmd_hist(void)
+{
+uschar * list = NULL;
+int size = 0, len = 0, i;
+
+for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+  if (smtp_connection_had[i] != SCH_NONE)
+    list = string_append_listele(list, &size, &len, ',',
+      smtp_names[smtp_connection_had[i]]);
+for (i = 0; i < smtp_ch_index; i++)
+  list = string_append_listele(list, &size, &len, ',',
+    smtp_names[smtp_connection_had[i]]);
+return list ? list : US"";
+}
+
 
 
 
@@ -1849,17 +1942,17 @@ while (v > smtp_cmd_data && *v != '=' && !isspace(*v))
 
 n = v;
 if (*v == '=')
-{
+  {
   while(isalpha(n[-1])) n--;
   /* RFC says SP, but TAB seen in wild and other major MTAs accept it */
   if (!isspace(n[-1])) return FALSE;
   n[-1] = 0;
-}
+  }
 else
-{
+  {
   n++;
   if (v == smtp_cmd_data) return FALSE;
-}
+  }
 *v++ = 0;
 *name = n;
 *value = v;
@@ -1887,7 +1980,6 @@ smtp_reset(void *reset_point)
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
-cancel_cutthrough_connection("smtp reset");
 message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;
@@ -2018,6 +2110,7 @@ bsmtp_transaction_linecount = receive_linecount;
 
 if ((receive_feof)()) return 0;   /* Treat EOF as QUIT */
 
+cancel_cutthrough_connection(TRUE, US"smtp_setup_batch_msg");
 smtp_reset(reset_point);                /* Reset for start of message */
 
 /* Deal with SMTP commands. This loop is exited by setting done to a POSITIVE
@@ -2042,6 +2135,7 @@ while (done <= 0)
     /* Fall through */
 
     case RSET_CMD:
+    cancel_cutthrough_connection(TRUE, US"RSET received");
     smtp_reset(reset_point);
     bsmtp_transaction_linecount = receive_linecount;
     break;
@@ -2065,6 +2159,7 @@ while (done <= 0)
 
     /* Reset to start of message */
 
+    cancel_cutthrough_connection(TRUE, US"MAIL received");
     smtp_reset(reset_point);
 
     /* Apply SMTP rewrite */
@@ -2237,6 +2332,28 @@ return FALSE;
 }
 
 
+
+
+#ifdef TCP_FASTOPEN
+static void
+tfo_in_check(void)
+{
+# ifdef TCP_INFO
+struct tcp_info tinfo;
+socklen_t len = sizeof(tinfo);
+
+if (  getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
+   && tinfo.tcpi_state == TCP_SYN_RECV
+   )
+  {
+  DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection\n");
+  tcp_in_fastopen = TRUE;
+  }
+# endif
+}
+#endif
+
+
 /*************************************************
 *          Start an SMTP session                 *
 *************************************************/
@@ -2259,7 +2376,7 @@ uschar *user_msg, *log_msg;
 uschar *code, *esc;
 uschar *p, *s, *ss;
 
-smtp_connection_start = time(NULL);
+gettimeofday(&smtp_connection_start, NULL);
 for (smtp_ch_index = 0; smtp_ch_index < SMTP_HBUFF_SIZE; smtp_ch_index++)
   smtp_connection_had[smtp_ch_index] = SCH_NONE;
 smtp_ch_index = 0;
@@ -2326,10 +2443,11 @@ else
 /* Set up the buffer for inputting using direct read() calls, and arrange to
 call the local functions instead of the standard C ones. */
 
-if (!(smtp_inbuffer = (uschar *)malloc(IN_BUFFER_SIZE)))
+if (!(smtp_inbuffer = US malloc(IN_BUFFER_SIZE)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
 
 receive_getc = smtp_getc;
+receive_getbuf = smtp_getbuf;
 receive_get_cache = smtp_get_cache;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
@@ -2431,14 +2549,14 @@ if (!sender_host_unknown)
 
     DEBUG(D_receive) debug_printf("checking for IP options\n");
 
-    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, (uschar *)(ipopt),
+    if (getsockopt(fileno(smtp_out), IPPROTO_IP, IP_OPTIONS, US (ipopt),
           &optlen) < 0)
       {
       if (errno != ENOPROTOOPT)
         {
         log_write(0, LOG_MAIN, "getsockopt() failed from %s: %s",
           host_and_ident(FALSE), strerror(errno));
-        smtp_printf("451 SMTP service not available\r\n");
+        smtp_printf("451 SMTP service not available\r\n", FALSE);
         return FALSE;
         }
       }
@@ -2457,11 +2575,11 @@ if (!sender_host_unknown)
       struct in_addr addr;
 
       #if OPTSTYLE == 1
-      uschar *optstart = (uschar *)(ipopt->__data);
+      uschar *optstart = US (ipopt->__data);
       #elif OPTSTYLE == 2
-      uschar *optstart = (uschar *)(ipopt->ip_opts);
+      uschar *optstart = US (ipopt->ip_opts);
       #else
-      uschar *optstart = (uschar *)(ipopt->ipopt_list);
+      uschar *optstart = US (ipopt->ipopt_list);
       #endif
 
       DEBUG(D_receive) debug_printf("IP options exist\n");
@@ -2470,7 +2588,7 @@ if (!sender_host_unknown)
       p += Ustrlen(p);
 
       for (opt = optstart; opt != NULL &&
-           opt < (uschar *)(ipopt) + optlen;)
+           opt < US (ipopt) + optlen;)
         {
         switch (*opt)
           {
@@ -2524,10 +2642,7 @@ if (!sender_host_unknown)
             Ustrcat(p, "[ ");
             p += 2;
             for (i = 0; i < opt[1]; i++)
-              {
-              sprintf(CS p, "%2.2x ", opt[i]);
-              p += 3;
-              }
+              p += sprintf(CS p, "%2.2x ", opt[i]);
             *p++ = ']';
             }
           opt += opt[1];
@@ -2543,7 +2658,7 @@ if (!sender_host_unknown)
       log_write(0, LOG_MAIN|LOG_REJECT,
         "connection from %s refused (IP options)", host_and_ident(FALSE));
 
-      smtp_printf("554 SMTP service not available\r\n");
+      smtp_printf("554 SMTP service not available\r\n", FALSE);
       return FALSE;
       }
 
@@ -2595,7 +2710,7 @@ if (!sender_host_unknown)
     {
     log_write(L_connection_reject, LOG_MAIN|LOG_REJECT, "refused connection "
       "from %s (host_reject_connection)", host_and_ident(FALSE));
-    smtp_printf("554 SMTP service not available\r\n");
+    smtp_printf("554 SMTP service not available\r\n", FALSE);
     return FALSE;
     }
 
@@ -2626,7 +2741,7 @@ if (!sender_host_unknown)
       log_write(L_connection_reject,
                 LOG_MAIN|LOG_REJECT, "refused connection from %s "
                 "(tcp wrappers)", host_and_ident(FALSE));
-      smtp_printf("554 SMTP service not available\r\n");
+      smtp_printf("554 SMTP service not available\r\n", FALSE);
       }
     else
       {
@@ -2636,7 +2751,7 @@ if (!sender_host_unknown)
       log_write(L_connection_reject,
                 LOG_MAIN|LOG_REJECT, "temporarily refused connection from %s "
                 "(tcp wrappers errno=%d)", host_and_ident(FALSE), save_errno);
-      smtp_printf("451 Temporary local problem - please try later\r\n");
+      smtp_printf("451 Temporary local problem - please try later\r\n", FALSE);
       }
     return FALSE;
     }
@@ -2656,7 +2771,7 @@ if (!sender_host_unknown)
         host_and_ident(FALSE), smtp_accept_count - 1, smtp_accept_max,
         smtp_accept_reserve, (rc == DEFER)? " (lookup deferred)" : "");
       smtp_printf("421 %s: Too many concurrent SMTP connections; "
-        "please try again later\r\n", smtp_active_hostname);
+        "please try again later\r\n", FALSE, smtp_active_hostname);
       return FALSE;
       }
     reserved_host = TRUE;
@@ -2677,7 +2792,7 @@ if (!sender_host_unknown)
       LOG_MAIN, "temporarily refused connection from %s: not in "
       "reserve list and load average = %.2f", host_and_ident(FALSE),
       (double)load_average/1000.0);
-    smtp_printf("421 %s: Too much load; please try again later\r\n",
+    smtp_printf("421 %s: Too much load; please try again later\r\n", FALSE,
       smtp_active_hostname);
     return FALSE;
     }
@@ -2817,17 +2932,28 @@ this synchronisation check is disabled. */
 
 if (!check_sync())
   {
+  unsigned n = smtp_inend - smtp_inptr;
+  if (n > 32) n = 32;
+
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
     "synchronization error (input sent without waiting for greeting): "
     "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-    string_printing(smtp_inptr));
-  smtp_printf("554 SMTP synchronization error\r\n");
+    string_printing(string_copyn(smtp_inptr, n)));
+  smtp_printf("554 SMTP synchronization error\r\n", FALSE);
   return FALSE;
   }
 
 /* Now output the banner */
 
-smtp_printf("%s", ss);
+smtp_printf("%s", FALSE, ss);
+
+/* Attempt to see if we sent the banner before the last ACK of the 3-way
+handshake arrived.  If so we must have managed a TFO. */
+
+#ifdef TCP_FASTOPEN
+tfo_in_check();
+#endif
+
 return TRUE;
 }
 
@@ -2874,10 +3000,10 @@ if (++synprot_error_count > smtp_max_synprot_errors)
 
 if (code > 0)
   {
-  smtp_printf("%d%c%s%s%s\r\n", code, (yield == 1)? '-' : ' ',
-    (data == NULL)? US"" : data, (data == NULL)? US"" : US": ", errmess);
+  smtp_printf("%d%c%s%s%s\r\n", FALSE, code, yield == 1 ? '-' : ' ',
+    data ? data : US"", data ? US": " : US"", errmess);
   if (yield == 1)
-    smtp_printf("%d Too many syntax or protocol errors\r\n", code);
+    smtp_printf("%d Too many syntax or protocol errors\r\n", FALSE, code);
   }
 
 return yield;
@@ -2933,25 +3059,27 @@ if (rcpt_in_progress)
   rcpt_in_progress = FALSE;
   }
 
-/* Not output the message, splitting it up into multiple lines if necessary. */
+/* Now output the message, splitting it up into multiple lines if necessary.
+We only handle pipelining these responses as far as nonfinal/final groups,
+not the whole MAIL/RCPT/DATA response set. */
 
 for (;;)
   {
   uschar *nl = Ustrchr(msg, '\n');
   if (nl == NULL)
     {
-    smtp_printf("%.3s%c%.*s%s\r\n", code, final? ' ':'-', esclen, esc, msg);
+    smtp_printf("%.3s%c%.*s%s\r\n", !final, code, final ? ' ':'-', esclen, esc, msg);
     return;
     }
   else if (nl[1] == 0 || no_multiline_responses)
     {
-    smtp_printf("%.3s%c%.*s%.*s\r\n", code, final? ' ':'-', esclen, esc,
+    smtp_printf("%.3s%c%.*s%.*s\r\n", !final, code, final ? ' ':'-', esclen, esc,
       (int)(nl - msg), msg);
     return;
     }
   else
     {
-    smtp_printf("%.3s-%.*s%.*s\r\n", code, esclen, esc, (int)(nl - msg), msg);
+    smtp_printf("%.3s-%.*s%.*s\r\n", TRUE, code, esclen, esc, (int)(nl - msg), msg);
     msg = nl + 1;
     while (isspace(*msg)) msg++;
     }
@@ -3295,7 +3423,7 @@ if (code && defaultrespond)
     va_start(ap, defaultrespond);
     if (!string_vformat(buffer, sizeof(buffer), CS defaultrespond, ap))
       log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_notquit_exit()");
-    smtp_printf("%s %s\r\n", code, buffer);
+    smtp_printf("%s %s\r\n", FALSE, code, buffer);
     va_end(ap);
     }
   mac_smtp_fflush();
@@ -3587,7 +3715,7 @@ if (allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
   *recipient = rewrite_address_qualify(*recipient, TRUE);
   return rd;
   }
-smtp_printf("501 %s: recipient address must contain a domain\r\n",
+smtp_printf("501 %s: recipient address must contain a domain\r\n", FALSE,
   smtp_cmd_data);
 log_write(L_smtp_syntax_error,
   LOG_MAIN|LOG_REJECT, "unqualified %s rejected: <%s> %s%s",
@@ -3613,7 +3741,7 @@ if (acl_smtp_quit)
 if (*user_msgp)
   smtp_respond(US"221", 3, TRUE, *user_msgp);
 else
-  smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+  smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 
 #ifdef SUPPORT_TLS
 tls_close(TRUE, TRUE);
@@ -3629,7 +3757,7 @@ smtp_rset_handler(void)
 {
 HAD(SCH_RSET);
 incomplete_transaction_log(US"RSET");
-smtp_printf("250 Reset OK\r\n");
+smtp_printf("250 Reset OK\r\n", FALSE);
 cmd_list[CMD_LIST_RSET].is_mail_cmd = FALSE;
 }
 
@@ -3849,7 +3977,7 @@ while (done <= 0)
       {
       c = smtp_in_auth(au, &s, &ss);
 
-      smtp_printf("%s\r\n", s);
+      smtp_printf("%s\r\n", FALSE, s);
       if (c != OK)
 	log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
 	  au->name, host_and_ident(FALSE), ss);
@@ -3896,7 +4024,7 @@ while (done <= 0)
 
     if (!check_helo(smtp_cmd_data))
       {
-      smtp_printf("501 Syntactically invalid %s argument(s)\r\n", hello);
+      smtp_printf("501 Syntactically invalid %s argument(s)\r\n", FALSE, hello);
 
       log_write(0, LOG_MAIN|LOG_REJECT, "rejected %s from %s: syntactically "
         "invalid argument(s): %s", hello, host_and_ident(FALSE),
@@ -3960,7 +4088,7 @@ while (done <= 0)
           {
           if (helo_required)
             {
-            smtp_printf("%d %s argument does not match calling host\r\n",
+            smtp_printf("%d %s argument does not match calling host\r\n", FALSE,
               tempfail? 451 : 550, hello);
             log_write(0, LOG_MAIN|LOG_REJECT, "%srejected \"%s %s\" from %s",
               tempfail? "temporarily " : "",
@@ -4010,19 +4138,19 @@ while (done <= 0)
 #endif
 
     smtp_code = US"250 ";        /* Default response code plus space*/
-    if (user_msg == NULL)
+    if (!user_msg)
       {
       s = string_sprintf("%.3s %s Hello %s%s%s",
         smtp_code,
         smtp_active_hostname,
-        (sender_ident == NULL)?  US"" : sender_ident,
-        (sender_ident == NULL)?  US"" : US" at ",
-        (sender_host_name == NULL)? sender_helo_name : sender_host_name);
+        sender_ident ? sender_ident : US"",
+        sender_ident ? US" at " : US"",
+        sender_host_name ? sender_host_name : sender_helo_name);
 
       ptr = Ustrlen(s);
       size = ptr + 1;
 
-      if (sender_host_address != NULL)
+      if (sender_host_address)
         {
         s = string_catn(s, &size, &ptr, US" [", 2);
         s = string_cat (s, &size, &ptr, sender_host_address);
@@ -4150,26 +4278,34 @@ while (done <= 0)
 	auth_instance *au;
 	BOOL first = TRUE;
 	for (au = auths; au; au = au->next)
-	  if (au->server && (au->advertise_condition == NULL ||
-	      expand_check_condition(au->advertise_condition, au->name,
-	      US"authenticator")))
+	  {
+	  au->advertised = FALSE;
+	  if (au->server)
 	    {
-	    int saveptr;
-	    if (first)
+	    DEBUG(D_auth+D_expand) debug_printf_indent(
+	      "Evaluating advertise_condition for %s athenticator\n",
+	      au->public_name);
+	    if (  !au->advertise_condition
+	       || expand_check_condition(au->advertise_condition, au->name,
+		      US"authenticator")
+	       )
 	      {
-	      s = string_catn(s, &size, &ptr, smtp_code, 3);
-	      s = string_catn(s, &size, &ptr, US"-AUTH", 5);
-	      first = FALSE;
-	      auth_advertised = TRUE;
+	      int saveptr;
+	      if (first)
+		{
+		s = string_catn(s, &size, &ptr, smtp_code, 3);
+		s = string_catn(s, &size, &ptr, US"-AUTH", 5);
+		first = FALSE;
+		auth_advertised = TRUE;
+		}
+	      saveptr = ptr;
+	      s = string_catn(s, &size, &ptr, US" ", 1);
+	      s = string_cat (s, &size, &ptr, au->public_name);
+	      while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
+	      au->advertised = TRUE;
 	      }
-	    saveptr = ptr;
-	    s = string_catn(s, &size, &ptr, US" ", 1);
-	    s = string_cat (s, &size, &ptr, au->public_name);
-	    while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
-	    au->advertised = TRUE;
 	    }
-	  else
-	    au->advertised = FALSE;
+	  }
 
 	if (!first) s = string_catn(s, &size, &ptr, US"\r\n", 2);
 	}
@@ -4230,7 +4366,7 @@ while (done <= 0)
     s[ptr] = 0;
 
 #ifdef SUPPORT_TLS
-    if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr); else
+    if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr, FALSE); else
 #endif
 
       {
@@ -4253,6 +4389,7 @@ while (done <= 0)
 	  : pnormal)
 	+ (tls_in.active >= 0 ? pcrpted : 0)
 	];
+    cancel_cutthrough_connection(TRUE, US"sent EHLO response");
     smtp_reset(reset_point);
     toomany = FALSE;
     break;   /* HELO/EHLO */
@@ -4272,7 +4409,7 @@ while (done <= 0)
 
     if (helo_required && !helo_seen)
       {
-      smtp_printf("503 HELO or EHLO required\r\n");
+      smtp_printf("503 HELO or EHLO required\r\n", FALSE);
       log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL from %s: no "
         "HELO/EHLO given", host_and_ident(FALSE));
       break;
@@ -4298,7 +4435,7 @@ while (done <= 0)
     if (smtp_accept_max_per_connection > 0 &&
         smtp_mailcmd_count > smtp_accept_max_per_connection)
       {
-      smtp_printf("421 too many messages in this connection\r\n");
+      smtp_printf("421 too many messages in this connection\r\n", FALSE);
       log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL command %s: too many "
         "messages in one connection", host_and_ident(TRUE));
       break;
@@ -4307,6 +4444,7 @@ while (done <= 0)
     /* Reset for start of message - even if this is going to fail, we
     obviously need to throw away any previous data. */
 
+    cancel_cutthrough_connection(TRUE, US"MAIL received");
     smtp_reset(reset_point);
     toomany = FALSE;
     sender_data = recipient_data = NULL;
@@ -4562,7 +4700,7 @@ while (done <= 0)
 
     if (thismessage_size_limit > 0 && message_size > thismessage_size_limit)
       {
-      smtp_printf("552 Message size exceeds maximum permitted\r\n");
+      smtp_printf("552 Message size exceeds maximum permitted\r\n", FALSE);
       log_write(L_size_reject,
           LOG_MAIN|LOG_REJECT, "rejected MAIL FROM:<%s> %s: "
           "message too big: size%s=%d max=%d",
@@ -4587,7 +4725,7 @@ while (done <= 0)
          (smtp_check_spool_space && message_size >= 0)?
             message_size + 5000 : 0))
       {
-      smtp_printf("452 Space shortage, please try later\r\n");
+      smtp_printf("452 Space shortage, please try later\r\n", FALSE);
       sender_address = NULL;
       break;
       }
@@ -4609,7 +4747,7 @@ while (done <= 0)
         }
       else
         {
-        smtp_printf("501 %s: sender address must contain a domain\r\n",
+        smtp_printf("501 %s: sender address must contain a domain\r\n", FALSE,
           smtp_cmd_data);
         log_write(L_smtp_syntax_error,
           LOG_MAIN|LOG_REJECT,
@@ -4637,8 +4775,10 @@ while (done <= 0)
 
     if (rc == OK || rc == DISCARD)
       {
+      BOOL more = pipeline_response();
+
       if (!user_msg)
-        smtp_printf("%s%s%s", US"250 OK",
+        smtp_printf("%s%s%s", more, US"250 OK",
                   #ifndef DISABLE_PRDR
                     prdr_requested ? US", PRDR Requested" : US"",
 		  #else
@@ -4684,7 +4824,7 @@ while (done <= 0)
       {
       if (pipelining_advertised && last_was_rej_mail)
         {
-        smtp_printf("503 sender not yet given\r\n");
+        smtp_printf("503 sender not yet given\r\n", FALSE);
         was_rej_mail = TRUE;
         }
       else
@@ -4832,7 +4972,7 @@ while (done <= 0)
       if (recipients_max_reject)
         {
         rcpt_fail_count++;
-        smtp_printf("552 too many recipients\r\n");
+        smtp_printf("552 too many recipients\r\n", FALSE);
         if (!toomany)
           log_write(0, LOG_MAIN|LOG_REJECT, "too many recipients: message "
             "rejected: sender=<%s> %s", sender_address, host_and_ident(TRUE));
@@ -4840,7 +4980,7 @@ while (done <= 0)
       else
         {
         rcpt_defer_count++;
-        smtp_printf("452 too many recipients\r\n");
+        smtp_printf("452 too many recipients\r\n", FALSE);
         if (!toomany)
           log_write(0, LOG_MAIN|LOG_REJECT, "too many recipients: excess "
             "temporarily rejected: sender=<%s> %s", sender_address,
@@ -4882,10 +5022,12 @@ while (done <= 0)
 
     if (rc == OK)
       {
+      BOOL more = pipeline_response();
+
       if (user_msg)
         smtp_user_msg(US"250", user_msg);
       else
-        smtp_printf("250 Accepted\r\n");
+        smtp_printf("250 Accepted\r\n", more);
       receive_add_recipient(recipient, -1);
 
       /* Set the dsn flags in the recipients_list */
@@ -4904,7 +5046,7 @@ while (done <= 0)
       if (user_msg)
         smtp_user_msg(US"250", user_msg);
       else
-        smtp_printf("250 Accepted\r\n");
+        smtp_printf("250 Accepted\r\n", FALSE);
       rcpt_fail_count++;
       discarded = TRUE;
       log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> RCPT %s: "
@@ -4971,6 +5113,7 @@ while (done <= 0)
 				    (int)chunking_state, chunking_data_left);
 
       lwr_receive_getc = receive_getc;
+      lwr_receive_getbuf = receive_getbuf;
       lwr_receive_ungetc = receive_ungetc;
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;
@@ -4996,7 +5139,7 @@ while (done <= 0)
         smtp_respond(code, 3, FALSE, rcpt_smtp_response);
         }
       if (pipelining_advertised && last_was_rcpt)
-        smtp_printf("503 Valid RCPT command must precede %s\r\n",
+        smtp_printf("503 Valid RCPT command must precede %s\r\n", FALSE,
 	  smtp_names[smtp_connection_had[smtp_ch_index-1]]);
       else
         done = synprot_error(L_smtp_protocol_error, 503, NULL,
@@ -5013,7 +5156,7 @@ while (done <= 0)
       {
       sender_address = NULL;  /* This will allow a new MAIL without RSET */
       sender_address_unrewritten = NULL;
-      smtp_printf("554 Too many recipients\r\n");
+      smtp_printf("554 Too many recipients\r\n", FALSE);
       break;
       }
 
@@ -5048,7 +5191,7 @@ while (done <= 0)
 	smtp_user_msg(US"354", user_msg);
       else
 	smtp_printf(
-	  "354 Enter message, ending with \".\" on a line by itself\r\n");
+	  "354 Enter message, ending with \".\" on a line by itself\r\n", FALSE);
       }
 
 #ifdef TCP_QUICKACK
@@ -5071,7 +5214,7 @@ while (done <= 0)
       if (!(address = parse_extract_address(smtp_cmd_data, &errmess,
             &start, &end, &recipient_domain, FALSE)))
 	{
-	smtp_printf("501 %s\r\n", errmess);
+	smtp_printf("501 %s\r\n", FALSE, errmess);
 	break;
 	}
 
@@ -5110,7 +5253,7 @@ while (done <= 0)
 	    break;
 	  }
 
-	smtp_printf("%s\r\n", s);
+	smtp_printf("%s\r\n", FALSE, s);
 	}
       break;
       }
@@ -5162,6 +5305,7 @@ while (done <= 0)
     do an implied RSET when STARTTLS is received. */
 
     incomplete_transaction_log(US"STARTTLS");
+    cancel_cutthrough_connection(TRUE, US"STARTTLS received");
     smtp_reset(reset_point);
     toomany = FALSE;
     cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = FALSE;
@@ -5238,7 +5382,7 @@ while (done <= 0)
 
     if (rc == DEFER)
       {
-      smtp_printf("454 TLS currently unavailable\r\n");
+      smtp_printf("454 TLS currently unavailable\r\n", FALSE);
       break;
       }
 
@@ -5271,14 +5415,14 @@ while (done <= 0)
 	if (user_msg)
 	  smtp_respond(US"221", 3, TRUE, user_msg);
 	else
-	  smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+	  smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 	log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
 	  smtp_get_connection_info());
 	done = 2;
 	break;
 
       default:
-	smtp_printf("554 Security failure\r\n");
+	smtp_printf("554 Security failure\r\n", FALSE);
 	break;
       }
     tls_close(TRUE, TRUE);
@@ -5298,6 +5442,7 @@ while (done <= 0)
 
     case RSET_CMD:
     smtp_rset_handler();
+    cancel_cutthrough_connection(TRUE, US"RSET received");
     smtp_reset(reset_point);
     toomany = FALSE;
     break;
@@ -5305,7 +5450,7 @@ while (done <= 0)
 
     case NOOP_CMD:
     HAD(SCH_NOOP);
-    smtp_printf("250 OK\r\n");
+    smtp_printf("250 OK\r\n", FALSE);
     break;
 
 
@@ -5316,7 +5461,7 @@ while (done <= 0)
 
     case HELP_CMD:
     HAD(SCH_HELP);
-    smtp_printf("214-Commands supported:\r\n");
+    smtp_printf("214-Commands supported:\r\n", TRUE);
       {
       uschar buffer[256];
       buffer[0] = 0;
@@ -5331,7 +5476,7 @@ while (done <= 0)
       if (acl_smtp_etrn != NULL) Ustrcat(buffer, " ETRN");
       if (acl_smtp_expn != NULL) Ustrcat(buffer, " EXPN");
       if (acl_smtp_vrfy != NULL) Ustrcat(buffer, " VRFY");
-      smtp_printf("214%s\r\n", buffer);
+      smtp_printf("214%s\r\n", FALSE, buffer);
       }
     break;
 
@@ -5345,15 +5490,22 @@ while (done <= 0)
     just drop the call rather than sending QUIT, and it clutters up the logs.
     */
 
-    if (sender_address != NULL || recipients_count > 0)
-      log_write(L_lost_incoming_connection,
-          LOG_MAIN,
-          "unexpected %s while reading SMTP command from %s%s",
-          sender_host_unknown? "EOF" : "disconnection",
-          host_and_ident(FALSE), smtp_read_error);
+    if (sender_address || recipients_count > 0)
+      log_write(L_lost_incoming_connection, LOG_MAIN,
+	"unexpected %s while reading SMTP command from %s%s%s D=%s",
+	sender_host_unknown ? "EOF" : "disconnection",
+	tcp_in_fastopen && !tcp_in_fastopen_logged ? US"TFO " : US"",
+	host_and_ident(FALSE), smtp_read_error,
+	string_timesince(&smtp_connection_start)
+	);
 
-    else log_write(L_smtp_connection, LOG_MAIN, "%s lost%s",
-      smtp_get_connection_info(), smtp_read_error);
+    else
+      log_write(L_smtp_connection, LOG_MAIN, "%s %slost%s D=%s",
+        smtp_get_connection_info(),
+	tcp_in_fastopen && !tcp_in_fastopen_logged ? US"TFO " : US"",
+	smtp_read_error,
+	string_timesince(&smtp_connection_start)
+	);
 
     done = 1;
     break;
@@ -5400,7 +5552,7 @@ while (done <= 0)
         {
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to set up ETRN command: %s",
           error);
-        smtp_printf("458 Internal failure\r\n");
+        smtp_printf("458 Internal failure\r\n", FALSE);
         break;
         }
       }
@@ -5431,7 +5583,7 @@ while (done <= 0)
         debug_printf("ETRN command is: %s\n", etrn_command);
         debug_printf("ETRN command execution skipped\n");
         }
-      if (user_msg == NULL) smtp_printf("250 OK\r\n");
+      if (user_msg == NULL) smtp_printf("250 OK\r\n", FALSE);
         else smtp_user_msg(US"250", user_msg);
       break;
       }
@@ -5442,7 +5594,7 @@ while (done <= 0)
 
     if (smtp_etrn_serialize && !enq_start(etrn_serialize_key, 1))
       {
-      smtp_printf("458 Already processing %s\r\n", smtp_cmd_data);
+      smtp_printf("458 Already processing %s\r\n", FALSE, smtp_cmd_data);
       break;
       }
 
@@ -5505,12 +5657,12 @@ while (done <= 0)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "fork of process for ETRN failed: %s",
         strerror(errno));
-      smtp_printf("458 Unable to fork process\r\n");
+      smtp_printf("458 Unable to fork process\r\n", FALSE);
       if (smtp_etrn_serialize) enq_end(etrn_serialize_key);
       }
     else
       {
-      if (user_msg == NULL) smtp_printf("250 OK\r\n");
+      if (user_msg == NULL) smtp_printf("250 OK\r\n", FALSE);
         else smtp_user_msg(US"250", user_msg);
       }
 
@@ -5529,7 +5681,7 @@ while (done <= 0)
     case BADCHAR_CMD:
     done = synprot_error(L_smtp_syntax_error, 0, NULL,       /* Just logs */
       US"NULL character(s) present (shown as '?')");
-    smtp_printf("501 NULL characters are not allowed in SMTP commands\r\n");
+    smtp_printf("501 NULL characters are not allowed in SMTP commands\r\n", FALSE);
     break;
 
 
@@ -5566,7 +5718,7 @@ while (done <= 0)
 
 #ifdef SUPPORT_PROXY
     case PROXY_FAIL_IGNORE_CMD:
-    smtp_printf("503 Command refused, required Proxy negotiation failed\r\n");
+    smtp_printf("503 Command refused, required Proxy negotiation failed\r\n", FALSE);
     break;
 #endif
 

@@ -40,6 +40,17 @@ address can appear in the tables drtables.c. */
 int lmtp_transport_options_count =
   sizeof(lmtp_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+lmtp_transport_options_block lmtp_transport_option_defaults = {0};
+void lmtp_transport_init(transport_instance *tblock) {}
+BOOL lmtp_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else   /*!MACRO_PREDEF*/
+
+
 /* Default private options block for the lmtp transport. */
 
 lmtp_transport_options_block lmtp_transport_option_defaults = {
@@ -610,6 +621,7 @@ if (send_data)
   {
   BOOL ok;
   transport_ctx tctx = {
+    {fd_in},
     tblock,
     addrlist,
     US".", US"..",
@@ -634,7 +646,7 @@ if (send_data)
     debug_printf("  LMTP>> writing message and terminating \".\"\n");
 
   transport_count = 0;
-  ok = transport_write_message(fd_in, &tctx, 0);
+  ok = transport_write_message(&tctx, 0);
 
   /* Failure can either be some kind of I/O disaster (including timeout),
   or the failure of a transport filter or the expansion of added headers. */
@@ -663,7 +675,7 @@ if (send_data)
         {
         const uschar *s = string_printing(buffer);
 	/* de-const safe here as string_printing known to have alloc'n'copied */
-        addr->message = (s == buffer)? (uschar *)string_copy(s) : US s;
+        addr->message = (s == buffer)? US string_copy(s) : US s;
         }
       }
     /* If the response has failed badly, use it for all the remaining pending
@@ -790,4 +802,5 @@ MINUS_N:
   return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/lmtp.c */

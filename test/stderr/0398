@@ -120,13 +120,14 @@ routed by r2 router
 Attempting full verification using callout
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/callout)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x2
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=remote
 callout cache: found domain record for remote
 dbfn_read: key=qq@remote
 callout cache: no address record found for qq@remote
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
@@ -150,14 +151,15 @@ cmd buf flush ddd bytes
   SMTP(close)>>
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/callout)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x42
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
 dbfn_write: key=remote
 wrote callout cache domain record for remote:
   result=1 postmaster=0 random=0
 dbfn_write: key=qq@remote
 wrote negative callout cache address record for qq@remote
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 ----------- end verify ------------
 l_message: $acl_verify_message
@@ -231,14 +233,15 @@ routed by r2 router
 Attempting full verification using callout
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/callout)
-returned from EXIM_DBOPEN
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x2
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=remote
 callout cache: found domain record for remote
 dbfn_read: key=qq@remote
 callout cache: found address record for qq@remote
 callout cache: address record is negative
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 ----------- end verify ------------
 l_message: $acl_verify_message

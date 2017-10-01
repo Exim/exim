@@ -12,7 +12,6 @@
 #define HASH_H
 
 #include "sha_ver.h"
-#include "blob.h"
 
 #ifdef SHA_OPENSSL
 # include <openssl/sha.h>
@@ -32,7 +31,11 @@
 typedef enum hashmethod {
   HASH_BADTYPE,
   HASH_SHA1,
-  HASH_SHA256,
+
+  HASH_SHA2_256,
+  HASH_SHA2_384,
+  HASH_SHA2_512,
+
   HASH_SHA3_224,
   HASH_SHA3_256,
   HASH_SHA3_384,
@@ -46,7 +49,8 @@ typedef struct {
 #ifdef SHA_OPENSSL
   union {
     SHA_CTX      sha1;       /* SHA1 block                                */
-    SHA256_CTX   sha2;       /* SHA256 block                              */
+    SHA256_CTX   sha2_256;   /* SHA256 or 224 block                       */
+    SHA512_CTX   sha2_512;   /* SHA512 or 384 block                       */
   } u;
 
 #elif defined(SHA_GNUTLS)
@@ -70,7 +74,6 @@ typedef struct {
 extern BOOL     exim_sha_init(hctx *, hashmethod);
 extern void     exim_sha_update(hctx *, const uschar *a, int);
 extern void     exim_sha_finish(hctx *, blob *);
-extern int      exim_sha_hashlen(hctx *);
 
 #endif
 /* End of File */

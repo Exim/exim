@@ -1,0 +1,29 @@
+# client: callout lazy-close, -bs send
+gnutls
+need_ipv4
+#
+# a tls-capable target for the verify/delivery connection
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# A recipient verify and continued-delivery.  The debug output should show "already connected to",
+# "proxied TLS", and the DATA smtp command only done by the transport process.
+# cmdline -bs send
+exim -d-all+transport -bs
+mail from:<usera@ok.example>
+rcpt to:<userb@test.ex>
+data
+Subject: test
+
+body
+.
+quit
+****
+sleep 1
+killdaemon
+exim -q
+****
+#
+#
+no_stdout_check
+no_msglog_check

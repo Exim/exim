@@ -14,22 +14,6 @@
 #endif
 
 
-/* Encodings for mailbox formats, and their names. MBX format is actually
-supported only if SUPPORT_MBX is set. */
-
-enum { mbf_unix, mbf_mbx, mbf_smail, mbf_maildir, mbf_mailstore };
-
-static const char *mailbox_formats[] = {
-  "unix", "mbx", "smail", "maildir", "mailstore" };
-
-
-/* Check warn threshold only if quota size set or not a percentage threshold
-   percentage check should only be done if quota > 0 */
-
-#define THRESHOLD_CHECK  (ob->quota_warn_threshold_value > 0 && \
-  (!ob->quota_warn_threshold_is_percent || ob->quota_value > 0))
-
-
 /* Options specific to the appendfile transport. They must be in alphabetic
 order (note that "_" comes before the lower case letters). Some of them are
 stored in the publicly visible instance block - these are flagged with the
@@ -170,6 +154,16 @@ address can appear in the tables drtables.c. */
 int appendfile_transport_options_count =
   sizeof(appendfile_transport_options)/sizeof(optionlist);
 
+
+#ifdef MACRO_PREDEF
+
+/* Dummy values */
+appendfile_transport_options_block appendfile_transport_option_defaults = {0};
+void appendfile_transport_init(transport_instance *tblock) {}
+BOOL appendfile_transport_entry(transport_instance *tblock, address_item *addr) {return FALSE;}
+
+#else	/*!MACRO_PREDEF*/
+
 /* Default private options block for the appendfile transport. */
 
 appendfile_transport_options_block appendfile_transport_option_defaults = {
@@ -234,8 +228,26 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   FALSE,          /* mailstore_format */
   FALSE,          /* mbx_format */
   FALSE,          /* quota_warn_threshold_is_percent */
-  TRUE            /* quota_is_inclusive */
+  TRUE,           /* quota_is_inclusive */
+  FALSE,          /* quota_no_check */
+  FALSE           /* quota_filecount_no_check */
 };
+
+
+/* Encodings for mailbox formats, and their names. MBX format is actually
+supported only if SUPPORT_MBX is set. */
+
+enum { mbf_unix, mbf_mbx, mbf_smail, mbf_maildir, mbf_mailstore };
+
+static const char *mailbox_formats[] = {
+  "unix", "mbx", "smail", "maildir", "mailstore" };
+
+
+/* Check warn threshold only if quota size set or not a percentage threshold
+   percentage check should only be done if quota > 0 */
+
+#define THRESHOLD_CHECK  (ob->quota_warn_threshold_value > 0 && \
+  (!ob->quota_warn_threshold_is_percent || ob->quota_value > 0))
 
 
 
@@ -285,9 +297,11 @@ mailbox_filecount */
 for (i = 0; i < 5; i++)
   {
   double d;
+  int no_check = 0;
   uschar *which = NULL;
 
-  if (q == NULL) d = default_value; else
+  if (q == NULL) d = default_value;
+  else
     {
     uschar *rest;
     uschar *s = expand_string(q);
@@ -321,6 +335,15 @@ for (i = 0; i < 5; i++)
       rest++;
       }
 
+
+    /* For quota and quota_filecount there may be options
+    appended. Currently only "no_check", so we can be lazy parsing it */
+    if (i < 2 && Ustrstr(rest, "/no_check") == rest)
+      {
+	 no_check = 1;
+	 rest += sizeof("/no_check") - 1;
+      }
+
     while (isspace(*rest)) rest++;
 
     if (*rest != 0)
@@ -338,12 +361,14 @@ for (i = 0; i < 5; i++)
     case 0:
     if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4) which = US"quota";
     ob->quota_value = (off_t)d;
+    ob->quota_no_check = no_check;
     q = ob->quota_filecount;
     break;
 
     case 1:
     if (d >= 2.0*1024.0*1024.0*1024.0) which = US"quota_filecount";
     ob->quota_filecount_value = (int)d;
+    ob->quota_filecount_no_check = no_check;
     q = ob->quota_warn_threshold;
     break;
 
@@ -630,7 +655,7 @@ for (h = &host; h; h = h->next)
 
   /* Connect never fails for a UDP socket, so don't set a timeout. */
 
-  (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0, FALSE);
+  (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0, NULL);
   rc = send(sock, buffer, Ustrlen(buffer) + 1, 0);
   (void)close(sock);
 
@@ -916,6 +941,9 @@ copy_mbx_message(int to_fd, int from_fd, off_t saved_size)
 int used;
 off_t size;
 struct stat statbuf;
+transport_ctx tctx = {{0}};
+
+tctx.u.fd = to_fd;
 
 /* If the current mailbox size is zero, write a header block */
 
@@ -928,7 +956,7 @@ if (saved_size == 0)
     (long int)time(NULL));
   for (i = 0; i < MBX_NUSERFLAGS; i++)
     sprintf (CS(s += Ustrlen(s)), "\015\012");
-  if (!transport_write_block (to_fd, deliver_out_buffer, MBX_HDRSIZE))
+  if (!transport_write_block (&tctx, deliver_out_buffer, MBX_HDRSIZE, FALSE))
     return DEFER;
   }
 
@@ -946,7 +974,7 @@ used = Ustrlen(deliver_out_buffer);
 
 /* Rewind the temporary file, and copy it over in chunks. */
 
-lseek(from_fd, 0 , SEEK_SET);
+if (lseek(from_fd, 0 , SEEK_SET) < 0) return DEFER;
 
 while (size > 0)
   {
@@ -957,7 +985,7 @@ while (size > 0)
     if (len == 0) errno = ERRNO_MBXLENGTH;
     return DEFER;
     }
-  if (!transport_write_block(to_fd, deliver_out_buffer, used + len))
+  if (!transport_write_block(&tctx, deliver_out_buffer, used + len, FALSE))
     return DEFER;
   size -= len;
   used = 0;
@@ -1380,10 +1408,13 @@ else
 DEBUG(D_transport)
   {
   debug_printf("appendfile: mode=%o notify_comsat=%d quota=" OFF_T_FMT
+    "%s%s"
     " warning=" OFF_T_FMT "%s\n"
     "  %s=%s format=%s\n  message_prefix=%s\n  message_suffix=%s\n  "
     "maildir_use_size_file=%s\n",
     mode, ob->notify_comsat, ob->quota_value,
+    ob->quota_no_check? " (no_check)" : "",
+    ob->quota_filecount_no_check? " (no_check_filecount)" : "",
     ob->quota_warn_threshold_value,
     ob->quota_warn_threshold_is_percent? "%" : "",
     isdirectory? "directory" : "file",
@@ -2774,21 +2805,33 @@ if (!disable_quota && ob->quota_value > 0)
     debug_printf("  file count quota = %d count = %d\n",
       ob->quota_filecount_value, mailbox_filecount);
     }
+
   if (mailbox_size + (ob->quota_is_inclusive? message_size:0) > ob->quota_value)
     {
-    DEBUG(D_transport) debug_printf("mailbox quota exceeded\n");
-    yield = DEFER;
-    errno = ERRNO_EXIMQUOTA;
+
+      if (!ob->quota_no_check)
+        {
+        DEBUG(D_transport) debug_printf("mailbox quota exceeded\n");
+        yield = DEFER;
+        errno = ERRNO_EXIMQUOTA;
+        }
+      else DEBUG(D_transport) debug_printf("mailbox quota exceeded but ignored\n");
+
     }
-  else if (ob->quota_filecount_value > 0 &&
-           mailbox_filecount + (ob->quota_is_inclusive ? 1:0) >
-             ob->quota_filecount_value)
-    {
-    DEBUG(D_transport) debug_printf("mailbox file count quota exceeded\n");
-    yield = DEFER;
-    errno = ERRNO_EXIMQUOTA;
-    filecount_msg = US" filecount";
-    }
+
+  if (ob->quota_filecount_value > 0
+           && mailbox_filecount + (ob->quota_is_inclusive ? 1:0) >
+              ob->quota_filecount_value)
+    if(!ob->quota_filecount_no_check)
+      {
+      DEBUG(D_transport) debug_printf("mailbox file count quota exceeded\n");
+      yield = DEFER;
+      errno = ERRNO_EXIMQUOTA;
+      filecount_msg = US" filecount";
+      }
+    else DEBUG(D_transport) if (ob->quota_filecount_no_check)
+      debug_printf("mailbox file count quota exceeded but ignored\n");
+
   }
 
 /* If we are writing in MBX format, what we actually do is to write the message
@@ -2874,13 +2917,14 @@ at initialization time. */
 if (yield == OK)
   {
   transport_ctx tctx = {
+    {fd},
     tblock,
     addr,
     ob->check_string,
     ob->escape_string,
     ob->options
   };
-  if (!transport_write_message(fd, &tctx, 0))
+  if (!transport_write_message(&tctx, 0))
     yield = DEFER;
   }
 
@@ -3373,4 +3417,5 @@ put in the first address of a batch. */
 return FALSE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* End of transport/appendfile.c */

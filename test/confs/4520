@@ -12,6 +12,7 @@ primary_hostname = myhost.test.ex
 acl_smtp_rcpt = accept
 acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
 
+DDIR=DIR/aux-fixed/dkim
 
 # ----- Routers
 
@@ -42,9 +43,18 @@ send_to_server:
 .else
   dkim_selector =	sel
 .endif
-  dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
+
+  dkim_private_key =	${if match {$dkim_selector}{^ses}	{DDIR/dkim512.private} \
+			  {${if match {$dkim_selector}{^sel} {DDIR/dkim.private} \
+			  {}}}}
+
 .ifndef HEADERS_MAXSIZE
   dkim_sign_headers =	OPT
+.else
+  dkim_identity =	allheaders@$dkim_domain
+.endif
+.ifdef VALUE
+  dkim_hash =		VALUE
 .endif
 
 # End

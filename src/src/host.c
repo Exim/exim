@@ -737,16 +737,14 @@ host_build_ifacelist(const uschar *list, uschar *name)
 {
 int sep = 0;
 uschar *s;
-uschar buffer[64];
-ip_address_item *yield = NULL;
-ip_address_item *last = NULL;
-ip_address_item *next;
+ip_address_item * yield = NULL, * last = NULL, * next;
 
-while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   {
   int ipv;
   int port = host_address_extract_port(s);            /* Leaves just the IP address */
-  if ((ipv = string_is_ip_address(s, NULL)) == 0)
+
+  if (!(ipv = string_is_ip_address(s, NULL)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Malformed IP address \"%s\" in %s",
       s, name);
 
@@ -764,7 +762,9 @@ while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   next->port = port;
   next->v6_include_v4 = FALSE;
 
-  if (yield == NULL) yield = last = next; else
+  if (!yield)
+    yield = last = next;
+  else
     {
     last->next = next;
     last = next;
@@ -919,21 +919,21 @@ if (type < 0)
   if (family == AF_INET6)
     {
     struct sockaddr_in6 *sk = (struct sockaddr_in6 *)arg;
-    yield = (uschar *)inet_ntop(family, &(sk->sin6_addr), CS addr_buffer,
+    yield = US inet_ntop(family, &(sk->sin6_addr), CS addr_buffer,
       sizeof(addr_buffer));
     if (portptr != NULL) *portptr = ntohs(sk->sin6_port);
     }
   else
     {
     struct sockaddr_in *sk = (struct sockaddr_in *)arg;
-    yield = (uschar *)inet_ntop(family, &(sk->sin_addr), CS addr_buffer,
+    yield = US inet_ntop(family, &(sk->sin_addr), CS addr_buffer,
       sizeof(addr_buffer));
     if (portptr != NULL) *portptr = ntohs(sk->sin_port);
     }
   }
 else
   {
-  yield = (uschar *)inet_ntop(type, arg, CS addr_buffer, sizeof(addr_buffer));
+  yield = US inet_ntop(type, arg, CS addr_buffer, sizeof(addr_buffer));
   }
 
 /* If the result is a mapped IPv4 address, show it in V4 format. */
@@ -1160,10 +1160,7 @@ tt--;   /* lose final separator */
 if (mask < 0)
   *tt = 0;
 else
-  {
-  sprintf(CS tt, "/%d", mask);
-  while (*tt) tt++;
-  }
+  tt += sprintf(CS tt, "/%d", mask);
 
 return tt - buffer;
 }
@@ -1587,7 +1584,7 @@ if (hosts->h_name == NULL || hosts->h_name[0] == 0 || hosts->h_name[0] == '.')
 /* Copy and lowercase the name, which is in static storage in many systems.
 Put it in permanent memory. */
 
-s = (uschar *)hosts->h_name;
+s = US hosts->h_name;
 len = Ustrlen(s) + 1;
 t = sender_host_name = store_get_perm(len);
 while (*s != 0) *t++ = tolower(*s++);
@@ -1742,7 +1739,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
         truncated and dn_expand may fail. */
 
         if (dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen,
-             (uschar *)(rr->data), (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
+             US (rr->data), (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
           {
           log_write(0, LOG_MAIN, "host name alias list truncated for %s",
             sender_host_address);
@@ -2099,7 +2096,7 @@ for (i = 1; i <= times;
 
   if (hostdata->h_name[0] != 0 &&
       Ustrcmp(host->name, hostdata->h_name) != 0)
-    host->name = string_copy_dnsdomain((uschar *)hostdata->h_name);
+    host->name = string_copy_dnsdomain(US hostdata->h_name);
   if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
 
   /* Get the list of addresses. IPv4 and IPv6 addresses can be distinguished

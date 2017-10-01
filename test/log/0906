@@ -1,0 +1,12 @@
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a <a@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1224
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= sender@dom H=(test.com) [127.0.0.1] P=esmtp K S=sss for a@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtp K S=sss for a@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmaY-0005vi-00 => a@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250- 8nn byte chunk, total 8nn\\n250 OK id=10HmaX-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

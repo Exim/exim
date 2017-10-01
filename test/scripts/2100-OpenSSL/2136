@@ -1,0 +1,75 @@
+# client: callout lazy-close, smtp send
+need_ipv4
+#
+# a recipient verify and continued-delivery
+# smtp send
+# a tls-capable target for the verify/delivery connection on PORT_D
+# plus a daemon under test on PORT_S
+exim -bd -DSERVER=server -oX PORT_D:PORT_S
+****
+#
+client 127.0.0.1 PORT_S
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<userc@ok.example>
+??? 250
+RCPT TO:<userd@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 3
+killdaemon
+exim -q
+****
+#
+#
+# smtp send, deliver_drop_priv
+exim -bd -DSERVER=server -DOPT=deliver_drop_privilege -oX PORT_D:PORT_S
+****
+#
+client 127.0.0.1 PORT_S
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250 
+MAIL FROM:<usere@ok.example>
+??? 250
+RCPT TO:<userf@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+QUIT
+??? 221
+****
+sleep 3
+killdaemon
+exim -q
+****
+#
+#
+#
+no_stdout_check
+no_msglog_check
