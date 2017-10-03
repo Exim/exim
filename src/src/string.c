@@ -1050,10 +1050,32 @@ return list;
 
 
 
+/************************************************/
+/* Create a growable-string with some preassigned space */
+
+gstring *
+string_get(unsigned size)
+{
+gstring * g = store_get(sizeof(gstring) + size);
+g->size = size;
+g->ptr = 0;
+g->s = US(g + 1);
+return g;
+}
+
+/* NUL-terminate the C string in the growable-string, and return it. */
+
+uschar *
+string_from_gstring(gstring * g)
+{
+if (!g) return NULL;
+g->s[g->ptr] = '\0';
+return g->s;
+}
+
 /*************************************************
 *             Add chars to string                *
 *************************************************/
-/* See inline functions in functions.h */
 
 void
 gstring_grow(gstring * g, int p, int count)
@@ -1087,6 +1109,61 @@ if (!store_extend(g->s, oldsize, g->size))
   if (release_ok) store_release(g->s);
   g->s = newstring;
   }
+}
+
+
+
+/* This function is used when building up strings of unknown length. Room is
+always left for a terminating zero to be added to the string that is being
+built. This function does not require the string that is being added to be NUL
+terminated, because the number of characters to add is given explicitly. It is
+sometimes called to extract parts of other strings.
+
+Arguments:
+  string   points to the start of the string that is being built, or NULL
+             if this is a new string that has no contents yet
+  s        points to characters to add
+  count    count of characters to add; must not exceed the length of s, if s
+             is a C string.
+
+Returns:   pointer to the start of the string, changed if copied for expansion.
+           Note that a NUL is not added, though space is left for one. This is
+           because string_cat() is often called multiple times to build up a
+           string - there's no point adding the NUL till the end.
+
+*/
+/* coverity[+alloc] */
+
+gstring *
+string_catn(gstring * g, const uschar *s, int count)
+{
+int p;
+
+if (!g)
+  {
+  unsigned inc = count < 4096 ? 127 : 1023;
+  unsigned size = ((count + inc) &  ~inc) + 1;
+  g = string_get(size);
+  }
+
+p = g->ptr;
+if (p + count >= g->size)
+  gstring_grow(g, p, count);
+
+/* Because we always specify the exact number of characters to copy, we can
+use memcpy(), which is likely to be more efficient than strncopy() because the
+latter has to check for zero bytes. */
+
+memcpy(g->s + p, s, count);
+g->ptr = p + count;
+return g;
+}
+ 
+ 
+gstring *
+string_cat(gstring *string, const uschar *s)
+{
+return string_catn(string, s, Ustrlen(s));
 }
 
 
