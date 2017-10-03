@@ -266,7 +266,7 @@ return;
 String to be appended must be nul-terminated. */
 
 gstring *
-exim_dkim_data_append(blob * g, uschar * s)
+exim_dkim_data_append(gstring * g, uschar * s)
 {
 return g;	/*dummy*/
 }
