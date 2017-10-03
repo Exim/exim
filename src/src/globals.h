@@ -923,10 +923,10 @@ extern BOOL    system_filtering;       /* TRUE when running system filter */
 
 extern BOOL    tcp_fastopen_ok;	       /* appears to be supported by kernel */
 extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
-extern BOOL    tcp_in_fastopen;	       /* conn used fastopen */
+extern BOOL    tcp_in_fastopen;	       /* conn usefully used fastopen */
 extern BOOL    tcp_in_fastopen_logged; /* one-time logging */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
-extern BOOL    tcp_out_fastopen;       /* conn used fastopen */
+extern int     tcp_out_fastopen;       /* 0: no  1: conn used  2: useful */
 extern BOOL    tcp_out_fastopen_logged; /* one-time logging */
 #ifdef USE_TCP_WRAPPERS
 extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */

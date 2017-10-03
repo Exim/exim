@@ -126,10 +126,12 @@ switch(method)
       for (i = 0; i<len; i++) debug_printf(" %02x", s[i]);
       debug_printf("\n");
       }
-    if (  send(fd, s, len, 0) < 0
-       || !fd_ready(fd, tmo-time(NULL))
-       || read(fd, s, 2) != 2
-       )
+    if (send(fd, s, len, 0) < 0)
+      return FAIL;
+#ifdef TCP_QUICKACK
+    (void) setsockopt(fd, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
+    if (!fd_ready(fd, tmo-time(NULL)) || read(fd, s, 2) != 2)
       return FAIL;
     HDEBUG(D_transport|D_acl|D_v)
       debug_printf_indent("  SOCKS<< %02x %02x\n", s[0], s[1]);
@@ -314,6 +316,10 @@ for(;;)
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SOCKS>> 05 01 %02x\n", sob->auth_type);
 
 /* expect method response */
+
+#ifdef TCP_QUICKACK
+(void) setsockopt(fd, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
 
 if (  !fd_ready(fd, tmo-time(NULL))
    || read(fd, buf, 2) != 2

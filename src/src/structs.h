@@ -610,7 +610,8 @@ typedef struct address_item {
     BOOL af_cert_verified:1;		/* delivered with verified TLS cert */
     BOOL af_pass_message:1;		/* pass message in bounces */
     BOOL af_bad_reply:1;		/* filter could not generate autoreply */
-    BOOL af_tcp_fastopen:1;		/* delivery used TCP Fast Open */
+    BOOL af_tcp_fastopen_conn:1;	/* delivery connection used TCP Fast Open */
+    BOOL af_tcp_fastopen:1;		/* delivery usefuly used TCP Fast Open */
 #ifndef DISABLE_PRDR
     BOOL af_prdr_used:1;		/* delivery used SMTP PRDR */
 #endif

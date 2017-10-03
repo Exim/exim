@@ -2346,7 +2346,7 @@ if (  getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
    && tinfo.tcpi_state == TCP_SYN_RECV
    )
   {
-  DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection\n");
+  DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
   tcp_in_fastopen = TRUE;
   }
 # endif
