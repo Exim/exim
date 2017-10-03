@@ -40,11 +40,11 @@ static void
 tree_printsub(tree_node *p, int pos, int barswitch)
 {
 int i;
-if (p->right != NULL) tree_printsub(p->right, pos+2, 1);
+if (p->right) tree_printsub(p->right, pos+2, 1);
 for (i = 0; i <= pos-1; i++) debug_printf("%c", tree_printline[i]);
 debug_printf("-->%s [%d]\n", p->name, p->balance);
 tree_printline[pos] = barswitch? '|' : ' ';
-if (p->left != NULL)
+if (p->left)
   {
   tree_printline[pos+2] = '|';
   tree_printsub(p->left, pos+2, 0);
@@ -58,7 +58,7 @@ debug_print_tree(tree_node *p)
 {
 int i;
 for (i = 0; i < tree_printlinesize; i++) tree_printline[i] = ' ';
-if (p == NULL) debug_printf("Empty Tree\n"); else tree_printsub(p, 0, 0);
+if (!p) debug_printf("Empty Tree\n"); else tree_printsub(p, 0, 0);
 debug_printf("---- End of tree ----\n");
 }
 
@@ -78,7 +78,7 @@ void
 debug_print_argv(const uschar ** argv)
 {
 debug_printf("exec");
-while (*argv != NULL) debug_printf(" %.256s", *argv++);
+while (*argv) debug_printf(" %.256s", *argv++);
 debug_printf("\n");
 }
 
@@ -98,11 +98,11 @@ Returns:     nothing
 void
 debug_print_string(uschar *debug_string)
 {
-if (debug_string == NULL) return;
+if (!debug_string) return;
 HDEBUG(D_any|D_v)
   {
   uschar *s = expand_string(debug_string);
-  if (s == NULL)
+  if (!s)
     debug_printf("failed to expand debug_output \"%s\": %s\n", debug_string,
       expand_string_message);
   else if (s[0] != 0)
@@ -195,9 +195,7 @@ if (debug_ptr == debug_buffer)
     }
 
   DEBUG(D_pid)
-    {
     debug_ptr += sprintf(CS debug_ptr, "%5d ", (int)getpid());
-    }
 
   /* Set up prefix if outputting for host checking and not debugging */
 

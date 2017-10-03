@@ -13,7 +13,7 @@ are in in fact in separate headers. */
 
 
 #ifdef EXIM_PERL
-extern uschar *call_perl_cat(uschar *, int *, int *, uschar **, uschar *,
+extern gstring *call_perl_cat(gstring *, uschar **, uschar *,
                  uschar **) WARN_UNUSED_RESULT;
 extern void    cleanup_perl(void);
 extern uschar *init_perl(uschar *);
@@ -204,6 +204,8 @@ extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
+
+extern void    gstring_grow(gstring *, int, int);
 
 extern void    header_add(int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
@@ -437,12 +439,10 @@ extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
-extern uschar *string_append(uschar *, int *, int *, int, ...) WARN_UNUSED_RESULT;
-extern uschar *string_append_listele(uschar *, int *, int *, uschar, const uschar *) WARN_UNUSED_RESULT;
-extern uschar *string_append_listele_n(uschar *, int *, int *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
+extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
+extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
+extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
 extern uschar *string_base62(unsigned long int);
-extern uschar *string_cat(uschar *, int *, int *, const uschar *) WARN_UNUSED_RESULT;
-extern uschar *string_catn(uschar *, int *, int *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
@@ -530,6 +530,93 @@ extern void    version_init(void);
 
 extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
+
+/******************************************************************************/
+
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
+
+/* Create a growable-string with some preassigned space */
+
+__inline__ gstring *
+string_get(unsigned size)
+{
+gstring * g = store_get(sizeof(gstring) + size);
+g->size = size;
+g->ptr = 0;
+g->s = US(g + 1);
+return g;
+}
+
+
+/* NUL-terminate the C string in the growable-string, and return it. */
+
+__inline__ uschar *
+string_from_gstring(gstring * g)
+{
+if (!g) return NULL;
+g->s[g->ptr] = '\0';
+return g->s;
+}
+
+
+
+/* This function is used when building up strings of unknown length. Room is
+always left for a terminating zero to be added to the string that is being
+built. This function does not require the string that is being added to be NUL
+terminated, because the number of characters to add is given explicitly. It is
+sometimes called to extract parts of other strings.
+
+Arguments:
+  string   points to the start of the string that is being built, or NULL
+             if this is a new string that has no contents yet
+  s        points to characters to add
+  count    count of characters to add; must not exceed the length of s, if s
+             is a C string.
+
+Returns:   pointer to the start of the string, changed if copied for expansion.
+           Note that a NUL is not added, though space is left for one. This is
+           because string_cat() is often called multiple times to build up a
+           string - there's no point adding the NUL till the end.
+
+*/
+/* coverity[+alloc] */
+
+WARN_UNUSED_RESULT
+__inline__ gstring *
+string_catn(gstring * g, const uschar *s, int count)
+{
+int p;
+
+if (!g)
+  {
+  unsigned inc = count < 4096 ? 127 : 1023;
+  unsigned size = ((count + inc) &  ~inc) + 1;
+  g = string_get(size);
+  }
+
+p = g->ptr;
+if (p + count >= g->size)
+  gstring_grow(g, p, count);
+
+/* Because we always specify the exact number of characters to copy, we can
+use memcpy(), which is likely to be more efficient than strncopy() because the
+latter has to check for zero bytes. */
+
+memcpy(g->s + p, s, count);
+g->ptr = p + count;
+return g;
+}
+
+
+WARN_UNUSED_RESULT
+__inline__ gstring *
+string_cat(gstring *string, const uschar *s)
+{
+return string_catn(string, s, Ustrlen(s));
+}
+#endif	/*!COMPILE_UTILITY*/
+
+
 
 /* vi: aw
 */

@@ -145,7 +145,7 @@ struct timeval *timeoutptr = NULL;
 
 uschar *attr;
 uschar **attrp;
-uschar *data = NULL;
+gstring * data = NULL;
 uschar *dn = NULL;
 uschar *host;
 uschar **values;
@@ -161,9 +161,7 @@ int    error_yield = DEFER;
 int    msgid;
 int    rc, ldap_rc, ldap_parse_rc;
 int    port;
-int    ptr = 0;
 int    rescount = 0;
-int    size = 0;
 BOOL   attribute_found = FALSE;
 BOOL   ldapi = FALSE;
 
@@ -722,7 +720,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
   DEBUG(D_lookup) debug_printf("LDAP result loop\n");
 
   for(e = ldap_first_entry(lcp->ld, result), valuecount = 0;
-      e != NULL;
+      e;
       e = ldap_next_entry(lcp->ld, e))
     {
     uschar *new_dn;
@@ -734,7 +732,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
     /* Results for multiple entries values are separated by newlines. */
 
-    if (data != NULL) data = string_catn(data, &size, &ptr, US"\n", 1);
+    if (data) data = string_catn(data, US"\n", 1);
 
     /* Get the DN from the last result. */
 
@@ -762,8 +760,8 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
       {                                  /* condition, because of the else */
       if (new_dn != NULL)                /* below, that's for the first only */
         {
-        data = string_cat(data, &size, &ptr, new_dn);
-        data[ptr] = 0;
+        data = string_cat(data, new_dn);
+	(void) string_from_gstring(data);
         attribute_found = TRUE;
         }
       }
@@ -776,8 +774,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
     If there are multiple values, they are given within the quotes, comma separated. */
 
     else for (attr = US ldap_first_attribute(lcp->ld, e, &ber);
-              attr != NULL;
-              attr = US ldap_next_attribute(lcp->ld, e, ber))
+              attr; attr = US ldap_next_attribute(lcp->ld, e, ber))
       {
       DEBUG(D_lookup) debug_printf("LDAP attr loop\n");
 
@@ -789,21 +786,20 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         {
         /* Get array of values for this attribute. */
 
-        if ((firstval = values = USS ldap_get_values(lcp->ld, e, CS attr))
-             != NULL)
+        if ((firstval = values = USS ldap_get_values(lcp->ld, e, CS attr)))
           {
 
           if (attrs_requested != 1)
             {
             if (insert_space)
-              data = string_catn(data, &size, &ptr, US" ", 1);
+              data = string_catn(data, US" ", 1);
             else
               insert_space = TRUE;
-            data = string_cat(data, &size, &ptr, attr);
-            data = string_catn(data, &size, &ptr, US"=\"", 2);
+            data = string_cat(data, attr);
+            data = string_catn(data, US"=\"", 2);
             }
 
-          while (*values != NULL)
+          while (*values)
             {
             uschar *value = *values;
             int len = Ustrlen(value);
@@ -818,7 +814,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             attribute and append only every non first value. */
 
             if (data && valuecount > 1)
-              data = string_catn(data, &size, &ptr, US",", 1);
+              data = string_catn(data, US",", 1);
 
             /* For multiple attributes, the data is in quotes. We must escape
             internal quotes, backslashes, newlines, and must double commas. */
@@ -829,14 +825,14 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
               for (j = 0; j < len; j++)
                 {
                 if (value[j] == '\n')
-                  data = string_catn(data, &size, &ptr, US"\\n", 2);
+                  data = string_catn(data, US"\\n", 2);
                 else if (value[j] == ',')
-                  data = string_catn(data, &size, &ptr, US",,", 2);
+                  data = string_catn(data, US",,", 2);
                 else
                   {
                   if (value[j] == '\"' || value[j] == '\\')
-                    data = string_catn(data, &size, &ptr, US"\\", 1);
-                  data = string_catn(data, &size, &ptr, value+j, 1);
+                    data = string_catn(data, US"\\", 1);
+                  data = string_catn(data, value+j, 1);
                   }
                 }
               }
@@ -848,9 +844,9 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 	      int j;
 	      for (j = 0; j < len; j++)
 	        if (value[j] == ',')
-	          data = string_catn(data, &size, &ptr, US",,", 2);
+	          data = string_catn(data, US",,", 2);
 	        else
-	          data = string_catn(data, &size, &ptr, value+j, 1);
+	          data = string_catn(data, value+j, 1);
 	      }
 
 
@@ -863,7 +859,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
           /* Closing quote at the end of the data for a named attribute. */
 
           if (attrs_requested != 1)
-            data = string_catn(data, &size, &ptr, US"\"", 1);
+            data = string_catn(data, US"\"", 1);
 
           /* Free the values */
 
@@ -890,15 +886,15 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 
 /* Terminate the dynamic string that we have built and reclaim unused store */
 
-if (data != NULL)
+if (data)
   {
-  data[ptr] = 0;
-  store_reset(data + ptr + 1);
+  (void) string_from_gstring(data);
+  store_reset(data->s + data->ptr + 1);
   }
 
 /* Copy the last dn into eldap_dn */
 
-if (dn != NULL)
+if (dn)
   {
   eldap_dn = string_copy(dn);
   #if defined LDAP_LIB_NETSCAPE || defined LDAP_LIB_OPENLDAP2
@@ -1077,8 +1073,8 @@ if (!attribute_found)
 
 /* Otherwise, it's all worked */
 
-DEBUG(D_lookup) debug_printf("LDAP search: returning: %s\n", data);
-*res = data;
+DEBUG(D_lookup) debug_printf("LDAP search: returning: %s\n", data->s);
+*res = data->s;
 
 RETURN_OK:
 if (result != NULL) ldap_msgfree(result);

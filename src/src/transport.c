@@ -346,12 +346,9 @@ if (!(tctx->options & topt_output_string))
 /* Write to expanding-string.  NOTE: not NUL-terminated */
 
 if (!tctx->u.msg)
-  {
-  tctx->u.msg = store_get(tctx->msg_size = 1024);
-  tctx->msg_ptr = 0;
-  }
+  tctx->u.msg = string_get(1024);
 
-tctx->u.msg = string_catn(tctx->u.msg, &tctx->msg_size, &tctx->msg_ptr, block, len);
+tctx->u.msg = string_catn(tctx->u.msg, block, len);
 return TRUE;
 }
 

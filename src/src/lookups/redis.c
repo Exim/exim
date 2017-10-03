@@ -80,13 +80,10 @@ redisReply *redis_reply = NULL;
 redisReply *entry = NULL;
 redisReply *tentry = NULL;
 redis_connection *cn;
-int ssize = 0;
-int offset = 0;
 int yield = DEFER;
 int i, j;
-uschar *result = NULL;
+gstring * result = NULL;
 uschar *server_copy = NULL;
-uschar *tmp, *ttmp;
 uschar *sdata[3];
 
 /* Disaggregate the parameters from the server argument.
@@ -217,10 +214,13 @@ if(sdata[1])
 
   for (i = 0; *s && i < nele(argv); i++)
     {
-    for (argv[i] = NULL, siz = ptr = 0; (c = *s) && !isspace(c); s++)
+    gstring * g;
+
+    for (g = NULL; (c = *s) && !isspace(c); s++)
       if (c != '\\' || *++s)		/* backslash protects next char */
-	argv[i] = string_catn(argv[i], &siz, &ptr, s, 1);
-    *(argv[i]+ptr) = '\0';
+	g = string_catn(g, s, 1);
+    argv[i] = string_from_gstring(g);
+
     DEBUG(D_lookup) debug_printf("REDIS: argv[%d] '%s'\n", i, argv[i]);
     while (isspace(*s)) s++;
     }
@@ -249,20 +249,18 @@ switch (redis_reply->type)
   case REDIS_REPLY_NIL:
     DEBUG(D_lookup)
       debug_printf("REDIS: query was not one that returned any data\n");
-    result = string_sprintf("");
+    result = string_catn(result, US"", 1);
     *do_cache = 0;
     goto REDIS_EXIT;
     /* NOTREACHED */
 
   case REDIS_REPLY_INTEGER:
-    ttmp = (redis_reply->integer != 0) ? US"true" : US"false";
-    result = string_cat(result, &ssize, &offset, US ttmp);
+    result = string_cat(result, redis_reply->integer != 0 ? US"true" : US"false");
     break;
 
   case REDIS_REPLY_STRING:
   case REDIS_REPLY_STATUS:
-    result = string_catn(result, &ssize, &offset,
-			US redis_reply->str, redis_reply->len);
+    result = string_catn(result, US redis_reply->str, redis_reply->len);
     break;
 
   case REDIS_REPLY_ARRAY:
@@ -275,17 +273,15 @@ switch (redis_reply->type)
       entry = redis_reply->element[i];
 
       if (result)
-	result = string_catn(result, &ssize, &offset, US"\n", 1);
+	result = string_catn(result, US"\n", 1);
 
       switch (entry->type)
 	{
 	case REDIS_REPLY_INTEGER:
-	  tmp = string_sprintf("%d", entry->integer);
-	  result = string_cat(result, &ssize, &offset, US tmp);
+	  result = string_cat(result, string_sprintf("%d", entry->integer));
 	  break;
 	case REDIS_REPLY_STRING:
-	  result = string_catn(result, &ssize, &offset,
-			      US entry->str, entry->len);
+	  result = string_catn(result, US entry->str, entry->len);
 	  break;
 	case REDIS_REPLY_ARRAY:
 	  for (j = 0; j < entry->elements; j++)
@@ -293,17 +289,15 @@ switch (redis_reply->type)
 	    tentry = entry->element[j];
 
 	    if (result)
-	      result = string_catn(result, &ssize, &offset, US"\n", 1);
+	      result = string_catn(result, US"\n", 1);
 
 	    switch (tentry->type)
 	      {
 	      case REDIS_REPLY_INTEGER:
-		ttmp = string_sprintf("%d", tentry->integer);
-		result = string_cat(result, &ssize, &offset, US ttmp);
+		result = string_cat(result, string_sprintf("%d", tentry->integer));
 		break;
 	      case REDIS_REPLY_STRING:
-		result = string_catn(result, &ssize, &offset,
-				    US tentry->str, tentry->len);
+		result = string_catn(result, US tentry->str, tentry->len);
 		break;
 	      case REDIS_REPLY_ARRAY:
 		DEBUG(D_lookup)
@@ -327,10 +321,7 @@ switch (redis_reply->type)
 
 
 if (result)
-  {
-  result[offset] = 0;
-  store_reset(result + offset + 1);
-  }
+  store_reset(result->s + result->ptr + 1);
 else
   {
   yield = FAIL;
@@ -348,7 +339,7 @@ if (redis_reply) freeReplyObject(redis_reply);
 
 if (result)
   {
-  *resultptr = result;
+  *resultptr = string_from_gstring(result);
   return OK;
   }
 else

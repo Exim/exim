@@ -28,13 +28,10 @@ exim_dkim_init(void)
 
 
 /* accumulate data (gnutls-only).  String to be appended must be nul-terminated. */
-blob *
-exim_dkim_data_append(blob * b, int * alloc, uschar * s)
+gstring *
+exim_dkim_data_append(gstring * g, uschar * s)
 {
-int len = b->len;
-b->data = string_append(b->data, alloc, &len, 1, s);
-b->len = len;
-return b;
+return string_cat(g, s);
 }
 
 
@@ -268,10 +265,10 @@ return;
 /* Accumulate data (gnutls-only).
 String to be appended must be nul-terminated. */
 
-blob *
-exim_dkim_data_append(blob * b, int * alloc, uschar * s)
+gstring *
+exim_dkim_data_append(blob * g, uschar * s)
 {
-return b;	/*dummy*/
+return g;	/*dummy*/
 }
 
 
@@ -593,10 +590,10 @@ ERR_load_crypto_strings();
 
 
 /* accumulate data (gnutls-only) */
-blob *
-exim_dkim_data_append(blob * b, int * alloc, uschar * s)
+gstring *
+exim_dkim_data_append(gstring * g, uschar * s)
 {
-return b;	/*dummy*/
+return g;	/*dummy*/
 }
 
 

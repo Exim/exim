@@ -471,13 +471,19 @@ argv[1] = US"-c";
 /* We have to take special action to handle the special "variable" called
 $pipe_addresses, which is not recognized by the normal expansion function. */
 
-DEBUG(D_transport)
-  debug_printf("shell pipe command before expansion:\n  %s\n", cmd);
-
 if (expand_arguments)
   {
   uschar *s = cmd;
   uschar *p = Ustrstr(cmd, "pipe_addresses");
+  gstring * g = NULL;
+
+  DEBUG(D_transport)
+    debug_printf("shell pipe command before expansion:\n  %s\n", cmd);
+
+  /* Allow $recipients in the expansion iff it comes from a system filter */
+
+  enable_dollar_recipients = addr && addr->parent &&
+    Ustrcmp(addr->parent->address, "system-filter") == 0;
 
   if (p != NULL && (
          (p > cmd && p[-1] == '$') ||
@@ -485,37 +491,30 @@ if (expand_arguments)
     {
     address_item *ad;
     uschar *q = p + 14;
-    int size = Ustrlen(cmd) + 64;
-    int offset;
 
     if (p[-1] == '{') { q++; p--; }
 
-    s = store_get(size);
-    offset = p - cmd - 1;
-    Ustrncpy(s, cmd, offset);
+    g = string_get(Ustrlen(cmd) + 64);
+    g = string_catn(g, cmd, p - cmd - 1);
 
-    for (ad = addr; ad != NULL; ad = ad->next)
+    for (ad = addr; ad; ad = ad->next)
       {
       /*XXX string_append_listele() ? */
-      if (ad != addr) s = string_catn(s, &size, &offset, US" ", 1);
-      s = string_cat(s, &size, &offset, ad->address);
+      if (ad != addr) g = string_catn(g, US" ", 1);
+      g = string_cat(g, ad->address);
       }
 
-    s = string_cat(s, &size, &offset, q);
-    s[offset] = 0;
+    g = string_cat(g, q);
+    argv[2] = (cmd = string_from_gstring(g)) ? expand_string(cmd) : NULL;
     }
+  else
+    argv[2] = expand_string(cmd);
 
-  /* Allow $recipients in the expansion iff it comes from a system filter */
-
-  enable_dollar_recipients = addr != NULL &&
-    addr->parent != NULL &&
-    Ustrcmp(addr->parent->address, "system-filter") == 0;
-  argv[2] = expand_string(s);
   enable_dollar_recipients = FALSE;
 
-  if (argv[2] == NULL)
+  if (!argv[2])
     {
-    addr->transport_return = search_find_defer? DEFER : expand_fail;
+    addr->transport_return = search_find_defer ? DEFER : expand_fail;
     addr->message = string_sprintf("Expansion of command \"%s\" "
       "in %s transport failed: %s",
       cmd, tname, expand_string_message);
@@ -525,7 +524,12 @@ if (expand_arguments)
   DEBUG(D_transport)
     debug_printf("shell pipe command after expansion:\n  %s\n", argv[2]);
   }
-else argv[2] = cmd;
+else
+  {
+  DEBUG(D_transport)
+    debug_printf("shell pipe command (no expansion):\n  %s\n", cmd);
+  argv[2] = cmd;
+  }
 
 argv[3] = US 0;
 return TRUE;
@@ -1072,7 +1076,8 @@ if ((rc = child_close(pid, timeout)) != 0)
     else if (!ob->ignore_status)
       {
       uschar *ss;
-      int size, ptr, i;
+      gstring * g;
+      int i;
 
       /* If temp_errors is "*" all codes are temporary. Initialization checks
       that it's either "*" or a list of numbers. If not "*", scan the list of
@@ -1097,9 +1102,7 @@ if ((rc = child_close(pid, timeout)) != 0)
 
       addr->message = string_sprintf("Child process of %s transport returned "
         "%d", tblock->name, rc);
-
-      ptr = Ustrlen(addr->message);
-      size = ptr + 1;
+      g = string_cat(NULL, addr->message);
 
       /* If the return code is > 128, it often means that a shell command
       was terminated by a signal. */
@@ -1111,35 +1114,34 @@ if ((rc = child_close(pid, timeout)) != 0)
 
       if (*ss != 0)
         {
-        addr->message = string_catn(addr->message, &size, &ptr, US" ", 1);
-        addr->message = string_cat (addr->message, &size, &ptr, ss);
+        g = string_catn(g, US" ", 1);
+        g = string_cat (g, ss);
         }
 
       /* Now add the command and arguments */
 
-      addr->message = string_catn(addr->message, &size, &ptr,
-        US" from command:", 14);
+      g = string_catn(g, US" from command:", 14);
 
       for (i = 0; i < sizeof(argv)/sizeof(int *) && argv[i] != NULL; i++)
         {
         BOOL quote = FALSE;
-        addr->message = string_catn(addr->message, &size, &ptr, US" ", 1);
+        g = string_catn(g, US" ", 1);
         if (Ustrpbrk(argv[i], " \t") != NULL)
           {
           quote = TRUE;
-          addr->message = string_catn(addr->message, &size, &ptr, US"\"", 1);
+          g = string_catn(g, US"\"", 1);
           }
-        addr->message = string_cat(addr->message, &size, &ptr, argv[i]);
+        g = string_cat(g, argv[i]);
         if (quote)
-          addr->message = string_catn(addr->message, &size, &ptr, US"\"", 1);
+          g = string_catn(g, US"\"", 1);
         }
 
       /* Add previous filter timeout message, if present. */
 
       if (*tmsg)
-        addr->message = string_cat(addr->message, &size, &ptr, tmsg);
+        g = string_cat(g, tmsg);
 
-      addr->message[ptr] = 0;  /* Ensure concatenated string terminated */
+      addr->message = string_from_gstring(g);
       }
     }
   }

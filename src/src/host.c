@@ -586,46 +586,45 @@ else if (sender_helo_name[0] == '[' &&
 
 /* Host name is not verified */
 
-if (sender_host_name == NULL)
+if (!sender_host_name)
   {
   uschar *portptr = Ustrstr(address, "]:");
-  int size = 0;
-  int ptr = 0;
+  gstring * g;
   int adlen;    /* Sun compiler doesn't like ++ in initializers */
 
-  adlen = (portptr == NULL)? Ustrlen(address) : (++portptr - address);
-  sender_fullhost = (sender_helo_name == NULL)? address :
-    string_sprintf("(%s) %s", sender_helo_name, address);
+  adlen = portptr ? (++portptr - address) : Ustrlen(address);
+  sender_fullhost = sender_helo_name
+    ? string_sprintf("(%s) %s", sender_helo_name, address)
+    : address;
 
-  sender_rcvhost = string_catn(NULL, &size, &ptr, address, adlen);
+  g = string_catn(NULL, address, adlen);
 
   if (sender_ident != NULL || show_helo || portptr != NULL)
     {
     int firstptr;
-    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US" (", 2);
-    firstptr = ptr;
+    g = string_catn(g, US" (", 2);
+    firstptr = g->ptr;
 
-    if (portptr != NULL)
-      sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2, US"port=",
-        portptr + 1);
+    if (portptr)
+      g = string_append(g, 2, US"port=", portptr + 1);
 
     if (show_helo)
-      sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2,
-        (firstptr == ptr)? US"helo=" : US" helo=", sender_helo_name);
+      g = string_append(g, 2,
+        firstptr == g->ptr ? US"helo=" : US" helo=", sender_helo_name);
 
-    if (sender_ident != NULL)
-      sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2,
-        (firstptr == ptr)? US"ident=" : US" ident=", sender_ident);
+    if (sender_ident)
+      g = string_append(g, 2,
+        firstptr == g->ptr ? US"ident=" : US" ident=", sender_ident);
 
-    sender_rcvhost = string_catn(sender_rcvhost, &size, &ptr, US")", 1);
+    g = string_catn(g, US")", 1);
     }
 
-  sender_rcvhost[ptr] = 0;   /* string_cat() always leaves room */
+  sender_rcvhost = string_from_gstring(g);
 
   /* Release store, because string_cat allocated a minimum of 100 bytes that
   are rarely completely used. */
 
-  store_reset(sender_rcvhost + ptr + 1);
+  store_reset(sender_rcvhost + g->ptr + 1);
   }
 
 /* Host name is known and verified. Unless we've already found that the HELO

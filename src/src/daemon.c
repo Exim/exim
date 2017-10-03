@@ -143,10 +143,9 @@ union sockaddr_46 interface_sockaddr;
 EXIM_SOCKLEN_T ifsize = sizeof(interface_sockaddr);
 int dup_accept_socket = -1;
 int max_for_this_host = 0;
-int wfsize = 0;
-int wfptr = 0;
 int save_log_selector = *log_selector;
-uschar *whofrom = NULL;
+gstring * whofrom = NULL;
+uschar * whofrom_s;
 
 void *reset_point = store_get(0);
 
@@ -201,17 +200,16 @@ DEBUG(D_interface) debug_printf("interface address=%s port=%d\n",
 the local interface data. This is for logging; at the end of this function the
 memory is reclaimed. */
 
-whofrom = string_append(whofrom, &wfsize, &wfptr, 3, "[", sender_host_address, "]");
+whofrom = string_append(whofrom, 3, "[", sender_host_address, "]");
 
 if (LOGGING(incoming_port))
-  whofrom = string_append(whofrom, &wfsize, &wfptr, 2, ":", string_sprintf("%d",
-    sender_host_port));
+  whofrom = string_append(whofrom, 2, ":", string_sprintf("%d", sender_host_port));
 
 if (LOGGING(incoming_interface))
-  whofrom = string_append(whofrom, &wfsize, &wfptr, 4, " I=[",
+  whofrom = string_append(whofrom, 4, " I=[",
     interface_address, "]:", string_sprintf("%d", interface_port));
 
-whofrom[wfptr] = 0;    /* Terminate the newly-built string */
+(void) string_from_gstring(whofrom);    /* Terminate the newly-built string */
 
 /* Check maximum number of connections. We do not check for reserved
 connections or unacceptable hosts here. That is done in the subprocess because
@@ -225,7 +223,7 @@ if (smtp_accept_max > 0 && smtp_accept_count >= smtp_accept_max)
     "please try again later.\r\n", FALSE);
   log_write(L_connection_reject,
             LOG_MAIN, "Connection from %s refused: too many connections",
-    whofrom);
+    whofrom->s);
   goto ERROR_RETURN;
   }
 
@@ -244,7 +242,7 @@ if (smtp_load_reserve >= 0)
     smtp_printf("421 Too much load; please try again later.\r\n", FALSE);
     log_write(L_connection_reject,
               LOG_MAIN, "Connection from %s refused: load average = %.2f",
-      whofrom, (double)load_average/1000.0);
+      whofrom->s, (double)load_average/1000.0);
     goto ERROR_RETURN;
     }
   }
@@ -264,7 +262,7 @@ if (smtp_accept_max_per_host != NULL)
     {
     if (!expand_string_forcedfail)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
-        "failed for %s: %s", whofrom, expand_string_message);
+        "failed for %s: %s", whofrom->s, expand_string_message);
     }
   /* For speed, interpret a decimal number inline here */
   else
@@ -274,7 +272,7 @@ if (smtp_accept_max_per_host != NULL)
       max_for_this_host = max_for_this_host * 10 + *s++ - '0';
     if (*s != 0)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
-        "for %s contains non-digit: %s", whofrom, expanded);
+        "for %s contains non-digit: %s", whofrom->s, expanded);
     }
   }
 
@@ -315,7 +313,7 @@ if ((max_for_this_host > 0) &&
       "from this IP address; please try again later.\r\n", FALSE);
     log_write(L_connection_reject,
               LOG_MAIN, "Connection from %s refused: too many connections "
-      "from that IP address", whofrom);
+      "from that IP address", whofrom->s);
     goto ERROR_RETURN;
     }
   }
@@ -341,7 +339,7 @@ if (LOGGING(smtp_connection))
     save_log_selector &= ~L_smtp_connection;
   else
     log_write(L_smtp_connection, LOG_MAIN, "SMTP connection from %s "
-      "(TCP/IP connection count = %d)", whofrom, smtp_accept_count + 1);
+      "(TCP/IP connection count = %d)", whofrom->s, smtp_accept_count + 1);
   }
 
 /* Now we can fork the accepting process; do a lookup tidy, just in case any
@@ -1072,14 +1070,10 @@ if (daemon_listen && !inetd_wait_mode)
   that contain neither a dot nor a colon are used to override daemon_smtp_port.
   Any other items are used to override local_interfaces. */
 
-  if (override_local_interfaces != NULL)
+  if (override_local_interfaces)
     {
-    uschar *new_smtp_port = NULL;
-    uschar *new_local_interfaces = NULL;
-    int portsize = 0;
-    int portptr = 0;
-    int ifacesize = 0;
-    int ifaceptr = 0;
+    gstring * new_smtp_port = NULL;
+    gstring * new_local_interfaces = NULL;
 
     if (override_pid_file_path == NULL) write_pid = FALSE;
 
@@ -1088,46 +1082,34 @@ if (daemon_listen && !inetd_wait_mode)
     while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
       {
       uschar joinstr[4];
-      uschar **ptr;
-      int *sizeptr;
-      int *ptrptr;
+      gstring ** gp;
 
       if (Ustrpbrk(s, ".:") == NULL)
-        {
-        ptr = &new_smtp_port;
-        sizeptr = &portsize;
-        ptrptr = &portptr;
-        }
+        gp = &new_smtp_port;
       else
-        {
-        ptr = &new_local_interfaces;
-        sizeptr = &ifacesize;
-        ptrptr = &ifaceptr;
-        }
+        gp = &new_local_interfaces;
 
-      if (*ptr == NULL)
+      if (!*gp)
         {
         joinstr[0] = sep;
         joinstr[1] = ' ';
-        *ptr = string_catn(*ptr, sizeptr, ptrptr, US"<", 1);
+        *gp = string_catn(*gp, US"<", 1);
         }
 
-      *ptr = string_catn(*ptr, sizeptr, ptrptr, joinstr, 2);
-      *ptr = string_cat (*ptr, sizeptr, ptrptr, s);
+      *gp = string_catn(*gp, joinstr, 2);
+      *gp = string_cat (*gp, s);
       }
 
-    if (new_smtp_port != NULL)
+    if (new_smtp_port)
       {
-      new_smtp_port[portptr] = 0;
-      daemon_smtp_port = new_smtp_port;
+      daemon_smtp_port = string_from_gstring(new_smtp_port);
       DEBUG(D_any) debug_printf("daemon_smtp_port overridden by -oX:\n  %s\n",
         daemon_smtp_port);
       }
 
-    if (new_local_interfaces != NULL)
+    if (new_local_interfaces)
       {
-      new_local_interfaces[ifaceptr] = 0;
-      local_interfaces = new_local_interfaces;
+      local_interfaces = string_from_gstring(new_local_interfaces);
       local_iface_source = US"-oX data";
       DEBUG(D_any) debug_printf("local_interfaces overridden by -oX:\n  %s\n",
         local_interfaces);
@@ -1173,7 +1155,7 @@ if (daemon_listen && !inetd_wait_mode)
   while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
     if (!isdigit(*s))
       {
-      int size = 0, len = 0;
+      gstring * g = NULL;
 
       list = tls_in.on_connect_ports;
       tls_in.on_connect_ports = NULL;
@@ -1187,9 +1169,10 @@ if (daemon_listen && !inetd_wait_mode)
 	    log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "TCP port \"%s\" not found", s);
 	  s = string_sprintf("%d", (int)ntohs(smtp_service->s_port));
 	  }
-	tls_in.on_connect_ports = string_append_listele(tls_in.on_connect_ports,
-	    &size, &len, ':', s);
+	g = string_append_listele(g, ':', s);
 	}
+      if (g)
+	tls_in.on_connect_ports = g->s;
       break;
       }
 

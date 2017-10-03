@@ -263,8 +263,7 @@ uschar outsep = '\n';
 uschar * ele;
 uschar * match = NULL;
 int len;
-uschar * list = NULL;
-int size = 0, pos = 0;
+gstring * list = NULL;
 
 while ((ele = string_nextinlist(&mod, &insep, NULL, 0)))
   if (ele[0] != '>')
@@ -279,8 +278,8 @@ while ((ele = string_nextinlist(CUSS &dn, &insep, NULL, 0)))
   if (  !match
      || Ustrncmp(ele, match, len) == 0 && ele[len] == '='
      )
-    list = string_append_listele(list, &size, &pos, outsep, ele+len+1);
-return list;
+    list = string_append_listele(list, outsep, ele+len+1);
+return string_from_gstring(list);
 }
 
 

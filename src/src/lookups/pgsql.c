@@ -125,9 +125,7 @@ PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
 
 int i;
-uschar *result = NULL;
-int ssize = 0;
-int offset = 0;
+gstring * result = NULL;
 int yield = DEFER;
 unsigned int num_fields, num_tuples;
 pgsql_connection *cn;
@@ -287,30 +285,31 @@ else
     {
     case PGRES_EMPTY_QUERY:
     case PGRES_COMMAND_OK:
-    /* The command was successful but did not return any data since it was
-     * not SELECT but either an INSERT, UPDATE or DELETE statement. Tell the
-     * high level code to not cache this query, and clean the current cache for
-     * this handle by setting *do_cache zero. */
-    result = string_copy(US PQcmdTuples(pg_result));
-    offset = Ustrlen(result);
-    *do_cache = 0;
-    DEBUG(D_lookup) debug_printf("PGSQL: command does not return any data "
-      "but was successful. Rows affected: %s\n", result);
+      /* The command was successful but did not return any data since it was
+      not SELECT but either an INSERT, UPDATE or DELETE statement. Tell the
+      high level code to not cache this query, and clean the current cache for
+      this handle by setting *do_cache zero. */
+
+      result = string_cat(result, US PQcmdTuples(pg_result));
+      *do_cache = 0;
+      DEBUG(D_lookup) debug_printf("PGSQL: command does not return any data "
+	"but was successful. Rows affected: %s\n", result->s);
+      break;
 
     case PGRES_TUPLES_OK:
-    break;
+      break;
 
     default:
-    /* This was the original code:
-    *errmsg = string_sprintf("PGSQL: query failed: %s\n",
-                             PQresultErrorMessage(pg_result));
-    This was suggested by a user:
-    */
+      /* This was the original code:
+      *errmsg = string_sprintf("PGSQL: query failed: %s\n",
+			       PQresultErrorMessage(pg_result));
+      This was suggested by a user:
+      */
 
-    *errmsg = string_sprintf("PGSQL: query failed: %s (%s) (%s)\n",
+      *errmsg = string_sprintf("PGSQL: query failed: %s (%s) (%s)\n",
                              PQresultErrorMessage(pg_result),
                              PQresStatus(PQresultStatus(pg_result)), query);
-    goto PGSQL_EXIT;
+      goto PGSQL_EXIT;
     }
 
 /* Result is in pg_result. Find the number of fields returned. If this is one,
@@ -326,23 +325,19 @@ row, we insert '\n' between them. */
 
 for (i = 0; i < num_tuples; i++)
   {
-  if (result != NULL)
-    result = string_catn(result, &ssize, &offset, US"\n", 1);
+  if (result)
+    result = string_catn(result, US"\n", 1);
 
-   if (num_fields == 1)
-    {
-    result = string_catn(result, &ssize, &offset,
-      US PQgetvalue(pg_result, i, 0), PQgetlength(pg_result, i, 0));
-    }
-
-   else
+  if (num_fields == 1)
+    result = string_catn(NULL,
+	US PQgetvalue(pg_result, i, 0), PQgetlength(pg_result, i, 0));
+  else
     {
     int j;
     for (j = 0; j < num_fields; j++)
       {
       uschar *tmp = US PQgetvalue(pg_result, i, j);
-      result = lf_quote(US PQfname(pg_result, j), tmp, Ustrlen(tmp), result,
-        &ssize, &offset);
+      result = lf_quote(US PQfname(pg_result, j), tmp, Ustrlen(tmp), result);
       }
     }
   }
@@ -351,16 +346,13 @@ for (i = 0; i < num_tuples; i++)
 Otherwise, we must terminate the string which has been built; string_cat()
 always leaves enough room for a terminating zero. */
 
-if (result == NULL)
+if (!result)
   {
   yield = FAIL;
   *errmsg = US"PGSQL: no data found";
   }
 else
-  {
-  result[offset] = 0;
-  store_reset(result + offset + 1);
-  }
+  store_reset(result->s + result->ptr + 1);
 
 /* Get here by goto from various error checks. */
 
@@ -369,13 +361,13 @@ PGSQL_EXIT:
 /* Free store for any result that was got; don't close the connection, as
 it is cached. */
 
-if (pg_result != NULL) PQclear(pg_result);
+if (pg_result) PQclear(pg_result);
 
 /* Non-NULL result indicates a successful result */
 
-if (result != NULL)
+if (result)
   {
-  *resultptr = result;
+  *resultptr = string_from_gstring(result);
   return OK;
   }
 else

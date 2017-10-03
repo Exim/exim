@@ -702,62 +702,58 @@ you can enable incoming_interface and disable outgoing_interface to get I=
 fields on incoming lines only.
 
 Arguments:
-  s         The log line buffer
-  sizep     Pointer to the buffer size
-  ptrp      Pointer to current index into buffer
+  g         The log line
   addr      The address to be logged
 
 Returns:    New value for s
 */
 
-static uschar *
-d_log_interface(uschar *s, int *sizep, int *ptrp)
+static gstring *
+d_log_interface(gstring * g)
 {
 if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
     && sending_ip_address)
   {
-  s = string_append(s, sizep, ptrp, 2, US" I=[", sending_ip_address);
-  s = LOGGING(outgoing_port)
-    ? string_append(s, sizep, ptrp, 2, US"]:",
-	string_sprintf("%d", sending_port))
-    : string_catn(s, sizep, ptrp, US"]", 1);
+  g = string_append(g, 2, US" I=[", sending_ip_address);
+  g = LOGGING(outgoing_port)
+    ? string_append(g, 2, US"]:", string_sprintf("%d", sending_port))
+    : string_catn(g, US"]", 1);
   }
-return s;
+return g;
 }
 
 
 
-static uschar *
-d_hostlog(uschar * s, int * sp, int * pp, address_item * addr)
+static gstring *
+d_hostlog(gstring * g, address_item * addr)
 {
 host_item * h = addr->host_used;
 
-s = string_append(s, sp, pp, 2, US" H=", h->name);
+g = string_append(g, 2, US" H=", h->name);
 
 if (LOGGING(dnssec) && h->dnssec == DS_YES)
-  s = string_catn(s, sp, pp, US" DS", 3);
+  g = string_catn(g, US" DS", 3);
 
-s = string_append(s, sp, pp, 3, US" [", h->address, US"]");
+g = string_append(g, 3, US" [", h->address, US"]");
 
 if (LOGGING(outgoing_port))
-  s = string_append(s, sp, pp, 2, US":", string_sprintf("%d", h->port));
+  g = string_append(g, 2, US":", string_sprintf("%d", h->port));
 
 #ifdef SUPPORT_SOCKS
 if (LOGGING(proxy) && proxy_local_address)
   {
-  s = string_append(s, sp, pp, 3, US" PRX=[", proxy_local_address, US"]");
+  g = string_append(g, 3, US" PRX=[", proxy_local_address, US"]");
   if (LOGGING(outgoing_port))
-    s = string_append(s, sp, pp, 2, US":", string_sprintf("%d",
-      proxy_local_port));
+    g = string_append(g, 2, US":", string_sprintf("%d", proxy_local_port));
   }
 #endif
 
-s = d_log_interface(s, sp, pp);
+g = d_log_interface(g);
 
 if (testflag(addr, af_tcp_fastopen))
-  s = string_catn(s, sp, pp, US" TFO", 4);
+  g = string_catn(g, US" TFO", 4);
 
-return s;
+return g;
 }
 
 
@@ -765,13 +761,13 @@ return s;
 
 
 #ifdef SUPPORT_TLS
-static uschar *
-d_tlslog(uschar * s, int * sizep, int * ptrp, address_item * addr)
+static gstring *
+d_tlslog(gstring * s, address_item * addr)
 {
 if (LOGGING(tls_cipher) && addr->cipher)
-  s = string_append(s, sizep, ptrp, 2, US" X=", addr->cipher);
+  s = string_append(s, 2, US" X=", addr->cipher);
 if (LOGGING(tls_certificate_verified) && addr->cipher)
-  s = string_append(s, sizep, ptrp, 2, US" CV=",
+  s = string_append(s, 2, US" CV=",
     testflag(addr, af_cert_verified)
     ?
 #ifdef EXPERIMENTAL_DANE
@@ -782,8 +778,7 @@ if (LOGGING(tls_certificate_verified) && addr->cipher)
       "yes"
     : "no");
 if (LOGGING(tls_peerdn) && addr->peerdn)
-  s = string_append(s, sizep, ptrp, 3, US" DN=\"",
-    string_printing(addr->peerdn), US"\"");
+  s = string_append(s, 3, US" DN=\"", string_printing(addr->peerdn), US"\"");
 return s;
 }
 #endif
@@ -873,15 +868,12 @@ router_name = transport_name = NULL;
 Arguments:
   addr        the address being logged
   yield       the current dynamic buffer pointer
-  sizeptr     points to current size
-  ptrptr      points to current insert pointer
 
 Returns:      the new value of the buffer pointer
 */
 
-static uschar *
-string_get_localpart(address_item *addr, uschar *yield, int *sizeptr,
-  int *ptrptr)
+static gstring *
+string_get_localpart(address_item * addr, gstring * yield)
 {
 uschar * s;
 
@@ -892,7 +884,7 @@ if (testflag(addr, af_include_affixes) && s)
   if (testflag(addr, af_utf8_downcvt))
     s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-  yield = string_cat(yield, sizeptr, ptrptr, s);
+  yield = string_cat(yield, s);
   }
 
 s = addr->local_part;
@@ -900,7 +892,7 @@ s = addr->local_part;
 if (testflag(addr, af_utf8_downcvt))
   s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-yield = string_cat(yield, sizeptr, ptrptr, s);
+yield = string_cat(yield, s);
 
 s = addr->suffix;
 if (testflag(addr, af_include_affixes) && s)
@@ -909,7 +901,7 @@ if (testflag(addr, af_include_affixes) && s)
   if (testflag(addr, af_utf8_downcvt))
     s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-  yield = string_cat(yield, sizeptr, ptrptr, s);
+  yield = string_cat(yield, s);
   }
 
 return yield;
@@ -927,9 +919,7 @@ affixes set, the af_include_affixes bit will be set in the address. In that
 case, we include the affixes here too.
 
 Arguments:
-  str           points to start of growing string, or NULL
-  size          points to current allocation for string
-  ptr           points to offset for append point; updated on exit
+  g             points to growing-string struct
   addr          bottom (ultimate) address
   all_parents   if TRUE, include all parents
   success       TRUE for successful delivery
@@ -937,8 +927,8 @@ Arguments:
 Returns:        a growable string in dynamic store
 */
 
-static uschar *
-string_log_address(uschar * str, int * size, int * ptr,
+static gstring *
+string_log_address(gstring * g,
   address_item *addr, BOOL all_parents, BOOL success)
 {
 BOOL add_topaddr = TRUE;
@@ -962,8 +952,8 @@ if (  testflag(addr, af_pfr)
    )  )
   {
   if (testflag(addr, af_file) && addr->local_part[0] != '/')
-    str = string_catn(str, size, ptr, CUS"save ", 5);
-  str = string_get_localpart(addr, str, size, ptr);
+    g = string_catn(g, CUS"save ", 5);
+  g = string_get_localpart(addr, g);
   }
 
 /* Other deliveries start with the full address. It we have split it into local
@@ -972,29 +962,31 @@ splitting is done; in those cases use the original field. */
 
 else
   {
-  uschar * cmp = str + *ptr;
+  uschar * cmp = g->s + g->ptr;
 
   if (addr->local_part)
     {
     const uschar * s;
-    str = string_get_localpart(addr, str, size, ptr);
-    str = string_catn(str, size, ptr, US"@", 1);
+    g = string_get_localpart(addr, g);
+    g = string_catn(g, US"@", 1);
     s = addr->domain;
 #ifdef SUPPORT_I18N
     if (testflag(addr, af_utf8_downcvt))
       s = string_localpart_utf8_to_alabel(s, NULL);
 #endif
-    str = string_cat(str, size, ptr, s);
+    g = string_cat(g, s);
     }
   else
-    str = string_cat(str, size, ptr, addr->address);
+    g = string_cat(g, addr->address);
 
   /* If the address we are going to print is the same as the top address,
   and all parents are not being included, don't add on the top address. First
   of all, do a caseless comparison; if this succeeds, do a caseful comparison
   on the local parts. */
+  /*XXX dodgy coding.  the string at "cmp" might not be nul-terminated if
+  we had to extend the allocation! */
 
-  str[*ptr] = 0;
+  g->s[g->ptr] = '\0';
   if (  strcmpic(cmp, topaddr->address) == 0
      && Ustrncmp(cmp, topaddr->address, Ustrchr(cmp, '@') - cmp) == 0
      && !addr->onetime_parent
@@ -1015,23 +1007,23 @@ if (  (all_parents || testflag(addr, af_pfr))
   address_item *addr2;
   for (addr2 = addr->parent; addr2 != topaddr; addr2 = addr2->parent)
     {
-    str = string_catn(str, size, ptr, s, 2);
-    str = string_cat (str, size, ptr, addr2->address);
+    g = string_catn(g, s, 2);
+    g = string_cat (g, addr2->address);
     if (!all_parents) break;
     s = US", ";
     }
-  str = string_catn(str, size, ptr, US")", 1);
+  g = string_catn(g, US")", 1);
   }
 
 /* Add the top address if it is required */
 
 if (add_topaddr)
-  str = string_append(str, size, ptr, 3,
+  g = string_append(g, 3,
     US" <",
     addr->onetime_parent ? addr->onetime_parent : topaddr->address,
     US">");
 
-return str;
+return g;
 }
 
 
@@ -1086,9 +1078,7 @@ Arguments:
 void
 delivery_log(int flags, address_item * addr, int logchar, uschar * msg)
 {
-int size = 256;         /* Used for a temporary, */
-int ptr = 0;            /* expanding buffer, for */
-uschar * s;             /* building log lines;   */
+gstring * g; /* Used for a temporary, expanding buffer, for building log lines  */
 void * reset_point;     /* released afterwards.  */
 
 /* Log the delivery on the main log. We use an extensible string to build up
@@ -1101,19 +1091,19 @@ pointer to a single host item in their host list, for use by the transport. */
   lookup_dnssec_authenticated = NULL;
 #endif
 
-s = reset_point = store_get(size);
+g = reset_point = string_get(256);
 
 if (msg)
-  s = string_append(s, &size, &ptr, 2, host_and_ident(TRUE), US" ");
+  g = string_append(g, 2, host_and_ident(TRUE), US" ");
 else
   {
-  s[ptr++] = logchar;
-  s = string_catn(s, &size, &ptr, US"> ", 2);
+  g->s[0] = logchar; g->ptr = 1;
+  g = string_catn(g, US"> ", 2);
   }
-s = string_log_address(s, &size, &ptr, addr, LOGGING(all_parents), TRUE);
+g = string_log_address(g, addr, LOGGING(all_parents), TRUE);
 
 if (LOGGING(sender_on_delivery) || msg)
-  s = string_append(s, &size, &ptr, 3, US" F=<",
+  g = string_append(g, 3, US" F=<",
 #ifdef SUPPORT_I18N
     testflag(addr, af_utf8_downcvt)
     ? string_address_utf8_to_alabel(sender_address, NULL)
@@ -1123,11 +1113,11 @@ if (LOGGING(sender_on_delivery) || msg)
   US">");
 
 if (*queue_name)
-  s = string_append(s, &size, &ptr, 2, US" Q=", queue_name);
+  g = string_append(g, 2, US" Q=", queue_name);
 
 #ifdef EXPERIMENTAL_SRS
 if(addr->prop.srs_sender)
-  s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->prop.srs_sender, US">");
+  g = string_append(g, 3, US" SRS=<", addr->prop.srs_sender, US">");
 #endif
 
 /* You might think that the return path must always be set for a successful
@@ -1136,19 +1126,19 @@ when it is not set is for a delivery to /dev/null which is optimised by not
 being run at all. */
 
 if (used_return_path && LOGGING(return_path_on_delivery))
-  s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
+  g = string_append(g, 3, US" P=<", used_return_path, US">");
 
 if (msg)
-  s = string_append(s, &size, &ptr, 2, US" ", msg);
+  g = string_append(g, 2, US" ", msg);
 
 /* For a delivery from a system filter, there may not be a router */
 if (addr->router)
-  s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
+  g = string_append(g, 2, US" R=", addr->router->name);
 
-s = string_append(s, &size, &ptr, 2, US" T=", addr->transport->name);
+g = string_append(g, 2, US" T=", addr->transport->name);
 
 if (LOGGING(delivery_size))
-  s = string_append(s, &size, &ptr, 2, US" S=",
+  g = string_append(g, 2, US" S=",
     string_sprintf("%d", transport_count));
 
 /* Local delivery */
@@ -1156,10 +1146,10 @@ if (LOGGING(delivery_size))
 if (addr->transport->info->local)
   {
   if (addr->host_list)
-    s = string_append(s, &size, &ptr, 2, US" H=", addr->host_list->name);
-  s = d_log_interface(s, &size, &ptr);
+    g = string_append(g, 2, US" H=", addr->host_list->name);
+  g = d_log_interface(g);
   if (addr->shadow_message)
-    s = string_cat(s, &size, &ptr, addr->shadow_message);
+    g = string_cat(g, addr->shadow_message);
   }
 
 /* Remote delivery */
@@ -1168,9 +1158,9 @@ else
   {
   if (addr->host_used)
     {
-    s = d_hostlog(s, &size, &ptr, addr);
+    g = d_hostlog(g, addr);
     if (continue_sequence > 1)
-      s = string_catn(s, &size, &ptr, US"*", 1);
+      g = string_catn(g, US"*", 1);
 
 #ifndef DISABLE_EVENT
     deliver_host_address = addr->host_used->address;
@@ -1185,27 +1175,27 @@ else
     }
 
 #ifdef SUPPORT_TLS
-  s = d_tlslog(s, &size, &ptr, addr);
+  g = d_tlslog(g, addr);
 #endif
 
   if (addr->authenticator)
     {
-    s = string_append(s, &size, &ptr, 2, US" A=", addr->authenticator);
+    g = string_append(g, 2, US" A=", addr->authenticator);
     if (addr->auth_id)
       {
-      s = string_append(s, &size, &ptr, 2, US":", addr->auth_id);
+      g = string_append(g, 2, US":", addr->auth_id);
       if (LOGGING(smtp_mailauth) && addr->auth_sndr)
-        s = string_append(s, &size, &ptr, 2, US":", addr->auth_sndr);
+        g = string_append(g, 2, US":", addr->auth_sndr);
       }
     }
 
 #ifndef DISABLE_PRDR
   if (testflag(addr, af_prdr_used))
-    s = string_catn(s, &size, &ptr, US" PRDR", 5);
+    g = string_catn(g, US" PRDR", 5);
 #endif
 
   if (testflag(addr, af_chunking_used))
-    s = string_catn(s, &size, &ptr, US" K", 2);
+    g = string_catn(g, US" K", 2);
   }
 
 /* confirmation message (SMTP (host_used) and LMTP (driver_name)) */
@@ -1227,26 +1217,25 @@ if (  LOGGING(smtp_confirmation)
     }
   *p++ = '\"';
   *p = 0;
-  s = string_append(s, &size, &ptr, 2, US" C=", big_buffer);
+  g = string_append(g, 2, US" C=", big_buffer);
   }
 
 /* Time on queue and actual time taken to deliver */
 
 if (LOGGING(queue_time))
-  s = string_append(s, &size, &ptr, 2, US" QT=",
+  g = string_append(g, 2, US" QT=",
     string_timesince(&received_time));
 
 if (LOGGING(deliver_time))
   {
   struct timeval diff = {.tv_sec = addr->more_errno, .tv_usec = addr->delivery_usec};
-  s = string_append(s, &size, &ptr, 2, US" DT=", string_timediff(&diff));
+  g = string_append(g, 2, US" DT=", string_timediff(&diff));
   }
 
 /* string_cat() always leaves room for the terminator. Release the
 store we used to build the line after writing it. */
 
-s[ptr] = 0;
-log_write(0, flags, "%s", s);
+log_write(0, flags, "%s", string_from_gstring(g));
 
 #ifndef DISABLE_EVENT
 if (!msg) msg_event_raise(US"msg:delivery", addr);
@@ -1262,25 +1251,21 @@ static void
 deferral_log(address_item * addr, uschar * now,
   int logflags, uschar * driver_name, uschar * driver_kind)
 {
-int size = 256;         /* Used for a temporary, */
-int ptr = 0;            /* expanding buffer, for */
-uschar * s;             /* building log lines;   */
-void * reset_point;     /* released afterwards.  */
-
-uschar ss[32];
+gstring * g;
+void * reset_point;
 
 /* Build up the line that is used for both the message log and the main
 log. */
 
-s = reset_point = store_get(size);
+g = reset_point = string_get(256);
 
 /* Create the address string for logging. Must not do this earlier, because
 an OK result may be changed to FAIL when a pipe returns text. */
 
-s = string_log_address(s, &size, &ptr, addr, LOGGING(all_parents), FALSE);
+g = string_log_address(g, addr, LOGGING(all_parents), FALSE);
 
 if (*queue_name)
-  s = string_append(s, &size, &ptr, 2, US" Q=", queue_name);
+  g = string_append(g, 2, US" Q=", queue_name);
 
 /* Either driver_name contains something and driver_kind contains
 " router" or " transport" (note the leading space), or driver_name is
@@ -1291,45 +1276,42 @@ so nothing has been done at all, both variables contain null strings. */
 if (driver_name)
   {
   if (driver_kind[1] == 't' && addr->router)
-    s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
-  Ustrcpy(ss, " ?=");
-  ss[1] = toupper(driver_kind[1]);
-  s = string_append(s, &size, &ptr, 2, ss, driver_name);
+    g = string_append(g, 2, US" R=", addr->router->name);
+  g = string_cat(g, string_sprintf(" %c=%s", toupper(driver_kind[1]), driver_name));
   }
 else if (driver_kind)
-  s = string_append(s, &size, &ptr, 2, US" ", driver_kind);
+  g = string_append(g, 2, US" ", driver_kind);
 
 /*XXX need an s+s+p sprintf */
-sprintf(CS ss, " defer (%d)", addr->basic_errno);
-s = string_cat(s, &size, &ptr, ss);
+g = string_cat(g, string_sprintf(" defer (%d)", addr->basic_errno));
 
 if (addr->basic_errno > 0)
-  s = string_append(s, &size, &ptr, 2, US": ",
+  g = string_append(g, 2, US": ",
     US strerror(addr->basic_errno));
 
 if (addr->host_used)
   {
-  s = string_append(s, &size, &ptr, 5,
+  g = string_append(g, 5,
 		    US" H=", addr->host_used->name,
 		    US" [",  addr->host_used->address, US"]");
   if (LOGGING(outgoing_port))
     {
     int port = addr->host_used->port;
-    s = string_append(s, &size, &ptr, 2,
+    g = string_append(g, 2,
 	  US":", port == PORT_NONE ? US"25" : string_sprintf("%d", port));
     }
   }
 
 if (addr->message)
-  s = string_append(s, &size, &ptr, 2, US": ", addr->message);
+  g = string_append(g, 2, US": ", addr->message);
 
-s[ptr] = 0;
+(void) string_from_gstring(g);
 
 /* Log the deferment in the message log, but don't clutter it
 up with retry-time defers after the first delivery attempt. */
 
 if (deliver_firsttime || addr->basic_errno > ERRNO_RETRY_BASE)
-  deliver_msglog("%s %s\n", now, s);
+  deliver_msglog("%s %s\n", now, g->s);
 
 /* Write the main log and reset the store.
 For errors of the type "retry time not reached" (also remotes skipped
@@ -1339,7 +1321,7 @@ others. */
 
 
 log_write(addr->basic_errno <= ERRNO_RETRY_BASE ? L_retry_defer : 0, logflags,
-  "== %s", s);
+  "== %s", g->s);
 
 store_reset(reset_point);
 return;
@@ -1350,60 +1332,56 @@ return;
 static void
 failure_log(address_item * addr, uschar * driver_kind, uschar * now)
 {
-int size = 256;         /* Used for a temporary, */
-int ptr = 0;            /* expanding buffer, for */
-uschar * s;             /* building log lines;   */
-void * reset_point;     /* released afterwards.  */
+void * reset_point;
+gstring * g = reset_point = string_get(256);
 
 /* Build up the log line for the message and main logs */
-
-s = reset_point = store_get(size);
 
 /* Create the address string for logging. Must not do this earlier, because
 an OK result may be changed to FAIL when a pipe returns text. */
 
-s = string_log_address(s, &size, &ptr, addr, LOGGING(all_parents), FALSE);
+g = string_log_address(g, addr, LOGGING(all_parents), FALSE);
 
 if (LOGGING(sender_on_delivery))
-  s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
+  g = string_append(g, 3, US" F=<", sender_address, US">");
 
 if (*queue_name)
-  s = string_append(s, &size, &ptr, 2, US" Q=", queue_name);
+  g = string_append(g, 2, US" Q=", queue_name);
 
 /* Return path may not be set if no delivery actually happened */
 
 if (used_return_path && LOGGING(return_path_on_delivery))
-  s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
+  g = string_append(g, 3, US" P=<", used_return_path, US">");
 
 if (addr->router)
-  s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
+  g = string_append(g, 2, US" R=", addr->router->name);
 if (addr->transport)
-  s = string_append(s, &size, &ptr, 2, US" T=", addr->transport->name);
+  g = string_append(g, 2, US" T=", addr->transport->name);
 
 if (addr->host_used)
-  s = d_hostlog(s, &size, &ptr, addr);
+  g = d_hostlog(g, addr);
 
 #ifdef SUPPORT_TLS
-s = d_tlslog(s, &size, &ptr, addr);
+g = d_tlslog(g, addr);
 #endif
 
 if (addr->basic_errno > 0)
-  s = string_append(s, &size, &ptr, 2, US": ", US strerror(addr->basic_errno));
+  g = string_append(g, 2, US": ", US strerror(addr->basic_errno));
 
 if (addr->message)
-  s = string_append(s, &size, &ptr, 2, US": ", addr->message);
+  g = string_append(g, 2, US": ", addr->message);
 
-s[ptr] = 0;
+(void) string_from_gstring(g);
 
 /* Do the logging. For the message log, "routing failed" for those cases,
 just to make it clearer. */
 
 if (driver_kind)
-  deliver_msglog("%s %s failed for %s\n", now, driver_kind, s);
+  deliver_msglog("%s %s failed for %s\n", now, driver_kind, g->s);
 else
-  deliver_msglog("%s %s\n", now, s);
+  deliver_msglog("%s %s\n", now, g->s);
 
-log_write(0, LOG_MAIN, "** %s", s);
+log_write(0, LOG_MAIN, "** %s", g->s);
 
 #ifndef DISABLE_EVENT
 msg_event_raise(US"msg:fail:delivery", addr);
@@ -5153,9 +5131,8 @@ Returns:     NULL or an expanded string
 static uschar *
 next_emf(FILE *f, uschar *which)
 {
-int size = 256;
-int ptr = 0;
-uschar *para, *yield;
+uschar *yield;
+gstring * para;
 uschar buffer[256];
 
 if (!f) return NULL;
@@ -5163,16 +5140,14 @@ if (!f) return NULL;
 if (!Ufgets(buffer, sizeof(buffer), f) || Ustrcmp(buffer, "****\n") == 0)
   return NULL;
 
-para = store_get(size);
+para = string_get(256);
 for (;;)
   {
-  para = string_cat(para, &size, &ptr, buffer);
+  para = string_cat(para, buffer);
   if (!Ufgets(buffer, sizeof(buffer), f) || Ustrcmp(buffer, "****\n") == 0)
     break;
   }
-para[ptr] = 0;
-
-if ((yield = expand_string(para)))
+if ((yield = expand_string(string_from_gstring(para))))
   return yield;
 
 log_write(0, LOG_MAIN|LOG_PANIC, "Failed to expand string from "

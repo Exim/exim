@@ -1149,8 +1149,7 @@ uschar *
 local_part_quote(uschar *lpart)
 {
 BOOL needs_quote = FALSE;
-int size, ptr;
-uschar *yield;
+gstring * g;
 uschar *t;
 
 for (t = lpart; !needs_quote && *t != 0; t++)
@@ -1161,26 +1160,24 @@ for (t = lpart; !needs_quote && *t != 0; t++)
 
 if (!needs_quote) return lpart;
 
-size = ptr = 0;
-yield = string_catn(NULL, &size, &ptr, US"\"", 1);
+g = string_catn(NULL, US"\"", 1);
 
 for (;;)
   {
   uschar *nq = US Ustrpbrk(lpart, "\\\"");
   if (nq == NULL)
     {
-    yield = string_cat(yield, &size, &ptr, lpart);
+    g = string_cat(g, lpart);
     break;
     }
-  yield = string_catn(yield, &size, &ptr, lpart, nq - lpart);
-  yield = string_catn(yield, &size, &ptr, US"\\", 1);
-  yield = string_catn(yield, &size, &ptr, nq, 1);
+  g = string_catn(g, lpart, nq - lpart);
+  g = string_catn(g, US"\\", 1);
+  g = string_catn(g, nq, 1);
   lpart = nq + 1;
   }
 
-yield = string_catn(yield, &size, &ptr, US"\"", 1);
-yield[ptr] = 0;
-return yield;
+g = string_catn(g, US"\"", 1);
+return string_from_gstring(g);
 }
 
 
@@ -1253,11 +1250,9 @@ static uschar *
 get_stdinput(char *(*fn_readline)(const char *), void(*fn_addhist)(const char *))
 {
 int i;
-int size = 0;
-int ptr = 0;
-uschar *yield = NULL;
+gstring * g = NULL;
 
-if (fn_readline == NULL) { printf("> "); fflush(stdout); }
+if (!fn_readline) { printf("> "); fflush(stdout); }
 
 for (i = 0;; i++)
   {
@@ -1292,23 +1287,22 @@ for (i = 0;; i++)
     while (p < ss && isspace(*p)) p++;   /* leading space after cont */
     }
 
-  yield = string_catn(yield, &size, &ptr, p, ss - p);
+  g = string_catn(g, p, ss - p);
 
   #ifdef USE_READLINE
-  if (fn_readline != NULL) free(readline_line);
+  if (fn_readline) free(readline_line);
   #endif
 
-  /* yield can only be NULL if ss==p */
-  if (ss == p || yield[ptr-1] != '\\')
-    {
-    if (yield) yield[ptr] = 0;
+  /* g can only be NULL if ss==p */
+  if (ss == p || g->s[g->ptr-1] != '\\')
     break;
-    }
-  yield[--ptr] = 0;
+
+  --g->ptr;
+  (void) string_from_gstring(g);
   }
 
-if (yield == NULL) printf("\n");
-return yield;
+if (!g) printf("\n");
+return string_from_gstring(g);
 }
 
 

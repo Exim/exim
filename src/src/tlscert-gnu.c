@@ -279,8 +279,7 @@ return cp2;
 uschar *
 tls_cert_subject_altname(void * cert, uschar * mod)
 {
-uschar * list = NULL;
-int lsize = 0, llen = 0;
+gstring * list = NULL;
 int index;
 size_t siz;
 int ret;
@@ -308,7 +307,7 @@ for(index = 0;; index++)
       (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL))
     {
     case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
-      return list;	/* no more elements; normal exit */
+      return string_from_gstring(list);	/* no more elements; normal exit */
 
     case GNUTLS_E_SHORT_MEMORY_BUFFER:
       break;
@@ -333,7 +332,7 @@ for(index = 0;; index++)
     case GNUTLS_SAN_RFC822NAME: tag = US"MAIL"; break;
     default: continue;        /* ignore unrecognised types */
     }
-  list = string_append_listele(list, &lsize, &llen, sep,
+  list = string_append_listele(list, sep,
           match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 /*NOTREACHED*/
@@ -347,8 +346,7 @@ gnutls_datum_t uri;
 int ret;
 uschar sep = '\n';
 int index;
-uschar * list = NULL;
-int lsize = 0, llen = 0;
+gstring * list = NULL;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -359,12 +357,11 @@ for(index = 0;; index++)
 	  index, GNUTLS_IA_OCSP_URI, &uri, NULL);
 
   if (ret == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
-    return list;
+    return string_from_gstring(list);
   if (ret < 0)
     return g_err("gai", __FUNCTION__, ret);
 
-  list = string_append_listele_n(list, &lsize, &llen, sep,
-	    uri.data, uri.size);
+  list = string_append_listele_n(list, sep, uri.data, uri.size);
   }
 /*NOTREACHED*/
 
@@ -385,8 +382,7 @@ int ret;
 size_t siz;
 uschar sep = '\n';
 int index;
-uschar * list = NULL;
-int lsize = 0, llen = 0;
+gstring * list = NULL;
 uschar * ele;
 
 if (mod)
@@ -399,7 +395,7 @@ for(index = 0;; index++)
     (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL, NULL))
     {
     case GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE:
-      return list;
+      return string_from_gstring(list);
     case GNUTLS_E_SHORT_MEMORY_BUFFER:
       break;
     default:
@@ -411,7 +407,7 @@ for(index = 0;; index++)
       (gnutls_x509_crt_t)cert, index, ele, &siz, NULL, NULL)) < 0)
     return g_err("gc1", __FUNCTION__, ret);
 
-  list = string_append_listele_n(list, &lsize, &llen, sep, ele, siz);
+  list = string_append_listele_n(list, sep, ele, siz);
   }
 /*NOTREACHED*/
 }

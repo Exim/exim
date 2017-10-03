@@ -126,6 +126,7 @@ dkim_exim_verify_finish(void)
 {
 pdkim_signature * sig = NULL;
 int dkim_signers_size = 0, dkim_signers_ptr = 0, rc;
+gstring * g = NULL;
 const uschar * errstr;
 
 store_pool = POOL_PERM;
@@ -158,112 +159,105 @@ if (rc != PDKIM_OK)
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
-  int size = 0, ptr = 0;
-  uschar * logmsg = NULL, * s;
+  uschar * s;
+  gstring * logmsg;
 
   /* Log a line for each signature */
 
   if (!(s = sig->domain)) s = US"<UNSET>";
-  logmsg = string_append(logmsg, &size, &ptr, 2, "d=", s);
+  logmsg = string_append(NULL, 2, "d=", s);
   if (!(s = sig->selector)) s = US"<UNSET>";
-  logmsg = string_append(logmsg, &size, &ptr, 2, " s=", s);
-  logmsg = string_append(logmsg, &size, &ptr, 7, 
+  logmsg = string_append(logmsg, 2, " s=", s);
+  logmsg = string_append(logmsg, 7, 
 	" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 	"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 	" a=", dkim_sig_to_a_tag(sig),
 	string_sprintf(" b=%d",
 			(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
-  if ((s= sig->identity)) logmsg = string_append(logmsg, &size, &ptr, 2, " i=", s);
-  if (sig->created > 0) logmsg = string_append(logmsg, &size, &ptr, 1,
+  if ((s= sig->identity)) logmsg = string_append(logmsg, 2, " i=", s);
+  if (sig->created > 0) logmsg = string_cat(logmsg,
 				      string_sprintf(" t=%lu", sig->created));
-  if (sig->expires > 0) logmsg = string_append(logmsg, &size, &ptr, 1,
+  if (sig->expires > 0) logmsg = string_cat(logmsg,
 				      string_sprintf(" x=%lu", sig->expires));
-  if (sig->bodylength > -1) logmsg = string_append(logmsg, &size, &ptr, 1,
+  if (sig->bodylength > -1) logmsg = string_cat(logmsg,
 				      string_sprintf(" l=%lu", sig->bodylength));
 
   switch (sig->verify_status)
     {
     case PDKIM_VERIFY_NONE:
-      logmsg = string_append(logmsg, &size, &ptr, 1, " [not verified]");
+      logmsg = string_cat(logmsg, " [not verified]");
       break;
 
     case PDKIM_VERIFY_INVALID:
-      logmsg = string_append(logmsg, &size, &ptr, 1, " [invalid - ");
+      logmsg = string_cat(logmsg, " [invalid - ");
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
-	  logmsg = string_append(logmsg, &size, &ptr, 1,
+	  logmsg = string_cat(logmsg,
 		        "public key record (currently?) unavailable]");
 	  break;
 
 	case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
-	  logmsg = string_append(logmsg, &size, &ptr, 1,
-			"overlong public key record]");
+	  logmsg = string_cat(logmsg, "overlong public key record]");
 	  break;
 
 	case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
 	case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
-	  logmsg = string_append(logmsg, &size, &ptr, 1,
-		       "syntax error in public key record]");
+	  logmsg = string_cat(logmsg, "syntax error in public key record]");
 	  break;
 
         case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
-          logmsg = string_append(logmsg, &size, &ptr, 1,
-                       "signature tag missing or invalid]");
+          logmsg = string_cat(logmsg, "signature tag missing or invalid]");
           break;
 
         case PDKIM_VERIFY_INVALID_DKIM_VERSION:
-          logmsg = string_append(logmsg, &size, &ptr, 1,
-                       "unsupported DKIM version]");
+          logmsg = string_cat(logmsg, "unsupported DKIM version]");
           break;
 
 	default:
-	  logmsg = string_append(logmsg, &size, &ptr, 1,
-			"unspecified problem]");
+	  logmsg = string_cat(logmsg, "unspecified problem]");
 	}
       break;
 
     case PDKIM_VERIFY_FAIL:
       logmsg =
-	string_append(logmsg, &size, &ptr, 1, " [verification failed - ");
+	string_cat(logmsg, " [verification failed - ");
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_FAIL_BODY:
-	  logmsg = string_append(logmsg, &size, &ptr, 1,
+	  logmsg = string_cat(logmsg,
 		       "body hash mismatch (body probably modified in transit)]");
 	  break;
 
 	case PDKIM_VERIFY_FAIL_MESSAGE:
-	  logmsg = string_append(logmsg, &size, &ptr, 1,
+	  logmsg = string_cat(logmsg,
 		       "signature did not verify (headers probably modified in transit)]");
 	break;
 
 	default:
-	  logmsg = string_append(logmsg, &size, &ptr, 1, "unspecified reason]");
+	  logmsg = string_cat(logmsg, "unspecified reason]");
 	}
       break;
 
     case PDKIM_VERIFY_PASS:
-      logmsg =
-	string_append(logmsg, &size, &ptr, 1, " [verification succeeded]");
+      logmsg = string_cat(logmsg, " [verification succeeded]");
       break;
     }
 
-  logmsg[ptr] = '\0';
-  log_write(0, LOG_MAIN, "DKIM: %s", logmsg);
+  log_write(0, LOG_MAIN, "DKIM: %s", string_from_gstring(logmsg));
 
   /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
 
   if (sig->domain)
-    dkim_signers = string_append_listele(dkim_signers, &dkim_signers_size,
-      &dkim_signers_ptr, ':', sig->domain);
+    g = string_append_listele(g, ':', sig->domain);
 
   if (sig->identity)
-    dkim_signers = string_append_listele(dkim_signers, &dkim_signers_size,
-      &dkim_signers_ptr, ':', sig->identity);
+    g = string_append_listele(g, ':', sig->identity);
 
   /* Process next signature */
   }
+
+if (g) dkim_signers = g->s;
 
 out:
 store_pool = dkim_verify_oldpool;
@@ -453,19 +447,16 @@ switch (what)
 If a prefix is given, prepend it to the file for the calculations.
 */
 
-blob *
+gstring *
 dkim_exim_sign(int fd, off_t off, uschar * prefix,
   struct ob_dkim * dkim, const uschar ** errstr)
 {
 const uschar * dkim_domain;
 int sep = 0;
-uschar * seen_doms = NULL;
-int seen_doms_size = 0;
-int seen_doms_offset = 0;
+gstring * seen_doms = NULL;
 pdkim_ctx ctx;
 pdkim_signature * sig;
-blob * sigbuf = NULL;
-int sigsize = 0;
+gstring * sigbuf;
 int pdkim_rc;
 int sread;
 uschar buf[4096];
@@ -498,8 +489,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
       0, NULL, NULL, MCL_STRING, TRUE, NULL) == OK)
     continue;
 
-  seen_doms = string_append_listele(seen_doms, &seen_doms_size,
-    &seen_doms_offset, ':', dkim_signing_domain);
+  seen_doms = string_append_listele(seen_doms, ':', dkim_signing_domain);
 
   /* Set $dkim_selector expansion variable to each selector in list,
   for this domain. */
@@ -648,23 +638,10 @@ if (sread == -1)
 if ((pdkim_rc = pdkim_feed_finish(&ctx, &sig, errstr)) != PDKIM_OK)
   goto pk_bad;
 
-sigbuf = store_get(sizeof(blob));
-sigbuf->data = NULL;
-sigbuf->len = 0;
+for (sigbuf = NULL; sig; sig = sig->next)
+  sigbuf = string_append(sigbuf, 2, US sig->signature_header, US"\r\n");
 
-while (sig)
-  {
-  int len = sigbuf->len;
-  sigbuf->data = string_append(sigbuf->data, &sigsize, &len, 2,
-			US sig->signature_header, US"\r\n");
-  sigbuf->len = len;
-  sig = sig->next;
-  }
-
-if (sigbuf->data)
-  sigbuf->data[sigbuf->len] = '\0';
-else
-  sigbuf->data = US"";
+(void) string_from_gstring(sigbuf);
 
 CLEANUP:
   store_pool = old_pool;

@@ -94,11 +94,9 @@ MYSQL_ROW mysql_row_data;
 MYSQL_FIELD *fields;
 
 int i;
-int ssize = 0;
-int offset = 0;
 int yield = DEFER;
 unsigned int num_fields;
-uschar *result = NULL;
+gstring * result = NULL;
 mysql_connection *cn;
 uschar *server_copy = NULL;
 uschar *sdata[4];
@@ -242,7 +240,8 @@ if ((mysql_result = mysql_use_result(mysql_handle)) == NULL)
   if ( mysql_field_count(mysql_handle) == 0 )
     {
     DEBUG(D_lookup) debug_printf("MYSQL: query was not one that returns data\n");
-    result = string_sprintf("%d", mysql_affected_rows(mysql_handle));
+    result = string_cat(result,
+	       string_sprintf("%d", mysql_affected_rows(mysql_handle)));
     *do_cache = 0;
     goto MYSQL_EXIT;
     }
@@ -262,25 +261,25 @@ row, we insert '\n' between them. */
 
 fields = mysql_fetch_fields(mysql_result);
 
-while ((mysql_row_data = mysql_fetch_row(mysql_result)) != NULL)
+while ((mysql_row_data = mysql_fetch_row(mysql_result)))
   {
   unsigned long *lengths = mysql_fetch_lengths(mysql_result);
 
-  if (result != NULL)
-      result = string_catn(result, &ssize, &offset, US"\n", 1);
+  if (result)
+    result = string_catn(result, US"\n", 1);
 
   if (num_fields == 1)
     {
     if (mysql_row_data[0] != NULL)    /* NULL value yields nothing */
-      result = string_catn(result, &ssize, &offset, US mysql_row_data[0],
+      {
+      result = string_catn(result, US mysql_row_data[0],
         lengths[0]);
+      (void) string_from_gstring(result);
+      }
     }
 
   else for (i = 0; i < num_fields; i++)
-    {
-    result = lf_quote(US fields[i].name, US mysql_row_data[i], lengths[i],
-      result, &ssize, &offset);
-    }
+    result = lf_quote(US fields[i].name, US mysql_row_data[i], lengths[i], result);
   }
 
 /* more results? -1 = no, >0 = error, 0 = yes (keep looping)
@@ -302,15 +301,15 @@ while((i = mysql_next_result(mysql_handle)) >= 0) {
 Otherwise, we must terminate the string which has been built; string_cat()
 always leaves enough room for a terminating zero. */
 
-if (result == NULL)
+if (!result)
   {
   yield = FAIL;
   *errmsg = US"MYSQL: no data found";
   }
 else
   {
-  result[offset] = 0;
-  store_reset(result + offset + 1);
+  (void) string_from_gstring(result);
+  store_reset(result->s + result->ptr + 1);
   }
 
 /* Get here by goto from various error checks and from the case where no data
@@ -321,13 +320,13 @@ MYSQL_EXIT:
 /* Free mysal store for any result that was got; don't close the connection, as
 it is cached. */
 
-if (mysql_result != NULL) mysql_free_result(mysql_result);
+if (mysql_result) mysql_free_result(mysql_result);
 
 /* Non-NULL result indicates a successful result */
 
-if (result != NULL)
+if (result)
   {
-  *resultptr = result;
+  *resultptr = result->s;
   return OK;
   }
 else

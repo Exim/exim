@@ -409,12 +409,14 @@ Returns
  -1           syntax error
 */
 
-static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *header, struct String *subject, struct String *body)
+static int
+parse_mailto_uri(struct Sieve *filter, const uschar *uri,
+  string_item **recipient, struct String *header, struct String *subject,
+  struct String *body)
 {
 const uschar *start;
 struct String to, hname;
 struct String hvalue = {.character = NULL, .length = 0};
-int capacity;
 string_item *new;
 
 if (Ustrncmp(uri,"mailto:",7))
@@ -431,22 +433,21 @@ if (*uri && *uri!='?')
     for (start=uri; *uri && *uri!='?' && (*uri!='%' || *(uri+1)!='2' || tolower(*(uri+2))!='c'); ++uri);
     if (uri>start)
       {
-      capacity=0;
-      to.character= NULL;
-      to.length=0;
-      to.character=string_catn(to.character, &capacity, &to.length, start, uri-start);
-      to.character[to.length]='\0';
+      gstring * g = string_catn(NULL, start, uri-start);
+
+      to.character = string_from_gstring(g);
+      to.length = g->ptr;
       if (uri_decode(&to)==-1)
         {
         filter->errmsg=US"Invalid URI encoding";
         return -1;
         }
-        new=store_get(sizeof(string_item));
-        new->text=store_get(to.length+1);
-        if (to.length) memcpy(new->text,to.character,to.length);
-        new->text[to.length]='\0';
-        new->next=*recipient;
-        *recipient=new;
+      new=store_get(sizeof(string_item));
+      new->text=store_get(to.length+1);
+      if (to.length) memcpy(new->text,to.character,to.length);
+      new->text[to.length]='\0';
+      new->next=*recipient;
+      *recipient=new;
       }
     else
       {
@@ -465,11 +466,10 @@ if (*uri=='?')
     for (start=uri; *uri && (isalnum(*uri) || strchr("$-_.+!*'(),%",*uri)); ++uri);
     if (uri>start)
       {
-      capacity=0;
-      hname.character= NULL;
-      hname.length=0;
-      hname.character = string_catn(hname.character, &capacity, &hname.length, start, uri-start);
-      hname.character[hname.length]='\0';
+      gstring * g = string_catn(NULL, start, uri-start);
+
+      hname.character = string_from_gstring(g);
+      hname.length = g->ptr;
       if (uri_decode(&hname)==-1)
         {
         filter->errmsg=US"Invalid URI encoding";
@@ -488,11 +488,10 @@ if (*uri=='?')
     for (start=uri; *uri && (isalnum(*uri) || strchr("$-_.+!*'(),%",*uri)); ++uri);
     if (uri>start)
       {
-      capacity=0;
-      hvalue.character= NULL;
-      hvalue.length=0;
-      hvalue.character=string_catn(hvalue.character,&capacity,&hvalue.length,start,uri-start);
-      hvalue.character[hvalue.length]='\0';
+      gstring * g = string_catn(NULL, start, uri-start);
+
+      hname.character = string_from_gstring(g);
+      hname.length = g->ptr;
       if (uri_decode(&hvalue)==-1)
         {
         filter->errmsg=US"Invalid URI encoding";
@@ -528,13 +527,18 @@ if (*uri=='?')
       for (i=ignore; i<end && !eq_asciicase(&hname,i,0); ++i);
       if (i==end)
         {
-        if (header->length==-1) header->length=0;
-        capacity=header->length;
-        header->character=string_catn(header->character,&capacity,&header->length,hname.character,hname.length);
-        header->character=string_catn(header->character,&capacity,&header->length,CUS ": ",2);
-        header->character=string_catn(header->character,&capacity,&header->length,hvalue.character,hvalue.length);
-        header->character=string_catn(header->character,&capacity,&header->length,CUS "\n",1);
-        header->character[header->length]='\0';
+	gstring * g;
+
+        if (header->length==-1) header->length = 0;
+
+	g = string_catn(NULL, header->character, header->length);
+        g = string_catn(g, hname.character, hname.length);
+        g = string_catn(g, CUS ": ", 2);
+        g = string_catn(g, hvalue.character, hvalue.length);
+        g = string_catn(g, CUS "\n", 1);
+
+	header->character = string_from_gstring(g);
+	header->length = g->ptr;
         }
       }
     if (*uri=='&') ++uri;
@@ -992,10 +996,10 @@ Arguments:
 Returns:      quoted string
 */
 
-static const uschar *quote(const struct String *header)
+static const uschar *
+quote(const struct String *header)
 {
-uschar *quoted=NULL;
-int size=0,ptr=0;
+gstring * quoted = NULL;
 size_t l;
 const uschar *h;
 
@@ -1006,26 +1010,20 @@ while (l)
   switch (*h)
     {
     case '\0':
-      {
-      quoted=string_catn(quoted,&size,&ptr,CUS "\\0",2);
+      quoted = string_catn(quoted, CUS "\\0", 2);
       break;
-      }
     case '$':
     case '{':
     case '}':
-      {
-      quoted=string_catn(quoted,&size,&ptr,CUS "\\",1);
-      }
+      quoted = string_catn(quoted, CUS "\\", 1);
     default:
-      {
-      quoted=string_catn(quoted,&size,&ptr,h,1);
-      }
+      quoted = string_catn(quoted, h, 1);
     }
   ++h;
   --l;
   }
-quoted=string_catn(quoted,&size,&ptr,CUS "",1);
-return quoted;
+quoted = string_catn(quoted, CUS "", 1);
+return string_from_gstring(quoted);
 }
 
 
@@ -1476,10 +1474,12 @@ Returns:      1                success
 
 static int parse_string(struct Sieve *filter, struct String *data)
 {
+gstring * g = NULL;
 int dataCapacity=0;
 
-data->length=0;
-data->character=(uschar*)0;
+data->length = 0;
+data->character = NULL;
+
 if (*filter->pc=='"') /* quoted string */
   {
   ++filter->pc;
@@ -1487,11 +1487,17 @@ if (*filter->pc=='"') /* quoted string */
     {
     if (*filter->pc=='"') /* end of string */
       {
-      int foo=data->length;
-
       ++filter->pc;
+
+      if (g)
+	{
+	data->character = string_from_gstring(g);
+	data->length = g->ptr;
+	}
+      else
+	data->character = US"\0";
       /* that way, there will be at least one character allocated */
-      data->character=string_catn(data->character,&dataCapacity,&foo,CUS "",1);
+
 #ifdef ENCODED_CHARACTER
       if (filter->require_encoded_character
           && string_decode(filter,data)==-1)
@@ -1501,7 +1507,7 @@ if (*filter->pc=='"') /* quoted string */
       }
     else if (*filter->pc=='\\' && *(filter->pc+1)) /* quoted character */
       {
-      data->character=string_catn(data->character,&dataCapacity,&data->length,filter->pc+1,1);
+      g = string_catn(g, filter->pc+1, 1);
       filter->pc+=2;
       }
     else /* regular character */
@@ -1511,11 +1517,11 @@ if (*filter->pc=='"') /* quoted string */
 #else
       if (*filter->pc=='\n')
         {
-        data->character=string_catn(data->character,&dataCapacity,&data->length,US"\r",1);
+        g = string_catn(g, US"\r", 1);
         ++filter->line;
         }
 #endif
-      data->character=string_catn(data->character,&dataCapacity,&data->length,filter->pc,1);
+      g = string_catn(g, filter->pc, 1);
       filter->pc++;
       }
     }
@@ -1557,7 +1563,7 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
     if (*filter->pc=='\n') /* end of line */
 #endif
       {
-      data->character=string_catn(data->character,&dataCapacity,&data->length,CUS "\r\n",2);
+      g = string_catn(g, CUS "\r\n", 2);
 #ifdef RFC_EOL
       filter->pc+=2;
 #else
@@ -1570,10 +1576,15 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
       if (*filter->pc=='.' && *(filter->pc+1)=='\n') /* end of string */
 #endif
         {
-        int foo=data->length;
+	if (g)
+	  {
+	  data->character = string_from_gstring(g);
+	  data->length = g->ptr;
+	  }
+	else
+	  data->character = US"\0";
+	/* that way, there will be at least one character allocated */
 
-        /* that way, there will be at least one character allocated */
-        data->character=string_catn(data->character,&dataCapacity,&foo,CUS "",1);
 #ifdef RFC_EOL
         filter->pc+=3;
 #else
@@ -1589,13 +1600,13 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
         }
       else if (*filter->pc=='.' && *(filter->pc+1)=='.') /* remove dot stuffing */
         {
-        data->character=string_catn(data->character,&dataCapacity,&data->length,CUS ".",1);
+        g = string_catn(g, CUS ".", 1);
         filter->pc+=2;
         }
       }
     else /* regular character */
       {
-      data->character=string_catn(data->character,&dataCapacity,&data->length,filter->pc,1);
+      g = string_catn(g, filter->pc, 1);
       filter->pc++;
       }
     }
@@ -3275,15 +3286,14 @@ while (*filter->pc)
     if (exec)
       {
       address_item *addr;
-      int capacity,start;
+      int start;
       uschar *buffer;
       int buffer_capacity;
-      struct String key;
       md5 base;
       uschar digest[16];
       uschar hexdigest[33];
       int i;
-      uschar *once;
+      gstring * once;
 
       if (filter_personal(aliases,TRUE))
         {
@@ -3295,32 +3305,30 @@ while (*filter->pc)
           }
         /* build oncelog filename */
 
-        key.character=(uschar*)0;
-        key.length=0;
-        capacity=0;
+        md5_start(&base);
+
         if (handle.length==-1)
           {
-          if (subject.length!=-1) key.character=string_catn(key.character,&capacity,&key.length,subject.character,subject.length);
-          if (from.length!=-1) key.character=string_catn(key.character,&capacity,&key.length,from.character,from.length);
-          key.character=string_catn(key.character,&capacity,&key.length,reason_is_mime?US"1":US"0",1);
-          key.character=string_catn(key.character,&capacity,&key.length,reason.character,reason.length);
+	  gstring * key = NULL;
+          if (subject.length!=-1) key =string_catn(key, subject.character, subject.length);
+          if (from.length!=-1) key = string_catn(key, from.character, from.length);
+          key = string_catn(key, reason_is_mime?US"1":US"0", 1);
+          key = string_catn(key, reason.character, reason.length);
+	  md5_end(&base, key->s, key->ptr, digest);
           }
         else
-          key=handle;
-        md5_start(&base);
-        md5_end(&base, key.character, key.length, digest);
+	  md5_end(&base, handle.character, handle.length, digest);
+
         for (i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
+
         if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          {
           debug_printf("Sieve: mail was personal, vacation file basename: %s\n", hexdigest);
-          }
+
         if (filter_test == FTEST_NONE)
           {
-          capacity=Ustrlen(filter->vacation_directory);
-          start=capacity;
-          once=string_catn(filter->vacation_directory,&capacity,&start,US"/",1);
-          once=string_catn(once,&capacity,&start,hexdigest,33);
-          once[start] = '\0';
+          once = string_cat (NULL, filter->vacation_directory);
+          once = string_catn(once, US"/", 1);
+          once = string_catn(once, hexdigest, 33);
 
           /* process subject */
 
@@ -3331,11 +3339,12 @@ while (*filter->pc)
             subject_def=expand_string(US"${if def:header_subject {true}{false}}");
             if (Ustrcmp(subject_def,"true")==0)
               {
+	      gstring * g = string_catn(NULL, US"Auto: ", 6);
+
               expand_header(&subject,&str_subject);
-              capacity=6;
-              start=6;
-              subject.character=string_catn(US"Auto: ",&capacity,&start,subject.character,subject.length);
-              subject.length=start;
+              g = string_catn(g, subject.character, subject.length);
+	      subject.character = string_from_gstring(g);
+              subject.length = g->ptr;
               }
             else
               {
@@ -3363,7 +3372,7 @@ while (*filter->pc)
           buffer=store_get(buffer_capacity);
 	  /* deconst cast safe as we pass in a non-const item */
           addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
-          addr->reply->oncelog=once;
+          addr->reply->oncelog = string_from_gstring(once);
           addr->reply->once_repeat=days*86400;
 
           /* build body and MIME headers */
@@ -3372,6 +3381,7 @@ while (*filter->pc)
             {
             uschar *mime_body,*reason_end;
             static const uschar nlnl[]="\r\n\r\n";
+	    gstring * g;
 
             for
               (
@@ -3379,22 +3389,17 @@ while (*filter->pc)
               mime_body<(reason_end-(sizeof(nlnl)-1)) && memcmp(mime_body,nlnl,(sizeof(nlnl)-1));
               ++mime_body
               );
-            capacity = 0;
-            start = 0;
-            addr->reply->headers = string_catn(NULL,&capacity,&start,reason.character,mime_body-reason.character);
-            addr->reply->headers[start] = '\0';
-            capacity = 0;
-            start = 0;
+
+            addr->reply->headers = string_copyn(reason.character, mime_body-reason.character);
+
             if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=(sizeof(nlnl)-1);
             else mime_body=reason_end-1;
-            addr->reply->text = string_catn(NULL,&capacity,&start,mime_body,reason_end-mime_body);
-            addr->reply->text[start] = '\0';
+            addr->reply->text = string_copyn(mime_body, reason_end-mime_body);
             }
           else
             {
             struct String qp = { .character = NULL, .length = 0 };  /* Keep compiler happy (PH) */
 
-            capacity = 0;
             start = reason.length;
             addr->reply->headers = US"MIME-Version: 1.0\n"
                                    "Content-Type: text/plain;\n"
@@ -3405,9 +3410,7 @@ while (*filter->pc)
           }
         }
         else if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          {
           debug_printf("Sieve: mail was not personal, vacation would ignore it\n");
-          }
       }
     }
     else break;

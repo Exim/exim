@@ -259,9 +259,7 @@ typedef struct pdkim_ctx {
   int(*dns_txt_callback)(char *, char *);
 
   /* Coder's little helpers */
-  uschar    *cur_header;
-  int        cur_header_size;
-  int        cur_header_len;
+  gstring   *cur_header;
   uschar    *linebuf;
   int        linebuf_offset;
   int        num_headers;

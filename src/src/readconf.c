@@ -983,10 +983,8 @@ for (;;)
           "absolute path \"%s\"", ss);
       else
         {
-        int offset = 0;
-        int size = 0;
-        ss = string_append(NULL, &size, &offset, 3, config_directory, "/", ss);
-        ss[offset] = '\0';  /* string_append() does not zero terminate the string! */
+	gstring * g = string_append(NULL, 3, config_directory, "/", ss);
+	ss = string_from_gstring(g);
         }
 
     if (include_if_exists != 0 && (Ustat(ss, &statbuf) != 0)) continue;
@@ -1699,16 +1697,19 @@ switch (type)
       int    sep_i = -(int)sep_o;
       const uschar * list = sptr;
       uschar * s;
-      uschar * list_o = *str_target;
-      int size = 0, len = 0;
+      gstring * list_o = NULL;
 
-      if (list_o)
-	size = (len = Ustrlen(list_o)) + 1;
+      if (*str_target)
+	{
+	list_o = string_get(Ustrlen(*str_target) + Ustrlen(sptr));
+	list_o = string_cat(list_o, *str_target);
+	}
 
       while ((s = string_nextinlist(&list, &sep_i, NULL, 0)))
-	list_o = string_append_listele(list_o, &size, &len, sep_o, s);
+	list_o = string_append_listele(list_o, sep_o, s);
+
       if (list_o)
-	*str_target = string_copy_malloc(list_o);
+	*str_target = string_copy_malloc(string_from_gstring(list_o));
       }
     else
       {
@@ -3200,25 +3201,24 @@ if (config_file)
       /* relative configuration file name: working dir + / + basename(filename) */
 
       uschar buf[PATH_MAX];
-      int offset = 0;
-      int size = 0;
+      gstring * g;
 
       if (os_getcwd(buf, PATH_MAX) == NULL)
         {
         perror("exim: getcwd");
         exit(EXIT_FAILURE);
         }
-      config_main_directory = string_cat(NULL, &size, &offset, buf);
+      g = string_cat(NULL, buf);
 
       /* If the dir does not end with a "/", append one */
-      if (config_main_directory[offset-1] != '/')
-        config_main_directory = string_catn(config_main_directory, &size, &offset, US"/", 1);
+      if (g->s[g->ptr-1] != '/')
+        g = string_catn(g, US"/", 1);
 
       /* If the config file contains a "/", extract the directory part */
       if (last_slash)
-        config_main_directory = string_catn(config_main_directory, &size, &offset, filename, last_slash - filename);
+        g = string_catn(g, filename, last_slash - filename);
 
-      config_main_directory[offset] = '\0';
+      config_main_directory = string_from_gstring(g);
     }
   config_directory = config_main_directory;
   }
