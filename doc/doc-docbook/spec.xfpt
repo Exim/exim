@@ -10118,7 +10118,15 @@ character. For example:
 .code
 ${addresses:>& Chief <ceo@up.stairs>, sec@base.ment (dogsbody)}
 .endd
-expands to &`ceo@up.stairs&&sec@base.ment`&. Compare the &*address*& (singular)
+expands to &`ceo@up.stairs&&sec@base.ment`&. The string is expanded
+first, so if the expanded string starts with >, it may change the output
+separator unintentionally. This can be avoided by setting the output
+separator explicitly:
+.code
+${addresses:>:$h_from:}
+.endd
+
+Compare the &*address*& (singular)
 expansion item, which extracts the working address from a single RFC2822
 address. See the &*filter*&, &*map*&, and &*reduce*& items for ways of
 processing lists.

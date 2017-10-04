@@ -6797,7 +6797,13 @@ while (*s != 0)
         int start, end, domain;  /* Not really used */
 
         while (isspace(*sub)) sub++;
-        if (*sub == '>') { *outsep = *++sub; ++sub; }
+        if (*sub == '>')
+          if (*outsep = *++sub) ++sub;
+          else {
+            expand_string_message = string_sprintf("output separator "
+              "missing in expanding ${addresses:%s}", --sub);
+            goto EXPAND_FAILED;
+          }
         parse_allow_group = TRUE;
 
         for (;;)
