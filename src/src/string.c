@@ -1363,10 +1363,20 @@ while (*fp != 0)
     break;
 
     case 'p':
-    if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
-    strncpy(newformat, item_start, fp - item_start);
-    newformat[fp - item_start] = 0;
-    p += sprintf(CS p, newformat, va_arg(ap, void *));
+      {
+      void * ptr;
+      if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
+      /* sprintf() saying "(nil)" for a null pointer doesn't work
+      on FreeBSD; we get "0xAAAAAAAA".  Handle it explicitly. */
+      if ((ptr = va_arg(ap, void *)))
+	{
+	strncpy(newformat, item_start, fp - item_start);
+	newformat[fp - item_start] = 0;
+	p += sprintf(CS p, newformat, va_arg(ap, void *));
+	}
+      else
+	p += sprintf(CS p, "(nil)");
+      }
     break;
 
     /* %f format is inherently insecure if the numbers that it may be
