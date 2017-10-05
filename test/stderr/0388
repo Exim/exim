@@ -141,7 +141,7 @@ Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
-returned from EXIM_DBOPEN: 0xAAAAAAAA
+returned from EXIM_DBOPEN: (nil)
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=x@y pattern=*
 y in "*"? yes (matched "*")
@@ -241,7 +241,7 @@ set_process_info: pppp delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
-returned from EXIM_DBOPEN: 0xAAAAAAAA
+returned from EXIM_DBOPEN: (nil)
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
@@ -252,7 +252,7 @@ dbfn_read: key=R:CALLER@myhost.test.ex:<>
 no domain retry record
 no address retry record
 CALLER@myhost.test.ex: queued for routing
-EXIM_DBCLOSE(0xAAAAAAAA)
+EXIM_DBCLOSE((nil))
 closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
