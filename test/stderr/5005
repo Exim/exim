@@ -554,7 +554,7 @@ Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
-returned from EXIM_DBOPEN: (nil)
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
@@ -566,7 +566,7 @@ Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 dbfn_write: key=T:userx@test.ex
-EXIM_DBCLOSE((nil))
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
@@ -659,7 +659,7 @@ Delivery address list:
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
-returned from EXIM_DBOPEN: (nil)
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -670,7 +670,7 @@ dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
 no domain retry record
 no address retry record
 userx@test.ex: queued for routing
-EXIM_DBCLOSE((nil))
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
@@ -700,12 +700,12 @@ search_tidyup called
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
-returned from EXIM_DBOPEN: (nil)
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 dbfn_read: key=T:userx@test.ex
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
-EXIM_DBCLOSE((nil))
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
@@ -750,7 +750,7 @@ Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
 EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
-returned from EXIM_DBOPEN: (nil)
+returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
@@ -762,7 +762,7 @@ Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
 dbfn_write: key=T:userx@test.ex
-EXIM_DBCLOSE((nil))
+EXIM_DBCLOSE(0xAAAAAAAA)
 closed hints database and lockfile
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
