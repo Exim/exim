@@ -1,4 +1,5 @@
 # RSET error for multiple messages
+munge peer_terminated_conn
 need_ipv4
 #
 exim -odi -odqs userx@test.ex

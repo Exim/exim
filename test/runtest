@@ -1549,6 +1549,9 @@ $munges =
 
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux
     { 'mainlog' => 's/(host deferral .* errno) <\d+> /$1 <EEE> /' },
+
+    'peer_terminated_conn' =>	# actual error differs FreedBSD vs. Linux
+    { 'stderr' => 's/^(  SMTP\()Connection reset by peer(\)<<)$/$1closed$2/' },
   };
 
 
