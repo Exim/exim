@@ -632,8 +632,12 @@ after reading data. */
 #  define EXIM_DBOPEN(name, dirname, flags, mode, dbpp) \
   do { \
   DEBUG(D_hints_lookup) \
-    debug_printf("EXIM_DBOPEN: file <%s> dir <%s> flags 0x%x\n", \
-      (name), (dirname), flags); \
+    debug_printf("EXIM_DBOPEN: file <%s> dir <%s> flags=%s\n", \
+      (name), (dirname),		\
+      (flags) == O_RDONLY ? "O_RDONLY"	\
+      : (flags) == O_RDWR ? "O_RDWR"	\
+      : (flags) == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"	\
+      : "??");	\
   EXIM_DBOPEN__(name, dirname, flags, mode, dbpp); \
   DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN: %p\n", *dbpp); \
   } while(0)

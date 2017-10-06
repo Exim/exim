@@ -9,7 +9,7 @@ set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
 failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
@@ -77,7 +77,7 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -109,7 +109,7 @@ address match test: subject=*@127.0.0.1 pattern=*
 checking status of V4NET.0.0.0
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -140,7 +140,7 @@ Deferred addresses:
  x@y
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x2
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=x@y pattern=*
@@ -240,7 +240,7 @@ set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

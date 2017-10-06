@@ -81,7 +81,7 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 Attempting full verification using callout
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x2
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=y
@@ -112,7 +112,7 @@ cmd buf flush ddd bytes
   SMTP(close)>>
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x42
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
 dbfn_write: key=y
@@ -191,7 +191,7 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 Attempting full verification using callout
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x2
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=y

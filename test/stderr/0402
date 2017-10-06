@@ -221,7 +221,7 @@ Delivery address list:
   rd+usery@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
 failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
@@ -417,7 +417,7 @@ routed by r1 router
   transport: t1
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -445,7 +445,7 @@ search_tidyup called
 --------> TESTSUITE/test-mail/junk <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -505,7 +505,7 @@ LOG: MAIN
 --------> TESTSUITE/test-mail/junk <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -562,7 +562,7 @@ LOG: MAIN
 --------> CALLER@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -588,7 +588,7 @@ LOG: MAIN
 --------> usery@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -617,7 +617,7 @@ LOG: MAIN
 --------> userz@test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available

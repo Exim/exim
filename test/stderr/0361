@@ -86,7 +86,7 @@ Delivery address list:
   kilos@recurse.test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -123,7 +123,7 @@ rewrite_one_header: type=F:
 re-routed to kilos@recurse.test.ex.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -163,7 +163,7 @@ routed by r3 router
   transport: <none>
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
@@ -212,7 +212,7 @@ search_tidyup called
 --------> kilos@recurse.test.ex.test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
 locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags 0x0
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
 returned from EXIM_DBOPEN: (nil)
 failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
