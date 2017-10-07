@@ -2702,10 +2702,24 @@ if (ip_connect(sock, host_af, sender_host_address, port,
 sprintf(CS buffer, "%d , %d\r\n", sender_host_port, interface_port);
 qlen = Ustrlen(buffer);
 if (send(sock, buffer, qlen, 0) < 0)
-  {
-  DEBUG(D_ident) debug_printf("ident send failed: %s\n", strerror(errno));
-  goto END_OFF;
-  }
+  if (errno == ENOTCONN)	/* seen for TFO on FreeBSD */
+    {
+    struct timeval tv = { .tv_sec = 0, .tv_usec = 500*1000 };
+    fd_set s;
+
+    FD_ZERO(&s); FD_SET(sock, &s);
+    (void) select(sock+1, NULL,  (SELECT_ARG2_TYPE *)&s, (SELECT_ARG2_TYPE *)&s, &tv);
+    if (send(sock, buffer, qlen, 0) < 0)
+      {
+      DEBUG(D_ident) debug_printf("ident re-send failed: %s\n", strerror(errno));
+      goto END_OFF;
+      }
+    }
+  else
+    {
+    DEBUG(D_ident) debug_printf("ident send failed: %s\n", strerror(errno));
+    goto END_OFF;
+    }
 
 /* Read a response line. We put it into the rest of the buffer, using several
 recv() calls if necessary. */
