@@ -212,7 +212,7 @@ int dscp_level;
 int dscp_option;
 int sock;
 int save_errno = 0;
-const blob * fastopen = NULL;
+const blob * fastopen_blob = NULL;
 
 
 #ifndef DISABLE_EVENT
@@ -265,12 +265,12 @@ else
   {
 #ifdef TCP_FASTOPEN
   if (verify_check_given_host(&ob->hosts_try_fastopen, host) == OK)
-    fastopen = early_data ? early_data : &tcp_fastopen_nodata;
+    fastopen_blob = early_data ? early_data : &tcp_fastopen_nodata;
 #endif
 
-  if (ip_connect(sock, host_af, host->address, port, timeout, fastopen) < 0)
+  if (ip_connect(sock, host_af, host->address, port, timeout, fastopen_blob) < 0)
     save_errno = errno;
-  else if (early_data && !fastopen && early_data->data && early_data->len)
+  else if (early_data && !fastopen_blob && early_data->data && early_data->len)
     if (send(sock, early_data->data, early_data->len, 0) < 0)
       save_errno = errno;
   }
@@ -309,7 +309,7 @@ else
     }
   if (ob->keepalive) ip_keepalive(sock, host->address, TRUE);
 #ifdef TCP_FASTOPEN
-  if (fastopen) tfo_out_check(sock);
+  if (fastopen_blob) tfo_out_check(sock);
 #endif
   return sock;
   }

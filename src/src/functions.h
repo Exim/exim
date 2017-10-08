@@ -474,6 +474,9 @@ extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
+#ifdef EXIM_TFO_PROBE
+extern void    tfo_probe(void);
+#endif
 extern void    timesince(struct timeval * diff, struct timeval * then);
 extern void    tls_modify_variables(tls_support *);
 extern uschar *tod_stamp(int);

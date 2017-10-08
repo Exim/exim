@@ -8413,6 +8413,13 @@ return final_yield;
 void
 deliver_init(void)
 {
+#ifdef EXIM_TFO_PROBE
+tfo_probe();
+#else
+tcp_fastopen_ok = TRUE;
+#endif
+
+
 if (!regex_PIPELINING) regex_PIPELINING =
   regex_must_compile(US"\\n250[\\s\\-]PIPELINING(\\s|\\n|$)", FALSE, TRUE);
 
