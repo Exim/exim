@@ -2657,6 +2657,7 @@ verify_get_ident(int port)
 int sock, host_af, qlen;
 int received_sender_port, received_interface_port, n;
 uschar *p;
+blob early_data;
 uschar buffer[2048];
 
 /* Default is no ident. Check whether we want to do an ident check for this
@@ -2682,11 +2683,15 @@ if (ip_bind(sock, host_af, interface_address, 0) < 0)
   goto END_OFF;
   }
 
-/*XXX could take advantage of TFO early-data.  Hmm, what are the
-error returns; can we differentiate connect from data fails?
-Do we need to? */
+/* Construct and send the query. */
+
+qlen = snprintf(CS buffer, sizeof(buffer), "%d , %d\r\n",
+  sender_host_port, interface_port);
+early_data.data = buffer;
+early_data.len = qlen;
+
 if (ip_connect(sock, host_af, sender_host_address, port,
-		rfc1413_query_timeout, &tcp_fastopen_nodata) < 0)
+		rfc1413_query_timeout, &early_data) < 0)
   {
   if (errno == ETIMEDOUT && LOGGING(ident_timeout))
     log_write(0, LOG_MAIN, "ident connection to %s timed out",
@@ -2696,30 +2701,6 @@ if (ip_connect(sock, host_af, sender_host_address, port,
       sender_host_address, strerror(errno));
   goto END_OFF;
   }
-
-/* Construct and send the query. */
-
-sprintf(CS buffer, "%d , %d\r\n", sender_host_port, interface_port);
-qlen = Ustrlen(buffer);
-if (send(sock, buffer, qlen, 0) < 0)
-  if (errno == ENOTCONN)	/* seen for TFO on FreeBSD */
-    {
-    struct timeval tv = { .tv_sec = 0, .tv_usec = 500*1000 };
-    fd_set s;
-
-    FD_ZERO(&s); FD_SET(sock, &s);
-    (void) select(sock+1, NULL,  (SELECT_ARG2_TYPE *)&s, (SELECT_ARG2_TYPE *)&s, &tv);
-    if (send(sock, buffer, qlen, 0) < 0)
-      {
-      DEBUG(D_ident) debug_printf("ident re-send failed: %s\n", strerror(errno));
-      goto END_OFF;
-      }
-    }
-  else
-    {
-    DEBUG(D_ident) debug_printf("ident send failed: %s\n", strerror(errno));
-    goto END_OFF;
-    }
 
 /* Read a response line. We put it into the rest of the buffer, using several
 recv() calls if necessary. */
