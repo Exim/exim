@@ -166,6 +166,9 @@ HS/02 Fix Bug 2130: large writes from the transport subprocess where chunked
 JH/27 Fix SOCKS bug: an unitialized pointer was deref'd by the transport process
       which could crash as a result.  This could lead to undeliverable messages.
 
+JH/28 Logging: "next input sent too soon" now shows where input was truncated
+      for log purposes.
+
 
 Exim version 4.89
 -----------------

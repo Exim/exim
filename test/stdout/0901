@@ -330,11 +330,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> RCPT TO:CALLER@test.ex
 ??? 250
 <<< 250 Accepted
->>> BDAT 1\r\nTBDAT 87 last
->>> o: Susan@random.com
->>> From: Sam@random.com
->>> Subject: This is a bodyless test message
->>> 
+>>> BDAT 1\r\nTBDAT 87 last\r\no: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n\r\n
 ??? 554 SMTP synchronization error
 <<< 554 SMTP synchronization error
 End of script

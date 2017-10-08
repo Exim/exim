@@ -565,11 +565,12 @@ for(;;)
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
-      "rejected \"%s\" %s next input=\"%s\"",
+      "rejected \"%s\" %s next input=\"%s\"%s",
       smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(string_copyn(smtp_inptr, n)));
-      (void) synprot_error(L_smtp_protocol_error, 554, NULL,
-	US"SMTP synchronization error");
+      string_printing(string_copyn(smtp_inptr, n)),
+      smtp_inend - smtp_inptr > n ? "..." : "");
+    (void) synprot_error(L_smtp_protocol_error, 554, NULL,
+      US"SMTP synchronization error");
     goto repeat_until_rset;
     }
 
