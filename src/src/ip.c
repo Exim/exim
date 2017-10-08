@@ -262,7 +262,7 @@ if (fastopen_blob && tcp_fastopen_ok)
     {
     DEBUG(D_transport|D_v)
       debug_printf("non-TFO mode connection attempt to %s, %d data\n",
-	address, fastopen_blob->len);
+	address, (unsigned long)fastopen_blob->len);
     tcp_out_fastopen = fastopen_blob->len > 0 ?  2 : 1;
     }
   else if (errno == EINPROGRESS)	/* expected if we had no cookie for peer */
@@ -294,8 +294,8 @@ else
   {
 legacy_connect:
   DEBUG(D_transport|D_v) if (fastopen_blob)
-    debug_printf("non-TFO mode connection attempt to %s, %d data\n",
-      address, fastopen_blob->len);
+    debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
+      address, (unsigned long)fastopen_blob->len);
   if ((rc = connect(sock, s_ptr, s_len)) >= 0)
     if (  fastopen_blob && fastopen_blob->data && fastopen_blob->len
        && send(sock, fastopen_blob->data, fastopen_blob->len, 0) < 0)
