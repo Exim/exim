@@ -171,8 +171,7 @@ tfo_probe(void)
 int sock, backlog = 5;
 
 if (  (sock = socket(SOCK_STREAM, AF_INET, 0)) < 0
-   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN,
-		    &connect_backlog, sizeof(smtp_connect_backlog))
+   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &backlog, sizeof(backlog))
    )
   tcp_fastopen_ok = TRUE;
 close(sock);
