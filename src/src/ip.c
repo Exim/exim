@@ -261,7 +261,7 @@ if (fastopen_blob && tcp_fastopen_ok)
 	/* seen for with-data, proper TFO opt, with-cookie case */
     {
     DEBUG(D_transport|D_v)
-      debug_printf("non-TFO mode connection attempt to %s, %d data\n",
+      debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
 	address, (unsigned long)fastopen_blob->len);
     tcp_out_fastopen = fastopen_blob->len > 0 ?  2 : 1;
     }

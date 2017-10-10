@@ -1446,7 +1446,7 @@ DEBUG(D_deliver) debug_printf("post-process %s (%d)\n", addr->address, result);
 /* Set up driver kind and name for logging. Disable logging if the router or
 transport has disabled it. */
 
-if (driver_type == DTYPE_TRANSPORT)
+if (driver_type == EXIM_DTYPE_TRANSPORT)
   {
   if (addr->transport)
     {
@@ -1456,7 +1456,7 @@ if (driver_type == DTYPE_TRANSPORT)
     }
   else driver_kind = US"transporting";
   }
-else if (driver_type == DTYPE_ROUTER)
+else if (driver_type == EXIM_DTYPE_ROUTER)
   {
   if (addr->router)
     {
@@ -2650,7 +2650,7 @@ if (max_parallel > 0)
       next = addr->next;
       addr->message = US"concurrency limit reached for transport";
       addr->basic_errno = ERRNO_TRETRY;
-      post_process_one(addr, DEFER, LOG_MAIN, DTYPE_TRANSPORT, 0);
+      post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_TRANSPORT, 0);
       } while ((addr = next));
     return TRUE;
     }
@@ -2712,7 +2712,7 @@ while (addr_local)
     addr->message = addr->router
       ? string_sprintf("No transport set by %s router", addr->router->name)
       : string_sprintf("No transport set by system filter");
-    post_process_one(addr, DEFER, logflags, DTYPE_TRANSPORT, 0);
+    post_process_one(addr, DEFER, logflags, EXIM_DTYPE_TRANSPORT, 0);
     continue;
     }
 
@@ -2847,7 +2847,7 @@ while (addr_local)
       while (addr)
         {
         addr2 = addr->next;
-        post_process_one(addr, rc, logflags, DTYPE_TRANSPORT, 0);
+        post_process_one(addr, rc, logflags, EXIM_DTYPE_TRANSPORT, 0);
         addr = addr2;
         }
       continue;    /* With next batch of addresses */
@@ -2949,7 +2949,7 @@ while (addr_local)
       this->basic_errno = ERRNO_LRETRY;
       addr2 = addr3 ? (addr3->next = addr2->next)
 		    : (addr = addr2->next);
-      post_process_one(this, DEFER, logflags, DTYPE_TRANSPORT, 0);
+      post_process_one(this, DEFER, logflags, EXIM_DTYPE_TRANSPORT, 0);
       }
     }
 
@@ -2972,7 +2972,7 @@ while (addr_local)
       do
 	{
 	addr = addr->next;
-	post_process_one(addr, DEFER, logflags, DTYPE_TRANSPORT, 0);
+	post_process_one(addr, DEFER, logflags, EXIM_DTYPE_TRANSPORT, 0);
 	} while ((addr = addr2));
       }
     continue;			/* Loop for the next set of addresses. */
@@ -3129,7 +3129,7 @@ while (addr_local)
       addr2->more_errno = deliver_time.tv_sec;
       addr2->delivery_usec = deliver_time.tv_usec;
       }
-    post_process_one(addr2, result, logflags, DTYPE_TRANSPORT, logchar);
+    post_process_one(addr2, result, logflags, EXIM_DTYPE_TRANSPORT, logchar);
 
     /* If a pipe delivery generated text to be sent back, the result may be
     changed to FAIL, and we must copy this for subsequent addresses in the
@@ -3779,7 +3779,7 @@ while (addr)
       addr->transport_return = DEFER;
       }
     (void)post_process_one(addr, addr->transport_return, logflags,
-      DTYPE_TRANSPORT, addr->special_action);
+      EXIM_DTYPE_TRANSPORT, addr->special_action);
     }
 
   /* Next address */
@@ -6073,7 +6073,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           p = p->next;
           if (!addr_last) addr_new = p; else addr_last->next = p;
           badp->local_part = badp->address;   /* Needed for log line */
-          post_process_one(badp, DEFER, LOG_MAIN|LOG_PANIC, DTYPE_ROUTER, 0);
+          post_process_one(badp, DEFER, LOG_MAIN|LOG_PANIC, EXIM_DTYPE_ROUTER, 0);
           continue;
           }
         }    /* End of pfr handling */
@@ -6191,7 +6191,7 @@ if (process_recipients != RECIP_IGNORE)
 
         case RECIP_FAIL_LOOP:
         new->message = US"Too many \"Received\" headers - suspected mail loop";
-        post_process_one(new, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+        post_process_one(new, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
         break;
 
 
@@ -6324,7 +6324,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
         addr->message =
           US"filter autoreply generated syntactically invalid recipient";
         addr->prop.ignore_error = TRUE;
-        (void) post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+        (void) post_process_one(addr, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
         continue;   /* with the next new address */
         }
 
@@ -6391,7 +6391,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
           {
           addr->basic_errno = ERRNO_FORBIDFILE;
           addr->message = US"delivery to file forbidden";
-          (void)post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+          (void)post_process_one(addr, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
           continue;   /* with the next new address */
           }
         }
@@ -6401,7 +6401,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
           {
           addr->basic_errno = ERRNO_FORBIDPIPE;
           addr->message = US"delivery to pipe forbidden";
-          (void)post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+          (void)post_process_one(addr, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
           continue;   /* with the next new address */
           }
         }
@@ -6409,7 +6409,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
         {
         addr->basic_errno = ERRNO_FORBIDREPLY;
         addr->message = US"autoreply forbidden";
-        (void)post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+        (void)post_process_one(addr, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
         continue;     /* with the next new address */
         }
 
@@ -6420,7 +6420,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
       if (addr->basic_errno == ERRNO_BADTRANSPORT)
         {
-        (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_ROUTER, 0);
+        (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
         continue;
         }
 
@@ -6432,7 +6432,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
         {
         uschar *save = addr->transport->name;
         addr->transport->name = US"**bypassed**";
-        (void)post_process_one(addr, OK, LOG_MAIN, DTYPE_TRANSPORT, '=');
+        (void)post_process_one(addr, OK, LOG_MAIN, EXIM_DTYPE_TRANSPORT, '=');
         addr->transport->name = save;
         continue;   /* with the next new address */
         }
@@ -6455,7 +6455,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       {
       addr->message = US"cannot check percent_hack_domains";
       addr->basic_errno = ERRNO_LISTDEFER;
-      (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_NONE, 0);
+      (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_NONE, 0);
       continue;
       }
 
@@ -6479,7 +6479,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
         addr->message = US"domain is held";
         addr->basic_errno = ERRNO_HELD;
         }
-      (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_NONE, 0);
+      (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_NONE, 0);
       continue;
       }
 
@@ -6588,7 +6588,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       {
       addr->message = US"reusing SMTP connection skips previous routing defer";
       addr->basic_errno = ERRNO_RRETRY;
-      (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_ROUTER, 0);
+      (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
       }
 
     /* If we are in a queue run, defer routing unless there is no retry data or
@@ -6641,7 +6641,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       {
       addr->message = US"retry time not reached";
       addr->basic_errno = ERRNO_RRETRY;
-      (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_ROUTER, 0);
+      (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
       }
 
     /* The domain is OK for routing. Remember if retry data exists so it
@@ -6683,7 +6683,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
           {
           addr->basic_errno = ERRNO_LISTDEFER;
           addr->message = US"queue_domains lookup deferred";
-          (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_ROUTER, 0);
+          (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
           }
         else
           {
@@ -6694,7 +6694,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
         {
         addr->basic_errno = ERRNO_QUEUE_DOMAIN;
         addr->message = US"domain is in queue_domains";
-        (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_ROUTER, 0);
+        (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
         }
       }
 
@@ -6759,7 +6759,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
     if (rc != OK)
       {
-      (void)post_process_one(addr, rc, LOG_MAIN, DTYPE_ROUTER, 0);
+      (void)post_process_one(addr, rc, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
       continue;  /* route next address */
       }
 
@@ -7062,7 +7062,7 @@ if (queue_run_local)
     addr->next = NULL;
     addr->basic_errno = ERRNO_LOCAL_ONLY;
     addr->message = US"remote deliveries suppressed";
-    (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_TRANSPORT, 0);
+    (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_TRANSPORT, 0);
     }
 
 /* Handle remote deliveries */

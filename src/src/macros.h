@@ -224,9 +224,9 @@ enum { tod_log, tod_log_bare, tod_log_zone, tod_log_datestamp_daily,
 /* For identifying types of driver */
 
 enum {
-  DTYPE_NONE,
-  DTYPE_ROUTER,
-  DTYPE_TRANSPORT
+  EXIM_DTYPE_NONE,
+  EXIM_DTYPE_ROUTER,
+  EXIM_DTYPE_TRANSPORT
 };
 
 /* Error numbers for generating error messages when reading a message on the
