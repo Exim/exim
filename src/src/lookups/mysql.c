@@ -433,10 +433,15 @@ return quoted;
 void
 mysql_version_report(FILE *f)
 {
-fprintf(f, "Library version: MySQL: Compile: %s [%s]\n"
-           "                        Runtime: %s\n",
-        MYSQL_SERVER_VERSION, MYSQL_COMPILATION_COMMENT,
-        mysql_get_client_info());
+#ifdef MYSQL_SERVER_VERSION
+fprintf(f, "Library version: MySQL: Compile: %s [%s]\n",
+        MYSQL_SERVER_VERSION, MYSQL_COMPILATION_COMMENT);
+#else
+fprintf(f, "Library version: MySQL: Compile: (unknown)\n");
+#endif
+
+fprintf(f, "                        Runtime: %s\n", mysql_get_client_info());
+
 #ifdef DYNLOOKUP
 fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
 #endif
