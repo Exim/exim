@@ -930,9 +930,8 @@ if (buffer != NULL)
 
 else
   {
-  int size = 0;
-  int ptr = 0;
   const uschar *ss;
+  gstring * g = NULL;
 
   /* We know that *s != 0 at this point. However, it might be pointing to a
   separator, which could indicate an empty string, or (if an ispunct()
@@ -954,13 +953,13 @@ else
 
   for (;;)
     {
-    for (ss = s + 1; *ss != 0 && *ss != sep; ss++);
-    buffer = string_catn(buffer, &size, &ptr, s, ss-s);
+    for (ss = s + 1; *ss != 0 && *ss != sep; ss++) ;
+    g = string_catn(g, s, ss-s);
     s = ss;
     if (*s == 0 || *(++s) != sep || sep_is_special) break;
     }
-  while (ptr > 0 && isspace(buffer[ptr-1])) ptr--;
-  buffer[ptr] = 0;
+  while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--;
+  buffer = string_from_gstring(g);
   }
 
 /* Update the current pointer and return the new string */
@@ -1000,64 +999,119 @@ Despite having the same growable-string interface as string_cat() the list is
 always returned null-terminated.
 
 Arguments:
-  list	points to the start of the list that is being built, or NULL
+  list	expanding-string for the list that is being built, or NULL
 	if this is a new list that has no contents yet
-  sz    (ptr to) amount of memory allocated for list; zero for a new list
-  off   (ptr to) current list length in chars (insert point for next addition),
-        zero for a new list
   sep	list separator character
   ele	new element to be appended to the list
 
 Returns:  pointer to the start of the list, changed if copied for expansion.
 */
 
-uschar *
-string_append_listele(uschar * list, int * sz, int * off,
-  uschar sep, const uschar * ele)
+gstring *
+string_append_listele(gstring * list, uschar sep, const uschar * ele)
 {
 uschar * sp;
 
-if (list)
-  list = string_catn(list, sz, off, &sep, 1);
+if (list && list->ptr)
+  list = string_catn(list, &sep, 1);
 
 while((sp = Ustrchr(ele, sep)))
   {
-  list = string_catn(list, sz, off, ele, sp-ele+1);
-  list = string_catn(list, sz, off, &sep, 1);
+  list = string_catn(list, ele, sp-ele+1);
+  list = string_catn(list, &sep, 1);
   ele = sp+1;
   }
-list = string_cat(list, sz, off, ele);
-list[*off] = '\0';
+list = string_cat(list, ele);
+(void) string_from_gstring(list);
 return list;
 }
 
 
-uschar *
-string_append_listele_n(uschar * list, int * sz, int * off,
-  uschar sep, const uschar * ele, unsigned len)
+gstring *
+string_append_listele_n(gstring * list, uschar sep, const uschar * ele,
+ unsigned len)
 {
 const uschar * sp;
 
-if (list)
-  list = string_catn(list, sz, off, &sep, 1);
+if (list && list->ptr)
+  list = string_catn(list, &sep, 1);
 
 while((sp = Ustrnchr(ele, sep, &len)))
   {
-  list = string_catn(list, sz, off, ele, sp-ele+1);
-  list = string_catn(list, sz, off, &sep, 1);
+  list = string_catn(list, ele, sp-ele+1);
+  list = string_catn(list, &sep, 1);
   ele = sp+1;
   len--;
   }
-list = string_catn(list, sz, off, ele, len);
-list[*off] = '\0';
+list = string_catn(list, ele, len);
+(void) string_from_gstring(list);
 return list;
 }
 
 
+
+/************************************************/
+/* Create a growable-string with some preassigned space */
+
+gstring *
+string_get(unsigned size)
+{
+gstring * g = store_get(sizeof(gstring) + size);
+g->size = size;
+g->ptr = 0;
+g->s = US(g + 1);
+return g;
+}
+
+/* NUL-terminate the C string in the growable-string, and return it. */
+
+uschar *
+string_from_gstring(gstring * g)
+{
+if (!g) return NULL;
+g->s[g->ptr] = '\0';
+return g->s;
+}
 
 /*************************************************
 *             Add chars to string                *
 *************************************************/
+
+void
+gstring_grow(gstring * g, int p, int count)
+{
+int oldsize = g->size;
+
+/* Mostly, string_cat() is used to build small strings of a few hundred
+characters at most. There are times, however, when the strings are very much
+longer (for example, a lookup that returns a vast number of alias addresses).
+To try to keep things reasonable, we use increments whose size depends on the
+existing length of the string. */
+
+unsigned inc = oldsize < 4096 ? 127 : 1023;
+g->size = ((p + count + inc) & ~inc) + 1;
+
+/* Try to extend an existing allocation. If the result of calling
+store_extend() is false, either there isn't room in the current memory block,
+or this string is not the top item on the dynamic store stack. We then have
+to get a new chunk of store and copy the old string. When building large
+strings, it is helpful to call store_release() on the old string, to release
+memory blocks that have become empty. (The block will be freed if the string
+is at its start.) However, we can do this only if we know that the old string
+was the last item on the dynamic memory stack. This is the case if it matches
+store_last_get. */
+
+if (!store_extend(g->s, oldsize, g->size))
+  {
+  BOOL release_ok = store_last_get[store_pool] == g->s;
+  uschar *newstring = store_get(g->size);
+  memcpy(newstring, g->s, p);
+  if (release_ok) store_release(g->s);
+  g->s = newstring;
+  }
+}
+
+
 
 /* This function is used when building up strings of unknown length. Room is
 always left for a terminating zero to be added to the string that is being
@@ -1068,15 +1122,9 @@ sometimes called to extract parts of other strings.
 Arguments:
   string   points to the start of the string that is being built, or NULL
              if this is a new string that has no contents yet
-  size     points to a variable that holds the current capacity of the memory
-             block (updated if changed)
-  ptr      points to a variable that holds the offset at which to add
-             characters, updated to the new offset
   s        points to characters to add
   count    count of characters to add; must not exceed the length of s, if s
              is a C string.
-
-If string is given as NULL, *size and *ptr should both be zero.
 
 Returns:   pointer to the start of the string, changed if copied for expansion.
            Note that a NUL is not added, though space is left for one. This is
@@ -1086,74 +1134,40 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
 */
 /* coverity[+alloc] */
 
-uschar *
-string_catn(uschar *string, int *size, int *ptr, const uschar *s, int count)
+gstring *
+string_catn(gstring * g, const uschar *s, int count)
 {
-int p = *ptr;
+int p;
 
-if (p + count >= *size)
+if (!g)
   {
-  int oldsize = *size;
-
-  /* Mostly, string_cat() is used to build small strings of a few hundred
-  characters at most. There are times, however, when the strings are very much
-  longer (for example, a lookup that returns a vast number of alias addresses).
-  To try to keep things reasonable, we use increments whose size depends on the
-  existing length of the string. */
-
-  int inc = (oldsize < 4096)? 100 : 1024;
-  while (*size <= p + count) *size += inc;
-
-  /* New string */
-
-  if (string == NULL) string = store_get(*size);
-
-  /* Try to extend an existing allocation. If the result of calling
-  store_extend() is false, either there isn't room in the current memory block,
-  or this string is not the top item on the dynamic store stack. We then have
-  to get a new chunk of store and copy the old string. When building large
-  strings, it is helpful to call store_release() on the old string, to release
-  memory blocks that have become empty. (The block will be freed if the string
-  is at its start.) However, we can do this only if we know that the old string
-  was the last item on the dynamic memory stack. This is the case if it matches
-  store_last_get. */
-
-  else if (!store_extend(string, oldsize, *size))
-    {
-    BOOL release_ok = store_last_get[store_pool] == string;
-    uschar *newstring = store_get(*size);
-    memcpy(newstring, string, p);
-    if (release_ok) store_release(string);
-    string = newstring;
-    }
+  unsigned inc = count < 4096 ? 127 : 1023;
+  unsigned size = ((count + inc) &  ~inc) + 1;
+  g = string_get(size);
   }
+
+p = g->ptr;
+if (p + count >= g->size)
+  gstring_grow(g, p, count);
 
 /* Because we always specify the exact number of characters to copy, we can
 use memcpy(), which is likely to be more efficient than strncopy() because the
-latter has to check for zero bytes.
+latter has to check for zero bytes. */
 
-The Coverity annotation deals with the lack of correlated variable tracking;
-common use is a null string and zero size and pointer, on first use for a
-string being built. The "if" above then allocates, but Coverity assume that
-the "if" might not happen and whines for a null-deref done by the memcpy(). */
-
-/* coverity[deref_parm_field_in_call] : FALSE */
-memcpy(string + p, s, count);
-*ptr = p + count;
-return string;
+memcpy(g->s + p, s, count);
+g->ptr = p + count;
+return g;
 }
-
-
-uschar *
-string_cat(uschar *string, int *size, int *ptr, const uschar *s)
+ 
+ 
+gstring *
+string_cat(gstring *string, const uschar *s)
 {
-return string_catn(string, size, ptr, s, Ustrlen(s));
+return string_catn(string, s, Ustrlen(s));
 }
-#endif  /* COMPILE_UTILITY */
 
 
 
-#ifndef COMPILE_UTILITY
 /*************************************************
 *        Append strings to another string        *
 *************************************************/
@@ -1162,12 +1176,8 @@ return string_catn(string, size, ptr, s, Ustrlen(s));
 It calls string_cat() to do the dirty work.
 
 Arguments:
-  string   points to the start of the string that is being built, or NULL
+  string   expanding-string that is being built, or NULL
              if this is a new string that has no contents yet
-  size     points to a variable that holds the current capacity of the memory
-             block (updated if changed)
-  ptr      points to a variable that holds the offset at which to add
-             characters, updated to the new offset
   count    the number of strings to append
   ...      "count" uschar* arguments, which must be valid zero-terminated
              C strings
@@ -1176,17 +1186,16 @@ Returns:   pointer to the start of the string, changed if copied for expansion.
            The string is not zero-terminated - see string_cat() above.
 */
 
-uschar *
-string_append(uschar *string, int *size, int *ptr, int count, ...)
+__inline__ gstring *
+string_append(gstring *string, int count, ...)
 {
 va_list ap;
-int i;
 
 va_start(ap, count);
-for (i = 0; i < count; i++)
+while (count-- > 0)
   {
   uschar *t = va_arg(ap, uschar *);
-  string = string_cat(string, size, ptr, t);
+  string = string_cat(string, t);
   }
 va_end(ap);
 
@@ -1209,7 +1218,7 @@ as a va_list item.
 
 The formats are the usual printf() ones, with some omissions (never used) and
 three additions for strings: %S forces lower case, %T forces upper case, and
-%#s or %#S prints nothing for a NULL string. Without thr # "NULL" is printed
+%#s or %#S prints nothing for a NULL string. Without the # "NULL" is printed
 (useful in debugging). There is also the addition of %D and %M, which insert
 the date in the form used for datestamped log files.
 

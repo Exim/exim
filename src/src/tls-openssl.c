@@ -2573,8 +2573,7 @@ tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
 {
 int outbytes, error, left;
 SSL *ssl = is_server ? server_ssl : client_ssl;
-static uschar * corked = NULL;
-static int c_size = 0, c_len = 0;
+static gstring * corked = NULL;
 
 DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
   buff, (unsigned long)len, more ? ", more" : "");
@@ -2586,12 +2585,12 @@ for the responses to the received SMTP MAIL , RCPT, DATA sequence, only. */
 
 if (is_server && (more || corked))
   {
-  corked = string_catn(corked, &c_size, &c_len, buff, len);
+  corked = string_catn(corked, buff, len);
   if (more)
     return len;
-  buff = CUS corked;
-  len = c_len;
-  corked = NULL; c_size = c_len = 0;
+  buff = CUS corked->s;
+  len = corked->ptr;
+  corked = NULL;
   }
 
 for (left = len; left > 0;)

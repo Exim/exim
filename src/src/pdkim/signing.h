@@ -72,7 +72,7 @@ typedef struct {
 
 
 extern void exim_dkim_init(void);
-extern blob * exim_dkim_data_append(blob *, int *, uschar *);
+extern gstring * exim_dkim_data_append(gstring *, uschar *);
 
 extern const uschar * exim_dkim_signing_init(uschar *, es_ctx *);
 extern const uschar * exim_dkim_sign(es_ctx *, hashmethod, blob *, blob *);

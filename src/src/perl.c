@@ -150,9 +150,8 @@ cleanup_perl(void)
   interp_perl = 0;
 }
 
-uschar *
-call_perl_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
-  uschar *name, uschar **arg)
+gstring *
+call_perl_cat(gstring * yield, uschar **errstrp, uschar *name, uschar **arg)
 {
   dSP;
   SV *sv;
@@ -186,7 +185,7 @@ call_perl_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
     return NULL;
     }
   str = US SvPV(sv, len);
-  yield = string_catn(yield, sizep, ptrp, str, (int)len);
+  yield = string_catn(yield, str, (int)len);
   FREETMPS;
   LEAVE;
 

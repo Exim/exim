@@ -1036,9 +1036,7 @@ for (p = q; *p != 0; )
 uschar *
 fn_hdrs_added(void)
 {
-uschar * ret = NULL;
-int size = 0;
-int ptr = 0;
+gstring * g = NULL;
 header_line * h = acl_added_headers;
 uschar * s;
 uschar * cp;
@@ -1053,18 +1051,19 @@ do
     if (cp[1] == '\0') break;
 
     /* contains embedded newline; needs doubling */
-    ret = string_catn(ret, &size, &ptr, s, cp-s+1);
-    ret = string_catn(ret, &size, &ptr, US"\n", 1);
+    g = string_catn(g, s, cp-s+1);
+    g = string_catn(g, US"\n", 1);
     s = cp+1;
     }
   /* last bit of header */
 
-  ret = string_catn(ret, &size, &ptr, s, cp-s+1);	/* newline-sep list */
+/*XXX could we use add_listele? */
+  g = string_catn(g, s, cp-s+1);	/* newline-sep list */
   }
 while((h = h->next));
 
-ret[ptr-1] = '\0';	/* overwrite last newline */
-return ret;
+g->s[g->ptr - 1] = '\0';	/* overwrite last newline */
+return g->s;
 }
 
 

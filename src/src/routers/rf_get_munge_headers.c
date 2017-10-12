@@ -91,10 +91,10 @@ if (rblock->remove_headers)
   const uschar * list = rblock->remove_headers;
   int sep = ':';
   uschar * s;
-  int size = 0, len = 0;
+  gstring * g = NULL;
 
   if (*remove_headers)
-    size = (len = Ustrlen(*remove_headers)) + 1;
+    g = string_cat(NULL, *remove_headers);
 
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
@@ -108,12 +108,14 @@ if (rblock->remove_headers)
 	}
       }
     else if (*s)
-      *remove_headers = string_append_listele(*remove_headers, &size, &len, ':', s);
+      g = string_append_listele(g, ':', s);
+    if (g)
+      *remove_headers = g->s;
   }
 
 return OK;
 }
 
-/* vi: aw ai sw=4
+/* vi: aw ai sw=2
 */
 /* End of rf_get_munge_headers.c */

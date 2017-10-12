@@ -25,6 +25,13 @@ struct smtp_outblock;
 struct transport_info;
 struct router_info;
 
+/* Growable-string */
+typedef struct gstring {
+  int	size;		/* Current capacity of string memory */
+  int	ptr;		/* Offset at which to append further chars */
+  uschar * s;		/* The string memory */
+} gstring;
+
 /* Structure for remembering macros for the configuration file */
 
 typedef struct macro_item {
@@ -238,7 +245,7 @@ typedef int (*tpt_chunk_cmd_cb)(struct transport_context *, unsigned, unsigned);
 typedef struct transport_context {
   union {			/* discriminated by option topt_output_string */
     int			  fd;	/* file descriptor to write message to */
-    uschar *		  msg;	/* allocated string with written message */
+    gstring *		  msg;	/* allocated string with written message */
   } u;
   transport_instance	* tblock;		/* transport */
   struct address_item	* addr;
@@ -249,10 +256,6 @@ typedef struct transport_context {
   /* items below only used with option topt_use_bdat */
   tpt_chunk_cmd_cb	  chunk_cb;		/* per-datachunk callback */
   void			* smtp_context;
-
-  /* items below only used with option topt_output_string */
-  int			  msg_size;
-  int			  msg_ptr;
 } transport_ctx;
 
 

@@ -1291,36 +1291,34 @@ the calling host to a string that is being built dynamically.
 
 Arguments:
   s           the dynamic string
-  sizeptr     points to the size variable
-  ptrptr      points to the pointer variable
 
 Returns:      the extended string
 */
 
-static uschar *
-add_host_info_for_log(uschar * s, int * sizeptr, int * ptrptr)
+static gstring *
+add_host_info_for_log(gstring * g)
 {
 if (sender_fullhost)
   {
   if (LOGGING(dnssec) && sender_host_dnssec)	/*XXX sender_helo_dnssec? */
-    s = string_catn(s, sizeptr, ptrptr, US" DS", 3);
-  s = string_append(s, sizeptr, ptrptr, 2, US" H=", sender_fullhost);
+    g = string_catn(g, US" DS", 3);
+  g = string_append(g, 2, US" H=", sender_fullhost);
   if (LOGGING(incoming_interface) && interface_address != NULL)
     {
-    s = string_cat(s, sizeptr, ptrptr,
+    g = string_cat(g,
       string_sprintf(" I=[%s]:%d", interface_address, interface_port));
     }
   }
 if (tcp_in_fastopen && !tcp_in_fastopen_logged)
   {
-  s = string_catn(s, sizeptr, ptrptr, US" TFO", 4);
+  g = string_catn(g, US" TFO", 4);
   tcp_in_fastopen_logged = TRUE;
   }
 if (sender_ident)
-  s = string_append(s, sizeptr, ptrptr, 2, US" U=", sender_ident);
+  g = string_append(g, 2, US" U=", sender_ident);
 if (received_protocol)
-  s = string_append(s, sizeptr, ptrptr, 2, US" P=", received_protocol);
-return s;
+  g = string_append(g, 2, US" P=", received_protocol);
+return g;
 }
 
 
@@ -1625,7 +1623,7 @@ int  process_info_len = Ustrlen(process_info);
 int  error_rc = (error_handling == ERRORS_SENDER)?
        errors_sender_rc : EXIT_FAILURE;
 int  header_size = 256;
-int  start, end, domain, size, sptr;
+int  start, end, domain;
 int  id_resolution;
 int  had_zero = 0;
 int  prevlines_length = 0;
@@ -1650,7 +1648,8 @@ error_block *bad_addresses = NULL;
 uschar *frozen_by = NULL;
 uschar *queued_by = NULL;
 
-uschar *errmsg, *s;
+uschar *errmsg;
+gstring * g;
 struct stat statbuf;
 
 /* Final message to give to SMTP caller, and messages from ACLs */
@@ -3408,9 +3407,8 @@ else
           int sep = 0;
           const uschar *ptr = dkim_verify_signers_expanded;
           uschar *item = NULL;
-          uschar *seen_items = NULL;
-          int     seen_items_size = 0;
-          int     seen_items_offset = 0;
+          gstring * seen_items = NULL;
+
           /* Default to OK when no items are present */
           rc = OK;
           while ((item = string_nextinlist(&ptr, &sep, NULL, 0)))
@@ -3422,8 +3420,8 @@ else
 	    no matter how often it appears in the expanded list. */
             if (seen_items)
               {
-              uschar *seen_item = NULL;
-              const uschar *seen_items_list = seen_items;
+              uschar *seen_item;
+              const uschar *seen_items_list = string_from_gstring(seen_items);
               BOOL seen_this_item = FALSE;
 
               while ((seen_item = string_nextinlist(&seen_items_list, &sep,
@@ -3442,13 +3440,10 @@ else
                 continue;
                 }
 
-              seen_items = string_append(seen_items, &seen_items_size,
-		&seen_items_offset, 1, ":");
+              seen_items = string_cat(seen_items, ":");
               }
 
-            seen_items = string_append(seen_items, &seen_items_size,
-	      &seen_items_offset, 1, item);
-            seen_items[seen_items_offset] = '\0';
+            seen_items = string_cat(seen_items, item);
 
             DEBUG(D_receive)
               debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n",
@@ -3773,10 +3768,8 @@ multiline SMTP responses. */
 else
   {
   uschar *istemp = US"";
-  uschar *s = NULL;
   uschar *smtp_code;
-  int size = 0;
-  int sptr = 0;
+  gstring * g;
 
   errmsg = local_scan_data;
 
@@ -3809,13 +3802,12 @@ else
     break;
     }
 
-  s = string_append(s, &size, &sptr, 2, US"F=",
-    (sender_address[0] == 0)? US"<>" : sender_address);
-  s = add_host_info_for_log(s, &size, &sptr);
-  s[sptr] = 0;
+  g = string_append(g, 2, US"F=",
+    sender_address[0] == 0 ? US"<>" : sender_address);
+  g = add_host_info_for_log(g);
 
   log_write(0, LOG_MAIN|LOG_REJECT, "%s %srejected by local_scan(): %.256s",
-    s, istemp, string_printing(errmsg));
+    string_from_gstring(g), istemp, string_printing(errmsg));
 
   if (smtp_input)
     {
@@ -3949,58 +3941,53 @@ it first! Include any message id that is in the message - since the syntax of a
 message id is actually an addr-spec, we can use the parse routine to canonicalize
 it. */
 
-size = 256;
-sptr = 0;
-s = store_get(size);
+g = string_get(256);
 
-s = string_append(s, &size, &sptr, 2,
+g = string_append(g, 2,
   fake_response == FAIL ? US"(= " : US"<= ",
   sender_address[0] == 0 ? US"<>" : sender_address);
 if (message_reference)
-  s = string_append(s, &size, &sptr, 2, US" R=", message_reference);
+  g = string_append(g, 2, US" R=", message_reference);
 
-s = add_host_info_for_log(s, &size, &sptr);
+g = add_host_info_for_log(g);
 
 #ifdef SUPPORT_TLS
 if (LOGGING(tls_cipher) && tls_in.cipher)
-  s = string_append(s, &size, &sptr, 2, US" X=", tls_in.cipher);
+  g = string_append(g, 2, US" X=", tls_in.cipher);
 if (LOGGING(tls_certificate_verified) && tls_in.cipher)
-  s = string_append(s, &size, &sptr, 2, US" CV=",
-    tls_in.certificate_verified ? "yes":"no");
+  g = string_append(g, 2, US" CV=", tls_in.certificate_verified ? "yes":"no");
 if (LOGGING(tls_peerdn) && tls_in.peerdn)
-  s = string_append(s, &size, &sptr, 3, US" DN=\"",
-    string_printing(tls_in.peerdn), US"\"");
+  g = string_append(g, 3, US" DN=\"", string_printing(tls_in.peerdn), US"\"");
 if (LOGGING(tls_sni) && tls_in.sni)
-  s = string_append(s, &size, &sptr, 3, US" SNI=\"",
-    string_printing(tls_in.sni), US"\"");
+  g = string_append(g, 3, US" SNI=\"", string_printing(tls_in.sni), US"\"");
 #endif
 
 if (sender_host_authenticated)
   {
-  s = string_append(s, &size, &sptr, 2, US" A=", sender_host_authenticated);
+  g = string_append(g, 2, US" A=", sender_host_authenticated);
   if (authenticated_id)
     {
-    s = string_append(s, &size, &sptr, 2, US":", authenticated_id);
+    g = string_append(g, 2, US":", authenticated_id);
     if (LOGGING(smtp_mailauth) && authenticated_sender)
-      s = string_append(s, &size, &sptr, 2, US":", authenticated_sender);
+      g = string_append(g, 2, US":", authenticated_sender);
     }
   }
 
 #ifndef DISABLE_PRDR
 if (prdr_requested)
-  s = string_catn(s, &size, &sptr, US" PRDR", 5);
+  g = string_catn(g, US" PRDR", 5);
 #endif
 
 #ifdef SUPPORT_PROXY
 if (proxy_session && LOGGING(proxy))
-  s = string_append(s, &size, &sptr, 2, US" PRX=", proxy_local_address);
+  g = string_append(g, 2, US" PRX=", proxy_local_address);
 #endif
 
 if (chunking_state > CHUNKING_OFFERED)
-  s = string_catn(s, &size, &sptr, US" K", 2);
+  g = string_catn(g, US" K", 2);
 
 sprintf(CS big_buffer, "%d", msg_size);
-s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
+g = string_append(g, 2, US" S=", big_buffer);
 
 /* log 8BITMIME mode announced in MAIL_FROM
    0 ... no BODY= used
@@ -4009,11 +3996,11 @@ s = string_append(s, &size, &sptr, 2, US" S=", big_buffer);
 if (LOGGING(8bitmime))
   {
   sprintf(CS big_buffer, "%d", body_8bitmime);
-  s = string_append(s, &size, &sptr, 2, US" M8S=", big_buffer);
+  g = string_append(g, 2, US" M8S=", big_buffer);
   }
 
 if (*queue_name)
-  s = string_append(s, &size, &sptr, 2, US" Q=", queue_name);
+  g = string_append(g, 2, US" Q=", queue_name);
 
 /* If an addr-spec in a message-id contains a quoted string, it can contain
 any characters except " \ and CR and so in particular it can contain NL!
@@ -4029,7 +4016,7 @@ if (msgid_header)
     &errmsg, &start, &end, &domain, FALSE);
   allow_domain_literals = save_allow_domain_literals;
   if (old_id != NULL)
-    s = string_append(s, &size, &sptr, 2, US" id=", string_printing(old_id));
+    g = string_append(g, 2, US" id=", string_printing(old_id));
   }
 
 /* If subject logging is turned on, create suitable printing-character
@@ -4052,20 +4039,20 @@ if (LOGGING(subject) && subject_header != NULL)
     }
   *p++ = '\"';
   *p = 0;
-  s = string_append(s, &size, &sptr, 2, US" T=", string_printing(big_buffer));
+  g = string_append(g, 2, US" T=", string_printing(big_buffer));
   }
 
 /* Terminate the string: string_cat() and string_append() leave room, but do
 not put the zero in. */
 
-s[sptr] = 0;
+(void) string_from_gstring(g);
 
 /* Create a message log file if message logs are being used and this message is
 not blackholed. Write the reception stuff to it. We used to leave message log
 creation until the first delivery, but this has proved confusing for some
 people. */
 
-if (message_logs && blackholed_by == NULL)
+if (message_logs && !blackholed_by)
   {
   int fd;
 
@@ -4082,11 +4069,8 @@ if (message_logs && blackholed_by == NULL)
     }
 
   if (fd < 0)
-    {
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open message log %s: %s",
       spool_name, strerror(errno));
-    }
-
   else
     {
     FILE *message_log = fdopen(fd, "a");
@@ -4099,7 +4083,7 @@ if (message_logs && blackholed_by == NULL)
     else
       {
       uschar *now = tod_stamp(tod_log);
-      fprintf(message_log, "%s Received from %s\n", now, s+3);
+      fprintf(message_log, "%s Received from %s\n", now, g->s+3);
       if (deliver_freeze) fprintf(message_log, "%s frozen by %s\n", now,
         frozen_by);
       if (queue_only_policy) fprintf(message_log,
@@ -4156,11 +4140,10 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 
       /* Re-use the log line workspace */
 
-      sptr = 0;
-      s = string_cat(s, &size, &sptr, US"SMTP connection lost after final dot");
-      s = add_host_info_for_log(s, &size, &sptr);
-      s[sptr] = 0;
-      log_write(0, LOG_MAIN, "%s", s);
+      g->ptr = 0;
+      g = string_cat(g, US"SMTP connection lost after final dot");
+      g = add_host_info_for_log(g);
+      log_write(0, LOG_MAIN, "%s", string_from_gstring(g));
 
       /* Delete the files for this aborted message. */
 
@@ -4224,7 +4207,7 @@ if(!smtp_reply)
   log_write(0, LOG_MAIN |
     (LOGGING(received_recipients)? LOG_RECIPIENTS : 0) |
     (LOGGING(received_sender)? LOG_SENDER : 0),
-    "%s", s);
+    "%s", g->s);
 
   /* Log any control actions taken by an ACL or local_scan(). */
 
@@ -4236,7 +4219,7 @@ if(!smtp_reply)
   }
 receive_call_bombout = FALSE;
 
-store_reset(s);   /* The store for the main log message can be reused */
+store_reset(g);   /* The store for the main log message can be reused */
 
 /* If the message is frozen, and freeze_tell is set, do the telling. */
 

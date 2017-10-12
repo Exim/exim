@@ -97,8 +97,7 @@ string_domain_alabel_to_utf8(const uschar * alabel, uschar ** err)
 #ifdef SUPPORT_I18N_2008
 const uschar * label;
 int sep = '.';
-uschar * s = NULL;
-int size = 0, len = 0;
+gstring * g = NULL;
 
 while (label = string_nextinlist(&alabel, &sep, NULL, 0))
   if (  string_is_alabel(label)
@@ -106,8 +105,8 @@ while (label = string_nextinlist(&alabel, &sep, NULL, 0))
      )
     return NULL;
   else
-    s = string_append_listele(s, &size, &len, '.', label);
-return s;
+    g = string_append_listele(g, '.', label);
+return string_from_gstring(g);
 
 #else
 

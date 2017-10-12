@@ -118,7 +118,7 @@ int save_fd = tctx->u.fd;
 int save_options = tctx->options;
 BOOL save_wireformat = spool_file_wireformat;
 uschar * hdrs;
-blob * dkim_signature;
+gstring * dkim_signature;
 int hsize;
 const uschar * errstr;
 BOOL rc;
@@ -133,8 +133,8 @@ tctx->options = tctx->options & ~(topt_end_dot | topt_use_bdat)
   | topt_output_string | topt_no_body;
 
 rc = transport_write_message(tctx, 0);
-hdrs = tctx->u.msg;
-hdrs[hsize = tctx->msg_ptr] = '\0';
+hdrs = string_from_gstring(tctx->u.msg);
+hsize = tctx->u.msg->ptr;
 
 tctx->u.fd = save_fd;
 tctx->options = save_options;
@@ -163,8 +163,8 @@ tctx->options &= ~topt_escape_headers;
 spool_file_wireformat = TRUE;
 transport_write_reset(0);
 if (  (  dkim_signature
-      && dkim_signature->len > 0
-      && !write_chunk(tctx, dkim_signature->data, dkim_signature->len)
+      && dkim_signature->ptr > 0
+      && !write_chunk(tctx, dkim_signature->s, dkim_signature->ptr)
       )
    || !write_chunk(tctx, hdrs, hsize)
    )
@@ -204,7 +204,7 @@ int dkim_fd;
 int save_errno = 0;
 BOOL rc;
 uschar * dkim_spool_name;
-blob * dkim_signature;
+gstring * dkim_signature;
 int options, dlen;
 off_t k_file_size;
 const uschar * errstr;
@@ -258,7 +258,7 @@ if (!(dkim_signature = dkim_exim_sign(dkim_fd, 0, NULL, dkim, &errstr)))
     }
   }
 else
-  dlen = dkim_signature->len;
+  dlen = dkim_signature->ptr;
 
 #ifndef OS_SENDFILE
 if (options & topt_use_bdat)
@@ -280,7 +280,7 @@ if (options & topt_use_bdat)
     {
     if (  tctx->chunk_cb(tctx, dlen, 0) != OK
        || !transport_write_block(tctx,
-		    dkim_signature->data, dlen, FALSE)
+		    dkim_signature->s, dlen, FALSE)
        || tctx->chunk_cb(tctx, 0, tc_reap_prev) != OK
        )
       goto err;
@@ -294,7 +294,7 @@ if (options & topt_use_bdat)
     goto err;
   }
 
-if(dlen > 0 && !transport_write_block(tctx, dkim_signature->data, dlen, TRUE))
+if(dlen > 0 && !transport_write_block(tctx, dkim_signature->s, dlen, TRUE))
   goto err;
 
 if (!dkt_send_file(tctx->u.fd, dkim_fd, 0, k_file_size))

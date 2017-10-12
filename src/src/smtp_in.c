@@ -1711,37 +1711,22 @@ return string_sprintf("SMTP connection from %s", hostname);
 /* Append TLS-related information to a log line
 
 Arguments:
-  s		String under construction: allocated string to extend, or NULL
-  sizep		Pointer to current allocation size (update on return), or NULL
-  ptrp		Pointer to index for new entries in string (update on return), or NULL
+  g		String under construction: allocated string to extend, or NULL
 
 Returns:	Allocated string or NULL
 */
-static uschar *
-s_tlslog(uschar * s, int * sizep, int * ptrp)
+static gstring *
+s_tlslog(gstring * g)
 {
-  int size = sizep ? *sizep : 0;
-  int ptr = ptrp ? *ptrp : 0;
-
-  if (LOGGING(tls_cipher) && tls_in.cipher != NULL)
-    s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
-  if (LOGGING(tls_certificate_verified) && tls_in.cipher != NULL)
-    s = string_append(s, &size, &ptr, 2, US" CV=",
-      tls_in.certificate_verified? "yes":"no");
-  if (LOGGING(tls_peerdn) && tls_in.peerdn != NULL)
-    s = string_append(s, &size, &ptr, 3, US" DN=\"",
-      string_printing(tls_in.peerdn), US"\"");
-  if (LOGGING(tls_sni) && tls_in.sni != NULL)
-    s = string_append(s, &size, &ptr, 3, US" SNI=\"",
-      string_printing(tls_in.sni), US"\"");
-
-  if (s)
-    {
-    s[ptr] = '\0';
-    if (sizep) *sizep = size;
-    if (ptrp) *ptrp = ptr;
-    }
-  return s;
+if (LOGGING(tls_cipher) && tls_in.cipher)
+  g = string_append(g, 2, US" X=", tls_in.cipher);
+if (LOGGING(tls_certificate_verified) && tls_in.cipher)
+  g = string_append(g, 2, US" CV=", tls_in.certificate_verified? "yes":"no");
+if (LOGGING(tls_peerdn) && tls_in.peerdn)
+  g = string_append(g, 3, US" DN=\"", string_printing(tls_in.peerdn), US"\"");
+if (LOGGING(tls_sni) && tls_in.sni)
+  g = string_append(g, 3, US" SNI=\"", string_printing(tls_in.sni), US"\"");
+return g;
 }
 #endif
 
@@ -1760,45 +1745,40 @@ Returns:     nothing
 void
 smtp_log_no_mail(void)
 {
-int size, ptr, i;
-uschar *s, *sep;
+int i;
+uschar * sep, * s;
+gstring * g = NULL;
 
 if (smtp_mailcmd_count > 0 || !LOGGING(smtp_no_mail))
   return;
 
-s = NULL;
-size = ptr = 0;
-
 if (sender_host_authenticated != NULL)
   {
-  s = string_append(s, &size, &ptr, 2, US" A=", sender_host_authenticated);
-  if (authenticated_id != NULL)
-    s = string_append(s, &size, &ptr, 2, US":", authenticated_id);
+  g = string_append(g, 2, US" A=", sender_host_authenticated);
+  if (authenticated_id) g = string_append(g, 2, US":", authenticated_id);
   }
 
 #ifdef SUPPORT_TLS
-s = s_tlslog(s, &size, &ptr);
+g = s_tlslog(g);
 #endif
 
-sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?
-  US" C=..." : US" C=";
+sep = smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE ?  US" C=..." : US" C=";
+
 for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
-  {
   if (smtp_connection_had[i] != SCH_NONE)
     {
-    s = string_append(s, &size, &ptr, 2, sep,
-      smtp_names[smtp_connection_had[i]]);
+    g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
     sep = US",";
     }
-  }
 
 for (i = 0; i < smtp_ch_index; i++)
   {
-  s = string_append(s, &size, &ptr, 2, sep, smtp_names[smtp_connection_had[i]]);
+  g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
   sep = US",";
   }
 
-if (s) s[ptr] = 0; else s = US"";
+if (!(s = string_from_gstring(g))) s = US"";
+
 log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
   tcp_in_fastopen ? US"TFO " : US"",
   host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
@@ -1810,17 +1790,19 @@ log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
 uschar *
 smtp_cmd_hist(void)
 {
-uschar * list = NULL;
-int size = 0, len = 0, i;
+int  i;
+gstring * list = NULL;
+uschar * s;
 
 for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
   if (smtp_connection_had[i] != SCH_NONE)
-    list = string_append_listele(list, &size, &len, ',',
-      smtp_names[smtp_connection_had[i]]);
+    list = string_append_listele(list, ',', smtp_names[smtp_connection_had[i]]);
+
 for (i = 0; i < smtp_ch_index; i++)
-  list = string_append_listele(list, &size, &len, ',',
-    smtp_names[smtp_connection_had[i]]);
-return list ? list : US"";
+  list = string_append_listele(list, ',', smtp_names[smtp_connection_had[i]]);
+
+s = string_from_gstring(list);
+return s ? s : US"";
 }
 
 
@@ -2371,11 +2353,11 @@ Returns:       FALSE if the session can not continue; something has
 BOOL
 smtp_start_session(void)
 {
-int size = 256;
-int ptr, esclen;
+int esclen;
 uschar *user_msg, *log_msg;
 uschar *code, *esc;
-uschar *p, *s, *ss;
+uschar *p, *s;
+gstring * ss;
 
 gettimeofday(&smtp_connection_start, NULL);
 for (smtp_ch_index = 0; smtp_ch_index < SMTP_HBUFF_SIZE; smtp_ch_index++)
@@ -2899,34 +2881,31 @@ command. Sigh. To try to avoid this, build the complete greeting message
 first, and output it in one fell swoop. This gives a better chance of it
 ending up as a single packet. */
 
-ss = store_get(size);
-ptr = 0;
+ss = string_get(256);
 
 p = s;
 do       /* At least once, in case we have an empty string */
   {
   int len;
   uschar *linebreak = Ustrchr(p, '\n');
-  ss = string_catn(ss, &size, &ptr, code, 3);
+  ss = string_catn(ss, code, 3);
   if (linebreak == NULL)
     {
     len = Ustrlen(p);
-    ss = string_catn(ss, &size, &ptr, US" ", 1);
+    ss = string_catn(ss, US" ", 1);
     }
   else
     {
     len = linebreak - p;
-    ss = string_catn(ss, &size, &ptr, US"-", 1);
+    ss = string_catn(ss, US"-", 1);
     }
-  ss = string_catn(ss, &size, &ptr, esc, esclen);
-  ss = string_catn(ss, &size, &ptr, p, len);
-  ss = string_catn(ss, &size, &ptr, US"\r\n", 2);
+  ss = string_catn(ss, esc, esclen);
+  ss = string_catn(ss, p, len);
+  ss = string_catn(ss, US"\r\n", 2);
   p += len;
   if (linebreak != NULL) p++;
   }
 while (*p != 0);
-
-ss[ptr] = 0;  /* string_cat leaves room for this */
 
 /* Before we write the banner, check that there is no input pending, unless
 this synchronisation check is disabled. */
@@ -2946,7 +2925,7 @@ if (!check_sync())
 
 /* Now output the banner */
 
-smtp_printf("%s", FALSE, ss);
+smtp_printf("%s", FALSE, string_from_gstring(ss));
 
 /* Attempt to see if we sent the banner before the last ACK of the 3-way
 handshake arrived.  If so we must have managed a TFO. */
@@ -3324,7 +3303,8 @@ is closing if required and return 2.  */
 if (log_reject_target != 0)
   {
 #ifdef SUPPORT_TLS
-  uschar * tls = s_tlslog(NULL, NULL, NULL);
+  gstring * g = s_tlslog(NULL);
+  uschar * tls = string_from_gstring(g);
   if (!tls) tls = US"";
 #else
   uschar * tls = US"";
@@ -3847,11 +3827,12 @@ while (done <= 0)
   void (*oldsignal)(int);
   pid_t pid;
   int start, end, sender_domain, recipient_domain;
-  int ptr, size, rc;
+  int rc;
   int c;
   auth_instance *au;
   uschar *orcpt = NULL;
   int flags;
+  gstring * g;
 
 #ifdef AUTH_TLS
   /* Check once per STARTTLS or SSL-on-connect for a TLS AUTH */
@@ -4147,15 +4128,13 @@ while (done <= 0)
         sender_ident ? sender_ident : US"",
         sender_ident ? US" at " : US"",
         sender_host_name ? sender_host_name : sender_helo_name);
-
-      ptr = Ustrlen(s);
-      size = ptr + 1;
+      g = string_cat(NULL, s);
 
       if (sender_host_address)
         {
-        s = string_catn(s, &size, &ptr, US" [", 2);
-        s = string_cat (s, &size, &ptr, sender_host_address);
-        s = string_catn(s, &size, &ptr, US"]", 1);
+        g = string_catn(g, US" [", 2);
+        g = string_cat (g, sender_host_address);
+        g = string_catn(g, US"]", 1);
         }
       }
 
@@ -4175,18 +4154,17 @@ while (done <= 0)
           "newlines: message truncated: %s", string_printing(s));
         *ss = 0;
         }
-      ptr = Ustrlen(s);
-      size = ptr + 1;
+      g = string_cat(NULL, s);
       }
 
-    s = string_catn(s, &size, &ptr, US"\r\n", 2);
+    g = string_catn(g, US"\r\n", 2);
 
     /* If we received EHLO, we must create a multiline response which includes
     the functions supported. */
 
     if (esmtp)
       {
-      s[3] = '-';
+      g->s[3] = '-';
 
       /* I'm not entirely happy with this, as an MTA is supposed to check
       that it has enough room to accept a message of maximum size before
@@ -4198,12 +4176,12 @@ while (done <= 0)
         {
         sprintf(CS big_buffer, "%.3s-SIZE %d\r\n", smtp_code,
           thismessage_size_limit);
-        s = string_cat(s, &size, &ptr, big_buffer);
+        g = string_cat(g, big_buffer);
         }
       else
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-SIZE\r\n", 7);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-SIZE\r\n", 7);
         }
 
       /* Exim does not do protocol conversion or data conversion. It is 8-bit
@@ -4215,15 +4193,15 @@ while (done <= 0)
 
       if (accept_8bitmime)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-8BITMIME\r\n", 11);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-8BITMIME\r\n", 11);
         }
 
       /* Advertise DSN support if configured to do so. */
       if (verify_check_host(&dsn_advertise_hosts) != FAIL)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-DSN\r\n", 6);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-DSN\r\n", 6);
         dsn_advertised = TRUE;
         }
 
@@ -4232,18 +4210,18 @@ while (done <= 0)
 
       if (acl_smtp_etrn)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-ETRN\r\n", 7);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-ETRN\r\n", 7);
         }
       if (acl_smtp_vrfy)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-VRFY\r\n", 7);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-VRFY\r\n", 7);
         }
       if (acl_smtp_expn)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-EXPN\r\n", 7);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-EXPN\r\n", 7);
         }
 
       /* Exim is quite happy with pipelining, so let the other end know that
@@ -4252,8 +4230,8 @@ while (done <= 0)
       if (pipelining_enable &&
           verify_check_host(&pipelining_advertise_hosts) == OK)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-PIPELINING\r\n", 13);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-PIPELINING\r\n", 13);
         sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
         pipelining_advertised = TRUE;
         }
@@ -4294,29 +4272,29 @@ while (done <= 0)
 	      int saveptr;
 	      if (first)
 		{
-		s = string_catn(s, &size, &ptr, smtp_code, 3);
-		s = string_catn(s, &size, &ptr, US"-AUTH", 5);
+		g = string_catn(g, smtp_code, 3);
+		g = string_catn(g, US"-AUTH", 5);
 		first = FALSE;
 		auth_advertised = TRUE;
 		}
-	      saveptr = ptr;
-	      s = string_catn(s, &size, &ptr, US" ", 1);
-	      s = string_cat (s, &size, &ptr, au->public_name);
-	      while (++saveptr < ptr) s[saveptr] = toupper(s[saveptr]);
+	      saveptr = g->ptr;
+	      g = string_catn(g, US" ", 1);
+	      g = string_cat (g, au->public_name);
+	      while (++saveptr < g->ptr) g->s[saveptr] = toupper(g->s[saveptr]);
 	      au->advertised = TRUE;
 	      }
 	    }
 	  }
 
-	if (!first) s = string_catn(s, &size, &ptr, US"\r\n", 2);
+	if (!first) g = string_catn(g, US"\r\n", 2);
 	}
 
       /* RFC 3030 CHUNKING */
 
       if (verify_check_host(&chunking_advertise_hosts) != FAIL)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-CHUNKING\r\n", 11);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-CHUNKING\r\n", 11);
 	chunking_offered = TRUE;
 	chunking_state = CHUNKING_OFFERED;
         }
@@ -4330,8 +4308,8 @@ while (done <= 0)
       if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-STARTTLS\r\n", 11);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-STARTTLS\r\n", 11);
         tls_advertised = TRUE;
         }
 #endif
@@ -4340,8 +4318,8 @@ while (done <= 0)
       /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
       if (prdr_enable)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-PRDR\r\n", 7);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-PRDR\r\n", 7);
 	}
 #endif
 
@@ -4349,36 +4327,36 @@ while (done <= 0)
       if (  accept_8bitmime
          && verify_check_host(&smtputf8_advertise_hosts) != FAIL)
 	{
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-SMTPUTF8\r\n", 11);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-SMTPUTF8\r\n", 11);
         smtputf8_advertised = TRUE;
 	}
 #endif
 
       /* Finish off the multiline reply with one that is always available. */
 
-      s = string_catn(s, &size, &ptr, smtp_code, 3);
-      s = string_catn(s, &size, &ptr, US" HELP\r\n", 7);
+      g = string_catn(g, smtp_code, 3);
+      g = string_catn(g, US" HELP\r\n", 7);
       }
 
     /* Terminate the string (for debug), write it, and note that HELO/EHLO
     has been seen. */
 
-    s[ptr] = 0;
-
 #ifdef SUPPORT_TLS
-    if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr, FALSE); else
+    if (tls_in.active >= 0) (void)tls_write(TRUE, g->s, g->ptr, FALSE); else
 #endif
 
       {
-      int i = fwrite(s, 1, ptr, smtp_out); i = i; /* compiler quietening */
+      int i = fwrite(g->s, 1, g->ptr, smtp_out); i = i; /* compiler quietening */
       }
     DEBUG(D_receive)
       {
       uschar *cr;
-      while ((cr = Ustrchr(s, '\r')) != NULL)   /* lose CRs */
-        memmove(cr, cr + 1, (ptr--) - (cr - s));
-      debug_printf("SMTP>> %s", s);
+
+      (void) string_from_gstring(g);
+      while ((cr = Ustrchr(g->s, '\r')) != NULL)   /* lose CRs */
+        memmove(cr, cr + 1, (g->ptr--) - (cr - g->s));
+      debug_printf("SMTP>> %s", g->s);
       }
     helo_seen = TRUE;
 

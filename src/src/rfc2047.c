@@ -188,10 +188,10 @@ uschar *
 rfc2047_decode2(uschar *string, BOOL lencheck, uschar *target, int zeroval,
   int *lenptr, int *sizeptr, uschar **error)
 {
-int ptr = 0;
 int size = Ustrlen(string);
 size_t dlen;
-uschar *dptr, *yield;
+uschar *dptr;
+gstring *yield;
 uschar *mimeword, *q1, *q2, *endword;
 
 *error = NULL;
@@ -208,7 +208,10 @@ building the result as we go. The result may be longer than the input if it is
 translated into a multibyte code such as UTF-8. That's why we use the dynamic
 string building code. */
 
-yield = store_get(++size);
+yield = store_get(sizeof(gstring) + ++size);
+yield->size = size;
+yield->ptr = 0;
+yield->s = US(yield + 1);
 
 while (mimeword)
   {
@@ -218,7 +221,7 @@ while (mimeword)
   #endif
 
   if (mimeword != string)
-    yield = string_catn(yield, &size, &ptr, string, mimeword - string);
+    yield = string_catn(yield, string, mimeword - string);
 
   /* Do a charset translation if required. This is supported only on hosts
   that have the iconv() function. Translation errors set error, but carry on,
@@ -305,7 +308,7 @@ while (mimeword)
 
     /* Add the new string onto the result */
 
-    yield = string_catn(yield, &size, &ptr, tptr, tlen);
+    yield = string_catn(yield, tptr, tlen);
     }
 
   #if HAVE_ICONV
@@ -328,11 +331,11 @@ while (mimeword)
 /* Copy the remaining characters of the string, zero-terminate it, and return
 the length as well if requested. */
 
-yield = string_cat(yield, &size, &ptr, string);
-yield[ptr] = 0;
-if (lenptr) *lenptr = ptr;
-if (sizeptr) *sizeptr = size;
-return yield;
+yield = string_cat(yield, string);
+
+if (lenptr) *lenptr = yield->ptr;
+if (sizeptr) *sizeptr = yield->size;
+return string_from_gstring(yield);
 }
 
 

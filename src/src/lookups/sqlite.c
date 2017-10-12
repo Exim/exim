@@ -41,21 +41,16 @@ return db;
 
 /* See local README for interface description. */
 
-struct strbuf {
-  uschar *string;
-  int size;
-  int len;
-};
-
-static int sqlite_callback(void *arg, int argc, char **argv, char **azColName)
+static int
+sqlite_callback(void *arg, int argc, char **argv, char **azColName)
 {
-struct strbuf *res = arg;
+gstring * res = *(gstring **)arg;
 int i;
 
 /* For second and subsequent results, insert \n */
 
-if (res->string != NULL)
-  res->string = string_catn(res->string, &res->size, &res->len, US"\n", 1);
+if (res)
+  res = string_catn(res, US"\n", 1);
 
 if (argc > 1)
   {
@@ -63,18 +58,14 @@ if (argc > 1)
   for (i = 0; i < argc; i++)
     {
     uschar *value = US((argv[i] != NULL)? argv[i]:"<NULL>");
-    res->string = lf_quote(US azColName[i], value, Ustrlen(value), res->string,
-      &res->size, &res->len);
+    res = lf_quote(US azColName[i], value, Ustrlen(value), res);
     }
   }
 
 else
-  {
-  res->string = string_append(res->string, &res->size, &res->len, 1,
-    (argv[0] != NULL)? argv[0]:"<NULL>");
-  }
+  res = string_cat(res, argv[0] ? US argv[0] : US "<NULL>");
 
-res->string[res->len] = 0;
+*(gstring **)arg = res;
 return 0;
 }
 
@@ -84,7 +75,7 @@ sqlite_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 int ret;
-struct strbuf res = { NULL, 0, 0 };
+gstring * res = NULL;
 
 ret = sqlite3_exec(handle, CS query, sqlite_callback, &res, (char **)errmsg);
 if (ret != SQLITE_OK)
@@ -93,9 +84,9 @@ if (ret != SQLITE_OK)
   return FAIL;
   }
 
-if (res.string == NULL) *do_cache = 0;
+if (!res) *do_cache = 0;
 
-*result = res.string;
+*result = string_from_gstring(res);
 return OK;
 }
 

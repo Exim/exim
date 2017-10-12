@@ -13,7 +13,7 @@ are in in fact in separate headers. */
 
 
 #ifdef EXIM_PERL
-extern uschar *call_perl_cat(uschar *, int *, int *, uschar **, uschar *,
+extern gstring *call_perl_cat(gstring *, uschar **, uschar *,
                  uschar **) WARN_UNUSED_RESULT;
 extern void    cleanup_perl(void);
 extern uschar *init_perl(uschar *);
@@ -204,6 +204,8 @@ extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
+
+extern void    gstring_grow(gstring *, int, int);
 
 extern void    header_add(int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
@@ -437,12 +439,12 @@ extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
-extern uschar *string_append(uschar *, int *, int *, int, ...) WARN_UNUSED_RESULT;
-extern uschar *string_append_listele(uschar *, int *, int *, uschar, const uschar *) WARN_UNUSED_RESULT;
-extern uschar *string_append_listele_n(uschar *, int *, int *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
+extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
+extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
+extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
 extern uschar *string_base62(unsigned long int);
-extern uschar *string_cat(uschar *, int *, int *, const uschar *) WARN_UNUSED_RESULT;
-extern uschar *string_catn(uschar *, int *, int *, const uschar *, int) WARN_UNUSED_RESULT;
+extern gstring *string_cat (gstring *, const uschar *     ) WARN_UNUSED_RESULT;
+extern gstring *string_catn(gstring *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
@@ -451,6 +453,8 @@ extern uschar *string_copynlc(uschar *, int);
 extern uschar *string_dequote(const uschar **);
 extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
 extern uschar *string_format_size(int, uschar *);
+extern uschar *string_from_gstring(gstring *);
+extern gstring *string_get(unsigned);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
@@ -533,6 +537,7 @@ extern void    version_init(void);
 
 extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
+
 
 /* vi: aw
 */

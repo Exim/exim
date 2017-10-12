@@ -140,7 +140,7 @@ optionlist optionlist_routers[] = {
                  (void *)offsetof(router_instance, verify_sender) }
 };
 
-int optionlist_routers_size = sizeof(optionlist_routers)/sizeof(optionlist);
+int optionlist_routers_size = nelem(optionlist_routers);
 
 
 #ifdef MACRO_PREDEF

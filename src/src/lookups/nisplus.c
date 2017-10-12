@@ -46,8 +46,6 @@ nisplus_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 int i;
-int ssize = 0;
-int offset = 0;
 int error_error = FAIL;
 uschar *field_name = NULL;
 nis_result *nrt = NULL;
@@ -57,6 +55,7 @@ struct entry_obj *eo;
 struct table_obj *ta;
 uschar *p = query + length;
 uschar *yield = NULL;
+gstring * yield = NULL;
 
 do_cache = do_cache;   /* Placate picky compilers */
 
@@ -156,33 +155,34 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
 
   if (field_name == NULL)
     {
-    yield = string_cat(yield, &ssize, &offset,US  tc->tc_name);
-    yield = string_catn(yield, &ssize, &offset, US"=", 1);
+    yield = string_cat (yield, tc->tc_name);
+    yield = string_catn(yield, US"=", 1);
 
     /* Quote the value if it contains spaces or is empty */
 
     if (value[0] == 0 || Ustrchr(value, ' ') != NULL)
       {
       int j;
-      yield = string_catn(yield, &ssize, &offset, US"\"", 1);
+      yield = string_catn(yield, US"\"", 1);
       for (j = 0; j < len; j++)
         {
         if (value[j] == '\"' || value[j] == '\\')
-          yield = string_catn(yield, &ssize, &offset, US"\\", 1);
-        yield = string_catn(yield, &ssize, &offset, value+j, 1);
+          yield = string_catn(yield, US"\\", 1);
+        yield = string_catn(yield, value+j, 1);
         }
-      yield = string_catn(yield, &ssize, &offset, US"\"", 1);
+      yield = string_catn(yield, US"\"", 1);
       }
-    else yield = string_catn(yield, &ssize, &offset, value, len);
+    else
+    eyield = string_catn(yield, value, len);
 
-    yield = string_catn(yield, &ssize, &offset, US" ", 1);
+    yield = string_catn(yield, US" ", 1);
     }
 
   /* When the specified field is found, grab its data and finish */
 
   else if (Ustrcmp(field_name, tc->tc_name) == 0)
     {
-    yield = string_copyn(value, len);
+    yield = string_catn(yield, value, len);
     goto NISPLUS_EXIT;
     }
   }
@@ -190,26 +190,23 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
 /* Error if a field name was specified and we didn't find it; if no
 field name, ensure the concatenated data is zero-terminated. */
 
-if (field_name != NULL)
+if (field_name)
   *errmsg = string_sprintf("NIS+ field %s not found for %s", field_name,
     query);
 else
-  {
-  yield[offset] = 0;
-  store_reset(yield + offset + 1);
-  }
+  store_reset(yield->s + yield->ptr + 1);
 
 /* Restore the colon in the query, and free result store before
 finishing. */
 
 NISPLUS_EXIT:
-if (field_name != NULL) field_name[-1] = ':';
-if (nrt != NULL) nis_freeresult(nrt);
-if (nre != NULL) nis_freeresult(nre);
+if (field_name) field_name[-1] = ':';
+if (nrt) nis_freeresult(nrt);
+if (nre) nis_freeresult(nre);
 
-if (yield != NULL)
+if (yield)
   {
-  *result = yield;
+  *result = string_from_gstring(yield);
   return OK;
   }
 

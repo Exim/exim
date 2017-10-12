@@ -342,8 +342,7 @@ return cp3;
 uschar *
 tls_cert_subject_altname(void * cert, uschar * mod)
 {
-uschar * list = NULL;
-int lsize = 0, llen = 0;
+gstring * list = NULL;
 STACK_OF(GENERAL_NAME) * san = (STACK_OF(GENERAL_NAME) *)
   X509_get_ext_d2i((X509 *)cert, NID_subject_alt_name, NULL, NULL);
 uschar osep = '\n';
@@ -394,12 +393,12 @@ while (sk_GENERAL_NAME_num(san) > 0)
     ele = string_copyn(ele, len);
 
   if (Ustrlen(ele) == len)	/* ignore any with embedded nul */
-    list = string_append_listele(list, &lsize, &llen, osep,
+    list = string_append_listele(list, osep,
 	  match == -1 ? string_sprintf("%s=%s", tag, ele) : ele);
   }
 
 sk_GENERAL_NAME_free(san);
-return list;
+return string_from_gstring(list);
 }
 
 uschar *
@@ -410,8 +409,7 @@ STACK_OF(ACCESS_DESCRIPTION) * ads = (STACK_OF(ACCESS_DESCRIPTION) *)
 int adsnum = sk_ACCESS_DESCRIPTION_num(ads);
 int i;
 uschar sep = '\n';
-uschar * list = NULL;
-int size = 0, len = 0;
+gstring * list = NULL;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -421,12 +419,12 @@ for (i = 0; i < adsnum; i++)
   ACCESS_DESCRIPTION * ad = sk_ACCESS_DESCRIPTION_value(ads, i);
 
   if (ad && OBJ_obj2nid(ad->method) == NID_ad_OCSP)
-    list = string_append_listele_n(list, &size, &len, sep,
+    list = string_append_listele_n(list, sep,
       ASN1_STRING_data(ad->location->d.ia5),
       ASN1_STRING_length(ad->location->d.ia5));
   }
 sk_ACCESS_DESCRIPTION_free(ads);
-return list;
+return string_from_gstring(list);
 }
 
 uschar *
@@ -439,8 +437,7 @@ DIST_POINT * dp;
 int dpsnum = sk_DIST_POINT_num(dps);
 int i;
 uschar sep = '\n';
-uschar * list = NULL;
-int size = 0, len = 0;
+gstring * list = NULL;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
@@ -457,12 +454,12 @@ if (dps) for (i = 0; i < dpsnum; i++)
       if (  (np = sk_GENERAL_NAME_value(names, j))
 	 && np->type == GEN_URI
 	 )
-	list = string_append_listele_n(list, &size, &len,  sep,
+	list = string_append_listele_n(list, sep,
 	  ASN1_STRING_data(np->d.uniformResourceIdentifier),
 	  ASN1_STRING_length(np->d.uniformResourceIdentifier));
     }
 sk_DIST_POINT_free(dps);
-return list;
+return string_from_gstring(list);
 }
 
 

@@ -371,29 +371,28 @@ start = time(NULL);
 /* now we are connected to spamd on spamd_sock */
 if (sd->is_rspamd)
   {
-  uschar * req_str = NULL;
-  int size = 0, len = 0;
+  gstring * req_str;
   const uschar * s;
 
-  req_str = string_append(req_str, &size, &len, 8,
+  req_str = string_append(NULL, 8,
     "CHECK RSPAMC/1.3\r\nContent-length: ", string_sprintf("%lu\r\n", mbox_size),
     "Queue-Id: ", message_id,
     "\r\nFrom: <", sender_address,
     ">\r\nRecipient-Number: ", string_sprintf("%d\r\n", recipients_count));
 
   for (i = 0; i < recipients_count; i ++)
-    req_str = string_append(req_str, &size, &len, 3,
+    req_str = string_append(req_str, 3,
       "Rcpt: <", recipients_list[i].address, ">\r\n");
   if ((s = expand_string(US"$sender_helo_name")) && *s)
-    req_str = string_append(req_str, &size, &len, 3, "Helo: ", s, "\r\n");
+    req_str = string_append(req_str, 3, "Helo: ", s, "\r\n");
   if ((s = expand_string(US"$sender_host_name")) && *s)
-    req_str = string_append(req_str, &size, &len, 3, "Hostname: ", s, "\r\n");
+    req_str = string_append(req_str, 3, "Hostname: ", s, "\r\n");
   if (sender_host_address)
-    req_str = string_append(req_str, &size, &len, 3, "IP: ", sender_host_address, "\r\n");
+    req_str = string_append(req_str, 3, "IP: ", sender_host_address, "\r\n");
   if ((s = expand_string(US"$authenticated_id")) && *s)
-    req_str = string_append(req_str, &size, &len, 3, "User: ", s, "\r\n");
-  req_str = string_catn(req_str, &size, &len, "\r\n", 2);
-  wrote = send(spamd_sock, req_str, len, 0);
+    req_str = string_append(req_str, 3, "User: ", s, "\r\n");
+  req_str = string_catn(req_str, "\r\n", 2);
+  wrote = send(spamd_sock, req_str->s, req_str->ptr, 0);
   }
 else
   {				/* spamassassin variant */

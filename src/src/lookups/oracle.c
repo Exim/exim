@@ -255,15 +255,12 @@ Ora_Define *def = NULL;
 void *hda = NULL;
 
 int i;
-int ssize = 0;
-int offset = 0;
 int yield = DEFER;
 unsigned int num_fields = 0;
-uschar *result = NULL;
+gstring * result = NULL;
 oracle_connection *cn = NULL;
 uschar *server_copy = NULL;
 uschar *sdata[4];
-uschar tmp[1024];
 
 /* Disaggregate the parameters from the server argument. The order is host,
 database, user, password. We can write to the string, since it is in a
@@ -292,19 +289,17 @@ if (sdata[1][0] == 0) sdata[1] = NULL;
 
 /* See if we have a cached connection to the server */
 
-for (cn = oracle_connections; cn != NULL; cn = cn->next)
-  {
+for (cn = oracle_connections; cn; cn = cn->next)
   if (strcmp(cn->server, server_copy) == 0)
     {
     oracle_handle = cn->handle;
     hda = cn->hda_mem;
     break;
     }
-  }
 
 /* If no cached connection, we must set one up */
 
-if (cn == NULL)
+if (!cn)
   {
   DEBUG(D_lookup) debug_printf("ORACLE new connection: host=%s database=%s "
     "user=%s\n", sdata[0], sdata[1], sdata[2]);
@@ -400,12 +395,12 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
   ofetch(cda);
   if(cda->rc == NO_DATA_FOUND) break;
 
-  if (result) result = string_catn(result, &ssize, &offset, "\n", 1);
+  if (result) result = string_catn(result, "\n", 1);
 
   /* Single field - just add on the data */
 
   if (num_fields == 1)
-    result = string_catn(result, &ssize, &offset, def[0].buf, def[0].col_retlen);
+    result = string_catn(result, def[0].buf, def[0].col_retlen);
 
   /* Multiple fields - precede by file name, removing {lead,trail}ing WS */
 
@@ -417,8 +412,8 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
     while (*s != 0 && isspace(*s)) s++;
     slen = Ustrlen(s);
     while (slen > 0 && isspace(s[slen-1])) slen--;
-    result = string_catn(result, &ssize, &offset, s, slen);
-    result = string_catn(result, &ssize, &offset, US"=", 1);
+    result = string_catn(result, s, slen);
+    result = string_catn(result, US"=", 1);
 
     /* int and float type wont ever need escaping. Otherwise, quote the value
     if it contains spaces or is empty. */
@@ -427,41 +422,38 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
        (def[i].buf[0] == 0 || strchr(def[i].buf, ' ') != NULL))
       {
       int j;
-      result = string_catn(result, &ssize, &offset, "\"", 1);
+      result = string_catn(result, "\"", 1);
       for (j = 0; j < def[i].col_retlen; j++)
         {
         if (def[i].buf[j] == '\"' || def[i].buf[j] == '\\')
-          result = string_catn(result, &ssize, &offset, "\\", 1);
-        result = string_catn(result, &ssize, &offset, def[i].buf+j, 1);
+          result = string_catn(result, "\\", 1);
+        result = string_catn(result, def[i].buf+j, 1);
         }
-      result = string_catn(result, &ssize, &offset, "\"", 1);
+      result = string_catn(result, "\"", 1);
       }
 
     else switch(desc[i].dbtype)
       {
       case INT_TYPE:
-      sprintf(CS tmp, "%d", def[i].int_buf);
-      result = string_cat(result, &ssize, &offset, tmp);
-      break;
+	result = string_cat(result, string_sprintf("%d", def[i].int_buf));
+	break;
 
       case FLOAT_TYPE:
-      sprintf(CS tmp, "%f", def[i].flt_buf);
-      result = string_cat(result, &ssize, &offset, tmp);
-      break;
+	result = string_cat(result, string_sprintf("%f", def[i].flt_buf));
+	break;
 
       case STRING_TYPE:
-      result = string_catn(result, &ssize, &offset, def[i].buf,
-        def[i].col_retlen);
-      break;
+	result = string_catn(result, def[i].buf, def[i].col_retlen);
+	break;
 
       default:
-      *errmsg = string_sprintf("ORACLE: unknown field type %d", desc[i].dbtype);
-      *defer_break = FALSE;
-      result = NULL;
-      goto ORACLE_EXIT;
+	*errmsg = string_sprintf("ORACLE: unknown field type %d", desc[i].dbtype);
+	*defer_break = FALSE;
+	result = NULL;
+	goto ORACLE_EXIT;
       }
 
-    result = string_catn(result, &ssize, &offset, " ", 1);
+    result = string_catn(result, " ", 1);
     }
   }
 
@@ -469,16 +461,13 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
 Otherwise, we must terminate the string which has been built; string_cat()
 always leaves enough room for a terminating zero. */
 
-if (result == NULL)
+if (!result)
   {
   yield = FAIL;
   *errmsg = "ORACLE: no data found";
   }
 else
-  {
-  result[offset] = 0;
-  store_reset(result + offset + 1);
-  }
+  store_reset(result->s + result->ptr + 1);
 
 /* Get here by goto from various error checks. */
 
@@ -492,9 +481,9 @@ ORACLE_EXIT_NO_VALS:
 
 /* Non-NULL result indicates a successful result */
 
-if (result != NULL)
+if (result)
   {
-  *resultptr = result;
+  *resultptr = string_from_gstring(result);
   return OK;
   }
 else
