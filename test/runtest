@@ -903,7 +903,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^SSL info:/;
     next if /SSL verify error: depth=0 error=certificate not trusted/;
     s/SSL3_READ_BYTES/ssl3_read_bytes/i;
-    s/^\d+:error:\d+(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
+    s/CONNECT_CR_FINISHED/ssl3_read_bytes/i;
+    s/^\d+:error:\d+(?:E\d+)?(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
+
+    s/^(TLS error on connection .*):func\(4095:\)(No such file or directory)$/$1:fopen:/;
 
     # gnutls version variances
     next if /^Error in the pull function./;
