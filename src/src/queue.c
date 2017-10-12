@@ -80,7 +80,11 @@ queue_filename *first = NULL;
 queue_filename **append = &first;
 
 while (a && b)
-  if (Ustrcmp(a->text, b->text) < 0)
+  {
+  int d;
+  if ((d = Ustrncmp(a->text, b->text, 6)) == 0)
+    d = Ustrcmp(a->text + 14, b->text + 14);
+  if (d < 0)
     {
     *append = a;
     append= &a->next;
@@ -92,6 +96,7 @@ while (a && b)
     append= &b->next;
     b = b->next;
     }
+  }
 
 *append = a ? a : b;
 return first;
@@ -278,7 +283,7 @@ for (; i <= *subcount; i++)
           if (root[j])
             {
             next = merge_queue_lists(next, root[j]);
-            root[j] = (j == LOG2_MAXNODES - 1)? next : NULL;
+            root[j] = j == LOG2_MAXNODES - 1 ? next : NULL;
             }
           else
             {
@@ -450,8 +455,8 @@ subsequent iterations.
 When the first argument of queue_get_spool_list() is -1 (for queue_run_in_
 order), it scans all directories and makes a single message list. */
 
-for (i  = (queue_run_in_order? -1 : 0);
-     i <= (queue_run_in_order? -1 : subcount);
+for (i = queue_run_in_order ? -1 : 0;
+     i <= (queue_run_in_order ? -1 : subcount);
      i++)
   {
   queue_filename *f;

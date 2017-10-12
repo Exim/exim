@@ -169,6 +169,10 @@ JH/27 Fix SOCKS bug: an unitialized pointer was deref'd by the transport process
 JH/28 Logging: "next input sent too soon" now shows where input was truncated
       for log purposes.
 
+JH/29 Fix queue_run_in_order to ignore the PID portion of the message ID.  This
+      matters on fast-turnover and PID-randomising systems, which were getting
+      out-of-order delivery.
+
 
 Exim version 4.89
 -----------------
