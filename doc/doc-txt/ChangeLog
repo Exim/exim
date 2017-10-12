@@ -50,6 +50,10 @@ JH/15 Fix a crash in the smtp transport caused when two hosts in succession
       are unsuable for non-message-specific reasons - eg. connection timeout,
       banner-time rejection.
 
+JH/29 Fix queue_run_in_order to ignore the PID portion of the message ID.  This
+      matters on fast-turnover and PID-randomising systems, which were getting
+      out-of-order delivery.
+
 
 Exim version 4.89
 -----------------
