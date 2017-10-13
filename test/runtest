@@ -906,7 +906,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/CONNECT_CR_FINISHED/ssl3_read_bytes/i;
     s/^\d+:error:\d+(?:E\d+)?(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
 
-    s/^(TLS error on connection .*):func\(4095:\)(No such file or directory)$/$1:fopen:/;
+    s/^(TLS error on connection .*):func\(4095\):(No such file or directory)$/$1:fopen:$2/;
 
     # gnutls version variances
     next if /^Error in the pull function./;

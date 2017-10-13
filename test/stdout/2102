@@ -93,11 +93,15 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 250
 <<< 250 HELP
 >>> starttls
-??? 220
+??? 220 TLS go ahead
 <<< 220 TLS go ahead
 Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:[...]:SSL alert number 40
 Failed to start TLS
++++ 1
+>>> help
+??? 554
+<<< 554 Security failure
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Certificate file = TESTSUITE/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem
