@@ -906,8 +906,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/CONNECT_CR_FINISHED/ssl3_read_bytes/i;
     s/^\d+:error:\d+(?:E\d+)?(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
 
-    s/^(TLS error on connection .*):func\(4095\):(No such file or directory)$/$1:fopen:$2/;
-
     # gnutls version variances
     next if /^Error in the pull function./;
 
@@ -1171,6 +1169,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # CHUNKING: exact sizes depend on hostnames in headers
     s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
+
+    # openssl version variances
+    s/(TLS error on connection .*: error:)[0-9A-F]{8}(:system library):func\(4095\):(No such file or
+ directory)$/$1xxxxxxxx$2:fopen:$3/;
     }
 
   # ======== All files other than stderr ========
