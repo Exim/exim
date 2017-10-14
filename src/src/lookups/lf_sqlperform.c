@@ -98,7 +98,7 @@ else
     return DEFER;
     }
 
-  qserverlist = string_sprintf("%.*s", ss - s, s);
+  qserverlist = string_sprintf("%.*s", (int)(ss - s), s);
   qsep = 0;
 
   while ((qserver = string_nextinlist(&qserverlist, &qsep, qbuffer,

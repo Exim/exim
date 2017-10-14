@@ -107,8 +107,8 @@ don't make the file descriptors two-way. */
 
 /* Debugging control */
 
-#define DEBUG(x)      if ((debug_selector & (x)) != 0)
-#define HDEBUG(x)     if (host_checking || (debug_selector & (x)) != 0)
+#define DEBUG(x)      if (debug_selector & (x))
+#define HDEBUG(x)     if (host_checking || (debug_selector & (x)))
 
 #define PTR_CHK(ptr) \
 do { \

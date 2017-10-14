@@ -74,8 +74,6 @@ sob->priority =   SOCKS_PRIORITY;
 static void
 socks_option(socks_opts * sob, const uschar * opt)
 {
-const uschar * s;
-
 if (Ustrncmp(opt, "auth=", 5) == 0)
   {
   opt += 5;

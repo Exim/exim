@@ -3314,11 +3314,11 @@ while (!done)
   got = readn(fd, pipeheader, required);
   if (got != required)
     {
-      msg = string_sprintf("got %d of %d bytes (pipeheader) "
-        "from transport process %d for transport %s",
-        got, PIPE_HEADER_SIZE, pid, addr->transport->driver_name);
-      done = TRUE;
-      break;
+    msg = string_sprintf("got " SSIZE_T_FMT " of %d bytes (pipeheader) "
+      "from transport process %d for transport %s",
+      got, PIPE_HEADER_SIZE, pid, addr->transport->driver_name);
+    done = TRUE;
+    break;
     }
 
   pipeheader[PIPE_HEADER_SIZE] = '\0';
@@ -3351,11 +3351,11 @@ while (!done)
   got = readn(fd, big_buffer, required);
   if (got != required)
     {
-      msg = string_sprintf("got only %d of %d bytes (pipedata) "
-        "from transport process %d for transport %s",
-        got, required, pid, addr->transport->driver_name);
-      done = TRUE;
-      break;
+    msg = string_sprintf("got only " SSIZE_T_FMT " of " SIZE_T_FMT
+      " bytes (pipedata) from transport process %d for transport %s",
+      got, required, pid, addr->transport->driver_name);
+    done = TRUE;
+    break;
     }
 
   /* Handle each possible type of item, assuming the complete item is

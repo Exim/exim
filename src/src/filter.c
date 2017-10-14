@@ -2322,7 +2322,7 @@ while (commands != NULL)
 	    {
 	    *error_pointer = string_sprintf("Bad time value for \"once_repeat\" "
 	      "in mail or vacation command: %s",
-	      commands->args[mailarg_index_once_repeat]);
+	      commands->args[mailarg_index_once_repeat].u);
 	    return FF_ERROR;
 	    }
 	  }

@@ -309,7 +309,7 @@ for (rule = rewrite_rules;
 
         start = Ustrlen(pf1) + start + new - p1;
         end = start + Ustrlen(newparsed);
-        new = string_sprintf("%s%.*s%s", pf1, p2 - p1, p1, pf2);
+        new = string_sprintf("%s%.*s%s", pf1, (int)(p2 - p1), p1, pf2);
         }
 
       /* Now accept the whole thing */

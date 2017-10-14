@@ -4714,10 +4714,9 @@ for (i = 0;;)
     /* If user name has not been set by -F, set it from the passwd entry
     unless -f has been used to set the sender address by a trusted user. */
 
-    if (originator_name == NULL)
+    if (!originator_name)
       {
-      if (sender_address == NULL ||
-           (!trusted_caller && filter_test == FTEST_NONE))
+      if (!sender_address || (!trusted_caller && filter_test == FTEST_NONE))
         {
         uschar *name = US pw->pw_gecos;
         uschar *amp = Ustrchr(name, '&');
@@ -4727,11 +4726,11 @@ for (i = 0;;)
         replaced by a copy of the login name, and some even specify that
         the first character should be upper cased, so that's what we do. */
 
-        if (amp != NULL)
+        if (amp)
           {
           int loffset;
           string_format(buffer, sizeof(buffer), "%.*s%n%s%s",
-            amp - name, name, &loffset, originator_login, amp + 1);
+            (int)(amp - name), name, &loffset, originator_login, amp + 1);
           buffer[loffset] = toupper(buffer[loffset]);
           name = buffer;
           }
@@ -4739,7 +4738,7 @@ for (i = 0;;)
         /* If a pattern for matching the gecos field was supplied, apply
         it and then expand the name string. */
 
-        if (gecos_pattern != NULL && gecos_name != NULL)
+        if (gecos_pattern && gecos_name)
           {
           const pcre *re;
           re = regex_must_compile(gecos_pattern, FALSE, TRUE); /* Use malloc */
@@ -4748,7 +4747,7 @@ for (i = 0;;)
             {
             uschar *new_name = expand_string(gecos_name);
             expand_nmax = -1;
-            if (new_name != NULL)
+            if (new_name)
               {
               DEBUG(D_receive) debug_printf("user name \"%s\" extracted from "
                 "gecos field \"%s\"\n", new_name, name);

@@ -588,7 +588,7 @@ at = Ustrrchr(addr->address, '@');
 plen = (addr->prefix == NULL)? 0 : Ustrlen(addr->prefix);
 slen = Ustrlen(addr->suffix);
 
-return string_sprintf("%.*s@%s", (at - addr->address - plen - slen),
+return string_sprintf("%.*s@%s", (int)(at - addr->address - plen - slen),
    addr->address + plen, at + 1);
 }
 

@@ -3931,7 +3931,7 @@ if (acl_level == 0)
   }
 else ss = s;
 
-while (isspace(*ss))ss++;
+while (isspace(*ss)) ss++;
 
 /* If we can't find a named ACL, the default is to parse it as an inline one.
 (Unless it begins with a slash; non-existent files give rise to an error.) */

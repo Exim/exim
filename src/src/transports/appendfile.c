@@ -1980,7 +1980,7 @@ if (!isdirectory)
         {
         addr->basic_errno = ERRNO_INODECHANGED;
         addr->message = string_sprintf("opened mailbox %s inode number changed "
-          "from %d to %ld", filename, inode, statbuf.st_ino);
+          "from " INO_T_FMT " to " INO_T_FMT, filename, inode, statbuf.st_ino);
         addr->special_action = SPECIAL_FREEZE;
         goto RETURN;
         }
@@ -2571,7 +2571,7 @@ else
       uschar *basename;
 
       (void)gettimeofday(&msg_tv, NULL);
-      basename = string_sprintf(TIME_T_FMT ".H%luP%lu.%s",
+      basename = string_sprintf(TIME_T_FMT ".H%luP" PID_T_FMT ".%s",
        	msg_tv.tv_sec, msg_tv.tv_usec, getpid(), primary_hostname);
 
       filename = dataname = string_sprintf("tmp/%s", basename);

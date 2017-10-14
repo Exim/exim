@@ -1484,14 +1484,14 @@ while (*s != 0)
 /* If value2 is unset, just compute one number */
 
 if (value2 < 0)
-  s = string_sprintf("%d", total % value1);
+  s = string_sprintf("%lu", total % value1);
 
 /* Otherwise do a div/mod hash */
 
 else
   {
   total = total % (value1 * value2);
-  s = string_sprintf("%d/%d", total/value2, total % value2);
+  s = string_sprintf("%lu/%lu", total/value2, total % value2);
   }
 
 *len = Ustrlen(s);
@@ -3927,18 +3927,20 @@ while (*s != 0)
     {
     int len;
     int newsize = 0;
-    gstring * g;
+    gstring * g = NULL;
 
     s = read_name(name, sizeof(name), s, US"_");
 
     /* If this is the first thing to be expanded, release the pre-allocated
     buffer. */
 
-    if (yield && yield->ptr == 0)
+    if (!yield)
+      g = store_get(sizeof(gstring));
+    else if (yield->ptr == 0)
       {
       if (resetok) store_reset(yield);
       yield = NULL;
-      g = store_get(sizeof(gstring));
+      g = store_get(sizeof(gstring));	/* alloc _before_ calling find_variable() */
       }
 
     /* Header */
@@ -3993,7 +3995,8 @@ while (*s != 0)
       yield->ptr = len;
       yield->s = value;
       }
-    else yield = string_catn(yield, value, len);
+    else
+      yield = string_catn(yield, value, len);
 
     continue;
     }
@@ -7148,8 +7151,8 @@ while (*s != 0)
         if (error != NULL)
           {
           expand_string_message = string_sprintf("error in expression "
-            "evaluation: %s (after processing \"%.*s\")", error, sub-save_sub,
-              save_sub);
+            "evaluation: %s (after processing \"%.*s\")", error,
+	    (int)(sub-save_sub), save_sub);
           goto EXPAND_FAILED;
           }
         sprintf(CS var_buffer, PR_EXIM_ARITH, n);
@@ -7428,13 +7431,15 @@ while (*s != 0)
     {
     int len;
     int newsize = 0;
-    gstring * g;
+    gstring * g = NULL;
 
-    if (yield && yield->ptr == 0)
+    if (!yield)
+      g = store_get(sizeof(gstring));
+    else if (yield->ptr == 0)
       {
       if (resetok) store_reset(yield);
       yield = NULL;
-      g = store_get(sizeof(gstring));
+      g = store_get(sizeof(gstring));	/* alloc _before_ calling find_variable() */
       }
     if (!(value = find_variable(name, FALSE, skipping, &newsize)))
       {

@@ -37,8 +37,8 @@ rf_change_domain(address_item *addr, const uschar *domain, BOOL rewrite,
 {
 address_item *parent = store_get(sizeof(address_item));
 uschar *at = Ustrrchr(addr->address, '@');
-uschar *address = string_sprintf("%.*s@%s", at - addr->address, addr->address,
-  domain);
+uschar *address = string_sprintf("%.*s@%s",
+  (int)(at - addr->address), addr->address, domain);
 
 DEBUG(D_route) debug_printf("domain changed to %s\n", domain);
 

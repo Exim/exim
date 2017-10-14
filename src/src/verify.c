@@ -2263,7 +2263,7 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
       /* deconst cast ok as we're passing a non-const to string_printing() */
       *msgptr = US string_printing(
         string_sprintf("%s: failing address in \"%.*s:\" header %s: %.*s",
-          errmess, tt - h->text, h->text, verb, len, s));
+          errmess, (int)(tt - h->text), h->text, verb, len, s));
 
       yield = FAIL;
       break;          /* Out of address loop */
@@ -2564,7 +2564,7 @@ for (i = 0; i < 3 && !done; i++)
           while (ss > s && isspace(ss[-1])) ss--;
           *log_msgptr = string_sprintf("syntax error in '%.*s' header when "
             "scanning for sender: %s in \"%.*s\"",
-            endname - h->text, h->text, *log_msgptr, ss - s, s);
+            (int)(endname - h->text), h->text, *log_msgptr, (int)(ss - s), s);
           yield = FAIL;
           done = TRUE;
           break;
@@ -2592,11 +2592,9 @@ for (i = 0; i < 3 && !done; i++)
         {
         *verrno = vaddr->basic_errno;
         if (smtp_return_error_details)
-          {
           *user_msgptr = string_sprintf("Rejected after DATA: "
             "could not verify \"%.*s\" header address\n%s: %s",
-            endname - h->text, h->text, vaddr->address, vaddr->message);
-          }
+            (int)(endname - h->text), h->text, vaddr->address, vaddr->message);
         }
 
       /* Success or defer */

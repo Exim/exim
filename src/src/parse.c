@@ -745,7 +745,7 @@ if (*s == '<')
     *errorptr = s[-1] == 0
       ? US"'>' missing at end of address"
       : string_sprintf("malformed address: %.32s may not follow %.*s",
-	  s-1, s - US mailbox - 1, mailbox);
+	  s-1, (int)(s - US mailbox - 1), mailbox);
     goto PARSE_FAILED;
     }
 
@@ -798,7 +798,7 @@ if (*s != 0)
   else
     {
     *errorptr = string_sprintf("malformed address: %.32s may not follow %.*s",
-      s, s - US mailbox, mailbox);
+      s, (int)(s - US mailbox), mailbox);
     goto PARSE_FAILED;
     }
   }
