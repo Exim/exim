@@ -19,12 +19,12 @@ and *_BASE_STR (char*). It's a bit of guesswork. Especially for mariadb
 with versions before 10.2, as they do not define there there specific symbols.
 */
 
-// Newer (>= 10.2) MariaDB
+/* Newer (>= 10.2) MariaDB */
 #if defined                   MARIADB_VERSION_ID
 #define EXIM_MxSQL_VERSION_ID MARIADB_VERSION_ID
 
-// MySQL defines MYSQL_VERSION_ID, and MariaDB does so
-// https://dev.mysql.com/doc/refman/5.7/en/c-api-server-client-versions.html
+/* MySQL defines MYSQL_VERSION_ID, and MariaDB does so */
+/* https://dev.mysql.com/doc/refman/5.7/en/c-api-server-client-versions.html */
 #elif defined                 LIBMYSQL_VERSION_ID
 #define EXIM_MxSQL_VERSION_ID LIBMYSQL_VERSION_ID
 #elif defined                 MYSQL_VERSION_ID
@@ -34,11 +34,11 @@ with versions before 10.2, as they do not define there there specific symbols.
 #define EXIM_MYSQL_VERSION_ID  0
 #endif
 
-// Newer (>= 10.2) MariaDB
+/* Newer (>= 10.2) MariaDB */
 #ifdef                         MARIADB_CLIENT_VERSION_STR
 #define EXIM_MxSQL_VERSION_STR MARIADB_CLIENT_VERSION_STR
 
-// Mysql uses MYSQL_SERVER_VERSION
+/* Mysql uses MYSQL_SERVER_VERSION */
 #elif defined                  LIBMYSQL_VERSION
 #define EXIM_MxSQL_VERSION_STR LIBMYSQL_VERSION
 #elif defined                  MYSQL_SERVER_VERSION
