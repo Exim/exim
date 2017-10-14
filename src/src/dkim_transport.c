@@ -43,7 +43,11 @@ dkt_send_file(int out_fd, int in_fd, off_t off
 #endif
   )
 {
+#ifdef OS_SENDFILE
 DEBUG(D_transport) debug_printf("send file fd=%d size=%u\n", out_fd, (unsigned)(size - off));
+#else
+DEBUG(D_transport) debug_printf("send file fd=%d\n", out_fd);
+#endif
 
 /*XXX should implement timeout, like transport_write_block_fd() ? */
 
