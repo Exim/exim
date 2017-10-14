@@ -14,6 +14,7 @@ log_selector = +tls_peerdn+smtp_connection+incoming_port+received_recipients
 
 queue_only
 queue_run_in_order
+remote_max_parallel = 1
 
 smtp_accept_max_nonmail = 0
 
