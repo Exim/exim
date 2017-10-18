@@ -45,7 +45,7 @@ with versions before 10.2, as they do not define there there specific symbols.
 #define EXIM_MxSQL_VERSION_STR MYSQL_SERVER_VERSION
 
 #else
-#define EXIM_MxSQL_VERSION_STR  "N.A."
+#define EXIM_MxSQL_VERSION_STR  "unknown"
 #endif
 
 #if defined                 MARIADB_BASE_VERSION
