@@ -9967,7 +9967,7 @@ a regular expression, and a substitution string. For example:
 ${sg{abcdefabcdef}{abc}{xyz}}
 .endd
 yields &"xyzdefxyzdef"&. Because all three arguments are expanded before use,
-if any $ or \ characters are required in the regular expression or in the
+if any $, } or \ characters are required in the regular expression or in the
 substitution string, they have to be escaped. For example:
 .code
 ${sg{abcdef}{^(...)(...)\$}{\$2\$1}}
