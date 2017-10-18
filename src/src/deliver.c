@@ -10,6 +10,7 @@
 
 #include "exim.h"
 #include "transports/smtp.h"
+#include <sys/uio.h>
 #include <assert.h>
 
 
