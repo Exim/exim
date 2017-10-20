@@ -3513,6 +3513,7 @@ propagate it from the initial
 	      _exit(pid < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 	      }
 	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd[0], sx.ob->command_timeout);
+	    if (running_in_test_harness) millisleep(100);	/* let logging complete */
 	    exim_exit(0, US"TLS proxy");
 	    }
 	  }
