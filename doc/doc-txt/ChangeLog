@@ -54,6 +54,11 @@ JH/29 Fix queue_run_in_order to ignore the PID portion of the message ID.  This
       matters on fast-turnover and PID-randomising systems, which were getting
       out-of-order delivery.
 
+JH/30 Fix a logging bug on aarch64: an unsafe routine was previously used for
+      a possibly-overlapping copy.  The symptom was that "Remote host closed
+      connection in response to HELO" was logged instead of the actual 4xx
+      error for the HELO.
+
 
 Exim version 4.89
 -----------------

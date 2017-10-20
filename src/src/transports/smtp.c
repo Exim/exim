@@ -1778,7 +1778,7 @@ goto SEND_QUIT;
 	errno = ERRNO_SMTPCLOSED;
 	goto EHLOHELO_FAILED;
 	}
-      Ustrncpy(sx->buffer, rsp, sizeof(sx->buffer)/2);
+      memmove(sx->buffer, rsp, Ustrlen(rsp));
       goto RESPONSE_FAILED;
       }
     }
@@ -2108,17 +2108,17 @@ return OK;
     sx->send_quit = FALSE;
     goto FAILED;
 
-  /* This label is jumped to directly when a TLS negotiation has failed,
-  or was not done for a host for which it is required. Values will be set
-  in message and errno, and setting_up will always be true. Treat as
-  a temporary error. */
-
   EHLOHELO_FAILED:
     code = '4';
     message = string_sprintf("Remote host closed connection in response to %s"
       " (EHLO response was: %s)", smtp_command, sx->buffer);
     sx->send_quit = FALSE;
     goto FAILED;
+
+  /* This label is jumped to directly when a TLS negotiation has failed,
+  or was not done for a host for which it is required. Values will be set
+  in message and errno, and setting_up will always be true. Treat as
+  a temporary error. */
 
 #ifdef SUPPORT_TLS
   TLS_FAILED:
