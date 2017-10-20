@@ -3932,8 +3932,12 @@ foreach $test (@test_list)
 	}
         if ($force_continue)
           {
-          print "\nstderr tail:\n";
+          print "\nstdout tail:\n";
+          print "==================>\n";
+          system("tail -20 test-stdout");
           print "===================\n";
+          print "stderr tail:\n";
+          print "==================>\n";
           system("tail -20 test-stderr");
           print "===================\n";
           print "... continue forced\n";
