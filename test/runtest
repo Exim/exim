@@ -1082,7 +1082,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     if (s/(with \$received_protocol)\}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
       {
       $_ .= <IN>;
-      s/\s+\}\}(?=\(Exim )/\}\} /;
+      s/[ ╎]+\}\}(?=\(Exim )/\}\} /;
       }
     if (/^  condition: def:tls_cipher$/)
       {
@@ -1535,10 +1535,11 @@ $munges =
                   dkim_(canon|domain|private_key|selector|sign_headers|strict|hash|identity)
                   |gnutls_require_(kx|mac|protocols)
                   |hosts_(requ(est|ire)|try)_(dane|ocsp)
-                  |hosts_(avoid|nopass|require|verify_avoid)_tls
+                  |hosts_(avoid|nopass|noproxy|require|verify_avoid)_tls
                   |socks_proxy
                   |tls_[^ ]*
-                  )($|[ ]=)/x' },
+                  )($|[ ]=)/x'
+    },
 
     'sys_bindir' =>
     { 'mainlog' => 's%/(usr/(local/)?)?bin/%SYSBINDIR/%' },
@@ -1557,6 +1558,8 @@ $munges =
 
     'peer_terminated_conn' =>	# actual error differs FreedBSD vs. Linux
     { 'stderr' => 's/^(  SMTP\()Connection reset by peer(\)<<)$/$1closed$2/' },
+
+    'perl_variants'
   };
 
 

@@ -136,7 +136,7 @@ end of inline ACL: ACCEPT
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
  ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol 	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
@@ -144,7 +144,7 @@ end of inline ACL: ACCEPT
  ├─────result: false
   ┌───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -154,19 +154,19 @@ end of inline ACL: ACCEPT
   	
   └───skipping: result is not used
   ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
    ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -177,7 +177,7 @@ end of inline ACL: ACCEPT
   ├──condition: def:sender_helo_name
   ├─────result: true
    ┌considering: (helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
@@ -191,7 +191,7 @@ end of inline ACL: ACCEPT
   	
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol}} (Exim $version_number)
+  ┌considering: with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -228,7 +228,7 @@ end of inline ACL: ACCEPT
   	for userx@domain.com
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol 	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
@@ -362,7 +362,7 @@ end of inline ACL: ACCEPT
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
  ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol 	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
@@ -370,7 +370,7 @@ end of inline ACL: ACCEPT
  ├─────result: false
   ┌───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -380,19 +380,19 @@ end of inline ACL: ACCEPT
   	
   └───skipping: result is not used
   ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
    ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -403,7 +403,7 @@ end of inline ACL: ACCEPT
   ├──condition: def:sender_helo_name
   ├─────result: true
    ┌considering: (helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
@@ -417,7 +417,7 @@ end of inline ACL: ACCEPT
   	
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol}} (Exim $version_number)
+  ┌considering: with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -454,7 +454,7 @@ end of inline ACL: ACCEPT
   	for usery@domain.com
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol 	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
@@ -588,7 +588,7 @@ end of inline ACL: ACCEPT
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
  ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol 	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
@@ -596,7 +596,7 @@ end of inline ACL: ACCEPT
  ├─────result: false
   ┌───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -606,19 +606,19 @@ end of inline ACL: ACCEPT
   	
   └───skipping: result is not used
   ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
    ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -629,7 +629,7 @@ end of inline ACL: ACCEPT
   ├──condition: def:sender_helo_name
   ├─────result: true
    ┌considering: (helo=$sender_helo_name)
-   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
@@ -643,7 +643,7 @@ end of inline ACL: ACCEPT
   	
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol}} (Exim $version_number)
+  ┌considering: with $received_protocol  	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
@@ -680,7 +680,7 @@ end of inline ACL: ACCEPT
   	for usery@domain.com
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
- 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
+ 	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol 	}}(Exim $version_number)
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}

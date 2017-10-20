@@ -53,7 +53,6 @@ hosts_avoid_esmtp =
 hosts_avoid_pipelining = 
 hosts_max_try = 5
 hosts_max_try_hardlimit = 50
-hosts_noproxy_tls = *
 no_hosts_override
 no_hosts_randomize
 hosts_require_auth = 
