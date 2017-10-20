@@ -1559,7 +1559,8 @@ $munges =
     'peer_terminated_conn' =>	# actual error differs FreedBSD vs. Linux
     { 'stderr' => 's/^(  SMTP\()Connection reset by peer(\)<<)$/$1closed$2/' },
 
-    'perl_variants'
+    'perl_variants' =>		# result of hash-in-scalar-context changed from bucket-fill to keycount
+    { 'stdout' => 's%^> X/X$%> X%' },
   };
 
 
