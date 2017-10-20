@@ -25,4 +25,4 @@ finding IP address for ten-2.test.ex
 doing DNS lookup
 fully qualified name = ten-2.test.ex
 ten-2.test.ex V4NET.0.0.2 mx=-1 sort=xx 
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

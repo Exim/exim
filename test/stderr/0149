@@ -187,4 +187,4 @@ routed by domainlist2 router
   transport: <none>
   host V4NET.0.0.6 [V4NET.0.0.6]
   host V4NET.0.0.7 [V4NET.0.0.7]
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

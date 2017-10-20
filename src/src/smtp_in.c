@@ -842,7 +842,7 @@ if (!yield)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_printf()");
   smtp_closedown(US"Unexpected error");
-  exim_exit(EXIT_FAILURE);
+  exim_exit(EXIT_FAILURE, NULL);
   }
 
 /* If this is the first output for a (non-batch) RCPT command, see if all RCPTs
@@ -922,7 +922,7 @@ if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout");  /* Does not return */
 smtp_notquit_exit(US"command-timeout", US"421",
   US"%s: SMTP command timeout - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE);
+exim_exit(EXIT_FAILURE, US"receiving");
 }
 
 
@@ -946,7 +946,7 @@ if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
 smtp_notquit_exit(US"signal-exit", US"421",
   US"%s: Service not available - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE);
+exim_exit(EXIT_FAILURE, US"receiving");
 }
 
 

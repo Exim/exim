@@ -262,4 +262,4 @@ SMTP>> 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>

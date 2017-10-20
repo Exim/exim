@@ -3510,10 +3510,10 @@ propagate it from the initial
 	    if ((pid = fork()))
 	      {
 	      DEBUG(D_transport) debug_printf("proxy-prox final-pid %d\n", pid);
-	      _exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
+	      _exit(pid < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
 	      }
 	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd[0], sx.ob->command_timeout);
-	    exim_exit(0);
+	    exim_exit(0, US"TLS proxy");
 	    }
 	  }
 #endif

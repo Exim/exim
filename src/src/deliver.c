@@ -8510,9 +8510,9 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
       {
       close(pfd[1]);
       if ((pid = fork()))
-	_exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
+	_exit(pid < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
       smtp_proxy_tls(big_buffer, big_buffer_size, pfd[0], 5*60);
-      exim_exit(0);
+      exim_exit(0, US"TLS proxy");
       }
 
     close(pfd[0]);

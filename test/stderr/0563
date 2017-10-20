@@ -40,4 +40,4 @@ routed by router2 router
   envelope to: joe-real@testexim.test.ex
   transport: local_delivery
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

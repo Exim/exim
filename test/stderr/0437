@@ -79,4 +79,4 @@ search_tidyup called
 LOG: queue_run MAIN
   End queue run: pid=pppp
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

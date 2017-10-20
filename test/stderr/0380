@@ -89,5 +89,5 @@ locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => bbbb <bbbb@myhost.test.ex> R=r3 T=t1
 locking TESTSUITE/spool/db/retry.lockfile
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

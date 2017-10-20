@@ -27,8 +27,8 @@ added to list for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -57,4 +57,4 @@ LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: queue_run MAIN
   End queue run: pid=pppp
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

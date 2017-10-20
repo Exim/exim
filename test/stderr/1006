@@ -16,7 +16,7 @@ DNS lookup of v6.test.ex (AAAA) succeeded
 DNS lookup of v6.test.ex (A) using fakens
 DNS lookup of v6.test.ex (A) gave NO_DATA
 returning DNS_NODATA
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -32,6 +32,6 @@ returning DNS_NODATA
 DNS lookup of v6.test.ex (A) using fakens
 DNS lookup of v6.test.ex (A) gave NO_DATA
 returning DNS_NODATA
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

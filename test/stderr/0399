@@ -43,4 +43,4 @@ parse_forward_list:
 r3 router declined for x@y
 failed to expand "more" in r3 router: unknown variable name "unknown_variable"
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=1 >>>>>>>>>>>>>>>>

@@ -214,4 +214,4 @@ routed by r2 router
   envelope to: xxx@testsub.sub.test.ex
   transport: t1
   host testsub.sub.test.ex [V4NET.99.0.3]
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>

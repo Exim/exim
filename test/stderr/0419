@@ -49,4 +49,4 @@ routed by dnslookup router
   transport: smtp
   host other1.test.ex [V4NET.12.4.5] MX=4
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -48,7 +48,7 @@ callout cache: found address record for Ok@localhost
 callout cache: address record is positive
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -83,7 +83,7 @@ LOG: MAIN REJECT
   H=[V4NET.0.0.2] U=root F=<NOTok@elsewhere> rejected RCPT <nocheckpm@test.ex>: Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -116,4 +116,4 @@ LOG: MAIN REJECT
   H=[V4NET.0.0.2] U=root F=<NOTok2@elsewhere> rejected RCPT <nocheckpm@test.ex>: Sender verify failed
 LOG: smtp_connection MAIN
   SMTP connection from root closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>

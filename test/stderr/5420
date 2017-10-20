@@ -255,7 +255,7 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -481,7 +481,7 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -707,6 +707,6 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

@@ -19,7 +19,7 @@ routed by lookuphost router
   host ten-1.test.ex [V4NET.0.0.1] MX=5
   host ten-2.test.ex [V4NET.0.0.2] MX=6
   host ten-3.test.ex [V4NET.0.0.3] MX=7
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -41,7 +41,7 @@ routed by lookuphost router
   host ten-1.test.ex [V4NET.0.0.1] MX=5
   host ten-2.test.ex [V4NET.0.0.2] MX=6
   host ten-3.test.ex [V4NET.0.0.3] MX=7
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -63,4 +63,4 @@ routed by lookuphost router
   host ten-1.test.ex [V4NET.0.0.1] MX=5
   host ten-2.test.ex [V4NET.0.0.2] MX=6
   host ten-3.test.ex [V4NET.0.0.3] MX=7
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

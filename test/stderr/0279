@@ -73,7 +73,7 @@ routed by r3 router
   envelope to: CALLER@test.ex
   transport: t1
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -112,4 +112,4 @@ parse_forward_list: :fail: matched *@+funny_domains
 extract item: :fail: matched *@+funny_domains
 rr1 router forced address failure
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>
