@@ -601,5 +601,11 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 ssize_t
 readn(int fd, void *buffer, size_t len);
 
+/* Some platforms (FreeBSD, OpenBSD, Solaris) do not seem to define this */
+
+#ifndef POLLRDHUP
+# define POLLRDHUP (POLLIN | POLLHUP)
+#endif
+
 #endif
 /* End of exim.h */
