@@ -412,7 +412,7 @@ extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
-extern void    smtp_proxy_tls(uschar *, size_t, int, int);
+extern void    smtp_proxy_tls(uschar *, size_t, int *, int);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);

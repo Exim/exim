@@ -8507,14 +8507,10 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
       goto fail;
 
     else if (pid == 0)		/* child: fork again to totally disconnect */
-      {
-      close(pfd[1]);
-      if ((pid = fork()))
-	_exit(pid < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
-      smtp_proxy_tls(big_buffer, big_buffer_size, pfd[0], 5*60);
-      exim_exit(0, US"TLS proxy");
-      }
+      /* does not return */
+      smtp_proxy_tls(big_buffer, big_buffer_size, pfd, 5*60);
 
+    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
     close(pfd[0]);
     waitpid(pid, NULL, 0);
     (void) close(channel_fd);	/* release the client socket */

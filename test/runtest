@@ -925,9 +925,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     s/^Exim version .*/Exim version x.yz ..../;
 
-    # Debugging lines for Exim terminations
+    # Debugging lines for Exim terminations and process-generation
 
     s/(?<=^>>>>>>>>>>>>>>>> Exim pid=)\d+(?= terminating)/pppp/;
+    s/^(proxy-proc \w{5}-pid) \d+$/$1 pppp/;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.
