@@ -178,6 +178,10 @@ JH/30 Fix a logging bug on aarch64: an unsafe routine was previously used for
       connection in response to HELO" was logged instead of the actual 4xx
       error for the HELO.
 
+JH/31 Fix CHUNKING code to properly flush the unwanted chunk after an error.
+      Previously only that bufferd was discarded, resulting in SYMTP command
+      desynchronisation.
+
 
 Exim version 4.89
 -----------------

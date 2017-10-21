@@ -681,8 +681,11 @@ return buf;
 void
 bdat_flush_data(void)
 {
-unsigned n = chunking_data_left;
-(void) bdat_getbuf(&n);
+while (chunking_data_left)
+{
+  unsigned n = chunking_data_left;
+  (void) bdat_getbuf(&n);
+}
 
 receive_getc = lwr_receive_getc;
 receive_getbuf = lwr_receive_getbuf;
