@@ -81,6 +81,52 @@ static uschar *used_return_path = NULL;
 
 
 /*************************************************
+*          read as much as requested             *
+*************************************************/
+
+/* The syscall read(2) doesn't always returns as much as we want. For
+several reasons it might get less. (Not talking about signals, as syscalls
+are restartable). When reading from a network or pipe connection the sender
+might send in smaller chunks, with delays between these chunks. The read(2)
+may return such a chunk.
+
+The more the writer writes and the smaller the pipe between write and read is,
+the more we get the chance of reading leass than requested. (See bug 2130)
+
+This function read(2)s until we got all the data we *requested*.
+
+Note: This function may block. Use it only if you're sure about the
+amount of data you will get.
+
+Argument:
+  fd          the file descriptor to read from
+  buffer      pointer to a buffer of size len
+  len         the requested(!) amount of bytes
+
+Returns:      the amount of bytes read
+*/
+static ssize_t
+readn(int fd, void * buffer, size_t len)
+{
+  void * next = buffer;
+  void * end = buffer + len;
+
+  while (next < end)
+    {
+    ssize_t got = read(fd, next, end - next);
+
+    /* I'm not sure if there are signals that can interrupt us,
+    for now I assume the worst */
+    if (got == -1 && errno == EINTR) continue;
+    if (got <= 0) return next - buffer;
+    next += got;
+    }
+
+  return len;
+}
+
+
+/*************************************************
 *             Make a new address item            *
 *************************************************/
 
@@ -3312,8 +3358,7 @@ while (!done)
   If we get less, we can assume the subprocess do be done and do not expect any further
   information from it. */
 
-  got = readn(fd, pipeheader, required);
-  if (got != required)
+  if ((got = readn(fd, pipeheader, required)) != required)
     {
     msg = string_sprintf("got " SSIZE_T_FMT " of %d bytes (pipeheader) "
       "from transport process %d for transport %s",
@@ -3349,8 +3394,7 @@ while (!done)
   /* Same as above, the transport process will write the bytes announced
   in a timely manner, so we can just wait for the bytes, getting less than expected
   is considered a problem of the subprocess, we do not expect anything else from it. */
-  got = readn(fd, big_buffer, required);
-  if (got != required)
+  if ((got = readn(fd, big_buffer, required)) != required)
     {
     msg = string_sprintf("got only " SSIZE_T_FMT " of " SIZE_T_FMT
       " bytes (pipedata) from transport process %d for transport %s",
