@@ -6771,11 +6771,12 @@ while (*s != 0)
         while (isspace(*sub)) sub++;
         if (*sub == '>')
           if (*outsep = *++sub) ++sub;
-          else {
+          else
+	    {
             expand_string_message = string_sprintf("output separator "
               "missing in expanding ${addresses:%s}", --sub);
             goto EXPAND_FAILED;
-          }
+            }
         parse_allow_group = TRUE;
 
         for (;;)

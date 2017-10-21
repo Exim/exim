@@ -306,11 +306,11 @@ for (i = 0; i < 5; i++)
     uschar *rest;
     uschar *s = expand_string(q);
 
-    if (s == NULL)
+    if (!s)
       {
       *errmsg = string_sprintf("Expansion of \"%s\" in %s transport failed: "
         "%s", q, tblock->name, expand_string_message);
-      return search_find_defer? DEFER : FAIL;
+      return search_find_defer ? DEFER : FAIL;
       }
 
     d = Ustrtod(s, &rest);
@@ -324,7 +324,8 @@ for (i = 0; i < 5; i++)
     else if (tolower(*rest) == 'g') { d *= 1024.0*1024.0*1024.0; rest++; }
     else if (*rest == '%' && i == 2)
       {
-      if (ob->quota_value <= 0 && !ob->maildir_use_size_file) d = 0;
+      if (ob->quota_value <= 0 && !ob->maildir_use_size_file)
+	d = 0;
       else if ((int)d < 0 || (int)d > 100)
         {
         *errmsg = string_sprintf("Invalid quota_warn_threshold percentage (%d)"
@@ -340,8 +341,8 @@ for (i = 0; i < 5; i++)
     appended. Currently only "no_check", so we can be lazy parsing it */
     if (i < 2 && Ustrstr(rest, "/no_check") == rest)
       {
-	 no_check = 1;
-	 rest += sizeof("/no_check") - 1;
+       no_check = 1;
+       rest += sizeof("/no_check") - 1;
       }
 
     while (isspace(*rest)) rest++;
@@ -359,41 +360,44 @@ for (i = 0; i < 5; i++)
   switch (i)
     {
     case 0:
-    if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4) which = US"quota";
-    ob->quota_value = (off_t)d;
-    ob->quota_no_check = no_check;
-    q = ob->quota_filecount;
-    break;
+      if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
+	which = US"quota";
+      ob->quota_value = (off_t)d;
+      ob->quota_no_check = no_check;
+      q = ob->quota_filecount;
+      break;
 
     case 1:
-    if (d >= 2.0*1024.0*1024.0*1024.0) which = US"quota_filecount";
-    ob->quota_filecount_value = (int)d;
-    ob->quota_filecount_no_check = no_check;
-    q = ob->quota_warn_threshold;
-    break;
+      if (d >= 2.0*1024.0*1024.0*1024.0)
+	which = US"quota_filecount";
+      ob->quota_filecount_value = (int)d;
+      ob->quota_filecount_no_check = no_check;
+      q = ob->quota_warn_threshold;
+      break;
 
     case 2:
     if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
-      which = US"quota_warn_threshold";
-    ob->quota_warn_threshold_value = (off_t)d;
-    q = ob->mailbox_size_string;
-    default_value = -1.0;
-    break;
+	which = US"quota_warn_threshold";
+      ob->quota_warn_threshold_value = (off_t)d;
+      q = ob->mailbox_size_string;
+      default_value = -1.0;
+      break;
 
     case 3:
-    if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
-      which = US"mailbox_size";;
-    ob->mailbox_size_value = (off_t)d;
-    q = ob->mailbox_filecount_string;
-    break;
+      if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
+	which = US"mailbox_size";;
+      ob->mailbox_size_value = (off_t)d;
+      q = ob->mailbox_filecount_string;
+      break;
 
     case 4:
-    if (d >= 2.0*1024.0*1024.0*1024.0) which = US"mailbox_filecount";
-    ob->mailbox_filecount_value = (int)d;
-    break;
+      if (d >= 2.0*1024.0*1024.0*1024.0)
+	which = US"mailbox_filecount";
+      ob->mailbox_filecount_value = (int)d;
+      break;
     }
 
-  if (which != NULL)
+  if (which)
     {
     *errmsg = string_sprintf("%s value %.10g is too large (overflow) in "
       "%s transport", which, d, tblock->name);
@@ -575,12 +579,12 @@ else if (ob->dirname == NULL && !ob->maildir_format && !ob->mailstore_format)
 driver options. Only one of body_only and headers_only can be set. */
 
 ob->options |=
-  (tblock->body_only? topt_no_headers : 0) |
-  (tblock->headers_only? topt_no_body : 0) |
-  (tblock->return_path_add? topt_add_return_path : 0) |
-  (tblock->delivery_date_add? topt_add_delivery_date : 0) |
-  (tblock->envelope_to_add? topt_add_envelope_to : 0) |
-  ((ob->use_crlf || ob->mbx_format)? topt_use_crlf : 0);
+  (tblock->body_only ? topt_no_headers : 0) |
+  (tblock->headers_only ? topt_no_body : 0) |
+  (tblock->return_path_add ? topt_add_return_path : 0) |
+  (tblock->delivery_date_add ? topt_add_delivery_date : 0) |
+  (tblock->envelope_to_add ? topt_add_envelope_to : 0) |
+  ((ob->use_crlf || ob->mbx_format) ? topt_use_crlf : 0);
 }
 
 
@@ -892,7 +896,7 @@ if (dofcntl)
 #ifndef NO_FLOCK
 if (doflock && (yield >= 0))
   {
-  int flocktype = (fcntltype == F_WRLCK)? LOCK_EX : LOCK_SH;
+  int flocktype = (fcntltype == F_WRLCK) ? LOCK_EX : LOCK_SH;
   if (flocktime > 0)
     {
     alarm(flocktime);
@@ -1271,7 +1275,7 @@ BOOL wait_for_tick = FALSE;
 uid_t uid = geteuid();     /* See note above */
 gid_t gid = getegid();
 int mbformat;
-int mode = (addr->mode > 0)? addr->mode : ob->mode;
+int mode = (addr->mode > 0) ? addr->mode : ob->mode;
 off_t saved_size = -1;
 off_t mailbox_size = ob->mailbox_size_value;
 int mailbox_filecount = ob->mailbox_filecount_value;
@@ -1349,7 +1353,7 @@ if ((ob->maildir_format || ob->mailstore_format) && !isdirectory)
   addr->transport_return = PANIC;
   addr->message = string_sprintf("mail%s_format requires \"directory\" "
     "to be specified for the %s transport",
-    ob->maildir_format? "dir" : "store", tblock->name);
+    ob->maildir_format ? "dir" : "store", tblock->name);
   return FALSE;
   }
 
@@ -1389,10 +1393,10 @@ if (isdirectory)
   {
   mbformat =
   #ifdef SUPPORT_MAILDIR
-    (ob->maildir_format)? mbf_maildir :
+    (ob->maildir_format) ? mbf_maildir :
   #endif
   #ifdef SUPPORT_MAILSTORE
-    (ob->mailstore_format)? mbf_mailstore :
+    (ob->mailstore_format) ? mbf_mailstore :
   #endif
     mbf_smail;
   }
@@ -1400,7 +1404,7 @@ else
   {
   mbformat =
   #ifdef SUPPORT_MBX
-    (ob->mbx_format)? mbf_mbx :
+    (ob->mbx_format) ? mbf_mbx :
   #endif
     mbf_unix;
   }
@@ -1413,22 +1417,22 @@ DEBUG(D_transport)
     "  %s=%s format=%s\n  message_prefix=%s\n  message_suffix=%s\n  "
     "maildir_use_size_file=%s\n",
     mode, ob->notify_comsat, ob->quota_value,
-    ob->quota_no_check? " (no_check)" : "",
-    ob->quota_filecount_no_check? " (no_check_filecount)" : "",
+    ob->quota_no_check ? " (no_check)" : "",
+    ob->quota_filecount_no_check ? " (no_check_filecount)" : "",
     ob->quota_warn_threshold_value,
-    ob->quota_warn_threshold_is_percent? "%" : "",
-    isdirectory? "directory" : "file",
+    ob->quota_warn_threshold_is_percent ? "%" : "",
+    isdirectory ? "directory" : "file",
     path, mailbox_formats[mbformat],
-    (ob->message_prefix == NULL)? US"null" : string_printing(ob->message_prefix),
-    (ob->message_suffix == NULL)? US"null" : string_printing(ob->message_suffix),
-    (ob->maildir_use_size_file)? "yes" : "no");
+    (ob->message_prefix == NULL) ? US"null" : string_printing(ob->message_prefix),
+    (ob->message_suffix == NULL) ? US"null" : string_printing(ob->message_suffix),
+    (ob->maildir_use_size_file) ? "yes" : "no");
 
   if (!isdirectory) debug_printf("  locking by %s%s%s%s%s\n",
-    ob->use_lockfile? "lockfile " : "",
-    ob->use_mbx_lock? "mbx locking (" : "",
-    ob->use_fcntl? "fcntl " : "",
-    ob->use_flock? "flock" : "",
-    ob->use_mbx_lock? ")" : "");
+    ob->use_lockfile ? "lockfile " : "",
+    ob->use_mbx_lock ? "mbx locking (" : "",
+    ob->use_fcntl ? "fcntl " : "",
+    ob->use_flock ? "flock" : "",
+    ob->use_mbx_lock ? ")" : "");
   }
 
 /* If the -N option is set, can't do any more. */
@@ -1740,7 +1744,7 @@ if (!isdirectory)
     int sleep_before_retry = TRUE;
     file_opened = FALSE;
 
-    if((use_lstat? Ulstat(filename, &statbuf) : Ustat(filename, &statbuf)) != 0)
+    if((use_lstat ? Ulstat(filename, &statbuf) : Ustat(filename, &statbuf)) != 0)
       {
       /* Let's hope that failure to stat (other than non-existence) is a
       rare event. */
@@ -1787,7 +1791,7 @@ if (!isdirectory)
       get a shared lock. */
 
       fd = Uopen(filename, O_RDWR | O_APPEND | O_CREAT |
-        (use_lstat? O_EXCL : 0), mode);
+        (use_lstat ? O_EXCL : 0), mode);
       if (fd < 0)
         {
         if (errno == EEXIST) continue;
@@ -1836,7 +1840,7 @@ if (!isdirectory)
         addr->basic_errno = ERRNO_BADUGID;
         addr->message = string_sprintf("mailbox %s%s has wrong uid "
           "(%ld != %ld)", filename,
-          islink? " (symlink)" : "",
+          islink ? " (symlink)" : "",
           (long int)(statbuf.st_uid), (long int)uid);
         goto RETURN;
         }
@@ -1847,7 +1851,7 @@ if (!isdirectory)
         {
         addr->basic_errno = ERRNO_BADUGID;
         addr->message = string_sprintf("mailbox %s%s has wrong gid (%d != %d)",
-          filename, islink? " (symlink)" : "", statbuf.st_gid, gid);
+          filename, islink ? " (symlink)" : "", statbuf.st_gid, gid);
         goto RETURN;
         }
 
@@ -1858,7 +1862,7 @@ if (!isdirectory)
         {
         addr->basic_errno = ERRNO_NOTREGULAR;
         addr->message = string_sprintf("mailbox %s%s has too many links (%d)",
-          filename, islink? " (symlink)" : "", statbuf.st_nlink);
+          filename, islink ? " (symlink)" : "", statbuf.st_nlink);
         goto RETURN;
 
         }
@@ -1884,7 +1888,7 @@ if (!isdirectory)
         {
         addr->basic_errno = ERRNO_NOTREGULAR;
         addr->message = string_sprintf("mailbox %s is not a regular file%s",
-          filename, ob->allow_fifo? " or named pipe" : "");
+          filename, ob->allow_fifo ? " or named pipe" : "");
         goto RETURN;
         }
 
@@ -1933,7 +1937,7 @@ if (!isdirectory)
       a FIFO is opened WRONLY + NDELAY so that it fails if there is no process
       reading the pipe. */
 
-      fd = Uopen(filename, isfifo? (O_WRONLY|O_NDELAY) : (O_RDWR|O_APPEND),
+      fd = Uopen(filename, isfifo ? (O_WRONLY|O_NDELAY) : (O_RDWR|O_APPEND),
         mode);
       if (fd < 0)
         {
@@ -1994,7 +1998,7 @@ if (!isdirectory)
         addr->basic_errno = ERRNO_NOTREGULAR;
         addr->message =
           string_sprintf("opened mailbox %s is no longer a %s", filename,
-            isfifo? "named pipe" : "regular file");
+            isfifo ? "named pipe" : "regular file");
         addr->special_action = SPECIAL_FREEZE;
         goto RETURN;
         }
@@ -2432,7 +2436,7 @@ else
         {
         uschar *s = path + check_path_len;
         while (*s == '/') s++;
-        s = (*s == 0)? US "new" : string_sprintf("%s/new", s);
+        s = (*s == 0) ? US "new" : string_sprintf("%s/new", s);
         if (pcre_exec(dir_regex, NULL, CS s, Ustrlen(s), 0, 0, NULL, 0) < 0)
           {
           disable_quota = TRUE;
@@ -2592,7 +2596,7 @@ else
       if (i >= ob->maildir_retries)
         {
         addr->message = string_sprintf ("failed to open %s (%d tr%s)",
-          filename, i, (i == 1)? "y" : "ies");
+          filename, i, (i == 1) ? "y" : "ies");
         addr->basic_errno = errno;
         if (errno == errno_quota || errno == ENOSPC)
           addr->user_message = US"mailbox is full";
@@ -2801,12 +2805,12 @@ if (!disable_quota && ob->quota_value > 0)
     debug_printf("Exim quota = " OFF_T_FMT " old size = " OFF_T_FMT
       " this message = %d (%sincluded)\n",
       ob->quota_value, mailbox_size, message_size,
-      ob->quota_is_inclusive? "" : "not ");
+      ob->quota_is_inclusive ? "" : "not ");
     debug_printf("  file count quota = %d count = %d\n",
       ob->quota_filecount_value, mailbox_filecount);
     }
 
-  if (mailbox_size + (ob->quota_is_inclusive? message_size:0) > ob->quota_value)
+  if (mailbox_size + (ob->quota_is_inclusive ? message_size:0) > ob->quota_value)
     {
 
       if (!ob->quota_no_check)
@@ -2898,7 +2902,7 @@ if (yield == OK && ob->use_bsmtp)
     transport_newlines++;
     for (a = addr; a != NULL; a = a->next)
       {
-      address_item *b = testflag(a, af_pfr)? a->parent: a;
+      address_item *b = testflag(a, af_pfr) ? a->parent: a;
       if (!transport_write_string(fd, "RCPT TO:<%s>%s\n",
         transport_rcpt_address(b, tblock->rcpt_include_affixes), cr))
           { yield = DEFER; break; }
@@ -3078,7 +3082,7 @@ if (yield != OK)
         }
       else   /* Want a repeatable time when in test harness */
         {
-        addr->more_errno = running_in_test_harness? 10 :
+        addr->more_errno = running_in_test_harness ? 10 :
           (int)time(NULL) - statbuf.st_mtime;
         }
       DEBUG(D_transport)
@@ -3103,8 +3107,8 @@ if (yield != OK)
     addr->user_message = US"mailbox is full";
     DEBUG(D_transport) debug_printf("System quota exceeded for %s%s%s\n",
       dataname,
-      isdirectory? US"" : US": time since file read = ",
-      isdirectory? US"" : readconf_printtime(addr->more_errno));
+      isdirectory ? US"" : US": time since file read = ",
+      isdirectory ? US"" : readconf_printtime(addr->more_errno));
     }
 
   /* Handle Exim's own quota-imposition */
@@ -3117,8 +3121,8 @@ if (yield != OK)
     addr->user_message = US"mailbox is full";
     DEBUG(D_transport) debug_printf("Exim%s quota exceeded for %s%s%s\n",
       filecount_msg, dataname,
-      isdirectory? US"" : US": time since file read = ",
-      isdirectory? US"" : readconf_printtime(addr->more_errno));
+      isdirectory ? US"" : US": time since file read = ",
+      isdirectory ? US"" : readconf_printtime(addr->more_errno));
     }
 
   /* Handle a process failure while writing via a filter; the return
@@ -3129,7 +3133,7 @@ if (yield != OK)
     yield = PANIC;
     addr->message = string_sprintf("transport filter process failed (%d) "
       "while writing to %s%s", addr->more_errno, dataname,
-      (addr->more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
+      (addr->more_errno == EX_EXECFAILED) ? ": unable to execute command" : "");
     }
 
   /* Handle failure to expand header changes */
@@ -3203,7 +3207,7 @@ else
       {
       addr->basic_errno = errno;
       addr->message = string_sprintf("close() error for %s",
-        (ob->mailstore_format)? dataname : filename);
+        (ob->mailstore_format) ? dataname : filename);
       yield = DEFER;
       }
 

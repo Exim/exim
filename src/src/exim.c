@@ -3196,10 +3196,10 @@ for (i = 1; i < argc; i++)
     which sets the host protocol and host name */
 
     if (*argrest == 0)
-      {
-      if (i+1 < argc) argrest = argv[++i]; else
+      if (i+1 < argc)
+	argrest = argv[++i];
+      else
         { badarg = TRUE; break; }
-      }
 
     if (*argrest != 0)
       {
@@ -3213,9 +3213,7 @@ for (i = 1; i < argc; i++)
 
       hn = Ustrchr(argrest, ':');
       if (hn == NULL)
-        {
         received_protocol = argrest;
-        }
       else
         {
 	int old_pool = store_pool;

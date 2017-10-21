@@ -3165,7 +3165,7 @@ else
         else
           sprintf(CS sx.buffer, "%.500s\n", addr->unique);
 
-        DEBUG(D_deliver) debug_printf("S:journalling %s", sx.buffer);
+        DEBUG(D_deliver) debug_printf("S:journalling %s\n", sx.buffer);
         len = Ustrlen(CS sx.buffer);
         if (write(journal_fd, sx.buffer, len) != len)
           log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "

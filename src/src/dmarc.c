@@ -79,12 +79,12 @@ return eblock;
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
 
-int dmarc_init()
+int
+dmarc_init()
 {
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
-char *tld_file = (dmarc_tld_file == NULL) ?
-		 DMARC_TLD_FILE : CS dmarc_tld_file;
+char *tld_file = dmarc_tld_file ? CS dmarc_tld_file : DMARC_TLD_FILE;
 
 /* Set some sane defaults.  Also clears previous results when
  * multiple messages in one connection. */
@@ -505,11 +505,11 @@ if (!dmarc_history_file)
 history_file_fd = log_create(dmarc_history_file);
 
 if (history_file_fd < 0)
-{
+  {
   log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
 			   dmarc_history_file);
   return DMARC_HIST_FILE_ERR;
-}
+  }
 
 /* Generate the contents of the history file */
 history_buffer = string_sprintf(
@@ -575,31 +575,24 @@ else
 return DMARC_HIST_OK;
 }
 
+
 uschar *
 dmarc_exim_expand_query(int what)
 {
 if (dmarc_disable_verify || !dmarc_pctx)
   return dmarc_exim_expand_defaults(what);
 
-switch(what)
-  {
-  case DMARC_VERIFY_STATUS:
-    return(dmarc_status);
-  default:
-    return US"";
-  }
+if (what == DMARC_VERIFY_STATUS)
+  return dmarc_status;
+return US"";
 }
 
 uschar *
 dmarc_exim_expand_defaults(int what)
 {
-switch(what)
-  {
-  case DMARC_VERIFY_STATUS:
-    return dmarc_disable_verify ?  US"off" : US"none";
-  default:
-    return US"";
-  }
+if (what == DMARC_VERIFY_STATUS)
+  return dmarc_disable_verify ?  US"off" : US"none";
+return US"";
 }
 
 uschar *
