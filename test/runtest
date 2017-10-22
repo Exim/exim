@@ -1083,9 +1083,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     if (s/(with \$received_protocol)\}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
       {
       $_ .= <IN>;
-      s/[ ╎]+\}\}(?=\(Exim )/\}\} /;
+      s/[\s╎]+\}\}(?=\(Exim )/\}\} /;
       }
-    if (/^  condition: def:tls_cipher$/)
+    if (/^ ├──condition: def:tls_cipher$/)
       {
       <IN>; <IN>; <IN>; <IN>; <IN>; <IN>;
       <IN>; <IN>; <IN>; <IN>; <IN>; next;
