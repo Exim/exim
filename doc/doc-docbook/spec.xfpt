@@ -24147,7 +24147,7 @@ This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
 BDAT will not be used in conjunction with a transport filter.
 
-.option hosts_try_fastopen smtp "host list!!" unset
+.option hosts_try_fastopen smtp "host list&!!" unset
 .cindex "fast open, TCP" "enabling, in client"
 .cindex "TCP Fast Open" "enabling, in client"
 .cindex "RFC 7413" "TCP Fast Open"
@@ -24163,6 +24163,9 @@ as the initiator must present a cookie in the SYN segment.
 
 On (at least some) current Linux distributions the facility must be enabled
 in the kernel by the sysadmin before the support is usable.
+There is no option for control of the server side; if the system supports
+it it is always enebled.  Note that legthy operations in the connect ACL,
+such as DNSBL lookups, will still delay the emission of the SMTP banner.
 
 .option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
