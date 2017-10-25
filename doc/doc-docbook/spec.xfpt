@@ -23806,7 +23806,7 @@ of the message. Its value must not be zero. See also &%final_timeout%&.
 .option dkim_private_key smtp string&!! unset
 .option dkim_canon smtp string&!! unset
 .option dkim_strict smtp string&!! unset
-.option dkim_sign_headers smtp string&!! unset
+.option dkim_sign_headers smtp string&!! per RFC
 .option dkim_hash smtp string&!! sha256
 .option dkim_identity smtp string&!! unset
 DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
@@ -38591,11 +38591,13 @@ either "1" or "true", Exim will defer. Otherwise Exim will send the message
 unsigned. You can use the &%$dkim_domain%& and &%$dkim_selector%& expansion
 variables here.
 
-.option dkim_sign_headers smtp string&!! unset
-If set, this option must expand to (or be specified as) a colon-separated
+.option dkim_sign_headers smtp string&!! see below
+If set, this option must expand to a colon-separated
 list of header names. Headers with these names will be included in the message
 signature.
 When unspecified, the header names recommended in RFC4871 will be used.
+The default list is available for the expansion in the macro
+"_DKIM_SIGN_HEADERS".
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECID514"

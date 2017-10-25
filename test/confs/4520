@@ -9,7 +9,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
+acl_smtp_rcpt = accept logwrite = macro: _DKIM_SIGN_HEADERS
 acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length h=$dkim_headernames
 
 DDIR=DIR/aux-fixed/dkim

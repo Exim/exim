@@ -12,7 +12,20 @@
 
 #ifndef DISABLE_DKIM
 
-#include "pdkim/pdkim.h"
+# include "pdkim/pdkim.h"
+
+# ifdef MACRO_PREDEF
+#  include "macro_predef.h"
+
+void
+dkim_params(void)
+{
+builtin_macro_create_var(US"_DKIM_SIGN_HEADERS", US PDKIM_DEFAULT_SIGN_HEADERS);
+}
+# else	/*!MACRO_PREDEF*/
+
+
+
 
 int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
@@ -661,4 +674,5 @@ expand_bad:
   goto bad;
 }
 
-#endif
+# endif	/*!MACRO_PREDEF*/
+#endif	/*!DISABLE_DKIM*/

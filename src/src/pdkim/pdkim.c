@@ -51,14 +51,6 @@
 #define PDKIM_MAX_HEADERS           512
 #define PDKIM_MAX_BODY_LINE_LEN     16384
 #define PDKIM_DNS_TXT_MAX_NAMELEN   1024
-#define PDKIM_DEFAULT_SIGN_HEADERS "From:Sender:Reply-To:Subject:Date:"\
-                             "Message-ID:To:Cc:MIME-Version:Content-Type:"\
-                             "Content-Transfer-Encoding:Content-ID:"\
-                             "Content-Description:Resent-Date:Resent-From:"\
-                             "Resent-Sender:Resent-To:Resent-Cc:"\
-                             "Resent-Message-ID:In-Reply-To:References:"\
-                             "List-Id:List-Help:List-Unsubscribe:"\
-                             "List-Subscribe:List-Post:List-Owner:List-Archive"
 
 /* -------------------------------------------------------------------------- */
 struct pdkim_stringlist {
