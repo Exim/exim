@@ -276,7 +276,9 @@ options_auths();
 static void
 params(void)
 {
+#ifndef DISABLE_DKIM
 dkim_params();
+#endif
 }
 
 
