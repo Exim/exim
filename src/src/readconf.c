@@ -12,7 +12,7 @@ implementation of the conditional .ifdef etc. */
 #include "exim.h"
 
 #ifdef MACRO_PREDEF
-# include "macro_predef.h"
+# include "predef.h"
 #endif
 
 static uschar * syslog_facility_str;

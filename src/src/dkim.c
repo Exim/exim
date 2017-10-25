@@ -15,7 +15,7 @@
 # include "pdkim/pdkim.h"
 
 # ifdef MACRO_PREDEF
-#  include "macro_predef.h"
+#  include "predef.h"
 
 void
 dkim_params(void)
