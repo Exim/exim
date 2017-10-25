@@ -935,6 +935,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     s/\b(gethostbyname2?|\bgetipnodebyname)(\(af=inet\))?/get[host|ipnode]byname[2]/;
 
+    # we don't care what TZ enviroment the testhost was running
+    next if /^Reset TZ to/;
+
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
     next if /GnuTLS runtime version: \d+[\.\d]+$/;
