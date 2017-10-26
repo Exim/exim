@@ -1175,8 +1175,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
 
     # openssl version variances
-    s/(TLS error on connection .*: error:)[0-9A-F]{8}(:system library):func\(4095\):(No such file or
- directory)$/$1xxxxxxxx$2:fopen:$3/;
+    s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;
     }
 
   # ======== All files other than stderr ========
