@@ -145,7 +145,7 @@ int optionlist_routers_size = nelem(optionlist_routers);
 
 #ifdef MACRO_PREDEF
 
-# include "predef.h"
+# include "macro_predef.h"
 
 void
 options_routers(void)

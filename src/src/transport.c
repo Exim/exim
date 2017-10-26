@@ -90,7 +90,7 @@ int optionlist_transports_size = nelem(optionlist_transports);
 
 #ifdef MACRO_PREDEF
 
-# include "predef.h"
+# include "macro_predef.h"
 
 void
 options_transports(void)

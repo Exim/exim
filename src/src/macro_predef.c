@@ -9,7 +9,7 @@
 included in the main Exim build */
 
 #include "exim.h"
-#include "predef.h"
+#include "macro_predef.h"
 
 unsigned mp_index = 0;
 

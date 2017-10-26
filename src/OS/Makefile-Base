@@ -123,39 +123,109 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 
 # Build the builtin-macros data struct
 
-MACRO_HSRC = predef.h os.h globals.h config.h \
+MACRO_HSRC = macro_predef.h os.h globals.h config.h \
 	routers/accept.h routers/dnslookup.h routers/ipliteral.h \
 	routers/iplookup.h routers/manualroute.h routers/queryprogram.h \
 	routers/redirect.h
 
-OBJ_MACRO_PLAIN = macro-predef.o \
+OBJ_MACRO = macro_predef.o \
 	macro-globals.o macro-readconf.o macro-route.o macro-transport.o macro-drtables.o \
-	macro-dkim.o
-OBJ_MACRO_TP = \
 	macro-appendfile.o macro-autoreply.o macro-lmtp.o macro-pipe.o macro-queuefile.o \
-	macro-smtp.o
-OBJ_MACRO_RT = \
-	macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
-	macro-manualroute.o macro-queryprogram.o macro-redirect.o
-OBJ_MACRO_AU = \
+	macro-smtp.o macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
+	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
 	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
-	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-tls.o
+	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-tls.o\
+	macro-dkim.o
 
-OBJ_MACRO = $(OBJ_MACRO_PLAIN) $(OBJ_MACRO_TP) $(OBJ_MACRO_RT) $(OBJ_MACRO_AU)
 $(OBJ_MACRO):	$(MACRO_HSRC)
 
-$(OBJ_MACRO_PLAIN):	macro-%.o : %.c
-	@echo "$(CC) -DMACRO_PREDEF $<"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
-$(OBJ_MACRO_TP):	macro-%.o : transports/%.c
-	@echo "$(CC) -DMACRO_PREDEF $<"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
-$(OBJ_MACRO_RT):	macro-%.o : routers/%.c
-	@echo "$(CC) -DMACRO_PREDEF $<"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
-$(OBJ_MACRO_AU):	macro-%.o : auths/%.c
-	@echo "$(CC) -DMACRO_PREDEF $<"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ $<
+macro_predef.o :	macro_predef.c
+	@echo "$(CC) -DMACRO_PREDEF macro_predef.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ macro_predef.c
+macro-globals.o :	globals.c
+	@echo "$(CC) -DMACRO_PREDEF globals.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ globals.c
+macro-readconf.o :	readconf.c
+	@echo "$(CC) -DMACRO_PREDEF readconf.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ readconf.c
+macro-route.o :		route.c
+	@echo "$(CC) -DMACRO_PREDEF route.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ route.c
+macro-transport.o:	transport.c
+	@echo "$(CC) -DMACRO_PREDEF transport.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transport.c
+macro-drtables.o :	drtables.c
+	@echo "$(CC) -DMACRO_PREDEF drtables.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ drtables.c
+macro-appendfile.o :	transports/appendfile.c
+	@echo "$(CC) -DMACRO_PREDEF transports/appendfile.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/appendfile.c
+macro-autoreply.o :	transports/autoreply.c
+	@echo "$(CC) -DMACRO_PREDEF transports/autoreply.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/autoreply.c
+macro-lmtp.o:		transports/lmtp.c
+	@echo "$(CC) -DMACRO_PREDEF transports/lmtp.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/lmtp.c
+macro-pipe.o :		transports/pipe.c
+	@echo "$(CC) -DMACRO_PREDEF transports/pipe.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/pipe.c
+macro-queuefile.o :	transports/queuefile.c
+	@echo "$(CC) -DMACRO_PREDEF transports/queuefile.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/queuefile.c
+macro-smtp.o :		transports/smtp.c
+	@echo "$(CC) -DMACRO_PREDEF transports/smtp.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ transports/smtp.c
+macro-accept.o :	routers/accept.c
+	@echo "$(CC) -DMACRO_PREDEF routers/accept.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/accept.c
+macro-dnslookup.o :	routers/dnslookup.c
+	@echo "$(CC) -DMACRO_PREDEF routers/dnslookup.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/dnslookup.c
+macro-ipliteral.o :	routers/ipliteral.c
+	@echo "$(CC) -DMACRO_PREDEF routers/ipliteral.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/ipliteral.c
+macro-iplookup.o :	routers/iplookup.c
+	@echo "$(CC) -DMACRO_PREDEF routers/iplookup.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/iplookup.c
+macro-manualroute.o :	routers/manualroute.c
+	@echo "$(CC) -DMACRO_PREDEF routers/manualroute.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/manualroute.c
+macro-queryprogram.o :	routers/queryprogram.c
+	@echo "$(CC) -DMACRO_PREDEF routers/queryprogram.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/queryprogram.c
+macro-redirect.o :	routers/redirect.c
+	@echo "$(CC) -DMACRO_PREDEF routers/redirect.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ routers/redirect.c
+macro-auth-spa.o :	auths/auth-spa.c
+	@echo "$(CC) -DMACRO_PREDEF auths/auth-spa.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/auth-spa.c
+macro-cram_md5.o :	auths/cram_md5.c
+	@echo "$(CC) -DMACRO_PREDEF auths/cram_md5.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/cram_md5.c
+macro-cyrus_sasl.o :	auths/cyrus_sasl.c
+	@echo "$(CC) -DMACRO_PREDEF auths/cyrus_sasl.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/cyrus_sasl.c
+macro-dovecot.o:	auths/dovecot.c
+	@echo "$(CC) -DMACRO_PREDEF auths/dovecot.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/dovecot.c
+macro-gsasl_exim.o :	auths/gsasl_exim.c
+	@echo "$(CC) -DMACRO_PREDEF auths/gsasl_exim.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/gsasl_exim.c
+macro-heimdal_gssapi.o:	auths/heimdal_gssapi.c
+	@echo "$(CC) -DMACRO_PREDEF auths/heimdal_gssapi.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/heimdal_gssapi.c
+macro-plaintext.o :	auths/plaintext.c
+	@echo "$(CC) -DMACRO_PREDEF auths/plaintext.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/plaintext.c
+macro-spa.o :		auths/spa.c
+	@echo "$(CC) -DMACRO_PREDEF auths/spa.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/spa.c
+macro-tls.o:		auths/tls.c
+	@echo "$(CC) -DMACRO_PREDEF auths/tls.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/tls.c
+macro-dkim.o:		dkim.c
+	@echo "$(CC) -DMACRO_PREDEF dkim.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ dkim.c
 
 macro_predef: $(OBJ_MACRO)
 	@echo "$(LNCC) -o $@"
