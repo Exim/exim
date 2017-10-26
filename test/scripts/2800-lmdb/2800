@@ -1,11 +1,30 @@
 # lmdb lookup
+#
+# prep a test database to work with
+perl -e 'chdir "DIR/aux-var"; exec "mdb_load -n DIR/aux-var/TESTNUM.mdb";'
+VERSION=3
+format=print
+type=btree
+mapsize=10485760
+maxreaders=126
+HEADER=END
+ first
+ data for first
+ second
+ A=1 B=2
+ third
+ A1:B2:C3
+DATA=END
+****
+#
+#
 exim -be
-${lookup{first}lmdb{DIR/aux-fixed/TESTNUM.mdb}}
-${lookup{first}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}fail}
-${lookup{fail}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}{failure value}}
-${lookup{fail}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}fail}
-${lookup{second}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}fail}
-${extract{A}{${lookup{second}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}fail}}}
-${extract{B}{${lookup{second}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}fail}}}
-${extract{C}{${lookup{second}lmdb{DIR/aux-fixed/TESTNUM.mdb}{$value}fail}}{$value}fail}
+${lookup{first}lmdb{DIR/aux-var/TESTNUM.mdb}}
+${lookup{first}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}fail}
+${lookup{fail}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}{failure value}}
+${lookup{fail}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}fail}
+${lookup{second}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}fail}
+${extract{A}{${lookup{second}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}fail}}}
+${extract{B}{${lookup{second}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}fail}}}
+${extract{C}{${lookup{second}lmdb{DIR/aux-var/TESTNUM.mdb}{$value}fail}}{$value}fail}
 ****
