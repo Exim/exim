@@ -1,4 +1,5 @@
 # Make file for building the pdkim library.
+# Copyright (c) The Exim Maintainers 2017
 
 OBJ = pdkim.o signing.o
 

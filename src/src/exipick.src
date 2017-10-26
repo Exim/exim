@@ -1,4 +1,7 @@
 #!PERL_COMMAND
+# Copyright (c) 2017 University of Cambridge.
+# See the file NOTICE for conditions of use and distribution.
+
 
 # This variables should be set by the building process
 my $spool = 'SPOOL_DIRECTORY';	# may be overridden later

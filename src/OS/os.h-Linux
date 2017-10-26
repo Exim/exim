@@ -1,4 +1,7 @@
 /* Exim: OS-specific C header file for Linux */
+/* Copyright (c) University of Cambridge 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
 
 /* Some old systems we've received bug-reports for have a <limits.h> which
 does not pull in <features.h>.  Best to just pull it in now and have done

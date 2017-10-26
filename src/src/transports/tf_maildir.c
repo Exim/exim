@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2014 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions in support of the use of maildirsize files for handling quotas in

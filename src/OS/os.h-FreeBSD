@@ -1,4 +1,7 @@
 /* Exim: OS-specific C header file for FreeBSD */
+/* Copyright (c) University of Cambridge 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
 
 #include <sys/types.h>
 

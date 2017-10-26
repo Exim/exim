@@ -1,4 +1,7 @@
 /* Exim: OS-specific C header file for OpenBSD */
+/* Copyright (c) University of Cambridge 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
 
 #define HAVE_BSD_GETLOADAVG
 #define HAVE_MMAP

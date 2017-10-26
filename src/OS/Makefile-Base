@@ -5,7 +5,7 @@
 # optional, Local/* files at the front of this file, to create Makefile in the
 # build directory.
 #
-# Copyright (c) The Exim Maintainers 2016
+# Copyright (c) The Exim Maintainers 2017
 
 SHELL      = $(MAKE_SHELL)
 SCRIPTS    = ../scripts

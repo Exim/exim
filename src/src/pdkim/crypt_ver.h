@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2016 */
+/* Copyright (c) Jeremy Harris 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Signing and hashing routine selection for PDKIM */

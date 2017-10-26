@@ -1,3 +1,6 @@
+/* Copyright (c) University of Cambridge 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
 #include "exim.h"
 
 #ifdef SUPPORT_I18N
