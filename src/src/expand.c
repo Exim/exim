@@ -2821,18 +2821,21 @@ switch(cond_type)
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
-      DEBUG(D_expand) debug_printf_indent("condition: %s\n", name);
+      DEBUG(D_expand) debug_printf_indent("condition: %s  item: %s\n", name, sub[0]);
 
       tempcond = FALSE;
       compare = cond_type == ECOND_INLISTI
         ? strcmpic : (int (*)(const uschar *, const uschar *)) strcmp;
 
       while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)))
+	{
+	DEBUG(D_expand) debug_printf_indent(" compare %s\n", iterate_item);
         if (compare(sub[0], iterate_item) == 0)
           {
           tempcond = TRUE;
           break;
           }
+	}
       iterate_item = save_iterate_item;
       }
 
