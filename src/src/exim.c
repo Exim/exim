@@ -3876,7 +3876,7 @@ else
   }
 
 /* At this point, we know if the user is privileged and some command-line
-options become possibly imperssible, depending upon the configuration file. */
+options become possibly impermissible, depending upon the configuration file. */
 
 if (checking && commandline_checks_require_admin && !admin_user) {
   fprintf(stderr, "exim: those command-line flags are set to require admin\n");
