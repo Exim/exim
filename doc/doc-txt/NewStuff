@@ -61,6 +61,9 @@ Version 4.90
 15. TCP Fast Open used, with data-on-SYN, for client SMTP via SOCKS5 proxy,
     for ${readsocket } expansions, and for ClamAV.
 
+16. The "-be" expansion test mode now supports macros.  Macros are expanded
+    in test lines, and new macros can be defined.
+
 
 Version 4.89
 ------------

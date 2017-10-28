@@ -1458,6 +1458,39 @@ return TRUE;
 
 
 /*************************************************
+*          Expansion testing			 *
+*************************************************/
+
+/* Expand and print one item, doing macro-processing.
+
+Arguments:
+  item		line for expansion
+*/
+
+static void
+expansion_test_line(uschar * line)
+{
+int len;
+BOOL dummy_macexp;
+
+Ustrncpy(big_buffer, line, big_buffer_size);
+big_buffer[big_buffer_size-1] = '\0';
+len = Ustrlen(big_buffer);
+
+(void) macros_expand(0, &len, &dummy_macexp);
+
+if (isupper(big_buffer[0]))
+  {
+  if (macro_read_assignment(big_buffer))
+    printf("Defined macro '%s'\n", mlast->name);
+  }
+else
+  if ((line = expand_string(big_buffer))) printf("%s\n", CS line);
+  else printf("Failed: %s\n", expand_string_message);
+}
+
+
+/*************************************************
 *          Entry point and high-level code       *
 *************************************************/
 
@@ -4988,7 +5021,7 @@ if (expansion_test)
   /* Read a test message from a file. We fudge it up to be on stdin, saving
   stdin itself for later reading of expansion strings. */
 
-  else if (expansion_test_message != NULL)
+  else if (expansion_test_message)
     {
     int save_stdin = dup(0);
     int fd = Uopen(expansion_test_message, O_RDONLY, 0);
@@ -5008,6 +5041,10 @@ if (expansion_test)
     clearerr(stdin);               /* Required by Darwin */
     }
 
+  /* Only admin users may see config-file macros this way */
+
+  if (!admin_user) macros = mlast = NULL;
+
   /* Allow $recipients for this testing */
 
   enable_dollar_recipients = TRUE;
@@ -5015,15 +5052,8 @@ if (expansion_test)
   /* Expand command line items */
 
   if (recipients_arg < argc)
-    {
     while (recipients_arg < argc)
-      {
-      uschar *s = argv[recipients_arg++];
-      uschar *ss = expand_string(s);
-      if (ss == NULL) printf ("Failed: %s\n", expand_string_message);
-      else printf("%s\n", CS ss);
-      }
-    }
+      expansion_test_line(argv[recipients_arg++]);
 
   /* Read stdin */
 
@@ -5031,25 +5061,18 @@ if (expansion_test)
     {
     char *(*fn_readline)(const char *) = NULL;
     void (*fn_addhist)(const char *) = NULL;
+    uschar * s;
 
-    #ifdef USE_READLINE
+#ifdef USE_READLINE
     void *dlhandle = set_readline(&fn_readline, &fn_addhist);
-    #endif
+#endif
 
-    for (;;)
-      {
-      uschar *ss;
-      uschar *source = get_stdinput(fn_readline, fn_addhist);
-      if (source == NULL) break;
-      ss = expand_string(source);
-      if (ss == NULL)
-        printf ("Failed: %s\n", expand_string_message);
-      else printf("%s\n", CS ss);
-      }
+    while (s = get_stdinput(fn_readline, fn_addhist))
+      expansion_test_line(s);
 
-    #ifdef USE_READLINE
-    if (dlhandle != NULL) dlclose(dlhandle);
-    #endif
+#ifdef USE_READLINE
+    if (dlhandle) dlclose(dlhandle);
+#endif
     }
 
   /* The data file will be open after -Mset */
@@ -5060,7 +5083,7 @@ if (expansion_test)
     deliver_datafile = -1;
     }
 
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(EXIT_SUCCESS, US"main: expansion test");
   }
 
 

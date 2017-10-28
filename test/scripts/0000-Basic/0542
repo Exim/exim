@@ -7,13 +7,15 @@ Subject: The subject is not the object
 This is the body of the message. Make the line longer than any header.
 ****
 sudo exim -be -Mset $msg1
-From: $h_from:
-Subject: $h_subject:
+from: $h_from:
+subject: $h_subject:
 message_body_size=$message_body_size
 message_id=$message_id
 message_exim_id=$message_exim_id
 max_received_linelength=$max_received_linelength
 recipients=$recipients
+TESTING_MACROS=$recipients
+(TESTING_MACROS)
 ****
 exim -bs
 mail from:<userz@test.ex>
@@ -29,8 +31,8 @@ This is the body of the message. Make the line much longer than any header.
 quit
 ****
 sudo exim -be -Mset $msg2
-From: $h_from:
-Subject: $h_subject:
+from: $h_from:
+subject: $h_subject:
 message_body_size=$message_body_size
 message_id=$message_id
 message_exim_id=$message_exim_id
