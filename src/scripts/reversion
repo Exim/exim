@@ -96,7 +96,7 @@ if [ ".${SOURCE_DATE_EPOCH:-}" != "." ]; then
   # builds without it causing any problems: nothing really cares about timezone.
   # GNU date: "date -d @TS"
   # BSD date: "date -r TS"
-  exim_build_date_override="$(date -u -d "@${SOURCE_DATE_EPOCH}" "$fmt" 2>/dev/null | date -u -r "${SOURCE_DATE_EPOCH}" "$fmt" 2>/dev/null)"
+  exim_build_date_override="$(date -u -d "@${SOURCE_DATE_EPOCH}" "$fmt" 2>/dev/null || date -u -r "${SOURCE_DATE_EPOCH}" "$fmt" 2>/dev/null)"
 fi
 
 ( echo '# automatically generated file - see ../scripts/reversion'
