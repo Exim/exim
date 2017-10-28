@@ -277,7 +277,7 @@ static void
 params(void)
 {
 #ifndef DISABLE_DKIM
-dkim_params();
+params_dkim();
 #endif
 }
 

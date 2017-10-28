@@ -18,7 +18,7 @@
 #  include "macro_predef.h"
 
 void
-dkim_params(void)
+params_dkim(void)
 {
 builtin_macro_create_var(US"_DKIM_SIGN_HEADERS", US PDKIM_DEFAULT_SIGN_HEADERS);
 }
