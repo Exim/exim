@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Thanks to Paul Kelly for contributing the original code for these
@@ -13,7 +13,53 @@ functions. */
 #include "lf_functions.h"
 
 #include <mysql.h>       /* The system header */
-#include <mysql_version.h>
+
+/* We define symbols for *_VERSION_ID (numeric), *_VERSION_STR (char*)
+and *_BASE_STR (char*). It's a bit of guesswork. Especially for mariadb
+with versions before 10.2, as they do not define there there specific symbols.
+*/
+
+/* Newer (>= 10.2) MariaDB */
+#if defined                   MARIADB_VERSION_ID
+#define EXIM_MxSQL_VERSION_ID MARIADB_VERSION_ID
+
+/* MySQL defines MYSQL_VERSION_ID, and MariaDB does so */
+/* https://dev.mysql.com/doc/refman/5.7/en/c-api-server-client-versions.html */
+#elif defined                 LIBMYSQL_VERSION_ID
+#define EXIM_MxSQL_VERSION_ID LIBMYSQL_VERSION_ID
+#elif defined                 MYSQL_VERSION_ID
+#define EXIM_MxSQL_VERSION_ID MYSQL_VERSION_ID
+
+#else
+#define EXIM_MYSQL_VERSION_ID  0
+#endif
+
+/* Newer (>= 10.2) MariaDB */
+#ifdef                         MARIADB_CLIENT_VERSION_STR
+#define EXIM_MxSQL_VERSION_STR MARIADB_CLIENT_VERSION_STR
+
+/* Mysql uses MYSQL_SERVER_VERSION */
+#elif defined                  LIBMYSQL_VERSION
+#define EXIM_MxSQL_VERSION_STR LIBMYSQL_VERSION
+#elif defined                  MYSQL_SERVER_VERSION
+#define EXIM_MxSQL_VERSION_STR MYSQL_SERVER_VERSION
+
+#else
+#define EXIM_MxSQL_VERSION_STR  "unknown"
+#endif
+
+#if defined                 MARIADB_BASE_VERSION
+#define EXIM_MxSQL_BASE_STR MARIADB_BASE_VERSION
+
+#elif defined               MARIADB_PACKAGE_VERSION
+#define EXIM_MxSQL_BASE_STR "mariadb"
+
+#elif defined               MYSQL_BASE_VERSION
+#define EXIM_MxSQL_BASE_STR MYSQL_BASE_VERSION
+
+#else
+#define EXIM_MxSQL_BASE_STR  "n.A."
+#endif
 
 
 /* Structure and anchor for caching connections. */
@@ -432,10 +478,10 @@ return quoted;
 void
 mysql_version_report(FILE *f)
 {
-fprintf(f, "Library version: MySQL: Compile: %s [%s]\n"
-           "                        Runtime: %s\n",
-        MYSQL_SERVER_VERSION, MYSQL_COMPILATION_COMMENT,
-        mysql_get_client_info());
+fprintf(f, "Library version: MySQL: Compile: %lu %s [%s]\n"
+           "                        Runtime: %lu %s\n",
+        (long)EXIM_MxSQL_VERSION_ID, EXIM_MxSQL_VERSION_STR, EXIM_MxSQL_BASE_STR,
+        mysql_get_client_version(), mysql_get_client_info());
 #ifdef DYNLOOKUP
 fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
 #endif

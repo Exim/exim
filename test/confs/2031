@@ -12,7 +12,7 @@ primary_hostname = myhost.test.ex
 domainlist local_domains = test.ex : *.test.ex
 
 acl_smtp_rcpt = acl_log_sni
-log_selector = +tls_peerdn +tls_sni
+log_selector = +tls_peerdn +tls_sni +received_recipients
 remote_max_parallel = 1
 
 tls_advertise_hosts = *

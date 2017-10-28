@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -107,8 +107,8 @@ don't make the file descriptors two-way. */
 
 /* Debugging control */
 
-#define DEBUG(x)      if ((debug_selector & (x)) != 0)
-#define HDEBUG(x)     if (host_checking || (debug_selector & (x)) != 0)
+#define DEBUG(x)      if (debug_selector & (x))
+#define HDEBUG(x)     if (host_checking || (debug_selector & (x)))
 
 #define PTR_CHK(ptr) \
 do { \
@@ -224,9 +224,9 @@ enum { tod_log, tod_log_bare, tod_log_zone, tod_log_datestamp_daily,
 /* For identifying types of driver */
 
 enum {
-  DTYPE_NONE,
-  DTYPE_ROUTER,
-  DTYPE_TRANSPORT
+  EXIM_DTYPE_NONE,
+  EXIM_DTYPE_ROUTER,
+  EXIM_DTYPE_TRANSPORT
 };
 
 /* Error numbers for generating error messages when reading a message on the

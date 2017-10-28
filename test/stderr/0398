@@ -120,7 +120,7 @@ routed by r2 router
 Attempting full verification using callout
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x2
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=remote
@@ -151,7 +151,7 @@ cmd buf flush ddd bytes
   SMTP(close)>>
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x42
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
 dbfn_write: key=remote
@@ -233,7 +233,7 @@ routed by r2 router
 Attempting full verification using callout
 locking TESTSUITE/spool/db/callout.lockfile
 locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags 0x2
+EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
 returned from EXIM_DBOPEN: 0xAAAAAAAA
 opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
 dbfn_read: key=remote
@@ -262,4 +262,4 @@ SMTP>> 221 mail.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Miscellaneous string-handling functions. Some are not required for
@@ -1372,10 +1372,20 @@ while (*fp != 0)
     break;
 
     case 'p':
-    if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
-    strncpy(newformat, item_start, fp - item_start);
-    newformat[fp - item_start] = 0;
-    p += sprintf(CS p, newformat, va_arg(ap, void *));
+      {
+      void * ptr;
+      if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
+      /* sprintf() saying "(nil)" for a null pointer seems unreliable.
+      Handle it explicitly. */
+      if ((ptr = va_arg(ap, void *)))
+	{
+	strncpy(newformat, item_start, fp - item_start);
+	newformat[fp - item_start] = 0;
+	p += sprintf(CS p, newformat, ptr);
+	}
+      else
+	p += sprintf(CS p, "(nil)");
+      }
     break;
 
     /* %f format is inherently insecure if the numbers that it may be

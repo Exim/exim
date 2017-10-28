@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2015 */
+/* Copyright (c) Jeremy Harris 2015 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* SOCKS version 5 proxy, client-mode */
@@ -74,8 +74,6 @@ sob->priority =   SOCKS_PRIORITY;
 static void
 socks_option(socks_opts * sob, const uschar * opt)
 {
-const uschar * s;
-
 if (Ustrncmp(opt, "auth=", 5) == 0)
   {
   opt += 5;

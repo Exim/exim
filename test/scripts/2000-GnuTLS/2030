@@ -6,5 +6,5 @@ exim -DSERVER=server -bd -oX PORT_D
 exim CALLER@test.ex
 Test message.
 ****
-millisleep 500
+sleep 1
 killdaemon

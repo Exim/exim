@@ -3,7 +3,7 @@
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
 #
-# Copyright (c) The Exim Maintainers 2016
+# Copyright (c) The Exim Maintainers 2017
 
 test ! -d ../src && \
   echo "*** $0 should be run in a system-specific subdirectory." && \

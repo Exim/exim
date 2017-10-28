@@ -93,8 +93,8 @@ set_process_info: pppp delivering 10HmaZ-0005vi-00
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
 set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
 set_process_info: pppp running queue: waiting for children of pppp
@@ -126,4 +126,4 @@ set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 LOG: queue_run MAIN
   End queue run: pid=pppp
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

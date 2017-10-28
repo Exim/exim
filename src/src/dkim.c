@@ -12,7 +12,20 @@
 
 #ifndef DISABLE_DKIM
 
-#include "pdkim/pdkim.h"
+# include "pdkim/pdkim.h"
+
+# ifdef MACRO_PREDEF
+#  include "macro_predef.h"
+
+void
+params_dkim(void)
+{
+builtin_macro_create_var(US"_DKIM_SIGN_HEADERS", US PDKIM_DEFAULT_SIGN_HEADERS);
+}
+# else	/*!MACRO_PREDEF*/
+
+
+
 
 int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
@@ -125,7 +138,7 @@ void
 dkim_exim_verify_finish(void)
 {
 pdkim_signature * sig = NULL;
-int dkim_signers_size = 0, dkim_signers_ptr = 0, rc;
+int rc;
 gstring * g = NULL;
 const uschar * errstr;
 
@@ -172,7 +185,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 	"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 	" a=", dkim_sig_to_a_tag(sig),
-	string_sprintf(" b=%d",
+	string_sprintf(" b=" SIZE_T_FMT,
 			(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
   if ((s= sig->identity)) logmsg = string_append(logmsg, 2, " i=", s);
   if (sig->created > 0) logmsg = string_cat(logmsg,
@@ -340,7 +353,7 @@ switch (what)
 
   case DKIM_BODYLENGTH:
     return dkim_cur_sig->bodylength >= 0
-      ? string_sprintf(OFF_T_FMT, (LONGLONG_T) dkim_cur_sig->bodylength)
+      ? string_sprintf("%ld", dkim_cur_sig->bodylength)
       : dkim_exim_expand_defaults(what);
 
   case DKIM_CANON_BODY:
@@ -365,12 +378,12 @@ switch (what)
 
   case DKIM_CREATED:
     return dkim_cur_sig->created > 0
-      ? string_sprintf("%llu", dkim_cur_sig->created)
+      ? string_sprintf("%lu", dkim_cur_sig->created)
       : dkim_exim_expand_defaults(what);
 
   case DKIM_EXPIRES:
     return dkim_cur_sig->expires > 0
-      ? string_sprintf("%llu", dkim_cur_sig->expires)
+      ? string_sprintf("%lu", dkim_cur_sig->expires)
       : dkim_exim_expand_defaults(what);
 
   case DKIM_HEADERNAMES:
@@ -661,4 +674,5 @@ expand_bad:
   goto bad;
 }
 
-#endif
+# endif	/*!MACRO_PREDEF*/
+#endif	/*!DISABLE_DKIM*/

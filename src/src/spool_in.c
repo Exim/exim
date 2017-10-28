@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading spool files. When compiling for a utility (eximon),
@@ -459,8 +459,8 @@ for (;;)
       tree_node *node;
       endptr = Ustrchr(big_buffer + 6, ' ');
       if (endptr == NULL) goto SPOOL_FORMAT_ERROR;
-      name = string_sprintf("%c%.*s", big_buffer[4], endptr - big_buffer - 6,
-        big_buffer + 6);
+      name = string_sprintf("%c%.*s", big_buffer[4],
+        (int)(endptr - big_buffer - 6), big_buffer + 6);
       if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);

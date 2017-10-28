@@ -1,4 +1,7 @@
 /* Exim: OS-specific C header file for FreeBSD */
+/* Copyright (c) University of Cambridge 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
 
 #include <sys/types.h>
 
@@ -48,6 +51,7 @@ extern ssize_t os_sendfile(int, int, off_t *, size_t);
 
 /* TCP_FASTOPEN support.  There does not seems to be a
 MSG_FASTOPEN defined yet... */
+#define EXIM_TFO_PROBE
 
 #include <netinet/tcp.h>        /* for TCP_FASTOPEN */
 #include <sys/socket.h>         /* for MSG_FASTOPEN */

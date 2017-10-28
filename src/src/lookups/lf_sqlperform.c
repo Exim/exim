@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2015 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -98,7 +98,7 @@ else
     return DEFER;
     }
 
-  qserverlist = string_sprintf("%.*s", ss - s, s);
+  qserverlist = string_sprintf("%.*s", (int)(ss - s), s);
   qsep = 0;
 
   while ((qserver = string_nextinlist(&qserverlist, &qsep, qbuffer,

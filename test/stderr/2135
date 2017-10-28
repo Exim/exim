@@ -35,7 +35,9 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
+proxy-proc inter-pid pppp
+proxy-proc final-pid pppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -64,11 +66,11 @@ ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
 cmd buf flush ddd bytes
   SMTP(close)>>
 Leaving t1 transport
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLSv1:AES256-SHA:256 CV=no C="250 OK id=10HmaY-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

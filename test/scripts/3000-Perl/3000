@@ -1,4 +1,5 @@
 # Embedded Perl
+munge perl_variants
 exim -be
 ${perl{foo}}
 ${perl{foo}{arg1}}

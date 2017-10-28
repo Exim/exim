@@ -129,4 +129,4 @@ cached data used for lookup of root
   in TESTSUITE/aux-fixed/0484.aliases
 lookup yielded: userx
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

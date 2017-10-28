@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2015, 2016 */
+/* Copyright (c) Jeremy Harris 2015 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

@@ -46,5 +46,5 @@ maildir_taggedX_appendfile transport returned DEFER for userx@myhost.test.ex
 added retry item for T:userx@myhost.test.ex: errno=-22 more_errno=dd flags=0
 LOG: MAIN
   == userx@myhost.test.ex R=localuser T=maildir_taggedX_appendfile defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

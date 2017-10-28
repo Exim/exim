@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -101,6 +101,7 @@ main(int argc, char **argv)
 {
 off_t test_off_t = 0;
 time_t test_time_t = 0;
+ino_t test_ino_t;
 #if ! (__STDC_VERSION__ >= 199901L)
 size_t test_size_t = 0;
 ssize_t test_ssize_t = 0;
@@ -153,13 +154,13 @@ This assumption is known to be OK for the common operating systems. */
 fprintf(new, "#ifndef OFF_T_FMT\n");
 if (sizeof(test_off_t) > sizeof(test_long_t))
   {
-  fprintf(new, "#define OFF_T_FMT  \"%%lld\"\n");
-  fprintf(new, "#define LONGLONG_T long long int\n");
+  fprintf(new, "# define OFF_T_FMT  \"%%lld\"\n");
+  fprintf(new, "# define LONGLONG_T long long int\n");
   }
 else
   {
-  fprintf(new, "#define OFF_T_FMT  \"%%ld\"\n");
-  fprintf(new, "#define LONGLONG_T long int\n");
+  fprintf(new, "# define OFF_T_FMT  \"%%ld\"\n");
+  fprintf(new, "# define LONGLONG_T long int\n");
   }
 fprintf(new, "#endif\n\n");
 
@@ -171,14 +172,23 @@ off_t. */
 fprintf(new, "#ifndef TIME_T_FMT\n");
 if (sizeof(test_time_t) > sizeof(test_long_t))
   {
-  fprintf(new, "#define TIME_T_FMT  \"%%lld\"\n");
-  fprintf(new, "#undef  LONGLONG_T\n");
-  fprintf(new, "#define LONGLONG_T long long int\n");
+  fprintf(new, "# define TIME_T_FMT  \"%%lld\"\n");
+  fprintf(new, "# undef  LONGLONG_T\n");
+  fprintf(new, "# define LONGLONG_T long long int\n");
   }
 else
-  {
-  fprintf(new, "#define TIME_T_FMT  \"%%ld\"\n");
-  }
+  fprintf(new, "# define TIME_T_FMT  \"%%ld\"\n");
+fprintf(new, "#endif\n\n");
+
+fprintf(new, "#ifndef INO_T_FMT\n");
+if (sizeof(test_ino_t) > sizeof(test_long_t))
+  fprintf(new, "# define INO_T_FMT  \"%%llu\"\n");
+else
+  fprintf(new, "# define INO_T_FMT  \"%%lu\"\n");
+fprintf(new, "#endif\n\n");
+
+fprintf(new, "#ifndef PID_T_FMT\n");
+fprintf(new, "# define PID_T_FMT  \"%%lu\"\n");
 fprintf(new, "#endif\n\n");
 
 /* And for sizeof() results, size_t, which should with C99 be just %zu, deal

@@ -565,11 +565,12 @@ for(;;)
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was not advertised): "
-      "rejected \"%s\" %s next input=\"%s\"",
+      "rejected \"%s\" %s next input=\"%s\"%s",
       smtp_cmd_buffer, host_and_ident(TRUE),
-      string_printing(string_copyn(smtp_inptr, n)));
-      (void) synprot_error(L_smtp_protocol_error, 554, NULL,
-	US"SMTP synchronization error");
+      string_printing(string_copyn(smtp_inptr, n)),
+      smtp_inend - smtp_inptr > n ? "..." : "");
+    (void) synprot_error(L_smtp_protocol_error, 554, NULL,
+      US"SMTP synchronization error");
     goto repeat_until_rset;
     }
 
@@ -680,8 +681,11 @@ return buf;
 void
 bdat_flush_data(void)
 {
-unsigned n = chunking_data_left;
-(void) bdat_getbuf(&n);
+while (chunking_data_left)
+{
+  unsigned n = chunking_data_left;
+  (void) bdat_getbuf(&n);
+}
 
 receive_getc = lwr_receive_getc;
 receive_getbuf = lwr_receive_getbuf;
@@ -841,7 +845,7 @@ if (!yield)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_printf()");
   smtp_closedown(US"Unexpected error");
-  exim_exit(EXIT_FAILURE);
+  exim_exit(EXIT_FAILURE, NULL);
   }
 
 /* If this is the first output for a (non-batch) RCPT command, see if all RCPTs
@@ -921,7 +925,7 @@ if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout");  /* Does not return */
 smtp_notquit_exit(US"command-timeout", US"421",
   US"%s: SMTP command timeout - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE);
+exim_exit(EXIT_FAILURE, US"receiving");
 }
 
 
@@ -945,7 +949,7 @@ if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
 smtp_notquit_exit(US"signal-exit", US"421",
   US"%s: Service not available - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE);
+exim_exit(EXIT_FAILURE, US"receiving");
 }
 
 

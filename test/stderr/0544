@@ -36,7 +36,7 @@ admin user
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -67,18 +67,6 @@ admin user
   	for $received_for}}
   ├──expanding: with $received_protocol
   └─────result: with local
- ├──condition: def:tls_cipher
- ├─────result: false
-  ┌───scanning: ($tls_cipher)
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: ($tls_cipher)
-  	
-  ├─────result: ()
-  	
-  └───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ┌considering: (envelope-from <$sender_address>)
@@ -153,8 +141,8 @@ LOG: MAIN
   └─────result: yes
  ├──expanding: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
  └─────result: yes
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -188,4 +176,4 @@ LOG: smtp_connection MAIN
  └─────result: domain=recipient.domain/sender_domain=sender.domain
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>

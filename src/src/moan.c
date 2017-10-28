@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for sending messages to sender or to mailmaster. */
@@ -587,7 +587,7 @@ fprintf(stderr, "%d previous message%s successfully processed.\n",
 
 fprintf(stderr, "The rest of the batch was abandoned.\n");
 
-exim_exit(yield);
+exim_exit(yield, US"batch");
 }
 
 

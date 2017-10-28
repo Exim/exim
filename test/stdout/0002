@@ -123,6 +123,7 @@
 > addresses: local-part@dom.ain+xyz@abc
 > addresses: local-part@dom.ain:xyz@abc:p@q:r@s
 > addresses: 
+> Failed: output separator missing in expanding ${addresses:>}
 > 
 > escape:     B7\267F2\362
 > excape8bit: undisturbed text	tab

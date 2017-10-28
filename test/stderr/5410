@@ -166,7 +166,7 @@ end of inline ACL: ACCEPT
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -197,18 +197,6 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──expanding: with $received_protocol
   └─────result: with local-esmtp
- ├──condition: def:tls_cipher
- ├─────result: false
-  ┌───scanning: ($tls_cipher)
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: ($tls_cipher)
-  	
-  ├─────result: ()
-  	
-  └───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ┌considering: (envelope-from <$sender_address>)
@@ -256,7 +244,7 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -392,7 +380,7 @@ end of inline ACL: ACCEPT
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -423,18 +411,6 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──expanding: with $received_protocol
   └─────result: with local-esmtp
- ├──condition: def:tls_cipher
- ├─────result: false
-  ┌───scanning: ($tls_cipher)
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: ($tls_cipher)
-  	
-  ├─────result: ()
-  	
-  └───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ┌considering: (envelope-from <$sender_address>)
@@ -482,7 +458,7 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -618,7 +594,7 @@ end of inline ACL: ACCEPT
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
    ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
-   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol   ╎}} (Exim $version_number)
+   ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol}} (Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
@@ -649,18 +625,6 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──expanding: with $received_protocol
   └─────result: with local-esmtp
- ├──condition: def:tls_cipher
- ├─────result: false
-  ┌───scanning: ($tls_cipher)
-  	}}(Exim $version_number)
-  	${if def:sender_address {(envelope-from <$sender_address>)
-  	}}id $message_exim_id${if def:received_for {
-  	for $received_for}}
-  ├──expanding: ($tls_cipher)
-  	
-  ├─────result: ()
-  	
-  └───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
   ┌considering: (envelope-from <$sender_address>)
@@ -708,6 +672,6 @@ LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

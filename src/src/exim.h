@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -597,9 +597,11 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # undef DISABLE_DNSSEC
 #endif
 
-/* Wrapper around read(2) to read all the data we requested (BLOCKING) */
-ssize_t
-readn(int fd, void *buffer, size_t len);
+/* Some platforms (FreeBSD, OpenBSD, Solaris) do not seem to define this */
+
+#ifndef POLLRDHUP
+# define POLLRDHUP (POLLIN | POLLHUP)
+#endif
 
 #endif
 /* End of exim.h */

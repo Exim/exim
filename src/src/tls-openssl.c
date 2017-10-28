@@ -29,7 +29,7 @@ functions from the OpenSSL library. */
 # include <openssl/ocsp.h>
 #endif
 #ifdef EXPERIMENTAL_DANE
-# include <danessl.h>
+# include "danessl.h"
 #endif
 
 

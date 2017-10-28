@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading the configuration file, and for displaying
@@ -3271,9 +3271,8 @@ if (trusted_config && Ustrcmp(filename, US"/dev/null"))
 letter. If we see something starting with an upper case letter, it is taken as
 a macro definition. */
 
-while ((s = get_config_line()) != NULL)
+while ((s = get_config_line()))
   {
-
   if (config_lineno == 1 && Ustrstr(s, "\xef\xbb\xbf") == s)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "found unexpected BOM (Byte Order Mark)");
@@ -3441,7 +3440,7 @@ if (*log_file_path != 0)
 openlog(). Default is LOG_MAIL set in globals.c. Allow the user to omit the
 leading "log_". */
 
-if (syslog_facility_str != NULL)
+if (syslog_facility_str)
   {
   int i;
   uschar *s = syslog_facility_str;
@@ -3451,27 +3450,22 @@ if (syslog_facility_str != NULL)
     s += 4;
 
   for (i = 0; i < syslog_list_size; i++)
-    {
     if (strcmpic(s, syslog_list[i].name) == 0)
       {
       syslog_facility = syslog_list[i].value;
       break;
       }
-    }
 
   if (i >= syslog_list_size)
-    {
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "failed to interpret syslog_facility \"%s\"", syslog_facility_str);
-    }
   }
 
 /* Expand pid_file_path */
 
 if (*pid_file_path != 0)
   {
-  s = expand_string(pid_file_path);
-  if (s == NULL)
+  if (!(s = expand_string(pid_file_path)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand pid_file_path "
       "\"%s\": %s", pid_file_path, expand_string_message);
   pid_file_path = s;
@@ -3479,7 +3473,7 @@ if (*pid_file_path != 0)
 
 /* Set default value of process_log_path */
 
-if (process_log_path == NULL || *process_log_path =='\0')
+if (!process_log_path || *process_log_path =='\0')
   process_log_path = string_sprintf("%s/exim-process.info", spool_directory);
 
 /* Compile the regex for matching a UUCP-style "From_" line in an incoming
@@ -3489,23 +3483,19 @@ regex_From = regex_must_compile(uucp_from_pattern, FALSE, TRUE);
 
 /* Unpick the SMTP rate limiting options, if set */
 
-if (smtp_ratelimit_mail != NULL)
-  {
+if (smtp_ratelimit_mail)
   unpick_ratelimit(smtp_ratelimit_mail, &smtp_rlm_threshold,
     &smtp_rlm_base, &smtp_rlm_factor, &smtp_rlm_limit);
-  }
 
-if (smtp_ratelimit_rcpt != NULL)
-  {
+if (smtp_ratelimit_rcpt)
   unpick_ratelimit(smtp_ratelimit_rcpt, &smtp_rlr_threshold,
     &smtp_rlr_base, &smtp_rlr_factor, &smtp_rlr_limit);
-  }
 
 /* The qualify domains default to the primary host name */
 
-if (qualify_domain_sender == NULL)
+if (!qualify_domain_sender)
   qualify_domain_sender = primary_hostname;
-if (qualify_domain_recipient == NULL)
+if (!qualify_domain_recipient)
   qualify_domain_recipient = qualify_domain_sender;
 
 /* Setting system_filter_user in the configuration sets the gid as well if a
@@ -3514,7 +3504,7 @@ name is given, but a numerical value does not. */
 if (system_filter_uid_set && !system_filter_gid_set)
   {
   struct passwd *pw = getpwuid(system_filter_uid);
-  if (pw == NULL)
+  if (!pw)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to look up uid %ld",
       (long int)system_filter_uid);
   system_filter_gid = pw->pw_gid;
@@ -3524,14 +3514,14 @@ if (system_filter_uid_set && !system_filter_gid_set)
 /* If the errors_reply_to field is set, check that it is syntactically valid
 and ensure it contains a domain. */
 
-if (errors_reply_to != NULL)
+if (errors_reply_to)
   {
   uschar *errmess;
   int start, end, domain;
   uschar *recipient = parse_extract_address(errors_reply_to, &errmess,
     &start, &end, &domain, FALSE);
 
-  if (recipient == NULL)
+  if (!recipient)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
       "error in errors_reply_to (%s): %s", errors_reply_to, errmess);
 
@@ -3553,12 +3543,13 @@ if (smtp_accept_max == 0 &&
 so that it can be computed from the host name, for example. We do this last
 so as to ensure that everything else is set up before the expansion. */
 
-if (host_number_string != NULL)
+if (host_number_string)
   {
   long int n;
   uschar *end;
   uschar *s = expand_string(host_number_string);
-  if (s == NULL)
+
+  if (!s)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
         "failed to expand localhost_number \"%s\": %s",
         host_number_string, expand_string_message);
@@ -3577,11 +3568,10 @@ if (host_number_string != NULL)
 #ifdef SUPPORT_TLS
 /* If tls_verify_hosts is set, tls_verify_certificates must also be set */
 
-if ((tls_verify_hosts != NULL || tls_try_verify_hosts != NULL) &&
-     tls_verify_certificates == NULL)
+if ((tls_verify_hosts || tls_try_verify_hosts) && !tls_verify_certificates)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "tls_%sverify_hosts is set, but tls_verify_certificates is not set",
-    (tls_verify_hosts != NULL)? "" : "try_");
+    tls_verify_hosts ? "" : "try_");
 
 /* This also checks that the library linkage is working and we can call
 routines in it, so call even if tls_require_ciphers is unset */

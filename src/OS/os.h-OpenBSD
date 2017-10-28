@@ -1,4 +1,7 @@
 /* Exim: OS-specific C header file for OpenBSD */
+/* Copyright (c) University of Cambridge 2017 */
+/* See the file NOTICE for conditions of use and distribution. */
+
 
 #define HAVE_BSD_GETLOADAVG
 #define HAVE_MMAP
@@ -10,7 +13,7 @@
    if the version released is past that point. */
 #include <sys/param.h>
 #if OpenBSD >= 201405
-#define NOT_HAVE_ARC4RANDOM_STIR
+# define NOT_HAVE_ARC4RANDOM_STIR
 #endif
 
 typedef struct flock flock_t;
@@ -26,5 +29,28 @@ typedef struct __res_state *res_state;
 #ifndef EPROTO
 # define EPROTO 71
 #endif
+
+/* We need to force this; the automatic in buildconfig.c gets %ld */
+#ifdef OFF_T_FMT
+# undef OFF_T_FMT
+# undef LONGLONG_T
+#endif
+#define OFF_T_FMT "%lld"
+#define LONGLONG_T long long int
+
+#ifdef PID_T_FMT
+# undef PID_T_FMT
+#endif
+#define PID_T_FMT "%d"
+
+#ifdef INO_T_FMT
+# undef INO_T_FMT
+#endif
+#define INO_T_FMT "%llu"
+
+#ifdef TIME_T_FMT
+# undef TIME_T_FMT
+#endif
+#define TIME_T_FMT "%lld"
 
 /* End */

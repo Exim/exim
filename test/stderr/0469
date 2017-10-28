@@ -31,4 +31,4 @@ host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
 r1 router declined for x@mxt1c.test.ex
 no more routers
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>

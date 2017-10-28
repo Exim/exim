@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for writing log files. The code for maintaining datestamped
@@ -232,7 +232,7 @@ if (s1)
   }
 if (receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
 if (smtp_input) smtp_closedown(s2);
-exim_exit(EXIT_FAILURE);
+exim_exit(EXIT_FAILURE, NULL);
 }
 
 
@@ -761,7 +761,7 @@ if (!log_buffer)
   if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
     {
     fprintf(stderr, "exim: failed to get store for log buffer\n");
-    exim_exit(EXIT_FAILURE);
+    exim_exit(EXIT_FAILURE, NULL);
     }
 
 /* If we haven't already done so, inspect the setting of log_file_path to
@@ -958,7 +958,7 @@ if (!really_exim || log_testing_mode)
     else
       fprintf(log_stderr, "%s", CS log_buffer);
     }
-  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE);
+  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE, US"");
   return;
   }
 

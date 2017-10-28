@@ -8,7 +8,7 @@ DNS lookup of a-aa.test.ex (A) succeeded
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -19,4 +19,4 @@ DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS lookup of a-sec.test.ex (A) using fakens
 DNS lookup of a-sec.test.ex (A) succeeded
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

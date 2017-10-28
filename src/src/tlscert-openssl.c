@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2014 - 2016 */
+/* Copyright (c) Jeremy Harris 2014 - 2017 */
 
 /* This module provides TLS (aka SSL) support for Exim using the OpenSSL
 library. It is #included into the tls.c file when that library is used.
@@ -149,7 +149,7 @@ else
     time_t t = mktime(&tm);	/* make the tm self-consistent */
 
     if (mod && Ustrcmp(mod, "int") == 0)	/* seconds since epoch */
-      s = string_sprintf("%u", t);
+      s = string_sprintf(TIME_T_FMT, t);
 
     else
       {
@@ -300,7 +300,7 @@ return mod ? tls_field_from_dn(cp, mod) : cp;
 uschar *
 tls_cert_version(void * cert, uschar * mod)
 {
-return string_sprintf("%d", X509_get_version((X509 *)cert));
+return string_sprintf("%ld", X509_get_version((X509 *)cert));
 }
 
 uschar *

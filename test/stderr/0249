@@ -17,4 +17,4 @@ LOG: address_rewrite MAIN
   "User@c.domain" from env-from rewritten as "User@d.domain" by rule 2
 LOG: address_rewrite MAIN
   "User@c.domain" from env-to rewritten as "User@d.domain" by rule 2
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

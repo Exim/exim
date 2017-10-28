@@ -15,4 +15,3 @@ exim -qqf
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf
 ****
-sortlog

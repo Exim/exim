@@ -181,7 +181,7 @@ extern uschar *event_raise(uschar *, const uschar *, uschar *);
 extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
 extern const uschar * exim_errstr(int);
-extern void    exim_exit(int);
+extern void    exim_exit(int, const uschar *);
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
 extern void    exim_wait_tick(struct timeval *, int);
@@ -412,7 +412,7 @@ extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
-extern void    smtp_proxy_tls(uschar *, size_t, int, int);
+extern void    smtp_proxy_tls(uschar *, size_t, int *, int);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
@@ -478,6 +478,9 @@ extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
+#ifdef EXIM_TFO_PROBE
+extern void    tfo_probe(void);
+#endif
 extern void    timesince(struct timeval * diff, struct timeval * then);
 extern void    tls_modify_variables(tls_support *);
 extern uschar *tod_stamp(int);

@@ -1,6 +1,6 @@
 #!PERL_COMMAND
 
-# Copyright (c) 2001-2016 University of Cambridge.
+# Copyright (c) 2001-2017 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
 
 # Perl script to generate statistics from one or more Exim log files.

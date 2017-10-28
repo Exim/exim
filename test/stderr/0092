@@ -110,7 +110,7 @@ LOG: lost_incoming_connection MAIN
   SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<userx@test.ex>
 SMTP>> 421 myhost.test.ex SMTP incoming data timeout - closing connection.
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp NULLterminating with rc=1 >>>>>>>>>>>>>>>>
 exim: timed out while reading - message abandoned
 exim: timed out while reading - message abandoned
 >>> host in hosts_connection_nolog? no (option unset)

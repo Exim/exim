@@ -41,7 +41,7 @@ LOG: MAIN
   log from Perl
  ├──expanding: ${perl{log_write}{log from Perl}}
  └─────result: Wrote log
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN

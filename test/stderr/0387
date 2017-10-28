@@ -434,4 +434,4 @@ cached data used for lookup of *.b.c
   in TESTSUITE/aux-fixed/0387.1
 lookup yielded: [*.b.c]
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

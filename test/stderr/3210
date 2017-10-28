@@ -32,4 +32,4 @@ test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
 test.ex in "! +local_domains"? list match deferred for ! +local_domains
 domains check lookup or other defer
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=1 >>>>>>>>>>>>>>>>

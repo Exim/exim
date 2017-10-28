@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* General functions concerned with transportation, and generic options for all
@@ -588,7 +588,7 @@ at = Ustrrchr(addr->address, '@');
 plen = (addr->prefix == NULL)? 0 : Ustrlen(addr->prefix);
 slen = Ustrlen(addr->suffix);
 
-return string_sprintf("%.*s@%s", (at - addr->address - plen - slen),
+return string_sprintf("%.*s@%s", (int)(at - addr->address - plen - slen),
    addr->address + plen, at + 1);
 }
 

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -1484,14 +1484,14 @@ while (*s != 0)
 /* If value2 is unset, just compute one number */
 
 if (value2 < 0)
-  s = string_sprintf("%d", total % value1);
+  s = string_sprintf("%lu", total % value1);
 
 /* Otherwise do a div/mod hash */
 
 else
   {
   total = total % (value1 * value2);
-  s = string_sprintf("%d/%d", total/value2, total % value2);
+  s = string_sprintf("%lu/%lu", total/value2, total % value2);
   }
 
 *len = Ustrlen(s);
@@ -2821,18 +2821,21 @@ switch(cond_type)
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
-      DEBUG(D_expand) debug_printf_indent("condition: %s\n", name);
+      DEBUG(D_expand) debug_printf_indent("condition: %s  item: %s\n", name, sub[0]);
 
       tempcond = FALSE;
       compare = cond_type == ECOND_INLISTI
         ? strcmpic : (int (*)(const uschar *, const uschar *)) strcmp;
 
       while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)))
+	{
+	DEBUG(D_expand) debug_printf_indent(" compare %s\n", iterate_item);
         if (compare(sub[0], iterate_item) == 0)
           {
           tempcond = TRUE;
           break;
           }
+	}
       iterate_item = save_iterate_item;
       }
 
@@ -3927,18 +3930,20 @@ while (*s != 0)
     {
     int len;
     int newsize = 0;
-    gstring * g;
+    gstring * g = NULL;
 
     s = read_name(name, sizeof(name), s, US"_");
 
     /* If this is the first thing to be expanded, release the pre-allocated
     buffer. */
 
-    if (yield && yield->ptr == 0)
+    if (!yield)
+      g = store_get(sizeof(gstring));
+    else if (yield->ptr == 0)
       {
       if (resetok) store_reset(yield);
       yield = NULL;
-      g = store_get(sizeof(gstring));
+      g = store_get(sizeof(gstring));	/* alloc _before_ calling find_variable() */
       }
 
     /* Header */
@@ -3993,7 +3998,8 @@ while (*s != 0)
       yield->ptr = len;
       yield->s = value;
       }
-    else yield = string_catn(yield, value, len);
+    else
+      yield = string_catn(yield, value, len);
 
     continue;
     }
@@ -6766,7 +6772,14 @@ while (*s != 0)
         int start, end, domain;  /* Not really used */
 
         while (isspace(*sub)) sub++;
-        if (*sub == '>') { *outsep = *++sub; ++sub; }
+        if (*sub == '>')
+          if (*outsep = *++sub) ++sub;
+          else
+	    {
+            expand_string_message = string_sprintf("output separator "
+              "missing in expanding ${addresses:%s}", --sub);
+            goto EXPAND_FAILED;
+            }
         parse_allow_group = TRUE;
 
         for (;;)
@@ -7142,8 +7155,8 @@ while (*s != 0)
         if (error != NULL)
           {
           expand_string_message = string_sprintf("error in expression "
-            "evaluation: %s (after processing \"%.*s\")", error, sub-save_sub,
-              save_sub);
+            "evaluation: %s (after processing \"%.*s\")", error,
+	    (int)(sub-save_sub), save_sub);
           goto EXPAND_FAILED;
           }
         sprintf(CS var_buffer, PR_EXIM_ARITH, n);
@@ -7422,13 +7435,15 @@ while (*s != 0)
     {
     int len;
     int newsize = 0;
-    gstring * g;
+    gstring * g = NULL;
 
-    if (yield && yield->ptr == 0)
+    if (!yield)
+      g = store_get(sizeof(gstring));
+    else if (yield->ptr == 0)
       {
       if (resetok) store_reset(yield);
       yield = NULL;
-      g = store_get(sizeof(gstring));
+      g = store_get(sizeof(gstring));	/* alloc _before_ calling find_variable() */
       }
     if (!(value = find_variable(name, FALSE, skipping, &newsize)))
       {

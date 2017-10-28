@@ -247,11 +247,7 @@ MAIL FROM:someone9@some.domain
 ??? 250
 RCPT TO:CALLER@test.ex
 ??? 250
-BDAT 1\r\nTBDAT 87 last
-o: Susan@random.com
-From: Sam@random.com
-Subject: This is a bodyless test message
-
+BDAT 1\r\nTBDAT 87 last\r\no: Susan@random.com\r\nFrom: Sam@random.com\r\nSubject: This is a bodyless test message\r\n\r\n
 ??? 554 SMTP synchronization error
 ****
 #

@@ -1,4 +1,3 @@
-**NOTE: The delivery lines in this file have been sorted.
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userx0@test.ex userx1@test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usery0@test.ex usery1@test.ex
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userz0@test.ex userz1@test.ex

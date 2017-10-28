@@ -258,7 +258,7 @@ TRANSPORT_SMTP=yes
 # you perform upgrades and revert them. You should consider the benefit of
 # embedding the Exim version number into LOOKUP_MODULE_DIR, so that you can
 # maintain two concurrent sets of modules.
-# 
+#
 # *BEWARE*: ability to modify the files in LOOKUP_MODULE_DIR is equivalent to
 # the ability to modify the Exim binary, which is often setuid root!  The Exim
 # developers only intend this functionality be used by OS software packagers
@@ -311,6 +311,7 @@ LOOKUP_DNSDB=yes
 # LOOKUP_IBASE=yes
 # LOOKUP_LDAP=yes
 # LOOKUP_MYSQL=yes
+# LOOKUP_MYSQL_PC=mariadb
 # LOOKUP_NIS=yes
 # LOOKUP_NISPLUS=yes
 # LOOKUP_ORACLE=yes

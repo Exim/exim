@@ -161,6 +161,26 @@ return bind(sock, (struct sockaddr *)&sin, s_len);
 
 
 /*************************************************
+*************************************************/
+
+#ifdef EXIM_TFO_PROBE
+void
+tfo_probe(void)
+{
+# ifdef TCP_FASTOPEN
+int sock, backlog = 5;
+
+if (  (sock = socket(SOCK_STREAM, AF_INET, 0)) < 0
+   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &backlog, sizeof(backlog))
+   )
+  tcp_fastopen_ok = TRUE;
+close(sock);
+# endif
+}
+#endif
+
+
+/*************************************************
 *        Connect socket to remote host           *
 *************************************************/
 
@@ -175,7 +195,7 @@ Arguments:
   address     the remote address, in text form
   port        the remote port
   timeout     a timeout (zero for indefinite timeout)
-  fastopen    non-null iff TCP_FASTOPEN can be used; may indicate early-data to
+  fastopen_blob    non-null iff TCP_FASTOPEN can be used; may indicate early-data to
 		be sent in SYN segment
 
 Returns:      0 on success; -1 on failure, with errno set
@@ -183,7 +203,7 @@ Returns:      0 on success; -1 on failure, with errno set
 
 int
 ip_connect(int sock, int af, const uschar *address, int port, int timeout,
-  const blob * fastopen)
+  const blob * fastopen_blob)
 {
 struct sockaddr_in s_in4;
 struct sockaddr *s_ptr;
@@ -232,16 +252,17 @@ before it gets our ACK of its SYN,ACK - the latter is useful for
 the SMTP banner.  Other (than SMTP) cases of TCP connections can
 possibly use the data-on-syn, so support that too.  */
 
-if (fastopen)
+if (fastopen_blob && tcp_fastopen_ok)
   {
-  if ((rc = sendto(sock, fastopen->data, fastopen->len,
+  if ((rc = sendto(sock, fastopen_blob->data, fastopen_blob->len,
 		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
 	/* seen for with-data, experimental TFO option, with-cookie case */
 	/* seen for with-data, proper TFO opt, with-cookie case */
     {
-    DEBUG(D_transport|D_v) debug_printf("TFO mode connection attempt, %s data\n",
-      fastopen->len > 0 ? "with"  : "no");
-    tcp_out_fastopen = fastopen->len > 0 ?  2 : 1;
+    DEBUG(D_transport|D_v)
+      debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
+	address, (unsigned long)fastopen_blob->len);
+    tcp_out_fastopen = fastopen_blob->len > 0 ?  2 : 1;
     }
   else if (errno == EINPROGRESS)	/* expected if we had no cookie for peer */
 	/* seen for no-data, proper TFO option, both cookie-request and with-cookie cases */
@@ -251,14 +272,14 @@ if (fastopen)
 	/* ? older Experimental TFO option behaviour ? */
     {					/* queue unsent data */
     DEBUG(D_transport|D_v) debug_printf("TFO mode sendto, %s data: EINPROGRESS\n",
-      fastopen->len > 0 ? "with"  : "no");
-    if (!fastopen->data)
+      fastopen_blob->len > 0 ? "with"  : "no");
+    if (!fastopen_blob->data)
       {
       tcp_out_fastopen = 1;		/* we tried; unknown if useful yet */
       rc = 0;
       }
     else
-      rc = send(sock, fastopen->data, fastopen->len, 0);
+      rc = send(sock, fastopen_blob->data, fastopen_blob->len, 0);
     }
   else if(errno == EOPNOTSUPP)
     {
@@ -271,9 +292,12 @@ else
 #endif
   {
 legacy_connect:
+  DEBUG(D_transport|D_v) if (fastopen_blob)
+    debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
+      address, (unsigned long)fastopen_blob->len);
   if ((rc = connect(sock, s_ptr, s_len)) >= 0)
-    if (  fastopen && fastopen->data && fastopen->len
-       && send(sock, fastopen->data, fastopen->len, 0) < 0)
+    if (  fastopen_blob && fastopen_blob->data && fastopen_blob->len
+       && send(sock, fastopen_blob->data, fastopen_blob->len, 0) < 0)
 	rc = -1;
   }
 
@@ -320,7 +344,7 @@ Arguments:
   timeout       a timeout
   connhost	if not NULL, host_item to be filled in with connection details
   errstr        pointer for allocated string on error
-  fastopen	with SOCK_STREAM, if non-null, request TCP Fast Open.
+  fastopen_blob	with SOCK_STREAM, if non-null, request TCP Fast Open.
 		Additionally, optional early-data to send
 
 Return:
@@ -328,7 +352,7 @@ Return:
 */
 int
 ip_connectedsocket(int type, const uschar * hostname, int portlo, int porthi,
-      int timeout, host_item * connhost, uschar ** errstr, const blob * fastopen)
+      int timeout, host_item * connhost, uschar ** errstr, const blob * fastopen_blob)
 {
 int namelen, port;
 host_item shost;
@@ -389,7 +413,7 @@ for (h = &shost; h; h = h->next)
     }
 
   for(port = portlo; port <= porthi; port++)
-    if (ip_connect(fd, af, h->address, port, timeout, fastopen) == 0)
+    if (ip_connect(fd, af, h->address, port, timeout, fastopen_blob) == 0)
       {
       if (fd != fd6) close(fd6);
       if (fd != fd4) close(fd4);

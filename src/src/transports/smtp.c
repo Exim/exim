@@ -1820,7 +1820,7 @@ goto SEND_QUIT;
 	errno = ERRNO_SMTPCLOSED;
 	goto EHLOHELO_FAILED;
 	}
-      Ustrncpy(sx->buffer, rsp, sizeof(sx->buffer)/2);
+      memmove(sx->buffer, rsp, Ustrlen(rsp));
       goto RESPONSE_FAILED;
       }
     }
@@ -2176,17 +2176,17 @@ return OK;
     sx->send_quit = FALSE;
     goto FAILED;
 
-  /* This label is jumped to directly when a TLS negotiation has failed,
-  or was not done for a host for which it is required. Values will be set
-  in message and errno, and setting_up will always be true. Treat as
-  a temporary error. */
-
   EHLOHELO_FAILED:
     code = '4';
     message = string_sprintf("Remote host closed connection in response to %s"
       " (EHLO response was: %s)", smtp_command, sx->buffer);
     sx->send_quit = FALSE;
     goto FAILED;
+
+  /* This label is jumped to directly when a TLS negotiation has failed,
+  or was not done for a host for which it is required. Values will be set
+  in message and errno, and setting_up will always be true. Treat as
+  a temporary error. */
 
 #ifdef SUPPORT_TLS
   TLS_FAILED:
@@ -2580,29 +2580,37 @@ return 0;
 * Proxy TLS connection for another transport process *
 ******************************************************/
 /*
-Use the given buffer as a staging area, and select on both the given fd
-and the TLS'd client-fd for data to read (per the coding in ip_recv() and
-fd_ready() this is legitimate).  Do blocking full-size writes, and reads
-under a timeout.
+Close the unused end of the pipe, fork once more, then use the given buffer
+as a staging area, and select on both the given fd and the TLS'd client-fd for
+data to read (per the coding in ip_recv() and fd_ready() this is legitimate).
+Do blocking full-size writes, and reads under a timeout.  Once both input
+channels are closed, exit the process.
 
 Arguments:
   buf		space to use for buffering
   bufsiz	size of buffer
-  proxy_fd	comms to proxied process
+  pfd		pipe filedescriptor array; [0] is comms to proxied process
   timeout	per-read timeout, seconds
 */
 
 void
-smtp_proxy_tls(uschar * buf, size_t bsize, int proxy_fd, int timeout)
+smtp_proxy_tls(uschar * buf, size_t bsize, int * pfd, int timeout)
 {
 fd_set rfds, efds;
-int max_fd = MAX(proxy_fd, tls_out.active) + 1;
+int max_fd = MAX(pfd[0], tls_out.active) + 1;
 int rc, i, fd_bits, nbytes;
+
+close(pfd[1]);
+if ((rc = fork()))
+  {
+  DEBUG(D_transport) debug_printf("proxy-proc final-pid %d\n", rc);
+  _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+  }
 
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active, &rfds);
-FD_SET(proxy_fd, &rfds);
+FD_SET(pfd[0], &rfds);
 
 for (fd_bits = 3; fd_bits; )
   {
@@ -2624,17 +2632,17 @@ for (fd_bits = 3; fd_bits; )
     if (rc <= 0)
       {
       DEBUG(D_transport) if (rc == 0) debug_printf("%s: timed out\n", __FUNCTION__);
-      return;
+      goto done;
       }
 
-    if (FD_ISSET(tls_out.active, &efds) || FD_ISSET(proxy_fd, &efds))
+    if (FD_ISSET(tls_out.active, &efds) || FD_ISSET(pfd[0], &efds))
       {
       DEBUG(D_transport) debug_printf("select: exceptional cond on %s fd\n",
-	FD_ISSET(proxy_fd, &efds) ? "proxy" : "tls");
-      return;
+	FD_ISSET(pfd[0], &efds) ? "proxy" : "tls");
+      goto done;
       }
     }
-  while (rc < 0 || !(FD_ISSET(tls_out.active, &rfds) || FD_ISSET(proxy_fd, &rfds)));
+  while (rc < 0 || !(FD_ISSET(tls_out.active, &rfds) || FD_ISSET(pfd[0], &rfds)));
 
   /* handle inbound data */
   if (FD_ISSET(tls_out.active, &rfds))
@@ -2642,20 +2650,20 @@ for (fd_bits = 3; fd_bits; )
       {
       fd_bits &= ~1;
       FD_CLR(tls_out.active, &rfds);
-      shutdown(proxy_fd, SHUT_WR);
+      shutdown(pfd[0], SHUT_WR);
       timeout = 5;
       }
     else
       {
       for (nbytes = 0; rc - nbytes > 0; nbytes += i)
-	if ((i = write(proxy_fd, buf + nbytes, rc - nbytes)) < 0) return;
+	if ((i = write(pfd[0], buf + nbytes, rc - nbytes)) < 0) goto done;
       }
   else if (fd_bits & 1)
     FD_SET(tls_out.active, &rfds);
 
   /* handle outbound data */
-  if (FD_ISSET(proxy_fd, &rfds))
-    if ((rc = read(proxy_fd, buf, bsize)) <= 0)
+  if (FD_ISSET(pfd[0], &rfds))
+    if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
       fd_bits = 0;
       tls_close(FALSE, TRUE);
@@ -2664,11 +2672,15 @@ for (fd_bits = 3; fd_bits; )
       {
       for (nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = tls_write(FALSE, buf + nbytes, rc - nbytes, FALSE)) < 0)
-	  return;
+	  goto done;
       }
   else if (fd_bits & 2)
-    FD_SET(proxy_fd, &rfds);
+    FD_SET(pfd[0], &rfds);
   }
+
+done:
+  if (running_in_test_harness) millisleep(100);	/* let logging complete */
+  exim_exit(0, US"TLS proxy");
 }
 #endif
 
@@ -3153,7 +3165,7 @@ else
         else
           sprintf(CS sx.buffer, "%.500s\n", addr->unique);
 
-        DEBUG(D_deliver) debug_printf("S:journalling %s", sx.buffer);
+        DEBUG(D_deliver) debug_printf("S:journalling %s\n", sx.buffer);
         len = Ustrlen(CS sx.buffer);
         if (write(journal_fd, sx.buffer, len) != len)
           log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
@@ -3485,7 +3497,8 @@ propagate it from the initial
 	{
         sx.send_quit = FALSE;
 
-	/* If TLS is still active, we need to proxy it for the transport we
+	/* We have passed the client socket to a fresh transport process.
+	If TLS is still active, we need to proxy it for the transport we
 	just passed the baton to.  Fork a child to to do it, and return to
 	get logging done asap.  Which way to place the work makes assumptions
 	about post-fork prioritisation which may not hold on all platforms. */
@@ -3493,10 +3506,16 @@ propagate it from the initial
 	if (tls_out.active >= 0)
 	  {
 	  int pid = fork();
+	  if (pid == 0)		/* child; fork again to disconnect totally */
+	    /* does not return */
+	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd,
+			    sx.ob->command_timeout);
+
 	  if (pid > 0)		/* parent */
 	    {
 	    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
 	    close(pfd[0]);
+	    /* tidy the inter-proc to disconn the proxy proc */
 	    waitpid(pid, NULL, 0);
 	    tls_close(FALSE, FALSE);
 	    (void)close(sx.inblock.sock);
@@ -3504,17 +3523,7 @@ propagate it from the initial
 	    continue_hostname = NULL;
 	    return yield;
 	    }
-	  else if (pid == 0)	/* child; fork again to disconnect totally */
-	    {
-	    close(pfd[1]);
-	    if ((pid = fork()))
-	      {
-	      DEBUG(D_transport) debug_printf("proxy-prox final-pid %d\n", pid);
-	      _exit(pid ? EXIT_FAILURE : EXIT_SUCCESS);
-	      }
-	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd[0], sx.ob->command_timeout);
-	    exim_exit(0);
-	    }
+	  log_write(0, LOG_PANIC_DIE, "fork failed");
 	  }
 #endif
 	}

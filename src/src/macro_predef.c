@@ -21,7 +21,7 @@ uschar * syslog_facility_str;
 /******************************************************************************/
 
 void
-builtin_macro_create(const uschar * name)
+builtin_macro_create_var(const uschar * name, const uschar * val)
 {
 printf ("static macro_item p%d = { ", mp_index);
 if (mp_index == 0)
@@ -29,11 +29,19 @@ if (mp_index == 0)
 else
   printf(".next=&p%d,", mp_index-1);
 
-printf(" .command_line=FALSE, .namelen=%d, .replen=1,"
-	" .name=US\"%s\", .replacement=US\"y\" };\n",
-	Ustrlen(name), CS name);
+printf(" .command_line=FALSE, .namelen=%d, .replen=%d,"
+	" .name=US\"%s\", .replacement=US\"%s\" };\n",
+	Ustrlen(name), Ustrlen(val), CS name, CS val);
 mp_index++;
 }
+
+
+void
+builtin_macro_create(const uschar * name)
+{
+builtin_macro_create_var(name, US"y");
+}
+
 
 void
 spf(uschar * buf, int len, const uschar * fmt, ...)
@@ -265,6 +273,14 @@ options_transports();
 options_auths();
 }
 
+static void
+params(void)
+{
+#ifndef DISABLE_DKIM
+params_dkim();
+#endif
+}
+
 
 int
 main(void)
@@ -272,6 +288,7 @@ main(void)
 printf("#include \"exim.h\"\n");
 features();
 options();
+params();
 
 printf("macro_item * macros = &p%d;\n", mp_index-1);
 printf("macro_item * mlast = &p0;\n");

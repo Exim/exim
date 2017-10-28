@@ -190,7 +190,7 @@ if (STATVFS(CS path, &statbuf) != 0)
     log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
       "%s directory %s: %s", name, path, strerror(errno));
     smtp_closedown(US"spool or log directory problem");
-    exim_exit(EXIT_FAILURE);
+    exim_exit(EXIT_FAILURE, NULL);
     }
 
 *inodeptr = (statbuf.F_FILES > 0)? statbuf.F_FAVAIL : -1;
@@ -343,7 +343,7 @@ if (!already_bombing_out)
 
 /* Exit from the program (non-BSMTP cases) */
 
-exim_exit(EXIT_FAILURE);
+exim_exit(EXIT_FAILURE, NULL);
 }
 
 
@@ -1142,7 +1142,7 @@ if (error_handling == ERRORS_SENDER)
 else
   fprintf(stderr, "exim: %s%s\n", text2, text1);  /* Sic */
 (void)fclose(f);
-exim_exit(error_rc);
+exim_exit(error_rc, US"");
 }
 
 
@@ -2620,8 +2620,9 @@ letter and it is not used internally.
 NOTE: If ever the format of message ids is changed, the regular expression for
 checking that a string is in this format must be updated in a corresponding
 way. It appears in the initializing code in exim.c. The macro MESSAGE_ID_LENGTH
-must also be changed to reflect the correct string length. Then, of course,
-other programs that rely on the message id format will need updating too. */
+must also be changed to reflect the correct string length. The queue-sort code
+needs to know the layout. Then, of course, other programs that rely on the
+message id format will need updating too. */
 
 Ustrncpy(message_id, string_base62((long int)(message_id_tv.tv_sec)), 6);
 message_id[6] = '-';
@@ -3323,7 +3324,7 @@ if (extract_recip && (bad_addresses != NULL || recipients_count == 0))
     {
     Uunlink(spool_name);
     (void)fclose(data_file);
-    exim_exit(error_rc);
+    exim_exit(error_rc, US"receiving");
     }
   }
 

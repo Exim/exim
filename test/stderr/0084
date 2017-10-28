@@ -67,4 +67,4 @@ domain = myhost.test.ex
 routed by smart router
   envelope to: no@myhost.test.ex
   transport: <none>
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

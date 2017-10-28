@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -658,12 +658,13 @@ Returns:     does not return
 */
 
 void
-exim_exit(int rc)
+exim_exit(int rc, const uschar * process)
 {
 search_tidyup();
 DEBUG(D_any)
-  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d terminating with rc=%d "
-    ">>>>>>>>>>>>>>>>\n", (int)getpid(), rc);
+  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d %s%s%sterminating with rc=%d "
+    ">>>>>>>>>>>>>>>>\n", (int)getpid(),
+    process ? "(" : "", process, process ? ") " : "", rc);
 exit(rc);
 }
 
@@ -840,7 +841,8 @@ fprintf(f, "Support for:");
   fprintf(f, " SOCKS");
 #endif
 #ifdef TCP_FASTOPEN
-  fprintf(f, " TCP_Fast_Open");
+  deliver_init();
+  if (tcp_fastopen_ok) fprintf(f, " TCP_Fast_Open");
 #endif
 #ifdef EXPERIMENTAL_LMDB
   fprintf(f, " Experimental_LMDB");
@@ -3194,10 +3196,10 @@ for (i = 1; i < argc; i++)
     which sets the host protocol and host name */
 
     if (*argrest == 0)
-      {
-      if (i+1 < argc) argrest = argv[++i]; else
+      if (i+1 < argc)
+	argrest = argv[++i];
+      else
         { badarg = TRUE; break; }
-      }
 
     if (*argrest != 0)
       {
@@ -3211,9 +3213,7 @@ for (i = 1; i < argc; i++)
 
       hn = Ustrchr(argrest, ':');
       if (hn == NULL)
-        {
         received_protocol = argrest;
-        }
       else
         {
 	int old_pool = store_pool;
@@ -3793,12 +3793,9 @@ NOTE: immediatly after opening the configuration file we change the working
 directory to "/"! Later we change to $spool_directory. We do it there, because
 during readconf_main() some expansion takes place already. */
 
-/* Store the initial cwd before we change directories */
-if ((initial_cwd = os_getcwd(NULL, 0)) == NULL)
-  {
-  perror("exim: can't get the current working directory");
-  exit(EXIT_FAILURE);
-  }
+/* Store the initial cwd before we change directories.  Can be NULL if the
+dir has already been unlinked. */
+initial_cwd = os_getcwd(NULL, 0);
 
 /* checking:
     -be[m] expansion test        -
@@ -3876,7 +3873,7 @@ else
   }
 
 /* At this point, we know if the user is privileged and some command-line
-options become possibly imperssible, depending upon the configuration file. */
+options become possibly impermissible, depending upon the configuration file. */
 
 if (checking && commandline_checks_require_admin && !admin_user) {
   fprintf(stderr, "exim: those command-line flags are set to require admin\n");
@@ -4482,7 +4479,7 @@ if (test_retry_arg >= 0)
   if (test_retry_arg >= argc)
     {
     printf("-brt needs a domain or address argument\n");
-    exim_exit(EXIT_FAILURE);
+    exim_exit(EXIT_FAILURE, US"main");
     }
   s1 = argv[test_retry_arg++];
   s2 = NULL;
@@ -4588,7 +4585,7 @@ if (test_retry_arg >= 0)
 
     printf("\n");
     }
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 /* Handle a request to list one or more configuration options */
@@ -4612,14 +4609,14 @@ if (list_options)
         }
       else readconf_print(argv[i], NULL, flag_n);
       }
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 if (list_config)
   {
   set_process_info("listing config");
   readconf_print(US"config", NULL, flag_n);
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 
@@ -4648,7 +4645,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
   if (prod_requires_admin && !admin_user)
     {
     fprintf(stderr, "exim: Permission denied\n");
-    exim_exit(EXIT_FAILURE);
+    exim_exit(EXIT_FAILURE, US"main");
     }
   set_process_info("delivering specified messages");
   if (deliver_give_up) forced_delivery = deliver_force_thaw = TRUE;
@@ -4667,11 +4664,11 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
       {
       fprintf(stderr, "failed to fork delivery process for %s: %s\n", argv[i],
         strerror(errno));
-      exim_exit(EXIT_FAILURE);
+      exim_exit(EXIT_FAILURE, US"main");
       }
     else wait(&status);
     }
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 
@@ -4690,7 +4687,7 @@ if (queue_interval == 0 && !daemon_listen)
   else
     set_process_info("running the queue (single queue run)");
   queue_run(start_queue_run_id, stop_queue_run_id, FALSE);
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 
@@ -4713,10 +4710,9 @@ for (i = 0;;)
     /* If user name has not been set by -F, set it from the passwd entry
     unless -f has been used to set the sender address by a trusted user. */
 
-    if (originator_name == NULL)
+    if (!originator_name)
       {
-      if (sender_address == NULL ||
-           (!trusted_caller && filter_test == FTEST_NONE))
+      if (!sender_address || (!trusted_caller && filter_test == FTEST_NONE))
         {
         uschar *name = US pw->pw_gecos;
         uschar *amp = Ustrchr(name, '&');
@@ -4726,11 +4722,11 @@ for (i = 0;;)
         replaced by a copy of the login name, and some even specify that
         the first character should be upper cased, so that's what we do. */
 
-        if (amp != NULL)
+        if (amp)
           {
           int loffset;
           string_format(buffer, sizeof(buffer), "%.*s%n%s%s",
-            amp - name, name, &loffset, originator_login, amp + 1);
+            (int)(amp - name), name, &loffset, originator_login, amp + 1);
           buffer[loffset] = toupper(buffer[loffset]);
           name = buffer;
           }
@@ -4738,7 +4734,7 @@ for (i = 0;;)
         /* If a pattern for matching the gecos field was supplied, apply
         it and then expand the name string. */
 
-        if (gecos_pattern != NULL && gecos_name != NULL)
+        if (gecos_pattern && gecos_name)
           {
           const pcre *re;
           re = regex_must_compile(gecos_pattern, FALSE, TRUE); /* Use malloc */
@@ -4747,7 +4743,7 @@ for (i = 0;;)
             {
             uschar *new_name = expand_string(gecos_name);
             expand_nmax = -1;
-            if (new_name != NULL)
+            if (new_name)
               {
               DEBUG(D_receive) debug_printf("user name \"%s\" extracted from "
                 "gecos field \"%s\"\n", new_name, name);
@@ -4844,10 +4840,10 @@ if (test_rewrite_arg >= 0)
   if (test_rewrite_arg >= argc)
     {
     printf("-brw needs an address argument\n");
-    exim_exit(EXIT_FAILURE);
+    exim_exit(EXIT_FAILURE, US"main");
     }
   rewrite_test(argv[test_rewrite_arg]);
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 /* A locally-supplied message is considered to be coming from a local user
@@ -4962,7 +4958,7 @@ if (verify_address_mode || address_test_mode)
     }
 
   route_tidyup();
-  exim_exit(exit_value);
+  exim_exit(exit_value, US"main");
   }
 
 /* Handle expansion checking. Either expand items on the command line, or read
@@ -5064,7 +5060,7 @@ if (expansion_test)
     deliver_datafile = -1;
     }
 
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 
@@ -5158,7 +5154,7 @@ if (host_checking)
       }
     smtp_log_no_mail();
     }
-  exim_exit(EXIT_SUCCESS);
+  exim_exit(EXIT_SUCCESS, US"main");
   }
 
 
@@ -5322,7 +5318,7 @@ if (smtp_input)
   if (!smtp_start_session())
     {
     mac_smtp_fflush();
-    exim_exit(EXIT_SUCCESS);
+    exim_exit(EXIT_SUCCESS, US"smtp_start toplevel");
     }
   }
 
@@ -5437,14 +5433,14 @@ while (more)
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
         if (more) goto moreloop;
         smtp_log_no_mail();               /* Log no mail if configured */
-        exim_exit(EXIT_FAILURE);
+        exim_exit(EXIT_FAILURE, US"receive toplevel");
         }
       }
     else
       {
       cancel_cutthrough_connection(TRUE, US"message setup dropped");
       smtp_log_no_mail();               /* Log no mail if configured */
-      exim_exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
+      exim_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS, US"msg setup toplevel");
       }
     }
 
@@ -5495,14 +5491,12 @@ while (more)
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: too many recipients\n");
-            exim_exit(EXIT_FAILURE);
+            exim_exit(EXIT_FAILURE, US"main");
             }
           else
-            {
             return
               moan_to_sender(ERRMESS_TOOMANYRECIP, NULL, NULL, stdin, TRUE)?
                 errors_sender_rc : EXIT_FAILURE;
-            }
 
 #ifdef SUPPORT_I18N
 	{
@@ -5531,7 +5525,7 @@ while (more)
             {
             fprintf(stderr, "exim: bad recipient address \"%s\": %s\n",
               string_printing(list[i]), errmess);
-            exim_exit(EXIT_FAILURE);
+            exim_exit(EXIT_FAILURE, US"main");
             }
           else
             {
@@ -5604,7 +5598,7 @@ while (more)
     for real; when reading the headers of a message for filter testing,
     it is TRUE if the headers were terminated by '.' and FALSE otherwise. */
 
-    if (message_id[0] == 0) exim_exit(EXIT_FAILURE);
+    if (message_id[0] == 0) exim_exit(EXIT_FAILURE, US"main");
     }  /* Non-SMTP message reception */
 
   /* If this is a filter testing run, there are headers in store, but
@@ -5649,7 +5643,7 @@ while (more)
     if (chdir("/"))   /* Get away from wherever the user is running this from */
       {
       DEBUG(D_receive) debug_printf("chdir(\"/\") failed\n");
-      exim_exit(EXIT_FAILURE);
+      exim_exit(EXIT_FAILURE, US"main");
       }
 
     /* Now we run either a system filter test, or a user filter test, or both.
@@ -5658,20 +5652,16 @@ while (more)
     explicitly. */
 
     if ((filter_test & FTEST_SYSTEM) != 0)
-      {
       if (!filter_runtest(filter_sfd, filter_test_sfile, TRUE, more))
-        exim_exit(EXIT_FAILURE);
-      }
+        exim_exit(EXIT_FAILURE, US"main");
 
     memcpy(filter_sn, filter_n, sizeof(filter_sn));
 
     if ((filter_test & FTEST_USER) != 0)
-      {
       if (!filter_runtest(filter_ufd, filter_test_ufile, FALSE, more))
-        exim_exit(EXIT_FAILURE);
-      }
+        exim_exit(EXIT_FAILURE, US"main");
 
-    exim_exit(EXIT_SUCCESS);
+    exim_exit(EXIT_SUCCESS, US"main");
     }
 
   /* Else act on the result of message reception. We should not get here unless
@@ -5797,7 +5787,7 @@ while (more)
 	  log_write(0, LOG_MAIN|LOG_PANIC,
 	    "process %d crashed with signal %d while delivering %s",
 	    (int)pid, status & 0x00ff, message_id);
-	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
+	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE, US"main");
 	}
       }
     }
@@ -5829,53 +5819,8 @@ moreloop:
   store_reset(reset_point);
   }
 
-exim_exit(EXIT_SUCCESS);   /* Never returns */
+exim_exit(EXIT_SUCCESS, US"main");   /* Never returns */
 return 0;                  /* To stop compiler warning */
-}
-
-/*************************************************
-*          read as much as requested             *
-*************************************************/
-
-/* The syscall read(2) doesn't always returns as much as we want. For
-several reasons it might get less. (Not talking about signals, as syscalls
-are restartable). When reading from a network or pipe connection the sender
-might send in smaller chunks, with delays between these chunks. The read(2)
-may return such a chunk.
-
-The more the writer writes and the smaller the pipe between write and read is,
-the more we get the chance of reading leass than requested. (See bug 2130)
-
-This function read(2)s until we got all the data we *requested*.
-
-Note: This function may block. Use it only if you're sure about the
-amount of data you will get.
-
-Argument:
-  fd          the file descriptor to read from
-  buffer      pointer to a buffer of size len
-  len         the requested(!) amount of bytes
-
-Returns:      the amount of bytes read
-*/
-ssize_t
-readn(int fd, void *buffer, size_t len)
-{
-  void *next = buffer;
-  void *end = buffer + len;
-
-  while (next < end)
-    {
-    ssize_t got = read(fd, next, end - next);
-
-    /* I'm not sure if there are signals that can interrupt us,
-    for now I assume the worst */
-    if (got == -1 && errno == EINTR) continue;
-    if (got <= 0) return next - buffer;
-    next += got;
-    }
-
-  return len;
 }
 
 

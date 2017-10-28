@@ -903,7 +903,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^SSL info:/;
     next if /SSL verify error: depth=0 error=certificate not trusted/;
     s/SSL3_READ_BYTES/ssl3_read_bytes/i;
-    s/^\d+:error:\d+(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
+    s/CONNECT_CR_FINISHED/ssl3_read_bytes/i;
+    s/^\d+:error:\d+(?:E\d+)?(:SSL routines:ssl3_read_bytes:[^:]+:).*(:SSL alert number \d\d)$/pppp:error:dddddddd$1\[...\]$2/;
 
     # gnutls version variances
     next if /^Error in the pull function./;
@@ -924,14 +925,18 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     s/^Exim version .*/Exim version x.yz ..../;
 
-    # Debugging lines for Exim terminations
+    # Debugging lines for Exim terminations and process-generation
 
     s/(?<=^>>>>>>>>>>>>>>>> Exim pid=)\d+(?= terminating)/pppp/;
+    s/^(proxy-proc \w{5}-pid) \d+$/$1 pppp/;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.
 
     s/\b(gethostbyname2?|\bgetipnodebyname)(\(af=inet\))?/get[host|ipnode]byname[2]/;
+
+    # we don't care what TZ enviroment the testhost was running
+    next if /^Reset TZ to/;
 
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
@@ -1081,9 +1086,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     if (s/(with \$received_protocol)\}\} \$\{if def:tls_cipher \{\(\$tls_cipher\)\n$/$1/)
       {
       $_ .= <IN>;
-      s/\s+\}\}(?=\(Exim )/\}\} /;
+      s/[\s╎]+\}\}(?=\(Exim )/\}\} /;
       }
-    if (/^  condition: def:tls_cipher$/)
+    if (/^ ├──condition: def:tls_cipher$/)
       {
       <IN>; <IN>; <IN>; <IN>; <IN>; <IN>;
       <IN>; <IN>; <IN>; <IN>; <IN>; next;
@@ -1111,8 +1116,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
 
     # Specific pointer values reported for DB operations change from run to run
-    s/^(returned from EXIM_DBOPEN: 0x)[0-9a-f]+/$1AAAAAAAA/;
-    s/^(EXIM_DBCLOSE.0x)[0-9a-f]+/$1AAAAAAAA/;
+    s/^(returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
+    s/^(EXIM_DBCLOSE.)(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
@@ -1168,6 +1173,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # CHUNKING: exact sizes depend on hostnames in headers
     s/(=>.* K C="250- \d)\d+ (byte chunk, total \d)\d+/$1nn $2nn/;
+
+    # openssl version variances
+    s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;
     }
 
   # ======== All files other than stderr ========
@@ -1530,10 +1538,11 @@ $munges =
                   dkim_(canon|domain|private_key|selector|sign_headers|strict|hash|identity)
                   |gnutls_require_(kx|mac|protocols)
                   |hosts_(requ(est|ire)|try)_(dane|ocsp)
-                  |hosts_(avoid|nopass|require|verify_avoid)_tls
+                  |hosts_(avoid|nopass|noproxy|require|verify_avoid)_tls
                   |socks_proxy
                   |tls_[^ ]*
-                  )($|[ ]=)/x' },
+                  )($|[ ]=)/x'
+    },
 
     'sys_bindir' =>
     { 'mainlog' => 's%/(usr/(local/)?)?bin/%SYSBINDIR/%' },
@@ -1549,6 +1558,12 @@ $munges =
 
     'timeout_errno' =>		# actual errno differs Solaris vs. Linux
     { 'mainlog' => 's/(host deferral .* errno) <\d+> /$1 <EEE> /' },
+
+    'peer_terminated_conn' =>	# actual error differs FreedBSD vs. Linux
+    { 'stderr' => 's/^(  SMTP\()Connection reset by peer(\)<<)$/$1closed$2/' },
+
+    'perl_variants' =>		# result of hash-in-scalar-context changed from bucket-fill to keycount
+    { 'stdout' => 's%^> X/X$%> X%' },
   };
 
 
@@ -3924,8 +3939,12 @@ foreach $test (@test_list)
 	}
         if ($force_continue)
           {
-          print "\nstderr tail:\n";
+          print "\nstdout tail:\n";
+          print "==================>\n";
+          system("tail -20 test-stdout");
           print "===================\n";
+          print "stderr tail:\n";
+          print "==================>\n";
           system("tail -20 test-stderr");
           print "===================\n";
           print "... continue forced\n";

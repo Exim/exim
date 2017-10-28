@@ -5,7 +5,7 @@
 # optional, Local/* files at the front of this file, to create Makefile in the
 # build directory.
 #
-# Copyright (c) The Exim Maintainers 2016
+# Copyright (c) The Exim Maintainers 2017
 
 SHELL      = $(MAKE_SHELL)
 SCRIPTS    = ../scripts
@@ -135,6 +135,7 @@ OBJ_MACRO = macro_predef.o \
 	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
 	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
 	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-tls.o\
+	macro-dkim.o
 
 $(OBJ_MACRO):	$(MACRO_HSRC)
 
@@ -222,6 +223,9 @@ macro-spa.o :		auths/spa.c
 macro-tls.o:		auths/tls.c
 	@echo "$(CC) -DMACRO_PREDEF auths/tls.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/tls.c
+macro-dkim.o:		dkim.c
+	@echo "$(CC) -DMACRO_PREDEF dkim.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ dkim.c
 
 macro_predef: $(OBJ_MACRO)
 	@echo "$(LNCC) -o $@"

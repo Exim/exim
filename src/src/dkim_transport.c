@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2016 */
+/* Copyright (c) University of Cambridge 1995 - 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Transport shim for dkim signing */
@@ -37,9 +37,17 @@ return TRUE;
 /* Send the file at in_fd down the output fd */
 
 static BOOL
-dkt_send_file(int out_fd, int in_fd, off_t off, size_t size)
+dkt_send_file(int out_fd, int in_fd, off_t off
+#ifdef OS_SENDFILE
+  , size_t size
+#endif
+  )
 {
+#ifdef OS_SENDFILE
 DEBUG(D_transport) debug_printf("send file fd=%d size=%u\n", out_fd, (unsigned)(size - off));
+#else
+DEBUG(D_transport) debug_printf("send file fd=%d\n", out_fd);
+#endif
 
 /*XXX should implement timeout, like transport_write_block_fd() ? */
 
@@ -297,7 +305,11 @@ if (options & topt_use_bdat)
 if(dlen > 0 && !transport_write_block(tctx, dkim_signature->s, dlen, TRUE))
   goto err;
 
-if (!dkt_send_file(tctx->u.fd, dkim_fd, 0, k_file_size))
+if (!dkt_send_file(tctx->u.fd, dkim_fd, 0
+#ifdef OS_SENDFILE
+  , k_file_size
+#endif
+  ))
   {
   save_errno = errno;
   rc = FALSE;
