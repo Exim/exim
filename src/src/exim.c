@@ -3793,12 +3793,9 @@ NOTE: immediatly after opening the configuration file we change the working
 directory to "/"! Later we change to $spool_directory. We do it there, because
 during readconf_main() some expansion takes place already. */
 
-/* Store the initial cwd before we change directories */
-if ((initial_cwd = os_getcwd(NULL, 0)) == NULL)
-  {
-  perror("exim: can't get the current working directory");
-  exit(EXIT_FAILURE);
-  }
+/* Store the initial cwd before we change directories.  Can be NULL if the
+dir has already been unlinked. */
+initial_cwd = os_getcwd(NULL, 0);
 
 /* checking:
     -be[m] expansion test        -
