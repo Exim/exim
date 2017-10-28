@@ -390,7 +390,7 @@ sub process_criteria {
     } else {
       $c[-1]{cmp} .= $G::negate ? " ? 0 : 1" : " ? 1 : 0";
     }
-    # support the each_* psuedo variables.  Steal the criteria off of the
+    # support the each_* pseudo variables.  Steal the criteria off of the
     # queue for special processing later
     if ($c[-1]{var} =~ /^each_(recipients(_(un)?del)?)$/) {
       my $var = $1;
@@ -1597,7 +1597,7 @@ TRUE if, under normal circumstances, Exim will not try to deliver the message.
 
 =item S + $each_recipients
 
-This is a psuedo variable which allows you to apply a test against each address in $recipients individually.  Whereas '$recipients =~ /@aol.com/' will match if any recipient address contains aol.com, '$each_recipients =~ /@aol.com$/' will only be true if every recipient matches that pattern.  Note that this obeys --and or --or being set.  Using it with --or is very similar to just matching against $recipients, but with the added benefit of being able to use anchors at the beginning and end of each recipient address.
+This is a pseudo variable which allows you to apply a test against each address in $recipients individually.  Whereas '$recipients =~ /@aol.com/' will match if any recipient address contains aol.com, '$each_recipients =~ /@aol.com$/' will only be true if every recipient matches that pattern.  Note that this obeys --and or --or being set.  Using it with --or is very similar to just matching against $recipients, but with the added benefit of being able to use anchors at the beginning and end of each recipient address.
 
 =item S + $each_recipients_del
 
