@@ -1,8 +1,8 @@
-> BadCrypt: no
-> MySecret: yes
-> MySecret: no
-> MySecret: yes
-> MySecret: no
+> badCrypt: no
+> mySecret: yes
+> mySecret: no
+> mySecret: yes
+> mySecret: no
 > 
 > crypt16: yes
 > crypt16: yes
@@ -23,9 +23,9 @@
 > 
 > # Combinations
 > 
-> Y:      Y
-> Y:      Y
-> Y:      Y
-> N:      N
-> N:      N
+> y:      Y
+> y:      Y
+> y:      Y
+> n:      N
+> n:      N
 > 

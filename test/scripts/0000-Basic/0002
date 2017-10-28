@@ -198,7 +198,7 @@ base32d: 32 ${base32d:${base32:32}}
 base32d: 42 ${base32d:${base32:42}}
 base32d error: ABC ${base32d:ABC}
 
-The base62 operator is actually a base36 operator in the Darwin and Cygwin
+the base62 operator is actually a base36 operator in the Darwin and Cygwin
 environments. Write cunning tests that produce the same output in both cases,
 while doing a reasonable check.
 
@@ -531,8 +531,8 @@ abc:   ${lookup{abc}wildlsearch{DIR/aux-var/0002.wild}}
 a.b.c: ${lookup{a.b.c}wildlsearch{DIR/aux-var/0002.wild}}
 ab.c:  ${lookup{ab.c}wildlsearch{DIR/aux-var/0002.wild}}
 xyz:   ${lookup{xyz}wildlsearch{DIR/aux-var/0002.wild}}
-Xyz:   ${lookup{Xyz}wildlsearch{DIR/aux-var/0002.wild}}
-Zyz:   ${lookup{Zyz}wildlsearch{DIR/aux-var/0002.wild}}
+.Xyz:   ${lookup{Xyz}wildlsearch{DIR/aux-var/0002.wild}}
+.Zyz:   ${lookup{Zyz}wildlsearch{DIR/aux-var/0002.wild}}
 a b:   ${lookup{a b}wildlsearch{DIR/aux-var/0002.wild}}
 a  b:  ${lookup{a  b}wildlsearch{DIR/aux-var/0002.wild}}
 a:b:   ${lookup{a:b}wildlsearch{DIR/aux-var/0002.wild}}
@@ -547,8 +547,8 @@ abc:   ${lookup{abc}nwildlsearch{DIR/aux-var/0002.wild}}
 a.b.c: ${lookup{a.b.c}nwildlsearch{DIR/aux-var/0002.wild}}
 ab.c:  ${lookup{ab.c}nwildlsearch{DIR/aux-var/0002.wild}}
 xyz:   ${lookup{xyz}nwildlsearch{DIR/aux-var/0002.wild}}
-Xyz:   ${lookup{Xyz}nwildlsearch{DIR/aux-var/0002.wild}}
-Zyz:   ${lookup{Zyz}nwildlsearch{DIR/aux-var/0002.wild}}
+.Xyz:   ${lookup{Xyz}nwildlsearch{DIR/aux-var/0002.wild}}
+.Zyz:   ${lookup{Zyz}nwildlsearch{DIR/aux-var/0002.wild}}
 a b:   ${lookup{a b}nwildlsearch{DIR/aux-var/0002.wild}}
 a  b:  ${lookup{a  b}nwildlsearch{DIR/aux-var/0002.wild}}
 a:b:   ${lookup{a:b}nwildlsearch{DIR/aux-var/0002.wild}}
@@ -567,10 +567,10 @@ a\\:Xb: ${lookup{a\\:Xb}nwildlsearch{DIR/aux-var/0002.wild}}
 
 # Some tests of case-(in)dependence
 
-MiXeD-CD:  ${lookup{MiXeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
-MixeD-CD:  ${lookup{MixeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
-MiXeD-Ncd: ${lookup{MiXeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
-MixeD-Ncd: ${lookup{MixeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+.MiXeD-CD:  ${lookup{MiXeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+.MixeD-CD:  ${lookup{MixeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+.MiXeD-Ncd: ${lookup{MiXeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+.MixeD-Ncd: ${lookup{MixeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
 
 # IP address (CIDR) lookups
 
@@ -614,12 +614,12 @@ ${extract{B}{A=1 B=2 C=3}}
 ${extract{ B }{A=1 B=2 C=3}{$value}{NOT FOUND}}
 ${extract{2}{:}{1:2:3}}
 ${extract{ 2 }{:}{1:2:3}{$value}{NOT FOUND}}
-Empty:<${extract{D}{A=1 B=2 C=3}}>
-Empty:<${extract{4}{:}{1:2:3}}>
+empty:<${extract{D}{A=1 B=2 C=3}}>
+empty:<${extract{4}{:}{1:2:3}}>
 ${extract{C}{A=1 B=2 C=3}{<$value>}}
 ${extract{3}{:}{1:2:3}{<$value>}}
-Empty:<${extract{Z}{A=1 B=2 C=3}{<$value>}}>
-Empty:<${extract{4}{:}{1:2:3}{<$value>}}>
+empty:<${extract{Z}{A=1 B=2 C=3}{<$value>}}>
+empty:<${extract{4}{:}{1:2:3}{<$value>}}>
 ${extract{Z}{A=1 B=2 C=3}{<$value>}{no Z}}
 ${extract{4}{:}{1:2:3}{<$value>}{no 4}}
 ${extract{Z}{A=1 B=2 C=3}{<$value>}fail}
@@ -698,8 +698,8 @@ abcdea abc z   ${tr{abcdea}{abc}{z}}
 abcd      ${rfc2047:abcd}
 <:abcd:>  ${rfc2047:<:abcd:>}
 <:ab cd:> ${rfc2047:<:ab cd:>}
-Long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit}
-Long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit}
+long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit}
+long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit}
 
 # RFC 2047 decode
 
@@ -739,21 +739,21 @@ ${if exists{/non/exist/file}{${readfile{/non/exist/file}}}{non-exist}}
 # Calling a command
 
 ${run{DIR/aux-fixed/0002.runfile 0}}
-RC=$runrc
+rc=$runrc
 ${run{DIR/aux-fixed/0002.runfile 0}{1}{2}}
-RC=$runrc
+rc=$runrc
 ${run{DIR/aux-fixed/0002.runfile 0}{$value}{2}}
-RC=$runrc
+rc=$runrc
 ${run{DIR/aux-fixed/0002.runfile 1}{$value}{2}}
-RC=$runrc
+rc=$runrc
 ${run{DIR/aux-fixed/0002.runfile 1}{$value}{$value}}
-RC=$runrc
+rc=$runrc
 ${run{DIR/test-nonexist}{Y}{N}}
-RC=$runrc
+rc=$runrc
 >>${run{DIR/bin/iefbr14}}<<
-RC=$runrc
+rc=$runrc
 ${if eq{1}{2}{${run{/non/exist}}}{1!=2}}
-RC=$runrc
+rc=$runrc
 
 # PRVS
 
