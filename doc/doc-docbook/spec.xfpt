@@ -2794,7 +2794,7 @@ of lookups, you will just get the same result as before.
 .new
 Macro processing is done on lines before string-expansion: new macros can be
 defined and macros will be expanded.
-Because macros in thc config file are often used for secrets, those are only
+Because macros in the config file are often used for secrets, those are only
 available to admin users.
 .wen
 
