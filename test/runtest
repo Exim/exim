@@ -3408,6 +3408,8 @@ else
 tests_exit(-1, "Failed to unlink $log_summary_filename: $!")
   if not unlink($log_summary_filename) and -e $log_summary_filename;
 
+print "Perl version:" . $];
+
 ##################################################
 #        Create a list of available tests        #
 ##################################################
