@@ -3381,6 +3381,7 @@ while (*filter->pc)
             {
             uschar *mime_body,*reason_end;
             static const uschar nlnl[]="\r\n\r\n";
+	    gstring * g;
 
             for
               (

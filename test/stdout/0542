@@ -1,10 +1,12 @@
-> From: Himself <himself@there.tld>
-> Subject: The subject is not the object
+> from: Himself <himself@there.tld>
+> subject: The subject is not the object
 > message_body_size=71
 > message_id=10HmaX-0005vi-00
 > message_exim_id=10HmaX-0005vi-00
 > max_received_linelength=70
 > recipients=userx@test.x, usery@test.ex
+> Defined macro 'TESTING_MACROS'
+> (userx@test.x, usery@test.ex)
 > 
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
@@ -13,8 +15,8 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaY-0005vi-00
 221 myhost.test.ex closing connection
-> From: Himself <himself@there.tld>
-> Subject: The subject is not the object
+> from: Himself <himself@there.tld>
+> subject: The subject is not the object
 > message_body_size=76
 > message_id=10HmaY-0005vi-00
 > message_exim_id=10HmaY-0005vi-00

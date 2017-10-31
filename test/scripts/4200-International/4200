@@ -124,13 +124,13 @@ conversion: ${utf8_domain_from_alabel:german.xn--strae-oqa.de}
 imapfolder conversions:
 
 ${imapfolder {Foo/Bar}}
-Foo.Bar
+.  Foo.Bar
 
 ${imapfolder {Foo/Bar} {.} {/}}
-Foo&AC8-Bar
+.  Foo&AC8-Bar
 
 ${imapfolder{Räksmörgås}}
-R&AOQ-ksm&APY-rg&AOU-s
+.  R&AOQ-ksm&APY-rg&AOU-s
 
 
 ****

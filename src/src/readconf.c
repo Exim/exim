@@ -615,7 +615,10 @@ m->namelen = Ustrlen(name);
 m->replen = Ustrlen(val);
 m->name = name;
 m->replacement = val;
-mlast->next = m;
+if (mlast)
+  mlast->next = m;
+else
+  macros = m;
 mlast = m;
 return m;
 }
@@ -630,11 +633,11 @@ non-command line, macros is permitted using '==' instead of '='.
 Arguments:
   s            points to the start of the logical line
 
-Returns:       nothing
+Returns:       FALSE iff fatal error
 */
 
-static void
-read_macro_assignment(uschar *s)
+BOOL
+macro_read_assignment(uschar *s)
 {
 uschar name[64];
 int namelen = 0;
@@ -644,15 +647,21 @@ macro_item *m;
 while (isalnum(*s) || *s == '_')
   {
   if (namelen >= sizeof(name) - 1)
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+    {
+    log_write(0, LOG_PANIC|LOG_CONFIG_IN,
       "macro name too long (maximum is " SIZE_T_FMT " characters)", sizeof(name) - 1);
+    return FALSE;
+    }
   name[namelen++] = *s++;
   }
 name[namelen] = 0;
 
 while (isspace(*s)) s++;
 if (*s++ != '=')
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "malformed macro definition");
+  {
+  log_write(0, LOG_PANIC|LOG_CONFIG_IN, "malformed macro definition");
+  return FALSE;
+  }
 
 if (*s == '=')
   {
@@ -675,15 +684,21 @@ for (m = macros; m; m = m->next)
   if (Ustrcmp(m->name, name) == 0)
     {
     if (!m->command_line && !redef)
-      log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "macro \"%s\" is already "
+      {
+      log_write(0, LOG_CONFIG|LOG_PANIC, "macro \"%s\" is already "
        "defined (use \"==\" if you want to redefine it", name);
+      return FALSE;
+      }
     break;
     }
 
   if (m->namelen < namelen && Ustrstr(name, m->name) != NULL)
-    log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
+    {
+    log_write(0, LOG_CONFIG|LOG_PANIC, "\"%s\" cannot be defined as "
       "a macro because previously defined macro \"%s\" is a substring",
       name, m->name);
+    return FALSE;
+    }
 
   /* We cannot have this test, because it is documented that a substring
   macro is permitted (there is even an example).
@@ -697,7 +712,7 @@ for (m = macros; m; m = m->next)
 
 /* Check for an overriding command-line definition. */
 
-if (m && m->command_line) return;
+if (m && m->command_line) return TRUE;
 
 /* Redefinition must refer to an existing macro. */
 
@@ -708,17 +723,118 @@ if (redef)
     m->replacement = string_copy(s);
     }
   else
-    log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "can't redefine an undefined macro "
+    {
+    log_write(0, LOG_CONFIG|LOG_PANIC, "can't redefine an undefined macro "
       "\"%s\"", name);
+    return FALSE;
+    }
 
 /* We have a new definition. */
 else
   (void) macro_create(string_copy(name), string_copy(s), FALSE);
+return TRUE;
 }
 
 
 
 
+
+/* Process line for macros. The line is in big_buffer starting at offset len.
+Expand big_buffer if needed.  Handle definitions of new macros, and
+imacro expansions, rewriting the line in thw buffer.
+
+Arguments:
+ len		Offset in buffer of start of line
+ newlen		Pointer to offset of end of line, updated on return
+ macro_found	Pointer to return that a macro was expanded
+
+Return: pointer to first nonblank char in line
+*/
+
+uschar *
+macros_expand(int len, int * newlen, BOOL * macro_found)
+{
+uschar * ss = big_buffer + len;
+uschar * s;
+macro_item * m;
+
+/* Find the true start of the physical line - leading spaces are always
+ignored. */
+
+while (isspace(*ss)) ss++;
+
+/* Process the physical line for macros. If this is the start of the logical
+line, skip over initial text at the start of the line if it starts with an
+upper case character followed by a sequence of name characters and an equals
+sign, because that is the definition of a new macro, and we don't do
+replacement therein. */
+
+s = ss;
+if (len == 0 && isupper(*s))
+  {
+  while (isalnum(*s) || *s == '_') s++;
+  while (isspace(*s)) s++;
+  if (*s != '=') s = ss;          /* Not a macro definition */
+  }
+
+/* Skip leading chars which cannot start a macro name, to avoid multiple
+pointless rescans in Ustrstr calls. */
+
+while (*s && !isupper(*s) && *s != '_') s++;
+
+/* For each defined macro, scan the line (from after XXX= if present),
+replacing all occurrences of the macro. */
+
+*macro_found = FALSE;
+for (m = macros; m; m = m->next)
+  {
+  uschar * p, *pp;
+  uschar * t = s;
+
+  while ((p = Ustrstr(t, m->name)) != NULL)
+    {
+    int moveby;
+
+/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss); */
+    /* Expand the buffer if necessary */
+
+    while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)
+      {
+      int newsize = big_buffer_size + BIG_BUFFER_SIZE;
+      uschar *newbuffer = store_malloc(newsize);
+      memcpy(newbuffer, big_buffer, *newlen + 1);
+      p = newbuffer  + (p - big_buffer);
+      s = newbuffer  + (s - big_buffer);
+      ss = newbuffer + (ss - big_buffer);
+      t = newbuffer  + (t - big_buffer);
+      big_buffer_size = newsize;
+      store_free(big_buffer);
+      big_buffer = newbuffer;
+      }
+
+    /* Shuffle the remaining characters up or down in the buffer before
+    copying in the replacement text. Don't rescan the replacement for this
+    same macro. */
+
+    pp = p + m->namelen;
+    if ((moveby = m->replen - m->namelen) != 0)
+      {
+      memmove(p + m->replen, pp, (big_buffer + *newlen) - pp + 1);
+      *newlen += moveby;
+      }
+    Ustrncpy(p, m->replacement, m->replen);
+    t = p + m->replen;
+    while (*t && !isupper(*t) && *t != '_') t++;
+    *macro_found = TRUE;
+    }
+  }
+
+/* An empty macro replacement at the start of a line could mean that ss no
+longer points to the first non-blank character. */
+
+while (isspace(*ss)) ss++;
+return ss;
+}
 
 /*************************************************
 *            Read configuration line             *
@@ -749,7 +865,6 @@ int startoffset = 0;         /* To first non-blank char in logical line */
 int len = 0;                 /* Of logical line so far */
 int newlen;
 uschar *s, *ss;
-macro_item *m;
 BOOL macro_found;
 
 /* Loop for handling continuation lines, skipping comments, and dealing with
@@ -810,82 +925,7 @@ for (;;)
     newlen += Ustrlen(big_buffer + newlen);
     }
 
-  /* Find the true start of the physical line - leading spaces are always
-  ignored. */
-
-  ss = big_buffer + len;
-  while (isspace(*ss)) ss++;
-
-  /* Process the physical line for macros. If this is the start of the logical
-  line, skip over initial text at the start of the line if it starts with an
-  upper case character followed by a sequence of name characters and an equals
-  sign, because that is the definition of a new macro, and we don't do
-  replacement therein. */
-
-  s = ss;
-  if (len == 0 && isupper(*s))
-    {
-    while (isalnum(*s) || *s == '_') s++;
-    while (isspace(*s)) s++;
-    if (*s != '=') s = ss;          /* Not a macro definition */
-    }
-
-  /* Skip leading chars which cannot start a macro name, to avoid multiple
-  pointless rescans in Ustrstr calls. */
-
-  while (*s && !isupper(*s) && *s != '_') s++;
-
-  /* For each defined macro, scan the line (from after XXX= if present),
-  replacing all occurrences of the macro. */
-
-  macro_found = FALSE;
-  for (m = macros; m; m = m->next)
-    {
-    uschar * p, *pp;
-    uschar * t = s;
-
-    while ((p = Ustrstr(t, m->name)) != NULL)
-      {
-      int moveby;
-
-/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss); */
-      /* Expand the buffer if necessary */
-
-      while (newlen - m->namelen + m->replen + 1 > big_buffer_size)
-        {
-        int newsize = big_buffer_size + BIG_BUFFER_SIZE;
-        uschar *newbuffer = store_malloc(newsize);
-        memcpy(newbuffer, big_buffer, newlen + 1);
-        p = newbuffer  + (p - big_buffer);
-        s = newbuffer  + (s - big_buffer);
-        ss = newbuffer + (ss - big_buffer);
-        t = newbuffer  + (t - big_buffer);
-        big_buffer_size = newsize;
-        store_free(big_buffer);
-        big_buffer = newbuffer;
-        }
-
-      /* Shuffle the remaining characters up or down in the buffer before
-      copying in the replacement text. Don't rescan the replacement for this
-      same macro. */
-
-      pp = p + m->namelen;
-      if ((moveby = m->replen - m->namelen) != 0)
-        {
-        memmove(p + m->replen, pp, (big_buffer + newlen) - pp + 1);
-        newlen += moveby;
-        }
-      Ustrncpy(p, m->replacement, m->replen);
-      t = p + m->replen;
-      while (*t && !isupper(*t) && *t != '_') t++;
-      macro_found = TRUE;
-      }
-    }
-
-  /* An empty macro replacement at the start of a line could mean that ss no
-  longer points to the first non-blank character. */
-
-  while (isspace(*ss)) ss++;
+  ss = macros_expand(len, &newlen, &macro_found);
 
   /* Check for comment lines - these are physical lines. */
 
@@ -3277,7 +3317,8 @@ while ((s = get_config_line()))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "found unexpected BOM (Byte Order Mark)");
 
-  if (isupper(s[0])) read_macro_assignment(s);
+  if (isupper(s[0]))
+    { if (!macro_read_assignment(s)) exim_exit(EXIT_FAILURE, US""); }
 
   else if (Ustrncmp(s, "domainlist", 10) == 0)
     read_named_list(&domainlist_anchor, &domainlist_count,
@@ -3724,7 +3765,7 @@ while ((buffer = get_config_line()) != NULL)
       (d->info->init)(d);
       d = NULL;
       }
-    read_macro_assignment(buffer);
+    if (!macro_read_assignment(buffer)) exim_exit(EXIT_FAILURE, US"");
     continue;
     }
 
@@ -4225,7 +4266,7 @@ between ACLs. */
 
 acl_line = get_config_line();
 
-while(acl_line != NULL)
+while(acl_line)
   {
   uschar name[64];
   tree_node *node;
@@ -4234,7 +4275,7 @@ while(acl_line != NULL)
   p = readconf_readname(name, sizeof(name), acl_line);
   if (isupper(*name) && *p == '=')
     {
-    read_macro_assignment(acl_line);
+    if (!macro_read_assignment(acl_line)) exim_exit(EXIT_FAILURE, US"");
     acl_line = get_config_line();
     continue;
     }
@@ -4278,7 +4319,7 @@ log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "local_scan() options not supported: "
 #else
 
 uschar *p;
-while ((p = get_config_line()) != NULL)
+while ((p = get_config_line()))
   {
   (void) readconf_handle_option(p, local_scan_options, local_scan_options_count,
     NULL, US"local_scan option \"%s\" unknown");
@@ -4368,14 +4409,14 @@ while(next_section[0] != 0)
 void
 readconf_save_config(const uschar *s)
 {
-  save_config_line(string_sprintf("# Exim Configuration (%s)",
-    running_in_test_harness ? US"X" : s));
+save_config_line(string_sprintf("# Exim Configuration (%s)",
+  running_in_test_harness ? US"X" : s));
 }
 
 static void
 save_config_position(const uschar *file, int line)
 {
-  save_config_line(string_sprintf("# %d \"%s\"", line, file));
+save_config_line(string_sprintf("# %d \"%s\"", line, file));
 }
 
 /* Append a pre-parsed logical line to the config lines store,

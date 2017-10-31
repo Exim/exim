@@ -1,11 +1,11 @@
 # crypteq expansions
 
 exim -be
-BadCrypt: ${if crypteq{MySecret}{}{yes}{no}}
-MySecret: ${if crypteq{MySecret}{azrazPWCQJhyg}{yes}{no}}
-MySecret: ${if crypteq{MySecret}{aarazPWCQJhyg}{yes}{no}}
-MySecret: ${if crypteq{MySecret}{\{crypt\}azrazPWCQJhyg}{yes}{no}}
-MySecret: ${if crypteq{MySecret}{\{CRYPT\}zzrazPWCQJhyg}{yes}{no}}
+badCrypt: ${if crypteq{MySecret}{}{yes}{no}}
+mySecret: ${if crypteq{MySecret}{azrazPWCQJhyg}{yes}{no}}
+mySecret: ${if crypteq{MySecret}{aarazPWCQJhyg}{yes}{no}}
+mySecret: ${if crypteq{MySecret}{\{crypt\}azrazPWCQJhyg}{yes}{no}}
+mySecret: ${if crypteq{MySecret}{\{CRYPT\}zzrazPWCQJhyg}{yes}{no}}
 
 crypt16: ${if crypteq{MySecret}{\{crypt16\}azrazPWCQJhyg}{yes}{no}}
 crypt16: ${if crypteq{MySecretRhubarb}{\{crypt\}azrazPWCQJhyg}{yes}{no}}
@@ -26,9 +26,9 @@ abd:  ${if crypteq{abd}{\{sha1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{n
 
 # Combinations
 
-Y:      ${if and {{crypteq{MySecret}{azrazPWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
-Y:      ${if or  {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
-Y:      ${if or  {{crypteq{MySecret}{azrazPWCQJhyg}}{exists{/etc/pxsswd}}}{Y}{N}}
-N:      ${if or  {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/pxsswd}}}{Y}{N}}
-N:      ${if and {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
+y:      ${if and {{crypteq{MySecret}{azrazPWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
+y:      ${if or  {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
+y:      ${if or  {{crypteq{MySecret}{azrazPWCQJhyg}}{exists{/etc/pxsswd}}}{Y}{N}}
+n:      ${if or  {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/pxsswd}}}{Y}{N}}
+n:      ${if and {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
 ****
