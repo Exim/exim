@@ -244,7 +244,8 @@ $pattern = quotemeta $pattern if $literal;
 # Start a pager if output goes to a terminal
 if (-t 1 and $use_pager)
   {
-  foreach ($ENV{PAGER}//(), 'less', 'more')
+  # for perl >= v5.10.x: foreach ($ENV{PAGER}//(), 'less', 'more')
+  foreach (defined $ENV{PAGER} ? $ENV{PAGER} : (), 'less', 'more')
     {
     local $ENV{LESS} .= ' --no-init --quit-if-one-screen';
     open(my $pager, '|-', $_) or next;
