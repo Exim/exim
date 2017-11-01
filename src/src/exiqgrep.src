@@ -49,7 +49,7 @@ if ($^O eq 'darwin') { # aka MacOS X
 if ($ARGV[0] eq '--version') {
     print basename($0) . ": $0\n",
         "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
-        "perl(runtime): $^V\n";
+        "perl(runtime): $]\n";
         exit 0;
 }
 

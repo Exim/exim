@@ -233,7 +233,7 @@ GetOptions(
       'version'        => sub {
             print basename($0) . ": $0\n",
                 "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
-                "perl(runtime): $^V\n";
+                "perl(runtime): $]\n";
             exit 0;
       },
 ) and @ARGV or pod2usage;

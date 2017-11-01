@@ -3364,7 +3364,7 @@ if (system("cp $parm_exim_dir/eximstats eximdir") != 0)
 
 # Collect some version information
 print '-' x 78, "\n";
-print "Perl version for runtest: $^V\n";
+print "Perl version for runtest: $]\n";
 foreach (map { "./eximdir/$_" } qw(exigrep exinext eximstats)) {
   # fold (or unfold?) multiline output into a one-liner
   print join(', ', map { chomp; $_ } `$_ --version`), "\n";
