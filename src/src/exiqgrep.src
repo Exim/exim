@@ -19,7 +19,9 @@
 
 use strict;
 BEGIN { pop @INC if $INC[-1] eq '.' };
+
 use Getopt::Std;
+use File::Basename;
 
 # Have this variable point to your exim binary.
 my $exim = 'BIN_DIRECTORY/exim';
@@ -43,6 +45,13 @@ if ($^O eq 'darwin') { # aka MacOS X
  } else {
   $base = 62;
 };
+
+if ($ARGV[0] eq '--version') {
+    print basename($0) . ": $0\n",
+        "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+        "perl(runtime): $^V\n";
+        exit 0;
+}
 
 getopts('hf:r:y:o:s:C:zxlibRca',\%opt);
 if ($ARGV[0]) { &help; exit;}

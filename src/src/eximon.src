@@ -18,6 +18,13 @@
 # X11_LD_LIBRARY
 
 # PROCESSED_FLAG
+#
+if test "x$1" = x--version
+then
+    echo "`basename $0`: $0"
+    echo "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION"
+    exit 0
+fi
 
 # See if caller wants to invoke gdb
 

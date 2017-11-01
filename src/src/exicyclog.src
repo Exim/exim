@@ -72,6 +72,11 @@ while [ $# -gt 0 ] ; do
   -k) keep=$2
       shift
       ;;
+   --version)
+      echo "`basename $0`: $0"
+      echo "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION"
+      exit 0
+      ;;
    *) echo "** exicyclog: unknown option $1"
       exit 1
       ;;

@@ -52,6 +52,13 @@ signal=EXIWHAT_KILL_SIGNAL
 # See if this installation is using the esoteric "USE_NODE" feature of Exim,
 # in which it uses the host's name as a suffix for the configuration file name.
 
+if test "x$1" = x--version
+then
+    echo "`basename $0`: $0"
+    echo "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION"
+    exit 0
+fi
+
 if [ "CONFIGURE_FILE_USE_NODE" = "yes" ]; then
   hostsuffix=.`uname -n`
 fi
