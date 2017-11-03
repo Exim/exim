@@ -250,16 +250,19 @@ pdkim_free_ctx(pdkim_ctx *ctx)
 /* -------------------------------------------------------------------------- */
 /* Matches the name of the passed raw "header" against
    the passed colon-separated "tick", and invalidates
-   the entry in tick. Returns OK or fail-code */
-/*XXX might be safer done using a pdkim_stringlist for "tick" */
+   the entry in tick.  Entries can be prefixed for multi- or over-signing,
+   in which case do not invalidate.
+
+   Returns OK for a match, or fail-code
+*/
 
 static int
 header_name_match(const uschar * header, uschar * tick)
 {
-uschar * hname;
-uschar * lcopy;
-uschar * p;
-uschar * q;
+const uschar * ticklist = tick;
+int sep = ':';
+BOOL multisign;
+uschar * hname, * p, * ele;
 uschar * hcolon = Ustrchr(header, ':');		/* Get header name */
 
 if (!hcolon)
@@ -268,27 +271,22 @@ if (!hcolon)
 /* if we had strncmpic() we wouldn't need this copy */
 hname = string_copyn(header, hcolon-header);
 
-/* Copy tick-off list locally, so we can punch zeroes into it */
-p = lcopy = string_copy(tick);
-
-for (q = Ustrchr(p, ':'); q; q = Ustrchr(p, ':'))
+while (p = US ticklist, ele = string_nextinlist(&ticklist, &sep, NULL, 0))
   {
-  *q = '\0';
-  if (strcmpic(p, hname) == 0)
-    goto found;
-
-  p = q+1;
+  switch (*ele)
+  {
+  case '=': case '+':	multisign = TRUE; ele++; break;
+  default:		multisign = FALSE; break;
   }
 
-if (strcmpic(p, hname) == 0)
-  goto found;
-
+  if (strcmpic(ele, hname) == 0)
+    {
+    if (!multisign)
+      *p = '_';	/* Invalidate this header name instance in tick-off list */
+    return PDKIM_OK;
+    }
+  }
 return PDKIM_FAIL;
-
-found:
-  /* Invalidate header name instance in tick-off list */
-  tick[p-lcopy] = '_';
-  return PDKIM_OK;
 }
 
 
@@ -1445,11 +1443,17 @@ for (sig = ctx->sig; sig; sig = sig->next)
 	}
       }
 
-    /* Any headers we wanted to sign but were not present must also be listed */
+    /* Any headers we wanted to sign but were not present must also be listed.
+    Ignore elements that have been ticked-off or are marked as never-oversign. */
+
     l = sig->sign_headers;
     while((s = string_nextinlist(&l, &sep, NULL, 0)))
-      if (*s != '_')
+      {
+      if (*s == '+')			/* skip oversigning marker */
+        s++;
+      if (*s != '_' && *s != '=')
 	g = string_append_listele(g, ':', s);
+      }
     sig->headernames = string_from_gstring(g);
 
     /* Create signature header with b= omitted */

@@ -18,6 +18,39 @@ From: nobody@example.com
 content
 ****
 #
+# no header, multi-sign
+exim -DOPT=From:=X-Mine -odf b10@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# double header, multi-sign
+exim -DOPT=From:=X-Mine -odf b12@test.ex
+From: nobody@example.com
+X-mine: one
+X-mine: two
+
+content
+****
+#
+#
+# no header, always-oversign
+exim -DOPT=+X-Mine -odf b20@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# double header, always-oversign
+exim -DOPT=+X-Mine -odf b22@test.ex
+From: nobody@example.com
+X-mine: one
+X-mine: two
+
+content
+****
+#
 # default header set
 exim -DHEADERS_MAXSIZE=y -odf c@test.ex
 From: nobody@example.com

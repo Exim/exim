@@ -38608,6 +38608,17 @@ When unspecified, the header names listed in RFC4871 will be used,
 whether or not each header is present in the message.
 The default list is available for the expansion in the macro
 "_DKIM_SIGN_HEADERS".
+
+If a name is repeated, multiple headers by that name (or the absence therof)
+will be signed.  The textually later headers in the headers part of the
+message are signed first, if there are multiples.
+
+A name can be prefixed with either an '=' or a '+' character.
+If an '=' prefix is used, all headers that are present with this name
+will be signed.
+If a '+' prefix if used, all headers that are present with this name
+will be signed, and one signtature added for a missing header with the
+name will be appended.
 .wen
 
 
