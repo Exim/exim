@@ -28999,6 +28999,7 @@ This modifier puts a value into one of the ACL variables (see section
 
 
 .vitem &*udpsend*&&~=&~<&'parameters'&>
+.cindex "UDP communications"
 This modifier sends a UDP packet, for purposes such as statistics
 collection or behaviour monitoring. The parameters are expanded, and
 the result of the expansion must be a colon-separated list consisting
