@@ -1,6 +1,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 850 NONSENSE
 1999-03-02 09:44:33 10HmaX-0005vi-00 == abcd@xyz R=callout T=smtp defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 850 NONSENSE
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 850 RUBBISH
 1999-03-02 09:44:33 10HmaX-0005vi-00 == abcd@xyz R=callout T=smtp defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@the.local.host.name>: 850 RUBBISH
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf

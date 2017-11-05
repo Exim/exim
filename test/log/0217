@@ -12,6 +12,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == f@test.ex R=client T=send_to_server defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after RCPT TO:<f@test.ex>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == g@test.ex R=client T=send_to_server defer (dd): Connection timed out: SMTP timeout after RCPT TO:<f@test.ex>
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 451 Temp error
 1999-03-02 09:44:33 10HmbA-0005vi-00 == h@test.ex R=client T=send_to_server defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 451 Temp error
 1999-03-02 09:44:33 10HmbA-0005vi-00 == i@test.ex R=client T=send_to_server defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 451 Temp error
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
@@ -49,9 +50,11 @@
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbK-0005vi-00 == t@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbK-0005vi-00 == u@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbL-0005vi-00 == yes@test.ex R=client T=send_to_server defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined DATA: 403 Sorry temp data error
 1999-03-02 09:44:33 10HmbL-0005vi-00 ** n00@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<n00@test.ex>: 550 NO
 1999-03-02 09:44:33 10HmbL-0005vi-00 ** n01@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<n01@test.ex>: 550 NO
