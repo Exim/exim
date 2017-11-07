@@ -138,9 +138,12 @@ store_pool = dkim_verify_oldpool;
 static void
 dkim_exim_verify_log_sig(pdkim_signature * sig)
 {
-gstring * logmsg = string_catn(NULL, "DKIM: ", 6);
+gstring * logmsg;
 uschar * s;
 
+if (!sig) return;
+
+logmsg = string_catn(NULL, "DKIM: ", 6);
 if (!(s = sig->domain)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, "d=", s);
 if (!(s = sig->selector)) s = US"<UNSET>";
@@ -306,6 +309,8 @@ dkim_exim_acl_setup(uschar * id)
 pdkim_signature * sig;
 uschar * cmp_val;
 
+dkim_verify_status = US"none";
+dkim_verify_reason = US"";
 dkim_cur_sig = NULL;
 dkim_cur_signer = id;
 

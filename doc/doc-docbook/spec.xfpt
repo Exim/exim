@@ -11665,8 +11665,11 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
+.vitem &$dkim_verify_status$& &&&
+Results of DKIM verification.
+For details see chapter &<<CHAPdkim>>&.
+
 .vitem &$dkim_cur_signer$& &&&
-       &$dkim_verify_status$& &&&
        &$dkim_verify_reason$& &&&
        &$dkim_domain$& &&&
        &$dkim_identity$& &&&
@@ -38717,7 +38720,8 @@ an identity. This is one of the list items from the expanded main option
 &%dkim_verify_signers%& (see above).
 
 .vitem &%$dkim_verify_status%&
-A string describing the general status of the signature. One of
+Within the DKIM ACL,
+a string describing the general status of the signature. One of
 .ilist
 &%none%&: There is no signature in the message for the current domain or
 identity (as reflected by &%$dkim_cur_signer%&).
@@ -38742,6 +38746,9 @@ hash-method or key-size:
 	set dkim_verify_status = fail
 	set dkim_verify_reason = hash too weak
 .endd
+
+After all the DKIM ACL runs have completed, the value becomes a
+colon-separated list of the values after each run.
 .wen
 
 .vitem &%$dkim_verify_reason%&
