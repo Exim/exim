@@ -852,6 +852,26 @@ while ((s = (*func)()) != NULL)
   compatibility. */
 
   if (c == ACLC_SET)
+#ifndef DISABLE_DKIM
+    if (  Ustrncmp(s, "dkim_verify_status", 18) == 0
+       || Ustrncmp(s, "dkim_verify_reason", 18) == 0)
+      {
+      uschar * endptr = s+18;
+
+      if (isalnum(*endptr))
+	{
+	*error = string_sprintf("invalid variable name after \"set\" in ACL "
+	  "modifier \"set %s\" "
+	  "(only \"dkim_verify_status\" or \"dkim_verify_reason\" permitted)",
+	  s);
+	return NULL;
+	}
+      cond->u.varname = string_copyn(s, 18);
+      s = endptr;
+      while (isspace(*s)) s++;
+      }
+    else
+#endif
     {
     uschar *endptr;
 
@@ -2899,8 +2919,19 @@ for (; cb != NULL; cb = cb->next)
 
     if (cb->type == ACLC_SET)
       {
-      debug_printf("acl_%s ", cb->u.varname);
-      lhswidth += 5 + Ustrlen(cb->u.varname);
+#ifndef DISABLE_DKIM
+      if (  Ustrcmp(cb->u.varname, "dkim_verify_status") == 0
+	 || Ustrcmp(cb->u.varname, "dkim_verify_reason") == 0)
+	{
+	debug_printf("%s ", cb->u.varname);
+	lhswidth += 19;
+	}
+      else
+#endif
+	{
+	debug_printf("acl_%s ", cb->u.varname);
+	lhswidth += 5 + Ustrlen(cb->u.varname);
+	}
       }
 
     debug_printf("= %s\n", cb->arg);
@@ -3402,7 +3433,7 @@ for (; cb != NULL; cb = cb->next)
 
     #ifndef DISABLE_DKIM
     case ACLC_DKIM_SIGNER:
-    if (dkim_cur_signer != NULL)
+    if (dkim_cur_signer)
       rc = match_isinlist(dkim_cur_signer,
                           &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     else
@@ -3410,7 +3441,7 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_DKIM_STATUS:
-    rc = match_isinlist(dkim_exim_expand_query(DKIM_VERIFY_STATUS),
+    rc = match_isinlist(dkim_verify_status,
                         &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     break;
     #endif
@@ -3609,12 +3640,22 @@ for (; cb != NULL; cb = cb->next)
       {
       int old_pool = store_pool;
       if (  cb->u.varname[0] == 'c'
+#ifndef DISABLE_DKIM
+         || cb->u.varname[0] == 'd'
+#endif
 #ifndef DISABLE_EVENT
 	 || event_name		/* An event is being delivered */
 #endif
 	 )
         store_pool = POOL_PERM;
-      acl_var_create(cb->u.varname)->data.ptr = string_copy(arg);
+#ifndef DISABLE_DKIM	/* Overwriteable dkim result variables */
+      if (Ustrcmp(cb->u.varname, "dkim_verify_status") == 0)
+	dkim_verify_status = string_copy(arg);
+      else if (Ustrcmp(cb->u.varname, "dkim_verify_reason") == 0)
+	dkim_verify_reason = string_copy(arg);
+      else
+#endif
+	acl_var_create(cb->u.varname)->data.ptr = string_copy(arg);
       store_pool = old_pool;
       }
     break;

@@ -393,6 +393,8 @@ extern uschar *dkim_signers;           /* Expansion variable, holds colon-separa
 extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
 extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */
 extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for each of which we call the DKIM ACL */
+extern uschar *dkim_verify_status;     /* result for this signature */
+extern uschar *dkim_verify_reason;     /* result for this signature */
 #endif
 #ifdef EXPERIMENTAL_DMARC
 extern BOOL    dmarc_has_been_checked; /* Global variable to check if test has been called yet */

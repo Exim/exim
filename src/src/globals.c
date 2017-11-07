@@ -668,6 +668,8 @@ uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
 uschar *dkim_verify_signers      = US"$dkim_signers";
+uschar *dkim_verify_status	 = NULL;
+uschar *dkim_verify_reason	 = NULL;
 #endif
 #ifdef EXPERIMENTAL_DMARC
 BOOL    dmarc_has_been_checked  = FALSE;

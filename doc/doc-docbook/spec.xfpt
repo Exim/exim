@@ -38731,6 +38731,19 @@ available in &%$dkim_verify_reason%&.
 &%pass%&: The signature passed verification. It is valid.
 .endlist
 
+.new
+This variable can be overwritten using an ACL 'set' modifier.
+This might, for instance, be done to enforce a policy restriction on
+hash-method or key-size:
+.code
+  warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
+	condition =	${if eq {$dkim_verify_status}{pass}}
+	logwrite =	NOTE: forcing dkim verify fail (was pass)
+	set dkim_verify_status = fail
+	set dkim_verify_reason = hash too weak
+.endd
+.wen
+
 .vitem &%$dkim_verify_reason%&
 A string giving a little bit more detail when &%$dkim_verify_status%& is either
 "fail" or "invalid". One of
@@ -38750,6 +38763,10 @@ could not be verified. This may mean that headers were modified,
 re-written or otherwise changed in a way which is incompatible with
 DKIM verification. It may of course also mean that the signature is forged.
 .endlist
+
+.new
+This variable can be overwritten using an ACL 'set' modifier.
+.wen
 
 .vitem &%$dkim_domain%&
 The signing domain. IMPORTANT: This variable is only populated if there is

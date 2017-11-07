@@ -3405,8 +3405,8 @@ else
         else
           {
           int sep = 0;
-          const uschar *ptr = dkim_verify_signers_expanded;
-          uschar *item = NULL;
+          const uschar * ptr = dkim_verify_signers_expanded;
+          uschar * item = NULL;
           gstring * seen_items = NULL;
 
           /* Default to OK when no items are present */
@@ -3452,6 +3452,7 @@ else
             dkim_exim_acl_setup(item);
             rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim,
 		  &user_msg, &log_msg);
+	    dkim_exim_verify_log_item();
 
             if (rc != OK)
 	      {
@@ -3467,7 +3468,7 @@ else
             {
             recipients_count = 0;
             blackholed_by = US"DKIM ACL";
-            if (log_msg != NULL)
+            if (log_msg)
               blackhole_log_msg = string_sprintf(": %s", log_msg);
             }
           else if (rc != OK)
@@ -3481,6 +3482,8 @@ else
             }
           }
         }
+      else
+	dkim_exim_verify_log_all();
       }
 #endif /* DISABLE_DKIM */
 

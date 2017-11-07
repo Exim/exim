@@ -134,10 +134,125 @@ store_pool = dkim_verify_oldpool;
 }
 
 
+/* Log the result for the given signature */
+static void
+dkim_exim_verify_log_sig(pdkim_signature * sig)
+{
+gstring * logmsg = string_catn(NULL, "DKIM: ", 6);
+uschar * s;
+
+if (!(s = sig->domain)) s = US"<UNSET>";
+logmsg = string_append(logmsg, 2, "d=", s);
+if (!(s = sig->selector)) s = US"<UNSET>";
+logmsg = string_append(logmsg, 2, " s=", s);
+logmsg = string_append(logmsg, 7, 
+" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+" a=", dkim_sig_to_a_tag(sig),
+string_sprintf(" b=" SIZE_T_FMT,
+		(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
+if ((s= sig->identity)) logmsg = string_append(logmsg, 2, " i=", s);
+if (sig->created > 0) logmsg = string_cat(logmsg,
+			      string_sprintf(" t=%lu", sig->created));
+if (sig->expires > 0) logmsg = string_cat(logmsg,
+			      string_sprintf(" x=%lu", sig->expires));
+if (sig->bodylength > -1) logmsg = string_cat(logmsg,
+			      string_sprintf(" l=%lu", sig->bodylength));
+
+if (  !dkim_verify_status
+   || (  dkim_verify_status == dkim_exim_expand_query(DKIM_VERIFY_STATUS)
+      && dkim_verify_reason == dkim_exim_expand_query(DKIM_VERIFY_REASON)
+   )  )
+  switch (sig->verify_status)
+    {
+    case PDKIM_VERIFY_NONE:
+      logmsg = string_cat(logmsg, " [not verified]");
+      break;
+
+    case PDKIM_VERIFY_INVALID:
+      logmsg = string_cat(logmsg, " [invalid - ");
+      switch (sig->verify_ext_status)
+	{
+	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
+	  logmsg = string_cat(logmsg,
+			"public key record (currently?) unavailable]");
+	  break;
+
+	case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
+	  logmsg = string_cat(logmsg, "overlong public key record]");
+	  break;
+
+	case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
+	case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
+	  logmsg = string_cat(logmsg, "syntax error in public key record]");
+	  break;
+
+	case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
+	  logmsg = string_cat(logmsg, "signature tag missing or invalid]");
+	  break;
+
+	case PDKIM_VERIFY_INVALID_DKIM_VERSION:
+	  logmsg = string_cat(logmsg, "unsupported DKIM version]");
+	  break;
+
+	default:
+	  logmsg = string_cat(logmsg, "unspecified problem]");
+	}
+      break;
+
+    case PDKIM_VERIFY_FAIL:
+      logmsg = string_cat(logmsg, " [verification failed - ");
+      switch (sig->verify_ext_status)
+	{
+	case PDKIM_VERIFY_FAIL_BODY:
+	  logmsg = string_cat(logmsg,
+		       "body hash mismatch (body probably modified in transit)]");
+	  break;
+
+	case PDKIM_VERIFY_FAIL_MESSAGE:
+	  logmsg = string_cat(logmsg,
+		       "signature did not verify (headers probably modified in transit)]");
+	break;
+
+	default:
+	  logmsg = string_cat(logmsg, "unspecified reason]");
+	}
+      break;
+
+    case PDKIM_VERIFY_PASS:
+      logmsg = string_cat(logmsg, " [verification succeeded]");
+      break;
+    }
+else
+  logmsg = string_append(logmsg, 5,
+	    US" [", dkim_verify_status, US" - ", dkim_verify_reason, US"]");
+
+log_write(0, LOG_MAIN, string_from_gstring(logmsg));
+return;
+}
+
+
+/* Log a line for "the current" signature */
+void
+dkim_exim_verify_log_item(void)
+{
+dkim_exim_verify_log_sig(dkim_cur_sig);
+}
+
+
+/* Log a line for each signature */
+void
+dkim_exim_verify_log_all(void)
+{
+pdkim_signature * sig;
+for (sig = dkim_signatures; sig; sig = sig->next) dkim_exim_verify_log_sig(sig);
+}
+
+
 void
 dkim_exim_verify_finish(void)
 {
-pdkim_signature * sig = NULL;
+pdkim_signature * sig;
 int rc;
 gstring * g = NULL;
 const uschar * errstr;
@@ -170,104 +285,12 @@ if (rc != PDKIM_OK)
   goto out;
   }
 
+/* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
+
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
-  uschar * s;
-  gstring * logmsg;
-
-  /* Log a line for each signature */
-
-  if (!(s = sig->domain)) s = US"<UNSET>";
-  logmsg = string_append(NULL, 2, "d=", s);
-  if (!(s = sig->selector)) s = US"<UNSET>";
-  logmsg = string_append(logmsg, 2, " s=", s);
-  logmsg = string_append(logmsg, 7, 
-	" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-	"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-	" a=", dkim_sig_to_a_tag(sig),
-	string_sprintf(" b=" SIZE_T_FMT,
-			(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
-  if ((s= sig->identity)) logmsg = string_append(logmsg, 2, " i=", s);
-  if (sig->created > 0) logmsg = string_cat(logmsg,
-				      string_sprintf(" t=%lu", sig->created));
-  if (sig->expires > 0) logmsg = string_cat(logmsg,
-				      string_sprintf(" x=%lu", sig->expires));
-  if (sig->bodylength > -1) logmsg = string_cat(logmsg,
-				      string_sprintf(" l=%lu", sig->bodylength));
-
-  switch (sig->verify_status)
-    {
-    case PDKIM_VERIFY_NONE:
-      logmsg = string_cat(logmsg, " [not verified]");
-      break;
-
-    case PDKIM_VERIFY_INVALID:
-      logmsg = string_cat(logmsg, " [invalid - ");
-      switch (sig->verify_ext_status)
-	{
-	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
-	  logmsg = string_cat(logmsg,
-		        "public key record (currently?) unavailable]");
-	  break;
-
-	case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
-	  logmsg = string_cat(logmsg, "overlong public key record]");
-	  break;
-
-	case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
-	case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
-	  logmsg = string_cat(logmsg, "syntax error in public key record]");
-	  break;
-
-        case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
-          logmsg = string_cat(logmsg, "signature tag missing or invalid]");
-          break;
-
-        case PDKIM_VERIFY_INVALID_DKIM_VERSION:
-          logmsg = string_cat(logmsg, "unsupported DKIM version]");
-          break;
-
-	default:
-	  logmsg = string_cat(logmsg, "unspecified problem]");
-	}
-      break;
-
-    case PDKIM_VERIFY_FAIL:
-      logmsg =
-	string_cat(logmsg, " [verification failed - ");
-      switch (sig->verify_ext_status)
-	{
-	case PDKIM_VERIFY_FAIL_BODY:
-	  logmsg = string_cat(logmsg,
-		       "body hash mismatch (body probably modified in transit)]");
-	  break;
-
-	case PDKIM_VERIFY_FAIL_MESSAGE:
-	  logmsg = string_cat(logmsg,
-		       "signature did not verify (headers probably modified in transit)]");
-	break;
-
-	default:
-	  logmsg = string_cat(logmsg, "unspecified reason]");
-	}
-      break;
-
-    case PDKIM_VERIFY_PASS:
-      logmsg = string_cat(logmsg, " [verification succeeded]");
-      break;
-    }
-
-  log_write(0, LOG_MAIN, "DKIM: %s", string_from_gstring(logmsg));
-
-  /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
-
-  if (sig->domain)
-    g = string_append_listele(g, ':', sig->domain);
-
-  if (sig->identity)
-    g = string_append_listele(g, ':', sig->identity);
-
-  /* Process next signature */
+  if (sig->domain)   g = string_append_listele(g, ':', sig->domain);
+  if (sig->identity) g = string_append_listele(g, ':', sig->identity);
   }
 
 if (g) dkim_signers = g->s;
@@ -309,6 +332,12 @@ for (sig = dkim_signatures; sig; sig = sig->next)
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
     dkim_key_length = sig->sighash.len * 8;
+
+    /* These two return static strings, so we can compare the addr
+    later to see if the ACL overwrote them.  Check that when logging */
+
+    dkim_verify_status = dkim_exim_expand_query(DKIM_VERIFY_STATUS);
+    dkim_verify_reason = dkim_exim_expand_query(DKIM_VERIFY_REASON);
     return;
     }
 }
@@ -365,12 +394,12 @@ switch (what)
       }
 
   case DKIM_CANON_HEADERS:
-  switch (dkim_cur_sig->canon_headers)
-    {
-    case PDKIM_CANON_RELAXED:	return US"relaxed";
-    case PDKIM_CANON_SIMPLE:
-    default:			return US"simple";
-    }
+    switch (dkim_cur_sig->canon_headers)
+      {
+      case PDKIM_CANON_RELAXED:	return US"relaxed";
+      case PDKIM_CANON_SIMPLE:
+      default:			return US"simple";
+      }
 
   case DKIM_COPIEDHEADERS:
     return dkim_cur_sig->copiedheaders
