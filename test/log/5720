@@ -1,19 +1,19 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA
+1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.com/CN=clica CA rsa
 1999-03-02 09:44:33 10HmaX-0005vi-00 msg:host:defer bad
 1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
 1999-03-02 09:44:33 10HmaX-0005vi-00 Peer cert:
 1999-03-02 09:44:33 10HmaX-0005vi-00 ver <2>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=clica CA,O=example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=clica CA;O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=clica CA rsa,O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=clica CA rsa;O=example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SNO <example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <CN=clica CA,O=example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <CN=clica CA rsa,O=example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:01 2012 +0000>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:01 2038 +0000>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <sha256WithRSAEncryption>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <         1a:d3:99:1f:3e:82:d1:02:2d:4e:f3:b1:ba:ec:44:a2:1e:13:\n         d6:12:5f:1b:2a:ce:fd:c3:3e:95:23:f5:53:7b:97:4e:44:45:\n         ed:dd:6f:bf:d3:35:e3:c1:2c:7d:0a:c2:98:d6:96:3b:8f:0d:\n         48:4a:58:2e:63:42:f9:1f:80:11:2b:d0:22:80:2d:01:96:53:\n         4b:10:24:33:61:47:74:83:b0:f5:06:53:40:45:51:04:fb:83:\n         50:7d:e0:39:a9:ef:68:af:1c:b8:cc:ae:dc:67:2e:b3:93:df:\n         65:21:89:a1:06:dd:7e:75:02:9a:2a:45:1c:97:71:22:59:05:\n         c6:0d\n>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <         03:30:ff:66:cc:e8:5f:88:9e:49:04:31:0c:e1:f9:dd:59:22:\n         00:90:ec:df:6a:ac:a3:d6:33:19:b4:1a:7a:7b:91:9d:51:42:\n         ba:8e:eb:b7:af:1c:8c:c7:0e:8f:37:f5:f3:f2:3e:88:c7:87:\n         9c:47:1d:aa:47:e8:60:1e:19:dc:b5:ef:0d:a4:46:66:18:3f:\n         64:eb:f9:f2:6b:b3:46:7b:16:da:84:08:f7:21:6a:0f:00:f4:\n         15:93:ed:33:a5:6a:d0:05:97:8c:bb:aa:22:88:0e:23:97:d2:\n         85:2a:3b:1f:98:5c:de:fa:e4:bd:2e:ca:52:1c:ee:bf:71:4a:\n         9d:a4\n>
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no OCU)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
@@ -23,10 +23,10 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 NO CLIENT CERT presented
 1999-03-02 09:44:33 10HmaX-0005vi-00 No Peer cert
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=2 <CN=clica CA,O=example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=1 <CN=clica Signing Cert,O=example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=2 <CN=clica CA rsa,O=example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=1 <CN=clica Signing Cert rsa,O=example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHAxx:256 CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 msg:delivery good
 1999-03-02 09:44:33 10HmaY-0005vi-00 Our cert SN: CN=server2.example.com
 1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
@@ -34,12 +34,12 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN  <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SNO <>
-1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <CN=clica Signing Cert,O=example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <CN=clica Signing Cert rsa,O=example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:01 2012 +0000>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:34:01 2037 +0000>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <sha256WithRSAEncryption>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <         67:ef:2d:43:8e:43:50:f5:3f:41:ee:42:cf:f4:b4:31:3d:d8:\n         88:b5:f7:24:1f:26:83:32:6a:6c:ff:8a:36:b7:be:cb:28:48:\n         68:9c:a9:3c:6e:2f:2d:a5:f4:fc:d2:09:9b:1d:04:00:26:7d:\n         a5:f9:39:13:06:dd:9d:69:78:f8:7b:f5:3c:82:9d:8f:b9:4f:\n         1a:b6:f0:0b:7f:20:82:6e:80:4e:38:09:d1:43:23:22:dd:37:\n         5d:80:6d:5a:aa:23:33:e4:79:c9:0d:8d:cc:b8:ed:5f:6b:01:\n         56:2c:49:89:9b:ca:5e:d5:b3:b0:93:7e:d5:5e:f0:98:7d:5f:\n         07:4b\n>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=server1.example.com;DNS=*.test.ex;DNS=alternatename.server1.example.com;DNS=alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <         7a:cd:30:27:d2:7c:9d:fe:c7:12:17:ba:ea:f4:38:91:c2:4e:\n         5a:92:a8:e2:ad:eb:e3:16:1d:11:0c:ac:a2:3e:d0:74:13:71:\n         2e:dc:4d:c2:35:ac:7e:6e:aa:ac:9d:59:7c:a8:9c:c5:19:f4:\n         05:96:a6:a3:e3:0c:e0:0c:4b:05:ce:3a:50:32:a0:7e:b2:43:\n         9b:85:c6:1a:64:d2:c1:fb:e4:f7:e7:40:06:51:db:e8:50:de:\n         13:a0:ec:c6:ef:b8:75:5c:db:bd:8e:52:0b:c1:66:4d:45:e0:\n         71:b2:d8:77:18:81:79:4c:29:de:c0:b9:ab:9b:aa:14:1e:6a:\n         dd:9f\n>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=*.test.ex;DNS=alternatename.server1.example.com;DNS=server1.example.com;DNS=alternatename2.server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 OCU <http://oscp.example.com/>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
@@ -49,7 +49,7 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 [127.0.0.1] depth=2 CN=clica CA,O=example.com
-1999-03-02 09:44:33 [127.0.0.1] depth=1 CN=clica Signing Cert,O=example.com
+1999-03-02 09:44:33 [127.0.0.1] depth=2 CN=clica CA rsa,O=example.com
+1999-03-02 09:44:33 [127.0.0.1] depth=1 CN=clica Signing Cert rsa,O=example.com
 1999-03-02 09:44:33 [127.0.0.1] depth=0 CN=server2.example.com
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:AES256-SHA:256 CV=yes DN="/CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHAxx:256 CV=yes DN="/CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex

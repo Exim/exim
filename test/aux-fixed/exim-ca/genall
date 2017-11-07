@@ -2,7 +2,11 @@
 #
 
 set -e
-set -x
+
+# Debugging.  Set V for clica verbosity.
+#set -x
+V=
+#V='-v'
 
 clica --help >/dev/null 2>&1
 
@@ -10,43 +14,62 @@ echo Ensure time is set to 2012/11/01 12:34
 echo use -  date -u 110112342012
 echo hit return when ready
 read junk
+
+# Main suite: RSA certs
 for tld in com org net
 do
-    idir="example.$tld"
+    iname="example.$tld"
+    idir=$iname
+
+####
+    # create CAs & server certs
     rm -fr "$idir"
-    clica -D "$idir" -p password -B 1024 -I -N example.$tld -F \
-	-C http://crl.example.$tld/latest.crl -O http://oscp.example.$tld/
 
+    # create CA cert + templates
+    clica $V -D "$idir" -p password -B 1024 -I -N $iname -F -C http://crl.$iname/latest.crl -O http://oscp.$iname/
+
+    # create server certs
     # -m <months>
-    clica -D example.$tld -p password -s 101 -S server1.example.$tld -m 301 \
+    clica $V -D $idir -p password -s 101 -S server1.$iname -m 301 \
 	-8 alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
-    clica -D example.$tld -p password -s 102 -S revoked1.example.$tld -m 301
-    clica -D example.$tld -p password -s 103 -S expired1.example.$tld -m 1
-    clica -D example.$tld -p password -s 201 -S  server2.example.$tld -m 301
-    clica -D example.$tld -p password -s 202 -S revoked2.example.$tld -m 301
-    clica -D example.$tld -p password -s 203 -S expired2.example.$tld -m 1
+    clica $V -D $idir -p password -s 102 -S revoked1.$iname -m 301
+    clica $V -D $idir -p password -s 103 -S expired1.$iname -m 1
+    clica $V -D $idir -p password -s 201 -S  server2.$iname -m 301
+    clica $V -D $idir -p password -s 202 -S revoked2.$iname -m 301
+    clica $V -D $idir -p password -s 203 -S expired2.$iname -m 1
 
+####
 
     # openssl seems to generate a file (ca_chain.pam) in an order it
     # cannot then use (the key applies to the first cert in the file?).
     # Generate a shuffled one.
-    cd example.$tld/server1.example.$tld
-    openssl pkcs12 -in server1.example.$tld.p12 -passin file:pwdfile -cacerts -out cacerts.pem -nokeys
-    cat server1.example.$tld.pem cacerts.pem > fullchain.pem
-    rm cacerts.pem
+    cd $idir/server1.$iname
+        openssl pkcs12 -in server1.$iname.p12 -passin file:pwdfile -cacerts -out cacerts.pem -nokeys
+        cat server1.$iname.pem cacerts.pem > fullchain.pem
+        rm cacerts.pem
     cd ../..
-done
 
-# and loop again
-for tld in com org net
-do
-    CADIR=example.$tld/CA
+####
+
+    # generate unlocked keys and client cert bundles
+    for server in server1 revoked1 expired1 server2 revoked2 expired2
+    do
+	SDIR=$idir/$server.$iname
+	SPFX=$SDIR/$server.$iname
+	openssl rsa -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
+	cat $SPFX.pem $iname/CA/Signer.pem >$SPFX.chain.pem
+    done
+
+####
+
+    # create OCSP reqs & resps
+    CADIR=$idir/CA
     #give ourselves an OSCP key to work with
-    pk12util -o $CADIR/OCSP.p12 -n 'OCSP Signer' -d $CADIR -K password -W password
+    pk12util -o $CADIR/OCSP.p12 -n 'OCSP Signer rsa' -d $CADIR -K password -W password
     openssl pkcs12 -in $CADIR/OCSP.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/OCSP.key
 
     # also need variation from Signer
-    pk12util -o $CADIR/Signer.p12 -n 'Signing Cert' -d $CADIR -K password -W password
+    pk12util -o $CADIR/Signer.p12 -n 'Signing Cert rsa' -d $CADIR -K password -W password
     openssl pkcs12 -in $CADIR/Signer.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/Signer.key
 
     # create some index files for the ocsp responder to work with
@@ -59,62 +82,118 @@ do
 # 5: DN, index
 
     cat >$CADIR/index.valid.txt <<EOF
-V	130110200751Z		65	unknown	CN=server1.example.$tld
-V	130110200751Z		66	unknown	CN=revoked1.example.$tld
-V	130110200751Z		67	unknown	CN=expired1.example.$tld
-V	130110200751Z		c9	unknown	CN=server2.example.$tld
-V	130110200751Z		ca	unknown	CN=revoked2.example.$tld
-V	130110200751Z		cb	unknown	CN=expired2.example.$tld
+V	130110200751Z		65	unknown	CN=server1.$iname
+V	130110200751Z		66	unknown	CN=revoked1.$iname
+V	130110200751Z		67	unknown	CN=expired1.$iname
+V	130110200751Z		c9	unknown	CN=server2.$iname
+V	130110200751Z		ca	unknown	CN=revoked2.$iname
+V	130110200751Z		cb	unknown	CN=expired2.$iname
 EOF
     cat >$CADIR/index.revoked.txt <<EOF
-R	130110200751Z	100201142709Z,superseded	65	unknown	CN=server1.example.$tld
-R	130110200751Z	100201142709Z,superseded	66	unknown	CN=revoked1.example.$tld
-R	130110200751Z	100201142709Z,superseded	67	unknown	CN=expired1.example.$tld
-R	130110200751Z	100201142709Z,superseded	c9	unknown	CN=server2.example.$tld
-R	130110200751Z	100201142709Z,superseded	ca	unknown	CN=revoked2.example.$tld
-R	130110200751Z	100201142709Z,superseded	cb	unknown	CN=expired2.example.$tld
+R	130110200751Z	100201142709Z,superseded	65	unknown	CN=server1.$iname
+R	130110200751Z	100201142709Z,superseded	66	unknown	CN=revoked1.$iname
+R	130110200751Z	100201142709Z,superseded	67	unknown	CN=expired1.$iname
+R	130110200751Z	100201142709Z,superseded	c9	unknown	CN=server2.$iname
+R	130110200751Z	100201142709Z,superseded	ca	unknown	CN=revoked2.$iname
+R	130110200751Z	100201142709Z,superseded	cb	unknown	CN=expired2.$iname
 EOF
 
     # Now create all the ocsp requests and responses
+    IVALID="-index $CADIR/index.valid.txt"
+    IREVOKED="-index $CADIR/index.revoked.txt"
     for server in server1 revoked1 expired1 server2 revoked2 expired2
     do
-	SPFX=example.$tld/$server.example.$tld/$server.example.$tld
+	SPFX=$idir/$server.$iname/$server.$iname
 	openssl ocsp -issuer $CADIR/Signer.pem -cert $SPFX.pem -no_nonce -sha256 -reqout $SPFX.ocsp.req
+	REQIN="-reqin $SPFX.ocsp.req"
 
 	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.good.resp
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.dated.resp
-	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.revoked.resp
+	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 -sha256 $REQIN -respout $SPFX.ocsp.good.resp
+	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   -sha256 $REQIN -respout $SPFX.ocsp.dated.resp
+	openssl ocsp $IREVOKED $OGENCOMMON -ndays 3652 -sha256 $REQIN -respout $SPFX.ocsp.revoked.resp
 
 	OGENCOMMON="-rsigner $CADIR/Signer.pem -rkey $CADIR/Signer.key -CA $CADIR/Signer.pem -noverify"
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signer.good.resp
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signer.dated.resp
-	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signer.revoked.resp
+	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 -sha256 $REQIN -respout $SPFX.ocsp.signer.good.resp
+	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   -sha256 $REQIN -respout $SPFX.ocsp.signer.dated.resp
+	openssl ocsp $IREVOKED $OGENCOMMON -ndays 3652 -sha256 $REQIN -respout $SPFX.ocsp.signer.revoked.resp
 
 	OGENCOMMON="-rsigner $CADIR/Signer.pem -rkey $CADIR/Signer.key -CA $CADIR/Signer.pem -resp_no_certs -noverify"
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signernocert.good.resp
-	openssl ocsp -index $CADIR/index.valid.txt $OGENCOMMON   -ndays 30   -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signernocert.dated.resp
-	openssl ocsp -index $CADIR/index.revoked.txt $OGENCOMMON -ndays 3652 -sha256 -reqin $SPFX.ocsp.req -respout $SPFX.ocsp.signernocert.revoked.resp
+	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 -sha256 $REQIN -respout $SPFX.ocsp.signernocert.good.resp
+	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   -sha256 $REQIN -respout $SPFX.ocsp.signernocert.dated.resp
+	openssl ocsp $IREVOKED $OGENCOMMON -ndays 3652 -sha256 $REQIN -respout $SPFX.ocsp.signernocert.revoked.resp
     done
+####
 done
 
-# and loop again to generate unlocked keys and client cert bundles
-for tld in com org net
+# Create one EC leaf cert in the RSA cert tree.  It will have an EC pubkey but be signed using its parent
+# therefore its parent's algo, RSA.
+clica $V -D example.com -p password -k ec -q nistp521 -s 1101 -S server1_ec.example.com -m 301 -8 'server1.example.com,*.test.ex'
+SDIR=example.com/server1_ec.example.com
+SPFX=$SDIR/server1_ec.example.com
+openssl ec -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
+cat $SPFX.pem example.com/CA/Signer.pem >$SPFX.chain.pem
+
+
+
+###############################################################################
+# Limited suite: EC certs
+# separate trust root & chain
+# .com only, server1 good only, no ocsp
+# with server1 in SAN of leaf
+
+for tld in com
 do
-    for server in server1 revoked1 expired1 server2 revoked2 expired2
+    iname="example_ec.$tld"
+    idir=$iname
+
+####
+    # create CAs & server certs
+    rm -fr "$idir"
+
+    # create CA cert + templates
+    clica $V -D "$idir" -p password -B 1024 -I -N $iname -F \
+	-k ec -q nistp521 \
+	-C http://crl.example.$tld/latest.crl -O http://oscp.example.$tld/
+
+    # create server certs
+    # -m <months>
+    clica $V -D $idir -p password -s 2101 -S server1.$iname -m 301 \
+	-k ec -q nistp521 \
+	-8 server1.example.$tld,alternatename.server1.example.$tld,alternatename2.server1.example.$tld,*.test.ex
+
+####
+
+    # openssl seems to generate a file (ca_chain.pam) in an order it
+    # cannot then use (the key applies to the first cert in the file?).
+    # Generate a shuffled one.
+    cd $idir/server1.$iname
+        openssl pkcs12 -in server1.$iname.p12 -passin file:pwdfile -cacerts -out cacerts.pem -nokeys
+        cat server1.$iname.pem cacerts.pem > fullchain.pem
+        rm cacerts.pem
+    cd ../..
+
+####
+
+    # generate unlocked keys and client cert bundles
+    for server in server1
     do
-	SDIR=example.$tld/$server.example.$tld
-	SPFX=$SDIR/$server.example.$tld
-	openssl rsa -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
+	SDIR=$idir/$server.$iname
+	SPFX=$SDIR/$server.$iname
+	openssl ec -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
 	cat $SPFX.pem example.$tld/CA/Signer.pem >$SPFX.chain.pem
     done
+
 done
+
+###############################################################################
 
 echo Please to reset date to now.
 echo 'service ntpdate start (not on a systemd though...)'
 echo 
 echo Then hit return
 read junk
+
+
 
 # Create CRL files in .der and .pem
 # empty versions, and ones with the revoked servers
@@ -125,7 +204,7 @@ do
     DATENOW=`date -u +%Y%m%d%H%M%SZ`
     echo "update=$DATENOW " >$CRLIN
     crlutil -G -d $CADIR -f $CADIR/pwdfile \
-	-n 'Signing Cert' -c $CRLIN -o $CADIR/crl.empty
+	-n 'Signing Cert rsa' -c $CRLIN -o $CADIR/crl.empty
     openssl crl -in $CADIR/crl.empty -inform der -out $CADIR/crl.empty.pem
 done
 sleep 2
@@ -138,7 +217,7 @@ do
     echo "addcert 102 $DATENOW" >>$CRLIN
     echo "addcert 202 $DATENOW" >>$CRLIN
     crlutil -G -d $CADIR -f $CADIR/pwdfile \
-	-n 'Signing Cert' -c $CRLIN -o $CADIR/crl.v2
+	-n 'Signing Cert rsa' -c $CRLIN -o $CADIR/crl.v2
     openssl crl -in $CADIR/crl.v2 -inform der -out $CADIR/crl.v2.pem
 done
 
@@ -159,7 +238,7 @@ cd ../../..
 pwd
 ls -l
 
-find example.* -type d -print0 | xargs -0 chmod 755
-find example.* -type f -print0 | xargs -0 chmod 644
+find example* -type d -print0 | xargs -0 chmod 755
+find example* -type f -print0 | xargs -0 chmod 644
 
 echo "CA, Certificate, CRL and OSCP Response generation complete"

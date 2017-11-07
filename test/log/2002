@@ -5,35 +5,45 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer cert:
 1999-03-02 09:44:33 ver 3
 1999-03-02 09:44:33 SR  <c9>
 1999-03-02 09:44:33 SN  <CN=server2.example.com>
-1999-03-02 09:44:33 IN  <O=example.com,CN=clica Signing Cert>
+1999-03-02 09:44:33 IN  <O=example.com,CN=clica Signing Cert rsa>
 1999-03-02 09:44:33 IN/O <example.com>
-1999-03-02 09:44:33 NB/r <Nov  1 12:34:02 2012 GMT>
-1999-03-02 09:44:33 NB   <Nov  1 12:34:02 2012 GMT>
-1999-03-02 09:44:33 NB/i <1351773242>
-1999-03-02 09:44:33 NA/i <2143283642>
-1999-03-02 09:44:33 NA   <Dec  1 12:34:02 2037 GMT>
+1999-03-02 09:44:33 NB/r <Nov  1 12:34:01 2012 GMT>
+1999-03-02 09:44:33 NB   <Nov  1 12:34:01 2012 GMT>
+1999-03-02 09:44:33 NB/i <1351773241>
+1999-03-02 09:44:33 NA/i <2143283641>
+1999-03-02 09:44:33 NA   <Dec  1 12:34:01 2037 GMT>
 1999-03-02 09:44:33 SA  <RSA-SHA256>
-1999-03-02 09:44:33 SG  <3a e2 4b 89 c0 a9 e8 f8 d2 bb ea 7d f8 57 7a aa 26 42 b3 94 04 04 24 f7 0d 6d 33 de 82 90 75 76 ba 3a a4 7d e0 e5 6d 3a 3c e6 74 3f b4 ad cf d1 b9 bd 6a 06 44 ea a9 a3 14 5e 34 d7 54 2e ed 5a b3 fb ca df 5a b6 22 d8 b0 f0 38 68 48 a8 cd 34 6b b2 e9 7f 96 cd ec 48 fa 5d 0e 2f 66 f0 c3 bf f9 f4 65 10 80 b9 f4 fa db be a4 26 c3 3d 25 3a 7f b7 e9 ad cd d6 06 55 f1 98 3e ea b5 cf 76 a1>
+1999-03-02 09:44:33 SG  <19 0c f4 82 0c 4a 90 45 f1 e7 47 97 fe e5 ad 94 2e fe 24 5c 2c 24 b0 61 53 f9 c6 06 63 8b c7 31 e1 a6 da d1 04 b8 aa 2d 8a fc 0a 18 fd d9 e6 4d 9c 3a f5 1d 46 34 8c 80 bc 3d c3 c3 8e 98 33 d6 bb 3e e8 73 b2 dc 5f be b7 bb be c7 5c 7c f4 c4 36 0d 48 c2 aa ac a3 88 cf cf ce e2 ac 75 4e 15 4d 55 ec bb c4 78 c7 c6 12 8c 27 d7 78 a2 40 94 e2 f8 ac fc b6 c1 4d f0 5d 18 73 09 fe 04 b7 81>
 1999-03-02 09:44:33 SAN <DNS=server2.example.com>
 1999-03-02 09:44:33 CRU <http://crl.example.com/latest.crl>
-1999-03-02 09:44:33 md5    fingerprint 61F3EF662C9186FC1CA4F6FF1C22F0C9
-1999-03-02 09:44:33 sha1   fingerprint 3E38B35220A0E1803974EA8DD9D22CDAF653CCBF
-1999-03-02 09:44:33 sha256 fingerprint 33177BB2668D3D95E81B241F3C71AF36DF691818CB47B882B59F349D7416B025
-1999-03-02 09:44:33 der_b64 MIICiDCCAfGgAwIBAgICAMkwDQYJKoZIhvcNAQELBQAwMzEUMBIGA1UEChMLZXhhbXBsZS5jb20xGzAZBgNVBAMTEmNsaWNhIFNpZ25pbmcgQ2VydDAeFw0xMjExMDExMjM0MDJaFw0zNzEyMDExMjM0MDJaMB4xHDAaBgNVBAMTE3NlcnZlcjIuZXhhbXBsZS5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKpVDMWYm+sUgk2Suy9gbFS1QSurQJANa1I4+2yQhqK8r2KaNMODeTBPm8wjDaia3OUPUXx0dUwzF5oi6sr7ztThjz6vAvPyq7fCyIO5P19FdQ8Po1QefxoPWTvN7giWjh0n1FeoG/Ls+sROjchmTbVuxrbU9kGfSqmBIPF1R0qPAgMBAAGjgb8wgbwwDgYDVR0PAQH/BAQDAgTwMCAGA1UdJQEB/wQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAyBgNVHR8EKzApMCegJaAjhiFodHRwOi8vY3JsLmV4YW1wbGUuY29tL2xhdGVzdC5jcmwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb3NjcC5leGFtcGxlLmNvbS8wHgYDVR0RBBcwFYITc2VydmVyMi5leGFtcGxlLmNvbTANBgkqhkiG9w0BAQsFAAOBgQA64kuJwKno+NK76n34V3qqJkKzlAQEJPcNbTPegpB1dro6pH3g5W06POZ0P7Stz9G5vWoGROqpoxReNNdULu1as/vK31q2Itiw8DhoSKjNNGuy6X+WzexI+l0OL2bww7/59GUQgLn0+tu+pCbDPSU6f7fprc3WBlXxmD7qtc92oQ==
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server2.example.com" S=sss
+1999-03-02 09:44:33 md5    fingerprint 7A3C37D07696CADBC539AB02A8A0C82A
+1999-03-02 09:44:33 sha1   fingerprint 0D9E776B02AFDEFB0231588927D305CA81F00366
+1999-03-02 09:44:33 sha256 fingerprint 3B8118604CE886FD44668735B467D32CA1A03C9EBA610F6EF54BB8CCA223F12F
+1999-03-02 09:44:33 der_b64 MIICjDCCAfWgAwIBAgICAMkwDQYJKoZIhvcNAQELBQAwNzEUMBIGA1UEChMLZXhhbXBsZS5jb20xHzAdBgNVBAMTFmNsaWNhIFNpZ25pbmcgQ2VydCByc2EwHhcNMTIxMTAxMTIzNDAxWhcNMzcxMjAxMTIzNDAxWjAeMRwwGgYDVQQDExNzZXJ2ZXIyLmV4YW1wbGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5xczcpFPcohZhLegf/wzSJvwj/dVkXg0MEyVulbMS+sgCwwSO6uGykJVc6ZKUnGqFyv5Icp1zG9Y9/joYefiXN5K1n/3NrtsET+6AJDWzZYz/AyRGd07xLwEw+Ip0/bqqNaxpc07L1qAABcwz2lcSeKsIDbYC9znSdEzuNUFmGQIDAQABo4G/MIG8MA4GA1UdDwEB/wQEAwIE8DAgBgNVHSUBAf8EFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwMgYDVR0fBCswKTAnoCWgI4YhaHR0cDovL2NybC5leGFtcGxlLmNvbS9sYXRlc3QuY3JsMDQGCCsGAQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29zY3AuZXhhbXBsZS5jb20vMB4GA1UdEQQXMBWCE3NlcnZlcjIuZXhhbXBsZS5jb20wDQYJKoZIhvcNAQELBQADgYEAGQz0ggxKkEXx50eX/uWtlC7+JFwsJLBhU/nGBmOLxzHhptrRBLiqLYr8Chj92eZNnDr1HUY0jIC8PcPDjpgz1rs+6HOy3F++t7u+x1x89MQ2DUjCqqyjiM/PzuKsdU4VTVXsu8R4x8YSjCfXeKJAlOL4rPy2wU3wXRhzCf4Et4E=
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server2.example.com" S=sss
+1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
+1999-03-02 09:44:33 Peer did not present a cert
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
+1999-03-02 09:44:33 Peer did not present a cert
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_ECDSA_AES_256_CBC_SHAnnn:256 CV=no S=sss

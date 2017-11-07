@@ -153,6 +153,9 @@ acl_smtp_data = acl_check_data
 # tls_certificate = /etc/ssl/exim.crt
 # tls_privatekey = /etc/ssl/exim.pem
 
+# For OpenSSL, prefer EC- over RSA-authenticated ciphers
+# tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAILT
+
 # In order to support roaming users who wish to send email from anywhere,
 # you may want to make Exim listen on other ports as well as port 25, in
 # case these users need to send email from a network that blocks port 25.

@@ -18,7 +18,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using AES256-SHA
+SSL connection using ke-RSA-AES256-SHAxx
 Succeeded in starting TLS
 >>> mail from:<CALLER@test.ex>
 ??? 250
@@ -57,7 +57,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using AES256-SHA
+SSL connection using ke-RSA-AES256-SHAxx
 Succeeded in starting TLS
 >>> mail from:<"name with spaces"@test.ex>
 ??? 250
@@ -125,7 +125,7 @@ Key file = TESTSUITE/aux-fixed/exim-ca/example.com/server2.example.com/server2.e
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using AES256-SHA
+SSL connection using ke-RSA-AES256-SHAxx
 Succeeded in starting TLS
 >>> mail from:<CALLER@test.ex>
 ??? 250
@@ -140,6 +140,46 @@ Succeeded in starting TLS
 >>> .
 ??? 250
 <<< 250 OK id=10HmaZ-0005vi-00
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+SSL connection using ke-ECDSA-AES256-SHAxx
+Succeeded in starting TLS
+>>> mail from:<CALLER@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<CALLER@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 3
+<<< 354 Enter message, ending with "." on a line by itself
+>>> This is a test encrypted message.
+>>> It should be sent under the EC server cert and with an ECDSA cipher.
+>>> .
+??? 250
+<<< 250 OK id=10HmbA-0005vi-00
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection

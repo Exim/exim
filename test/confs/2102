@@ -16,11 +16,21 @@ queue_run_in_order
 
 tls_advertise_hosts = 127.0.0.1 : HOSTIPV4
 
-tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
-tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
+.ifdef ORDER
+tls_require_ciphers = ORDER
+.endif
+
+CA = DIR/aux-fixed/exim-ca
+DRSA = CA/example.com
+DECDSA = CA/example_ec.com
+
+tls_certificate = DRSA/server1.example.com/server1.example.com.pem \
+		: DECDSA/server1.example_ec.com/server1.example_ec.com.pem
+tls_privatekey =  DRSA/server1.example.com/server1.example.com.unlocked.key \
+		: DECDSA/server1.example_ec.com/server1.example_ec.com.unlocked.key
 
 tls_verify_hosts = HOSTIPV4
-tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server2.example.com/ca_chain.pem
+tls_verify_certificates = DRSA/server2.example.com/ca_chain.pem
 
 
 # ------ ACL ------
@@ -30,19 +40,9 @@ begin acl
 check_recipient:
   accept  hosts = :
   deny    hosts = HOSTIPV4
-         !encrypted = AES256-SHA : \
-                      AES256-GCM-SHA384 : \
-                      AES128-GCM-SHA256 : \
-                      IDEA-CBC-MD5 : \
-                      DES-CBC3-SHA : \
-		      DHE-RSA-AES256-SHA : \
-		      DHE-RSA-AES256-GCM-SHA384 : \
-                      DHE_RSA_AES_256_CBC_SHA1 : \
-                      DHE_RSA_3DES_EDE_CBC_SHA : \
-                      ECDHE-RSA-AES256-GCM-SHA384 : \
-                      ECDHE-RSA-AES128-GCM-SHA256 : \
-		      ECDHE-RSA-CHACHA20-POLY1305
+         !encrypted = *
 	  logwrite = cipher: $tls_in_cipher
+# This appears to lie. Despite what's on the wire, it returns the last cert loaded.
   warn    logwrite =  ${if def:tls_in_ourcert \
 		{Our cert SN: <${certextract{subject}{$tls_in_ourcert}}>} \
 		{We did not present a cert}}

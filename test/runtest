@@ -572,8 +572,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   #   DHE-RSA-AES256-SHA
   # picking latter as canonical simply because regex easier that way.
   s/\bDHE_RSA_AES_128_CBC_SHA1:128/RSA_AES_256_CBC_SHA1:256/g;
-  s/TLS1.[012]:((EC)?DHE_)?RSA_AES_(256|128)_(CBC|GCM)_SHA(1|256|384):(256|128)/TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256/g;
-  s/\b(ECDHE-RSA-AES256-SHA|DHE-RSA-AES256-SHA256)\b/AES256-SHA/g;
+  s/TLS1.[012]:((EC)?DHE_)?(RSA|ECDSA)_AES_(256|128)_(CBC|GCM)_SHA(1|256|384):(256|128)/TLS1.x:ke_$3_AES_256_CBC_SHAnnn:256/g;
+  s/\b(ECDHE-(RSA|ECDSA)-AES256-SHA|DHE-RSA-AES256-SHA256)\b/ke-$2-AES256-SHAxx/g;
 
   # GnuTLS library error message changes
   s/No certificate was found/The peer did not send any certificate/g;

@@ -65,6 +65,8 @@ Version 4.90
 16. The "-be" expansion test mode now supports macros.  Macros are expanded
     in test lines, and new macros can be defined.
 
+17. Support for server-side dual-certificate-stacks (eg. RSA + ECDSA).
+
 
 Version 4.89
 ------------
