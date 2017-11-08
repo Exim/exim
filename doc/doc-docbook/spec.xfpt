@@ -27137,7 +27137,7 @@ let the Exim Maintainers know and we'll likely use it).
 .next
 .new
 With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option
-main option, it must be ordered to match the %&tls_certificate%& list.
+main option, it must be ordered to match the &%tls_certificate%& list.
 .wen
 .next
 Some other recently added features may only be available in one or the other.
