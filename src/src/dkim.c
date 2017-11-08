@@ -235,14 +235,6 @@ return;
 }
 
 
-/* Log a line for "the current" signature */
-void
-dkim_exim_verify_log_item(void)
-{
-dkim_exim_verify_log_sig(dkim_cur_sig);
-}
-
-
 /* Log a line for each signature */
 void
 dkim_exim_verify_log_all(void)
@@ -303,37 +295,72 @@ store_pool = dkim_verify_oldpool;
 }
 
 
-void
-dkim_exim_acl_setup(uschar * id)
+
+/* Args as per dkim_exim_acl_run() below */
+static int
+dkim_acl_call(uschar * id, gstring ** res_ptr,
+  uschar ** user_msgptr, uschar ** log_msgptr)
+{
+int rc;
+DEBUG(D_receive)
+  debug_printf("calling acl_smtp_dkim for dkim_cur_signer='%s'\n", id);
+
+rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, user_msgptr, log_msgptr);
+dkim_exim_verify_log_sig(dkim_cur_sig);
+*res_ptr = string_append_listele(*res_ptr, ':', dkim_verify_status);
+return rc;
+}
+
+
+
+/* For the given identity, run the DKIM ACL once for each matching signature.
+
+Arguments
+ id		Identity to look for in dkim signatures
+ res_ptr	ptr to growable string-list of status results,
+		appended to per ACL run
+ user_msgptr	where to put a user error (for SMTP response)
+ log_msgptr	where to put a logging message (not for SMTP response)
+
+Returns:       OK         access is granted by an ACCEPT verb
+               DISCARD    access is granted by a DISCARD verb
+               FAIL       access is denied
+               FAIL_DROP  access is denied; drop the connection
+               DEFER      can't tell at the moment
+               ERROR      disaster
+*/
+
+int
+dkim_exim_acl_run(uschar * id, gstring ** res_ptr,
+  uschar ** user_msgptr, uschar ** log_msgptr)
 {
 pdkim_signature * sig;
 uschar * cmp_val;
+int rc = -1;
 
 dkim_verify_status = US"none";
 dkim_verify_reason = US"";
-dkim_cur_sig = NULL;
 dkim_cur_signer = id;
 
 if (dkim_disable_verify || !id || !dkim_verify_ctx)
-  return;
+  return OK;
 
-/* Find signature to run ACL on */
+/* Find signatures to run ACL on */
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   if (  (cmp_val = Ustrchr(id, '@') != NULL ? US sig->identity : US sig->domain)
      && strcmpic(cmp_val, id) == 0
      )
     {
-    dkim_cur_sig = sig;
-
     /* The "dkim_domain" and "dkim_selector" expansion variables have
-       related globals, since they are used in the signing code too.
-       Instead of inventing separate names for verification, we set
-       them here. This is easy since a domain and selector is guaranteed
-       to be in a signature. The other dkim_* expansion items are
-       dynamically fetched from dkim_cur_sig at expansion time (see
-       function below). */
+    related globals, since they are used in the signing code too.
+    Instead of inventing separate names for verification, we set
+    them here. This is easy since a domain and selector is guaranteed
+    to be in a signature. The other dkim_* expansion items are
+    dynamically fetched from dkim_cur_sig at expansion time (see
+    function below). */
 
+    dkim_cur_sig = sig;
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
     dkim_key_length = sig->sighash.len * 8;
@@ -343,8 +370,18 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     dkim_verify_status = dkim_exim_expand_query(DKIM_VERIFY_STATUS);
     dkim_verify_reason = dkim_exim_expand_query(DKIM_VERIFY_REASON);
-    return;
+    
+    if ((rc = dkim_acl_call(id, res_ptr, user_msgptr, log_msgptr)) != OK)
+      return rc;
     }
+
+if (rc != -1)
+  return rc;
+
+/* No matching sig found.  Call ACL once anyway. */
+
+dkim_cur_sig = NULL;
+return dkim_acl_call(id, res_ptr, user_msgptr, log_msgptr);
 }
 
 

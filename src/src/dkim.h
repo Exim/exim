@@ -10,9 +10,8 @@ gstring * dkim_exim_sign(int, off_t, uschar *, struct ob_dkim *, const uschar **
 void    dkim_exim_verify_init(BOOL);
 void    dkim_exim_verify_feed(uschar *, int);
 void    dkim_exim_verify_finish(void);
-void    dkim_exim_verify_log_item(void);
 void    dkim_exim_verify_log_all(void);
-void    dkim_exim_acl_setup(uschar *);
+int     dkim_exim_acl_run(uschar *, gstring **, uschar **, uschar **);
 uschar *dkim_exim_expand_query(int);
 
 #define DKIM_ALGO               1

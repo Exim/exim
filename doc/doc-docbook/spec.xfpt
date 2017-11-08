@@ -38708,6 +38708,11 @@ dkim_verify_signers = $sender_address_domain:$dkim_signers
 If a domain or identity is listed several times in the (expanded) value of
 &%dkim_verify_signers%&, the ACL is only called once for that domain or identity.
 
+.new
+If multiple signatures match a domain (or identity), the ACL is called once
+for each matching signature.
+.wen
+
 
 Inside the &%acl_smtp_dkim%&, the following expansion variables are
 available (from most to least important):

@@ -3444,19 +3444,9 @@ else
 
 	    seen_items = string_catn(seen_items, ":", 1);
 	    }
-
 	  seen_items = string_cat(seen_items, item);
 
-	  dkim_exim_acl_setup(item);
-	  DEBUG(D_receive)
-	    debug_printf("calling acl_smtp_dkim for dkim_cur_signer='%s'\n",
-	      item);
-
-	  rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim,
-		&user_msg, &log_msg);
-	  dkim_exim_verify_log_item();
-	  results = string_append_listele(results, ':', dkim_verify_status);
-
+	  rc = dkim_exim_acl_run(item, &results, &user_msg, &log_msg);
 	  if (rc != OK)
 	    {
 	    DEBUG(D_receive)
