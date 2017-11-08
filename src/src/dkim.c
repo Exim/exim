@@ -143,7 +143,7 @@ uschar * s;
 
 if (!sig) return;
 
-logmsg = string_catn(NULL, "DKIM: ", 6);
+logmsg = string_catn(NULL, US"DKIM: ", 6);
 if (!(s = sig->domain)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, "d=", s);
 if (!(s = sig->selector)) s = US"<UNSET>";
@@ -169,68 +169,69 @@ if (  !dkim_verify_status
   switch (sig->verify_status)
     {
     case PDKIM_VERIFY_NONE:
-      logmsg = string_cat(logmsg, " [not verified]");
+      logmsg = string_cat(logmsg, US" [not verified]");
       break;
 
     case PDKIM_VERIFY_INVALID:
-      logmsg = string_cat(logmsg, " [invalid - ");
+      logmsg = string_cat(logmsg, US" [invalid - ");
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
 	  logmsg = string_cat(logmsg,
-			"public key record (currently?) unavailable]");
+			US"public key record (currently?) unavailable]");
 	  break;
 
 	case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
-	  logmsg = string_cat(logmsg, "overlong public key record]");
+	  logmsg = string_cat(logmsg, US"overlong public key record]");
 	  break;
 
 	case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
 	case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
-	  logmsg = string_cat(logmsg, "syntax error in public key record]");
+	  logmsg = string_cat(logmsg, US"syntax error in public key record]");
 	  break;
 
 	case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
-	  logmsg = string_cat(logmsg, "signature tag missing or invalid]");
+	  logmsg = string_cat(logmsg, US"signature tag missing or invalid]");
 	  break;
 
 	case PDKIM_VERIFY_INVALID_DKIM_VERSION:
-	  logmsg = string_cat(logmsg, "unsupported DKIM version]");
+	  logmsg = string_cat(logmsg, US"unsupported DKIM version]");
 	  break;
 
 	default:
-	  logmsg = string_cat(logmsg, "unspecified problem]");
+	  logmsg = string_cat(logmsg, US"unspecified problem]");
 	}
       break;
 
     case PDKIM_VERIFY_FAIL:
-      logmsg = string_cat(logmsg, " [verification failed - ");
+      logmsg = string_cat(logmsg, US" [verification failed - ");
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_FAIL_BODY:
 	  logmsg = string_cat(logmsg,
-		       "body hash mismatch (body probably modified in transit)]");
+	       US"body hash mismatch (body probably modified in transit)]");
 	  break;
 
 	case PDKIM_VERIFY_FAIL_MESSAGE:
 	  logmsg = string_cat(logmsg,
-		       "signature did not verify (headers probably modified in transit)]");
+		US"signature did not verify "
+		"(headers probably modified in transit)]");
 	break;
 
 	default:
-	  logmsg = string_cat(logmsg, "unspecified reason]");
+	  logmsg = string_cat(logmsg, US"unspecified reason]");
 	}
       break;
 
     case PDKIM_VERIFY_PASS:
-      logmsg = string_cat(logmsg, " [verification succeeded]");
+      logmsg = string_cat(logmsg, US" [verification succeeded]");
       break;
     }
 else
   logmsg = string_append(logmsg, 5,
 	    US" [", dkim_verify_status, US" - ", dkim_verify_reason, US"]");
 
-log_write(0, LOG_MAIN, string_from_gstring(logmsg));
+log_write(0, LOG_MAIN, "%s", string_from_gstring(logmsg));
 return;
 }
 
