@@ -13,10 +13,10 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-RSA-AES256-SHAxxx:256 CV=no S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-RSA-AES256-SHAxxx:256 CV=no S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer cert:
@@ -39,8 +39,8 @@
 1999-03-02 09:44:33 sha1   fingerprint 0D9E776B02AFDEFB0231588927D305CA81F00366
 1999-03-02 09:44:33 sha256 fingerprint 3B8118604CE886FD44668735B467D32CA1A03C9EBA610F6EF54BB8CCA223F12F
 1999-03-02 09:44:33 der_b64 MIICjDCCAfWgAwIBAgICAMkwDQYJKoZIhvcNAQELBQAwNzEUMBIGA1UEChMLZXhhbXBsZS5jb20xHzAdBgNVBAMTFmNsaWNhIFNpZ25pbmcgQ2VydCByc2EwHhcNMTIxMTAxMTIzNDAxWhcNMzcxMjAxMTIzNDAxWjAeMRwwGgYDVQQDExNzZXJ2ZXIyLmV4YW1wbGUuY29tMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5xczcpFPcohZhLegf/wzSJvwj/dVkXg0MEyVulbMS+sgCwwSO6uGykJVc6ZKUnGqFyv5Icp1zG9Y9/joYefiXN5K1n/3NrtsET+6AJDWzZYz/AyRGd07xLwEw+Ip0/bqqNaxpc07L1qAABcwz2lcSeKsIDbYC9znSdEzuNUFmGQIDAQABo4G/MIG8MA4GA1UdDwEB/wQEAwIE8DAgBgNVHSUBAf8EFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwMgYDVR0fBCswKTAnoCWgI4YhaHR0cDovL2NybC5leGFtcGxlLmNvbS9sYXRlc3QuY3JsMDQGCCsGAQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29zY3AuZXhhbXBsZS5jb20vMB4GA1UdEQQXMBWCE3NlcnZlcjIuZXhhbXBsZS5jb20wDQYJKoZIhvcNAQELBQADgYEAGQz0ggxKkEXx50eX/uWtlC7+JFwsJLBhU/nGBmOLxzHhptrRBLiqLYr8Chj92eZNnDr1HUY0jIC8PcPDjpgz1rs+6HOy3F++t7u+x1x89MQ2DUjCqqyjiM/PzuKsdU4VTVXsu8R4x8YSjCfXeKJAlOL4rPy2wU3wXRhzCf4Et4E=
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLSv1:ke-RSA-AES256-SHAxxx:256 CV=yes DN="/CN=server2.example.com" S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server2.example.com" S=sss
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-ECDSA-AES256-SHAxxx:256 CV=no S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-ECDSA-AES256-SHA:xxx CV=no S=sss
