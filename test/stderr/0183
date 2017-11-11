@@ -3,9 +3,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
-DSN: srv propagating DSN
-DSN: useryz propagating DSN
-DSN: lookuphost propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -196,9 +193,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
-DSN: srv propagating DSN
-DSN: useryz propagating DSN
-DSN: lookuphost propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -387,9 +381,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
-DSN: srv propagating DSN
-DSN: useryz propagating DSN
-DSN: lookuphost propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -580,9 +571,6 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
-DSN: srv propagating DSN
-DSN: useryz propagating DSN
-DSN: lookuphost propagating DSN
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID

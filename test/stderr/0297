@@ -2,7 +2,6 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: r1 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing /a/b/c@myhost.test.ex
 --------> r1 router <--------
@@ -26,7 +25,6 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: r1 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing /x/y/z@myhost.test.ex
 --------> r1 router <--------

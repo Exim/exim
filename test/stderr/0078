@@ -1,9 +1,6 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: lookuphost propagating DSN
-DSN: self propagating DSN
-DSN: self2 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@mxt6.test.ex
 --------> lookuphost router <--------
@@ -25,9 +22,6 @@ routed by lookuphost router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: lookuphost propagating DSN
-DSN: self propagating DSN
-DSN: self2 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing myhost.test.ex@mxt1.test.ex
 --------> lookuphost router <--------
@@ -63,9 +57,6 @@ routed by self router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: lookuphost propagating DSN
-DSN: self propagating DSN
-DSN: self2 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@mxt1.test.ex
 --------> lookuphost router <--------
@@ -115,9 +106,6 @@ routed by self2 router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: lookuphost propagating DSN
-DSN: self propagating DSN
-DSN: self2 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing xx@not.exist
 --------> lookuphost router <--------

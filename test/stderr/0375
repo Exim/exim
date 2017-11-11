@@ -1,15 +1,6 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: u1 propagating DSN
-DSN: ut2 propagating DSN
-DSN: ut3 propagating DSN
-DSN: ut4 propagating DSN
-DSN: ut5 propagating DSN
-DSN: ut6 propagating DSN
-DSN: ut7 propagating DSN
-DSN: ut8 propagating DSN
-DSN: real propagating DSN
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
@@ -17,15 +8,6 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: u1 propagating DSN
-DSN: ut2 propagating DSN
-DSN: ut3 propagating DSN
-DSN: ut4 propagating DSN
-DSN: ut5 propagating DSN
-DSN: ut6 propagating DSN
-DSN: ut7 propagating DSN
-DSN: ut8 propagating DSN
-DSN: real propagating DSN
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -858,30 +840,12 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: u1 propagating DSN
-DSN: ut2 propagating DSN
-DSN: ut3 propagating DSN
-DSN: ut4 propagating DSN
-DSN: ut5 propagating DSN
-DSN: ut6 propagating DSN
-DSN: ut7 propagating DSN
-DSN: ut8 propagating DSN
-DSN: real propagating DSN
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: u1 propagating DSN
-DSN: ut2 propagating DSN
-DSN: ut3 propagating DSN
-DSN: ut4 propagating DSN
-DSN: ut5 propagating DSN
-DSN: ut6 propagating DSN
-DSN: ut7 propagating DSN
-DSN: ut8 propagating DSN
-DSN: real propagating DSN
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
@@ -960,30 +924,12 @@ log writing disabled
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: u1 propagating DSN
-DSN: ut2 propagating DSN
-DSN: ut3 propagating DSN
-DSN: ut4 propagating DSN
-DSN: ut5 propagating DSN
-DSN: ut6 propagating DSN
-DSN: ut7 propagating DSN
-DSN: ut8 propagating DSN
-DSN: real propagating DSN
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: u1 propagating DSN
-DSN: ut2 propagating DSN
-DSN: ut3 propagating DSN
-DSN: ut4 propagating DSN
-DSN: ut5 propagating DSN
-DSN: ut6 propagating DSN
-DSN: ut7 propagating DSN
-DSN: ut8 propagating DSN
-DSN: real propagating DSN
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: h1@myhost.test.ex

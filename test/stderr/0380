@@ -1,10 +1,6 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: r0 propagating DSN
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
-DSN: r3 propagating DSN
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
@@ -12,10 +8,6 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-DSN: r0 propagating DSN
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
-DSN: r3 propagating DSN
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

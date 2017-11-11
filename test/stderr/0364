@@ -1,11 +1,6 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
-DSN: r3 propagating DSN
-DSN: r4 propagating DSN
-DSN: r5 propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@thishost
 --------> r1 router <--------

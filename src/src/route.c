@@ -244,14 +244,12 @@ for (r = routers; r; r = r->next)
 
   /* Check for transport or no transport on certain routers */
 
-  if ((r->info->ri_flags & ri_yestransport) != 0 &&
-      r->transport_name == NULL &&
-      !r->verify_only)
+  if (  (r->info->ri_flags & ri_yestransport)
+     && !r->transport_name && !r->verify_only)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "%s router:\n  "
       "a transport is required for this router", r->name);
 
-  if ((r->info->ri_flags & ri_notransport) != 0 &&
-       r->transport_name != NULL)
+  if ((r->info->ri_flags & ri_notransport) && r->transport_name)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "%s router:\n  "
       "a transport must not be defined for this router", r->name);
 
@@ -292,14 +290,16 @@ for (r = routers; r; r = r->next)
 
   /* Check redirect_router and pass_router are valid */
 
-  if (r->redirect_router_name != NULL)
+  if (r->redirect_router_name)
     set_router(r, r->redirect_router_name, &(r->redirect_router), FALSE);
 
-  if (r->pass_router_name != NULL)
+  if (r->pass_router_name)
     set_router(r, r->pass_router_name, &(r->pass_router), TRUE);
 
+#ifdef notdef
   DEBUG(D_route) debug_printf("DSN: %s %s\n", r->name,
 	r->dsn_lasthop ? "lasthop set" : "propagating DSN");
+#endif
   }
 }
 

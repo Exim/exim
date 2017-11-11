@@ -7,8 +7,6 @@ changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -156,8 +154,6 @@ trusted user
 admin user
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
@@ -262,8 +258,6 @@ changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
@@ -1536,8 +1530,6 @@ trusted user
 admin user
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
-DSN: r1 propagating DSN
-DSN: r2 propagating DSN
 seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
