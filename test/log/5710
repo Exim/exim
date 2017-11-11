@@ -9,12 +9,12 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 SN  <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SNCN<server1.example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <O=example.com,CN=clica Signing Cert>
+1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <O=example.com,CN=clica Signing Cert rsa>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:01 2012 GMT>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Dec  1 12:34:01 2037 GMT>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <RSA-SHA256>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <67 ef 2d 43 8e 43 50 f5 3f 41 ee 42 cf f4 b4 31 3d d8 88 b5 f7 24 1f 26 83 32 6a 6c ff 8a 36 b7 be cb 28 48 68 9c a9 3c 6e 2f 2d a5 f4 fc d2 09 9b 1d 04 00 26 7d a5 f9 39 13 06 dd 9d 69 78 f8 7b f5 3c 82 9d 8f b9 4f 1a b6 f0 0b 7f 20 82 6e 80 4e 38 09 d1 43 23 22 dd 37 5d 80 6d 5a aa 23 33 e4 79 c9 0d 8d cc b8 ed 5f 6b 01 56 2c 49 89 9b ca 5e d5 b3 b0 93 7e d5 5e f0 98 7d 5f 07 4b>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <7a cd 30 27 d2 7c 9d fe c7 12 17 ba ea f4 38 91 c2 4e 5a 92 a8 e2 ad eb e3 16 1d 11 0c ac a2 3e d0 74 13 71 2e dc 4d c2 35 ac 7e 6e aa ac 9d 59 7c a8 9c c5 19 f4 05 96 a6 a3 e3 0c e0 0c 4b 05 ce 3a 50 32 a0 7e b2 43 9b 85 c6 1a 64 d2 c1 fb e4 f7 e7 40 06 51 db e8 50 de 13 a0 ec c6 ef b8 75 5c db bd 8e 52 0b c1 66 4d 45 e0 71 b2 d8 77 18 81 79 4c 29 de c0 b9 ab 9b aa 14 1e 6a dd 9f>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex>
 1999-03-02 09:44:33 10HmaX-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session: (certificate verification failed): certificate invalid: delivering unencrypted to H=127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
@@ -23,7 +23,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 No Peer cert
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth=0 <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 => good@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 msg:delivery good
 1999-03-02 09:44:33 10HmaY-0005vi-00 Our cert SN: CN=server2.example.com
 1999-03-02 09:44:33 10HmaY-0005vi-00 Peer cert:
@@ -31,12 +31,12 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN  <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SNCN<server1.example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <O=example.com,CN=clica Signing Cert>
+1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <O=example.com,CN=clica Signing Cert rsa>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:01 2012 GMT>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:34:01 2037 GMT>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <RSA-SHA256>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <67 ef 2d 43 8e 43 50 f5 3f 41 ee 42 cf f4 b4 31 3d d8 88 b5 f7 24 1f 26 83 32 6a 6c ff 8a 36 b7 be cb 28 48 68 9c a9 3c 6e 2f 2d a5 f4 fc d2 09 9b 1d 04 00 26 7d a5 f9 39 13 06 dd 9d 69 78 f8 7b f5 3c 82 9d 8f b9 4f 1a b6 f0 0b 7f 20 82 6e 80 4e 38 09 d1 43 23 22 dd 37 5d 80 6d 5a aa 23 33 e4 79 c9 0d 8d cc b8 ed 5f 6b 01 56 2c 49 89 9b ca 5e d5 b3 b0 93 7e d5 5e f0 98 7d 5f 07 4b>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <7a cd 30 27 d2 7c 9d fe c7 12 17 ba ea f4 38 91 c2 4e 5a 92 a8 e2 ad eb e3 16 1d 11 0c ac a2 3e d0 74 13 71 2e dc 4d c2 35 ac 7e 6e aa ac 9d 59 7c a8 9c c5 19 f4 05 96 a6 a3 e3 0c e0 0c 4b 05 ce 3a 50 32 a0 7e b2 43 9b 85 c6 1a 64 d2 c1 fb e4 f7 e7 40 06 51 db e8 50 de 13 a0 ec c6 ef b8 75 5c db bd 8e 52 0b c1 66 4d 45 e0 71 b2 d8 77 18 81 79 4c 29 de c0 b9 ab 9b aa 14 1e 6a dd 9f>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=server1.example.com\nDNS=alternatename.server1.example.com\nDNS=*.test.ex>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
@@ -48,4 +48,4 @@
 1999-03-02 09:44:33 TLS error on connection from localhost [127.0.0.1] (send): The specified session has been invalidated for some reason.
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 [127.0.0.1] depth=0 CN=server2.example.com
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:xxxxRSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server2.example.com" S=sss id=E10HmaY-0005vi-00@myhost.test.ex

@@ -508,8 +508,8 @@ static var_entry var_table[] = {
   { "dkim_key_testing",    vtype_dkim,        (void *)DKIM_KEY_TESTING },
   { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
   { "dkim_signers",        vtype_stringptr,   &dkim_signers },
-  { "dkim_verify_reason",  vtype_dkim,        (void *)DKIM_VERIFY_REASON },
-  { "dkim_verify_status",  vtype_dkim,        (void *)DKIM_VERIFY_STATUS},
+  { "dkim_verify_reason",  vtype_stringptr,   &dkim_verify_reason },
+  { "dkim_verify_status",  vtype_stringptr,   &dkim_verify_status },
 #endif
 #ifdef EXPERIMENTAL_DMARC
   { "dmarc_ar_header",     vtype_stringptr,   &dmarc_ar_header },

@@ -51,9 +51,9 @@ the relevant directory into the rpath stamped into the binary:
 
     SUPPORT_TLS=yes
     USE_OPENSSL_PC=openssl
-    EXTRALIBS_EXIM=-ldl -Wl,-rpath,/opt/openssl/lib
+    LDFLAGS=-ldl -Wl,-rpath,/opt/openssl/lib
 
-The -ldl is needed by OpenSSL 1.1+ on Linux and is not needed on most
+The -ldl is needed by OpenSSL 1.0.2+ on Linux and is not needed on most
 other platforms.
 
 Then tell pkg-config how to find the configuration files for your new

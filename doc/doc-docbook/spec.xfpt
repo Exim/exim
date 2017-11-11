@@ -11665,8 +11665,11 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
+.vitem &$dkim_verify_status$& &&&
+Results of DKIM verification.
+For details see chapter &<<CHAPdkim>>&.
+
 .vitem &$dkim_cur_signer$& &&&
-       &$dkim_verify_status$& &&&
        &$dkim_verify_reason$& &&&
        &$dkim_domain$& &&&
        &$dkim_identity$& &&&
@@ -12905,6 +12908,11 @@ inbound connection when the message was received.
 It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
+
+.new
+&*Note*&: Under current versions of OpenSSL, when a list of more than one
+file is used for &%tls_certificate%&, this variable is not reliable.
+.wen
 
 .vitem &$tls_in_peercert$&
 .vindex "&$tls_in_peercert$&"
@@ -17107,11 +17115,15 @@ using the &%tls_certificate%& option.  If TLS support for incoming connections
 is not required the &%tls_advertise_hosts%& option should be set empty.
 
 
-.option tls_certificate main string&!! unset
+.option tls_certificate main string list&!! unset
 .cindex "TLS" "server certificate; location of"
 .cindex "certificate" "server, location of"
-The value of this option is expanded, and must then be the absolute path to a
-file which contains the server's certificates. The server's private key is also
+.new
+The value of this option is expanded, and must then be a list of absolute paths to
+files which contains the server's certificates.  Commonly only one file is
+needed.
+.wen
+The server's private key is also
 assumed to be in this file if &%tls_privatekey%& is unset. See chapter
 &<<CHAPTLS>>& for further details.
 
@@ -17119,6 +17131,11 @@ assumed to be in this file if &%tls_privatekey%& is unset. See chapter
 receiving incoming messages as a server. If you want to supply certificates for
 use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
+
+.new
+&*Note*&: Under current versions of OpenSSL, when a list of more than one
+file is used, the &$tls_in_ourcert$& veriable is unreliable.
+.wen
 
 If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
@@ -17270,10 +17287,13 @@ further details, see section &<<SECTsupobssmt>>&.
 
 
 
-.option tls_privatekey main string&!! unset
+.option tls_privatekey main string list&!! unset
 .cindex "TLS" "server private key; location of"
-The value of this option is expanded, and must then be the absolute path to a
-file which contains the server's private key. If this option is unset, or if
+.new
+The value of this option is expanded, and must then be a list of absolute paths to
+files which contains the server's private keys.
+.wen
+If this option is unset, or if
 the expansion is forced to fail, or the result is an empty string, the private
 key is assumed to be in the same file as the server's certificates. See chapter
 &<<CHAPTLS>>& for further details.
@@ -27115,6 +27135,11 @@ When using OpenSSL, this option is ignored.
 (If an API is found to let OpenSSL be configured in this way,
 let the Exim Maintainers know and we'll likely use it).
 .next
+.new
+With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option
+main option, it must be ordered to match the &%tls_certificate%& list.
+.wen
+.next
 Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
 explicitly state that the feature is infeasible in the other TLS
@@ -27270,6 +27295,12 @@ tls_require_ciphers = ${if =={$received_port}{25}\
                            {HIGH:!MD5:!SHA1}}
 .endd
 
+.new
+This example will prefer ECDSA-authenticated ciphers over RSA ones:
+.code
+tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
+.endd
+.wen
 
 
 .section "Requiring specific ciphers or other parameters in GnuTLS" &&&
@@ -27358,8 +27389,7 @@ from someone able to intercept the communication.
 
 Further protection requires some further configuration at the server end.
 
-It is rumoured that all existing clients that support TLS/SSL use RSA
-encryption. To make this work you need to set, in the server,
+To make TLS work you need to set, in the server,
 .code
 tls_certificate = /some/file/name
 tls_privatekey = /some/file/name
@@ -27377,6 +27407,15 @@ set, or if its expansion is forced to fail or results in an empty string, this
 is assumed to be the case. The certificate file may also contain intermediate
 certificates that need to be sent to the client to enable it to authenticate
 the server's certificate.
+
+.new
+For dual-stack (eg. RSA and ECDSA) configurations, these options can be
+colon-separated lists of file paths.  Ciphers using given authentication
+algorithms require the presence of a suitable certificate to supply the
+public-key.  The server selects among the certificates to present to the
+client depending on the selected cipher, hence the priority ordering for
+ciphers will affect which certificate is used.
+.wen
 
 If you do not understand about certificates and keys, please try to find a
 source of this background information, which is not Exim-specific. (There are a
@@ -28999,6 +29038,7 @@ This modifier puts a value into one of the ACL variables (see section
 
 
 .vitem &*udpsend*&&~=&~<&'parameters'&>
+.cindex "UDP communications"
 This modifier sends a UDP packet, for purposes such as statistics
 collection or behaviour monitoring. The parameters are expanded, and
 the result of the expansion must be a colon-separated list consisting
@@ -38608,6 +38648,17 @@ When unspecified, the header names listed in RFC4871 will be used,
 whether or not each header is present in the message.
 The default list is available for the expansion in the macro
 "_DKIM_SIGN_HEADERS".
+
+If a name is repeated, multiple headers by that name (or the absence therof)
+will be signed.  The textually later headers in the headers part of the
+message are signed first, if there are multiples.
+
+A name can be prefixed with either an '=' or a '+' character.
+If an '=' prefix is used, all headers that are present with this name
+will be signed.
+If a '+' prefix if used, all headers that are present with this name
+will be signed, and one signtature added for a missing header with the
+name will be appended.
 .wen
 
 
@@ -38657,6 +38708,11 @@ dkim_verify_signers = $sender_address_domain:$dkim_signers
 If a domain or identity is listed several times in the (expanded) value of
 &%dkim_verify_signers%&, the ACL is only called once for that domain or identity.
 
+.new
+If multiple signatures match a domain (or identity), the ACL is called once
+for each matching signature.
+.wen
+
 
 Inside the &%acl_smtp_dkim%&, the following expansion variables are
 available (from most to least important):
@@ -38669,7 +38725,8 @@ an identity. This is one of the list items from the expanded main option
 &%dkim_verify_signers%& (see above).
 
 .vitem &%$dkim_verify_status%&
-A string describing the general status of the signature. One of
+Within the DKIM ACL,
+a string describing the general status of the signature. One of
 .ilist
 &%none%&: There is no signature in the message for the current domain or
 identity (as reflected by &%$dkim_cur_signer%&).
@@ -38682,6 +38739,22 @@ available in &%$dkim_verify_reason%&.
 .next
 &%pass%&: The signature passed verification. It is valid.
 .endlist
+
+.new
+This variable can be overwritten using an ACL 'set' modifier.
+This might, for instance, be done to enforce a policy restriction on
+hash-method or key-size:
+.code
+  warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
+	condition =	${if eq {$dkim_verify_status}{pass}}
+	logwrite =	NOTE: forcing dkim verify fail (was pass)
+	set dkim_verify_status = fail
+	set dkim_verify_reason = hash too weak
+.endd
+
+After all the DKIM ACL runs have completed, the value becomes a
+colon-separated list of the values after each run.
+.wen
 
 .vitem &%$dkim_verify_reason%&
 A string giving a little bit more detail when &%$dkim_verify_status%& is either
@@ -38702,6 +38775,10 @@ could not be verified. This may mean that headers were modified,
 re-written or otherwise changed in a way which is incompatible with
 DKIM verification. It may of course also mean that the signature is forged.
 .endlist
+
+.new
+This variable can be overwritten using an ACL 'set' modifier.
+.wen
 
 .vitem &%$dkim_domain%&
 The signing domain. IMPORTANT: This variable is only populated if there is

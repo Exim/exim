@@ -36,9 +36,9 @@ FE       = $(FULLECHO)
 # are set up, and finally it goes to the main Exim target.
 
 all:       utils exim
-config:    $(EDITME) checklocalmake Makefile os.c config.h version.h macro.c
+config:    $(EDITME) checklocalmake Makefile os.c config.h version.h version.sh macro.c
 
-checklocalmake: 
+checklocalmake:
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
 	  $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(ARCHTYPE) $(EDITME) || \
 	  $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE)-$(ARCHTYPE) $(EDITME); \
@@ -260,7 +260,7 @@ buildconfig: buildconfig.c
 # Target for the exicyclog utility script
 exicyclog: config ../src/exicyclog.src
 	@rm -f exicyclog
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -277,6 +277,8 @@ exicyclog: config ../src/exicyclog.src
 	  -e "s?MV_COMMAND?$(MV_COMMAND)?" \
 	  -e "s?RM_COMMAND?$(RM_COMMAND)?" \
 	  -e "s?TOUCH_COMMAND?$(TOUCH_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exicyclog.src > exicyclog-t
 	@mv exicyclog-t exicyclog
 	@chmod a+x exicyclog
@@ -285,13 +287,15 @@ exicyclog: config ../src/exicyclog.src
 # Target for the exinext utility script
 exinext: config ../src/exinext.src
 	@rm -f exinext
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
 	  -e "s?CONFIGURE_FILE_USE_NODE?$(CONFIGURE_FILE_USE_NODE)?" \
 	  -e "s?CONFIGURE_FILE?$(CONFIGURE_FILE)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exinext.src > exinext-t
 	@mv exinext-t exinext
 	@chmod a+x exinext
@@ -300,7 +304,7 @@ exinext: config ../src/exinext.src
 # Target for the exiwhat utility script
 exiwhat: config ../src/exiwhat.src
 	@rm -f exiwhat
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -313,6 +317,8 @@ exiwhat: config ../src/exiwhat.src
 	  -e "s?EXIWHAT_EGREP_ARG?$(EXIWHAT_EGREP_ARG)?" \
 	  -e "s?EXIWHAT_MULTIKILL_CMD?$(EXIWHAT_MULTIKILL_CMD)?" \
 	  -e "s?EXIWHAT_MULTIKILL_ARG?$(EXIWHAT_MULTIKILL_ARG)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exiwhat.src > exiwhat-t
 	@mv exiwhat-t exiwhat
 	@chmod a+x exiwhat
@@ -321,7 +327,7 @@ exiwhat: config ../src/exiwhat.src
 # Target for the exim_checkaccess utility script
 exim_checkaccess: config ../src/exim_checkaccess.src
 	@rm -f exim_checkaccess
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -329,6 +335,8 @@ exim_checkaccess: config ../src/exim_checkaccess.src
 	  -e "s?CONFIGURE_FILE?$(CONFIGURE_FILE)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exim_checkaccess.src > exim_checkaccess-t
 	@mv exim_checkaccess-t exim_checkaccess
 	@chmod a+x exim_checkaccess
@@ -339,7 +347,7 @@ eximon: config ../src/eximon.src ../OS/eximon.conf-Default \
           ../Local/eximon.conf
 	@rm -f eximon
 	$(SHELL) $(SCRIPTS)/Configure-eximon
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -349,85 +357,108 @@ eximon: config ../src/eximon.src ../OS/eximon.conf-Default \
 	  -e "s?BASENAME_COMMAND?$(BASENAME_COMMAND)?" \
 	  -e "s?HOSTNAME_COMMAND?$(HOSTNAME_COMMAND)?" \
 	  -e "s?X11_LD_LIBRARY?$(X11_LD_LIB)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/eximon.src >> eximon
 	@echo ">>> eximon script built"; echo ""
 
 # Targets for utilities; these are all Perl scripts that have to get the
 # location of Perl put in them. A few need other things as well.
 
-exigrep: Makefile ../src/exigrep.src
+exigrep: config ../src/exigrep.src
 	@rm -f exigrep
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?ZCAT_COMMAND?$(ZCAT_COMMAND)?" \
           -e "s?COMPRESS_SUFFIX?$(COMPRESS_SUFFIX)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exigrep.src > exigrep-t
 	@mv exigrep-t exigrep
 	@chmod a+x exigrep
 	@echo ">>> exigrep script built"
 
-eximstats: Makefile ../src/eximstats.src
+eximstats: config ../src/eximstats.src
 	@rm -f eximstats
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/eximstats.src > eximstats-t
 	@mv eximstats-t eximstats
 	@chmod a+x eximstats
 	@echo ">>> eximstats script built"
 
-exiqgrep: Makefile ../src/exiqgrep.src
+exiqgrep: config ../src/exiqgrep.src
 	@rm -f exiqgrep
-	@sed \
+	@. ./version.sh && sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exiqgrep.src > exiqgrep-t
 	@mv exiqgrep-t exiqgrep
 	@chmod a+x exiqgrep
 	@echo ">>> exiqgrep script built"
 
-exiqsumm: Makefile ../src/exiqsumm.src
+exiqsumm: config ../src/exiqsumm.src
 	@rm -f exiqsumm
-	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@. ./version.sh && sed \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exiqsumm.src > exiqsumm-t
 	@mv exiqsumm-t exiqsumm
 	@chmod a+x exiqsumm
 	@echo ">>> exiqsumm script built"
 
-exipick: Makefile ../src/exipick.src
+exipick: config ../src/exipick.src
 	@rm -f exipick
-	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@. ./version.sh && sed \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
 	  -e "s?BIN_DIRECTORY?$(BIN_DIRECTORY)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/exipick.src > exipick-t
 	@mv exipick-t exipick
 	@chmod a+x exipick
 	@echo ">>> exipick script built"
 
-transport-filter.pl: Makefile ../src/transport-filter.src
+transport-filter.pl: config ../src/transport-filter.src
 	@rm -f transport-filter.pl
-	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@. ./version.sh && sed \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/transport-filter.src > transport-filter.pl-t
 	@mv transport-filter.pl-t transport-filter.pl
 	@chmod a+x transport-filter.pl
 	@echo ">>> transport-filter.pl script built"
 
-convert4r3: Makefile ../src/convert4r3.src
+convert4r3: config ../src/convert4r3.src
 	@rm -f convert4r3
-	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@. ./version.sh && sed \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/convert4r3.src > convert4r3-t
 	@mv convert4r3-t convert4r3
 	@chmod a+x convert4r3
 	@echo ">>> convert4r3 script built"
 
-convert4r4: Makefile ../src/convert4r4.src
+convert4r4: config ../src/convert4r4.src
 	@rm -f convert4r4
-	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@. ./version.sh && sed \
+	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
+	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
 	  ../src/convert4r4.src > convert4r4-t
 	@mv convert4r4-t convert4r4
 	@chmod a+x convert4r4
@@ -635,7 +666,7 @@ PHDRS = ../config.h \
 
 # Update Exim's version information and build the version object.
 
-version.h::
+version.h version.sh::
 	@../scripts/reversion
 
 cnumber.h: version.h

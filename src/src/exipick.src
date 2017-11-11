@@ -17,6 +17,7 @@ my $charset = 'ISO-8859-1';
 use strict;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 use Getopt::Long;
+use File::Basename;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
 my $p_version = "20100323.0";
@@ -83,7 +84,13 @@ GetOptions(
   'show-vars=s' => \$G::show_vars,  # display the contents of these vars
   'just-vars'   => \$G::just_vars,  # only display vars, no other info
   'show-rules'  => \$G::show_rules, # display compiled match rules
-  'show-tests'  => \$G::show_tests  # display tests as applied to each message
+  'show-tests'  => \$G::show_tests, # display tests as applied to each message
+  'version'     => sub {
+        print basename($0) . ": $0\n",
+            "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+            "perl(runtime): $]\n";
+            exit 0;
+  },
 ) || exit(1);
 
 # if both freeze and thaw specified, only thaw as it is less destructive

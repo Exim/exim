@@ -1,6 +1,6 @@
 # DKIM signing, multiple
 #
-exim -bd -DSERVER=server -oX PORT_D
+exim -bd -DSERVER=server -DFAKE=test.dkim.dom.ain -oX PORT_D
 ****
 #
 exim -DSELECTOR=ses:sel -DOPT=From:To:Subject -odf c@test.ex

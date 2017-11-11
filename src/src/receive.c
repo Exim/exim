@@ -3388,99 +3388,96 @@ else
 #ifndef DISABLE_DKIM
     if (!dkim_disable_verify)
       {
-      /* Finish verification, this will log individual signature results to
-         the mainlog */
+      /* Finish verification */
       dkim_exim_verify_finish();
 
       /* Check if we must run the DKIM ACL */
       if (acl_smtp_dkim && dkim_verify_signers && *dkim_verify_signers)
         {
-        uschar *dkim_verify_signers_expanded =
+        uschar * dkim_verify_signers_expanded =
           expand_string(dkim_verify_signers);
-        if (!dkim_verify_signers_expanded)
+	gstring * results = NULL;
+	int signer_sep = 0;
+	const uschar * ptr;
+	uschar * item;
+	gstring * seen_items = NULL;
+	int old_pool = store_pool;
+
+	store_pool = POOL_PERM;   /* Allow created variables to live to data ACL */
+
+        if (!(ptr = dkim_verify_signers_expanded))
           log_write(0, LOG_MAIN|LOG_PANIC,
             "expansion of dkim_verify_signers option failed: %s",
             expand_string_message);
 
-        else
-          {
-          int sep = 0;
-          const uschar *ptr = dkim_verify_signers_expanded;
-          uschar *item = NULL;
-          gstring * seen_items = NULL;
+	/* Default to OK when no items are present */
+	rc = OK;
+	while ((item = string_nextinlist(&ptr, &signer_sep, NULL, 0)))
+	  {
+	  /* Prevent running ACL for an empty item */
+	  if (!item || !*item) continue;
 
-          /* Default to OK when no items are present */
-          rc = OK;
-          while ((item = string_nextinlist(&ptr, &sep, NULL, 0)))
-            {
-            /* Prevent running ACL for an empty item */
-            if (!item || !*item) continue;
+	  /* Only run ACL once for each domain or identity,
+	  no matter how often it appears in the expanded list. */
+	  if (seen_items)
+	    {
+	    uschar * seen_item;
+	    const uschar * seen_items_list = string_from_gstring(seen_items);
+	    int seen_sep = ':';
+	    BOOL seen_this_item = FALSE;
 
-            /* Only run ACL once for each domain or identity,
-	    no matter how often it appears in the expanded list. */
-            if (seen_items)
-              {
-              uschar *seen_item;
-              const uschar *seen_items_list = string_from_gstring(seen_items);
-              BOOL seen_this_item = FALSE;
+	    while ((seen_item = string_nextinlist(&seen_items_list, &seen_sep,
+						  NULL, 0)))
+	      if (Ustrcmp(seen_item,item) == 0)
+		{
+		seen_this_item = TRUE;
+		break;
+		}
 
-              while ((seen_item = string_nextinlist(&seen_items_list, &sep,
-                                                    NULL, 0)))
-		if (Ustrcmp(seen_item,item) == 0)
-		  {
-		  seen_this_item = TRUE;
-		  break;
-		  }
-
-              if (seen_this_item)
-                {
-                DEBUG(D_receive)
-                  debug_printf("acl_smtp_dkim: skipping signer %s, "
-		    "already seen\n", item);
-                continue;
-                }
-
-              seen_items = string_cat(seen_items, ":");
-              }
-
-            seen_items = string_cat(seen_items, item);
-
-            DEBUG(D_receive)
-              debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n",
-		item);
-
-            dkim_exim_acl_setup(item);
-            rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim,
-		  &user_msg, &log_msg);
-
-            if (rc != OK)
+	    if (seen_this_item)
 	      {
 	      DEBUG(D_receive)
-		debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
-		  "skipping remaining items\n", rc, item);
-	      cancel_cutthrough_connection(TRUE, US"dkim acl not ok");
-	      break;
+		debug_printf("acl_smtp_dkim: skipping signer %s, "
+		  "already seen\n", item);
+	      continue;
 	      }
-            }
-          add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
-          if (rc == DISCARD)
-            {
-            recipients_count = 0;
-            blackholed_by = US"DKIM ACL";
-            if (log_msg != NULL)
-              blackhole_log_msg = string_sprintf(": %s", log_msg);
-            }
-          else if (rc != OK)
-            {
-            Uunlink(spool_name);
-            if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
-              smtp_yield = FALSE;    /* No more messages after dropped connection */
-            smtp_reply = US"";       /* Indicate reply already sent */
-            message_id[0] = 0;       /* Indicate no message accepted */
-            goto TIDYUP;             /* Skip to end of function */
-            }
-          }
+
+	    seen_items = string_catn(seen_items, ":", 1);
+	    }
+	  seen_items = string_cat(seen_items, item);
+
+	  rc = dkim_exim_acl_run(item, &results, &user_msg, &log_msg);
+	  if (rc != OK)
+	    {
+	    DEBUG(D_receive)
+	      debug_printf("acl_smtp_dkim: acl_check returned %d on %s, "
+		"skipping remaining items\n", rc, item);
+	    cancel_cutthrough_connection(TRUE, US"dkim acl not ok");
+	    break;
+	    }
+	  }
+	dkim_verify_status = string_from_gstring(results);
+	store_pool = old_pool;
+	add_acl_headers(ACL_WHERE_DKIM, US"DKIM");
+	if (rc == DISCARD)
+	  {
+	  recipients_count = 0;
+	  blackholed_by = US"DKIM ACL";
+	  if (log_msg)
+	    blackhole_log_msg = string_sprintf(": %s", log_msg);
+	  }
+	else if (rc != OK)
+	  {
+	  Uunlink(spool_name);
+	  if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
+	    smtp_yield = FALSE;    /* No more messages after dropped connection */
+	  smtp_reply = US"";       /* Indicate reply already sent */
+	  message_id[0] = 0;       /* Indicate no message accepted */
+	  goto TIDYUP;             /* Skip to end of function */
+	  }
         }
+      else
+	dkim_exim_verify_log_all();
       }
 #endif /* DISABLE_DKIM */
 

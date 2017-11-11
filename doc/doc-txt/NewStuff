@@ -54,6 +54,9 @@ Version 4.90
 13. DKIM support for multiple signing, by domain and/or key-selector.
     DKIM support for multiple hashes, and for alternate-identity tags.
     Builtin macro with default list of signed headers.
+    Better syntax for specifying oversigning.
+    The DKIM ACL can override verification status, and status is visible in
+    the data ACL.
 
 14. Exipick understands -C|--config for an alternative Exim
     configuration file.
@@ -63,6 +66,8 @@ Version 4.90
 
 16. The "-be" expansion test mode now supports macros.  Macros are expanded
     in test lines, and new macros can be defined.
+
+17. Support for server-side dual-certificate-stacks (eg. RSA + ECDSA).
 
 
 Version 4.89

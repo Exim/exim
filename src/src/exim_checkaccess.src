@@ -65,7 +65,15 @@ PERL_COMMAND - $exim_path $args <<'End'
 
 BEGIN { pop @INC if $INC[-1] eq '.' };
 use FileHandle;
+use File::Basename;
 use IPC::Open2;
+
+if ($ARGV[0] eq '--version') {
+    print basename($0) . ": $0\n",
+          "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+          "perl(runtime): $]\n";
+          exit 0;
+}
 
 if (scalar(@ARGV) < 3)
   {

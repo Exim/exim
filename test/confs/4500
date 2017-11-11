@@ -9,9 +9,23 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
-acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
+acl_smtp_dkim = check_dkim
 
 queue_only
 queue_run_in_order
+
+
+begin acl
+
+check_dkim:
+.ifdef OPTION
+  warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
+	condition =	${if eq {$dkim_verify_status}{pass}}
+	logwrite =	NOTE: forcing dkim verify fail (was pass)
+	set dkim_verify_status = fail
+	set dkim_verify_reason = hash too weak
+.endif
+  accept
+	logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
 
 # End

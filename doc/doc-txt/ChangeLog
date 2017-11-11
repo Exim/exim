@@ -182,6 +182,17 @@ JH/31 Fix CHUNKING code to properly flush the unwanted chunk after an error.
       Previously only that bufferd was discarded, resulting in SYMTP command
       desynchronisation.
 
+JH/32 DKIM: when a message has multiple signatures matching an identity given
+      in dkim_verify_signers, run the dkim acl once for each.  Previously only
+      one run was done.  Bug 2189.
+
+JH/33 Downgrade an unfound-list name (usually a typo in the config file) from
+      "panic the current process" to "deliberately defer".  The panic log is
+      still written with the problem list name; the mail and reject logs now
+      get a temp-reject line for the message that was being handled, saying
+      something like "domains check lookup or other defer".  The SMTP 451
+      message is still "Temporary local problem".
+
 
 Exim version 4.89
 -----------------

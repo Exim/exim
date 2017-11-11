@@ -6,6 +6,8 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
+acl_smtp_rcpt = accept verify = recipient
+
 domainlist nocache = $local_part
 domainlist nocache2 = +nocache
 domainlist local_domains = test.ex
@@ -35,6 +37,14 @@ t1:
 # ----- Routers -----
 
 begin routers
+
+.ifdef FAKE
+r0f:
+  driver = accept
+  local_parts = error
+  domains = +no_such_list
+  transport = t1
+.endif
 
 r00:
   driver = accept

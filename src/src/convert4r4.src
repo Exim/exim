@@ -9,6 +9,18 @@
 use warnings;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 
+use Getopt::Long;
+use File::Basename;
+
+GetOptions(
+    'version' => sub {
+        print basename($0) . ": $0\n",
+            "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+            "perl(runtime): $^V\n";
+            exit 0;
+    },
+);
+
 # These are lists of main options which are abolished in Exim 4.
 # The first contains options that are used to construct new options.
 

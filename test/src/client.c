@@ -103,7 +103,7 @@ static int  ssl_session_timeout = 200;
 
 /* Priorities for TLS algorithms to use. */
 
-#if GNUTLS_VERSION_NUMBER < 0x030400
+# if GNUTLS_VERSION_NUMBER < 0x030400
 static const int protocol_priority[16] = { GNUTLS_TLS1, GNUTLS_SSL3, 0 };
 
 static const int kx_priority[16] = {
@@ -125,7 +125,7 @@ static const int mac_priority[16] = {
   0 };
 
 static const int comp_priority[16] = { GNUTLS_COMP_NULL, 0 };
-#endif
+# endif
 
 #endif	/*HAVE_GNUTLS*/
 
@@ -133,6 +133,7 @@ static const int comp_priority[16] = { GNUTLS_COMP_NULL, 0 };
 
 #ifdef HAVE_TLS
 char * ocsp_stapling = NULL;
+char * pri_string = NULL;
 #endif
 
 
@@ -454,7 +455,7 @@ gnutls_session_t session;
 
 gnutls_init(&session, GNUTLS_CLIENT | GNUTLS_NO_EXTENSIONS);
 
-#if GNUTLS_VERSION_NUMBER < 0x030400
+# if GNUTLS_VERSION_NUMBER < 0x030400
 gnutls_cipher_set_priority(session, default_cipher_priority);
 gnutls_compression_set_priority(session, comp_priority);
 gnutls_kx_set_priority(session, kx_priority);
@@ -462,10 +463,19 @@ gnutls_protocol_set_priority(session, protocol_priority);
 gnutls_mac_set_priority(session, mac_priority);
 
 gnutls_cred_set(session, GNUTLS_CRD_CERTIFICATE, x509_cred);
-#else
-gnutls_set_default_priority(session);
+# else
+if (pri_string)
+  {
+  gnutls_priority_t priority_cache;
+  const char * errpos;
+
+  gnutls_priority_init(&priority_cache, pri_string, &errpos);
+  gnutls_priority_set(session, priority_cache);
+  }
+else
+  gnutls_set_default_priority(session);
 gnutls_credentials_set(session, GNUTLS_CRD_CERTIFICATE, x509_cred);
-#endif
+# endif
 
 gnutls_dh_set_prime_bits(session, DH_BITS);
 gnutls_db_set_cache_expiration(session, ssl_session_timeout);
@@ -836,6 +846,10 @@ Usage: client\n"
 "\
           [-tls-on-connect]\n\
           [-ocsp]\n"
+# ifdef HAVE_GNUTLS
+"\
+          [-p priority-string]\n"
+# endif
 #endif
 "\
           [-tn] n seconds timeout\n\
@@ -901,6 +915,17 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
       }
     ocsp_stapling = argv[argi++];
     }
+# ifdef HAVE_GNUTLS
+  else if (strcmp(argv[argi], "-p") == 0)
+    {
+    if (argc < ++argi + 1)
+      {
+      fprintf(stderr, "Missing priority string\n");
+      exit(96);
+      }
+    pri_string = argv[argi++];
+    }
+#endif
 
 #endif
   else if (argv[argi][1] == 't' && isdigit(argv[argi][2]))

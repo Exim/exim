@@ -43,6 +43,14 @@
 
 use warnings;
 BEGIN { pop @INC if $INC[-1] eq '.' };
+use File::Basename;
+
+if ($ARGV[0] eq '--version') {
+    print basename($0) . ": $0\n",
+        "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+        "perl(runtime): $]\n";
+        exit 0;
+}
 
 sub print_volume_rounded {
 my($x) = pop @_;

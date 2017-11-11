@@ -83,6 +83,64 @@ This is a test encrypted message from a verified host.
 quit
 ??? 221
 ****
+#
+#
+# A client that only talks RSA.
+#
+# We have to specify the key-exchange as well as the authentication, otherwise,
+# the GnuTLS server side being foolish - it picks an ECDSA cipher-suite and then can't use it :(
+# Possibly fixed in 3.6.x ? 
+client-gnutls -p NONE:+SIGN-RSA-SHA256:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<CALLER@test.ex>
+??? 250
+rcpt to:<CALLER@test.ex>
+??? 250
+DATA
+??? 3
+This is a test encrypted message.
+It should be sent under the RSA server cert and with an RSA cipher.
+.
+??? 250
+quit
+??? 221
+****
+#
+#
+# Make ECDSA authentication preferred (normally RSA is, it seems).
+client-gnutls -p NONE:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+KX-ALL:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<CALLER@test.ex>
+??? 250
+rcpt to:<CALLER@test.ex>
+??? 250
+DATA
+??? 3
+This is a test encrypted message.
+It should be sent under the EC server cert and with an ECDSA cipher.
+.
+??? 250
+quit
+??? 221
+****
 killdaemon
 exim -qf
 ****

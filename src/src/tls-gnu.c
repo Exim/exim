@@ -804,6 +804,18 @@ err:
 
 
 
+static int
+tls_add_certfile(exim_gnutls_state_st * state, const host_item * host,
+  uschar * certfile, uschar * keyfile, uschar ** errstr)
+{
+int rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
+    CS certfile, CS keyfile, GNUTLS_X509_FMT_PEM);
+exim_gnutls_err_check(
+    string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile));
+return OK;
+}
+
+
 /*************************************************
 *       Variables re-expanded post-SNI           *
 *************************************************/
@@ -824,7 +836,7 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_expand_session_files(exim_gnutls_state_st *state, uschar ** errstr)
+tls_expand_session_files(exim_gnutls_state_st * state, uschar ** errstr)
 {
 struct stat statbuf;
 int rc;
@@ -839,11 +851,11 @@ int cert_count;
 if (!host)	/* server */
   if (!state->received_sni)
     {
-    if (state->tls_certificate &&
-        (Ustrstr(state->tls_certificate, US"tls_sni") ||
-         Ustrstr(state->tls_certificate, US"tls_in_sni") ||
-         Ustrstr(state->tls_certificate, US"tls_out_sni")
-       ))
+    if (  state->tls_certificate
+       && (  Ustrstr(state->tls_certificate, US"tls_sni")
+	  || Ustrstr(state->tls_certificate, US"tls_in_sni")
+	  || Ustrstr(state->tls_certificate, US"tls_out_sni")
+       )  )
       {
       DEBUG(D_tls) debug_printf("We will re-expand TLS session files if we receive SNI.\n");
       state->trigger_sni_changes = TRUE;
@@ -910,13 +922,29 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       DEBUG(D_tls) debug_printf("TLS SNI: have a changed cert/key pair.\n");
       }
 
-  rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
-      CS state->exp_tls_certificate, CS state->exp_tls_privatekey,
-      GNUTLS_X509_FMT_PEM);
-  exim_gnutls_err_check(
-      string_sprintf("cert/key setup: cert=%s key=%s",
-        state->exp_tls_certificate, state->exp_tls_privatekey));
-  DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
+  if (!host)	/* server */
+    {
+    const uschar * clist = state->exp_tls_certificate;
+    const uschar * klist = state->exp_tls_privatekey;
+    int csep = 0, ksep = 0;
+    uschar * cfile, * kfile;
+
+    while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
+      if (!(kfile = string_nextinlist(&klist, &ksep, NULL, 0)))
+	return tls_error(US"cert/key setup: out of keys", NULL, host, errstr);
+      else if ((rc = tls_add_certfile(state, host, cfile, kfile, errstr)))
+	return rc;
+      else
+	DEBUG(D_tls) debug_printf("TLS: cert/key %s registered\n", cfile);
+    }
+  else
+    {
+    if ((rc = tls_add_certfile(state, host,
+		state->exp_tls_certificate, state->exp_tls_privatekey, errstr)))
+      return rc;
+    DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
+    }
+
   } /* tls_certificate */
 
 
@@ -1276,7 +1304,7 @@ if (host)
   }
 else if (state->tls_sni)
   DEBUG(D_tls) debug_printf("*** PROBABLY A BUG *** " \
-      "have an SNI set for a client [%s]\n", state->tls_sni);
+      "have an SNI set for a server [%s]\n", state->tls_sni);
 
 /* This is the priority string support,
 http://www.gnutls.org/manual/html_node/Priority-Strings.html

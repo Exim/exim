@@ -552,9 +552,17 @@ use integer;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 use strict;
 use IO::File;
+use File::Basename;
 
 # use Time::Local;  # PH/FANF
 use POSIX;
+
+if ($ARGV[0] eq '--version') {
+    print basename($0) . ": $0\n",
+        "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+        "perl(runtime): $]\n";
+        exit 0;
+}
 
 use vars qw($HAVE_GD_Graph_pie $HAVE_GD_Graph_linespoints $HAVE_Spreadsheet_WriteExcel);
 eval { require GD::Graph::pie; };

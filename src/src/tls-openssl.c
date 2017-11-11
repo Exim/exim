@@ -1024,6 +1024,30 @@ err:
 
 
 
+static int
+tls_add_certfile(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo, uschar * file,
+  uschar ** errstr)
+{
+DEBUG(D_tls) debug_printf("tls_certificate file %s\n", file);
+if (!SSL_CTX_use_certificate_chain_file(sctx, CS file))
+  return tls_error(string_sprintf(
+    "SSL_CTX_use_certificate_chain_file file=%s", file),
+      cbinfo->host, NULL, errstr);
+return 0;
+}
+
+static int
+tls_add_pkeyfile(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo, uschar * file,
+  uschar ** errstr)
+{
+DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", file);
+if (!SSL_CTX_use_PrivateKey_file(sctx, CS file, SSL_FILETYPE_PEM))
+  return tls_error(string_sprintf(
+    "SSL_CTX_use_PrivateKey_file file=%s", file), cbinfo->host, NULL, errstr);
+return 0;
+}
+
+
 /*************************************************
 *        Expand key and cert file specs          *
 *************************************************/
@@ -1048,7 +1072,7 @@ uschar *expanded;
 
 if (!cbinfo->certificate)
   {
-  if (cbinfo->host)			/* client */
+  if (!cbinfo->is_server)		/* client */
     return OK;
   					/* server */
   if (tls_install_selfsign(sctx, errstr) != OK)
@@ -1056,6 +1080,8 @@ if (!cbinfo->certificate)
   }
 else
   {
+  int err;
+
   if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
       Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
       Ustrstr(cbinfo->certificate, US"tls_out_sni")
@@ -1065,14 +1091,20 @@ else
   if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded, errstr))
     return DEFER;
 
-  if (expanded != NULL)
-    {
-    DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
-    if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
-      return tls_error(string_sprintf(
-	"SSL_CTX_use_certificate_chain_file file=%s", expanded),
-	  cbinfo->host, NULL, errstr);
-    }
+  if (expanded)
+    if (cbinfo->is_server)
+      {
+      const uschar * file_list = expanded;
+      int sep = 0;
+      uschar * file;
+
+      while (file = string_nextinlist(&file_list, &sep, NULL, 0))
+	if ((err = tls_add_certfile(sctx, cbinfo, file, errstr)))
+	  return err;
+      }
+    else	/* would there ever be a need for multiple client certs? */
+      if ((err = tls_add_certfile(sctx, cbinfo, expanded, errstr)))
+	return err;
 
   if (cbinfo->privatekey != NULL &&
       !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded, errstr))
@@ -1083,12 +1115,19 @@ else
   key is in the same file as the certificate. */
 
   if (expanded && *expanded)
-    {
-    DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
-    if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
-      return tls_error(string_sprintf(
-	"SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL, errstr);
-    }
+    if (cbinfo->is_server)
+      {
+      const uschar * file_list = expanded;
+      int sep = 0;
+      uschar * file;
+
+      while (file = string_nextinlist(&file_list, &sep, NULL, 0))
+	if ((err = tls_add_pkeyfile(sctx, cbinfo, file, errstr)))
+	  return err;
+      }
+    else	/* would there ever be a need for multiple client certs? */
+      if ((err = tls_add_pkeyfile(sctx, cbinfo, expanded, errstr)))
+	return err;
   }
 
 #ifndef DISABLE_OCSP

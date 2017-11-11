@@ -6,6 +6,7 @@ BEGIN { pop @INC if $INC[-1] eq '.' };
 
 use Pod::Usage;
 use Getopt::Long;
+use File::Basename;
 
 # Copyright (c) 2007-2017 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -229,6 +230,12 @@ GetOptions(
             -noperldoc => system('perldoc -V 2>/dev/null >&2')
         );
       },
+      'version'        => sub {
+            print basename($0) . ": $0\n",
+                "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
+                "perl(runtime): $]\n";
+            exit 0;
+      },
 ) and @ARGV or pod2usage;
 
 $pattern = shift @ARGV;
@@ -237,7 +244,8 @@ $pattern = quotemeta $pattern if $literal;
 # Start a pager if output goes to a terminal
 if (-t 1 and $use_pager)
   {
-  foreach ($ENV{PAGER}//(), 'less', 'more')
+  # for perl >= v5.10.x: foreach ($ENV{PAGER}//(), 'less', 'more')
+  foreach (defined $ENV{PAGER} ? $ENV{PAGER} : (), 'less', 'more')
     {
     local $ENV{LESS} .= ' --no-init --quit-if-one-screen';
     open(my $pager, '|-', $_) or next;
