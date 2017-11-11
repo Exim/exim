@@ -1,5 +1,14 @@
 # named domain lists
 exim -d -bt userx@test.ex
 ****
+#
 exim -d -odi userx@test.ex
 ****
+#
+exim -d -DFAKE -bh 127.0.0.1
+HELO test
+MAIL FROM:<test@test.ex>
+RCPT TO:<error@test.ex>
+QUIT
+****
+#
