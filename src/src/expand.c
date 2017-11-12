@@ -4494,25 +4494,25 @@ while (*s != 0)
       if (skipping) continue;
 
       /* sub_arg[0] is the address */
-      domain = Ustrrchr(sub_arg[0],'@');
-      if ( (domain == NULL) || (domain == sub_arg[0]) || (Ustrlen(domain) == 1) )
+      if (  !(domain = Ustrrchr(sub_arg[0],'@'))
+	 || domain == sub_arg[0] || Ustrlen(domain) == 1)
         {
         expand_string_message = US"prvs first argument must be a qualified email address";
         goto EXPAND_FAILED;
         }
 
-      /* Calculate the hash. The second argument must be a single-digit
+      /* Calculate the hash. The third argument must be a single-digit
       key number, or unset. */
 
-      if (sub_arg[2] != NULL &&
-          (!isdigit(sub_arg[2][0]) || sub_arg[2][1] != 0))
+      if (  sub_arg[2]
+         && (!isdigit(sub_arg[2][0]) || sub_arg[2][1] != 0))
         {
-        expand_string_message = US"prvs second argument must be a single digit";
+        expand_string_message = US"prvs third argument must be a single digit";
         goto EXPAND_FAILED;
         }
 
-      p = prvs_hmac_sha1(sub_arg[0],sub_arg[1],sub_arg[2],prvs_daystamp(7));
-      if (p == NULL)
+      p = prvs_hmac_sha1(sub_arg[0], sub_arg[1], sub_arg[2], prvs_daystamp(7));
+      if (!p)
         {
         expand_string_message = US"prvs hmac-sha1 conversion failed";
         goto EXPAND_FAILED;
@@ -4628,7 +4628,7 @@ while (*s != 0)
             prvscheck_result = US"1";
             DEBUG(D_expand) debug_printf_indent("prvscheck: success, $pvrs_result set to 1\n");
             }
-            else
+	  else
             {
             prvscheck_result = NULL;
             DEBUG(D_expand) debug_printf_indent("prvscheck: signature expired, $pvrs_result unset\n");

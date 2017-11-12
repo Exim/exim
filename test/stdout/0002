@@ -736,9 +736,9 @@ xyz
 > 
 > # Syntax errors
 > 
-> Failed: prvs second argument must be a single digit
-> Failed: prvs second argument must be a single digit
-> Failed: prvs second argument must be a single digit
+> Failed: prvs third argument must be a single digit
+> Failed: prvs third argument must be a single digit
+> Failed: prvs third argument must be a single digit
 > 
 > # Correct checks; can't put explicit addresses in the tests, because they
 > # will change over time.

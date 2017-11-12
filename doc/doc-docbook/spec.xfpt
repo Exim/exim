@@ -17133,6 +17133,9 @@ use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
 .new
+&*Note*&: If you use filenames based on IP addresses, change the list
+separator in the usual way to avoid confusion under IPv6.
+
 &*Note*&: Under current versions of OpenSSL, when a list of more than one
 file is used, the &$tls_in_ourcert$& veriable is unreliable.
 .wen
@@ -31327,6 +31330,7 @@ address and some time-based randomizing information. The &%prvs%& expansion
 item creates a signed address, and the &%prvscheck%& expansion item checks one.
 The syntax of these expansion items is described in section
 &<<SECTexpansionitems>>&.
+The validity period on signed addresses is seven days.
 
 As an example, suppose the secret per-address keys are stored in an MySQL
 database. A query to look up the key for an address could be defined as a macro
