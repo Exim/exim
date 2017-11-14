@@ -1,5 +1,6 @@
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <rcpt_defer@test.ex>: Could not complete recipient verify callout: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<rcpt_defer@test.ex>: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for data_defer@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 H=127.0.0.1 [127.0.0.1]:1111: SMTP error from remote mail server after end of data: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaY-0005vi-00 == data_defer@test.ex R=client T=t1 defer (-46) H=127.0.0.1 [127.0.0.1]:1111: SMTP error from remote mail server after end of data: 451 Temporary local problem - please try later
 
 ******** SERVER ********
