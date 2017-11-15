@@ -5,7 +5,7 @@
 # As a result the expansion done and logged is misleading.
 #
 # Make RSA authentication the only acceptable
-exim -d-all+tls -DSERVER=server -DORDER=RSA -bd -oX PORT_D
+exim -DSERVER=server -DORDER=RSA -bd -oX PORT_D
 ****
 client-ssl 127.0.0.1 PORT_D
 ??? 220

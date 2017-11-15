@@ -401,7 +401,7 @@ else
       sin6.sin6_addr = anyaddr6;
       if (bind(listen_socket[i], (struct sockaddr *)&sin6, sizeof(sin6)) < 0)
         {
-        printf("IPv6 socket bind() failed: %s\n", strerror(errno));
+        printf("IPv6 socket bind(port %d) failed: %s\n", port, strerror(errno));
         exit(1);
         }
       }
@@ -420,7 +420,7 @@ else
       if (bind(listen_socket[i], (struct sockaddr *)&sin4, sizeof(sin4)) < 0)
         if (listen_socket[v6n] < 0 || errno != EADDRINUSE)
           {
-          printf("IPv4 socket bind() failed: %s\n", strerror(errno));
+          printf("IPv4 socket bind(port %d) failed: %s\n", port, strerror(errno));
           exit(1);
           }
         else
