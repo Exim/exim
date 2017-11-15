@@ -2607,6 +2607,7 @@ if ((rc = fork()))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
   }
 
+if (running_in_test_harness) millisleep(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active, &rfds);
@@ -3508,9 +3509,12 @@ propagate it from the initial
 	  {
 	  int pid = fork();
 	  if (pid == 0)		/* child; fork again to disconnect totally */
+	    {
+	    if (running_in_test_harness) millisleep(100); /* let parent debug out */
 	    /* does not return */
 	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd,
 			    sx.ob->command_timeout);
+	    }
 
 	  if (pid > 0)		/* parent */
 	    {
