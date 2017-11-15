@@ -13,7 +13,7 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdane256ta.test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbB-0005vi-00 tls:cert depth = 2 <CN=clica CA rsa,O=example.com>
-1999-03-02 09:44:33 10HmbB-0005vi-00 DANE attempt failed; TLS connection to dane256ta.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect): error:14090086:SSL routines:ssl3_get_server_certificate:certificate verify failed
+1999-03-02 09:44:33 10HmbB-0005vi-00 DANE attempt failed; TLS connection to dane256ta.test.ex [ip4.ip4.ip4.ip4]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
 1999-03-02 09:44:33 10HmbB-0005vi-00 msg:host:defer dane=no
 1999-03-02 09:44:33 10HmbB-0005vi-00 == CALLER@mxdane256ta.test.ex R=client T=send_to_server defer (-37) H=dane256ta.test.ex [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbB-0005vi-00 ** CALLER@mxdane256ta.test.ex: retry timeout exceeded
