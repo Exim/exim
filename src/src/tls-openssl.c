@@ -228,14 +228,13 @@ return host ? FAIL : DEFER;
 
 
 
-#ifdef EXIM_HAVE_EPHEM_RSA_KEX
 /*************************************************
 *        Callback to generate RSA key            *
 *************************************************/
 
 /*
 Arguments:
-  s          SSL connection
+  s          SSL connection (not used)
   export     not used
   keylength  keylength
 
@@ -270,7 +269,6 @@ if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
   }
 return rsa_key;
 }
-#endif
 
 
 
@@ -977,8 +975,7 @@ if (!(x509 = X509_new()))
   goto err;
 
 where = US"generating pkey";
-		/* deprecated, use RSA_generate_key_ex() */
-if (!(rsa = RSA_generate_key(1024, RSA_F4, NULL, NULL)))
+if (!(rsa = rsa_callback(NULL, 0, 1024)))
   goto err;
 
 where = US"assigning pkey";

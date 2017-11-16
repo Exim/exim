@@ -21,6 +21,9 @@ library. It is #included into the tls.c file when that library is used.
 # define EXIM_HAVE_ASN1_MACROS
 #endif
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
+# define ASN1_STRING_get0_data ASN1_STRING_data
+#endif
 
 /*****************************************************
 *  Export/import a certificate, binary/printable
@@ -373,17 +376,17 @@ while (sk_GENERAL_NAME_num(san) > 0)
     {
     case GEN_DNS:
       tag = US"DNS";
-      ele = ASN1_STRING_data(namePart->d.dNSName);
+      ele = US ASN1_STRING_get0_data(namePart->d.dNSName);
       len = ASN1_STRING_length(namePart->d.dNSName);
       break;
     case GEN_URI:
       tag = US"URI";
-      ele = ASN1_STRING_data(namePart->d.uniformResourceIdentifier);
+      ele = US ASN1_STRING_get0_data(namePart->d.uniformResourceIdentifier);
       len = ASN1_STRING_length(namePart->d.uniformResourceIdentifier);
       break;
     case GEN_EMAIL:
       tag = US"MAIL";
-      ele = ASN1_STRING_data(namePart->d.rfc822Name);
+      ele = US ASN1_STRING_get0_data(namePart->d.rfc822Name);
       len = ASN1_STRING_length(namePart->d.rfc822Name);
       break;
     default:
@@ -420,7 +423,7 @@ for (i = 0; i < adsnum; i++)
 
   if (ad && OBJ_obj2nid(ad->method) == NID_ad_OCSP)
     list = string_append_listele_n(list, sep,
-      ASN1_STRING_data(ad->location->d.ia5),
+      US ASN1_STRING_get0_data(ad->location->d.ia5),
       ASN1_STRING_length(ad->location->d.ia5));
   }
 sk_ACCESS_DESCRIPTION_free(ads);
@@ -455,7 +458,7 @@ if (dps) for (i = 0; i < dpsnum; i++)
 	 && np->type == GEN_URI
 	 )
 	list = string_append_listele_n(list, sep,
-	  ASN1_STRING_data(np->d.uniformResourceIdentifier),
+	  US ASN1_STRING_get0_data(np->d.uniformResourceIdentifier),
 	  ASN1_STRING_length(np->d.uniformResourceIdentifier));
     }
 sk_DIST_POINT_free(dps);
