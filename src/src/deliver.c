@@ -8551,8 +8551,11 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
       goto fail;
 
     else if (pid == 0)		/* child: fork again to totally disconnect */
+      {
+      if (running_in_test_harness) millisleep(100); /* let parent debug out */
       /* does not return */
       smtp_proxy_tls(big_buffer, big_buffer_size, pfd, 5*60);
+      }
 
     DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
     close(pfd[0]);
