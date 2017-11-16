@@ -17,22 +17,22 @@ static uschar *expand_string_internal(const uschar *, BOOL, const uschar **, BOO
 static int_eximarith_t expanded_string_integer(const uschar *, BOOL);
 
 #ifdef STAND_ALONE
-#ifndef SUPPORT_CRYPTEQ
-#define SUPPORT_CRYPTEQ
-#endif
+# ifndef SUPPORT_CRYPTEQ
+#  define SUPPORT_CRYPTEQ
+# endif
 #endif
 
 #ifdef LOOKUP_LDAP
-#include "lookups/ldap.h"
+# include "lookups/ldap.h"
 #endif
 
 #ifdef SUPPORT_CRYPTEQ
-#ifdef CRYPT_H
-#include <crypt.h>
-#endif
-#ifndef HAVE_CRYPT16
+# ifdef CRYPT_H
+#  include <crypt.h>
+# endif
+# ifndef HAVE_CRYPT16
 extern char* crypt16(char*, char*);
-#endif
+# endif
 #endif
 
 /* The handling of crypt16() is a mess. I will record below the analysis of the
