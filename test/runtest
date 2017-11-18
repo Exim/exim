@@ -2762,6 +2762,9 @@ die "CONFIGURE_GROUP ($parm_configure_group) does not match the group invoking $
 	if 0020 & (stat "$parm_cwd/test-config")[2]
 	and $parm_configure_group != $);
 
+die "aux-fixed file is world-writeable; best to strip them all, recursively\n"
+	if 0020 & (stat "aux-fixed/0037.f-1")[2];
+
 
 open(EXIMINFO, "$parm_exim -d-all+transport -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
   die "** Cannot run $parm_exim: $!\n";
@@ -3143,6 +3146,12 @@ print "Home directory is $parm_caller_home\n";
 unless (defined $parm_eximgroup)
   {
   print "Unable to derive \$parm_eximgroup.\n";
+  die "** ABANDONING.\n";
+  }
+
+if ($parm_caller_home eq $parm_cwd)
+  {
+  print "will confuse working dir with homedir; change homedir\n";
   die "** ABANDONING.\n";
   }
 
