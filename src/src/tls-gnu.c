@@ -221,7 +221,8 @@ static BOOL gnutls_buggy_ocsp = FALSE;
 
 /* Set this to control gnutls_global_set_log_level(); values 0 to 9 will setup
 the library logging; a value less than 0 disables the calls to set up logging
-callbacks. */
+callbacks.  Possibly GNuTLS also looks for an environment variable
+"GNUTLS_DEBUG_LEVEL". */
 #ifndef EXIM_GNUTLS_LIBRARY_LOG_LEVEL
 # define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
 #endif
