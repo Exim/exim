@@ -1810,8 +1810,8 @@ for (;;)
   (and sometimes lunatic messages can have ones that are 100s of K long) we
   call store_release() for strings that have been copied - if the string is at
   the start of a block (and therefore the only thing in it, because we aren't
-  doing any other gets), the block gets freed. We can only do this because we
-  know there are no other calls to store_get() going on. */
+  doing any other gets), the block gets freed. We can only do this release if
+  there were no allocations since the once that we want to free. */
 
   if (ptr >= header_size - 4)
     {
@@ -1820,9 +1820,10 @@ for (;;)
     header_size *= 2;
     if (!store_extend(next->text, oldsize, header_size))
       {
+      BOOL release_ok = store_last_get[store_pool] == next->text;
       uschar *newtext = store_get(header_size);
       memcpy(newtext, next->text, ptr);
-      store_release(next->text);
+      if (release_ok) store_release(next->text);
       next->text = newtext;
       }
     }
