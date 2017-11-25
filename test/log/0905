@@ -30,6 +30,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 v@test.ex: error ignored
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= sender@dom U=root P=local-bsmtp S=sss for u@test.ex
+1999-03-02 09:44:33 10HmbF-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined sending data block: 400 oops nonlast bdat
 1999-03-02 09:44:33 10HmbF-0005vi-00 == u@test.ex R=to_server T=remote_smtp defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined sending data block: 400 oops nonlast bdat
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= sender@dom U=root P=local-bsmtp S=sss for p@test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => p@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] K C="250 OK bdat"

@@ -3,10 +3,6 @@ LOG: MAIN
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "DECLINE cannot route this one (DECLINE)"@some.host
 --------> b router <--------
@@ -27,10 +23,6 @@ no more routers
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "FAIL cannot route this one (FAIL)"@some.host
 --------> b router <--------
@@ -49,10 +41,6 @@ q router forced address failure
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "ERROR cannot route this one (ERROR)"@some.host
 --------> b router <--------
@@ -74,10 +62,6 @@ q router: defer for "ERROR cannot route this one (ERROR)"@some.host
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "DEFER cannot route this one (DEFER)"@some.host
 --------> b router <--------
@@ -97,10 +81,6 @@ q router: defer for "DEFER cannot route this one (DEFER)"@some.host
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
 --------> b router <--------
@@ -128,10 +108,6 @@ routed by q router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing PASS@some.host
 --------> b router <--------
@@ -171,10 +147,6 @@ routed by s router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "FREEZE cannot route this one (FREEZE)"@some.host
 --------> b router <--------
@@ -194,10 +166,6 @@ q router: defer for "FREEZE cannot route this one (FREEZE)"@some.host
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "REDIRECT postmaster@test.ex"@some.host
 --------> b router <--------
@@ -252,10 +220,6 @@ routed by pm router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
-DSN: b propagating DSN
-DSN: q propagating DSN
-DSN: s propagating DSN
-DSN: pm propagating DSN
 host in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.2.3.4]

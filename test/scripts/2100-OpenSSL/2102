@@ -1,5 +1,11 @@
 # TLS server: general ops and certificate extractions
-exim -DSERVER=server -bd -oX PORT_D
+#
+# NOTE: current OpenSSL libraries return faulty my-cert information
+# when more than one is loaded, which the conf for this testcase does.
+# As a result the expansion done and logged is misleading.
+#
+# Make RSA authentication the only acceptable
+exim -DSERVER=server -DORDER=RSA -bd -oX PORT_D
 ****
 client-ssl 127.0.0.1 PORT_D
 ??? 220

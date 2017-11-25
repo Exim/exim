@@ -623,34 +623,34 @@ return FALSE;
 /* This writes to the main log and to the message log.
 
 Arguments:
-  addr     the address item containing error information
   host     the current host
+  detail  the current message (addr_item->message)
+  basic_errno the errno (addr_item->basic_errno)
 
 Returns:   nothing
 */
 
 static void
-write_logs(address_item *addr, host_item *host)
+write_logs(const host_item *host, const uschar *suffix, int basic_errno)
 {
-uschar * message = LOGGING(outgoing_port)
+
+
+uschar *message = LOGGING(outgoing_port)
   ? string_sprintf("H=%s [%s]:%d", host->name, host->address,
 		    host->port == PORT_NONE ? 25 : host->port)
   : string_sprintf("H=%s [%s]", host->name, host->address);
 
-if (addr->message)
+if (suffix)
   {
-  message = string_sprintf("%s: %s", message, addr->message);
-  if (addr->basic_errno > 0)
-    message = string_sprintf("%s: %s", message, strerror(addr->basic_errno));
-  log_write(0, LOG_MAIN, "%s", message);
-  deliver_msglog("%s %s\n", tod_stamp(tod_log), message);
+  message = string_sprintf("%s: %s", message, suffix);
+  if (basic_errno > 0)
+    message = string_sprintf("%s: %s", message, strerror(basic_errno));
   }
 else
-  {
-  const uschar * s = exim_errstr(addr->basic_errno);
-  log_write(0, LOG_MAIN, "%s %s", message, s);
-  deliver_msglog("%s %s %s\n", tod_stamp(tod_log), message, s);
-  }
+  message = string_sprintf("%s %s", message, exim_errstr(basic_errno));
+
+log_write(0, LOG_MAIN, "%s", message);
+deliver_msglog("%s %s\n", tod_stamp(tod_log), message);
 }
 
 static void
@@ -2607,6 +2607,7 @@ if ((rc = fork()))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
   }
 
+if (running_in_test_harness) millisleep(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active, &rfds);
@@ -3319,8 +3320,9 @@ if (!sx.ok)
 	set_rc = DEFER;
         if (save_errno > 0)
           message = US string_sprintf("%s: %s", message, strerror(save_errno));
-        if (host->next != NULL) log_write(0, LOG_MAIN, "%s", message);
-	msglog_line(host, message);
+
+        write_logs(host, message, sx.first_addr ? sx.first_addr->basic_errno : 0);
+
         *message_defer = TRUE;
         }
       }
@@ -3507,9 +3509,12 @@ propagate it from the initial
 	  {
 	  int pid = fork();
 	  if (pid == 0)		/* child; fork again to disconnect totally */
+	    {
+	    if (running_in_test_harness) millisleep(100); /* let parent debug out */
 	    /* does not return */
 	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd,
 			    sx.ob->command_timeout);
+	    }
 
 	  if (pid > 0)		/* parent */
 	    {
@@ -4325,7 +4330,7 @@ for (cutoff_retry = 0;
 
       if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL
 		      && first_addr->basic_errno != ERRNO_TLSFAILURE)
-        write_logs(first_addr, host);
+        write_logs(host, first_addr->message, first_addr->basic_errno);
 
 #ifndef DISABLE_EVENT
       if (rc == DEFER)
@@ -4355,7 +4360,7 @@ for (cutoff_retry = 0;
         rc = smtp_deliver(addrlist, thost, host_af, defport, interface, tblock,
           &message_defer, TRUE);
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
-          write_logs(first_addr, host);
+          write_logs(host, first_addr->message, first_addr->basic_errno);
 # ifndef DISABLE_EVENT
         if (rc == DEFER)
           deferred_event_raise(first_addr, host);

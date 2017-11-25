@@ -1,6 +1,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 450 DELAY
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@x.y R=r1 T=t1 defer (-45) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: 450 DELAY
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP timeout after end of data (ddd bytes written): Connection timed out
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@x.y R=r1 T=t1 defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after end of data (ddd bytes written)
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@x.y: retry timeout exceeded
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss

@@ -553,8 +553,15 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA):(128|256)/ke-$3-AES256-SHA:xxx/g;
 
   # LibreSSL
+  # TLSv1:AES256-GCM-SHA384:256
   # TLSv1:ECDHE-RSA-CHACHA20-POLY1305:256
-  s/((EC)?DHE-)?(RSA|ECDSA)-CHACHA20-POLY1305\b/ke-$3-AES256-SHA:xxx/g;
+  #
+  # ECDHE-RSA-CHACHA20-POLY1305
+  # AES256-GCM-SHA384
+
+  s/(?<!-)(AES256-GCM-SHA384)/RSA-$1/;
+  s/((EC)?DHE-)?(RSA|ECDSA)-(AES256|CHACHA20)-(GCM-SHA384|POLY1305)(?!:)/ke-$3-AES256-SHA/g;
+  s/((EC)?DHE-)?(RSA|ECDSA)-(AES256|CHACHA20)-(GCM-SHA384|POLY1305):256/ke-$3-AES256-SHA:xxx/g;
 
   # GnuTLS have seen:
   #   TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256
@@ -1176,6 +1183,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # openssl version variances
     s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;
+    s/(DANE attempt failed.*error:)[0-9A-F]{8}(:SSL routines:)(ssl3_get_server_certificate|tls_process_server_certificate|CONNECT_CR_CERT)(?=:certificate verify failed$)/$1xxxxxxxx$2ssl3_get_server_certificate/;
     }
 
   # ======== All files other than stderr ========
@@ -2754,6 +2762,9 @@ die "CONFIGURE_GROUP ($parm_configure_group) does not match the group invoking $
 	if 0020 & (stat "$parm_cwd/test-config")[2]
 	and $parm_configure_group != $);
 
+die "aux-fixed file is world-writeable; best to strip them all, recursively\n"
+	if 0020 & (stat "aux-fixed/0037.f-1")[2];
+
 
 open(EXIMINFO, "$parm_exim -d-all+transport -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
   die "** Cannot run $parm_exim: $!\n";
@@ -3135,6 +3146,12 @@ print "Home directory is $parm_caller_home\n";
 unless (defined $parm_eximgroup)
   {
   print "Unable to derive \$parm_eximgroup.\n";
+  die "** ABANDONING.\n";
+  }
+
+if ($parm_caller_home eq $parm_cwd)
+  {
+  print "will confuse working dir with homedir; change homedir\n";
   die "** ABANDONING.\n";
   }
 
