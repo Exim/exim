@@ -428,14 +428,8 @@ DEBUG(D_memory)
 *             Release store                     *
 ************************************************/
 
-/* This function is specifically provided for use when reading very
-long strings, e.g. header lines. When the string gets longer than a
-complete block, it gets copied to a new block. It is helpful to free
-the old block iff the previous copy of the string is at its start,
-and therefore the only thing in it. Otherwise, for very long strings,
-dead store can pile up somewhat disastrously. This function checks that
-the pointer it is given is the first thing in a block, and if so,
-releases that block.
+/* This function checks that the pointer it is given is the first thing in a
+block, and if so, releases that block.
 
 Arguments:
   block       block of store to consider
@@ -445,17 +439,17 @@ Arguments:
 Returns:      nothing
 */
 
-void
-store_release_3(void *block, const char *filename, int linenumber)
+static void
+store_release_3(void * block, const char * filename, int linenumber)
 {
-storeblock *b;
+storeblock * b;
 
 /* It will never be the first block, so no need to check that. */
 
-for (b = chainbase[store_pool]; b != NULL; b = b->next)
+for (b = chainbase[store_pool]; b; b = b->next)
   {
-  storeblock *bb = b->next;
-  if (bb != NULL && CS block == CS bb + ALIGNED_SIZEOF_STOREBLOCK)
+  storeblock * bb = b->next;
+  if (bb && CS block == CS bb + ALIGNED_SIZEOF_STOREBLOCK)
     {
     b->next = bb->next;
     pool_malloc -= bb->length + ALIGNED_SIZEOF_STOREBLOCK;
@@ -463,26 +457,62 @@ for (b = chainbase[store_pool]; b != NULL; b = b->next)
     /* Cut out the debugging stuff for utilities, but stop picky compilers
     from giving warnings. */
 
-    #ifdef COMPILE_UTILITY
+#ifdef COMPILE_UTILITY
     filename = filename;
     linenumber = linenumber;
-    #else
+#else
     DEBUG(D_memory)
-      {
       if (running_in_test_harness)
         debug_printf("-Release       %d\n", pool_malloc);
       else
         debug_printf("-Release %6p %-20s %4d %d\n", (void *)bb, filename,
           linenumber, pool_malloc);
-      }
+
     if (running_in_test_harness)
       memset(bb, 0xF0, bb->length+ALIGNED_SIZEOF_STOREBLOCK);
-    #endif  /* COMPILE_UTILITY */
+#endif  /* COMPILE_UTILITY */
 
     free(bb);
     return;
     }
   }
+}
+
+
+/************************************************
+*             Move store                        *
+************************************************/
+
+/* Allocate a new block big enough to expend to the given size and
+copy the current data into it.  Free the old one if possible.
+
+This function is specifically provided for use when reading very
+long strings, e.g. header lines. When the string gets longer than a
+complete block, it gets copied to a new block. It is helpful to free
+the old block iff the previous copy of the string is at its start,
+and therefore the only thing in it. Otherwise, for very long strings,
+dead store can pile up somewhat disastrously. This function checks that
+the pointer it is given is the first thing in a block, and that nothing
+has been allocated since. If so, releases that block.
+
+Arguments:
+  block
+  newsize
+  len
+
+Returns:	new location of data
+*/
+
+void *
+store_newblock_3(void * block, int newsize, int len,
+  const char * filename, int linenumber)
+{
+BOOL release_ok = store_last_get[store_pool] == block;
+uschar * newtext = store_get(newsize);
+
+memcpy(newtext, block, len);
+if (release_ok) store_release_3(block, filename, linenumber);
+return (void *)newtext;
 }
 
 

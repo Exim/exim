@@ -1102,13 +1102,7 @@ was the last item on the dynamic memory stack. This is the case if it matches
 store_last_get. */
 
 if (!store_extend(g->s, oldsize, g->size))
-  {
-  BOOL release_ok = store_last_get[store_pool] == g->s;
-  uschar *newstring = store_get(g->size);
-  memcpy(newstring, g->s, p);
-  if (release_ok) store_release(g->s);
-  g->s = newstring;
-  }
+  g->s = store_newblock(g->s, g->size, p);
 }
 
 

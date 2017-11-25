@@ -1819,13 +1819,7 @@ for (;;)
     /* header_size += 256; */
     header_size *= 2;
     if (!store_extend(next->text, oldsize, header_size))
-      {
-      BOOL release_ok = store_last_get[store_pool] == next->text;
-      uschar *newtext = store_get(header_size);
-      memcpy(newtext, next->text, ptr);
-      if (release_ok) store_release(next->text);
-      next->text = newtext;
-      }
+      next->text = store_newblock(next->text, header_size, ptr);
     }
 
   /* Cope with receiving a binary zero. There is dispute about whether
