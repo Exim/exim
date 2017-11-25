@@ -1077,7 +1077,13 @@ return g->s;
 *             Add chars to string                *
 *************************************************/
 
-void
+/* Arguments:
+  g		the grawable-string
+  p		current end of data
+  count		amount to grow by
+*/
+
+static void
 gstring_grow(gstring * g, int p, int count)
 {
 int oldsize = g->size;

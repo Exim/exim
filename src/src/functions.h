@@ -205,8 +205,6 @@ extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
 
-extern void    gstring_grow(gstring *, int, int);
-
 extern void    header_add(int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
 extern BOOL    header_match(uschar *, BOOL, BOOL, string_item *, int, ...);
