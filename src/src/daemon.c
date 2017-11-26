@@ -144,8 +144,7 @@ EXIM_SOCKLEN_T ifsize = sizeof(interface_sockaddr);
 int dup_accept_socket = -1;
 int max_for_this_host = 0;
 int save_log_selector = *log_selector;
-gstring * whofrom = NULL;
-uschar * whofrom_s;
+gstring * whofrom;
 
 void *reset_point = store_get(0);
 
@@ -200,7 +199,7 @@ DEBUG(D_interface) debug_printf("interface address=%s port=%d\n",
 the local interface data. This is for logging; at the end of this function the
 memory is reclaimed. */
 
-whofrom = string_append(whofrom, 3, "[", sender_host_address, "]");
+whofrom = string_append(NULL, 3, "[", sender_host_address, "]");
 
 if (LOGGING(incoming_port))
   whofrom = string_append(whofrom, 2, ":", string_sprintf("%d", sender_host_port));

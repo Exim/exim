@@ -3437,7 +3437,7 @@ else
 	      continue;
 	      }
 
-	    seen_items = string_catn(seen_items, ":", 1);
+	    seen_items = string_catn(seen_items, US":", 1);
 	    }
 	  seen_items = string_cat(seen_items, item);
 
@@ -3769,29 +3769,29 @@ else
   switch(rc)
     {
     default:
-    log_write(0, LOG_MAIN, "invalid return %d from local_scan(). Temporary "
-      "rejection given", rc);
-    goto TEMPREJECT;
+      log_write(0, LOG_MAIN, "invalid return %d from local_scan(). Temporary "
+	"rejection given", rc);
+      goto TEMPREJECT;
 
     case LOCAL_SCAN_REJECT_NOLOGHDR:
-    BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
-    /* Fall through */
+      BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
+      /* Fall through */
 
     case LOCAL_SCAN_REJECT:
-    smtp_code = US"550";
-    if (errmsg == NULL) errmsg =  US"Administrative prohibition";
-    break;
+      smtp_code = US"550";
+      if (!errmsg) errmsg =  US"Administrative prohibition";
+      break;
 
     case LOCAL_SCAN_TEMPREJECT_NOLOGHDR:
-    BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
-    /* Fall through */
+      BIT_CLEAR(log_selector, log_selector_size, Li_rejected_header);
+      /* Fall through */
 
     case LOCAL_SCAN_TEMPREJECT:
     TEMPREJECT:
-    smtp_code = US"451";
-    if (errmsg == NULL) errmsg = US"Temporary local problem";
-    istemp = US"temporarily ";
-    break;
+      smtp_code = US"451";
+      if (!errmsg) errmsg = US"Temporary local problem";
+      istemp = US"temporarily ";
+      break;
     }
 
   g = string_append(g, 2, US"F=",

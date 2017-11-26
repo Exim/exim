@@ -1472,10 +1472,10 @@ Returns:      1                success
               0                identifier not matched
 */
 
-static int parse_string(struct Sieve *filter, struct String *data)
+static int
+parse_string(struct Sieve *filter, struct String *data)
 {
 gstring * g = NULL;
-int dataCapacity=0;
 
 data->length = 0;
 data->character = NULL;
@@ -1737,7 +1737,6 @@ if (*filter->pc=='[') /* string list */
     if (dataLength+1 >= dataCapacity) /* increase buffer */
       {
       struct String *new;
-      int newCapacity;          /* Don't amalgamate with next line; some compilers grumble */
 
       dataCapacity = dataCapacity ? dataCapacity * 2 : 4;
       new = store_get(sizeof(struct String) * dataCapacity);
@@ -3286,7 +3285,6 @@ while (*filter->pc)
     if (exec)
       {
       address_item *addr;
-      int start;
       uschar *buffer;
       int buffer_capacity;
       md5 base;
@@ -3385,8 +3383,8 @@ while (*filter->pc)
 
             for
               (
-              mime_body=reason.character,reason_end=reason.character+reason.length;
-              mime_body<(reason_end-(sizeof(nlnl)-1)) && memcmp(mime_body,nlnl,(sizeof(nlnl)-1));
+              mime_body = reason.character, reason_end = reason.character + reason.length;
+              mime_body < (reason_end-(sizeof(nlnl)-1)) && memcmp(mime_body, nlnl, (sizeof(nlnl)-1));
               ++mime_body
               );
 
@@ -3400,7 +3398,6 @@ while (*filter->pc)
             {
             struct String qp = { .character = NULL, .length = 0 };  /* Keep compiler happy (PH) */
 
-            start = reason.length;
             addr->reply->headers = US"MIME-Version: 1.0\n"
                                    "Content-Type: text/plain;\n"
                                    "\tcharset=\"utf-8\"\n"

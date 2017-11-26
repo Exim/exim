@@ -224,7 +224,7 @@ static void
 pdkim_strtrim(gstring * str)
 {
 uschar * p = str->s;
-uschar * q = p + str->ptr;
+uschar * q;
 
 while (*p == '\t' || *p == ' ')		/* dump the leading whitespace */
   { str->size--; str->ptr--; str->s++; }

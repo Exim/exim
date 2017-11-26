@@ -473,8 +473,7 @@ $pipe_addresses, which is not recognized by the normal expansion function. */
 
 if (expand_arguments)
   {
-  uschar *s = cmd;
-  uschar *p = Ustrstr(cmd, "pipe_addresses");
+  uschar * p = Ustrstr(cmd, "pipe_addresses");
   gstring * g = NULL;
 
   DEBUG(D_transport)
