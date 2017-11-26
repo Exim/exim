@@ -685,7 +685,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
 
     pdkim_set_optional(sig,
 			CS dkim_sign_headers_expanded,
-			dkim_identity_expanded,
+			CS dkim_identity_expanded,
 			pdkim_canon,
 			pdkim_canon, -1, 0, 0);
 

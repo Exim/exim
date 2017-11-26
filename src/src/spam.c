@@ -391,7 +391,7 @@ if (sd->is_rspamd)
     req_str = string_append(req_str, 3, "IP: ", sender_host_address, "\r\n");
   if ((s = expand_string(US"$authenticated_id")) && *s)
     req_str = string_append(req_str, 3, "User: ", s, "\r\n");
-  req_str = string_catn(req_str, "\r\n", 2);
+  req_str = string_catn(req_str, US"\r\n", 2);
   wrote = send(spamd_sock, req_str->s, req_str->ptr, 0);
   }
 else
