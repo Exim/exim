@@ -230,7 +230,7 @@ while (*p == '\t' || *p == ' ')		/* dump the leading whitespace */
   { str->size--; str->ptr--; str->s++; }
 
 while (  str->ptr > 0
-      && (q = str->s + str->ptr - 1),  *q == '\t' || *q == ' '
+      && ((q = str->s + str->ptr - 1),  (*q == '\t' || *q == ' '))
       )
   str->ptr--;				/* dump trailing whitespace */
 
