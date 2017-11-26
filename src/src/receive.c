@@ -3800,7 +3800,7 @@ else
       break;
     }
 
-  g = string_append(g, 2, US"F=",
+  g = string_append(NULL, 2, US"F=",
     sender_address[0] == 0 ? US"<>" : sender_address);
   g = add_host_info_for_log(g);
 
