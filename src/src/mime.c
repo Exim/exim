@@ -490,6 +490,7 @@ while ((c = *fname))
     val = string_catn(val, fname++, 1);
 
 val = string_catn(val, US"?=", 2);
+*len = val->ptr;
 return string_from_gstring(val);
 }
 
@@ -646,9 +647,7 @@ while(1)
 		  NULL, &err_msg);
 		DEBUG(D_acl) debug_printf_indent("MIME:    plain-name %s\n", temp_string);
 
-		size = Ustrlen(temp_string);
-
-		if (size == slen)
+		if (!temp_string || (size = Ustrlen(temp_string))  == slen)
 		  decoding_failed = TRUE;
 		else
 		  /* build up a decoded filename over successive
