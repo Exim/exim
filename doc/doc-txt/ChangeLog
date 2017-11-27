@@ -61,7 +61,11 @@ JH/30 Fix a logging bug on aarch64: an unsafe routine was previously used for
 
 JH/34 Bug 2199: fix a use-after-free while reading smtp input for header lines.
       A crafted sequence of BDAT commands could result in in-use memory beeing
-      freed.
+      freed.  CVE-2017-16943.
+
+HS/03 Bug 2201: Fix checking for leading-dot on a line during headers reading
+      from SMTP input.  Previously it was always done; now only done for DATA
+      and not BDAT commands.  CVE-2017-16944.
 
 
 Exim version 4.89

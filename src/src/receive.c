@@ -1827,7 +1827,7 @@ for (;;)
   prevent further reading), and break out of the loop, having freed the
   empty header, and set next = NULL to indicate no data line. */
 
-  if (ptr == 0 && ch == '.' && (smtp_input || dot_ends))
+  if (ptr == 0 && ch == '.' && dot_ends)
     {
     ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\r')
