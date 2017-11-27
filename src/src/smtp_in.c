@@ -5094,17 +5094,24 @@ while (done <= 0)
       DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
 				    (int)chunking_state, chunking_data_left);
 
+      /* push the current receive_* function on the "stack", and
+      replace them by bdat_getc(), which in turn will use the lwr_receive_*
+      functions to do the dirty work. */
       lwr_receive_getc = receive_getc;
       lwr_receive_getbuf = receive_getbuf;
       lwr_receive_ungetc = receive_ungetc;
+
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;
+
+      dot_ends = FALSE;
 
       goto DATA_BDAT;
       }
 
     case DATA_CMD:
     HAD(SCH_DATA);
+    dot_ends = TRUE;
 
     DATA_BDAT:		/* Common code for DATA and BDAT */
     if (!discarded && recipients_count <= 0)
