@@ -3849,24 +3849,24 @@ while (done <= 0)
      )
     {
     cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = FALSE;
-    if (  acl_smtp_auth
-       && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
-		  &user_msg, &log_msg)) != OK
-       )
-      {
-      done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
-      continue;
-      }
 
     for (au = auths; au; au = au->next)
       if (strcmpic(US"tls", au->driver_name) == 0)
 	{
-	smtp_cmd_data = NULL;
-
-	if (smtp_in_auth(au, &s, &ss) == OK)
-	  { DEBUG(D_auth) debug_printf("tls auth succeeded\n"); }
+	if (  acl_smtp_auth
+	   && (rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth,
+		      &user_msg, &log_msg)) != OK
+	   )
+	  done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
 	else
-	  { DEBUG(D_auth) debug_printf("tls auth not succeeded\n"); }
+	  {
+	  smtp_cmd_data = NULL;
+
+	  if (smtp_in_auth(au, &s, &ss) == OK)
+	    { DEBUG(D_auth) debug_printf("tls auth succeeded\n"); }
+	  else
+	    { DEBUG(D_auth) debug_printf("tls auth not succeeded\n"); }
+	  }
 	break;
 	}
     }
