@@ -5,10 +5,9 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
-Exim version 4.89+fixes
------------------------
-Cherry-Picked from the master development branch
--------------------------------------------------
+Exim version 4.89.1
+-------------------
+Security Release including all fixes in 4.89..4.89+fixes.
 
 HS/01 Cleanup, prevent repeated use of -p/-oMr (CVE-2017-1000369)
 
