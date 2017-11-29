@@ -9,6 +9,7 @@ log_selector = +received_recipients +outgoing_port
 
 # ----- Main settings -----
 
+acl_smtp_auth = log_call
 acl_smtp_mail = check_authd
 acl_smtp_rcpt = check_authd
 queue_only
@@ -26,6 +27,9 @@ tls_verify_certificates = DIR/aux-fixed/cert2
 # ----- ACL -----
 
 begin acl
+
+log_call:
+  accept   logwrite = Auth ACL called, after smtp cmd "$smtp_command"
 
 check_authd:
   deny     message = authentication required

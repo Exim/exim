@@ -187,7 +187,7 @@ static smtp_cmd_list cmd_list[] = {
   { "auth",       sizeof("auth")-1,       AUTH_CMD, TRUE,  TRUE  },
   #ifdef SUPPORT_TLS
   { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
-  { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, TRUE },
+  { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, FALSE },
   #endif
 
 /* If you change anything above here, also fix the definitions below. */
@@ -2826,8 +2826,12 @@ if (check_proxy_protocol_host())
   smtps port for use with older style SSL MTAs. */
 
 #ifdef SUPPORT_TLS
-  if (tls_in.on_connect && tls_server_start(tls_require_ciphers, &user_msg) != OK)
-    return smtp_log_tls_fail(user_msg);
+  if (tls_in.on_connect)
+    {
+    if (tls_server_start(tls_require_ciphers, &user_msg) != OK)
+      return smtp_log_tls_fail(user_msg);
+    cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
+    }
 #endif
 
 /* Run the connect ACL if it exists */
@@ -3800,7 +3804,6 @@ cmd_list[CMD_LIST_HELO].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
 #ifdef SUPPORT_TLS
 cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
-cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
 #endif
 
 /* Set the local signal handler for SIGTERM - it tries to end off tidily */
