@@ -409,7 +409,7 @@ return 0;
 }
 
 static int
-set_issuer_name(X509 *cert, AUTHORITY_KEYID *akid)
+set_issuer_name(X509 *cert, AUTHORITY_KEYID *akid, X509_NAME *subj)
 {
 X509_NAME *name = akid_issuer_name(akid);
 
@@ -418,7 +418,7 @@ X509_NAME *name = akid_issuer_name(akid);
  * must use that.
  */
 return X509_set_issuer_name(cert,
-			    name ? name : X509_get_subject_name(cert));
+			    name ? name : subj);
 }
 
 static int
@@ -500,7 +500,7 @@ akid = X509_get_ext_d2i(subject, NID_authority_key_identifier, 0, 0);
  */
 if (  !X509_set_version(cert, 2)
    || !set_serial(cert, akid, subject)
-   || !set_issuer_name(cert, akid)
+   || !set_issuer_name(cert, akid, name)
    || !X509_gmtime_adj(X509_getm_notBefore(cert), -30 * 86400L)
    || !X509_gmtime_adj(X509_getm_notAfter(cert), 30 * 86400L)
    || !X509_set_subject_name(cert, name)
