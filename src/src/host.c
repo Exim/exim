@@ -2612,8 +2612,8 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
 
   DEBUG(D_dns)
     if ((dnssec_request || dnssec_require)
-	& !dns_is_secure(&dnsa)
-	& dns_is_aa(&dnsa))
+	&& !dns_is_secure(&dnsa)
+	&& dns_is_aa(&dnsa))
       debug_printf("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
