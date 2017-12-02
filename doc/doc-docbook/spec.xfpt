@@ -17138,6 +17138,8 @@ separator in the usual way to avoid confusion under IPv6.
 
 &*Note*&: Under current versions of OpenSSL, when a list of more than one
 file is used, the &$tls_in_ourcert$& veriable is unreliable.
+
+&*Note*&: OCSP stapling is not usable when a list of more than one file is used.
 .wen
 
 If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
@@ -17278,6 +17280,11 @@ status proof for the server's certificate, as obtained from the
 Certificate Authority.
 
 Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
+
+.new
+&*Note*&: There is currently no support for multiple OCSP proofs to match the
+multiple certificates facility.
+.wen
 
 
 .option tls_on_connect_ports main "string list" unset
