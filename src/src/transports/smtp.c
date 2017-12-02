@@ -206,7 +206,7 @@ void smtp_transport_closedown(transport_instance *tblock) {}
 
 smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts =			NULL,
-  .hosts =			NULL,
+  .fallback_hosts =		NULL,
   .hostlist =			NULL,
   .fallback_hostlist =		NULL,
   .authenticated_sender =	NULL,
