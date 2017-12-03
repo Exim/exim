@@ -46,7 +46,7 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5431.34
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -73,7 +73,7 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5431.79
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -100,7 +100,7 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5431.63
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -127,7 +127,7 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5434.63
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -154,7 +154,7 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5432.00
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -181,7 +181,7 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5431.94
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
@@ -208,85 +208,85 @@ cpuid level	: 22
 wp		: yes
 flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp
 bugs		:
-bogomips	: 5431.94
+bogomips	: 5424.00
 clflush size	: 64
 cache_alignment	: 64
 address sizes	: 39 bits physical, 48 bits virtual
 power management:
 
             CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7       
-   0:         70          0          0          0          0          0          0          0  IR-IO-APIC    2-edge      timer
-   1:         39      16476       1416       1089       6857       1983       1674       1959  IR-IO-APIC    1-edge      i8042
-   8:          0          0          1          0          0          0          0          0  IR-IO-APIC    8-edge      rtc0
-   9:        284       4834       2265       1628       7027       2758       1632       1695  IR-IO-APIC    9-fasteoi   acpi
-  12:        273    1626151      37392      40715     288530      39254      36081      51183  IR-IO-APIC   12-edge      i8042
-  16:          1          0          0          0          0          0          0          0  IR-IO-APIC   16-fasteoi   i801_smbus
+   0:         75          0          0          0          0          0          0          0  IR-IO-APIC    2-edge      timer
+   1:      31269        202         87         48        453        423         74         52  IR-IO-APIC    1-edge      i8042
+   8:          0          0          0          0          0          0          1          0  IR-IO-APIC    8-edge      rtc0
+   9:      41536       3276       1387        879       7157       5730       1146        669  IR-IO-APIC    9-fasteoi   acpi
+  12:    2318674      35852      10877       6907      58328      38294       9421       7960  IR-IO-APIC   12-edge      i8042
+  16:          0          1          0          0          0          0          0          0  IR-IO-APIC   16-fasteoi   i801_smbus
  120:          0          0          0          0          0          0          0          0  DMAR-MSI    0-edge      dmar0
  121:          0          0          0          0          0          0          0          0  DMAR-MSI    1-edge      dmar1
- 122:       7136       3040       2312       1908       4546       3822      75945       2347  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
- 123:         22          7          1          0          7          3          4          1  IR-PCI-MSI 327680-edge      xhci_hcd
- 124:         89         19         22         25         79         55         27         54  IR-PCI-MSI 2097152-edge      rtsx_pci
- 125:         88         15     127570         11         48         25         19         21  IR-PCI-MSI 520192-edge      enp0s31f6
- 126:          1          1          1          0          3          1          3          6  IR-PCI-MSI 1048576-edge    
- 127:        561        174         98     789459        240        230        184        147  IR-PCI-MSI 32768-edge      i915
- 128:         34         14          0          0          1          0          0          0  IR-PCI-MSI 360448-edge      mei_me
- 129:         22         10          0          1         10          0          0          0  IR-PCI-MSI 1572864-edge      iwlwifi
- 130:         92        103         30         22        194        115         10         45  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
- NMI:          9         12          9         14         10          9          9         10   Non-maskable interrupts
- LOC:     567716     554896     727085    1034643     584080     592635     624369     549045   Local timer interrupts
+ 122:       6059       2640       2167     208567       3549       2888       2163       2225  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
+ 123:         11          5          1          6          1         18          4          0  IR-PCI-MSI 327680-edge      xhci_hcd
+ 124:        218         86         28         17         18         37         23          3  IR-PCI-MSI 2097152-edge      rtsx_pci
+ 125:        235         80         13          0        180      12205          0          4  IR-PCI-MSI 520192-edge      enp0s31f6
+ 126:          2          6          0          0          1          2         12          1  IR-PCI-MSI 1048576-edge    
+ 127:        298         81         68         39     944399         40         36         26  IR-PCI-MSI 32768-edge      i915
+ 128:         15          0          0          3          5          8          7         11  IR-PCI-MSI 360448-edge      mei_me
+ 129:         16          3          4          0          7         10          2          0  IR-PCI-MSI 1572864-edge      iwlwifi
+ 130:        217        118         38         21        142        132         15         20  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
+ NMI:        542       1338        726       1756       1377        575       1182        153   Non-maskable interrupts
+ LOC:    5732963   12111821    7174265   15461197   12389254    5979538   10894479    2709567   Local timer interrupts
  SPU:          0          0          0          0          0          0          0          0   Spurious interrupts
- PMI:          9         12          9         14         10          9          9         10   Performance monitoring interrupts
- IWI:          0          1          0          0          0          0          2          0   IRQ work interrupts
+ PMI:        542       1338        726       1756       1377        575       1182        153   Performance monitoring interrupts
+ IWI:         28          0          0          5         13          0          1          2   IRQ work interrupts
  RTR:          7          0          0          0          0          0          0          0   APIC ICR read retries
- RES:      85583      31067      11917       8325       7466       6913       6401       5898   Rescheduling interrupts
- CAL:      73161      74171      68752      70655      80169      75209      61391      70903   Function call interrupts
- TLB:      55150      56119      50377      53791      62195      57072      43366      55765   TLB shootdowns
- TRM:          0          0          0          0          0          0          0          0   Thermal event interrupts
+ RES:    6214255    1012955     876812      80829     351377      43031      16481      17374   Rescheduling interrupts
+ CAL:      55519      38528      41399      31968      43915      46731      41271      53177   Function call interrupts
+ TLB:      38864      25517      30447      18261      30283      34832      28015      41609   TLB shootdowns
+ TRM:    2295525    2295525    2295525    2295525    2295525    2295525    2295525    2295525   Thermal event interrupts
  THR:          0          0          0          0          0          0          0          0   Threshold APIC interrupts
  DFR:          0          0          0          0          0          0          0          0   Deferred Error APIC interrupts
  MCE:          0          0          0          0          0          0          0          0   Machine check exceptions
- MCP:         49         49         49         49         49         49         49         49   Machine check polls
+ MCP:         63         63         63         63         63         63         63         63   Machine check polls
  ERR:          0
  MIS:          0
  PIN:          0          0          0          0          0          0          0          0   Posted-interrupt notification event
  NPI:          0          0          0          0          0          0          0          0   Nested posted-interrupt event
  PIW:          0          0          0          0          0          0          0          0   Posted-interrupt wakeup event
-MemTotal:       15852528 kB
-MemFree:        10535936 kB
-MemAvailable:   12484200 kB
-Buffers:          128136 kB
-Cached:          1542420 kB
+MemTotal:       16292156 kB
+MemFree:        11439488 kB
+MemAvailable:   14204976 kB
+Buffers:          168096 kB
+Cached:          2424920 kB
 SwapCached:            0 kB
-Active:          3134176 kB
-Inactive:        1817128 kB
-Active(anon):    2706712 kB
-Inactive(anon):    79680 kB
-Active(file):     427464 kB
-Inactive(file):  1737448 kB
-Unevictable:          32 kB
-Mlocked:              32 kB
-SwapTotal:       7933948 kB
-SwapFree:        7933948 kB
-Dirty:              3980 kB
+Active:          2310516 kB
+Inactive:        2155060 kB
+Active(anon):    1237604 kB
+Inactive(anon):   269224 kB
+Active(file):    1072912 kB
+Inactive(file):  1885836 kB
+Unevictable:          48 kB
+Mlocked:              48 kB
+SwapTotal:       8212476 kB
+SwapFree:        8212476 kB
+Dirty:              3636 kB
 Writeback:             0 kB
-AnonPages:       2975780 kB
-Mapped:           495468 kB
-Shmem:             80740 kB
-Slab:             143672 kB
-SReclaimable:      74472 kB
-SUnreclaim:        69200 kB
-KernelStack:        9152 kB
-PageTables:        39092 kB
+AnonPages:       1872628 kB
+Mapped:           640608 kB
+Shmem:            270240 kB
+Slab:             192328 kB
+SReclaimable:     121140 kB
+SUnreclaim:        71188 kB
+KernelStack:       12364 kB
+PageTables:        51476 kB
 NFS_Unstable:          0 kB
 Bounce:                0 kB
 WritebackTmp:          0 kB
-CommitLimit:    15860212 kB
-Committed_AS:   11673848 kB
+CommitLimit:    16358552 kB
+Committed_AS:    6761500 kB
 VmallocTotal:   34359738367 kB
 VmallocUsed:           0 kB
 VmallocChunk:          0 kB
 HardwareCorrupted:     0 kB
-AnonHugePages:    966656 kB
+AnonHugePages:         0 kB
 ShmemHugePages:        0 kB
 ShmemPmdMapped:        0 kB
 CmaTotal:              0 kB
@@ -296,15 +296,13 @@ HugePages_Free:        0
 HugePages_Rsvd:        0
 HugePages_Surp:        0
 Hugepagesize:       2048 kB
-DirectMap4k:      202752 kB
-DirectMap2M:     7602176 kB
-DirectMap1G:     9437184 kB
+DirectMap4k:      218600 kB
+DirectMap2M:     6983680 kB
+DirectMap1G:    10485760 kB
 Inter-|   Receive                                                |  Transmit
  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
-virbr1:  353867    2838    0    0    0     0          0         0  1474230    3810    0    0    0     0       0          0
-enp0s31f6: 43449731   65089    0    0    0     0          0      2075  6949500   57088    0    0    0     0       0          0
-virbr1-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-tun_wizint: 4130741    7381    0    0    0     0          0         0  1092175    8002    0    0    0     0       0          0
-    lo:    5706      74    0    0    0     0          0         0     5706      74    0    0    0     0       0          0
- vnet0:  393599    2838    0    0    0     0          0         0  1609950    6362    0    0    0     0       0          0
+virbr0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
 wlp3s0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
+enp0s31f6: 68746075   70693    0    0    0     0          0      3154 11933453   54507    0    0    0     0       0          0
+    lo:  103039     867    0    0    0     0          0         0   103039     867    0    0    0     0       0          0
+virbr0-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
