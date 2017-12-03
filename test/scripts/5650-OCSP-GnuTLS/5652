@@ -1,0 +1,37 @@
+# OCSP stapling, server, multiple certs
+#
+#
+#
+exim -z '1: Server sends good staple on request, to client requiring RSA auth'
+****
+#
+exim -bd -oX PORT_D -DSERVER=server
+****
+exim -odf \
+  -DOPT=NONE:+SIGN-RSA-SHA256:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 \
+  -DCERT=DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem \
+  rsa.auth@test.ex
+Subject: test
+
+.
+****
+killdaemon
+#
+#
+#
+#
+exim -z '2: Server sends good staple on request, to client preferring ECDSA auth'
+****
+#
+exim -bd -oX PORT_D -DSERVER=server
+****
+exim -odf \
+  -DOPT=NONE:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+KX-ALL:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 \
+  -DCERT=DIR/aux-fixed/exim-ca/example_ec.com/server1.example_ec.com/ca_chain.pem \
+  ecdsa.auth@test.ex
+Subject: test
+
+.
+****
+killdaemon
+no_msglog_check

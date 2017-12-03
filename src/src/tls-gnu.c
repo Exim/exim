@@ -63,6 +63,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030109
 # define SUPPORT_CORK
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
+# define SUPPORT_SRV_OCSP_STACK
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
@@ -123,7 +126,6 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_verify_certificates;
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
-  uschar *exp_tls_ocsp_file;
   const uschar *exp_tls_verify_cert_hostnames;
 #ifndef DISABLE_EVENT
   uschar *event_action;
@@ -166,7 +168,6 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   .exp_tls_verify_certificates = NULL,
   .exp_tls_crl =	NULL,
   .exp_tls_require_ciphers = NULL,
-  .exp_tls_ocsp_file =	NULL,
   .exp_tls_verify_cert_hostnames = NULL,
 #ifndef DISABLE_EVENT
   .event_action =	NULL,
@@ -238,8 +239,8 @@ before, for now. */
 # define EXIM_SERVER_DH_BITS_PRE2_12 1024
 #endif
 
-#define exim_gnutls_err_check(Label) do { \
-  if (rc != GNUTLS_E_SUCCESS) \
+#define exim_gnutls_err_check(rc, Label) do { \
+  if ((rc) != GNUTLS_E_SUCCESS) \
     return tls_error((Label), gnutls_strerror(rc), host, errstr); \
   } while (0)
 
@@ -507,7 +508,7 @@ host_item *host = NULL; /* dummy for macros */
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params.\n");
 
 rc = gnutls_dh_params_init(&dh_server_params);
-exim_gnutls_err_check(US"gnutls_dh_params_init");
+exim_gnutls_err_check(rc, US"gnutls_dh_params_init");
 
 m.data = NULL;
 m.size = 0;
@@ -543,7 +544,7 @@ else
 if (m.data)
   {
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
-  exim_gnutls_err_check(US"gnutls_dh_params_import_pkcs3");
+  exim_gnutls_err_check(rc, US"gnutls_dh_params_import_pkcs3");
   DEBUG(D_tls) debug_printf("Loaded fixed standard D-H parameters\n");
   return OK;
   }
@@ -626,7 +627,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
 
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
   free(m.data);
-  exim_gnutls_err_check(US"gnutls_dh_params_import_pkcs3");
+  exim_gnutls_err_check(rc, US"gnutls_dh_params_import_pkcs3");
   DEBUG(D_tls) debug_printf("read D-H parameters from file \"%s\"\n", filename);
   }
 
@@ -683,7 +684,7 @@ if (rc < 0)
     debug_printf("requesting generation of %d bit Diffie-Hellman prime ...\n",
         dh_bits_gen);
   rc = gnutls_dh_params_generate2(dh_server_params, dh_bits_gen);
-  exim_gnutls_err_check(US"gnutls_dh_params_generate2");
+  exim_gnutls_err_check(rc, US"gnutls_dh_params_generate2");
 
   /* gnutls_dh_params_export_pkcs3() will tell us the exact size, every time,
   and I confirmed that a NULL call to get the size first is how the GnuTLS
@@ -694,7 +695,7 @@ if (rc < 0)
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
       m.data, &sz);
   if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
-    exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3(NULL) sizing");
+    exim_gnutls_err_check(rc, US"gnutls_dh_params_export_pkcs3(NULL) sizing");
   m.size = sz;
   if (!(m.data = malloc(m.size)))
     return tls_error(US"memory allocation failed", strerror(errno), NULL, errstr);
@@ -705,7 +706,7 @@ if (rc < 0)
   if (rc != GNUTLS_E_SUCCESS)
     {
     free(m.data);
-    exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3() real");
+    exim_gnutls_err_check(rc, US"gnutls_dh_params_export_pkcs3() real");
     }
   m.size = sz; /* shrink by 1, probably */
 
@@ -805,15 +806,24 @@ err:
 
 
 
+/* Add certificate and key, from files.
+
+Return:
+  Zero or negative: good.  Negate value for certificate index if < 0.
+  Greater than zero: FAIL or DEFER code.
+*/
+
 static int
 tls_add_certfile(exim_gnutls_state_st * state, const host_item * host,
   uschar * certfile, uschar * keyfile, uschar ** errstr)
 {
 int rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
     CS certfile, CS keyfile, GNUTLS_X509_FMT_PEM);
-exim_gnutls_err_check(
-    string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile));
-return OK;
+if (rc < 0)
+  return tls_error(
+    string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile),
+    gnutls_strerror(rc), host, errstr);
+return -rc;
 }
 
 
@@ -872,7 +882,11 @@ if (!host)	/* server */
     }
 
 rc = gnutls_certificate_allocate_credentials(&state->x509_cred);
-exim_gnutls_err_check(US"gnutls_certificate_allocate_credentials");
+exim_gnutls_err_check(rc, US"gnutls_certificate_allocate_credentials");
+
+#ifdef SUPPORT_SRV_OCSP_STACK
+gnutls_certificate_set_flags(state->x509_cred, GNUTLS_CERTIFICATE_API_V2);
+#endif
 
 /* remember: expand_check_tlsvar() is expand_check() but fiddling with
 state members, assuming consistent naming; and expand_check() returns
@@ -927,56 +941,77 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
     {
     const uschar * clist = state->exp_tls_certificate;
     const uschar * klist = state->exp_tls_privatekey;
-    int csep = 0, ksep = 0;
-    uschar * cfile, * kfile;
+    const uschar * olist;
+    int csep = 0, ksep = 0, osep = 0, cnt = 0;
+    uschar * cfile, * kfile, * ofile;
+
+#ifndef DISABLE_OCSP
+    if (!expand_check(tls_ocsp_file, US"tls_ocsp_file", &ofile, errstr))
+      return DEFER;
+    olist = ofile;
+#endif
 
     while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
+
       if (!(kfile = string_nextinlist(&klist, &ksep, NULL, 0)))
 	return tls_error(US"cert/key setup: out of keys", NULL, host, errstr);
-      else if ((rc = tls_add_certfile(state, host, cfile, kfile, errstr)))
+      else if (0 < (rc = tls_add_certfile(state, host, cfile, kfile, errstr)))
 	return rc;
       else
+	{
+	int gnutls_cert_index = -rc;
 	DEBUG(D_tls) debug_printf("TLS: cert/key %s registered\n", cfile);
+
+	/* Set the OCSP stapling server info */
+
+#ifndef DISABLE_OCSP
+	if (tls_ocsp_file)
+	  if (gnutls_buggy_ocsp)
+	    {
+	    DEBUG(D_tls)
+	      debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
+	    }
+	  else if ((ofile = string_nextinlist(&olist, &osep, NULL, 0)))
+	    {
+	    /* Use the full callback method for stapling just to get
+	    observability.  More efficient would be to read the file once only,
+	    if it never changed (due to SNI). Would need restart on file update,
+	    or watch datestamp.  */
+
+# ifdef SUPPORT_SRV_OCSP_STACK
+	    rc = gnutls_certificate_set_ocsp_status_request_function2(
+	      state->x509_cred, gnutls_cert_index,
+	      server_ocsp_stapling_cb, ofile);
+
+	    exim_gnutls_err_check(rc,
+	      US"gnutls_certificate_set_ocsp_status_request_function2");
+# else
+	    if (cnt++ > 0)
+	      {
+	      DEBUG(D_tls)
+		debug_printf("oops; multiple OCSP files not supported\n");
+	      break;
+	      }
+	      gnutls_certificate_set_ocsp_status_request_function(
+		state->x509_cred, server_ocsp_stapling_cb, ofile);
+# endif
+
+	    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", ofile);
+	    }
+	  else
+	    DEBUG(D_tls) debug_printf("ran out of OCSP response files in list\n");
+#endif
+	}
     }
   else
     {
-    if ((rc = tls_add_certfile(state, host,
+    if (0 < (rc = tls_add_certfile(state, host,
 		state->exp_tls_certificate, state->exp_tls_privatekey, errstr)))
       return rc;
     DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
     }
 
   } /* tls_certificate */
-
-
-/* Set the OCSP stapling server info */
-
-#ifndef DISABLE_OCSP
-if (  !host	/* server */
-   && tls_ocsp_file
-   )
-  {
-  if (gnutls_buggy_ocsp)
-    {
-    DEBUG(D_tls) debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
-    }
-  else
-    {
-    if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
-	  &state->exp_tls_ocsp_file, errstr))
-      return DEFER;
-
-    /* Use the full callback method for stapling just to get observability.
-    More efficient would be to read the file once only, if it never changed
-    (due to SNI). Would need restart on file update, or watch datestamp.  */
-
-    gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
-      server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
-
-    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", state->exp_tls_ocsp_file);
-    }
-  }
-#endif
 
 
 /* Set the trusted CAs file if one is provided, and then add the CRL if one is
@@ -1071,7 +1106,7 @@ else
 if (cert_count < 0)
   {
   rc = cert_count;
-  exim_gnutls_err_check(US"setting certificate trust");
+  exim_gnutls_err_check(rc, US"setting certificate trust");
   }
 DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
 
@@ -1084,7 +1119,7 @@ if (state->tls_crl && *state->tls_crl &&
   if (cert_count < 0)
     {
     rc = cert_count;
-    exim_gnutls_err_check(US"gnutls_certificate_set_x509_crl_file");
+    exim_gnutls_err_check(rc, US"gnutls_certificate_set_x509_crl_file");
     }
   DEBUG(D_tls) debug_printf("Processed %d CRLs.\n", cert_count);
   }
@@ -1135,7 +1170,7 @@ if (!state->host)
 /* Link the credentials to the session. */
 
 rc = gnutls_credentials_set(state->session, GNUTLS_CRD_CERTIFICATE, state->x509_cred);
-exim_gnutls_err_check(US"gnutls_credentials_set");
+exim_gnutls_err_check(rc, US"gnutls_credentials_set");
 
 return OK;
 }
@@ -1225,12 +1260,12 @@ if (!exim_gnutls_base_init_done)
   if (!gnutls_allow_auto_pkcs11)
     {
     rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
-    exim_gnutls_err_check(US"gnutls_pkcs11_init");
+    exim_gnutls_err_check(rc, US"gnutls_pkcs11_init");
     }
 #endif
 
   rc = gnutls_global_init();
-  exim_gnutls_err_check(US"gnutls_global_init");
+  exim_gnutls_err_check(rc, US"gnutls_global_init");
 
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
   DEBUG(D_tls)
@@ -1265,7 +1300,7 @@ else
   DEBUG(D_tls) debug_printf("initialising GnuTLS server session\n");
   rc = gnutls_init(&state->session, GNUTLS_SERVER);
   }
-exim_gnutls_err_check(US"gnutls_init");
+exim_gnutls_err_check(rc, US"gnutls_init");
 
 state->host = host;
 
@@ -1300,7 +1335,7 @@ if (host)
     sz = Ustrlen(state->tlsp->sni);
     rc = gnutls_server_name_set(state->session,
         GNUTLS_NAME_DNS, state->tlsp->sni, sz);
-    exim_gnutls_err_check(US"gnutls_server_name_set");
+    exim_gnutls_err_check(rc, US"gnutls_server_name_set");
     }
   }
 else if (state->tls_sni)
@@ -1340,12 +1375,12 @@ if (want_default_priorities)
   p = US exim_default_gnutls_priority;
   }
 
-exim_gnutls_err_check(string_sprintf(
+exim_gnutls_err_check(rc, string_sprintf(
       "gnutls_priority_init(%s) failed at offset %ld, \"%.6s..\"",
       p, errpos - CS p, errpos));
 
 rc = gnutls_priority_set(state->session, state->priority_cache);
-exim_gnutls_err_check(US"gnutls_priority_set");
+exim_gnutls_err_check(rc, US"gnutls_priority_set");
 
 gnutls_db_set_cache_expiration(state->session, ssl_session_timeout);
 
@@ -1705,6 +1740,7 @@ server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
   gnutls_datum_t * ocsp_response)
 {
 int ret;
+DEBUG(D_tls) debug_printf("OCSP stapling callback: %s\n", US ptr);
 
 if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
   {
