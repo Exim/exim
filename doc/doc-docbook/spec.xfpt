@@ -27660,11 +27660,10 @@ if it requests it. If the server is Exim, it will request a certificate only if
 
 If the &%tls_verify_certificates%& option is set on the &(smtp)& transport, it
 specifies a collection of expected server certificates.
-These may be the system default set (depending on library version),
-a file or,
-depending on library version, a directory,
-must name a file or,
-for OpenSSL only (not GnuTLS), a directory.
+These may be
+the system default set (depending on library version),
+a file,
+or (depending on library version) a directory.
 The client verifies the server's certificate
 against this collection, taking into account any revoked certificates that are
 in the list defined by &%tls_crl%&.
