@@ -94,6 +94,10 @@ functions from the OpenSSL library. */
 # define DISABLE_OCSP
 #endif
 
+#ifdef EXIM_HAVE_OPENSSL_CHECKHOST
+# include <openssl/x509v3.h>
+#endif
+
 /* Structure for collecting random data for seeding. */
 
 typedef struct randstuff {
@@ -147,8 +151,8 @@ static BOOL reexpand_tls_files_for_sni = FALSE;
 typedef struct tls_ext_ctx_cb {
   uschar *certificate;
   uschar *privatekey;
-#ifndef DISABLE_OCSP
   BOOL is_server;
+#ifndef DISABLE_OCSP
   STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
     struct {
@@ -1483,9 +1487,10 @@ tls_ext_ctx_cb * cbinfo;
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
+cbinfo->is_server = host==NULL;
 #ifndef DISABLE_OCSP
 cbinfo->verify_stack = NULL;
-if ((cbinfo->is_server = host==NULL))
+if (!host)
   {
   cbinfo->u_ocsp.server.file = ocsp_file;
   cbinfo->u_ocsp.server.file_expanded = NULL;

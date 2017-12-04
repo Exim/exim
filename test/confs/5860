@@ -74,9 +74,11 @@ send_to_server:
 
 #  hosts_try_dane = *
   hosts_require_dane = *
+.ifdef _HAVE_OCSP
   hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
 				 {= {0}{$tls_out_tlsa_usage}} } \
                         {*}{}}
+.endif
 
   event_action =   ${acl {logger}}
 
