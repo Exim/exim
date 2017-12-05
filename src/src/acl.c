@@ -1702,7 +1702,7 @@ switch(vp->value)
     return csa_return_code[rc];
 
   case VERIFY_HDR_SYNTAX:
-    /* Check that all relevant header lines have the correct syntax. If there is
+    /* Check that all relevant header lines have the correct 5322-syntax. If there is
     a syntax error, we return details of the error to the sender if configured to
     send out full details. (But a "message" setting on the ACL can override, as
     always). */

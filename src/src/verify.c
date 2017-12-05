@@ -2165,7 +2165,7 @@ return yield;
 *************************************************/
 
 /* This function checks those header lines that contain addresses, and verifies
-that all the addresses therein are syntactially correct.
+that all the addresses therein are 5322-syntactially correct.
 
 Arguments:
   msgptr     where to put an error message
@@ -2181,7 +2181,7 @@ header_line *h;
 uschar *colon, *s;
 int yield = OK;
 
-for (h = header_list; h != NULL && yield == OK; h = h->next)
+for (h = header_list; h && yield == OK; h = h->next)
   {
   if (h->type != htype_from &&
       h->type != htype_reply_to &&
@@ -2200,7 +2200,7 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
 
   parse_allow_group = TRUE;
 
-  while (*s != 0)
+  while (*s)
     {
     uschar *ss = parse_find_address_end(s, FALSE);
     uschar *recipient, *errmess;
@@ -2217,7 +2217,7 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
     /* Permit an unqualified address only if the message is local, or if the
     sending host is configured to be permitted to send them. */
 
-    if (recipient != NULL && domain == 0)
+    if (recipient && !domain)
       {
       if (h->type == htype_from || h->type == htype_sender)
         {
@@ -2233,7 +2233,7 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
     /* It's an error if no address could be extracted, except for the special
     case of an empty address. */
 
-    if (recipient == NULL && Ustrcmp(errmess, "empty address") != 0)
+    if (!recipient && Ustrcmp(errmess, "empty address") != 0)
       {
       uschar *verb = US"is";
       uschar *t = ss;
@@ -2271,7 +2271,7 @@ for (h = header_list; h != NULL && yield == OK; h = h->next)
 
     /* Advance to the next address */
 
-    s = ss + (terminator? 1:0);
+    s = ss + (terminator ? 1 : 0);
     while (isspace(*s)) s++;
     }   /* Next address */
 

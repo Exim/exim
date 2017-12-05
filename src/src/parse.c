@@ -421,10 +421,10 @@ for (;;)
   if (*s == '\"')
     {
     *t++ = '\"';
-    while ((c = *(++s)) != 0 && c != '\"')
+    while ((c = *++s) && c != '\"')
       {
       *t++ = c;
-      if (c == '\\' && s[1] != 0) *t++ = *(++s);
+      if (c == '\\' && s[1]) *t++ = *++s;
       }
     if (c == '\"')
       {
@@ -443,7 +443,7 @@ for (;;)
   else while (!mac_iscntrl_or_special(*s) || *s == '\\')
     {
     c = *t++ = *s++;
-    if (c == '\\' && *s != 0) *t++ = *s++;
+    if (c == '\\' && *s) *t++ = *s++;
     }
 
   /* Terminate the word and skip subsequent comment */
@@ -638,7 +638,7 @@ RESTART:   /* Come back here after passing a group name */
 s = skip_comment(s);
 startptr = s;                                 /* In case addr-spec */
 s = read_local_part(s, t, errorptr, TRUE);    /* Dot separated words */
-if (*errorptr != NULL) goto PARSE_FAILED;
+if (*errorptr) goto PARSE_FAILED;
 
 /* If the terminator is neither < nor @ then the format of the address
 must either be a bare local-part (we are now at the end), or a phrase

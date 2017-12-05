@@ -682,10 +682,10 @@ void
 bdat_flush_data(void)
 {
 while (chunking_data_left)
-{
+  {
   unsigned n = chunking_data_left;
   (void) bdat_getbuf(&n);
-}
+  }
 
 receive_getc = lwr_receive_getc;
 receive_getbuf = lwr_receive_getbuf;
@@ -1646,27 +1646,27 @@ Returns:    nothing
 void
 smtp_closedown(uschar *message)
 {
-if (smtp_in == NULL || smtp_batched_input) return;
+if (!smtp_in || smtp_batched_input) return;
 receive_swallow_smtp();
 smtp_printf("421 %s\r\n", FALSE, message);
 
 for (;;) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
   {
   case EOF_CMD:
-  return;
+    return;
 
   case QUIT_CMD:
-  smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
-  mac_smtp_fflush();
-  return;
+    smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
+    mac_smtp_fflush();
+    return;
 
   case RSET_CMD:
-  smtp_printf("250 Reset OK\r\n", FALSE);
-  break;
+    smtp_printf("250 Reset OK\r\n", FALSE);
+    break;
 
   default:
-  smtp_printf("421 %s\r\n", FALSE, message);
-  break;
+    smtp_printf("421 %s\r\n", FALSE, message);
+    break;
   }
 }
 
@@ -1755,7 +1755,7 @@ gstring * g = NULL;
 if (smtp_mailcmd_count > 0 || !LOGGING(smtp_no_mail))
   return;
 
-if (sender_host_authenticated != NULL)
+if (sender_host_authenticated)
   {
   g = string_append(g, 2, US" A=", sender_host_authenticated);
   if (authenticated_id) g = string_append(g, 2, US":", authenticated_id);
@@ -1847,7 +1847,7 @@ if (sender_helo_name != NULL)
 /* Skip tests if junk is permitted. */
 
 if (!yield)
-  {
+
   /* Allow the new standard form for IPv6 address literals, namely,
   [IPv6:....], and because someone is bound to use it, allow an equivalent
   IPv4 form. Allow plain addresses as well. */
@@ -1870,21 +1870,14 @@ if (!yield)
   /* Non-literals must be alpha, dot, hyphen, plus any non-valid chars
   that have been configured (usually underscore - sigh). */
 
-  else if (*s != 0)
-    {
-    yield = TRUE;
-    while (*s != 0)
-      {
+  else if (*s)
+    for (yield = TRUE; *s; s++)
       if (!isalnum(*s) && *s != '.' && *s != '-' &&
           Ustrchr(helo_allow_chars, *s) == NULL)
         {
         yield = FALSE;
         break;
         }
-      s++;
-      }
-    }
-  }
 
 /* Save argument if OK */
 
@@ -2117,14 +2110,14 @@ while (done <= 0)
     case HELO_CMD:
     case EHLO_CMD:
 
-    check_helo(smtp_cmd_data);
-    /* Fall through */
+      check_helo(smtp_cmd_data);
+      /* Fall through */
 
     case RSET_CMD:
-    cancel_cutthrough_connection(TRUE, US"RSET received");
-    smtp_reset(reset_point);
-    bsmtp_transaction_linecount = receive_linecount;
-    break;
+      cancel_cutthrough_connection(TRUE, US"RSET received");
+      smtp_reset(reset_point);
+      bsmtp_transaction_linecount = receive_linecount;
+      break;
 
 
     /* The MAIL FROM command requires an address as an operand. All we
@@ -2134,53 +2127,53 @@ while (done <= 0)
     it is the canonical extracted address which is all that is kept. */
 
     case MAIL_CMD:
-    smtp_mailcmd_count++;              /* Count for no-mail log */
-    if (sender_address != NULL)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "503 Sender already given");
+      smtp_mailcmd_count++;              /* Count for no-mail log */
+      if (sender_address != NULL)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer, "503 Sender already given");
 
-    if (smtp_cmd_data[0] == 0)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "501 MAIL FROM must have an address operand");
+      if (smtp_cmd_data[0] == 0)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer, "501 MAIL FROM must have an address operand");
 
-    /* Reset to start of message */
+      /* Reset to start of message */
 
-    cancel_cutthrough_connection(TRUE, US"MAIL received");
-    smtp_reset(reset_point);
+      cancel_cutthrough_connection(TRUE, US"MAIL received");
+      smtp_reset(reset_point);
 
-    /* Apply SMTP rewrite */
+      /* Apply SMTP rewrite */
 
-    raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_cmd_data, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
-        US"", global_rewrite_rules) : smtp_cmd_data;
+      raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
+	rewrite_one(smtp_cmd_data, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
+	  US"", global_rewrite_rules) : smtp_cmd_data;
 
-    /* Extract the address; the TRUE flag allows <> as valid */
+      /* Extract the address; the TRUE flag allows <> as valid */
 
-    raw_sender =
-      parse_extract_address(raw_sender, &errmess, &start, &end, &sender_domain,
-        TRUE);
+      raw_sender =
+	parse_extract_address(raw_sender, &errmess, &start, &end, &sender_domain,
+	  TRUE);
 
-    if (raw_sender == NULL)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
+      if (!raw_sender)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
 
-    sender_address = string_copy(raw_sender);
+      sender_address = string_copy(raw_sender);
 
-    /* Qualify unqualified sender addresses if permitted to do so. */
+      /* Qualify unqualified sender addresses if permitted to do so. */
 
-    if (sender_domain == 0 && sender_address[0] != 0 && sender_address[0] != '@')
-      {
-      if (allow_unqualified_sender)
-        {
-        sender_address = rewrite_address_qualify(sender_address, FALSE);
-        DEBUG(D_receive) debug_printf("unqualified address %s accepted "
-          "and rewritten\n", raw_sender);
-        }
-      /* The function moan_smtp_batch() does not return. */
-      else moan_smtp_batch(smtp_cmd_buffer, "501 sender address must contain "
-        "a domain");
-      }
-    break;
+      if (  !sender_domain
+         && sender_address[0] != 0 && sender_address[0] != '@')
+	if (allow_unqualified_sender)
+	  {
+	  sender_address = rewrite_address_qualify(sender_address, FALSE);
+	  DEBUG(D_receive) debug_printf("unqualified address %s accepted "
+	    "and rewritten\n", raw_sender);
+	  }
+	/* The function moan_smtp_batch() does not return. */
+	else
+	  moan_smtp_batch(smtp_cmd_buffer, "501 sender address must contain "
+	    "a domain");
+      break;
 
 
     /* The RCPT TO command requires an address as an operand. All we do
@@ -2191,53 +2184,54 @@ while (done <= 0)
     extracted address. */
 
     case RCPT_CMD:
-    if (sender_address == NULL)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "503 No sender yet given");
+      if (!sender_address)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer, "503 No sender yet given");
 
-    if (smtp_cmd_data[0] == 0)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "501 RCPT TO must have an address operand");
+      if (smtp_cmd_data[0] == 0)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer,
+	  "501 RCPT TO must have an address operand");
 
-    /* Check maximum number allowed */
+      /* Check maximum number allowed */
 
-    if (recipients_max > 0 && recipients_count + 1 > recipients_max)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "%s too many recipients",
-        recipients_max_reject? "552": "452");
+      if (recipients_max > 0 && recipients_count + 1 > recipients_max)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer, "%s too many recipients",
+	  recipients_max_reject? "552": "452");
 
-    /* Apply SMTP rewrite, then extract address. Don't allow "<>" as a
-    recipient address */
+      /* Apply SMTP rewrite, then extract address. Don't allow "<>" as a
+      recipient address */
 
-    recipient = rewrite_existflags & rewrite_smtp
-      ? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
-		    global_rewrite_rules)
-      : smtp_cmd_data;
+      recipient = rewrite_existflags & rewrite_smtp
+	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+		      global_rewrite_rules)
+	: smtp_cmd_data;
 
-    recipient = parse_extract_address(recipient, &errmess, &start, &end,
-      &recipient_domain, FALSE);
+      recipient = parse_extract_address(recipient, &errmess, &start, &end,
+	&recipient_domain, FALSE);
 
-    if (!recipient)
-      /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
+      if (!recipient)
+	/* The function moan_smtp_batch() does not return. */
+	moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
 
-    /* If the recipient address is unqualified, qualify it if permitted. Then
-    add it to the list of recipients. */
+      /* If the recipient address is unqualified, qualify it if permitted. Then
+      add it to the list of recipients. */
 
-    if (recipient_domain == 0)
-      {
-      if (allow_unqualified_recipient)
-        {
-        DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
-          recipient);
-        recipient = rewrite_address_qualify(recipient, TRUE);
-        }
-      /* The function moan_smtp_batch() does not return. */
-      else moan_smtp_batch(smtp_cmd_buffer, "501 recipient address must contain "
-        "a domain");
-      }
-    receive_add_recipient(recipient, -1);
-    break;
+      if (!recipient_domain)
+	if (allow_unqualified_recipient)
+	  {
+	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
+	    recipient);
+	  recipient = rewrite_address_qualify(recipient, TRUE);
+	  }
+	/* The function moan_smtp_batch() does not return. */
+	else
+	  moan_smtp_batch(smtp_cmd_buffer,
+	    "501 recipient address must contain a domain");
+
+      receive_add_recipient(recipient, -1);
+      break;
 
 
     /* The DATA command is legal only if it follows successful MAIL FROM
@@ -2245,22 +2239,20 @@ while (done <= 0)
     command is encountered. */
 
     case DATA_CMD:
-    if (sender_address == NULL || recipients_count <= 0)
-      {
-      /* The function moan_smtp_batch() does not return. */
-      if (sender_address == NULL)
-        moan_smtp_batch(smtp_cmd_buffer,
-          "503 MAIL FROM:<sender> command must precede DATA");
+      if (!sender_address || recipients_count <= 0)
+	/* The function moan_smtp_batch() does not return. */
+	if (!sender_address)
+	  moan_smtp_batch(smtp_cmd_buffer,
+	    "503 MAIL FROM:<sender> command must precede DATA");
+	else
+	  moan_smtp_batch(smtp_cmd_buffer,
+	    "503 RCPT TO:<recipient> must precede DATA");
       else
-        moan_smtp_batch(smtp_cmd_buffer,
-          "503 RCPT TO:<recipient> must precede DATA");
-      }
-    else
-      {
-      done = 3;                      /* DATA successfully achieved */
-      message_ended = END_NOTENDED;  /* Indicate in middle of message */
-      }
-    break;
+	{
+	done = 3;                      /* DATA successfully achieved */
+	message_ended = END_NOTENDED;  /* Indicate in middle of message */
+	}
+      break;
 
 
     /* The VRFY, EXPN, HELP, ETRN, and NOOP commands are ignored. */
@@ -2270,32 +2262,32 @@ while (done <= 0)
     case HELP_CMD:
     case NOOP_CMD:
     case ETRN_CMD:
-    bsmtp_transaction_linecount = receive_linecount;
-    break;
+      bsmtp_transaction_linecount = receive_linecount;
+      break;
 
 
     case EOF_CMD:
     case QUIT_CMD:
-    done = 2;
-    break;
+      done = 2;
+      break;
 
 
     case BADARG_CMD:
-    /* The function moan_smtp_batch() does not return. */
-    moan_smtp_batch(smtp_cmd_buffer, "501 Unexpected argument data");
-    break;
+      /* The function moan_smtp_batch() does not return. */
+      moan_smtp_batch(smtp_cmd_buffer, "501 Unexpected argument data");
+      break;
 
 
     case BADCHAR_CMD:
-    /* The function moan_smtp_batch() does not return. */
-    moan_smtp_batch(smtp_cmd_buffer, "501 Unexpected NULL in SMTP command");
-    break;
+      /* The function moan_smtp_batch() does not return. */
+      moan_smtp_batch(smtp_cmd_buffer, "501 Unexpected NULL in SMTP command");
+      break;
 
 
     default:
-    /* The function moan_smtp_batch() does not return. */
-    moan_smtp_batch(smtp_cmd_buffer, "500 Command unrecognized");
-    break;
+      /* The function moan_smtp_batch() does not return. */
+      moan_smtp_batch(smtp_cmd_buffer, "500 Command unrecognized");
+      break;
     }
   }
 
@@ -2445,7 +2437,7 @@ smtp_had_eof = smtp_had_error = 0;
 /* Set up the message size limit; this may be host-specific */
 
 thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
-if (expand_string_message != NULL)
+if (expand_string_message)
   {
   if (thismessage_size_limit == -1)
     log_write(0, LOG_MAIN|LOG_PANIC, "unable to expand message_size_limit: "
@@ -2896,7 +2888,7 @@ do       /* At least once, in case we have an empty string */
   int len;
   uschar *linebreak = Ustrchr(p, '\n');
   ss = string_catn(ss, code, 3);
-  if (linebreak == NULL)
+  if (!linebreak)
     {
     len = Ustrlen(p);
     ss = string_catn(ss, US" ", 1);
@@ -2910,9 +2902,9 @@ do       /* At least once, in case we have an empty string */
   ss = string_catn(ss, p, len);
   ss = string_catn(ss, US"\r\n", 2);
   p += len;
-  if (linebreak != NULL) p++;
+  if (linebreak) p++;
   }
-while (*p != 0);
+while (*p);
 
 /* Before we write the banner, check that there is no input pending, unless
 this synchronisation check is disabled. */
