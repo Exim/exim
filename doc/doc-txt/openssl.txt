@@ -38,7 +38,7 @@ something else.  `/opt/exim/openssl` perhaps.
 
     ./config --prefix=/opt/openssl --openssldir=/etc/ssl  \
         -L/opt/openssl/lib -Wl,-R/opt/openssl/lib         \
-        enable-ssl-trace
+        enable-ssl-trace shared
     make
     make install
 
