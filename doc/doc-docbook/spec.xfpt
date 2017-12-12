@@ -1,6 +1,6 @@
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
-. converted into DocBook XML for subsequent conversion into printing and online
+. converted into DocBook XML for subsequent conversion into printable and online
 . formats. The markup used herein is "standard" xfpt markup, with some extras.
 . The markup is summarized in a file called Markup.txt.
 .
