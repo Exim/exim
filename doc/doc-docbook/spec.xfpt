@@ -653,7 +653,7 @@ interface to Exim's command line administration options.
 .cindex "terminology definitions"
 .cindex "body of message" "definition of"
 The &'body'& of a message is the actual data that the sender wants to transmit.
-It is the last part of a message, and is separated from the &'header'& (see
+It is the last part of a message and is separated from the &'header'& (see
 below) by a blank line.
 
 .cindex "bounce message" "definition of"
