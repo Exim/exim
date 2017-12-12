@@ -375,7 +375,7 @@ contributors.
 .cindex "documentation"
 This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
-renditions of the document; this paragraph is so marked if the rendition is
+renditions of this document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
 .wen
 
@@ -384,7 +384,7 @@ is expected to have some familiarity with the SMTP mail transfer protocol and
 with general Unix system administration. Although there are some discussions
 and examples in places, the information is mostly organized in a way that makes
 it easy to look up, rather than in a natural order for sequential reading.
-Furthermore, the manual aims to cover every aspect of Exim in detail, including
+Furthermore, this manual aims to cover every aspect of Exim in detail, including
 a number of rarely-used, special-purpose features that are unlikely to be of
 very wide interest.
 
