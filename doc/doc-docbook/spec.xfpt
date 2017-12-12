@@ -89,7 +89,7 @@
 
 . --- A macro for the common 2-column tables. The width of the first column
 . --- is suitable for the many tables at the start of the main options chapter;
-. --- the small number of other 2-column tables override it.
+. --- a small number of other 2-column tables override it.
 
 .macro table2 196pt 254pt
 .itable none 0 0 2 $1 left $2 left
