@@ -547,9 +547,9 @@ The distributions will be PGP signed by an individual key of the Release
 Coordinator.  This key will have a uid containing an email address in the
 &'exim.org'& domain and will have signatures from other people, including
 other Exim maintainers.  We expect that the key will be in the "strong set" of
-PGP keys.  There should be a trust path to that key from Nigel Metheringham's
-PGP key, a version of which can be found in the release directory in the file
-&_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
+PGP keys.  There should be a trust path to that key from the Exim Maintainer's
+PGP keys, a version of which can be found in the release directory in the file
+&_Exim-Maintainers-Keyring.asc_&.  All keys used will be available in public keyserver pools,
 such as &'pool.sks-keyservers.net'&.
 
 At the time of the last update, releases were being made by Jeremy Harris and signed
