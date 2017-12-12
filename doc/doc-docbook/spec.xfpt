@@ -337,7 +337,7 @@ Configuration files currently exist for the following operating systems: AIX,
 BSD/OS (aka BSDI), Darwin (Mac OS X), DGUX, Dragonfly, FreeBSD, GNU/Hurd,
 GNU/Linux, HI-OSF (Hitachi), HI-UX, HP-UX, IRIX, MIPS RISCOS, NetBSD, OpenBSD,
 OpenUNIX, QNX, SCO, SCO SVR4.2 (aka UNIX-SV), Solaris (aka SunOS5), SunOS4,
-Tru64-Unix (formerly Digital UNIX, formerly DEC-OSF1), Ultrix, and Unixware.
+Tru64-Unix (formerly Digital UNIX, formerly DEC-OSF1), Ultrix, and UnixWare.
 Some of these operating systems are no longer current and cannot easily be
 tested, so the configuration files may no longer work in practice.
 
