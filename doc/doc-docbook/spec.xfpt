@@ -445,8 +445,8 @@ available in other formats (HTML, PostScript, PDF, and Texinfo). Section
 
 
 
-.section "FTP and web sites" "SECID2"
-.cindex "web site"
+.section "FTP site and websites" "SECID2"
+.cindex "website"
 .cindex "FTP site"
 The primary site for Exim source distributions is the &%exim.org%& FTP site,
 available over HTTPS, HTTP and FTP.  These services, and the &%exim.org%&
@@ -454,7 +454,7 @@ website, are hosted at the University of Cambridge.
 
 .cindex "wiki"
 .cindex "FAQ"
-As well as Exim distribution tar files, the Exim web site contains a number of
+As well as Exim distribution tar files, the Exim website contains a number of
 differently formatted versions of the documentation. A recent addition to the
 online information is the Exim wiki (&url(http://wiki.exim.org)),
 which contains what used to be a separate FAQ, as well as various other

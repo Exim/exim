@@ -7094,7 +7094,7 @@ Samples whose names are of the form Cnnn are Exim configurations; those with
 names of the form Fnnn are filter file fragments; those with names of the form
 Lnnn are sample \^^local_scan()^^\ functions, and those with names of thf form
 Snnn are scripts of various kinds. There are other examples of
-\^^local_scan()^^\ functions at a number of web sites (for example,
+\^^local_scan()^^\ functions at a number of websites (for example,
 \?http://marc.merlins.org/linux/exim/sa.html?\).
 
 There are gaps in the C and F numbers because I have omitted the Exim 3 samples
