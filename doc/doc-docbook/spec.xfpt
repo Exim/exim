@@ -563,7 +563,7 @@ The signatures for the tar bundles are in:
 &_exim-n.nn.tar.gz.asc_&
 &_exim-n.nn.tar.bz2.asc_&
 .endd
-For each released version, the log of changes is made separately available in a
+For each released version, the log of changes is made available in a
 separate file in the directory &_ChangeLogs_& so that it is possible to
 find out what has changed without having to download the entire distribution.
 
