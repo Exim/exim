@@ -394,7 +394,7 @@ introductory, and tutorial material can be found in a book entitled &'The Exim
 SMTP Mail Server'& (second edition, 2007), published by UIT Cambridge
 (&url(http://www.uit.co.uk/exim-book/)).
 
-This book also contains a chapter that gives a general introduction to SMTP and
+The book also contains a chapter that gives a general introduction to SMTP and
 Internet mail. Inevitably, however, the book is unlikely to be fully up-to-date
 with the latest release of Exim. (Note that the earlier book about Exim,
 published by O'Reilly, covers Exim 3, and many things have changed in Exim 4.)
