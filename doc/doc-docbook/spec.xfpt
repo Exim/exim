@@ -505,7 +505,7 @@ message to the &'exim-dev'& mailing list and have it discussed.
 .section "Where to find the Exim distribution" "SECTavail"
 .cindex "FTP site"
 .cindex "HTTPS download site"
-.cindex "distribution" "ftp site"
+.cindex "distribution" "FTP site"
 .cindex "distribution" "https site"
 The master distribution site for the Exim distribution is
 .display
@@ -2379,7 +2379,7 @@ make INSTALL_ARG='-no_symlink exim' install
 .cindex "installing Exim" "&'info'& documentation"
 Not all systems use the GNU &'info'& system for documentation, and for this
 reason, the Texinfo source of Exim's documentation is not included in the main
-distribution. Instead it is available separately from the ftp site (see section
+distribution. Instead it is available separately from the FTP site (see section
 &<<SECTavail>>&).
 
 If you have defined INFO_DIRECTORY in &_Local/Makefile_& and the Texinfo
