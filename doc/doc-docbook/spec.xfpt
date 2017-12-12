@@ -350,7 +350,7 @@ the file &_NOTICE_&. Exim is distributed under the terms of the GNU General
 Public Licence, a copy of which may be found in the file &_LICENCE_&.
 
 The use, supply, or promotion of Exim for the purpose of sending bulk,
-unsolicited electronic mail is incompatible with the basic aims of the program,
+unsolicited electronic mail is incompatible with the basic aims of Exim,
 which revolve around the free provision of a service that enhances the quality
 of personal communications. The author of Exim regards indiscriminate
 mass-mailing as an antisocial, irresponsible abuse of the Internet.
@@ -409,7 +409,7 @@ information.
 .cindex "&_doc/NewStuff_&"
 .cindex "&_doc/ChangeLog_&"
 .cindex "change log"
-As the program develops, there may be features in newer versions that have not
+As Exim develops, there may be features in newer versions that have not
 yet made it into this document, which is updated only when the most significant
 digit of the fractional part of the version number changes. Specifications of
 new features that are not yet in this manual are placed in the file
@@ -420,7 +420,7 @@ incompatibly while they are developing, or even be withdrawn. For this reason,
 they are not documented in this manual. Information about experimental features
 can be found in the file &_doc/experimental.txt_&.
 
-All changes to the program (whether new features, bug fixes, or other kinds of
+All changes to Exim (whether new features, bug fixes, or other kinds of
 change) are noted briefly in the file called &_doc/ChangeLog_&.
 
 .cindex "&_doc/spec.txt_&"
@@ -1179,7 +1179,7 @@ is updated to indicate which these are, and the journal file is then deleted.
 Updating the spool file is done by writing a new file and renaming it, to
 minimize the possibility of data loss.
 
-Should the system or the program crash after a successful delivery but before
+Should the system or Exim crash after a successful delivery but before
 the spool file has been updated, the journal is left lying around. The next
 time Exim attempts to deliver the message, it reads the journal file and
 updates the spool file before proceeding. This minimizes the chances of double
@@ -11708,7 +11708,7 @@ address that was connected to.
 .vindex "&$compile_number$&"
 The building process for Exim keeps a count of the number
 of times it has been compiled. This serves to distinguish different
-compilations of the same version of the program.
+compilations of the same version of Exim.
 
 .vitem &$config_dir$&
 .vindex "&$config_dir$&"
