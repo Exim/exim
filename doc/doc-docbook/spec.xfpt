@@ -722,7 +722,7 @@ normally no ordering of waiting messages.
 .cindex "queue runner" "definition of"
 The term &'queue runner'& is used to describe a process that scans the queue
 and attempts to deliver those messages whose retry times have come. This term
-is used by other MTAs, and also relates to the command &%runq%&, but in Exim
+is used by other MTAs and also relates to the command &%runq%&, but in Exim
 the waiting messages are normally processed in an unpredictable order.
 
 .cindex "spool directory" "definition of"
