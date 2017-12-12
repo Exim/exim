@@ -60,7 +60,7 @@
 . provided in the xfpt library.
 . /////////////////////////////////////////////////////////////////////////////
 
-. --- Override the &$ flag to automatically insert a $ with the variable name
+. --- Override the &$ flag to automatically insert a $ with the variable name.
 
 .flag &$  $&   "<varname>$"  "</varname>"
 
