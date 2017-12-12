@@ -698,7 +698,7 @@ line.
 
 .cindex "local part" "definition of"
 .cindex "domain" "definition of"
-The term &'local part'&, which is taken from RFC 2822, is used to refer to that
+The term &'local part'&, which is taken from RFC 2822, is used to refer to the
 part of an email address that precedes the @ sign. The part that follows the
 @ sign is called the &'domain'& or &'mail domain'&.
 
