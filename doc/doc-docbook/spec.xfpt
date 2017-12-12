@@ -65,7 +65,7 @@
 .flag &$  $&   "<varname>$"  "</varname>"
 
 . --- Short flags for daggers in option headings. They will always be inside
-. --- an italic string, but we want the daggers to be roman.
+. --- an italic string, but we want the daggers to be in Roman.
 
 .flag &!!      "</emphasis>&dagger;<emphasis>"
 .flag &!?      "</emphasis>&Dagger;<emphasis>"
