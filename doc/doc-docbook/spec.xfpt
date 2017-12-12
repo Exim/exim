@@ -621,8 +621,8 @@ a number of common scanners are provided.
 .endlist
 
 
-.section "Run time configuration" "SECID7"
-Exim's run time configuration is held in a single text file that is divided
+.section "Runtime configuration" "SECID7"
+Exim's runtime configuration is held in a single text file that is divided
 into a number of sections. The entries in this file consist of keywords and
 values, in the style of Smail 3 configuration files. A default configuration
 file which is suitable for simple online installations is provided in the
@@ -1194,11 +1194,11 @@ deliveries caused by crashes.
 The main delivery processing elements of Exim are called &'routers'& and
 &'transports'&, and collectively these are known as &'drivers'&. Code for a
 number of them is provided in the source distribution, and compile-time options
-specify which ones are included in the binary. Run time options specify which
+specify which ones are included in the binary. Runtime options specify which
 ones are actually used for delivering messages.
 
 .cindex "drivers" "instance definition"
-Each driver that is specified in the run time configuration is an &'instance'&
+Each driver that is specified in the runtime configuration is an &'instance'&
 of that particular driver type. Multiple instances are allowed; for example,
 you can set up several different &(smtp)& transports, each with different
 option values that might specify different ports or different timeouts. Each
@@ -1814,17 +1814,17 @@ building Exim for the first time, the simplest thing to do is to copy
 &_src/EDITME_& to &_Local/Makefile_&, then read it and edit it appropriately.
 
 There are three settings that you must supply, because Exim will not build
-without them. They are the location of the run time configuration file
+without them. They are the location of the runtime configuration file
 (CONFIGURE_FILE), the directory in which Exim binaries will be installed
 (BIN_DIRECTORY), and the identity of the Exim user (EXIM_USER and
 maybe EXIM_GROUP as well). The value of CONFIGURE_FILE can in fact be
 a colon-separated list of file names; Exim uses the first of them that exists.
 
 There are a few other parameters that can be specified either at build time or
-at run time, to enable the same binary to be used on a number of different
+at runtime, to enable the same binary to be used on a number of different
 machines. However, if the locations of Exim's spool directory and log file
 directory (if not within the spool directory) are fixed, it is recommended that
-you specify them in &_Local/Makefile_& instead of at run time, so that errors
+you specify them in &_Local/Makefile_& instead of at runtime, so that errors
 detected early in Exim's execution (such as a malformed configuration file) can
 be logged.
 
@@ -2157,7 +2157,7 @@ libraries need to be installed before compiling Exim.
 However, there are some optional lookup types (such as cdb) for which
 the code is entirely contained within Exim, and no external include
 files or libraries are required. When a lookup type is not included in the
-binary, attempts to configure Exim to use it cause run time configuration
+binary, attempts to configure Exim to use it cause runtime configuration
 errors.
 
 .cindex "pkg-config" "lookups"
@@ -2260,7 +2260,7 @@ As with Exim itself, the final three files need not exist, and in this case the
 &_OS/eximon.conf-Default_& can be overridden dynamically by setting environment
 variables of the same name, preceded by EXIMON_. For example, setting
 EXIMON_LOG_DEPTH in the environment overrides the value of
-LOG_DEPTH at run time.
+LOG_DEPTH at runtime.
 .ecindex IIDbuex
 
 
@@ -2280,10 +2280,10 @@ it may be possible to run Exim without making the binary setuid root (see
 chapter &<<CHAPsecurity>>& for details).
 
 .cindex "CONFIGURE_FILE"
-Exim's run time configuration file is named by the CONFIGURE_FILE setting
+Exim's runtime configuration file is named by the CONFIGURE_FILE setting
 in &_Local/Makefile_&. If this names a single file, and the file does not
 exist, the default configuration file &_src/configure.default_& is copied there
-by the installation script. If a run time configuration file already exists, it
+by the installation script. If a runtime configuration file already exists, it
 is left alone. If CONFIGURE_FILE is a colon-separated list, naming several
 alternative files, no default is installed.
 
@@ -2400,7 +2400,7 @@ necessary.
 
 .section "Testing" "SECID34"
 .cindex "testing" "installation"
-Having installed Exim, you can check that the run time configuration file is
+Having installed Exim, you can check that the runtime configuration file is
 syntactically valid by running the following command, which assumes that the
 Exim binary directory is within your PATH environment variable:
 .code
@@ -2474,7 +2474,7 @@ incoming SMTP mail.
 
 Testing a new version on a system that is already running Exim can most easily
 be done by building a binary with a different CONFIGURE_FILE setting. From
-within the run time configuration, all other file and directory names
+within the runtime configuration, all other file and directory names
 that Exim uses can be altered, in order to keep it entirely clear of the
 production version.
 
@@ -2790,7 +2790,7 @@ function, which provides extensive line-editing facilities, for reading the
 test data. A line history is supported.
 
 Long expansion expressions can be split over several lines by using backslash
-continuations. As in Exim's run time configuration, white space at the start of
+continuations. As in Exim's runtime configuration, white space at the start of
 continuation lines is ignored. Each argument or data line is passed through the
 string expansion mechanism, and the result is output. Variable values from the
 configuration file (for example, &$qualify_domain$&) are available, but no
@@ -3122,7 +3122,7 @@ mysql_servers = <value not displayable>
 If &%config%& is given as an argument, the config is
 output, as it was parsed, any include file resolved, any comment removed.
 
-If &%config_file%& is given as an argument, the name of the run time
+If &%config_file%& is given as an argument, the name of the runtime
 configuration file is output. (&%configure_file%& works too, for
 backward compatibility.)
 If a list of configuration files was supplied, the value that is output here
@@ -3405,7 +3405,7 @@ This option causes Exim to write the current version number, compilation
 number, and compilation date of the &'exim'& binary to the standard output.
 It also lists the DBM library that is being used, the optional modules (such as
 specific lookup types), the drivers that are included in the binary, and the
-name of the run time configuration file that is in use.
+name of the runtime configuration file that is in use.
 
 As part of its operation, &%-bV%& causes Exim to read and syntax check its
 configuration file. However, this is a static check only. It cannot check
@@ -3494,7 +3494,7 @@ which the daemon will exit, which should cause inetd to listen once more.
 .cindex "configuration file" "alternate"
 .cindex "CONFIGURE_FILE"
 .cindex "alternate configuration file"
-This option causes Exim to find the run time configuration file from the given
+This option causes Exim to find the runtime configuration file from the given
 list instead of from the list specified by the CONFIGURE_FILE
 compile-time setting. Usually, the list will consist of just a single file
 name, but it can be a colon-separated list of names. In this case, the first
@@ -4739,16 +4739,16 @@ under most shells.
 . ////////////////////////////////////////////////////////////////////////////
 
 
-.chapter "The Exim run time configuration file" "CHAPconf" &&&
+.chapter "The Exim runtime configuration file" "CHAPconf" &&&
          "The runtime configuration file"
 
-.cindex "run time configuration"
+.cindex "runtime configuration"
 .cindex "configuration file" "general description"
 .cindex "CONFIGURE_FILE"
 .cindex "configuration file" "errors in"
 .cindex "error" "in configuration file"
 .cindex "return code" "for bad configuration"
-Exim uses a single run time configuration file that is read whenever an Exim
+Exim uses a single runtime configuration file that is read whenever an Exim
 binary is executed. Note that in normal operation, this happens frequently,
 because Exim is designed to operate in a distributed manner, without central
 control.
@@ -4772,19 +4772,19 @@ existing file in the list.
 .cindex "CONFIGURE_GROUP"
 .cindex "configuration file" "ownership"
 .cindex "ownership" "configuration file"
-The run time configuration file must be owned by root or by the user that is
+The runtime configuration file must be owned by root or by the user that is
 specified at compile time by the CONFIGURE_OWNER option (if set). The
 configuration file must not be world-writeable, or group-writeable unless its
 group is the root group or the one specified at compile time by the
 CONFIGURE_GROUP option.
 
 &*Warning*&: In a conventional configuration, where the Exim binary is setuid
-to root, anybody who is able to edit the run time configuration file has an
+to root, anybody who is able to edit the runtime configuration file has an
 easy way to run commands as root. If you specify a user or group in the
 CONFIGURE_OWNER or CONFIGURE_GROUP options, then that user and/or any users
 who are members of that group will trivially be able to obtain root privileges.
 
-Up to Exim version 4.72, the run time configuration file was also permitted to
+Up to Exim version 4.72, the runtime configuration file was also permitted to
 be writeable by the Exim user and/or group. That has been changed in Exim 4.73
 since it offered a simple privilege escalation for any attacker who managed to
 compromise the Exim user account.
@@ -4937,7 +4937,7 @@ described.
 .cindex "configuration file" "including other files"
 .cindex "&`.include`& in configuration file"
 .cindex "&`.include_if_exists`& in configuration file"
-You can include other files inside Exim's run time configuration file by
+You can include other files inside Exim's runtime configuration file by
 using this syntax:
 .display
 &`.include`& <&'file name'&>
@@ -8998,7 +8998,7 @@ types.
 
 .chapter "String expansions" "CHAPexpand"
 .scindex IIDstrexp "expansion" "of strings"
-Many strings in Exim's run time configuration are expanded before use. Some of
+Many strings in Exim's runtime configuration are expanded before use. Some of
 them are expanded every time they are used; others are expanded only once.
 
 When a string is being expanded it is copied verbatim from left to right except
@@ -13656,7 +13656,7 @@ details.
 .chapter "Main configuration" "CHAPmainconfig"
 .scindex IIDconfima "configuration file" "main section"
 .scindex IIDmaiconf "main configuration"
-The first part of the run time configuration file contains three types of item:
+The first part of the runtime configuration file contains three types of item:
 
 .ilist
 Macro definitions: These lines start with an upper case letter. See section
@@ -15604,8 +15604,8 @@ section &<<SECTmessiden>>&.
 This option sets the path which is used to determine the names of Exim's log
 files, or indicates that logging is to be to syslog, or both. It is expanded
 when Exim is entered, so it can, for example, contain a reference to the host
-name. If no specific path is set for the log files at compile or run time,
-or if the option is unset at run time (i.e.  &`log_file_path = `&)
+name. If no specific path is set for the log files at compile or runtime,
+or if the option is unset at runtime (i.e.  &`log_file_path = `&)
 they are written in a sub-directory called &_log_& in Exim's spool directory.
 Chapter &<<CHAPlog>>& contains further details about Exim's logging, and
 section &<<SECTwhelogwri>>& describes how the contents of &%log_file_path%& are
@@ -24880,7 +24880,7 @@ transport time.
 .section "Testing the rewriting rules that apply on input" "SECID149"
 .cindex "rewriting" "testing"
 .cindex "testing" "rewriting"
-Exim's input rewriting configuration appears in a part of the run time
+Exim's input rewriting configuration appears in a part of the runtime
 configuration file headed by &"begin rewrite"&. It can be tested by the
 &%-brw%& command line option. This takes an address (which can be a full RFC
 2822 address) as its argument. The output is a list of how the address would be
@@ -25762,7 +25762,7 @@ considered immediately.
 .chapter "SMTP authentication" "CHAPSMTPAUTH"
 .scindex IIDauthconf1 "SMTP" "authentication configuration"
 .scindex IIDauthconf2 "authentication"
-The &"authenticators"& section of Exim's run time configuration is concerned
+The &"authenticators"& section of Exim's runtime configuration is concerned
 with SMTP authentication. This facility is an extension to the SMTP protocol,
 described in RFC 2554, which allows a client SMTP host to authenticate itself
 to a server. This is a common way for a server to recognize clients that are
@@ -28239,7 +28239,7 @@ incompatible specification changes prior to reaching RFC status).
 .cindex "control of incoming mail"
 .cindex "message" "controlling incoming"
 .cindex "policy control" "access control lists"
-Access Control Lists (ACLs) are defined in a separate section of the run time
+Access Control Lists (ACLs) are defined in a separate section of the runtime
 configuration file, headed by &"begin acl"&. Each ACL definition starts with a
 name, terminated by a colon. Here is a complete ACL section that contains just
 one very small ACL:
@@ -32754,7 +32754,7 @@ function controls whether the message is actually accepted or not. There is a
 commented template function (that just accepts the message) in the file
 _src/local_scan.c_.
 
-If you want to make use of Exim's run time configuration file to set options
+If you want to make use of Exim's runtime configuration file to set options
 for your &[local_scan()]& function, you must also set
 .code
 LOCAL_SCAN_HAS_OPTIONS=yes
@@ -35939,14 +35939,14 @@ need to tweak syslog to prevent it syncing the file with each write &-- on
 Linux this has been seen to make syslog take 90% plus of CPU time.
 
 The destination for Exim's logs is configured by setting LOG_FILE_PATH in
-&_Local/Makefile_& or by setting &%log_file_path%& in the run time
+&_Local/Makefile_& or by setting &%log_file_path%& in the runtime
 configuration. This latter string is expanded, so it can contain, for example,
 references to the host name:
 .code
 log_file_path = /var/log/$primary_hostname/exim_%slog
 .endd
 It is generally advisable, however, to set the string in &_Local/Makefile_&
-rather than at run time, because then the setting is available right from the
+rather than at runtime, because then the setting is available right from the
 start of Exim's execution. Otherwise, if there's something it wants to log
 before it has read the configuration file (for example, an error in the
 configuration file) it will not use the path you want, and may not be able to
@@ -35969,8 +35969,8 @@ equivalent to the setting:
 .code
 log_file_path = $spool_directory/log/%slog
 .endd
-If you do not specify anything at build time or run time,
-or if you unset the option at run time (i.e. &`log_file_path = `&),
+If you do not specify anything at build time or runtime,
+or if you unset the option at runtime (i.e. &`log_file_path = `&),
 that is where the logs are written.
 
 A log file path may also contain &`%D`& or &`%M`& if datestamped log file names
@@ -37935,7 +37935,7 @@ information and headers is displayed in a new text window. See chapter
 &'body'&: The contents of the spool file containing the body of the message are
 displayed in a new text window. There is a default limit of 20,000 bytes to the
 amount of data displayed. This can be changed by setting the BODY_MAX
-option at compile time, or the EXIMON_BODY_MAX option at run time.
+option at compile time, or the EXIMON_BODY_MAX option at runtime.
 .next
 &'deliver message'&: A call to Exim is made using the &%-M%& option to request
 delivery of the message. This causes an automatic thaw if the message is
@@ -38110,7 +38110,7 @@ receiving messages and delivering them externally over SMTP, and it is
 obviously more secure if Exim does not run as root except when necessary.
 For this reason, a user and group for Exim to use must be defined in
 &_Local/Makefile_&. These are known as &"the Exim user"& and &"the Exim
-group"&. Their values can be changed by the run time configuration, though this
+group"&. Their values can be changed by the runtime configuration, though this
 is not recommended. Often a user called &'exim'& is used, but some sites use
 &'mail'& or another user name altogether.
 
