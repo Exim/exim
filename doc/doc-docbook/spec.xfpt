@@ -716,7 +716,7 @@ message's envelope.
 .cindex "queue" "definition of"
 The term &'queue'& is used to refer to the set of messages awaiting delivery
 because this term is in widespread use in the context of MTAs. However, in
-Exim's case the reality is more like a pool than a queue, because there is
+Exim's case, the reality is more like a pool than a queue, because there is
 normally no ordering of waiting messages.
 
 .cindex "queue runner" "definition of"
