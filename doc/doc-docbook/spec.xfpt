@@ -552,7 +552,7 @@ PGP key, a version of which can be found in the release directory in the file
 &_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
 such as &'pool.sks-keyservers.net'&.
 
-At time of last update, releases were being made by Jeremy Harris and signed
+At the time of the last update, releases were being made by Jeremy Harris and signed
 with key &'0xBCE58C8CE41F32DF'&.  Other recent keys used for signing are those
 of Heiko Schlittermann, &'0x26101B62F69376CE'&,
 and of Phil Pennock, &'0x4D1E900E14C1CC04'&.
