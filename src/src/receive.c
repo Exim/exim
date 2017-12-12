@@ -1023,7 +1023,8 @@ int ch;
 
 /* Remember that this message uses wireformat. */
 
-DEBUG(D_receive) debug_printf("CHUNKING: writing spoolfile in wire format\n");
+DEBUG(D_receive) debug_printf("CHUNKING: %s\n",
+	fout ? "writing spoolfile in wire format" : "flushing input");
 spool_file_wireformat = TRUE;
 
 for (;;)
@@ -1077,9 +1078,10 @@ Returns:     nothing
 void
 receive_swallow_smtp(void)
 {
-/*XXX CHUNKING: not enough.  read chunks until RSET? */
 if (message_ended >= END_NOTENDED)
-  message_ended = read_message_data_smtp(NULL);
+  message_ended = chunking_state <= CHUNKING_OFFERED
+     ? read_message_data_smtp(NULL)
+     : read_message_bdat_smtp_wire(NULL);
 }
 
 
@@ -2052,32 +2054,30 @@ for (;;)
   these lines in SMTP messages. There is now an option to ignore them from
   specified hosts or networks. Sigh. */
 
-  if (header_last == header_list &&
-       (!smtp_input
-         ||
-         (sender_host_address != NULL &&
-           verify_check_host(&ignore_fromline_hosts) == OK)
-         ||
-         (sender_host_address == NULL && ignore_fromline_local)
-       ) &&
-       regex_match_and_setup(regex_From, next->text, 0, -1))
+  if (  header_last == header_list
+     && (  !smtp_input
+        || (  sender_host_address
+	   && verify_check_host(&ignore_fromline_hosts) == OK
+	   )
+        || (!sender_host_address && ignore_fromline_local)
+        )
+     && regex_match_and_setup(regex_From, next->text, 0, -1)
+     )
     {
     if (!sender_address_forced)
       {
       uschar *uucp_sender = expand_string(uucp_from_sender);
-      if (uucp_sender == NULL)
-        {
+      if (!uucp_sender)
         log_write(0, LOG_MAIN|LOG_PANIC,
           "expansion of \"%s\" failed after matching "
           "\"From \" line: %s", uucp_from_sender, expand_string_message);
-        }
       else
         {
         int start, end, domain;
         uschar *errmess;
         uschar *newsender = parse_extract_address(uucp_sender, &errmess,
           &start, &end, &domain, TRUE);
-        if (newsender != NULL)
+        if (newsender)
           {
           if (domain == 0 && newsender[0] != 0)
             newsender = rewrite_address_qualify(newsender, FALSE);
@@ -2172,13 +2172,11 @@ for (;;)
         }
 
       else
-        {
         give_local_error(ERRMESS_VLONGHDRLINE,
           string_sprintf("message header line longer than %d characters "
            "received: message not accepted", header_line_maxsize), US"",
            error_rc, stdin, header_list->next);
         /* Does not return */
-        }
       }
 
     /* Note if any resent- fields exist. */

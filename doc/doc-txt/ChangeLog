@@ -201,6 +201,11 @@ HS/03 Bug 2201: Fix checking for leading-dot on a line during headers reading
       from SMTP input.  Previously it was always done; now only done for DATA
       and not BDAT commands.  CVE-2017-16944.
 
+JH/35 Bug 2201: Flush received data in BDAT mode after detecting an error fatal
+      to the message (such as an overlong header line).  Previously this was
+      not done and we did not exit BDAT mode.  Followon from the previous item
+      though a different problem.
+
 
 Exim version 4.89
 -----------------
