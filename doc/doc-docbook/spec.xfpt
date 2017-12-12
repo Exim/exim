@@ -489,7 +489,7 @@ via this web page:
 .display
 &url(http://lists.alioth.debian.org/mailman/listinfo/pkg-exim4-users)
 .endd
-Please ask Debian-specific questions on this list and not on the general Exim
+Please ask Debian-specific questions on that list and not on the general Exim
 lists.
 
 .section "Bug reports" "SECID5"
