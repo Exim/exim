@@ -727,7 +727,7 @@ the waiting messages are normally processed in an unpredictable order.
 
 .cindex "spool directory" "definition of"
 The term &'spool directory'& is used for a directory in which Exim keeps the
-messages on its queue &-- that is, those that it is in the process of
+messages in its queue &-- that is, those that it is in the process of
 delivering. This should not be confused with the directory in which local
 mailboxes are stored, which is called a &"spool directory"& by some people. In
 the Exim documentation, &"spool"& is always used in the first sense.
