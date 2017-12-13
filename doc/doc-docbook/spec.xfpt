@@ -18385,7 +18385,7 @@ full list of the order in which preconditions are evaluated.) However, as
 these options are all expanded, you can use the &%exists%& expansion condition
 to make such tests. The &%require_files%& option is intended for checking files
 that the router may be going to use internally, or which are needed by a
-transport (for example &_.procmailrc_&).
+transport (e.g., &_.procmailrc_&).
 
 During delivery, the &[stat()]& function is run as root, but there is a
 facility for some checking of the accessibility of a file by another user.
@@ -28473,7 +28473,7 @@ for this can be disabled when the variable &$prdr_requested$&
 is &"yes"&.
 Any required difference in behaviour of the main DATA-time
 ACL should however depend on the PRDR-time ACL having run, as Exim
-will avoid doing so in some situations (e.g.  single-recipient mails).
+will avoid doing so in some situations (e.g. single-recipient mails).
 
 See also the &%prdr_enable%& global option
 and the &%hosts_try_prdr%& smtp transport option.
@@ -30405,7 +30405,7 @@ MX hosts or nameservers of an email sender address. For an example, see section
 .section "DNS lists keyed on domain names" "SECID202"
 .cindex "DNS list" "keyed by domain name"
 There are some lists that are keyed on domain names rather than inverted IP
-addresses (see for example the &'domain based zones'& link at
+addresses (see, e.g., the &'domain based zones'& link at
 &url(http://www.rfc-ignorant.org/)). No reversing of components is used
 with these lists. You can change the name that is looked up in a DNS list by
 listing it after the domain name, introduced by a slash. For example,
