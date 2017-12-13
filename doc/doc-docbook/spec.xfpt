@@ -879,7 +879,7 @@ source code.
 
 .next
 Many people have contributed code fragments, some large, some small, that were
-not covered by any specific licence requirements. It is assumed that the
+not covered by any specific license requirements. It is assumed that the
 contributors are happy to see their code incorporated into Exim under the GPL.
 .endlist
 
