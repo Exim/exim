@@ -1850,7 +1850,7 @@ happy with the default settings described in &_exim_monitor/EDITME_&,
 This is all the configuration that is needed in straightforward cases for known
 operating systems. However, the building process is set up so that it is easy
 to override options that are set by default or by operating-system-specific
-configuration files, for example to change the C compiler, which
+configuration files, for example, to change the C compiler, which
 defaults to &%gcc%&. See section &<<SECToverride>>& below for details of how to
 do this.
 
@@ -2331,7 +2331,7 @@ INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
 For the utility programs, old versions are renamed by adding the suffix &_.O_&
 to their names. The Exim binary itself, however, is handled differently. It is
 installed under a name that includes the version number and the compile number,
-for example &_exim-&version()-1_&. The script then arranges for a symbolic link
+for example, &_exim-&version()-1_&. The script then arranges for a symbolic link
 called &_exim_& to point to the binary. If you are updating a previous version
 of Exim, the script takes care to ensure that the name &_exim_& is never absent
 from the directory (as seen by other processes).
@@ -9564,7 +9564,7 @@ Then given a message, you can check where it was scanned by looking at the
 &'X-Spam-Scanned:'& header line. If you know the secret, you can check that
 this header line is authentic by recomputing the authentication code from the
 host name, message ID and the &'Message-id:'& header line. This can be done
-using Exim's &%-be%& option, or by other means, for example by using the
+using Exim's &%-be%& option, or by other means, for example, by using the
 &'hmac_md5_hex()'& function in Perl.
 
 
@@ -10411,7 +10411,7 @@ be useful for processing the output of the MD5 and SHA-1 hashing functions.
 .cindex "&%hexquote%& expansion item"
 This operator converts non-printable characters in a string into a hex
 escape form. Byte values between 33 (!) and 126 (~) inclusive are left
-as is, and other byte values are converted to &`\xNN`&, for example a
+as is, and other byte values are converted to &`\xNN`&, for example, a
 byte value 127 is converted to &`\x7f`&.
 
 
@@ -26645,7 +26645,7 @@ the Cyrus interface, so if your Cyrus library can do, for example, CRAM-MD5,
 then so can the &(cyrus_sasl)& authenticator. By default it uses the public
 name of the driver to determine which mechanism to support.
 
-Where access to some kind of secret file is required, for example in GSSAPI
+Where access to some kind of secret file is required, for example, in GSSAPI
 or CRAM-MD5, it is worth noting that the authenticator runs as the Exim
 user, and that the Cyrus SASL library has no way of escalating privileges
 by default. You may also find you need to set environment variables,
@@ -30856,7 +30856,7 @@ rate at which a recipient receives messages, you can use the key
 ACL.
 
 Each &%ratelimit%& condition can have up to four options. A &%per_*%& option
-specifies what Exim measures the rate of, for example messages or recipients
+specifies what Exim measures the rate of, for example, messages or recipients
 or bytes. You can adjust the measurement using the &%unique=%& and/or
 &%count=%& options. You can also control when Exim updates the recorded rate
 using a &%strict%&, &%leaky%&, or &%readonly%& option. The options are
@@ -32377,7 +32377,7 @@ available for use at delivery time.
 
 .vlist
 .vitem &$spam_score$&
-The spam score of the message, for example &"3.4"& or &"30.5"&. This is useful
+The spam score of the message, for example, &"3.4"& or &"30.5"&. This is useful
 for inclusion in log or reject messages.
 
 .vitem &$spam_score_int$&
@@ -32632,7 +32632,7 @@ condition = ${if eq{$mime_content_type}{text/html}{1}{0}}
 .endd
 .vitem &$mime_is_multipart$&
 This variable has the value 1 (true) when the current part has the main type
-&"multipart"&, for example &"multipart/alternative"& or &"multipart/mixed"&.
+&"multipart"&, for example, &"multipart/alternative"& or &"multipart/mixed"&.
 Since multipart entities only serve as containers for other parts, you may not
 want to carry out specific actions on them.
 
@@ -36644,7 +36644,7 @@ client's ident port times out.
 &%incoming_interface%&: The interface on which a message was received is added
 to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
-added to other SMTP log lines, for example &"SMTP connection from"&, to
+added to other SMTP log lines, for example, &"SMTP connection from"&, to
 rejection lines, and (despite the name) to outgoing &"=>"& and &"->"& lines.
 The latter can be disabled by turning off the &%outgoing_interface%& option.
 .next
