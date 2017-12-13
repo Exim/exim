@@ -907,7 +907,7 @@ has been down, and it also maintains per-host retry information.
 .section "Policy control" "SECID11"
 .cindex "policy control" "overview"
 Policy controls are now an important feature of MTAs that are connected to the
-Internet. Perhaps their most important job is to stop MTAs being abused as
+Internet. Perhaps their most important job is to stop MTAs from being abused as
 &"open relays"& by misguided individuals who send out vast amounts of
 unsolicited junk, and want to disguise its source. Exim provides flexible
 facilities for specifying policy controls on incoming mail:
