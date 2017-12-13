@@ -1850,7 +1850,7 @@ happy with the default settings described in &_exim_monitor/EDITME_&,
 This is all the configuration that is needed in straightforward cases for known
 operating systems. However, the building process is set up so that it is easy
 to override options that are set by default or by operating-system-specific
-configuration files, for example to change the name of the C compiler, which
+configuration files, for example to change the C compiler, which
 defaults to &%gcc%&. See section &<<SECToverride>>& below for details of how to
 do this.
 
