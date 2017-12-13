@@ -1020,7 +1020,6 @@ for(;;)
 
 
 
-
 /*************************************************
 *             Swallow SMTP message               *
 *************************************************/
@@ -1037,9 +1036,10 @@ Returns:     nothing
 void
 receive_swallow_smtp(void)
 {
-/*XXX CHUNKING: not enough.  read chunks until RSET? */
 if (message_ended >= END_NOTENDED)
-  message_ended = read_message_data_smtp(NULL);
+  message_ended = chunking_state <= CHUNKING_OFFERED
+     ? read_message_data_smtp(NULL)
+     : read_message_bdat_smtp(NULL);
 }
 
 
