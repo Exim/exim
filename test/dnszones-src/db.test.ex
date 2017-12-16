@@ -526,5 +526,7 @@ ses._domainkey TXT "v=DKIM1; n=halfkilo; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eA
 ses_sha1._domainkey TXT "v=DKIM1; h=sha1; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
 ses_sha256._domainkey TXT "v=DKIM1; h=sha256; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
 
+sel2._domainkey TXT "v=spf1 mx a include:spf.nl2go.com -all"
+sel2._domainkey TXT "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
 
 ; End
