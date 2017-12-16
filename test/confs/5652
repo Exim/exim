@@ -72,6 +72,7 @@ remote_delivery:
   tls_require_ciphers =		OPT
   hosts_require_ocsp =		*
   tls_verify_certificates =	CERT
+  tls_verify_cert_hostnames =	:
 
 local_delivery:
   driver = appendfile
