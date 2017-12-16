@@ -25,17 +25,25 @@ tls_advertise_hosts = *
 CDIR1 = DIR/aux-fixed
 CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
 
+.ifdef CERT
+tls_certificate = CERT
+.else
 tls_certificate = ${if eq {SERVER}{server} \
 	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}}} \
 		{CDIR2/fullchain.pem}\
 		{CDIR1/cert1}}}\
 	fail}
+.endif
 
+.ifdef ALLOW
+tls_privatekey = ALLOW
+.else
 tls_privatekey = ${if eq {SERVER}{server} \
 	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}}} \
 		{CDIR2/server1.example.com.unlocked.key}\
 		{CDIR1/cert1}}}\
 	fail}
+.endif
 
 # ----- Routers -----
 

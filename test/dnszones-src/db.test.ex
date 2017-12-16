@@ -446,9 +446,30 @@ DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 2bb55f418bb03411a5007cecbfcd3ec1c9440431
 ; openssl x509 -in aux-fixed/exim-ca/example.com/CA/CA.pem -fingerprint -sha256 -noout \
 ;  | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
 ;
+; Since this refers to a cert in the exim-ca tree, it must be regenerated any time that tree is.
+;
 DNSSEC mxdane256ta          MX  1  dane256ta
 DNSSEC dane256ta            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 8982981b99236651397a76ea89523f2fffa04c2828248b2cb7c0cd52e2282bf7
+DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 6ec4a7b5f5310953ea3d6deb3f210ba60923be16bf1450b7a45e7567e98287bc
+
+
+; full MX, sha256, TA-mode, cert-key-only
+; Indicates a trust-anchor for a chain involving an Authority Key ID extension
+; linkage, as this excites a bug in OpenSSL 1.0.2 which the DANE code has to
+; work around, while synthesizing a selfsigned parent for it.
+; As it happens it is also an intermediate cert in the CA-rooted chain, as this
+; was initially thought ot be a factor.
+;
+; openssl x509 -in aux-fixed/exim-ca/example.com/CA/Signer.pem -noout -pubkey \
+; | openssl pkey -pubin -outform DER \
+; | openssl dgst -sha256 \
+; | awk '{print $2}'
+;
+; Since this refers to a cert in the exim-ca tree, it must be regenerated any time that tree is.
+;
+DNSSEC mxdane256tak          MX  1  dane256tak
+DNSSEC dane256tak            A      HOSTIPV4
+DNSSEC _1225._tcp.dane256tak TLSA 2 1 1 7e241508cffb12c85b1b06a00268f6f7f926ba742db671f3994cbebc81368816
 
 
 ; A multiple-return MX where all TLSA lookups defer
@@ -505,7 +526,5 @@ ses._domainkey TXT "v=DKIM1; n=halfkilo; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eA
 ses_sha1._domainkey TXT "v=DKIM1; h=sha1; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
 ses_sha256._domainkey TXT "v=DKIM1; h=sha256; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL6eAQxd9didJ0/+05iDwJOqT6ly826Vi8aGPecsBiYK5/tAT97fxXk+dPWMZp9kQxtknEzYjYjAydzf+HQ2yJMCAwEAAQ=="
 
-sel2._domainkey TXT "v=spf1 mx a include:spf.nl2go.com -all"
-sel2._domainkey TXT "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+lCgFhhSkinZKcFNeRzjYdW8vT29Rbb3NadvTFwAd+cVLPFwZL8H5tUD/7JbUPqNTCPxmpgIL+V5T4tEZMorHatvvUM2qfcpQ45IfsZ+YdhbIiAslHCpy4xNxIR3zylgqRUF4+Dtsaqy3a5LhwMiKCLrnzhXk1F1hxwIDAQAB"
 
 ; End

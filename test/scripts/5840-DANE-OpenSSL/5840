@@ -25,10 +25,16 @@ killdaemon
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
 ### TLSA (2 0 1)
-exim -odq CALLER@mxdane256ta.test.ex
+exim -odf CALLER@mxdane256ta.test.ex
 Testing
 ****
-exim -qf
+killdaemon
+#
+exim -DSERVER=server -DCERT=DIR/aux-fixed/exim-ca/example.com/server2.example.com/fullchain.pem -DALLOW=DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key -bd -oX PORT_D
+****
+### TLSA (2 1 1)
+exim -odf CALLER@mxdane256tak.test.ex
+Testing
 ****
 killdaemon
 #
@@ -47,7 +53,7 @@ killdaemon
 # Check we get a CV and TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
-exim -odq CALLER@thishost.test.ex
+exim -odf CALLER@thishost.test.ex
 Testing
 ****
 exim -DOPT=no_certname -qf

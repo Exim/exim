@@ -1370,38 +1370,38 @@ if (selector > DANESSL_SELECTOR_LAST)
   return 0;
   }
 
-    /* Support built-in standard one-digit mtypes */
-  if (mdname && *mdname && mdname[1] == '\0')
-    switch (*mdname - '0')
-    {
-    case DANESSL_MATCHING_FULL: mdname = 0;	   break;
-    case DANESSL_MATCHING_2256: mdname = "sha256"; break;
-    case DANESSL_MATCHING_2512: mdname = "sha512"; break;
-    }
-  if (mdname && *mdname && (md = EVP_get_digestbyname(mdname)) == 0)
-    {
-    DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_DIGEST);
-    return 0;
-    }
-  if (mdname && *mdname && dlen != EVP_MD_size(md))
-    {
-    DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_DATA_LENGTH);
-    return 0;
-    }
-  if (!data)
-    {
-    DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_NULL_DATA);
-    return 0;
-    }
+/* Support built-in standard one-digit mtypes */
+if (mdname && *mdname && mdname[1] == '\0')
+  switch (*mdname - '0')
+  {
+  case DANESSL_MATCHING_FULL: mdname = 0;	   break;
+  case DANESSL_MATCHING_2256: mdname = "sha256"; break;
+  case DANESSL_MATCHING_2512: mdname = "sha512"; break;
+  }
+if (mdname && *mdname && !(md = EVP_get_digestbyname(mdname)))
+  {
+  DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_DIGEST);
+  return 0;
+  }
+if (mdname && *mdname && dlen != EVP_MD_size(md))
+  {
+  DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_DATA_LENGTH);
+  return 0;
+  }
+if (!data)
+  {
+  DANEerr(DANESSL_F_ADD_TLSA, DANESSL_R_BAD_NULL_DATA);
+  return 0;
+  }
 
-  /*
-   * Full Certificate or Public Key when NULL or empty digest name
-   */
-  if (!mdname || !*mdname)
-    {
-    X509 *x = 0;
-    EVP_PKEY *k = 0;
-    const unsigned char *p = data;
+/*
+ * Full Certificate or Public Key when NULL or empty digest name
+ */
+if (!mdname || !*mdname)
+  {
+  X509 *x = 0;
+  EVP_PKEY *k = 0;
+  const unsigned char *p = data;
 
 #define xklistinit(lvar, ltype, var, freeFunc) do { \
 	  (lvar) = (ltype) OPENSSL_malloc(sizeof(*(lvar))); \

@@ -7,48 +7,49 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdane256ta.test.ex
-1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER@mxdane256ta.test.ex R=client T=send_to_server H=dane256ta.test.ex [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=dane DN="/CN=server1.example.com" C="250 OK id=10HmbC-0005vi-00"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@thishost.test.ex
-1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbD-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
-1999-03-02 09:44:33 10HmbD-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="thishost.test.ex"
-1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER@mxdane256tak.test.ex R=client T=send_to_server H=dane256tak.test.ex [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=dane DN="/CN=server2.example.com" C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@thishost.test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbG-0005vi-00"
+1999-03-02 09:44:33 10HmbF-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
+1999-03-02 09:44:33 10HmbF-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="thishost.test.ex"
+1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdanelazy.test.ex
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.1.test.ex
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.2.test.ex
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken1.test.ex
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.3.test.ex
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@thishost.test.ex
+1999-03-02 09:44:33 10HmbH-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbI-0005vi-00"
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbH-0005vi-00 H=danelazy.test.ex [ip4.ip4.ip4.ip4]: DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbH-0005vi-00 H=danelazy2.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbH-0005vi-00 == CALLER@mxdanelazy.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbI-0005vi-00 ** CALLER@dane.no.1.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
-1999-03-02 09:44:33 10HmbI-0005vi-00 CALLER@dane.no.1.test.ex: error ignored
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbJ-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
-1999-03-02 09:44:33 10HmbJ-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="dane.no.2.test.ex"
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => CALLER@dane.no.2.test.ex R=client T=send_to_server H=dane.no.2.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbN-0005vi-00"
-1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbK-0005vi-00 H=danebroken1.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbK-0005vi-00 == CALLER@danebroken1.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
-1999-03-02 09:44:33 10HmbL-0005vi-00 ** CALLER@dane.no.3.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
-1999-03-02 09:44:33 10HmbL-0005vi-00 CALLER@dane.no.3.test.ex: error ignored
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdanelazy.test.ex
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.1.test.ex
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken1.test.ex
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.3.test.ex
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.4.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbJ-0005vi-00 H=danelazy.test.ex [ip4.ip4.ip4.ip4]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbJ-0005vi-00 H=danelazy2.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbJ-0005vi-00 == CALLER@mxdanelazy.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbK-0005vi-00 ** CALLER@dane.no.1.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbK-0005vi-00 CALLER@dane.no.1.test.ex: error ignored
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
+1999-03-02 09:44:33 10HmbL-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="dane.no.2.test.ex"
+1999-03-02 09:44:33 10HmbL-0005vi-00 => CALLER@dane.no.2.test.ex R=client T=send_to_server H=dane.no.2.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbP-0005vi-00"
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbM-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
-1999-03-02 09:44:33 10HmbM-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="dane.no.4.test.ex"
-1999-03-02 09:44:33 10HmbM-0005vi-00 => CALLER@dane.no.4.test.ex R=client T=send_to_server H=dane.no.4.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbO-0005vi-00"
-1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 H=danebroken1.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbM-0005vi-00 == CALLER@danebroken1.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbN-0005vi-00 ** CALLER@dane.no.3.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbN-0005vi-00 CALLER@dane.no.3.test.ex: error ignored
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbO-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
+1999-03-02 09:44:33 10HmbO-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="dane.no.4.test.ex"
+1999-03-02 09:44:33 10HmbO-0005vi-00 => CALLER@dane.no.4.test.ex R=client T=send_to_server H=dane.no.4.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbQ-0005vi-00"
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
@@ -64,17 +65,21 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@mxdane256ta.test.ex> R=server
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex for CALLER@mxdane256tak.test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@mxdane256tak.test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmbN-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbJ-0005vi-00@myhost.test.ex for CALLER@dane.no.2.test.ex
-1999-03-02 09:44:33 10HmbN-0005vi-00 => :blackhole: <CALLER@dane.no.2.test.ex> R=server
-1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbO-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbM-0005vi-00@myhost.test.ex for CALLER@dane.no.4.test.ex
-1999-03-02 09:44:33 10HmbO-0005vi-00 => :blackhole: <CALLER@dane.no.4.test.ex> R=server
-1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbH-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
+1999-03-02 09:44:33 10HmbI-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmbP-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbL-0005vi-00@myhost.test.ex for CALLER@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbP-0005vi-00 => :blackhole: <CALLER@dane.no.2.test.ex> R=server
+1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbO-0005vi-00@myhost.test.ex for CALLER@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbQ-0005vi-00 => :blackhole: <CALLER@dane.no.4.test.ex> R=server
+1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
