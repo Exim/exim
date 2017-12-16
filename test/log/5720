@@ -10,10 +10,10 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 SN; <CN=clica CA rsa;O=example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SNO <example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 IN  <CN=clica CA rsa,O=example.com>
-1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:47:28 2012 +0000>
-1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:47:28 2038 +0000>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:02 2012 +0000>
+1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Jan  1 12:34:02 2038 +0000>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <sha256WithRSAEncryption>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <         2e:64:5b:da:42:ba:4f:f8:a7:df:e9:b6:9e:4f:a7:49:91:39:\n         0e:8c:7d:cf:99:0d:b2:1c:1b:ba:6d:77:1f:f8:37:f1:83:7f:\n         bd:93:b9:b8:75:e5:46:39:d4:74:0d:82:e3:9f:24:1f:42:57:\n         87:bb:0c:53:1e:d2:23:f1:9f:cf:d0:37:7b:77:60:5c:7e:82:\n         6e:fa:90:8c:31:33:10:99:b4:74:09:4a:b0:30:65:bd:71:79:\n         53:16:f9:7b:41:38:c3:6c:7c:b7:b8:77:9c:13:08:f0:54:68:\n         eb:c3:22:4c:bb:d4:30:5a:88:55:ea:28:a8:36:6f:aa:ba:21:\n         47:88\n>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <         9f:c9:c6:76:d6:00:e8:b2:8d:b1:f0:5e:94:0f:47:31:81:e0:\n         e5:87:5d:16:d2:e1:7d:d1:2d:3d:b3:ce:12:ff:16:17:01:95:\n         ee:be:76:19:b1:ec:1e:ea:ef:75:92:dd:7b:d3:ea:5c:4e:69:\n         20:57:8b:50:c7:7f:1c:48:81:81:d2:b0:f8:d4:10:1c:6b:fd:\n         9d:1e:e6:b5:07:0a:c9:c2:a0:57:d9:68:25:a4:42:c8:55:cd:\n         e3:72:15:0c:4f:05:ed:35:48:22:89:1e:c2:05:54:36:97:29:\n         59:7b:24:c6:c7:fb:eb:fe:53:9d:b3:18:43:09:6e:f0:ae:25:\n         f8:91\n>
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no SAN)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no OCU)
 1999-03-02 09:44:33 10HmaX-0005vi-00 (no CRU)
@@ -35,11 +35,11 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 SN; <CN=server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SNO <>
 1999-03-02 09:44:33 10HmaY-0005vi-00 IN  <CN=clica Signing Cert rsa,O=example.com>
-1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:47:28 2012 +0000>
-1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:47:28 2037 +0000>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:02 2012 +0000>
+1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:34:02 2037 +0000>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <sha256WithRSAEncryption>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <         7c:9b:46:71:07:49:97:31:2f:91:a4:2c:86:37:60:97:de:d0:\n         df:e1:18:6d:e9:a5:a1:ba:66:f8:93:1f:91:5d:45:99:30:c8:\n         4f:e8:1f:23:89:d3:f2:40:90:e3:d8:1d:4c:9a:09:42:12:4c:\n         bf:de:95:b8:58:23:89:52:ab:93:e9:08:36:8f:d7:af:1e:f1:\n         fa:a6:1a:52:c5:34:ef:2e:68:ae:30:1c:c7:5d:8e:de:98:be:\n         4f:04:95:64:c3:0f:7d:8e:d9:0e:66:bd:5f:82:9f:d9:2c:33:\n         a9:85:12:23:c0:eb:d4:11:c8:5c:5b:ec:9d:c5:d4:b6:70:03:\n         51:2e\n>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=*.test.ex;DNS=server1.example.com;DNS=alternatename.server1.example.com;DNS=alternatename2.server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <         34:e2:2a:42:26:da:a6:a8:8e:e7:7c:3c:ca:37:03:7b:69:f1:\n         4c:38:ea:8e:05:2d:1b:81:4e:90:61:1d:2f:d4:e9:cd:19:b8:\n         bc:1b:5b:c6:5a:05:9a:e5:9c:3b:77:25:e2:2e:83:ef:d0:02:\n         95:2a:98:60:de:ab:b4:04:97:ee:3e:24:63:e2:98:74:d2:65:\n         30:d9:0a:9c:92:a8:cf:66:c6:0e:50:f2:09:da:ec:09:d8:07:\n         44:c7:4b:ee:f4:1d:3c:57:df:d7:48:af:c7:4a:e4:6e:a6:4e:\n         2e:2e:f7:7a:0f:da:2e:c4:5d:2d:ee:df:01:b0:2c:6c:de:6b:\n         30:aa\n>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename.server1.example.com;DNS=server1.example.com;DNS=*.test.ex;DNS=alternatename2.server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 OCU <http://oscp.example.com/>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
