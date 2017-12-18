@@ -216,36 +216,36 @@ power management:
 
             CPU0       CPU1       CPU2       CPU3       CPU4       CPU5       CPU6       CPU7       
    0:         75          0          0          0          0          0          0          0  IR-IO-APIC    2-edge      timer
-   1:      28375       2779       1798       1410       3672       2918       1756       1165  IR-IO-APIC    1-edge      i8042
+   1:      69775       6441       4183       4351       8821       6710       4808       2655  IR-IO-APIC    1-edge      i8042
    8:          1          0          0          0          0          0          0          0  IR-IO-APIC    8-edge      rtc0
-   9:      26824      10583       8549       6845      19392      10669       7595       4844  IR-IO-APIC    9-fasteoi   acpi
-  12:    1652948     206933     138126     121080     313548     214279     144993     102413  IR-IO-APIC   12-edge      i8042
-  16:          1          0          0          0          0          0          0          0  IR-IO-APIC   16-fasteoi   i801_smbus
+   9:     116958      16080      12437      10549      27759      16386      11560       7036  IR-IO-APIC    9-fasteoi   acpi
+  12:    5146732     362636     240016     241533     534196     383274     265445     167959  IR-IO-APIC   12-edge      i8042
+  16:          3          0          0          0          0          0          0          0  IR-IO-APIC   16-fasteoi   i801_smbus
  120:          0          0          0          0          0          0          0          0  DMAR-MSI    0-edge      dmar0
  121:          0          0          0          0          0          0          0          0  DMAR-MSI    1-edge      dmar1
- 122:       5099       2645       2048    2133111       3083       2651       2210       2042  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
- 123:         17          3          7          1          9          3          5          0  IR-PCI-MSI 327680-edge      xhci_hcd
- 124:         75         17         21          9         93        164         15         42  IR-PCI-MSI 2097152-edge      rtsx_pci
- 125:         18          3          8          1         11     307592          2          0  IR-PCI-MSI 520192-edge      enp0s31f6
- 126:          2          0          3          0          1          2         16          0  IR-PCI-MSI 1048576-edge    
- 127:        339         56         54         23    1528642         37         26         18  IR-PCI-MSI 32768-edge      i915
- 128:         14          0          0          1          5          1          0         27  IR-PCI-MSI 360448-edge      mei_me
- 129:         18          2          0          4          8          0          4          7  IR-PCI-MSI 1572864-edge      iwlwifi
- 130:        216        116         11         70        193         65         78         49  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
- NMI:        368        382        366        323        340        333        336        355   Non-maskable interrupts
- LOC:    6161920    6212526    6081033    5762738    6023262    5960201    5962068    6075752   Local timer interrupts
+ 122:      40662       2645       2048    8326186       3083       2651       2210       2042  IR-PCI-MSI 376832-edge      ahci[0000:00:17.0]
+ 123:         50          3          7          1          9          3          5          0  IR-PCI-MSI 327680-edge      xhci_hcd
+ 124:        269         24         28         20        104        171         22         48  IR-PCI-MSI 2097152-edge      rtsx_pci
+ 125:         38          0          0          0          0         10          0          4  IR-PCI-MSI 360448-edge      mei_me
+ 126:          2          0          3          0          1          2         24          0  IR-PCI-MSI 1048576-edge    
+ 127:       2247         56         54         23    3782852         37         26         18  IR-PCI-MSI 32768-edge      i915
+ 128:         77          0          0          0          2         32          8          1  IR-PCI-MSI 514048-edge      snd_hda_intel:card0
+ 129:         18          2          0          4          8          0          4      24684  IR-PCI-MSI 1572864-edge      iwlwifi
+ 130:        658          1          0          0          0          8          5   13518769  IR-PCI-MSI 520192-edge      enp0s31f6
+ NMI:        607       2649       2621       2523       2484       2424       2424       2470   Non-maskable interrupts
+ LOC:   29014738   29910147   29754034   28953856   29024391   28521696   28469173   28816545   Local timer interrupts
  SPU:          0          0          0          0          0          0          0          0   Spurious interrupts
- PMI:        368        382        366        323        340        333        336        355   Performance monitoring interrupts
- IWI:          0          2          1          1          4          2          1          0   IRQ work interrupts
- RTR:          6          0          0          0          0          0          0          0   APIC ICR read retries
- RES:    2767495    1298498     589870     442469     433571     428645     274117     316937   Rescheduling interrupts
- CAL:     346261     329432     331889     336862     344974     333357     332847     336503   Function call interrupts
- TLB:      99587      89304      89373      92699      93692      88842      83748      88761   TLB shootdowns
- TRM:       3458       3458       3458       3458       3458       3458       3458       3458   Thermal event interrupts
+ PMI:        607       2649       2621       2523       2484       2424       2424       2470   Performance monitoring interrupts
+ IWI:          6          4          3          2         10          4          3          1   IRQ work interrupts
+ RTR:         18          0          0          0          0          0          0          0   APIC ICR read retries
+ RES:    7885792    3950261    2715262    2193529    2474046    1957554    1665440    1988038   Rescheduling interrupts
+ CAL:     987291     866818     901402     885321     915800     938469     935939     966681   Function call interrupts
+ TLB:     231525     195523     218511     215448     205511     204323     194087     201607   TLB shootdowns
+ TRM:    1627962    1627962    1627962    1627962    1627962    1627962    1627962    1627962   Thermal event interrupts
  THR:          0          0          0          0          0          0          0          0   Threshold APIC interrupts
  DFR:          0          0          0          0          0          0          0          0   Deferred Error APIC interrupts
  MCE:          0          0          0          0          0          0          0          0   Machine check exceptions
- MCP:         87         87         87         87         87         87         87         87   Machine check polls
+ MCP:        202        200        200        200        200        200        200        200   Machine check polls
  HYP:          0          0          0          0          0          0          0          0   Hypervisor callback interrupts
  ERR:          0
  MIS:          0
@@ -253,41 +253,41 @@ power management:
  NPI:          0          0          0          0          0          0          0          0   Nested posted-interrupt event
  PIW:          0          0          0          0          0          0          0          0   Posted-interrupt wakeup event
 MemTotal:       16293504 kB
-MemFree:          171892 kB
-MemAvailable:    1950708 kB
-Buffers:           25332 kB
-Cached:          1901368 kB
-SwapCached:         9076 kB
-Active:          9043816 kB
-Inactive:        6504992 kB
-Active(anon):    8606972 kB
-Inactive(anon):  4972924 kB
-Active(file):     436844 kB
-Inactive(file):  1532068 kB
-Unevictable:          48 kB
-Mlocked:              48 kB
+MemFree:          934072 kB
+MemAvailable:   13703496 kB
+Buffers:          452228 kB
+Cached:         12441380 kB
+SwapCached:       101680 kB
+Active:          2599800 kB
+Inactive:       12195432 kB
+Active(anon):    1356304 kB
+Inactive(anon):   588448 kB
+Active(file):    1243496 kB
+Inactive(file): 11606984 kB
+Unevictable:          64 kB
+Mlocked:              64 kB
 SwapTotal:       8212476 kB
-SwapFree:        7958012 kB
-Dirty:             11804 kB
+SwapFree:        7376112 kB
+Dirty:             11044 kB
 Writeback:             0 kB
-AnonPages:      13614364 kB
-Mapped:           390544 kB
-Shmem:            322816 kB
-Slab:             237008 kB
-SReclaimable:     127500 kB
-SUnreclaim:       109508 kB
-KernelStack:       14304 kB
-PageTables:        94668 kB
+AnonPages:       1871520 kB
+Mapped:           416280 kB
+Shmem:            289864 kB
+Slab:             351256 kB
+SReclaimable:     257264 kB
+SUnreclaim:        93992 kB
+KernelStack:       12832 kB
+PageTables:        58172 kB
 NFS_Unstable:          0 kB
 Bounce:                0 kB
 WritebackTmp:          0 kB
 CommitLimit:    16359228 kB
-Committed_AS:   29520640 kB
+Committed_AS:    7879332 kB
 VmallocTotal:   34359738367 kB
 VmallocUsed:           0 kB
 VmallocChunk:          0 kB
 HardwareCorrupted:     0 kB
-AnonHugePages:   8423424 kB
+AnonHugePages:         0 kB
 ShmemHugePages:        0 kB
 ShmemPmdMapped:        0 kB
 CmaTotal:              0 kB
@@ -297,27 +297,14 @@ HugePages_Free:        0
 HugePages_Rsvd:        0
 HugePages_Surp:        0
 Hugepagesize:       2048 kB
-DirectMap4k:      427496 kB
-DirectMap2M:    16211968 kB
+DirectMap4k:      523752 kB
+DirectMap2M:    16115712 kB
 DirectMap1G:     1048576 kB
 Inter-|   Receive                                                |  Transmit
  face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed
- vnet0:   46917     481    0    0    0     0          0         0   325097    3671    0    0    0     0       0          0
- vnet7:  502731    3695    0    0    0     0          0         0  2163888    8497    0    0    0     0       0          0
- vnet3:   32162     252    0    0    0     0          0         0   291837    3410    0    0    0     0       0          0
-enp0s31f6: 191749422  170921    0    0    0     0          0      3922 42698749  129945    0    0    0     0       0          0
-vnet11: 7303439    6454    0    0    0     0          0         0  2343040   11288    0    0    0     0       0          0
-wlp3s0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
-    lo: 2455626   14797    0    0    0     0          0         0  2455626   14797    0    0    0     0       0          0
+enp0s31f6: 9760816648 13664538    0    0    0     0          0      8965 118421394195 83833297    0    0    0     0       0          0
+wlp3s0: 3643580    7768    0    0    0     0          0         0  4732829    8244    0    0    0     0       0          0
+    lo: 9996035   41708    0    0    0     0          0         0  9996035   41708    0    0    0     0       0          0
 virbr0-nic:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0
- vnet6:  256893    1947    0    0    0     0          0         0  1206381    5925    0    0    0     0       0          0
-  tun0: 112501735  104283    0    0    0     0          0         0 30579473   80458    0    0    0     0       0          0
- vnet2:    8030      34    0    0    0     0          0         0    42770     387    0 1712    0     0       0          0
- vnet9:  126854    1141    0    0    0     0          0         0   686477    4612    0    0    0     0       0          0
- vnet5:  139304     988    0    0    0     0          0         0   787497    4718    0    0    0     0       0          0
-vnet12:  133857    1141    0    0    0     0          0         0   815494    4633    0    0    0     0       0          0
- vnet1:   71961     671    0    0    0     0          0         0   421240    3847    0    0    0     0       0          0
-vnet10:   85763     802    0    0    0     0          0         0   485974    4056    0    0    0     0       0          0
- vnet8:  445523    6298    0    0    0     0          0         0 15036777   14092    0    0    0     0       0          0
-virbr0: 31724349   82897    0    0    0     0          0         0 119520165  124442    0    0    0     0       0          0
- vnet4:  329164    2446    0    0    0     0          0         0  1592232    7002    0    0    0     0       0          0
+  tun0: 20139456   21861    0    0    0     0          0         0  3370846   19686    0    0    0     0       0          0
+virbr0: 47538577  146404    0    0    0     0          0         0 164360816  210422    0    0    0     0       0          0

@@ -189,7 +189,7 @@ do
 	SDIR=$idir/$server.$iname
 	SPFX=$SDIR/$server.$iname
 	openssl ec -in $SPFX.key -passin file:$SDIR/pwdfile -out $SPFX.unlocked.key
-	cat $SPFX.pem example.$tld/CA/Signer.pem >$SPFX.chain.pem
+	cat $SPFX.pem $idir/CA/Signer.pem >$SPFX.chain.pem
     done
 
 ####
@@ -238,28 +238,36 @@ read junk
 
 # Create CRL files in .der and .pem
 # empty versions, and ones with the revoked servers
+DATENOW=`date -u +%Y%m%d%H%M%SZ`
 for tld in com org net
 do
     CADIR=example.$tld/CA
     CRLIN=$CADIR/crl.empty.in.txt
-    DATENOW=`date -u +%Y%m%d%H%M%SZ`
     echo "update=$DATENOW " >$CRLIN
     crlutil -G -d $CADIR -f $CADIR/pwdfile \
 	-n 'Signing Cert rsa' -c $CRLIN -o $CADIR/crl.empty
     openssl crl -in $CADIR/crl.empty -inform der -out $CADIR/crl.empty.pem
 done
 sleep 2
+DATENOW=`date -u +%Y%m%d%H%M%SZ`
 for tld in com org net
 do
     CADIR=example.$tld/CA
     CRLIN=$CADIR/crl.v2.in.txt
-    DATENOW=`date -u +%Y%m%d%H%M%SZ`
     echo "update=$DATENOW " >$CRLIN
     echo "addcert 102 $DATENOW" >>$CRLIN
     echo "addcert 202 $DATENOW" >>$CRLIN
     crlutil -G -d $CADIR -f $CADIR/pwdfile \
 	-n 'Signing Cert rsa' -c $CRLIN -o $CADIR/crl.v2
     openssl crl -in $CADIR/crl.v2 -inform der -out $CADIR/crl.v2.pem
+
+    CRLIN=$CADIR/crl.Signer.in.txt
+    echo "update=$DATENOW " >$CRLIN
+    crlutil -G -d $CADIR -f $CADIR/pwdfile \
+	-n 'Certificate Authority rsa' -c $CRLIN -o $CADIR/crl.Signer
+    openssl crl -in $CADIR/crl.Signer -inform der -out $CADIR/crl.Signer.pem
+
+    cat $CADIR/crl.Signer.pem $CADIR/crl.v2.pem > $CADIR/crl.chain.pem
 done
 
 # Finally, a single certificate-directory

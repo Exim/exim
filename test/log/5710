@@ -13,8 +13,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 NB  <Nov  1 12:34:02 2012 GMT>
 1999-03-02 09:44:33 10HmaX-0005vi-00 NA  <Dec  1 12:34:02 2037 GMT>
 1999-03-02 09:44:33 10HmaX-0005vi-00 SA  <RSA-SHA256>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <34 e2 2a 42 26 da a6 a8 8e e7 7c 3c ca 37 03 7b 69 f1 4c 38 ea 8e 05 2d 1b 81 4e 90 61 1d 2f d4 e9 cd 19 b8 bc 1b 5b c6 5a 05 9a e5 9c 3b 77 25 e2 2e 83 ef d0 02 95 2a 98 60 de ab b4 04 97 ee 3e 24 63 e2 98 74 d2 65 30 d9 0a 9c 92 a8 cf 66 c6 0e 50 f2 09 da ec 09 d8 07 44 c7 4b ee f4 1d 3c 57 df d7 48 af c7 4a e4 6e a6 4e 2e 2e f7 7a 0f da 2e c4 5d 2d ee df 01 b0 2c 6c de 6b 30 aa>
-1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com\nDNS=alternatename.server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SG  <4a a7 4c 59 e1 1a 26 0a 00 9d 08 38 70 22 79 a3 d7 e9 28 3d df ab 2d e7 e2 bd b3 64 f7 1b 86 57 d8 6e 01 5f 7e 9b ca 2f 34 d9 40 62 ac b6 d3 8a d3 5d ae 8b 86 eb 1d 6f 4b f8 59 63 a9 51 3a 09 31 3f 23 18 d8 49 45 e3 ff cf ac 37 af a1 05 20 3d 0c 95 0a 03 35 a3 0d df a5 a2 a0 6a e4 e3 f1 41 32 d2 7c d6 b7 7e 92 fc 61 f7 c2 f0 b6 d4 1a 11 9b 01 dd 67 a1 88 8d a9 44 54 91 b1 c4 0f d4>
+1999-03-02 09:44:33 10HmaX-0005vi-00 SAN <DNS=*.test.ex\nDNS=server1.example.com\nDNS=alternatename.server1.example.com\nDNS=alternatename2.server1.example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaX-0005vi-00 TLS session: (certificate verification failed): certificate invalid: delivering unencrypted to H=127.0.0.1 [127.0.0.1] (not in hosts_require_tls)
 1999-03-02 09:44:33 10HmaX-0005vi-00 => bad@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
@@ -35,8 +35,8 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 NB  <Nov  1 12:34:02 2012 GMT>
 1999-03-02 09:44:33 10HmaY-0005vi-00 NA  <Dec  1 12:34:02 2037 GMT>
 1999-03-02 09:44:33 10HmaY-0005vi-00 SA  <RSA-SHA256>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <34 e2 2a 42 26 da a6 a8 8e e7 7c 3c ca 37 03 7b 69 f1 4c 38 ea 8e 05 2d 1b 81 4e 90 61 1d 2f d4 e9 cd 19 b8 bc 1b 5b c6 5a 05 9a e5 9c 3b 77 25 e2 2e 83 ef d0 02 95 2a 98 60 de ab b4 04 97 ee 3e 24 63 e2 98 74 d2 65 30 d9 0a 9c 92 a8 cf 66 c6 0e 50 f2 09 da ec 09 d8 07 44 c7 4b ee f4 1d 3c 57 df d7 48 af c7 4a e4 6e a6 4e 2e 2e f7 7a 0f da 2e c4 5d 2d ee df 01 b0 2c 6c de 6b 30 aa>
-1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=alternatename2.server1.example.com\nDNS=*.test.ex\nDNS=server1.example.com\nDNS=alternatename.server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SG  <4a a7 4c 59 e1 1a 26 0a 00 9d 08 38 70 22 79 a3 d7 e9 28 3d df ab 2d e7 e2 bd b3 64 f7 1b 86 57 d8 6e 01 5f 7e 9b ca 2f 34 d9 40 62 ac b6 d3 8a d3 5d ae 8b 86 eb 1d 6f 4b f8 59 63 a9 51 3a 09 31 3f 23 18 d8 49 45 e3 ff cf ac 37 af a1 05 20 3d 0c 95 0a 03 35 a3 0d df a5 a2 a0 6a e4 e3 f1 41 32 d2 7c d6 b7 7e 92 fc 61 f7 c2 f0 b6 d4 1a 11 9b 01 dd 67 a1 88 8d a9 44 54 91 b1 c4 0f d4>
+1999-03-02 09:44:33 10HmaY-0005vi-00 SAN <DNS=*.test.ex\nDNS=server1.example.com\nDNS=alternatename.server1.example.com\nDNS=alternatename2.server1.example.com>
 1999-03-02 09:44:33 10HmaY-0005vi-00 CRU <http://crl.example.com/latest.crl>
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf

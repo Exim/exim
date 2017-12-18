@@ -17155,7 +17155,15 @@ generated for every connection.
 .cindex "TLS" "server certificate revocation list"
 .cindex "certificate" "revocation list for server"
 This option specifies a certificate revocation list. The expanded value must
-be the name of a file that contains a CRL in PEM format.
+be the name of a file that contains CRLs in PEM format.
+
+.new
+Under OpenSSL the option can specify a directory with CRL files.
+
+&*Note: Under OpenSSL the option must, if given, supply a CRL
+for each signing element of the certificate chain (i.e. all but the leaf).
+For the file variant this can be multiple PEM blocks in the one file.
+.wen
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
