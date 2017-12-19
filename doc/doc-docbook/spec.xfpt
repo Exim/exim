@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.89"
+.set previousversion "4.90"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -2791,12 +2791,10 @@ files or databases you are using, you must exit and restart Exim before trying
 the same lookup again. Otherwise, because each Exim process caches the results
 of lookups, you will just get the same result as before.
 
-.new
 Macro processing is done on lines before string-expansion: new macros can be
 defined and macros will be expanded.
 Because macros in the config file are often used for secrets, those are only
 available to admin users.
-.wen
 
 .vitem &%-bem%&&~<&'filename'&>
 .oindex "&%-bem%&"
@@ -3867,14 +3865,12 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
 
-.new
 .vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>&~<&'cipher'&>
 .oindex "&%-MCt%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 connection is being proxied by a parent process for handling TLS encryption.
 The arguments give the local address and port being proxied, and the TLS cipher.
-.wen
 
 .vitem &%-Mc%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
 .oindex "&%-Mc%&"
@@ -11050,12 +11046,10 @@ colon-separated components are permitted, each containing from one to four
 hexadecimal digits. There may be fewer than eight components if an empty
 component (adjacent colons) is present. Only one empty component is permitted.
 
-.new
 &*Note*&: The checks used to be just on the form of the address; actual numerical
 values were not considered. Thus, for example, 999.999.999.999 passed the IPv4
 check.
 This is no longer the case.
-.wen
 
 The main use of these tests is to distinguish between IP addresses and
 host names, or between IPv4 and IPv6 addresses. For example, you could use
@@ -12089,9 +12083,7 @@ when the ACL &%malware%& condition is true (see section &<<SECTscanvirus>>&).
 This variable contains the number of bytes in the longest line that was
 received as part of the message, not counting the line termination
 character(s).
-.new
 It is not valid if the &%spool_files_wireformat%& option is used.
-.wen
 
 .vitem &$message_age$&
 .cindex "message" "age of"
@@ -12134,11 +12126,9 @@ in bytes. The count starts from the character after the blank line that
 separates the body from the header. Newlines are included in the count. See
 also &$message_size$&, &$body_linecount$&, and &$body_zerocount$&.
 
-.new
 If the spool file is wireformat
 (see the &%spool_files_wireformat%& main option)
 the CRLF line-terminators are included in the count.
-.wen
 
 .vitem &$message_exim_id$&
 .vindex "&$message_exim_id$&"
@@ -12190,9 +12180,7 @@ deny message   = Too many lines in message header
 In the MAIL and RCPT ACLs, the value is zero because at that stage the
 message has not yet been received.
 
-.new
 This variable is not valid if the &%spool_files_wireformat%& option is used.
-.wen
 
 .vitem &$message_size$&
 .cindex "size" "of message"
@@ -12814,14 +12802,12 @@ argument, that is, the text that follows the command name, with leading white
 space removed. Following the introduction of &$smtp_command$&, this variable is
 somewhat redundant, but is retained for backwards compatibility.
 
-.new
 .vitem &$smtp_command_history$&
 .cindex SMTP "command history"
 .vindex "&$smtp_command_history$&"
 A comma-separated list (with no whitespace) of the most-recent SMTP commands
 received, in time-order left to right.  Only a limited number of commands
 are remembered.
-.wen
 
 .vitem &$smtp_count_at_connection_start$&
 .vindex "&$smtp_count_at_connection_start$&"
@@ -12909,10 +12895,8 @@ It is only useful as the argument of a
 &%certextract%& expansion item, &%md5%&, &%sha1%& or &%sha256%& operator,
 or a &%def%& condition.
 
-.new
 &*Note*&: Under current versions of OpenSSL, when a list of more than one
 file is used for &%tls_certificate%&, this variable is not reliable.
-.wen
 
 .vitem &$tls_in_peercert$&
 .vindex "&$tls_in_peercert$&"
@@ -14498,13 +14482,11 @@ The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
 
-.new
 .option commandline_checks_require_admin main boolean &`false`&
 .cindex "restricting access to features"
 This option restricts various basic checking features to require an
 administrative user.
 This affects most of the &%-b*%& options, such as &%-be%&.
-.wen
 
 .option debug_store main boolean &`false`&
 .cindex debugging "memory corruption"
@@ -16883,7 +16865,6 @@ as failures in the configuration file.
 By using this option to override the compiled-in path, it is possible to run
 tests of Exim without using the standard spool.
 
-.new
 .option spool_wireformat main boolean false
 .cindex "spool directory" "file formats"
 If this option is set, Exim may for some messages use an alternate format
@@ -16907,7 +16888,6 @@ will need to be aware of the potential different format.
 Using any of the ACL conditions noted will negate the reception benefit
 (as a Unix-mbox-format file is contructed for them).
 The transimssion benefit is maintained.
-.wen
 
 .option sqlite_lock_timeout main time 5s
 .cindex "sqlite lookup type" "lock timeout"
@@ -17118,11 +17098,9 @@ is not required the &%tls_advertise_hosts%& option should be set empty.
 .option tls_certificate main string list&!! unset
 .cindex "TLS" "server certificate; location of"
 .cindex "certificate" "server, location of"
-.new
 The value of this option is expanded, and must then be a list of absolute paths to
 files which contains the server's certificates.  Commonly only one file is
 needed.
-.wen
 The server's private key is also
 assumed to be in this file if &%tls_privatekey%& is unset. See chapter
 &<<CHAPTLS>>& for further details.
@@ -17132,7 +17110,6 @@ receiving incoming messages as a server. If you want to supply certificates for
 use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
-.new
 &*Note*&: If you use filenames based on IP addresses, change the list
 separator in the usual way to avoid confusion under IPv6.
 
@@ -17140,7 +17117,6 @@ separator in the usual way to avoid confusion under IPv6.
 file is used, the &$tls_in_ourcert$& veriable is unreliable.
 
 &*Note*&: OCSP stapling is not usable when a list of more than one file is used.
-.wen
 
 If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
@@ -17281,10 +17257,8 @@ Certificate Authority.
 
 Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
 
-.new
 &*Note*&: There is currently no support for multiple OCSP proofs to match the
 multiple certificates facility.
-.wen
 
 
 .option tls_on_connect_ports main "string list" unset
@@ -17299,10 +17273,8 @@ further details, see section &<<SECTsupobssmt>>&.
 
 .option tls_privatekey main string list&!! unset
 .cindex "TLS" "server private key; location of"
-.new
 The value of this option is expanded, and must then be a list of absolute paths to
 files which contains the server's private keys.
-.wen
 If this option is unset, or if
 the expansion is forced to fail, or the result is an empty string, the private
 key is assumed to be in the same file as the server's certificates. See chapter
@@ -24089,7 +24061,6 @@ been started will not be passed to a new delivery process for sending another
 message on the same connection. See section &<<SECTmulmessam>>& for an
 explanation of when this might be needed.
 
-.new
 .option hosts_noproxy_tls smtp "host list&!!" *
 .cindex "TLS" "passing connection"
 .cindex "multiple SMTP deliveries"
@@ -24105,7 +24076,6 @@ instead, and the original process maintains the TLS connection and proxies
 the SMTP connection from and to the new process and any subsequents.
 The new process has no access to TLS information, so cannot include it in
 logging.
-.wen
 
 
 
@@ -27145,10 +27115,8 @@ When using OpenSSL, this option is ignored.
 (If an API is found to let OpenSSL be configured in this way,
 let the Exim Maintainers know and we'll likely use it).
 .next
-.new
 With GnuTLS, if an explicit list is used for the &%tls_privatekey%& main option
 main option, it must be ordered to match the &%tls_certificate%& list.
-.wen
 .next
 Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
@@ -27305,12 +27273,10 @@ tls_require_ciphers = ${if =={$received_port}{25}\
                            {HIGH:!MD5:!SHA1}}
 .endd
 
-.new
 This example will prefer ECDSA-authenticated ciphers over RSA ones:
 .code
 tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
 .endd
-.wen
 
 
 .section "Requiring specific ciphers or other parameters in GnuTLS" &&&
@@ -27418,14 +27384,12 @@ is assumed to be the case. The certificate file may also contain intermediate
 certificates that need to be sent to the client to enable it to authenticate
 the server's certificate.
 
-.new
 For dual-stack (eg. RSA and ECDSA) configurations, these options can be
 colon-separated lists of file paths.  Ciphers using given authentication
 algorithms require the presence of a suitable certificate to supply the
 public-key.  The server selects among the certificates to present to the
 client depending on the selected cipher, hence the priority ordering for
 ciphers will affect which certificate is used.
-.wen
 
 If you do not understand about certificates and keys, please try to find a
 source of this background information, which is not Exim-specific. (There are a
@@ -27803,7 +27767,6 @@ built, then you have SNI support).
          "SECTmulmessam"
 .cindex "multiple SMTP deliveries with TLS"
 .cindex "TLS" "multiple message deliveries"
-.new
 Exim sends multiple messages down the same TCP/IP connection by starting up
 an entirely new delivery process for each message, passing the socket from
 one process to the next. This implementation does not fit well with the use
@@ -27816,7 +27779,6 @@ unencrypted data stream from and to the delivery processes.
 An older mode of operation can be enabled on a per-host basis by the
 &%hosts_noproxy_tls%& option on the &(smtp)& transport.  If the host matches
 this list the proxy process descibed above is not used; instead Exim
-.wen
 shuts down an existing TLS session being run by the delivery process
 before passing the socket to a new process. The new process may then
 try to start a new TLS session, and if successful, may try to re-authenticate
@@ -29147,11 +29109,9 @@ and cannot depend on content of received headers.
 Note also that headers cannot be
 modified by any of the post-data ACLs (DATA, MIME and DKIM).
 Headers may be modified by routers (subject to the above) and transports.
-.new
 The Received-By: header is generated as soon as the body reception starts,
 rather than the traditional time after the full message is received;
 this will affect the timestamp.
-.wen
 
 All the usual ACLs are called; if one results in the message being
 rejected, all effort spent in delivery (including the costs on
@@ -31087,7 +31047,6 @@ need to use this option unless you know that the called hosts make use of the
 sender when checking recipients. If used indiscriminately, it reduces the
 usefulness of callout caching.
 
-.new
 .vitem &*hold*&
 This option applies to recipient callouts only. For example:
 .code
@@ -31102,7 +31061,6 @@ The advantage is only gained if there are no callout cache hits
 if the use_sender option is used,
 if neither the random nor the use_postmaster option is used,
 and if no other callouts intervene.
-.wen
 .endlist
 
 If you use any of the parameters that set a non-empty sender for the MAIL
@@ -31740,7 +31698,6 @@ av_scanner = f-protd:localhost 10200-10204
 .endd
 If you omit the argument, the default values show above are used.
 
-.new
 .vitem &%f-prot6d%&
 .cindex "virus scanners" "f-prot6d"
 The f-prot6d scanner is accessed using the FPSCAND protocol over TCP.
@@ -31750,7 +31707,6 @@ For example:
 av_scanner = f-prot6d:localhost 10200
 .endd
 If you omit the argument, the default values show above are used.
-.wen
 
 .vitem &%fsecure%&
 .cindex "virus scanners" "F-Secure"
@@ -31800,13 +31756,11 @@ For example:
 .code
 av_scanner = sock:127.0.0.1 6001:%s:(SPAM|VIRUS):(.*)$
 .endd
-.new
 Note that surrounding whitespace is stripped from each option, meaning
 there is no way to specify a trailing newline.
 The socket specifier and both regular-expressions are required.
 Default for the commandline is &_%s\n_& (note this does have a trailing newline);
 specify an empty element to get this.
-.wen
 
 .vitem &%sophie%&
 .cindex "virus scanners" "Sophos and Sophie"
@@ -32646,15 +32600,11 @@ C variables are as follows:
 .vlist
 .vitem &*int&~body_linecount*&
 This variable contains the number of lines in the message's body.
-.new
 It is not valid if the &%spool_files_wireformat%& option is used.
-.wen
 
 .vitem &*int&~body_zerocount*&
 This variable contains the number of binary zero bytes in the message's body.
-.new
 It is not valid if the &%spool_files_wireformat%& option is used.
-.wen
 
 .vitem &*unsigned&~int&~debug_selector*&
 This variable is set to zero when no debugging is taking place. Otherwise, it
@@ -35978,12 +35928,10 @@ SMTP RCPT commands in one transaction) the second and subsequent addresses are
 flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the IP address in the log
 lines for the second and subsequent messages.
-.new
 When two or more messages are delivered down a single TLS connection, the
 DNS and some TLS-related information logged for the first message delivered
 will not be present in the log lines for the second and subsequent messages.
 TLS cipher information is still available.
-.wen
 
 .cindex "delivery" "cutthrough; logging"
 .cindex "cutthrough" "logging"
@@ -36359,13 +36307,11 @@ important with the widening use of NAT (see RFC 2505).
 &%lost_incoming_connection%&: A log line is written when an incoming SMTP
 connection is unexpectedly dropped.
 .next
-.new
 .cindex "log" "millisecond timestamps"
 .cindex millisecond logging
 .cindex timstamps "millisecond, in logs"
 &%millisec%&: Timestamps have a period and three decimal places of finer granularity
 appended to the seconds value.
-.wen
 .next
 .cindex "log" "outgoing interface"
 .cindex "log" "local interface"
@@ -38109,13 +38055,11 @@ the contents of files on the spool via the Exim monitor (which runs
 unprivileged), Exim must be built to allow group read access to its spool
 files.
 
-.new
 By default, regular users are trusted to perform basic testing and
 introspection commands, as themselves.  This setting can be tightened by
 setting the &%commandline_checks_require_admin%& option.
 This affects most of the checking options,
 such as &%-be%& and anything else &%-b*%&.
-.wen
 
 
 .section "Spool files" "SECID275"
@@ -38236,12 +38180,10 @@ file remains in existence. When Exim next processes the message, it notices the
 -J file and uses it to update the -H file before starting the next delivery
 attempt.
 
-.new
 Files whose names end with -K or .eml may also be seen in the spool.
 These are temporaries used for DKIM or malware processing, when that is used.
 They should be tidied up by normal operations; any old ones are probably
 relics of crashes and can be removed.
-.wen
 
 .section "Format of the -H file" "SECID282"
 .cindex "uid (user id)" "in spool file"
@@ -38403,13 +38345,11 @@ to ensure that the caller is displayed in queue listings).
 If a message was scanned by SpamAssassin, this is present. It records the value
 of &$spam_score_int$&.
 
-.new
 .vitem &%-spool_file_wireformat%&
 The -D file for this message is in wire-format (for ESMTP CHUNKING)
 rather than Unix-format.
 The line-ending is CRLF rather than newline.
 There is still, however, no leading-dot-stuffing.
-.wen
 
 .vitem &%-tls_certificate_verified%&
 A TLS certificate was received from the client that sent this message, and the
@@ -38518,7 +38458,6 @@ unqualified domain &'foundation'&.
 .ecindex IIDforspo2
 .ecindex IIDforspo3
 
-.new
 .section "Format of the -D file" "SECID282a"
 The data file is traditionally in Unix-standard format: lines are ended with
 an ASCII newline character.
@@ -38530,7 +38469,6 @@ suitable for direct copying to the wire when transmitting using the
 ESMTP CHUNKING option, meaning lower processing overhead.
 Lines are terminated with an ASCII CRLF pair.
 There is no dot-stuffing (and no dot-termination).
-.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
@@ -38588,22 +38526,18 @@ These options take (expandable) strings as arguments.
 
 .option dkim_domain smtp string list&!! unset
 The domain(s) you want to sign with.
-.new
 After expansion, this can be a list.
 Each element in turn is put into the &%$dkim_domain%& expansion variable
 while expanding the remaining signing options.
-.wen
 If it is empty after expansion, DKIM signing is not done.
 
 .option dkim_selector smtp string list&!! unset
 This sets the key selector string.
-.new
 After expansion, which can use &$dkim_domain$&, this can be a list.
 Each element in turn is put in the expansion
 variable &%$dkim_selector%& which may be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
 If the option is empty after expansion, DKIM signing is not done for this domain.
-.wen
 
 .option dkim_private_key smtp string&!! unset
 This sets the private key to use.
@@ -38622,7 +38556,6 @@ is set.
 .endlist
 If the option is empty after expansion, DKIM signing is not done.
 
-.new
 .option dkim_hash smtp string&!! sha256
 Can be set alternatively to &"sha1"& to use an alternate hash
 method.  Note that sha1 is now condidered insecure, and deprecated.
@@ -38633,7 +38566,6 @@ the signing header.  The DKIM standards restrict the permissible
 syntax of this optional tag to a mail address, with possibly-empty
 local part, an @, and a domain identical to or subdomain of the "d="
 tag value.  Note that Exim does not check the value.
-.wen
 
 .option dkim_canon smtp string&!! unset
 This option sets the canonicalization method used when signing a message.
@@ -38651,7 +38583,6 @@ variables here.
 .option dkim_sign_headers smtp string&!! "see below"
 If set, this option must expand to a colon-separated
 list of header names.
-.new
 Headers with these names, or the absence or such a header, will be included
 in the message signature.
 When unspecified, the header names listed in RFC4871 will be used,
@@ -38669,7 +38600,6 @@ will be signed.
 If a '+' prefix if used, all headers that are present with this name
 will be signed, and one signtature added for a missing header with the
 name will be appended.
-.wen
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECID514"
@@ -38718,10 +38648,8 @@ dkim_verify_signers = $sender_address_domain:$dkim_signers
 If a domain or identity is listed several times in the (expanded) value of
 &%dkim_verify_signers%&, the ACL is only called once for that domain or identity.
 
-.new
 If multiple signatures match a domain (or identity), the ACL is called once
 for each matching signature.
-.wen
 
 
 Inside the &%acl_smtp_dkim%&, the following expansion variables are
@@ -38750,7 +38678,6 @@ available in &%$dkim_verify_reason%&.
 &%pass%&: The signature passed verification. It is valid.
 .endlist
 
-.new
 This variable can be overwritten using an ACL 'set' modifier.
 This might, for instance, be done to enforce a policy restriction on
 hash-method or key-size:
@@ -38764,7 +38691,6 @@ hash-method or key-size:
 
 After all the DKIM ACL runs have completed, the value becomes a
 colon-separated list of the values after each run.
-.wen
 
 .vitem &%$dkim_verify_reason%&
 A string giving a little bit more detail when &%$dkim_verify_status%& is either
@@ -38786,9 +38712,7 @@ re-written or otherwise changed in a way which is incompatible with
 DKIM verification. It may of course also mean that the signature is forged.
 .endlist
 
-.new
 This variable can be overwritten using an ACL 'set' modifier.
-.wen
 
 .vitem &%$dkim_domain%&
 The signing domain. IMPORTANT: This variable is only populated if there is
@@ -39235,10 +39159,8 @@ The second column in the table above describes whether the event fires
 before or after the action is associates with.  Those which fire before
 can be used to affect that action (more on this below).
 
-.new
 The third column in the table above says what section of the configumration
 should define the event action.
-.wen
 
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
