@@ -1,7 +1,9 @@
 
 The three directories each contain a complete CA with server signing
 certificate, OCSP signing certificate and a selection of server
-certificates under each domain.
+certificates under each domain. The "server1" certificates have
+a CRL distribution point extension; the "server2" ones instead have
+a Authority Key extension/
 
 For each directory there are a number of subdirectories.
 

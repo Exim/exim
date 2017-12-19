@@ -63,9 +63,18 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030109
 # define SUPPORT_CORK
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
+# define SUPPORT_SRV_OCSP_STACK
+#endif
+#if GNUTLS_VERSION_NUMBER >= 0x030000 && defined(EXPERIMENTAL_DANE)
+# define SUPPORT_DANE
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
+#endif
+#ifdef SUPPORT_DANE
+# include <gnutls/dane.h>
 #endif
 
 /* GnuTLS 2 vs 3
@@ -82,7 +91,7 @@ Changes:
 /* Values for verify_requirement */
 
 enum peer_verify_requirement
-  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED };
+  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED, VERIFY_DANE };
 
 /* This holds most state for server or client; with this, we can set up an
 outbound TLS-enabled connection in an ACL callout, while not stomping all
@@ -103,6 +112,7 @@ typedef struct exim_gnutls_state {
   int			fd_in;
   int			fd_out;
   BOOL			peer_cert_verified;
+  BOOL			peer_dane_verified;
   BOOL			trigger_sni_changes;
   BOOL			have_set_peerdn;
   const struct host_item *host;
@@ -123,10 +133,13 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_verify_certificates;
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
-  uschar *exp_tls_ocsp_file;
   const uschar *exp_tls_verify_cert_hostnames;
 #ifndef DISABLE_EVENT
   uschar *event_action;
+#endif
+#ifdef SUPPORT_DANE
+  char * const *	dane_data;
+  const int *		dane_data_len;
 #endif
 
   tls_support *tlsp;	/* set in tls_init() */
@@ -146,6 +159,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   .fd_in =		-1,
   .fd_out =		-1,
   .peer_cert_verified =	FALSE,
+  .peer_dane_verified =	FALSE,
   .trigger_sni_changes =FALSE,
   .have_set_peerdn =	FALSE,
   .host =		NULL,
@@ -166,7 +180,6 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   .exp_tls_verify_certificates = NULL,
   .exp_tls_crl =	NULL,
   .exp_tls_require_ciphers = NULL,
-  .exp_tls_ocsp_file =	NULL,
   .exp_tls_verify_cert_hostnames = NULL,
 #ifndef DISABLE_EVENT
   .event_action =	NULL,
@@ -238,8 +251,8 @@ before, for now. */
 # define EXIM_SERVER_DH_BITS_PRE2_12 1024
 #endif
 
-#define exim_gnutls_err_check(Label) do { \
-  if (rc != GNUTLS_E_SUCCESS) \
+#define exim_gnutls_err_check(rc, Label) do { \
+  if ((rc) != GNUTLS_E_SUCCESS) \
     return tls_error((Label), gnutls_strerror(rc), host, errstr); \
   } while (0)
 
@@ -437,6 +450,9 @@ tlsp->cipher = state->ciphersuite;
 DEBUG(D_tls) debug_printf("cipher: %s\n", state->ciphersuite);
 
 tlsp->certificate_verified = state->peer_cert_verified;
+#ifdef SUPPORT_DANE
+tlsp->dane_verified = state->peer_dane_verified;
+#endif
 
 /* note that tls_channelbinding_b64 is not saved to the spool file, since it's
 only available for use for authenticators while this TLS session is running. */
@@ -507,7 +523,7 @@ host_item *host = NULL; /* dummy for macros */
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params.\n");
 
 rc = gnutls_dh_params_init(&dh_server_params);
-exim_gnutls_err_check(US"gnutls_dh_params_init");
+exim_gnutls_err_check(rc, US"gnutls_dh_params_init");
 
 m.data = NULL;
 m.size = 0;
@@ -543,7 +559,7 @@ else
 if (m.data)
   {
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
-  exim_gnutls_err_check(US"gnutls_dh_params_import_pkcs3");
+  exim_gnutls_err_check(rc, US"gnutls_dh_params_import_pkcs3");
   DEBUG(D_tls) debug_printf("Loaded fixed standard D-H parameters\n");
   return OK;
   }
@@ -626,7 +642,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
 
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
   free(m.data);
-  exim_gnutls_err_check(US"gnutls_dh_params_import_pkcs3");
+  exim_gnutls_err_check(rc, US"gnutls_dh_params_import_pkcs3");
   DEBUG(D_tls) debug_printf("read D-H parameters from file \"%s\"\n", filename);
   }
 
@@ -683,7 +699,7 @@ if (rc < 0)
     debug_printf("requesting generation of %d bit Diffie-Hellman prime ...\n",
         dh_bits_gen);
   rc = gnutls_dh_params_generate2(dh_server_params, dh_bits_gen);
-  exim_gnutls_err_check(US"gnutls_dh_params_generate2");
+  exim_gnutls_err_check(rc, US"gnutls_dh_params_generate2");
 
   /* gnutls_dh_params_export_pkcs3() will tell us the exact size, every time,
   and I confirmed that a NULL call to get the size first is how the GnuTLS
@@ -694,7 +710,7 @@ if (rc < 0)
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
       m.data, &sz);
   if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
-    exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3(NULL) sizing");
+    exim_gnutls_err_check(rc, US"gnutls_dh_params_export_pkcs3(NULL) sizing");
   m.size = sz;
   if (!(m.data = malloc(m.size)))
     return tls_error(US"memory allocation failed", strerror(errno), NULL, errstr);
@@ -705,7 +721,7 @@ if (rc < 0)
   if (rc != GNUTLS_E_SUCCESS)
     {
     free(m.data);
-    exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3() real");
+    exim_gnutls_err_check(rc, US"gnutls_dh_params_export_pkcs3() real");
     }
   m.size = sz; /* shrink by 1, probably */
 
@@ -805,15 +821,24 @@ err:
 
 
 
+/* Add certificate and key, from files.
+
+Return:
+  Zero or negative: good.  Negate value for certificate index if < 0.
+  Greater than zero: FAIL or DEFER code.
+*/
+
 static int
 tls_add_certfile(exim_gnutls_state_st * state, const host_item * host,
   uschar * certfile, uschar * keyfile, uschar ** errstr)
 {
 int rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
     CS certfile, CS keyfile, GNUTLS_X509_FMT_PEM);
-exim_gnutls_err_check(
-    string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile));
-return OK;
+if (rc < 0)
+  return tls_error(
+    string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile),
+    gnutls_strerror(rc), host, errstr);
+return -rc;
 }
 
 
@@ -872,7 +897,11 @@ if (!host)	/* server */
     }
 
 rc = gnutls_certificate_allocate_credentials(&state->x509_cred);
-exim_gnutls_err_check(US"gnutls_certificate_allocate_credentials");
+exim_gnutls_err_check(rc, US"gnutls_certificate_allocate_credentials");
+
+#ifdef SUPPORT_SRV_OCSP_STACK
+gnutls_certificate_set_flags(state->x509_cred, GNUTLS_CERTIFICATE_API_V2);
+#endif
 
 /* remember: expand_check_tlsvar() is expand_check() but fiddling with
 state members, assuming consistent naming; and expand_check() returns
@@ -927,56 +956,77 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
     {
     const uschar * clist = state->exp_tls_certificate;
     const uschar * klist = state->exp_tls_privatekey;
-    int csep = 0, ksep = 0;
-    uschar * cfile, * kfile;
+    const uschar * olist;
+    int csep = 0, ksep = 0, osep = 0, cnt = 0;
+    uschar * cfile, * kfile, * ofile;
+
+#ifndef DISABLE_OCSP
+    if (!expand_check(tls_ocsp_file, US"tls_ocsp_file", &ofile, errstr))
+      return DEFER;
+    olist = ofile;
+#endif
 
     while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
+
       if (!(kfile = string_nextinlist(&klist, &ksep, NULL, 0)))
 	return tls_error(US"cert/key setup: out of keys", NULL, host, errstr);
-      else if ((rc = tls_add_certfile(state, host, cfile, kfile, errstr)))
+      else if (0 < (rc = tls_add_certfile(state, host, cfile, kfile, errstr)))
 	return rc;
       else
+	{
+	int gnutls_cert_index = -rc;
 	DEBUG(D_tls) debug_printf("TLS: cert/key %s registered\n", cfile);
+
+	/* Set the OCSP stapling server info */
+
+#ifndef DISABLE_OCSP
+	if (tls_ocsp_file)
+	  if (gnutls_buggy_ocsp)
+	    {
+	    DEBUG(D_tls)
+	      debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
+	    }
+	  else if ((ofile = string_nextinlist(&olist, &osep, NULL, 0)))
+	    {
+	    /* Use the full callback method for stapling just to get
+	    observability.  More efficient would be to read the file once only,
+	    if it never changed (due to SNI). Would need restart on file update,
+	    or watch datestamp.  */
+
+# ifdef SUPPORT_SRV_OCSP_STACK
+	    rc = gnutls_certificate_set_ocsp_status_request_function2(
+	      state->x509_cred, gnutls_cert_index,
+	      server_ocsp_stapling_cb, ofile);
+
+	    exim_gnutls_err_check(rc,
+	      US"gnutls_certificate_set_ocsp_status_request_function2");
+# else
+	    if (cnt++ > 0)
+	      {
+	      DEBUG(D_tls)
+		debug_printf("oops; multiple OCSP files not supported\n");
+	      break;
+	      }
+	      gnutls_certificate_set_ocsp_status_request_function(
+		state->x509_cred, server_ocsp_stapling_cb, ofile);
+# endif
+
+	    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", ofile);
+	    }
+	  else
+	    DEBUG(D_tls) debug_printf("ran out of OCSP response files in list\n");
+#endif
+	}
     }
   else
     {
-    if ((rc = tls_add_certfile(state, host,
+    if (0 < (rc = tls_add_certfile(state, host,
 		state->exp_tls_certificate, state->exp_tls_privatekey, errstr)))
       return rc;
     DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
     }
 
   } /* tls_certificate */
-
-
-/* Set the OCSP stapling server info */
-
-#ifndef DISABLE_OCSP
-if (  !host	/* server */
-   && tls_ocsp_file
-   )
-  {
-  if (gnutls_buggy_ocsp)
-    {
-    DEBUG(D_tls) debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
-    }
-  else
-    {
-    if (!expand_check(tls_ocsp_file, US"tls_ocsp_file",
-	  &state->exp_tls_ocsp_file, errstr))
-      return DEFER;
-
-    /* Use the full callback method for stapling just to get observability.
-    More efficient would be to read the file once only, if it never changed
-    (due to SNI). Would need restart on file update, or watch datestamp.  */
-
-    gnutls_certificate_set_ocsp_status_request_function(state->x509_cred,
-      server_ocsp_stapling_cb, state->exp_tls_ocsp_file);
-
-    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", state->exp_tls_ocsp_file);
-    }
-  }
-#endif
 
 
 /* Set the trusted CAs file if one is provided, and then add the CRL if one is
@@ -1071,7 +1121,7 @@ else
 if (cert_count < 0)
   {
   rc = cert_count;
-  exim_gnutls_err_check(US"setting certificate trust");
+  exim_gnutls_err_check(rc, US"setting certificate trust");
   }
 DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
 
@@ -1084,7 +1134,7 @@ if (state->tls_crl && *state->tls_crl &&
   if (cert_count < 0)
     {
     rc = cert_count;
-    exim_gnutls_err_check(US"gnutls_certificate_set_x509_crl_file");
+    exim_gnutls_err_check(rc, US"gnutls_certificate_set_x509_crl_file");
     }
   DEBUG(D_tls) debug_printf("Processed %d CRLs.\n", cert_count);
   }
@@ -1135,7 +1185,7 @@ if (!state->host)
 /* Link the credentials to the session. */
 
 rc = gnutls_credentials_set(state->session, GNUTLS_CRD_CERTIFICATE, state->x509_cred);
-exim_gnutls_err_check(US"gnutls_credentials_set");
+exim_gnutls_err_check(rc, US"gnutls_credentials_set");
 
 return OK;
 }
@@ -1225,12 +1275,12 @@ if (!exim_gnutls_base_init_done)
   if (!gnutls_allow_auto_pkcs11)
     {
     rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
-    exim_gnutls_err_check(US"gnutls_pkcs11_init");
+    exim_gnutls_err_check(rc, US"gnutls_pkcs11_init");
     }
 #endif
 
   rc = gnutls_global_init();
-  exim_gnutls_err_check(US"gnutls_global_init");
+  exim_gnutls_err_check(rc, US"gnutls_global_init");
 
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
   DEBUG(D_tls)
@@ -1265,7 +1315,7 @@ else
   DEBUG(D_tls) debug_printf("initialising GnuTLS server session\n");
   rc = gnutls_init(&state->session, GNUTLS_SERVER);
   }
-exim_gnutls_err_check(US"gnutls_init");
+exim_gnutls_err_check(rc, US"gnutls_init");
 
 state->host = host;
 
@@ -1300,7 +1350,7 @@ if (host)
     sz = Ustrlen(state->tlsp->sni);
     rc = gnutls_server_name_set(state->session,
         GNUTLS_NAME_DNS, state->tlsp->sni, sz);
-    exim_gnutls_err_check(US"gnutls_server_name_set");
+    exim_gnutls_err_check(rc, US"gnutls_server_name_set");
     }
   }
 else if (state->tls_sni)
@@ -1340,12 +1390,12 @@ if (want_default_priorities)
   p = US exim_default_gnutls_priority;
   }
 
-exim_gnutls_err_check(string_sprintf(
+exim_gnutls_err_check(rc, string_sprintf(
       "gnutls_priority_init(%s) failed at offset %ld, \"%.6s..\"",
       p, errpos - CS p, errpos));
 
 rc = gnutls_priority_set(state->session, state->priority_cache);
-exim_gnutls_err_check(US"gnutls_priority_set");
+exim_gnutls_err_check(rc, US"gnutls_priority_set");
 
 gnutls_db_set_cache_expiration(state->session, ssl_session_timeout);
 
@@ -1514,8 +1564,8 @@ gnutls_certificate_set_verify_function() to fail the handshake if we dislike
 the peer information, but that's too new for some OSes.
 
 Arguments:
-  state           exim_gnutls_state_st *
-  errstr          where to put an error message
+  state		exim_gnutls_state_st *
+  errstr	where to put an error message
 
 Returns:
   FALSE     if the session should be rejected
@@ -1526,7 +1576,10 @@ static BOOL
 verify_certificate(exim_gnutls_state_st *state, uschar ** errstr)
 {
 int rc;
-unsigned int verify;
+uint verify;
+
+if (state->verify_requirement == VERIFY_NONE)
+  return TRUE;
 
 *errstr = NULL;
 
@@ -1536,10 +1589,49 @@ if ((rc = peer_status(state, errstr)) != OK)
   *errstr = US"certificate not supplied";
   }
 else
-  rc = gnutls_certificate_verify_peers2(state->session, &verify);
 
-/* Handle the result of verification. INVALID seems to be set as well
-as REVOKED, but leave the test for both. */
+  {
+#ifdef SUPPORT_DANE
+  if (state->verify_requirement == VERIFY_DANE && state->host)
+    {
+    /* Using dane_verify_session_crt() would be easy, as it does it all for us
+    including talking to a DNS resolver.  But we want to do that bit ourselves
+    as the testsuite intercepts and fakes its own DNS environment. */
+
+    dane_state_t s;
+    dane_query_t r;
+    const gnutls_datum_t * certlist;
+    uint lsize;
+
+    certlist = gnutls_certificate_get_peers(state->session, &lsize);
+
+    if (  (rc = dane_state_init(&s, 0))
+       || (rc = dane_raw_tlsa(s, &r, state->dane_data, state->dane_data_len,
+			      1, 0))
+       || (rc = dane_verify_crt_raw(s, certlist, lsize,
+			      gnutls_certificate_type_get(state->session),
+			      r, 0, 0, &verify))
+       )
+
+      {
+      *errstr = string_sprintf("TLSA record problem: %s", dane_strerror(rc));
+      goto badcert;
+      }
+    if (verify != 0)
+      {
+      gnutls_datum_t str;
+      (void) dane_verification_status_print(verify, &str, 0);
+      *errstr = US str.data;	/* don't bother to free */
+      goto badcert;
+      }
+    state->peer_dane_verified = TRUE;
+    }
+#endif
+
+  rc = gnutls_certificate_verify_peers2(state->session, &verify);
+  }
+
+/* Handle the result of verification. INVALID is set if any others are. */
 
 if (rc < 0 ||
     verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)
@@ -1555,11 +1647,7 @@ if (rc < 0 ||
         *errstr, state->peerdn ? state->peerdn : US"<unset>");
 
   if (state->verify_requirement >= VERIFY_REQUIRED)
-    {
-    gnutls_alert_send(state->session,
-      GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
-    return FALSE;
-    }
+    goto badcert;
   DEBUG(D_tls)
     debug_printf("TLS verify failure overridden (host in tls_try_verify_hosts)\n");
   }
@@ -1579,11 +1667,7 @@ else
       DEBUG(D_tls)
 	debug_printf("TLS certificate verification failed: cert name mismatch\n");
       if (state->verify_requirement >= VERIFY_REQUIRED)
-	{
-	gnutls_alert_send(state->session,
-	  GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
-	return FALSE;
-	}
+	goto badcert;
       return TRUE;
       }
     }
@@ -1593,8 +1677,11 @@ else
   }
 
 state->tlsp->peerdn = state->peerdn;
-
 return TRUE;
+
+badcert:
+  gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
+  return FALSE;
 }
 
 
@@ -1705,6 +1792,7 @@ server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
   gnutls_datum_t * ocsp_response)
 {
 int ret;
+DEBUG(D_tls) debug_printf("OCSP stapling callback: %s\n", US ptr);
 
 if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
   {
@@ -1919,8 +2007,7 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify after the fact */
 
-if (  state->verify_requirement != VERIFY_NONE
-   && !verify_certificate(state, errstr))
+if (!verify_certificate(state, errstr))
   {
   if (state->verify_requirement != VERIFY_OPTIONAL)
     {
@@ -1978,6 +2065,55 @@ if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
 }
 
 
+
+
+#ifdef SUPPORT_DANE
+/* Given our list of RRs from the TLSA lookup, build a lookup block in
+GnuTLS-DANE's preferred format.  Hang it on the state str for later
+use in DANE verification.
+
+We point at the dnsa data not copy it, so it must remain valid until
+after verification is done.*/
+
+static void
+dane_tlsa_load(exim_gnutls_state_st * state, dns_answer * dnsa)
+{
+dns_record * rr;
+dns_scan dnss;
+int i;
+const char **	dane_data;
+int *		dane_data_len;
+
+for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 1;
+     rr;
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+    ) if (rr->type == T_TLSA) i++;
+
+dane_data = store_get(i * sizeof(uschar *));
+dane_data_len = store_get(i * sizeof(int));
+
+for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
+     rr;
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+    ) if (rr->type == T_TLSA)
+  {
+  const uschar * p = rr->data;
+  uint8_t usage = *p;
+
+  tls_out.tlsa_usage |= 1<<usage;
+  dane_data[i] = p;
+  dane_data_len[i++] = rr->size;
+  }
+dane_data[i] = NULL;
+dane_data_len[i] = 0;
+
+state->dane_data = (char * const *)dane_data;
+state->dane_data_len = dane_data_len;
+}
+#endif
+
+
+
 /*************************************************
 *    Start a TLS session in a client             *
 *************************************************/
@@ -1989,7 +2125,11 @@ Arguments:
   host              connected host (for messages)
   addr              the first address (not used)
   tb                transport (always smtp)
-
+  tlsa_dnsa	    non-NULL, either request or require dane for this host, and
+		    a TLSA record found.  Therefore, dane verify required.
+		    Which implies cert must be requested and supplied, dane
+		    verify must pass, and cert verify irrelevant (incl.
+		    hostnames), and (caller handled) require_tls
   errstr	    error string pointer
 
 Returns:            OK/DEFER/FAIL (because using common functions),
@@ -2001,14 +2141,14 @@ tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
     transport_instance * tb,
 #ifdef EXPERIMENTAL_DANE
-    dns_answer * tlsa_dnsa ARG_UNUSED,
+    dns_answer * tlsa_dnsa,
 #endif
     uschar ** errstr)
 {
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tb->options_block;
 int rc;
-exim_gnutls_state_st *state = NULL;
+exim_gnutls_state_st * state = NULL;
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
   verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
@@ -2044,12 +2184,23 @@ if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
 set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
-if (  (  state->exp_tls_verify_certificates
-      && !ob->tls_verify_hosts
-      && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
-      )
-    || verify_check_given_host(&ob->tls_verify_hosts, host) == OK
-   )
+#ifdef SUPPORT_DANE
+if (tlsa_dnsa)
+  {
+  DEBUG(D_tls)
+    debug_printf("TLS: server certificate DANE required.\n");
+  state->verify_requirement = VERIFY_DANE;
+  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
+  dane_tlsa_load(state, tlsa_dnsa);
+  }
+else
+#endif
+    if (  (  state->exp_tls_verify_certificates
+	  && !ob->tls_verify_hosts
+	  && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
+	  )
+	|| verify_check_given_host(&ob->tls_verify_hosts, host) == OK
+       )
   {
   tls_client_setup_hostname_checks(host, state, ob);
   DEBUG(D_tls)
@@ -2124,8 +2275,7 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify late */
 
-if (state->verify_requirement != VERIFY_NONE &&
-    !verify_certificate(state, errstr))
+if (!verify_certificate(state, errstr))
   return tls_error(US"certificate verification failed", *errstr, state->host, errstr);
 
 #ifndef DISABLE_OCSP

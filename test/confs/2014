@@ -22,7 +22,7 @@ tls_privatekey = DIR/aux-fixed/cert1
 
 tls_verify_hosts = HOSTIPV4
 tls_try_verify_hosts = *
-tls_verify_certificates = DIR/aux-fixed/cert2
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
 tls_crl = CRL
 
 
@@ -31,7 +31,7 @@ tls_crl = CRL
 begin acl
 
 check_recipient:
-  deny     message = certificate not verified: peerdn=$tls_peerdn
+  deny     message = certificate not verified: peerdn=$tls_in_peerdn
          ! verify = certificate
   accept
 
@@ -53,7 +53,7 @@ begin transports
 local_delivery:
   driver = appendfile
   file = DIR/test-mail/$local_part
-  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_in_peerdn
   user = CALLER
 
 # End

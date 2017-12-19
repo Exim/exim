@@ -25,10 +25,17 @@ killdaemon
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
 ### TLSA (2 0 1)
-exim -odq CALLER@mxdane256ta.test.ex
+exim -odf CALLER@mxdane256ta.test.ex
 Testing
 ****
-exim -qf
+killdaemon
+#
+# OpenSSL-specific regression testcase: certificate having Authority Key ID extension
+exim -DSERVER=server -DCERT=DIR/aux-fixed/exim-ca/example.com/server2.example.com/fullchain.pem -DALLOW=DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key -bd -oX PORT_D
+****
+### TLSA (2 1 1)
+exim -odf CALLER@mxdane256tak.test.ex
+Testing
 ****
 killdaemon
 #
@@ -36,10 +43,8 @@ killdaemon
 # Check we get a non-CV but TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=no -bd -oX PORT_D
 ****
-exim -odq CALLER@thishost.test.ex
+exim -odf CALLER@thishost.test.ex
 Testing
-****
-exim -qf
 ****
 killdaemon
 #
@@ -47,7 +52,7 @@ killdaemon
 # Check we get a CV and TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
-exim -odq CALLER@thishost.test.ex
+exim -odf CALLER@thishost.test.ex
 Testing
 ****
 exim -DOPT=no_certname -qf
@@ -57,7 +62,7 @@ killdaemon
 #
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
-### A server with two MXs for which both TLSA lookups return defer
+### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
 exim -odq CALLER@mxdanelazy.test.ex
 Testing
 ****
@@ -65,23 +70,45 @@ Testing
 exim -odq CALLER@dane.no.1.test.ex
 Testing
 ****
-### A server lacking a TLSA, dane requested only (should fail, as the NXDOMAIN is not DNSSEC)
+### A server lacking a TLSA, dane requested only (should deliver, non-DANE, as the NXDOMAIN is not DNSSEC)
 exim -odq CALLER@dane.no.2.test.ex
 Testing
 ****
-### A server where the A is dnssec and the TLSA _fails_
+### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
 exim -odq CALLER@danebroken1.test.ex
 Testing
 ****
-### A server securely saying "no TLSA records here", dane required (should fail)
+### A server securely saying "no TLSA records here", dane required (delivery should fail)
 exim -odq CALLER@dane.no.3.test.ex
 Testing
 ****
-### A server securely saying "no TLSA records here", dane requested only (should transmit)
+### A server securely saying "no TLSA records here", dane requested only (should deliver)
 exim -odq CALLER@dane.no.4.test.ex
 Testing
 ****
 exim -qf
 ****
+#
+### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
+exim -odf CALLER@danebroken2.test.ex
+Testing
+****
+### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
+exim -odf CALLER@danebroken3.test.ex
+Testing
+****
+### A server insecurely serving a good TLSA record, dane required (delivery should fail)
+exim -odf CALLER@danebroken4.test.ex
+Testing
+****
+### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
+exim -odf CALLER@danebroken5.test.ex
+Testing
+****
+### A server insecurely serving a good A record, dane required (delivery should fail)
+exim -odf CALLER@danebroken6.test.ex
+Testing
+****
+#
 killdaemon
 no_msglog_check

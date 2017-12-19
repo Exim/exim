@@ -1,0 +1,100 @@
+### TLSA (3 1 1)
+### TLSA (3 1 2)
+### Recipient callout
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> processing "accept"
+>>> check verify = recipient/callout
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing rcptuser@dane256ee.test.ex
+>>> calling client router
+>>> dane256ee.test.ex in "*"? yes (matched "*")
+>>> local host found for non-MX address
+>>> routed by client router
+>>> Attempting full verification using callout
+>>> callout cache: no domain record found for dane256ee.test.ex
+>>> callout cache: no address record found for rcptuser@dane256ee.test.ex
+>>> ip4.ip4.ip4.ip4 in hosts_require_dane? yes (matched "ip4.ip4.ip4.ip4")
+>>> interface=NULL port=1225
+>>> Connecting to dane256ee.test.ex [ip4.ip4.ip4.ip4]:1225 ... connected
+>>>   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ip4.ip4.ip4.ip4 in hosts_avoid_esmtp? no (option unset)
+>>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
+>>>   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
+>>>          250-SIZE 52428800
+>>>          250-8BITMIME
+>>>          250-PIPELINING
+>>>          250-STARTTLS
+>>>          250 HELP
+>>> ip4.ip4.ip4.ip4 in hosts_avoid_tls? no (option unset)
+>>> ip4.ip4.ip4.ip4 in hosts_verify_avoid_tls? no (option unset)
+>>>   SMTP>> STARTTLS
+>>> cmd buf flush 10 bytes
+>>>   SMTP<< 220 TLS go ahead
+>>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
+>>> ip4.ip4.ip4.ip4 in hosts_request_ocsp? yes (matched "*")
+>>>   SMTP>> EHLO myhost.test.ex
+>>> cmd buf flush 21 bytes
+>>>   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
+>>>          250-SIZE 52428800
+>>>          250-8BITMIME
+>>>          250-PIPELINING
+>>>          250 HELP
+>>> ip4.ip4.ip4.ip4 in hosts_avoid_pipelining? no (option unset)
+>>> ip4.ip4.ip4.ip4 in hosts_require_auth? no (option unset)
+>>>   SMTP>> MAIL FROM:<>
+>>>   SMTP>> RCPT TO:<rcptuser@dane256ee.test.ex>
+>>> cmd buf flush 52 bytes
+>>>   SMTP<< 250 OK
+>>>   SMTP<< 250 Accepted
+>>>   SMTP>> QUIT
+>>> cmd buf flush 6 bytes
+>>>   SMTP<< 221 myhost.test.ex closing connection
+>>>   SMTP(close)>>
+>>> wrote callout cache domain record for dane256ee.test.ex:
+>>>   result=1 postmaster=0 random=0
+>>> wrote positive callout cache address record for rcptuser@dane256ee.test.ex
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
+### TLSA (2 0 1)
+### A server with a nonverifying cert and no TLSA
+### A server with a verifying cert and no TLSA
+### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
+### A server lacking a TLSA, dane required (should fail)
+### A server lacking a TLSA, dane requested only (should deliver, non-DANE, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
+### A server securely saying "no TLSA records here", dane required (delivery should fail)
+### A server securely saying "no TLSA records here", dane requested only (should deliver)
+### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
+### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good TLSA record, dane required (delivery should fail)
+### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good A record, dane required (delivery should fail)
+
+******** SERVER ********
+### TLSA (3 1 1)
+### TLSA (3 1 2)
+### Recipient callout
+### TLSA (2 0 1)
+### A server with a nonverifying cert and no TLSA
+### A server with a verifying cert and no TLSA
+### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
+### A server lacking a TLSA, dane required (should fail)
+### A server lacking a TLSA, dane requested only (should deliver, non-DANE, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
+### A server securely saying "no TLSA records here", dane required (delivery should fail)
+### A server securely saying "no TLSA records here", dane requested only (should deliver)
+### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
+### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good TLSA record, dane required (delivery should fail)
+### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good A record, dane required (delivery should fail)

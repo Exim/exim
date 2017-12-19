@@ -1,0 +1,20 @@
+### No certificate, certificate required
+### No certificate, certificate optional at TLS time, required by ACL
+### Good certificate, certificate required
+### Good certificate, certificate optional at TLS time, checked by ACL
+### Bad certificate, certificate required
+### Bad certificate, certificate optional at TLS time, reject at ACL time
+### Otherwise good but revoked certificate, certificate required
+### Revoked certificate, certificate optional at TLS time, reject at ACL time
+### Good certificate, certificate required - but nonmatching CRL also present
+
+******** SERVER ********
+### No certificate, certificate required
+### No certificate, certificate optional at TLS time, required by ACL
+### Good certificate, certificate required
+### Good certificate, certificate optional at TLS time, checked by ACL
+### Bad certificate, certificate required
+### Bad certificate, certificate optional at TLS time, reject at ACL time
+### Otherwise good but revoked certificate, certificate required
+### Revoked certificate, certificate optional at TLS time, reject at ACL time
+### Good certificate, certificate required - but nonmatching CRL also present

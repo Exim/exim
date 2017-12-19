@@ -73,6 +73,9 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN)
 	return PDKIM_FAIL;	/*XXX better error detail?  logging? */
       }
+
+    /* check if this looks like a DKIM record */
+    if (strncasecmp(answer, "v=dkim", 6) != 0) continue;
     return PDKIM_OK;
     }
 
@@ -148,7 +151,7 @@ if (!(s = sig->domain)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, "d=", s);
 if (!(s = sig->selector)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, " s=", s);
-logmsg = string_append(logmsg, 7, 
+logmsg = string_append(logmsg, 7,
 " c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 "/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
 " a=", dkim_sig_to_a_tag(sig),
@@ -371,7 +374,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 
     dkim_verify_status = dkim_exim_expand_query(DKIM_VERIFY_STATUS);
     dkim_verify_reason = dkim_exim_expand_query(DKIM_VERIFY_REASON);
-    
+
     if ((rc = dkim_acl_call(id, res_ptr, user_msgptr, log_msgptr)) != OK)
       return rc;
     }

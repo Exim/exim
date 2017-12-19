@@ -1217,13 +1217,14 @@ DEBUG(D_transport)
 
 switch (rc)
   {
-  case DNS_SUCCEED:
-    if (sec) return OK;
-
-    log_write(0, LOG_MAIN, "DANE error: TLSA lookup not DNSSEC");
-    /*FALLTHROUGH*/
   case DNS_AGAIN:
     return DEFER; /* just defer this TLS'd conn */
+
+  case DNS_SUCCEED:
+    if (sec) return OK;
+    log_write(0, LOG_MAIN,
+      "DANE error: TLSA lookup for %s not DNSSEC", host->name);
+    /*FALLTRHOUGH*/
 
   case DNS_NODATA:	/* no TLSA RR for this lookup */
   case DNS_NOMATCH:	/* no records at all for this lookup */

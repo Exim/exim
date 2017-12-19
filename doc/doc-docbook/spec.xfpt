@@ -17116,7 +17116,8 @@ separator in the usual way to avoid confusion under IPv6.
 &*Note*&: Under current versions of OpenSSL, when a list of more than one
 file is used, the &$tls_in_ourcert$& veriable is unreliable.
 
-&*Note*&: OCSP stapling is not usable when a list of more than one file is used.
+&*Note*&: OCSP stapling is not usable under OpenSSL
+when a list of more than one file is used.
 
 If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
@@ -17130,7 +17131,15 @@ generated for every connection.
 .cindex "TLS" "server certificate revocation list"
 .cindex "certificate" "revocation list for server"
 This option specifies a certificate revocation list. The expanded value must
-be the name of a file that contains a CRL in PEM format.
+be the name of a file that contains CRLs in PEM format.
+
+.new
+Under OpenSSL the option can specify a directory with CRL files.
+
+&*Note: Under OpenSSL the option must, if given, supply a CRL
+for each signing element of the certificate chain (i.e. all but the leaf).
+For the file variant this can be multiple PEM blocks in the one file.
+.wen
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
@@ -17257,8 +17266,11 @@ Certificate Authority.
 
 Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
 
-&*Note*&: There is currently no support for multiple OCSP proofs to match the
-multiple certificates facility.
+.new
+For GnuTLS 3.5.6 or later the expanded value of this option can be a list
+of files, to match a list given for the &%tls_certificate%& option.
+The ordering of the two lists must match.
+.wen
 
 
 .option tls_on_connect_ports main "string list" unset

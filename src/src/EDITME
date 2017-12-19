@@ -489,7 +489,7 @@ EXIM_MONITOR=eximon.bin
 
 # Uncomment the following line to add DANE support
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
-# Note: DANE is only supported when using OpenSSL
+# For DANE under GnuTLS we need an additional library.  See TLS_LIBS below.
 # EXPERIMENTAL_DANE=yes
 
 # Uncomment the following to include extra information in fail DSN message (bounces)
@@ -796,6 +796,9 @@ HEADERS_CHARSET="ISO-8859-1"
 # TLS_LIBS=-L/usr/local/openssl/lib -lssl -lcrypto
 # or
 # TLS_LIBS=-L/opt/gnu/lib -lgnutls -ltasn1 -lgcrypt
+
+# For DANE under GnuTLS we need an additional library.
+# TLS_LIBS += -lgnutls-dane
 
 # TLS_LIBS is included only on the command for linking Exim itself, not on any
 # auxiliary programs. If the include files are not in a standard place, you can

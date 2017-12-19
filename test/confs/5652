@@ -1,0 +1,83 @@
+# Exim test configuration 5652
+# OCSP stapling, server, multiple certs
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = server1.example.com
+
+# ----- Main settings -----
+
+acl_smtp_mail = check_mail
+acl_smtp_rcpt = check_recipient
+
+log_selector = +tls_peerdn
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+CADIR = DIR/aux-fixed/exim-ca
+DRSA = CADIR/example.com
+DECDSA = CADIR/example_ec.com
+
+tls_certificate = DRSA/server1.example.com/server1.example.com.pem \
+	      : DECDSA/server1.example_ec.com/server1.example_ec.com.pem
+tls_privatekey =  DRSA/server1.example.com/server1.example.com.unlocked.key \
+	      : DECDSA/server1.example_ec.com/server1.example_ec.com.unlocked.key
+tls_ocsp_file =   DRSA/server1.example.com/server1.example.com.ocsp.good.resp \
+	      : DECDSA/server1.example_ec.com/server1.example_ec.com.ocsp.good.resp
+
+
+
+# ------ ACL ------
+
+begin acl
+
+check_mail:
+  accept   logwrite = acl_mail: ocsp in status: $tls_in_ocsp \
+    (${listextract {${eval:$tls_in_ocsp+1}} \
+		{notreq:notresp:vfynotdone:failed:verified}})
+
+check_recipient:
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = manualroute
+  condition = ${if !eq {SERVER}{server}}
+  route_list = * 127.0.0.1
+  self = send
+  transport = remote_delivery
+  errors_to = ""
+
+srvr:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+remote_delivery:
+  driver =			smtp
+  port =			PORT_D
+  hosts_require_tls =		*
+  tls_require_ciphers =		OPT
+  hosts_require_ocsp =		*
+  tls_verify_certificates =	CERT
+  tls_verify_cert_hostnames =	:
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+# End

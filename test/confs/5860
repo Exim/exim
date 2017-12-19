@@ -19,20 +19,10 @@ queue_run_in_order
 tls_advertise_hosts = *
 
 # Set certificate only if server
-CDIR1 = DIR/aux-fixed
 CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
 
-tls_certificate = ${if eq {SERVER}{server} \
-	{${if eq {DETAILS}{ta} \
-		{CDIR2/fullchain.pem}\
-		{CDIR1/cert1}}}\
-	fail}
-
-tls_privatekey = ${if eq {SERVER}{server} \
-	{${if eq {DETAILS}{ta} \
-		{CDIR2/server1.example.com.unlocked.key}\
-		{CDIR1/cert1}}}\
-	fail}
+tls_certificate = ${if eq {SERVER}{server} {CDIR2/fullchain.pem} fail}
+tls_privatekey = ${if eq {SERVER}{server} {CDIR2/server1.example.com.unlocked.key} fail}
 
 
 begin acl

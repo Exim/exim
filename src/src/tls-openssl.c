@@ -937,7 +937,7 @@ if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX
   }
 
 supply_response:
-  cbinfo->u_ocsp.server.response = resp;
+  cbinfo->u_ocsp.server.response = resp;	/*XXX stack?*/
 return;
 
 bad:
@@ -945,7 +945,7 @@ bad:
     {
     extern char ** environ;
     uschar ** p;
-    if (environ) for (p = USS environ; *p != NULL; p++)
+    if (environ) for (p = USS environ; *p; p++)
       if (Ustrncmp(*p, "EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK", 42) == 0)
 	{
 	DEBUG(D_tls) debug_printf("Supplying known bad OCSP response\n");
@@ -1134,6 +1134,7 @@ else
 #ifndef DISABLE_OCSP
 if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
   {
+  /*XXX stack*/
   if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded, errstr))
     return DEFER;
 
@@ -1271,8 +1272,14 @@ static int
 tls_server_stapling_cb(SSL *s, void *arg)
 {
 const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
-uschar *response_der;
+uschar *response_der;	/*XXX blob */
 int response_der_len;
+
+/*XXX stack: use SSL_get_certificate() to see which cert; from that work
+out which ocsp blob to send.  Unfortunately, SSL_get_certificate is known
+buggy in current OpenSSL; it returns the last cert loaded always rather than
+the one actually presented.  So we can't support a stack of OCSP proofs at
+this time. */
 
 DEBUG(D_tls)
   debug_printf("Received TLS status request (OCSP stapling); %s response\n",
@@ -1283,7 +1290,7 @@ if (!cbinfo->u_ocsp.server.response)
   return SSL_TLSEXT_ERR_NOACK;
 
 response_der = NULL;
-response_der_len = i2d_OCSP_RESPONSE(cbinfo->u_ocsp.server.response,
+response_der_len = i2d_OCSP_RESPONSE(cbinfo->u_ocsp.server.response,	/*XXX stack*/
 		      &response_der);
 if (response_der_len <= 0)
   return SSL_TLSEXT_ERR_NOACK;
@@ -1475,7 +1482,7 @@ static int
 tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
   uschar *privatekey,
 #ifndef DISABLE_OCSP
-  uschar *ocsp_file,
+  uschar *ocsp_file,	/*XXX stack, in server*/
 #endif
   address_item *addr, tls_ext_ctx_cb ** cbp, uschar ** errstr)
 {
@@ -1946,7 +1953,7 @@ the error. */
 
 rc = tls_init(&server_ctx, NULL, tls_dhparam, tls_certificate, tls_privatekey,
 #ifndef DISABLE_OCSP
-    tls_ocsp_file,
+    tls_ocsp_file,	/*XXX stack*/
 #endif
     NULL, &server_static_cbinfo, errstr);
 if (rc != OK) return rc;

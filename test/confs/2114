@@ -22,7 +22,7 @@ tls_privatekey = DIR/aux-fixed/cert1
 
 tls_verify_hosts = HOSTIPV4
 tls_try_verify_hosts = *
-tls_verify_certificates = DIR/aux-fixed/cert2
+tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
 tls_crl = CRL
 
 
