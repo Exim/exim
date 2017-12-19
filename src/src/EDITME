@@ -798,7 +798,7 @@ HEADERS_CHARSET="ISO-8859-1"
 # TLS_LIBS=-L/opt/gnu/lib -lgnutls -ltasn1 -lgcrypt
 
 # For DANE under GnuTLS we need an additional library.
-TLS_LIBS += -lgnutls-dane
+# TLS_LIBS += -lgnutls-dane
 
 # TLS_LIBS is included only on the command for linking Exim itself, not on any
 # auxiliary programs. If the include files are not in a standard place, you can
