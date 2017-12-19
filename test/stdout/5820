@@ -11,7 +11,6 @@
 250 Accepted
 421 myhost.test.ex lost input connection
 ### TLSA (2 0 1)
-### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
@@ -31,7 +30,6 @@
 ### TLSA (3 1 2)
 ### Recipient callout
 ### TLSA (2 0 1)
-### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)

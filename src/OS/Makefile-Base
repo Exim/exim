@@ -471,13 +471,13 @@ convert4r4: config ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_EXPERIMENTAL = bmi_spam.o \
-				dane.o \
-				dcc.o \
-				dmarc.o \
-				imap_utf7.o \
-				spf.o \
-				srs.o \
-				utf8.o
+			dane.o \
+			dcc.o \
+			dmarc.o \
+			imap_utf7.o \
+			spf.o \
+			srs.o \
+			utf8.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -821,7 +821,7 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 # Dependencies for EXPERIMENTAL_* modules
 
 bmi_spam.o:	$(HDRS) bmi_spam.c
-dane.o:		$(HDRS) dane.c dane-gnu.c dane-openssl.c
+dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c
 dmarc.o:	$(HDRS) pdkim/pdkim.h dmarc.h dmarc.c
 imap_utf7.o:	$(HDRS) imap_utf7.c

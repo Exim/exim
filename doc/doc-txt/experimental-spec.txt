@@ -928,6 +928,8 @@ verification succeeded using DANE and "no" otherwise (only useful
 in combination with EXPERIMENTAL_EVENT), and a new variable
 $tls_out_tlsa_usage (detailed above).
 
+Under GnuTLS, DANE is only supported from versin 3.0.0 onwards
+
 
 
 DSN extra information

@@ -66,9 +66,15 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
 # define SUPPORT_SRV_OCSP_STACK
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030000 && defined(EXPERIMENTAL_DANE)
+# define SUPPORT_DANE
+#endif
 
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
+#endif
+#ifdef SUPPORT_DANE
+# include <gnutls/dane.h>
 #endif
 
 /* GnuTLS 2 vs 3
@@ -85,7 +91,7 @@ Changes:
 /* Values for verify_requirement */
 
 enum peer_verify_requirement
-  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED };
+  { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED, VERIFY_DANE };
 
 /* This holds most state for server or client; with this, we can set up an
 outbound TLS-enabled connection in an ACL callout, while not stomping all
@@ -106,6 +112,7 @@ typedef struct exim_gnutls_state {
   int			fd_in;
   int			fd_out;
   BOOL			peer_cert_verified;
+  BOOL			peer_dane_verified;
   BOOL			trigger_sni_changes;
   BOOL			have_set_peerdn;
   const struct host_item *host;
@@ -130,6 +137,10 @@ typedef struct exim_gnutls_state {
 #ifndef DISABLE_EVENT
   uschar *event_action;
 #endif
+#ifdef SUPPORT_DANE
+  char * const *	dane_data;
+  const int *		dane_data_len;
+#endif
 
   tls_support *tlsp;	/* set in tls_init() */
 
@@ -148,6 +159,7 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   .fd_in =		-1,
   .fd_out =		-1,
   .peer_cert_verified =	FALSE,
+  .peer_dane_verified =	FALSE,
   .trigger_sni_changes =FALSE,
   .have_set_peerdn =	FALSE,
   .host =		NULL,
@@ -438,6 +450,9 @@ tlsp->cipher = state->ciphersuite;
 DEBUG(D_tls) debug_printf("cipher: %s\n", state->ciphersuite);
 
 tlsp->certificate_verified = state->peer_cert_verified;
+#ifdef SUPPORT_DANE
+tlsp->dane_verified = state->peer_dane_verified;
+#endif
 
 /* note that tls_channelbinding_b64 is not saved to the spool file, since it's
 only available for use for authenticators while this TLS session is running. */
@@ -1549,8 +1564,8 @@ gnutls_certificate_set_verify_function() to fail the handshake if we dislike
 the peer information, but that's too new for some OSes.
 
 Arguments:
-  state           exim_gnutls_state_st *
-  errstr          where to put an error message
+  state		exim_gnutls_state_st *
+  errstr	where to put an error message
 
 Returns:
   FALSE     if the session should be rejected
@@ -1561,7 +1576,10 @@ static BOOL
 verify_certificate(exim_gnutls_state_st *state, uschar ** errstr)
 {
 int rc;
-unsigned int verify;
+uint verify;
+
+if (state->verify_requirement == VERIFY_NONE)
+  return TRUE;
 
 *errstr = NULL;
 
@@ -1571,10 +1589,49 @@ if ((rc = peer_status(state, errstr)) != OK)
   *errstr = US"certificate not supplied";
   }
 else
-  rc = gnutls_certificate_verify_peers2(state->session, &verify);
 
-/* Handle the result of verification. INVALID seems to be set as well
-as REVOKED, but leave the test for both. */
+  {
+#ifdef SUPPORT_DANE
+  if (state->verify_requirement == VERIFY_DANE && state->host)
+    {
+    /* Using dane_verify_session_crt() would be easy, as it does it all for us
+    including talking to a DNS resolver.  But we want to do that bit ourselves
+    as the testsuite intercepts and fakes its own DNS environment. */
+
+    dane_state_t s;
+    dane_query_t r;
+    const gnutls_datum_t * certlist;
+    uint lsize;
+
+    certlist = gnutls_certificate_get_peers(state->session, &lsize);
+
+    if (  (rc = dane_state_init(&s, 0))
+       || (rc = dane_raw_tlsa(s, &r, state->dane_data, state->dane_data_len,
+			      1, 0))
+       || (rc = dane_verify_crt_raw(s, certlist, lsize,
+			      gnutls_certificate_type_get(state->session),
+			      r, 0, 0, &verify))
+       )
+
+      {
+      *errstr = string_sprintf("TLSA record problem: %s", dane_strerror(rc));
+      goto badcert;
+      }
+    if (verify != 0)
+      {
+      gnutls_datum_t str;
+      (void) dane_verification_status_print(verify, &str, 0);
+      *errstr = US str.data;	/* don't bother to free */
+      goto badcert;
+      }
+    state->peer_dane_verified = TRUE;
+    }
+#endif
+
+  rc = gnutls_certificate_verify_peers2(state->session, &verify);
+  }
+
+/* Handle the result of verification. INVALID is set if any others are. */
 
 if (rc < 0 ||
     verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)
@@ -1590,11 +1647,7 @@ if (rc < 0 ||
         *errstr, state->peerdn ? state->peerdn : US"<unset>");
 
   if (state->verify_requirement >= VERIFY_REQUIRED)
-    {
-    gnutls_alert_send(state->session,
-      GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
-    return FALSE;
-    }
+    goto badcert;
   DEBUG(D_tls)
     debug_printf("TLS verify failure overridden (host in tls_try_verify_hosts)\n");
   }
@@ -1614,11 +1667,7 @@ else
       DEBUG(D_tls)
 	debug_printf("TLS certificate verification failed: cert name mismatch\n");
       if (state->verify_requirement >= VERIFY_REQUIRED)
-	{
-	gnutls_alert_send(state->session,
-	  GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
-	return FALSE;
-	}
+	goto badcert;
       return TRUE;
       }
     }
@@ -1628,8 +1677,11 @@ else
   }
 
 state->tlsp->peerdn = state->peerdn;
-
 return TRUE;
+
+badcert:
+  gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
+  return FALSE;
 }
 
 
@@ -1955,8 +2007,7 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify after the fact */
 
-if (  state->verify_requirement != VERIFY_NONE
-   && !verify_certificate(state, errstr))
+if (!verify_certificate(state, errstr))
   {
   if (state->verify_requirement != VERIFY_OPTIONAL)
     {
@@ -2014,6 +2065,55 @@ if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
 }
 
 
+
+
+#ifdef SUPPORT_DANE
+/* Given our list of RRs from the TLSA lookup, build a lookup block in
+GnuTLS-DANE's preferred format.  Hang it on the state str for later
+use in DANE verification.
+
+We point at the dnsa data not copy it, so it must remain valid until
+after verification is done.*/
+
+static void
+dane_tlsa_load(exim_gnutls_state_st * state, dns_answer * dnsa)
+{
+dns_record * rr;
+dns_scan dnss;
+int i;
+const char **	dane_data;
+int *		dane_data_len;
+
+for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 1;
+     rr;
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+    ) if (rr->type == T_TLSA) i++;
+
+dane_data = store_get(i * sizeof(uschar *));
+dane_data_len = store_get(i * sizeof(int));
+
+for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
+     rr;
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+    ) if (rr->type == T_TLSA)
+  {
+  const uschar * p = rr->data;
+  uint8_t usage = *p;
+
+  tls_out.tlsa_usage |= 1<<usage;
+  dane_data[i] = p;
+  dane_data_len[i++] = rr->size;
+  }
+dane_data[i] = NULL;
+dane_data_len[i] = 0;
+
+state->dane_data = (char * const *)dane_data;
+state->dane_data_len = dane_data_len;
+}
+#endif
+
+
+
 /*************************************************
 *    Start a TLS session in a client             *
 *************************************************/
@@ -2025,7 +2125,11 @@ Arguments:
   host              connected host (for messages)
   addr              the first address (not used)
   tb                transport (always smtp)
-
+  tlsa_dnsa	    non-NULL, either request or require dane for this host, and
+		    a TLSA record found.  Therefore, dane verify required.
+		    Which implies cert must be requested and supplied, dane
+		    verify must pass, and cert verify irrelevant (incl.
+		    hostnames), and (caller handled) require_tls
   errstr	    error string pointer
 
 Returns:            OK/DEFER/FAIL (because using common functions),
@@ -2037,14 +2141,14 @@ tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
     transport_instance * tb,
 #ifdef EXPERIMENTAL_DANE
-    dns_answer * tlsa_dnsa ARG_UNUSED,
+    dns_answer * tlsa_dnsa,
 #endif
     uschar ** errstr)
 {
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tb->options_block;
 int rc;
-exim_gnutls_state_st *state = NULL;
+exim_gnutls_state_st * state = NULL;
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
   verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
@@ -2080,12 +2184,23 @@ if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
 set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
-if (  (  state->exp_tls_verify_certificates
-      && !ob->tls_verify_hosts
-      && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
-      )
-    || verify_check_given_host(&ob->tls_verify_hosts, host) == OK
-   )
+#ifdef SUPPORT_DANE
+if (tlsa_dnsa)
+  {
+  DEBUG(D_tls)
+    debug_printf("TLS: server certificate DANE required.\n");
+  state->verify_requirement = VERIFY_DANE;
+  gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
+  dane_tlsa_load(state, tlsa_dnsa);
+  }
+else
+#endif
+    if (  (  state->exp_tls_verify_certificates
+	  && !ob->tls_verify_hosts
+	  && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
+	  )
+	|| verify_check_given_host(&ob->tls_verify_hosts, host) == OK
+       )
   {
   tls_client_setup_hostname_checks(host, state, ob);
   DEBUG(D_tls)
@@ -2160,8 +2275,7 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify late */
 
-if (state->verify_requirement != VERIFY_NONE &&
-    !verify_certificate(state, errstr))
+if (!verify_certificate(state, errstr))
   return tls_error(US"certificate verification failed", *errstr, state->host, errstr);
 
 #ifndef DISABLE_OCSP

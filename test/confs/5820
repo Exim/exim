@@ -1,19 +1,22 @@
-# Exim test configuration 5800
-# DANE
+# Exim test configuration 5820
+# DANE/GnuTLS
 
 SERVER=
 
-.include DIR/aux-var/std_conf_prefix
+.include DIR/aux-var/tls_conf_prefix
 
 primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
+.ifndef OPT
+acl_smtp_rcpt = accept logwrite = "rcpt ACL"
+.else
+acl_smtp_rcpt = accept verify = recipient/callout
+.endif
 
-log_selector =  +tls_peerdn
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
 
-queue_only
 queue_run_in_order
 
 tls_advertise_hosts = *
@@ -21,23 +24,33 @@ tls_advertise_hosts = *
 tls_dhparam = historic
 
 # Set certificate only if server
+CDIR1 = DIR/aux-fixed/exim-ca/example.net/server1.example.net
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
 
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
-#tls_verify_hosts = *
-#tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+tls_certificate = ${if eq {SERVER}{server} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+		{CDIR2/fullchain.pem}\
+		{CDIR1/fullchain.pem}}}\
+	fail}
 
+tls_privatekey = ${if eq {SERVER}{server} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+		{CDIR2/server1.example.com.unlocked.key}\
+		{CDIR1/server1.example.net.unlocked.key}}}\
+	fail}
 
 # ----- Routers -----
 
 begin routers
 
 client:
-  driver = accept
-  condition = ${if eq {SERVER}{server}{no}{yes}}
-  retry_use_local_part
+  driver = dnslookup
+  condition = ${if eq {SERVER}{}}
+  dnssec_request_domains = *
+  self = send
   transport = send_to_server
+  errors_to = ""
 
 server:
   driver = redirect
@@ -51,11 +64,14 @@ begin transports
 send_to_server:
   driver = smtp
   allow_localhost
-  hosts = 127.0.0.1
-  port = PORT_D
-#  tls_certificate = DIR/aux-fixed/cert2
-#  tls_privatekey = DIR/aux-fixed/cert2
-#  tls_verify_certificates = DIR/aux-fixed/cert2
+  port = ${if match {$host}{\Ntest.ex$\N} {PORT_D}{25}}
+
+  hosts_try_dane =     *
+  hosts_require_dane = HOSTIPV4
+  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  tls_try_verify_hosts = thishost.test.ex
+  tls_verify_certificates = CDIR2/ca_chain.pem
+
 
 
 # ----- Retry -----

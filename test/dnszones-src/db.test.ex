@@ -419,34 +419,34 @@ DNSSEC l-sec   A 127.0.0.1
 AA a-aa        A V4NET.0.0.100
 
 ; ------- Testing DANE ------------
+; Since these refer to certs in the exim-ca tree, they must be regenerated any time that tree is.
+;
 
 ; full suite dns chain, sha512
 ;
-; openssl x509 -in aux-fixed/cert1 -noout -pubkey \
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
 ; | openssl pkey -pubin -outform DER \
 ; | openssl dgst -sha512 \
 ; | awk '{print $2}'
 ;
 DNSSEC mxdane512ee          MX  1  dane512ee
 DNSSEC dane512ee            A      HOSTIPV4
-DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 3d5eb81b1dfc3f93c1fa8819e3fb3fdb41bb590441d5f3811db17772f4bc6de29bdd7c4f4b723750dda871b99379192b3f979f03db1252c4f08b03ef7176528d
+DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 69e8a5ddf24df2c51dc503959d26e621be4ce3853f71890512de3ae3390c5749ef3368dd4d274669b0653da8c3663f12ca092cd98e5e242e4de57ee6aa01cde1
 
 ; A-only, sha256
 ;
-; openssl x509 -in aux-fixed/cert1 -noout -pubkey \
+; openssl x509 -in aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem -noout -pubkey \
 ; | openssl pkey -pubin -outform DER \
 ; | openssl dgst -sha256 \
 ; | awk '{print $2}'
 ;
 DNSSEC dane256ee            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 2bb55f418bb03411a5007cecbfcd3ec1c94404312c0d53a44bb2166b32654db3
+DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
 
 ; full MX, sha256, TA-mode
 ;
 ; openssl x509 -in aux-fixed/exim-ca/example.com/CA/CA.pem -fingerprint -sha256 -noout \
 ;  | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
-;
-; Since this refers to a cert in the exim-ca tree, it must be regenerated any time that tree is.
 ;
 DNSSEC mxdane256ta          MX  1  dane256ta
 DNSSEC dane256ta            A      HOSTIPV4
@@ -464,8 +464,6 @@ DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 cb0fa6a633e52c787657f5ca0da1030800223cac4
 ; | openssl pkey -pubin -outform DER \
 ; | openssl dgst -sha256 \
 ; | awk '{print $2}'
-;
-; Since this refers to a cert in the exim-ca tree, it must be regenerated any time that tree is.
 ;
 DNSSEC mxdane256tak          MX  1  dane256tak
 DNSSEC dane256tak            A      HOSTIPV4
@@ -490,6 +488,27 @@ DNSSEC dane.no.2            A       127.0.0.1
 ; a broken dane config (or under attack) where the TLSA lookup fails (as opposed to there not being one)
 DNSSEC danebroken1          A       127.0.0.1
 _1225._tcp.danebroken1      CNAME   test.fail.dns.
+
+; a broken dane config (or under attack) where the TLSA record is wrong
+; (127.0.0.1 for merely dane-requested, but having gotten the TLSA it is supposedly definitive)
+DNSSEC danebroken2          A       127.0.0.1
+DNSSEC _1225._tcp.danebroken2 TLSA 2 0 1 cb0fa60000000000000000000000000000000000000000000000000000000000
+
+; a broken dane config (or under attack) where the TLSA record is correct but not DNSSEC-assured
+; (record copied from dane256ee above)
+; 3 for dane-requested, 4 for dane-required
+DNSSEC danebroken3          A       127.0.0.1
+_1225._tcp.danebroken3 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+DNSSEC danebroken4          A       HOSTIPV4
+_1225._tcp.danebroken4 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+
+; a broken dane config (or under attack) where the address record is correct but not DNSSEC-assured
+; (TLSA record copied from dane256ee above)
+; 5 for dane-requested, 6 for dane-required
+danebroken5          A       127.0.0.1
+DNSSEC _1225._tcp.danebroken5 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+danebroken6          A       HOSTIPV4
+DNSSEC _1225._tcp.danebroken6 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
 
 ; a good dns config saying there is no dane support, by securely returning NOXDOMAIN for TLSA lookups
 ; 3 for dane-required, 4 for merely requested

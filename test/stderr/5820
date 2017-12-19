@@ -39,8 +39,7 @@
 >>> cmd buf flush 10 bytes
 >>>   SMTP<< 220 TLS go ahead
 >>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
->>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
->>> ip4.ip4.ip4.ip4 in hosts_request_ocsp? no (end of list)
+>>> ip4.ip4.ip4.ip4 in hosts_request_ocsp? yes (matched "*")
 >>>   SMTP>> EHLO myhost.test.ex
 >>> cmd buf flush 21 bytes
 >>>   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
@@ -67,7 +66,6 @@
 >>> end of inline ACL: ACCEPT
 LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### TLSA (2 0 1)
-### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
@@ -87,7 +85,6 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### TLSA (3 1 2)
 ### Recipient callout
 ### TLSA (2 0 1)
-### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
