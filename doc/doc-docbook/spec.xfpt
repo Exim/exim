@@ -1102,7 +1102,7 @@ the two spool files consist of the message id, followed by &`-H`& for the
 file containing the envelope and header, and &`-D`& for the data file.
 
 .cindex "spool directory" "&_input_& sub-directory"
-By default all these message files are held in a single directory called
+By default, all these message files are held in a single directory called
 &_input_& inside the general Exim spool directory. Some operating systems do
 not perform very well if the number of files in a directory gets large; to
 improve performance in such cases, the &%split_spool_directory%& option can be
