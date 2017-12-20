@@ -1066,7 +1066,7 @@ constructed from the login name of the user that called Exim and a default
 qualification domain (which can be set by the &%qualify_domain%& configuration
 option). For local or batch SMTP, a sender address that is passed using the
 SMTP MAIL command is ignored. However, the system administrator may allow
-certain users (&"trusted users"&) to specify a different sender address
+certain users (&"trusted users"&) to specify a different sender addresses
 unconditionally, or all users to specify certain forms of different sender
 address. The &%-f%& option or the SMTP MAIL command is used to specify these
 different addresses. See section &<<SECTtrustedadmin>>& for details of trusted
