@@ -319,6 +319,7 @@ exiwhat: config ../src/exiwhat.src
 	  -e "s?EXIWHAT_MULTIKILL_ARG?$(EXIWHAT_MULTIKILL_ARG)?" \
 	  -e "s?EXIM_RELEASE_VERSION?$${EXIM_RELEASE_VERSION}?" \
 	  -e "s?EXIM_VARIANT_VERSION?$${EXIM_VARIANT_VERSION}?" \
+	  -e "s?RM_COMMAND?$(RM_COMMAND)?" \
 	  ../src/exiwhat.src > exiwhat-t
 	@mv exiwhat-t exiwhat
 	@chmod a+x exiwhat
