@@ -1162,7 +1162,7 @@ While Exim is working on a message, it writes information about each delivery
 attempt to its main log file. This includes successful, unsuccessful, and
 delayed deliveries for each recipient (see chapter &<<CHAPlog>>&). The log
 lines are also written to a separate &'message log'& file for each message.
-These logs are solely for the benefit of the administrator, and are normally
+These logs are solely for the benefit of the administrator and are normally
 deleted along with the spool files when processing of a message is complete.
 The use of individual message logs can be disabled by setting
 &%no_message_logs%&; this might give an improvement in performance on very busy
