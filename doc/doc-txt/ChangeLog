@@ -13,6 +13,9 @@ JH/01 Replace the store_release() internal interface with store_newblock(),
       the allocate and data copy operations duplicated in both (!) of the
       extant use locations.
 
+JH/02 Disallow '/' characters in queue names specified for the "queue=" ACL
+      modifier.  This matches the restriction on the commandline.
+
 Exim version 4.90
 -----------------
 

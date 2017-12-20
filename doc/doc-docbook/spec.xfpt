@@ -17136,7 +17136,7 @@ be the name of a file that contains CRLs in PEM format.
 .new
 Under OpenSSL the option can specify a directory with CRL files.
 
-&*Note: Under OpenSSL the option must, if given, supply a CRL
+&*Note:*& Under OpenSSL the option must, if given, supply a CRL
 for each signing element of the certificate chain (i.e. all but the leaf).
 For the file variant this can be multiple PEM blocks in the one file.
 .wen
@@ -28998,6 +28998,8 @@ effect.
 
 
 .vitem &*queue*&&~=&~<&'text'&>
+.cindex "&%queue%& ACL modifier"
+.cindex "named queues" "selecting in ACL"
 This modifier specifies the use of a named queue for spool files
 for the message.
 It can only be used before the message is received (i.e. not in

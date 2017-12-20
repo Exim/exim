@@ -3597,6 +3597,12 @@ for (; cb != NULL; cb = cb->next)
     #endif
 
     case ACLC_QUEUE:
+    if (Ustrchr(arg, '/'))
+      {
+      *log_msgptr = string_sprintf(
+	      "Directory separator not permitted in queue name: '%s'", arg);
+      return ERROR;
+      }
     queue_name = string_copy_malloc(arg);
     break;
 
