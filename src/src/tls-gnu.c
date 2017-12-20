@@ -2084,7 +2084,7 @@ use in DANE verification.
 We point at the dnsa data not copy it, so it must remain valid until
 after verification is done.*/
 
-static void
+static BOOL
 dane_tlsa_load(exim_gnutls_state_st * state, dns_answer * dnsa)
 {
 dns_record * rr;
@@ -2107,17 +2107,37 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
     ) if (rr->type == T_TLSA)
   {
   const uschar * p = rr->data;
-  uint8_t usage = *p;
+  uint8_t usage = p[0], sel = p[1], type = p[2];
+
+  DEBUG(D_tls)
+    debug_printf("TLSA: %d %d %d size %d\n", usage, sel, type, rr->size);
+
+  if (usage != 2 && usage != 3) continue;
+  if (sel != 0 && sel != 1) continue;
+  switch(type)
+    {
+    case 0:	/* Full: cannot check at present */
+		break;
+    case 1:	if (rr->size != 3 + 256/8) continue;	/* sha2-256 */
+		break;
+    case 2:	if (rr->size != 3 + 512/8) continue;	/* sha2-512 */
+		break;
+    default:	continue;
+    }
 
   tls_out.tlsa_usage |= 1<<usage;
   dane_data[i] = p;
   dane_data_len[i++] = rr->size;
   }
+
+if (!i) return FALSE;
+
 dane_data[i] = NULL;
 dane_data_len[i] = 0;
 
 state->dane_data = (char * const *)dane_data;
 state->dane_data_len = dane_data_len;
+return TRUE;
 }
 #endif
 
@@ -2194,13 +2214,12 @@ set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa)
+if (tlsa_dnsa && dane_tlsa_load(state, tlsa_dnsa))
   {
   DEBUG(D_tls)
     debug_printf("TLS: server certificate DANE required.\n");
   state->verify_requirement = VERIFY_DANE;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
-  dane_tlsa_load(state, tlsa_dnsa);
   }
 else
 #endif
