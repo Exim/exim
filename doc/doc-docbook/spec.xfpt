@@ -1139,7 +1139,7 @@ delivered (see chapters &<<CHAProutergeneric>>& and
 A message remains in the spool directory until it is completely delivered to
 its recipients or to an error address, or until it is deleted by an
 administrator or by the user who originally created it. In cases when delivery
-cannot proceed &-- for example, when a message can neither be delivered to its
+cannot proceed &-- for example when a message can neither be delivered to its
 recipients nor returned to its sender, the message is marked &"frozen"& on the
 spool, and no more deliveries are attempted.
 
