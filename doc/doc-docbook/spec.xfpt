@@ -5579,7 +5579,7 @@ Three more commented-out option settings follow:
 These are example settings that can be used when Exim is compiled with
 support for TLS (aka SSL) as described in section &<<SECTinctlsssl>>&. The
 first one specifies the list of clients that are allowed to use TLS when
-connecting to this server; in this case the wildcard means all clients. The
+connecting to this server; in this case, the wildcard means all clients. The
 other options specify where Exim should find its TLS certificate and private
 key, which together prove the server's identity to any clients that connect.
 More details are given in chapter &<<CHAPTLS>>&.
