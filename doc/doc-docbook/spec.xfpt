@@ -1154,7 +1154,7 @@ to be sent.
 .oindex "&%ignore_bounce_errors_after%&"
 There are options called &%ignore_bounce_errors_after%& and
 &%timeout_frozen_after%&, which discard frozen messages after a certain time.
-The first applies only to frozen bounces, the second to any frozen messages.
+The first applies only to frozen bounces, the second to all frozen messages.
 
 .cindex "message" "log file for"
 .cindex "log" "file for each message"
