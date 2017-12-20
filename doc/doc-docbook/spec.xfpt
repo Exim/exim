@@ -1074,10 +1074,10 @@ users, and the &%untrusted_set_sender%& option for a way of allowing untrusted
 users to change sender addresses.
 
 Messages received by either of the non-interactive mechanisms are subject to
-checking by the non-SMTP ACL, if one is defined. Messages received using SMTP
-(either over TCP/IP, or interacting with a local process) can be checked by a
+checking by the non-SMTP ACL if one is defined. Messages received using SMTP
+(either over TCP/IP or interacting with a local process) can be checked by a
 number of ACLs that operate at different times during the SMTP session. Either
-individual recipients, or the entire message, can be rejected if local policy
+individual recipients or the entire message can be rejected if local policy
 requirements are not met. The &[local_scan()]& function (see chapter
 &<<CHAPlocalscan>>&) is run for all incoming messages.
 
