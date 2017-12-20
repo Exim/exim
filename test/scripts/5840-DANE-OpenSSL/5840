@@ -111,4 +111,19 @@ Testing
 ****
 #
 killdaemon
+
+
+### A server with a name not matching the cert.  TA-mode; should fail
+exim -DSERVER=server -DDETAILS=cert.net -bd -oX PORT_D
+****
+exim -odf CALLER@danebroken7.example.com
+Testing
+****
+#
+### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+exim -odf CALLER@danebroken8.example.com
+Testing
+****
+#
+killdaemon
 no_msglog_check

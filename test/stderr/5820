@@ -79,6 +79,8 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### A server insecurely serving a good TLSA record, dane required (delivery should fail)
 ### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
 ### A server insecurely serving a good A record, dane required (delivery should fail)
+### A server with a name not matching the cert.  TA-mode; should fail
+### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
 
 ******** SERVER ********
 ### TLSA (3 1 1)
@@ -98,3 +100,5 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### A server insecurely serving a good TLSA record, dane required (delivery should fail)
 ### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
 ### A server insecurely serving a good A record, dane required (delivery should fail)
+### A server with a name not matching the cert.  TA-mode; should fail
+### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode

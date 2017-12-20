@@ -69,7 +69,7 @@ begin transports
 send_to_server:
   driver = smtp
   allow_localhost
-  port = ${if match {$host}{\Ntest.ex$\N} {PORT_D}{25}}
+  port = PORT_D
 
   hosts_try_dane =     *
   hosts_require_dane = HOSTIPV4

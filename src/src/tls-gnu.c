@@ -1573,7 +1573,7 @@ Returns:
 */
 
 static BOOL
-verify_certificate(exim_gnutls_state_st *state, uschar ** errstr)
+verify_certificate(exim_gnutls_state_st * state, uschar ** errstr)
 {
 int rc;
 uint verify;
@@ -1625,6 +1625,16 @@ else
       goto badcert;
       }
     state->peer_dane_verified = TRUE;
+
+    /* If there were only EE-mode TLSA records present, no checks on cert anchor
+    valididation or cert names are required.  For a TA record only, or a mixed
+    set, do them (we cannot tell if an EE record worked). */
+
+    if (!(tls_out.tlsa_usage & (1 << 2)))
+      {
+      state->peer_cert_verified = TRUE;
+      goto goodcert;
+      }
     }
 #endif
 
@@ -1633,9 +1643,7 @@ else
 
 /* Handle the result of verification. INVALID is set if any others are. */
 
-if (rc < 0 ||
-    verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)
-   )
+if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
   {
   state->peer_cert_verified = FALSE;
   if (!*errstr)
@@ -1676,8 +1684,9 @@ else
       state->peerdn ? state->peerdn : US"<unset>");
   }
 
-state->tlsp->peerdn = state->peerdn;
-return TRUE;
+goodcert:
+  state->tlsp->peerdn = state->peerdn;
+  return TRUE;
 
 badcert:
   gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
