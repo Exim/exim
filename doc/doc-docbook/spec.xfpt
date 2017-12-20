@@ -1042,7 +1042,7 @@ command line, or from the body of the message if &%-t%& is also used.
 If the process runs Exim with the &%-bS%& option, the message is also read
 non-interactively, but in this case the recipients are listed at the start of
 the message in a series of SMTP RCPT commands, terminated by a DATA
-command. This is so-called &"batch SMTP"& format,
+command. This is called &"batch SMTP"& format,
 but it isn't really SMTP. The SMTP commands are just another way of passing
 envelope addresses in a non-interactive submission.
 .next
