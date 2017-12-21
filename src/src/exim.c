@@ -1120,8 +1120,8 @@ switch(request)
 "If the string is not recognised, you'll get this help (on stderr).\n"
 "\n"
 "  exim -bI:help    this information\n"
-"  exim -bI:dscp    dscp value keywords known\n"
-"  exim -bI:sieve   list of supported sieve extensions, one per line.\n"
+"  exim -bI:dscp    list of known dscp value keywords\n"
+"  exim -bI:sieve   list of supported sieve extensions\n"
 );
     return;
   case CMDINFO_SIEVE:
