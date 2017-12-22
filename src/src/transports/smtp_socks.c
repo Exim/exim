@@ -87,11 +87,11 @@ else if (Ustrncmp(opt, "pass=", 5) == 0)
 else if (Ustrncmp(opt, "port=", 5) == 0)
   sob->port = atoi(opt + 5);
 else if (Ustrncmp(opt, "tmo=", 4) == 0)
-  sob->timeout = atoi(opt + 4);
+  sob->timeout = atoi(CCS opt + 4);
 else if (Ustrncmp(opt, "pri=", 4) == 0)
-  sob->priority = atoi(opt + 4);
+  sob->priority = atoi(CCS opt + 4);
 else if (Ustrncmp(opt, "weight=", 7) == 0)
-  sob->weight = atoi(opt + 7);
+  sob->weight = atoi(CCS opt + 7);
 return;
 }
 
