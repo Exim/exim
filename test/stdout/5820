@@ -24,6 +24,7 @@
 ### A server insecurely serving a good TLSA record, dane required (delivery should fail)
 ### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
 ### A server insecurely serving a good A record, dane required (delivery should fail)
+### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
 
@@ -45,5 +46,6 @@
 ### A server insecurely serving a good TLSA record, dane required (delivery should fail)
 ### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
 ### A server insecurely serving a good A record, dane required (delivery should fail)
+### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode

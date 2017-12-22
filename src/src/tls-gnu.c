@@ -68,6 +68,11 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030000 && defined(EXPERIMENTAL_DANE)
 # define SUPPORT_DANE
+# define DANESSL_USAGE_DANE_TA 2
+# define DANESSL_USAGE_DANE_EE 3
+#endif
+#if GNUTLS_VERSION_NUMBER < 0x999999 && defined(EXPERIMENTAL_DANE)
+# define GNUTLS_BROKEN_DANE_VALIDATION
 #endif
 
 #ifndef DISABLE_OCSP
@@ -1600,24 +1605,91 @@ else
 
     dane_state_t s;
     dane_query_t r;
-    const gnutls_datum_t * certlist;
     uint lsize;
+    const gnutls_datum_t * certlist =
+      gnutls_certificate_get_peers(state->session, &lsize);
+    int usage = tls_out.tlsa_usage;
 
-    certlist = gnutls_certificate_get_peers(state->session, &lsize);
+# ifdef GNUTLS_BROKEN_DANE_VALIDATION
+    /* Split the TLSA records into two sets, TA and EE selectors.  Run the
+    dane-verification separately so that we know which selector verified;
+    then we know whether to do CA-chain-verification and name-verification
+    (needed for TA but not EE). */
 
-    if (  (rc = dane_state_init(&s, 0))
-       || (rc = dane_raw_tlsa(s, &r, state->dane_data, state->dane_data_len,
-			      1, 0))
-       || (rc = dane_verify_crt_raw(s, certlist, lsize,
-			      gnutls_certificate_type_get(state->session),
-			      r, 0, 0, &verify))
-       )
+    if (usage == ((1<<DANESSL_USAGE_DANE_TA) | (1<<DANESSL_USAGE_DANE_EE)))
+    {						/* a mixed-usage bundle */
+      int i, j, nrec;
+      const char ** dd;
+      int * ddl;
 
-      {
-      *errstr = string_sprintf("TLSA record problem: %s", dane_strerror(rc));
-      goto badcert;
+      for(nrec = 0; state->dane_data_len[nrec]; ) nrec++;
+      nrec++;
+
+      dd = store_get(nrec * sizeof(uschar *));
+      ddl = store_get(nrec * sizeof(int));
+      nrec--;
+
+      if ((rc = dane_state_init(&s, 0)))
+	goto tlsa_prob;
+
+      for (usage = DANESSL_USAGE_DANE_EE;
+	   usage >= DANESSL_USAGE_DANE_TA; usage--)
+	{				/* take records with this usage */
+	for (j = i = 0; i < nrec; i++)
+	  if (state->dane_data[i][0] == usage)
+	    {
+	    dd[j] = state->dane_data[i];
+	    ddl[j++] = state->dane_data_len[i];
+	    }
+	if (j)
+	  {
+	  dd[j] = NULL;
+	  ddl[j] = 0;
+
+	  if ((rc = dane_raw_tlsa(s, &r, (char * const *)dd, ddl, 1, 0)))
+	    goto tlsa_prob;
+
+	  if ((rc = dane_verify_crt_raw(s, certlist, lsize,
+			    gnutls_certificate_type_get(state->session),
+			    r, 0,
+			    usage == DANESSL_USAGE_DANE_EE
+			    ? DANE_VFLAG_ONLY_CHECK_EE_USAGE : 0,
+			    &verify)))
+	    {
+	    DEBUG(D_tls)
+	      debug_printf("TLSA record problem: %s\n", dane_strerror(rc));
+	    }
+	  else if (verify == 0)	/* verification passed */
+	    {
+	    usage = 1 << usage;
+	    break;
+	    }
+	  }
+	}
+
+	if (rc) goto tlsa_prob;
       }
-    if (verify != 0)
+    else
+# endif
+      {
+      if (  (rc = dane_state_init(&s, 0))
+	 || (rc = dane_raw_tlsa(s, &r, state->dane_data, state->dane_data_len,
+			1, 0))
+	 || (rc = dane_verify_crt_raw(s, certlist, lsize,
+			gnutls_certificate_type_get(state->session),
+			r, 0, 
+# ifdef GNUTLS_BROKEN_DANE_VALIDATION
+			usage == (1 << DANESSL_USAGE_DANE_EE)
+			? DANE_VFLAG_ONLY_CHECK_EE_USAGE : 0,
+# else
+			0,
+# endif
+			&verify))
+	 )
+	goto tlsa_prob;
+      }
+
+    if (verify != 0)		/* verification failed */
       {
       gnutls_datum_t str;
       (void) dane_verification_status_print(verify, &str, 0);
@@ -1626,11 +1698,12 @@ else
       }
     state->peer_dane_verified = TRUE;
 
-    /* If there were only EE-mode TLSA records present, no checks on cert anchor
-    valididation or cert names are required.  For a TA record only, or a mixed
-    set, do them (we cannot tell if an EE record worked). */
+# ifdef GNUTLS_BROKEN_DANE_VALIDATION
+    /* If a TA-mode TLSA record was used for verification we must additionally
+    verify the CA chain and the cert name.  For EE-mode, skip it. */
 
-    if (!(tls_out.tlsa_usage & (1 << 2)))
+    if (usage & (1 << DANESSL_USAGE_DANE_EE))
+# endif
       {
       state->peer_cert_verified = TRUE;
       goto goodcert;
@@ -1688,6 +1761,8 @@ goodcert:
   state->tlsp->peerdn = state->peerdn;
   return TRUE;
 
+tlsa_prob:
+  *errstr = string_sprintf("TLSA record problem: %s", dane_strerror(rc));
 badcert:
   gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
   return FALSE;
@@ -2112,8 +2187,10 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
   DEBUG(D_tls)
     debug_printf("TLSA: %d %d %d size %d\n", usage, sel, type, rr->size);
 
-  if (usage != 2 && usage != 3) continue;
-  if (sel != 0 && sel != 1) continue;
+  if (  (usage != DANESSL_USAGE_DANE_TA && usage != DANESSL_USAGE_DANE_EE)
+     || (sel != 0 && sel != 1)
+     )
+    continue;
   switch(type)
     {
     case 0:	/* Full: cannot check at present */

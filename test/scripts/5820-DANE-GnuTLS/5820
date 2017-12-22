@@ -102,9 +102,16 @@ exim -odf CALLER@danebroken6.test.ex
 Testing
 ****
 #
+### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
+# that way round to excersize more code in the implementation
+exim -odf CALLER@danemixed.test.ex
+Testing
+****
+#
 killdaemon
-
-
+#
+#
+#
 ### A server with a name not matching the cert.  TA-mode; should fail
 exim -DSERVER=server -DDETAILS=cert.net -bd -oX PORT_D
 ****

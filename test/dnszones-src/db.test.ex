@@ -446,7 +446,7 @@ DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 827664533176a58b3578e0e91d77d79d036d3a97
 ; full MX, sha256, TA-mode
 ;
 ; openssl x509 -in aux-fixed/exim-ca/example.com/CA/CA.pem -fingerprint -sha256 -noout \
-;  | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
+; | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
 ;
 DNSSEC mxdane256ta          MX  1  dane256ta
 DNSSEC dane256ta            A      HOSTIPV4
@@ -518,6 +518,11 @@ DNSSEC dane.no.4            A       127.0.0.1
 
 DNSSEC NXDOMAIN _1225._tcp.dane.no.3 TLSA 2 0 1 eec923139018c540a344c5191660ecba1ac3708525a98bfc338e17f31d3fa741
 DNSSEC NXDOMAIN _1225._tcp.dane.no.4 TLSA 2 0 1 eec923139018c540a344c5191660ecba1ac3708525a98bfc338e17f31d3fa741
+
+; a mixed-usage set of TLSA records, EE one failing.  TA one coped from dane256ta.
+DNSSEC danemixed            A      127.0.0.1
+DNSSEC _1225._tcp.danemixed TLSA  2 0 1 cb0fa6a633e52c787657f5ca0da1030800223cac459577b9b6a55ac9733348e5
+DNSSEC                      TLSA  3 1 1 8276000000000000000000000000000000000000000000000000000000000000
 
 ; ------- Testing delays ------------
 
