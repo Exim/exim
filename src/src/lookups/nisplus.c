@@ -54,7 +54,6 @@ nis_object *tno, *eno;
 struct entry_obj *eo;
 struct table_obj *ta;
 uschar *p = query + length;
-uschar *yield = NULL;
 gstring * yield = NULL;
 
 do_cache = do_cache;   /* Placate picky compilers */
@@ -173,7 +172,7 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
       yield = string_catn(yield, US"\"", 1);
       }
     else
-    eyield = string_catn(yield, value, len);
+      yield = string_catn(yield, value, len);
 
     yield = string_catn(yield, US" ", 1);
     }
