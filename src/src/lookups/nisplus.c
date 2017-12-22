@@ -42,18 +42,18 @@ yield is the concatenation of all the fields, preceded by their names and an
 equals sign. */
 
 static int
-nisplus_find(void *handle, uschar *filename, uschar *query, int length,
+nisplus_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 int i;
 int error_error = FAIL;
-uschar *field_name = NULL;
+const uschar * field_name = NULL;
 nis_result *nrt = NULL;
 nis_result *nre = NULL;
 nis_object *tno, *eno;
 struct entry_obj *eo;
 struct table_obj *ta;
-uschar *p = query + length;
+const uschar * p = query + length;
 gstring * yield = NULL;
 
 do_cache = do_cache;   /* Placate picky compilers */
@@ -63,12 +63,15 @@ has been given. */
 
 while (p > query && p[-1] != ':') p--;
 
-if (p > query)
+if (p > query)		/* get the query without the result-field */
   {
+  uint len = p-1 - query;
   field_name = p;
-  p[-1] = 0;
+  query = string_copyn(query, len);
+  p = query + len;
   }
-else p = query + length;
+else
+  p = query + length;
 
 /* Now search backwards to find the comma that starts the
 table name. */
@@ -100,7 +103,7 @@ if (tno->zo_data.zo_type != TABLE_OBJ)
   *errmsg = string_sprintf("NIS+ error: %s is not a table", p);
   goto NISPLUS_EXIT;
   }
-ta = &(tno->zo_data.objdata_u.ta_data);
+ta = &tno->zo_data.objdata_u.ta_data;
 
 /* Now look up the entry in the table, check that we got precisely one
 object and that it is a table entry. */
@@ -152,7 +155,7 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
 
   /* Concatenate all fields if no specific one selected */
 
-  if (field_name == NULL)
+  if (!field_name)
     {
     yield = string_cat (yield, tc->tc_name);
     yield = string_catn(yield, US"=", 1);
@@ -195,11 +198,9 @@ if (field_name)
 else
   store_reset(yield->s + yield->ptr + 1);
 
-/* Restore the colon in the query, and free result store before
-finishing. */
+/* Free result store before finishing. */
 
 NISPLUS_EXIT:
-if (field_name) field_name[-1] = ':';
 if (nrt) nis_freeresult(nrt);
 if (nre) nis_freeresult(nre);
 
