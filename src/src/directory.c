@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2009 */
+/* Copyright (c) The Exim Maintainers 2017 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "exim.h"
@@ -38,59 +39,54 @@ directory_make(const uschar *parent, const uschar *name,
                int mode, BOOL panic)
 {
 BOOL use_chown = parent == spool_directory && geteuid() == root_uid;
-uschar *p;
-const uschar *slash;
-int c = 1;
+uschar * p;
+uschar c = 1;
 struct stat statbuf;
-uschar buffer[256];
+uschar * path;
 
-if (parent == NULL)
+if (parent)
   {
-  p = buffer + 1;
-  slash = parent = CUS"";
+  path = string_sprintf("%s%s%s", parent, US"/", name);
+  p = path + Ustrlen(parent);
   }
 else
   {
-  p = buffer + Ustrlen(parent);
-  slash = US"/";
+  path = string_copy(name);
+  p = path + 1;
   }
 
-if (!string_format(buffer, sizeof(buffer), "%s%s%s", parent, slash, name))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "name too long in directory_make");
+/* Walk the path creating any missing directories */
 
-while (c != 0 && *p != 0)
+while (c && *p)
   {
-  while (*p != 0 && *p != '/') p++;
+  while (*p && *p != '/') p++;
   c = *p;
-  *p = 0;
-  if (Ustat(buffer, &statbuf) != 0)
+  *p = '\0';
+  if (Ustat(path, &statbuf) != 0)
     {
-    if (mkdir(CS buffer, mode) < 0 && errno != EEXIST)
-      {
-      if (!panic) return FALSE;
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-        "Failed to create directory \"%s\": %s\n", buffer, strerror(errno));
-      }
+    if (mkdir(CS path, mode) < 0 && errno != EEXIST)
+      { p = US"create"; goto bad; }
 
     /* Set the ownership if necessary. */
 
-    if (use_chown && Uchown(buffer, exim_uid, exim_gid))
-      {
-      if (!panic) return FALSE;
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-        "Failed to set owner on directory \"%s\": %s\n", buffer, strerror(errno));
-      }
+    if (use_chown && Uchown(path, exim_uid, exim_gid))
+      { p = US"set owner on"; goto bad; }
 
     /* It appears that any mode bits greater than 0777 are ignored by
     mkdir(), at least on some operating systems. Therefore, if the mode
     contains any such bits, do an explicit mode setting. */
 
-    if ((mode & 0777000) != 0) (void)Uchmod(buffer, mode);
+    if (mode & 0777000) (void) Uchmod(path, mode);
     }
   *p++ = c;
   }
 
 return TRUE;
+
+bad:
+  if (panic) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "Failed to %s directory \"%s\": %s\n", p, path, strerror(errno));
+  return FALSE;
 }
 
 /* End of directory.c */
