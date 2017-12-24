@@ -159,6 +159,30 @@ database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
 PostgreSQL query: servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
 PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
 lookup yielded: Philip Hazel
+search_open: pgsql "NULL"
+  cached open
+search_find: file="NULL"
+  key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=pgsql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');"
+database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
+PostgreSQL query: SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
+PGSQL using cached connection for localhost:1223/test/CALLER
+lookup yielded: Philip Hazel
+Aristotle
+search_open: pgsql "NULL"
+  cached open
+search_find: file="NULL"
+  key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=pgsql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');"
+database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
+PostgreSQL query: SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
+PGSQL using cached connection for localhost:1223/test/CALLER
+lookup yielded: name="Philip Hazel" id=ph10 
+name=Aristotle id=aaaa 
 search_tidyup called
 close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
 close PGSQL connection: localhost:1223/test/CALLER

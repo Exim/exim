@@ -16,6 +16,10 @@ JH/01 Replace the store_release() internal interface with store_newblock(),
 JH/02 Disallow '/' characters in queue names specified for the "queue=" ACL
       modifier.  This matches the restriction on the commandline.
 
+JH/03 Fix pgsql lookup for multiple result-tuples with a single column.
+      Previously only the last row was returned.
+
+
 Exim version 4.90
 -----------------
 

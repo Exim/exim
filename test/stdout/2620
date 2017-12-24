@@ -28,6 +28,7 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
+INSERT 0 1
 > Philip Hazel
 > Philip Hazel
 > 
@@ -43,6 +44,11 @@ after" id=newline
 > Philip Hazel
 > Philip Hazel
 > Philip Hazel
+> x
+> Philip Hazel
+Aristotle
+> name="Philip Hazel" id=ph10 
+name=Aristotle id=aaaa 
 > 
 
 **** SMTP testing session as if from host 10.0.0.0

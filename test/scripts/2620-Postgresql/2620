@@ -13,6 +13,7 @@ system 'createdb -h localhost -p PORT_N test';
 system 'psql -h localhost -p PORT_N -d test \
  -c "CREATE TABLE them ( name text, id text );" \
  -c "INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' );" \
+ -c "INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' );" \
  -c "INSERT INTO them VALUES ( \'\', \'nothing\' );" \
  -c "INSERT INTO them VALUES ( \'\"stquot\', \'quote2\' );" \
  -c "INSERT INTO them VALUES ( \'before\' || CHR(13) || CHR(10) || \'after\', \'newline\' );" \
@@ -37,6 +38,9 @@ ${lookup pgsql {servers=x:localhost; select name from them where id='ph10';}}
 ${lookup pgsql {servers=localhost::PORT_N:x; select name from them where id='ph10';}}
 ${lookup pgsql {servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';}}
 ${lookup pgsql {servers=(DIR/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';}}
+x
+${lookup pgsql {SELECT name FROM them WHERE id IN ('ph10', 'aaaa');}}
+${lookup pgsql {SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');}}
 ****
 exim -d -bh 10.0.0.0
 mail from:<a@b>
