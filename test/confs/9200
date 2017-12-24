@@ -1,6 +1,6 @@
 # Exim test configuration 9200
 
-SERVERS=localhost/test/ph10/
+SERVERS=localhost::PORT_N/test/CALLER/
 
 .include DIR/aux-var/std_conf_prefix
 

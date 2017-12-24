@@ -1,4 +1,27 @@
-# pgsql lookups - expects specific data
+# pgsql lookups
+#
+# first, populate a DB to test against
+sudo rm -fr DIR/pgsql
+perl
+system 'initdb -D DIR/pgsql/data';
+****
+background
+/usr/bin/postgres -D DIR/pgsql/data -p PORT_N -k DIR/pgsql
+****
+perl
+system 'createdb -h localhost -p PORT_N test';
+system 'psql -h localhost -p PORT_N -d test \
+ -c "CREATE TABLE them ( name text, id text );" \
+ -c "INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' );" \
+ -c "INSERT INTO them VALUES ( \'\', \'nothing\' );" \
+ -c "INSERT INTO them VALUES ( \'\"stquot\', \'quote2\' );" \
+ -c "INSERT INTO them VALUES ( \'before\' || CHR(13) || CHR(10) || \'after\', \'newline\' );" \
+ -c "INSERT INTO them VALUES ( \'x\' || CHR(9) || \'x\', \'tab\' );" \
+ -c "INSERT INTO them VALUES ( CHR(39) || \'stquot\', \'quote1\' );" \
+ ';
+****
+#
+# now, the tests
 exim -d-all+lookup -be
 ${lookup pgsql {select name from them where id='ph10';}}
 ${lookup pgsql {select name from them where id='ph10';}}
@@ -11,9 +34,9 @@ ${lookup pgsql {select * from them where id='newline';}}
 ${lookup pgsql {select * from them where id='tab';}}
 ${lookup pgsql {select * from them where name='${quote_pgsql:'stquot}';}}
 ${lookup pgsql {servers=x:localhost; select name from them where id='ph10';}}
-${lookup pgsql {servers=localhost:x; select name from them where id='ph10';}}
-${lookup pgsql {servers=localhost/test/CALLER/:x; select name from them where id='ph10';}}
-${lookup pgsql {servers=(/tmp/.s.PGSQL.5432)/test/ph10/:x; select name from them where id='ph10';}}
+${lookup pgsql {servers=localhost::PORT_N:x; select name from them where id='ph10';}}
+${lookup pgsql {servers=localhost::PORT_N/test/CALLER/:x; select name from them where id='ph10';}}
+${lookup pgsql {servers=(DIR/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name from them where id='ph10';}}
 ****
 exim -d -bh 10.0.0.0
 mail from:<a@b>
@@ -25,6 +48,12 @@ exim -odi -d CALLER
 Test message
 .
 ****
-exim -DSERVERS=\(/tmp/.s.PGSQL.5432\)/test/ph10/ -d-all+lookup -be
-${lookup pgsql {select name from them where id='CALLER';}}
+exim -DSERVERS=\(DIR/pgsql/.s.PGSQL.PORT_N\)/test/CALLER/ -d-all+lookup -be
+${lookup pgsql {select name from them where id='ph10';}}
 ****
+#
+perl
+system 'pg_ctl stop -D DIR/pgsql/data -m immediate';
+****
+killdaemon
+sudo rm -fr DIR/pgsql
