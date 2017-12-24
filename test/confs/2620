@@ -1,4 +1,4 @@
-# Exim test configuration 9200
+# Exim test configuration 2620
 
 SERVERS=localhost::PORT_N/test/CALLER/
 
