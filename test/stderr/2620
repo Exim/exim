@@ -1,24 +1,28 @@
+
+WARNING: enabling "trust" authentication for local connections
+You can change this by editing pg_hba.conf or using the option -A, or
+--auth-local and --auth-host, the next time you run initdb.
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 search_open: pgsql "NULL"
 search_find: file="NULL"
-  key="select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select name from them where id='CALLER';"
-database lookup required for select name from them where id='CALLER';
-PostgreSQL query: select name from them where id='CALLER';
-PGSQL new connection: host=localhost port= database=test user=CALLER
+  type=pgsql key="select name from them where id='ph10';"
+database lookup required for select name from them where id='ph10';
+PostgreSQL query: select name from them where id='ph10';
+PGSQL new connection: host=localhost port=1223 database=test user=CALLER
 lookup yielded: Philip Hazel
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select name from them where id='CALLER';"
-cached data used for lookup of select name from them where id='CALLER';
+  type=pgsql key="select name from them where id='ph10';"
+cached data used for lookup of select name from them where id='ph10';
 lookup yielded: Philip Hazel
 search_open: pgsql "NULL"
   cached open
@@ -29,7 +33,7 @@ internal_search_find: file="NULL"
   type=pgsql key="select name from them where id='xxxx';"
 database lookup required for select name from them where id='xxxx';
 PostgreSQL query: select name from them where id='xxxx';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 PGSQL: no data found
 lookup failed
 search_open: pgsql "NULL"
@@ -41,7 +45,7 @@ internal_search_find: file="NULL"
   type=pgsql key="select name from them where id='nothing';"
 database lookup required for select name from them where id='nothing';
 PostgreSQL query: select name from them where id='nothing';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: 
 search_open: pgsql "NULL"
   cached open
@@ -52,7 +56,7 @@ internal_search_find: file="NULL"
   type=pgsql key="select id,name from them where id='nothing';"
 database lookup required for select id,name from them where id='nothing';
 PostgreSQL query: select id,name from them where id='nothing';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: id=nothing name="" 
 search_open: pgsql "NULL"
   cached open
@@ -63,7 +67,7 @@ internal_search_find: file="NULL"
   type=pgsql key="delete from them where id='nonexist';"
 database lookup required for delete from them where id='nonexist';
 PostgreSQL query: delete from them where id='nonexist';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 PGSQL: command does not return any data but was successful. Rows affected: 0
 lookup forced cache cleanup
 lookup yielded: 0
@@ -76,7 +80,7 @@ internal_search_find: file="NULL"
   type=pgsql key="select * from them where id='quote2';"
 database lookup required for select * from them where id='quote2';
 PostgreSQL query: select * from them where id='quote2';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: name="\"stquot" id=quote2 
 search_open: pgsql "NULL"
   cached open
@@ -87,7 +91,7 @@ internal_search_find: file="NULL"
   type=pgsql key="select * from them where id='newline';"
 database lookup required for select * from them where id='newline';
 PostgreSQL query: select * from them where id='newline';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: name="before
 after" id=newline 
 search_open: pgsql "NULL"
@@ -99,7 +103,7 @@ internal_search_find: file="NULL"
   type=pgsql key="select * from them where id='tab';"
 database lookup required for select * from them where id='tab';
 PostgreSQL query: select * from them where id='tab';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: name="x	x" id=tab 
 search_open: pgsql "NULL"
   cached open
@@ -110,55 +114,79 @@ internal_search_find: file="NULL"
   type=pgsql key="select * from them where name='''stquot';"
 database lookup required for select * from them where name='''stquot';
 PostgreSQL query: select * from them where name='''stquot';
-PGSQL using cached connection for localhost/test/CALLER
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: name='stquot id=quote1 
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=x:localhost; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="servers=x:localhost; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="servers=x:localhost; select name from them where id='CALLER';"
-database lookup required for servers=x:localhost; select name from them where id='CALLER';
-PostgreSQL query: servers=x:localhost; select name from them where id='CALLER';
+  type=pgsql key="servers=x:localhost; select name from them where id='ph10';"
+database lookup required for servers=x:localhost; select name from them where id='ph10';
+PostgreSQL query: servers=x:localhost; select name from them where id='ph10';
 lookup deferred: PostgreSQL server "x" not found in pgsql_servers
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=localhost:x; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="servers=localhost::1223:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="servers=localhost:x; select name from them where id='CALLER';"
-database lookup required for servers=localhost:x; select name from them where id='CALLER';
-PostgreSQL query: servers=localhost:x; select name from them where id='CALLER';
-PGSQL using cached connection for localhost/test/CALLER
+  type=pgsql key="servers=localhost::1223:x; select name from them where id='ph10';"
+database lookup required for servers=localhost::1223:x; select name from them where id='ph10';
+PostgreSQL query: servers=localhost::1223:x; select name from them where id='ph10';
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: Philip Hazel
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=localhost/test/CALLER/:x; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="servers=localhost/test/CALLER/:x; select name from them where id='CALLER';"
-database lookup required for servers=localhost/test/CALLER/:x; select name from them where id='CALLER';
-PostgreSQL query: servers=localhost/test/CALLER/:x; select name from them where id='CALLER';
-PGSQL using cached connection for localhost/test/CALLER
+  type=pgsql key="servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';"
+database lookup required for servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';
+PostgreSQL query: servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';
+PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: Philip Hazel
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=(/tmp/.s.PGSQL.5432)/test/CALLER/:x; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="servers=(/tmp/.s.PGSQL.5432)/test/CALLER/:x; select name from them where id='CALLER';"
-database lookup required for servers=(/tmp/.s.PGSQL.5432)/test/CALLER/:x; select name from them where id='CALLER';
-PostgreSQL query: servers=(/tmp/.s.PGSQL.5432)/test/CALLER/:x; select name from them where id='CALLER';
-PGSQL new connection: socket=/tmp/.s.PGSQL.5432 database=test user=CALLER
+  type=pgsql key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';"
+database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
+PostgreSQL query: servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
+PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
 lookup yielded: Philip Hazel
+search_open: pgsql "NULL"
+  cached open
+search_find: file="NULL"
+  key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=pgsql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');"
+database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
+PostgreSQL query: SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
+PGSQL using cached connection for localhost:1223/test/CALLER
+lookup yielded: Philip Hazel
+Aristotle
+search_open: pgsql "NULL"
+  cached open
+search_find: file="NULL"
+  key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=pgsql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');"
+database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
+PostgreSQL query: SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
+PGSQL using cached connection for localhost:1223/test/CALLER
+lookup yielded: name="Philip Hazel" id=ph10 
+name=Aristotle id=aaaa 
 search_tidyup called
-close PGSQL connection: (/tmp/.s.PGSQL.5432)/test/CALLER
-close PGSQL connection: localhost/test/CALLER
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
+close PGSQL connection: localhost:1223/test/CALLER
+>>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -186,6 +214,8 @@ host in helo_accept_junk_hosts? no (option unset)
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< mail from:<a@b>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
@@ -193,7 +223,7 @@ processing "accept"
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 search_open: pgsql "NULL"
@@ -204,14 +234,16 @@ internal_search_find: file="NULL"
   type=pgsql key="select * from them where id='10.0.0.0'"
 database lookup required for select * from them where id='10.0.0.0'
 PostgreSQL query: select * from them where id='10.0.0.0'
-PGSQL new connection: host=localhost port= database=test user=CALLER
+PGSQL new connection: host=localhost port=1223 database=test user=CALLER
 PGSQL: no data found
 lookup failed
 host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "deny"
-deny: condition test succeeded
+  message: relay not permitted
+deny: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -221,7 +253,7 @@ processing "accept"
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 search_open: pgsql "NULL"
@@ -235,9 +267,11 @@ cached data used for lookup of select * from them where id='10.0.0.0'
 lookup failed
 host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "deny"
-deny: condition test succeeded
+  message: relay not permitted
+deny: condition test succeeded in ACL "check_recipient"
+end of ACL "check_recipient": DENY
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -246,8 +280,8 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from [10.0.0.0] closed by QUIT
 search_tidyup called
-close PGSQL connection: localhost/test/CALLER
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+close PGSQL connection: localhost:1223/test/CALLER
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -260,6 +294,8 @@ getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 Sender: CALLER@myhost.test.ex
 Recipients:
   CALLER
@@ -274,6 +310,7 @@ I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -282,7 +319,12 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
-Writing spool header file
+Writing spool header file: TESTSUITE/spool//input//hdr.pppp
+DSN: Write SPOOL :-dsn_envid NULL
+DSN: Write SPOOL :-dsn_ret 0
+DSN: Flags :0
+DSN: **** SPOOL_OUT - address: |CALLER@myhost.test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
@@ -295,11 +337,11 @@ changed uid/gid: forcing real = effective
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-skipping ACL configuration - not needed
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
+Trying spool file TESTSUITE/spool//input//10HmaX-0005vi-00-D
 reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@myhost.test.ex
 sender_local=1 ident=CALLER
@@ -307,14 +349,17 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=1
+**** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
+DSN: set orcpt: NULL  flags: 0
 Delivery address list:
   CALLER@myhost.test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+locked  TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+returned from EXIM_DBOPEN: (nil)
 ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
@@ -329,13 +374,13 @@ local_part=CALLER domain=myhost.test.ex
 processing address_data
 search_open: pgsql "NULL"
 search_find: file="NULL"
-  key="select name from them where id='CALLER'" partial=-1 affix=NULL starflags=0
+  key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select name from them where id='CALLER'"
-database lookup required for select name from them where id='CALLER'
-PostgreSQL query: select name from them where id='CALLER'
-PGSQL new connection: host=localhost port= database=test user=CALLER
+  type=pgsql key="select name from them where id='ph10'"
+database lookup required for select name from them where id='ph10'
+PostgreSQL query: select name from them where id='ph10'
+PGSQL new connection: host=localhost port=1223 database=test user=CALLER
 lookup yielded: Philip Hazel
 calling r1 router
 r1 router called for CALLER@myhost.test.ex
@@ -356,13 +401,14 @@ After routing:
   Failed addresses:
   Deferred addresses:
 search_tidyup called
-close PGSQL connection: localhost/test/CALLER
+close PGSQL connection: localhost:1223/test/CALLER
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> CALLER@myhost.test.ex <--------
 locking TESTSUITE/spool/db/retry.lockfile
-locked TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/retry)
-returned from EXIM_DBOPEN
+locked  TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+returned from EXIM_DBOPEN: (nil)
+failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to CALLER <CALLER@myhost.test.ex> transport=t1
@@ -372,31 +418,32 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 to CALLER using t1
 appendfile transport entered
 search_open: pgsql "NULL"
 search_find: file="NULL"
-  key="select id from them where id='CALLER'" partial=-1 affix=NULL starflags=0
+  key="select id from them where id='ph10'" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select id from them where id='CALLER'"
-database lookup required for select id from them where id='CALLER'
-PostgreSQL query: select id from them where id='CALLER'
-PGSQL new connection: host=localhost port= database=test user=CALLER
-lookup yielded: CALLER
+  type=pgsql key="select id from them where id='ph10'"
+database lookup required for select id from them where id='ph10'
+PostgreSQL query: select id from them where id='ph10'
+PGSQL new connection: host=localhost port=1223 database=test user=CALLER
+lookup yielded: ph10
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
-  file=TESTSUITE/test-mail/CALLER format=unix
+  file=TESTSUITE/test-mail/ph10 format=unix
   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
   message_suffix=\n
   maildir_use_size_file=no
   locking by lockfile fcntl 
-lock name: TESTSUITE/test-mail/CALLER.lock
-hitch name: TESTSUITE/test-mail/CALLER.lock.test.ex.dddddddd.pppppppp
+lock name: TESTSUITE/test-mail/ph10.lock
+hitch name: TESTSUITE/test-mail/ph10.lock.test.ex.dddddddd.pppppppp
 lock file created
-mailbox TESTSUITE/test-mail/CALLER is locked
-writing to file TESTSUITE/test-mail/CALLER
+mailbox TESTSUITE/test-mail/ph10 is locked
+writing to file TESTSUITE/test-mail/ph10
 writing data block fd=dddd size=sss timeout=0
+cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-close PGSQL connection: localhost/test/CALLER
+close PGSQL connection: localhost:1223/test/CALLER
 journalling CALLER@myhost.test.ex
 t1 transport returned OK for CALLER@myhost.test.ex
 post-process CALLER@myhost.test.ex (0)
@@ -409,31 +456,43 @@ changed uid/gid: post-delivery tidying
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 Processing retry items
 Succeeded addresses:
-CALLER@myhost.test.ex: no retry items
+ CALLER@myhost.test.ex: no retry items
 Failed addresses:
 Deferred addresses:
 end of retry processing
+DSN: processing router : r1
+DSN: processing successful delivery address: CALLER@myhost.test.ex
+DSN: Sender_address: CALLER@myhost.test.ex
+DSN: orcpt: NULL  flags: 0
+DSN: envid: NULL  ret: 0
+DSN: Final recipient: CALLER@myhost.test.ex
+DSN: Remote SMTP server supports DSN: 0
+DSN: not sending DSN success message
 LOG: MAIN
   Completed
 end delivery of 10HmaX-0005vi-00
 search_tidyup called
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 search_open: pgsql "NULL"
 search_find: file="NULL"
-  key="select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+  key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select name from them where id='CALLER';"
-database lookup required for select name from them where id='CALLER';
-PostgreSQL query: select name from them where id='CALLER';
-PGSQL new connection: socket=/tmp/.s.PGSQL.5432 database=test user=CALLER
+  type=pgsql key="select name from them where id='ph10';"
+database lookup required for select name from them where id='ph10';
+PostgreSQL query: select name from them where id='ph10';
+PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
 lookup yielded: Philip Hazel
 search_tidyup called
-close PGSQL connection: (/tmp/.s.PGSQL.5432)/test/CALLER
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
+>>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+
+******** SERVER ********
+LOG:  redirecting log output to logging collector process
+HINT:  Future log output will appear in directory "pg_log".

@@ -1,0 +1,66 @@
+The files belonging to this database system will be owned by user "CALLER".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default database encoding has accordingly been set to "SQL_ASCII".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory TESTSUITE/pgsql/data ... ok
+creating subdirectories ... ok
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting dynamic shared memory implementation ... posix
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    pg_ctl -D TESTSUITE/pgsql/data -l logfile start
+
+CREATE TABLE
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+> Philip Hazel
+> Philip Hazel
+> 
+> 
+> id=nothing name="" 
+> 0
+> name="\"stquot" id=quote2 
+> name="before
+after" id=newline 
+> name="x	x" id=tab 
+> name='stquot id=quote1 
+> Failed: lookup of "servers=x:localhost; select name from them where id='ph10';" gave DEFER: PostgreSQL server "x" not found in pgsql_servers
+> Philip Hazel
+> Philip Hazel
+> Philip Hazel
+> x
+> Philip Hazel
+Aristotle
+> name="Philip Hazel" id=ph10 
+name=Aristotle id=aaaa 
+> 
+
+**** SMTP testing session as if from host 10.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 relay not permitted
+550 relay not permitted
+221 myhost.test.ex closing connection
+> Philip Hazel
+> 
+waiting for server to shut down.... done
+server stopped

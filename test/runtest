@@ -2428,6 +2428,7 @@ elsif (/^background$/)
 
   $_ = <SCRIPT>; $lineno++;
   chomp;
+  do_substitute($testno);
   $line = $_;
   if ($debug) { printf ">> daemon: $line >>test-stdout 2>>test-stderr\n"; }
 

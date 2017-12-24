@@ -5,6 +5,13 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Since Exim version 4.90
+-----------------
+
+JH/03 Fix pgsql lookup for multiple result-tuples with a single column.
+      Previously only the last row was returned.
+
+
 Exim version 4.90
 -----------------
 
