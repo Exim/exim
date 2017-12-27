@@ -3925,7 +3925,9 @@ for (cutoff_retry = 0;
   {
   host_item *nexthost = NULL;
   int unexpired_hosts_tried = 0;
+  BOOL continue_host_tried = FALSE;
 
+retry_non_continued:
   for (host = hostlist;
           host
        && unexpired_hosts_tried < ob->hosts_max_try
@@ -4058,14 +4060,16 @@ for (cutoff_retry = 0;
     result of the lookup. Set expired FALSE, to save the outer loop executing
     twice. */
 
-    if (  continue_hostname
-       && (  Ustrcmp(continue_hostname, host->name) != 0
-          || Ustrcmp(continue_host_address, host->address) != 0
-       )  )
-      {
-      expired = FALSE;
-      continue;      /* With next host */
-      }
+    if (continue_hostname)
+      if (  Ustrcmp(continue_hostname, host->name) != 0
+         || Ustrcmp(continue_host_address, host->address) != 0
+	 )
+	{
+	expired = FALSE;
+	continue;      /* With next host */
+	}
+      else
+	continue_host_tried = TRUE;
 
     /* Reset the default next host in case a multihomed host whose addresses
     are not looked up till just above added to the host list. */
@@ -4522,6 +4526,32 @@ for (cutoff_retry = 0;
         }
       }
     }   /* End of loop for trying multiple hosts. */
+
+  /* If we failed to find a matching host in the list, for an already-open
+  connection, just close it and start over with the list.  This can happen
+  for routing that changes from run to run, or big multi-IP sites with
+  round-robin DNS. */
+
+  if (continue_hostname && !continue_host_tried)
+    {
+    int fd = cutthrough.fd >= 0 ? cutthrough.fd : 0;
+
+    DEBUG(D_transport) debug_printf("no hosts match already-open connection\n");
+#ifdef SUPPORT_TLS
+    if (tls_out.active == fd)
+      {
+      (void) tls_write(FALSE, US"QUIT\r\n", 6, FALSE);
+      tls_close(FALSE, TRUE);
+      }
+    else
+#else
+      (void) write(fd, US"QUIT\r\n", 6);
+#endif
+    (void) close(fd);
+    cutthrough.fd = -1;
+    continue_hostname = NULL;
+    goto retry_non_continued;
+    }
 
   /* This is the end of the loop that repeats iff expired is TRUE and
   ob->delay_after_cutoff is FALSE. The second time round we will

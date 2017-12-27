@@ -37,6 +37,12 @@ JH/05 Bug 2215: Fix crash associated with dnsdb lookup done from DKIM ACL.
       active in the testsuite.
       Problem spotted, and debugging aided, by Wolfgang Breyha.
 
+JH/06 Fix issue with continued-connections when the DNS shifts unreliably.
+      When none of the hosts presented to a transport match an already-open
+      connection, close it and proceed with the list.  Previously we would
+      queue the message.  Spotted by Lena with Yahoo, probably involving
+      round-robin DNS.
+
 
 Exim version 4.90
 -----------------
