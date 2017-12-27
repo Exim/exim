@@ -494,5 +494,3 @@ close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********
-LOG:  redirecting log output to logging collector process
-HINT:  Future log output will appear in directory "pg_log".
