@@ -5,20 +5,22 @@ sudo rm -fr DIR/pgsql
 perl
 system 'initdb -D DIR/pgsql/data';
 ****
+sudo rm test-stdout
 background
 /usr/bin/postgres -D DIR/pgsql/data -p PORT_N -k DIR/pgsql
 ****
+sleep 1
 perl
 system 'createdb -h localhost -p PORT_N test';
 system 'psql -h localhost -p PORT_N -d test \
- -c "CREATE TABLE them ( name text, id text );" \
- -c "INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' );" \
- -c "INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' );" \
- -c "INSERT INTO them VALUES ( \'\', \'nothing\' );" \
- -c "INSERT INTO them VALUES ( \'\"stquot\', \'quote2\' );" \
- -c "INSERT INTO them VALUES ( \'before\' || CHR(13) || CHR(10) || \'after\', \'newline\' );" \
- -c "INSERT INTO them VALUES ( \'x\' || CHR(9) || \'x\', \'tab\' );" \
- -c "INSERT INTO them VALUES ( CHR(39) || \'stquot\', \'quote1\' );" \
+ -c "CREATE TABLE them ( name text, id text ); \
+     INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
+     INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' ); \
+     INSERT INTO them VALUES ( \'\', \'nothing\' ); \
+     INSERT INTO them VALUES ( \'\"stquot\', \'quote2\' ); \
+     INSERT INTO them VALUES ( \'before\' || CHR(13) || CHR(10) || \'after\', \'newline\' ); \
+     INSERT INTO them VALUES ( \'x\' || CHR(9) || \'x\', \'tab\' ); \
+     INSERT INTO them VALUES ( CHR(39) || \'stquot\', \'quote1\' );" \
  ';
 ****
 #
