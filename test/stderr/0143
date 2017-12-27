@@ -15,7 +15,7 @@ transport_name <my_smtp>
 my_smtp transport entered
   userx@domain.com
 hostlist:
-  127.0.0.1:-1
+  '127.0.0.1' IP 127.0.0.1 port -1
 checking status of 127.0.0.1
 127.0.0.1 [127.0.0.1]:1111/ip4.ip4.ip4.ip4 retry-status = usable
 delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@domain.com)

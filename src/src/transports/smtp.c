@@ -3733,7 +3733,7 @@ uschar *tid = string_sprintf("%s transport", tblock->name);
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)(tblock->options_block);
 host_item *hostlist = addrlist->host_list;
-host_item *host = NULL;
+host_item *host;
 
 DEBUG(D_transport)
   {
@@ -3744,7 +3744,7 @@ DEBUG(D_transport)
     {
     debug_printf("hostlist:\n");
     for (host = hostlist; host; host = host->next)
-      debug_printf("  %s:%d\n", host->name, host->port);
+      debug_printf("  '%s' IP %s port %d\n", host->name, host->address, host->port);
     }
   if (continue_hostname)
     debug_printf("already connected to %s [%s] (on fd %d)\n",
