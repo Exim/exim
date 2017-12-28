@@ -490,7 +490,12 @@ for (p = raw_hdr; ; p++)
 
     if (c == ';' || c == '\0')
       {
-      if (cur_tag && cur_val)
+      /* We must have both tag and value, and tags must be one char except
+      for the possibility of "bh". */
+
+      if (  cur_tag && cur_val
+	 && (cur_tag->ptr == 1 || *cur_tag->s == 'b')
+	 )
         {
 	(void) string_from_gstring(cur_val);
 	pdkim_strtrim(cur_val);
@@ -500,8 +505,14 @@ for (p = raw_hdr; ; p++)
 	switch (*cur_tag->s)
 	  {
 	  case 'b':
-	    pdkim_decode_base64(cur_val->s,
-			    cur_tag->s[1] == 'h' ? &sig->bodyhash : &sig->sighash);
+	    switch (cur_tag->s[1])
+	      {
+	      case '\0': pdkim_decode_base64(cur_val->s, &sig->sighash); break;
+	      case 'h':  if (cur_tag->ptr == 2)
+			   pdkim_decode_base64(cur_val->s, &sig->bodyhash);
+			 break;
+	      default:   break;
+	      }
 	    break;
 	  case 'v':
 	      /* We only support version 1, and that is currently the
