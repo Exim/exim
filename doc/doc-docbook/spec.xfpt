@@ -1233,7 +1233,7 @@ routers in many different ways, and there may be any number of routers in a
 configuration.
 
 The first router that is specified in a configuration is often one that handles
-addresses in domains that are not recognized specially by the local host. These
+addresses in domains that are not recognized specifically by the local host. These
 are typically addresses for arbitrary domains on the Internet. A precondition
 is set up which looks for the special domains known to the host (for example,
 its own domain name), and the router is run for addresses that do &'not'&
