@@ -596,6 +596,15 @@ switch(t)
 *        Cache a failed DNS lookup result        *
 *************************************************/
 
+static void
+dns_fail_tag(uschar * buf, const uschar * name, int dns_type)
+{
+res_state resp = os_get_dns_resolver_res();
+sprintf(CS buf, "%.255s-%s-%lx", name, dns_text_type(dns_type),
+  (unsigned long) resp->options);
+}
+
+
 /* We cache failed lookup results so as not to experience timeouts many
 times for the same domain. We need to retain the resolver options because they
 may change. For successful lookups, we rely on resolver and/or name server
@@ -612,10 +621,8 @@ Returns:     the return code
 static int
 dns_return(const uschar * name, int type, int rc)
 {
-res_state resp = os_get_dns_resolver_res();
 tree_node *node = store_get_perm(sizeof(tree_node) + 290);
-sprintf(CS node->name, "%.255s-%s-%lx", name, dns_text_type(type),
-  (unsigned long) resp->options);
+dns_fail_tag(node->name, name, type);
 node->data.val = rc;
 (void)tree_insertnode(&tree_dns_fails, node);
 return rc;
@@ -653,7 +660,6 @@ dns_basic_lookup(dns_answer *dnsa, const uschar *name, int type)
 int rc = -1;
 const uschar *save_domain;
 #endif
-res_state resp = os_get_dns_resolver_res();
 
 tree_node *previous;
 uschar node_name[290];
@@ -663,8 +669,7 @@ a timeout on one domain doesn't happen time and time again for messages that
 have many addresses in the same domain. We rely on the resolver and name server
 caching for successful lookups. */
 
-sprintf(CS node_name, "%.255s-%s-%lx", name, dns_text_type(type),
-  (unsigned long) resp->options);
+dns_fail_tag(node_name, name, type);
 if ((previous = tree_search(tree_dns_fails, node_name)))
   {
   DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: using cached value %s\n",
