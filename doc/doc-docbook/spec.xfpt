@@ -1547,7 +1547,7 @@ attempt is the queue runner process. You must either run an Exim daemon that
 uses the &%-q%& option with a time interval to start queue runners at regular
 intervals or use some other means (such as &'cron'&) to start them. If you do
 not arrange for queue runners to be run, messages that fail temporarily at the
-first attempt will remain in your queue for ever. A queue runner process works
+first attempt will remain in your queue forever. A queue runner process works
 its way through the queue, one message at a time, trying each delivery that has
 passed its retry time.
 You can run several queue runners at once.
@@ -16240,7 +16240,7 @@ SMTP deliveries to be queued in this way, and is equivalent to setting
 .cindex "timeout" "for non-SMTP input"
 This option sets the timeout for accepting a non-SMTP message, that is, the
 maximum time that Exim waits when reading a message on the standard input. If
-the value is zero, it will wait for ever. This setting is overridden by the
+the value is zero, it will wait forever. This setting is overridden by the
 &%-or%& command line option. The timeout for incoming SMTP messages is
 controlled by &%smtp_receive_timeout%&.
 
@@ -37630,7 +37630,7 @@ default is to create a lock file and also to use &[fcntl()]& locking on the
 mailbox, which is the same as Exim's default. The use of &%-flock%& or
 &%-fcntl%& requires that the file be writeable; the use of &%-lockfile%&
 requires that the directory containing the file be writeable. Locking by lock
-file does not last for ever; Exim assumes that a lock file is expired if it is
+file does not last forever; Exim assumes that a lock file is expired if it is
 more than 30 minutes old.
 
 The &%-mbx%& option can be used with either or both of &%-fcntl%& or
