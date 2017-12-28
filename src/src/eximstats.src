@@ -557,7 +557,7 @@ use File::Basename;
 # use Time::Local;  # PH/FANF
 use POSIX;
 
-if ($ARGV[0] eq '--version') {
+if (@ARGV > 0 && $ARGV[0] eq '--version') {
     print basename($0) . ": $0\n",
         "build: EXIM_RELEASE_VERSIONEXIM_VARIANT_VERSION\n",
         "perl(runtime): $]\n";
