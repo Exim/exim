@@ -1350,7 +1350,7 @@ facility for this purpose.
 .cindex "duplicate addresses"
 Once routing is complete, Exim scans the addresses that are assigned to local
 and remote transports and discards any duplicates that it finds. During this
-check, local parts are treated as case-sensitive. This happens only when
+check, local parts are treated case-sensitively. This happens only when
 actually delivering a message; when testing routers with &%-bt%&, all the
 routed addresses are shown.
 
