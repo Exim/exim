@@ -636,13 +636,13 @@ can be a straight replacement for &_/usr/lib/sendmail_& or
 &_/usr/sbin/sendmail_& when sending mail, but you do not need to know anything
 about Sendmail in order to run Exim. For actions other than sending messages,
 Sendmail-compatible options also exist, but those that produce output (for
-example, &%-bp%&, which lists the messages on the queue) do so in Exim's own
+example, &%-bp%&, which lists the messages in the queue) do so in Exim's own
 format. There are also some additional options that are compatible with Smail
 3, and some further options that are new to Exim. Chapter &<<CHAPcommandline>>&
 documents all Exim's command line options. This information is automatically
 made into the man page that forms part of the Exim distribution.
 
-Control of messages on the queue can be done via certain privileged command
+Control of messages in the queue can be done via certain privileged command
 line options. There is also an optional monitor program called &'eximon'&,
 which displays current information in an X window, and which contains a menu
 interface to Exim's command line administration options.
@@ -1616,7 +1616,7 @@ of the list.
 .section "Failures to deliver bounce messages" "SECID22"
 .cindex "bounce message" "failure to deliver"
 If a bounce message (either locally generated or received from a remote host)
-itself suffers a permanent delivery failure, the message is left on the queue,
+itself suffers a permanent delivery failure, the message is left in the queue,
 but it is frozen, awaiting the attention of an administrator. There are options
 that can be used to make Exim discard such failed messages, or to keep them
 for only a short time (see &%timeout_frozen_after%& and
@@ -3178,15 +3178,15 @@ the exit status will be nonzero.
 
 .vitem &%-bp%&
 .oindex "&%-bp%&"
-.cindex "queue" "listing messages on"
-.cindex "listing" "messages on the queue"
+.cindex "queue" "listing messages in"
+.cindex "listing" "messages in the queue"
 This option requests a listing of the contents of the mail queue on the
 standard output. If the &%-bp%& option is followed by a list of message ids,
 just those messages are listed. By default, this option can be used only by an
 admin user. However, the &%queue_list_requires_admin%& option can be set false
 to allow any user to see the queue.
 
-Each message on the queue is displayed as in the following example:
+Each message in the queue is displayed as in the following example:
 .code
 25m  2.9K 0t5C6f-0000c8-00 <alice@wonderland.fict.example>
           red.king@looking-glass.fict.example
@@ -3194,7 +3194,7 @@ Each message on the queue is displayed as in the following example:
 .endd
 .cindex "message" "size in queue listing"
 .cindex "size" "of message"
-The first line contains the length of time the message has been on the queue
+The first line contains the length of time the message has been in the queue
 (in this case 25 minutes), the size of the message (2.9K), the unique local
 identifier for the message, and the message sender, as contained in the
 envelope. For bounce messages, the sender address is empty, and appears as
@@ -3225,7 +3225,7 @@ of just &"D"&.
 .vitem &%-bpc%&
 .oindex "&%-bpc%&"
 .cindex "queue" "count of messages on"
-This option counts the number of messages on the queue, and writes the total
+This option counts the number of messages in the queue, and writes the total
 to the standard output. It is restricted to admin users, unless
 &%queue_list_requires_admin%& is set false.
 
@@ -3234,7 +3234,7 @@ to the standard output. It is restricted to admin users, unless
 .oindex "&%-bpr%&"
 This option operates like &%-bp%&, but the output is not sorted into
 chronological order of message arrival. This can speed it up when there are
-lots of messages on the queue, and is particularly useful if the output is
+lots of messages in the queue, and is particularly useful if the output is
 going to be post-processed in a way that doesn't need the sorting.
 
 .vitem &%-bpra%&
@@ -3517,7 +3517,7 @@ even if the caller is root. The reception works, but by that time, Exim is
 running as the Exim user, so when it re-executes to regain privilege for the
 delivery, the use of &%-C%& causes privilege to be lost. However, root can
 test reception and delivery using two separate commands (one to put a message
-on the queue, using &%-odq%&, and another to do the delivery, using &%-M%&).
+in the queue, using &%-odq%&, and another to do the delivery, using &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option
@@ -3964,7 +3964,7 @@ This option requests Exim to remove the given messages from the queue. No
 bounce messages are sent; each message is simply forgotten. However, if any of
 the messages are active, their status is not altered. This option can be used
 only by an admin user or by the user who originally caused the message to be
-placed on the queue.
+placed in the queue.
 
 .vitem &%-Mset%&&~<&'message&~id'&>
 .oindex "&%-Mset%&
@@ -4109,7 +4109,7 @@ However, like &%-odb%&, this option has no effect if &%queue_only_override%& is
 false and one of the queueing options in the configuration file is in effect.
 
 If there is a temporary delivery error during foreground delivery, the
-message is left on the queue for later delivery, and the original reception
+message is left in the queue for later delivery, and the original reception
 process exits. See chapter &<<CHAPnonqueueing>>& for a way of setting up a
 restricted configuration that never queues messages.
 
@@ -4127,7 +4127,7 @@ Sendmail.
 This option applies to all modes in which Exim accepts incoming messages,
 including the listening daemon. It specifies that the accepting process should
 not automatically start a delivery process for each message received. Messages
-are placed on the queue, and remain there until a subsequent queue runner
+are placed in the queue, and remain there until a subsequent queue runner
 process encounters them. There are several configuration options (such as
 &%queue_only%&) that can be used to queue incoming messages under certain
 conditions. This option overrides all of them and also &%-odqs%&. It always
@@ -4145,7 +4145,7 @@ When &%-odqs%& does operate, a delivery process is started for each incoming
 message, in the background by default, but in the foreground if &%-odi%& is
 also present. The recipient addresses are routed, and local deliveries are done
 in the normal way. However, if any SMTP deliveries are required, they are not
-done at this time, so the message remains on the queue until a subsequent queue
+done at this time, so the message remains in the queue until a subsequent queue
 runner process encounters it. Because routing was done, Exim knows which
 messages are waiting for which hosts, and so a number of messages for the same
 host can be sent in a single SMTP connection. The &%queue_smtp_domains%&
@@ -4466,7 +4466,7 @@ intermittently.
 .cindex "queue" "initial delivery"
 If the &'i'& flag is present, the queue runner runs delivery processes only for
 those messages that haven't previously been tried. (&'i'& stands for &"initial
-delivery"&.) This can be helpful if you are putting messages on the queue using
+delivery"&.) This can be helpful if you are putting messages in the queue using
 &%-odq%& and want a queue runner just to process the new messages.
 
 .vitem &%-q[q][i]f...%&
@@ -4487,7 +4487,7 @@ frozen or not.
 .oindex "&%-ql%&"
 .cindex "queue" "local deliveries only"
 The &'l'& (the letter &"ell"&) flag specifies that only local deliveries are to
-be done. If a message requires any remote deliveries, it remains on the queue
+be done. If a message requires any remote deliveries, it remains in the queue
 for later delivery.
 
 .vitem &%-q[q][i][f[f]][l][G<name>[/<time>]]]%&
@@ -4819,7 +4819,7 @@ delivery, even if the caller is root. The reception works, but by that time,
 Exim is running as the Exim user, so when it re-execs to regain privilege for
 the delivery, the use of &%-C%& causes privilege to be lost. However, root
 can test reception and delivery using two separate commands (one to put a
-message on the queue, using &%-odq%&, and another to do the delivery, using
+message in the queue, using &%-odq%&, and another to do the delivery, using
 &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
@@ -5725,7 +5725,7 @@ ignore_bounce_errors_after = 2d
 timeout_frozen_after = 7d
 .endd
 The first of these options specifies that failing bounce messages are to be
-discarded after 2 days on the queue. The second specifies that any frozen
+discarded after 2 days in the queue. The second specifies that any frozen
 message (whether a bounce message or not) is to be timed out (and discarded)
 after a week. In this configuration, the first setting ensures that no failing
 bounce message ever lasts a week.
@@ -14613,7 +14613,7 @@ When a message is delayed, Exim sends a warning message to the sender at
 intervals specified by this option. The data is a colon-separated list of times
 after which to send warning messages. If the value of the option is an empty
 string or a zero time, no warnings are sent. Up to 10 times may be given. If a
-message has been on the queue for longer than the last time, the last interval
+message has been in the queue for longer than the last time, the last interval
 between the times is used to compute subsequent warning times. For example,
 with
 .code
@@ -15206,7 +15206,7 @@ error.
 .option hold_domains main "domain list&!!" unset
 .cindex "domain" "delaying delivery"
 .cindex "delivery" "delaying certain domains"
-This option allows mail for particular domains to be held on the queue
+This option allows mail for particular domains to be held in the queue
 manually. The option is overridden if a message delivery is forced with the
 &%-M%&, &%-qf%&, &%-Rf%& or &%-Sf%& options, and also while testing or
 verifying addresses using &%-bt%& or &%-bv%&. Otherwise, if a domain matches an
@@ -15336,7 +15336,7 @@ suffer temporary delivery failures are of course retried in the usual way.)
 
 After a permanent delivery failure, bounce messages are frozen,
 because there is no sender to whom they can be returned. When a frozen bounce
-message has been on the queue for more than the given time, it is unfrozen at
+message has been in the queue for more than the given time, it is unfrozen at
 the next queue run, and a further delivery is attempted. If delivery fails
 again, the bounce message is discarded. This makes it possible to keep failed
 bounce messages around for a shorter time than the normal maximum retry time
@@ -16119,7 +16119,7 @@ See also &%prod_requires_admin%& and &%commandline_checks_require_admin%&.
 .cindex "queueing incoming messages"
 .cindex "message" "queueing unconditionally"
 If &%queue_only%& is set, a delivery process is not automatically started
-whenever a message is received. Instead, the message waits on the queue for the
+whenever a message is received. Instead, the message waits in the queue for the
 next queue run. Even if &%queue_only%& is false, incoming messages may not get
 delivered immediately when certain conditions (such as heavy load) occur.
 
@@ -16227,7 +16227,7 @@ When this option is set, a delivery process is started whenever a message is
 received, routing is performed, and local deliveries take place.
 However, if any SMTP deliveries are required for domains that match
 &%queue_smtp_domains%&, they are not immediately delivered, but instead the
-message waits on the queue for the next queue run. Since routing of the message
+message waits in the queue for the next queue run. Since routing of the message
 has taken place, Exim knows to which remote hosts it must be delivered, and so
 when the queue run happens, multiple messages for the same host are delivered
 over a single SMTP connection. The &%-odqs%& command line option causes all
@@ -16571,7 +16571,7 @@ doing this processing, it cannot accept any other incoming connections.
 .cindex "message" "queueing by SMTP connection count"
 If the number of simultaneous incoming SMTP connections being handled via the
 listening daemon exceeds this value, messages received by SMTP are just placed
-on the queue; no delivery processes are started automatically. The count is
+in the queue; no delivery processes are started automatically. The count is
 fixed at the start of an SMTP connection. It cannot be updated in the
 subprocess that receives messages, and so the queueing or not queueing applies
 to all messages received in the same connection.
@@ -16592,7 +16592,7 @@ This option limits the number of delivery processes that Exim starts
 automatically when receiving messages via SMTP, whether via the daemon or by
 the use of &%-bs%& or &%-bS%&. If the value of the option is greater than zero,
 and the number of messages received in a single SMTP session exceeds this
-number, subsequent messages are placed on the queue, but no delivery processes
+number, subsequent messages are placed in the queue, but no delivery processes
 are started. This helps to limit the number of Exim processes when a server
 restarts after downtime and there is a lot of mail waiting for it on other
 systems. On large systems, the default should probably be increased, and on
@@ -16938,7 +16938,7 @@ trying to deliver each one, in turn, it constructs a list of those in one
 sub-directory and tries to deliver them, before moving on to the next
 sub-directory. The sub-directories are processed in a random order. This
 spreads out the scanning of the input directories, and uses less memory. It is
-particularly beneficial when there are lots of messages on the queue. However,
+particularly beneficial when there are lots of messages in the queue. However,
 if &%queue_run_in_order%& is set, none of this new processing happens. The
 entire queue has to be scanned and sorted before any deliveries can start.
 
@@ -17147,7 +17147,7 @@ TCP_NODELAY.
 .cindex "frozen messages" "timing out"
 .cindex "timeout" "frozen messages"
 If &%timeout_frozen_after%& is set to a time greater than zero, a frozen
-message of any kind that has been on the queue for longer than the given time
+message of any kind that has been in the queue for longer than the given time
 is automatically cancelled at the next queue run. If the frozen message is a
 bounce message, it is just discarded; otherwise, a bounce is sent to the
 sender, in a similar manner to cancellation by the &%-Mg%& command line option.
@@ -17601,7 +17601,7 @@ See &%uucp_from_pattern%& above.
 .cindex "customizing" "warning message"
 This option defines a template file containing paragraphs of text to be used
 for constructing the warning message which is sent by Exim when a message has
-been on the queue for a specified amount of time, as specified by
+been in the queue for a specified amount of time, as specified by
 &%delay_warning%&. Details of the file's contents are given in chapter
 &<<CHAPemsgcust>>&. See also &%bounce_message_file%&.
 
@@ -20287,7 +20287,7 @@ lookup and in &':include:'& files.
 
 During routing for message delivery (as opposed to verification), a redirection
 containing &':fail:'& causes an immediate failure of the incoming address,
-whereas &':defer:'& causes the message to remain on the queue so that a
+whereas &':defer:'& causes the message to remain in the queue so that a
 subsequent delivery attempt can happen at a later time. If an address is
 deferred for too long, it will ultimately fail, because the normal retry
 rules still apply.
@@ -35081,7 +35081,7 @@ accepted.
 
 .chapter "Customizing bounce and warning messages" "CHAPemsgcust" &&&
          "Customizing messages"
-When a message fails to be delivered, or remains on the queue for more than a
+When a message fails to be delivered, or remains in the queue for more than a
 configured amount of time, Exim sends a message to the original sender, or
 to an alternative configured address. The text of these messages is built into
 the code of Exim, but it is possible to change it, either by adding a single
@@ -35194,7 +35194,7 @@ A message ${if eq{$sender_address}{$warn_message_recipients}
 <$sender_address>
 
 }}has not been delivered to all of its recipients after
-more than $warn_message_delay on the queue on $primary_hostname.
+more than $warn_message_delay in the queue on $primary_hostname.
 
 The message identifier is:     $message_exim_id
 The subject of the message is: $h_subject
@@ -37092,7 +37092,7 @@ There is one more option, &%-h%&, which outputs a list of options.
 .cindex "&'exiqsumm'&"
 .cindex "queue" "summary"
 The &'exiqsumm'& utility is a Perl script which reads the output of &`exim
--bp`& and produces a summary of the messages on the queue. Thus, you use it by
+-bp`& and produces a summary of the messages in the queue. Thus, you use it by
 running a command such as
 .code
 exim -bp | exiqsumm
@@ -37143,7 +37143,7 @@ If no log file names are given on the command line, the standard input is read.
 
 The &%-t%& argument specifies a number of seconds. It adds an additional
 condition for message selection. Messages that are complete are shown only if
-they spent more than <&'n'&> seconds on the queue.
+they spent more than <&'n'&> seconds in the queue.
 
 By default, &'exigrep'& does case-insensitive matching. The &%-I%& option
 makes it case-sensitive. This may give a performance improvement when searching
@@ -37277,7 +37277,7 @@ least one address that failed.
 The remainder of the output is in sections that can be independently disabled
 or modified by various options. It consists of a summary of deliveries by
 transport, histograms of messages received and delivered per time interval
-(default per hour), information about the time messages spent on the queue,
+(default per hour), information about the time messages spent in the queue,
 a list of relayed messages, lists of the top fifty sending hosts, local
 senders, destination hosts, and destination local users by count and by volume,
 and a list of delivery errors that occurred.
@@ -37721,7 +37721,7 @@ Eximon*highlight: gray
 End
 .endd
 .cindex "admin user"
-In order to see the contents of messages on the queue, and to operate on them,
+In order to see the contents of messages in the queue, and to operate on them,
 &'eximon'& must either be run as root or by an admin user.
 
 The command-line parameters of &'eximon'& are passed to &_eximon.bin_& and may
@@ -37741,7 +37741,7 @@ different parts of the display.
 
 .section "The stripcharts" "SECID265"
 .cindex "stripchart"
-The first stripchart is always a count of messages on the queue. Its name can
+The first stripchart is always a count of messages in the queue. Its name can
 be configured by setting QUEUE_STRIPCHART_NAME in the
 &_Local/eximon.conf_& file. The remaining stripcharts are defined in the
 configuration script by regular expression matches on log file entries, making
@@ -37857,7 +37857,7 @@ window.
 .section "The queue display" "SECID268"
 .cindex "queue" "display in monitor"
 The bottom section of the monitor window contains a list of all messages that
-are on the queue, which includes those currently being received or delivered,
+are in the queue, which includes those currently being received or delivered,
 as well as those awaiting delivery. The size of this subwindow is controlled by
 parameters in the configuration file &_Local/eximon.conf_&, and the frequency
 at which it is updated is controlled by another parameter in the same file &--
@@ -37866,7 +37866,7 @@ there is an &"Update"& action button just above the display which can be used
 to force an update of the queue display at any time.
 
 When a host is down for some time, a lot of pending mail can build up for it,
-and this can make it hard to deal with other messages on the queue. To help
+and this can make it hard to deal with other messages in the queue. To help
 with this situation there is a button next to &"Update"& called &"Hide"&. If
 pressed, a dialogue box called &"Hide addresses ending with"& is put up. If you
 type anything in here and press &"Return"&, the text is added to a chain of
@@ -37887,7 +37887,7 @@ queue display to use in the dialogue box, you have to do the cutting before
 pressing the &"Hide"& button.
 
 The queue display contains, for each unhidden queued message, the length of
-time it has been on the queue, the size of the message, the message id, the
+time it has been in the queue, the size of the message, the message id, the
 message sender, and the first undelivered recipient, all on one line. If it is
 a bounce message, the sender is shown as &"<>"&. If there is more than one
 recipient to which the message has not yet been delivered, subsequent ones are
