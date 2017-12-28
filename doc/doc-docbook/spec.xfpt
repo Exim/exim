@@ -1307,7 +1307,7 @@ child addresses. Unlike &%pass_router%& (see below) the router specified by
 &%redirect_router%& may be anywhere in the router configuration.
 .next
 &'pass'&: The router recognizes the address, but cannot handle it itself. It
-requests that the address be passed to another router. By default the address
+requests that the address be passed to another router. By default, the address
 is passed to the next router, but this can be changed by setting the
 &%pass_router%& option. However, (unlike &%redirect_router%&) the named router
 must be below the current router (to avoid loops).
