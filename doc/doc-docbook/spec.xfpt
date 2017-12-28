@@ -1271,7 +1271,7 @@ When an address is being verified, the routers are run in &"verify mode"&. This
 does not affect the way the routers work, but it is a state that can be
 detected. By this means, a router can be skipped or made to behave differently
 when verifying. A common example is a configuration in which the first router
-sends all messages to a message-scanning program, unless they have been
+sends all messages to a message-scanning program unless they have been
 previously scanned. Thus, the first router accepts all addresses without any
 checking, making it useless for verifying. Normally, the &%no_verify%& option
 would be set for such a router, causing it to be skipped in verify mode.
@@ -1291,8 +1291,8 @@ the following:
 
 .ilist
 &'accept'&: The router accepts the address, and either assigns it to a
-transport, or generates one or more &"child"& addresses. Processing the
-original address ceases,
+transport or generates one or more &"child"& addresses. Processing the
+original address ceases
 .oindex "&%unseen%&"
 unless the &%unseen%& option is set on the router. This option
 can be used to set up multiple deliveries with different routing (for example,
