@@ -1547,7 +1547,7 @@ attempt is the queue runner process. You must either run an Exim daemon that
 uses the &%-q%& option with a time interval to start queue runners at regular
 intervals or use some other means (such as &'cron'&) to start them. If you do
 not arrange for queue runners to be run, messages that fail temporarily at the
-first attempt will remain on your queue for ever. A queue runner process works
+first attempt will remain in your queue for ever. A queue runner process works
 its way through the queue, one message at a time, trying each delivery that has
 passed its retry time.
 You can run several queue runners at once.
@@ -17155,7 +17155,7 @@ If you want to timeout frozen bounce messages earlier than other kinds of
 frozen message, see &%ignore_bounce_errors_after%&.
 
 &*Note:*& the default value of zero means no timeouts; with this setting,
-frozen messages remain on the queue forever (except for any frozen bounce
+frozen messages remain in the queue forever (except for any frozen bounce
 messages that are released by &%ignore_bounce_errors_after%&).
 
 
@@ -25730,7 +25730,7 @@ intermittently available, or when a message has some attribute that prevents
 its delivery when others to the same address get through. In this situation,
 because some messages are successfully delivered, the &"retry clock"& for the
 host or address keeps getting reset by the successful deliveries, and so
-failing messages remain on the queue for ever because the cutoff time is never
+failing messages remain in the queue for ever because the cutoff time is never
 reached.
 
 Two exceptional actions are applied to prevent this happening. The first
@@ -35682,7 +35682,7 @@ Nevertheless there are some features that can be used.
 
 .section "Exim on the upstream server host" "SECID247"
 It is tempting to arrange for incoming mail for the intermittently connected
-host to remain on Exim's queue until the client connects. However, this
+host to remain in Exim's queue until the client connects. However, this
 approach does not scale very well. Two different kinds of waiting message are
 being mixed up in the same queue &-- those that cannot be delivered because of
 some temporary problem, and those that are waiting for their destination host
