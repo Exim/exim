@@ -1661,7 +1661,7 @@ following subdirectories are created:
 .irow &_util_&            "independent utilities"
 .endtable
 
-The main utility programs are contained in the &_src_& directory, and are built
+The main utility programs are contained in the &_src_& directory and are built
 with the Exim binary. The &_util_& directory contains a few optional scripts
 that may be useful to some sites.
 
