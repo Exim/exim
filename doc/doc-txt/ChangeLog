@@ -17,6 +17,18 @@ JH/04 Bug 2217: Tighten up the parsing of DKIM signature headers. Previously
       Assumptions at that stage could crash the receive process on malformed
       input.
 
+JH/05 Bug 2215: Fix crash associated with dnsdb lookup done from DKIM ACL.
+      While running the DKIM ACL we operate on the Permanent memory pool so that
+      variables created with "set" persist to the DATA ACL.  Also (at any time)
+      DNS lookups that fail create cache records using the Permanent pool.  But
+      expansions release any allocations made on the current pool - so a dnsdb
+      lookup expansion done in the DKIM ACL releases the memory used for the
+      DNS negative-cache, and bad things result.  Solution is to switch to the
+      Main pool for expansions.
+      While we're in that code, add checks on the DNS cache during store_reset,
+      active in the testsuite.
+      Problem spotted, and debugging aided, by Wolfgang Breyha.
+
 
 Exim version 4.90
 -----------------

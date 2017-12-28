@@ -18,6 +18,9 @@ queue_run_in_order
 begin acl
 
 check_dkim:
+.ifdef BAD
+  warn	logwrite =	${lookup dnsdb{defer_never,txt=_adsp._domainkey.$dkim_cur_signer}{$value}{unknown}}
+.endif
 .ifdef OPTION
   warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
 	condition =	${if eq {$dkim_verify_status}{pass}}

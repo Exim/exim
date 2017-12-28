@@ -699,6 +699,7 @@ for (i = queue_run_in_order ? -1 : 0;
       }
     }                                  /* End loop for list of messages */
 
+  tree_nonrecipients = NULL;
   store_reset(reset_point1);           /* Scavenge list of messages */
 
   /* If this was the first time through for random order processing, and

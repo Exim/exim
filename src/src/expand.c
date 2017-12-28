@@ -7546,7 +7546,7 @@ DEBUG(D_expand)
   if (expand_string_forcedfail)
     debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
   }
-if (resetok_p) *resetok_p = resetok;
+if (resetok_p && !resetok) *resetok_p = FALSE;
 expand_level--;
 return NULL;
 }
@@ -7560,25 +7560,32 @@ Returns:  the expanded string, or NULL if expansion failed; if failure was
           due to a lookup deferring, search_find_defer will be TRUE
 */
 
-uschar *
-expand_string(uschar *string)
-{
-search_find_defer = FALSE;
-malformed_header = FALSE;
-return (Ustrpbrk(string, "$\\") == NULL)? string :
-  expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
-}
-
-
-
 const uschar *
-expand_cstring(const uschar *string)
+expand_cstring(const uschar * string)
 {
-search_find_defer = FALSE;
-malformed_header = FALSE;
-return (Ustrpbrk(string, "$\\") == NULL)? string :
-  expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
+if (Ustrpbrk(string, "$\\") != NULL)
+  {
+  int old_pool = store_pool;
+  uschar * s;
+
+  search_find_defer = FALSE;
+  malformed_header = FALSE;
+  store_pool = POOL_MAIN;
+    s = expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
+  store_pool = old_pool;
+  return s;
+  }
+return string;
 }
+
+
+uschar *
+expand_string(uschar * string)
+{
+return US expand_cstring(CUS string);
+}
+
+
 
 
 
@@ -7812,8 +7819,6 @@ return (  (  Ustrstr(s, "failed to expand") != NULL
 * Error-checking for testsuite                   *
 *************************************************/
 typedef struct {
-  const char *	filename;
-  int		linenumber;
   uschar * 	region_start;
   uschar *	region_end;
   const uschar *var_name;
@@ -7834,7 +7839,8 @@ if (var_data >= e->region_start  &&  var_data < e->region_end)
 void
 assert_no_variables(void * ptr, int len, const char * filename, int linenumber)
 {
-err_ctx e = {filename, linenumber, ptr, US ptr + len, NULL };
+err_ctx e = { .region_start = ptr, .region_end = US ptr + len,
+	      .var_name = NULL, .var_data = NULL };
 int i;
 var_entry * v;
 
@@ -7855,10 +7861,16 @@ for (v = var_table; v < var_table + var_table_size; v++)
   if (v->type == vtype_stringptr)
     assert_variable_notin(US v->name, *(USS v->value), &e);
 
+/* check dns and address trees */
+tree_walk(tree_dns_fails,     assert_variable_notin, &e);
+tree_walk(tree_duplicates,    assert_variable_notin, &e);
+tree_walk(tree_nonrecipients, assert_variable_notin, &e);
+tree_walk(tree_unusable,      assert_variable_notin, &e);
+
 if (e.var_name)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "live variable '%s' destroyed by reset_store at %s:%d\n- value '%.64s'",
-    e.var_name, e.filename, e.linenumber, e.var_data);
+    e.var_name, filename, linenumber, e.var_data);
 }
 
 
