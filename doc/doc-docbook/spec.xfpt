@@ -1545,7 +1545,7 @@ deleted, though the message log can optionally be preserved if required.
 Exim's mechanism for retrying messages that fail to get delivered at the first
 attempt is the queue runner process. You must either run an Exim daemon that
 uses the &%-q%& option with a time interval to start queue runners at regular
-intervals, or use some other means (such as &'cron'&) to start them. If you do
+intervals or use some other means (such as &'cron'&) to start them. If you do
 not arrange for queue runners to be run, messages that fail temporarily at the
 first attempt will remain on your queue for ever. A queue runner process works
 its way through the queue, one message at a time, trying each delivery that has
