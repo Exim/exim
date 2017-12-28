@@ -11,6 +11,12 @@ Since Exim version 4.90
 JH/03 Fix pgsql lookup for multiple result-tuples with a single column.
       Previously only the last row was returned.
 
+JH/04 Bug 2217: Tighten up the parsing of DKIM signature headers. Previously
+      we assumed that tags in the header were well-formed, and parsed the
+      element content after inspecting only the first char of the tag.
+      Assumptions at that stage could crash the receive process on malformed
+      input.
+
 
 Exim version 4.90
 -----------------
