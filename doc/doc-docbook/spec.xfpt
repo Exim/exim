@@ -1468,7 +1468,7 @@ be immediately delivered, the system filter is run each time. The filter
 condition &%first_delivery%& can be used to detect the first run of the system
 filter.
 .next
-Each recipient address is offered to each configured router in turn, subject to
+Each recipient address is offered to each configured router, in turn, subject to
 its preconditions, until one is able to handle it. If no router can handle the
 address, that is, if they all decline, the address is failed. Because routers
 can be targeted at particular domains, several locally handled domains can be
@@ -3889,7 +3889,7 @@ The arguments give the local address and port being proxied, and the TLS cipher.
 .oindex "&%-Mc%&"
 .cindex "hints database" "not overridden by &%-Mc%&"
 .cindex "delivery" "manually started &-- not forced"
-This option requests Exim to run a delivery attempt on each message in turn,
+This option requests Exim to run a delivery attempt on each message, in turn,
 but unlike the &%-M%& option, it does check for retry hints, and respects any
 that are found. This option is not very useful to external callers. It is
 provided mainly for internal use by Exim when it needs to re-invoke itself in
@@ -4990,7 +4990,7 @@ ACL, or in the &%local_scan%&, retry, or rewrite sections of the configuration.
 .section "Macro substitution" "SECID42"
 Once a macro is defined, all subsequent lines in the file (and any included
 files) are scanned for the macro name; if there are several macros, the line is
-scanned for each in turn, in the order in which the macros are defined. The
+scanned for each, in turn, in the order in which the macros are defined. The
 replacement text is not re-scanned for the current macro, though it is scanned
 for subsequently defined macros. For this reason, a macro name may not contain
 the name of a previously defined macro as a substring. You could, for example,
@@ -5985,7 +5985,7 @@ by the line
 begin routers
 .endd
 Routers are the modules in Exim that make decisions about where to send
-messages. An address is passed to each router in turn, until it is either
+messages. An address is passed to each router, in turn, until it is either
 accepted, or failed. This means that the order in which you define the routers
 matters. Each router is fully described in its own chapter later in this
 manual. Here we give only brief overviews.
@@ -9921,7 +9921,7 @@ This operation reduces a list to a single, scalar string. After expansion,
 <&'string1'&> is interpreted as a list, colon-separated by default, but the
 separator can be changed in the usual way. Then <&'string2'&> is expanded and
 assigned to the &$value$& variable. After this, each item in the <&'string1'&>
-list is assigned to &$item$& in turn, and <&'string3'&> is expanded for each of
+list is assigned to &$item$&, in turn, and <&'string3'&> is expanded for each of
 them. The result of that expansion is assigned to &$value$& before the next
 iteration. When the end of the list is reached, the final value of &$value$& is
 added to the expansion output. The &*reduce*& expansion item can be used in a
@@ -16934,7 +16934,7 @@ automatically deleted.
 
 When &%split_spool_directory%& is set, the behaviour of queue runner processes
 changes. Instead of creating a list of all messages in the queue, and then
-trying to deliver each one in turn, it constructs a list of those in one
+trying to deliver each one, in turn, it constructs a list of those in one
 sub-directory and tries to deliver them, before moving on to the next
 sub-directory. The sub-directories are processed in a random order. This
 spreads out the scanning of the input directories, and uses less memory. It is
