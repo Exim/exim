@@ -985,7 +985,7 @@ example &`16VDhn-0001bo-D3`&. Each part is a sequence of letters and digits,
 normally encoding numbers in base 62. However, in the Darwin operating
 system (Mac OS X) and when Exim is compiled to run under Cygwin, base 36
 (avoiding the use of lower case letters) is used instead, because the message
-id is used to construct file names, and the names of files in those systems are
+id is used to construct filenames, and the names of files in those systems are
 not always case-sensitive.
 
 .cindex "pid (process id)" "re-use of"
@@ -1736,7 +1736,7 @@ Solaris, operates on two files called &_dbmfile.dir_& and &_dbmfile.pag_&.
 The GNU library, &'gdbm'&, operates on a single file. If used via its &'ndbm'&
 compatibility interface it makes two different hard links to it with names
 &_dbmfile.dir_& and &_dbmfile.pag_&, but if used via its native interface, the
-file name is used unmodified.
+filename is used unmodified.
 .next
 .cindex "Berkeley DB library"
 The Berkeley DB package, if called via its &'ndbm'& compatibility interface,
@@ -1818,7 +1818,7 @@ without them. They are the location of the runtime configuration file
 (CONFIGURE_FILE), the directory in which Exim binaries will be installed
 (BIN_DIRECTORY), and the identity of the Exim user (EXIM_USER and
 maybe EXIM_GROUP as well). The value of CONFIGURE_FILE can in fact be
-a colon-separated list of file names; Exim uses the first of them that exists.
+a colon-separated list of filenames; Exim uses the first of them that exists.
 
 There are a few other parameters that can be specified either at build time or
 at runtime, to enable the same binary to be used on a number of different
@@ -3496,8 +3496,8 @@ which the daemon will exit, which should cause inetd to listen once more.
 .cindex "alternate configuration file"
 This option causes Exim to find the runtime configuration file from the given
 list instead of from the list specified by the CONFIGURE_FILE
-compile-time setting. Usually, the list will consist of just a single file
-name, but it can be a colon-separated list of names. In this case, the first
+compile-time setting. Usually, the list will consist of just a single filename,
+but it can be a colon-separated list of names. In this case, the first
 file that exists is used. Failure to open an existing file stops Exim from
 proceeding any further along the list, and an error is generated.
 
@@ -3521,11 +3521,11 @@ in the queue, using &%-odq%&, and another to do the delivery, using &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option
-must start. In addition, the file name must not contain the sequence &`/../`&.
+must start. In addition, the filename must not contain the sequence &`/../`&.
 However, if the value of the &%-C%& option is identical to the value of
 CONFIGURE_FILE in &_Local/Makefile_&, Exim ignores &%-C%& and proceeds as
 usual. There is no default setting for ALT_CONFIG_PREFIX; when it is
-unset, any file name can be used with &%-C%&.
+unset, any filename can be used with &%-C%&.
 
 ALT_CONFIG_PREFIX can be used to confine alternative configuration files
 to a directory to which only root has access. This prevents someone who has
@@ -4060,7 +4060,7 @@ Exim.
 .oindex "&%-oA%&"
 .cindex "Sendmail compatibility" "&%-oA%& option"
 This option is used by Sendmail in conjunction with &%-bi%& to specify an
-alternative alias file name. Exim handles &%-bi%& differently; see the
+alternative alias filename. Exim handles &%-bi%& differently; see the
 description above.
 
 .vitem &%-oB%&&~<&'n'&>
@@ -4364,7 +4364,7 @@ This option is relevant only when the &%-bd%& (start listening daemon) option
 is also given. It controls which ports and interfaces the daemon uses. Details
 of the syntax, and how it interacts with configuration file options, are given
 in chapter &<<CHAPinterfaces>>&. When &%-oX%& is used to start a daemon, no pid
-file is written unless &%-oP%& is also present to specify a pid file name.
+file is written unless &%-oP%& is also present to specify a pid filename.
 
 .vitem &%-pd%&
 .oindex "&%-pd%&"
@@ -4763,7 +4763,7 @@ actually alter the string.
 The name of the configuration file is compiled into the binary for security
 reasons, and is specified by the CONFIGURE_FILE compilation option. In
 most configurations, this specifies a single file. However, it is permitted to
-give a colon-separated list of file names, in which case Exim uses the first
+give a colon-separated list of filenames, in which case Exim uses the first
 existing file in the list.
 
 .cindex "EXIM_USER"
@@ -4791,7 +4791,7 @@ compromise the Exim user account.
 
 A default configuration file, which will work correctly in simple situations,
 is provided in the file &_src/configure.default_&. If CONFIGURE_FILE
-defines just one file name, the installation process copies the default
+defines just one filename, the installation process copies the default
 configuration to a new file of that name if it did not previously exist. If
 CONFIGURE_FILE is a list, no default is automatically installed. Chapter
 &<<CHAPdefconfil>>& is a &"walk-through"& discussion of the default
@@ -4824,9 +4824,9 @@ message in the queue, using &%-odq%&, and another to do the delivery, using
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option must
-start. In addition, the file name must not contain the sequence &"&`/../`&"&.
-There is no default setting for ALT_CONFIG_PREFIX; when it is unset, any file
-name can be used with &%-C%&.
+start. In addition, the filename must not contain the sequence &"&`/../`&"&.
+There is no default setting for ALT_CONFIG_PREFIX; when it is unset, any
+filename can be used with &%-C%&.
 
 One-off changes to a configuration can be specified by the &%-D%& command line
 option, which defines and overrides values for macros used inside the
@@ -4848,10 +4848,10 @@ values for the macros satisfy the regexp: &`^[A-Za-z0-9_/.-]*$`&
 Some sites may wish to use the same Exim binary on different machines that
 share a file system, but to use different configuration files on each machine.
 If CONFIGURE_FILE_USE_NODE is defined in &_Local/Makefile_&, Exim first
-looks for a file whose name is the configuration file name followed by a dot
+looks for a file whose name is the configuration filename followed by a dot
 and the machine's node name, as obtained from the &[uname()]& function. If this
 file does not exist, the standard name is tried. This processing occurs for
-each file name in the list given by CONFIGURE_FILE or &%-C%&.
+each filename in the list given by CONFIGURE_FILE or &%-C%&.
 
 In some esoteric situations different versions of Exim may be run under
 different effective uids and the CONFIGURE_FILE_USE_EUID is defined to
@@ -4940,15 +4940,15 @@ described.
 You can include other files inside Exim's runtime configuration file by
 using this syntax:
 .display
-&`.include`& <&'file name'&>
-&`.include_if_exists`& <&'file name'&>
+&`.include`& <&'filename'&>
+&`.include_if_exists`& <&'filename'&>
 .endd
-on a line by itself. Double quotes round the file name are optional. If you use
+on a line by itself. Double quotes round the filename are optional. If you use
 the first form, a configuration error occurs if the file does not exist; the
 second form does nothing for non-existent files.
 The first form allows a relative name. It is resolved relative to
-the directory of the including file. For the second form an absolute file
-name is required.
+the directory of the including file. For the second form an absolute filename
+is required.
 
 Includes may be nested to any depth, but remember that Exim reads its
 configuration file often, so it is a good idea to keep them to a minimum.
@@ -5849,7 +5849,7 @@ common convention of local parts constructed as
 &"&'first-initial.second-initial.family-name'&"& when applied to someone like
 the author of Exim, who has no second initial.) However, a local part starting
 with a dot or containing &"/../"& can cause trouble if it is used as part of a
-file name (for example, for a mailing list). This is also true for local parts
+filename (for example, for a mailing list). This is also true for local parts
 that contain slashes. A pipe symbol can also be troublesome if the local part
 is incorporated unthinkingly into a shell command line.
 
@@ -6769,7 +6769,7 @@ passed to a Redis database. See section &<<SECTsql>>&.
 .next
 .cindex "sqlite lookup type"
 .cindex "lookup" "sqlite"
-&(sqlite)&: The format of the query is a file name followed by an SQL statement
+&(sqlite)&: The format of the query is a filename followed by an SQL statement
 that is passed to an SQLite database. See section &<<SECTsqlite>>&.
 
 .next
@@ -7810,7 +7810,7 @@ affected.
 .section "More about SQLite" "SECTsqlite"
 .cindex "lookup" "SQLite"
 .cindex "sqlite lookup type"
-SQLite is different to the other SQL lookups because a file name is required in
+SQLite is different to the other SQL lookups because a filename is required in
 addition to the SQL query. An SQLite database is a single file, and there is no
 daemon as in the other SQL databases. The interface to Exim requires the name
 of the file, as an absolute path, to be given at the start of the query. It is
@@ -7956,11 +7956,11 @@ item.
 
 
 .section "File names in lists" "SECTfilnamlis"
-.cindex "list" "file name in"
-If an item in a domain, host, address, or local part list is an absolute file
-name (beginning with a slash character), each line of the file is read and
+.cindex "list" "filename in"
+If an item in a domain, host, address, or local part list is an absolute
+filename (beginning with a slash character), each line of the file is read and
 processed as if it were an independent item in the list, except that further
-file names are not allowed,
+filenames are not allowed,
 and no expansion of the data from the file takes place.
 Empty lines in the file are ignored, and the file may also contain comment
 lines:
@@ -7977,12 +7977,12 @@ not#comment@x.y.z   # but this is a comment
 .endd
 .endlist
 
-Putting a file name in a list has the same effect as inserting each line of the
+Putting a filename in a list has the same effect as inserting each line of the
 file as an item in the list (blank lines and comments excepted). However, there
 is one important difference: the file is read each time the list is processed,
 so if its contents vary over time, Exim's behaviour changes.
 
-If a file name is preceded by an exclamation mark, the sense of any match
+If a filename is preceded by an exclamation mark, the sense of any match
 within the file is inverted. For example, if
 .code
 hold_domains = !/etc/nohold-domains
@@ -8007,7 +8007,7 @@ non-constant pattern. This is not the case. The keys in an &(lsearch)& file are
 always fixed strings, just as for any other single-key lookup type.
 
 If you want to use a file to contain wild-card patterns that form part of a
-list, just give the file name on its own, without a search type, as described
+list, just give the filename on its own, without a search type, as described
 in the previous section. You could also use the &(wildlsearch)& or
 &(nwildlsearch)&, but there is no advantage in doing this.
 
@@ -8254,7 +8254,7 @@ expression by expansion, of course).
 .cindex "domain list" "matching by lookup"
 If a pattern starts with the name of a single-key lookup type followed by a
 semicolon (for example, &"dbm;"& or &"lsearch;"&), the remainder of the pattern
-must be a file name in a suitable format for the lookup type. For example, for
+must be a filename in a suitable format for the lookup type. For example, for
 &"cdb;"& it must be an absolute path:
 .code
 domains = cdb;/etc/mail/local_domains.cdb
@@ -8951,7 +8951,7 @@ default.
 The domain portion of an address is always lowercased before matching it to an
 address list. The local part is lowercased by default, and any string
 comparisons that take place are done caselessly. This means that the data in
-the address list itself, in files included as plain file names, and in any file
+the address list itself, in files included as plain filenames, and in any file
 that is looked up using the &"@@"& mechanism, can be in any case. However, the
 keys in files that are looked up by a search type other than &(lsearch)& (which
 works caselessly) must be in lower case, because these lookups are not
@@ -9072,7 +9072,7 @@ using &%-be%& for reading files to which they do not have access.
 .oindex "&%-bem%&"
 If you want to test expansions that include variables whose values are taken
 from a message, there are two other options that can be used. The &%-bem%&
-option is like &%-be%& except that it is followed by a file name. The file is
+option is like &%-be%& except that it is followed by a filename. The file is
 read as a message before doing the test expansions. For example:
 .code
 exim -bem /tmp/test.message '$h_subject:'
@@ -9822,7 +9822,7 @@ For more discussion and an example, see section &<<SECTverifyPRVS>>&.
 .cindex "expansion" "inserting an entire file"
 .cindex "file" "inserting into expansion"
 .cindex "&%readfile%& expansion item"
-The file name and end-of-line string are first expanded separately. The file is
+The filename and end-of-line string are first expanded separately. The file is
 then read, and its contents replace the entire item. All newline characters in
 the file are replaced by the end-of-line string if it is present. Otherwise,
 newlines are left in the string.
@@ -10234,9 +10234,9 @@ The number is converted to decimal and output as a string.
 The string must consist entirely of decimal digits. The number is converted to
 base 62 and output as a string of six characters, including leading zeros. In
 the few operating environments where Exim uses base 36 instead of base 62 for
-its message identifiers (because those systems do not have case-sensitive file
-names), base 36 is used by this operator, despite its name. &*Note*&: Just to
-be absolutely clear: this is &'not'& base64 encoding.
+its message identifiers (because those systems do not have case-sensitive
+filenames), base 36 is used by this operator, despite its name. &*Note*&: Just
+to be absolutely clear: this is &'not'& base64 encoding.
 
 .vitem &*${base62d:*&<&'base-62&~digits'&>&*}*&
 .cindex "&%base62d%& expansion item"
@@ -12021,7 +12021,7 @@ any prefix or suffix are in &$local_part_prefix$& and
 
 When a message is being delivered to a file, pipe, or autoreply transport as a
 result of aliasing or forwarding, &$local_part$& is set to the local part of
-the parent address, not to the file name or command (see &$address_file$& and
+the parent address, not to the filename or command (see &$address_file$& and
 &$address_pipe$&).
 
 When an ACL is running for a RCPT command, &$local_part$& contains the
@@ -12453,7 +12453,7 @@ the port value is -1 unless it has been set using the &%-oMi%& command line
 option.
 
 As well as being useful in ACLs (including the &"connect"& ACL), these variable
-could be used, for example, to make the file name for a TLS certificate depend
+could be used, for example, to make the filename for a TLS certificate depend
 on which interface and/or port is being used for the incoming connection. The
 values of &$received_ip_address$& and &$received_port$& are saved with any
 messages that are received, thus making these variables available at delivery
@@ -18425,8 +18425,8 @@ The default action for handling an unresolved EACCES is to consider it to
 be caused by a configuration error, and routing is deferred because the
 existence or non-existence of the file cannot be determined. However, in some
 circumstances it may be desirable to treat this condition as if the file did
-not exist. If the file name (or the exclamation mark that precedes the file
-name for non-existence) is preceded by a plus sign, the EACCES error is treated
+not exist. If the filename (or the exclamation mark that precedes the filename
+for non-existence) is preceded by a plus sign, the EACCES error is treated
 as if the file did not exist. For example:
 .code
 require_files = +/some/file
@@ -20030,7 +20030,7 @@ Otherwise, the data must be a comma-separated list of redirection items, as
 described in the next section.
 .endlist
 
-When a message is redirected to a file (a &"mail folder"&), the file name given
+When a message is redirected to a file (a &"mail folder"&), the filename given
 in a non-filter redirection list must always be an absolute path. A filter may
 generate a relative path &-- how this is handled depends on the transport's
 configuration. See section &<<SECTfildiropt>>& for a discussion of this issue
@@ -20042,7 +20042,7 @@ for the &(appendfile)& transport.
 .cindex "address redirection" "non-filter list items"
 When the redirection data is not an Exim or Sieve filter, for example, if it
 comes from a conventional alias or forward file, it consists of a list of
-addresses, file names, pipe commands, or certain special items (see section
+addresses, filenames, pipe commands, or certain special items (see section
 &<<SECTspecitredli>>& below). The special items can be individually enabled or
 disabled by means of options whose names begin with &%allow_%& or &%forbid_%&,
 depending on their default values. The items in the list are separated by
@@ -20176,14 +20176,14 @@ parse as a valid RFC 2822 address that includes a domain. For example,
 .code
 /home/world/minbari
 .endd
-is treated as a file name, but
+is treated as a filename, but
 .code
 /s=molari/o=babylon/@x400gate.way
 .endd
-is treated as an address. For a file name, a transport must be specified using
+is treated as an address. For a filename, a transport must be specified using
 the &%file_transport%& option. However, if the generated path name ends with a
 forward slash character, it is interpreted as a directory name rather than a
-file name, and &%directory_transport%& is used instead.
+filename, and &%directory_transport%& is used instead.
 
 Normally, either the router or the transport specifies a user and a group under
 which to run the delivery. The default is to use the Exim user and group.
@@ -20492,7 +20492,7 @@ A &(redirect)& router sets up a direct delivery to a file when a path name not
 ending in a slash is specified as a new &"address"&. The transport used is
 specified by this option, which, after expansion, must be the name of a
 configured transport. This should normally be an &(appendfile)& transport. When
-it is running, the file name is in &$address_file$&.
+it is running, the filename is in &$address_file$&.
 
 
 .option filter_prepend_home redirect boolean true
@@ -21787,7 +21787,7 @@ require "fileinto";
 fileinto "folder23";
 .endd
 In this situation, the expansion of &%file%& or &%directory%& in the transport
-must transform the relative path into an appropriate absolute file name. In the
+must transform the relative path into an appropriate absolute filename. In the
 case of Sieve filters, the name &'inbox'& must be handled. It is the name that
 is used as a result of a &"keep"& action in the filter. This example shows one
 way of handling this requirement:
@@ -21914,9 +21914,9 @@ beneath.
 
 The option must be set to one of the words &"anywhere"&, &"inhome"&, or
 &"belowhome"&. In the second and third cases, a home directory must have been
-set for the transport. This option is not useful when an explicit file name is
-given for normal mailbox deliveries. It is intended for the case when file
-names are generated from users' &_.forward_& files. These are usually handled
+set for the transport. This option is not useful when an explicit filename is
+given for normal mailbox deliveries. It is intended for the case when filenames
+are generated from users' &_.forward_& files. These are usually handled
 by an &(appendfile)& transport called &%address_file%&. See also
 &%file_must_exist%&.
 
@@ -22338,14 +22338,14 @@ See &%quota%& above.
 This option applies when one of the delivery modes that writes a separate file
 for each message is being used. When Exim wants to find the size of one of
 these files in order to test the quota, it first checks &%quota_size_regex%&.
-If this is set to a regular expression that matches the file name, and it
+If this is set to a regular expression that matches the filename, and it
 captures one string, that string is interpreted as a representation of the
 file's size. The value of &%quota_size_regex%& is not expanded.
 
 This feature is useful only when users have no shell access to their mailboxes
 &-- otherwise they could defeat the quota simply by renaming the files. This
 facility can be used with maildir deliveries, by setting &%maildir_tag%& to add
-the file length to the file name. For example:
+the file length to the filename. For example:
 .code
 maildir_tag = ,S=$message_size
 quota_size_regex = ,S=(\d+)
@@ -22354,8 +22354,8 @@ An alternative to &$message_size$& is &$message_linecount$&, which contains the
 number of lines in the message.
 
 The regular expression should not assume that the length is at the end of the
-file name (even though &%maildir_tag%& puts it there) because maildir MUAs
-sometimes add other information onto the ends of message file names.
+filename (even though &%maildir_tag%& puts it there) because maildir MUAs
+sometimes add other information onto the ends of message filenames.
 
 Section &<<SECID136>>& contains further information.
 
@@ -22534,7 +22534,7 @@ Create a &"hitching post"& file whose name is that of the lock file with the
 current time, primary host name, and process id added, by opening for writing
 as a new file. If this fails with an access error, delivery is deferred.
 .next
-Close the hitching post file, and hard link it to the lock file name.
+Close the hitching post file, and hard link it to the lock filename.
 .next
 If the call to &[link()]& succeeds, creation of the lock file has succeeded.
 Unlink the hitching post name.
@@ -22701,11 +22701,11 @@ directory that is defined by the &%directory%& option (the &"delivery
 directory"&). If the delivery is successful, the file is renamed into the
 &_new_& subdirectory.
 
-In the file name, <&'stime'&> is the current time of day in seconds, and
+In the filename, <&'stime'&> is the current time of day in seconds, and
 <&'mtime'&> is the microsecond fraction of the time. After a maildir delivery,
 Exim checks that the time-of-day clock has moved on by at least one microsecond
 before terminating the delivery process. This guarantees uniqueness for the
-file name. However, as a precaution, Exim calls &[stat()]& for the file before
+filename. However, as a precaution, Exim calls &[stat()]& for the file before
 opening it. If any response other than ENOENT (does not exist) is given,
 Exim waits 2 seconds and tries again, up to &%maildir_retries%& times.
 
@@ -23006,7 +23006,7 @@ recipient is kept when the message is specified by the transport. &*Note*&:
 This does not apply to &'Cc:'& or &'Bcc:'& recipients.
 
 If &%once%& is unset, or is set to an empty string, the message is always sent.
-By default, if &%once%& is set to a non-empty file name, the message
+By default, if &%once%& is set to a non-empty filename, the message
 is not sent if a potential recipient is already listed in the database.
 However, if the &%once_repeat%& option specifies a time greater than zero, the
 message is sent if that much time has elapsed since a message was last sent to
@@ -28565,7 +28565,7 @@ configuration file; there are other possibilities. Having expanded the
 string, Exim searches for an ACL as follows:
 
 .ilist
-If the string begins with a slash, Exim uses it as a file name, and reads its
+If the string begins with a slash, Exim uses it as a filename, and reads its
 contents as an ACL. The lines are processed in the same way as lines in the
 Exim configuration file. In particular, continuation lines are supported, blank
 lines are ignored, as are lines whose first non-whitespace character is &"#"&.
@@ -32250,7 +32250,7 @@ spamd_address = 127.0.0.1 11333 variant=rspamd
 
 As of version 2.60, &%SpamAssassin%& also supports communication over UNIX
 sockets. If you want to us these, supply &%spamd_address%& with an absolute
-file name instead of an address/port pair:
+filename instead of an address/port pair:
 .code
 spamd_address = /var/run/spamd_socket
 .endd
@@ -32487,13 +32487,13 @@ the value can be:
 .next
 The string &"default"&. In that case, the file is put in the temporary
 &"default"& directory <&'spool_directory'&>&_/scan/_&<&'message_id'&>&_/_& with
-a sequential file name consisting of the message id and a sequence number. The
+a sequential filename consisting of the message id and a sequence number. The
 full path and name is available in &$mime_decoded_filename$& after decoding.
 .next
 A full path name starting with a slash. If the full name is an existing
 directory, it is used as a replacement for the default directory. The filename
 is then sequentially assigned. If the path does not exist, it is used as
-the full path and file name.
+the full path and filename.
 .next
 If the string does not start with a slash, it is used as the
 filename, and the default path is then used.
@@ -32581,7 +32581,7 @@ empty string.
 
 .vitem &$mime_decoded_filename$&
 This variable is set only after the &%decode%& modifier (see above) has been
-successfully run. It contains the full path and file name of the file
+successfully run. It contains the full path and filename of the file
 containing the decoded data.
 .endlist
 
@@ -35276,7 +35276,7 @@ such file, the router declines, but because &%no_more%& is set, no subsequent
 routers are tried, and so the whole delivery fails.
 
 The &%forbid_pipe%& and &%forbid_file%& options prevent a local part from being
-expanded into a file name or a pipe delivery, which is usually inappropriate in
+expanded into a filename or a pipe delivery, which is usually inappropriate in
 a mailing list.
 
 .oindex "&%errors_to%&"
@@ -35532,7 +35532,7 @@ part in the file to find a new address (or list of addresses). The &%no_more%&
 setting ensures that if the lookup fails (leading to &%data%& being an empty
 string), Exim gives up on the address without trying any subsequent routers.
 
-This one router can handle all the virtual domains because the alias file names
+This one router can handle all the virtual domains because the alias filenames
 follow a fixed pattern. Permissions can be arranged so that appropriate people
 can edit the different alias files. A successful aliasing operation results in
 a new envelope recipient address, which is then routed from scratch.
@@ -35973,7 +35973,7 @@ If you do not specify anything at build time or runtime,
 or if you unset the option at runtime (i.e. &`log_file_path = `&),
 that is where the logs are written.
 
-A log file path may also contain &`%D`& or &`%M`& if datestamped log file names
+A log file path may also contain &`%D`& or &`%M`& if datestamped log filenames
 are in use &-- see section &<<SECTdatlogfil>>& below.
 
 Here are some examples of possible settings:
@@ -37139,7 +37139,7 @@ included in &'exigrep'&'s output without any additional lines. The usage is:
 .display
 &`exigrep [-t<`&&'n'&&`>] [-I] [-l] [-M] [-v] <`&&'pattern'&&`> [<`&&'log file'&&`>] ...`&
 .endd
-If no log file names are given on the command line, the standard input is read.
+If no log filenames are given on the command line, the standard input is read.
 
 The &%-t%& argument specifies a number of seconds. It adds an additional
 condition for message selection. Messages that are complete are shown only if
@@ -37206,8 +37206,8 @@ overriding the script's default, which is to find the setting from Exim's
 configuration.
 .endlist
 
-Each time &'exicyclog'& is run the file names get &"shuffled down"& by one. If
-the main log file name is &_mainlog_& (the default) then when &'exicyclog'& is
+Each time &'exicyclog'& is run the filenames get &"shuffled down"& by one. If
+the main log filename is &_mainlog_& (the default) then when &'exicyclog'& is
 run &_mainlog_& becomes &_mainlog.01_&, the previous &_mainlog.01_& becomes
 &_mainlog.02_& and so on, up to the limit that is set in the script or by the
 &%-k%& option. Log files whose numbers exceed the limit are discarded. Reject
@@ -37360,9 +37360,9 @@ well.
 
 .cindex "USE_DB"
 If the native DB interface is in use (USE_DB is set in a compile-time
-configuration file &-- this is common in free versions of Unix) the two file
-names must be different, because in this mode the Berkeley DB functions create
-a single output file using exactly the name given. For example,
+configuration file &-- this is common in free versions of Unix) the two
+filenames must be different, because in this mode the Berkeley DB functions
+create a single output file using exactly the name given. For example,
 .code
 exim_dbmbuild /etc/aliases /etc/aliases.db
 .endd
@@ -37374,7 +37374,7 @@ Unix), two files are used, with the suffixes &_.dir_& and &_.pag_&. In this
 environment, the suffixes are added to the second argument of
 &'exim_dbmbuild'&, so it can be the same as the first. This is also the case
 when the Berkeley functions are used in compatibility mode (though this is not
-recommended), because in that case it adds a &_.db_& suffix to the file name.
+recommended), because in that case it adds a &_.db_& suffix to the filename.
 
 If a duplicate key is encountered, the program outputs a warning, and when it
 finishes, its return code is 1 rather than zero, unless the &%-noduperr%&
@@ -38041,9 +38041,9 @@ penetrated the Exim (but not the root) account. These options are as follows:
 
 .ilist
 ALT_CONFIG_PREFIX can be set to a string that is required to match the
-start of any file names used with the &%-C%& option. When it is set, these file
-names are also not allowed to contain the sequence &"/../"&. (However, if the
-value of the &%-C%& option is identical to the value of CONFIGURE_FILE in
+start of any filenames used with the &%-C%& option. When it is set, these
+filenames are also not allowed to contain the sequence &"/../"&. (However, if
+the value of the &%-C%& option is identical to the value of CONFIGURE_FILE in
 &_Local/Makefile_&, Exim ignores &%-C%& and proceeds as usual.) There is no
 default setting for &%ALT_CONFIG_PREFIX%&.
 
