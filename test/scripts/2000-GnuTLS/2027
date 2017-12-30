@@ -12,5 +12,7 @@ Test message
 exim -qf
 ****
 killdaemon
+#
+millisleep 500
 exim -DSERVER=server -DNOTDAEMON -qf
 ****

@@ -1761,8 +1761,11 @@ goodcert:
   state->tlsp->peerdn = state->peerdn;
   return TRUE;
 
+#ifdef SUPPORT_DANE
 tlsa_prob:
   *errstr = string_sprintf("TLSA record problem: %s", dane_strerror(rc));
+#endif
+
 badcert:
   gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_BAD_CERTIFICATE);
   return FALSE;
