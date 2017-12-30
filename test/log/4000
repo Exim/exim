@@ -1,21 +1,22 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex T="[exim] Re: Bug#286074: eximstats: uses message count as data for\n	the \"volume\" charts"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
-1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex T="Nasty"
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex T="[exim] Re: Bug#286074: eximstats: uses message count as data for\n	the \"volume\" charts"
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex T="Nasty"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex T="Nasty"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex T="Nasty3"
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex T="Nasty"
 1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex T="Nasty4"
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex T="Nasty3"
 1999-03-02 09:44:33 10HmbB-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex T="Nasty5"
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3059@test.ex T="Nasty4"
 1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133502.GA3059@test.ex T="Nasty6"
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133501.GA3058@test.ex T="Nasty5"
 1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss id=20041217133502.GA3059@test.ex T="Nasty6"
+1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected during MIME ACL checks: this is a deny from the mime acl

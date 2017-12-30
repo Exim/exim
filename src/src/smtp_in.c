@@ -3142,7 +3142,7 @@ return;
 
 /* This function is called when acl_check() fails. As well as calls from within
 this module, it is called from receive.c for an ACL after DATA. It sorts out
-logging the incident, and sets up the error response. A message containing
+logging the incident, and sends the error response. A message containing
 newlines is turned into a multiline SMTP response, but for logging, only the
 first line is used.
 
