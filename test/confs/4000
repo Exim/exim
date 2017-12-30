@@ -17,6 +17,10 @@ acl_smtp_mime = check_mime
 begin acl
 
 check_mime:
+.ifdef BAD
+  deny	   message =	this is a deny from the mime acl
+.endif
+
   warn     decode  = default
            add_header = X-$mime_part_count-content-type: $mime_content_type\n\
                         X-$mime_part_count-filename: $mime_filename\n\

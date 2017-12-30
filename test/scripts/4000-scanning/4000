@@ -243,3 +243,32 @@ foobar
 .
 quit
 ****
+#
+#
+# As above, but with a deny from the mime acl
+#
+exim -DBAD=bad -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133502.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: application/pdf;
+ name*=''2015.11.13%20-%20Pr%C3%A4sentation%20GI%20-%20LK.PDF
+Content-Disposition: attachment;
+ filename*=''2015.11.13%20-%20Pr%C3%A4sentation%20GI%20-%20LK.PDF
+Subject: Nasty6
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+.
+quit
+****

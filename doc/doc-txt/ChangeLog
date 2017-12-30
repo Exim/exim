@@ -43,6 +43,10 @@ JH/06 Fix issue with continued-connections when the DNS shifts unreliably.
       queue the message.  Spotted by Lena with Yahoo, probably involving
       round-robin DNS.
 
+JH/07 Bug 2214: Fix SMTP responses resulting from non-accept result of MIME ACL.
+      Previously a spurious "250 OK id=" response was appended to the proper
+      failure response.
+
 
 Exim version 4.90
 -----------------

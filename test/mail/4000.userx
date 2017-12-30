@@ -2,7 +2,7 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaX-0005vi-00
+	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
@@ -28,7 +28,7 @@ X-0-content-description:
 X-0-is-multipart: 1
 X-0-is-coverletter: 1
 X-0-is-rfc822: 0
-X-0-decode-filename: TESTSUITE/spool/scan/10HmaX-0005vi-00/10HmaX-0005vi-00-00000
+X-0-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00000
 X-0-content-size: 2
 X-1-content-type: text/plain
 X-1-filename: 
@@ -41,7 +41,7 @@ X-1-content-description:
 X-1-is-multipart: 0
 X-1-is-coverletter: 1
 X-1-is-rfc822: 0
-X-1-decode-filename: TESTSUITE/spool/scan/10HmaX-0005vi-00/10HmaX-0005vi-00-00001
+X-1-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00001
 X-1-content-size: 1
 X-2-content-type: text/plain
 X-2-filename: 
@@ -54,7 +54,7 @@ X-2-content-description:
 X-2-is-multipart: 0
 X-2-is-coverletter: 0
 X-2-is-rfc822: 0
-X-2-decode-filename: TESTSUITE/spool/scan/10HmaX-0005vi-00/10HmaX-0005vi-00-00002
+X-2-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00002
 X-2-content-size: 1
 X-3-content-type: text/plain
 X-3-filename: working-patch
@@ -67,7 +67,7 @@ X-3-content-description:
 X-3-is-multipart: 0
 X-3-is-coverletter: 0
 X-3-is-rfc822: 0
-X-3-decode-filename: TESTSUITE/spool/scan/10HmaX-0005vi-00/10HmaX-0005vi-00-00003
+X-3-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00003
 X-3-content-size: 1
 X-4-content-type: text/plain
 X-4-filename: 
@@ -80,7 +80,7 @@ X-4-content-description:
 X-4-is-multipart: 0
 X-4-is-coverletter: 0
 X-4-is-rfc822: 0
-X-4-decode-filename: TESTSUITE/spool/scan/10HmaX-0005vi-00/10HmaX-0005vi-00-00004
+X-4-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00004
 X-4-content-size: 1
 
 --T4sUOijqQbZv57TR
@@ -135,7 +135,7 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmaZ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
@@ -157,7 +157,7 @@ X-0-content-description:
 X-0-is-multipart: 1
 X-0-is-coverletter: 1
 X-0-is-rfc822: 0
-X-0-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00000
+X-0-decode-filename: TESTSUITE/spool/scan/10HmaZ-0005vi-00/10HmaZ-0005vi-00-00000
 X-0-content-size: 1
 X-1-content-type: text/plain
 X-1-filename: 
@@ -170,49 +170,11 @@ X-1-content-description:
 X-1-is-multipart: 0
 X-1-is-coverletter: 1
 X-1-is-rfc822: 0
-X-1-decode-filename: TESTSUITE/spool/scan/10HmaY-0005vi-00/10HmaY-0005vi-00-00001
+X-1-decode-filename: TESTSUITE/spool/scan/10HmaZ-0005vi-00/10HmaZ-0005vi-00-00001
 X-1-content-size: 1
 
 --T4sUOijqQbZv57TR
 Content-Type: text/plain; charset=
-
-foobar
-
---T4sUOijqQbZv57TR--
-
-From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
-Received: from CALLER (helo=test.ex)
-	by myhost.test.ex with local-esmtp (Exim x.yz)
-	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaZ-0005vi-00
-	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-From: J Caesar <jcaesar@test.ex>
-To: a-list00@exim.org
-Message-ID: <20041217133501.GA3059@test.ex>
-Mime-Version: 1.0
-Content-Type: text/html;
-        charset=UTF-8;
-        name=""
-Content-Disposition: inline
-Subject: Nasty
-Sender: CALLER_NAME <CALLER@myhost.test.ex>
-X-0-content-type: text/html
-X-0-filename: 
-X-0-charset: UTF-8
-X-0-boundary: 
-X-0-content-disposition: inline
-X-0-content-transfer-encoding: 
-X-0-content-id: 
-X-0-content-description: 
-X-0-is-multipart: 0
-X-0-is-coverletter: 1
-X-0-is-rfc822: 0
-X-0-decode-filename: TESTSUITE/spool/scan/10HmaZ-0005vi-00/10HmaZ-0005vi-00-00000
-X-0-content-size: 1
-
---T4sUOijqQbZv57TR
-Content-Type: text/plain;
 
 foobar
 
@@ -229,13 +191,15 @@ From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
 Message-ID: <20041217133501.GA3059@test.ex>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8""
+Content-Type: text/html;
+        charset=UTF-8;
+        name=""
 Content-Disposition: inline
-Subject: Nasty3
+Subject: Nasty
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
-X-0-content-type: text/plain
+X-0-content-type: text/html
 X-0-filename: 
-X-0-charset: utf-8;
+X-0-charset: UTF-8
 X-0-boundary: 
 X-0-content-disposition: inline
 X-0-content-transfer-encoding: 
@@ -265,18 +229,13 @@ From: J Caesar <jcaesar@test.ex>
 To: a-list00@exim.org
 Message-ID: <20041217133501.GA3059@test.ex>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        garbage1;
-        garbage2=foo;
-        garbage3="bar"foo;
-        charset=UTF-8;
-        garbage4=";
+Content-Type: text/plain; charset="utf-8""
 Content-Disposition: inline
-Subject: Nasty4
+Subject: Nasty3
 Sender: CALLER_NAME <CALLER@myhost.test.ex>
 X-0-content-type: text/plain
 X-0-filename: 
-X-0-charset: UTF-8
+X-0-charset: utf-8;
 X-0-boundary: 
 X-0-content-disposition: inline
 X-0-content-transfer-encoding: 
@@ -302,6 +261,47 @@ Received: from CALLER (helo=test.ex)
 	id 10HmbC-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+From: J Caesar <jcaesar@test.ex>
+To: a-list00@exim.org
+Message-ID: <20041217133501.GA3059@test.ex>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        garbage1;
+        garbage2=foo;
+        garbage3="bar"foo;
+        charset=UTF-8;
+        garbage4=";
+Content-Disposition: inline
+Subject: Nasty4
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+X-0-content-type: text/plain
+X-0-filename: 
+X-0-charset: UTF-8
+X-0-boundary: 
+X-0-content-disposition: inline
+X-0-content-transfer-encoding: 
+X-0-content-id: 
+X-0-content-description: 
+X-0-is-multipart: 0
+X-0-is-coverletter: 1
+X-0-is-rfc822: 0
+X-0-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00000
+X-0-content-size: 1
+
+--T4sUOijqQbZv57TR
+Content-Type: text/plain;
+
+foobar
+
+--T4sUOijqQbZv57TR--
+
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER (helo=test.ex)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbD-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-ID: <20041217133501.GA3058@test.ex>
 Subject: Nasty5
 Mime-Version: 1.0
@@ -318,7 +318,7 @@ X-0-content-description:
 X-0-is-multipart: 1
 X-0-is-coverletter: 1
 X-0-is-rfc822: 0
-X-0-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00000
+X-0-decode-filename: TESTSUITE/spool/scan/10HmbD-0005vi-00/10HmbD-0005vi-00-00000
 X-0-content-size: 1
 X-1-content-type: text/plain
 X-1-filename: test ä test1
@@ -331,7 +331,7 @@ X-1-content-description:
 X-1-is-multipart: 0
 X-1-is-coverletter: 1
 X-1-is-rfc822: 0
-X-1-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00001
+X-1-decode-filename: TESTSUITE/spool/scan/10HmbD-0005vi-00/10HmbD-0005vi-00-00001
 X-1-content-size: 1
 X-2-content-type: text/plain
 X-2-filename: test ä test2
@@ -344,7 +344,7 @@ X-2-content-description:
 X-2-is-multipart: 0
 X-2-is-coverletter: 0
 X-2-is-rfc822: 0
-X-2-decode-filename: TESTSUITE/spool/scan/10HmbC-0005vi-00/10HmbC-0005vi-00-00002
+X-2-decode-filename: TESTSUITE/spool/scan/10HmbD-0005vi-00/10HmbD-0005vi-00-00002
 X-2-content-size: 1
 
 --T4sUOijqQbZv57TR
@@ -365,7 +365,7 @@ From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER (helo=test.ex)
 	by myhost.test.ex with local-esmtp (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbD-0005vi-00
+	id 10HmbE-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 From: J Caesar <jcaesar@test.ex>
@@ -389,7 +389,7 @@ X-0-content-description:
 X-0-is-multipart: 0
 X-0-is-coverletter: 1
 X-0-is-rfc822: 0
-X-0-decode-filename: TESTSUITE/spool/scan/10HmbD-0005vi-00/10HmbD-0005vi-00-00000
+X-0-decode-filename: TESTSUITE/spool/scan/10HmbE-0005vi-00/10HmbE-0005vi-00-00000
 X-0-content-size: 1
 
 --T4sUOijqQbZv57TR

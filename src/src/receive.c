@@ -1348,15 +1348,13 @@ run_mime_acl(uschar *acl, BOOL *smtp_yield_ptr, uschar **smtp_reply_ptr,
   uschar **blackholed_by_ptr)
 {
 FILE *mbox_file;
-uschar rfc822_file_path[2048];
+uschar * rfc822_file_path = NULL;
 unsigned long mbox_size;
 header_line *my_headerlist;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
 uschar * mbox_filename;
 int rc = OK;
-
-memset(CS rfc822_file_path,0,2048);
 
 /* check if it is a MIME message */
 
@@ -1397,7 +1395,7 @@ mime_part_count = -1;
 rc = mime_acl_check(acl, mbox_file, NULL, &user_msg, &log_msg);
 (void)fclose(mbox_file);
 
-if (Ustrlen(rfc822_file_path) > 0)
+if (rfc822_file_path)
   {
   mime_part_count = mime_part_count_buffer;
 
@@ -1405,36 +1403,31 @@ if (Ustrlen(rfc822_file_path) > 0)
     {
     log_write(0, LOG_PANIC,
          "acl_smtp_mime: can't unlink RFC822 spool file, skipping.");
-      goto END_MIME_ACL;
+    goto END_MIME_ACL;
     }
+  rfc822_file_path = NULL;
   }
 
 /* check if we must check any message/rfc822 attachments */
 if (rc == OK)
   {
-  uschar * scandir;
+  uschar * scandir = string_copyn(mbox_filename,
+	      Ustrrchr(mbox_filename, '/') - mbox_filename);
   struct dirent * entry;
   DIR * tempdir;
 
-  scandir = string_copyn(mbox_filename, Ustrrchr(mbox_filename, '/') - mbox_filename);
-
-  tempdir = opendir(CS scandir);
-  for (;;)
-    {
-    if (!(entry = readdir(tempdir)))
-      break;
+  for (tempdir = opendir(CS scandir); entry = readdir(tempdir); )
     if (strncmpic(US entry->d_name, US"__rfc822_", 9) == 0)
       {
-      (void) string_format(rfc822_file_path, sizeof(rfc822_file_path),
-	"%s/%s", scandir, entry->d_name);
-      DEBUG(D_receive) debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n",
-	rfc822_file_path);
+      rfc822_file_path = string_sprintf("%s/%s", scandir, entry->d_name);
+      DEBUG(D_receive)
+	debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n",
+	  rfc822_file_path);
       break;
       }
-    }
   closedir(tempdir);
 
-  if (entry)
+  if (rfc822_file_path)
     {
     if ((mbox_file = Ufopen(rfc822_file_path, "rb")))
       {
@@ -1463,10 +1456,10 @@ else if (rc != OK)
 #ifdef EXPERIMENTAL_DCC
   dcc_ok = 0;
 #endif
-  if (  smtp_input
-     && smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
+  if (smtp_input)
     {
-    *smtp_yield_ptr = FALSE;    /* No more messages after dropped connection */
+    if (smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
+      *smtp_yield_ptr = FALSE;  /* No more messages after dropped connection */
     *smtp_reply_ptr = US"";     /* Indicate reply already sent */
     }
   message_id[0] = 0;            /* Indicate no message accepted */
@@ -3475,9 +3468,10 @@ else
 #endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
-    if (recipients_count > 0 &&
-        acl_smtp_mime != NULL &&
-        !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by))
+    if (  recipients_count > 0
+       && acl_smtp_mime
+       && !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by)
+       )
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
@@ -3597,9 +3591,10 @@ else
     {
 
 #ifdef WITH_CONTENT_SCAN
-    if (acl_not_smtp_mime != NULL &&
-        !run_mime_acl(acl_not_smtp_mime, &smtp_yield, &smtp_reply,
-          &blackholed_by))
+    if (  acl_not_smtp_mime
+       && !run_mime_acl(acl_not_smtp_mime, &smtp_yield, &smtp_reply,
+          &blackholed_by)
+       )
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
