@@ -520,6 +520,12 @@ acl_check_data:
                        got $max_received_linelength
           condition  = ${if > {$max_received_linelength}{998}}
 
+  # Deny if the headers contain badly-formed addresses.
+  #
+  deny	  !verify =	header_syntax
+	  message =	header syntax
+	  log_message = header syntax ($acl_verify_message)
+
   # Deny if the message contains a virus. Before enabling this check, you
   # must install a virus scanner and set the av_scanner option above.
   #
