@@ -89,6 +89,11 @@ PP/01 Fix broken Heimdal GSSAPI authenticator integration.
       Broken in f2ed27cf5, missing an equals sign for specified-initialisers.
       Broken also in d185889f4, with init system revamp.
 
+JH/17 Bug 2113: Fix conversation closedown with the Avast malware scanner.
+      Previously we abruptly closed the connection after reading a malware-
+      found indication; now we go on to read the "scan ok" response line,
+      and send a quit.
+
 
 Exim version 4.90
 -----------------

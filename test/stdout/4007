@@ -66,7 +66,7 @@ Connection request
 >LF>blah\x09[+]
 >LF>200 SCAN OK
 <QUIT
-Unexpected EOF read from client
+Expected EOF read from client
 End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
@@ -83,7 +83,9 @@ Connection request
 >LF>210 SCAN DATA
 >LF>b\\ l\\ a\\ h\x09[L]9.9\x099 VNAME
 >LF>200 SCAN OK
-Unexpected EOF read from client
+<QUIT
+Expected EOF read from client
+End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 *sleep 3
