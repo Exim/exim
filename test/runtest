@@ -1158,6 +1158,7 @@ RESET_AFTER_EXTRA_LINE_READ:
                 /^Support for:/ ||
                 /^Routers:/ ||
                 /^Transports:/ ||
+                /^Malware:/ ||
                 /^log selectors =/ ||
                 /^cwd=/ ||
                 /^Fixed never_users:/ ||
@@ -2840,6 +2841,15 @@ while (<EXIMINFO>)
         }
       }
     }
+
+  elsif (/^Malware: (.*)/)
+    {
+    print;
+    @temp = split /(\s+)/, $1;
+    push(@temp, ' ');
+    %parm_malware = @temp;
+    }
+
   }
 close(EXIMINFO);
 print "-" x 78, "\n";
@@ -3509,6 +3519,10 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
       elsif (/^transport (.*)$/)
         {
         if (!defined $parm_transports{$1}) { $wantthis = 0; last; }
+        }
+      elsif (/^malware (.*)$/)
+        {
+        if (!defined $parm_malware{$1}) { $wantthis = 0; last; }
         }
       else
         {

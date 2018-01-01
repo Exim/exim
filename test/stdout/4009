@@ -1,5 +1,5 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello fromuser at test.ex
+250-myhost.test.ex Hello CALLER at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -7,10 +7,10 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaX-0005vi-00
+250 OK id=10HmbB-0005vi-00
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello fromuser at test.ex
+250-myhost.test.ex Hello CALLER at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -18,10 +18,32 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaY-0005vi-00
+451 Temporary local problem - please try later
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello fromuser at test.ex
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+451 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
 250-SIZE 52428800
 250-8BITMIME
 250-PIPELINING
@@ -31,193 +53,31 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaZ-0005vi-00
 221 myhost.test.ex closing connection
-220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
-250-myhost.test.ex Hello fromuser at test.ex
-250-SIZE 52428800
-250-8BITMIME
-250-PIPELINING
-250 HELP
-250 OK
-250 Accepted
-354 Enter message, ending with "." on a line by itself
-250 OK id=10HmbA-0005vi-00
-221 myhost.test.ex closing connection
 
 ******** SERVER ********
-Listening on port 7833 ... 
-Connection request from [127.0.0.1]
-<REPORT SPAMC/1.2
-<User: nobody
-<Content-length: ddd
-<
-<From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <fromuser@myhost.test.ex>
-<X-Envelope-To: userx@test.ex
-<Received: from fromuser (helo=test.ex)
-<	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <fromuser@myhost.test.ex>)
-<	id 10HmaX-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-<Content-type: text/plain
-<Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
-<From: fromuser@myhost.test.ex
-<Date: Tue, 2 Mar 1999 09:44:33 +0000
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
+Listening on TESTSUITE/eximdir/sophie_sock ... 
+Connection request
+<TESTSUITE/spool/scan/10HmbB-0005vi-00
+>0 no problems mate
 Expected EOF read from client
 End of script
-Listening on port 7833 ... 
-Connection request from [127.0.0.1]
-<REPORT SPAMC/1.2
-<User: nobody
-<Content-length: ddd
-<
-<From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <fromuser@myhost.test.ex>
-<X-Envelope-To: userx@test.ex
-<Received: from fromuser (helo=test.ex)
-<	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <fromuser@myhost.test.ex>)
-<	id 10HmaY-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-<Content-type: text/plain
-<Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
-<From: fromuser@myhost.test.ex
-<Date: Tue, 2 Mar 1999 09:44:33 +0000
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
+Listening on TESTSUITE/eximdir/sophie_sock ... 
+Connection request
+<TESTSUITE/spool/scan/10HmaX-0005vi-00
+>-1 oops, internal error in scanner
 Expected EOF read from client
 End of script
-Inital pause of 2 seconds
-Listening on port 7833 ... 
-Connection request from [127.0.0.1]
-<REPORT SPAMC/1.2
-<User: nobody
-<Content-length: ddd
-<
-<From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <fromuser@myhost.test.ex>
-<X-Envelope-To: userx@test.ex
-<Received: from fromuser (helo=test.ex)
-<	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <fromuser@myhost.test.ex>)
-<	id 10HmaZ-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-<Content-type: text/plain
-<Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
-<From: fromuser@myhost.test.ex
-<Date: Tue, 2 Mar 1999 09:44:33 +0000
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
+Listening on TESTSUITE/eximdir/sophie_sock ... 
+Connection request
+<TESTSUITE/spool/scan/10HmbA-0005vi-00
+>LF>1 VNAME
 Expected EOF read from client
 End of script
-Listening on port 7833 ... 
-Connection request from [127.0.0.1]
-<REPORT SPAMC/1.2
-<User: nobody
-<Content-length: ddd
-<
-<From MAILER-DAEMON Tue Mar 02 09:44:33 1999
-<X-Envelope-From: <fromuser@myhost.test.ex>
-<X-Envelope-To: userx@test.ex
-<Received: from fromuser (helo=test.ex)
-<	by myhost.test.ex with local-esmtp (Exim x.yz)
-<	(envelope-from <fromuser@myhost.test.ex>)
-<	id 10HmbA-0005vi-00
-<	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-<Content-type: text/plain
-<Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
-<From: fromuser@myhost.test.ex
-<Date: Tue, 2 Mar 1999 09:44:33 +0000
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
-Expected EOF read from client
+Listening on TESTSUITE/eximdir/sophie_sock ... 
+Connection request
+*sleep 3
+End of script
+Listening on TESTSUITE/eximdir/sophie_sock ... 
+Connection request
+*sleep 3
 End of script

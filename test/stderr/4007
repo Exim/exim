@@ -1,2 +1,3 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: cmdline  : unable to read from scanner (TESTSUITE/aux-fixed/4007.script -o pause3 TESTSUITE/spool/scan/10HmaX-0005vi-00 2>&1): Connection timed out
-1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: cmdline  : unable to read from scanner (TESTSUITE/aux-fixed/4007.script -o pause3 TESTSUITE/spool/scan/10HmaY-0005vi-00 2>&1): Connection timed out
+1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : invalid response from scanner: 'blah	[E]'
+1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : timeout from scanner
+1999-03-02 09:44:33 10HmaZ-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : timeout from scanner

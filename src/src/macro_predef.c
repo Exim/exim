@@ -43,6 +43,7 @@ builtin_macro_create_var(name, US"y");
 }
 
 
+/* restricted snprintf */
 void
 spf(uschar * buf, int len, const uschar * fmt, ...)
 {
@@ -260,6 +261,10 @@ due to conflicts with other common macros. */
 # ifdef SUPPORT_MBX
   builtin_macro_create(US"_HAVE_TRANSPORT_APPEND_MBX");
 # endif
+#endif
+
+#ifdef WITH_CONTENT_SCAN
+features_malware();
 #endif
 }
 

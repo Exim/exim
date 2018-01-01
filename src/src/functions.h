@@ -263,6 +263,7 @@ extern void    mainlog_close(void);
 extern int     malware(const uschar *, int);
 extern int     malware_in_file(uschar *);
 extern void    malware_init(void);
+extern void    malware_show_supported(FILE *);
 #endif
 extern int     match_address_list(const uschar *, BOOL, BOOL, const uschar **,
                  unsigned int *, int, int, const uschar **);

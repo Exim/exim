@@ -1,0 +1,168 @@
+# content scan interface: aveserver
+#
+server DIR/eximdir/aveserver_sock
+>200 ready
+<SCAN
+>200 done
+<quit
+>200 ready
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/aveserver_sock
+>2xx ready
+<SCAN
+>5xx defer
+<quit
+>2xx ready
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: defer this one (daemon tmp-err)
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/aveserver_sock
+>2xx ready
+<SCAN
+>322 VNAME found
+>2xx ready
+<quit
+>2xx ready
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected (virus found)
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/aveserver_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT="/tmo=2s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be deferred due to timeout
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/aveserver_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT="/tmo=2s / defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted despite timeout
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/aveserver_sock
+>2xx ready
+<SCAN
+>5xx defer
+<quit
+>2xx ready
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=" / defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: accept this, overriding the scan daemon temp-error
+
+.
+quit
+****
+#
+#
+#
+# Recheck that defer_ok option does not affect a malware detection
+#
+server DIR/eximdir/aveserver_sock
+>2xx ready
+<SCAN
+>322 VNAME found
+>2xx ready
+<quit
+>2xx ready
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT="/defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected (virus found)
+
+.
+quit
+****

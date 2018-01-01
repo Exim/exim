@@ -1,12 +1,16 @@
 # Exim test configuration 4006
-# Content-scan: avast interface
+# Content-scan: clamav interface
+
+OPT=
+CONTROL=
 
 .include DIR/aux-var/std_conf_prefix
 
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-av_scanner = avast : DIR/eximdir/avast_sock : OPTION
+#XXX we need an additional test for tcp-connected clamd
+av_scanner = clamd : DIR/eximdir/clam_sock CONTROL
 
 # ----- Main settings -----
 
@@ -16,7 +20,7 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  accept !malware = * INSERT
+  accept !malware = * OPT
   deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----

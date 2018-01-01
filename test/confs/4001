@@ -1,29 +1,53 @@
-# Exim test configuration 4001
-# Content-scan: f-protd interface
+# Exim test configuration 4001:  ACL regex=
 
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
 
-av_scanner = f-protd : localhost4 PORT_S
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
-acl_smtp_data = c_data
+acl_smtp_rcpt = check_rcpt
+acl_smtp_data = check_data
+acl_not_smtp  = check_data
+
+
+# ----- ACL -----
 
 begin acl
 
-c_data:
-  accept !malware = * OPT
-  deny	 logwrite = $callout_address malware_name $malware_name
+check_rcpt:
+  accept
+
+check_data:
+  warn     regex   = \N(THIS\s((\w+)\s)?REGEX)\N
+           message = X-Regex: Regex matched <$regex1> <$regex3>
+
+  warn     condition = ${if !eq{$h_fakereject:}{}}
+           control   = fakereject
+
+  warn     condition = ${if !eq{$h_fakedefer:}{}}
+           control   = fakedefer
+
+  accept
 
 # ----- Routers -----
 
 begin routers
 
-r:
-  driver = redirect
-  data = :blackhole:
+r1:
+  driver = accept
+  transport = t1
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
 
 # End

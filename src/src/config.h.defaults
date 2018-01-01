@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2017 */
+/* Copyright (c) The Exim Maintainers 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* The default settings for Exim configuration variables. A #define without
@@ -173,6 +174,18 @@ Do not put spaces between # and the 'define'.
 #define WHITELIST_D_MACROS
 
 #define WITH_CONTENT_SCAN
+#define DISABLE_MAL_FFROTD
+#define DISABLE_MAL_FFROT6D
+#define DISABLE_MAL_DRWEB
+#define DISABLE_MAL_AVE
+#define DISABLE_MAL_FSECURE
+#define DISABLE_MAL_KAV
+#define DISABLE_MAL_SOPHIE
+#define DISABLE_MAL_CLAM
+#define DISABLE_MAL_MKS
+#define DISABLE_MAL_AVAST
+#define DISABLE_MAL_SOCK
+#define DISABLE_MAL_CMDLINE
 #define WITH_OLD_CLAMAV_STREAM
 
 /* EXPERIMENTAL features */

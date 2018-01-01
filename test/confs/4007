@@ -1,12 +1,12 @@
 # Exim test configuration 4007
-# Content-scan: cmsline interface
+# Content-scan: avast interface
 
 .include DIR/aux-var/std_conf_prefix
 
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-av_scanner = cmdline : DIR/aux-fixed/TESTNUM.script -o OPT %s : found in file : ^(\S*)
+av_scanner = avast : DIR/eximdir/avast_sock : OPTION
 
 # ----- Main settings -----
 

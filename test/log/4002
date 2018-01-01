@@ -1,19 +1,17 @@
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss T="message should be accepted"
-1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <userx@test.ex> R=r
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: aveserver TESTSUITE/eximdir/aveserver_sock : unable to scan file TESTSUITE/spool/scan/10HmaX-0005vi-00/10HmaX-0005vi-00.eml (Responded: 5xx defer).
-1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> temporarily rejected after DATA
-1999-03-02 09:44:33 10HmbB-0005vi-00 malware_name VNAME
-1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA
-1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: aveserver TESTSUITE/eximdir/aveserver_sock : unavailable (Responded: nothing).
-1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> temporarily rejected after DATA
-1999-03-02 09:44:33 10HmaZ-0005vi-00 malware acl condition: aveserver TESTSUITE/eximdir/aveserver_sock : unavailable (Responded: nothing).
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss T="message should be accepted despite timeout"
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=fromuser Warning: [127.0.0.1]:1111 no action Spam detection software, running on the system "demo",\n has NOT identified this incoming email as spam.  The original\n message has been attached to this so you can view it or label\n similar future email.  If you have any questions, see\n @@CONTACT_ADDRESS@@ for details.\n \n Content preview:  test [...]\n \n Content analysis details:   (4.5 points, 5.0 required)\n \n  pts rule name              description\n ---- ---------------------- --------------------------------------------------\n -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP\n  1.2 MISSING_HEADERS        Missing To: header\n  1.0 MISSING_FROM           Missing From: header\n  1.8 MISSING_SUBJECT        Missing Subject: header\n  1.4 MISSING_DATE           Missing Date: header\n  0.1 MISSING_MID            Missing Message-Id: header
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= fromuser@myhost.test.ex U=fromuser P=local-esmtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <userx@test.ex> R=r
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 U=fromuser Warning: [127.0.0.1]:1111 no action Spam detection software, running on the system "demo",\n has NOT identified this incoming email as spam.  The original\n message has been attached to this so you can view it or label\n similar future email.  If you have any questions, see\n @@CONTACT_ADDRESS@@ for details.\n \n Content preview:  test [...]\n \n Content analysis details:   (4.5 points, 5.0 required)\n \n  pts rule name              description\n ---- ---------------------- --------------------------------------------------\n -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP\n  1.2 MISSING_HEADERS        Missing To: header\n  1.0 MISSING_FROM           Missing From: header\n  1.8 MISSING_SUBJECT        Missing Subject: header\n  1.4 MISSING_DATE           Missing Date: header\n  0.1 MISSING_MID            Missing Message-Id: header
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= fromuser@myhost.test.ex U=fromuser P=local-esmtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <userx@test.ex> R=r
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 U=fromuser Warning: [127.0.0.1]:1111 no action Spam detection software, running on the system "demo",\n has NOT identified this incoming email as spam.  The original\n message has been attached to this so you can view it or label\n similar future email.  If you have any questions, see\n @@CONTACT_ADDRESS@@ for details.\n \n Content preview:  test [...]\n \n Content analysis details:   (4.5 points, 5.0 required)\n \n  pts rule name              description\n ---- ---------------------- --------------------------------------------------\n -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP\n  1.2 MISSING_HEADERS        Missing To: header\n  1.0 MISSING_FROM           Missing From: header\n  1.8 MISSING_SUBJECT        Missing Subject: header\n  1.4 MISSING_DATE           Missing Date: header\n  0.1 MISSING_MID            Missing Message-Id: header
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= fromuser@myhost.test.ex U=fromuser P=local-esmtp S=sss
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <userx@test.ex> R=r
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 malware acl condition: aveserver TESTSUITE/eximdir/aveserver_sock : unable to scan file TESTSUITE/spool/scan/10HmbA-0005vi-00/10HmbA-0005vi-00.eml (Responded: 5xx defer).
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss T="accept this, overriding the scan daemon temp-error"
+1999-03-02 09:44:33 10HmbA-0005vi-00 spam acl condition: spamd: failed to connect to any address for ip4.ip4.ip4.ip4: Connection refused
+1999-03-02 09:44:33 10HmbA-0005vi-00 U=fromuser Warning: [127.0.0.1]:1111 no action Spam detection software, running on the system "demo",\n has NOT identified this incoming email as spam.  The original\n message has been attached to this so you can view it or label\n similar future email.  If you have any questions, see\n @@CONTACT_ADDRESS@@ for details.\n \n Content preview:  test [...]\n \n Content analysis details:   (4.5 points, 5.0 required)\n \n  pts rule name              description\n ---- ---------------------- --------------------------------------------------\n -1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP\n  1.2 MISSING_HEADERS        Missing To: header\n  1.0 MISSING_FROM           Missing From: header\n  1.8 MISSING_SUBJECT        Missing Subject: header\n  1.4 MISSING_DATE           Missing Date: header\n  0.1 MISSING_MID            Missing Message-Id: header
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= fromuser@myhost.test.ex U=fromuser P=local-esmtp S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <userx@test.ex> R=r
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbC-0005vi-00 malware_name VNAME
-1999-03-02 09:44:33 10HmbC-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA

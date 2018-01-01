@@ -1,0 +1,3 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: sophie TESTSUITE/eximdir/sophie_sock : scanner reported error
+1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: sophie TESTSUITE/eximdir/sophie_sock : unable to read from UNIX socket (TESTSUITE/eximdir/sophie_sock)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 malware acl condition: sophie TESTSUITE/eximdir/sophie_sock : unable to read from UNIX socket (TESTSUITE/eximdir/sophie_sock)

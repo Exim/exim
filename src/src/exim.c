@@ -801,11 +801,11 @@ fprintf(f, "Support for:");
   fprintf(f, " TCPwrappers");
 #endif
 #ifdef SUPPORT_TLS
-  #ifdef USE_GNUTLS
+# ifdef USE_GNUTLS
   fprintf(f, " GnuTLS");
-  #else
+# else
   fprintf(f, " OpenSSL");
-  #endif
+# endif
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   fprintf(f, " translate_ip_address");
@@ -933,6 +933,10 @@ fprintf(f, "\n");
 auth_show_supported(f);
 route_show_supported(f);
 transport_show_supported(f);
+
+#ifdef WITH_CONTENT_SCAN
+malware_show_supported(f);
+#endif
 
 if (fixed_never_users[0] > 0)
   {

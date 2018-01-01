@@ -1,12 +1,12 @@
 # Exim test configuration 4008
-# Content-scan: rspamd interface
+# Content-scan: cmsline interface
 
 .include DIR/aux-var/std_conf_prefix
 
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-spamd_address = 127.0.0.1 11333 variant=rspamd
+av_scanner = cmdline : DIR/aux-fixed/TESTNUM.script -o OPT %s : found in file : ^(\S*)
 
 # ----- Main settings -----
 
@@ -16,11 +16,8 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  warn
-    spam = nobody
-  warn
-    log_message = $spam_action $spam_report
-  accept
+  accept !malware = * INSERT
+  deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----
 

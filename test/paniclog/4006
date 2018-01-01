@@ -1,3 +1,3 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : invalid response from scanner: 'blah	[E]'
-1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : timeout from scanner
-1999-03-02 09:44:33 10HmaZ-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : timeout from scanner
+1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: clamd TESTSUITE/eximdir/clam_sock : ClamAV returned: scanned_file_name: 666 ERROR
+1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: clamd TESTSUITE/eximdir/clam_sock : unable to read from socket (Connection timed out)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 malware acl condition: clamd TESTSUITE/eximdir/clam_sock : unable to read from socket (Connection timed out)

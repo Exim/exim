@@ -1,11 +1,11 @@
 # Exim test configuration 4012
-# Content-scan: sock interface
+# Content-scan: f-protd interface
 
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
 
-av_scanner = sock : 127.0.0.1 PORT_S : : BAD : NAME:: (\w+)
+av_scanner = f-protd : localhost4 PORT_S
 
 # ----- Main settings -----
 

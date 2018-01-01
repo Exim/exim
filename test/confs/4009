@@ -1,17 +1,12 @@
 # Exim test configuration 4009
-# Content-scan: spamassassin interface
-
-OPT= 127.0.0.1 7833
+# Content-scan: sophie interface
 
 .include DIR/aux-var/std_conf_prefix
 
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-# we need to set the sender
-trusted_users = CALLER
-
-spamd_address = OPT
+av_scanner = sophie : DIR/eximdir/sophie_sock
 
 # ----- Main settings -----
 
@@ -21,11 +16,8 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  warn
-    spam = nobody
-  warn
-    log_message = $callout_address $spam_action $spam_report
-  accept
+  accept !malware = * OPT
+  deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----
 

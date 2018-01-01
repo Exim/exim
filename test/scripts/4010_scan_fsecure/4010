@@ -1,0 +1,134 @@
+# content scan interface: fsecure
+# also testing alternate list separator for malware= args
+#
+server DIR/eximdir/fsec_sock
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<SCAN
+>LF>random ignored line
+>LF>random ignored line 2
+>LF>OK	Scan ok.
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/fsec_sock
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<SCAN
+>LF>xxxINFECTED	blah	VNAME	blah
+>LF>OK	Scan ok.
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/fsec_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT=";tmo=2s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be tmp-rejected due to timeout
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/fsec_sock
+*sleep 3
+****
+#
+#
+#
+exim -odi -bs -DOPT=";defer_ok;tmo=2s"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted despite timeout
+
+.
+quit
+****
+#
+#
+#
+server DIR/eximdir/fsec_sock
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<CONFIGURE
+>ignored_response
+<SCAN
+>LF>xxxINFECTED	blah	VNAME	blah
+>LF>OK	Scan ok.
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPT="; defer_ok ; tmo=5h"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected as the options are not relevant
+
+.
+quit
+****

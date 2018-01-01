@@ -1,16 +1,11 @@
-# Exim test configuration 4005
-# Content-scan: clamav interface
-
-OPT=
-CONTROL=
+# Exim test configuration 4014
+# Content-scan: sock interface
 
 .include DIR/aux-var/std_conf_prefix
 
-log_selector = +subject
 primary_hostname = myhost.test.ex
 
-#XXX we need an additional test for tcp-connected clamd
-av_scanner = clamd : DIR/eximdir/clam_sock CONTROL
+av_scanner = sock : 127.0.0.1 PORT_S : : BAD : NAME:: (\w+)
 
 # ----- Main settings -----
 
@@ -21,7 +16,7 @@ begin acl
 
 c_data:
   accept !malware = * OPT
-  deny	 logwrite = malware_name $malware_name
+  deny	 logwrite = $callout_address malware_name $malware_name
 
 # ----- Routers -----
 

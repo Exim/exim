@@ -47,6 +47,10 @@ JH/07 Bug 2214: Fix SMTP responses resulting from non-accept result of MIME ACL.
       Previously a spurious "250 OK id=" response was appended to the proper
       failure response.
 
+JH/08 The "support for" informational output now, which built with Content
+      Scanning support, has a line for the malware scanner interfaces compiled
+      in.  Interface can be individually included or not at build time.
+
 
 Exim version 4.90
 -----------------

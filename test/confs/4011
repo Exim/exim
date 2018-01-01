@@ -1,11 +1,12 @@
 # Exim test configuration 4011
-# Content-scan: f-prot6d interface
+# Content-scan: aveserver interface
 
 .include DIR/aux-var/std_conf_prefix
 
+log_selector = +subject
 primary_hostname = myhost.test.ex
 
-av_scanner = f-prot6d : localhost4 PORT_S
+av_scanner = aveserver : DIR/eximdir/aveserver_sock
 
 # ----- Main settings -----
 
@@ -16,7 +17,7 @@ begin acl
 
 c_data:
   accept !malware = * OPT
-  deny	 logwrite = $callout_address malware_name $malware_name
+  deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----
 

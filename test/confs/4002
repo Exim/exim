@@ -1,12 +1,17 @@
 # Exim test configuration 4002
-# Content-scan: aveserver interface
+# Content-scan: spamassassin interface
+
+OPT= 127.0.0.1 7833
 
 .include DIR/aux-var/std_conf_prefix
 
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-av_scanner = aveserver : DIR/eximdir/aveserver_sock
+# we need to set the sender
+trusted_users = CALLER
+
+spamd_address = OPT
 
 # ----- Main settings -----
 
@@ -16,8 +21,11 @@ acl_smtp_data = c_data
 begin acl
 
 c_data:
-  accept !malware = * OPT
-  deny	 logwrite = malware_name $malware_name
+  warn
+    spam = nobody
+  warn
+    log_message = $callout_address $spam_action $spam_report
+  accept
 
 # ----- Routers -----
 

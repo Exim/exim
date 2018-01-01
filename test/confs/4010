@@ -1,53 +1,30 @@
-# Exim test configuration 0568:  ACL regex=
+# Exim test configuration 4010
+# Content-scan: fsecure interface
 
 .include DIR/aux-var/std_conf_prefix
 
+log_selector = +subject
 primary_hostname = myhost.test.ex
-rfc1413_query_timeout = 0s
 
+av_scanner = fsecure : DIR/eximdir/fsec_sock
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = check_rcpt
-acl_smtp_data = check_data
-acl_not_smtp  = check_data
-
-
-# ----- ACL -----
+acl_smtp_rcpt = accept
+acl_smtp_data = c_data
 
 begin acl
 
-check_rcpt:
-  accept
-
-check_data:
-  warn     regex   = \N(THIS\s((\w+)\s)?REGEX)\N
-           message = X-Regex: Regex matched <$regex1> <$regex3>
-
-  warn     condition = ${if !eq{$h_fakereject:}{}}
-           control   = fakereject
-
-  warn     condition = ${if !eq{$h_fakedefer:}{}}
-           control   = fakedefer
-
-  accept
+c_data:
+  accept !malware = <; * OPT
+  deny	 logwrite = malware_name $malware_name
 
 # ----- Routers -----
 
 begin routers
 
-r1:
-  driver = accept
-  transport = t1
-
-# ----- Transports -----
-
-begin transports
-
-t1:
-  driver = appendfile
-  file = DIR/test-mail/$local_part
-  user = CALLER
-
+r:
+  driver = redirect
+  data = :blackhole:
 
 # End
