@@ -419,17 +419,6 @@ DISABLE_MAL_MKS=yes
 
 
 #------------------------------------------------------------------------------
-# If you're using ClamAV and are backporting fixes to an old version, instead
-# of staying current (which is the more usual approach) then you may need to
-# use an older API which uses a STREAM command, now deprecated, instead of
-# zINSTREAM.  If you need to set this, please let the Exim developers know, as
-# if nobody reports a need for it, we'll remove this option and clean up the
-# code.  zINSTREAM was introduced with ClamAV 0.95.
-#
-# WITH_OLD_CLAMAV_STREAM=yes
-
-
-#------------------------------------------------------------------------------
 # If built with TLS, Exim includes code to support DKIM (DomainKeys Identified
 # Mail, RFC4871) signing and verification.  Verification of signatures is
 # turned on by default.  See the spec for information on conditionally

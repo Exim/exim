@@ -186,7 +186,6 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_MAL_AVAST
 #define DISABLE_MAL_SOCK
 #define DISABLE_MAL_CMDLINE
-#define WITH_OLD_CLAMAV_STREAM
 
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_BRIGHTMAIL
