@@ -100,6 +100,7 @@ extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
 
 extern int     auth_get_data(uschar **, uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
+extern void    auth_show_supported(FILE *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
@@ -377,6 +378,7 @@ extern BOOL    route_find_expanded_group(uschar *, uschar *, uschar *, gid_t *,
 extern BOOL    route_find_expanded_user(uschar *, uschar *, uschar *,
                  struct passwd **, uid_t *, uschar **);
 extern void    route_init(void);
+extern void    route_show_supported(FILE *);
 extern void    route_tidyup(void);
 
 extern uschar *search_find(void *, uschar *, uschar *, int, const uschar *, int,
@@ -501,6 +503,7 @@ extern void    transport_write_reset(int);
 extern BOOL    transport_write_string(int, const char *, ...);
 extern BOOL    transport_headers_send(transport_ctx *,
                  BOOL (*)(transport_ctx *, uschar *, int));
+extern void    transport_show_supported(FILE *);
 extern BOOL    transport_write_message(transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);

@@ -930,86 +930,9 @@ fprintf(f, "Lookups (built-in):");
 #endif
 fprintf(f, "\n");
 
-fprintf(f, "Authenticators:");
-#ifdef AUTH_CRAM_MD5
-  fprintf(f, " cram_md5");
-#endif
-#ifdef AUTH_CYRUS_SASL
-  fprintf(f, " cyrus_sasl");
-#endif
-#ifdef AUTH_DOVECOT
-  fprintf(f, " dovecot");
-#endif
-#ifdef AUTH_GSASL
-  fprintf(f, " gsasl");
-#endif
-#ifdef AUTH_HEIMDAL_GSSAPI
-  fprintf(f, " heimdal_gssapi");
-#endif
-#ifdef AUTH_PLAINTEXT
-  fprintf(f, " plaintext");
-#endif
-#ifdef AUTH_SPA
-  fprintf(f, " spa");
-#endif
-#ifdef AUTH_TLS
-  fprintf(f, " tls");
-#endif
-fprintf(f, "\n");
-
-fprintf(f, "Routers:");
-#ifdef ROUTER_ACCEPT
-  fprintf(f, " accept");
-#endif
-#ifdef ROUTER_DNSLOOKUP
-  fprintf(f, " dnslookup");
-#endif
-#ifdef ROUTER_IPLITERAL
-  fprintf(f, " ipliteral");
-#endif
-#ifdef ROUTER_IPLOOKUP
-  fprintf(f, " iplookup");
-#endif
-#ifdef ROUTER_MANUALROUTE
-  fprintf(f, " manualroute");
-#endif
-#ifdef ROUTER_QUERYPROGRAM
-  fprintf(f, " queryprogram");
-#endif
-#ifdef ROUTER_REDIRECT
-  fprintf(f, " redirect");
-#endif
-fprintf(f, "\n");
-
-fprintf(f, "Transports:");
-#ifdef TRANSPORT_APPENDFILE
-  fprintf(f, " appendfile");
-  #ifdef SUPPORT_MAILDIR
-    fprintf(f, "/maildir");
-  #endif
-  #ifdef SUPPORT_MAILSTORE
-    fprintf(f, "/mailstore");
-  #endif
-  #ifdef SUPPORT_MBX
-    fprintf(f, "/mbx");
-  #endif
-#endif
-#ifdef TRANSPORT_AUTOREPLY
-  fprintf(f, " autoreply");
-#endif
-#ifdef TRANSPORT_LMTP
-  fprintf(f, " lmtp");
-#endif
-#ifdef TRANSPORT_PIPE
-  fprintf(f, " pipe");
-#endif
-#ifdef EXPERIMENTAL_QUEUEFILE
-  fprintf(f, " queuefile");
-#endif
-#ifdef TRANSPORT_SMTP
-  fprintf(f, " smtp");
-#endif
-fprintf(f, "\n");
+auth_show_supported(f);
+route_show_supported(f);
+transport_show_supported(f);
 
 if (fixed_never_users[0] > 0)
   {

@@ -171,8 +171,18 @@ auth_info auths_available[] = {
   },
 #endif
 
-{ .driver_name = US"" }		/* end marker */
+  { .driver_name = US"" }		/* end marker */
 };
+
+void
+auth_show_supported(FILE * f)
+{
+auth_info * ai;
+fprintf(f, "Authenticators:");
+for (ai = auths_available; ai->driver_name[0]; ai++)
+       	fprintf(f, " %s", ai->driver_name);
+fprintf(f, "\n");
+}
 
 
 /* Tables of information about which routers and transports are included in the
@@ -329,8 +339,20 @@ router_info routers_available[] = {
   .ri_flags =		ri_notransport
   },
 #endif
-{ US"" }
+  { US"" }
 };
+
+
+void
+route_show_supported(FILE * f)
+{
+router_info * rr;
+fprintf(f, "Routers:");
+for (rr = routers_available; rr->driver_name[0]; rr++)
+       	fprintf(f, " %s", rr->driver_name);
+fprintf(f, "\n");
+}
+
 
 
 
@@ -419,8 +441,42 @@ transport_info transports_available[] = {
   .local =		FALSE
   },
 #endif
-{ US"" }
+  { US"" }
 };
+
+void
+transport_show_supported(FILE * f)
+{
+fprintf(f, "Transports:");
+#ifdef TRANSPORT_APPENDFILE
+  fprintf(f, " appendfile");
+  #ifdef SUPPORT_MAILDIR
+    fprintf(f, "/maildir");	/* damn these subclasses */
+  #endif
+  #ifdef SUPPORT_MAILSTORE
+    fprintf(f, "/mailstore");
+  #endif
+  #ifdef SUPPORT_MBX
+    fprintf(f, "/mbx");
+  #endif
+#endif
+#ifdef TRANSPORT_AUTOREPLY
+  fprintf(f, " autoreply");
+#endif
+#ifdef TRANSPORT_LMTP
+  fprintf(f, " lmtp");
+#endif
+#ifdef TRANSPORT_PIPE
+  fprintf(f, " pipe");
+#endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  fprintf(f, " queuefile");
+#endif
+#ifdef TRANSPORT_SMTP
+  fprintf(f, " smtp");
+#endif
+fprintf(f, "\n");
+}
 
 
 #ifndef MACRO_PREDEF
