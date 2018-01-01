@@ -50,6 +50,8 @@ JH/07 Bug 2214: Fix SMTP responses resulting from non-accept result of MIME ACL.
 JH/08 The "support for" informational output now, which built with Content
       Scanning support, has a line for the malware scanner interfaces compiled
       in.  Interface can be individually included or not at build time.
+      The "aveserver", "kavdaemon" and "mksd" interfaces are now not included
+      by the template makefile "src/EDITME".
 
 
 Exim version 4.90

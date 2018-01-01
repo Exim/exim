@@ -404,15 +404,18 @@ EXIM_MONITOR=eximon.bin
 # DISABLE_MAL_FFROTD=yes
 # DISABLE_MAL_FFROT6D=yes
 # DISABLE_MAL_DRWEB=yes
-# DISABLE_MAL_AVE=yes
 # DISABLE_MAL_FSECURE=yes
-# DISABLE_MAL_KAV=yes
 # DISABLE_MAL_SOPHIE=yes
 # DISABLE_MAL_CLAM=yes
-# DISABLE_MAL_MKS=yes
 # DISABLE_MAL_AVAST=yes
 # DISABLE_MAL_SOCK=yes
 # DISABLE_MAL_CMDLINE=yes
+
+# These scanners are claimed to be no longer existent.
+
+DISABLE_MAL_AVE=yes
+DISABLE_MAL_KAV=yes
+DISABLE_MAL_MKS=yes
 
 
 #------------------------------------------------------------------------------
