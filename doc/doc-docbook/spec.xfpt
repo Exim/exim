@@ -31629,8 +31629,6 @@ option, then the ClamAV interface will pass a filename containing the data
 to be scanned, which will should normally result in less I/O happening and be
 more efficient.  Normally in the TCP case, the data is streamed to ClamAV as
 Exim does not assume that there is a common filesystem with the remote host.
-There is an option WITH_OLD_CLAMAV_STREAM in &_src/EDITME_& available, should
-you be running a version of ClamAV prior to 0.95.
 
 The final example shows that multiple TCP targets can be specified.  Exim will
 randomly use one for each incoming email (i.e. it load balances them).  Note
