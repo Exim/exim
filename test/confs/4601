@@ -1,0 +1,13 @@
+# Exim test configuration 4601
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = \
+  accept	logwrite =	$sender_address [$sender_host_address] \
+				${lookup {$sender_address} spf {$sender_host_address} \
+						{lookup: '$value'}{FAILED}}
+# End

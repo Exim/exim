@@ -1,0 +1,12 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 spf_result         fail
+1999-03-02 09:44:33 spf_header_comment myhost.test.ex: domain of example.com does not designate ip4.ip4.ip4.ip4 as permitted sender
+1999-03-02 09:44:33 spf_smtp_comment   Please see http://www.openspf.org/Why?id=a%40example.com&ip=ip4.ip4.ip4.ip4&receiver=myhost.test.ex : Reason: mechanism
+1999-03-02 09:44:33 spf_received       Received-SPF: fail (myhost.test.ex: domain of example.com does not designate ip4.ip4.ip4.ip4 as permitted sender) client-ip=ip4.ip4.ip4.ip4; envelope-from=a@example.com; helo=testclient;
+1999-03-02 09:44:33 H=(testclient) [ip4.ip4.ip4.ip4] F=<a@example.com> rejected RCPT <fred@test.ex>
+1999-03-02 09:44:33 spf_result         pass
+1999-03-02 09:44:33 spf_header_comment myhost.test.ex: localhost is always allowed.
+1999-03-02 09:44:33 spf_smtp_comment   
+1999-03-02 09:44:33 spf_received       Received-SPF: pass (myhost.test.ex: localhost is always allowed.) client-ip=127.0.0.1; envelope-from=b@example.com; helo=testclient;
