@@ -3666,35 +3666,30 @@ for (; cb != NULL; cb = cb->next)
       }
     break;
 
-    #ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
     case ACLC_SPAM:
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
       uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
-      /* Run the spam backend. */
+
       rc = spam(CUSS &ss);
       /* Modify return code based upon the existence of options. */
-      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
-            != NULL) {
+      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
-          {
-          /* FAIL so that the message is passed to the next ACL */
-          rc = FAIL;
-          }
-        }
+          rc = FAIL;	/* FAIL so that the message is passed to the next ACL */
       }
     break;
-    #endif
+#endif
 
-    #ifdef EXPERIMENTAL_SPF
+#ifdef EXPERIMENTAL_SPF
     case ACLC_SPF:
       rc = spf_process(&arg, sender_address, SPF_PROCESS_NORMAL);
     break;
     case ACLC_SPF_GUESS:
       rc = spf_process(&arg, sender_address, SPF_PROCESS_GUESS);
     break;
-    #endif
+#endif
 
     case ACLC_UDPSEND:
     rc = acl_udpsend(arg, log_msgptr);
