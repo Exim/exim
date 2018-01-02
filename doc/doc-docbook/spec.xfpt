@@ -31541,7 +31541,10 @@ av_scanner = sophie:/var/run/sophie
 If the value of &%av_scanner%& starts with a dollar character, it is expanded
 before use.
 The usual list-parsing of the content (see &<<SECTlistconstruct>>&) applies.
-The following scanner types are supported in this release:
+The following scanner types are supported in this release,
+.new
+though individual ones can be included or not at build time:
+.wen
 
 .vlist
 .vitem &%avast%&

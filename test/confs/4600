@@ -1,7 +1,5 @@
 # Exim test configuration 4600
 
-SERVER=
-
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
@@ -9,10 +7,6 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = check_rcpt
-
-queue_only
-queue_run_in_order
-
 
 begin acl
 

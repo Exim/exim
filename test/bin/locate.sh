@@ -1,6 +1,6 @@
 #!/bin/sh
 
-[ -e bin.sys ] || mkdir bin.sys
+[ -d bin.sys ] || mkdir bin.sys
 cd bin.sys
 
 while read d
@@ -13,6 +13,7 @@ do
       ln -s $d/$1 .
       shift
     done
+    exit 0
   fi
 done <<-HERE
 	/bin
