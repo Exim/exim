@@ -16,15 +16,18 @@ SRC = @srcdir@/src
 
 ##############################################################################
 
-# List of targets
-
-all:            makebin bin/cf bin/client $(CLIENT_SSL) $(CLIENT_GNUTLS) \
+BINARIES =	bin/cf bin/client $(CLIENT_SSL) $(CLIENT_GNUTLS) \
                 bin/checkaccess bin/fakens bin/fd bin/iefbr14 $(LOADED) \
                 bin/mtpscript bin/server bin/showids
 
-# Ensure the bin directory exists
+# List of targets
 
-makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
+all:            binaries sysbinaries
+
+binaries:	$(BINARIES)
+
+sysbinaries:	FRC
+		bin/locate.sh initdb postgres
 
 # Compile and link the programs:
 #
@@ -43,64 +46,42 @@ makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
 
 bin/cf:         $(SRC)/cf.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf $(SRC)/cf.c
-		@echo ">>> bin/cf command build"
-		@echo " "
 
 bin/client:     $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client $(SRC)/client.c $(LIBS)
-		@echo ">>> bin/client command built"
-		@echo " "
 
 bin/client-gnutls: $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/client-gnutls $(SRC)/client.c -lgnutls -lgcrypt $(LIBS)
-		@echo ">>> bin/client-gnutls command built"
-		@echo " "
 
 bin/client-ssl: $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl $(SRC)/client.c -lssl -lcrypto $(LIBS)
-		@echo ">>> bin/client-ssl command built"
-		@echo " "
 
 bin/checkaccess:$(SRC)/checkaccess.c Makefile
 		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess $(SRC)/checkaccess.c
-		@echo ">>> bin/checkaccess command built"
-		@echo " "
 
 bin/fakens:     $(SRC)/fakens.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens $(SRC)/fakens.c $(LIBS)
-		@echo ">>> bin/fakens command built"
-		@echo " "
 
 bin/fd:         $(SRC)/fd.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd $(SRC)/fd.c
-		@echo ">>> bin/fd command built"
-		@echo " "
 
 bin/iefbr14:    $(SRC)/iefbr14.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 $(SRC)/iefbr14.c
-		@echo ">>> bin/iefbr14 command built"
-		@echo " "
 
 bin/loaded:     $(SRC)/loaded.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded $(SRC)/loaded.c
-		@echo ">>> bin/loaded command built"
-		@echo " "
 
 bin/mtpscript:  $(SRC)/mtpscript.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript $(SRC)/mtpscript.c
-		@echo ">>> bin/mtpscript command built"
-		@echo " "
 
 bin/server:     $(SRC)/server.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server $(SRC)/server.c $(LIBS)
-		@echo ">>> bin/server command built"
-		@echo " "
 
 bin/showids:    $(SRC)/showids.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $(SRC)/showids.c
-		@echo ">>> bin/showids command built"
-		@echo " "
 
-clean:;         rm -rf bin/*
+clean:;         rm -rf $(BINARIES) bin.sys
+
+FRC:
 
 # End

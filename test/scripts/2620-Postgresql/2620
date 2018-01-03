@@ -3,11 +3,11 @@
 # first, populate a DB to test against
 sudo rm -fr DIR/pgsql
 perl
-system 'initdb -D DIR/pgsql/data';
+system 'DIR/bin.sys/initdb -D DIR/pgsql/data';
 ****
 sudo rm test-stdout
 background
-/usr/bin/postgres -D DIR/pgsql/data -p PORT_N -k DIR/pgsql
+DIR/bin.sys/postgres -D DIR/pgsql/data -p PORT_N -k DIR/pgsql
 ****
 sleep 1
 perl
