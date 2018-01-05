@@ -840,6 +840,9 @@ fprintf(f, "Support for:");
 #ifdef SUPPORT_SOCKS
   fprintf(f, " SOCKS");
 #endif
+#ifdef SUPPORT_SPF
+  fprintf(f, " SPF");
+#endif
 #ifdef TCP_FASTOPEN
   deliver_init();
   if (tcp_fastopen_ok) fprintf(f, " TCP_Fast_Open");
@@ -849,9 +852,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   fprintf(f, " Experimental_QUEUEFILE");
-#endif
-#ifdef EXPERIMENTAL_SPF
-  fprintf(f, " Experimental_SPF");
 #endif
 #ifdef EXPERIMENTAL_SRS
   fprintf(f, " Experimental_SRS");

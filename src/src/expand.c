@@ -700,7 +700,7 @@ static var_entry var_table[] = {
   { "spam_score",          vtype_stringptr,   &spam_score },
   { "spam_score_int",      vtype_stringptr,   &spam_score_int },
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
   { "spf_guess",           vtype_stringptr,   &spf_guess },
   { "spf_header_comment",  vtype_stringptr,   &spf_header_comment },
   { "spf_received",        vtype_stringptr,   &spf_received },

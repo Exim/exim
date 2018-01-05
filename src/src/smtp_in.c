@@ -2007,7 +2007,7 @@ deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
 #ifndef DISABLE_PRDR
 prdr_requested = FALSE;
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
 spf_header_comment = NULL;
 spf_received = NULL;
 spf_result = NULL;
@@ -4082,7 +4082,7 @@ while (done <= 0)
         }
       }
 
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
     /* set up SPF context */
     spf_init(sender_helo_name, sender_host_address);
 #endif

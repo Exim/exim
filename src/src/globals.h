@@ -867,7 +867,7 @@ extern uschar *spam_action;            /* the spamd recommended-action */
 extern uschar *spam_score;             /* the spam score (float) */
 extern uschar *spam_score_int;         /* spam_score * 10 (int) */
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
 extern uschar *spf_guess;              /* spf best-guess record */
 extern uschar *spf_header_comment;     /* spf header comment */
 extern uschar *spf_received;           /* Received-SPF: header */

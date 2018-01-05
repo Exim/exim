@@ -17,6 +17,9 @@ Version 4.91
 
  3. Feature macros for the compiled-in set of malware scanner interfaces.
 
+ 4. SPF support is promoted from Experimental to mainline status.  The template
+    src/EDITME makefile does not enable its inclusion.
+
 
 Version 4.90
 ------------

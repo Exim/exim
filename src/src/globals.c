@@ -1360,7 +1360,7 @@ uschar *spam_action            = NULL;
 uschar *spam_score             = NULL;
 uschar *spam_score_int         = NULL;
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
 uschar *spf_guess              = US"v=spf1 a/24 mx/24 ptr ?all";
 uschar *spf_header_comment     = NULL;
 uschar *spf_received           = NULL;

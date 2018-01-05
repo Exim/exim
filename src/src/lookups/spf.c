@@ -18,7 +18,7 @@
 
 #include "../exim.h"
 
-#ifndef EXPERIMENTAL_SPF
+#ifndef SUPPORT_SPF
 static void dummy(int x);
 static void dummy2(int x) { dummy(x-1); }
 static void dummy(int x) { dummy2(x-1); }
@@ -118,4 +118,4 @@ static lookup_info _lookup_info = {
 static lookup_info *_lookup_list[] = { &_lookup_info };
 lookup_module_info spf_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
-#endif /* EXPERIMENTAL_SPF */
+#endif /* SUPPORT_SPF */

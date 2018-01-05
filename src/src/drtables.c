@@ -578,7 +578,7 @@ extern lookup_module_info redis_lookup_module_info;
 #if defined(EXPERIMENTAL_LMDB)
 extern lookup_module_info lmdb_lookup_module_info;
 #endif
-#if defined(EXPERIMENTAL_SPF)
+#if defined(SUPPORT_SPF)
 extern lookup_module_info spf_lookup_module_info;
 #endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
@@ -669,7 +669,7 @@ init_lookup_list(void)
   addlookupmodule(NULL, &lmdb_lookup_module_info);
 #endif
 
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
   addlookupmodule(NULL, &spf_lookup_module_info);
 #endif
 

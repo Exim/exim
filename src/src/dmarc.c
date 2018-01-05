@@ -12,7 +12,7 @@
 
 #include "exim.h"
 #ifdef EXPERIMENTAL_DMARC
-# if !defined EXPERIMENTAL_SPF
+# if !defined SUPPORT_SPF
 #  error SPF must also be enabled for DMARC
 # elif defined DISABLE_DKIM
 #  error DKIM must also be enabled for DMARC
@@ -632,7 +632,7 @@ if (header_from_sender)
 return hdr_tmp;
 }
 
-# endif /* EXPERIMENTAL_SPF */
+# endif /* SUPPORT_SPF */
 #endif /* EXPERIMENTAL_DMARC */
 /* vi: aw ai sw=2
  */

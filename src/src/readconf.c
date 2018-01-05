@@ -304,7 +304,7 @@ static optionlist optionlist_config[] = {
 #ifdef WITH_CONTENT_SCAN
   { "spamd_address",            opt_stringptr,   &spamd_address },
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
   { "spf_guess",                opt_stringptr,   &spf_guess },
 #endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },

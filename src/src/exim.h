@@ -502,7 +502,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 # include "bmi_spam.h"
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
 # include "spf.h"
 #endif
 #ifdef EXPERIMENTAL_SRS

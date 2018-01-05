@@ -463,14 +463,6 @@ DISABLE_MAL_MKS=yes
 
 # EXPERIMENTAL_DCC=yes
 
-# Uncomment the following lines to add SPF support. You need to have libspf2
-# installed on your system (www.libspf2.org). Depending on where it is installed
-# you may have to edit the CFLAGS and LDFLAGS lines.
-
-# EXPERIMENTAL_SPF=yes
-# CFLAGS  += -I/usr/local/include
-# LDFLAGS += -lspf2
-
 # Uncomment the following lines to add SRS (Sender rewriting scheme) support.
 # You need to have libsrs_alt installed on your system (srs.mirtol.com).
 # Depending on where it is installed you may have to edit the CFLAGS and
@@ -976,6 +968,16 @@ ZCAT_COMMAND=/usr/bin/zcat
 # LDFLAGS += -lidn
 # SUPPORT_I18N_2008=yes
 # LDFLAGS += -lidn -lidn2
+
+
+#------------------------------------------------------------------------------
+# Uncomment the following lines to add SPF support. You need to have libspf2
+# installed on your system (www.libspf2.org). Depending on where it is installed
+# you may have to edit the CFLAGS and LDFLAGS lines.
+
+# SUPPORT_SPF=yes
+# CFLAGS  += -I/usr/local/include
+# LDFLAGS += -lspf2
 
 
 #------------------------------------------------------------------------------

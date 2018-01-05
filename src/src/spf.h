@@ -8,7 +8,7 @@
    Copyright (c) The Exim Maintainers 2016
 */
 
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
 
 /* Yes, we do have ns_type. spf.h redefines it if we don't set this. Doh */
 #ifndef HAVE_NS_TYPE

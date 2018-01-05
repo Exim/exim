@@ -11,7 +11,7 @@
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
 
 #include "exim.h"
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
 
 /* must be kept in numeric order */
 static spf_result_id spf_result_id_list[] = {

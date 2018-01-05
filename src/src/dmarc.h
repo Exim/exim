@@ -12,9 +12,9 @@
 #ifdef EXPERIMENTAL_DMARC
 
 # include "opendmarc/dmarc.h"
-# ifdef EXPERIMENTAL_SPF
+# ifdef SUPPORT_SPF
 #  include "spf2/spf.h"
-# endif /* EXPERIMENTAL_SPF */
+# endif /* SUPPORT_SPF */
 
 /* prototypes */
 int dmarc_init();

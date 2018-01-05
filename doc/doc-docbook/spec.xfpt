@@ -11661,7 +11661,7 @@ The name of the main configuration file Exim is using.
 
 .vitem &$dkim_verify_status$& &&&
 Results of DKIM verification.
-For details see chapter &<<CHAPdkim>>&.
+For details see section &<<SECDKIMVFY>>&.
 
 .vitem &$dkim_cur_signer$& &&&
        &$dkim_verify_reason$& &&&
@@ -11683,13 +11683,13 @@ For details see chapter &<<CHAPdkim>>&.
        &$dkim_key_notes$& &&&
        &$dkim_key_length$&
 These variables are only available within the DKIM ACL.
-For details see chapter &<<CHAPdkim>>&.
+For details see section &<<SECDKIMVFY>>&.
 
 .vitem &$dkim_signers$&
 .vindex &$dkim_signers$&
 When a message has been received this variable contains
 a colon-separated list of signer domains and identities for the message.
-For details see chapter &<<CHAPdkim>>&.
+For details see section &<<SECDKIMVFY>>&.
 
 .vitem &$dnslist_domain$& &&&
        &$dnslist_matched$& &&&
@@ -12833,6 +12833,14 @@ A number of variables whose names start with &$spam$& are available when Exim
 is compiled with the content-scanning extension. For details, see section
 &<<SECTscanspamass>>&.
 
+.new
+.vitem &$spf_header_comment$& &&&
+       &$spf_received$& &&&
+       &$spf_result$& &&&
+       &$spf_smtp_comment$&
+These variables are only available if Exim is built with SPF support.
+For details see section &<<SECSPF>>&.
+.wen
 
 .vitem &$spool_directory$&
 .vindex "&$spool_directory$&"
@@ -14086,7 +14094,7 @@ acknowledgment is sent. See chapter &<<CHAPACL>>& for further details.
 This option defines the ACL that is run for each DKIM signature
 (by default, or as specified in the dkim_verify_signers option)
 of a received message.
-See chapter &<<CHAPdkim>>& for further details.
+See section &<<SECDKIMVFY>>& for further details.
 
 .option acl_smtp_etrn main string&!! unset
 .cindex "ETRN" "ACL for"
@@ -14619,7 +14627,7 @@ to handle IPv6 literal addresses.
 This option gives a list of DKIM domains for which the DKIM ACL is run.
 It is expanded after the message is received; by default it runs
 the ACL once for each signature in the message.
-See chapter &<<CHAPdkim>>&.
+See section &<<SECDKIMVFY>>&.
 
 
 .option dns_again_means_nonexist main "domain list&!!" unset
@@ -16804,14 +16812,18 @@ response to EHLO only to those client hosts that match this option. See
 chapter &<<CHAPi18n>>& for details of Exim's support for internationalisation.
 
 
-.option spamd_address main string "see below"
+.option spamd_address main string "127.0.0.1 783"
 This option is available when Exim is compiled with the content-scanning
 extension. It specifies how Exim connects to SpamAssassin's &%spamd%& daemon.
-The default value is
-.code
-127.0.0.1 783
-.endd
 See section &<<SECTscanspamass>>& for more details.
+
+
+
+.new
+.option spf_guess main string "v=spf1 a/24 mx/24 ptr ?all"
+This option is available when Exim is compiled with SPF support.
+See section &<<SECSPF>>& for more details.
+.wen
 
 
 
@@ -28115,7 +28127,7 @@ otherwise specified, the default action is to accept.
 
 This ACL is evaluated before &%acl_smtp_mime%& and &%acl_smtp_data%&.
 
-For details on the operation of DKIM, see chapter &<<CHAPdkim>>&.
+For details on the operation of DKIM, see section &<<SECDKIM>>&.
 
 
 .section "The SMTP MIME ACL" "SECID194"
@@ -29181,7 +29193,7 @@ contexts):
 .cindex "disable DKIM verify"
 .cindex "DKIM" "disable verify"
 This control turns off DKIM verification processing entirely.  For details on
-the operation and configuration of DKIM, see chapter &<<CHAPdkim>>&.
+the operation and configuration of DKIM, see section &<<SECDKIM>>&.
 
 
 .vitem &*control&~=&~dscp/*&<&'value'&>
@@ -38483,14 +38495,22 @@ There is no dot-stuffing (and no dot-termination).
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHAPdkim" &&&
-         "DKIM Support"
+.chapter "DKIM and SPF" "CHAPdkim" &&&
+         "DKIM and SPF Support"
 .cindex "DKIM"
+
+.section "DKIM (DomainKeys Identified Mail)" SECDKIM
 
 DKIM is a mechanism by which messages sent by some entity can be provably
 linked to a domain which that entity controls.  It permits reputation to
 be tracked on a per-domain basis, rather than merely upon source IP address.
 DKIM is documented in RFC 4871.
+
+.new
+As DKIM relies on the message being unchanged in transit, messages handled
+by a mailing-list (which traditionally adds to the message) will not match
+any original DKIM signature.
+.wen
 
 DKIM support is compiled into Exim by default if TLS support is present.
 It can be disabled by setting DISABLE_DKIM=yes in &_Local/Makefile_&.
@@ -38612,7 +38632,7 @@ will be signed, and one signtature added for a missing header with the
 name will be appended.
 
 
-.section "Verifying DKIM signatures in incoming mail" "SECID514"
+.section "Verifying DKIM signatures in incoming mail" "SECDKIMVFY"
 .cindex "DKIM" "verification"
 
 Verification of DKIM signatures in SMTP incoming email is implemented via the
@@ -38828,6 +38848,178 @@ The possible status keywords are: 'none','invalid','fail' and 'pass'. Please
 see the documentation of the &%$dkim_verify_status%& expansion variable above
 for more information of what they mean.
 .endlist
+
+
+
+
+.new
+.section "SPF (Sender Policy Framework)" SECSPF
+.cindex SPF verification
+
+SPF is a mechanism whereby a domain may assert which IP addresses may transmit
+messages with its domain in the envelope from, documented by RFC 7208.
+For more information on SPF see &url(http://www.openspf.org).
+
+Messages sent by a system not authorised will fail checking of such assertions.
+This includes retransmissions done by traditional forwarders.
+
+SPF verification support is built into Exim if SUPPORT_SPF=yes is set in
+&_Local/Makefile_&.  The support uses the &_libspf2_& library
+&url(http://www.libspf2.org/).
+There is no Exim involvement on the trasmission of messages; publishing certain
+DNS records is all that is required.
+
+For verification, an ACL condition and an expansion lookup are provided.
+
+.cindex SPF "ACL condition"
+.cindex ACL "spf condition"
+The ACL condition "spf" can be used at or after the MAIL ACL.
+It takes as an argument a list of strings giving the outcome of the SPF check,
+and will succeed for any matching outcome.
+Valid strings are:
+.vlist
+.vitem &%pass%&
+The SPF check passed, the sending host is positively verified by SPF.
+
+.vitem &%fail%&
+The SPF check failed, the sending host is NOT allowed to send mail for the
+domain in the envelope-from address.
+
+.vitem &%softfail%&
+The SPF check failed, but the queried domain can't absolutely confirm that this
+is a forgery.
+
+.vitem &%none%&
+The queried domain does not publish SPF records.
+
+.vitem &%neutral%&
+The SPF check returned a "neutral" state.  This means the queried domain has
+published a SPF record, but wants to allow outside servers to send mail under
+its domain as well.  This should be treated like "none".
+
+.vitem &%permerror%&
+This indicates a syntax error in the SPF record of the queried domain.
+You may deny messages when this occurs. (Changed in 4.83)
+
+.vitem &%temperror%&
+This indicates a temporary error during all processing, including Exim's
+SPF processing.  You may defer messages when this occurs.
+(Changed in 4.83)
+
+.vitem &%err_temp%&
+Same as permerror, deprecated in 4.83, will be removed in a future release.
+
+.vitem &%err_perm%&
+Same as temperror, deprecated in 4.83, will be removed in a future release.
+.endlist
+
+You can prefix each string with an exclamation mark to  invert
+its meaning,  for example  "!fail" will  match all  results but
+"fail".  The  string  list is  evaluated  left-to-right,  in a
+short-circuit fashion.
+
+Example:
+.code
+deny spf = fail
+     message = $sender_host_address is not allowed to send mail from \
+               ${if def:sender_address_domain \
+                    {$sender_address_domain}{$sender_helo_name}}.  \
+               Please see http://www.openspf.org/Why?scope=\
+               ${if def:sender_address_domain {mfrom}{helo}};\
+               identity=${if def:sender_address_domain \
+                             {$sender_address}{$sender_helo_name}};\
+               ip=$sender_host_address
+.endd
+
+When the spf condition has run, it sets up several expansion
+variables:
+
+.cindex SPF "verification variables"
+.vlist
+.vitem &$spf_header_comment$&
+.vindex &$spf_header_comment$&
+  This contains a human-readable string describing the outcome
+  of the SPF check. You can add it to a custom header or use
+  it for logging purposes.
+
+.vitem &$spf_received$&
+.vindex &$spf_received$&
+  This contains a complete Received-SPF: header that can be
+  added to the message. Please note that according to the SPF
+  draft, this header must be added at the top of the header
+  list. Please see section 10 on how you can do this.
+
+  Note: in case of "Best-guess" (see below), the convention is
+  to put this string in a header called X-SPF-Guess: instead.
+
+.vitem &$spf_result$&
+.vindex &$spf_result$&
+  This contains the outcome of the SPF check in string form,
+  one of pass, fail, softfail, none, neutral, permerror or
+  temperror.
+
+.vitem &$spf_smtp_comment$&
+.vindex &$spf_smtp_comment$&
+  This contains a string that can be used in a SMTP response
+  to the calling party. Useful for "fail".
+.endlist
+
+
+.cindex SPF "ACL condition"
+.cindex ACL "spf_guess condition"
+.cindex SPF "best guess"
+In addition to SPF, you can also perform checks for so-called
+"Best-guess".  Strictly speaking, "Best-guess" is not standard
+SPF, but it is supported by the same framework that enables SPF
+capability.
+Refer to &url(http://www.openspf.org/FAQ/Best_guess_record)
+for a description of what it means.
+
+To access this feature, simply use the spf_guess condition in place
+of the spf one.  For example:
+
+.code
+deny spf_guess = fail
+     message = $sender_host_address doesn't look trustworthy to me
+.endd
+
+In case you decide to reject messages based on this check, you
+should note that although it uses the same framework, "Best-guess"
+is not SPF, and therefore you should not mention SPF at all in your
+reject message.
+
+When the spf_guess condition has run, it sets up the same expansion
+variables as when spf condition is run, described above.
+
+Additionally, since Best-guess is not standardized, you may redefine
+what "Best-guess" means to you by redefining the main configuration
+&%spf_guess%& option.
+For example, the following:
+
+.code
+spf_guess = v=spf1 a/16 mx/16 ptr ?all
+.endd
+
+would relax host matching rules to a broader network range.
+
+
+.cindex SPF "lookup expansion"
+.cindex lookup spf
+A lookup expansion is also available. It takes an email
+address as the key and an IP address as the database:
+
+.code
+  ${lookup {username@domain} spf {ip.ip.ip.ip}}
+.endd
+
+The lookup will return the same result strings as they can appear in
+&$spf_result$& (pass,fail,softfail,neutral,none,err_perm,err_temp).
+Currently, only IPv4 addresses are supported.
+
+
+. wen-for SPF section
+.wen
+
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////

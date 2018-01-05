@@ -102,7 +102,7 @@ enum { ACLC_ACL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_SPAM,
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
        ACLC_SPF,
        ACLC_SPF_GUESS,
 #endif
@@ -312,7 +312,7 @@ static condition_def conditions[] = {
 				  (1<<ACL_WHERE_NOTSMTP)),
   },
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
   [ACLC_SPF] =			{ US"spf",		TRUE, FALSE,
 				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
 				    (1<<ACL_WHERE_HELO)|
@@ -3682,7 +3682,7 @@ for (; cb != NULL; cb = cb->next)
     break;
 #endif
 
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
     case ACLC_SPF:
       rc = spf_process(&arg, sender_address, SPF_PROCESS_NORMAL);
     break;

@@ -174,7 +174,7 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_LMDB
   builtin_macro_create(US"_HAVE_LMDB");
 #endif
-#ifdef EXPERIMENTAL_SPF
+#ifdef SUPPORT_SPF
   builtin_macro_create(US"_HAVE_SPF");
 #endif
 #ifdef EXPERIMENTAL_SRS
