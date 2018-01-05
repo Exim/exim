@@ -27737,19 +27737,14 @@ option (prior to expansion) then the following options will be re-expanded
 during TLS session handshake, to permit alternative values to be chosen:
 
 .ilist
-.vindex "&%tls_certificate%&"
 &%tls_certificate%&
 .next
-.vindex "&%tls_crl%&"
 &%tls_crl%&
 .next
-.vindex "&%tls_privatekey%&"
 &%tls_privatekey%&
 .next
-.vindex "&%tls_verify_certificates%&"
 &%tls_verify_certificates%&
 .next
-.vindex "&%tls_ocsp_file%&"
 &%tls_ocsp_file%&
 .endlist
 
