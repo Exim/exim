@@ -11,6 +11,8 @@ primary_hostname = myhost.test.ex
 acl_smtp_rcpt = accept
 acl_smtp_dkim = check_dkim
 
+log_selector = +dkim_verbose
+
 queue_only
 queue_run_in_order
 
@@ -28,7 +30,10 @@ check_dkim:
 	set dkim_verify_status = fail
 	set dkim_verify_reason = hash too weak
 .endif
-  accept
+  warn
 	logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
+.ifndef STRICT
+  accept
+.endif
 
 # End

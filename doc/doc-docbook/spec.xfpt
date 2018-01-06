@@ -36058,6 +36058,7 @@ the following table:
 &`    `&        command list for &"no mail in SMTP session"&
 &`CV  `&        certificate verification status
 &`D   `&        duration of &"no mail in SMTP session"&
+&`DKIM`&        domain verified in incoming message
 &`DN  `&        distinguished name from peer certificate
 &`DS  `&        DNSSEC secured lookups
 &`DT  `&        on &`=>`& lines: time taken for a delivery
@@ -36127,6 +36128,12 @@ A delivery set up by a router configured with
 .endd
 failed. The delivery was discarded.
 .endlist olist
+.next
+.new
+.cindex DKIM "log line"
+&'DKIM: d='&&~&~Verbose results of a DKIM verification attempt, if enabled for
+logging and the message has a DKIM signature header.
+.wen
 .endlist ilist
 
 
@@ -36154,6 +36161,8 @@ selection marked by asterisks:
 &`*delay_delivery             `&  immediate delivery delayed
 &` deliver_time               `&  time taken to perform delivery
 &` delivery_size              `&  add &`S=`&&'nnn'& to => lines
+&`*dkim                       `&  DKIM verified domain on <= lines
+&` dkim_verbose               `&  separate full DKIM verification result line, per signature
 &`*dnslist_defer              `&  defers of DNS list (aka RBL) lookups
 &` dnssec                     `&  DNSSEC secured lookups
 &`*etrn                       `&  ETRN commands
@@ -36259,6 +36268,17 @@ precision, eg. &`DT=0.304`&.
 .cindex "size" "of message"
 &%delivery_size%&: For each delivery, the size of message delivered is added to
 the &"=>"& line, tagged with S=.
+.next
+.new
+.cindex log "DKIM verification"
+.cindex DKIM "verification logging"
+&%dkim%&: For message acceptance log lines, when an DKIM signture in the header
+verifies successfully a tag of DKIM is added, with one of the verified domains.
+.next
+.cindex log "DKIM verification"
+.cindex DKIM "verification logging"
+&%dkim_verbose%&: A log entry is written for each attempted DKIM verification.
+.wen
 .next
 .cindex "log" "dnslist defer"
 .cindex "DNS list" "logging defer"

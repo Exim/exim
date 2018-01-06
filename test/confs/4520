@@ -18,6 +18,7 @@ dkim_verify_signers = $dkim_signers : FAKE
 
 DDIR=DIR/aux-fixed/dkim
 
+log_selector = -dkim +dkim_verbose
 
 # ----- Routers
 

@@ -26,7 +26,12 @@ acl_smtp_data = check_data
 trusted_users = CALLER
 queue_only
 smtp_receive_timeout = 2s
+
+.ifdef _HAVE_DKIM
+log_selector = +received_recipients +dkim_verbose
+.else
 log_selector = +received_recipients
+.endif
 
 .ifdef _OPT_MAIN_TLS_CERTIFICATE
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}

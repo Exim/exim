@@ -667,6 +667,7 @@ int     dkim_key_length          = 0;
 uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
+uschar *dkim_verify_overall      = NULL;
 uschar *dkim_verify_signers      = US"$dkim_signers";
 uschar *dkim_verify_status	 = NULL;
 uschar *dkim_verify_reason	 = NULL;
@@ -858,6 +859,7 @@ int     log_default[]          = { /* for initializing log_selector */
   Li_acl_warn_skipped,
   Li_connection_reject,
   Li_delay_delivery,
+  Li_dkim,
   Li_dnslist_defer,
   Li_etrn,
   Li_host_lookup_failed,
@@ -892,6 +894,10 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, delay_delivery),
   BIT_TABLE(L, deliver_time),
   BIT_TABLE(L, delivery_size),
+#ifndef DISABLE_DKIM
+  BIT_TABLE(L, dkim),
+  BIT_TABLE(L, dkim_verbose),
+#endif
   BIT_TABLE(L, dnslist_defer),
   BIT_TABLE(L, dnssec),
   BIT_TABLE(L, etrn),
@@ -904,7 +910,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, outgoing_interface),
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),
-#if defined(SUPPORT_PROXY) || defined (SUPPORT_SOCKS)
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
   BIT_TABLE(L, proxy),
 #endif
   BIT_TABLE(L, queue_run),

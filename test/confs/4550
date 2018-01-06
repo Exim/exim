@@ -14,6 +14,7 @@ acl_smtp_dkim = accept logwrite = signer: $dkim_cur_signer bits: $dkim_key_lengt
 acl_smtp_data_prdr = accept local_parts = okuser
 
 prdr_enable
+log_selector = +dkim_verbose
 
 # ----- Routers
 

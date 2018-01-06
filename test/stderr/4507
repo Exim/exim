@@ -21,4 +21,4 @@ LOG: 10HmaX-0005vi-00 signer: test.ex bits: 1024
 >>> accept: condition test succeeded in ACL "check_dkim"
 >>> end of ACL "check_dkim": ACCEPT
 LOG: 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [verification succeeded]
-LOG: 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net
+LOG: 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net

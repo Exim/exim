@@ -3984,6 +3984,11 @@ if (LOGGING(8bitmime))
   g = string_append(g, 2, US" M8S=", big_buffer);
   }
 
+#ifndef DISABLE_DKIM
+if (LOGGING(dkim) && dkim_verify_overall)
+  g = string_append(g, 2, US" DKIM=", dkim_verify_overall);
+#endif
+
 if (*queue_name)
   g = string_append(g, 2, US" Q=", queue_name);
 

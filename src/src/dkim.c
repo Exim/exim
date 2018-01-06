@@ -146,6 +146,15 @@ uschar * s;
 
 if (!sig) return;
 
+if (  !dkim_verify_overall
+   && dkim_verify_status
+      ? Ustrcmp(dkim_verify_status, US"pass") == 0
+      : sig->verify_status == PDKIM_VERIFY_PASS
+   )
+  dkim_verify_overall = string_copy(sig->domain);
+
+if (!LOGGING(dkim_verbose)) return;
+
 logmsg = string_catn(NULL, US"DKIM: ", 6);
 if (!(s = sig->domain)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, "d=", s);

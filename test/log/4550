@@ -12,7 +12,7 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha256 b=1024 [verification succeeded]
 1999-03-02 09:44:33 10HmbA-0005vi-00 PRDR R=<baduser@test.ex> refusal
 1999-03-02 09:44:33 10HmbA-0005vi-00 PRDR R=<okuser@test.ex> acceptance
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp PRDR S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp PRDR S=sss DKIM=test.ex id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <okuser@test.ex> R=server_dump
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-0005vi-00@myhost.test.ex

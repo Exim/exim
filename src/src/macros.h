@@ -459,6 +459,8 @@ enum {
   Li_arguments,
   Li_deliver_time,
   Li_delivery_size,
+  Li_dkim,
+  Li_dkim_verbose,
   Li_dnssec,
   Li_ident_timeout,
   Li_incoming_interface,

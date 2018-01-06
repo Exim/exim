@@ -392,6 +392,7 @@ extern int     dkim_key_length;        /* Expansion variable, length of signing 
 extern uschar *dkim_signers;           /* Expansion variable, holds colon-separated list of domains and identities that have signed a message */
 extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
 extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */
+extern uschar *dkim_verify_overall;    /* First successful domain verified, or null */
 extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for each of which we call the DKIM ACL */
 extern uschar *dkim_verify_status;     /* result for this signature */
 extern uschar *dkim_verify_reason;     /* result for this signature */

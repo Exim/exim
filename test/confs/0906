@@ -19,7 +19,13 @@ primary_hostname = testhost.test.ex
 domainlist local_domains = @ : test.ex
 
 acl_smtp_rcpt = acl_r
+
+.ifdef _HAVE_DKIM
+log_selector = +received_recipients +dkim_verbose
+.else
 log_selector = +received_recipients
+.endif
+
 
 .ifdef _OPT_MAIN_TLS_CERTIFICATE
 tls_certificate = DIR/aux-fixed/cert1
