@@ -1364,7 +1364,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
     int status, reason;
     ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
 
-    DEBUG(D_tls) bp = BIO_new_fp(stderr, BIO_NOCLOSE);
+    DEBUG(D_tls) bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
 
     /*OCSP_RESPONSE_print(bp, rsp, 0);   extreme debug: stapling content */
 
@@ -1375,10 +1375,12 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
 	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
       {
       tls_out.ocsp = OCSP_FAILED;
-      if (LOGGING(tls_cipher))
-	log_write(0, LOG_MAIN, "Received TLS cert status response, itself unverifiable");
+      if (LOGGING(tls_cipher)) log_write(0, LOG_MAIN,
+	      "Received TLS cert status response, itself unverifiable: %s",
+	      ERR_reason_error_string(ERR_peek_error()));
       BIO_printf(bp, "OCSP response verify failure\n");
       ERR_print_errors(bp);
+      OCSP_RESPONSE_print(bp, rsp, 0);
       goto failed;
       }
 
@@ -1810,7 +1812,7 @@ if (expcerts && *expcerts)
 	   )
 	  {
 	  log_write(0, LOG_MAIN|LOG_PANIC,
-	    "failed to load cert hain from %s", file);
+	    "failed to load cert chain from %s", file);
 	  return DEFER;
 	  }
 #endif
