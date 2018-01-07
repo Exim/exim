@@ -65,6 +65,13 @@ From: nobody@example.com
 content
 ****
 #
+# check that an empty dkim_privatekey overrides dkim_strict
+exim -DOPT=From -DSTRICT=true -DSELECTOR=none -odf a@test.ex
+From: nobody@example.com
+
+content
+****
+#
 millisleep 500
 killdaemon
 no_msglog_check

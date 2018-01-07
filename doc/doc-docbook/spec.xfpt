@@ -38579,7 +38579,8 @@ The domain(s) you want to sign with.
 After expansion, this can be a list.
 Each element in turn is put into the &%$dkim_domain%& expansion variable
 while expanding the remaining signing options.
-If it is empty after expansion, DKIM signing is not done.
+If it is empty after expansion, DKIM signing is not done,
+and no error will result even if &%dkim_strict%& is set.
 
 .option dkim_selector smtp string list&!! unset
 This sets the key selector string.
@@ -38587,7 +38588,8 @@ After expansion, which can use &$dkim_domain$&, this can be a list.
 Each element in turn is put in the expansion
 variable &%$dkim_selector%& which may be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
-If the option is empty after expansion, DKIM signing is not done for this domain.
+If the option is empty after expansion, DKIM signing is not done for this domain,
+and no error will result even if &%dkim_strict%& is set.
 
 .option dkim_private_key smtp string&!! unset
 This sets the private key to use.
@@ -38604,7 +38606,6 @@ be "0", "false" or the empty string, in which case the message will not
 be signed. This case will not result in an error, even if &%dkim_strict%&
 is set.
 .endlist
-If the option is empty after expansion, DKIM signing is not done.
 
 .option dkim_hash smtp string&!! sha256
 Can be set alternatively to &"sha1"& to use an alternate hash

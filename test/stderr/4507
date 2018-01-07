@@ -14,10 +14,12 @@
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_dkim"
->>> processing "accept"
+>>> processing "warn"
 >>> check logwrite = signer: $dkim_cur_signer bits: $dkim_key_length
 >>>                = signer: test.ex bits: 1024
 LOG: 10HmaX-0005vi-00 signer: test.ex bits: 1024
+>>> warn: condition test succeeded in ACL "check_dkim"
+>>> processing "accept"
 >>> accept: condition test succeeded in ACL "check_dkim"
 >>> end of ACL "check_dkim": ACCEPT
 LOG: 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [verification succeeded]

@@ -62,5 +62,8 @@ send_to_server:
 .ifdef VALUE
   dkim_hash =		VALUE
 .endif
+.ifdef STRICT
+  dkim_strict =		STRICT
+.endif
 
 # End

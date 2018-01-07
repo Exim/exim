@@ -540,8 +540,12 @@ switch (what)
 }
 
 
-/* Generate signatures for the given file, returning a string.
+/* Generate signatures for the given file.
 If a prefix is given, prepend it to the file for the calculations.
+
+Return:
+  NULL:		error; error string written
+  string: 	signature header(s), or a zero-length string (not an error)
 */
 
 gstring *
@@ -711,9 +715,15 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
       }
     }
   }
+if (!ctx.sig)
+  {
+  DEBUG(D_transport) debug_printf("DKIM: no viable signatures to use\n");
+  sigbuf = string_get(1);	/* return a zero-len string */
+  goto CLEANUP;
+  }
 
-if (prefix)
-  pdkim_feed(&ctx, prefix, Ustrlen(prefix));
+if (prefix && (pdkim_feed(&ctx, prefix, Ustrlen(prefix))) != PDKIM_OK)
+  goto pk_bad;
 
 if (lseek(fd, off, SEEK_SET) < 0)
   sread = -1;
@@ -738,9 +748,8 @@ if ((pdkim_rc = pdkim_feed_finish(&ctx, &sig, errstr)) != PDKIM_OK)
 for (sigbuf = NULL; sig; sig = sig->next)
   sigbuf = string_append(sigbuf, 2, US sig->signature_header, US"\r\n");
 
-(void) string_from_gstring(sigbuf);
-
 CLEANUP:
+  (void) string_from_gstring(sigbuf);
   store_pool = old_pool;
   errno = save_errno;
   return sigbuf;
