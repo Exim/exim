@@ -540,8 +540,21 @@ DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s depth %d %s\n",
 #endif
 
 if (preverify_ok == 1)
-  tls_out.dane_verified =
-  tls_out.certificate_verified = TRUE;
+  {
+  tls_out.dane_verified = tls_out.certificate_verified = TRUE;
+#ifndef DISABLE_OCSP
+  if (client_static_cbinfo->u_ocsp.client.verify_store)
+    {	/* client, wanting stapling  */
+    /* Add the server cert's signing chain as the one
+    for the verification of the OCSP stapled information. */
+
+    if (!X509_STORE_add_cert(client_static_cbinfo->u_ocsp.client.verify_store,
+                             cert))
+      ERR_clear_error();
+    sk_X509_push(client_static_cbinfo->verify_stack, cert);
+    }
+#endif
+  }
 else
   {
   int err = X509_STORE_CTX_get_error(x509ctx);
