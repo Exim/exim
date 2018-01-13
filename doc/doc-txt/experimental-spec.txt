@@ -388,6 +388,8 @@ mout.gmx.net                    212.227.15.16
 
 Use a reasonable IP. eg. one the sending cluster actually uses.
 
+
+
 DMARC Support
 --------------------------------------------------------------
 
@@ -407,7 +409,7 @@ that headers will be in /usr/local/include, and that the libraries
 are in /usr/local/lib.
 
 1. To compile Exim with DMARC support, you must first enable SPF.
-Please read the above section on enabling the EXPERIMENTAL_SPF
+Please read the Local/Makefile comments on enabling the SUPPORT_SPF
 feature.  You must also have DKIM support, so you cannot set the
 DISABLE_DKIM feature.  Once both of those conditions have been met
 you can enable DMARC in Local/Makefile:
