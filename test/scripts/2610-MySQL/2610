@@ -1,0 +1,68 @@
+# mysql lookups
+#
+# first, populate a DB to test against
+sudo rm -fr DIR/mysql
+perl
+system 'mysql_install_db --datadir=DIR/mysql';
+****
+sudo rm test-stdout
+#
+# start a db server
+background
+mysqld_safe --datadir=DIR/mysql --log-error=DIR/mysql/log --port=PORT_N --socket=DIR/mysql/sock --pid-file=DIR/mysql/pidfile
+****
+sleep 1
+sudo rm test-stderr-server
+#
+# insert some data
+perl
+system 'mysqladmin --protocol=TCP -P PORT_N -u root create test';
+system 'mysql --protocol=TCP -P PORT_N -u root -D test \
+ -e "CREATE TABLE them ( name text, id text ); \
+     INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
+     INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' ); \
+     INSERT INTO them VALUES ( \'\', \'nothing\' ); \
+     INSERT INTO them VALUES ( \'\"stquot\', \'quote2\' ); \
+     INSERT INTO them VALUES ( CONCAT(\'before\', CHAR(13), CHAR(10), \'after\'), \'newline\' ); \
+     INSERT INTO them VALUES ( CONCAT(\'x\', CHAR(9), \'x\'), \'tab\' ); \
+     INSERT INTO them VALUES ( CONCAT(CHAR(39), \'stquot\'), \'quote1\' ); \
+ "';
+****
+#
+#
+exim -d-all+lookup -be
+${lookup mysql {select name from them where id='ph10';}}
+${lookup mysql {select name from them where id='ph10';}}
+${lookup mysql {select name from them where id='xxxx';}}
+${lookup mysql {select name from them where id='nothing';}}
+${lookup mysql {select id,name from them where id='nothing';}}
+${lookup mysql {delete from them where id='nonexist';}}
+${lookup mysql {select * from them where id='quote';}}
+${lookup mysql {select * from them where id='filter';}}
+${lookup mysql {select * from them where id='quote2';}}
+${lookup mysql {select * from them where id='nlonly';}}
+${lookup mysql {servers=x:127.0.0.1::PORT_N; select name from them where id='ph10';}}
+${lookup mysql {servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';}}
+${lookup mysql {servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';}}
+${lookup mysql {servers=HOSTIPV4::PORT_N/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';}}
+${lookup mysql {servers=localhost(DIR/mysql/sock)/test/root/; select name from them where id='ph10';}}
+x
+${lookup mysql {SELECT name FROM them WHERE id IN ('ph10', 'aaaa');}}
+${lookup mysql {SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');}}
+${lookup mysql {delete from them where id='aaaa'}}
+****
+exim -d -bh 10.0.0.0
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+exim -odi -d ph10
+Test message
+.
+****
+#
+perl
+system 'mysqladmin --protocol=TCP -P PORT_N -u root shutdown';
+****
+killdaemon
+sudo rm -fr DIR/mysql

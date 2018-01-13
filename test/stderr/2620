@@ -183,6 +183,19 @@ PostgreSQL query: SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
 PGSQL using cached connection for localhost:1223/test/CALLER
 lookup yielded: name="Philip Hazel" id=ph10 
 name=Aristotle id=aaaa 
+search_open: pgsql "NULL"
+  cached open
+search_find: file="NULL"
+  key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=pgsql key="delete from them where id='aaaa'"
+database lookup required for delete from them where id='aaaa'
+PostgreSQL query: delete from them where id='aaaa'
+PGSQL using cached connection for localhost:1223/test/CALLER
+PGSQL: command does not return any data but was successful. Rows affected: 1
+lookup forced cache cleanup
+lookup yielded: 1
 search_tidyup called
 close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER
 close PGSQL connection: localhost:1223/test/CALLER

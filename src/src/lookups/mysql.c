@@ -281,7 +281,7 @@ we return the number of rows affected by the command. In this event, we do NOT
 want to cache the result; also the whole cache for the handle must be cleaned
 up. Setting do_cache zero requests this. */
 
-if ((mysql_result = mysql_use_result(mysql_handle)) == NULL)
+if (!(mysql_result = mysql_use_result(mysql_handle)))
   {
   if ( mysql_field_count(mysql_handle) == 0 )
     {
@@ -314,34 +314,32 @@ while ((mysql_row_data = mysql_fetch_row(mysql_result)))
   if (result)
     result = string_catn(result, US"\n", 1);
 
-  if (num_fields == 1)
-    {
-    if (mysql_row_data[0] != NULL)    /* NULL value yields nothing */
-      {
-      result = string_catn(result, US mysql_row_data[0],
-        lengths[0]);
-      (void) string_from_gstring(result);
-      }
-    }
+  if (num_fields != 1)
+    for (i = 0; i < num_fields; i++)
+      result = lf_quote(US fields[i].name, US mysql_row_data[i], lengths[i],
+			result);
 
-  else for (i = 0; i < num_fields; i++)
-    result = lf_quote(US fields[i].name, US mysql_row_data[i], lengths[i], result);
+  else if (mysql_row_data[0] != NULL)    /* NULL value yields nothing */
+      result = string_catn(result, US mysql_row_data[0], lengths[0]);
   }
 
 /* more results? -1 = no, >0 = error, 0 = yes (keep looping)
    This is needed because of the CLIENT_MULTI_RESULTS on mysql_real_connect(),
    we don't expect any more results. */
 
-while((i = mysql_next_result(mysql_handle)) >= 0) {
-   if(i == 0) {   /* Just ignore more results */
-     DEBUG(D_lookup) debug_printf("MYSQL: got unexpected more results\n");
-     continue;
-   }
+while((i = mysql_next_result(mysql_handle)) >= 0)
+  {
+  if(i == 0)	/* Just ignore more results */
+    {
+    DEBUG(D_lookup) debug_printf("MYSQL: got unexpected more results\n");
+    continue;
+    }
 
-   *errmsg = string_sprintf("MYSQL: lookup result error when checking for more results: %s\n",
-       mysql_error(mysql_handle));
-   goto MYSQL_EXIT;
-}
+  *errmsg = string_sprintf(
+	"MYSQL: lookup result error when checking for more results: %s\n",
+	mysql_error(mysql_handle));
+  goto MYSQL_EXIT;
+  }
 
 /* If result is NULL then no data has been found and so we return FAIL.
 Otherwise, we must terminate the string which has been built; string_cat()
@@ -351,11 +349,6 @@ if (!result)
   {
   yield = FAIL;
   *errmsg = US"MYSQL: no data found";
-  }
-else
-  {
-  (void) string_from_gstring(result);
-  store_reset(result->s + result->ptr + 1);
   }
 
 /* Get here by goto from various error checks and from the case where no data
@@ -372,7 +365,8 @@ if (mysql_result) mysql_free_result(mysql_result);
 
 if (result)
   {
-  *resultptr = result->s;
+  *resultptr = string_from_gstring(result);
+  store_reset(result->s + (result->size = result->ptr + 1));
   return OK;
   }
 else

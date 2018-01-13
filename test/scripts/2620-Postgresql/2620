@@ -43,6 +43,7 @@ ${lookup pgsql {servers=(DIR/pgsql/.s.PGSQL.PORT_N)/test/CALLER/:x; select name 
 x
 ${lookup pgsql {SELECT name FROM them WHERE id IN ('ph10', 'aaaa');}}
 ${lookup pgsql {SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');}}
+${lookup pgsql {delete from them where id='aaaa'}}
 ****
 exim -d -bh 10.0.0.0
 mail from:<a@b>
