@@ -1,0 +1,31 @@
+> Philip Hazel
+> Philip Hazel
+> 
+> 
+> id=nothing name="" 
+> 0
+> 
+> 
+> name="\"stquot" id=quote2 
+> 
+> Failed: lookup of "servers=x:127.0.0.1::1223; select name from them where id='ph10';" gave DEFER: MySQL server "x" not found in mysql_servers
+> Philip Hazel
+> Philip Hazel
+> Philip Hazel
+> Philip Hazel
+> x
+> Philip Hazel
+Aristotle
+> name="Philip Hazel" id=ph10 
+name=Aristotle id=aaaa 
+> 1
+> 
+
+**** SMTP testing session as if from host 10.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 relay not permitted
+221 myhost.test.ex closing connection

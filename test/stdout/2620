@@ -49,6 +49,7 @@ after" id=newline
 Aristotle
 > name="Philip Hazel" id=ph10 
 name=Aristotle id=aaaa 
+> 1
 > 
 
 **** SMTP testing session as if from host 10.0.0.0

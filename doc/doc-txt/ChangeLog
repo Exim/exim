@@ -39,6 +39,9 @@ JH/07 Bug 2214: Fix SMTP responses resulting from non-accept result of MIME ACL.
       Previously a spurious "250 OK id=" response was appended to the proper
       failure response.
 
+JH/10 Bug 2223: Fix mysql lookup returns for the no-data case (when the number of
+      rows affected is given instead).
+
 
 Exim version 4.90
 -----------------

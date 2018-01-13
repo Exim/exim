@@ -1,4 +1,4 @@
-# Exim test configuration 9100
+# Exim test configuration 2610
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -11,7 +11,7 @@ hostlist   relay_hosts = net-mysql;select * from them where id='$sender_host_add
 
 acl_smtp_rcpt = check_recipient
 
-mysql_servers = localhost/test/root/
+mysql_servers = 127.0.0.1::PORT_N/test/root/
 
 
 # ----- ACL -----
