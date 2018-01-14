@@ -1,9 +1,11 @@
 # mysql lookups
+# The mysql-devel (or equivalent) package will be need for Exim to build, and
+# the mysql-server (or mariadb-server or equivalent) package for this test to run.
 #
 # first, populate a DB to test against
 sudo rm -fr DIR/mysql
 perl
-system 'mysql_install_db --datadir=DIR/mysql';
+system 'mysql_install_db --no-defaults --datadir=DIR/mysql --user=CALLER';
 ****
 sudo rm test-stdout test-stderr
 #
@@ -24,6 +26,9 @@ system 'mysql --protocol=TCP -P PORT_N -u root -D test \
      INSERT INTO them VALUES ( CONCAT(\'before\', CHAR(13), CHAR(10), \'after\'), \'newline\' ); \
      INSERT INTO them VALUES ( CONCAT(\'x\', CHAR(9), \'x\'), \'tab\' ); \
      INSERT INTO them VALUES ( CONCAT(CHAR(39), \'stquot\'), \'quote1\' ); \
+     CREATE USER IF NOT EXISTS \'root\'@\'HOSTIPV4\', \'CALLER\'@\'HOSTIPV4\'; \
+     GRANT ALL ON *.* TO \'root\'@\'HOSTIPV4\'; \
+     GRANT ALL ON *.* TO \'CALLER\'@\'HOSTIPV4\'; \
  "';
 ****
 sudo rm test-stderr-server

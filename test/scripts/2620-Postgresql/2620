@@ -1,4 +1,6 @@
 # pgsql lookups
+# The pgsql-devel (or equivalent) package will be need for Exim to build, and
+# the postgresql-server (or equivalent) package for this test to run.
 #
 # first, populate a DB to test against
 sudo rm -fr DIR/pgsql

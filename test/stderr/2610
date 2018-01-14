@@ -1,5 +1,3 @@
-Tue Mar 02 09:44:33 1999 PerconaFT file system space is low
-mysqladmin: CREATE DATABASE failed; error: 'Can't create database 'test'; database exists'
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
