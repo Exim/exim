@@ -654,7 +654,8 @@ while ((ele = string_nextinlist(&raw_record, &sep, NULL, 0)))
   }
 
 /* Set fallback defaults */
-if (!pub->version    ) pub->version     = string_copy(PDKIM_PUB_RECORD_VERSION);
+if (!pub->version)
+  pub->version = string_copy(PDKIM_PUB_RECORD_VERSION);
 else if (Ustrcmp(pub->version, PDKIM_PUB_RECORD_VERSION) != 0)
   {
   DEBUG(D_acl) debug_printf(" Bad v= field\n");

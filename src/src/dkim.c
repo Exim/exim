@@ -75,7 +75,8 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       }
 
     /* check if this looks like a DKIM record */
-    if (strncasecmp(answer, "v=dkim", 6) != 0) continue;
+    if (strncmp(answer, "v=", 2) == 0 && strncasecmp(answer, "v=dkim", 6) != 0)
+      continue;
     return PDKIM_OK;
     }
 
