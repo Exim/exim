@@ -5,18 +5,16 @@ sudo rm -fr DIR/mysql
 perl
 system 'mysql_install_db --datadir=DIR/mysql';
 ****
-sudo rm test-stdout
+sudo rm test-stdout test-stderr
 #
 # start a db server
 background
 mysqld_safe --datadir=DIR/mysql --log-error=DIR/mysql/log --port=PORT_N --socket=DIR/mysql/sock --pid-file=DIR/mysql/pidfile
 ****
-sleep 1
-sudo rm test-stderr-server
 #
-# insert some data
+# wait for db startup, insert some data
 perl
-system 'mysqladmin --protocol=TCP -P PORT_N -u root create test';
+system 'mysqladmin --protocol=TCP -P PORT_N --connect_timeout=1 --wait=5 -u root create test';
 system 'mysql --protocol=TCP -P PORT_N -u root -D test \
  -e "CREATE TABLE them ( name text, id text ); \
      INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
@@ -28,6 +26,7 @@ system 'mysql --protocol=TCP -P PORT_N -u root -D test \
      INSERT INTO them VALUES ( CONCAT(CHAR(39), \'stquot\'), \'quote1\' ); \
  "';
 ****
+sudo rm test-stderr-server
 #
 #
 exim -d-all+lookup -be

@@ -28,6 +28,7 @@ binaries:	$(BINARIES)
 
 sysbinaries:	FRC
 		bin/locate.sh initdb postgres pg_ctl
+		ls -la bin.sys
 
 # Compile and link the programs:
 #
