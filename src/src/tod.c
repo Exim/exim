@@ -54,7 +54,6 @@ tod_stamp(int type)
 {
 struct timeval now;
 struct tm * t;
-int off = 0;
 
 gettimeofday(&now, NULL);
 
@@ -90,9 +89,17 @@ t = timestamps_utc ? gmtime(&now.tv_sec) : localtime(&now.tv_sec);
 switch(type)
   {
   case tod_log_bare:          /* Format used in logging without timezone */
-    off = sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d",
+#ifndef COMPILE_UTILITY
+    if (LOGGING(millisec))
+      sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday,
+      t->tm_hour, t->tm_min, t->tm_sec, (int)(now.tv_usec/1000));
+    else
+#endif
+      sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d",
       1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday,
       t->tm_hour, t->tm_min, t->tm_sec);
+
     break;
 
     /* Format used as suffix of log file name when 'log_datestamp' is active. For
@@ -101,19 +108,19 @@ switch(type)
 #ifdef TESTING_LOG_DATESTAMP
   case tod_log_datestamp_daily:
   case tod_log_datestamp_monthly:
-    off = sprintf(CS timebuf, "%04d%02d%02d%02d%02d",
+    sprintf(CS timebuf, "%04d%02d%02d%02d%02d",
       1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min);
     break;
 
 #else
   case tod_log_datestamp_daily:
-    off = sprintf(CS timebuf, "%04d%02d%02d",
+    sprintf(CS timebuf, "%04d%02d%02d",
       1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday);
     break;
 
   case tod_log_datestamp_monthly:
 #ifndef COMPILE_UTILITY
-    off = sprintf(CS timebuf, "%04d%02d",
+    sprintf(CS timebuf, "%04d%02d",
       1900 + t->tm_year, 1 + t->tm_mon);
 #endif
     break;
@@ -211,13 +218,6 @@ switch(type)
       }
     break;
   }
-
-#ifndef COMPILE_UTILITY
-if (LOGGING(millisec) && off > 0)
-  (void) sprintf(CS timebuf + off, ".%03d", (int)(now.tv_usec/1000));
-#else
-off = off;	/* Compiler quietening */
-#endif
 
 return timebuf;
 }
