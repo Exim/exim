@@ -17,6 +17,17 @@ mysqld_safe --datadir=DIR/mysql --log-error=DIR/mysql/log --port=PORT_N --socket
 # wait for db startup, insert some data
 perl
 system 'mysqladmin --protocol=TCP -P PORT_N --connect_timeout=1 --wait=5 -u root create test';
+my $fh;
+open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -D test -e "select 1 from mysql.user where User = \'root\' and Host = \'HOSTIPV4\'"');
+my $line = <$fh>;
+if (length($line) == 0) {
+  system 'mysql --protocol=TCP -P PORT_N -u root -D test -e "create user \'root\'@\'HOSTIPV4\'"';
+}
+open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -D test -e "select 1 from mysql.user where User = \'CALLER\' and Host = \'HOSTIPV4\'"');
+$line = <$fh>;
+if (length($line) == 0) {
+  system 'mysql --protocol=TCP -P PORT_N -u root -D test -e "create user \'CALLER\'@\'HOSTIPV4\'"';
+}
 system 'mysql --protocol=TCP -P PORT_N -u root -D test \
  -e "CREATE TABLE them ( name text, id text ); \
      INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
@@ -26,7 +37,6 @@ system 'mysql --protocol=TCP -P PORT_N -u root -D test \
      INSERT INTO them VALUES ( CONCAT(\'before\', CHAR(13), CHAR(10), \'after\'), \'newline\' ); \
      INSERT INTO them VALUES ( CONCAT(\'x\', CHAR(9), \'x\'), \'tab\' ); \
      INSERT INTO them VALUES ( CONCAT(CHAR(39), \'stquot\'), \'quote1\' ); \
-     CREATE USER IF NOT EXISTS \'root\'@\'HOSTIPV4\', \'CALLER\'@\'HOSTIPV4\'; \
      GRANT ALL ON *.* TO \'root\'@\'HOSTIPV4\'; \
      GRANT ALL ON *.* TO \'CALLER\'@\'HOSTIPV4\'; \
  "';
@@ -69,4 +79,4 @@ perl
 system 'mysqladmin --protocol=TCP -P PORT_N -u root shutdown';
 ****
 killdaemon
-sudo rm -fr DIR/mysql
+#sudo rm -fr DIR/mysql
