@@ -11,7 +11,7 @@ sudo rm test-stdout test-stderr
 #
 # start a db server
 background
-mysqld_safe --datadir=DIR/mysql --log-error=DIR/mysql/log --port=PORT_N --socket=DIR/mysql/sock --pid-file=DIR/mysql/pidfile
+DIR/bin.sys/mysqld --datadir=DIR/mysql --log-error=DIR/mysql/log --bind-address=* --port=PORT_N --socket=DIR/mysql/sock --pid-file=DIR/mysql/pidfile
 ****
 #
 # wait for db startup, insert some data
