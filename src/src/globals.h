@@ -725,6 +725,7 @@ extern uschar *received_for;           /* For "for" field */
 extern uschar *received_header_text;   /* Definition of Received: header */
 extern int     received_headers_max;   /* Max count of Received: headers */
 extern struct timeval received_time;   /* Time the message was received */
+extern struct timeval received_time_taken; /* Interval the message took to be received */
 extern uschar *recipient_data;         /* lookup data for recipients */
 extern uschar *recipient_unqualified_hosts; /* Permitted unqualified recipients */
 extern uschar *recipient_verify_failure; /* What went wrong */

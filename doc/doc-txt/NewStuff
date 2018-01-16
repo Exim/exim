@@ -20,10 +20,12 @@ Version 4.91
  4. SPF support is promoted from Experimental to mainline status.  The template
     src/EDITME makefile does not enable its inclusion.
 
- 5  Logging control for DKIM verification.  The existing DKIM log line is
+ 5. Logging control for DKIM verification.  The existing DKIM log line is
     controlled by a "dkim_verbose" selector which is _not_ enabled by default.
     A new tag "DKIM=<domain>" is added to <= lines by default, controlled by
     a "dkim" log_selector.
+
+ 6. Receive duration on <= lines, under a new log_selector "receive_time".
 
 
 Version 4.90

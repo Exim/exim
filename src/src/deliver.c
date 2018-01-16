@@ -1030,10 +1030,8 @@ else
   and all parents are not being included, don't add on the top address. First
   of all, do a caseless comparison; if this succeeds, do a caseful comparison
   on the local parts. */
-  /*XXX dodgy coding.  the string at "cmp" might not be nul-terminated if
-  we had to extend the allocation! */
 
-  g->s[g->ptr] = '\0';
+  string_from_gstring(g);	/* ensure nul-terminated */
   if (  strcmpic(cmp, topaddr->address) == 0
      && Ustrncmp(cmp, topaddr->address, Ustrchr(cmp, '@') - cmp) == 0
      && !addr->onetime_parent
@@ -1089,7 +1087,7 @@ if ((diff->tv_usec -= then->tv_usec) < 0)
 
 
 
-static uschar *
+uschar *
 string_timediff(struct timeval * diff)
 {
 static uschar buf[sizeof("0.000s")];
@@ -7934,8 +7932,7 @@ if (!addr_defer)
   /* Log the end of this message, with queue time if requested. */
 
   if (LOGGING(queue_time_overall))
-    log_write(0, LOG_MAIN, "Completed QT=%s",
-      string_timesince(&received_time));
+    log_write(0, LOG_MAIN, "Completed QT=%s", string_timesince(&received_time));
   else
     log_write(0, LOG_MAIN, "Completed");
 

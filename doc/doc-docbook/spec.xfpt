@@ -36077,6 +36077,7 @@ the following table:
 &`    `&        on &"Completed"& lines: time spent on queue
 &`R   `&        on &`<=`& lines: reference for local bounce
 &`    `&        on &`=>`&  &`>>`& &`**`& and &`==`& lines: router name
+&`RT  `&        on &`<=`& lines: time taken for reception
 &`S   `&        size of message in bytes
 &`SNI `&        server name indication from TLS client hello
 &`ST  `&        shadow transport name
@@ -36171,7 +36172,7 @@ selection marked by asterisks:
 &` incoming_interface         `&  local interface on <= and => lines
 &` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
-&` millisec                   `&  millisecond timestamps and QT,DT,D times
+&` millisec                   `&  millisecond timestamps and RT,QT,DT,D times
 &` outgoing_interface         `&  local interface on => lines
 &` outgoing_port              `&  add remote port to => lines
 &`*queue_run                  `&  start and end queue runs
@@ -36262,7 +36263,7 @@ process is started because &%queue_only%& is set or &%-odq%& was used.
 &%deliver_time%&: For each delivery, the amount of real time it has taken to
 perform the actual delivery is logged as DT=<&'time'&>, for example, &`DT=1s`&.
 If millisecond logging is enabled, short times will be shown with greater
-precision, eg. &`DT=0.304`&.
+precision, eg. &`DT=0.304s`&.
 .next
 .cindex "log" "message size on delivery"
 .cindex "size" "of message"
@@ -36400,6 +36401,14 @@ precision, eg. &`QT=1.578s`&.
 the local host is logged as QT=<&'time'&> on &"Completed"& lines, for
 example, &`QT=3m45s`&. The clock starts when Exim starts to receive the
 message, so it includes reception time as well as the total delivery time.
+.new
+.next
+.cindex "log" "receive duration"
+&%receive_time%&: For each message, the amount of real time it has taken to
+perform the reception is logged as RT=<&'time'&>, for example, &`RT=1s`&.
+If millisecond logging is enabled, short times will be shown with greater
+precision, eg. &`RT=0.204s`&.
+.wen
 .next
 .cindex "log" "recipients"
 &%received_recipients%&: The recipients of a message are listed in the main log

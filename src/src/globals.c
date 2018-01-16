@@ -916,6 +916,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, queue_run),
   BIT_TABLE(L, queue_time),
   BIT_TABLE(L, queue_time_overall),
+  BIT_TABLE(L, receive_time),
   BIT_TABLE(L, received_recipients),
   BIT_TABLE(L, received_sender),
   BIT_TABLE(L, rejected_header),
@@ -1121,6 +1122,7 @@ uschar *received_header_text   = US
 int     received_headers_max   = 30;
 uschar *received_protocol      = NULL;
 struct timeval received_time   = { 0, 0 };
+struct timeval received_time_taken = { 0, 0 };
 uschar *recipient_data         = NULL;
 uschar *recipient_unqualified_hosts = NULL;
 uschar *recipient_verify_failure = NULL;

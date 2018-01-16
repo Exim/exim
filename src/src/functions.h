@@ -467,6 +467,7 @@ extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
+extern uschar *string_timediff(struct timeval *);
 extern uschar *string_timesince(struct timeval *);
 extern uschar *string_unprinting(uschar *);
 #ifdef SUPPORT_I18N

@@ -472,6 +472,7 @@ enum {
   Li_proxy,
   Li_queue_time,
   Li_queue_time_overall,
+  Li_receive_time,
   Li_received_sender,
   Li_received_recipients,
   Li_rejected_header,

@@ -1742,7 +1742,7 @@ message id creation below. */
 
 /* For other uses of the received time we can operate with granularity of one
 second, and for that we use the global variable received_time. This is for
-things like ultimate message timeouts.XXX */
+things like ultimate message timeouts. */
 
 received_time = message_id_tv;
 
@@ -2619,7 +2619,7 @@ checked when it was read, to ensure it isn't too big. The timing granularity is
 left in id_resolution so that an appropriate wait can be done after receiving
 the message, if necessary (we hope it won't be). */
 
-if (host_number_string != NULL)
+if (host_number_string)
   {
   id_resolution = (BASE_62 == 62)? 5000 : 10000;
   sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
@@ -2655,9 +2655,8 @@ one, but only for local (without suppress_local_fixups) or submission mode
 messages. This can be user-configured if required, but we had better flatten
 any illegal characters therein. */
 
-if (msgid_header == NULL &&
-      ((sender_host_address == NULL && !suppress_local_fixups)
-        || submission_mode))
+if (  !msgid_header
+   && ((!sender_host_address && !suppress_local_fixups) || submission_mode))
   {
   uschar *p;
   uschar *id_text = US"";
@@ -2665,20 +2664,20 @@ if (msgid_header == NULL &&
 
   /* Permit only letters, digits, dots, and hyphens in the domain */
 
-  if (message_id_domain != NULL)
+  if (message_id_domain)
     {
     uschar *new_id_domain = expand_string(message_id_domain);
-    if (new_id_domain == NULL)
+    if (!new_id_domain)
       {
       if (!expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC,
           "expansion of \"%s\" (message_id_header_domain) "
           "failed: %s", message_id_domain, expand_string_message);
       }
-    else if (*new_id_domain != 0)
+    else if (*new_id_domain)
       {
       id_domain = new_id_domain;
-      for (p = id_domain; *p != 0; p++)
+      for (p = id_domain; *p; p++)
         if (!isalnum(*p) && *p != '.') *p = '-';  /* No need to test '-' ! */
       }
     }
@@ -2686,21 +2685,20 @@ if (msgid_header == NULL &&
   /* Permit all characters except controls and RFC 2822 specials in the
   additional text part. */
 
-  if (message_id_text != NULL)
+  if (message_id_text)
     {
     uschar *new_id_text = expand_string(message_id_text);
-    if (new_id_text == NULL)
+    if (!new_id_text)
       {
       if (!expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC,
           "expansion of \"%s\" (message_id_header_text) "
           "failed: %s", message_id_text, expand_string_message);
       }
-    else if (*new_id_text != 0)
+    else if (*new_id_text)
       {
       id_text = new_id_text;
-      for (p = id_text; *p != 0; p++)
-        if (mac_iscntrl_or_special(*p)) *p = '-';
+      for (p = id_text; *p; p++) if (mac_iscntrl_or_special(*p)) *p = '-';
       }
     }
 
@@ -2743,9 +2741,8 @@ possible addition of a Sender: header, because untrusted_set_sender allows an
 untrusted user to set anything in the envelope (which might then get info
 From:) but we still want to ensure a valid Sender: if it is required. */
 
-if (from_header == NULL &&
-    ((sender_host_address == NULL && !suppress_local_fixups)
-      || submission_mode))
+if (  !from_header
+   && ((!sender_host_address && !suppress_local_fixups) || submission_mode))
   {
   uschar *oname = US"";
 
@@ -2754,7 +2751,7 @@ if (from_header == NULL &&
   force its value or if we have a non-SMTP message for which -f was not used
   to set the sender. */
 
-  if (sender_host_address == NULL)
+  if (!sender_host_address)
     {
     if (!trusted_caller || sender_name_forced ||
          (!smtp_input && !sender_address_forced))
@@ -2764,46 +2761,38 @@ if (from_header == NULL &&
   /* For non-locally submitted messages, the only time we use the originator
   name is when it was forced by the /name= option on control=submission. */
 
-  else
-    {
-    if (submission_name != NULL) oname = submission_name;
-    }
+  else if (submission_name) oname = submission_name;
 
   /* Envelope sender is empty */
 
-  if (sender_address[0] == 0)
+  if (!*sender_address)
     {
     uschar *fromstart, *fromend;
 
-    fromstart = string_sprintf("%sFrom: %s%s", resent_prefix,
-      oname, (oname[0] == 0)? "" : " <");
-    fromend = (oname[0] == 0)? US"" : US">";
+    fromstart = string_sprintf("%sFrom: %s%s",
+      resent_prefix, oname, *oname ? " <" : "");
+    fromend = *oname ? US">" : US"";
 
     if (sender_local || local_error_message)
-      {
       header_add(htype_from, "%s%s@%s%s\n", fromstart,
         local_part_quote(originator_login), qualify_domain_sender,
         fromend);
-      }
-    else if (submission_mode && authenticated_id != NULL)
+
+    else if (submission_mode && authenticated_id)
       {
-      if (submission_domain == NULL)
-        {
+      if (!submission_domain)
         header_add(htype_from, "%s%s@%s%s\n", fromstart,
           local_part_quote(authenticated_id), qualify_domain_sender,
           fromend);
-        }
-      else if (submission_domain[0] == 0)  /* empty => whole address set */
-        {
+
+      else if (!*submission_domain)  /* empty => whole address set */
         header_add(htype_from, "%s%s%s\n", fromstart, authenticated_id,
           fromend);
-        }
+
       else
-        {
         header_add(htype_from, "%s%s@%s%s\n", fromstart,
-          local_part_quote(authenticated_id), submission_domain,
-          fromend);
-        }
+          local_part_quote(authenticated_id), submission_domain, fromend);
+
       from_header = header_last;    /* To get it checked for Sender: */
       }
     }
@@ -2816,10 +2805,9 @@ if (from_header == NULL &&
     {
     header_add(htype_from, "%sFrom: %s%s%s%s\n", resent_prefix,
       oname,
-      (oname[0] == 0)? "" : " <",
-      (sender_address_unrewritten == NULL)?
-        sender_address : sender_address_unrewritten,
-      (oname[0] == 0)? "" : ">");
+      *oname ? " <" : "",
+      sender_address_unrewritten ? sender_address_unrewritten : sender_address,
+      *oname ? ">" : "");
 
     from_header = header_last;    /* To get it checked for Sender: */
     }
@@ -2836,11 +2824,11 @@ trusted callers to forge From: without supplying -f, we have to test explicitly
 here. If the From: header contains more than one address, then the call to
 parse_extract_address fails, and a Sender: header is inserted, as required. */
 
-if (from_header != NULL &&
-     (active_local_from_check &&
-       ((sender_local && !trusted_caller && !suppress_local_fixups) ||
-        (submission_mode && authenticated_id != NULL))
-     ))
+if (  from_header
+   && (  active_local_from_check
+      && (  sender_local && !trusted_caller && !suppress_local_fixups
+	 || submission_mode && authenticated_id
+   )  )  )
   {
   BOOL make_sender = TRUE;
   int start, end, domain;
@@ -2850,37 +2838,26 @@ if (from_header != NULL &&
       &start, &end, &domain, FALSE);
   uschar *generated_sender_address;
 
-  if (submission_mode)
-    {
-    if (submission_domain == NULL)
-      {
-      generated_sender_address = string_sprintf("%s@%s",
-        local_part_quote(authenticated_id), qualify_domain_sender);
-      }
-    else if (submission_domain[0] == 0)  /* empty => full address */
-      {
-      generated_sender_address = string_sprintf("%s",
-        authenticated_id);
-      }
-    else
-      {
-      generated_sender_address = string_sprintf("%s@%s",
-        local_part_quote(authenticated_id), submission_domain);
-      }
-    }
-  else
-    generated_sender_address = string_sprintf("%s@%s",
-      local_part_quote(originator_login), qualify_domain_sender);
+  generated_sender_address = submission_mode
+    ? !submission_domain
+    ? string_sprintf("%s@%s",
+	local_part_quote(authenticated_id), qualify_domain_sender)
+    : !*submission_domain			/* empty => full address */
+    ? string_sprintf("%s", authenticated_id)
+    : string_sprintf("%s@%s",
+	local_part_quote(authenticated_id), submission_domain)
+    : string_sprintf("%s@%s",
+	local_part_quote(originator_login), qualify_domain_sender);
 
   /* Remove permitted prefixes and suffixes from the local part of the From:
   address before doing the comparison with the generated sender. */
 
-  if (from_address != NULL)
+  if (from_address)
     {
     int slen;
-    uschar *at = (domain == 0)? NULL : from_address + domain - 1;
+    uschar *at = domain ? from_address + domain - 1 : NULL;
 
-    if (at != NULL) *at = 0;
+    if (at) *at = 0;
     from_address += route_check_prefix(from_address, local_from_prefix);
     slen = route_check_suffix(from_address, local_from_suffix);
     if (slen > 0)
@@ -2888,10 +2865,10 @@ if (from_header != NULL &&
       memmove(from_address+slen, from_address, Ustrlen(from_address)-slen);
       from_address += slen;
       }
-    if (at != NULL) *at = '@';
+    if (at) *at = '@';
 
-    if (strcmpic(generated_sender_address, from_address) == 0 ||
-      (domain == 0 && strcmpic(from_address, originator_login) == 0))
+    if (  strcmpic(generated_sender_address, from_address) == 0
+       || (!domain && strcmpic(from_address, originator_login) == 0))
         make_sender = FALSE;
     }
 
@@ -2899,8 +2876,7 @@ if (from_header != NULL &&
   appropriate rewriting rules. */
 
   if (make_sender)
-    {
-    if (submission_mode && submission_name == NULL)
+    if (submission_mode && !submission_name)
       header_add(htype_sender, "%sSender: %s\n", resent_prefix,
         generated_sender_address);
     else
@@ -2908,14 +2884,13 @@ if (from_header != NULL &&
         resent_prefix,
         submission_mode? submission_name : originator_name,
         generated_sender_address);
-    }
 
   /* Ensure that a non-null envelope sender address corresponds to the
   submission mode sender address. */
 
-  if (submission_mode && sender_address[0] != 0)
+  if (submission_mode && *sender_address)
     {
-    if (sender_address_unrewritten == NULL)
+    if (!sender_address_unrewritten)
       sender_address_unrewritten = sender_address;
     sender_address = generated_sender_address;
     if (Ustrcmp(sender_address_unrewritten, generated_sender_address) != 0)
@@ -2928,8 +2903,7 @@ if (from_header != NULL &&
 /* If there are any rewriting rules, apply them to the sender address, unless
 it has already been rewritten as part of verification for SMTP input. */
 
-if (global_rewrite_rules != NULL && sender_address_unrewritten == NULL &&
-    sender_address[0] != 0)
+if (global_rewrite_rules && !sender_address_unrewritten && *sender_address)
   {
   sender_address = rewrite_address(sender_address, FALSE, TRUE,
     global_rewrite_rules, rewrite_existflags);
@@ -2978,9 +2952,8 @@ to be more confusing if Exim adds one to all remotely-originated messages.
 As per Message-Id, we prepend if resending, else append.
 */
 
-if (!date_header_exists &&
-      ((sender_host_address == NULL && !suppress_local_fixups)
-        || submission_mode))
+if (  !date_header_exists
+   && ((!sender_host_address && !suppress_local_fixups) || submission_mode))
   header_add_at_position(!resents_exist, NULL, FALSE, htype_other,
     "%sDate: %s\n", resent_prefix, tod_stamp(tod_full));
 
@@ -2992,7 +2965,7 @@ new Received:) has not yet been set. */
 DEBUG(D_receive)
   {
   debug_printf(">>Headers after rewriting and local additions:\n");
-  for (h = header_list->next; h != NULL; h = h->next)
+  for (h = header_list->next; h; h = h->next)
     debug_printf("%c %s", h->type, h->text);
   debug_printf("\n");
   }
@@ -3094,7 +3067,7 @@ format); write it (remembering that it might contain binary zeros). The result
 of fwrite() isn't inspected; instead we call ferror() below. */
 
 fprintf(data_file, "%s-D\n", message_id);
-if (next != NULL)
+if (next)
   {
   uschar *s = next->text;
   int len = next->slen;
@@ -3149,10 +3122,10 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
       log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
 	"message too big: read=%d max=%d",
 	sender_address,
-	(sender_fullhost == NULL)? "" : " H=",
-	(sender_fullhost == NULL)? US"" : sender_fullhost,
-	(sender_ident == NULL)? "" : " U=",
-	(sender_ident == NULL)? US"" : sender_ident,
+	sender_fullhost ? " H=" : "",
+	sender_fullhost ? sender_fullhost : US"",
+	sender_ident ? " U=" : "",
+	sender_ident ? sender_ident : US"",
 	message_size,
 	thismessage_size_limit);
 
@@ -3205,7 +3178,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
   uschar *msg = string_sprintf("%s error (%s) while receiving message from %s",
     input_error? "Input read" : "Spool write",
     msg_errno,
-    (sender_fullhost != NULL)? sender_fullhost : sender_ident);
+    sender_fullhost ? sender_fullhost : sender_ident);
 
   log_write(0, LOG_MAIN, "Message abandoned: %s", msg);
   Uunlink(spool_name);                /* Lose the data file */
@@ -3237,6 +3210,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 /* No I/O errors were encountered while writing the data file. */
 
 DEBUG(D_receive) debug_printf("Data file written for message %s\n", message_id);
+if (LOGGING(receive_time)) timesince(&received_time_taken, &received_time);
 
 
 /* If there were any bad addresses extracted by -t, or there were no recipients
@@ -3250,12 +3224,12 @@ recipients or stderr error writing, throw the data file away afterwards, and
 exit. (This can't be SMTP, which always ensures there's at least one
 syntactically good recipient address.) */
 
-if (extract_recip && (bad_addresses != NULL || recipients_count == 0))
+if (extract_recip && (bad_addresses || recipients_count == 0))
   {
   DEBUG(D_receive)
     {
     if (recipients_count == 0) debug_printf("*** No recipients\n");
-    if (bad_addresses != NULL)
+    if (bad_addresses)
       {
       error_block *eblock = bad_addresses;
       debug_printf("*** Bad address(es)\n");
@@ -3286,7 +3260,7 @@ if (extract_recip && (bad_addresses != NULL || recipients_count == 0))
     }
   else
     {
-    if (bad_addresses == NULL)
+    if (!bad_addresses)
       {
       if (extracted_ignored)
         fprintf(stderr, "exim: all -t recipients overridden by command line\n");
@@ -3331,7 +3305,7 @@ Note: the checking for too many Received: headers is handled by the delivery
 code. */
 /*XXX eventually add excess Received: check for cutthrough case back when classifying them */
 
-if (received_header->text == NULL)	/* Non-cutthrough case */
+if (!received_header->text)	/* Non-cutthrough case */
   {
   received_header_gen();
 
@@ -3989,6 +3963,9 @@ if (LOGGING(dkim) && dkim_verify_overall)
   g = string_append(g, 2, US" DKIM=", dkim_verify_overall);
 #endif
 
+if (LOGGING(receive_time))
+  g = string_append(g, 2, US" RT=", string_timediff(&received_time_taken));
+
 if (*queue_name)
   g = string_append(g, 2, US" Q=", queue_name);
 
@@ -4012,7 +3989,7 @@ if (msgid_header)
 /* If subject logging is turned on, create suitable printing-character
 text. By expanding $h_subject: we make use of the MIME decoding. */
 
-if (LOGGING(subject) && subject_header != NULL)
+if (LOGGING(subject) && subject_header)
   {
   int i;
   uschar *p = big_buffer;
