@@ -58,6 +58,9 @@ JH/09 The "aveserver", "kavdaemon" and "mksd" interfaces are now not included
 JH/10 Bug 2223: Fix mysql lookup returns for the no-data case (when the number of
       rows affected is given instead).
 
+JH/11 The runtime Berkeley DB library version is now additionally output by
+      "exim -d -bV".  Previously only the compile-time version was shown.
+
 
 Exim version 4.90
 -----------------

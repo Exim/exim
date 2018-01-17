@@ -2783,6 +2783,7 @@ while (<EXIMINFO>)
   my(@temp);
 
   if (/^(Exim|Library) version/) { print; }
+  if (/Runtime: /) {print; }
 
   elsif (/^Size of off_t: (\d+)/)
     {
