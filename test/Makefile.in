@@ -18,7 +18,7 @@ SRC = @srcdir@/src
 
 BINARIES =	bin/cf bin/client $(CLIENT_SSL) $(CLIENT_GNUTLS) \
                 bin/checkaccess bin/fakens bin/fd bin/iefbr14 $(LOADED) \
-                bin/mtpscript bin/server bin/showids
+                bin/mtpscript bin/server bin/showids bin/locate
 
 # List of targets
 
@@ -26,8 +26,8 @@ all:            binaries sysbinaries
 
 binaries:	$(BINARIES)
 
-sysbinaries:	FRC
-		bin/locate.sh initdb postgres pg_ctl mysqld
+sysbinaries:	FORCE
+		sh -x bin/locate initdb postgres pg_ctl mysqld
 		ls -la bin.sys
 
 # Compile and link the programs:
@@ -81,8 +81,11 @@ bin/server:     $(SRC)/server.c Makefile
 bin/showids:    $(SRC)/showids.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $(SRC)/showids.c
 
+bin/locate:     $(SRC)/locate.sh Makefile
+		install -m 0755 $(SRC)/locate.sh bin/locate
+
 clean:;         rm -rf $(BINARIES) bin.sys
 
-FRC:
+FORCE:
 
 # End

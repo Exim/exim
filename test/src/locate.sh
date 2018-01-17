@@ -19,13 +19,7 @@ do
 	/usr/sbin
 	/usr/libexec
 	/usr/local/bin
-	/usr/lib/postgresql/10/bin
-	/usr/lib/postgresql/9.5/bin
-	/usr/lib/postgresql/9.4/bin
-	/usr/lib/postgresql/9.3/bin
-	/usr/lib/postgresql/9.2/bin
-	/usr/lib/postgresql/9.1/bin
-	/usr/lib/postgresql/9/bin
+        `find /usr/lib/postgresql -name bin -type d`
 HERE
   shift
 done
