@@ -4,6 +4,7 @@
 #
 # first, populate a DB to test against
 sudo rm -fr DIR/pgsql
+echo Starting DB server
 perl
 system 'DIR/bin.sys/initdb -D DIR/pgsql/data';
 ****
@@ -12,7 +13,9 @@ background
 DIR/bin.sys/postgres -D DIR/pgsql/data -p PORT_N -k DIR/pgsql
 ****
 sleep 1
+echo Waiting for DB server
 perl
+system 'DIR/bin.sys/pg_ctl -w -D DIR/pgsql/data status';
 system 'createdb -h localhost -p PORT_N test';
 system 'psql -h localhost -p PORT_N -d test \
  -c "CREATE TABLE them ( name text, id text ); \
@@ -25,6 +28,7 @@ system 'psql -h localhost -p PORT_N -d test \
      INSERT INTO them VALUES ( CHR(39) || \'stquot\', \'quote1\' );" \
  ';
 ****
+echo Populated DB server
 #
 # now, the tests
 exim -d-all+lookup -be
@@ -62,7 +66,8 @@ ${lookup pgsql {select name from them where id='ph10';}}
 ****
 #
 perl
-system 'pg_ctl stop -D DIR/pgsql/data -m immediate';
+system 'DIR/bin.sys/pg_ctl stop -D DIR/pgsql/data -m immediate';
 ****
+sleep 2
 killdaemon
 sudo rm -fr DIR/pgsql

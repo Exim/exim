@@ -661,7 +661,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/\bgid=\d+/gid=gggg/;
   s/\begid=\d+/egid=gggg/;
-  s/\bpid=\d+/pid=pppp/;
+  s/\b(pid=|PID: )\d+/$1pppp/;
   s/\buid=\d+/uid=uuuu/;
   s/\beuid=\d+/euid=uuuu/;
   s/set_process_info:\s+\d+/set_process_info: pppp/;
@@ -922,6 +922,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # subsecond timstamp info in reported header-files
     s/^(-received_time_usec \.)\d{6}$/$1uuuuuu/;
+
+    # Postgres server takes varible time to shut down
+    s/^waiting for server to shut down\.+ done$/waiting for server to shut down.... done/;
     }
 
   # ======== stderr ========

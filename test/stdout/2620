@@ -1,3 +1,5 @@
+pg_ctl: server is running (PID: pppp)
+/usr/bin/postgres "-D" "TESTSUITE/pgsql/data" "-p" "1223" "-k" "TESTSUITE/pgsql"
 INSERT 0 1
 > Philip Hazel
 > Philip Hazel

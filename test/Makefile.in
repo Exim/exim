@@ -27,7 +27,7 @@ all:            binaries sysbinaries
 binaries:	$(BINARIES)
 
 sysbinaries:	FRC
-		sh -x bin/locate.sh initdb postgres pg_ctl mysqld
+		bin/locate.sh initdb postgres pg_ctl mysqld
 		ls -la bin.sys
 
 # Compile and link the programs:
