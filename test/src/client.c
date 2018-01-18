@@ -224,7 +224,7 @@ if(!(bs = OCSP_response_get1_basic(rsp)))
   }
 
 
-if (!(sk = chain_from_pem_file(ocsp_stapling)))
+if (!(sk = chain_from_pem_file((const uschar *)ocsp_stapling)))
   {
   BIO_printf(arg, "error in cert setup\n");
   return 0;
@@ -720,7 +720,7 @@ int rc;
   else if (strncmp(CS outbuffer, "<<< ", 4) == 0)
     {
     FILE * new_f;
-    if (!(new_f = fopen(outbuffer+4 , "r")))
+    if (!(new_f = fopen((const char *)outbuffer+4 , "r")))
       {
       printf("Unable to open '%s': %s", inptr, strerror(errno));
       exit(74);

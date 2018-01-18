@@ -4,19 +4,22 @@
 #
 # first, populate a DB to test against
 sudo rm -fr DIR/mysql
+echo Installing DB server dir
 perl
 system 'mysql_install_db --no-defaults --datadir=DIR/mysql --user=CALLER';
 ****
 sudo rm test-stdout test-stderr
 #
 # start a db server
+echo Starting DB server
 background
 DIR/bin.sys/mysqld --datadir=DIR/mysql --log-error=DIR/mysql/log --bind-address=* --port=PORT_N --socket=DIR/mysql/sock --pid-file=DIR/mysql/pidfile
 ****
 #
 # wait for db startup, insert some data
+echo Waiting for DB server startup
 perl
-system 'mysqladmin --protocol=TCP -P PORT_N --connect_timeout=1 --wait=5 -u root create test';
+system 'mysqladmin --protocol=TCP -P PORT_N --connect_timeout=2 --wait=5 -u root create test';
 my $fh;
 open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -D test -e "select 1 from mysql.user where User = \'root\' and Host = \'HOSTIPV4\'"');
 my $line = <$fh>;
@@ -41,6 +44,7 @@ system 'mysql --protocol=TCP -P PORT_N -u root -D test \
      GRANT ALL ON *.* TO \'CALLER\'@\'HOSTIPV4\'; \
  "';
 ****
+echo Populated DB
 sudo rm test-stderr-server
 #
 #

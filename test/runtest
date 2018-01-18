@@ -923,8 +923,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # subsecond timstamp info in reported header-files
     s/^(-received_time_usec \.)\d{6}$/$1uuuuuu/;
 
-    # Postgres server takes varible time to shut down
+    # Postgres server takes varible time to shut down; lives in various places
     s/^waiting for server to shut down\.+ done$/waiting for server to shut down.... done/;
+    s/^\/.*postgres /POSTGRES /;
     }
 
   # ======== stderr ========
