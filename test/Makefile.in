@@ -27,7 +27,7 @@ all:            binaries sysbinaries
 binaries:	$(BINARIES)
 
 sysbinaries:	FORCE binaries
-		sh -x bin/locate initdb postgres pg_ctl mysqld
+		bin/locate initdb postgres pg_ctl mysqld
 		ls -la bin.sys
 
 # Compile and link the programs:
@@ -82,7 +82,7 @@ bin/showids:    $(SRC)/showids.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids $(SRC)/showids.c
 
 bin/locate:     $(SRC)/locate.sh Makefile
-		cp $(SRC)/locate.sh bin/locate
+		cp $(SRC)/locate.pl bin/locate
 		chmod 0755 bin/locate
 
 clean:;         rm -rf $(BINARIES) bin.sys
