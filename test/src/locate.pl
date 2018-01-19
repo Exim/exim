@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+
+use 5.010;
 use strict;
 use warnings;
 use File::Find;
@@ -39,7 +41,8 @@ sub locate {
     eval {
         find(
             sub {
-                return unless $tool eq $_ and -x $_ and -f _;
+                return $File::Find::prune = 1 unless -r -x -r;
+                return unless $tool eq $_ and -x and -f _;
                 die { found => $File::Find::name };
             },
             @dirs
