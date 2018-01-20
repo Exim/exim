@@ -38563,8 +38563,12 @@ In typical Exim style, the verification implementation does not include any
 default "policy". Instead it enables you to build your own policy using
 Exim's standard controls.
 
+.new
 Please note that verification of DKIM signatures in incoming mail is turned
-on by default for logging purposes. For each signature in incoming email,
+on by default for logging (in the <= line) purposes.
+
+Additional log detail can be enabled using the &%dkim_verbose%& log_selector.
+When set, for each signature in incoming email,
 exim will log a line displaying the most important signature details, and the
 signature status. Here is an example (with line-breaks added for clarity):
 .code
@@ -38573,6 +38577,8 @@ signature status. Here is an example (with line-breaks added for clarity):
     c=relaxed/relaxed a=rsa-sha1
     i=@facebookmail.com t=1252484542 [verification succeeded]
 .endd
+.wen
+
 You might want to turn off DKIM verification processing entirely for internal
 or relay mail sources. To do that, set the &%dkim_disable_verify%& ACL
 control modifier. This should typically be done in the RCPT ACL, at points
@@ -38582,6 +38588,18 @@ senders).
 
 .section "Signing outgoing messages" "SECDKIMSIGN"
 .cindex "DKIM" "signing"
+
+.new
+For signing to be usable you must have published a DKIM record in DNS.
+Note that RFC 8301 says:
+.code
+rsa-sha1 MUST NOT be used for signing or verifying.
+
+Signers MUST use RSA keys of at least 1024 bits for all keys.
+Signers SHOULD use RSA keys of at least 2048 bits.
+.endd
+.wen
+.wen
 
 Signing is enabled by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
@@ -38624,9 +38642,23 @@ is set.
 .endlist
 
 .new
+Note that RFC 8301 says:
+.code
+Signers MUST use RSA keys of at least 1024 bits for all keys.
+Signers SHOULD use RSA keys of at least 2048 bits.
+.endd
+.wen
+
 .option dkim_hash smtp string&!! sha256
 Can be set alternatively to &"sha1"& to use an alternate hash
-method.  Note that sha1 is now condidered insecure, and deprecated.
+method.
+
+.new
+Note that RFC 8301 says:
+.code
+rsa-sha1 MUST NOT be used for signing or verifying.
+.endd
+.wen
 
 .option dkim_identity smtp string&!! unset
 If set after expansion, the value is used to set an "i=" tag in
@@ -38788,7 +38820,7 @@ DKIM verification. It may of course also mean that the signature is forged.
 .endlist
 
 .new
-This variable can be overwritten using an ACL 'set' modifier.
+This variable can be overwritten, with any value, using an ACL 'set' modifier.
 .wen
 
 .vitem &%$dkim_domain%&
@@ -38806,6 +38838,19 @@ The key record selector string.
 
 .vitem &%$dkim_algo%&
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
+
+.new
+Note that RFC 8301 says:
+.code
+rsa-sha1 MUST NOT be used for signing or verifying.
+
+DKIM signatures identified as having been signed with historic
+algorithms (currently, rsa-sha1) have permanently failed evaluation
+.endd
+
+To enforce this you must have a DKIM ACL which checks this variable
+and overwrites the &$dkim_verify_status$& variable as discussed above.
+.wen
 
 .vitem &%$dkim_canon_body%&
 The body canonicalization method. One of 'relaxed' or 'simple'.
@@ -38857,6 +38902,18 @@ Notes from the key record (tag n=).
 
 .vitem &%$dkim_key_length%&
 Number of bits in the key.
+
+.new
+Note that RFC 8301 says:
+.code
+Verifiers MUST NOT consider signatures using RSA keys of
+less than 1024 bits as valid signatures.
+.endd
+
+To enforce this you must have a DKIM ACL which checks this variable
+and overwrites the &$dkim_verify_status$& variable as discussed above.
+.wen
+
 .endlist
 
 In addition, two ACL conditions are provided:
