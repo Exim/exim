@@ -37,13 +37,13 @@ are held as a bitmap. This is to avoid expanding the strings unnecessarily. For
 the code. */
 
 static int msgcond[] = {
-  [ACL_ACCEPT] =	(1<<OK) | (1<<FAIL) | (1<<FAIL_DROP),
-  [ACL_DEFER] =		(1<<OK),
-  [ACL_DENY] =		(1<<OK),
-  [ACL_DISCARD] =	(1<<OK) | (1<<FAIL) | (1<<FAIL_DROP),
-  [ACL_DROP] =		(1<<OK),
-  [ACL_REQUIRE] =	(1<<FAIL) | (1<<FAIL_DROP),
-  [ACL_WARN] =		(1<<OK)
+  [ACL_ACCEPT] =	BIT(OK) | BIT(FAIL) | BIT(FAIL_DROP),
+  [ACL_DEFER] =		BIT(OK),
+  [ACL_DENY] =		BIT(OK),
+  [ACL_DISCARD] =	BIT(OK) | BIT(FAIL) | BIT(FAIL_DROP),
+  [ACL_DROP] =		BIT(OK),
+  [ACL_REQUIRE] =	BIT(FAIL) | BIT(FAIL_DROP),
+  [ACL_WARN] =		BIT(OK)
   };
 
 /* ACL condition and modifier codes - keep in step with the table that
@@ -137,34 +137,33 @@ static condition_def conditions[] = {
 
   [ACLC_ADD_HEADER] =		{ US"add_header",	TRUE, TRUE,
 				  (unsigned int)
-				  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-				    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+				  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
-				    (1<<ACL_WHERE_PRDR)|
+				    ACL_BIT_PRDR |
 #endif
-				    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_DKIM)|
-				    (1<<ACL_WHERE_NOTSMTP_START)),
+				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
+				    ACL_BIT_DKIM |
+				    ACL_BIT_NOTSMTP_START),
   },
 
   [ACLC_AUTHENTICATED] =	{ US"authenticated",	FALSE, FALSE,
-				  (1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_NOTSMTP_START)|
-				    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO),
+				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
+				    ACL_BIT_CONNECT | ACL_BIT_HELO,
   },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   [ACLC_BMI_OPTIN] =		{ US"bmi_optin",	TRUE, TRUE,
-				  (1<<ACL_WHERE_AUTH)|
-				    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-				    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
+				  ACL_BIT_AUTH |
+				    ACL_BIT_CONNECT | ACL_BIT_HELO |
+				    ACL_BIT_DATA | ACL_BIT_MIME |
 # ifndef DISABLE_PRDR
-				    (1<<ACL_WHERE_PRDR)|
+				    ACL_BIT_PRDR |
 # endif
-				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-				    (1<<ACL_WHERE_MAILAUTH)|
-				    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-				    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA)|
-				    (1<<ACL_WHERE_NOTSMTP_START),
+				    ACL_BIT_ETRN | ACL_BIT_EXPN |
+				    ACL_BIT_MAILAUTH |
+				    ACL_BIT_MAIL | ACL_BIT_STARTTLS |
+				    ACL_BIT_VRFY | ACL_BIT_PREDATA |
+				    ACL_BIT_NOTSMTP_START,
   },
 #endif
   [ACLC_CONDITION] =		{ US"condition",	TRUE, FALSE,	0 },
@@ -177,24 +176,24 @@ static condition_def conditions[] = {
 #ifdef EXPERIMENTAL_DCC
   [ACLC_DCC] =			{ US"dcc",		TRUE, FALSE,
 				  (unsigned int)
-				  ~((1<<ACL_WHERE_DATA)|
+				  ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
-				  (1<<ACL_WHERE_PRDR)|
+				  ACL_BIT_PRDR |
 # endif
-				  (1<<ACL_WHERE_NOTSMTP)),
+				  ACL_BIT_NOTSMTP),
   },
 #endif
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_DECODE] =		{ US"decode",		TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_MIME) },
+  [ACLC_DECODE] =		{ US"decode",		TRUE, FALSE, (unsigned int) ~ACL_BIT_MIME },
 
 #endif
-  [ACLC_DELAY] =		{ US"delay",		TRUE, TRUE, (1<<ACL_WHERE_NOTQUIT) },
+  [ACLC_DELAY] =		{ US"delay",		TRUE, TRUE, ACL_BIT_NOTQUIT },
 #ifndef DISABLE_DKIM
-  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DKIM) },
-  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DKIM) },
+  [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
+  [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_DATA) },
+  [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DATA },
 #endif
 
   /* Explicit key lookups can be made in non-smtp ACLs so pass
@@ -203,133 +202,124 @@ static condition_def conditions[] = {
 
   [ACLC_DOMAINS] =		{ US"domains",	FALSE, FALSE,
 				  (unsigned int)
-				  ~((1<<ACL_WHERE_RCPT)
-				    |(1<<ACL_WHERE_VRFY)
+				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
-				  |(1<<ACL_WHERE_PRDR)
+				  |ACL_BIT_PRDR
 #endif
       ),
   },
   [ACLC_ENCRYPTED] =		{ US"encrypted",	FALSE, FALSE,
-				  (1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_CONNECT)|
-				    (1<<ACL_WHERE_NOTSMTP_START)|
-				    (1<<ACL_WHERE_HELO),
+				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START |
+				    ACL_BIT_HELO,
   },
 
   [ACLC_ENDPASS] =		{ US"endpass",	TRUE, TRUE,	0 },
 
   [ACLC_HOSTS] =		{ US"hosts",		FALSE, FALSE,
-				  (1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_NOTSMTP_START),
+				  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
   [ACLC_LOCAL_PARTS] =		{ US"local_parts",	FALSE, FALSE,
 				  (unsigned int)
-				  ~((1<<ACL_WHERE_RCPT)
-				    |(1<<ACL_WHERE_VRFY)
+				  ~(ACL_BIT_RCPT | ACL_BIT_VRFY
 #ifndef DISABLE_PRDR
-				  |(1<<ACL_WHERE_PRDR)
+				  | ACL_BIT_PRDR
 #endif
       ),
   },
 
   [ACLC_LOG_MESSAGE] =		{ US"log_message",	TRUE, TRUE,	0 },
-  [ACLC_LOG_REJECT_TARGET] =		{ US"log_reject_target", TRUE, TRUE,	0 },
+  [ACLC_LOG_REJECT_TARGET] =	{ US"log_reject_target", TRUE, TRUE,	0 },
   [ACLC_LOGWRITE] =		{ US"logwrite",	TRUE, TRUE,	0 },
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_MALWARE] =		{ US"malware",	TRUE, FALSE,
 				  (unsigned int)
-				    ~((1<<ACL_WHERE_DATA)|
+				    ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
-				    (1<<ACL_WHERE_PRDR)|
+				    ACL_BIT_PRDR |
 # endif
-				    (1<<ACL_WHERE_NOTSMTP)),
+				    ACL_BIT_NOTSMTP),
   },
 #endif
 
   [ACLC_MESSAGE] =		{ US"message",	TRUE, TRUE,	0 },
 #ifdef WITH_CONTENT_SCAN
-  [ACLC_MIME_REGEX] =		{ US"mime_regex",	TRUE, FALSE, (unsigned int) ~(1<<ACL_WHERE_MIME) },
+  [ACLC_MIME_REGEX] =		{ US"mime_regex",	TRUE, FALSE, (unsigned int) ~ACL_BIT_MIME },
 #endif
 
   [ACLC_QUEUE] =		{ US"queue",		TRUE, TRUE,
-				  (1<<ACL_WHERE_NOTSMTP)|
+				  ACL_BIT_NOTSMTP |
 #ifndef DISABLE_PRDR
-				  (1<<ACL_WHERE_PRDR)|
+				  ACL_BIT_PRDR |
 #endif
-				  (1<<ACL_WHERE_DATA),
+				  ACL_BIT_DATA,
   },
 
   [ACLC_RATELIMIT] =		{ US"ratelimit",	TRUE, FALSE,	0 },
-  [ACLC_RECIPIENTS] =		{ US"recipients",	FALSE, FALSE, (unsigned int) ~(1<<ACL_WHERE_RCPT) },
+  [ACLC_RECIPIENTS] =		{ US"recipients",	FALSE, FALSE, (unsigned int) ~ACL_BIT_RCPT },
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_REGEX] =		{ US"regex",		TRUE, FALSE,
 				  (unsigned int)
-				  ~((1<<ACL_WHERE_DATA)|
+				  ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
-				    (1<<ACL_WHERE_PRDR)|
+				    ACL_BIT_PRDR |
 # endif
-				    (1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_MIME)),
+				    ACL_BIT_NOTSMTP |
+				    ACL_BIT_MIME),
   },
 
 #endif
   [ACLC_REMOVE_HEADER] =	{ US"remove_header",	TRUE, TRUE,
 				  (unsigned int)
-				  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-				    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+				  ~(ACL_BIT_MAIL|ACL_BIT_RCPT |
+				    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
-				    (1<<ACL_WHERE_PRDR)|
+				    ACL_BIT_PRDR |
 #endif
-				    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_NOTSMTP_START)),
+				    ACL_BIT_MIME | ACL_BIT_NOTSMTP |
+				    ACL_BIT_NOTSMTP_START),
   },
   [ACLC_SENDER_DOMAINS] =	{ US"sender_domains",	FALSE, FALSE,
-				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-				    (1<<ACL_WHERE_HELO)|
-				    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
+				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				    ACL_BIT_HELO |
+				    ACL_BIT_MAILAUTH | ACL_BIT_QUIT |
+				    ACL_BIT_ETRN | ACL_BIT_EXPN |
+				    ACL_BIT_STARTTLS | ACL_BIT_VRFY,
   },
   [ACLC_SENDERS] =		{ US"senders",	FALSE, FALSE,
-				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-				    (1<<ACL_WHERE_HELO)|
-				    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
+				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				    ACL_BIT_HELO |
+				    ACL_BIT_MAILAUTH | ACL_BIT_QUIT |
+				    ACL_BIT_ETRN | ACL_BIT_EXPN |
+				    ACL_BIT_STARTTLS | ACL_BIT_VRFY,
   },
 
   [ACLC_SET] =			{ US"set",		TRUE, TRUE,	0 },
 
 #ifdef WITH_CONTENT_SCAN
   [ACLC_SPAM] =			{ US"spam",		TRUE, FALSE,
-				  (unsigned int) ~((1<<ACL_WHERE_DATA)|
+				  (unsigned int) ~(ACL_BIT_DATA |
 # ifndef DISABLE_PRDR
-				  (1<<ACL_WHERE_PRDR)|
+				  ACL_BIT_PRDR |
 # endif
-				  (1<<ACL_WHERE_NOTSMTP)),
+				  ACL_BIT_NOTSMTP),
   },
 #endif
 #ifdef SUPPORT_SPF
   [ACLC_SPF] =			{ US"spf",		TRUE, FALSE,
-				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-				    (1<<ACL_WHERE_HELO)|
-				    (1<<ACL_WHERE_MAILAUTH)|
-				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
-				    (1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_NOTSMTP_START),
+				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
+				    ACL_BIT_ETRN | ACL_BIT_EXPN |
+				    ACL_BIT_STARTTLS | ACL_BIT_VRFY |
+				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
   [ACLC_SPF_GUESS] =		{ US"spf_guess",	TRUE, FALSE,
-				  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|
-				    (1<<ACL_WHERE_HELO)|
-				    (1<<ACL_WHERE_MAILAUTH)|
-				    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-				    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
-				    (1<<ACL_WHERE_NOTSMTP)|
-				    (1<<ACL_WHERE_NOTSMTP_START),
+				  ACL_BIT_AUTH | ACL_BIT_CONNECT |
+				    ACL_BIT_HELO | ACL_BIT_MAILAUTH |
+				    ACL_BIT_ETRN | ACL_BIT_EXPN |
+				    ACL_BIT_STARTTLS | ACL_BIT_VRFY |
+				    ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START,
   },
 #endif
   [ACLC_UDPSEND] =		{ US"udpsend",		TRUE, TRUE,	0 },
@@ -401,16 +391,16 @@ static control_def controls_list[] = {
 [CONTROL_AUTH_UNADVERTISED] =
   { US"allow_auth_unadvertised", FALSE,
 				  (unsigned)
-				  ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO))
+				  ~(ACL_BIT_CONNECT | ACL_BIT_HELO)
   },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 [CONTROL_BMI_RUN] =
   { US"bmi_run",                 FALSE,		0 },
 #endif
 [CONTROL_CASEFUL_LOCAL_PART] =
-  { US"caseful_local_part",      FALSE, (unsigned) ~(1<<ACL_WHERE_RCPT) },
+  { US"caseful_local_part",      FALSE, (unsigned) ~ACL_BIT_RCPT },
 [CONTROL_CASELOWER_LOCAL_PART] =
-  { US"caselower_local_part",    FALSE, (unsigned) ~(1<<ACL_WHERE_RCPT) },
+  { US"caselower_local_part",    FALSE, (unsigned) ~ACL_BIT_RCPT },
 [CONTROL_CUTTHROUGH_DELIVERY] =
   { US"cutthrough_delivery",     TRUE,		0 },
 [CONTROL_DEBUG] =
@@ -419,32 +409,32 @@ static control_def controls_list[] = {
 #ifndef DISABLE_DKIM
 [CONTROL_DKIM_VERIFY] =
   { US"dkim_disable_verify",     FALSE,
-				  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|
+				  ACL_BIT_DATA | ACL_BIT_NOTSMTP |
 # ifndef DISABLE_PRDR
-				  (1<<ACL_WHERE_PRDR)|
+				  ACL_BIT_PRDR |
 # endif
-				  (1<<ACL_WHERE_NOTSMTP_START)
+				  ACL_BIT_NOTSMTP_START
   },
 #endif
 
 #ifdef EXPERIMENTAL_DMARC
 [CONTROL_DMARC_VERIFY] =
   { US"dmarc_disable_verify",    FALSE,
-	  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_DATA | ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 [CONTROL_DMARC_FORENSIC] =
   { US"dmarc_enable_forensic",   FALSE,
-	  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_DATA | ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 #endif
 
 [CONTROL_DSCP] =
   { US"dscp",                    TRUE,
-	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)|(1<<ACL_WHERE_NOTQUIT)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START | ACL_BIT_NOTQUIT
   },
 [CONTROL_ENFORCE_SYNC] =
   { US"enforce_sync",            FALSE,
-	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 
   /* Pseudo-value for decode errors */
@@ -454,82 +444,82 @@ static control_def controls_list[] = {
 [CONTROL_FAKEDEFER] =
   { US"fakedefer",               TRUE,
 	  (unsigned)
-	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+	    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
-	    (1<<ACL_WHERE_PRDR)|
+	    ACL_BIT_PRDR |
 #endif
-	    (1<<ACL_WHERE_MIME))
+	    ACL_BIT_MIME)
   },
 [CONTROL_FAKEREJECT] =
   { US"fakereject",              TRUE,
 	  (unsigned)
-	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+	    ACL_BIT_PREDATA | ACL_BIT_DATA |
 #ifndef DISABLE_PRDR
-	  (1<<ACL_WHERE_PRDR)|
+	  ACL_BIT_PRDR |
 #endif
-	  (1<<ACL_WHERE_MIME))
+	  ACL_BIT_MIME)
   },
 [CONTROL_FREEZE] =
   { US"freeze",                  TRUE,
 	  (unsigned)
-	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-	    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-	    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+	    ACL_BIT_PREDATA | ACL_BIT_DATA |
+	    // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
+	    ACL_BIT_NOTSMTP | ACL_BIT_MIME)
   },
 
 [CONTROL_NO_CALLOUT_FLUSH] =
   { US"no_callout_flush",        FALSE,
-	  (1<<ACL_WHERE_NOTSMTP)| (1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 [CONTROL_NO_DELAY_FLUSH] =
   { US"no_delay_flush",          FALSE,
-	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
   
 [CONTROL_NO_ENFORCE_SYNC] =
   { US"no_enforce_sync",         FALSE,
-	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 #ifdef WITH_CONTENT_SCAN
 [CONTROL_NO_MBOX_UNSPOOL] =
   { US"no_mbox_unspool",         FALSE,
 	(unsigned)
-	~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-	  (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-	  // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-	  (1<<ACL_WHERE_MIME))
+	~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+	  ACL_BIT_PREDATA | ACL_BIT_DATA |
+	  // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
+	  ACL_BIT_MIME)
   },
 #endif
 [CONTROL_NO_MULTILINE] =
   { US"no_multiline_responses",  FALSE,
-	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 [CONTROL_NO_PIPELINING] =
   { US"no_pipelining",           FALSE,
-	  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_NOTSMTP_START)
+	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 
 [CONTROL_QUEUE_ONLY] =
   { US"queue_only",              FALSE,
 	  (unsigned)
-	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|
-	    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-	    // (1<<ACL_WHERE_PRDR)|    /* Not allow one user to freeze for all */
-	    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME))
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+	    ACL_BIT_PREDATA | ACL_BIT_DATA |
+	    // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
+	    ACL_BIT_NOTSMTP | ACL_BIT_MIME)
   },
 [CONTROL_SUBMISSION] =
   { US"submission",              TRUE,
 	  (unsigned)
-	  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA))
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT | ACL_BIT_PREDATA)
   },
 [CONTROL_SUPPRESS_LOCAL_FIXUPS] =
   { US"suppress_local_fixups",   FALSE,
     (unsigned)
-    ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-      (1<<ACL_WHERE_NOTSMTP_START))
+    ~(ACL_BIT_MAIL | ACL_BIT_RCPT | ACL_BIT_PREDATA |
+      ACL_BIT_NOTSMTP_START)
   },
 #ifdef SUPPORT_I18N
 [CONTROL_UTF8_DOWNCONVERT] =
@@ -1534,7 +1524,7 @@ switch (dns_lookup(&dnsa, target, type, NULL))
 
 enum { VERIFY_REV_HOST_LKUP, VERIFY_CERT, VERIFY_HELO, VERIFY_CSA, VERIFY_HDR_SYNTAX,
        VERIFY_NOT_BLIND, VERIFY_HDR_SNDR, VERIFY_SNDR, VERIFY_RCPT,
-       VERIFY_HDR_NAMES_ASCII
+       VERIFY_HDR_NAMES_ASCII, VERIFY_ARC
   };
 typedef struct {
   uschar * name;
@@ -1546,17 +1536,20 @@ typedef struct {
 static verify_type_t verify_type_list[] = {
     /*	name			value			where	no-opt opt-sep */
     { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	FALSE, 0 },
-    { US"certificate",	  	VERIFY_CERT,	 	~0,	TRUE, 0 },
-    { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE, 0 },
+    { US"certificate",	  	VERIFY_CERT,	 	~0,	TRUE,  0 },
+    { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE,  0 },
     { US"csa",	  		VERIFY_CSA,	 	~0,	FALSE, 0 },
-    { US"header_syntax",	VERIFY_HDR_SYNTAX,	(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), TRUE, 0 },
-    { US"not_blind",	  	VERIFY_NOT_BLIND,	(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), TRUE, 0 },
-    { US"header_sender",	VERIFY_HDR_SNDR,	(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), FALSE, 0 },
-    { US"sender",	  	VERIFY_SNDR,		(1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)
-			|(1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP),
+    { US"header_syntax",	VERIFY_HDR_SYNTAX,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
+    { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
+    { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
+    { US"sender",	  	VERIFY_SNDR,		ACL_BIT_MAIL | ACL_BIT_RCPT
+			|ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
 										FALSE, 6 },
-    { US"recipient",	  	VERIFY_RCPT,	 	(1<<ACL_WHERE_RCPT),	FALSE, 0 },
-    { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), TRUE, 0 }
+    { US"recipient",	  	VERIFY_RCPT,	 	ACL_BIT_RCPT,	FALSE, 0 },
+    { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
+#ifdef EXPERIMENTAL_ARC
+    { US"arc",			VERIFY_ARC,	 	ACL_BIT_DATA,	TRUE , 0 },
+#endif
   };
 
 
@@ -1639,7 +1632,7 @@ const uschar *list = arg;
 uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
 verify_type_t * vp;
 
-if (ss == NULL) goto BAD_VERIFY;
+if (!ss) goto BAD_VERIFY;
 
 /* Handle name/address consistency verification in a separate function. */
 
@@ -1653,15 +1646,16 @@ for (vp= verify_type_list;
 if (CS vp >= CS verify_type_list + sizeof(verify_type_list))
   goto BAD_VERIFY;
 
-if (vp->no_options && slash != NULL)
+if (vp->no_options && slash)
   {
   *log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
     "(this verify item has no options)", arg);
   return ERROR;
   }
-if (!(vp->where_allowed & (1<<where)))
+if (!(vp->where_allowed & BIT(where)))
   {
-  *log_msgptr = string_sprintf("cannot verify %s in ACL for %s", vp->name, acl_wherenames[where]);
+  *log_msgptr = string_sprintf("cannot verify %s in ACL for %s",
+		  vp->name, acl_wherenames[where]);
   return ERROR;
   }
 switch(vp->value)
@@ -3742,7 +3736,7 @@ present. */
 
 if (*epp && rc == OK) user_message = NULL;
 
-if (((1<<rc) & msgcond[verb]) != 0)
+if ((BIT(rc) & msgcond[verb]) != 0)
   {
   uschar *expmessage;
   uschar *old_user_msgptr = *user_msgptr;
@@ -3758,11 +3752,11 @@ if (((1<<rc) & msgcond[verb]) != 0)
       (rc == OK && (verb == ACL_ACCEPT || verb == ACL_DISCARD)))
     *log_msgptr = *user_msgptr = NULL;
 
-  if (user_message != NULL)
+  if (user_message)
     {
     acl_verify_message = old_user_msgptr;
     expmessage = expand_string(user_message);
-    if (expmessage == NULL)
+    if (!expmessage)
       {
       if (!expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message \"%s\": %s",
@@ -3771,11 +3765,11 @@ if (((1<<rc) & msgcond[verb]) != 0)
     else if (expmessage[0] != 0) *user_msgptr = expmessage;
     }
 
-  if (log_message != NULL)
+  if (log_message)
     {
     acl_verify_message = old_log_msgptr;
     expmessage = expand_string(log_message);
-    if (expmessage == NULL)
+    if (!expmessage)
       {
       if (!expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message \"%s\": %s",
@@ -3790,7 +3784,7 @@ if (((1<<rc) & msgcond[verb]) != 0)
 
   /* If no log message, default it to the user message */
 
-  if (*log_msgptr == NULL) *log_msgptr = *user_msgptr;
+  if (!*log_msgptr) *log_msgptr = *user_msgptr;
   }
 
 acl_verify_message = NULL;
