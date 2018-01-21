@@ -36,19 +36,19 @@ static const uschar * dkim_collect_error = NULL;
 
 
 /*XXX the caller only uses the first record if we return multiple.
-Could we hand back an allocated string?
 */
 
-static int
-dkim_exim_query_dns_txt(char *name, char *answer)
+static uschar *
+dkim_exim_query_dns_txt(char * name)
 {
 dns_answer dnsa;
 dns_scan dnss;
 dns_record *rr;
+gstring * g = NULL;
 
 lookup_dnssec_authenticated = NULL;
 if (dns_lookup(&dnsa, US name, T_TXT, NULL) != DNS_SUCCEED)
-  return PDKIM_FAIL;	/*XXX better error detail?  logging? */
+  return NULL;	/*XXX better error detail?  logging? */
 
 /* Search for TXT record */
 
@@ -65,22 +65,27 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     while (rr_offset < rr->size)
       {
       uschar len = rr->data[rr_offset++];
-      snprintf(answer + answer_offset,
-		PDKIM_DNS_TXT_MAX_RECLEN - answer_offset,
-		"%.*s", (int)len, CS  (rr->data + rr_offset));
+
+      g = string_catn(g, US(rr->data + rr_offset), len);
+      if (g->ptr >= PDKIM_DNS_TXT_MAX_RECLEN)
+	goto bad;
+
       rr_offset += len;
-      answer_offset += len;
-      if (answer_offset >= PDKIM_DNS_TXT_MAX_RECLEN)
-	return PDKIM_FAIL;	/*XXX better error detail?  logging? */
       }
 
     /* check if this looks like a DKIM record */
-    if (strncmp(answer, "v=", 2) == 0 && strncasecmp(answer, "v=dkim", 6) != 0)
-      continue;
-    return PDKIM_OK;
+    if (strncmp(g->s, "v=", 2) != 0 || strncasecmp(g->s, "v=dkim", 6) == 0)
+      {
+      store_reset(g->s + g->ptr + 1);
+      return string_from_gstring(g);
+      }
+
+    if (g) g->ptr = 0;		/* overwrite previous record */
     }
 
-return PDKIM_FAIL;	/*XXX better error detail?  logging? */
+bad:
+if (g) store_reset(g);
+return NULL;	/*XXX better error detail?  logging? */
 }
 
 

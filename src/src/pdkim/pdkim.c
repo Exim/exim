@@ -1306,10 +1306,7 @@ pdkim_pubkey * p;
 
 dns_txt_name = string_sprintf("%s._domainkey.%s.", sig->selector, sig->domain);
 
-dns_txt_reply = store_get(PDKIM_DNS_TXT_MAX_RECLEN);
-memset(dns_txt_reply, 0, PDKIM_DNS_TXT_MAX_RECLEN);
-
-if (  ctx->dns_txt_callback(CS dns_txt_name, CS dns_txt_reply) != PDKIM_OK 
+if (  !(dns_txt_reply = ctx->dns_txt_callback(CS dns_txt_name))
    || dns_txt_reply[0] == '\0'
    )
   {
@@ -1713,7 +1710,7 @@ return PDKIM_OK;
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_verify(int(*dns_txt_callback)(char *, char *), BOOL dot_stuffing)
+pdkim_init_verify(uschar * (*dns_txt_callback)(char *), BOOL dot_stuffing)
 {
 pdkim_ctx * ctx;
 
@@ -1817,7 +1814,7 @@ return;
 
 void
 pdkim_init_context(pdkim_ctx * ctx, BOOL dot_stuffed,
-  int(*dns_txt_callback)(char *, char *))
+  uschar * (*dns_txt_callback)(char *))
 {
 memset(ctx, 0, sizeof(pdkim_ctx));
 ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;

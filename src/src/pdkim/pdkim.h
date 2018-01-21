@@ -265,7 +265,7 @@ typedef struct pdkim_ctx {
   pdkim_signature *sig;
 
   /* Callback for dns/txt query method (verification only) */
-  int(*dns_txt_callback)(char *, char *);
+  uschar * (*dns_txt_callback)(char *);
 
   /* Coder's little helpers */
   gstring   *cur_header;
@@ -287,7 +287,7 @@ extern "C" {
 
 void	   pdkim_init         (void);
 
-void	   pdkim_init_context (pdkim_ctx *, BOOL, int(*)(char *, char *));
+void	   pdkim_init_context (pdkim_ctx *, BOOL, uschar * (*)(char *));
 
 DLLEXPORT
 pdkim_signature *pdkim_init_sign    (pdkim_ctx *,
@@ -295,7 +295,7 @@ pdkim_signature *pdkim_init_sign    (pdkim_ctx *,
 			       const uschar **);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_verify  (int(*)(char *, char *), BOOL);
+pdkim_ctx *pdkim_init_verify  (uschar * (*)(char *), BOOL);
 
 DLLEXPORT
 void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
