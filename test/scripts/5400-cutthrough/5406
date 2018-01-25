@@ -1,0 +1,110 @@
+# cutthrough_delivery multiple messages on initiator conn
+need_ipv4
+munge loopback
+#
+# Two single-RCPT messages.
+# Both should get cuttthrough, using separate onward connections
+server PORT_S 2
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userx@domain.com>
+DATA
+
+.
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<usery@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+#
+#
+#
+# A single-RCPT followed by a double-RCPT message
+# Both should get cuttthrough, using separate onward connections
+server PORT_S 2
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userx@domain.com>
+DATA
+
+.
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<usery@domain.com>
+RCPT TO:<userz@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+#
+#
+#
+# End

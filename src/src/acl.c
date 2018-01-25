@@ -3293,6 +3293,8 @@ for (; cb != NULL; cb = cb->next)
 		p = pp;
 		}
 	      }
+	    else
+	      DEBUG(D_acl) debug_printf(" cutthrough request ignored for nonfirst rcpt\n");
 	    break;
 	    }
 	  *log_msgptr = string_sprintf("\"control=%s\" on %s item",
@@ -4422,22 +4424,29 @@ switch (where)
     else if (  rc == OK
 	    && cutthrough.delivery
 	    && rcpt_count > cutthrough.nrcpt
-	    && (rc = open_cutthrough_connection(addr)) == DEFER
 	    )
-      if (cutthrough.defer_pass)
-	{
-	uschar * s = addr->message;
-	/* Horrid kludge to recover target's SMTP message */
-	while (*s) s++;
-	do --s; while (!isdigit(*s));
-	if (*--s && isdigit(*s) && *--s && isdigit(*s)) *user_msgptr = s;
-	acl_temp_details = TRUE;
-	}
-      else
-	{
-	HDEBUG(D_acl) debug_printf_indent("cutthrough defer; will spool\n");
-	rc = OK;
-	}
+      {
+      if ((rc = open_cutthrough_connection(addr)) == DEFER)
+	if (cutthrough.defer_pass)
+	  {
+	  uschar * s = addr->message;
+	  /* Horrid kludge to recover target's SMTP message */
+	  while (*s) s++;
+	  do --s; while (!isdigit(*s));
+	  if (*--s && isdigit(*s) && *--s && isdigit(*s)) *user_msgptr = s;
+	  acl_temp_details = TRUE;
+	  }
+	else
+	  {
+	  HDEBUG(D_acl) debug_printf_indent("cutthrough defer; will spool\n");
+	  rc = OK;
+	  }
+      }
+    else HDEBUG(D_acl) if (cutthrough.delivery)
+      if (rcpt_count <= cutthrough.nrcpt)
+	debug_printf_indent("ignore cutthrough request; nonfirst message\n");
+      else if (rc != OK)
+	debug_printf_indent("ignore cutthrough request; ACL did not accept\n");
     break;
 
   case ACL_WHERE_PREDATA:
