@@ -1,6 +1,6 @@
 # Exim test configuration 5400
 
-# any options on the cutthrough_delivery contol
+# any options on the cutthrough_delivery control
 CONTROL=
 
 # optional verify-callout

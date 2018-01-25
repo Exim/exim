@@ -61,6 +61,12 @@ JH/10 Bug 2223: Fix mysql lookup returns for the no-data case (when the number o
 JH/11 The runtime Berkeley DB library version is now additionally output by
       "exim -d -bV".  Previously only the compile-time version was shown.
 
+JH/12 Bug 2230: Fix cutthrough routing for nonfirst messages in an initiating
+      SMTP connection.  Previously, when one had more receipients than the
+      first, an abortive onward connection was made.  Move to full support for
+      multiple onward connections in sequence, handling cutthrough connection
+      for all multi-message initiating connections.
+
 
 Exim version 4.90
 -----------------

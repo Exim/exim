@@ -1380,6 +1380,7 @@ if(fd >= 0)
   _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
   _cutthrough_flush_send();
   cutthrough.fd = -1;			/* avoid recursion via read timeout */
+  cutthrough.nrcpt = 0;			/* permit re-cutthrough on subsequent message */
 
   /* Wait a short time for response, and discard it */
   cutthrough_response(fd, '2', NULL, 1);
