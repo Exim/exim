@@ -388,18 +388,21 @@ if (addr->transport == cutthrough.addr.transport)
 
       host_af = Ustrchr(host->address, ':') ? AF_INET6 : AF_INET;
 
-      if (!smtp_get_interface(tf->interface, host_af, addr, &interface,
-	      US"callout") ||
-	  !smtp_get_port(tf->port, addr, &port, US"callout"))
+      if (  !smtp_get_interface(tf->interface, host_af, addr, &interface,
+	      US"callout")
+	 || !smtp_get_port(tf->port, addr, &port, US"callout")
+	 )
 	log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
 	  addr->message);
+
+      smtp_port_for_connect(host, port);
 
       if (  (  interface == cutthrough.interface
 	    || (  interface
 	       && cutthrough.interface
 	       && Ustrcmp(interface, cutthrough.interface) == 0
 	    )  )
-	 && port == cutthrough.host.port
+	 && host->port == cutthrough.host.port
 	 )
 	{
 	uschar * resp = NULL;
