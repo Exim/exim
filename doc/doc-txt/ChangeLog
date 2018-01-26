@@ -48,6 +48,11 @@ JH/12 Bug 2230: Fix cutthrough routing for nonfirst messages in an initiating
       multiple onward connections in sequence, handling cutthrough connection
       for all multi-message initiating connections.
 
+JH/13 Bug 2229: Fix cutthrough routing for nonstandard port numbers defined by
+      routers.  Previously, a multi-recipient message would fail to match the
+      onward-connection opened for the first recipient, and cause its closure.
+
+
 Exim version 4.90
 -----------------
 

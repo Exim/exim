@@ -1,0 +1,52 @@
+# Exim test configuration 5407
+
+# any options on the cutthrough_delivery control
+CONTROL=
+
+# optional verify-callout
+OPT=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+log_selector = +received_recipients
+queue_only
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+acl_smtp_rcpt = ar
+
+
+# ----- ACLs -----
+
+begin acl
+
+ar:
+  accept
+	control = cutthrough_deliveryCONTROL
+	OPT
+	logwrite = rcpt for $local_part@$domain
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver =	manualroute
+  domains =	! +local_domains
+  route_list =	* 127.0.0.1::PORT_S
+  self =	send
+  transport =	smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver =	smtp
+
+# End

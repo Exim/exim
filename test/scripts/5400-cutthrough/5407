@@ -1,0 +1,40 @@
+# cutthrough_delivery multiple recipient; router specifying port
+need_ipv4
+munge loopback
+#
+# A two-RCPT message.
+# Both should get cuttthrough, still as one message
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userx@domain.com>
+RCPT TO:<usery@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+#
+#
+#
+# End
