@@ -2364,10 +2364,8 @@ DEBUG(D_tls) debug_printf("about to gnutls_handshake\n");
 sigalrm_seen = FALSE;
 alarm(ob->command_timeout);
 do
-  {
   rc = gnutls_handshake(state->session);
-  } while ((rc == GNUTLS_E_AGAIN) ||
-      (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen));
+while (rc == GNUTLS_E_AGAIN || rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
@@ -2483,6 +2481,7 @@ ssize_t inbytes;
 DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
   state->session, state->xfer_buffer, ssl_xfer_buffer_size);
 
+sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
   MIN(ssl_xfer_buffer_size, lim));
