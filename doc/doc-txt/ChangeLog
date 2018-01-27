@@ -52,6 +52,12 @@ JH/13 Bug 2229: Fix cutthrough routing for nonstandard port numbers defined by
       routers.  Previously, a multi-recipient message would fail to match the
       onward-connection opened for the first recipient, and cause its closure.
 
+JH/14 Bug 2174: A timeout on connect for a callout was also erroneously seen as
+      a timeout on read on a GnuTLS initiating connection, resulting in the
+      initiating connection being dropped.  This mattered most when the callout
+      was marked defer_ok.  Fix to keep the two timeout-detection methods
+      separate.
+
 
 Exim version 4.90
 -----------------
