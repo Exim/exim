@@ -10,6 +10,7 @@ my @dirs = grep { /^\// && -d } split(/:/, $ENV{PATH}), qw(
   /bin
   /usr/bin
   /usr/sbin
+  /usr/lib
   /usr/libexec
   /usr/local/bin
   /usr/local/sbin

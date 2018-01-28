@@ -30,3 +30,24 @@ x@mx46466b.test.ex
   host 46b.test.ex [V6NET:ffff:836f:a00:a:800:200a:c033] MX=47
   host 46b.test.ex [V4NET.0.0.5] MX=47
   host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] MX=48
+x@mx46.test.ex
+  router = r1, transport = t1
+  host 46.test.ex [V4NET.0.0.4] MX=46
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+x@mx46.test.ex
+  router = r1, transport = t1
+  host 46.test.ex [V4NET.0.0.4] MX=46
+x@mx46.test.ex
+  router = r0, transport = t1
+  host 46.test.ex [V4NET.0.0.4] MX=46
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+x@mx46.test.ex
+  router = r0, transport = t1
+  host 46.test.ex [V4NET.0.0.4] MX=46
+x@mx46.test.ex
+  router = r0, transport = t1
+  host 46.test.ex [V4NET.0.0.4] 
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031]
+x@mx46.test.ex
+  router = r0, transport = t1
+  host 46.test.ex [V4NET.0.0.4]

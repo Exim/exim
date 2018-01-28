@@ -11,3 +11,27 @@ exim -bt x@mx46466.test.ex
 ****
 exim -bt x@mx46466b.test.ex
 ****
+#
+# Reverse the preference order (dnslookup router)
+exim -bt -DOPT=ipv4_prefer=y x@mx46.test.ex
+****
+#
+# Only lookup ipv4 (dnslookup router)
+exim -bt -DOPT=ipv4_only=y x@mx46.test.ex
+****
+#
+# Reverse the preference order (manualroute router, MX)
+exim -bt -DROUTE_DATA=mx46.test.ex/MX -DOPT=ipv4_prefer x@mx46.test.ex
+****
+#
+# Only lookup ipv4 (manualroute router, MX)
+exim -bt -DROUTE_DATA=mx46.test.ex/MX -DOPT=ipv4_only x@mx46.test.ex
+****
+#
+# Reverse the preference order (manualroute router, plain)
+exim -bt -DROUTE_DATA=46.test.ex -DOPT=ipv4_prefer x@mx46.test.ex
+****
+#
+# Only lookup ipv4 (manualroute router, plain)
+exim -bt -DROUTE_DATA=46.test.ex -DOPT=ipv4_only x@mx46.test.ex
+****

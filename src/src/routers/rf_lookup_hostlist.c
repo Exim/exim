@@ -35,7 +35,8 @@ Arguments:
   rblock               the router block
   addr                 the address being routed
   ignore_target_hosts  list of hosts to ignore
-  lookup_type          lk_default or lk_byname or lk_bydns
+  lookup_type          LK_DEFAULT or LK_BYNAME or LK_BYDNS,
+		       plus LK_IPV4_{ONLY,PREFER}
   hff_code             what to do for host find failed
   addr_new             passed to rf_self_action for self=reroute
 
@@ -90,6 +91,12 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
   len = Ustrlen(h->name);
   if (len > 3 && strcmpic(h->name + len - 3, US"/mx") == 0)
     {
+    int whichrrs = lookup_type & LK_IPV4_ONLY
+      ? HOST_FIND_BY_MX | HOST_FIND_IPV4_ONLY
+      : lookup_type & LK_IPV4_PREFER
+      ? HOST_FIND_BY_MX | HOST_FIND_IPV4_FIRST
+      : HOST_FIND_BY_MX;
+
     DEBUG(D_route|D_host_lookup)
       debug_printf("doing DNS MX lookup for %s\n", h->name);
 
@@ -97,19 +104,19 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
     h->name = string_copyn(h->name, len - 3);
     rc = host_find_bydns(h,
         ignore_target_hosts,
-        HOST_FIND_BY_MX,                /* look only for MX records */
-        NULL,                           /* SRV service not relevant */
-        NULL,                           /* failing srv domains not relevant */
-        NULL,                           /* no special mx failing domains */
+        whichrrs,			/* look only for MX records */
+        NULL,				/* SRV service not relevant */
+        NULL,				/* failing srv domains not relevant */
+        NULL,				/* no special mx failing domains */
         &rblock->dnssec,		/* dnssec request/require */
-        NULL,                           /* fully_qualified_name */
-        NULL);                          /* indicate local host removed */
+        NULL,				/* fully_qualified_name */
+        NULL);				/* indicate local host removed */
     }
 
   /* If explicitly configured to look up by name, or if the "host name" is
   actually an IP address, do a byname lookup. */
 
-  else if (lookup_type == lk_byname || string_is_ip_address(h->name, NULL) != 0)
+  else if (lookup_type & LK_BYNAME || string_is_ip_address(h->name, NULL) != 0)
     {
     DEBUG(D_route|D_host_lookup) debug_printf("calling host_find_byname\n");
     rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
@@ -123,8 +130,14 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
   else
     {
     BOOL removed;
+    int whichrrs = lookup_type & LK_IPV4_ONLY
+      ? HOST_FIND_BY_A
+      : lookup_type & LK_IPV4_PREFER
+      ? HOST_FIND_BY_A | HOST_FIND_BY_AAAA | HOST_FIND_IPV4_FIRST
+      : HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
+
     DEBUG(D_route|D_host_lookup) debug_printf("doing DNS lookup\n");
-    switch (rc = host_find_bydns(h, ignore_target_hosts, HOST_FIND_BY_A, NULL,
+    switch (rc = host_find_bydns(h, ignore_target_hosts, whichrrs, NULL,
 	NULL, NULL,
 	&rblock->dnssec,			/* domains for request/require */
 	&canonical_name, &removed))
@@ -133,7 +146,7 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
         if (removed) setflag(addr, af_local_host_removed);
 	break;
       case HOST_FIND_FAILED:
-	if (lookup_type == lk_default)
+	if (lookup_type & LK_DEFAULT)
 	  {
 	  DEBUG(D_route|D_host_lookup)
 	    debug_printf("DNS lookup failed: trying getipnodebyname\n");

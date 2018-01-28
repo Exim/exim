@@ -1849,7 +1849,7 @@ while (addr_new)
             additional host items being inserted into the chain. Hence we must
             save the next host first. */
 
-            flags = HOST_FIND_BY_A;
+            flags = HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
             if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
             if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 

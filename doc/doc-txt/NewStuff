@@ -27,6 +27,9 @@ Version 4.91
 
  6. Receive duration on <= lines, under a new log_selector "receive_time".
 
+ 7. Options "ipv4_only" and "ipv4_prefer" on the dnslookup router and on
+    routing rules in the manualroute router.
+
 
 Version 4.90
 ------------

@@ -331,7 +331,7 @@ DEBUG(D_route) debug_printf("expanded list of hosts = \"%s\" options = %s\n",
 
 /* Set default lookup type and scan the options */
 
-lookup_type = lk_default;
+lookup_type = LK_DEFAULT;
 
 while (*options != 0)
   {
@@ -342,12 +342,16 @@ while (*options != 0)
 
   if (Ustrncmp(s, "randomize", n) == 0) randomize = TRUE;
   else if (Ustrncmp(s, "no_randomize", n) == 0) randomize = FALSE;
-  else if (Ustrncmp(s, "byname", n) == 0) lookup_type = lk_byname;
-  else if (Ustrncmp(s, "bydns", n) == 0) lookup_type = lk_bydns;
+  else if (Ustrncmp(s, "byname", n) == 0)
+    lookup_type = lookup_type & ~(LK_DEFAULT | LK_BYDNS) | LK_BYNAME;
+  else if (Ustrncmp(s, "bydns", n) == 0)
+    lookup_type = lookup_type & ~(LK_DEFAULT | LK_BYNAME) & LK_BYDNS;
+  else if (Ustrncmp(s, "ipv4_prefer", n) == 0) lookup_type |= LK_IPV4_PREFER;
+  else if (Ustrncmp(s, "ipv4_only",   n) == 0) lookup_type |= LK_IPV4_ONLY;
   else
     {
     transport_instance *t;
-    for (t = transports; t != NULL; t = t->next)
+    for (t = transports; t; t = t->next)
       if (Ustrncmp(t->name, s, n) == 0)
         {
         transport = t;
@@ -355,7 +359,7 @@ while (*options != 0)
         break;
         }
 
-    if (t == NULL)
+    if (!t)
       {
       s = string_sprintf("unknown routing option or transport name \"%s\"", s);
       log_write(0, LOG_MAIN, "Error in %s router: %s", rblock->name, s);
@@ -397,7 +401,7 @@ if (!individual_transport_set)
 /* Deal with the case of a local transport. The host list is passed over as a
 single text string that ends up in $host. */
 
-if (transport != NULL && transport->info->local)
+if (transport && transport->info->local)
   {
   if (hostlist[0] != 0)
     {
@@ -447,7 +451,7 @@ if (rc != OK) return rc;
 be ignored, in which case we will end up with an empty host list. What happens
 is controlled by host_all_ignored. */
 
-if (addr->host_list == NULL)
+if (!addr->host_list)
   {
   int i;
   DEBUG(D_route) debug_printf("host_find_failed ignored every host\n");

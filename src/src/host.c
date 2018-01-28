@@ -1841,7 +1841,7 @@ for (hname = sender_host_name; hname; hname = *aliases++)
   d.request = sender_host_dnssec ? US"*" : NULL;;
   d.require = NULL;
 
-  if (  (rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A,
+  if (  (rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A | HOST_FIND_BY_AAAA,
 	  NULL, NULL, NULL, &d, NULL, NULL)) == HOST_FOUND
      || rc == HOST_FOUND_LOCAL
      )
@@ -2241,9 +2241,7 @@ field set to NULL, fill in its IP address from the DNS. If it is multi-homed,
 create additional host items for the additional addresses, copying all the
 other fields, and randomizing the order.
 
-On IPv6 systems, A6 records are sought first (but only if support for A6 is
-configured - they may never become mainstream), then AAAA records are sought,
-and finally A records are sought as well.
+On IPv6 systems, AAAA records are sought first, then A records.
 
 The host name may be changed if the DNS returns a different name - e.g. fully
 qualified or changed via CNAME. If fully_qualified_name is not NULL, dns_lookup
@@ -2266,6 +2264,7 @@ Arguments:
                           to something)
   dnssec_request	if TRUE request the AD bit
   dnssec_require	if TRUE require the AD bit
+  whichrrs		select ipv4, ipv6 results
 
 Returns:       HOST_FIND_FAILED     couldn't find A record
                HOST_FIND_AGAIN      try again later
@@ -2278,7 +2277,7 @@ static int
 set_address_from_dns(host_item *host, host_item **lastptr,
   const uschar *ignore_target_hosts, BOOL allow_ip,
   const uschar **fully_qualified_name,
-  BOOL dnssec_request, BOOL dnssec_require)
+  BOOL dnssec_request, BOOL dnssec_require, int whichrrs)
 {
 dns_record *rr;
 host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
@@ -2293,8 +2292,8 @@ those sites that feel they have to flaunt the RFC rules. */
 if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   {
   #ifndef STAND_ALONE
-  if (ignore_target_hosts != NULL &&
-        verify_check_this_host(&ignore_target_hosts, NULL, host->name,
+  if (  ignore_target_hosts
+     && verify_check_this_host(&ignore_target_hosts, NULL, host->name,
         host->name, NULL) == OK)
     return HOST_IGNORED;
   #endif
@@ -2304,16 +2303,18 @@ if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   }
 
 /* On an IPv6 system, unless IPv6 is disabled, go round the loop up to twice,
-looking for AAAA records the first time. However, unless
-doing standalone testing, we force an IPv4 lookup if the domain matches
-dns_ipv4_lookup is set.  On an IPv4 system, go round the
-loop once only, looking only for A records. */
+looking for AAAA records the first time. However, unless doing standalone
+testing, we force an IPv4 lookup if the domain matches dns_ipv4_lookup global.
+On an IPv4 system, go round the loop once only, looking only for A records. */
 
 #if HAVE_IPV6
   #ifndef STAND_ALONE
-    if (disable_ipv6 || (dns_ipv4_lookup != NULL &&
-        match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
-	  MCL_DOMAIN, TRUE, NULL) == OK))
+    if (  disable_ipv6
+       || !(whichrrs & HOST_FIND_BY_AAAA)
+       || (dns_ipv4_lookup
+          && match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+	      MCL_DOMAIN, TRUE, NULL) == OK)
+       )
       i = 0;    /* look up A records only */
     else
   #endif        /* STAND_ALONE */
@@ -2330,7 +2331,8 @@ for (; i >= 0; i--)
   {
   static int types[] = { T_A, T_AAAA };
   int type = types[i];
-  int randoffset = (i == 0)? 500 : 0;  /* Ensures v6 sorts before v4 */
+  int randoffset = i == (whichrrs & HOST_FIND_IPV4_FIRST ? 1 : 0)
+    ? 500 : 0;  /* Ensures v6/4 sort order */
   dns_answer dnsa;
   dns_scan dnss;
 
@@ -2532,10 +2534,13 @@ Arguments:
   whichrrs              flags indicating which RRs to look for:
                           HOST_FIND_BY_SRV  => look for SRV
                           HOST_FIND_BY_MX   => look for MX
-                          HOST_FIND_BY_A    => look for A or AAAA
+                          HOST_FIND_BY_A    => look for A
+                          HOST_FIND_BY_AAAA => look for AAAA
                         also flags indicating how the lookup is done
                           HOST_FIND_QUALIFY_SINGLE   ) passed to the
                           HOST_FIND_SEARCH_PARENTS   )   resolver
+			  HOST_FIND_IPV4_FIRST => reverse usual result ordering
+			  HOST_FIND_IPV4_ONLY  => MX results elide ipv6
   srv_service           when SRV used, the service name
   srv_fail_domains      DNS errors for these domains => assume nonexist
   mx_fail_domains       DNS errors for these domains => assume nonexist
@@ -2716,7 +2721,7 @@ host. */
 
 if (rc != DNS_SUCCEED)
   {
-  if ((whichrrs & HOST_FIND_BY_A) == 0)
+  if (!(whichrrs & (HOST_FIND_BY_A | HOST_FIND_BY_AAAA)))
     {
     DEBUG(D_host_lookup) debug_printf("Address records are not being sought\n");
     yield = HOST_FIND_FAILED;
@@ -2729,7 +2734,7 @@ if (rc != DNS_SUCCEED)
   host->dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
   rc = set_address_from_dns(host, &last, ignore_target_hosts, FALSE,
-    fully_qualified_name, dnssec_request, dnssec_require);
+    fully_qualified_name, dnssec_request, dnssec_require, whichrrs);
 
   /* If one or more address records have been found, check that none of them
   are local. Since we know the host items all have their IP addresses
@@ -3064,20 +3069,18 @@ for (h = host; h != last->next; h = h->next)
   if (h->address) continue;  /* Inserted by a multihomed host */
 
   rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip,
-    NULL, dnssec_request, dnssec_require);
+    NULL, dnssec_request, dnssec_require,
+    whichrrs & HOST_FIND_IPV4_ONLY
+    ?  HOST_FIND_BY_A  :  HOST_FIND_BY_A | HOST_FIND_BY_AAAA);
   if (rc != HOST_FOUND)
     {
     h->status = hstatus_unusable;
     switch (rc)
       {
-      case HOST_FIND_AGAIN:
-	yield = rc; h->why = hwhy_deferred; break;
-      case HOST_FIND_SECURITY:
-	yield = rc; h->why = hwhy_insecure; break;
-      case HOST_IGNORED:
-	h->why = hwhy_ignored; break;
-      default:
-	h->why = hwhy_failed; break;
+      case HOST_FIND_AGAIN:	yield = rc; h->why = hwhy_deferred; break;
+      case HOST_FIND_SECURITY:	yield = rc; h->why = hwhy_insecure; break;
+      case HOST_IGNORED:	h->why = hwhy_ignored; break;
+      default:			h->why = hwhy_failed; break;
       }
     }
   }
@@ -3128,12 +3131,22 @@ if (h != last && !disable_ipv6) for (h = host; h != last; h = h->next)
   host_item temp;
   host_item *next = h->next;
 
-  if (h->mx != next->mx ||                   /* If next is different MX */
-      h->address == NULL ||                  /* OR this one is unset */
-      Ustrchr(h->address, ':') != NULL ||    /* OR this one is IPv6 */
-      (next->address != NULL &&
-       Ustrchr(next->address, ':') == NULL)) /* OR next is IPv4 */
+  if (  h->mx != next->mx			/* If next is different MX */
+     || !h->address				/* OR this one is unset */
+     )
+    continue;					/* move on to next */
+
+  if (  whichrrs & HOST_FIND_IPV4_FIRST
+     ?     !Ustrchr(h->address, ':')		/* OR this one is IPv4 */
+        || next->address
+           && Ustrchr(next->address, ':')	/* OR next is IPv6 */
+
+     :     Ustrchr(h->address, ':')		/* OR this one is IPv6 */
+        || next->address
+           && !Ustrchr(next->address, ':')	/* OR next is IPv4 */
+     )
     continue;                                /* move on to next */
+
   temp = *h;                                 /* otherwise, swap */
   temp.next = next->next;
   *h = *next;
@@ -3194,7 +3207,7 @@ return yield;
 int main(int argc, char **cargv)
 {
 host_item h;
-int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A;
+int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
 BOOL byname = FALSE;
 BOOL qualify_single = TRUE;
 BOOL search_parents = FALSE;
@@ -3236,15 +3249,15 @@ while (Ufgets(buffer, 256, stdin) != NULL)
 
   if (Ustrcmp(buffer, "byname") == 0) byname = TRUE;
   else if (Ustrcmp(buffer, "no_byname") == 0) byname = FALSE;
-  else if (Ustrcmp(buffer, "a_only") == 0) whichrrs = HOST_FIND_BY_A;
+  else if (Ustrcmp(buffer, "a_only") == 0) whichrrs = HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
   else if (Ustrcmp(buffer, "mx_only") == 0) whichrrs = HOST_FIND_BY_MX;
   else if (Ustrcmp(buffer, "srv_only") == 0) whichrrs = HOST_FIND_BY_SRV;
   else if (Ustrcmp(buffer, "srv+a") == 0)
-    whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_A;
+    whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
   else if (Ustrcmp(buffer, "srv+mx") == 0)
     whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX;
   else if (Ustrcmp(buffer, "srv+mx+a") == 0)
-    whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX | HOST_FIND_BY_A;
+    whichrrs = HOST_FIND_BY_SRV | HOST_FIND_BY_MX | HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
   else if (Ustrcmp(buffer, "qualify_single")    == 0) qualify_single = TRUE;
   else if (Ustrcmp(buffer, "no_qualify_single") == 0) qualify_single = FALSE;
   else if (Ustrcmp(buffer, "search_parents")    == 0) search_parents = TRUE;

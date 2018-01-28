@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2017 */
+/* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"
@@ -20,6 +20,10 @@ optionlist dnslookup_router_options[] = {
       (void *)(offsetof(dnslookup_router_options_block, check_srv)) },
   { "fail_defer_domains", opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, fail_defer_domains)) },
+  { "ipv4_only",          opt_stringptr,
+      (void *)(offsetof(dnslookup_router_options_block, ipv4_only)) },
+  { "ipv4_prefer",        opt_stringptr,
+      (void *)(offsetof(dnslookup_router_options_block, ipv4_prefer)) },
   { "mx_domains",         opt_stringptr,
       (void *)(offsetof(dnslookup_router_options_block, mx_domains)) },
   { "mx_fail_domains",    opt_stringptr,
@@ -63,16 +67,18 @@ int dnslookup_router_entry(router_instance *rblock, address_item *addr,
 /* Default private options block for the dnslookup router. */
 
 dnslookup_router_options_block dnslookup_router_option_defaults = {
-  FALSE,           /* check_secondary_mx */
-  TRUE,            /* qualify_single */
-  FALSE,           /* search_parents */
-  TRUE,            /* rewrite_headers */
-  NULL,            /* widen_domains */
-  NULL,            /* mx_domains */
-  NULL,            /* mx_fail_domains */
-  NULL,            /* srv_fail_domains */
-  NULL,            /* check_srv */
-  NULL             /* fail_defer_domains */
+  .check_secondary_mx =	FALSE,
+  .qualify_single =	TRUE,
+  .search_parents =	FALSE,
+  .rewrite_headers =	TRUE,
+  .widen_domains =	NULL,
+  .mx_domains =		NULL,
+  .mx_fail_domains =	NULL,
+  .srv_fail_domains =	NULL,
+  .check_srv =		NULL,
+  .fail_defer_domains =	NULL,
+  .ipv4_only =		NULL,
+  .ipv4_prefer =	NULL,
 };
 
 
@@ -154,7 +160,7 @@ dnslookup_router_entry(
 host_item h;
 int rc;
 int widen_sep = 0;
-int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A;
+int whichrrs = HOST_FIND_BY_MX | HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
 dnslookup_router_options_block *ob =
   (dnslookup_router_options_block *)(rblock->options_block);
 uschar *srv_service = NULL;
@@ -255,6 +261,19 @@ for (;;)
     }
   else return DECLINE;
 
+  /* Check if we must request only. or prefer, ipv4 */
+
+  if (  ob->ipv4_only
+     && expand_check_condition(ob->ipv4_only, rblock->name, US"router"))
+    flags = flags & ~HOST_FIND_BY_AAAA | HOST_FIND_IPV4_ONLY;
+  else if (search_find_defer)
+    return DEFER;
+  if (  ob->ipv4_prefer
+     && expand_check_condition(ob->ipv4_prefer, rblock->name, US"router"))
+    flags |= HOST_FIND_IPV4_FIRST;
+  else if (search_find_defer)
+    return DEFER;
+
   /* Set up the rest of the initial host item. Others may get chained on if
   there is more than one IP address. We set it up here instead of outside the
   loop so as to re-initialize if a previous try succeeded but was rejected
@@ -270,7 +289,7 @@ for (;;)
 
   /* Unfortunately, we cannot set the mx_only option in advance, because the
   DNS lookup may extend an unqualified name. Therefore, we must do the test
-  subsequently. We use the same logic as that for widen_domains above to avoid
+  stoubsequently. We use the same logic as that for widen_domains above to avoid
   requesting a header rewrite that cannot work. */
 
   if (verify != v_sender || !ob->rewrite_headers || addr->parent)
@@ -279,8 +298,8 @@ for (;;)
     if (ob->search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
     }
 
-  rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags, srv_service,
-    ob->srv_fail_domains, ob->mx_fail_domains,
+  rc = host_find_bydns(&h, CUS rblock->ignore_target_hosts, flags,
+    srv_service, ob->srv_fail_domains, ob->mx_fail_domains,
     &rblock->dnssec, &fully_qualified_name, &removed);
   if (removed) setflag(addr, af_local_host_removed);
 

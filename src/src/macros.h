@@ -750,7 +750,12 @@ enum { hwhy_unknown, hwhy_retry, hwhy_insecure, hwhy_failed, hwhy_deferred,
 
 /* Domain lookup types for routers */
 
-enum { lk_default, lk_byname, lk_bydns };
+#define LK_DEFAULT	BIT(0)
+#define LK_BYNAME	BIT(1)
+#define LK_BYDNS	BIT(2)	/* those 3 should be mutually exclusive */
+
+#define LK_IPV4_ONLY	BIT(3)
+#define LK_IPV4_PREFER	BIT(4)
 
 /* Values for the self_code fields */
 
@@ -819,11 +824,14 @@ enum {
 
 /* Flags for host_find_bydns() */
 
-#define HOST_FIND_BY_SRV          0x0001
-#define HOST_FIND_BY_MX           0x0002
-#define HOST_FIND_BY_A            0x0004
-#define HOST_FIND_QUALIFY_SINGLE  0x0008
-#define HOST_FIND_SEARCH_PARENTS  0x0010
+#define HOST_FIND_BY_SRV          BIT(0)
+#define HOST_FIND_BY_MX           BIT(1)
+#define HOST_FIND_BY_A            BIT(2)
+#define HOST_FIND_BY_AAAA         BIT(3)
+#define HOST_FIND_QUALIFY_SINGLE  BIT(4)
+#define HOST_FIND_SEARCH_PARENTS  BIT(5)
+#define HOST_FIND_IPV4_FIRST	  BIT(6)
+#define HOST_FIND_IPV4_ONLY	  BIT(7)
 
 /* Actions applied to specific messages. */
 

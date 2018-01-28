@@ -1,5 +1,7 @@
 # Exim test configuration 1009
 
+OPT=
+
 .include DIR/aux-var/std_conf_prefix
 
 
@@ -12,10 +14,21 @@ queue_run_in_order
 
 begin routers
 
+.ifdef ROUTE_DATA
+r0:
+  driver = manualroute
+  route_data = ROUTE_DATA OPT
+  transport = t1
+  self = send
+
+.else
+
 r1:
   driver = dnslookup
   transport = t1
   self = send
+  OPT
+.endif
 
 
 # ----- Transports -----

@@ -520,14 +520,14 @@ s = expand_string(US"${extract{hosts}{$value}}");
 
 if (*s != 0)
   {
-  int lookup_type = lk_default;
+  int lookup_type = LK_DEFAULT;
   uschar *ss = expand_string(US"${extract{lookup}{$value}}");
   lookup_value = NULL;
 
   if (*ss != 0)
     {
-    if (Ustrcmp(ss, "byname") == 0) lookup_type = lk_byname;
-    else if (Ustrcmp(ss, "bydns") == 0) lookup_type = lk_bydns;
+    if (Ustrcmp(ss, "byname") == 0) lookup_type = LK_BYNAME;
+    else if (Ustrcmp(ss, "bydns") == 0) lookup_type = LK_BYDNS;
     else
       {
       addr->message = string_sprintf("bad lookup type \"%s\" yielded by "

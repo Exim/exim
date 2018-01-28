@@ -14693,6 +14693,7 @@ If the resolver library does not support DNSSEC then this option has no effect.
 .option dns_ipv4_lookup main "domain list&!!" unset
 .cindex "IPv6" "DNS lookup for AAAA records"
 .cindex "DNS" "IPv6 lookup for AAAA records"
+.cindex DNS "IPv6 disabling"
 When Exim is compiled with IPv6 support and &%disable_ipv6%& is not set, it
 looks for IPv6 address records (AAAA records) as well as IPv4 address records
 (A records) when trying to find IP addresses for hosts, unless the host's
@@ -18745,7 +18746,9 @@ records.
 MX records of equal priority are sorted by Exim into a random order. Exim then
 looks for address records for the host names obtained from MX or SRV records.
 When a host has more than one IP address, they are sorted into a random order,
-except that IPv6 addresses are always sorted before IPv4 addresses. If all the
+.new
+except that IPv6 addresses are sorted before IPv4 addresses. If all the
+.wen
 IP addresses found are discarded by a setting of the &%ignore_target_hosts%&
 generic option, the router declines.
 
@@ -18877,6 +18880,24 @@ domain while the DNS configuration is not ready.
 However, it will result in any message with mistyped domains
 also being queued.
 
+
+.new
+.option ipv4_only "string&!!" unset
+.cindex IPv6 disabling
+.cindex DNS "IPv6 disabling"
+The string is expanded, and if the result is anything but a forced failure,
+or an empty string, or one of the strings “0” or “no” or “false”
+(checked without regard to the case of the letters),
+only A records are used.
+
+.option ipv4_prefer "string&!!" unset
+.cindex IPv4 preference
+.cindex DNS "IPv4 preference"
+The string is expanded, and if the result is anything but a forced failure,
+or an empty string, or one of the strings “0” or “no” or “false”
+(checked without regard to the case of the letters),
+A records are sorted before AAAA records (inverting the default).
+.wen
 
 .option mx_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "required to exist"
@@ -19482,8 +19503,8 @@ whether obtained from an MX lookup or not.
 
 
 .section "How the options are used" "SECThowoptused"
-The options are a sequence of words; in practice no more than three are ever
-present. One of the words can be the name of a transport; this overrides the
+The options are a sequence of words, space-separated.
+One of the words can be the name of a transport; this overrides the
 &%transport%& option on the router for this particular routing rule only. The
 other words (if present) control randomization of the list of hosts on a
 per-rule basis, and how the IP addresses of the hosts are to be found when
@@ -19503,6 +19524,12 @@ also look in &_/etc/hosts_& or other sources of information.
 &%bydns%&: look up address records for the hosts directly in the DNS; fail if
 no address records are found. If there is a temporary DNS error (such as a
 timeout), delivery is deferred.
+.new
+.next
+&%ipv4_only%&: in direct DNS lookups, look up only A records.
+.next
+&%ipv4_prefer%&: in direct DNS lookups, sort A records before AAAA records.
+.wen
 .endlist
 
 For example:

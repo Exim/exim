@@ -3992,7 +3992,7 @@ retry_non_continued:
       /* Find by name if so configured, or if it's an IP address. We don't
       just copy the IP address, because we need the test-for-local to happen. */
 
-      flags = HOST_FIND_BY_A;
+      flags = HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
       if (ob->dns_qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
       if (ob->dns_search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 

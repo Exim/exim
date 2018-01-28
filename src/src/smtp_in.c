@@ -3522,7 +3522,7 @@ else
 
     HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
       sender_helo_name);
-    rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A,
+    rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A | HOST_FIND_BY_AAAA,
 			  NULL, NULL, NULL, &d, NULL, NULL);
     if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
       for (hh = &h; hh; hh = hh->next)
