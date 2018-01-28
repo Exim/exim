@@ -244,7 +244,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt:   flags: 0
 Delivery address list:
   2@b 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -427,7 +427,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt:   flags: 0
 Delivery address list:
   2@b 
 locking TESTSUITE/spool/db/retry.lockfile

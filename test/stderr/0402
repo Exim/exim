@@ -186,11 +186,11 @@ recipients_count=5
 **** SPOOL_IN - No additional fields
 **** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=6
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
 Delivery address list:
   CALLER@test.ex 
   usery@test.ex 

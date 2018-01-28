@@ -168,7 +168,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=159
-DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt:   flags: 0
 Delivery address list:
   userx@test.ex 
 locking TESTSUITE/spool/db/retry.lockfile
@@ -2151,614 +2151,614 @@ recipients_count=608
 **** SPOOL_IN - No additional fields
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=9
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
-DSN: set orcpt: NULL  flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0
 Delivery address list:
   sender@test.ex 
   sender@test.ex 
