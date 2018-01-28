@@ -58,7 +58,6 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   if (rr->type == T_TXT)
     {
     int rr_offset = 0;
-    int answer_offset = 0;
 
     /* Copy record content to the answer buffer */
 
@@ -74,7 +73,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       }
 
     /* check if this looks like a DKIM record */
-    if (strncmp(g->s, "v=", 2) != 0 || strncasecmp(g->s, "v=dkim", 6) == 0)
+    if (Ustrncmp(g->s, "v=", 2) != 0 || strncasecmp(CS g->s, "v=dkim", 6) == 0)
       {
       store_reset(g->s + g->ptr + 1);
       return string_from_gstring(g);
@@ -728,7 +727,7 @@ if (!ctx.sig)
   goto CLEANUP;
   }
 
-if (prefix && (pdkim_feed(&ctx, prefix, Ustrlen(prefix))) != PDKIM_OK)
+if (prefix && (pdkim_rc = pdkim_feed(&ctx, prefix, Ustrlen(prefix))) != PDKIM_OK)
   goto pk_bad;
 
 if (lseek(fd, off, SEEK_SET) < 0)

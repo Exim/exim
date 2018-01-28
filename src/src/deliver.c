@@ -6150,7 +6150,7 @@ if (process_recipients != RECIP_IGNORE)
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
       DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: %d\n",
-	new->dsn_orcpt, new->dsn_flags);
+	new->dsn_orcpt ? new->dsn_orcpt : US"", new->dsn_flags);
 
       switch (process_recipients)
         {
@@ -7219,11 +7219,12 @@ for (addr_dsntmp = addr_succeed; addr_dsntmp; addr_dsntmp = addr_dsntmp->next)
       "DSN: envid: %s  ret: %d\n"
       "DSN: Final recipient: %s\n"
       "DSN: Remote SMTP server supports DSN: %d\n",
-      addr_dsntmp->router->name,
+      addr_dsntmp->router ? addr_dsntmp->router->name : US"(unknown)",
       addr_dsntmp->address,
       sender_address,
-      addr_dsntmp->dsn_orcpt, addr_dsntmp->dsn_flags,
-      dsn_envid, dsn_ret,
+      addr_dsntmp->dsn_orcpt ? addr_dsntmp->dsn_orcpt : US"NULL",
+      addr_dsntmp->dsn_flags,
+      dsn_envid ? dsn_envid : US"NULL", dsn_ret,
       addr_dsntmp->address,
       addr_dsntmp->dsn_aware
       );
