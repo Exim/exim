@@ -5579,19 +5579,27 @@ Another two commented-out option settings follow:
 .cindex "port" "465 and 587"
 .cindex "port" "for message submission"
 .cindex "message" "submission, ports for"
-.cindex "ssmtp protocol"
+.cindex "submissions protocol"
 .cindex "smtps protocol"
+.cindex "ssmtp protocol"
+.cindex "SMTP" "submissions protocol"
 .cindex "SMTP" "ssmtp protocol"
 .cindex "SMTP" "smtps protocol"
 These options provide better support for roaming users who wish to use this
 server for message submission. They are not much use unless you have turned on
 TLS (as described in the previous paragraph) and authentication (about which
-more in section &<<SECTdefconfauth>>&). The usual SMTP port 25 is often blocked
-on end-user networks, so RFC 4409 specifies that message submission should use
-port 587 instead. However some software (notably Microsoft Outlook) cannot be
-configured to use port 587 correctly, so these settings also enable the
-non-standard &"smtps"& (aka &"ssmtp"&) port 465 (see section
-&<<SECTsupobssmt>>&).
+more in section &<<SECTdefconfauth>>&).
+Mail submission from mail clients (MUAs) should be separate from inbound mail
+to your domain (MX delivery) for various good reasons (eg, ability to impose
+much saner TLS protocol and ciphersuite requirements without unintended
+consequences).
+RFC 6409 (previously 4409) specifies use of port 587 for SMTP Submission,
+which uses STARTTLS, so this is the &"submission"& port.
+RFC 8314 specifies use of port 465 as the &"submissions"& protocol,
+which should be used in preference to 587.
+You should also consider deploying SRV records to help clients find
+these ports.
+Older names for &"submissions"& are &"smtps"& and &"ssmtp"&.
 
 Two more commented-out options settings follow:
 .code
@@ -13408,23 +13416,32 @@ value of &%daemon_smtp_ports%& is no longer relevant in this example.)
 
 
 
-.section "Support for the obsolete SSMTP (or SMTPS) protocol" "SECTsupobssmt"
+.section "Support for the submissions (aka SSMTP or SMTPS) protocol" "SECTsupobssmt"
+.cindex "submissions protocol"
 .cindex "ssmtp protocol"
 .cindex "smtps protocol"
 .cindex "SMTP" "ssmtp protocol"
 .cindex "SMTP" "smtps protocol"
-Exim supports the obsolete SSMTP protocol (also known as SMTPS) that was used
-before the STARTTLS command was standardized for SMTP. Some legacy clients
-still use this protocol. If the &%tls_on_connect_ports%& option is set to a
-list of port numbers or service names,
-connections to those ports must use SSMTP. The most
-common use of this option is expected to be
+Exim supports the use of TLS-on-connect, used by mail clients in the
+&"submissions"& protocol, historically also known as SMTPS or SSMTP.
+For some years, IETF Standards Track documents only blessed the
+STARTTLS-based Submission service (port 587) while common practice was to support
+the same feature set on port 465, but using TLS-on-connect.
+If your installation needs to provide service to mail clients
+(Mail User Agents, MUAs) then you should provide service on both the 587 and
+the 465 TCP ports.
+
+If the &%tls_on_connect_ports%& option is set to a list of port numbers or
+service names, connections to those ports must first establish TLS, before
+proceeding to the application layer use of the SMTP protocol.
+
+The common use of this option is expected to be
 .code
 tls_on_connect_ports = 465
 .endd
-because 465 is the usual port number used by the legacy clients. There is also
-a command line option &%-tls-on-connect%&, which forces all ports to behave in
-this way when a daemon is started.
+per RFC 8314.
+There is also a command line option &%-tls-on-connect%&, which forces all ports
+to behave in this way when a daemon is started.
 
 &*Warning*&: Setting &%tls_on_connect_ports%& does not of itself cause the
 daemon to listen on those ports. You must still specify them in
@@ -27084,22 +27101,36 @@ in order to get TLS to work.
 
 
 
-.section "Support for the legacy &""ssmtp""& (aka &""smtps""&) protocol" &&&
+.section "Support for the &""submissions""& (aka &""ssmtp""& and &""smtps""&) protocol" &&&
          "SECID284"
+.cindex "submissions protocol"
 .cindex "ssmtp protocol"
 .cindex "smtps protocol"
+.cindex "SMTP" "submissions protocol"
 .cindex "SMTP" "ssmtp protocol"
 .cindex "SMTP" "smtps protocol"
-Early implementations of encrypted SMTP used a different TCP port from normal
-SMTP, and expected an encryption negotiation to start immediately, instead of
-waiting for a STARTTLS command from the client using the standard SMTP
-port. The protocol was called &"ssmtp"& or &"smtps"&, and port 465 was
-allocated for this purpose.
+The history of port numbers for TLS in SMTP is a little messy and has been
+contentious.  As of RFC 8314, the common practice of using the historically
+allocated port 465 for "email submission but with TLS immediately upon connect
+instead of using STARTTLS" is officially blessed by the IETF, and recommended
+in preference to STARTTLS.
 
-This approach was abandoned when encrypted SMTP was standardized, but there are
-still some legacy clients that use it. Exim supports these clients by means of
-the &%tls_on_connect_ports%& global option. Its value must be a list of port
-numbers; the most common use is expected to be:
+The name originally assigned to the port was &"ssmtp"& or &"smtps"&, but as
+clarity emerged over the dual roles of SMTP, for MX delivery and Email
+Submission, nomenclature has shifted.  The modern name is now &"submissions"&.
+
+This approach was, for a while, officially abandoned when encrypted SMTP was
+standardized, but many clients kept using it, even as the TCP port number was
+reassigned for other use.
+Thus you may encounter guidance claiming that you shouldn't enable use of
+this port.
+In practice, a number of mail-clients have only supported submissions, not
+submission with STARTTLS upgrade.
+Ideally, offer both submission (587) and submissions (465) service.
+
+Exim supports TLS-on-connect by means of the &%tls_on_connect_ports%&
+global option. Its value must be a list of port numbers;
+the most common use is expected to be:
 .code
 tls_on_connect_ports = 465
 .endd
@@ -27111,7 +27142,7 @@ an extra port &-- rather, it specifies different behaviour on a port that is
 defined elsewhere.
 
 There is also a &%-tls-on-connect%& command line option. This overrides
-&%tls_on_connect_ports%&; it forces the legacy behaviour for all ports.
+&%tls_on_connect_ports%&; it forces the TLS-only behaviour for all ports.
 
 
 
@@ -28271,8 +28302,8 @@ acl_smtp_rcpt = ${if ={25}{$interface_port} \
                      {acl_check_rcpt} {acl_check_rcpt_submit} }
 .endd
 In the default configuration file there are some example settings for
-providing an RFC 4409 message submission service on port 587 and a
-non-standard &"smtps"& service on port 465. You can use a string
+providing an RFC 4409 message &"submission"& service on port 587 and
+an RFC 8314 &"submissions"& service on port 465. You can use a string
 expansion like this to choose an ACL for MUAs on these ports which is
 more appropriate for this purpose than the default ACL on port 25.
 
