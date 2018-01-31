@@ -75,11 +75,6 @@
 #define PDKIM_CANON_SIMPLE        0
 #define PDKIM_CANON_RELAXED       1
 
-/*XXX change to enums */
-#define PDKIM_HASH_SHA256         1
-
-#define PDKIM_KEYTYPE_RSA         0
-
 /* -------------------------------------------------------------------------- */
 /* Some required forward declarations, please ignore */
 typedef struct pdkim_stringlist pdkim_stringlist;
@@ -120,6 +115,21 @@ typedef struct pdkim_pubkey {
 } pdkim_pubkey;
 
 /* -------------------------------------------------------------------------- */
+/* Body-hash to be calculated */
+typedef struct pdkim_bodyhash {
+  struct pdkim_bodyhash *	next;
+  int				hashtype;
+  int 				canon_method;
+  long				bodylength;
+
+  hctx         			body_hash_ctx;
+  unsigned long			signed_body_bytes;	/* done so far */
+  int				num_buffered_blanklines;
+
+  blob				bh;			/* completed hash */
+} pdkim_bodyhash;
+
+/* -------------------------------------------------------------------------- */
 /* Signature as it appears in a DKIM-Signature header */
 typedef struct pdkim_signature {
   struct pdkim_signature * next;
@@ -129,7 +139,7 @@ typedef struct pdkim_signature {
   /* (v=) The version, as an integer. Currently, always "1" */
   int version;
 
-  int keytype;	/* PDKIM_KEYTYPE_RSA */
+  int keytype;	/* pdkim_keytypes index */
   int hashtype;	/* pdkim_hashes index */
 
   /* (c=x/) Header canonicalization method. Either PDKIM_CANON_SIMPLE
@@ -236,11 +246,9 @@ typedef struct pdkim_signature {
   /* Properties below this point are used internally only ------------- */
 
   /* Per-signature helper variables ----------------------------------- */
-  hctx         body_hash_ctx;
+  pdkim_bodyhash *calc_body_hash;	/* hash to be / being calculated */
 
-  unsigned long signed_body_bytes; /* How many body bytes we hashed     */
-  int num_buffered_blanklines;
-  pdkim_stringlist *headers; /* Raw headers included in the sig         */
+  pdkim_stringlist *headers;		/* Raw headers included in the sig */
 
   /* Signing specific ------------------------------------------------- */
   uschar * privkey;	     /* Private key                                 */
@@ -263,6 +271,9 @@ typedef struct pdkim_ctx {
 
   /* One (signing) or several chained (verification) signatures */
   pdkim_signature *sig;
+
+  /* One (signing) or several chained (verification) bodyhashes */
+  pdkim_bodyhash *bodyhash;
 
   /* Callback for dns/txt query method (verification only) */
   uschar * (*dns_txt_callback)(char *);
@@ -302,6 +313,8 @@ void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
                                long,
                                unsigned long,
                                unsigned long);
+
+pdkim_bodyhash *pdkim_set_bodyhash(pdkim_ctx *, pdkim_signature *);
 
 DLLEXPORT
 int        pdkim_feed         (pdkim_ctx *, uschar *, int);

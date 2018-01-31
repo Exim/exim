@@ -710,6 +710,9 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
 			pdkim_canon,
 			pdkim_canon, -1, 0, 0);
 
+    if (!pdkim_set_bodyhash(&ctx, sig))
+      goto bad;
+
     if (!ctx.sig)		/* link sig to context chain */
       ctx.sig = sig;
     else
