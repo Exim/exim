@@ -51,6 +51,9 @@ typedef struct {
     SHA_CTX      sha1;       /* SHA1 block                                */
     SHA256_CTX   sha2_256;   /* SHA256 or 224 block                       */
     SHA512_CTX   sha2_512;   /* SHA512 or 384 block                       */
+#ifdef EXIM_HAVE_SHA3
+    EVP_MD_CTX * mctx;	     /* SHA3 block				  */
+#endif
   } u;
 
 #elif defined(SHA_GNUTLS)

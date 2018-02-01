@@ -30,6 +30,9 @@ Version 4.91
  7. Options "ipv4_only" and "ipv4_prefer" on the dnslookup router and on
     routing rules in the manualroute router.
 
+ 8. Expansion item ${sha3:<string>} / ${sha3_<N>:<string>} now also supported
+    under OpenSSL version 1.1.1 or later.
+
 
 Version 4.90
 ------------

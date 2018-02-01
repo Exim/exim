@@ -10645,7 +10645,10 @@ the output length.  Values of 224, 256, 384 and 512 are accepted;
 with 256 being the default.
 
 The &%sha3%& expansion item is only supported if Exim has been
-compiled with GnuTLS 3.5.0 or later.
+compiled with GnuTLS 3.5.0 or later,
+.new
+or OpenSSL 1.1.1 or later.
+.wen
 
 
 .vitem &*${stat:*&<&'string'&>&*}*&

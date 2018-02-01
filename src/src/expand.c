@@ -6495,7 +6495,7 @@ while (*s != 0)
 	}
         continue;
 #else
-	expand_string_message = US"sha3 only supported with GnuTLS 3.5.0 +";
+	expand_string_message = US"sha3 only supported with GnuTLS 3.5.0 + or OpenSSL 1.1.1 +";
 	goto EXPAND_FAILED;
 #endif
 

@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2016 */
+/* Copyright (c) Jeremy Harris 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* SHA routine selection */
@@ -34,6 +34,10 @@
 
 # else
 #  define SHA_OPENSSL
+#  include <openssl/ssl.h>
+#  if OPENSSL_VERSION_NUMBER >= 0x10101000L
+#   define EXIM_HAVE_SHA3
+#  endif
 # endif
 
 #else
