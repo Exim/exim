@@ -1,0 +1,146 @@
+#!/usr/bin/perl
+
+use v5.10.1;
+use strict;
+use warnings;
+use feature 'say';
+use Getopt::Long;
+use File::Temp qw(tempfile);
+use Pod::Usage;
+
+my $BRANCH_PATTERN = qr/^
+    (?<base>(?<name>exim)-
+    (?<version>
+    (?<major>\d+)
+    _(?<minor>\d+)
+    )(?:_(?<security>\d+))?
+    )\+fixes/x;
+
+sub trim { return join '', shift =~ /^\s*(.*?)\s*$/; }
+
+my %o = (edit => 1, dotted => 1, force => 0, auto => 0);
+
+GetOptions(
+    \%o,
+    'edit!',
+    'dotted!',
+    'force!', 'auto!',
+    'help|h' => sub { pod2usage(-verbose => 1, -exit => 0) },
+    'man|m'  => sub {
+        pod2usage(
+            -verbose   => 2,
+            -exit      => 0,
+            -noperldoc => system('perldoc -V >/dev/null 2>&1')
+        );
+    },
+) or pod2usage;
+
+my $branch = trim `git rev-parse --abbrev-ref HEAD`;    # exim-4_90+fixes
+die "$0: Branch `$branch` does not match `$BRANCH_PATTERN`"
+  unless "$branch" =~ /$BRANCH_PATTERN/;
+
+my $name = $+{name};
+my $base = $+{base};    # exim-4_90 (branch base)
+
+my $release_legacy = $+{version} . ($+{security} // '_0');    # 4.90_0
+my $release_dotted = join '.', $+{major}, $+{minor}, $+{security} // 0; # 4.90.0
+
+my $distance = trim `git rev-list --count $base..`;
+
+my $micro_legacy = "${release_legacy}_$distance";    # 4_90_0_20
+my $micro_dotted = "${release_dotted}.$distance";    # 4.90.0.20
+
+my $tag = "$name-" . ($o{dotted} ? $micro_dotted : $micro_legacy);
+
+# my $commit = trim `git show --no-patch --pretty=format:%h`;
+
+my ($fh, $filename) = tempfile();
+print $fh <<XXX;
+Exim fixup release $micro_dotted
+# Enter a one line tag description. The above is the sensible default.
+XXX
+close $fh;
+
+system(
+      defined $ENV{VISUAL} ? $ENV{VISUAL}
+    : defined $ENV{EDITOR} ? $ENV{EDITOR}
+    :                        'vi' => $filename
+  ) == 0
+  or exit $?
+  if $o{edit};
+
+if (not $o{auto}) {
+    print "Commit tag `$tag` to local repository? [Y/n] ";
+    exit 0 unless <STDIN> =~ /^y(?:es)?|$/i;
+}
+
+system(
+    git => 'tag',
+    '--sign', ($o{force} ? '--force' : ()),
+    -a => $tag,
+    -F => $filename,
+  ) == 0
+  or exit $?;
+
+exec git => 'tag',
+  '--verify'    => $tag;
+
+__END__
+
+=head1 NAME
+
+ micro-release - tag the current commit on a +fixes branch
+
+=head1 SYNOPSIS
+
+ micro-release [--[no]-edit] [--[no]-dotted] [--force] [TAG]
+
+=head1 DESCRIPTION
+
+This tools is for internal use only. It tags the current commit
+of a F<+fixes> branch as a "micro release".
+
+The tag is taken from the command line parameter I<TAG> or is calculated from the
+branch name and the distance to the release tag. The branch name needs
+to match the branch tag.
+
+    branch tag:    exim-4_90
+    branch name:   exim-4_90+fixes
+    resulting tag: exim-4.90.0.<distance>   (dotted version)
+                   exim-4_90_0_<distance>   (classic version)
+
+    branch tag:    exim-4_90_1   (security release)
+    branch name:   exim-4_90_1+fixes
+    resulting tag: exim-4.90.1.<distance>   (dotted version)
+                   exim-4_90_1_<distance>   (classic version)
+
+The tag will be GPG signed.
+
+=head1 OPTIONS
+
+=over
+
+=item B<--[no]-edit>
+
+Spawn or do not spawn an editor. The default message will be "Exim
+<tagname> fixup release".
+
+=item B<--dotted>
+
+Generate a dotted tag name. (default: on)
+
+=item B<--force>
+
+(Re)Move an existing tag name. Use with care!
+
+=item B<-h>|B<--help>
+
+Short help.
+
+=item B<-m>|B<--man>
+
+The manual page.
+
+=back
+
+=cut
