@@ -9345,7 +9345,7 @@ item in a new list; if the condition is false, the item is discarded. The
 separator used for the output list is the same as the one used for the
 input, but a separator setting is not included in the output. For example:
 .code
-${filter{a:b:c}{!eq{$item}{b}}
+${filter{a:b:c}{!eq{$item}{b}}}
 .endd
 yields &`a:c`&. At the end of the expansion, the value of &$item$& is restored
 to what it was before. See also the &*map*& and &*reduce*& expansion items.
