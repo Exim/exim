@@ -11670,7 +11670,7 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
-.vitem &$dkim_verify_status$& &&&
+.vitem &$dkim_verify_status$&
 Results of DKIM verification.
 For details see section &<<SECDKIMVFY>>&.
 
