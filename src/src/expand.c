@@ -2498,9 +2498,12 @@ switch(cond_type)
         "after \"%s\"", name);
       return NULL;
       }
-    sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL,
-        honour_dollar, resetok);
-    if (sub[i] == NULL) return NULL;
+    if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL,
+        honour_dollar, resetok)))
+      return NULL;
+    DEBUG(D_expand) if (i == 1 && !sub2_honour_dollar && Ustrchr(sub[1], '$'))
+      debug_printf_indent("WARNING: the second arg is NOT expanded,"
+			" for security reasons\n");
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
     /* Convert to numerical if required; we know that the names of all the
@@ -5790,7 +5793,8 @@ while (*s != 0)
       if (*s++ != '}')
         {						/*{*/
         expand_string_message = string_sprintf("missing } at end of condition "
-          "or expression inside \"%s\"", name);
+          "or expression inside \"%s\"; could be an unquoted } in the content",
+	  name);
         goto EXPAND_FAILED;
         }
 
