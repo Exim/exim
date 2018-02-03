@@ -52,7 +52,11 @@ my $micro_dotted = "${release_dotted}.$distance";    # 4.90.0.20
 
 my $tag = "$name-" . ($o{dotted} ? $micro_dotted : $micro_legacy);
 
-# my $commit = trim `git show --no-patch --pretty=format:%h`;
+# check if the tag already exists
+if (not $o{force}) {
+    `git rev-parse --quiet --verify '$tag'`;         # ignore stdout
+    die "$0: tag '$tag' exists already\n" if $? == 0;
+}
 
 my ($fh, $filename) = tempfile();
 print $fh <<XXX;
@@ -66,12 +70,12 @@ system(
     : defined $ENV{EDITOR} ? $ENV{EDITOR}
     :                        'vi' => $filename
   ) == 0
-  or exit $?
+  or exit $? >> 8
   if $o{edit};
 
 if (not $o{auto}) {
     print "Commit tag `$tag` to local repository? [Y/n] ";
-    exit 0 unless <STDIN> =~ /^y(?:es)?|$/i;
+    exit 0 unless <STDIN> =~ /^(:?y(?:es)?|)$/i;
 }
 
 system(
@@ -80,29 +84,33 @@ system(
     -a => $tag,
     -F => $filename,
   ) == 0
-  or exit $?;
+  or exit $? >> 8;
 
-exec git => 'tag',
-  '--verify'    => $tag;
+system(
+    git        => 'tag',
+    '--verify' => $tag
+  ) == 0
+  or exit $? >> 8;
+
+say "\nDo not forget to `git push --follow-tags ...` now."
 
 __END__
 
 =head1 NAME
 
- micro-release - tag the current commit on a +fixes branch
+ tag-fixes-release - tag the current commit on a +fixes branch
 
 =head1 SYNOPSIS
 
- micro-release [--[no]-edit] [--[no]-dotted] [--force] [TAG]
+ tag-fixes-release [--[no]-edit] [--[no]-dotted] [--force]
 
 =head1 DESCRIPTION
 
-This tools is for internal use only. It tags the current commit
-of a F<+fixes> branch as a "micro release".
+This B<tag-fixes-release> tools is for internal use only. It tags the
+current commit of a F<+fixes> branch as a "micro release".
 
-The tag is taken from the command line parameter I<TAG> or is calculated from the
-branch name and the distance to the release tag. The branch name needs
-to match the branch tag.
+The tag is calculated from the branch name and the distance to the
+branch tag. The branch name needs to match the branch tag.
 
     branch tag:    exim-4_90
     branch name:   exim-4_90+fixes
