@@ -9345,7 +9345,7 @@ item in a new list; if the condition is false, the item is discarded. The
 separator used for the output list is the same as the one used for the
 input, but a separator setting is not included in the output. For example:
 .code
-${filter{a:b:c}{!eq{$item}{b}}
+${filter{a:b:c}{!eq{$item}{b}}}
 .endd
 yields &`a:c`&. At the end of the expansion, the value of &$item$& is restored
 to what it was before. See also the &*map*& and &*reduce*& expansion items.
@@ -11670,7 +11670,7 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
-.vitem &$dkim_verify_status$& &&&
+.vitem &$dkim_verify_status$&
 Results of DKIM verification.
 For details see section &<<SECDKIMVFY>>&.
 
@@ -16919,8 +16919,8 @@ and any external programs which are passed a reference to a message data file
 will need to be aware of the potential different format.
 
 Using any of the ACL conditions noted will negate the reception benefit
-(as a Unix-mbox-format file is contructed for them).
-The transimssion benefit is maintained.
+(as a Unix-mbox-format file is constructed for them).
+The transmission benefit is maintained.
 
 .option sqlite_lock_timeout main time 5s
 .cindex "sqlite lookup type" "lock timeout"
@@ -17147,7 +17147,7 @@ option in the relevant &(smtp)& transport.
 separator in the usual way to avoid confusion under IPv6.
 
 &*Note*&: Under current versions of OpenSSL, when a list of more than one
-file is used, the &$tls_in_ourcert$& veriable is unreliable.
+file is used, the &$tls_in_ourcert$& variable is unreliable.
 
 &*Note*&: OCSP stapling is not usable under OpenSSL
 when a list of more than one file is used.
@@ -24242,7 +24242,7 @@ as the initiator must present a cookie in the SYN segment.
 On (at least some) current Linux distributions the facility must be enabled
 in the kernel by the sysadmin before the support is usable.
 There is no option for control of the server side; if the system supports
-it it is always enebled.  Note that legthy operations in the connect ACL,
+it it is always enabled.  Note that lengthy operations in the connect ACL,
 such as DNSBL lookups, will still delay the emission of the SMTP banner.
 
 .option hosts_try_prdr smtp "host list&!!" *
@@ -27424,8 +27424,8 @@ tls_require_ciphers = ${if =={$received_port}{25}\
 When Exim has been built with TLS support, it advertises the availability of
 the STARTTLS command to client hosts that match &%tls_advertise_hosts%&,
 but not to any others. The default value of this option is *, which means
-that STARTTLS is alway advertised.  Set it to blank to never advertise;
-this is reasonble for systems that want to use TLS only as a client.
+that STARTTLS is always advertised.  Set it to blank to never advertise;
+this is reasonable for systems that want to use TLS only as a client.
 
 If STARTTLS is to be used you
 need to set some other options in order to make TLS available.
@@ -27858,7 +27858,7 @@ unencrypted data stream from and to the delivery processes.
 
 An older mode of operation can be enabled on a per-host basis by the
 &%hosts_noproxy_tls%& option on the &(smtp)& transport.  If the host matches
-this list the proxy process descibed above is not used; instead Exim
+this list the proxy process described above is not used; instead Exim
 shuts down an existing TLS session being run by the delivery process
 before passing the socket to a new process. The new process may then
 try to start a new TLS session, and if successful, may try to re-authenticate
@@ -31134,7 +31134,7 @@ This option applies to recipient callouts only. For example:
 .code
 require  verify = recipient/callout=use_sender,hold
 .endd
-It causes the connection to be helod open and used for any further recipients
+It causes the connection to be held open and used for any further recipients
 and for eventual delivery (should that be done quickly).
 Doing this saves on TCP and SMTP startup costs, and TLS costs also
 when that is used for the connections.
@@ -32363,7 +32363,7 @@ All parts contained within an attachment multipart are attachments.
 
 As an example, the following will ban &"HTML mail"& (including that sent with
 alternative plain text), while allowing HTML files to be attached. HTML
-coverletter mail attached to non-HMTL coverletter mail will also be allowed:
+coverletter mail attached to non-HTML coverletter mail will also be allowed:
 .code
 deny message = HTML mail is not accepted here
 !condition = $mime_is_rfc822
@@ -36334,7 +36334,7 @@ the &"=>"& line, tagged with S=.
 .new
 .cindex log "DKIM verification"
 .cindex DKIM "verification logging"
-&%dkim%&: For message acceptance log lines, when an DKIM signture in the header
+&%dkim%&: For message acceptance log lines, when an DKIM signature in the header
 verifies successfully a tag of DKIM is added, with one of the verified domains.
 .next
 .cindex log "DKIM verification"
@@ -36413,7 +36413,7 @@ connection is unexpectedly dropped.
 .next
 .cindex "log" "millisecond timestamps"
 .cindex millisecond logging
-.cindex timstamps "millisecond, in logs"
+.cindex timestamps "millisecond, in logs"
 &%millisec%&: Timestamps have a period and three decimal places of finer granularity
 appended to the seconds value.
 .next
@@ -36428,7 +36428,7 @@ followed by IP address in square brackets. You can disable this by turning
 off the &%outgoing_interface%& option.
 .next
 .cindex "log" "outgoing remote port"
-.cindex "port" "logging outgoint remote"
+.cindex "port" "logging outgoing remote"
 .cindex "TCP/IP" "logging outgoing remote port"
 &%outgoing_port%&: The remote port number is added to delivery log lines (those
 containing => tags) following the IP address.
@@ -38744,7 +38744,7 @@ whether or not each header is present in the message.
 The default list is available for the expansion in the macro
 "_DKIM_SIGN_HEADERS".
 
-If a name is repeated, multiple headers by that name (or the absence therof)
+If a name is repeated, multiple headers by that name (or the absence thereof)
 will be signed.  The textually later headers in the headers part of the
 message are signed first, if there are multiples.
 
@@ -38752,7 +38752,7 @@ A name can be prefixed with either an '=' or a '+' character.
 If an '=' prefix is used, all headers that are present with this name
 will be signed.
 If a '+' prefix if used, all headers that are present with this name
-will be signed, and one signtature added for a missing header with the
+will be signed, and one signature added for a missing header with the
 name will be appended.
 
 
@@ -39424,7 +39424,7 @@ the "headers charset" command (in a filter file)
 or &%headers_charset%& main configuration option (otherwise),
 to the
 modified UTF-7 encoding specified by RFC 2060,
-with the following exception: All occurences of <sep>
+with the following exception: All occurrences of <sep>
 (which has to be a single character)
 are replaced with periods ("."), and all periods and slashes that are not
 <sep> and are not in the <specials> string are BASE64 encoded.
@@ -39510,7 +39510,7 @@ The second column in the table above describes whether the event fires
 before or after the action is associates with.  Those which fire before
 can be used to affect that action (more on this below).
 
-The third column in the table above says what section of the configumration
+The third column in the table above says what section of the configuration
 should define the event action.
 
 An additional variable, &$event_data$&, is filled with information varying
