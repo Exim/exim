@@ -5,8 +5,8 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
-Exim version 4.91
------------------
+Since Exim version 4.90
+-----------------------
 
 JH/01 Replace the store_release() internal interface with store_newblock(),
       which internalises the check required to safely use the old one, plus
@@ -81,6 +81,8 @@ JH/15 Relax results from ACL control request to enable cutthrough, in
       unsupported situations, from error to silently (except under debug)
       ignoring.  This covers use with PRDR, frozen messages, queue-only and
       fake-reject.
+
+HS/01 Fix Buffer overflow in base64d() (CVE-2018-6789)
 
 JH/16 Fix bug in DKIM verify: a buffer overflow could corrupt the malloc
       metadata, resulting in a crash in free().
