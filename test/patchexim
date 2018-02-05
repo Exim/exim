@@ -22,7 +22,7 @@ while(<IN>)
   s{
     (\d+\.\d+                         # major.minor
     (?:[_.]\d+)?                      # optional patchlevel
-    (?:[_-]RC\d+|[_-]?dev(?:start)?)? # optional RC or dev(start)
+    (?:\.\d+|[_-]RC\d+|[_-]?dev(?:start)?)? # optional microrelease, or RC, or dev(start)
     (?:(?:[_-]\d+)?                   # git tag distance
        [-_][[:xdigit:]]+)?            # git id
     (?:[-_]XX)?\0                     # git dirty bit
