@@ -5,8 +5,8 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
-Since Exim version 4.90
------------------
+Exim version 4.90.1
+-------------------
 
 JH/03 Fix pgsql lookup for multiple result-tuples with a single column.
       Previously only the last row was returned.
@@ -57,6 +57,8 @@ JH/14 Bug 2174: A timeout on connect for a callout was also erroneously seen as
       initiating connection being dropped.  This mattered most when the callout
       was marked defer_ok.  Fix to keep the two timeout-detection methods
       separate.
+
+HS/01 Fix Buffer overflow in base64d() (CVE-2018-6789)
 
 JH/16 Fix bug in DKIM verify: a buffer overflow could corrupt the malloc
       metadata, resulting in a crash in free().

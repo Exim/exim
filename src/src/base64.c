@@ -152,10 +152,14 @@ static uschar dec64table[] = {
 int
 b64decode(const uschar *code, uschar **ptr)
 {
-int x, y;
-uschar *result = store_get(3*(Ustrlen(code)/4) + 1);
 
-*ptr = result;
+int x, y;
+uschar *result;
+
+{
+  int l = Ustrlen(code);
+  *ptr = result = store_get(1 + l/4 * 3 + l%4);
+}
 
 /* Each cycle of the loop handles a quantum of 4 input bytes. For the last
 quantum this may decode to 1, 2, or 3 output bytes. */
