@@ -10,6 +10,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 signer: test.ex bits: 1024
 1999-03-02 09:44:33 10HmaZ-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/simple a=rsa-sha1 b=1024 [verification succeeded]
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 PDKIM: d=test.ex s=sel_bad [failed key import]
 1999-03-02 09:44:33 10HmbA-0005vi-00 signer: test.ex bits: 1024
 1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: d=test.ex s=sel_bad c=relaxed/relaxed a=rsa-sha1 b=1024 [invalid - syntax error in public key record]
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=564CFC9B.1040905@yahoo.com

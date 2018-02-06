@@ -1194,6 +1194,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # openssl version variances
     s/(TLS error on connection [^:]*: error:)[0-9A-F]{8}(:system library):(?:fopen|func\(4095\)):(No such file or directory)$/$1xxxxxxxx$2:fopen:$3/;
     s/(DANE attempt failed.*error:)[0-9A-F]{8}(:SSL routines:)(ssl3_get_server_certificate|tls_process_server_certificate|CONNECT_CR_CERT)(?=:certificate verify failed$)/$1xxxxxxxx$2ssl3_get_server_certificate/;
+    s/(DKIM: validation error: )error:[0-9A-F]{8}:rsa routines:int_rsa_verify:bad signature$/$1Public key signature verification has failed./;
     }
 
   # ======== All files other than stderr ========

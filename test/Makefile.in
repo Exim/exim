@@ -8,6 +8,7 @@ CFLAGS=@CFLAGS@ @BIND_8_COMPAT@ @DEFS@
 LDFLAGS=@LDFLAGS@
 CLIENT_SSL=@CLIENT_SSL@
 CLIENT_GNUTLS=@CLIENT_GNUTLS@
+B64_GNUTLS=@B64_GNUTLS@
 LOADED=@LOADED@
 LOADED_OPT=@LOADED_OPT@
 LIBS=@LIBS@
@@ -18,7 +19,8 @@ SRC = @srcdir@/src
 
 BINARIES =	bin/cf bin/client $(CLIENT_SSL) $(CLIENT_GNUTLS) \
                 bin/checkaccess bin/fakens bin/fd bin/iefbr14 $(LOADED) \
-                bin/mtpscript bin/server bin/showids bin/locate
+                bin/mtpscript bin/server bin/showids bin/locate \
+		$(B64_GNUTLS)
 
 # List of targets
 
@@ -84,6 +86,10 @@ bin/showids:    $(SRC)/showids.c Makefile
 bin/locate:     $(SRC)/locate.sh Makefile
 		cp $(SRC)/locate.pl bin/locate
 		chmod 0755 bin/locate
+
+bin/ed25519_privkey_pem_to_pubkey_raw_b64:     $(SRC)/ed25519_privkey_pem_to_pubkey_raw_b64.c Makefile
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o bin/ed25519_privkey_pem_to_pubkey_raw_b64 \
+			$(SRC)/ed25519_privkey_pem_to_pubkey_raw_b64.c  -lgnutls -lgcrypt $(LIBS)
 
 clean:;         rm -rf $(BINARIES) bin.sys
 

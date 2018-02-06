@@ -227,6 +227,7 @@ end of inline ACL: ACCEPT
  	for userx@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+PDKIM: no signatures
  ┌considering: ${tod_full}
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -441,6 +442,7 @@ end of inline ACL: ACCEPT
  	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+PDKIM: no signatures
  ┌considering: ${tod_full}
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
@@ -655,6 +657,7 @@ end of inline ACL: ACCEPT
  	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
+PDKIM: no signatures
  ┌considering: ${tod_full}
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000

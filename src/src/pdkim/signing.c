@@ -20,10 +20,41 @@
 
 /******************************************************************************/
 #ifdef SIGN_GNUTLS
+# define EXIM_GNUTLS_LIBRARY_LOG_LEVEL 3
+
+
+/* Logging function which can be registered with
+ *   gnutls_global_set_log_function()
+ *   gnutls_global_set_log_level() 0..9
+ */
+#if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
+static void
+exim_gnutls_logger_cb(int level, const char *message)
+{
+size_t len = strlen(message);
+if (len < 1)
+  {
+  DEBUG(D_tls) debug_printf("GnuTLS<%d> empty debug message\n", level);
+  return;
+  }
+DEBUG(D_tls) debug_printf("GnuTLS<%d>: %s%s", level, message,
+    message[len-1] == '\n' ? "" : "\n");
+}
+#endif
+
+
 
 void
 exim_dkim_init(void)
 {
+#if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
+DEBUG(D_tls)
+  {
+  gnutls_global_set_log_function(exim_gnutls_logger_cb);
+  /* arbitrarily chosen level; bump upto 9 for more */
+  gnutls_global_set_log_level(EXIM_GNUTLS_LIBRARY_LOG_LEVEL);
+  }
+#endif
 }
 
 
@@ -42,17 +73,27 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_dkim_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
 {
-gnutls_datum_t k;
+gnutls_datum_t k = { .data = privkey_pem, .size = Ustrlen(privkey_pem) };
+gnutls_x509_privkey_t x509_key;
 int rc;
 
-k.data = privkey_pem;
-k.size = strlen(privkey_pem);
-
-if (  (rc = gnutls_x509_privkey_init(&sign_ctx->key)) != GNUTLS_E_SUCCESS
-   || (rc = gnutls_x509_privkey_import(sign_ctx->key, &k,
-	  GNUTLS_X509_FMT_PEM)) != GNUTLS_E_SUCCESS
+if (  (rc = gnutls_x509_privkey_init(&x509_key))
+   || (rc = gnutls_x509_privkey_import(x509_key, &k, GNUTLS_X509_FMT_PEM))
+   || (rc = gnutls_privkey_init(&sign_ctx->key))
+   || (rc = gnutls_privkey_import_x509(sign_ctx->key, x509_key, 0))
    )
-  return gnutls_strerror(rc);
+  return CUS gnutls_strerror(rc);
+
+switch (rc = gnutls_privkey_get_pk_algorithm(sign_ctx->key, NULL))
+  {
+  case GNUTLS_PK_RSA:		sign_ctx->keytype = KEYTYPE_RSA;     break;
+#ifdef SIGN_HAVE_ED25519
+  case GNUTLS_PK_EDDSA_ED25519:	sign_ctx->keytype = KEYTYPE_ED25519; break;
+#endif
+  default: return rc < 0
+    ? CUS gnutls_strerror(rc)
+    : string_sprintf("Unhandled key type: %d '%s'", rc, gnutls_pk_get_name(rc));
+  }
 
 return NULL;
 }
@@ -60,20 +101,17 @@ return NULL;
 
 
 /* allocate mem for signature (when signing) */
-/* sign data (gnutls_only)
-OR
-sign hash.
+/* hash & sign data.   No way to do incremental.
 
 Return: NULL for success, or an error string */
 
 const uschar *
 exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
 {
+gnutls_datum_t k_data = { .data = data->data, .size = data->len };
 gnutls_digest_algorithm_t dig;
-gnutls_datum_t k;
-size_t sigsize = 0;
+gnutls_datum_t k_sig;
 int rc;
-const uschar * ret = NULL;
 
 switch (hash)
   {
@@ -83,75 +121,87 @@ switch (hash)
   default:		return US"nonhandled hash type";
   }
 
-/* Allocate mem for signature */
-k.data = data->data;
-k.size = data->len;
-(void) gnutls_x509_privkey_sign_data(sign_ctx->key, dig,
-  0, &k, NULL, &sigsize);
+if ((rc = gnutls_privkey_sign_data(sign_ctx->key, dig, 0, &k_data, &k_sig)))
+  return CUS gnutls_strerror(rc);
 
-sig->data = store_get(sigsize);
-sig->len = sigsize;
+/* Don't care about deinit for the key; shortlived process */
 
-/* Do signing */
-if ((rc = gnutls_x509_privkey_sign_data(sign_ctx->key, dig,
-	    0, &k, sig->data, &sigsize)) != GNUTLS_E_SUCCESS
-   )
-  ret = gnutls_strerror(rc);
-
-gnutls_x509_privkey_deinit(sign_ctx->key);
-return ret;
+sig->data = k_sig.data;
+sig->len = k_sig.size;
+return NULL;
 }
 
 
 
-/* import public key (from DER in memory)
+/* import public key (from blob in memory)
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
+exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
 {
 gnutls_datum_t k;
 int rc;
 const uschar * ret = NULL;
 
 gnutls_pubkey_init(&verify_ctx->key);
+k.data = pubkey->data;
+k.size = pubkey->len;
 
-k.data = pubkey_der->data;
-k.size = pubkey_der->len;
-
-if ((rc = gnutls_pubkey_import(verify_ctx->key, &k, GNUTLS_X509_FMT_DER))
-       != GNUTLS_E_SUCCESS)
-  ret = gnutls_strerror(rc);
+switch(fmt)
+  {
+  case KEYFMT_DER:
+    if ((rc = gnutls_pubkey_import(verify_ctx->key, &k, GNUTLS_X509_FMT_DER)))
+      ret = gnutls_strerror(rc);
+    break;
+#ifdef SIGN_HAVE_ED25519
+  case KEYFMT_ED25519_BARE:
+    if ((rc = gnutls_pubkey_import_ecc_raw(verify_ctx->key,
+					  GNUTLS_ECC_CURVE_ED25519, &k, NULL)))
+      ret = gnutls_strerror(rc);
+    break;
+#endif
+  default:
+    ret = US"pubkey format not handled";
+    break;
+  }
 return ret;
 }
 
 
-/* verify signature (of hash)  (given pubkey & alleged sig)
+/* verify signature (of hash if RSA sig, of data if EC sig.  No way to do incremental)
+(given pubkey & alleged sig)
 Return: NULL for success, or an error string */
 
 const uschar *
 exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
 {
-gnutls_sign_algorithm_t algo;
-gnutls_datum_t k, s;
+gnutls_datum_t k = { .data = data_hash->data, .size = data_hash->len };
+gnutls_datum_t s = { .data = sig->data,       .size = sig->len };
 int rc;
 const uschar * ret = NULL;
 
-/*XXX needs extension for non-rsa */
-switch (hash)
+#ifdef SIGN_HAVE_ED25519
+if (verify_ctx->keytype == KEYTYPE_ED25519)
   {
-  case HASH_SHA1:	algo = GNUTLS_SIGN_RSA_SHA1;   break;
-  case HASH_SHA2_256:	algo = GNUTLS_SIGN_RSA_SHA256; break;
-  case HASH_SHA2_512:	algo = GNUTLS_SIGN_RSA_SHA512; break;
-  default:		return US"nonhandled hash type";
+  if ((rc = gnutls_pubkey_verify_data2(verify_ctx->key,
+				      GNUTLS_SIGN_EDDSA_ED25519, 0, &k, &s)) < 0)
+    ret = gnutls_strerror(rc);
   }
+else
+#endif
+  {
+  gnutls_sign_algorithm_t algo;
+  switch (hash)
+    {
+    case HASH_SHA1:	algo = GNUTLS_SIGN_RSA_SHA1;   break;
+    case HASH_SHA2_256:	algo = GNUTLS_SIGN_RSA_SHA256; break;
+    case HASH_SHA2_512:	algo = GNUTLS_SIGN_RSA_SHA512; break;
+    default:		return US"nonhandled hash type";
+    }
 
-k.data = data_hash->data;
-k.size = data_hash->len;
-s.data = sig->data;
-s.size = sig->len;
-if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo, 0, &k, &s)) < 0)
-  ret = gnutls_strerror(rc);
+  if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo, 0, &k, &s)) < 0)
+    ret = gnutls_strerror(rc);
+  }
 
 gnutls_pubkey_deinit(verify_ctx->key);
 return ret;
@@ -177,8 +227,8 @@ uschar tag_class;
 int taglen;
 long tag, len;
 
-/* debug_printf_indent("as_tag: %02x %02x %02x %02x\n",
-	der->data[0], der->data[1], der->data[2], der->data[3]); */
+debug_printf_indent("as_tag: %02x %02x %02x %02x\n",
+	der->data[0], der->data[1], der->data[2], der->data[3]);
 
 if ((rc = asn1_get_tag_der(der->data++, der->len--, &tag_class, &taglen, &tag))
     != ASN1_SUCCESS)
@@ -207,6 +257,8 @@ as_mpi(blob * der, gcry_mpi_t * mpi)
 long alen;
 int rc;
 gcry_error_t gerr;
+
+debug_printf_indent("%s\n", __FUNCTION__);
 
 /* integer; move past the header */
 if ((rc = as_tag(der, 0, ASN1_TAG_INTEGER, &alen)) != ASN1_SUCCESS)
@@ -274,6 +326,7 @@ return g;	/*dummy*/
 
 
 /* import private key from PEM string in memory.
+Only handles RSA keys.
 Return: NULL for success, or an error string */
 
 const uschar *
@@ -285,7 +338,15 @@ long alen;
 int rc;
 
 /*XXX will need extension to _spot_ as well as handle a
-non-RSA key?  I think... */
+non-RSA key?  I think...
+So... this is not a PrivateKeyInfo - which would have a field
+identifying the keytype - PrivateKeyAlgorithmIdentifier -
+but a plain RSAPrivateKey (wrapped in PEM-headers.  Can we
+use those as a type tag?  What forms are there?  "BEGIN EC PRIVATE KEY" (cf. ec(1ssl))
+
+How does OpenSSL PEM_read_bio_PrivateKey() deal with it?
+gnutls_x509_privkey_import() ?
+*/
 
 /*
  *  RSAPrivateKey ::= SEQUENCE
@@ -299,6 +360,31 @@ non-RSA key?  I think... */
  *      exponent2         INTEGER,  -- d mod (q-1)
  *      coefficient       INTEGER,  -- (inverse of q) mod p
  *      otherPrimeInfos   OtherPrimeInfos OPTIONAL
+
+ * ECPrivateKey ::= SEQUENCE {
+ *     version        INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+ *     privateKey     OCTET STRING,
+ *     parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+ *     publicKey  [1] BIT STRING OPTIONAL
+ *   }
+ * Hmm, only 1 useful item, and not even an integer?  Wonder how we might use it...
+
+- actually, gnutls_x509_privkey_import() appears to require a curve name parameter
+	value for that is an OID? a local-only integer (it's an enum in GnuTLS)?
+
+
+Useful cmds:
+  ssh-keygen -t ecdsa -f foo.privkey
+  ssh-keygen -t ecdsa -b384 -f foo.privkey
+  ssh-keygen -t ecdsa -b521 -f foo.privkey
+  ssh-keygen -t ed25519 -f foo.privkey
+
+  < foo openssl pkcs8 -in /dev/stdin -inform PEM -nocrypt -topk8 -outform DER | od -x
+
+  openssl asn1parse -in foo -inform PEM -dump
+  openssl asn1parse -in foo -inform PEM -dump -stroffset 24    (??)
+(not good for ed25519)
+
  */
  
 if (  !(s1 = Ustrstr(CS privkey_pem, "-----BEGIN RSA PRIVATE KEY-----"))
@@ -357,6 +443,8 @@ DEBUG(D_acl) debug_printf_indent("rsa_signing_init:\n");
   debug_printf_indent(" QP: %s\n", s);
   }
 #endif
+
+sign_ctx->keytype = KEYTYPE_RSA;
 return NULL;
 
 asn_err: return US asn1_strerror(rc);
@@ -365,9 +453,7 @@ asn_err: return US asn1_strerror(rc);
 
 
 /* allocate mem for signature (when signing) */
-/* sign data (gnutls_only)
-OR
-sign hash.
+/* sign already-hashed data.
 
 Return: NULL for success, or an error string */
 
@@ -443,11 +529,11 @@ return NULL;
 }
 
 
-/* import public key (from DER in memory)
+/* import public key (from blob in memory)
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
+exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
 {
 /*
 in code sequence per b81207d2bfa92 rsa_parse_public_key() and asn1_get_mpi()
@@ -459,6 +545,8 @@ int rc;
 uschar * errstr;
 gcry_error_t gerr;
 uschar * stage = US"S1";
+
+if (fmt != KEYFMT_DER) return US"pubkey format not handled";
 
 /*
 sequence
@@ -476,33 +564,33 @@ openssl rsa -in aux-fixed/dkim/dkim.private -pubout | openssl asn1parse -dump -o
 */
 
 /* sequence; just move past the header */
-if ((rc = as_tag(pubkey_der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
+if ((rc = as_tag(pubkey, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
    != ASN1_SUCCESS) goto asn_err;
 
 /* sequence; skip the entire thing */
 DEBUG(D_acl) stage = US"S2";
-if ((rc = as_tag(pubkey_der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, &alen))
+if ((rc = as_tag(pubkey, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, &alen))
    != ASN1_SUCCESS) goto asn_err;
-pubkey_der->data += alen; pubkey_der->len -= alen;
+pubkey->data += alen; pubkey->len -= alen;
 
 
 /* bitstring: limit range to size of bitstring;
 move over header + content wrapper */
 DEBUG(D_acl) stage = US"BS";
-if ((rc = as_tag(pubkey_der, 0, ASN1_TAG_BIT_STRING, &alen)) != ASN1_SUCCESS)
+if ((rc = as_tag(pubkey, 0, ASN1_TAG_BIT_STRING, &alen)) != ASN1_SUCCESS)
   goto asn_err;
-pubkey_der->len = alen;
-pubkey_der->data++; pubkey_der->len--;
+pubkey->len = alen;
+pubkey->data++; pubkey->len--;
 
 /* sequence; just move past the header */
 DEBUG(D_acl) stage = US"S3";
-if ((rc = as_tag(pubkey_der, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
+if ((rc = as_tag(pubkey, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
    != ASN1_SUCCESS) goto asn_err;
 
 /* read two integers */
 DEBUG(D_acl) stage = US"MPI";
-if (  (errstr = as_mpi(pubkey_der, &verify_ctx->n))
-   || (errstr = as_mpi(pubkey_der, &verify_ctx->e))
+if (  (errstr = as_mpi(pubkey, &verify_ctx->n))
+   || (errstr = as_mpi(pubkey, &verify_ctx->e))
    )
   return errstr;
 
@@ -525,7 +613,9 @@ DEBUG(D_acl) return string_sprintf("%s: %s", stage, asn1_strerror(rc));
 }
 
 
-/* verify signature (of hash)  (given pubkey & alleged sig)
+/* verify signature (of hash)
+XXX though we appear to be doing a hash, too!
+(given pubkey & alleged sig)
 Return: NULL for success, or an error string */
 
 const uschar *
@@ -589,11 +679,12 @@ ERR_load_crypto_strings();
 }
 
 
-/* accumulate data (gnutls-only) */
+/* accumulate data (was gnutls-onl but now needed for OpenSSL non-EC too
+because now using hash-and-sign interface) */
 gstring *
 exim_dkim_data_append(gstring * g, uschar * s)
 {
-return g;	/*dummy*/
+return string_cat(g, s);
 }
 
 
@@ -607,15 +698,21 @@ BIO * bp = BIO_new_mem_buf(privkey_pem, -1);
 
 if (!(sign_ctx->key = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL)))
   return US ERR_error_string(ERR_get_error(), NULL);
+
+sign_ctx->keytype =
+#ifdef SIGN_HAVE_ED25519
+	EVP_PKEY_type(EVP_PKEY_id(sign_ctx->key)) == EVP_PKEY_EC
+	  ? KEYTYPE_ED25519 : KEYTYPE_RSA;
+#else
+	KEYTYPE_RSA;
+#endif
 return NULL;
 }
 
 
 
 /* allocate mem for signature (when signing) */
-/* sign data (gnutls_only)
-OR
-sign hash.
+/* hash & sign data.  Could be incremental
 
 Return: NULL for success with the signaature in the sig blob, or an error string */
 
@@ -623,7 +720,7 @@ const uschar *
 exim_dkim_sign(es_ctx * sign_ctx, hashmethod hash, blob * data, blob * sig)
 {
 const EVP_MD * md;
-EVP_PKEY_CTX * ctx;
+EVP_MD_CTX * ctx;
 size_t siglen;
 
 switch (hash)
@@ -634,56 +731,98 @@ switch (hash)
   default:		return US"nonhandled hash type";
   }
 
-if (  (ctx = EVP_PKEY_CTX_new(sign_ctx->key, NULL))
-   && EVP_PKEY_sign_init(ctx) > 0
-   && EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0
-   && EVP_PKEY_CTX_set_signature_md(ctx, md) > 0
-   && EVP_PKEY_sign(ctx, NULL, &siglen, data->data, data->len) > 0
+/* Create the Message Digest Context */
+/*XXX renamed to EVP_MD_CTX_new() in 1.1.0 */
+if(  (ctx = EVP_MD_CTX_create())
+
+/* Initialise the DigestSign operation */
+  && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
+ 
+ /* Call update with the message */
+   && EVP_DigestSignUpdate(ctx, data->data, data->len) > 0
+ 
+ /* Finalise the DigestSign operation */
+ /* First call EVP_DigestSignFinal with a NULL sig parameter to obtain the length of the
+  * signature. Length is returned in slen */
+   && EVP_DigestSignFinal(ctx, NULL, &siglen) > 0
+
+ /* Allocate memory for the signature based on size in slen */
+   && (sig->data = store_get(siglen))
+
+ /* Obtain the signature (slen could change here!) */
+   && EVP_DigestSignFinal(ctx, sig->data, &siglen) > 0
    )
   {
-  /* Allocate mem for signature */
-  sig->data = store_get(siglen);
-
-  if (EVP_PKEY_sign(ctx, sig->data, &siglen, data->data, data->len) > 0)
-    {
-    EVP_PKEY_CTX_free(ctx);
-    sig->len = siglen;
-    return NULL;
-    }
+  EVP_MD_CTX_destroy(ctx);
+  sig->len = siglen;
+  return NULL;
   }
 
-if (ctx) EVP_PKEY_CTX_free(ctx);
+if (ctx) EVP_MD_CTX_destroy(ctx);
 return US ERR_error_string(ERR_get_error(), NULL);
 }
 
 
 
-/* import public key (from DER in memory)
+/* import public key (from blob in memory)
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey_der, ev_ctx * verify_ctx)
+exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
 {
-const uschar * s = pubkey_der->data;
+const uschar * s = pubkey->data;
+uschar * ret = NULL;
 
-/*XXX hmm, we never free this */
+if (fmt != KEYFMT_DER) return US"pubkey format not handled";
+switch(fmt)
+  {
+  case KEYFMT_DER:
+    /*XXX ok, this fails for EC:
+    error:0609E09C:digital envelope routines:pkey_set_type:unsupported algorithm
+    */
 
-if ((verify_ctx->key = d2i_PUBKEY(NULL, &s, pubkey_der->len)))
-  return NULL;
-return US ERR_error_string(ERR_get_error(), NULL);
+    /*XXX hmm, we never free this */
+    if (!(verify_ctx->key = d2i_PUBKEY(NULL, &s, pubkey->len)))
+      ret = US ERR_error_string(ERR_get_error(), NULL);
+    break;
+#ifdef SIGN_HAVE_ED25519
+  case KEYFMT_ED25519_BARE:
+    {
+    BIGNUM * x;
+    EC_KEY * eck;
+    if (  !(x = BN_bin2bn(s, pubkey->len, NULL))
+       || !(eck = EC_KEY_new_by_curve_name(NID_ED25519))
+       || !EC_KEY_set_public_key_affine_coordinates(eck, x, NULL)
+       || !(verify_ctx->key = EVP_PKEY_new())
+       || !EVP_PKEY_assign_EC_KEY(verify_ctx->key, eck)
+       )
+      ret = US ERR_error_string(ERR_get_error(), NULL);
+    }
+    break;
+#endif
+  default:
+    ret = US"pubkey format not handled";
+    break;
+  }
+
+return ret;
 }
 
 
 
 
-/* verify signature (of hash)  (given pubkey & alleged sig)
+/* verify signature (of hash)
+(pre-EC coding; of data if "notyet" code, The latter could be incremental)
+(given pubkey & alleged sig)
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data_hash, blob * sig)
+exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data, blob * sig)
 {
 const EVP_MD * md;
-EVP_PKEY_CTX * ctx;
+
+/*XXX OpenSSL does not seem to have Ed25519 support yet. Reportedly BoringSSL does,
+but that's a nonstable API and not recommended (by its owner, Google) for external use. */
 
 switch (hash)
   {
@@ -693,17 +832,50 @@ switch (hash)
   default:		return US"nonhandled hash type";
   }
 
-if (  (ctx = EVP_PKEY_CTX_new(verify_ctx->key, NULL))
-   && EVP_PKEY_verify_init(ctx) > 0
-   && EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0
-   && EVP_PKEY_CTX_set_signature_md(ctx, md) > 0
-   && EVP_PKEY_verify(ctx, sig->data, sig->len,
-	data_hash->data, data_hash->len) == 1
-   )
-  { EVP_PKEY_CTX_free(ctx); return NULL; }
+#ifdef notyet_SIGN_HAVE_ED25519
+  {
+  EVP_MD_CTX * ctx;
 
-if (ctx) EVP_PKEY_CTX_free(ctx);
-return US ERR_error_string(ERR_get_error(), NULL);
+  /*XXX renamed to EVP_MD_CTX_new() in 1.1.0 */
+  if (
+        (ctx = EVP_MD_CTX_create())
+
+  /* Initialize `key` with a public key */
+     && EVP_DigestVerifyInit(ctx, NULL, md, NULL, verify_ctx->key) > 0
+
+  /* add data to be hashed (call multiple times if needed) */
+
+     && EVP_DigestVerifyUpdate(ctx, data->data, data->len) > 0
+
+  /* finish off the hash and check the offered signature */
+
+     && EVP_DigestVerifyFinal(ctx, sig->data, sig->len) > 0
+     )
+    {
+    EVP_MD_CTX_destroy(ctx);	/* renamed to _free in 1.1.0 */
+    return NULL;
+    }
+
+  if (ctx) EVP_MD_CTX_free(ctx);
+  return US ERR_error_string(ERR_get_error(), NULL);
+  }
+#else
+  {
+  EVP_PKEY_CTX * ctx;
+
+  if (  (ctx = EVP_PKEY_CTX_new(verify_ctx->key, NULL))
+     && EVP_PKEY_verify_init(ctx) > 0
+     && EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0
+     && EVP_PKEY_CTX_set_signature_md(ctx, md) > 0
+     && EVP_PKEY_verify(ctx, sig->data, sig->len,
+	  data->data, data->len) == 1
+     )
+    { EVP_PKEY_CTX_free(ctx); return NULL; }
+
+  if (ctx) EVP_PKEY_CTX_free(ctx);
+  return US ERR_error_string(ERR_get_error(), NULL);
+  }
+#endif
 }
 
 

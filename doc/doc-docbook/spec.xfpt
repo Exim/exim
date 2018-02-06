@@ -38594,7 +38594,7 @@ There is no dot-stuffing (and no dot-termination).
 DKIM is a mechanism by which messages sent by some entity can be provably
 linked to a domain which that entity controls.  It permits reputation to
 be tracked on a per-domain basis, rather than merely upon source IP address.
-DKIM is documented in RFC 4871.
+DKIM is documented in RFC 6376.
 
 .new
 As DKIM relies on the message being unchanged in transit, messages handled
@@ -38656,6 +38656,12 @@ rsa-sha1 MUST NOT be used for signing or verifying.
 Signers MUST use RSA keys of at least 1024 bits for all keys.
 Signers SHOULD use RSA keys of at least 2048 bits.
 .endd
+
+Note also that the key content (the 'p=' field)
+in the DNS record is different between RSA and EC keys;
+for the former it is the base64 of the ASN.1 for the RSA public key
+(equivalent to the private-key .pem with the header/trailer stripped)
+but for EC keys it is the base64 of the pure key; no ASN.1 wrapping.
 .wen
 .wen
 
@@ -38685,10 +38691,14 @@ You can use the &%$dkim_domain%& and
 &%$dkim_selector%& expansion variables to determine the private key to use.
 The result can either
 .ilist
-be a valid RSA private key in ASCII armor, including line breaks.
+be a valid RSA private key in ASCII armor (.pem file), including line breaks
+.new
+.next
+with GnuTLS 3.6.0 or later, be a valid Ed25519 private key (same format as above)
+.wen
 .next
 start with a slash, in which case it is treated as a file that contains
-the private key.
+the private key
 .next
 be "0", "false" or the empty string, in which case the message will not
 be signed. This case will not result in an error, even if &%dkim_strict%&
@@ -38700,6 +38710,13 @@ Note that RFC 8301 says:
 .code
 Signers MUST use RSA keys of at least 1024 bits for all keys.
 Signers SHOULD use RSA keys of at least 2048 bits.
+
+Support for EC keys is being developed under
+&url(https://datatracker.ietf.org/doc/draft-ietf-dcrup-dkim-crypto/).
+They are considerably smaller than RSA keys for equivalent protection.
+As they are a recent development, users should consider dual-signing
+(by setting a list of selectors, and an expansion for this option)
+for some transition period.
 .endd
 .wen
 
@@ -38883,6 +38900,9 @@ The key record selector string.
 
 .vitem &%$dkim_algo%&
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
+.new
+If running under GnuTLS 3.6.0 or later, may also be 'ed25519-sha256'.
+.wen
 
 .new
 Note that RFC 8301 says:

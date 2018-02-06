@@ -18,6 +18,7 @@ dnl Checks for header files.
 AC_CHECK_HEADERS(sys/socket.h)
 AC_CHECK_HEADERS(openssl/crypto.h,[CLIENT_SSL=bin/client-ssl])
 AC_CHECK_HEADERS(gnutls/gnutls.h,[CLIENT_GNUTLS=bin/client-gnutls])
+AC_CHECK_HEADERS(gnutls/gnutls.h,[B64_GNUTLS=bin/ed25519_privkey_pem_to_pubkey_raw_b64])
 
 dnl The check on dynamically loaded modules requires the building of
 dnl something to load. This seems to be something that varies between
@@ -61,6 +62,7 @@ dnl "Export" these variables
 AC_SUBST(BIND_8_COMPAT)
 AC_SUBST(CLIENT_SSL)
 AC_SUBST(CLIENT_GNUTLS)
+AC_SUBST(B64_GNUTLS)
 AC_SUBST(LOADED)
 AC_SUBST(LOADED_OPT)
 AC_SUBST(LIBS)

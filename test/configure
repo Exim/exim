@@ -623,6 +623,7 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 LOADED_OPT
 LOADED
+B64_GNUTLS
 CLIENT_GNUTLS
 CLIENT_SSL
 BIND_8_COMPAT
@@ -3242,6 +3243,18 @@ fi
 
 done
 
+for ac_header in gnutls/gnutls.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "gnutls/gnutls.h" "ac_cv_header_gnutls_gnutls_h" "$ac_includes_default"
+if test "x$ac_cv_header_gnutls_gnutls_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_GNUTLS_GNUTLS_H 1
+_ACEOF
+ B64_GNUTLS=bin/ed25519_privkey_pem_to_pubkey_raw_b64
+fi
+
+done
+
 
 
 
@@ -3490,6 +3503,7 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
+
 
 
 

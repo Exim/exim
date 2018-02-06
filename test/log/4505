@@ -1,0 +1,11 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaX-0005vi-00 signer: test.ex bits: 512
+1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: d=test.ex s=sed c=relaxed/relaxed a=ed25519-sha256 b=512 [verification succeeded]
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=E10HmaY-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 signer: kitterman.org bits: 512
+1999-03-02 09:44:33 10HmaZ-0005vi-00 DKIM: d=kitterman.org s=ed25519 c=relaxed/simple a=ed25519-sha256 b=512 i=@kitterman.org t=1517847601 [verification succeeded]
+1999-03-02 09:44:33 10HmaZ-0005vi-00 signer: @kitterman.org bits: 512
+1999-03-02 09:44:33 10HmaZ-0005vi-00 DKIM: d=kitterman.org s=ed25519 c=relaxed/simple a=ed25519-sha256 b=512 i=@kitterman.org t=1517847601 [verification succeeded]
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=kitterman.org id=example@example.com

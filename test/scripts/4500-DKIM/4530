@@ -1,6 +1,6 @@
 # DKIM, CHUNKING, wireformat-spoolfile
 #
-exim -bd -DSERVER=server -DOPT=dkim -oX PORT_S:PORT_D
+exim -bd -DSERVER=server -DOPT=dkim -DLIST=Subject -oX PORT_S:PORT_D
 ****
 #
 # 1: non-CHUNKING injection; will not be stored as wireformat therefore

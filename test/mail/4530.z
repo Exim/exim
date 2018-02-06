@@ -5,10 +5,10 @@ Received: from localhost ([127.0.0.1] helo=testhost.test.ex)
 	id 10HmaX-0005vi-00
 	for z@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
-	s=sel; h=LIST; bh=CVpkzY75tV/NCKk5pPx4GnM3NX83xwCiT0xVwo0G1Rs=; b=TIqPqpKM5qf
-	ZFlv2H8yio5RybWA3sLCtVmE6HmBhBKqW+uqLKG2grqJhVMJ3qXnvQQ3ixnMjMlJqfCpEBtxfsSR9
-	MGLPP9ZMdlrBNEL6XKlgE+X8bAra5zkuLZs8gy8H3/mtEfoKPs4ltB/ZK/j2FHG2+CEx+TDTIkh9E
-	wkAMrA=;
+	s=sel; h=Subject; bh=CVpkzY75tV/NCKk5pPx4GnM3NX83xwCiT0xVwo0G1Rs=; b=JTYpVY1D
+	sO37MibaZTC2CgpQAZlz/lRefFQv3Q7JM4D0aUfseT24Xg+kxv3xc5guSzKWQzycm3zie366tHape
+	lu70O4/5+Dyr0f/FKjmYxT+ALcIzuVN7Rty2JioBG07aryqJqmcR0xpmiggctb/h/2a/JGRKPcDWO
+	psj50XQNQ=;
 Received: from [127.0.0.1] (helo=xxx)
 	by testhost.test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)

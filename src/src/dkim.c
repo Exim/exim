@@ -268,7 +268,7 @@ dkim_exim_verify_finish(void)
 pdkim_signature * sig;
 int rc;
 gstring * g = NULL;
-const uschar * errstr;
+const uschar * errstr = NULL;
 
 store_pool = POOL_PERM;
 
@@ -291,12 +291,8 @@ dkim_collect_input = FALSE;
 /* Finish DKIM operation and fetch link to signatures chain */
 
 rc = pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures, &errstr);
-if (rc != PDKIM_OK)
-  {
-  log_write(0, LOG_MAIN, "DKIM: validation error: %.100s%s%s", pdkim_errstr(rc),
-	    errstr ? ": " : "", errstr ? errstr : US"");
-  goto out;
-  }
+if (rc != PDKIM_OK && errstr)
+  log_write(0, LOG_MAIN, "DKIM: validation error: %s", errstr);
 
 /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
 

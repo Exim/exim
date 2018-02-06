@@ -245,7 +245,7 @@ uschar *p = code;
 
 while (len-- >0)
   {
-  register int x, y;
+  int x, y;
 
   x = *clear++;
   *p++ = enc64table[(x >> 2) & 63];

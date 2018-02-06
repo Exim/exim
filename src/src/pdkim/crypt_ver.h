@@ -14,8 +14,11 @@
 #ifdef USE_GNUTLS
 # include <gnutls/gnutls.h>
 
-# if GNUTLS_VERSION_NUMBER >= 0x30000
+# if GNUTLS_VERSION_NUMBER >= 0x030000
 #  define SIGN_GNUTLS
+#  if GNUTLS_VERSION_NUMBER >= 0x030600
+#   define SIGN_HAVE_ED25519
+#  endif
 # else
 #  define SIGN_GCRYPT
 # endif

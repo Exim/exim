@@ -82,13 +82,22 @@ static const pdkim_hashtype pdkim_hashes[] = {
 };
 
 const uschar * pdkim_keytypes[] = {
-  US"rsa"
+  [KEYTYPE_RSA] =	US"rsa",
+#ifdef SIGN_HAVE_ED25519
+  [KEYTYPE_ED25519] =	US"ed25519",		/* Works for 3.6.0 GnuTLS */
+#endif
+
+#ifdef notyet_EC_dkim_extensions	/* https://tools.ietf.org/html/draft-srose-dkim-ecc-00 */
+  US"eccp256",
+  US"eccp348",
+  US"ed448",
+#endif
 };
 
 typedef struct pdkim_combined_canon_entry {
-  const uschar * str;
-  int canon_headers;
-  int canon_body;
+  const uschar *	str;
+  int			canon_headers;
+  int			canon_body;
 } pdkim_combined_canon_entry;
 
 pdkim_combined_canon_entry pdkim_combined_canons[] = {
@@ -155,9 +164,9 @@ switch(status)
   {
   case PDKIM_OK:		return US"OK";
   case PDKIM_FAIL:		return US"FAIL";
-  case PDKIM_ERR_RSA_PRIVKEY:	return US"RSA_PRIVKEY";
-  case PDKIM_ERR_RSA_SIGNING:	return US"RSA SIGNING";
-  case PDKIM_ERR_LONG_LINE:	return US"RSA_LONG_LINE";
+  case PDKIM_ERR_RSA_PRIVKEY:	return US"PRIVKEY";
+  case PDKIM_ERR_RSA_SIGNING:	return US"SIGNING";
+  case PDKIM_ERR_LONG_LINE:	return US"LONG_LINE";
   case PDKIM_ERR_BUFFER_TOO_SMALL:	return US"BUFFER_TOO_SMALL";
   case PDKIM_SIGN_PRIVKEY_WRAP:	return US"PRIVKEY_WRAP";
   case PDKIM_SIGN_PRIVKEY_B64D:	return US"PRIVKEY_B64D";
@@ -504,7 +513,7 @@ for (p = raw_hdr; ; p++)
 
 	switch (*cur_tag->s)
 	  {
-	  case 'b':
+	  case 'b':				/* sig-data or body-hash */
 	    switch (cur_tag->s[1])
 	      {
 	      case '\0': pdkim_decode_base64(cur_val->s, &sig->sighash); break;
@@ -514,26 +523,35 @@ for (p = raw_hdr; ; p++)
 	      default:   break;
 	      }
 	    break;
-	  case 'v':
+	  case 'v':					/* version */
 	      /* We only support version 1, and that is currently the
 		 only version there is. */
 	    sig->version =
 	      Ustrcmp(cur_val->s, PDKIM_SIGNATURE_VERSION) == 0 ? 1 : -1;
 	    break;
-	  case 'a':
+	  case 'a':					/* algorithm */
 	    {
 	    uschar * s = Ustrchr(cur_val->s, '-');
 
 	    for(i = 0; i < nelem(pdkim_keytypes); i++)
 	      if (Ustrncmp(cur_val->s, pdkim_keytypes[i], s - cur_val->s) == 0)
 		{ sig->keytype = i; break; }
+	    if (sig->keytype < 0)
+	      log_write(0, LOG_MAIN,
+		"DKIM: ignoring signature due to nonhandled keytype in a=%s",
+		cur_val->s);
+
 	    for (++s, i = 0; i < nelem(pdkim_hashes); i++)
 	      if (Ustrcmp(s, pdkim_hashes[i].dkim_hashname) == 0)
 		{ sig->hashtype = i; break; }
+	    if (sig->hashtype < 0)
+	      log_write(0, LOG_MAIN,
+		"DKIM: ignoring signature due to nonhandled hashtype in a=%s",
+		cur_val);
 	    break;
 	    }
 
-	  case 'c':
+	  case 'c':					/* canonicalization */
 	    for (i = 0; pdkim_combined_canons[i].str; i++)
 	      if (Ustrcmp(cur_val->s, pdkim_combined_canons[i].str) == 0)
 	        {
@@ -542,30 +560,32 @@ for (p = raw_hdr; ; p++)
 		break;
 		}
 	    break;
-	  case 'q':
+	  case 'q':				/* Query method (for pubkey)*/
 	    for (i = 0; pdkim_querymethods[i]; i++)
 	      if (Ustrcmp(cur_val->s, pdkim_querymethods[i]) == 0)
 	        {
-		sig->querymethod = i;
+		sig->querymethod = i;	/* we never actually use this */
 		break;
 		}
 	    break;
-	  case 's':
+	  case 's':					/* Selector */
 	    sig->selector = string_copyn(cur_val->s, cur_val->ptr); break;
-	  case 'd':
+	  case 'd':					/* SDID */
 	    sig->domain = string_copyn(cur_val->s, cur_val->ptr); break;
-	  case 'i':
+	  case 'i':					/* AUID */
 	    sig->identity = pdkim_decode_qp(cur_val->s); break;
-	  case 't':
+	  case 't':					/* Timestamp */
 	    sig->created = strtoul(CS cur_val->s, NULL, 10); break;
-	  case 'x':
+	  case 'x':					/* Expiration */
 	    sig->expires = strtoul(CS cur_val->s, NULL, 10); break;
-	  case 'l':
+	  case 'l':					/* Body length count */
 	    sig->bodylength = strtol(CS cur_val->s, NULL, 10); break;
-	  case 'h':
+	  case 'h':					/* signed header fields */
 	    sig->headernames = string_copyn(cur_val->s, cur_val->ptr); break;
-	  case 'z':
+	  case 'z':					/* Copied headfields */
 	    sig->copiedheaders = pdkim_decode_qp(cur_val->s); break;
+/*XXX draft-ietf-dcrup-dkim-crypto-05 would need 'p' tag support
+for rsafp signatures.  But later discussion is dropping those. */
 	  default:
 	    DEBUG(D_acl) debug_printf(" Unknown tag encountered\n");
 	    break;
@@ -586,6 +606,9 @@ NEXT_CHAR:
   if (!in_b_val)
     *q++ = c;
   }
+
+if (sig->keytype < 0 || sig->hashtype < 0)	/* Cannot verify this signature */
+  return NULL;
 
 *q = '\0';
 /* Chomp raw header. The final newline must not be added to the signature. */
@@ -635,7 +658,7 @@ while ((ele = string_nextinlist(&raw_record, &sep, NULL, 0)))
       {
       case 'v': pub->version = val;			break;
       case 'h': pub->hashes = val;			break;
-      case 'k': break;
+      case 'k': pub->keytype = val;			break;
       case 'g': pub->granularity = val;			break;
       case 'n': pub->notes = pdkim_decode_qp(val);	break;
       case 'p': pdkim_decode_base64(val, &pub->key);	break;
@@ -658,9 +681,7 @@ else if (Ustrcmp(pub->version, PDKIM_PUB_RECORD_VERSION) != 0)
   }
 
 if (!pub->granularity) pub->granularity = US"*";
-/*
 if (!pub->keytype    ) pub->keytype     = US"rsa";
-*/
 if (!pub->srvtype    ) pub->srvtype     = US"*";
 
 /* p= is required */
@@ -1339,7 +1360,10 @@ DEBUG(D_acl) debug_printf(
       "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
 /* Import public key */
-if ((*errstr = exim_dkim_verify_init(&p->key, vctx)))
+
+if ((*errstr = exim_dkim_verify_init(&p->key,
+	    sig->keytype == KEYTYPE_ED25519 ? KEYFMT_ED25519_BARE : KEYFMT_DER,
+	    vctx)))
   {
   DEBUG(D_acl) debug_printf("verify_init: %s\n", *errstr);
   sig->verify_status =      PDKIM_VERIFY_INVALID;
@@ -1347,6 +1371,7 @@ if ((*errstr = exim_dkim_verify_init(&p->key, vctx)))
   return NULL;
   }
 
+vctx->keytype = sig->keytype;
 return p;
 }
 
@@ -1359,6 +1384,8 @@ pdkim_feed_finish(pdkim_ctx * ctx, pdkim_signature ** return_signatures,
 {
 pdkim_bodyhash * b;
 pdkim_signature * sig;
+BOOL verify_pass = FALSE;
+es_ctx sctx;
 
 /* Check if we must still flush a (partial) header. If that is the
    case, the message has no body, and we must compute a body hash
@@ -1379,6 +1406,12 @@ else
   DEBUG(D_acl) debug_printf(
       "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
+if (!ctx->sig)
+  {
+  DEBUG(D_acl) debug_printf("PDKIM: no signatures\n");
+  return PDKIM_OK;
+  }
+
 /* Build (and/or evaluate) body hash */
 pdkim_finish_bodyhash(ctx);
 
@@ -1388,11 +1421,33 @@ for (sig = ctx->sig; sig; sig = sig->next)
   uschar * sig_hdr = US"";
   blob hhash;
   gstring * hdata = NULL;
+  es_ctx sctx;
+
+  /*XXX The hash of the headers is needed for GCrypt (for which we can do RSA
+  suging only, as it happens) and for either GnuTLS and OpenSSL when we are
+  signing with EC (specifically, Ed25519).  The former is because the GCrypt
+  signing operation is pure (does not do its own hash) so we must hash.  The
+  latter is because we (stupidly, but this is what the IETF draft is saying)
+  must hash with the declared hash method, then pass the result to the library
+  hash-and-sign routine (because that's all the libraries are providing.  And
+  we're stuck with whatever that hidden hash method is, too).  We may as well
+  do this hash incrementally.
+  We don't need the hash we're calculating here for the GnuTLS and OpenSSL
+  cases of RSA signing, since those library routines can do hash-and-sign.
+ 
+  Some time in the future we could easily avoid doing the hash here for those
+  cases (which will be common for a long while.  We could also change from
+  the current copy-all-the-headers-into-one-block, then call the hash-and-sign
+  implementation  - to a proper incremental one.  Unfortunately, GnuTLS just
+  cannot do incremental - either signing or verification.  Unsure about GCrypt.
+  */
+
+  /*XXX The header hash is also used (so far) by the verify operation */
 
   if (!exim_sha_init(&hhash_ctx, pdkim_hashes[sig->hashtype].exim_hashmethod))
     {
-    DEBUG(D_acl)
-      debug_printf("PDKIM: hash setup error, possibly nonhandled hashtype\n");
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "PDKIM: hash setup error, possibly nonhandled hashtype");
     break;
     }
 
@@ -1420,9 +1475,19 @@ for (sig = ctx->sig; sig; sig = sig->next)
     uschar * s;
     int sep = 0;
 
-    sig->headernames = NULL;		/* Collected signed header names */
+    /* Import private key, including the keytype which we need for building
+    the signature header  */
 
-    for (p = sig->headers; p; p = p->next)
+/*XXX extend for non-RSA algos */
+    if ((*err = exim_dkim_signing_init(US sig->privkey, &sctx)))
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "signing_init: %s", *err);
+      return PDKIM_ERR_RSA_PRIVKEY;
+      }
+    sig->keytype = sctx.keytype;
+
+    for (sig->headernames = NULL,		/* Collected signed header names */
+	  p = sig->headers; p; p = p->next)
       {
       uschar * rh = p->value;
 
@@ -1438,6 +1503,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
 	exim_sha_update(&hhash_ctx, CUS rh, Ustrlen(rh));
 
 	/* Remember headers block for signing (when the library cannot do incremental)  */
+	/*XXX we could avoid doing this for all but the GnuTLS/RSA case */
 	hdata = exim_dkim_data_append(hdata, rh);
 
 	DEBUG(D_acl) pdkim_quoteprint(rh, Ustrlen(rh));
@@ -1555,31 +1621,25 @@ for (sig = ctx->sig; sig; sig = sig->next)
   /* SIGNING ---------------------------------------------------------------- */
   if (ctx->flags & PDKIM_MODE_SIGN)
     {
-    es_ctx sctx;
+    hashmethod hm = sig->keytype == KEYTYPE_ED25519
+      ? HASH_SHA2_512 : pdkim_hashes[sig->hashtype].exim_hashmethod;
 
-    /* Import private key, including the keytype */
-/*XXX extend for non-RSA algos */
-    if ((*err = exim_dkim_signing_init(US sig->privkey, &sctx)))
+#ifdef SIGN_HAVE_ED25519
+    /* For GCrypt, and for EC, we pass the hash-of-headers to the signing
+    routine.  For anything else we just pass the headers. */
+
+    if (sig->keytype != KEYTYPE_ED25519)
+#endif
       {
-      DEBUG(D_acl) debug_printf("signing_init: %s\n", *err);
-      return PDKIM_ERR_RSA_PRIVKEY;
+      hhash.data = hdata->s;
+      hhash.len = hdata->ptr;
       }
 
-    /* Do signing.  With OpenSSL we are signing the hash of headers just
-    calculated, with GnuTLS we have to sign an entire block of headers
-    (due to available interfaces) and it recalculates the hash internally. */
-
-#if defined(SIGN_GNUTLS)
-    hhash.data = hdata->s;
-    hhash.len =  hdata->ptr;
-#endif
-
 /*XXX extend for non-RSA algos */
-    if ((*err = exim_dkim_sign(&sctx,
-		  pdkim_hashes[sig->hashtype].exim_hashmethod,
-		  &hhash, &sig->sighash)))
+/*- done for GnuTLS */
+    if ((*err = exim_dkim_sign(&sctx, hm, &hhash, &sig->sighash)))
       {
-      DEBUG(D_acl) debug_printf("signing: %s\n", *err);
+      log_write(0, LOG_MAIN|LOG_PANIC, "signing: %s", *err);
       return PDKIM_ERR_RSA_SIGNING;
       }
 
@@ -1636,7 +1696,12 @@ for (sig = ctx->sig; sig; sig = sig->next)
       }
 
     if (!(sig->pubkey = pdkim_key_from_dns(ctx, sig, &vctx, err)))
+      {
+      log_write(0, LOG_MAIN, "PDKIM: %s%s %s%s [failed key import]",
+	sig->domain   ? "d=" : "", sig->domain   ? sig->domain   : US"",
+	sig->selector ? "s=" : "", sig->selector ? sig->selector : US"");
       goto NEXT_VERIFY;
+      }
 
     /* If the pubkey limits to a list of specific hashes, ignore sigs that
     do not have the hash part of the sig algorithm matching */
@@ -1660,10 +1725,11 @@ for (sig = ctx->sig; sig; sig = sig->next)
       }
 
     /* Check the signature */
-/*XXX needs extension for non-RSA */
+/*XXX extend for non-RSA algos */
+/*- done for GnuTLS */
     if ((*err = exim_dkim_verify(&vctx,
-		  pdkim_hashes[sig->hashtype].exim_hashmethod,
-		  &hhash, &sig->sighash)))
+				pdkim_hashes[sig->hashtype].exim_hashmethod,
+				&hhash, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("headers verify: %s\n", *err);
       sig->verify_status =      PDKIM_VERIFY_FAIL;
@@ -1674,14 +1740,18 @@ for (sig = ctx->sig; sig; sig = sig->next)
 
     /* We have a winner! (if bodyhash was correct earlier) */
     if (sig->verify_status == PDKIM_VERIFY_NONE)
+      {
       sig->verify_status = PDKIM_VERIFY_PASS;
+      verify_pass = TRUE;
+      }
 
 NEXT_VERIFY:
 
     DEBUG(D_acl)
       {
-      debug_printf("PDKIM [%s] signature status: %s",
-	      sig->domain, pdkim_verify_status_str(sig->verify_status));
+      debug_printf("PDKIM [%s] %s signature status: %s",
+	      sig->domain, dkim_sig_to_a_tag(sig),
+	      pdkim_verify_status_str(sig->verify_status));
       if (sig->verify_ext_status > 0)
 	debug_printf(" (%s)\n",
 		pdkim_verify_ext_status_str(sig->verify_ext_status));
@@ -1695,7 +1765,8 @@ NEXT_VERIFY:
 if (return_signatures)
   *return_signatures = ctx->sig;
 
-return PDKIM_OK;
+return ctx->flags & PDKIM_MODE_SIGN  ||  verify_pass
+  ? PDKIM_OK : PDKIM_FAIL;
 }
 
 
@@ -1719,8 +1790,6 @@ return ctx;
 
 /* -------------------------------------------------------------------------- */
 
-/*XXX ? needs extension to cover non-RSA algo?  */
-
 DLLEXPORT pdkim_signature *
 pdkim_init_sign(pdkim_ctx * ctx,
   uschar * domain, uschar * selector, uschar * privkey,
@@ -1742,15 +1811,15 @@ sig->bodylength = -1;
 sig->domain = string_copy(US domain);
 sig->selector = string_copy(US selector);
 sig->privkey = string_copy(US privkey);
-/*XXX no keytype yet; comes from privkey */
+sig->keytype = -1;
 
 for (hashtype = 0; hashtype < nelem(pdkim_hashes); hashtype++)
   if (Ustrcmp(hashname, pdkim_hashes[hashtype].dkim_hashname) == 0)
   { sig->hashtype = hashtype; break; }
 if (hashtype >= nelem(pdkim_hashes))
   {
-  DEBUG(D_acl)
-    debug_printf("PDKIM: unrecognised hashname '%s'\n", hashname);
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "PDKIM: unrecognised hashname '%s'", hashname);
   return NULL;
   }
 

@@ -72,6 +72,9 @@
 /* Some parameter values */
 #define PDKIM_QUERYMETHOD_DNS_TXT 0
 
+/*#define PDKIM_ALGO_RSA_SHA256     0 */
+/*#define PDKIM_ALGO_RSA_SHA1       1 */
+
 #define PDKIM_CANON_SIMPLE        0
 #define PDKIM_CANON_RELAXED       1
 
@@ -103,10 +106,8 @@ typedef struct pdkim_pubkey {
   const uschar *granularity;      /* g=  */
 
   const uschar * hashes;          /* h=  */
-#ifdef notdef
-  uschar *keytype;                /* k=  */
-#endif
-  const uschar *srvtype;          /* s=  */
+  const uschar * keytype;         /* k=  */
+  const uschar * srvtype;         /* s=  */
   uschar *notes;                  /* n=  */
 
   blob  key;                      /* p=  */
@@ -139,6 +140,7 @@ typedef struct pdkim_signature {
   /* (v=) The version, as an integer. Currently, always "1" */
   int version;
 
+  /* (a=) The signature algorithm. Either PDKIM_ALGO_RSA_SHA256 */
   int keytype;	/* pdkim_keytypes index */
   int hashtype;	/* pdkim_hashes index */
 

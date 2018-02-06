@@ -1,0 +1,24 @@
+# DKIM signing, ed25519
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# Privkey used here is:  aux-fixed/dkim/dkim_ed25519.private (set in the conf)
+#
+exim -DSELECTOR=sed -DOPT=From:To:Subject -odf a@test.ex
+From: nobody@example.com
+
+content
+****
+#
+# Multiple-signing test (rsa + ed25519)
+#
+exim -DSELECTOR=sed:sel -DOPT=From: -odf b@test.ex
+From: nobody@example.com
+
+content
+****
+#
+millisleep 500
+killdaemon
+no_msglog_check
