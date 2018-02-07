@@ -82,6 +82,9 @@ JH/15 Relax results from ACL control request to enable cutthrough, in
       ignoring.  This covers use with PRDR, frozen messages, queue-only and
       fake-reject.
 
+JH/16 Fix bug in DKIM verify: a buffer overflow could corrupt the malloc
+      metadata, resulting in a crash in free().
+
 
 Exim version 4.90
 -----------------
