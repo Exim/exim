@@ -58,6 +58,9 @@ JH/14 Bug 2174: A timeout on connect for a callout was also erroneously seen as
       was marked defer_ok.  Fix to keep the two timeout-detection methods
       separate.
 
+JH/16 Fix bug in DKIM verify: a buffer overflow could corrupt the malloc
+      metadata, resulting in a crash in free().
+
 
 Exim version 4.90
 -----------------

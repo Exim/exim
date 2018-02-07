@@ -701,7 +701,7 @@ if (sig->canon_body == PDKIM_CANON_RELAXED)
   if (!relaxed_data)
     {
     BOOL seen_wsp = FALSE;
-    const uschar * p;
+    const uschar * p, * r;
     int q = 0;
 
     /* We want to be able to free this else we allocate
@@ -712,7 +712,7 @@ if (sig->canon_body == PDKIM_CANON_RELAXED)
     relaxed_data = store_malloc(sizeof(blob) + orig_data->len+1);
     relaxed_data->data = US (relaxed_data+1);
 
-    for (p = orig_data->data; *p; p++)
+    for (p = orig_data->data, r = p + orig_data->len; p < r; p++)
       {
       char c = *p;
       if (c == '\r')
@@ -838,6 +838,7 @@ ctx->linebuf_offset = 0;
 
 /* -------------------------------------------------------------------------- */
 /* Call from pdkim_feed below for processing complete body lines */
+/* NOTE: the line is not NUL-terminated; but we have a count */
 
 static void
 pdkim_bodyline_complete(pdkim_ctx * ctx)
