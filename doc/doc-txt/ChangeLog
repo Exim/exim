@@ -77,6 +77,11 @@ JH/14 Bug 2174: A timeout on connect for a callout was also erroneously seen as
       was marked defer_ok.  Fix to keep the two timeout-detection methods
       separate.
 
+JH/15 Relax results from ACL control request to enable cutthrough, in
+      unsupported situations, from error to silently (except under debug)
+      ignoring.  This covers use with PRDR, frozen messages, queue-only and
+      fake-reject.
+
 
 Exim version 4.90
 -----------------

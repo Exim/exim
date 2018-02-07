@@ -3251,6 +3251,8 @@ for (; cb != NULL; cb = cb->next)
 	break;
 
 	case CONTROL_CUTTHROUGH_DELIVERY:
+	{
+	uschar * ignored = NULL;
 #ifndef DISABLE_PRDR
 	if (prdr_requested)
 #else
@@ -3259,20 +3261,20 @@ for (; cb != NULL; cb = cb->next)
 	  /* Too hard to think about for now.  We might in future cutthrough
 	  the case where both sides handle prdr and this-node prdr acl
 	  is "accept" */
-	  *log_msgptr = string_sprintf("PRDR on %s reception\n", arg);
+	  ignored = US"PRDR active";
 	else
 	  {
 	  if (deliver_freeze)
-	    *log_msgptr = US"frozen";
+	    ignored = US"frozen";
 	  else if (queue_only_policy)
-	    *log_msgptr = US"queue-only";
+	    ignored = US"queue-only";
 	  else if (fake_response == FAIL)
-	    *log_msgptr = US"fakereject";
+	    ignored = US"fakereject";
 	  else
 	    {
 	    if (rcpt_count == 1)
 	      {
-	      cutthrough.delivery = TRUE;
+	      cutthrough.delivery = TRUE;	/* control accepted */
 	      while (*p == '/')
 		{
 		const uschar * pp = p+1;
@@ -3288,13 +3290,13 @@ for (; cb != NULL; cb = cb->next)
 		}
 	      }
 	    else
-	      DEBUG(D_acl) debug_printf(" cutthrough request ignored for nonfirst rcpt\n");
-	    break;
+	      ignored = US"nonfirst rcpt";
 	    }
-	  *log_msgptr = string_sprintf("\"control=%s\" on %s item",
-					arg, *log_msgptr);
 	  }
-	return ERROR;
+	DEBUG(D_acl) if (ignored)
+	  debug_printf(" cutthrough request ignored on %s item\n", ignored);
+	}
+	break;
 
 #ifdef SUPPORT_I18N
 	case CONTROL_UTF8_DOWNCONVERT:
