@@ -119,7 +119,7 @@ auth_info auths_available[] = {
   {
   .driver_name =	US"heimdal_gssapi",
   .options =		auth_heimdal_gssapi_options,
-  .options_count 	 &auth_heimdal_gssapi_options_count,
+  .options_count =	&auth_heimdal_gssapi_options_count,
   .options_block =	&auth_heimdal_gssapi_option_defaults,
   .options_len =	sizeof(auth_heimdal_gssapi_options_block),
   .init =		auth_heimdal_gssapi_init,

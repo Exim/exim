@@ -85,6 +85,9 @@ JH/15 Relax results from ACL control request to enable cutthrough, in
 JH/16 Fix bug in DKIM verify: a buffer overflow could corrupt the malloc
       metadata, resulting in a crash in free().
 
+PP/01 Fix broken refactor of Heimdal GSSAPI authenticator init.
+      Broken in f2ed27cf5, missing an equals sign for specified-initialisers.
+
 
 Exim version 4.90
 -----------------
