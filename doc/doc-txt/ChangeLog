@@ -61,8 +61,9 @@ JH/14 Bug 2174: A timeout on connect for a callout was also erroneously seen as
 JH/16 Fix bug in DKIM verify: a buffer overflow could corrupt the malloc
       metadata, resulting in a crash in free().
 
-PP/01 Fix broken refactor of Heimdal GSSAPI authenticator init.
+PP/01 Fix broken Heimdal GSSAPI authenticator integration.
       Broken in f2ed27cf5, missing an equals sign for specified-initialisers.
+      Broken also in d185889f4, with init system revamp.
 
 
 Exim version 4.90
