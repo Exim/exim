@@ -1295,6 +1295,32 @@ exit(EXIT_FAILURE);
 *    Validate that the macros given are okay     *
 *************************************************/
 
+#ifdef WHITELIST_D_MACROS
+static void
+wlist_check(uschar * name, uschar * val, void * ctx)
+{
+uschar ** w, ** whites = ctx;
+unsigned len;
+int n;
+
+for (w = whites; *w; ++w)
+  if (Ustrcmp(*w, name) == 0) break;
+if (*w) 
+  {
+  if (!val || !*val) return;
+  len = Ustrlen(val);
+  if ((n = pcre_exec(regex_whitelisted_macro, NULL, CS val, len,
+		    0, PCRE_EOPT, NULL, 0)) >= 0)
+    return;
+  if (n != PCRE_ERROR_NOMATCH)
+    debug_printf("macros_trusted checking %s returned %d\n", name, n);
+  }
+*whites = NULL;
+return;
+}
+#endif
+
+
 /* Typically, Exim will drop privileges if macros are supplied.  In some
 cases, we want to not do so.
 
@@ -1307,7 +1333,7 @@ macros_trusted(BOOL opt_D_used)
 {
 #ifdef WHITELIST_D_MACROS
 macro_item *m;
-uschar *whitelisted, *end, *p, **whites, **w;
+uschar *whitelisted, *end, *p, **whites;
 int white_count, i, n;
 size_t len;
 BOOL prev_char_item, found;
@@ -1370,32 +1396,9 @@ for (p = whitelisted, i = 0; (p != end) && (i < white_count); ++p)
   }
 whites[i] = NULL;
 
-/* The list of commandline macros should be very short.
-Accept the N*M complexity. */
-for (m = macros; m; m = m->next) if (m->command_line)
-  {
-  found = FALSE;
-  for (w = whites; *w; ++w)
-    if (Ustrcmp(*w, m->name) == 0)
-      {
-      found = TRUE;
-      break;
-      }
-  if (!found)
-    return FALSE;
-  if (!m->replacement)
-    continue;
-  if ((len = m->replen) == 0)
-    continue;
-  n = pcre_exec(regex_whitelisted_macro, NULL, CS m->replacement, len,
-   0, PCRE_EOPT, NULL, 0);
-  if (n < 0)
-    {
-    if (n != PCRE_ERROR_NOMATCH)
-      debug_printf("macros_trusted checking %s returned %d\n", m->name, n);
-    return FALSE;
-    }
-  }
+tree_walk(tree_macros, wlist_check, whites);
+if (!*whites) return FALSE;
+
 DEBUG(D_any) debug_printf("macros_trusted overridden to true by whitelisting\n");
 return TRUE;
 #endif
@@ -1427,7 +1430,10 @@ len = Ustrlen(big_buffer);
 if (isupper(big_buffer[0]))
   {
   if (macro_read_assignment(big_buffer))
-    printf("Defined macro '%s'\n", mlast->name);
+    {
+    uschar * s = Ustrchr(big_buffer, '=');
+    printf("Defined macro '%.*s'\n", s - big_buffer, big_buffer);
+    }
   }
 else
   if ((line = expand_string(big_buffer))) printf("%s\n", CS line);
@@ -2422,22 +2428,21 @@ for (i = 1; i < argc; i++)
         while (isspace(*s)) s++;
         }
 
-      for (m = macros; m; m = m->next)
-        if (Ustrcmp(m->name, name) == 0)
-          {
-          fprintf(stderr, "exim: duplicated -D in command line\n");
-          exit(EXIT_FAILURE);
-          }
+      if (macro_search(name))
+        {
+        fprintf(stderr, "exim: duplicated -D in command line\n");
+        exit(EXIT_FAILURE);
+        }
 
-      m = macro_create(string_copy(name), string_copy(s), TRUE);
+      m = macro_create(name, s, TRUE);
 
       if (clmacro_count >= MAX_CLMACROS)
         {
         fprintf(stderr, "exim: too many -D options on command line\n");
         exit(EXIT_FAILURE);
         }
-      clmacros[clmacro_count++] = string_sprintf("-D%s=%s", m->name,
-        m->replacement);
+      clmacros[clmacro_count++] = string_sprintf("-D%s=%s",
+	m->tnode.name, m->tnode.data.ptr);
       }
     #endif
     break;
@@ -4985,7 +4990,7 @@ if (expansion_test)
 
   /* Only admin users may see config-file macros this way */
 
-  if (!admin_user) macros = mlast = NULL;
+  if (!admin_user) tree_macros = NULL;
 
   /* Allow $recipients for this testing */
 

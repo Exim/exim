@@ -592,38 +592,6 @@ return US"";
 
 
 
-/*************************************************
-*       Deal with an assignment to a macro       *
-*************************************************/
-
-/* We have a new definition; append to the list.
-
-Args:
- name	Name of the macro.  Must be in storage persistent past the call
- val	Expansion result for the macro.  Ditto persistence.
-*/
-
-macro_item *
-macro_create(const uschar * name, const uschar * val, BOOL command_line)
-{
-macro_item * m = store_get(sizeof(macro_item));
-
-/* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val); */
-m->next = NULL;
-m->command_line = command_line;
-m->namelen = Ustrlen(name);
-m->replen = Ustrlen(val);
-m->name = name;
-m->replacement = val;
-if (mlast)
-  mlast->next = m;
-else
-  macros = m;
-mlast = m;
-return m;
-}
-
-
 /* This function is called when a line that starts with an upper case letter is
 encountered. The argument "line" should contain a complete logical line, and
 start with the first letter of the macro name. The macro name and the
@@ -674,45 +642,29 @@ while (isspace(*s)) s++;
 just skip this definition. It's an error to attempt to redefine a macro without
 redef set to TRUE, or to redefine a macro when it hasn't been defined earlier.
 It is also an error to define a macro whose name begins with the name of a
-previously defined macro.  This is the requirement that make using a tree
-for macros hard; we must check all macros for the substring.  Perhaps a
-sorted list, and a bsearch, would work?
+previously defined macro.
 Note: it is documented that the other way round works. */
 
-for (m = macros; m; m = m->next)
+if ((m = macro_search_prefix(name)))
   {
-  if (Ustrcmp(m->name, name) == 0)
-    {
-    if (!m->command_line && !redef)
-      {
-      log_write(0, LOG_CONFIG|LOG_PANIC, "macro \"%s\" is already "
-       "defined (use \"==\" if you want to redefine it", name);
-      return FALSE;
-      }
-    break;
-    }
-
-  if (m->namelen < namelen && Ustrstr(name, m->name) != NULL)
+  if (m->namelen < namelen)	/* substring match */
     {
     log_write(0, LOG_CONFIG|LOG_PANIC, "\"%s\" cannot be defined as "
       "a macro because previously defined macro \"%s\" is a substring",
-      name, m->name);
+      name, m->tnode.name);
+    return FALSE;
+    }
+  				/* exact match */
+  if (!m->command_line && !redef)
+    {
+    log_write(0, LOG_CONFIG|LOG_PANIC, "macro \"%s\" is already "
+       "defined (use \"==\" if you want to redefine it", name);
     return FALSE;
     }
 
-  /* We cannot have this test, because it is documented that a substring
-  macro is permitted (there is even an example).
-  *
-  * if (m->namelen > namelen && Ustrstr(m->name, name) != NULL)
-  *   log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
-  *     "a macro because it is a substring of previously defined macro \"%s\"",
-  *     name, m->name);
-  */
+  if (m->command_line)		/* overriding cmdline definition */
+    return TRUE;
   }
-
-/* Check for an overriding command-line definition. */
-
-if (m && m->command_line) return TRUE;
 
 /* Redefinition must refer to an existing macro. */
 
@@ -720,7 +672,7 @@ if (redef)
   if (m)
     {
     m->replen = Ustrlen(s);
-    m->replacement = string_copy(s);
+    m->tnode.data.ptr = string_copy(s);
     }
   else
     {
@@ -731,7 +683,7 @@ if (redef)
 
 /* We have a new definition. */
 else
-  (void) macro_create(string_copy(name), string_copy(s), FALSE);
+  (void) macro_create(name, s, FALSE);
 return TRUE;
 }
 
@@ -756,7 +708,6 @@ macros_expand(int len, int * newlen, BOOL * macro_found)
 {
 uschar * ss = big_buffer + len;
 uschar * s;
-macro_item * m;
 
 /* Find the true start of the physical line - leading spaces are always
 ignored. */
@@ -777,56 +728,52 @@ if (len == 0 && isupper(*s))
   if (*s != '=') s = ss;          /* Not a macro definition */
   }
 
-/* Skip leading chars which cannot start a macro name, to avoid multiple
-pointless rescans in Ustrstr calls. */
-
-while (*s && !isupper(*s) && *s != '_') s++;
-
-/* For each defined macro, scan the line (from after XXX= if present),
-replacing all occurrences of the macro. */
+/* Scan the line (from after XXX= if present), replacing any macros. Rescan
+after replacement for any later-defined macros. */
 
 *macro_found = FALSE;
-for (m = macros; m; m = m->next)
+while (*s)
   {
-  uschar * p, *pp;
-  uschar * t = s;
-
-  while ((p = Ustrstr(t, m->name)) != NULL)
+  if (isupper(*s) || *s == '_' && isupper(s[1]))
     {
-    int moveby;
+    macro_item * m;
+    unsigned mnum = 0;
 
-/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss); */
-    /* Expand the buffer if necessary */
-
-    while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)
+    while ((m = macro_search_largest_prefix(s)) && m->m_number > mnum)
       {
-      int newsize = big_buffer_size + BIG_BUFFER_SIZE;
-      uschar *newbuffer = store_malloc(newsize);
-      memcpy(newbuffer, big_buffer, *newlen + 1);
-      p = newbuffer  + (p - big_buffer);
-      s = newbuffer  + (s - big_buffer);
-      ss = newbuffer + (ss - big_buffer);
-      t = newbuffer  + (t - big_buffer);
-      big_buffer_size = newsize;
-      store_free(big_buffer);
-      big_buffer = newbuffer;
-      }
+      uschar * pp;
+      int moveby;
 
-    /* Shuffle the remaining characters up or down in the buffer before
-    copying in the replacement text. Don't rescan the replacement for this
-    same macro. */
+      /* Expand the buffer if necessary */
 
-    pp = p + m->namelen;
-    if ((moveby = m->replen - m->namelen) != 0)
-      {
-      memmove(p + m->replen, pp, (big_buffer + *newlen) - pp + 1);
-      *newlen += moveby;
+      while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)
+	{
+	int newsize = big_buffer_size + BIG_BUFFER_SIZE;
+	uschar *newbuffer = store_malloc(newsize);
+	memcpy(newbuffer, big_buffer, *newlen + 1);
+	s = newbuffer  + (s - big_buffer);
+	ss = newbuffer + (ss - big_buffer);
+	big_buffer_size = newsize;
+	store_free(big_buffer);
+	big_buffer = newbuffer;
+	}
+
+      /* Shuffle the remaining characters up or down in the buffer before
+      copying in the replacement text. Don't rescan the replacement for this
+      same macro. */
+
+      pp = s + m->namelen;
+      if ((moveby = m->replen - m->namelen) != 0)
+	{
+	memmove(s + m->replen, pp, (big_buffer + *newlen) - pp + 1);
+	*newlen += moveby;
+	}
+      Ustrncpy(s, m->tnode.data.ptr, m->replen);
+      *macro_found = TRUE;
+      mnum = m->m_number;
       }
-    Ustrncpy(p, m->replacement, m->replen);
-    t = p + m->replen;
-    while (*t && !isupper(*t) && *t != '_') t++;
-    *macro_found = TRUE;
     }
+  s++;
   }
 
 /* An empty macro replacement at the start of a line could mean that ss no
@@ -2887,50 +2834,45 @@ else if (Ustrcmp(type, "macro") == 0)
     fprintf(stderr, "exim: permission denied\n");
     exit(EXIT_FAILURE);
     }
-  for (m = macros; m; m = m->next)
-    if (!name || Ustrcmp(name, m->name) == 0)
-      {
-      if (names_only)
-        printf("%s\n", CS m->name);
-      else
-        printf("%s=%s\n", CS m->name, CS m->replacement);
-      if (name)
-        return;
-      }
+
   if (name)
-    printf("%s %s not found\n", type, name);
+    if ((m = macro_search(name)))
+      macro_print(m->tnode.name, m->tnode.data.ptr, (void *)(long)names_only);
+    else
+      printf("%s %s not found\n", type, name);
+  else
+    tree_walk(tree_macros, macro_print, (void *)(long)names_only);
+
   return;
   }
 
 if (names_only)
   {
-  for (; d != NULL; d = d->next) printf("%s\n", CS d->name);
+  for (; d; d = d->next) printf("%s\n", CS d->name);
   return;
   }
 
 /* Either search for a given driver, or print all of them */
 
-for (; d != NULL; d = d->next)
+for (; d; d = d->next)
   {
-  if (name == NULL)
+  if (!name)
     printf("\n%s %s:\n", d->name, type);
-  else if (Ustrcmp(d->name, name) != 0) continue;
+  else if (Ustrcmp(d->name, name) != 0)
+    continue;
 
   for (ol = ol2; ol < ol2 + size; ol++)
-    {
     if ((ol->type & opt_hidden) == 0)
       print_ol(ol, US ol->name, d, ol2, size, no_labels);
-    }
 
   for (ol = d->info->options;
        ol < d->info->options + *(d->info->options_count); ol++)
-    {
     if ((ol->type & opt_hidden) == 0)
       print_ol(ol, US ol->name, d, d->info->options, *(d->info->options_count), no_labels);
-    }
-  if (name != NULL) return;
+
+  if (name) return;
   }
-if (name != NULL) printf("%s %s not found\n", type, name);
+if (name) printf("%s %s not found\n", type, name);
 }
 
 

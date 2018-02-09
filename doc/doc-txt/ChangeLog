@@ -94,6 +94,11 @@ JH/17 Bug 2113: Fix conversation closedown with the Avast malware scanner.
       found indication; now we go on to read the "scan ok" response line,
       and send a quit.
 
+JH/18 Convert macro handling to be tree-based, from the previous linear list.
+      With the number of builtin macros we now have this is worthwhile,
+      dropping the config-file read time (during which new macros are checked
+      and registered, and macros are expanded) from about 500 usec to about 180.
+
 
 Exim version 4.90
 -----------------
