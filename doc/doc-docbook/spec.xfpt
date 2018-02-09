@@ -10648,6 +10648,7 @@ The &%sha3%& expansion item is only supported if Exim has been
 compiled with GnuTLS 3.5.0 or later,
 .new
 or OpenSSL 1.1.1 or later.
+The macro "_CRYPTO_HASH_SHA3" will be defined if it is supported.
 .wen
 
 
@@ -38663,7 +38664,6 @@ for the former it is the base64 of the ASN.1 for the RSA public key
 (equivalent to the private-key .pem with the header/trailer stripped)
 but for EC keys it is the base64 of the pure key; no ASN.1 wrapping.
 .wen
-.wen
 
 Signing is enabled by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
@@ -38710,6 +38710,7 @@ Note that RFC 8301 says:
 .code
 Signers MUST use RSA keys of at least 1024 bits for all keys.
 Signers SHOULD use RSA keys of at least 2048 bits.
+.endd
 
 Support for EC keys is being developed under
 &url(https://datatracker.ietf.org/doc/draft-ietf-dcrup-dkim-crypto/).
@@ -38717,7 +38718,8 @@ They are considerably smaller than RSA keys for equivalent protection.
 As they are a recent development, users should consider dual-signing
 (by setting a list of selectors, and an expansion for this option)
 for some transition period.
-.endd
+The "_CRYPTO_SIGN_ED25519" macro will be defined if support is present
+for EC keys.
 .wen
 
 .option dkim_hash smtp string&!! sha256
@@ -38902,6 +38904,8 @@ The key record selector string.
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
 .new
 If running under GnuTLS 3.6.0 or later, may also be 'ed25519-sha256'.
+The "_CRYPTO_SIGN_ED25519" macro will be defined if support is present
+for EC keys.
 .wen
 
 .new

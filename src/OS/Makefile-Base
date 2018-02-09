@@ -134,8 +134,8 @@ OBJ_MACRO = macro_predef.o \
 	macro-smtp.o macro-accept.o macro-dnslookup.o macro-ipliteral.o macro-iplookup.o \
 	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
 	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
-	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-tls.o\
-	macro-dkim.o macro-malware.o macro-macro.o macro-tree.o
+	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-authtls.o \
+	macro-dkim.o macro-malware.o macro-macro.o macro-tree.o macro-signing.o
 
 $(OBJ_MACRO):	$(MACRO_HSRC)
 
@@ -220,7 +220,7 @@ macro-plaintext.o :	auths/plaintext.c
 macro-spa.o :		auths/spa.c
 	@echo "$(CC) -DMACRO_PREDEF auths/spa.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/spa.c
-macro-tls.o:		auths/tls.c
+macro-authtls.o:	auths/tls.c
 	@echo "$(CC) -DMACRO_PREDEF auths/tls.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ auths/tls.c
 macro-dkim.o:		dkim.c
@@ -235,6 +235,9 @@ macro-macro.o:	macro.c
 macro-tree.o:	tree.c
 	@echo "$(CC) -DMACRO_PREDEF tree.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ tree.c
+macro-signing.o:	pdkim/signing.c
+	@echo "$(CC) -DMACRO_PREDEF pdkim/signing.c"
+	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ pdkim/signing.c
 
 macro_predef: $(OBJ_MACRO)
 	@echo "$(LNCC) -o $@"

@@ -7,15 +7,30 @@
  */
 
 #include "../exim.h"
+#include "crypt_ver.h"
+#include "signing.h"
 
-#ifndef DISABLE_DKIM	/* entire file */
+
+#ifdef MACRO_PREDEF
+# include "../macro_predef.h"
+
+void
+features_crypto(void)
+{
+# ifdef SIGN_HAVE_ED25519
+  builtin_macro_create(US"_CRYPTO_SIGN_ED25519");
+# endif
+# ifdef EXIM_HAVE_SHA3
+  builtin_macro_create(US"_CRYPTO_HASH_SHA3");
+# endif
+}
+#else
+
+#ifndef DISABLE_DKIM	/* rest of file */
 
 #ifndef SUPPORT_TLS
 # error Need SUPPORT_TLS for DKIM
 #endif
-
-#include "crypt_ver.h"
-#include "signing.h"
 
 
 /******************************************************************************/
@@ -884,4 +899,5 @@ switch (hash)
 /******************************************************************************/
 
 #endif	/*DISABLE_DKIM*/
+#endif	/*MACRO_PREDEF*/
 /* End of File */

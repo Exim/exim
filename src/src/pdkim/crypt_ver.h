@@ -17,7 +17,7 @@
 # if GNUTLS_VERSION_NUMBER >= 0x030000
 #  define SIGN_GNUTLS
 #  if GNUTLS_VERSION_NUMBER >= 0x030600
-#   define SIGN_HAVE_ED25519
+#   define SIGN_HAVE_ED25519		/*MMMM*/
 #  endif
 # else
 #  define SIGN_GCRYPT

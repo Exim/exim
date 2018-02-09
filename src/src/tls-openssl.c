@@ -51,7 +51,7 @@ functions from the OpenSSL library. */
 # define EXIM_HAVE_RAND_PSEUDO
 #endif
 #if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
-# define EXIM_HAVE_SHA256
+# define EXIM_HAVE_SHA256	/*MMMM*/
 #endif
 
 /*
@@ -81,7 +81,7 @@ functions from the OpenSSL library. */
     || LIBRESSL_VERSION_NUMBER >= 0x20010000L
 # if !defined(OPENSSL_NO_ECDH)
 #  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
-#   define EXIM_HAVE_ECDH
+#   define EXIM_HAVE_ECDH	/*MMMM*/
 #  endif
 #  if OPENSSL_VERSION_NUMBER >= 0x10002000L
 #   define EXIM_HAVE_OPENSSL_EC_NIST2NID

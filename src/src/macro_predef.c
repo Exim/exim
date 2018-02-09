@@ -258,6 +258,8 @@ due to conflicts with other common macros. */
 #ifdef WITH_CONTENT_SCAN
 features_malware();
 #endif
+
+features_crypto();
 }
 
 
