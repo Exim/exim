@@ -488,7 +488,6 @@ int     bounce_return_linesize_limit = 998;
 BOOL    bounce_return_message  = TRUE;
 int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;
-uschar *builtin_macros_create_trigger = NULL;
 
 uschar *callout_address        = NULL;
 int     callout_cache_domain_positive_expire = 7*24*60*60;

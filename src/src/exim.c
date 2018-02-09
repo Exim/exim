@@ -3793,9 +3793,6 @@ defined) */
 
 readconf_main(checking || list_options);
 
-if (builtin_macros_create_trigger) DEBUG(D_any)
-  debug_printf("Builtin macros created (expensive) due to config line '%.*s'\n",
-    Ustrlen(builtin_macros_create_trigger)-1, builtin_macros_create_trigger);
 
 /* Now in directory "/" */
 

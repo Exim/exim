@@ -258,7 +258,6 @@ extern int     bounce_return_linesize_limit; /* Max line length in return */
 extern BOOL    bounce_return_message;  /* Include message in bounce */
 extern int     bounce_return_size_limit; /* Max amount to return */
 extern uschar *bounce_sender_authentication; /* AUTH address for bounces */
-extern uschar *builtin_macros_create_trigger; /* config file line causing lazy-create */
 
 extern uschar *callout_address;         /* Address used for a malware/spamd/verify etc. callout */
 extern int     callout_cache_domain_positive_expire; /* Time for positive domain callout cache records to expire */
