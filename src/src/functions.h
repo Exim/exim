@@ -336,7 +336,7 @@ extern void    readconf_driver_init(uschar *, driver_instance **,
 extern uschar *readconf_find_option(void *);
 extern void    readconf_main(BOOL);
 extern void    readconf_options_from_list(optionlist *, unsigned, const uschar *, uschar *);
-extern void    readconf_print(uschar *, uschar *, BOOL);
+extern BOOL    readconf_print(uschar *, uschar *, BOOL);
 extern uschar *readconf_printtime(int);
 extern uschar *readconf_readname(uschar *, int, uschar *);
 extern int     readconf_readtime(const uschar *, int, BOOL);

@@ -4573,30 +4573,33 @@ if (test_retry_arg >= 0)
 
 if (list_options)
   {
+  BOOL fail = FALSE;
   set_process_info("listing variables");
-  if (recipients_arg >= argc) readconf_print(US"all", NULL, flag_n);
-    else for (i = recipients_arg; i < argc; i++)
+  if (recipients_arg >= argc)
+    fail = !readconf_print(US"all", NULL, flag_n);
+  else for (i = recipients_arg; i < argc; i++)
+    {
+    if (i < argc - 1 &&
+	(Ustrcmp(argv[i], "router") == 0 ||
+	 Ustrcmp(argv[i], "transport") == 0 ||
+	 Ustrcmp(argv[i], "authenticator") == 0 ||
+	 Ustrcmp(argv[i], "macro") == 0 ||
+	 Ustrcmp(argv[i], "environment") == 0))
       {
-      if (i < argc - 1 &&
-          (Ustrcmp(argv[i], "router") == 0 ||
-           Ustrcmp(argv[i], "transport") == 0 ||
-           Ustrcmp(argv[i], "authenticator") == 0 ||
-           Ustrcmp(argv[i], "macro") == 0 ||
-           Ustrcmp(argv[i], "environment") == 0))
-        {
-        readconf_print(argv[i+1], argv[i], flag_n);
-        i++;
-        }
-      else readconf_print(argv[i], NULL, flag_n);
+      fail |= !readconf_print(argv[i+1], argv[i], flag_n);
+      i++;
       }
-  exim_exit(EXIT_SUCCESS, US"main");
+    else
+      fail = !readconf_print(argv[i], NULL, flag_n);
+    }
+  exim_exit(fail ? EXIT_FAILURE : EXIT_SUCCESS, US"main");
   }
 
 if (list_config)
   {
   set_process_info("listing config");
-  readconf_print(US"config", NULL, flag_n);
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(readconf_print(US"config", NULL, flag_n)
+		? EXIT_SUCCESS : EXIT_FAILURE, US"main");
   }
 
 

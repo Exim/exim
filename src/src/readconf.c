@@ -2320,10 +2320,10 @@ Arguments:
   last           one more than the offset of the last entry in optop
   no_labels      do not show "foo = " at the start.
 
-Returns:         nothing
+Returns:         boolean success
 */
 
-static void
+static BOOL
 print_ol(optionlist *ol, uschar *name, void *options_block,
   optionlist *oltop, int last, BOOL no_labels)
 {
@@ -2336,30 +2336,30 @@ gid_t *gidlist;
 uschar *s;
 uschar name2[64];
 
-if (ol == NULL)
+if (!ol)
   {
   printf("%s is not a known option\n", name);
-  return;
+  return FALSE;
   }
 
 /* Non-admin callers cannot see options that have been flagged secure by the
 "hide" prefix. */
 
-if (!admin_user && (ol->type & opt_secure) != 0)
+if (!admin_user && ol->type & opt_secure)
   {
   if (no_labels)
     printf("%s\n", hidden);
   else
     printf("%s = %s\n", name, hidden);
-  return;
+  return TRUE;
   }
 
 /* Else show the value of the option */
 
 value = ol->value;
-if (options_block != NULL)
+if (options_block)
   {
-  if ((ol->type & opt_public) == 0)
+  if (!(ol->type & opt_public))
     options_block = (void *)(((driver_instance *)options_block)->options_block);
   value = (void *)(US options_block + (long int)value);
   }
@@ -2368,15 +2368,15 @@ switch(ol->type & opt_mask)
   {
   case opt_stringptr:
   case opt_rewrite:        /* Show the text value */
-  s = *((uschar **)value);
-  if (!no_labels) printf("%s = ", name);
-  printf("%s\n", (s == NULL)? US"" : string_printing2(s, FALSE));
-  break;
+    s = *(USS value);
+    if (!no_labels) printf("%s = ", name);
+    printf("%s\n", s ? string_printing2(s, FALSE) : US"");
+    break;
 
   case opt_int:
-  if (!no_labels) printf("%s = ", name);
-  printf("%d\n", *((int *)value));
-  break;
+    if (!no_labels) printf("%s = ", name);
+    printf("%d\n", *((int *)value));
+    break;
 
   case opt_mkint:
     {
@@ -2399,22 +2399,22 @@ switch(ol->type & opt_mask)
       printf("%d\n", x);
       }
     }
-  break;
+    break;
 
   case opt_Kint:
     {
     int x = *((int *)value);
     if (!no_labels) printf("%s = ", name);
     if (x == 0) printf("0\n");
-      else if ((x & 1023) == 0) printf("%dM\n", x >> 10);
-        else printf("%dK\n", x);
+    else if ((x & 1023) == 0) printf("%dM\n", x >> 10);
+    else printf("%dK\n", x);
     }
-  break;
+    break;
 
   case opt_octint:
-  if (!no_labels) printf("%s = ", name);
-  printf("%#o\n", *((int *)value));
-  break;
+    if (!no_labels) printf("%s = ", name);
+    printf("%#o\n", *((int *)value));
+    break;
 
   /* Can be negative only when "unset", in which case integer */
 
@@ -2437,124 +2437,115 @@ switch(ol->type & opt_mask)
       printf("\n");
       }
     }
-  break;
+    break;
 
   /* If the numerical value is unset, try for the string value */
 
   case opt_expand_uid:
-  if (! *get_set_flag(name, oltop, last, options_block))
-    {
-    sprintf(CS name2, "*expand_%.50s", name);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL)
+    if (! *get_set_flag(name, oltop, last, options_block))
       {
-      void *value2 = ol2->value;
-      if (options_block != NULL)
-        value2 = (void *)(US options_block + (long int)value2);
-      s = *((uschar **)value2);
-      if (!no_labels) printf("%s = ", name);
-      printf("%s\n", (s == NULL)? US"" : string_printing(s));
-      break;
+      sprintf(CS name2, "*expand_%.50s", name);
+      if ((ol2 = find_option(name2, oltop, last)))
+	{
+	void *value2 = ol2->value;
+	if (options_block)
+	  value2 = (void *)(US options_block + (long int)value2);
+	s = *(USS value2);
+	if (!no_labels) printf("%s = ", name);
+	printf("%s\n", s ? string_printing(s) : US"");
+	break;
+	}
       }
-    }
 
-  /* Else fall through */
+    /* Else fall through */
 
   case opt_uid:
-  if (!no_labels) printf("%s = ", name);
-  if (! *get_set_flag(name, oltop, last, options_block))
-    printf("\n");
-  else
-    {
-    pw = getpwuid(*((uid_t *)value));
-    if (pw == NULL)
-      printf("%ld\n", (long int)(*((uid_t *)value)));
-    else printf("%s\n", pw->pw_name);
-    }
-  break;
+    if (!no_labels) printf("%s = ", name);
+    if (! *get_set_flag(name, oltop, last, options_block))
+      printf("\n");
+    else
+      if ((pw = getpwuid(*((uid_t *)value))))
+	printf("%s\n", pw->pw_name);
+      else
+	printf("%ld\n", (long int)(*((uid_t *)value)));
+    break;
 
   /* If the numerical value is unset, try for the string value */
 
   case opt_expand_gid:
-  if (! *get_set_flag(name, oltop, last, options_block))
-    {
-    sprintf(CS name2, "*expand_%.50s", name);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL && (ol2->type & opt_mask) == opt_stringptr)
+    if (! *get_set_flag(name, oltop, last, options_block))
       {
-      void *value2 = ol2->value;
-      if (options_block != NULL)
-        value2 = (void *)(US options_block + (long int)value2);
-      s = *((uschar **)value2);
-      if (!no_labels) printf("%s = ", name);
-      printf("%s\n", (s == NULL)? US"" : string_printing(s));
-      break;
+      sprintf(CS name2, "*expand_%.50s", name);
+      if (  (ol2 = find_option(name2, oltop, last))
+	 && (ol2->type & opt_mask) == opt_stringptr)
+	{
+	void *value2 = ol2->value;
+	if (options_block)
+	  value2 = (void *)(US options_block + (long int)value2);
+	s = *(USS value2);
+	if (!no_labels) printf("%s = ", name);
+	printf("%s\n", s ? string_printing(s) : US"");
+	break;
+	}
       }
-    }
 
-  /* Else fall through */
+    /* Else fall through */
 
   case opt_gid:
-  if (!no_labels) printf("%s = ", name);
-  if (! *get_set_flag(name, oltop, last, options_block))
-    printf("\n");
-  else
-    {
-    gr = getgrgid(*((int *)value));
-    if (gr == NULL)
-       printf("%ld\n", (long int)(*((int *)value)));
-    else printf("%s\n", gr->gr_name);
-    }
-  break;
+    if (!no_labels) printf("%s = ", name);
+    if (! *get_set_flag(name, oltop, last, options_block))
+      printf("\n");
+    else
+      if ((gr = getgrgid(*((int *)value))))
+	printf("%s\n", gr->gr_name);
+      else
+	 printf("%ld\n", (long int)(*((int *)value)));
+    break;
 
   case opt_uidlist:
-  uidlist = *((uid_t **)value);
-  if (!no_labels) printf("%s =", name);
-  if (uidlist != NULL)
-    {
-    int i;
-    uschar sep = ' ';
-    if (no_labels) sep = '\0';
-    for (i = 1; i <= (int)(uidlist[0]); i++)
+    uidlist = *((uid_t **)value);
+    if (!no_labels) printf("%s =", name);
+    if (uidlist)
       {
-      uschar *name = NULL;
-      pw = getpwuid(uidlist[i]);
-      if (pw != NULL) name = US pw->pw_name;
-      if (sep != '\0') printf("%c", sep);
-      if (name != NULL) printf("%s", name);
-        else printf("%ld", (long int)(uidlist[i]));
-      sep = ':';
+      int i;
+      uschar sep = no_labels ? '\0' : ' ';
+      for (i = 1; i <= (int)(uidlist[0]); i++)
+	{
+	uschar *name = NULL;
+	if ((pw = getpwuid(uidlist[i]))) name = US pw->pw_name;
+	if (sep != '\0') printf("%c", sep);
+	if (name) printf("%s", name);
+	else printf("%ld", (long int)(uidlist[i]));
+	sep = ':';
+	}
       }
-    }
-  printf("\n");
-  break;
+    printf("\n");
+    break;
 
   case opt_gidlist:
-  gidlist = *((gid_t **)value);
-  if (!no_labels) printf("%s =", name);
-  if (gidlist != NULL)
-    {
-    int i;
-    uschar sep = ' ';
-    if (no_labels) sep = '\0';
-    for (i = 1; i <= (int)(gidlist[0]); i++)
+    gidlist = *((gid_t **)value);
+    if (!no_labels) printf("%s =", name);
+    if (gidlist)
       {
-      uschar *name = NULL;
-      gr = getgrgid(gidlist[i]);
-      if (gr != NULL) name = US gr->gr_name;
-      if (sep != '\0') printf("%c", sep);
-      if (name != NULL) printf("%s", name);
-        else printf("%ld", (long int)(gidlist[i]));
-      sep = ':';
+      int i;
+      uschar sep = no_labels ? '\0' : ' ';
+      for (i = 1; i <= (int)(gidlist[0]); i++)
+	{
+	uschar *name = NULL;
+	if ((gr = getgrgid(gidlist[i]))) name = US gr->gr_name;
+	if (sep != '\0') printf("%c", sep);
+	if (name) printf("%s", name);
+	else printf("%ld", (long int)(gidlist[i]));
+	sep = ':';
+	}
       }
-    }
-  printf("\n");
-  break;
+    printf("\n");
+    break;
 
   case opt_time:
-  if (!no_labels) printf("%s = ", name);
-  printf("%s\n", readconf_printtime(*((int *)value)));
-  break;
+    if (!no_labels) printf("%s = ", name);
+    printf("%s\n", readconf_printtime(*((int *)value)));
+    break;
 
   case opt_timelist:
     {
@@ -2562,42 +2553,42 @@ switch(ol->type & opt_mask)
     int *list = (int *)value;
     if (!no_labels) printf("%s = ", name);
     for (i = 0; i < list[1]; i++)
-      printf("%s%s", (i == 0)? "" : ":", readconf_printtime(list[i+2]));
+      printf("%s%s", i == 0 ? "" : ":", readconf_printtime(list[i+2]));
     printf("\n");
     }
-  break;
+    break;
 
   case opt_bit:
-  printf("%s%s\n", ((*((int *)value)) & (1 << ((ol->type >> 16) & 31)))?
-    "" : "no_", name);
-  break;
+    printf("%s%s\n", ((*((int *)value)) & (1 << ((ol->type >> 16) & 31)))?
+      "" : "no_", name);
+    break;
 
   case opt_expand_bool:
-  sprintf(CS name2, "*expand_%.50s", name);
-  ol2 = find_option(name2, oltop, last);
-  if (ol2 != NULL && ol2->value != NULL)
-    {
-    void *value2 = ol2->value;
-    if (options_block != NULL)
-      value2 = (void *)(US options_block + (long int)value2);
-    s = *((uschar **)value2);
-    if (s != NULL)
+    sprintf(CS name2, "*expand_%.50s", name);
+    if ((ol2 = find_option(name2, oltop, last)) && ol2->value)
       {
-      if (!no_labels) printf("%s = ", name);
-      printf("%s\n", string_printing(s));
-      break;
+      void *value2 = ol2->value;
+      if (options_block)
+	value2 = (void *)(US options_block + (long int)value2);
+      s = *(USS value2);
+      if (s)
+	{
+	if (!no_labels) printf("%s = ", name);
+	printf("%s\n", string_printing(s));
+	break;
+	}
+      /* s == NULL => string not set; fall through */
       }
-    /* s == NULL => string not set; fall through */
-    }
 
-  /* Fall through */
+    /* Fall through */
 
   case opt_bool:
   case opt_bool_verify:
   case opt_bool_set:
-  printf("%s%s\n", (*((BOOL *)value))? "" : "no_", name);
-  break;
+    printf("%s%s\n", (*((BOOL *)value))? "" : "no_", name);
+    break;
   }
+return TRUE;
 }
 
 
@@ -2636,10 +2627,10 @@ Arguments:
   type        NULL or driver type name, as described above
   no_labels   avoid the "foo = " at the start of an item
 
-Returns:      nothing
+Returns:      Boolean success
 */
 
-void
+BOOL
 readconf_print(uschar *name, uschar *type, BOOL no_labels)
 {
 BOOL names_only = FALSE;
@@ -2649,7 +2640,7 @@ driver_instance *d = NULL;
 macro_item *m;
 int size = 0;
 
-if (type == NULL)
+if (!type)
   {
   if (*name == '+')
     {
@@ -2662,9 +2653,7 @@ if (type == NULL)
       &hostlist_anchor, &localpartlist_anchor };
 
     for (i = 0; i < 4; i++)
-      {
-      t = tree_search(*(anchors[i]), name+1);
-      if (t != NULL)
+      if ((t = tree_search(*(anchors[i]), name+1)))
         {
         found = TRUE;
         if (no_labels)
@@ -2673,54 +2662,50 @@ if (type == NULL)
           printf("%slist %s = %s\n", types[i], name+1,
             ((namedlist_block *)(t->data.ptr))->string);
         }
-      }
 
     if (!found)
       printf("no address, domain, host, or local part list called \"%s\" "
         "exists\n", name+1);
 
-    return;
+    return found;
     }
 
   if (  Ustrcmp(name, "configure_file") == 0
      || Ustrcmp(name, "config_file") == 0)
     {
     printf("%s\n", CS config_main_filename);
-    return;
+    return TRUE;
     }
 
   if (Ustrcmp(name, "all") == 0)
     {
     for (ol = optionlist_config;
          ol < optionlist_config + nelem(optionlist_config); ol++)
-      {
-      if ((ol->type & opt_hidden) == 0)
-        print_ol(ol, US ol->name, NULL,
-            optionlist_config, nelem(optionlist_config),
-            no_labels);
-      }
-    return;
+      if (!(ol->type & opt_hidden))
+        (void) print_ol(ol, US ol->name, NULL,
+		  optionlist_config, nelem(optionlist_config),
+		  no_labels);
+    return TRUE;
     }
 
   if (Ustrcmp(name, "local_scan") == 0)
     {
-    #ifndef LOCAL_SCAN_HAS_OPTIONS
+#ifndef LOCAL_SCAN_HAS_OPTIONS
     printf("local_scan() options are not supported\n");
-    #else
+    return FALSE;
+#else
     for (ol = local_scan_options;
          ol < local_scan_options + local_scan_options_count; ol++)
-      {
-      print_ol(ol, US ol->name, NULL, local_scan_options,
-        local_scan_options_count, no_labels);
-      }
-    #endif
-    return;
+      (void) print_ol(ol, US ol->name, NULL, local_scan_options,
+		  local_scan_options_count, no_labels);
+    return TRUE;
+#endif
     }
 
   if (Ustrcmp(name, "config") == 0)
     {
     print_config(admin_user, no_labels);
-    return;
+    return TRUE;
     }
 
   if (Ustrcmp(name, "routers") == 0)
@@ -2733,47 +2718,40 @@ if (type == NULL)
     type = US"transport";
     name = NULL;
     }
-
   else if (Ustrcmp(name, "authenticators") == 0)
     {
     type = US"authenticator";
     name = NULL;
     }
-
   else if (Ustrcmp(name, "macros") == 0)
     {
     type = US"macro";
     name = NULL;
     }
-
   else if (Ustrcmp(name, "router_list") == 0)
     {
     type = US"router";
     name = NULL;
     names_only = TRUE;
     }
-
   else if (Ustrcmp(name, "transport_list") == 0)
     {
     type = US"transport";
     name = NULL;
     names_only = TRUE;
     }
-
   else if (Ustrcmp(name, "authenticator_list") == 0)
     {
     type = US"authenticator";
     name = NULL;
     names_only = TRUE;
     }
-
   else if (Ustrcmp(name, "macro_list") == 0)
     {
     type = US"macro";
     name = NULL;
     names_only = TRUE;
     }
-
   else if (Ustrcmp(name, "environment") == 0)
     {
     if (environ)
@@ -2789,15 +2767,13 @@ if (type == NULL)
         puts(CS *p);
         }
       }
-    return;
+    return TRUE;
     }
 
   else
-    {
-    print_ol(find_option(name, optionlist_config, nelem(optionlist_config)),
+    return print_ol(find_option(name,
+      optionlist_config, nelem(optionlist_config)),
       name, NULL, optionlist_config, nelem(optionlist_config), no_labels);
-    return;
-    }
   }
 
 /* Handle the options for a router or transport. Skip options that are flagged
@@ -2832,47 +2808,55 @@ else if (Ustrcmp(type, "macro") == 0)
   if (!admin_user)
     {
     fprintf(stderr, "exim: permission denied\n");
-    exit(EXIT_FAILURE);
+    return FALSE;
     }
 
   if (name)
     if ((m = macro_search(name)))
       macro_print(m->tnode.name, m->tnode.data.ptr, (void *)(long)names_only);
     else
+      {
       printf("%s %s not found\n", type, name);
+      return FALSE;
+      }
   else
     tree_walk(tree_macros, macro_print, (void *)(long)names_only);
 
-  return;
+  return TRUE;
   }
 
 if (names_only)
   {
   for (; d; d = d->next) printf("%s\n", CS d->name);
-  return;
+  return TRUE;;
   }
 
 /* Either search for a given driver, or print all of them */
 
 for (; d; d = d->next)
   {
+  BOOL rc = FALSE;
   if (!name)
     printf("\n%s %s:\n", d->name, type);
   else if (Ustrcmp(d->name, name) != 0)
     continue;
 
   for (ol = ol2; ol < ol2 + size; ol++)
-    if ((ol->type & opt_hidden) == 0)
-      print_ol(ol, US ol->name, d, ol2, size, no_labels);
+    if (!(ol->type & opt_hidden))
+      rc |= print_ol(ol, US ol->name, d, ol2, size, no_labels);
 
   for (ol = d->info->options;
        ol < d->info->options + *(d->info->options_count); ol++)
-    if ((ol->type & opt_hidden) == 0)
-      print_ol(ol, US ol->name, d, d->info->options, *(d->info->options_count), no_labels);
+    if (!(ol->type & opt_hidden))
+      rc |= print_ol(ol, US ol->name, d, d->info->options,
+		    *d->info->options_count, no_labels);
 
-  if (name) return;
+  if (name) return rc;
   }
-if (name) printf("%s %s not found\n", type, name);
+if (!name) return TRUE;
+
+printf("%s %s not found\n", type, name);
+return FALSE;
 }
 
 

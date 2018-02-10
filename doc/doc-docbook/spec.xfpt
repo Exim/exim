@@ -3162,6 +3162,10 @@ If invoked by an admin user, then &%macro%&, &%macro_list%& and &%macros%&
 are available, similarly to the drivers.  Because macros are sometimes used
 for storing passwords, this option is restricted.
 The output format is one item per line.
+.new
+For the "-bP macro <name>" form, if no such macro is found
+the exit status will be nonzero.
+.wen
 
 .vitem &%-bp%&
 .oindex "&%-bp%&"
