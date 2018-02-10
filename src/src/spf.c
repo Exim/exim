@@ -5,7 +5,7 @@
 /* Experimental SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2014
    License: GPL
-   Copyright (c) The Exim Maintainers 2017
+   Copyright (c) The Exim Maintainers 2015 - 2018
 */
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
@@ -89,7 +89,7 @@ return TRUE;
 /* spf_process adds the envelope sender address to the existing
    context (if any), retrieves the result, sets up expansion
    strings and evaluates the condition outcome.
-   
+
 Return: OK/FAIL  */
 
 int

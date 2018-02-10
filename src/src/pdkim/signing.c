@@ -1,7 +1,7 @@
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
  *
- *  Copyright (C) 2017  Exim maintainers
+ *  Copyright (C) 1995 - 2018  Exim maintainers
  *
  *  signing/verification interface
  */
@@ -401,7 +401,7 @@ Useful cmds:
 (not good for ed25519)
 
  */
- 
+
 if (  !(s1 = Ustrstr(CS privkey_pem, "-----BEGIN RSA PRIVATE KEY-----"))
    || !(s2 = Ustrstr(CS (s1+=31),    "-----END RSA PRIVATE KEY-----" ))
    )
@@ -752,10 +752,10 @@ if(  (ctx = EVP_MD_CTX_create())
 
 /* Initialise the DigestSign operation */
   && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
- 
+
  /* Call update with the message */
    && EVP_DigestSignUpdate(ctx, data->data, data->len) > 0
- 
+
  /* Finalise the DigestSign operation */
  /* First call EVP_DigestSignFinal with a NULL sig parameter to obtain the length of the
   * signature. Length is returned in slen */

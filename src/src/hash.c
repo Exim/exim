@@ -1,8 +1,8 @@
 /*
  *  Exim - an Internet mail transport agent
  *
- *  Copyright (C) 2017  Exim maintainers
- *  Copyright (c) University of Cambridge 1995 - 2017
+ *  Copyright (C) 2010 - 2018  Exim maintainers
+ *  Copyright (c) University of Cambridge 1995 - 2009
  *
  *  Hash interface functions
  */

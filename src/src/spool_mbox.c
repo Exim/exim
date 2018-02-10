@@ -4,7 +4,7 @@
 
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015
  * License: GPL
- * Copyright (c) The Exim Maintainers 2017
+ * Copyright (c) The Exim Maintainers 2016 - 2018
  */
 
 /* Code for setting up a MBOX style spool file inside a /scan/<msgid>
@@ -132,7 +132,7 @@ if (!spool_mbox_ok)
   /* The code used to use this line, but it doesn't work in Cygwin.
 
       (void)fread(data_buffer, 1, 18, data_file);
-    
+
      What's happening is that spool_mbox used to use an fread to jump over the
      file header. That fails under Cygwin because the header is locked, but
      doing an fseek succeeds. We have to output the leading newline

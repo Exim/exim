@@ -7,7 +7,7 @@
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
  *
- * Copyright (c) The Exim Maintainers 2015 - 2017
+ * Copyright (c) The Exim Maintainers 2015 - 2018
  */
 
 /* This patch is based on code from Tom Kistners exiscan (ACL integration) and

@@ -1,5 +1,5 @@
 /* Exim: OS-specific C header file for FreeBSD */
-/* Copyright (c) University of Cambridge 2017 */
+/* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -58,7 +58,7 @@ MSG_FASTOPEN defined yet... */
 #if defined(TCP_FASTOPEN) && !defined(MSG_FASTOPEN)
 # define MSG_FASTOPEN 0x20000000
 #endif
- 
+
 /* for TCP state-variable values, for TFO logging */
 #include <netinet/tcp_fsm.h>
 #define TCP_SYN_RECV TCPS_SYN_RECEIVED

@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) 1998 Malcolm Beattie */
-/* Copyright (C) 2017  Exim maintainers */
+/* Copyright (C) 1999 - 2018  Exim maintainers */
 
 /* Modified by PH to get rid of the "na" usage, March 1999.
    Modified further by PH for general tidying for Exim 4.

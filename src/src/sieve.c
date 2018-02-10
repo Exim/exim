@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Michael Haardt 2003 - 2015
- * Copyright (c) The Exim Maintainers 2017
+ * Copyright (c) The Exim Maintainers 2016 - 2018
  * See the file NOTICE for conditions of use and distribution.
  */
 

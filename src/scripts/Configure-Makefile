@@ -6,7 +6,7 @@ export LC_ALL=C
 # just got too horrendous to get it right in "make", because of the optionally
 # existing configuration files.
 #
-# Copyright (c) The Exim Maintainers 2017
+# Copyright (c) The Exim Maintainers 1995 - 2018
 
 
 # First off, get the OS type, and check that there is a make file for it.

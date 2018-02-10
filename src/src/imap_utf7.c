@@ -1,4 +1,4 @@
-/* Copyright (c) University of Cambridge 2017 */
+/* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "exim.h"

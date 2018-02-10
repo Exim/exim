@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) Phil Pennock 2012, 2016
- * Copyright (c) The Exim Maintainers 2017
+ * Copyright (c) The Exim Maintainers 2017 - 2018
  * But almost everything here is fixed published constants from RFCs, so also:
  * Copyright (C) The Internet Society (2003)
  * Copyright (C) The IETF Trust (2008)
