@@ -3535,6 +3535,32 @@ DIR: for (my $i = 0; $i < @test_dirs; $i++)
         {
         if (!defined $parm_malware{$1}) { $wantthis = 0; last; }
         }
+      elsif (/^feature (.*)$/)
+        {
+	# move to a subroutine?
+	my $eximinfo = "$parm_exim -C $parm_cwd/test-config -DDIR=$parm_cwd -bP macro $1";
+
+	open (IN, "$parm_cwd/confs/0000") ||
+	  tests_exit(-1, "Couldn't open $parm_cwd/confs/0000: $!\n");
+	open (OUT, ">test-config") ||
+	  tests_exit(-1, "Couldn't open test-config: $!\n");
+	while (<IN>)
+	  {
+	  do_substitute($testno);
+	  print OUT;
+	  }
+	close(IN);
+	close(OUT);
+
+	system($eximinfo . " >/dev/null 2>&1");
+	if ($? != 0) {
+	  unlink("$parm_cwd/test-config");
+	  $wantthis = 0;
+	  $_ = "feature $1";
+	  last;
+	}
+	unlink("$parm_cwd/test-config");
+        }
       else
         {
         tests_exit(-1, "Unknown line in \"scripts/$testdir/REQUIRES\": \"$_\"");

@@ -1,0 +1,13 @@
+# sha3 expansions
+#
+exim -be
+sha256:   ${sha256:}
+sha256:   ${sha256:abc}
+
+sha3:     ${sha3:}
+sha3:     ${sha3:abc}
+sha3_256: ${sha3_256:}
+sha3_256: ${sha3_256:abc}
+sha3_512: ${sha3_512:}
+sha3_512: ${sha3_512:abc}
+****
