@@ -1,4 +1,4 @@
-# DKIM verify, sha512
+# DKIM verify, sha512 (with extraneous DNS record)
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****

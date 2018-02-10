@@ -1,0 +1,2 @@
+support DKIM
+feature _CRYPTO_SIGN_ED25519
