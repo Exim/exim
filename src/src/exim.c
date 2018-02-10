@@ -1432,7 +1432,7 @@ if (isupper(big_buffer[0]))
   if (macro_read_assignment(big_buffer))
     {
     uschar * s = Ustrchr(big_buffer, '=');
-    printf("Defined macro '%.*s'\n", s - big_buffer, big_buffer);
+    printf("Defined macro '%.*s'\n", (int)(s - big_buffer), big_buffer);
     }
   }
 else

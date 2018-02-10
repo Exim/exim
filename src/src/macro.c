@@ -40,7 +40,11 @@ m->namelen = namelen;
 m->replen = Ustrlen(val);
 m->m_number = m_number++;
 memset(&m->tnode, 0, sizeof(tree_node));
-Ustrcpy(m->tnode.name, name);
+/* Use memcpy here not Ustrcpy to avoid spurious compiler-inserted check
+when building with fortify-source. We know there is room for the copy into
+this dummy for a variable-size array because of the way we did the memory
+allocation above. */
+memcpy(m->tnode.name, name, namelen+1);
 m->tnode.data.ptr = string_copyn(val, m->replen);
 (void) tree_insertnode(&tree_macros, &m->tnode);
 
