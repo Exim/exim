@@ -48,4 +48,6 @@ a buffer */
 # define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
 
+extern char * strndup(const char *, size_t);
+
 /* End */

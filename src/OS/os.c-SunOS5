@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 2016 */
-/* Copyright (c) Jeremy Harris 2016 */
+/* Copyright (c) Jeremy Harris 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Solaris-specific code. This is concatenated onto the generic
@@ -12,5 +12,16 @@ src/os.c file. */
 #if defined(MISSING_UNSETENV_3) && !defined(COMPILE_UTILITY)
 # include "setenv.c"
 #endif
+
+/* This is missing in Solaris 10, present in Solaris 11.
+A feature-test would be good. */
+
+char *
+strndup(const char * s, size_t n)
+{
+char * dest;
+if (!(dest = malloc(n))) return NULL;
+return strncpy(dest, s, n);
+}
 
 /* End of os.c-SunOS5 */
