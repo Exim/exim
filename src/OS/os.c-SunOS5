@@ -17,7 +17,7 @@ src/os.c file. */
 A feature-test would be good. */
 
 char *
-strndup(const char * s, size_t n)
+strndup(const char * s, unsigned long n)
 {
 char * dest;
 if (!(dest = malloc(n))) return NULL;
