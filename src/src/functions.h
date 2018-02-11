@@ -256,10 +256,6 @@ extern int     log_create_as_exim(uschar *);
 extern void    log_close_all(void);
 
 extern macro_item * macro_create(const uschar *, const uschar *, BOOL);
-extern macro_item * macro_search(const uschar *);
-extern macro_item * macro_search_largest_prefix(const uschar *);
-extern macro_item * macro_search_prefix(const uschar *);
-extern void         macro_print(uschar *, uschar *, void *);
 extern BOOL    macro_read_assignment(uschar *);
 extern uschar *macros_expand(int, int *, BOOL *);
 extern void    mainlog_close(void);

@@ -110,7 +110,7 @@ for f in blob.h dbfunctions.h dbstuff.h exim.h functions.h globals.h \
   tod.c transport.c tree.c verify.c version.c \
   dkim.c dkim.h dkim_transport.c dmarc.c dmarc.h \
   valgrind.h memcheck.h \
-  macro.c macro_predef.c macro_predef.h
+  macro_predef.c macro_predef.h
 do
   ln -s ../src/$f $f
 done

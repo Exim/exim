@@ -32,6 +32,17 @@ typedef struct gstring {
   uschar * s;		/* The string memory */
 } gstring;
 
+/* Structure for remembering macros for the configuration file */
+
+typedef struct macro_item {
+  struct  macro_item * next;
+  BOOL     	command_line;
+  unsigned	namelen;
+  unsigned	replen;
+  const uschar * name;
+  const uschar * replacement;
+} macro_item;
+
 /* Structure for bit tables for debugging and logging */
 
 typedef struct bit_table {
@@ -693,38 +704,6 @@ typedef struct tree_node {
   uschar  balance;                /* balancing factor */
   uschar  name[1];                /* node name - variable length */
 } tree_node;
-
-typedef struct tree_node_64 {
-  struct tree_node_64 *left;      /* pointer to left child */
-  struct tree_node_64 *right;     /* pointer to right child */
-  union
-    {
-    void  *ptr;                   /* pointer to data */
-    int val;                      /* or integer data */
-    } data;
-  uschar  balance;                /* balancing factor */
-  uschar  name[64];               /* node name - bounded length */
-} tree_node_64;
-
-/* Structure for remembering macros for the configuration file */
-
-typedef struct macro_item {
-  BOOL     	command_line;
-  unsigned	namelen;
-  unsigned	replen;
-  unsigned	m_number;
-  tree_node	tnode;		/* contains name; ptr indicates val */
-} macro_item;
-
-typedef struct macro_item_64 {
-  BOOL     	command_line;
-  unsigned	namelen;
-  unsigned	replen;
-  unsigned	m_number;
-  tree_node_64	tnode;		/* contains name; ptr indicates val */
-} macro_item_64;
-
-#define tnode_to_mitem(tp) (tp ? (macro_item *) (CS(tp) - offsetof(macro_item, tnode)) : NULL)
 
 /* Structure for holding time-limited data such as DNS returns.
 We use this rather than extending tree_node to avoid wasting

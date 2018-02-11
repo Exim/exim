@@ -36,7 +36,7 @@ FE       = $(FULLECHO)
 # are set up, and finally it goes to the main Exim target.
 
 all:       utils exim
-config:    $(EDITME) checklocalmake Makefile os.c config.h version.h version.sh macro_defs.c
+config:    $(EDITME) checklocalmake Makefile os.c config.h version.h version.sh macro.c
 
 checklocalmake:
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
@@ -135,7 +135,7 @@ OBJ_MACRO = macro_predef.o \
 	macro-manualroute.o macro-queryprogram.o macro-redirect.o \
 	macro-auth-spa.o macro-cram_md5.o macro-cyrus_sasl.o macro-dovecot.o macro-gsasl_exim.o \
 	macro-heimdal_gssapi.o macro-plaintext.o macro-spa.o macro-authtls.o \
-	macro-dkim.o macro-malware.o macro-macro.o macro-tree.o macro-signing.o
+	macro-dkim.o macro-malware.o macro-signing.o
 
 $(OBJ_MACRO):	$(MACRO_HSRC)
 
@@ -229,12 +229,6 @@ macro-dkim.o:		dkim.c
 macro-malware.o:	malware.c
 	@echo "$(CC) -DMACRO_PREDEF malware.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ malware.c
-macro-macro.o:	macro.c
-	@echo "$(CC) -DMACRO_PREDEF macro.c"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ macro.c
-macro-tree.o:	tree.c
-	@echo "$(CC) -DMACRO_PREDEF tree.c"
-	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ tree.c
 macro-signing.o:	pdkim/signing.c
 	@echo "$(CC) -DMACRO_PREDEF pdkim/signing.c"
 	$(FE)$(CC) -c $(CFLAGS) -DMACRO_PREDEF $(INCLUDE) -o $@ pdkim/signing.c
@@ -243,8 +237,8 @@ macro_predef: $(OBJ_MACRO)
 	@echo "$(LNCC) -o $@"
 	$(FE)$(LNCC) -o $@ $(LFLAGS) $(OBJ_MACRO)
 
-macro_defs.c: macro_predef
-	./macro_predef > macro_defs.c
+macro.c: macro_predef
+	./macro_predef > macro.c
 
 # This target is recognized specially by GNU make. It records those targets
 # that do not correspond to files that are being built and which should
@@ -498,13 +492,14 @@ OBJ_EXPERIMENTAL = bmi_spam.o \
 OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
-        dkim.o dkim_transport.o directory.o dns.o drtables.o enq.o exim.o \
-	expand.o environment.o filter.o filtertest.o globals.o hash.o \
-        header.o host.o ip.o log.o lss.o macro.o macro_defs.o match.o moan.o \
+        directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
+        filtertest.o globals.o dkim.o dkim_transport.o hash.o \
+        header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
+        environment.o macro.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_EXPERIMENTAL)
@@ -776,8 +771,6 @@ dbfn.o:          $(HDRS) dbfn.c
 debug.o:         $(HDRS) debug.c
 deliver.o:       $(HDRS) transports/smtp.h deliver.c
 directory.o:     $(HDRS) directory.c
-dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
-dkim_transport.o: $(HDRS) dkim_transport.c
 dns.o:           $(HDRS) dns.c
 enq.o:           $(HDRS) enq.c
 exim.o:          $(HDRS) exim.c
@@ -792,8 +785,6 @@ host.o:          $(HDRS) host.c
 ip.o:            $(HDRS) ip.c
 log.o:           $(HDRS) log.c
 lss.o:           $(HDRS) lss.c
-macro.o:         $(HDRS) macro.c
-macro_defs.o:    $(HDRS) macro_defs.c
 match.o:         $(HDRS) match.c
 moan.o:          $(HDRS) moan.c
 os.o:            $(HDRS) $(OS_C_INCLUDES) os.c
@@ -822,6 +813,8 @@ tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) transports/smtp.h verify.c
+dkim.o:          $(HDRS) pdkim/pdkim.h dkim.c
+dkim_transport.o: $(HDRS) dkim_transport.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 

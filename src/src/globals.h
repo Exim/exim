@@ -565,7 +565,8 @@ extern uschar *lookup_dnssec_authenticated; /* AD status of dns lookup */
 extern int     lookup_open_max;        /* Max lookup files to cache */
 extern uschar *lookup_value;           /* Value looked up from file */
 
-extern unsigned m_number;	       /* count of macros */
+extern macro_item *macros;             /* Configuration macros */
+extern macro_item *mlast;              /* Last item in macro list */
 extern uschar *mailstore_basename;     /* For mailstore deliveries */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *malware_name;           /* Name of virus or malware ("W32/Klez-H") */
@@ -954,7 +955,6 @@ extern int     transport_write_timeout;/* Set to time out individual writes */
 extern tree_node *tree_dns_fails;      /* Tree of DNS lookup failures */
 extern tree_node *tree_duplicates;     /* Tree of duplicate addresses */
 extern tree_node *tree_nonrecipients;  /* Tree of nonrecipient addresses */
-extern tree_node *tree_macros;         /* Configuration macros */
 extern tree_node *tree_unusable;       /* Tree of unusable addresses */
 
 extern BOOL    trusted_caller;         /* Caller is trusted */

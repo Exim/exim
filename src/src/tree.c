@@ -12,7 +12,6 @@ functions as well. */
 #include "exim.h"
 
 
-#ifndef MACRO_PREDEF
 
 
 /*************************************************
@@ -116,9 +115,10 @@ Returns:     nothing
 static void
 write_tree(tree_node *p, FILE *f)
 {
-fprintf(f, "%c%c %s\n", p->left ? 'Y':'N', p->right ? 'Y':'N', p->name);
-if (p->left) write_tree(p->left, f);
-if (p->right) write_tree(p->right, f);
+fprintf(f, "%c%c %s\n",
+  (p->left == NULL)? 'N':'Y', (p->right == NULL)? 'N':'Y', p->name);
+if (p->left != NULL) write_tree(p->left, f);
+if (p->right != NULL) write_tree(p->right, f);
 }
 
 /* This is the top-level function, with the same arguments. */
@@ -126,7 +126,7 @@ if (p->right) write_tree(p->right, f);
 void
 tree_write(tree_node *p, FILE *f)
 {
-if (!p)
+if (p == NULL)
   {
   fprintf(f, "XX\n");
   return;
@@ -135,7 +135,6 @@ write_tree(p, f);
 }
 
 
-#endif
 
 
 
@@ -186,7 +185,7 @@ node->balance = 0;
 
 /* Deal with an empty tree */
 
-if (!p)
+if (p == NULL)
   {
   *treebase = node;
   return TRUE;
@@ -209,9 +208,9 @@ for (;;)
   /* Deal with climbing down the tree, exiting from the loop
   when we reach a leaf. */
 
-  q = c > 0 ? &p->right : &p->left;
+  q = (c > 0)? &(p->right) : &(p->left);
   p = *q;
-  if (!p) break;
+  if (p == NULL) break;
 
   /* Save the address of the pointer to the last node en route
   which has a non-zero balance factor. */
@@ -228,13 +227,14 @@ that is the place at which the new node must be inserted. */
 next node after it along the route. */
 
 s = *t;
-r = Ustrcmp(node->name, s->name) > 0 ? s->right : s->left;
+r = (Ustrcmp(node->name, s->name) > 0)? s->right : s->left;
 
 /* Adjust balance factors along the route from s to node. */
 
 p = r;
 
 while (p != node)
+  {
   if (Ustrcmp(node->name, p->name) < 0)
     {
     p->balance = tree_lbal;
@@ -245,16 +245,15 @@ while (p != node)
     p->balance = tree_rbal;
     p = p->right;
     }
+  }
 
 /* Now the World-Famous Balancing Act */
 
-a = Ustrcmp(node->name, s->name) < 0 ? tree_lbal : tree_rbal;
+a = (Ustrcmp(node->name, s->name) < 0)? tree_lbal : tree_rbal;
 
-if (s->balance == 0)
-  s->balance = (uschar)a;			/* The tree has grown higher */
-else if (s->balance != (uschar)a)
-   s->balance = 0;				/* It's become more balanced */
-else						/* It's got out of balance */
+if (s->balance == 0) s->balance = (uschar)a;        /* The tree has grown higher */
+  else if (s->balance != (uschar)a) s->balance = 0; /* It's become more balanced */
+else                                              /* It's got out of balance */
   {
   /* Perform a single rotation */
 
@@ -284,7 +283,7 @@ else						/* It's got out of balance */
     {
     if (a == tree_rbal)
       {
-      if (!r->left) return TRUE;   /* Bail out if tree corrupt */
+      if (r->left == NULL) return TRUE;   /* Bail out if tree corrupt */
       p = r->left;
       r->left = p->right;
       p->right = r;
@@ -293,7 +292,7 @@ else						/* It's got out of balance */
       }
     else
       {
-      if (!r->right) return TRUE;  /* Bail out if tree corrupt */
+      if (r->right == NULL) return TRUE;  /* Bail out if tree corrupt */
       p = r->right;
       r->right = p->left;
       p->left = r;
@@ -301,8 +300,8 @@ else						/* It's got out of balance */
       p->right = s;
       }
 
-    s->balance = p->balance == (uschar)a ? (uschar)(a^tree_bmask) : 0;
-    r->balance = p->balance == (uschar)(a^tree_bmask) ? (uschar)a : 0;
+    s->balance = (p->balance == (uschar)a)? (uschar)(a^tree_bmask) : 0;
+    r->balance = (p->balance == (uschar)(a^tree_bmask))? (uschar)a : 0;
     p->balance = 0;
     }
 
@@ -331,15 +330,16 @@ Returns:    pointer to node, or NULL if not found
 tree_node *
 tree_search(tree_node *p, const uschar *name)
 {
-int c;
-for ( ; p; p = c < 0 ? p->left : p->right)
-  if ((c = Ustrcmp(name, p->name)) == 0)
-    return p;
+while (p)
+  {
+  int c = Ustrcmp(name, p->name);
+  if (c == 0) return p;
+  p = c < 0 ? p->left : p->right;
+  }
 return NULL;
 }
 
 
-#ifndef MACRO_PREDEF
 
 /*************************************************
 *   Walk tree recursively and execute function   *
@@ -361,6 +361,5 @@ tree_walk(p->left, f, ctx);
 tree_walk(p->right, f, ctx);
 }
 
-#endif
 
 /* End of tree.c */

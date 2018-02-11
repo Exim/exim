@@ -11,8 +11,7 @@ included in the main Exim build */
 #include "exim.h"
 #include "macro_predef.h"
 
-tree_node * tree_macros = NULL;
-unsigned m_number = 1;
+unsigned mp_index = 0;
 
 /* Global dummy variables */
 
@@ -24,7 +23,16 @@ uschar * syslog_facility_str;
 void
 builtin_macro_create_var(const uschar * name, const uschar * val)
 {
-macro_create(name, val, FALSE);
+printf ("static macro_item p%d = { ", mp_index);
+if (mp_index == 0)
+  printf(".next=NULL,");
+else
+  printf(".next=&p%d,", mp_index-1);
+
+printf(" .command_line=FALSE, .namelen=%d, .replen=%d,"
+	" .name=US\"%s\", .replacement=US\"%s\" };\n",
+	Ustrlen(name), Ustrlen(val), CS name, CS val);
+mp_index++;
 }
 
 
@@ -281,59 +289,15 @@ params_dkim();
 }
 
 
-static unsigned
-macro_dump(macro_item * m)
-{
-int left = 0, right = 0;
-tree_node * t;
-macro_item_64 * m64;
-
-/* fprintf(stderr, "%s %p\n", __FUNCTION__, m); */
-
-if (!m) return 0;
-/* fprintf(stderr, "%s '%s' l %p r %p\n", __FUNCTION__, m->tnode.name, m->tnode.left, m->tnode.left); */
-if ((t = m->tnode.left)) left = macro_dump(tnode_to_mitem(m->tnode.left));
-if ((t = m->tnode.right)) right = macro_dump(tnode_to_mitem(m->tnode.right));
-
-printf ("static macro_item_64 p%u = { ", m->m_number);
-printf(" .command_line=FALSE,"
-       " .namelen=%d,"
-       " .replen=%d,"
-       " .m_number=%u,"
-       " .tnode={",
-	Ustrlen(m->tnode.name), Ustrlen(m->tnode.data.ptr), m->m_number);
-printf(left  ? " .left=&p%d.tnode,"  : " .left=NULL,",  left);
-printf(right ? " .right=&p%d.tnode," : " .right=NULL,", right);
-printf(
-	" .data.ptr=\"%s\","
-	" .balance=%d,"
-	" .name=\"%s\"}};\n",
-	CS m->tnode.data.ptr,
-	m->tnode.balance,
-	CS m->tnode.name);
-
-if (Ustrlen(m->tnode.name) +1 > sizeof(m64->tnode.name))
-  {
-  printf("#error macro name too long for macro_item_64\n");
-  exit(1);
-  }
-return m->m_number;
-}
-
-
-
 int
 main(void)
 {
-unsigned idx;
-
 printf("#include \"exim.h\"\n");
 features();
 options();
 params();
 
-idx = macro_dump(tnode_to_mitem(tree_macros));
-printf("tree_node * tree_macros = (tree_node *) &p%u.tnode;\n", idx);
-printf("unsigned m_number = %u;\n", m_number);
+printf("macro_item * macros = &p%d;\n", mp_index-1);
+printf("macro_item * mlast = &p0;\n");
 exit(0);
 }
