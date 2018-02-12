@@ -523,7 +523,8 @@ static control_def controls_list[] = {
   },
 #ifdef SUPPORT_I18N
 [CONTROL_UTF8_DOWNCONVERT] =
-  { US"utf8_downconvert",        TRUE, 0 }
+  { US"utf8_downconvert",        TRUE, (unsigned) ~(ACL_BIT_RCPT | ACL_BIT_VRFY)
+  }
 #endif
 };
 

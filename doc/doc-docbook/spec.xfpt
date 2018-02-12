@@ -39359,7 +39359,7 @@ This will add a component tagged with &"PRX="& to the line.
 .cindex internationalisation "email address"
 .cindex EAI
 .cindex i18n
-.cindex UTF-8 "mail name handling"
+.cindex utf8 "mail name handling"
 
 Exim has support for Internationalised mail names.
 To include this it must be built with SUPPORT_I18N and the libidn library.
@@ -39397,6 +39397,7 @@ form of the name.
 
 .cindex log protocol
 .cindex SMTPUTF8 logging
+.cindex i18n logging
 Log lines and Received-by: header lines will acquire a "utf8"
 prefix on the protocol element, eg. utf8esmtp.
 
@@ -39408,7 +39409,12 @@ ${utf8_localpart_to_alabel:str}
 ${utf8_localpart_from_alabel:str}
 .endd
 
-ACLs may use the following modifier:
+.cindex utf8 "address downconversion"
+.cindev i18n "utf8 address downconversion"
+.new
+The RCPT ACL
+.wen
+may use the following modifier:
 .display
 control = utf8_downconvert
 control = utf8_downconvert/<value>
