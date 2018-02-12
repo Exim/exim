@@ -781,10 +781,10 @@ for (sig = ctx->sig; sig; sig = sig->next)
 
   DEBUG(D_acl)
     {
-    debug_printf("PDKIM [%s] Body bytes hashed: %lu\n"
+    debug_printf("PDKIM [%s] Body bytes (%s) hashed: %lu\n"
 		 "PDKIM [%s] Body %s computed: ",
-		sig->domain, b->signed_body_bytes,
-		sig->domain, pdkim_hashes[sig->hashtype].dkim_hashname);
+	sig->domain, pdkim_canons[b->canon_method], b->signed_body_bytes,
+	sig->domain, pdkim_hashes[b->hashtype].dkim_hashname);
     pdkim_hexprint(CUS b->bh.data, b->bh.len);
     }
 
@@ -804,7 +804,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
     if (  sig->bodyhash.data
        && memcmp(b->bh.data, sig->bodyhash.data, b->bh.len) == 0)
       {
-      DEBUG(D_acl) debug_printf("PDKIM [%s] Body hash verified OK\n", sig->domain);
+      DEBUG(D_acl) debug_printf("PDKIM [%s] Body hash compared OK\n", sig->domain);
       }
     else
       {
@@ -1459,7 +1459,8 @@ for (sig = ctx->sig; sig; sig = sig->next)
 	sig->sign_headers);
 
   DEBUG(D_acl) debug_printf(
-      "PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>\n");
+      "PDKIM >> Header data for hash, canonicalized (%-7s), in sequence >>\n",
+	pdkim_canons[sig->canon_headers]);
 
 
   /* SIGNING ---------------------------------------------------------------- */
@@ -1596,8 +1597,8 @@ for (sig = ctx->sig; sig; sig = sig->next)
 
   DEBUG(D_acl)
     {
-    debug_printf(
-	    "PDKIM >> Signed DKIM-Signature header, canonicalized >>>>>>>>>>>>>>>>>\n");
+    debug_printf("PDKIM >> Signed DKIM-Signature header, canonicalized (%-7s) >>>>>>>\n",
+	    pdkim_canons[sig->canon_headers]);
     pdkim_quoteprint(CUS sig_hdr, Ustrlen(sig_hdr));
     debug_printf(
 	    "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");

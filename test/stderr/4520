@@ -34,15 +34,15 @@ PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WARNING: bad dkim key in dns
 PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 content{CR}{LF}
-PDKIM [test.ex] Body bytes hashed: 9
+PDKIM [test.ex] Body bytes (relaxed) hashed: 9
 PDKIM [test.ex] Body sha256 computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
 PDKIM >> Headers to be signed:                            >>>>>>>>>>>>
  From
-PDKIM >> Header data for hash, canonicalized, in sequence >>>>>>>>>>>>
+PDKIM >> Header data for hash, canonicalized (relaxed), in sequence >>
 from:nobody@example.com{CR}{LF}
 PDKIM >> Signed DKIM-Signature header, pre-canonicalized >>>>>>>>>>>>>
 DKIM-Signature:{SP}v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{CR}{LF}{TB}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
-PDKIM >> Signed DKIM-Signature header, canonicalized >>>>>>>>>>>>>>>>>
+PDKIM >> Signed DKIM-Signature header, canonicalized (relaxed) >>>>>>>
 dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{SP}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
 PDKIM [test.ex] Header sha256 computed: 241e16230df5723d899cfae9474c6b376a2ab1f81d1094e358f50ffd0e0067b3
   SMTP<< 250 OK id=10HmbM-0005vi-00
