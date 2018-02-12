@@ -67,6 +67,9 @@ PP/01 Fix broken Heimdal GSSAPI authenticator integration.
       Broken in f2ed27cf5, missing an equals sign for specified-initialisers.
       Broken also in d185889f4, with init system revamp.
 
+JH/18 Bug 2239: Enforce non-usability of control=utf8_downconvert in the mail
+      ACL.  Previously, a crash would result.
+
 
 Exim version 4.90
 -----------------
