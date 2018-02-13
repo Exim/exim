@@ -39410,7 +39410,7 @@ ${utf8_localpart_from_alabel:str}
 .endd
 
 .cindex utf8 "address downconversion"
-.cindev i18n "utf8 address downconversion"
+.cindex i18n "utf8 address downconversion"
 .new
 The RCPT ACL
 .wen
