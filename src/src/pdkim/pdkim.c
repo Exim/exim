@@ -547,7 +547,7 @@ for (p = raw_hdr; ; p++)
 	    if (sig->hashtype < 0)
 	      log_write(0, LOG_MAIN,
 		"DKIM: ignoring signature due to nonhandled hashtype in a=%s",
-		cur_val);
+		cur_val->s);
 	    break;
 	    }
 
@@ -1386,7 +1386,6 @@ pdkim_feed_finish(pdkim_ctx * ctx, pdkim_signature ** return_signatures,
 pdkim_bodyhash * b;
 pdkim_signature * sig;
 BOOL verify_pass = FALSE;
-es_ctx sctx;
 
 /* Check if we must still flush a (partial) header. If that is the
    case, the message has no body, and we must compute a body hash
