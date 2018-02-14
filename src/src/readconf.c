@@ -599,8 +599,8 @@ return US"";
 /* We have a new definition; append to the list.
 
 Args:
- name	Name of the macro.  Must be in storage persistent past the call
- val	Expansion result for the macro.  Ditto persistence.
+ name	Name of the macro; will be copied
+ val	Expansion result for the macro; will be copied
 */
 
 macro_item *
@@ -613,13 +613,15 @@ m->next = NULL;
 m->command_line = command_line;
 m->namelen = Ustrlen(name);
 m->replen = Ustrlen(val);
-m->name = name;
-m->replacement = val;
+m->name = string_copy(name);
+m->replacement = string_copy(val);
 if (mlast)
   mlast->next = m;
 else
   macros = m;
 mlast = m;
+if (!macros_user)
+  macros_user = m;
 return m;
 }
 
@@ -731,7 +733,7 @@ if (redef)
 
 /* We have a new definition. */
 else
-  (void) macro_create(string_copy(name), string_copy(s), FALSE);
+  (void) macro_create(name, s, FALSE);
 return TRUE;
 }
 
@@ -741,7 +743,7 @@ return TRUE;
 
 /* Process line for macros. The line is in big_buffer starting at offset len.
 Expand big_buffer if needed.  Handle definitions of new macros, and
-imacro expansions, rewriting the line in thw buffer.
+macro expansions, rewriting the line in the buffer.
 
 Arguments:
  len		Offset in buffer of start of line
@@ -780,17 +782,21 @@ if (len == 0 && isupper(*s))
 /* Skip leading chars which cannot start a macro name, to avoid multiple
 pointless rescans in Ustrstr calls. */
 
-while (*s && !isupper(*s) && *s != '_') s++;
+while (*s && !isupper(*s) && !(*s == '_' && isupper(s[1]))) s++;
 
 /* For each defined macro, scan the line (from after XXX= if present),
 replacing all occurrences of the macro. */
 
 *macro_found = FALSE;
-for (m = macros; m; m = m->next)
+if (*s) for (m = *s == '_' ? macros : macros_user; m; m = m->next)
   {
   uschar * p, *pp;
-  uschar * t = s;
+  uschar * t;
 
+  while (*s && !isupper(*s) && !(*s == '_' && isupper(s[1]))) s++;
+  if (!*s) break;
+
+  t = s;
   while ((p = Ustrstr(t, m->name)) != NULL)
     {
     int moveby;
@@ -824,7 +830,7 @@ for (m = macros; m; m = m->next)
       }
     Ustrncpy(p, m->replacement, m->replen);
     t = p + m->replen;
-    while (*t && !isupper(*t) && *t != '_') t++;
+    while (*t && !isupper(*t) && !(*t == '_' && isupper(t[1]))) t++;
     *macro_found = TRUE;
     }
   }

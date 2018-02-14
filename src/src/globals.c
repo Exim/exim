@@ -953,6 +953,7 @@ uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;
 uschar *lookup_value           = NULL;
 
+macro_item *macros_user        = NULL;
 uschar *mailstore_basename     = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *malware_name           = NULL;  /* Virus Name */

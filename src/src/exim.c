@@ -1372,7 +1372,7 @@ whites[i] = NULL;
 
 /* The list of commandline macros should be very short.
 Accept the N*M complexity. */
-for (m = macros; m; m = m->next) if (m->command_line)
+for (m = macros_user; m; m = m->next) if (m->command_line)
   {
   found = FALSE;
   for (w = whites; *w; ++w)
@@ -2422,14 +2422,14 @@ for (i = 1; i < argc; i++)
         while (isspace(*s)) s++;
         }
 
-      for (m = macros; m; m = m->next)
+      for (m = macros_user; m; m = m->next)
         if (Ustrcmp(m->name, name) == 0)
           {
           fprintf(stderr, "exim: duplicated -D in command line\n");
           exit(EXIT_FAILURE);
           }
 
-      m = macro_create(string_copy(name), string_copy(s), TRUE);
+      m = macro_create(name, s, TRUE);
 
       if (clmacro_count >= MAX_CLMACROS)
         {
@@ -4988,7 +4988,7 @@ if (expansion_test)
 
   /* Only admin users may see config-file macros this way */
 
-  if (!admin_user) macros = mlast = NULL;
+  if (!admin_user) macros_user = macros = mlast = NULL;
 
   /* Allow $recipients for this testing */
 

@@ -566,6 +566,7 @@ extern int     lookup_open_max;        /* Max lookup files to cache */
 extern uschar *lookup_value;           /* Value looked up from file */
 
 extern macro_item *macros;             /* Configuration macros */
+extern macro_item *macros_user;        /* Non-builtin configuration macros */
 extern macro_item *mlast;              /* Last item in macro list */
 extern uschar *mailstore_basename;     /* For mailstore deliveries */
 #ifdef WITH_CONTENT_SCAN

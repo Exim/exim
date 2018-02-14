@@ -99,6 +99,10 @@ JH/17 Bug 2113: Fix conversation closedown with the Avast malware scanner.
 JH/18 Bug 2239: Enforce non-usability of control=utf8_downconvert in the mail
       ACL.  Previously, a crash would result.
 
+JH/19 Speed up macro lookups during configuration file read, by skipping non-
+      macro text after a replacement (previously it was only once per line) and
+      by skipping builtin macros when searching for an uppercase lead character.
+
 
 Exim version 4.90
 -----------------
