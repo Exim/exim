@@ -46,7 +46,7 @@ extern uschar * tls_cert_fprt_sha256(void *);
 
 extern int     tls_client_start(int, host_item *, address_item *,
 		 transport_instance *,
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
 		dns_answer *,
 # endif
 		uschar **);
@@ -73,7 +73,7 @@ extern BOOL    tls_openssl_options_parse(uschar *, long *);
 extern uschar * tls_field_from_dn(uschar *, const uschar *);
 extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
 extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
 # endif
 

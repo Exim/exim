@@ -138,6 +138,7 @@ Do not put spaces between # and the 'define'.
 #define STRING_SPRINTF_BUFFER_SIZE (8192 * 4)
 
 #define SUPPORT_CRYPTEQ
+#define SUPPORT_DANE
 #define SUPPORT_I18N
 #define SUPPORT_I18N_2008
 #define SUPPORT_MAILDIR
@@ -190,7 +191,6 @@ Do not put spaces between # and the 'define'.
 
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_BRIGHTMAIL
-#define EXPERIMENTAL_DANE
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_DMARC

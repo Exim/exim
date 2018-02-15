@@ -832,6 +832,9 @@ fprintf(f, "Support for:");
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
 #endif
+#ifdef SUPPORT_DANE
+  fprintf(f, " DANE");
+#endif
 #ifndef DISABLE_DKIM
   fprintf(f, " DKIM");
 #endif
@@ -874,9 +877,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   fprintf(f, " Experimental_Brightmail");
-#endif
-#ifdef EXPERIMENTAL_DANE
-  fprintf(f, " Experimental_DANE");
 #endif
 #ifdef EXPERIMENTAL_DCC
   fprintf(f, " Experimental_DCC");

@@ -29,7 +29,7 @@ typedef struct {
   uschar *hosts_try_auth;
   uschar *hosts_require_auth;
   uschar *hosts_try_chunking;
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   uschar *hosts_try_dane;
   uschar *hosts_require_dane;
 #endif
@@ -115,7 +115,7 @@ typedef struct {
   BOOL utf8_needed:1;
 #endif
   BOOL dsn_all_lasthop:1;
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
   BOOL dane:1;
   BOOL dane_required:1;
 #endif

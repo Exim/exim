@@ -83,7 +83,7 @@ typedef struct {
   int     active;             /* fd/socket when in a TLS session */
   int     bits;               /* bits used in TLS session */
   BOOL    certificate_verified; /* Client certificate verified */
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   BOOL    dane_verified;        /* ... via DANE */
   int     tlsa_usage;         /* TLSA record(s) usage */
 #endif
@@ -414,7 +414,7 @@ extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
 extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standard) */
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 extern int     dns_dane_ok;            /* Ok to use DANE when checking TLS authenticity */
 #endif
 extern int     dns_retrans;            /* Retransmission time setting */

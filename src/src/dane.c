@@ -24,7 +24,7 @@ reference itself to stop picky compilers complaining that it is unused, and put
 in a dummy argument to stop even pickier compilers complaining about infinite
 loops. */
 
-#ifndef EXPERIMENTAL_DANE
+#ifndef SUPPORT_DANE
 static void dummy(int x) { dummy(x-1); }
 #else
 
@@ -43,6 +43,6 @@ static void dummy(int x) { dummy(x-1); }
 # endif
 
 
-#endif  /* EXPERIMENTAL_DANE */
+#endif  /* SUPPORT_DANE */
 
 /* End of dane.c */

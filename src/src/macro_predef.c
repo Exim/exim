@@ -183,7 +183,7 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   builtin_macro_create(US"_HAVE_BRIGHTMAIL");
 #endif
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   builtin_macro_create(US"_HAVE_DANE");
 #endif
 #ifdef EXPERIMENTAL_DCC

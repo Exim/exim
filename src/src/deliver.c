@@ -817,7 +817,7 @@ if (LOGGING(tls_certificate_verified) && addr->cipher)
   s = string_append(s, 2, US" CV=",
     testflag(addr, af_cert_verified)
     ?
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
       testflag(addr, af_dane_verified)
     ? "dane"
     :
@@ -1619,7 +1619,7 @@ if (result == OK)
   tls_out.cipher = addr->cipher;
   tls_out.peerdn = addr->peerdn;
   tls_out.ocsp = addr->ocsp;
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
   tls_out.dane_verified = testflag(addr, af_dane_verified);
 # endif
 #endif
@@ -1632,7 +1632,7 @@ if (result == OK)
   tls_out.cipher = NULL;
   tls_out.peerdn = NULL;
   tls_out.ocsp = OCSP_NOT_REQ;
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
   tls_out.dane_verified = FALSE;
 # endif
 #endif
@@ -4785,7 +4785,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
       /* The certificate verification status goes into the flags */
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
       if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
 #endif
 

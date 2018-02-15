@@ -620,7 +620,7 @@ typedef struct address_item {
 #endif
     BOOL af_chunking_used:1;		/* delivery used SMTP CHUNKING */
     BOOL af_force_command:1;		/* force_command in pipe transport */
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
     BOOL af_dane_verified:1;		/* TLS cert verify done with DANE */
 #endif
 #ifdef SUPPORT_I18N

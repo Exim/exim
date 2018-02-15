@@ -738,7 +738,7 @@ static var_entry var_table[] = {
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
   { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
   { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   { "tls_out_dane",        vtype_bool,        &tls_out.dane_verified },
 #endif
   { "tls_out_ocsp",        vtype_int,         &tls_out.ocsp },
@@ -748,7 +748,7 @@ static var_entry var_table[] = {
 #if defined(SUPPORT_TLS)
   { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
 #endif
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   { "tls_out_tlsa_usage",  vtype_int,         &tls_out.tlsa_usage },
 #endif
 

@@ -28,7 +28,7 @@ functions from the OpenSSL library. */
 #ifndef DISABLE_OCSP
 # include <openssl/ocsp.h>
 #endif
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 # include "danessl.h"
 #endif
 
@@ -512,7 +512,7 @@ return verify_callback(preverify_ok, x509ctx, &tls_in,
 }
 
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 
 /* This gets called *by* the dane library verify callback, which interposes
 itself.
@@ -566,7 +566,7 @@ else
 return preverify_ok;
 }
 
-#endif	/*EXPERIMENTAL_DANE*/
+#endif	/*SUPPORT_DANE*/
 
 
 /*************************************************
@@ -1996,7 +1996,7 @@ if (expciphers)
 optional, set up appropriately. */
 
 tls_in.certificate_verified = FALSE;
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 tls_in.dane_verified = FALSE;
 #endif
 server_verify_callback_called = FALSE;
@@ -2155,7 +2155,7 @@ return OK;
 }
 
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 static int
 dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa, uschar ** errstr)
 {
@@ -2210,7 +2210,7 @@ if (found)
 log_write(0, LOG_MAIN, "DANE error: No usable TLSA records");
 return DEFER;
 }
-#endif	/*EXPERIMENTAL_DANE*/
+#endif	/*SUPPORT_DANE*/
 
 
 
@@ -2236,7 +2236,7 @@ Returns:           OK on success
 int
 tls_client_start(int fd, host_item *host, address_item *addr,
   transport_instance * tb,
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   dns_answer * tlsa_dnsa,
 #endif
   uschar ** errstr)
@@ -2253,13 +2253,13 @@ BOOL request_ocsp = FALSE;
 BOOL require_ocsp = FALSE;
 #endif
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 tls_out.tlsa_usage = 0;
 #endif
 
 #ifndef DISABLE_OCSP
   {
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
   if (  tlsa_dnsa
      && ob->hosts_request_ocsp[0] == '*'
      && ob->hosts_request_ocsp[1] == '\0'
@@ -2277,7 +2277,7 @@ tls_out.tlsa_usage = 0;
 	verify_check_given_host(&ob->hosts_require_ocsp, host) == OK))
     request_ocsp = TRUE;
   else
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
     if (!request_ocsp)
 # endif
       request_ocsp =
@@ -2313,7 +2313,7 @@ if (expciphers)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL, errstr);
   }
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 if (tlsa_dnsa)
   {
   SSL_CTX_set_verify(client_ctx,
@@ -2361,7 +2361,7 @@ if (ob->tls_sni)
     }
   }
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 if (tlsa_dnsa)
   if ((rc = dane_tlsa_load(client_ssl, host, tlsa_dnsa, errstr)) != OK)
     return rc;
@@ -2370,7 +2370,7 @@ if (tlsa_dnsa)
 #ifndef DISABLE_OCSP
 /* Request certificate status at connection-time.  If the server
 does OCSP stapling we will get the callback (set in tls_init()) */
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
 if (request_ocsp)
   {
   const uschar * s;
@@ -2407,7 +2407,7 @@ alarm(ob->command_timeout);
 rc = SSL_connect(client_ssl);
 alarm(0);
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 if (tlsa_dnsa)
   DANESSL_cleanup(client_ssl);
 #endif

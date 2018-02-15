@@ -220,7 +220,7 @@ tls_support tls_in = {
  -1,	/* tls_active */
  0,	/* bits */
  FALSE,	/* tls_certificate_verified */
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
  FALSE, /* dane_verified */
  0,     /* tlsa_usage */
 #endif

@@ -364,6 +364,12 @@ PCRE_CONFIG=yes
 
 
 #------------------------------------------------------------------------------
+# Uncomment the following line to add DANE support
+# Note: Enabling this unconditionally overrides DISABLE_DNSSEC
+# For DANE under GnuTLS we need an additional library.  See TLS_LIBS below.
+# SUPPORT_DANE=yes
+
+#------------------------------------------------------------------------------
 # Additional libraries and include directories may be required for some
 # lookup styles (e.g. LDAP, MYSQL or PGSQL). LOOKUP_LIBS is included only on
 # the command for linking Exim itself, not on any auxiliary programs. You
@@ -443,7 +449,7 @@ DISABLE_MAL_MKS=yes
 # By default, Exim has support for checking the AD bit in a DNS response, to
 # determine if DNSSEC validation was successful.  If your system libraries
 # do not support that bit, then set DISABLE_DNSSEC to "yes"
-# Note: Enabling EXPERIMENTAL_DANE unconditionally overrides this setting.
+# Note: Enabling SUPPORT_DANE unconditionally overrides this setting.
 
 # DISABLE_DNSSEC=yes
 
@@ -487,11 +493,6 @@ DISABLE_MAL_MKS=yes
 # EXPERIMENTAL_BRIGHTMAIL=yes
 # CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
 # LDFLAGS += -lxml2_single -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
-
-# Uncomment the following line to add DANE support
-# Note: Enabling this unconditionally overrides DISABLE_DNSSEC
-# For DANE under GnuTLS we need an additional library.  See TLS_LIBS below.
-# EXPERIMENTAL_DANE=yes
 
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes

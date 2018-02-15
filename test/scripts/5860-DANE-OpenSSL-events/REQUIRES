@@ -1,4 +1,4 @@
-support Experimental_DANE
+support DANE
 support Event
 support OpenSSL
 running IPv4

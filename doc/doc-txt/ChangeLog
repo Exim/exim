@@ -103,6 +103,9 @@ JH/19 Speed up macro lookups during configuration file read, by skipping non-
       macro text after a replacement (previously it was only once per line) and
       by skipping builtin macros when searching for an uppercase lead character.
 
+JH/20 DANE support moved from Experimental to mainline.  The Makefile control
+      for the build is renamed.
+
 
 Exim version 4.90
 -----------------

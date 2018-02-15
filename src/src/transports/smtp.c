@@ -105,7 +105,7 @@ optionlist smtp_transport_options[] = {
   { "hosts_require_auth",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_auth) },
 #ifdef SUPPORT_TLS
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
   { "hosts_require_dane",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_dane) },
 # endif
@@ -120,7 +120,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
   { "hosts_try_chunking",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_chunking) },
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
 #endif
@@ -219,7 +219,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_try_auth =		NULL,
   .hosts_require_auth =		NULL,
   .hosts_try_chunking =		US"*",
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
   .hosts_try_dane =		NULL,
   .hosts_require_dane =		NULL,
 #endif
@@ -1190,7 +1190,7 @@ return FALSE;
 
 
 
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 /* Lookup TLSA record for host/port.
 Return:  OK		success with dnssec; DANE mode
          DEFER		Do not use this host now, may retry later
@@ -1490,7 +1490,7 @@ Returns:          OK    - the connection was made and the delivery attempted;
 int
 smtp_setup_conn(smtp_context * sx, BOOL suppress_tls)
 {
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
 dns_answer tlsa_dnsa;
 #endif
 BOOL pass_message = FALSE;
@@ -1512,7 +1512,7 @@ sx->esmtp_sent = FALSE;
 sx->utf8_needed = FALSE;
 #endif
 sx->dsn_all_lasthop = TRUE;
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
 sx->dane = FALSE;
 sx->dane_required = verify_check_given_host(&sx->ob->hosts_require_dane, sx->host) == OK;
 #endif
@@ -1586,7 +1586,7 @@ if (!continue_hostname)
 
   smtp_port_for_connect(sx->host, sx->port);
 
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_DANE)
+#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
     /* Do TLSA lookup for DANE */
     {
     tls_out.dane_verified = FALSE;
@@ -1936,7 +1936,7 @@ if (  smtp_peer_options & OPTION_TLS
     address_item * addr;
     uschar * errstr;
     int rc = tls_client_start(sx->inblock.sock, sx->host, sx->addrlist, sx->tblock,
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
 			     sx->dane ? &tlsa_dnsa : NULL,
 # endif
 			     &errstr);
@@ -1947,7 +1947,7 @@ if (  smtp_peer_options & OPTION_TLS
 
     if (rc != OK)
       {
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
       if (sx->dane) log_write(0, LOG_MAIN,
 	  "DANE attempt failed; TLS connection to %s [%s]: %s",
 	  sx->host->name, sx->host->address, errstr);
@@ -2034,7 +2034,7 @@ if (tls_out.active >= 0)
 have one. */
 
 else if (  sx->smtps
-# ifdef EXPERIMENTAL_DANE
+# ifdef SUPPORT_DANE
 	|| sx->dane
 # endif
 	|| verify_check_given_host(&sx->ob->hosts_require_tls, sx->host) == OK

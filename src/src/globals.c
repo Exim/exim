@@ -104,7 +104,7 @@ tls_support tls_in = {
  .active =		-1,
  .bits =		0,
  .certificate_verified = FALSE,
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
  .dane_verified =	FALSE,
  .tlsa_usage =		0,
 #endif
@@ -121,7 +121,7 @@ tls_support tls_out = {
  .active =		-1,
  .bits =		0,
  .certificate_verified = FALSE,
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
  .dane_verified =	FALSE,
  .tlsa_usage =		0,
 #endif
@@ -688,7 +688,7 @@ BOOL    dmarc_enable_forensic   = FALSE;
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;
 BOOL    dns_csa_use_reverse    = TRUE;
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
 int     dns_dane_ok            = -1;
 #endif
 uschar *dns_ipv4_lookup        = NULL;

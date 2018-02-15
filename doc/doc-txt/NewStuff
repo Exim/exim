@@ -12,8 +12,8 @@ Version 4.91
  1. Dual-certificate stacks on servers now support OCSP stapling, under GnuTLS
     version 3.5.6 or later.
 
- 2. DANE is now supported under GnuTLS version 3.0.0 or later (adding to the
-    previous OpenSSL implementation, but still Experimental).
+ 2. DANE is now supported under GnuTLS version 3.0.0 or later.  Both GnuTLS and
+    OpenSSL versions are moved to mainline support from Experimental.
 
  3. Feature macros for the compiled-in set of malware scanner interfaces.
 

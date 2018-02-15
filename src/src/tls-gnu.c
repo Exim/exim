@@ -66,13 +66,17 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
 # define SUPPORT_SRV_OCSP_STACK
 #endif
-#if GNUTLS_VERSION_NUMBER >= 0x030000 && defined(EXPERIMENTAL_DANE)
-# define SUPPORT_DANE
-# define DANESSL_USAGE_DANE_TA 2
-# define DANESSL_USAGE_DANE_EE 3
-#endif
-#if GNUTLS_VERSION_NUMBER < 0x999999 && defined(EXPERIMENTAL_DANE)
-# define GNUTLS_BROKEN_DANE_VALIDATION
+
+#ifdef SUPPORT_DANE
+# if GNUTLS_VERSION_NUMBER >= 0x030000
+#  define DANESSL_USAGE_DANE_TA 2
+#  define DANESSL_USAGE_DANE_EE 3
+# else
+#  error GnuTLS version too early for DANE
+# endif
+# if GNUTLS_VERSION_NUMBER < 0x999999
+#  define GNUTLS_BROKEN_DANE_VALIDATION
+# endif
 #endif
 
 #ifndef DISABLE_OCSP
@@ -2249,7 +2253,7 @@ int
 tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
     transport_instance * tb,
-#ifdef EXPERIMENTAL_DANE
+#ifdef SUPPORT_DANE
     dns_answer * tlsa_dnsa,
 #endif
     uschar ** errstr)
