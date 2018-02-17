@@ -4095,7 +4095,11 @@ while (done <= 0)
 		&user_msg, &log_msg)) != OK)
         {
         done = smtp_handle_acl_fail(ACL_WHERE_HELO, rc, user_msg, log_msg);
-        sender_helo_name = NULL;
+	if (sender_helo_name)
+	  {
+	  store_free(sender_helo_name);
+	  sender_helo_name = NULL;
+	  }
         host_build_sender_fullhost();  /* Rebuild */
         break;
         }

@@ -520,7 +520,9 @@ There wouldn't be two different variables if I had got all this right in the
 first place.
 
 Because this data may survive over more than one incoming SMTP message, it has
-to be in permanent store.
+to be in permanent store.  However, STARTTLS has to be forgotten and redone
+on a multi-message conn, so this will be called once per message then.  Hence
+we use malloc, so we can free.
 
 Arguments:  none
 Returns:    nothing
@@ -530,13 +532,12 @@ void
 host_build_sender_fullhost(void)
 {
 BOOL show_helo = TRUE;
-uschar *address;
+uschar * address, * fullhost, * rcvhost, * reset_point;
 int len;
-int old_pool = store_pool;
 
 if (!sender_host_address) return;
 
-store_pool = POOL_PERM;
+reset_point = store_get(0);
 
 /* Set up address, with or without the port. After discussion, it seems that
 the only format that doesn't cause trouble is [aaaa]:pppp. However, we can't
@@ -593,7 +594,7 @@ if (!sender_host_name)
   int adlen;    /* Sun compiler doesn't like ++ in initializers */
 
   adlen = portptr ? (++portptr - address) : Ustrlen(address);
-  sender_fullhost = sender_helo_name
+  fullhost = sender_helo_name
     ? string_sprintf("(%s) %s", sender_helo_name, address)
     : address;
 
@@ -619,12 +620,7 @@ if (!sender_host_name)
     g = string_catn(g, US")", 1);
     }
 
-  sender_rcvhost = string_from_gstring(g);
-
-  /* Release store, because string_cat allocated a minimum of 100 bytes that
-  are rarely completely used. */
-
-  store_reset(sender_rcvhost + g->ptr + 1);
+  rcvhost = string_from_gstring(g);
   }
 
 /* Host name is known and verified. Unless we've already found that the HELO
@@ -637,25 +633,30 @@ else
 
   if (show_helo)
     {
-    sender_fullhost = string_sprintf("%s (%s) %s", sender_host_name,
+    fullhost = string_sprintf("%s (%s) %s", sender_host_name,
       sender_helo_name, address);
-    sender_rcvhost = (sender_ident == NULL)?
-      string_sprintf("%s (%s helo=%s)", sender_host_name,
-        address, sender_helo_name) :
-      string_sprintf("%s\n\t(%s helo=%s ident=%s)", sender_host_name,
-        address, sender_helo_name, sender_ident);
+    rcvhost = sender_ident
+      ?  string_sprintf("%s\n\t(%s helo=%s ident=%s)", sender_host_name,
+        address, sender_helo_name, sender_ident)
+      : string_sprintf("%s (%s helo=%s)", sender_host_name,
+        address, sender_helo_name);
     }
   else
     {
-    sender_fullhost = string_sprintf("%s %s", sender_host_name, address);
-    sender_rcvhost = (sender_ident == NULL)?
-      string_sprintf("%s (%s)", sender_host_name, address) :
-      string_sprintf("%s (%s ident=%s)", sender_host_name, address,
-        sender_ident);
+    fullhost = string_sprintf("%s %s", sender_host_name, address);
+    rcvhost = sender_ident
+      ?  string_sprintf("%s (%s ident=%s)", sender_host_name, address,
+        sender_ident)
+      : string_sprintf("%s (%s)", sender_host_name, address);
     }
   }
 
-store_pool = old_pool;
+if (sender_fullhost) store_free(sender_fullhost);
+sender_fullhost = string_copy_malloc(fullhost);
+if (sender_rcvhost) store_free(sender_rcvhost);
+sender_rcvhost = string_copy_malloc(rcvhost);
+
+store_reset(reset_point);
 
 DEBUG(D_host_lookup) debug_printf("sender_fullhost = %s\n", sender_fullhost);
 DEBUG(D_host_lookup) debug_printf("sender_rcvhost = %s\n", sender_rcvhost);
