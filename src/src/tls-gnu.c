@@ -2202,9 +2202,10 @@ gnutls_certificate_free_credentials(state->x509_cred);
 
 
 state->tlsp->active = -1;
+if (state->xfer_buffer) store_free(state->xfer_buffer);
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
 
-if ((state_server.session == NULL) && (state_client.session == NULL))
+if (!state_server.session && !state_client.session)
   {
   gnutls_global_deinit();
   exim_gnutls_base_init_done = FALSE;

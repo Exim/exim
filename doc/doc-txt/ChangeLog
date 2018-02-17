@@ -70,6 +70,10 @@ PP/01 Fix broken Heimdal GSSAPI authenticator integration.
 JH/18 Bug 2239: Enforce non-usability of control=utf8_downconvert in the mail
       ACL.  Previously, a crash would result.
 
+JH/21 Fix memory leak during multi-message connections using STARTTLS.  A buffer
+      was allocated for every new TLS startup, meaning one per message.  Fix
+      by only allocating once (OpenSSL) or freeing on TLS-close (GnuTLS).
+
 
 Exim version 4.90
 -----------------
