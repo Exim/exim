@@ -53,7 +53,6 @@ P Received: from [V4NET.9.8.7]
 	(envelope-from <x@y>)
 	id 10HmbF-0005vi-00
 	for warn_empty@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM: no signatures
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN
@@ -124,7 +123,6 @@ P Received: from [V4NET.9.8.7]
 	(envelope-from <x@y>)
 	id 10HmbG-0005vi-00
 	for warn_log@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM: no signatures
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN
@@ -196,7 +194,6 @@ P Received: from [V4NET.9.8.7]
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: warn user message
 >>
-PDKIM: no signatures
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN

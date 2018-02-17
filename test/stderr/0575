@@ -48,7 +48,6 @@ P Received: from [V4NET.0.0.0]
 	(envelope-from <x@y>)
 	id 10HmaX-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-PDKIM: no signatures
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 LOG: MAIN

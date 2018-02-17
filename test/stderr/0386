@@ -206,7 +206,6 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
 >>
-PDKIM: no signatures
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file: TESTSUITE/spool//input//hdr.pppp
@@ -390,7 +389,6 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
 >>
-PDKIM: no signatures
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file: TESTSUITE/spool//input//hdr.pppp

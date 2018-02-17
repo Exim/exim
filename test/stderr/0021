@@ -184,7 +184,6 @@ end of ACL "rcpt": ACCEPT
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: added header line
 >>
-PDKIM: no signatures
 LOG: MAIN
   <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
 Exim version x.yz ....

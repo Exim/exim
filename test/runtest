@@ -1006,7 +1006,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /name=localhost address=::1/;
 
     # drop pdkim debugging header
-    next if /^PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+$/;
+    next if /^PDKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
 
     # Various other IPv6 lines must be omitted too
 
