@@ -106,6 +106,10 @@ JH/19 Speed up macro lookups during configuration file read, by skipping non-
 JH/20 DANE support moved from Experimental to mainline.  The Makefile control
       for the build is renamed.
 
+JH/21 Fix memory leak during multi-message connections using STARTTLS.  A buffer
+      was allocated for every new TLS startup, meaning one per message.  Fix
+      by only allocating once (OpenSSL) or freeing on TLS-close (GnuTLS).
+
 
 Exim version 4.90
 -----------------

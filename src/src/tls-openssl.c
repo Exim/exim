@@ -2095,7 +2095,7 @@ DEBUG(D_tls)
    smtp_read_response()/ip_recv().
    Hence no need to duplicate for _in and _out.
  */
-ssl_xfer_buffer = store_malloc(ssl_xfer_buffer_size);
+if (!ssl_xfer_buffer) ssl_xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
 ssl_xfer_eof = ssl_xfer_error = 0;
 
