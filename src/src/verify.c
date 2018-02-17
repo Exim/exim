@@ -3076,7 +3076,7 @@ if (isquery)
 /* Not a query-style lookup; must ensure the host name is present, and then we
 do a check on the name and all its aliases. */
 
-if (sender_host_name == NULL)
+if (!sender_host_name)
   {
   HDEBUG(D_host_lookup)
     debug_printf("sender host name required, to match against %s\n", ss);
@@ -3091,8 +3091,7 @@ if (sender_host_name == NULL)
 
 /* Match on the sender host name, using the general matching function */
 
-switch(match_check_string(sender_host_name, ss, -1, TRUE, TRUE, TRUE,
-       valueptr))
+switch(match_check_string(sender_host_name, ss, -1, TRUE, TRUE, TRUE, valueptr))
   {
   case OK:    return OK;
   case DEFER: return DEFER;
@@ -3101,14 +3100,12 @@ switch(match_check_string(sender_host_name, ss, -1, TRUE, TRUE, TRUE,
 /* If there are aliases, try matching on them. */
 
 aliases = sender_host_aliases;
-while (*aliases != NULL)
-  {
+while (*aliases)
   switch(match_check_string(*aliases++, ss, -1, TRUE, TRUE, TRUE, valueptr))
     {
     case OK:    return OK;
     case DEFER: return DEFER;
     }
-  }
 return FAIL;
 }
 
@@ -3407,25 +3404,23 @@ else
     for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
          rr;
          rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-      {
       if (rr->type == T_A)
         {
         dns_address *da = dns_address_from_rr(&dnsa, rr);
         if (da)
           {
           *addrp = da;
-          while (da->next != NULL) da = da->next;
-          addrp = &(da->next);
+          while (da->next) da = da->next;
+          addrp = &da->next;
 	  if (ttl > rr->ttl) ttl = rr->ttl;
           }
         }
-      }
 
     /* If we didn't find any A records, change the return code. This can
     happen when there is a CNAME record but there are no A records for what
     it points to. */
 
-    if (cb->rhs == NULL) cb->rc = DNS_NODATA;
+    if (!cb->rhs) cb->rc = DNS_NODATA;
     }
 
   cb->expiry = time(NULL)+ttl;
@@ -3447,7 +3442,7 @@ if (cb->rc == DNS_SUCCEED)
   records. For A6 records (currently not expected to be used) there may be
   multiple addresses from a single record. */
 
-  for (da = cb->rhs->next; da != NULL; da = da->next)
+  for (da = cb->rhs->next; da; da = da->next)
     addlist = string_sprintf("%s, %s", addlist, da->address);
 
   HDEBUG(D_dnsbl) debug_printf("DNS lookup for %s succeeded (yielding %s)\n",
@@ -3456,9 +3451,9 @@ if (cb->rc == DNS_SUCCEED)
   /* Address list check; this can be either for equality, or via a bitmask.
   In the latter case, all the bits must match. */
 
-  if (iplist != NULL)
+  if (iplist)
     {
-    for (da = cb->rhs; da != NULL; da = da->next)
+    for (da = cb->rhs; da; da = da->next)
       {
       int ipsep = ',';
       uschar ip[46];
@@ -3468,12 +3463,11 @@ if (cb->rc == DNS_SUCCEED)
       /* Handle exact matching */
 
       if (!bitmask)
-        {
-        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))) != NULL)
-          {
-          if (Ustrcmp(CS da->address, ip) == 0) break;
-          }
-        }
+	{
+        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))))
+          if (Ustrcmp(CS da->address, ip) == 0)
+	    break;
+	}
 
       /* Handle bitmask matching */
 
@@ -3493,7 +3487,7 @@ if (cb->rc == DNS_SUCCEED)
 
         /* Scan the returned addresses, skipping any that are IPv6 */
 
-        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))) != NULL)
+        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))))
           {
           if (host_aton(ip, address) != 1) continue;
           if ((address[0] & mask) == address[0]) break;
@@ -3526,17 +3520,13 @@ if (cb->rc == DNS_SUCCEED)
         switch(match_type)
           {
           case 0:
-          res = US"was no match";
-          break;
+	    res = US"was no match"; break;
           case MT_NOT:
-          res = US"was an exclude match";
-          break;
+	    res = US"was an exclude match"; break;
           case MT_ALL:
-          res = US"was an IP address that did not match";
-          break;
+	    res = US"was an IP address that did not match"; break;
           case MT_NOT|MT_ALL:
-          res = US"were no IP addresses that did not match";
-          break;
+	    res = US"were no IP addresses that did not match"; break;
           }
         debug_printf("=> but we are not accepting this block class because\n");
         debug_printf("=> there %s for %s%c%s\n",
@@ -3568,15 +3558,15 @@ if (cb->rc == DNS_SUCCEED)
       {
       dns_record *rr;
       for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-           rr != NULL;
+           rr;
            rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
         if (rr->type == T_TXT) break;
-      if (rr != NULL)
+      if (rr)
         {
         int len = (rr->data)[0];
         if (len > 511) len = 127;
         store_pool = POOL_PERM;
-        cb->text = string_sprintf("%.*s", len, (const uschar *)(rr->data+1));
+        cb->text = string_sprintf("%.*s", len, CUS (rr->data+1));
         store_pool = old_pool;
         }
       }

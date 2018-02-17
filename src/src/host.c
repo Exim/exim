@@ -534,7 +534,7 @@ uschar *address;
 int len;
 int old_pool = store_pool;
 
-if (sender_host_address == NULL) return;
+if (!sender_host_address) return;
 
 store_pool = POOL_PERM;
 
@@ -549,7 +549,7 @@ if (!LOGGING(incoming_port) || sender_host_port <= 0)
 
 /* If there's no EHLO/HELO data, we can't show it. */
 
-if (sender_helo_name == NULL) show_helo = FALSE;
+if (!sender_helo_name) show_helo = FALSE;
 
 /* If HELO/EHLO was followed by an IP literal, it's messy because of two
 features of IPv6. Firstly, there's the "IPv6:" prefix (Exim is liberal and
@@ -599,7 +599,7 @@ if (!sender_host_name)
 
   g = string_catn(NULL, address, adlen);
 
-  if (sender_ident != NULL || show_helo || portptr != NULL)
+  if (sender_ident || show_helo || portptr)
     {
     int firstptr;
     g = string_catn(g, US" (", 2);

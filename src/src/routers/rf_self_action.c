@@ -60,79 +60,61 @@ int
 rf_self_action(address_item *addr, host_item *host, int code, BOOL rewrite,
   uschar *new, address_item **addr_new)
 {
-uschar *msg = (host->mx >= 0)?
-  US"lowest numbered MX record points to local host" :
-  US"remote host address is the local host";
+uschar * msg = host->mx >= 0
+  ? US"lowest numbered MX record points to local host"
+  : US"remote host address is the local host";
 
 switch (code)
   {
   case self_freeze:
 
-  /* If there is no message id, this is happening during an address
-  verification, so give information about the address that is being verified,
-  and where it has come from. Otherwise, during message delivery, the normal
-  logging for the address will be sufficient. */
+    /* If there is no message id, this is happening during an address
+    verification, so give information about the address that is being verified,
+    and where it has come from. Otherwise, during message delivery, the normal
+    logging for the address will be sufficient. */
 
-  if (message_id[0] == 0)
-    {
-    if (sender_fullhost == NULL)
-      {
-      log_write(0, LOG_MAIN, "%s: %s (while routing <%s>)", msg,
-        addr->domain, addr->address);
-      }
+    if (message_id[0] == 0)
+      if (sender_fullhost)
+	log_write(0, LOG_MAIN, "%s: %s (while verifying <%s> from host %s)",
+	  msg, addr->domain, addr->address, sender_fullhost);
+      else
+	log_write(0, LOG_MAIN, "%s: %s (while routing <%s>)", msg,
+	  addr->domain, addr->address);
     else
-      {
-      log_write(0, LOG_MAIN, "%s: %s (while verifying <%s> from host %s)",
-        msg, addr->domain, addr->address, sender_fullhost);
-      }
-    }
-  else
-    log_write(0, LOG_MAIN, "%s: %s", msg, addr->domain);
+      log_write(0, LOG_MAIN, "%s: %s", msg, addr->domain);
 
-  addr->message = msg;
-  addr->special_action = SPECIAL_FREEZE;
-  return DEFER;
+    addr->message = msg;
+    addr->special_action = SPECIAL_FREEZE;
+    return DEFER;
 
   case self_defer:
-  addr->message = msg;
-  return DEFER;
+    addr->message = msg;
+    return DEFER;
 
   case self_reroute:
-  DEBUG(D_route)
-    {
-    debug_printf("%s: %s", msg, addr->domain);
-    debug_printf(": domain changed to %s\n", new);
-    }
-  rf_change_domain(addr, new, rewrite, addr_new);
-  return REROUTED;
+    DEBUG(D_route)
+      debug_printf("%s: %s: domain changed to %s\n", msg, addr->domain, new);
+    rf_change_domain(addr, new, rewrite, addr_new);
+    return REROUTED;
 
   case self_send:
-  DEBUG(D_route)
-    {
-    debug_printf("%s: %s", msg, addr->domain);
-    debug_printf(": configured to try delivery anyway\n");
-    }
-  return OK;
+    DEBUG(D_route)
+      debug_printf("%s: %s: configured to try delivery anyway\n", msg, addr->domain);
+    return OK;
 
   case self_pass:    /* This is soft failure; pass to next router */
-  DEBUG(D_route)
-    {
-    debug_printf("%s: %s", msg, addr->domain);
-    debug_printf(": passed to next router (self = pass)\n");
-    }
-  addr->message = msg;
-  addr->self_hostname = string_copy(host->name);
-  return PASS;
+    DEBUG(D_route)
+      debug_printf("%s: %s: passed to next router (self = pass)\n", msg, addr->domain);
+    addr->message = msg;
+    addr->self_hostname = string_copy(host->name);
+    return PASS;
 
   case self_fail:
-  DEBUG(D_route)
-    {
-    debug_printf("%s: %s", msg, addr->domain);
-    debug_printf(": address failed (self = fail)\n");
-    }
-  addr->message = msg;
-  setflag(addr, af_pass_message);
-  return FAIL;
+    DEBUG(D_route)
+      debug_printf("%s: %s: address failed (self = fail)\n", msg, addr->domain);
+    addr->message = msg;
+    setflag(addr, af_pass_message);
+    return FAIL;
   }
 
 return DEFER;   /* paranoia */

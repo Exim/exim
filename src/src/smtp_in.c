@@ -1838,7 +1838,7 @@ BOOL yield = helo_accept_junk;
 
 /* Discard any previous helo name */
 
-if (sender_helo_name != NULL)
+if (sender_helo_name)
   {
   store_free(sender_helo_name);
   sender_helo_name = NULL;
@@ -4040,9 +4040,9 @@ while (done <= 0)
       /* Force a reverse lookup if HELO quoted something in helo_lookup_domains
       because otherwise the log can be confusing. */
 
-      if (sender_host_name == NULL &&
-           (deliver_domain = sender_helo_name,  /* set $domain */
-            match_isinlist(sender_helo_name, CUSS &helo_lookup_domains, 0,
+      if (  !sender_host_name
+         && (deliver_domain = sender_helo_name,  /* set $domain */
+             match_isinlist(sender_helo_name, CUSS &helo_lookup_domains, 0,
               &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL)) == OK)
         (void)host_name_lookup();
 
@@ -5336,7 +5336,7 @@ while (done <= 0)
       cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
       cmd_list[CMD_LIST_AUTH].is_mail_cmd = TRUE;
       cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
-      if (sender_helo_name != NULL)
+      if (sender_helo_name)
         {
         store_free(sender_helo_name);
         sender_helo_name = NULL;
@@ -5497,7 +5497,7 @@ while (done <= 0)
 
     case ETRN_CMD:
     HAD(SCH_ETRN);
-    if (sender_address != NULL)
+    if (sender_address)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,
         US"ETRN is not permitted inside a transaction");
@@ -5523,7 +5523,7 @@ while (done <= 0)
     since that is strictly the only kind of ETRN that can be implemented
     according to the RFC. */
 
-    if (smtp_etrn_command != NULL)
+    if (smtp_etrn_command)
       {
       uschar *error;
       BOOL rc;

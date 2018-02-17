@@ -5208,7 +5208,7 @@ already been done (which it will have been for inetd). This caters for the
 case when it is forced by -oMa. However, we must flag that it isn't a socket,
 so that the test for IP options is skipped for -bs input. */
 
-if (sender_host_address != NULL && sender_fullhost == NULL)
+if (sender_host_address && !sender_fullhost)
   {
   host_build_sender_fullhost();
   set_process_info("handling incoming connection from %s via -oMa",

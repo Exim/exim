@@ -1797,10 +1797,10 @@ switch (vp->type)
     return var_buffer;
 
   case vtype_host_lookup:                    /* Lookup if not done so */
-    if (sender_host_name == NULL && sender_host_address != NULL &&
-	!host_lookup_failed && host_name_lookup() == OK)
+    if (  !sender_host_name && sender_host_address
+       && !host_lookup_failed && host_name_lookup() == OK)
       host_build_sender_fullhost();
-    return (sender_host_name == NULL)? US"" : sender_host_name;
+    return sender_host_name ? sender_host_name : US"";
 
   case vtype_localpart:                      /* Get local part from address */
     s = *((uschar **)(val));
