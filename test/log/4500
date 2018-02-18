@@ -3,18 +3,23 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmaX-0005vi-00 signer: test.ex bits: 1024
 1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net
 1999-03-02 09:44:33 10HmaY-0005vi-00 signer: test.ex bits: 512
 1999-03-02 09:44:33 10HmaY-0005vi-00 DKIM: d=test.ex s=ses c=simple/simple a=rsa-sha1 b=512 [verification succeeded]
+1999-03-02 09:44:33 10HmaY-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=ses header.a=rsa-sha1
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net
 1999-03-02 09:44:33 10HmaZ-0005vi-00 signer: test.ex bits: 1024
 1999-03-02 09:44:33 10HmaZ-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha256 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha256
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net
 1999-03-02 09:44:33 10HmbA-0005vi-00 signer: test.ex bits: 512
 1999-03-02 09:44:33 10HmbA-0005vi-00 DKIM: d=test.ex s=ses_sha1 c=simple/simple a=rsa-sha1 b=512 [verification succeeded]
+1999-03-02 09:44:33 10HmbA-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=ses_sha1 header.a=rsa-sha1
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmbB-0005vi-00 NOTE: forcing dkim verify fail (was pass)
 1999-03-02 09:44:33 10HmbB-0005vi-00 signer: test.ex bits: 1024
 1999-03-02 09:44:33 10HmbB-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [fail - hash too weak]
+1999-03-02 09:44:33 10HmbB-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=policy (fail - hash too weak) header.d=test.ex header.s=sel header.a=rsa-sha1
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net

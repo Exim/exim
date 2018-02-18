@@ -57,6 +57,7 @@
 #define PDKIM_VERIFY_INVALID   1
 #define PDKIM_VERIFY_FAIL      2
 #define PDKIM_VERIFY_PASS      3
+#define PDKIM_VERIFY_POLICY    BIT(31)
 
 #define PDKIM_VERIFY_FAIL_BODY                    1
 #define PDKIM_VERIFY_FAIL_MESSAGE                 2

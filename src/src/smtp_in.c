@@ -5743,6 +5743,23 @@ while (done <= 0)
 return done - 2;  /* Convert yield values */
 }
 
+
+
+gstring *
+authres_smtpauth(gstring * g)
+{
+if (!sender_host_authenticated)
+  return g;
+
+g = string_append(g, 4, US";\\n\\tauth=pass"
+	" (", sender_host_authenticated, US") smtp.auth=", authenticated_id);
+if (authenticated_sender)
+  g = string_append(g, 2, US" smtp.mailfrom=", authenticated_sender);
+return g;
+}
+
+
+
 /* vi: aw ai sw=2
 */
 /* End of smtp_in.c */

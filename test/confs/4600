@@ -17,6 +17,7 @@ check_rcpt:
 		logwrite =	spf_header_comment $spf_header_comment
 		logwrite =	spf_smtp_comment   $spf_smtp_comment
 		logwrite =	spf_received       $spf_received
+		logwrite =	${authresults {$primary_hostname}}
 
   accept	hosts =		127.0.0.1
 		spf =		pass : softfail : neutral
@@ -24,11 +25,13 @@ check_rcpt:
 		logwrite =	spf_header_comment $spf_header_comment
 		logwrite =	spf_smtp_comment   $spf_smtp_comment
 		logwrite =	spf_received       $spf_received
+		logwrite =	${authresults {$primary_hostname}}
 
   deny
 		logwrite =	spf_result         $spf_result
 		logwrite =	spf_header_comment $spf_header_comment
 		logwrite =	spf_smtp_comment   $spf_smtp_comment
 		logwrite =	spf_received       $spf_received
+		logwrite =	${authresults {$primary_hostname}}
 
 # End

@@ -7,6 +7,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
+acl_smtp_data = accept add_header = :at_start:${authresults {$primary_hostname}}
 
 
 # ----- Authentication -----

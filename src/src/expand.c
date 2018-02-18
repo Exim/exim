@@ -103,6 +103,7 @@ alphabetical order. */
 
 static uschar *item_table[] = {
   US"acl",
+  US"authresults",
   US"certextract",
   US"dlfunc",
   US"env",
@@ -133,6 +134,7 @@ static uschar *item_table[] = {
 
 enum {
   EITEM_ACL,
+  EITEM_AUTHRESULTS,
   EITEM_CERTEXTRACT,
   EITEM_DLFUNC,
   EITEM_ENV,
@@ -1653,6 +1655,24 @@ else
 return yield;
 }
 
+
+
+
+/* Append an "iprev" element to an Autherntication-Results: header
+if we have attempted to get the calling host's name.
+*/
+
+static gstring *
+authres_iprev(gstring * g)
+{
+if (sender_host_name)
+  return string_append(g, 3, US";\\n\\tiprev=pass (", sender_host_name, US")");
+if (host_lookup_deferred)
+  return string_catn(g, US";\\n\\tiprev=temperror", 21);
+if (host_lookup_failed)
+  return string_catn(g, US";\\n\\tiprev=fail", 15);
+return g;
+}
 
 
 
@@ -4098,6 +4118,34 @@ while (*s != 0)
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
 	  goto EXPAND_FAILED;
 	}
+      }
+
+    case EITEM_AUTHRESULTS:
+      /* ${authresults {mysystemname}} */
+      {
+      uschar *sub_arg[1];
+
+      switch(read_subs(sub_arg, nelem(sub_arg), 1, &s, skipping, TRUE, name,
+		      &resetok))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      yield = string_append(yield, 3,
+			US"Authentication-Results: ", sub_arg[0], US"; none");
+      yield->ptr -= 6;
+
+      yield = authres_iprev(yield);
+      yield = authres_smtpauth(yield);
+#ifdef SUPPORT_SPF
+      yield = authres_spf(yield);
+#endif
+#ifndef DISABLE_DKIM
+      yield = authres_dkim(yield);
+#endif
+      continue;
       }
 
     /* Handle conditionals - preserve the values of the numerical expansion

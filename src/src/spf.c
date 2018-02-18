@@ -146,4 +146,16 @@ while ((spf_result_id = string_nextinlist(&list, &sep, NULL, 0)))
 return FAIL;
 }
 
+
+
+gstring *
+authres_spf(gstring * g)
+{
+if (!spf_result) return g;
+
+return string_append(g, 4, US";\\n\\tspf=", spf_result,
+         US" smtp.mailfrom=", expand_string(US"$sender_address_domain"));
+}
+
+
 #endif

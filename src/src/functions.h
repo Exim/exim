@@ -104,6 +104,14 @@ extern void    auth_show_supported(FILE *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
+extern gstring *authres_smtpauth(gstring *);
+#ifdef SUPPORT_SPF
+extern gstring *authres_spf(gstring *);
+#endif
+#ifndef DISABLE_DKIM
+extern gstring *authres_dkim(gstring *);
+#endif
+
 extern uschar *b64encode(uschar *, int);
 extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);

@@ -41,6 +41,9 @@ Version 4.91
 
 11. "exim -bP macro <name>" returns caller-usable status.
 
+12. Expansion item ${authresults {<machine>}} for creating an
+    Authentication-Results: header.
+
 
 Version 4.90
 ------------

@@ -151,6 +151,12 @@ uschar * s;
 
 if (!sig) return;
 
+if (  dkim_verify_status
+   && (  dkim_verify_status != dkim_exim_expand_query(DKIM_VERIFY_STATUS)
+      || dkim_verify_reason != dkim_exim_expand_query(DKIM_VERIFY_REASON)
+   )  )
+  sig->verify_status |= PDKIM_VERIFY_POLICY;
+
 if (  !dkim_verify_overall
    && dkim_verify_status
       ? Ustrcmp(dkim_verify_status, US"pass") == 0
@@ -166,9 +172,9 @@ logmsg = string_append(logmsg, 2, "d=", s);
 if (!(s = sig->selector)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, " s=", s);
 logmsg = string_append(logmsg, 7,
-" c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-"/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-" a=", dkim_sig_to_a_tag(sig),
+  " c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+  "/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+  " a=", dkim_sig_to_a_tag(sig),
 string_sprintf(" b=" SIZE_T_FMT,
 		(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
 if ((s= sig->identity)) logmsg = string_append(logmsg, 2, " i=", s);
@@ -179,10 +185,10 @@ if (sig->expires > 0) logmsg = string_cat(logmsg,
 if (sig->bodylength > -1) logmsg = string_cat(logmsg,
 			      string_sprintf(" l=%lu", sig->bodylength));
 
-if (  !dkim_verify_status
-   || (  dkim_verify_status == dkim_exim_expand_query(DKIM_VERIFY_STATUS)
-      && dkim_verify_reason == dkim_exim_expand_query(DKIM_VERIFY_REASON)
-   )  )
+if (sig->verify_status & PDKIM_VERIFY_POLICY)
+  logmsg = string_append(logmsg, 5,
+	    US" [", dkim_verify_status, US" - ", dkim_verify_reason, US"]");
+else
   switch (sig->verify_status)
     {
     case PDKIM_VERIFY_NONE:
@@ -233,7 +239,7 @@ if (  !dkim_verify_status
 	  logmsg = string_cat(logmsg,
 		US"signature did not verify "
 		"(headers probably modified in transit)]");
-	break;
+	  break;
 
 	default:
 	  logmsg = string_cat(logmsg, US"unspecified reason]");
@@ -244,9 +250,6 @@ if (  !dkim_verify_status
       logmsg = string_cat(logmsg, US" [verification succeeded]");
       break;
     }
-else
-  logmsg = string_append(logmsg, 5,
-	    US" [", dkim_verify_status, US" - ", dkim_verify_reason, US"]");
 
 log_write(0, LOG_MAIN, "%s", string_from_gstring(logmsg));
 return;
@@ -770,6 +773,73 @@ expand_bad:
 	      errwhen, expand_string_message);
   goto bad;
 }
+
+
+
+
+gstring *
+authres_dkim(gstring * g)
+{
+pdkim_signature * sig;
+
+for (sig = dkim_signatures; sig; sig = sig->next)
+  {
+  g = string_catn(g, US";\\n\\tdkim=", 10);
+
+  if (sig->verify_status & PDKIM_VERIFY_POLICY)
+    g = string_append(g, 5,
+      US"policy (", dkim_verify_status, US" - ", dkim_verify_reason, US")");
+  else switch(sig->verify_status)
+    {
+    case PDKIM_VERIFY_NONE:    g = string_cat(g, US"none"); break;
+    case PDKIM_VERIFY_INVALID:
+      switch (sig->verify_ext_status)
+	{
+	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
+          g = string_cat(g, US"tmperror (pubkey unavailable)"); break;
+        case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
+          g = string_cat(g, US"permerror (overlong public key record)"); break;
+        case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
+        case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
+          g = string_cat(g, US"neutral (syntax error in public key record)");
+          break;
+        case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
+          g = string_cat(g, US"neutral (signature tag missing or invalid)");
+          break;
+        case PDKIM_VERIFY_INVALID_DKIM_VERSION:
+          g = string_cat(g, US"neutral (unsupported DKIM version)");
+          break;
+        default:
+          g = string_cat(g, US"permerror (unspecified problem)"); break;
+	}
+      break;
+    case PDKIM_VERIFY_FAIL:
+      switch (sig->verify_ext_status)
+	{
+	case PDKIM_VERIFY_FAIL_BODY:
+          g = string_cat(g,
+	    US"fail (body hash mismatch; body probably modified in transit)");
+	  break;
+        case PDKIM_VERIFY_FAIL_MESSAGE:
+          g = string_cat(g,
+	    US"fail (signature did not verify; headers probably modified in transit)");
+	  break;
+        default:
+          g = string_cat(g, US"fail (unspecified reason)");
+	  break;
+	}
+      break;
+    case PDKIM_VERIFY_PASS:    g = string_cat(g, US"pass"); break;
+    default:                   g = string_cat(g, US"permerror"); break;
+    }
+  if (sig->domain)   g = string_append(g, 2, US" header.d=", sig->domain);
+  if (sig->identity) g = string_append(g, 2, US" header.i=", sig->identity);
+  if (sig->selector) g = string_append(g, 2, US" header.s=", sig->selector);
+  g = string_append(g, 2, US" header.a=", dkim_sig_to_a_tag(sig));
+  }
+return g;
+}
+
 
 # endif	/*!MACRO_PREDEF*/
 #endif	/*!DISABLE_DKIM*/

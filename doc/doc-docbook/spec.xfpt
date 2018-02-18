@@ -9137,6 +9137,31 @@ the expansion result is an empty string.
 If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
+.new
+.vitem "&*${authresults{*&<&'authserv-id&>&*}}*&"
+.cindex authentication "results header"
+.cindex headers "authentication-results:"
+This item returns a string suitable for insertion as an
+&'Authentication-Results"'&
+header line.
+The given <&'authserv-id'&> is included in the result; typically this
+will ba a domain name identifying the system performing the authentications.
+Methods that may be present in the result include:
+.code
+none
+iprev
+auth
+spf
+dkim
+.endd
+
+Example use (as an ACL modifier):
+.code
+      add_header = :at_start:${authresults {$primary_hostname}}
+.endd
+.wen
+
+
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
        {*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting certificate fields"

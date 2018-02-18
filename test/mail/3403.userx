@@ -1,4 +1,6 @@
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Authentication-Results: myhost.test.ex;
+	auth=pass (plain1) smtp.auth=userx
 Received: from CALLER (helo=testing.ex)
 	by myhost.test.ex with local-esmtpa (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
