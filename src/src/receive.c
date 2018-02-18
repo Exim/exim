@@ -1223,48 +1223,49 @@ for (h = acl_added_headers; h; h = next)
   switch(h->type)
     {
     case htype_add_top:
-    h->next = header_list;
-    header_list = h;
-    DEBUG(D_receive|D_acl) debug_printf_indent("  (at top)");
-    break;
+      h->next = header_list;
+      header_list = h;
+      DEBUG(D_receive|D_acl) debug_printf_indent("  (at top)");
+      break;
 
     case htype_add_rec:
-    if (last_received == NULL)
-      {
-      last_received = header_list;
-      while (!header_testname(last_received, US"Received", 8, FALSE))
-        last_received = last_received->next;
-      while (last_received->next != NULL &&
-             header_testname(last_received->next, US"Received", 8, FALSE))
-        last_received = last_received->next;
-      }
-    h->next = last_received->next;
-    last_received->next = h;
-    DEBUG(D_receive|D_acl) debug_printf_indent("  (after Received:)");
-    break;
+      if (!last_received)
+	{
+	last_received = header_list;
+	while (!header_testname(last_received, US"Received", 8, FALSE))
+	  last_received = last_received->next;
+	while (last_received->next &&
+	       header_testname(last_received->next, US"Received", 8, FALSE))
+	  last_received = last_received->next;
+	}
+      h->next = last_received->next;
+      last_received->next = h;
+      DEBUG(D_receive|D_acl) debug_printf_indent("  (after Received:)");
+      break;
 
     case htype_add_rfc:
-    /* add header before any header which is NOT Received: or Resent- */
-    last_received = header_list;
-    while ( (last_received->next != NULL) &&
-            ( (header_testname(last_received->next, US"Received", 8, FALSE)) ||
-              (header_testname_incomplete(last_received->next, US"Resent-", 7, FALSE)) ) )
-              last_received = last_received->next;
-    /* last_received now points to the last Received: or Resent-* header
-       in an uninterrupted chain of those header types (seen from the beginning
-       of all headers. Our current header must follow it. */
-    h->next = last_received->next;
-    last_received->next = h;
-    DEBUG(D_receive|D_acl) debug_printf_indent("  (before any non-Received: or Resent-*: header)");
-    break;
+      /* add header before any header which is NOT Received: or Resent- */
+      last_received = header_list;
+      while ( last_received->next &&
+	      ( (header_testname(last_received->next, US"Received", 8, FALSE)) ||
+		(header_testname_incomplete(last_received->next, US"Resent-", 7, FALSE)) ) )
+		last_received = last_received->next;
+      /* last_received now points to the last Received: or Resent-* header
+	 in an uninterrupted chain of those header types (seen from the beginning
+	 of all headers. Our current header must follow it. */
+      h->next = last_received->next;
+      last_received->next = h;
+      DEBUG(D_receive|D_acl) debug_printf_indent("  (before any non-Received: or Resent-*: header)");
+      break;
 
     default:
-    h->next = NULL;
-    header_last->next = h;
-    break;
+      h->next = NULL;
+      header_last->next = h;
+      DEBUG(D_receive|D_acl) debug_printf_indent("  ");
+      break;
     }
 
-  if (h->next == NULL) header_last = h;
+  if (!h->next) header_last = h;
 
   /* Check for one of the known header types (From:, To:, etc.) though in
   practice most added headers are going to be "other". Lower case
@@ -1275,7 +1276,7 @@ for (h = acl_added_headers; h; h = next)
   h->type = header_checkname(h, FALSE);
   if (h->type >= 'a') h->type = htype_other;
 
-  DEBUG(D_receive|D_acl) debug_printf_indent("  %s", header_last->text);
+  DEBUG(D_receive|D_acl) debug_printf("%s", h->text);
   }
 
 acl_added_headers = NULL;
@@ -2249,119 +2250,119 @@ for (h = header_list->next; h; h = h->next)
   switch (header_checkname(h, is_resent))
     {
     case htype_bcc:
-    h->type = htype_bcc;        /* Both Bcc: and Resent-Bcc: */
-    break;
+      h->type = htype_bcc;        /* Both Bcc: and Resent-Bcc: */
+      break;
 
     case htype_cc:
-    h->type = htype_cc;         /* Both Cc: and Resent-Cc: */
-    break;
+      h->type = htype_cc;         /* Both Cc: and Resent-Cc: */
+      break;
 
-    /* Record whether a Date: or Resent-Date: header exists, as appropriate. */
+      /* Record whether a Date: or Resent-Date: header exists, as appropriate. */
 
     case htype_date:
-    if (!resents_exist || is_resent) date_header_exists = TRUE;
-    break;
+      if (!resents_exist || is_resent) date_header_exists = TRUE;
+      break;
 
-    /* Same comments as about Return-Path: below. */
+      /* Same comments as about Return-Path: below. */
 
     case htype_delivery_date:
-    if (delivery_date_remove) h->type = htype_old;
-    break;
+      if (delivery_date_remove) h->type = htype_old;
+      break;
 
-    /* Same comments as about Return-Path: below. */
+      /* Same comments as about Return-Path: below. */
 
     case htype_envelope_to:
-    if (envelope_to_remove) h->type = htype_old;
-    break;
+      if (envelope_to_remove) h->type = htype_old;
+      break;
 
-    /* Mark all "From:" headers so they get rewritten. Save the one that is to
-    be used for Sender: checking. For Sendmail compatibility, if the "From:"
-    header consists of just the login id of the user who called Exim, rewrite
-    it with the gecos field first. Apply this rule to Resent-From: if there
-    are resent- fields. */
+      /* Mark all "From:" headers so they get rewritten. Save the one that is to
+      be used for Sender: checking. For Sendmail compatibility, if the "From:"
+      header consists of just the login id of the user who called Exim, rewrite
+      it with the gecos field first. Apply this rule to Resent-From: if there
+      are resent- fields. */
 
     case htype_from:
-    h->type = htype_from;
-    if (!resents_exist || is_resent)
-      {
-      from_header = h;
-      if (!smtp_input)
-        {
-        int len;
-        uschar *s = Ustrchr(h->text, ':') + 1;
-        while (isspace(*s)) s++;
-        len = h->slen - (s - h->text) - 1;
-        if (Ustrlen(originator_login) == len &&
-	    strncmpic(s, originator_login, len) == 0)
-          {
-          uschar *name = is_resent? US"Resent-From" : US"From";
-          header_add(htype_from, "%s: %s <%s@%s>\n", name, originator_name,
-            originator_login, qualify_domain_sender);
-          from_header = header_last;
-          h->type = htype_old;
-          DEBUG(D_receive|D_rewrite)
-            debug_printf("rewrote \"%s:\" header using gecos\n", name);
-         }
-        }
-      }
-    break;
+      h->type = htype_from;
+      if (!resents_exist || is_resent)
+	{
+	from_header = h;
+	if (!smtp_input)
+	  {
+	  int len;
+	  uschar *s = Ustrchr(h->text, ':') + 1;
+	  while (isspace(*s)) s++;
+	  len = h->slen - (s - h->text) - 1;
+	  if (Ustrlen(originator_login) == len &&
+	      strncmpic(s, originator_login, len) == 0)
+	    {
+	    uschar *name = is_resent? US"Resent-From" : US"From";
+	    header_add(htype_from, "%s: %s <%s@%s>\n", name, originator_name,
+	      originator_login, qualify_domain_sender);
+	    from_header = header_last;
+	    h->type = htype_old;
+	    DEBUG(D_receive|D_rewrite)
+	      debug_printf("rewrote \"%s:\" header using gecos\n", name);
+	   }
+	  }
+	}
+      break;
 
-    /* Identify the Message-id: header for generating "in-reply-to" in the
-    autoreply transport. For incoming logging, save any resent- value. In both
-    cases, take just the first of any multiples. */
+      /* Identify the Message-id: header for generating "in-reply-to" in the
+      autoreply transport. For incoming logging, save any resent- value. In both
+      cases, take just the first of any multiples. */
 
     case htype_id:
-    if (msgid_header == NULL && (!resents_exist || is_resent))
-      {
-      msgid_header = h;
-      h->type = htype_id;
-      }
-    break;
+      if (!msgid_header && (!resents_exist || is_resent))
+	{
+	msgid_header = h;
+	h->type = htype_id;
+	}
+      break;
 
-    /* Flag all Received: headers */
+      /* Flag all Received: headers */
 
     case htype_received:
-    h->type = htype_received;
-    received_count++;
-    break;
+      h->type = htype_received;
+      received_count++;
+      break;
 
-    /* "Reply-to:" is just noted (there is no resent-reply-to field) */
+      /* "Reply-to:" is just noted (there is no resent-reply-to field) */
 
     case htype_reply_to:
-    h->type = htype_reply_to;
-    break;
+      h->type = htype_reply_to;
+      break;
 
-    /* The Return-path: header is supposed to be added to messages when
-    they leave the SMTP system. We shouldn't receive messages that already
-    contain Return-path. However, since Exim generates Return-path: on
-    local delivery, resent messages may well contain it. We therefore
-    provide an option (which defaults on) to remove any Return-path: headers
-    on input. Removal actually means flagging as "old", which prevents the
-    header being transmitted with the message. */
+      /* The Return-path: header is supposed to be added to messages when
+      they leave the SMTP system. We shouldn't receive messages that already
+      contain Return-path. However, since Exim generates Return-path: on
+      local delivery, resent messages may well contain it. We therefore
+      provide an option (which defaults on) to remove any Return-path: headers
+      on input. Removal actually means flagging as "old", which prevents the
+      header being transmitted with the message. */
 
     case htype_return_path:
-    if (return_path_remove) h->type = htype_old;
+      if (return_path_remove) h->type = htype_old;
 
-    /* If we are testing a mail filter file, use the value of the
-    Return-Path: header to set up the return_path variable, which is not
-    otherwise set. However, remove any <> that surround the address
-    because the variable doesn't have these. */
+      /* If we are testing a mail filter file, use the value of the
+      Return-Path: header to set up the return_path variable, which is not
+      otherwise set. However, remove any <> that surround the address
+      because the variable doesn't have these. */
 
-    if (filter_test != FTEST_NONE)
-      {
-      uschar *start = h->text + 12;
-      uschar *end = start + Ustrlen(start);
-      while (isspace(*start)) start++;
-      while (end > start && isspace(end[-1])) end--;
-      if (*start == '<' && end[-1] == '>')
-        {
-        start++;
-        end--;
-        }
-      return_path = string_copyn(start, end - start);
-      printf("Return-path taken from \"Return-path:\" header line\n");
-      }
-    break;
+      if (filter_test != FTEST_NONE)
+	{
+	uschar *start = h->text + 12;
+	uschar *end = start + Ustrlen(start);
+	while (isspace(*start)) start++;
+	while (end > start && isspace(end[-1])) end--;
+	if (*start == '<' && end[-1] == '>')
+	  {
+	  start++;
+	  end--;
+	  }
+	return_path = string_copyn(start, end - start);
+	printf("Return-path taken from \"Return-path:\" header line\n");
+	}
+      break;
 
     /* If there is a "Sender:" header and the message is locally originated,
     and from an untrusted caller and suppress_local_fixups is not set, or if we
@@ -2375,31 +2376,29 @@ for (h = header_list->next; h; h = h->next)
     set.) */
 
     case htype_sender:
-    h->type = ((!active_local_sender_retain &&
-                (
-                (sender_local && !trusted_caller && !suppress_local_fixups)
-                  || submission_mode
-                )
-               ) &&
-               (!resents_exist||is_resent))?
-      htype_old : htype_sender;
-    break;
+      h->type =    !active_local_sender_retain
+		&& (  sender_local && !trusted_caller && !suppress_local_fixups
+		   || submission_mode
+		   )
+		&& (!resents_exist || is_resent)
+	? htype_old : htype_sender;
+      break;
 
-    /* Remember the Subject: header for logging. There is no Resent-Subject */
+      /* Remember the Subject: header for logging. There is no Resent-Subject */
 
     case htype_subject:
-    subject_header = h;
-    break;
+      subject_header = h;
+      break;
 
-    /* "To:" gets flagged, and the existence of a recipient header is noted,
-    whether it's resent- or not. */
+      /* "To:" gets flagged, and the existence of a recipient header is noted,
+      whether it's resent- or not. */
 
     case htype_to:
-    h->type = htype_to;
-    /****
-    to_or_cc_header_exists = TRUE;
-    ****/
-    break;
+      h->type = htype_to;
+      /****
+      to_or_cc_header_exists = TRUE;
+      ****/
+      break;
     }
   }
 
