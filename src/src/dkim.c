@@ -803,7 +803,7 @@ pdkim_signature * sig;
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
-  g = string_catn(g, US";\\n\\tdkim=", 10);
+  g = string_catn(g, US";\n\tdkim=", 8);
 
   if (sig->verify_status & PDKIM_VERIFY_POLICY)
     g = string_append(g, 5,

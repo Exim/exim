@@ -23,11 +23,12 @@ LOG: 10HmaX-0005vi-00 signer: test.ex bits: 1024
 >>> accept: condition test succeeded in ACL "check_dkim"
 >>> end of ACL "check_dkim": ACCEPT
 LOG: 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=simple/simple a=rsa-sha1 b=1024 [verification succeeded]
+>>> using ACL "check_data"
 >>> processing "accept"
->>> check logwrite = Authentication-Results: myhost.test.ex;\n\tdkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
+>>> check logwrite = ${authresults {$primary_hostname}}
 >>>                = Authentication-Results: myhost.test.ex;
 >>> 	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
 LOG: 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha1
->>> accept: condition test succeeded in inline ACL
->>> end of inline ACL: ACCEPT
+>>> accept: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": ACCEPT
 LOG: 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=qwerty1234@disco-zombie.net

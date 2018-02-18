@@ -10,7 +10,7 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = accept
 acl_smtp_dkim = check_dkim
-acl_smtp_data = accept logwrite = ${authresults {$primary_hostname}}
+acl_smtp_data = check_data
 
 log_selector = +dkim_verbose
 
@@ -36,5 +36,8 @@ check_dkim:
 .ifndef STRICT
   accept
 .endif
+
+check_data:
+  accept logwrite = ${authresults {$primary_hostname}}
 
 # End

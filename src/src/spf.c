@@ -153,7 +153,7 @@ authres_spf(gstring * g)
 {
 if (!spf_result) return g;
 
-return string_append(g, 4, US";\\n\\tspf=", spf_result,
+return string_append(g, 4, US";\n\tspf=", spf_result,
          US" smtp.mailfrom=", expand_string(US"$sender_address_domain"));
 }
 

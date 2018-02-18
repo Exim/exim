@@ -1666,11 +1666,11 @@ static gstring *
 authres_iprev(gstring * g)
 {
 if (sender_host_name)
-  return string_append(g, 3, US";\\n\\tiprev=pass (", sender_host_name, US")");
+  return string_append(g, 3, US";\n\tiprev=pass (", sender_host_name, US")");
 if (host_lookup_deferred)
-  return string_catn(g, US";\\n\\tiprev=temperror", 21);
+  return string_catn(g, US";\n\tiprev=temperror", 19);
 if (host_lookup_failed)
-  return string_catn(g, US";\\n\\tiprev=fail", 15);
+  return string_catn(g, US";\n\tiprev=fail", 13);
 return g;
 }
 

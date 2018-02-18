@@ -7,7 +7,7 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 acl_smtp_rcpt = accept
-acl_smtp_data = accept add_header = :at_start:${authresults {$primary_hostname}}
+acl_smtp_data = check_data
 
 
 # ----- Authentication -----
@@ -26,6 +26,12 @@ plain1:
   server_set_id = $2
   server_mail_auth_condition = ${if eq{$authenticated_id}{userx}{yes}}
 
+
+# ----- ACL -----
+begin acl
+
+check_data:
+  accept add_header = :at_start:${authresults {$primary_hostname}}
 
 # ----- Routers -----
 
