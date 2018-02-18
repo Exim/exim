@@ -9138,7 +9138,7 @@ If the ACL returns defer the result is a forced-fail.  Otherwise the expansion f
 
 
 .new
-.vitem "&*${authresults{*&<&'authserv-id&>&*}}*&"
+.vitem "&*${authresults{*&<&'authserv-id'&>&*}}*&"
 .cindex authentication "results header"
 .cindex headers "authentication-results:"
 This item returns a string suitable for insertion as an
