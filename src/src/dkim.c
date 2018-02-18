@@ -151,11 +151,7 @@ uschar * s;
 
 if (!sig) return;
 
-if (  dkim_verify_status
-   && (  dkim_verify_status != dkim_exim_expand_query(DKIM_VERIFY_STATUS)
-      || dkim_verify_reason != dkim_exim_expand_query(DKIM_VERIFY_REASON)
-   )  )
-  sig->verify_status |= PDKIM_VERIFY_POLICY;
+/* Remember the domain for the first pass result */
 
 if (  !dkim_verify_overall
    && dkim_verify_status
@@ -164,7 +160,30 @@ if (  !dkim_verify_overall
    )
   dkim_verify_overall = string_copy(sig->domain);
 
+/* Rewrite the sig result if the ACL overrode it.  This is only
+needed because the DMARC code (sigh) peeks at the dkim sigs.
+Mark the sig for this having been done. */
+
+if (  dkim_verify_status
+   && (  dkim_verify_status != dkim_exim_expand_query(DKIM_VERIFY_STATUS)
+      || dkim_verify_reason != dkim_exim_expand_query(DKIM_VERIFY_REASON)
+   )  )
+  {			/* overridden by ACL */
+  sig->verify_ext_status = -1;
+  if (Ustrcmp(dkim_verify_status, US"fail") == 0)
+    sig->verify_status = PDKIM_VERIFY_POLICY | PDKIM_VERIFY_FAIL;
+  else if (Ustrcmp(dkim_verify_status, US"invalid") == 0)
+    sig->verify_status = PDKIM_VERIFY_POLICY | PDKIM_VERIFY_INVALID;
+  else if (Ustrcmp(dkim_verify_status, US"none") == 0)
+    sig->verify_status = PDKIM_VERIFY_POLICY | PDKIM_VERIFY_NONE;
+  else if (Ustrcmp(dkim_verify_status, US"pass") == 0)
+    sig->verify_status = PDKIM_VERIFY_POLICY | PDKIM_VERIFY_PASS;
+  else
+    sig->verify_status = -1;
+  }
+
 if (!LOGGING(dkim_verbose)) return;
+
 
 logmsg = string_catn(NULL, US"DKIM: ", 6);
 if (!(s = sig->domain)) s = US"<UNSET>";

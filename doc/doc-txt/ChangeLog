@@ -110,6 +110,10 @@ JH/21 Fix memory leak during multi-message connections using STARTTLS.  A buffer
       was allocated for every new TLS startup, meaning one per message.  Fix
       by only allocating once (OpenSSL) or freeing on TLS-close (GnuTLS).
 
+JH/22 Bug 2236: When a DKIM verification result is overridden by ACL, DMARC
+      reported the original.  Fix to report (as far as possible) the ACL
+      result replacing the original.
+
 
 Exim version 4.90
 -----------------

@@ -330,7 +330,7 @@ if (!dmarc_abort && !sender_host_authenticated)
   while (sig)
     {
     int dkim_result, dkim_ares_result, vs, ves;
-    vs  = sig->verify_status;
+    vs  = sig->verify_status & ~PDKIM_VERIFY_POLICY;
     ves = sig->verify_ext_status;
     dkim_result = vs == PDKIM_VERIFY_PASS ? DMARC_POLICY_DKIM_OUTCOME_PASS :
 		  vs == PDKIM_VERIFY_FAIL ? DMARC_POLICY_DKIM_OUTCOME_FAIL :
