@@ -74,6 +74,10 @@ JH/21 Fix memory leak during multi-message connections using STARTTLS.  A buffer
       was allocated for every new TLS startup, meaning one per message.  Fix
       by only allocating once (OpenSSL) or freeing on TLS-close (GnuTLS).
 
+JH/23 Fix memory leak during multi-message connections using STARTTLS under
+      OpenSSL.  Certificate information is loaded for every new TLS startup,
+      and the resources needed to be freed.
+
 
 Exim version 4.90
 -----------------

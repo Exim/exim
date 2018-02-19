@@ -991,5 +991,10 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define UTF8_VERT_2DASH		"\xE2\x95\x8E"
 
 
+/* Options on tls_close */
+#define TLS_NO_SHUTDOWN		0
+#define TLS_SHUTDOWN_NOWAIT	1
+#define TLS_SHUTDOWN_WAIT	2
+
 
 /* End of macros.h */

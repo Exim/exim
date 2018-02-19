@@ -821,7 +821,7 @@ tls_retry_connection:
 	      debug_printf_indent("problem after random/rset/mfrom; reopen conn\n");
 	    random_local_part = NULL;
 #ifdef SUPPORT_TLS
-	    tls_close(FALSE, TRUE);
+	    tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
 #endif
 	    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 	    (void)close(sx.inblock.sock);
@@ -1088,7 +1088,7 @@ no_conn:
       if (sx.inblock.sock >= 0)
 	{
 #ifdef SUPPORT_TLS
-	tls_close(FALSE, TRUE);
+	tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
 #endif
 	HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 	(void)close(sx.inblock.sock);
@@ -1389,7 +1389,7 @@ if(fd >= 0)
   cutthrough_response(fd, '2', NULL, 1);
 
 #ifdef SUPPORT_TLS
-  tls_close(FALSE, TRUE);
+  tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
 #endif
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
   (void)close(fd);

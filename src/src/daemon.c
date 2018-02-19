@@ -653,7 +653,7 @@ if (pid == 0)
         the data structures if necessary. */
 
 #ifdef SUPPORT_TLS
-        tls_close(TRUE, FALSE);
+        tls_close(TRUE, TLS_NO_SHUTDOWN);
 #endif
 
         /* Reset SIGHUP and SIGCHLD in the child in both cases. */

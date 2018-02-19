@@ -152,6 +152,7 @@ typedef struct tls_ext_ctx_cb {
   uschar *certificate;
   uschar *privatekey;
   BOOL is_server;
+  STACK_OF(X509_NAME) * acceptable_certnames;
 #ifndef DISABLE_OCSP
   STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
@@ -1488,6 +1489,7 @@ cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 cbinfo->is_server = host==NULL;
+cbinfo->acceptable_certnames = NULL;
 #ifndef DISABLE_OCSP
 cbinfo->verify_stack = NULL;
 if (!host)
@@ -1732,6 +1734,9 @@ chain_from_pem_file(const uschar * file, STACK_OF(X509) * verify_stack)
 BIO * bp;
 X509 * x;
 
+while (sk_X509_num(verify_stack) > 0)
+  X509_free(sk_X509_pop(verify_stack));
+
 if (!(bp = BIO_new_file(CS file, "r"))) return FALSE;
 while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
   sk_X509_push(verify_stack, x);
@@ -1741,7 +1746,8 @@ return TRUE;
 
 
 
-/* Called by both client and server startup
+/* Called by both client and server startup; on the server possibly
+repeated after a Server Name Indication.
 
 Arguments:
   sctx          SSL_CTX* to initialise
@@ -1791,6 +1797,7 @@ if (expcerts && *expcerts)
 	{ file = NULL; dir = expcerts; }
       else
 	{
+	/*XXX somewhere down here we leak memory per-STARTTLS, on a multi-message conn, server-side */
 	file = expcerts; dir = NULL;
 #ifndef DISABLE_OCSP
 	/* In the server if we will be offering an OCSP proof, load chain from
@@ -1831,11 +1838,21 @@ if (expcerts && *expcerts)
       */
       if (file)
 	{
-	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
+	tls_ext_ctx_cb * cbinfo = host
+	  ? client_static_cbinfo : server_static_cbinfo;
+	STACK_OF(X509_NAME) * names;
 
+	if ((names = cbinfo->acceptable_certnames))
+	  {
+	  sk_X509_NAME_pop_free(names, X509_NAME_free);
+	  cbinfo->acceptable_certnames = NULL;
+	  }
+	names = SSL_load_client_CA_file(CS file);
+
+	SSL_CTX_set_client_CA_list(sctx, names);
 	DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
 				    sk_X509_NAME_num(names));
-	SSL_CTX_set_client_CA_list(sctx, names);
+	cbinfo->acceptable_certnames = names;
 	}
       }
     }
@@ -2446,7 +2463,16 @@ if (error == SSL_ERROR_ZERO_RETURN)
   receive_ferror = smtp_ferror;
   receive_smtp_buffered = smtp_buffered;
 
+  if (SSL_get_shutdown(server_ssl) == SSL_RECEIVED_SHUTDOWN)
+ 	SSL_shutdown(server_ssl);
+
+  sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
+  sk_X509_NAME_pop_free(server_static_cbinfo->acceptable_certnames, X509_NAME_free);
   SSL_free(server_ssl);
+  SSL_CTX_free(server_ctx);
+  server_static_cbinfo->verify_stack = NULL;
+  server_static_cbinfo->acceptable_certnames = NULL;
+  server_ctx = NULL;
   server_ssl = NULL;
   tls_in.active = -1;
   tls_in.bits = 0;
@@ -2680,15 +2706,19 @@ return len;
 daemon, to shut down the TLS library, without actually doing a shutdown (which
 would tamper with the SSL session in the parent process).
 
-Arguments:   TRUE if SSL_shutdown is to be called
+Arguments:
+  shutdown	1 if TLS close-alert is to be sent,
+ 		2 if also response to be waited for
+
 Returns:     nothing
 
 Used by both server-side and client-side TLS.
 */
 
 void
-tls_close(BOOL is_server, BOOL shutdown)
+tls_close(BOOL is_server, int shutdown)
 {
+SSL_CTX **ctxp = is_server ? &server_ctx : &client_ctx;
 SSL **sslp = is_server ? &server_ssl : &client_ssl;
 int *fdp = is_server ? &tls_in.active : &tls_out.active;
 
@@ -2696,13 +2726,38 @@ if (*fdp < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
-  DEBUG(D_tls) debug_printf("tls_close(): shutting down SSL\n");
-  SSL_shutdown(*sslp);
+  int rc;
+  DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
+    shutdown > 1 ? " (with response-wait)" : "");
+
+  if (  (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
+     && shutdown > 1)
+    {
+    alarm(2);
+    rc = SSL_shutdown(*sslp);		/* wait for response */
+    alarm(0);
+    }
+
+  if (rc < 0) DEBUG(D_tls)
+    {
+    ERR_error_string(ERR_get_error(), ssl_errstring);
+    debug_printf("SSL_shutdown: %s\n", ssl_errstring);
+    }
   }
 
-SSL_free(*sslp);
-*sslp = NULL;
+if (is_server)
+  {
+  sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
+  sk_X509_NAME_pop_free(server_static_cbinfo->acceptable_certnames,
+    X509_NAME_free);
+  server_static_cbinfo->verify_stack = NULL;
+  server_static_cbinfo->acceptable_certnames = NULL;
+  }
 
+SSL_CTX_free(*ctxp);
+SSL_free(*sslp);
+*ctxp = NULL;
+*sslp = NULL;
 *fdp = -1;
 }
 

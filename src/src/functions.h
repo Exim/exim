@@ -50,7 +50,7 @@ extern int     tls_client_start(int, host_item *, address_item *,
 		dns_answer *,
 # endif
 		uschar **);
-extern void    tls_close(BOOL, BOOL);
+extern void    tls_close(BOOL, int);
 extern BOOL    tls_could_read(void);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
