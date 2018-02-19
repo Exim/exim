@@ -114,6 +114,10 @@ JH/22 Bug 2236: When a DKIM verification result is overridden by ACL, DMARC
       reported the original.  Fix to report (as far as possible) the ACL
       result replacing the original.
 
+JH/23 Fix memory leak during multi-message connections using STARTTLS under
+      OpenSSL.  Certificate information is loaded for every new TLS startup,
+      and the resources needed to be freed.
+
 
 Exim version 4.90
 -----------------

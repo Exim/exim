@@ -4988,7 +4988,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
   if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
     {
 #ifdef SUPPORT_TLS
-    tls_close(FALSE, FALSE);
+    tls_close(FALSE, TLS_NO_SHUTDOWN);
 #endif
     (void) close(cutthrough.fd);
     release_cutthrough_connection(US"passed to transport proc");

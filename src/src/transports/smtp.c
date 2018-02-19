@@ -2234,7 +2234,7 @@ if (sx->send_quit)
   (void)smtp_write_command(&sx->outblock, SCMD_FLUSH, "QUIT\r\n");
 
 #ifdef SUPPORT_TLS
-tls_close(FALSE, TRUE);
+tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
@@ -2668,7 +2668,7 @@ for (fd_bits = 3; fd_bits; )
     if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
       fd_bits = 0;
-      tls_close(FALSE, TRUE);
+      tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
       }
     else
       {
@@ -3458,7 +3458,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  a new EHLO. If we don't get a good response, we don't attempt to pass
 	  the socket on. */
 
-	  tls_close(FALSE, TRUE);
+	  tls_close(FALSE, TLS_SHUTDOWN_WAIT);
 	  smtp_peer_options = smtp_peer_options_wrap;
 	  sx.ok = !sx.smtps
 	    && smtp_write_command(&sx.outblock, SCMD_FLUSH,
@@ -3523,7 +3523,7 @@ propagate it from the initial
 	    close(pfd[0]);
 	    /* tidy the inter-proc to disconn the proxy proc */
 	    waitpid(pid, NULL, 0);
-	    tls_close(FALSE, FALSE);
+	    tls_close(FALSE, TLS_NO_SHUTDOWN);
 	    (void)close(sx.inblock.sock);
 	    continue_transport = NULL;
 	    continue_hostname = NULL;
@@ -3569,7 +3569,7 @@ if (sx.send_quit) (void)smtp_write_command(&sx.outblock, SCMD_FLUSH, "QUIT\r\n")
 END_OFF:
 
 #ifdef SUPPORT_TLS
-tls_close(FALSE, TRUE);
+tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
@@ -4541,7 +4541,7 @@ retry_non_continued:
     if (tls_out.active == fd)
       {
       (void) tls_write(FALSE, US"QUIT\r\n", 6, FALSE);
-      tls_close(FALSE, TRUE);
+      tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
       }
     else
 #else

@@ -3724,7 +3724,7 @@ else
   smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 
 #ifdef SUPPORT_TLS
-tls_close(TRUE, TRUE);
+tls_close(TRUE, TLS_SHUTDOWN_NOWAIT);
 #endif
 
 log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
@@ -5413,7 +5413,7 @@ while (done <= 0)
 	smtp_printf("554 Security failure\r\n", FALSE);
 	break;
       }
-    tls_close(TRUE, TRUE);
+    tls_close(TRUE, TLS_SHUTDOWN_NOWAIT);
     break;
     #endif
 

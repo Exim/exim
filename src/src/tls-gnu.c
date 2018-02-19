@@ -2442,12 +2442,15 @@ return OK;
 daemon, to shut down the TLS library, without actually doing a shutdown (which
 would tamper with the TLS session in the parent process).
 
-Arguments:   TRUE if gnutls_bye is to be called
+Arguments:
+  shutdown	1 if TLS close-alert is to be sent,
+ 		2 if also response to be waited for
+
 Returns:     nothing
 */
 
 void
-tls_close(BOOL is_server, BOOL shutdown)
+tls_close(BOOL is_server, int shutdown)
 {
 exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
 
@@ -2455,8 +2458,12 @@ if (!state->tlsp || state->tlsp->active < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
-  DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS\n");
-  gnutls_bye(state->session, GNUTLS_SHUT_WR);
+  DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
+    shutdown > 1 ? " (with response-wait)" : "");
+
+  alarm(2);
+  gnutls_bye(state->session, shutdown > 1 ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
+  alarm(0);
   }
 
 gnutls_deinit(state->session);
