@@ -78,6 +78,8 @@ JH/23 Fix memory leak during multi-message connections using STARTTLS under
       OpenSSL.  Certificate information is loaded for every new TLS startup,
       and the resources needed to be freed.
 
+JH/24 Bug 2242: Fix exim_dbmbuild to permit directoryless filenames.
+
 
 Exim version 4.90
 -----------------
