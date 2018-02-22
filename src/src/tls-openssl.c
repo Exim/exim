@@ -152,7 +152,6 @@ typedef struct tls_ext_ctx_cb {
   uschar *certificate;
   uschar *privatekey;
   BOOL is_server;
-  STACK_OF(X509_NAME) * acceptable_certnames;
 #ifndef DISABLE_OCSP
   STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
@@ -1489,7 +1488,6 @@ cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 cbinfo->is_server = host==NULL;
-cbinfo->acceptable_certnames = NULL;
 #ifndef DISABLE_OCSP
 cbinfo->verify_stack = NULL;
 if (!host)
@@ -1840,19 +1838,11 @@ if (expcerts && *expcerts)
 	{
 	tls_ext_ctx_cb * cbinfo = host
 	  ? client_static_cbinfo : server_static_cbinfo;
-	STACK_OF(X509_NAME) * names;
-
-	if ((names = cbinfo->acceptable_certnames))
-	  {
-	  sk_X509_NAME_pop_free(names, X509_NAME_free);
-	  cbinfo->acceptable_certnames = NULL;
-	  }
-	names = SSL_load_client_CA_file(CS file);
+	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
 
 	SSL_CTX_set_client_CA_list(sctx, names);
 	DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
 				    sk_X509_NAME_num(names));
-	cbinfo->acceptable_certnames = names;
 	}
       }
     }
@@ -2467,11 +2457,9 @@ if (error == SSL_ERROR_ZERO_RETURN)
  	SSL_shutdown(server_ssl);
 
   sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
-  sk_X509_NAME_pop_free(server_static_cbinfo->acceptable_certnames, X509_NAME_free);
   SSL_free(server_ssl);
   SSL_CTX_free(server_ctx);
   server_static_cbinfo->verify_stack = NULL;
-  server_static_cbinfo->acceptable_certnames = NULL;
   server_ctx = NULL;
   server_ssl = NULL;
   tls_in.active = -1;
@@ -2748,10 +2736,7 @@ if (shutdown)
 if (is_server)
   {
   sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
-  sk_X509_NAME_pop_free(server_static_cbinfo->acceptable_certnames,
-    X509_NAME_free);
   server_static_cbinfo->verify_stack = NULL;
-  server_static_cbinfo->acceptable_certnames = NULL;
   }
 
 SSL_CTX_free(*ctxp);
