@@ -1819,7 +1819,6 @@ if (expcerts && *expcerts)
 	{ file = NULL; dir = expcerts; }
       else
 	{
-	/*XXX somewhere down here we leak memory per-STARTTLS, on a multi-message conn, server-side */
 	file = expcerts; dir = NULL;
 #ifndef DISABLE_OCSP
 	/* In the server if we will be offering an OCSP proof, load chain from

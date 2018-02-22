@@ -710,9 +710,6 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
       else if (!*dkim_identity_expanded)
 	dkim_identity_expanded = NULL;
 
-  /*XXX so we currently nail signing to RSA + this hash.
-  Need to extract algo from privkey and check for disallowed combos. */
-
     if (!(sig = pdkim_init_sign(&ctx, dkim_signing_domain,
 			  dkim_signing_selector,
 			  dkim_private_key_expanded,
