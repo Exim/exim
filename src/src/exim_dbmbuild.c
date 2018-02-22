@@ -210,6 +210,8 @@ Ustrcat(temp_dbmname, ".dbmbuild_temp");
 Ustrcpy(dirname, temp_dbmname);
 if ((bptr = Ustrrchr(dirname, '/')))
   *bptr = '\0';
+else
+  Ustrcpy(dirname, ".");
 
 /* It is apparently necessary to open with O_RDWR for this to work
 with gdbm-1.7.3, though no reading is actually going to be done. */
