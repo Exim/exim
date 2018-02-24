@@ -93,6 +93,11 @@ bounces:
   data = DIR/test-mail/$local_part
   file_transport = local_delivery
 
+redir:
+  driver = redirect
+  local_parts = ^z
+  data  =	${substr_1:$local_part}@$domain
+
 rmt:
   driver = manualroute
   domains = +local_domains

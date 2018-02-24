@@ -80,6 +80,9 @@ JH/23 Fix memory leak during multi-message connections using STARTTLS under
 
 JH/24 Bug 2242: Fix exim_dbmbuild to permit directoryless filenames.
 
+JH/25 Fix utf8_downconvert propagation through a redirect router.  Previously it
+      was not propagated.
+
 
 Exim version 4.90
 -----------------
