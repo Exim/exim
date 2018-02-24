@@ -465,8 +465,9 @@ while (generated)
     }
 
 #ifdef SUPPORT_I18N
-    next->prop.utf8_msg = string_is_utf8(next->address)
-      || (sender_address && string_is_utf8(sender_address));
+    if (!next->prop.utf8_msg)
+      next->prop.utf8_msg = string_is_utf8(next->address)
+        || (sender_address && string_is_utf8(sender_address));
 #endif
 
   DEBUG(D_route)
@@ -567,9 +568,9 @@ addr_prop.remove_headers = NULL;
 addr_prop.srs_sender = NULL;
 #endif
 #ifdef SUPPORT_I18N
-addr_prop.utf8_msg = FALSE;	/*XXX should we not copy this from the parent? */
-addr_prop.utf8_downcvt = FALSE;
-addr_prop.utf8_downcvt_maybe = FALSE;
+addr_prop.utf8_msg = addr->prop.utf8_msg;
+addr_prop.utf8_downcvt = addr->prop.utf8_downcvt;
+addr_prop.utf8_downcvt_maybe = addr->prop.utf8_downcvt_maybe;
 #endif
 
 
