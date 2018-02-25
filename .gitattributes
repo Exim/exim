@@ -1,0 +1,7 @@
+# Using merge=union should make it easier to maintain changelogs across
+# branches, by using the text from both sides for the merge.
+#
+doc/doc-txt/NewStuff         merge=union
+doc/doc-txt/ChangeLog        merge=union
+doc/doc-txt/OptionLists.txt  merge=union
+src/README.UPDATING          merge=union
