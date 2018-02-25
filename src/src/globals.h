@@ -786,6 +786,7 @@ extern uschar *sender_fullhost;        /* Sender host name + address */
 extern BOOL    sender_helo_dnssec;     /* True if HELO verify used DNS and was DNSSEC */
 extern uschar *sender_helo_name;       /* Host name from HELO/EHLO */
 extern uschar **sender_host_aliases;   /* Points to list of alias names */
+extern uschar *sender_host_auth_pubname; /* Public-name of authentication method */
 extern unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for incoming host */
 extern BOOL    sender_host_dnssec;     /* true if sender_host_name verified in DNSSEC */
 extern BOOL    sender_host_notsocket;  /* Set for -bs and -bS */

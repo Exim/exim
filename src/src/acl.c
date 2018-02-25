@@ -2970,9 +2970,8 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_AUTHENTICATED:
-    rc = (sender_host_authenticated == NULL)? FAIL :
-      match_isinlist(sender_host_authenticated, &arg, 0, NULL, NULL, MCL_STRING,
-        TRUE, NULL);
+      rc = sender_host_authenticated ? match_isinlist(sender_host_authenticated,
+	      &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL) : FAIL;
     break;
 
     #ifdef EXPERIMENTAL_BRIGHTMAIL

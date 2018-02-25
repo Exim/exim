@@ -2375,7 +2375,8 @@ smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
 /* If receiving by -bs from a trusted user, or testing with -bh, we allow
 authentication settings from -oMaa to remain in force. */
 
-if (!host_checking && !sender_host_notsocket) sender_host_authenticated = NULL;
+if (!host_checking && !sender_host_notsocket)
+  sender_host_auth_pubname = sender_host_authenticated = NULL;
 authenticated_by = NULL;
 
 #ifdef SUPPORT_TLS
@@ -3625,6 +3626,7 @@ switch(rc)
     {
     if (set_id) authenticated_id = string_copy_malloc(set_id);
     sender_host_authenticated = au->name;
+    sender_host_auth_pubname  = au->public_name;
     authentication_failed = FALSE;
     authenticated_fail_id = NULL;   /* Impossible to already be set? */
 
@@ -4556,10 +4558,10 @@ while (done <= 0)
                 US"invalid data for AUTH");
               goto COMMAND_LOOP;
               }
-            if (acl_smtp_mailauth == NULL)
+            if (!acl_smtp_mailauth)
               {
               ignore_msg = US"client not authenticated";
-              rc = (sender_host_authenticated != NULL)? OK : FAIL;
+              rc = sender_host_authenticated ? OK : FAIL;
               }
             else
               {
@@ -5356,7 +5358,7 @@ while (done <= 0)
 	  + (tls_in.active >= 0 ? pcrpted : 0)
 	  ];
 
-      sender_host_authenticated = NULL;
+      sender_host_auth_pubname = sender_host_authenticated = NULL;
       authenticated_id = NULL;
       sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
       DEBUG(D_tls) debug_printf("TLS active\n");
@@ -5751,8 +5753,15 @@ authres_smtpauth(gstring * g)
 if (!sender_host_authenticated)
   return g;
 
-g = string_append(g, 4, US";\n\tauth=pass"
-	" (", sender_host_authenticated, US") smtp.auth=", authenticated_id);
+g = string_append(g, 2, US";\n\tauth=pass (", sender_host_auth_pubname);
+
+if (Ustrcmp(sender_host_auth_pubname, "tls") != 0)
+  g = string_append(g, 2, US") smtp.auth=", authenticated_id);
+else if (authenticated_id)
+  g = string_append(g, 2, US") x509.auth=", authenticated_id);
+else
+  g = string_catn(g, US") reason=x509.auth", 17);
+
 if (authenticated_sender)
   g = string_append(g, 2, US" smtp.mailfrom=", authenticated_sender);
 return g;

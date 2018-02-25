@@ -1277,6 +1277,7 @@ uschar *sender_helo_name       = NULL;
 uschar **sender_host_aliases   = &no_aliases;
 uschar *sender_host_address    = NULL;
 uschar *sender_host_authenticated = NULL;
+uschar *sender_host_auth_pubname  = NULL;
 unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32];
 BOOL    sender_host_dnssec     = FALSE;
 uschar *sender_host_name       = NULL;

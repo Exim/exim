@@ -10,4 +10,6 @@ exim -f ok@test.ex smtps@y
 exim -q
 ****
 killdaemon
+exim -DSERVER=server -DNOTDAEMON -q
+****
 no_msglog_check

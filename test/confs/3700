@@ -12,6 +12,8 @@ log_selector = +received_recipients +outgoing_port
 acl_smtp_auth = log_call
 acl_smtp_mail = check_authd
 acl_smtp_rcpt = check_authd
+acl_smtp_data = ar_header
+
 queue_only
 queue_run_in_order
 trusted_users = CALLER
@@ -36,6 +38,8 @@ check_authd:
           !authenticated = *
   accept
 
+ar_header:
+  accept  add_header = :at_start:${authresults {$primary_hostname}}
 
 # ----- Authentication -----
 
@@ -54,9 +58,14 @@ tls:
 
 begin routers
 
-r1:
-  driver = accept
-  transport = ${if eq {$local_part}{smtps} {t2}{t1}}
+server_r:
+  driver =	accept
+  condition =	${if eq {server}{SERVER}}
+  transport =	file
+
+client_r1:
+  driver =	accept
+  transport =	${if eq {$local_part}{smtps} {t2}{t1}}
 
 
 # ----- Transports -----
@@ -81,5 +90,10 @@ t2:
   tls_certificate =         DIR/aux-fixed/cert2
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
+
+file:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
 
 # End
