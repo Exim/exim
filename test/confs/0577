@@ -1,1 +1,2 @@
+.include DIR/aux-var/std_conf_prefix
 .include confs/TESTNUM./aaa

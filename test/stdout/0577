@@ -1,7 +1,22 @@
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
 # 1 "TESTSUITE/test-config"
-# 1 "TESTSUITE/confs/0577./aaa"
-# 1 "TESTSUITE/confs/0577./aaa"
-# 1 "TESTSUITE/confs/0577./aaa"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+# 1 "TESTSUITE/aux-var/tls_conf_prefix"
+keep_environment = PATH
+exim_path = TESTSUITE/eximdir/exim
+host_lookup_order = bydns
+spool_directory = TESTSUITE/spool
+log_file_path = TESTSUITE/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+# 1 "TESTSUITE/aux-var/std_conf_prefix"
+tls_advertise_hosts =
 # 1 "TESTSUITE/test-config"
+# 2 "TESTSUITE/test-config"
+# 1 "TESTSUITE/confs/0577./aaa"
+# 1 "TESTSUITE/confs/0577./aaa"
+# 1 "TESTSUITE/confs/0577./aaa"
+# 2 "TESTSUITE/test-config"

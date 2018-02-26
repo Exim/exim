@@ -1,3 +1,4 @@
 ﻿# This file contains a BOM at the very beginning
+.include DIR/aux-var/std_conf_prefix
 tls_advertise_hosts =
 keep_environment =
