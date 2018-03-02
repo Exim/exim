@@ -756,6 +756,53 @@ to your Local/Makefile. (Re-)build/install exim. exim -d should show
 Experimental_QUEUEFILE in the line "Support for:".
 
 
+ARC support
+-----------
+Specification: https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-11
+Note that this is not an RFC yet, so may change.
+
+ARC is intended to support the utility of SPF and DKIM in the presence of
+intermediaries in the transmission path - forwarders and mailinglists -
+by establishing a cryptographically-signed chain in headers.
+
+Normally one would only bother doing ARC-signing when functioning as
+an intermediary.  One might do verify for local destinations.
+
+ARC uses the notion of a "ADministrative Management Domain" (ADMD).
+Described in RFC 5598 (section 2.3), this is essentially the set of
+mail-handling systems that the mail transits.  A label should be chosen to
+identify the ADMD.  Messages should be ARC-verified on entry to the ADMD,
+and ARC-signed on exit from it.
+
+
+Verification
+--
+An ACL condition is provided to perform the "verifier actions" detailed
+in section 6 of the above specification.  It may be called from the DATA ACL
+and succeeds if the result matches any of a given list.
+It also records the highest ARC instance number (the chain size)
+and verification result for later use in creating an Authentication-Results:
+standard header.
+
+  verify = arc/<acceptable_list>   none:fail:pass
+
+  add_header = :at_start:${authresults {<admd-identifier>}}
+
+	Note that it would be wise to strip incoming messages of A-R headers
+	that claim to be from our own <admd-identifier>.
+
+Receive log lines for an ARC pass will be tagged "ARC".
+
+
+Signing
+--
+arc_sign = <admd-identifier> : <selector> : <privkey>
+An option on the smtp transport, which constructs and prepends to the message
+an ARC set of headers.  The textually-first Authentication-Results: header
+is used as a basis (you must have added one on entry to the ADMD).
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

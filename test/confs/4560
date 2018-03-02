@@ -1,0 +1,84 @@
+# Exim test configuration 4560
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+
+log_selector = +received_recipients +dkim_verbose
+queue_only
+
+# ----- ACL -----
+begin acl
+
+check_data:
+  warn	!verify =	arc
+.ifdef OPTION
+  accept
+.else
+  accept add_header =	:at_start:${authresults {$primary_hostname}}
+.endif
+  
+# ----- Routers -----
+
+begin routers
+
+d1:
+  driver = accept
+  local_parts = ^a
+  transport = tfile
+
+r2:
+  driver =	redirect
+  local_parts = ^m
+  data =	${substr_1:$local_part}@$domain
+  redirect_router = mlist
+
+redir:
+  driver =	redirect
+  data =	${substr_1:$local_part}@$domain
+  redirect_router = fwd
+
+fwd:
+  driver =	accept
+  transport =	tsmtp
+
+mlist:
+  driver =	accept
+  transport =	tmlist
+
+# ----- Transports -----
+
+begin transports
+
+tfile:
+  driver =	appendfile
+  file =	DIR/test-mail/$local_part
+  user =	CALLER
+
+tsmtp:
+  driver =	smtp
+  hosts =	HOSTIPV4
+  port =	PORT_D
+  allow_localhost
+.ifndef OPTION
+  arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
+.endif
+
+tmlist:
+  driver =	smtp
+  hosts =	HOSTIPV4
+  port =	PORT_D
+  allow_localhost
+  transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter
+.ifndef OPTION
+  arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
+.endif
+
+# End

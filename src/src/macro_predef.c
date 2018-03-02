@@ -180,6 +180,9 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_SRS
   builtin_macro_create(US"_HAVE_SRS");
 #endif
+#ifdef EXPERIMENTAL_ARC
+  builtin_macro_create(US"_HAVE_ARC");
+#endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   builtin_macro_create(US"_HAVE_BRIGHTMAIL");
 #endif

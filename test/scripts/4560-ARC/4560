@@ -1,0 +1,359 @@
+# ARC verify and sign
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# We send this one through one forwarding hop.
+# It starts off bare, so the forwarder reception gets an ARC status of "none".
+# The outbound signs it with that, and the final receiver is happy to pass it.
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<za@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# We send this one through two forwarding hops.
+# It starts off bare, so the 1st forwarder reception gets an ARC status of "none".
+# The outbound signs it with that, and the 2nd forwarder is happy to pass it.
+# The outbound signs again, and the final receiver is happy.
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<zza@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# We send this one through one forwarder, one mailinglist, and one more forwarder
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<zmza@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# We send this one through two forwarders, then one ARC-unaware mailinglist
+# then one more forwarder
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<zzmza@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -DOPTION -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# We send this one through a forwarders, then an ARC-unaware forwarder
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<zza@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -DOPTION -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# We send this one through one forwarding hop.
+# It starts with one ARC-set.
+# The reception at the forwarder gets an ARC-fail, because the bodyhash does not
+# match - so the forwarder outbound ARC-signs as a fail,
+# and the final receiver evaluates ARC status as fail.
+# Mail original in https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-11#page-14
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<za@test.ex>
+??? 250
+DATA
+??? 354
+Received: from dragon.trusteddomain.org (localhost [127.0.0.1])
+	by dragon.trusteddomain.org (8.14.5/8.14.5) with ESMTP id w121YG2q036577;
+	Thu, 1 Feb 2018 17:34:20 -0800 (PST)
+	(envelope-from arc-discuss-bounces@dmarc.org)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=dmarc.org;
+	s=clochette; t=1517535263;
+	bh=DXU/xKzzQYeoYB254nZ0AzNm7z2YZ//FpTnhgIjPyt8=;
+	h=Date:To:In-Reply-To:References:Cc:Subject:List-Id:
+	 List-Unsubscribe:List-Archive:List-Post:List-Help:List-Subscribe:
+	 From:Reply-To;
+	b=Z66qes0GxyXtv0ow232KSy/b44fPNLZL8JOXHiJLi9dHzIPyxsQd/Zb5NP8i3427g
+	 a9tEyo8Rpz8DPbn351e+IlYqRGLfokTWgX+7NfMLy87p3SfnPytUu6PM8QiW2VC889
+	 Tk0K+5xH5KSgkENaPdLBigHtunyNZaSofgKy5vBM=
+Authentication-Results: dragon.trusteddomain.org; sender-id=fail (NotPermitted) header.sender=arc-discuss-bounces@dmarc.org; spf=fail (NotPermitted) smtp.mfrom=arc-discuss-bounces@dmarc.org
+Received: from mailhub.convivian.com (mailhub.convivian.com [72.5.31.108])
+ by dragon.trusteddomain.org (8.14.5/8.14.5) with ESMTP id w121YEt6036571
+ for <arc-discuss@dmarc.org>; Thu, 1 Feb 2018 17:34:14 -0800 (PST)
+ (envelope-from jered@convivian.com)
+Authentication-Results: dragon.trusteddomain.org; dkim=pass
+ reason="1024-bit key"
+ header.d=convivian.com header.i=@convivian.com header.b=LHXEAl5e;
+ dkim-adsp=pass
+Authentication-Results: dragon.trusteddomain.org;
+ sender-id=pass header.from=jered@convivian.com;
+ spf=pass smtp.mfrom=jered@convivian.com
+Received: from zimbra8.internal.convivian.com (zimbra8.internal.convivian.com
+ [172.16.0.5])
+ by mailhub.convivian.com (Postfix) with ESMTP id 471DA66FB6;
+ Thu,  1 Feb 2018 20:34:08 -0500 (EST)
+ARC-Seal: i=1; a=rsa-sha256; d=convivian.com; s=default; t=1517535248; cv=none;
+ b=HkK4AhtPFBUHtRUKKzTON3wyMj7ZLq881P2qhWg+lO8Y50V9SEc8lJ4dBIM3cj3ftfAbooPSLHAVejA89bpS1eAvODci6pOPaQWkBZmpdu+yPIxqX3FyOaCdIaZFbXaMQ1Jg5Sraf5mkCESmfjR5bCguAaZsnPQDF6wSN8VhbQk=
+ARC-Message-Signature: i=1; a=rsa-sha256; d=convivian.com; s=default;
+ t=1517535248; c=relaxed/simple;
+ bh=9Cp8KoxNPc7FEuC29xB5bNWWadzdEFhXrX/8i+vd3g4=;
+ h=DKIM-Signature:Date:From:To:Cc:Message-ID:In-Reply-To:References:
+ Subject:MIME-Version:Content-Type:X-Originating-IP:X-Mailer:
+ Thread-Topic:Thread-Index:From;
+ b=jG+KnBrP2oq1z1upStMoWbM1fkS5zbUiir221Gy6h7ao5oy7Qc3m0pXgrSdhgGD4oX/kk2seEt2WAlPNwEsZyvYeG/80ctd/2+hwaVQ6JSOU83Rdd8im8HwMvXzXZIz8ATjPpOv21+xMrqlPSkD/l6X4VP+AAoVVkhW7f4GWcws=
+ARC-Authentication-Results: i=1; mailhub.convivian.com; none
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=convivian.com;
+ s=default; t=1517535248;
+ bh=9Cp8KoxNPc7FEuC29xB5bNWWadzdEFhXrX/8i+vd3g4=;
+ h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+ b=LHXEAl5elmfkdXNdK24QonXpkiG38neuJoS7fSQXwZVZkR+cdYNr6eBxx3DF4reJO
+ NgzV5GFyPX6+LdIqR6rnC8BXhjvJq+pxLW3/wKx39W3ANYWRFm1dgyWBz99NxNNvk/
+ ruQkYYBBk9GPM52EyHNMvHciRAyaSk+VluGj6c6M=
+Date: Thu, 1 Feb 2018 20:34:08 -0500 (EST)
+To: Brandon Long <blong@google.com>
+Message-ID: <1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com>
+In-Reply-To: <CABa8R6s3e1k=c9wQBtNBWvPT4BrXv3-2NnynyAfRseZ-5s6NKg@mail.gmail.com>
+References: <CO2PR0501MB981081FA2C73CB83FA1C903F1FA0@CO2PR0501MB981.namprd05.prod.outlook.com>
+ <CAAQnKjAV3zEfP-J6JgTrv1jU9UPmf9dG9SPr-+q4jZ6PaGQjxg@mail.gmail.com>
+ <CAAQnKjBBLS9Lm2vnT3i+WUNhrvv2oDEMFEcyozw+YzyKS4G1qQ@mail.gmail.com>
+ <29030059.107105.1517497494557.JavaMail.zimbra@convivian.com>
+ <4f60039a-a754-ae4c-1543-0a978d9e13be@rolandturner.com>
+ <1544831589.110194.1517532064123.JavaMail.zimbra@convivian.com>
+ <CABa8R6s3e1k=c9wQBtNBWvPT4BrXv3-2NnynyAfRseZ-5s6NKg@mail.gmail.com>
+MIME-Version: 1.0
+X-Originating-IP: [172.16.0.5]
+X-Mailer: Zimbra 8.7.11_GA_1854 (ZimbraWebClient - FF58 (Mac)/8.7.11_GA_1854)
+Thread-Topic: Gmail support of ARC headers from third-parties
+Thread-Index: JantLkX01vLd7pyKcopbBWCs3yDbLQ==
+Cc: arc-discuss <arc-discuss@dmarc.org>
+Subject: Re: [arc-discuss] Gmail support of ARC headers from third-parties
+X-BeenThere: arc-discuss@dmarc.org
+X-Mailman-Version: 2.1.18
+Precedence: list
+List-Id: Discussion of the ARC protocol <arc-discuss.dmarc.org>
+List-Unsubscribe: <http://lists.dmarc.org/mailman/options/arc-discuss>,
+ <mailto:arc-discuss-request@dmarc.org?subject=unsubscribe>
+List-Archive: <http://lists.dmarc.org/pipermail/arc-discuss/>
+List-Post: <mailto:arc-discuss@dmarc.org>
+List-Help: <mailto:arc-discuss-request@dmarc.org?subject=help>
+List-Subscribe: <http://lists.dmarc.org/mailman/listinfo/arc-discuss>,
+ <mailto:arc-discuss-request@dmarc.org?subject=subscribe>
+From: Jered Floyd via arc-discuss <arc-discuss@dmarc.org>
+Reply-To: Jered Floyd <jered@convivian.com>
+Content-Type: multipart/mixed; boundary="===============2728806607597782871=="
+Errors-To: arc-discuss-bounces@dmarc.org
+Sender: "arc-discuss" <arc-discuss-bounces@dmarc.org>
+
+--===============2728806607597782871==
+Content-Type: multipart/alternative; 
+	boundary="=_bda8d35f-e3be-4e59-9fc8-f78ed0af3226"
+
+--=_bda8d35f-e3be-4e59-9fc8-f78ed0af3226
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+>> Couldn't the first untrusted ARC signer (working in reverse chronological order)
+>> simply have faked all the earlier headers and applied a "valid" ARC
+>> signature/seal? This is why I figured you must trust the entire chain if you
+>> want to trust the sender data.
+
+> They can't fake an earlier signature unless they have the private key for the
+> signing domain.
+
+> Ie, a non-modifying hop is basically a no-op, unless you want to trust their
+> auth results.
+
+OK, sure; I agree with that. But I guess I see ARC as primarily for indirect mail flows that break DKIM (i.e. Mailman), in which case I think trust is needed to bridge those hops? 
+
+--Jered 
+
+--=_bda8d35f-e3be-4e59-9fc8-f78ed0af3226
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><div style="font-family: arial, helvetica, sans-serif; font-size: 12pt; color: #000000"><div><br></div><div data-marker="__QUOTED_TEXT__"><blockquote style="border-left:2px solid #1010FF;margin-left:5px;padding-left:5px;color:#000;font-weight:normal;font-style:normal;text-decoration:none;font-family:Helvetica,Arial,sans-serif;font-size:12pt;"><div dir="ltr"><div class="gmail_quote"><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+Couldn't the first untrusted ARC signer (working in reverse chronological order) simply have faked all the earlier headers and applied a "valid" ARC signature/seal?&nbsp; This is why I figured you must trust the entire chain if you want to trust the sender data.<br></blockquote><br><div>They can't fake an earlier signature unless they have the private key for the signing domain.</div><br><div>Ie, a non-modifying hop is basically a no-op, unless you want to trust their auth results.</div></div></div></blockquote><div>OK, sure; I agree with that.&nbsp; But I guess I see ARC as primarily for indirect mail flows that break DKIM (i.e. Mailman), in which case I think trust is needed to bridge those hops?<br></div><div><br data-mce-bogus="1"></div><div>--Jered<br data-mce-bogus="1"></div></div></div></body></html>
+--=_bda8d35f-e3be-4e59-9fc8-f78ed0af3226--
+
+--===============2728806607597782871==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+arc-discuss mailing list
+arc-discuss@dmarc.org
+http://lists.dmarc.org/mailman/listinfo/arc-discuss
+
+--===============2728806607597782871==--
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
+#
+#
+killdaemon
+#
+no_stdout_check
+no_msglog_check

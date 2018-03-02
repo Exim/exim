@@ -88,6 +88,14 @@ extern int     acl_eval(int, uschar *, uschar **, uschar **);
 
 extern tree_node *acl_var_create(uschar *);
 extern void    acl_var_write(uschar *, uschar *, void *);
+
+#ifdef EXPERIMENTAL_ARC
+extern void   *arc_ams_setup_sign_bodyhash(void);
+extern const uschar *arc_header_feed(gstring *, BOOL);
+extern gstring *arc_sign(const uschar *, gstring *, uschar **);
+extern const uschar *acl_verify_arc(void);
+#endif
+
 extern void    assert_no_variables(void *, int, const char *, int);
 extern int     auth_call_pam(const uschar *, uschar **);
 extern int     auth_call_pwcheck(uschar *, uschar **);
@@ -110,6 +118,9 @@ extern gstring *authres_spf(gstring *);
 #endif
 #ifndef DISABLE_DKIM
 extern gstring *authres_dkim(gstring *);
+#endif
+#ifdef EXPERIMENTAL_ARC
+extern gstring *authres_arc(gstring *);
 #endif
 
 extern uschar *b64encode(uschar *, int);
@@ -166,6 +177,9 @@ extern void    delivery_re_exec(int);
 
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
+extern uschar *dkim_exim_query_dns_txt(uschar *);
+extern void    dkim_exim_sign_init(void);
+
 extern BOOL    dkim_transport_write_message(transport_ctx *,
 		  struct ob_dkim *, const uschar ** errstr);
 #endif
@@ -198,6 +212,7 @@ extern int     exp_bool(address_item *addr,
   uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
   uschar *svalue, BOOL *rvalue);
 extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
+extern uschar *expand_file_big_buffer(const uschar *);
 extern uschar *expand_string(uschar *);	/* public, cannot make const */
 extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
 extern uschar *expand_hide_passwords(uschar * );
@@ -213,6 +228,8 @@ extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
+
+extern void    gstring_reset_unused(gstring *);
 
 extern void    header_add(int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);

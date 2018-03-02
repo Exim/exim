@@ -914,7 +914,7 @@ sep_is_special = iscntrl(sep);
 
 /* Handle the case when a buffer is provided. */
 
-if (buffer != NULL)
+if (buffer)
   {
   int p = 0;
   for (; *s != 0; s++)
@@ -960,6 +960,7 @@ else
     }
   while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--;
   buffer = string_from_gstring(g);
+  gstring_reset_unused(g);
   }
 
 /* Update the current pointer and return the new string */
@@ -1071,6 +1072,12 @@ string_from_gstring(gstring * g)
 if (!g) return NULL;
 g->s[g->ptr] = '\0';
 return g->s;
+}
+
+void
+gstring_reset_unused(gstring * g)
+{
+store_reset(g->s + (g->size = g->ptr + 1));
 }
 
 /*************************************************

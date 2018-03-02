@@ -958,7 +958,7 @@ else
 
 /* Loop for multiple header lines, taking care about continuations */
 
-for (p = q; *p != 0; )
+for (p = q; *p; p = q)
   {
   const uschar *s;
   uschar * hdr;
@@ -970,7 +970,7 @@ for (p = q; *p != 0; )
   for (;;)
     {
     q = Ustrchr(q, '\n');		/* we know there was a newline */
-    if (*(++q) != ' ' && *q != '\t') break;
+    if (*++q != ' ' && *q != '\t') break;
     }
 
   /* If the line starts with a colon, interpret the instruction for where to
@@ -1005,24 +1005,22 @@ for (p = q; *p != 0; )
   to the front of it. */
 
   for (s = p; s < q - 1; s++)
-    {
     if (*s == ':' || !isgraph(*s)) break;
-    }
 
-  hdr = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", (int) (q - p), p);
+  hdr = string_sprintf("%s%.*s", *s == ':' ? "" : "X-ACL-Warn: ", (int) (q - p), p);
   hlen = Ustrlen(hdr);
 
   /* See if this line has already been added */
 
-  while (*hptr != NULL)
+  while (*hptr)
     {
     if (Ustrncmp((*hptr)->text, hdr, hlen) == 0) break;
-    hptr = &((*hptr)->next);
+    hptr = &(*hptr)->next;
     }
 
   /* Add if not previously present */
 
-  if (*hptr == NULL)
+  if (!*hptr)
     {
     header_line *h = store_get(sizeof(header_line));
     h->text = hdr;
@@ -1030,12 +1028,8 @@ for (p = q; *p != 0; )
     h->type = newtype;
     h->slen = hlen;
     *hptr = h;
-    hptr = &(h->next);
+    hptr = &h->next;
     }
-
-  /* Advance for next header line within the string */
-
-  p = q;
   }
 }
 
@@ -1662,9 +1656,9 @@ if (!(vp->where_allowed & BIT(where)))
 switch(vp->value)
   {
   case VERIFY_REV_HOST_LKUP:
-    if (sender_host_address == NULL) return OK;
+    if (!sender_host_address) return OK;
     if ((rc = acl_verify_reverse(user_msgptr, log_msgptr)) == DEFER)
-      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+      while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
 	if (strcmpic(ss, US"defer_ok") == 0)
 	  return OK;
     return rc;
@@ -1683,7 +1677,7 @@ switch(vp->value)
     occurred earlier. If not, we can attempt the verification now. */
 
     if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
-    return helo_verified? OK : FAIL;
+    return helo_verified ? OK : FAIL;
 
   case VERIFY_CSA:
     /* Do Client SMTP Authorization checks in a separate function, and turn the
@@ -1695,6 +1689,23 @@ switch(vp->value)
     csa_status = csa_status_string[rc];
     DEBUG(D_acl) debug_printf_indent("CSA result %s\n", csa_status);
     return csa_return_code[rc];
+
+#ifdef EXPERIMENTAL_ARC
+  case VERIFY_ARC:
+    {	/* Do Authenticated Received Chain checks in a separate function. */
+    const uschar * condlist = CUS string_nextinlist(&list, &sep, NULL, 0);
+    int csep = 0;
+    uschar * cond;
+
+    if (!(arc_state = acl_verify_arc())) return DEFER;
+    DEBUG(D_acl) debug_printf_indent("ARC verify result %s\n", arc_state);
+
+    if (!condlist) condlist = US"none:pass";
+    while ((cond = string_nextinlist(&condlist, &csep, NULL, 0)))
+      if (Ustrcmp(arc_state, cond) == 0) return OK;
+    return FAIL;
+    }
+#endif
 
   case VERIFY_HDR_SYNTAX:
     /* Check that all relevant header lines have the correct 5322-syntax. If there is
@@ -1715,7 +1726,7 @@ switch(vp->value)
     See RFC 5322, 2.2. and RFC 6532, 3. */
 
     rc = verify_check_header_names_ascii(log_msgptr);
-    if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
+    if (rc != OK && smtp_return_error_details && *log_msgptr)
       *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
     return rc;
 
@@ -1723,8 +1734,7 @@ switch(vp->value)
     /* Check that no recipient of this message is "blind", that is, every envelope
     recipient must be mentioned in either To: or Cc:. */
 
-    rc = verify_check_notblind();
-    if (rc != OK)
+    if ((rc = verify_check_notblind()) != OK)
       {
       *log_msgptr = string_sprintf("bcc recipient detected");
       if (smtp_return_error_details)

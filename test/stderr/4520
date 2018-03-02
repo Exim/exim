@@ -34,6 +34,7 @@ PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WARNING: bad dkim key in dns
 PDKIM (finished checking verify key)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 content{CR}{LF}
+PDKIM: finish bodyhash 1/1/-1 len 9
 PDKIM [test.ex] Body bytes (relaxed) hashed: 9
 PDKIM [test.ex] Body sha256 computed: fc06f48221d98ad6106c3845b33a2a41152482ab9e697f736ad26db4853fa657
 PDKIM >> Headers to be signed:                            >>>>>>>>>>>>

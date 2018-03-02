@@ -86,7 +86,7 @@ return string_cat(g, s);
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
+exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 {
 gnutls_datum_t k = { .data = privkey_pem, .size = Ustrlen(privkey_pem) };
 gnutls_x509_privkey_t x509_key;
@@ -345,7 +345,7 @@ Only handles RSA keys.
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
+exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 {
 uschar * s1, * s2;
 blob der;
@@ -694,7 +694,7 @@ ERR_load_crypto_strings();
 }
 
 
-/* accumulate data (was gnutls-onl but now needed for OpenSSL non-EC too
+/* accumulate data (was gnutls-only but now needed for OpenSSL non-EC too
 because now using hash-and-sign interface) */
 gstring *
 exim_dkim_data_append(gstring * g, uschar * s)
@@ -707,7 +707,7 @@ return string_cat(g, s);
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_signing_init(uschar * privkey_pem, es_ctx * sign_ctx)
+exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 {
 BIO * bp = BIO_new_mem_buf(privkey_pem, -1);
 

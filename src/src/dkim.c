@@ -26,6 +26,7 @@ builtin_macro_create_var(US"_DKIM_SIGN_HEADERS", US PDKIM_DEFAULT_SIGN_HEADERS);
 
 
 
+pdkim_ctx dkim_sign_ctx;
 
 int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
@@ -38,8 +39,8 @@ static const uschar * dkim_collect_error = NULL;
 /*XXX the caller only uses the first record if we return multiple.
 */
 
-static uschar *
-dkim_exim_query_dns_txt(char * name)
+uschar *
+dkim_exim_query_dns_txt(uschar * name)
 {
 dns_answer dnsa;
 dns_scan dnss;
@@ -47,7 +48,7 @@ dns_record *rr;
 gstring * g = NULL;
 
 lookup_dnssec_authenticated = NULL;
-if (dns_lookup(&dnsa, US name, T_TXT, NULL) != DNS_SUCCEED)
+if (dns_lookup(&dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
   return NULL;	/*XXX better error detail?  logging? */
 
 /* Search for TXT record */
@@ -75,7 +76,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     /* check if this looks like a DKIM record */
     if (Ustrncmp(g->s, "v=", 2) != 0 || strncasecmp(CS g->s, "v=dkim", 6) == 0)
       {
-      store_reset(g->s + g->ptr + 1);
+      gstring_reset_unused(g);
       return string_from_gstring(g);
       }
 
@@ -563,6 +564,16 @@ switch (what)
 }
 
 
+void
+dkim_exim_sign_init(void)
+{
+int old_pool = store_pool;
+store_pool = POOL_MAIN;
+pdkim_init_context(&dkim_sign_ctx, FALSE, &dkim_exim_query_dns_txt);
+store_pool = old_pool;
+}
+
+
 /* Generate signatures for the given file.
 If a prefix is given, prepend it to the file for the calculations.
 
@@ -575,10 +586,9 @@ gstring *
 dkim_exim_sign(int fd, off_t off, uschar * prefix,
   struct ob_dkim * dkim, const uschar ** errstr)
 {
-const uschar * dkim_domain;
+const uschar * dkim_domain = NULL;
 int sep = 0;
 gstring * seen_doms = NULL;
-pdkim_ctx ctx;
 pdkim_signature * sig;
 gstring * sigbuf;
 int pdkim_rc;
@@ -587,18 +597,21 @@ uschar buf[4096];
 int save_errno = 0;
 int old_pool = store_pool;
 uschar * errwhen;
+const uschar * s;
+
+if (dkim->dot_stuffed)
+  dkim_sign_ctx.flags |= PDKIM_DOT_TERM;
 
 store_pool = POOL_MAIN;
 
-pdkim_init_context(&ctx, dkim->dot_stuffed, &dkim_exim_query_dns_txt);
-
-if (!(dkim_domain = expand_cstring(dkim->dkim_domain)))
+if ((s = dkim->dkim_domain) && !(dkim_domain = expand_cstring(s)))
   /* expansion error, do not send message. */
   { errwhen = US"dkim_domain"; goto expand_bad; }
 
 /* Set $dkim_domain expansion variable to each unique domain in list. */
 
-while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
+if (dkim_domain)
+  while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
   {
   const uschar * dkim_sel;
   int sel_sep = 0;
@@ -667,39 +680,10 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
        )
       continue;		/* don't sign, but no error */
 
-    if (dkim_private_key_expanded[0] == '/')
-      {
-      int privkey_fd, off = 0, len;
-
-      /* Looks like a filename, load the private key. */
-
-      memset(big_buffer, 0, big_buffer_size);
-
-      if ((privkey_fd = open(CS dkim_private_key_expanded, O_RDONLY)) < 0)
-	{
-	log_write(0, LOG_MAIN | LOG_PANIC, "unable to open "
-		   "private key file for reading: %s",
-		   dkim_private_key_expanded);
-	goto bad;
-	}
-
-      do
-	{
-	if ((len = read(privkey_fd, big_buffer + off, big_buffer_size - 2 - off)) < 0)
-	  {
-	  (void) close(privkey_fd);
-	  log_write(0, LOG_MAIN|LOG_PANIC, "unable to read private key file: %s",
-		     dkim_private_key_expanded);
-	  goto bad;
-	  }
-	off += len;
-	}
-      while (len > 0);
-
-      (void) close(privkey_fd);
-      big_buffer[off] = '\0';
-      dkim_private_key_expanded = big_buffer;
-      }
+    if (  dkim_private_key_expanded[0] == '/'
+       && !(dkim_private_key_expanded =
+	     expand_file_big_buffer(dkim_private_key_expanded)))
+      goto bad;
 
     if (!(dkim_hash_expanded = expand_string(dkim->dkim_hash)))
       { errwhen = US"dkim_hash"; goto expand_bad; }
@@ -710,7 +694,7 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
       else if (!*dkim_identity_expanded)
 	dkim_identity_expanded = NULL;
 
-    if (!(sig = pdkim_init_sign(&ctx, dkim_signing_domain,
+    if (!(sig = pdkim_init_sign(&dkim_sign_ctx, dkim_signing_domain,
 			  dkim_signing_selector,
 			  dkim_private_key_expanded,
 			  dkim_hash_expanded,
@@ -725,51 +709,61 @@ while ((dkim_signing_domain = string_nextinlist(&dkim_domain, &sep, NULL, 0)))
 			pdkim_canon,
 			pdkim_canon, -1, 0, 0);
 
-    if (!pdkim_set_bodyhash(&ctx, sig))
+    if (!pdkim_set_sig_bodyhash(&dkim_sign_ctx, sig))
       goto bad;
 
-    if (!ctx.sig)		/* link sig to context chain */
-      ctx.sig = sig;
+    if (!dkim_sign_ctx.sig)		/* link sig to context chain */
+      dkim_sign_ctx.sig = sig;
     else
       {
-      pdkim_signature * n = ctx.sig;
+      pdkim_signature * n = dkim_sign_ctx.sig;
       while (n->next) n = n->next;
       n->next = sig;
       }
     }
   }
-if (!ctx.sig)
+
+/* We may need to carry on with the data-feed even if there are no DKIM sigs to
+produce, if some other package (eg. ARC) is signing. */
+
+if (!dkim_sign_ctx.sig && !dkim->force_bodyhash)
   {
   DEBUG(D_transport) debug_printf("DKIM: no viable signatures to use\n");
   sigbuf = string_get(1);	/* return a zero-len string */
-  goto CLEANUP;
   }
-
-if (prefix && (pdkim_rc = pdkim_feed(&ctx, prefix, Ustrlen(prefix))) != PDKIM_OK)
-  goto pk_bad;
-
-if (lseek(fd, off, SEEK_SET) < 0)
-  sread = -1;
 else
-  while ((sread = read(fd, &buf, sizeof(buf))) > 0)
-    if ((pdkim_rc = pdkim_feed(&ctx, buf, sread)) != PDKIM_OK)
-      goto pk_bad;
-
-/* Handle failed read above. */
-if (sread == -1)
   {
-  debug_printf("DKIM: Error reading -K file.\n");
-  save_errno = errno;
-  goto bad;
+  if (prefix && (pdkim_rc = pdkim_feed(&dkim_sign_ctx, prefix, Ustrlen(prefix))) != PDKIM_OK)
+    goto pk_bad;
+
+  if (lseek(fd, off, SEEK_SET) < 0)
+    sread = -1;
+  else
+    while ((sread = read(fd, &buf, sizeof(buf))) > 0)
+      if ((pdkim_rc = pdkim_feed(&dkim_sign_ctx, buf, sread)) != PDKIM_OK)
+	goto pk_bad;
+
+  /* Handle failed read above. */
+  if (sread == -1)
+    {
+    debug_printf("DKIM: Error reading -K file.\n");
+    save_errno = errno;
+    goto bad;
+    }
+
+  /* Build string of headers, one per signature */
+
+  if ((pdkim_rc = pdkim_feed_finish(&dkim_sign_ctx, &sig, errstr)) != PDKIM_OK)
+    goto pk_bad;
+
+  if (!sig)
+    {
+    DEBUG(D_transport) debug_printf("DKIM: no signatures to use\n");
+    sigbuf = string_get(1);	/* return a zero-len string */
+    }
+  else for (sigbuf = NULL; sig; sig = sig->next)
+    sigbuf = string_append(sigbuf, 2, US sig->signature_header, US"\r\n");
   }
-
-/* Build string of headers, one per signature */
-
-if ((pdkim_rc = pdkim_feed_finish(&ctx, &sig, errstr)) != PDKIM_OK)
-  goto pk_bad;
-
-for (sigbuf = NULL; sig; sig = sig->next)
-  sigbuf = string_append(sigbuf, 2, US sig->signature_header, US"\r\n");
 
 CLEANUP:
   (void) string_from_gstring(sigbuf);
@@ -797,6 +791,9 @@ gstring *
 authres_dkim(gstring * g)
 {
 pdkim_signature * sig;
+int start;
+
+DEBUG(D_acl) start = g->ptr;
 
 for (sig = dkim_signatures; sig; sig = sig->next)
   {
@@ -812,21 +809,21 @@ for (sig = dkim_signatures; sig; sig = sig->next)
       switch (sig->verify_ext_status)
 	{
 	case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
-          g = string_cat(g, US"tmperror (pubkey unavailable)"); break;
+          g = string_cat(g, US"tmperror (pubkey unavailable)\n\t\t"); break;
         case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
-          g = string_cat(g, US"permerror (overlong public key record)"); break;
+          g = string_cat(g, US"permerror (overlong public key record)\n\t\t"); break;
         case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
         case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
-          g = string_cat(g, US"neutral (syntax error in public key record)");
+          g = string_cat(g, US"neutral (syntax error in public key record)\n\t\t");
           break;
         case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
-          g = string_cat(g, US"neutral (signature tag missing or invalid)");
+          g = string_cat(g, US"neutral (signature tag missing or invalid)\n\t\t");
           break;
         case PDKIM_VERIFY_INVALID_DKIM_VERSION:
-          g = string_cat(g, US"neutral (unsupported DKIM version)");
+          g = string_cat(g, US"neutral (unsupported DKIM version)\n\t\t");
           break;
         default:
-          g = string_cat(g, US"permerror (unspecified problem)"); break;
+          g = string_cat(g, US"permerror (unspecified problem)\n\t\t"); break;
 	}
       break;
     case PDKIM_VERIFY_FAIL:
@@ -834,14 +831,14 @@ for (sig = dkim_signatures; sig; sig = sig->next)
 	{
 	case PDKIM_VERIFY_FAIL_BODY:
           g = string_cat(g,
-	    US"fail (body hash mismatch; body probably modified in transit)");
+	    US"fail (body hash mismatch; body probably modified in transit)\n\t\t");
 	  break;
         case PDKIM_VERIFY_FAIL_MESSAGE:
           g = string_cat(g,
-	    US"fail (signature did not verify; headers probably modified in transit)");
+	    US"fail (signature did not verify; headers probably modified in transit)\n\t\t");
 	  break;
         default:
-          g = string_cat(g, US"fail (unspecified reason)");
+          g = string_cat(g, US"fail (unspecified reason)\n\t\t");
 	  break;
 	}
       break;
@@ -853,6 +850,12 @@ for (sig = dkim_signatures; sig; sig = sig->next)
   if (sig->selector) g = string_append(g, 2, US" header.s=", sig->selector);
   g = string_append(g, 2, US" header.a=", dkim_sig_to_a_tag(sig));
   }
+
+DEBUG(D_acl)
+  if (g->ptr == start)
+    debug_printf("DKIM: no authres\n");
+  else
+    debug_printf("DKIM: authres '%.*s'\n", g->ptr - start - 3, g->s + start + 3);
 return g;
 }
 

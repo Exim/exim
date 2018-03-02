@@ -3960,6 +3960,10 @@ if (LOGGING(8bitmime))
 #ifndef DISABLE_DKIM
 if (LOGGING(dkim) && dkim_verify_overall)
   g = string_append(g, 2, US" DKIM=", dkim_verify_overall);
+# ifdef EXPERIMENTAL_ARC
+if (LOGGING(dkim) && arc_state && Ustrcmp(arc_state, "pass") == 0)
+  g = string_catn(g, US" ARC", 4);
+# endif
 #endif
 
 if (LOGGING(receive_time))

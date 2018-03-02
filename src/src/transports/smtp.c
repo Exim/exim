@@ -24,6 +24,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, address_retry_include_sender) },
   { "allow_localhost",      opt_bool,
       (void *)offsetof(smtp_transport_options_block, allow_localhost) },
+#ifdef EXPERIMENTAL_ARC
+  { "arc_sign", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, arc_sign) },
+#endif
   { "authenticated_sender", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, authenticated_sender) },
   { "authenticated_sender_force", opt_bool,
@@ -209,7 +213,6 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .fallback_hosts =		NULL,
   .hostlist =			NULL,
   .fallback_hostlist =		NULL,
-  .authenticated_sender =	NULL,
   .helo_data =			US"$primary_hostname",
   .interface =			NULL,
   .port =			NULL,
@@ -287,7 +290,15 @@ smtp_transport_options_block smtp_transport_option_defaults = {
     .dkim_sign_headers =	NULL,
     .dkim_strict =		NULL,
     .dkim_hash =		US"sha256",
-    .dot_stuffed =		FALSE},
+    .dot_stuffed =		FALSE,
+    .force_bodyhash =		FALSE,
+# ifdef EXPERIMENTAL_ARC
+    .arc_signspec =		NULL,
+# endif
+    },
+# ifdef EXPERIMENTAL_ARC
+  .arc_sign =			NULL,
+# endif
 #endif
 };
 
@@ -2965,6 +2976,24 @@ else
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
+  dkim_exim_sign_init();
+# ifdef EXPERIMENTAL_ARC
+    {
+    uschar * s = sx.ob->arc_sign;
+    if (s)
+      {
+      if (!(sx.ob->dkim.arc_signspec = expand_string(s)))
+	{
+	message = US"failed to expand arc_sign";
+	sx.ok = FALSE;
+	goto SEND_FAILED;
+	}
+      /* Ask dkim code to hash the body for ARC */
+      (void) arc_ams_setup_sign_bodyhash();
+      sx.ob->dkim.force_bodyhash = TRUE;
+      }
+    }
+# endif
   sx.ok = dkim_transport_write_message(&tctx, &sx.ob->dkim, CUSS &message);
 #else
   sx.ok = transport_write_message(&tctx, 0);

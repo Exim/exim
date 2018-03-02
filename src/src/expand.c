@@ -4145,6 +4145,9 @@ while (*s != 0)
 #ifndef DISABLE_DKIM
       yield = authres_dkim(yield);
 #endif
+#ifdef EXPERIMENTAL_ARC
+      yield = authres_arc(yield);
+#endif
       continue;
       }
 
@@ -7530,10 +7533,9 @@ terminating brace. */
 
 if (ket_ends && *s == 0)
   {
-  expand_string_message = malformed_header?
-    US"missing } at end of string - could be header name not terminated by colon"
-    :
-    US"missing } at end of string";
+  expand_string_message = malformed_header
+    ? US"missing } at end of string - could be header name not terminated by colon"
+    : US"missing } at end of string";
   goto EXPAND_FAILED;
   }
 
@@ -7863,6 +7865,45 @@ return (  (  Ustrstr(s, "failed to expand") != NULL
 	  || Ustrstr(s, "ldapm:")  != NULL
        )  ) 
   ? US"Temporary internal error" : s;
+}
+
+
+/* Read given named file into big_buffer.  Use for keying material etc.
+The content will have an ascii NUL appended.
+
+Arguments:
+ filename	as it says
+
+Return:  pointer to buffer, or NULL on error.
+*/
+
+uschar *
+expand_file_big_buffer(const uschar * filename)
+{
+int fd, off = 0, len;
+
+if ((fd = open(CS filename, O_RDONLY)) < 0)
+  {
+  log_write(0, LOG_MAIN | LOG_PANIC, "unable to open file for reading: %s",
+	     filename);
+  return NULL;
+  }
+
+do
+  {
+  if ((len = read(fd, big_buffer + off, big_buffer_size - 2 - off)) < 0)
+    {
+    (void) close(fd);
+    log_write(0, LOG_MAIN|LOG_PANIC, "unable to read file: %s", filename);
+    return NULL;
+    }
+  off += len;
+  }
+while (len > 0);
+
+(void) close(fd);
+big_buffer[off] = '\0';
+return big_buffer;
 }
 
 

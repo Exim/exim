@@ -477,7 +477,8 @@ convert4r4: config ../src/convert4r4.src
 # are thrown away by the linker.
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
-OBJ_EXPERIMENTAL = bmi_spam.o \
+OBJ_EXPERIMENTAL =	arc.o \
+			bmi_spam.o \
 			dane.o \
 			dcc.o \
 			dmarc.o \
@@ -827,6 +828,7 @@ spool_mbox.o:    $(HDRS) spool_mbox.c
 
 # Dependencies for EXPERIMENTAL_* modules
 
+arc.o:		$(HDRS) pdkim/pdkim.h arc.c
 bmi_spam.o:	$(HDRS) bmi_spam.c
 dane.o:		$(HDRS) dane.c dane-openssl.c
 dcc.o:		$(HDRS) dcc.h dcc.c

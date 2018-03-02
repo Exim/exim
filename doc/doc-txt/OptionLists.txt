@@ -82,6 +82,7 @@ allow_localhost                      boolean         false         smtp         
 allow_mx_to_ip                       boolean         false         main              3.14
 allow_symlink                        boolean         false         appendfile
 allow_utf8_domains                   boolean         false         main              4.14
+arc_sign			     string*	     unset	   smtp		     4.91 with Experimental_ARC
 auth_advertise_hosts                 host list       "*"           main              4.00
 authenticated_sender                 string*         unset         smtp              4.14
 authenticated_sender_force           boolean         false         smtp              4.61

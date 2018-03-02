@@ -44,6 +44,8 @@ Version 4.91
 12. Expansion item ${authresults {<machine>}} for creating an
     Authentication-Results: header.
 
+13. EXPERIMENTAL_ARC.  See the experimental.spec file.
+
 
 Version 4.90
 ------------

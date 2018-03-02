@@ -71,11 +71,7 @@ const uschar * pdkim_canons[] = {
   NULL
 };
 
-typedef struct {
-  const uschar * dkim_hashname;
-  hashmethod	 exim_hashmethod;
-} pdkim_hashtype;
-static const pdkim_hashtype pdkim_hashes[] = {
+const pdkim_hashtype pdkim_hashes[] = {
   { US"sha1",   HASH_SHA1 },
   { US"sha256", HASH_SHA2_256 },
   { US"sha512", HASH_SHA2_512 }
@@ -122,6 +118,34 @@ if (  sig->keytype < 0  || sig->keytype > nelem(pdkim_keytypes)
   return US"err";
 return string_sprintf("%s-%s",
   pdkim_keytypes[sig->keytype], pdkim_hashes[sig->hashtype].dkim_hashname);
+}
+
+
+int
+pdkim_hashname_to_hashtype(const uschar * s, unsigned len)
+{
+int i;
+if (!len) len = Ustrlen(s);
+for (i = 0; i < nelem(pdkim_hashes); i++)
+  if (Ustrncmp(s, pdkim_hashes[i].dkim_hashname, len) == 0)
+    return i;
+return -1;
+}
+
+void
+pdkim_cstring_to_canons(const uschar * s, unsigned len,
+  int * canon_head, int * canon_body)
+{
+int i;
+if (!len) len = Ustrlen(s);
+for (i = 0; pdkim_combined_canons[i].str; i++)
+  if (  Ustrncmp(s, pdkim_combined_canons[i].str, len) == 0
+     && len == Ustrlen(pdkim_combined_canons[i].str))
+    {
+    *canon_head = pdkim_combined_canons[i].canon_headers;
+    *canon_body = pdkim_combined_canons[i].canon_body;
+    break;
+    }
 }
 
 
@@ -177,7 +201,7 @@ switch(status)
 
 /* -------------------------------------------------------------------------- */
 /* Print debugging functions */
-static void
+void
 pdkim_quoteprint(const uschar *data, int len)
 {
 int i;
@@ -203,7 +227,7 @@ for (i = 0; i < len; i++)
 debug_printf("\n");
 }
 
-static void
+void
 pdkim_hexprint(const uschar *data, int len)
 {
 int i;
@@ -302,16 +326,16 @@ return PDKIM_FAIL;
 /* -------------------------------------------------------------------------- */
 /* Performs "relaxed" canonicalization of a header. */
 
-static uschar *
-pdkim_relax_header(const uschar * header, BOOL append_crlf)
+uschar *
+pdkim_relax_header_n(const uschar * header, int len, BOOL append_crlf)
 {
 BOOL past_field_name = FALSE;
 BOOL seen_wsp = FALSE;
 const uschar * p;
-uschar * relaxed = store_get(Ustrlen(header)+3);
+uschar * relaxed = store_get(len+3);
 uschar * q = relaxed;
 
-for (p = header; *p; p++)
+for (p = header; p - header < len; p++)
   {
   uschar c = *p;
 
@@ -344,6 +368,13 @@ if (q > relaxed && q[-1] == ' ') q--; /* Squash eventual trailing SP */
 if (append_crlf) { *q++ = '\r'; *q++ = '\n'; }
 *q = '\0';
 return relaxed;
+}
+
+
+uschar *
+pdkim_relax_header(const uschar * header, BOOL append_crlf)
+{
+return pdkim_relax_header_n(header, Ustrlen(header), append_crlf);
 }
 
 
@@ -407,16 +438,15 @@ return n;
 
 /* -------------------------------------------------------------------------- */
 
-static void
+void
 pdkim_decode_base64(const uschar * str, blob * b)
 {
-int dlen;
-dlen = b64decode(str, &b->data);
+int dlen = b64decode(str, &b->data);
 if (dlen < 0) b->data = NULL;
 b->len = dlen;
 }
 
-static uschar *
+uschar *
 pdkim_encode_base64(blob * b)
 {
 return b64encode(b->data, b->len);
@@ -541,24 +571,13 @@ for (p = raw_hdr; ; p++)
 		"DKIM: ignoring signature due to nonhandled keytype in a=%s",
 		cur_val->s);
 
-	    for (++s, i = 0; i < nelem(pdkim_hashes); i++)
-	      if (Ustrcmp(s, pdkim_hashes[i].dkim_hashname) == 0)
-		{ sig->hashtype = i; break; }
-	    if (sig->hashtype < 0)
-	      log_write(0, LOG_MAIN,
-		"DKIM: ignoring signature due to nonhandled hashtype in a=%s",
-		cur_val->s);
+	    sig->hashtype = pdkim_hashname_to_hashtype(++s, 0);
 	    break;
 	    }
 
 	  case 'c':					/* canonicalization */
-	    for (i = 0; pdkim_combined_canons[i].str; i++)
-	      if (Ustrcmp(cur_val->s, pdkim_combined_canons[i].str) == 0)
-	        {
-		sig->canon_headers = pdkim_combined_canons[i].canon_headers;
-		sig->canon_body    = pdkim_combined_canons[i].canon_body;
-		break;
-		}
+	    pdkim_cstring_to_canons(cur_val->s, 0,
+				    &sig->canon_headers, &sig->canon_body);
 	    break;
 	  case 'q':				/* Query method (for pubkey)*/
 	    for (i = 0; pdkim_querymethods[i]; i++)
@@ -626,7 +645,7 @@ DEBUG(D_acl)
 	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
   }
 
-if (!pdkim_set_bodyhash(ctx, sig))
+if (!pdkim_set_sig_bodyhash(ctx, sig))
   return NULL;
 
 return sig;
@@ -635,8 +654,8 @@ return sig;
 
 /* -------------------------------------------------------------------------- */
 
-static pdkim_pubkey *
-pdkim_parse_pubkey_record(pdkim_ctx *ctx, const uschar *raw_record)
+pdkim_pubkey *
+pdkim_parse_pubkey_record(const uschar *raw_record)
 {
 const uschar * ele;
 int sep = ';';
@@ -772,7 +791,11 @@ pdkim_bodyhash * b;
 pdkim_signature * sig;
 
 for (b = ctx->bodyhash; b; b = b->next)		/* Finish hashes */
+  {
+  DEBUG(D_acl) debug_printf("PDKIM: finish bodyhash %d/%d/%d len %d\n",
+	    b->hashtype, b->canon_method, b->bodylength, b->signed_body_bytes);
   exim_sha_finish(&b->body_hash_ctx, &b->bh);
+  }
 
 /* Traverse all signatures */
 for (sig = ctx->sig; sig; sig = sig->next)
@@ -939,6 +962,11 @@ if ( (ctx->cur_header->ptr > 1) &&
      (ctx->cur_header->s[ctx->cur_header->ptr-1] == '\r') )
   --ctx->cur_header->ptr;
 (void) string_from_gstring(ctx->cur_header);
+
+#ifdef EXPERIMENTAL_ARC
+/* Feed the header line to ARC processing */
+(void) arc_header_feed(ctx->cur_header, !(ctx->flags & PDKIM_MODE_SIGN));
+#endif
 
 if (++ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
 
@@ -1319,7 +1347,7 @@ pdkim_pubkey * p;
 
 dns_txt_name = string_sprintf("%s._domainkey.%s.", sig->selector, sig->domain);
 
-if (  !(dns_txt_reply = ctx->dns_txt_callback(CS dns_txt_name))
+if (  !(dns_txt_reply = ctx->dns_txt_callback(dns_txt_name))
    || dns_txt_reply[0] == '\0'
    )
   {
@@ -1338,7 +1366,7 @@ DEBUG(D_acl)
   pdkim_quoteprint(CUS dns_txt_reply, Ustrlen(dns_txt_reply));
   }
 
-if (  !(p = pdkim_parse_pubkey_record(ctx, CUS dns_txt_reply))
+if (  !(p = pdkim_parse_pubkey_record(CUS dns_txt_reply))
    || (Ustrcmp(p->srvtype, "*") != 0 && Ustrcmp(p->srvtype, "email") != 0)
    )
   {
@@ -1406,14 +1434,17 @@ else
   DEBUG(D_acl) debug_printf(
       "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
+/* Build (and/or evaluate) body hash.  Do this even if no DKIM sigs, in case we
+have a hash to do for ARC. */
+
+pdkim_finish_bodyhash(ctx);
+
 if (!ctx->sig)
   {
   DEBUG(D_acl) debug_printf("PDKIM: no signatures\n");
+  *return_signatures = NULL;
   return PDKIM_OK;
   }
-
-/* Build (and/or evaluate) body hash */
-pdkim_finish_bodyhash(ctx);
 
 for (sig = ctx->sig; sig; sig = sig->next)
   {
@@ -1422,6 +1453,14 @@ for (sig = ctx->sig; sig; sig = sig->next)
   blob hhash;
   gstring * hdata = NULL;
   es_ctx sctx;
+
+  if (  !(ctx->flags & PDKIM_MODE_SIGN)
+     && sig->verify_status == PDKIM_VERIFY_FAIL)
+    {
+    DEBUG(D_acl)
+       debug_printf("PDKIM: [%s] abandoning this signature\n", sig->domain);
+    continue;
+    }
 
   /*XXX The hash of the headers is needed for GCrypt (for which we can do RSA
   suging only, as it happens) and for either GnuTLS and OpenSSL when we are
@@ -1480,7 +1519,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
     the signature header  */
 
 /*XXX extend for non-RSA algos */
-    if ((*err = exim_dkim_signing_init(US sig->privkey, &sctx)))
+    if ((*err = exim_dkim_signing_init(CUS sig->privkey, &sctx)))
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "signing_init: %s", *err);
       return PDKIM_ERR_RSA_PRIVKEY;
@@ -1774,7 +1813,7 @@ return ctx->flags & PDKIM_MODE_SIGN  ||  verify_pass
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_verify(uschar * (*dns_txt_callback)(char *), BOOL dot_stuffing)
+pdkim_init_verify(uschar * (*dns_txt_callback)(uschar *), BOOL dot_stuffing)
 {
 pdkim_ctx * ctx;
 
@@ -1868,29 +1907,35 @@ return;
 
 
 /* Set up a blob for calculating the bodyhash according to the
-needs of this signature.  Use an existing one if possible, or
-create a new one.
+given needs.  Use an existing one if possible, or create a new one.
 
-Return: hashblob pointer, or NULL on error (only used as a boolean).
+Return: hashblob pointer, or NULL on error
 */
 pdkim_bodyhash *
-pdkim_set_bodyhash(pdkim_ctx * ctx, pdkim_signature * sig)
+pdkim_set_bodyhash(pdkim_ctx * ctx, int hashtype, int canon_method,
+	long bodylength)
 {
 pdkim_bodyhash * b;
 
 for (b = ctx->bodyhash; b; b = b->next)
-  if (  sig->hashtype == b->hashtype
-     && sig->canon_body == b->canon_method
-     && sig->bodylength == b->bodylength)
-    goto old;
+  if (  hashtype == b->hashtype
+     && canon_method == b->canon_method
+     && bodylength == b->bodylength)
+    {
+    DEBUG(D_receive) debug_printf("PDKIM: using existing bodyhash %d/%d/%d\n",
+				  hashtype, canon_method, bodylength);
+    return b;
+    }
 
+DEBUG(D_receive) debug_printf("PDKIM: new bodyhash %d/%d/%d\n",
+			      hashtype, canon_method, bodylength);
 b = store_get(sizeof(pdkim_bodyhash));
 b->next = ctx->bodyhash;
-b->hashtype = sig->hashtype;
-b->canon_method = sig->canon_body;
-b->bodylength = sig->bodylength;
+b->hashtype = hashtype;
+b->canon_method = canon_method;
+b->bodylength = bodylength;
 if (!exim_sha_init(&b->body_hash_ctx,		/*XXX hash method: extend for sha512 */
-		  pdkim_hashes[sig->hashtype].exim_hashmethod))
+		  pdkim_hashes[hashtype].exim_hashmethod))
   {
   DEBUG(D_acl)
     debug_printf("PDKIM: hash init error, possibly nonhandled hashtype\n");
@@ -1899,8 +1944,21 @@ if (!exim_sha_init(&b->body_hash_ctx,		/*XXX hash method: extend for sha512 */
 b->signed_body_bytes = 0;
 b->num_buffered_blanklines = 0;
 ctx->bodyhash = b;
+return b;
+}
 
-old:
+
+/* Set up a blob for calculating the bodyhash according to the
+needs of this signature.  Use an existing one if possible, or
+create a new one.
+
+Return: hashblob pointer, or NULL on error (only used as a boolean).
+*/
+pdkim_bodyhash *
+pdkim_set_sig_bodyhash(pdkim_ctx * ctx, pdkim_signature * sig)
+{
+pdkim_bodyhash * b = pdkim_set_bodyhash(ctx,
+			sig->hashtype, sig->canon_body, sig->bodylength);
 sig->calc_body_hash = b;
 return b;
 }
@@ -1911,7 +1969,7 @@ return b;
 
 void
 pdkim_init_context(pdkim_ctx * ctx, BOOL dot_stuffed,
-  uschar * (*dns_txt_callback)(char *))
+  uschar * (*dns_txt_callback)(uschar *))
 {
 memset(ctx, 0, sizeof(pdkim_ctx));
 ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;

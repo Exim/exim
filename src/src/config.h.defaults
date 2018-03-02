@@ -190,6 +190,7 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_MAL_CMDLINE
 
 /* EXPERIMENTAL features */
+#define EXPERIMENTAL_ARC
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO

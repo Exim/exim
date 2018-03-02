@@ -420,7 +420,15 @@ BOOL    allow_domain_literals  = FALSE;
 BOOL    allow_mx_to_ip         = FALSE;
 BOOL    allow_unqualified_recipient = TRUE;    /* For local messages */
 BOOL    allow_unqualified_sender = TRUE;       /* Reset for SMTP */
-BOOL    allow_utf8_domains     = FALSE;
+BOOL    allow_utf8_domains	= FALSE;
+
+#ifdef EXPERIMENTAL_ARC
+struct arc_set *arc_received	= NULL;
+int     arc_received_instance	= 0;
+int     arc_oldest_pass		= 0;
+const uschar *arc_state		= NULL;
+#endif
+
 uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;
 uschar *authenticated_sender   = NULL;
@@ -785,7 +793,7 @@ header_name header_names[] = {
   { US"to",             2,	TRUE,		htype_to }
 };
 
-int header_names_size          = sizeof(header_names)/sizeof(header_name);
+int header_names_size          = nelem(header_names);
 
 BOOL    header_rewritten       = FALSE;
 uschar *helo_accept_junk_hosts = NULL;

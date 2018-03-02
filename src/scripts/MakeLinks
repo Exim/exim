@@ -122,7 +122,7 @@ do
 done
 
 # EXPERIMENTAL_*
-for f in  bmi_spam.c bmi_spam.h dcc.c dcc.h dane.c dane-openssl.c \
+for f in  arc.c bmi_spam.c bmi_spam.h dcc.c dcc.h dane.c dane-openssl.c \
   danessl.h imap_utf7.c spf.c spf.h srs.c srs.h utf8.c
 do
   ln -s ../src/$f $f

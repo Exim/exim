@@ -90,6 +90,9 @@ typedef struct {
 #ifndef DISABLE_DKIM
   struct ob_dkim dkim;
 #endif
+#ifdef EXPERIMENTAL_ARC
+  uschar *arc_sign;
+#endif
 } smtp_transport_options_block;
 
 /* smtp connect context */

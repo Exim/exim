@@ -279,7 +279,7 @@ typedef struct pdkim_ctx {
   pdkim_bodyhash *bodyhash;
 
   /* Callback for dns/txt query method (verification only) */
-  uschar * (*dns_txt_callback)(char *);
+  uschar * (*dns_txt_callback)(uschar *);
 
   /* Coder's little helpers */
   gstring   *cur_header;
@@ -288,6 +288,17 @@ typedef struct pdkim_ctx {
   int        num_headers;
   pdkim_stringlist *headers; /* Raw headers for verification         */
 } pdkim_ctx;
+
+
+/******************************************************************************/
+
+typedef struct {
+  const uschar * dkim_hashname;
+  hashmethod	 exim_hashmethod;
+} pdkim_hashtype;
+extern const pdkim_hashtype pdkim_hashes[];
+
+/******************************************************************************/
 
 
 /* -------------------------------------------------------------------------- */
@@ -301,7 +312,7 @@ extern "C" {
 
 void	   pdkim_init         (void);
 
-void	   pdkim_init_context (pdkim_ctx *, BOOL, uschar * (*)(char *));
+void	   pdkim_init_context (pdkim_ctx *, BOOL, uschar * (*)(uschar *));
 
 DLLEXPORT
 pdkim_signature *pdkim_init_sign    (pdkim_ctx *,
@@ -309,7 +320,7 @@ pdkim_signature *pdkim_init_sign    (pdkim_ctx *,
 			       const uschar **);
 
 DLLEXPORT
-pdkim_ctx *pdkim_init_verify  (uschar * (*)(char *), BOOL);
+pdkim_ctx *pdkim_init_verify  (uschar * (*)(uschar *), BOOL);
 
 DLLEXPORT
 void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
@@ -317,7 +328,10 @@ void       pdkim_set_optional (pdkim_signature *, char *, char *,int, int,
                                unsigned long,
                                unsigned long);
 
-pdkim_bodyhash *pdkim_set_bodyhash(pdkim_ctx *, pdkim_signature *);
+int		pdkim_hashname_to_hashtype(const uschar *, unsigned);
+void		pdkim_cstring_to_canons(const uschar *, unsigned, int *, int *);
+pdkim_bodyhash *pdkim_set_bodyhash(pdkim_ctx *, int, int, long);
+pdkim_bodyhash *pdkim_set_sig_bodyhash(pdkim_ctx *, pdkim_signature *);
 
 DLLEXPORT
 int        pdkim_feed         (pdkim_ctx *, uschar *, int);
@@ -330,7 +344,14 @@ void       pdkim_free_ctx     (pdkim_ctx *);
 
 const uschar *	pdkim_errstr(int);
 
-uschar *	dkim_sig_to_a_tag(const pdkim_signature * sig);
+extern uschar *		pdkim_encode_base64(blob *);
+extern void		pdkim_decode_base64(const uschar *, blob *);
+extern void		pdkim_hexprint(const uschar *, int);
+extern void		pdkim_quoteprint(const uschar *, int);
+extern pdkim_pubkey *	pdkim_parse_pubkey_record(const uschar *);
+extern uschar *		pdkim_relax_header_n(const uschar *, int, BOOL);
+extern uschar *		pdkim_relax_header(const uschar *, BOOL);
+extern uschar *		dkim_sig_to_a_tag(const pdkim_signature *);
 
 #ifdef __cplusplus
 }

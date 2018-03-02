@@ -875,6 +875,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_SRS
   fprintf(f, " Experimental_SRS");
 #endif
+#ifdef EXPERIMENTAL_ARC
+  fprintf(f, " Experimental_ARC");
+#endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   fprintf(f, " Experimental_Brightmail");
 #endif

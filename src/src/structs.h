@@ -879,6 +879,10 @@ struct ob_dkim {
   uschar *dkim_strict;
   uschar *dkim_hash;
   BOOL    dot_stuffed;
+  BOOL    force_bodyhash;
+#ifdef EXPERIMENTAL_ARC
+  uschar *arc_signspec;
+#endif
 };
 
 /* End of structs.h */

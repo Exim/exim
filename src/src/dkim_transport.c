@@ -129,6 +129,7 @@ uschar * hdrs;
 gstring * dkim_signature;
 int hsize;
 const uschar * errstr;
+uschar * verrstr;
 BOOL rc;
 
 DEBUG(D_transport) debug_printf("dkim signing direct-mode\n");
@@ -159,6 +160,16 @@ if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
     *err = errstr;
     return FALSE;
     }
+
+#ifdef EXPERIMENTAL_ARC
+if (dkim->arc_signspec)			/* Prepend ARC headers */
+  if (!(dkim_signature =
+	arc_sign(dkim->arc_signspec, dkim_signature, &verrstr)))
+    {
+    *err = verrstr;
+    return FALSE;
+    }
+#endif
 
 /* Write the signature and headers into the deliver-out-buffer.  This should
 mean they go out in the same packet as the MAIL, RCPT and (first) BDAT commands
@@ -268,6 +279,15 @@ if (!(dkim_signature = dkim_exim_sign(dkim_fd, 0, NULL, dkim, &errstr)))
 else
   dlen = dkim_signature->ptr;
 
+#ifdef EXPERIMENTAL_ARC
+if (dkim->arc_signspec)				/* Prepend ARC headers */
+  {
+  if (!(dkim_signature = arc_sign(dkim->arc_signspec, dkim_signature, USS err)))
+    goto CLEANUP;
+  dlen = dkim_signature->ptr;
+  }
+#endif
+
 #ifndef OS_SENDFILE
 if (options & topt_use_bdat)
 #endif
@@ -351,7 +371,8 @@ dkim_transport_write_message(transport_ctx * tctx,
 {
 /* If we can't sign, just call the original function. */
 
-if (!(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector))
+if (  !(dkim->dkim_private_key && dkim->dkim_domain && dkim->dkim_selector)
+   && !dkim->force_bodyhash)
   return transport_write_message(tctx, 0);
 
 /* If there is no filter command set up, construct the message and calculate
