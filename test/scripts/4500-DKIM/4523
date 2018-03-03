@@ -4,7 +4,7 @@ exim -bd -DSERVER=server -oX PORT_D
 ****
 #
 # default header set
-exim -DHEADERS_MAXSIZE=y -DVALUE=sha512 -odf a@test.ex
+exim -DOPT=+From -DVALUE=sha512 -odf a@test.ex
 From: nobody@example.com
 
 content

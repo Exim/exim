@@ -1,0 +1,24 @@
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbI-0005vi-00
+	for b22@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
+	s=sel; h=X-mine:X-mine:X-Mine;
+	bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=; b=xdhDHWeO9R0K1mMCManMqUGXH3
+	8js7wRlfof31603TebtErSiSY53U83IQ4B0/xpbWwPE5/oXEkWyzip0kM8Kyy1kkgkfaWilY8BhPt
+	/Bzt2ejTfNt7cbQQYHDLajY/q/9W6bGzJm4fBzrWrYgqfvyeXpb8jp2QkwO9zmGMiqmI=;
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbH-0005vi-00
+	for b22@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: nobody@example.com
+X-mine: one
+X-mine: two
+Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+content
+

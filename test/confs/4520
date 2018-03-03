@@ -24,14 +24,14 @@ log_selector = -dkim +dkim_verbose
 
 begin routers
 
-server_dump:
-  driver = redirect
-  condition = ${if eq {SERVER}{server}{yes}{no}}
-  data = :blackhole:
+server_store:
+  driver =	accept
+  condition =	${if eq {SERVER}{server}{yes}{no}}
+  transport =	file
 
 client:
-  driver = accept
-  transport = send_to_server
+  driver =	accept
+  transport =	send_to_server
 
 # ----- Transports
 
@@ -67,5 +67,10 @@ send_to_server:
 .ifdef STRICT
   dkim_strict =		STRICT
 .endif
+
+file:
+  driver =	appendfile
+  file =	DIR/test-mail/$local_part
+  user =	CALLER
 
 # End

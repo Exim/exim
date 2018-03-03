@@ -46,12 +46,12 @@ DKIM-Signature:{SP}v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}
 PDKIM >> Signed DKIM-Signature header, canonicalized (relaxed) >>>>>>>
 dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{SP}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
 PDKIM [test.ex] Header sha256 computed: 241e16230df5723d899cfae9474c6b376a2ab1f81d1094e358f50ffd0e0067b3
-  SMTP<< 250 OK id=10HmbM-0005vi-00
+  SMTP<< 250 OK id=10HmbK-0005vi-00
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
 LOG: MAIN
-  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbM-0005vi-00"
+  => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbK-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

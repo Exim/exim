@@ -12,5 +12,5 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 dkim_acl: signer: test.dkim.dom.ain bits: 1024 h=
 1999-03-02 09:44:33 10HmaY-0005vi-00 data acl: dkim status pass:pass:none
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <c@test.ex> R=server_dump
+1999-03-02 09:44:33 10HmaY-0005vi-00 => c <c@test.ex> R=server_store T=file
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

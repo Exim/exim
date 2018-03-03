@@ -51,13 +51,14 @@ X-mine: two
 content
 ****
 #
-# default header set
-exim -DHEADERS_MAXSIZE=y -odf c@test.ex
-From: nobody@example.com
-
-content
-****
+## default header set
+# cannot test that as it includes Date: so results in a varying signature
+#exim -DHEADERS_MAXSIZE=y -odf c@test.ex
+#From: nobody@example.com
 #
+#content
+#****
+##
 # check that on signing we warn in debug mode about verify problems
 exim -d-all+acl -DOPT=From -DSELECTOR=sel_bad -odf d@test.ex
 From: nobody@example.com
