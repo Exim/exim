@@ -2,6 +2,6 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmaX-0005vi-00 signer: test.ex bits: 1024
-1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: d=test.ex s=sel2 c=simple/simple a=rsa-sha512 b=1024 [verification failed - body hash mismatch (body probably modified in transit)]
-1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=test.ex header.s=sel2 header.a=rsa-sha512
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net
+1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: d=test.ex s=sel c=relaxed/relaxed a=rsa-sha512 b=1024 [verification succeeded]
+1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha512
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=test.ex id=E10HmaY-0005vi-00@myhost.test.ex

@@ -22,18 +22,18 @@ RCPT TO:<a@test.ex>
 ??? 250
 DATA
 ??? 354
-DKIM-Signature: v=1; a=rsa-sha512; c=simple/simple; d=test.ex; h=from:to
-	:date:message-id:subject; s=sel2; bh=3UbbJTudPxmejzh7U1Zg33U3QT+1
-	6kfV2eOTvMeiEis=; b=xQSD/JMqz0C+xKf0A1NTkPTbkDuDdJbpBuyjjT9iYvyP
-	Zez+xl0TkoPobFGVa6EN8+ZeYV18zjifhtWYLSsNmPinUtcpKQLG1zxAKmmS0JEh
-	+qihlWbeGJ5+tK588ugUzXHPj+4JBW0H6kxHvdH0l2SlQE5xs/cdggnx5QX5USY=
-From: mrgus@text.ex
-To: bakawolf@yahoo.com
-Date: Thu, 19 Nov 2015 17:00:07 -0700
-Message-ID: <qwerty1234@disco-zombie.net>
-Subject: simple test
+DKIM-Signature: v=1; a=rsa-sha512; q=dns/txt; c=relaxed/relaxed; d=test.ex;
+	s=sel; h=From:From; bh=6B2m0DINYQYGHTvmDYQAfAm/wCDFh+Oj57jE2G4jz4nAeJfmjTB6tz
+	me+A5nT6AQ4J3N47vffXLG1exv8bzFZw==; b=YFIC4khvqvXRd8I3r3YTdQqG/SbtDIAYTYVkIo3
+	W7Qe+42eI+w1koPY+ocPtZeRBWWjGVbnZNtof7s5x0sRc6fSDZJAQu6RjnP2xEJWsivowXBMuu8id
+	PtqcDhP/3Q/0W85VMalfSC7eCgpnNxfn73ZjPuBZFCc1wMVh5nUmUvo=;
+From: nobody@example.com
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-This is a simple test.
+content
+
 .
 ??? 250
 QUIT
