@@ -64,7 +64,7 @@ tfile:
 
 tsmtp:
   driver =	smtp
-  hosts =	HOSTIPV4
+  hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
 .ifndef OPTION
@@ -73,7 +73,7 @@ tsmtp:
 
 tmlist:
   driver =	smtp
-  hosts =	HOSTIPV4
+  hosts =	127.0.0.1
   port =	PORT_D
   allow_localhost
   transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter

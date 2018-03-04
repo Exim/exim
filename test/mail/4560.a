@@ -1,8 +1,8 @@
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmaY-0005vi-00
@@ -32,20 +32,20 @@ This is a test body.
 
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbB-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=pass; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=QPT4AYm4FOMArfxOkzKDV/wEYbVVD4rZ7BKz7wzbMmLj/oyuObMvZ/zff/uFoegX6Xl0W7Ogs4
-	  Oid4SiYGn8WmoUqxEuEGPo6/rnp93bPkjL6EVZcuqs8gK9JN+DC1/ubihCCj5zQkPcJEiq3fpV
-	  t59JpYefg0lWAxMXRe7XkSQ=;
+	 b=p0S5hu7O1X0QEtH5WHBKTSlksX8Q09cpDll3kZxgLv8bcq4aAVc+hk2ajkzlwplg3ArBTSx79R
+	  D4CB+BB3x5p4oB+VwgVSS+Fz/EFFxgEht4xKqPFJ/Xqi3SFdy0+vxdZ6d0z7sOE6pchlxooFhH
+	  QMpkkGVVGT+uT4MqnexuTjY=;
 ARC-Authentication-Results: i=2; test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=HUzfKKxIjPIa07lkj5uzDQ3q5YTRF/NwAUE7dhrrfvs=;
 	h=Subject;
@@ -53,9 +53,9 @@ ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	  iTHoJ4CBtVAkDwq75Wj+lh1OfrArWJatMyimkMwxX6b54KcXldIwB+7w6Tn3D9/sydBEduL82C
 	  p1kh+Bb/X0QGczb0CzdXwhM=;
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbA-0005vi-00
@@ -85,20 +85,20 @@ This is a test body.
 
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=3) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=3) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbF-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=3; cv=pass; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=UZiwwzRnbDfp1Qy85n7I53xtu0tXHmyGcuzuv/QL/pXNNNGPGxS4x+qLliXV3yMyUzPYEYjOkB
-	  zlbFTeha0LdIY6GksuprRSrVRqtoePCgl/9XLyrAtqXe4atZWYr8tpLfbdLGhS0SXAkNHgY/I0
-	  tIhVDsdGN6Z0tMMWxwljKro=;
+	 b=f9LBNUaiOCFYXDo/Qj0MeW9NwX4CszFtZjfvnjvlfDc6WM28bQyEqMQBWNt+vApDne+LPsLGW/
+	  28MQ4CQf6a3OZDtENt704sxqrwFPgaJhjNx79Yn5yWfqX6YFcTc/tI3DZzLMScUCPSfVGTsNwB
+	  J9vb4zPdN+QJ+viTsyMRQ4Y=;
 ARC-Authentication-Results: i=3; test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
+	iprev=pass (localhost);
+	arc=pass (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=31zA4VNQZ2yhHUh+7vWASIL9kKqo6pSym1QghgPyUkM=;
 	h=Subject;
@@ -106,20 +106,20 @@ ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	  nG6rkqTU/uqBRAbWaEHP1VYDss/x47a/GImRx89dR1P7ZTRLMGgk0AusbvtFDMsKvOTd8QeWLc
 	  DsScgtJ2MqYbikFuA0LxRIA=;
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbE-0005vi-00
 	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=pass; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=Ve0H0ri4edD3OUKRxMSyMWdVBiikGZwpYN/6lq6fxiFkgxV7atTuDfPJJ77xbuC/vmvLOWSa6x
-	  JcN+stcJn6QcPNjmzoNbK5BLIWwFfLKW02Ao+qqm1DGqWnI6XD3r/oKleEvUc2XdatoYHXCbp7
-	  qQO7e9u/Pzs+6u6dNA+KoJA=;
+	 b=VFGK3ThSLHrT5Zn9w3dPive+GXVNu/sYyfb6i64d8GiAf0fAcD8cSqiQizsuABJIkJzcTfQEw/
+	  g4ihDDhg3Mz3FgvWbsNbBfoDVy/PZ3xCp0XFEOh7joTr1N42yolOwt1BFbZw8CvKLv0x+p1Zhb
+	  ZIdrz8ZGocPUB2HB8m0h+NA=;
 ARC-Authentication-Results: i=2; test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=31zA4VNQZ2yhHUh+7vWASIL9kKqo6pSym1QghgPyUkM=;
 	h=Subject;
@@ -127,9 +127,9 @@ ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	  GMQ21ewl0ZaHC4bAzidgK7NsViw8cfKnJwkvSm4FejpBDto93vQ0Jn2dntbjGZeDSaFx8AuV0m
 	  oZRTJp3w8FnuMJ8Pl0bDLDM=;
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbD-0005vi-00
@@ -163,20 +163,20 @@ This is a generic mailinglist footer
 
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=fail (i=3) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=fail (i=3) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbK-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=3; cv=fail; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=Q7C2hXJPIS8zzONoXTI8rWioQs8SqYOBTXYLipH7fshFD+j83qqBfxoTQUzZmSjLq1ZDmIyJD/
-	  Ni8eBtkRv3wnbcnp1nxuv3ATnUfFgjd4DjmKtBqIKK0r3yvOXooeK7uEbvJHapXg7uHFSLq62X
-	  c7RWT/QCRAUexkZERkhQP6s=;
+	 b=TSTRZa5Pb1FTxQ2M5heDeAZTQ6mg/qETgzXrxUA9Aa9GkofMft7JnWyPuM5ZZm9f0BWydQUD24
+	  omdjyXmK78wyfDoSDS1Zzau16bByabyDgb7tF3K5qMYTNEosX0aJskb6h/NqBRd5RMlhyt3OOK
+	  zGEfd5TI5pS16ghs9I6oB88=;
 ARC-Authentication-Results: i=3; test.ex;
-	iprev=pass (the.local.host.name);
-	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
+	iprev=pass (localhost);
+	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=31zA4VNQZ2yhHUh+7vWASIL9kKqo6pSym1QghgPyUkM=;
 	h=Subject;
@@ -184,28 +184,28 @@ ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	  nG6rkqTU/uqBRAbWaEHP1VYDss/x47a/GImRx89dR1P7ZTRLMGgk0AusbvtFDMsKvOTd8QeWLc
 	  DsScgtJ2MqYbikFuA0LxRIA=;
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbJ-0005vi-00
 	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbI-0005vi-00
 	for mza@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=pass; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=QPT4AYm4FOMArfxOkzKDV/wEYbVVD4rZ7BKz7wzbMmLj/oyuObMvZ/zff/uFoegX6Xl0W7Ogs4
-	  Oid4SiYGn8WmoUqxEuEGPo6/rnp93bPkjL6EVZcuqs8gK9JN+DC1/ubihCCj5zQkPcJEiq3fpV
-	  t59JpYefg0lWAxMXRe7XkSQ=;
+	 b=p0S5hu7O1X0QEtH5WHBKTSlksX8Q09cpDll3kZxgLv8bcq4aAVc+hk2ajkzlwplg3ArBTSx79R
+	  D4CB+BB3x5p4oB+VwgVSS+Fz/EFFxgEht4xKqPFJ/Xqi3SFdy0+vxdZ6d0z7sOE6pchlxooFhH
+	  QMpkkGVVGT+uT4MqnexuTjY=;
 ARC-Authentication-Results: i=2; test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=HUzfKKxIjPIa07lkj5uzDQ3q5YTRF/NwAUE7dhrrfvs=;
 	h=Subject;
@@ -213,9 +213,9 @@ ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	  iTHoJ4CBtVAkDwq75Wj+lh1OfrArWJatMyimkMwxX6b54KcXldIwB+7w6Tn3D9/sydBEduL82C
 	  p1kh+Bb/X0QGczb0CzdXwhM=;
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbH-0005vi-00
@@ -249,17 +249,17 @@ This is a generic mailinglist footer
 
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbN-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	iprev=pass (localhost);
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbM-0005vi-00
@@ -289,12 +289,12 @@ This is a test body.
 
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (the.local.host.name);
+	iprev=pass (localhost);
 	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;
 	dkim=fail (body hash mismatch; body probably modified in transit)
 		 header.d=convivian.com header.s=default header.a=rsa-sha256;
-	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=ip4.ip4.ip4.ip4
-Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=test.ex)
+	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
 	id 10HmbP-0005vi-00
