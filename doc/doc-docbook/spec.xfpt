@@ -39040,11 +39040,13 @@ This variable can be overwritten using an ACL 'set' modifier.
 This might, for instance, be done to enforce a policy restriction on
 hash-method or key-size:
 .code
-  warn	condition =	${if eq {$dkim_algo}{rsa-sha1}}
-	condition =	${if eq {$dkim_verify_status}{pass}}
+  warn	condition =	${if eq {$dkim_verify_status}{pass}}
+	condition =	${if eq {$len_3:$dkim_algo}{rsa}}
+	condition =	${if or {eq {$dkim_algo}{rsa-sha1}} \
+				{< {$dkim_key_length}{1024}} }
 	logwrite =	NOTE: forcing dkim verify fail (was pass)
 	set dkim_verify_status = fail
-	set dkim_verify_reason = hash too weak
+	set dkim_verify_reason = hash too weak or key too short
 .endd
 
 After all the DKIM ACL runs have completed, the value becomes a
@@ -39133,6 +39135,9 @@ UNIX timestamp reflecting the date and time when the signer wants the
 signature to be treated as "expired". When this was not specified by the
 signer, "9999999999999" is returned. This makes it possible to do useful
 integer size comparisons against this value.
+.new
+Note that Exim does not check this value.
+.wen
 
 .vitem &%$dkim_headernames%&
 A colon-separated list of names of headers included in the signature.
@@ -39166,6 +39171,7 @@ less than 1024 bits as valid signatures.
 
 To enforce this you must have a DKIM ACL which checks this variable
 and overwrites the &$dkim_verify_status$& variable as discussed above.
+As EC keys are much smaller, the check should only do this for RSA keys.
 .wen
 
 .endlist
