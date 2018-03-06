@@ -1,0 +1,96 @@
+# Exim test configuration 5890
+# DANE/fail-events
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+.ifndef OPT
+acl_smtp_rcpt = accept logwrite = "rcpt ACL"
+.else
+acl_smtp_rcpt = accept verify = recipient/callout
+.endif
+
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
+
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+.ifdef _HAVE_GNUTLS
+# needed to force generation
+tls_dhparam = historic
+.endif
+
+# Set certificate only if server
+CDIR1 = DIR/aux-fixed/exim-ca/example.net/server1.example.net
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
+
+
+tls_certificate = ${if eq {SERVER}{server} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+		{CDIR2/fullchain.pem}\
+		{CDIR1/fullchain.pem}}}\
+	fail}
+
+tls_privatekey = ${if eq {SERVER}{server} \
+	{${if or {{eq {DETAILS}{ta}} {eq {DETAILS}{ca}} {eq {DETAILS}{ee}}} \
+		{CDIR2/server1.example.com.unlocked.key}\
+		{CDIR1/server1.example.net.unlocked.key}}}\
+	fail}
+
+# ----- ACL -----
+begin acl
+
+dane_fail:
+  accept	condition =	${if eq {dane} {${listextract{1}{$event_name}}}}
+		logwrite =	$event_name <$event_data>
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =		dnslookup
+  condition =		${if eq {SERVER}{}}
+  dnssec_request_domains = *
+  self =		send
+  transport =		send_to_server
+  errors_to =		""
+
+server:
+  driver = redirect
+  data = :blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  port = PORT_D
+
+  hosts_try_dane =     *
+  hosts_require_dane = HOSTIPV4
+  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
+  tls_try_verify_hosts = thishost.test.ex
+  tls_verify_certificates = CDIR2/ca_chain.pem
+  event_action =	${acl {dane_fail}}
+
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

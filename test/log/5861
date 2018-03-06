@@ -1,0 +1,102 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@thishost.test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=2 error=self signed certificate in certificate chain cert=/O=example.net/CN=clica CA rsa
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=server1.example.net" C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@thishost.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER@thishost.test.ex R=client T=send_to_server H=thishost.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdanelazy.test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 dane:fail <dane-required>
+1999-03-02 09:44:33 10HmbB-0005vi-00 H=danelazy.test.ex [ip4.ip4.ip4.ip4]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbB-0005vi-00 dane:fail <dnssec-invalid>
+1999-03-02 09:44:33 10HmbB-0005vi-00 H=danelazy2.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbB-0005vi-00 == CALLER@mxdanelazy.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.1.test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 dane:fail <dane-required>
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** CALLER@dane.no.1.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbC-0005vi-00 CALLER@dane.no.1.test.ex: error ignored
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="dane.no.2.test.ex"
+1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER@dane.no.2.test.ex R=client T=send_to_server H=dane.no.2.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken1.test.ex
+1999-03-02 09:44:33 10HmbF-0005vi-00 dane:fail <dnssec-invalid>
+1999-03-02 09:44:33 10HmbF-0005vi-00 H=danebroken1.test.ex [127.0.0.1]: DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbF-0005vi-00 == CALLER@danebroken1.test.ex R=client T=send_to_server defer (-36): DANE error: tlsa lookup DEFER
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.3.test.ex
+1999-03-02 09:44:33 10HmbG-0005vi-00 dane:fail <dane-required>
+1999-03-02 09:44:33 10HmbG-0005vi-00 ** CALLER@dane.no.3.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbG-0005vi-00 CALLER@dane.no.3.test.ex: error ignored
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbH-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="dane.no.4.test.ex"
+1999-03-02 09:44:33 10HmbH-0005vi-00 => CALLER@dane.no.4.test.ex R=client T=send_to_server H=dane.no.4.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbI-0005vi-00"
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken2.test.ex
+1999-03-02 09:44:33 10HmbJ-0005vi-00 DANE attempt failed; TLS connection to danebroken2.test.ex [127.0.0.1]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 dane:fail <validation-failure>
+1999-03-02 09:44:33 10HmbJ-0005vi-00 == CALLER@danebroken2.test.ex R=client T=send_to_server defer (-37) H=danebroken2.test.ex [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken3.test.ex
+1999-03-02 09:44:33 10HmbK-0005vi-00 DANE error: TLSA lookup for danebroken3.test.ex not DNSSEC
+1999-03-02 09:44:33 10HmbK-0005vi-00 => CALLER@danebroken3.test.ex R=client T=send_to_server H=danebroken3.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbL-0005vi-00"
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken4.test.ex
+1999-03-02 09:44:33 10HmbM-0005vi-00 DANE error: TLSA lookup for danebroken4.test.ex not DNSSEC
+1999-03-02 09:44:33 10HmbM-0005vi-00 dane:fail <dane-required>
+1999-03-02 09:44:33 10HmbM-0005vi-00 ** CALLER@danebroken4.test.ex R=client T=send_to_server: DANE error: tlsa lookup FAIL
+1999-03-02 09:44:33 10HmbM-0005vi-00 CALLER@danebroken4.test.ex: error ignored
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken5.test.ex
+1999-03-02 09:44:33 10HmbN-0005vi-00 => CALLER@danebroken5.test.ex R=client T=send_to_server H=danebroken5.test.ex [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbO-0005vi-00"
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbP-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken6.test.ex
+1999-03-02 09:44:33 10HmbP-0005vi-00 dane:fail <dane-required>
+1999-03-02 09:44:33 10HmbP-0005vi-00 ** CALLER@danebroken6.test.ex R=client T=send_to_server: DANE error: danebroken6.test.ex lookup not DNSSEC
+1999-03-02 09:44:33 10HmbP-0005vi-00 CALLER@danebroken6.test.ex: error ignored
+1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken7.example.com
+1999-03-02 09:44:33 10HmbQ-0005vi-00 DANE attempt failed; TLS connection to danebroken7.example.com [127.0.0.1]: (SSL_connect): error:xxxxxxxx:SSL routines:ssl3_get_server_certificate:certificate verify failed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 dane:fail <validation-failure>
+1999-03-02 09:44:33 10HmbQ-0005vi-00 == CALLER@danebroken7.example.com R=client T=send_to_server defer (-37) H=danebroken7.example.com [127.0.0.1]: TLS session: (SSL_connect): error: <<detail omitted>>
+1999-03-02 09:44:33 10HmbR-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken8.example.com
+1999-03-02 09:44:33 10HmbR-0005vi-00 => CALLER@danebroken8.example.com R=client T=send_to_server H=danebroken8.example.com [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=dane DN="/CN=server1.example.net" C="250 OK id=10HmbS-0005vi-00"
+1999-03-02 09:44:33 10HmbR-0005vi-00 Completed
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex for CALLER@dane.no.2.test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@dane.no.2.test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbH-0005vi-00@myhost.test.ex for CALLER@dane.no.4.test.ex
+1999-03-02 09:44:33 10HmbI-0005vi-00 => :blackhole: <CALLER@dane.no.4.test.ex> R=server
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbK-0005vi-00@myhost.test.ex for CALLER@danebroken3.test.ex
+1999-03-02 09:44:33 10HmbL-0005vi-00 => :blackhole: <CALLER@danebroken3.test.ex> R=server
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbN-0005vi-00@myhost.test.ex for CALLER@danebroken5.test.ex
+1999-03-02 09:44:33 10HmbO-0005vi-00 => :blackhole: <CALLER@danebroken5.test.ex> R=server
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (SSL_accept): error: <<detail omitted>>
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmbS-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbR-0005vi-00@myhost.test.ex for CALLER@danebroken8.example.com
+1999-03-02 09:44:33 10HmbS-0005vi-00 => :blackhole: <CALLER@danebroken8.example.com> R=server
+1999-03-02 09:44:33 10HmbS-0005vi-00 Completed

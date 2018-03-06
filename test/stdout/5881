@@ -1,0 +1,32 @@
+### A server with a nonverifying cert and no TLSA
+### A server with a verifying cert and no TLSA
+### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
+### A server lacking a TLSA, dane required (should fail; should get an event)
+### A server lacking a TLSA, dane requested only (should deliver, non-DANE, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
+### A server securely saying "no TLSA records here", dane required (delivery should fail)
+### A server securely saying "no TLSA records here", dane requested only (should deliver)
+### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
+### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good TLSA record, dane required (delivery should fail)
+### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good A record, dane required (delivery should fail)
+### A server with a name not matching the cert.  TA-mode; should fail
+### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+
+******** SERVER ********
+### A server with a nonverifying cert and no TLSA
+### A server with a verifying cert and no TLSA
+### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
+### A server lacking a TLSA, dane required (should fail; should get an event)
+### A server lacking a TLSA, dane requested only (should deliver, non-DANE, as the NXDOMAIN is not DNSSEC)
+### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
+### A server securely saying "no TLSA records here", dane required (delivery should fail)
+### A server securely saying "no TLSA records here", dane requested only (should deliver)
+### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
+### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good TLSA record, dane required (delivery should fail)
+### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
+### A server insecurely serving a good A record, dane required (delivery should fail)
+### A server with a name not matching the cert.  TA-mode; should fail
+### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode

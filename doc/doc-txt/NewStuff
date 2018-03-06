@@ -46,6 +46,8 @@ Version 4.91
 
 13. EXPERIMENTAL_ARC.  See the experimental.spec file.
 
+14: A dane:fail event, intended to facilitate reporting.
+
 
 Version 4.90
 ------------

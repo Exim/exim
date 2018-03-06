@@ -28153,7 +28153,16 @@ If verification was successful using DANE then the "CV" item in the delivery log
 
 There is a new variable &$tls_out_dane$& which will have "yes" if
 verification succeeded using DANE and "no" otherwise (only useful
-in combination with EXPERIMENTAL_EVENT), and a new variable &$tls_out_tlsa_usage$& (detailed above).
+in combination with events; see &<<CHAPevents>>&),
+and a new variable &$tls_out_tlsa_usage$& (detailed above).
+
+.cindex DANE reporting
+An event (see &<<CHAPevents>>&) of type "dane:fail" will be raised on failures
+to achieve DANE-verified connection, if one was either requested and offered, or
+required.  This is intended to support TLS-reporting as defined in
+&url(https://tools.ietf.org/html/draft-ietf-uta-smtp-tlsrpt-17).
+The &$event_data$& will be one of the Result Types defined in
+Section 4.3 of that document.
 
 Under GnuTLS, DANE is only supported from version 3.0.0 onwards.
 .wen
@@ -39709,6 +39718,7 @@ expansion must check this, as it will be called for every possible event type.
 
 The current list of events is:
 .display
+&`dane:fail              after    transport  `& per connection
 &`msg:complete           after    main       `& per message
 &`msg:delivery           after    transport  `& per recipient
 &`msg:rcpt:host:defer    after    transport  `& per recipient per host
@@ -39737,6 +39747,7 @@ should define the event action.
 An additional variable, &$event_data$&, is filled with information varying
 with the event type:
 .display
+&`dane:fail            `& failure reason
 &`msg:delivery         `& smtp confirmation message
 &`msg:rcpt:host:defer  `& error string
 &`msg:rcpt:defer       `& error string
@@ -39764,15 +39775,12 @@ The expansion of the event_action option should normally
 return an empty string.  Should it return anything else the
 following will be forced:
 .display
-&`msg:delivery     `&  (ignored)
-&`msg:host:defer   `&  (ignored)
-&`msg:fail:delivery`&  (ignored)
 &`tcp:connect      `&  do not connect
-&`tcp:close        `&  (ignored)
 &`tls:cert         `&  refuse verification
 &`smtp:connect     `&  close connection
 .endd
-No other use is made of the result string.
+All other message types ignore the result string, and
+no other use is made of it.
 
 For a tcp:connect event, if the connection is being made to a proxy
 then the address and port variables will be that of the proxy and not
