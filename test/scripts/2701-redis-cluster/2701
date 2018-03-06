@@ -1,0 +1,45 @@
+# Redis lookups and quoting in cluster mode
+#
+#
+echo Setting up 2-node cluster...
+sudo rm -fr DIR/node1 DIR/node2
+mkdir -p DIR/node1 DIR/node2
+#
+echo Starting node1
+background
+redis-server --bind 127.0.0.1 --port 6379 --cluster-enabled yes --cluster-config-file node1.conf --dir DIR/node1 --logfile /dev/null
+****
+sleep 5
+echo Starting node2
+background
+redis-server --bind 127.0.0.1 --port 6380 --cluster-enabled yes --cluster-config-file node2.conf --dir DIR/node2 --logfile /dev/null
+****
+#
+sleep 5
+echo Creating slots, node1
+perl
+system 'for x in {0..8191}; do echo "CLUSTER ADDSLOTS $x" | redis-cli -p 6379 | egrep -v OK; done';
+****
+sleep 5
+echo Creating slots, node2
+perl
+system 'for x in {8192..16383}; do echo "CLUSTER ADDSLOTS $x" | redis-cli -p 6380 | egrep -v OK; done';
+****
+sleep 5
+echo Sending CLUSTER MEET
+perl
+system 'echo "CLUSTER MEET 127.0.0.1 6380" | redis-cli -p 6379 -c';
+****
+sleep 5
+exim -be -d-all+expand+lookup
+${lookup redis{set ${quote_redis:KEY_100_1001 ABCDEF} ${quote_redis:objvalue plus}}}
+${lookup redis{set ${quote_redis:01t67it} ${quote_redis:bfhdkbflks}}}
+****
+sleep 2
+exim -be -d-all+expand+lookup
+${lookup redis{get ${quote_redis:KEY_100_1001 ABCDEF}}}
+${lookup redis{get ${quote_redis:01t67it}}}
+****
+#
+killdaemon
+no_stderr_check

@@ -1,0 +1,11 @@
+# Exim test configuration 2701
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+redis_servers = 127.0.0.1::6379// : 127.0.0.1::6380//
+
+# End
