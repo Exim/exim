@@ -1621,7 +1621,7 @@ else
     (needed for TA but not EE). */
 
     if (usage == ((1<<DANESSL_USAGE_DANE_TA) | (1<<DANESSL_USAGE_DANE_EE)))
-    {						/* a mixed-usage bundle */
+      {						/* a mixed-usage bundle */
       int i, j, nrec;
       const char ** dd;
       int * ddl;
@@ -1920,12 +1920,10 @@ int rc;
 uschar * yield;
 exim_gnutls_state_st * state = gnutls_session_get_ptr(session);
 
-cert_list = gnutls_certificate_get_peers(session, &cert_list_size);
-if (cert_list)
+if ((cert_list = gnutls_certificate_get_peers(session, &cert_list_size)))
   while (cert_list_size--)
   {
-  rc = import_cert(&cert_list[cert_list_size], &crt);
-  if (rc != GNUTLS_E_SUCCESS)
+  if ((rc = import_cert(&cert_list[cert_list_size], &crt)) != GNUTLS_E_SUCCESS)
     {
     DEBUG(D_tls) debug_printf("TLS: peer cert problem: depth %d: %s\n",
       cert_list_size, gnutls_strerror(rc));

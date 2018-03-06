@@ -1,0 +1,4 @@
+support DANE
+support Event
+support GnuTLS
+running IPv4

@@ -1,0 +1,78 @@
+# Exim test configuration 5880
+# DANE
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+# Set certificate only if server
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
+
+tls_certificate = ${if eq {SERVER}{server} {CDIR2/fullchain.pem} fail}
+tls_privatekey = ${if eq {SERVER}{server} {CDIR2/server1.example.com.unlocked.key} fail}
+
+
+begin acl
+
+logger:
+  accept condition = ${if eq {tls} {${listextract{1}{$event_name}}}}
+	 logwrite = $event_name depth = $event_data \
+			<${certextract {subject} {$tls_out_peercert}}>
+#  message = noooo
+
+  accept condition = ${if eq {msg} {${listextract{1}{$event_name}}}}
+	 logwrite = $event_name dane=$tls_out_dane
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = dnslookup
+  condition = ${if eq {SERVER}{}}
+  dnssec_request_domains = *
+  self = send
+  transport = send_to_server
+
+server:
+  driver = redirect
+  data = :blackhole:
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  port = PORT_D
+
+#  hosts_try_dane = *
+  hosts_require_dane = *
+
+  # required for TA-mode testing
+  tls_verify_certificates = CDIR2/ca_chain.pem
+.ifdef _HAVE_OCSP
+  hosts_request_ocsp = ${if or { {= {4}{$tls_out_tlsa_usage}} \
+				 {= {0}{$tls_out_tlsa_usage}} } \
+                        {*}{}}
+.endif
+
+  event_action =   ${acl {logger}}
+
+# End

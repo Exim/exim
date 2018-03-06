@@ -1,0 +1,42 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@dane256ee.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 tls:cert depth = 2 <O=example.com,CN=clica CA rsa>
+1999-03-02 09:44:33 10HmaX-0005vi-00 tls:cert depth = 1 <O=example.com,CN=clica Signing Cert rsa>
+1999-03-02 09:44:33 10HmaX-0005vi-00 tls:cert depth = 0 <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@dane256ee.test.ex R=client T=send_to_server H=dane256ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=dane DN="CN=server1.example.com" C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 msg:delivery dane=yes
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth = 2 <O=example.com,CN=clica CA rsa>
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth = 1 <O=example.com,CN=clica Signing Cert rsa>
+1999-03-02 09:44:33 10HmaY-0005vi-00 tls:cert depth = 0 <CN=server1.example.com>
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=dane DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 msg:delivery dane=yes
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@mxdane256ta.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 tls:cert depth = 2 <O=example.com,CN=clica CA rsa>
+1999-03-02 09:44:33 10HmbB-0005vi-00 tls:cert depth = 1 <O=example.com,CN=clica Signing Cert rsa>
+1999-03-02 09:44:33 10HmbB-0005vi-00 tls:cert depth = 0 <CN=server1.example.com>
+1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER@mxdane256ta.test.ex R=client T=send_to_server H=dane256ta.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=dane DN="CN=server1.example.com" C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 msg:delivery dane=yes
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for CALLER@dane256ee.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss id=E10HmaY-0005vi-00@myhost.test.ex for CALLER@mxdane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <CALLER@dane256ee.test.ex> R=server
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <CALLER@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss id=E10HmbB-0005vi-00@myhost.test.ex for CALLER@mxdane256ta.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@mxdane256ta.test.ex> R=server
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
