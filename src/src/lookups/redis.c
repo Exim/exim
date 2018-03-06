@@ -243,7 +243,7 @@ switch (redis_reply->type)
     *errmsg = string_sprintf("REDIS: lookup result failed: %s\n", redis_reply->str);
 
     /* trap MOVED cluster responses and follow them */
-    if (Ustrncmp(redis_reply->str, "MOVED", 5))
+    if (Ustrncmp(redis_reply->str, "MOVED", 5) == 0)
       {
       DEBUG(D_lookup)
         debug_printf("REDIS: cluster redirect %s\n", redis_reply->str);
