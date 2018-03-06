@@ -241,7 +241,20 @@ switch (redis_reply->type)
   {
   case REDIS_REPLY_ERROR:
     *errmsg = string_sprintf("REDIS: lookup result failed: %s\n", redis_reply->str);
-    *defer_break = FALSE;
+
+    /* trap MOVED cluster responses and follow them */
+    if (Ustrncmp(redis_reply->str, "MOVED", 5))
+      {
+      DEBUG(D_lookup)
+        debug_printf("REDIS: cluster redirect %s\n", redis_reply->str);
+      /* follow redirect
+      This is cheating, we simply set defer_break = TRUE to move on to
+      the next server in the redis_servers list */
+      *defer_break = TRUE;
+      return DEFER;
+      } else {
+      *defer_break = FALSE;
+      }
     *do_cache = 0;
     goto REDIS_EXIT;
     /* NOTREACHED */
