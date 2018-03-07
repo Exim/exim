@@ -173,7 +173,7 @@ while ((x = *code++) != 0)
 
   while (isspace(y = *code++)) ;
   /* debug_printf("b64d: '%c'\n", y); */
-  if (y == 0 || (y = dec64table[y]) == 255)
+  if (y > 127 || (y = dec64table[y]) == 255)
     return -1;
 
   *result++ = (x << 2) | (y >> 4);
