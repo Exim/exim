@@ -248,12 +248,12 @@ switch (redis_reply->type)
       DEBUG(D_lookup)
         debug_printf("REDIS: cluster redirect %s\n", redis_reply->str);
       /* follow redirect
-      This is cheating, we simply set defer_break = TRUE to move on to
+      This is cheating, we simply set defer_break = FALSE to move on to
       the next server in the redis_servers list */
-      *defer_break = TRUE;
+      *defer_break = FALSE;
       return DEFER;
       } else {
-      *defer_break = FALSE;
+      *defer_break = TRUE;
       }
     *do_cache = 0;
     goto REDIS_EXIT;
