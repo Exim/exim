@@ -2,17 +2,17 @@
 #
 #
 echo Setting up 2-node cluster...
-sudo rm -fr DIR/node1 DIR/node2
-mkdir -p DIR/node1 DIR/node2
+sudo rm -fr DIR/redis-cluster
+mkdir -p DIR/redis-cluster/node1 DIR/redis-cluster/node2
 #
 echo Starting node1
-background
-redis-server --bind 127.0.0.1 --port 6379 --cluster-enabled yes --cluster-config-file node1.conf --dir DIR/node1 --logfile /dev/null
+perl
+system 'redis-server --bind 127.0.0.1 --port 6379 --cluster-enabled yes --cluster-config-file node1.conf --dir DIR/redis-cluster/node1 --logfile node1.log --daemonize yes --pidfile node1.pid --loglevel debug';
 ****
 sleep 5
 echo Starting node2
-background
-redis-server --bind 127.0.0.1 --port 6380 --cluster-enabled yes --cluster-config-file node2.conf --dir DIR/node2 --logfile /dev/null
+perl
+system 'redis-server --bind 127.0.0.1 --port 6380 --cluster-enabled yes --cluster-config-file node2.conf --dir DIR/redis-cluster/node2 --logfile node2.log --daemonize yes --pidfile node2.pid --loglevel debug';
 ****
 #
 sleep 5
@@ -41,5 +41,18 @@ ${lookup redis{get ${quote_redis:KEY_100_1001 ABCDEF}}}
 ${lookup redis{get ${quote_redis:01t67it}}}
 ****
 #
-killdaemon
+sleep 5
+perl
+my @pidfiles = ( "DIR/redis-cluster/node1/node1.pid", "DIR/redis-cluster/node2/
+foreach my $pidfile (@pidfiles) {
+  if ( -f $pidfile ) {
+    open (my $fh, "<", $pidfile);
+    while (my $pid = <$fh>) {
+      chomp $pid;
+      kill 'TERM', $pid;
+    }
+  }
+}
+****
+sudo rm -fr DIR/redis-cluster
 no_stderr_check
