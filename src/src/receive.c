@@ -1034,6 +1034,7 @@ for (;;)
     unsigned len = MAX(chunking_data_left, thismessage_size_limit - message_size + 1);
     uschar * buf = bdat_getbuf(&len);
 
+    if (!buf) return END_EOF;
     message_size += len;
     if (fout && fwrite(buf, len, 1, fout) != 1) return END_WERROR;
     }

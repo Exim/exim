@@ -653,7 +653,7 @@ next_cmd:
 	  }
 
       receive_getc = bdat_getc;
-      receive_getbuf = bdat_getbuf;
+      receive_getbuf = bdat_getbuf;	/* r~getbuf is never actually used */
       receive_ungetc = bdat_ungetc;
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
@@ -684,7 +684,7 @@ bdat_flush_data(void)
 while (chunking_data_left)
   {
   unsigned n = chunking_data_left;
-  (void) bdat_getbuf(&n);
+  if (!bdat_getbuf(&n)) break;
   }
 
 receive_getc = lwr_receive_getc;

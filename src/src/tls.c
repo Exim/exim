@@ -41,8 +41,8 @@ static const int ssl_xfer_buffer_size = 4096;
 static uschar *ssl_xfer_buffer = NULL;
 static int ssl_xfer_buffer_lwm = 0;
 static int ssl_xfer_buffer_hwm = 0;
-static int ssl_xfer_eof = 0;
-static int ssl_xfer_error = 0;
+static int ssl_xfer_eof = FALSE;
+static BOOL ssl_xfer_error = FALSE;
 #endif
 
 uschar *tls_channelbinding_b64 = NULL;
@@ -162,7 +162,7 @@ Returns:       non-zero if the eof flag is set
 int
 tls_feof(void)
 {
-return ssl_xfer_eof;
+return (int)ssl_xfer_eof;
 }
 
 
@@ -184,7 +184,7 @@ Returns:       non-zero if the error flag is set
 int
 tls_ferror(void)
 {
-return ssl_xfer_error;
+return (int)ssl_xfer_error;
 }
 
 

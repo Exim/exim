@@ -156,8 +156,8 @@ typedef struct exim_gnutls_state {
   uschar *xfer_buffer;
   int xfer_buffer_lwm;
   int xfer_buffer_hwm;
-  int xfer_eof;
-  int xfer_error;
+  BOOL xfer_eof;	/*XXX never gets set! */
+  BOOL xfer_error;
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
@@ -198,8 +198,8 @@ static const exim_gnutls_state_st exim_gnutls_state_init = {
   .xfer_buffer =	NULL,
   .xfer_buffer_lwm =	0,
   .xfer_buffer_hwm =	0,
-  .xfer_eof =		0,
-  .xfer_error =		0,
+  .xfer_eof =		FALSE,
+  .xfer_error =		FALSE,
 };
 
 /* Not only do we have our own APIs which don't pass around state, assuming
@@ -2505,7 +2505,7 @@ alarm(0);
 if (sigalrm_seen)
   {
   DEBUG(D_tls) debug_printf("Got tls read timeout\n");
-  state->xfer_error = 1;
+  state->xfer_error = TRUE;
   return FALSE;
   }
 
@@ -2541,7 +2541,7 @@ else if (inbytes == 0)
 else if (inbytes < 0)
   {
   record_io_error(state, (int) inbytes, US"recv", NULL);
-  state->xfer_error = 1;
+  state->xfer_error = TRUE;
   return FALSE;
   }
 #ifndef DISABLE_DKIM

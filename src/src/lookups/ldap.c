@@ -889,7 +889,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
 if (data)
   {
   (void) string_from_gstring(data);
-  store_reset(data->s + data->ptr + 1);
+  gstring_reset_unused(data);
   }
 
 /* Copy the last dn into eldap_dn */

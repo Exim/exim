@@ -2103,7 +2103,7 @@ DEBUG(D_tls)
  */
 if (!ssl_xfer_buffer) ssl_xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
-ssl_xfer_eof = ssl_xfer_error = 0;
+ssl_xfer_eof = ssl_xfer_error = FALSE;
 
 receive_getc = tls_getc;
 receive_getbuf = tls_getbuf;
@@ -2498,14 +2498,14 @@ else if (error == SSL_ERROR_SSL)
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
-  ssl_xfer_error = 1;
+  ssl_xfer_error = TRUE;
   return FALSE;
   }
 
 else if (error != SSL_ERROR_NONE)
   {
   DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
-  ssl_xfer_error = 1;
+  ssl_xfer_error = TRUE;
   return FALSE;
   }
 
