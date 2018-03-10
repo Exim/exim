@@ -138,6 +138,9 @@ JH/26 Bug 2253: For logging delivery lines under PRDR, append the overall
 JH/27 Bug 2251: Fix ldap lookups that return a single attribute having zero-
       length value.  Previously this would segfault.
 
+HS/02 Support Avast multiline protoocol, this allows passing flags to
+      newer versions of the scanner.
+
 
 Exim version 4.90
 -----------------

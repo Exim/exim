@@ -1,0 +1,86 @@
+# content scan interface: avast
+### clean |  multiline response
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<FLAGS -fullfiles
+>LF>210 FLAGS DATA
+>LF>FLAGS -fullfiles
+>LF>FLAGS +extra
+>LF>200 FLAGS OK
+<SCAN
+>LF>210 SCAN DATA
+>LF>/bin/clean1	[+]
+>LF>/bin/clean2	[+]
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION="FLAGS -fullfiles" -DINSERT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****
+#
+#
+### clean and error | multiline response
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>/bin/ok	[+]
+>LF>/bin/error	[E]0.0
+>LF>/bin/infected	[L]0.0	0 This is not even EICAR!
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: defer this one, the scanner had an error
+
+.
+quit
+****
+#
+#
+# clean and infected | multiline response
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>/bin/clean	[+]
+>LF>v\\ i\\ a\\ r\\ u\\ s	[L]9.9	9 This ist not even an EICAR test virus.
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT="/defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****

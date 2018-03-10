@@ -31806,9 +31806,9 @@ though individual ones can be included or not at build time:
 .vitem &%avast%&
 .cindex "virus scanners" "avast"
 This is the scanner daemon of Avast. It has been tested with Avast Core
-Security (currently at version 1.1.7).
-You can get a trial version at &url(http://www.avast.com) or for Linux
-at &url(http://www.avast.com/linux-server-antivirus).
+Security (currently at version 2.2.0).
+You can get a trial version at &url(https://www.avast.com) or for Linux
+at &url(https://www.avast.com/linux-server-antivirus).
 This scanner type takes one option,
 which can be either a full path to a UNIX socket,
 or host and port specifiers separated by white space.
@@ -31834,6 +31834,8 @@ $ socat UNIX:/var/run/avast/scan.sock STDIO:
     SENSITIVITY
     PACK
 .endd
+
+Only the first virus detected will be reported.
 
 
 .vitem &%aveserver%&
