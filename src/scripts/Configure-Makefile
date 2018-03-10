@@ -1,5 +1,6 @@
 #! /bin/sh
-export LC_ALL=C
+LC_ALL=C
+export LC_ALL
 
 # Shell script to build Makefile in a build directory. It must be called
 # from inside the directory. It does its own checking of when to rebuild; it
