@@ -96,9 +96,9 @@ Return 0 on error */
 static unsigned
 arc_instance_from_hdr(const arc_line * al)
 {
-uschar * s = al->i.data;
+const uschar * s = al->i.data;
 if (!s || !al->i.len) return 0;
-return (unsigned) atoi(s);
+return (unsigned) atoi(CCS s);
 }
 
 
@@ -186,7 +186,7 @@ static uschar *
 arc_parse_line(arc_line * al, header_line * h, unsigned off, BOOL instance_only)
 {
 uschar * s = h->text + off;
-uschar * r;
+uschar * r = NULL;	/* compiler-quietening */
 uschar c;
 
 al->complete = h;
@@ -482,7 +482,7 @@ static const uschar *
 arc_vfy_collect_hdrs(arc_ctx * ctx)
 {
 header_line * h;
-hdr_rlist * r, * rprev = NULL;
+hdr_rlist * r = NULL, * rprev = NULL;
 const uschar * e;
 
 DEBUG(D_acl) debug_printf("ARC: collecting arc sets\n");
@@ -612,7 +612,7 @@ if (p->hashes)
   if (!ele)
     {
     DEBUG(D_acl) debug_printf("pubkey h=%s vs sig a=%.*s\n",
-			      p->hashes, al->a.len, al->a.data);
+			      p->hashes, (int)al->a.len, al->a.data);
     return NULL;
     }
   }
@@ -682,7 +682,7 @@ DEBUG(D_acl)
   debug_printf("ARC i=%d AMS   Body bytes hashed: %lu\n"
 	       "              Body %.*s computed: ",
 	       as->instance, b->signed_body_bytes,
-	       ams->a_hash.len, ams->a_hash.data);
+	       (int)ams->a_hash.len, ams->a_hash.data);
   pdkim_hexprint(CUS b->bh.data, b->bh.len);
   }
 
@@ -891,7 +891,7 @@ exim_sha_finish(&hhash_ctx, &hhash_computed);
 DEBUG(D_acl)
   {
   debug_printf("ARC i=%d AS Header %.*s computed: ",
-    as->instance, hdr_as->a_hash.len, hdr_as->a_hash.data);
+    as->instance, (int)hdr_as->a_hash.len, hdr_as->a_hash.data);
   pdkim_hexprint(hhash_computed.data, hhash_computed.len);
   }
 
@@ -1085,7 +1085,7 @@ hdr_rlist * rheaders = NULL;
 s = sigheaders ? sigheaders->s : NULL;
 if (s) while (*s)
   {
-  uschar * s2;
+  const uschar * s2 = s;
 
   /* This works for either NL or CRLF lines; also nul-termination */
   while (*++s2)
@@ -1370,7 +1370,6 @@ arc_set * as;
 uschar * status = arc_ar_cv_status(ar);
 arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line));
 header_line * h = (header_line *)(al+1);
-uschar * s;
 
 gstring * hdata = NULL;
 int hashtype = pdkim_hashname_to_hashtype(US"sha256", 6);	/*XXX hardwired */
@@ -1684,7 +1683,7 @@ authres_arc(gstring * g)
 if (arc_state)
   {
   arc_line * highest_ams;
-  int start;
+  int start = 0;		/* Compiler quietening */
   DEBUG(D_acl) start = g->ptr;
 
   g = string_append(g, 2, US";\n\tarc=", arc_state);
