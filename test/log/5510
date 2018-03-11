@@ -1,16 +1,16 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good"
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> userz@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 second rcpt was good"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good\\n250 OK, overall"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> userz@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 second rcpt was good\\n250 OK, overall"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => user2.1@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK got that"
 1999-03-02 09:44:33 10HmaY-0005vi-00 -> user2.2@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK got that"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= userx@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good\\n250 OK, overall"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userz@test.ex R=r0 T=t1 defer (0) H=127.0.0.1 [127.0.0.1]: PRDR error after DATA: 450 cannot handle second rcpt right now
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbA-0005vi-00 => userp@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good"
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userp@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1] PRDR C="250 first rcpt was good\\n250 OK, overall"
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** userq@test.ex R=r0 T=t1 H=127.0.0.1 [127.0.0.1]: PRDR error after DATA: 550 second rcpt does not like content
 1999-03-02 09:44:33 10HmbA-0005vi-00 Frozen (delivery error message)
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userz@test.ex routing defer (-51): retry time not reached

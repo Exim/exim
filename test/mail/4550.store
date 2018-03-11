@@ -2,10 +2,10 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Return-path: <>
 Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
 	by myhost.test.ex with esmtp (Exim x.yz)
-	id 10HmaZ-0005vi-00
+	id 10HmbA-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmaY-0005vi-00
+	id 10HmaZ-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: baduser@test.ex
 Auto-Submitted: auto-replied
@@ -14,7 +14,7 @@ To: CALLER@myhost.test.ex
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

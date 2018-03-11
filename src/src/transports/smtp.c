@@ -3224,8 +3224,11 @@ else
 #ifndef DISABLE_PRDR
       if (sx.prdr_active)
         {
+	const uschar * overall_message;
+
 	/* PRDR - get the final, overall response.  For any non-success
 	upgrade all the address statuses. */
+
         sx.ok = smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer), '2',
           sx.ob->final_timeout);
         if (!sx.ok)
@@ -3241,7 +3244,14 @@ else
 	  goto RESPONSE_FAILED;
 	  }
 
-	/* Update the journal, or setup retry. */
+	/* Append the overall response to the individual PRDR response for logging
+	and update the journal, or setup retry. */
+
+	overall_message = string_printing(sx.buffer);
+        for (addr = addrlist; addr != sx.first_addr; addr = addr->next)
+	  if (addr->transport_return == OK)
+	    addr->message = string_sprintf("%s\\n%s", addr->message, overall_message);
+
         for (addr = addrlist; addr != sx.first_addr; addr = addr->next)
 	  if (addr->transport_return == OK)
 	    {

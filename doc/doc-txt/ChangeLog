@@ -130,6 +130,11 @@ JH/24 Bug 2242: Fix exim_dbmbuild to permit directoryless filenames.
 JH/25 Fix utf8_downconvert propagation through a redirect router.  Previously it
       was not propagated.
 
+JH/26 Bug 2253: For logging delivery lines under PRDR, append the overall
+      DATA response info to the (existing) per-recipient response info for
+      the "C=" log element.  It can have useful tracking info from the
+      destination system.  Patch from Simon Arlott.
+
 
 Exim version 4.90
 -----------------
