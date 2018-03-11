@@ -83,6 +83,9 @@ JH/24 Bug 2242: Fix exim_dbmbuild to permit directoryless filenames.
 JH/25 Fix utf8_downconvert propagation through a redirect router.  Previously it
       was not propagated.
 
+JH/27 Bug 2251: Fix ldap lookups that return a single attribute having zero-
+      length value.  Previously this would segfault.
+
 
 Exim version 4.90
 -----------------

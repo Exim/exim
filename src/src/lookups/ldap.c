@@ -884,13 +884,13 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
   result = NULL;
   }            /* End "while" loop for multiple results */
 
-/* Terminate the dynamic string that we have built and reclaim unused store */
+/* Terminate the dynamic string that we have built and reclaim unused store.
+In the odd case of a single attribute with zero-length value, allocate
+an empty string. */
 
-if (data)
-  {
-  (void) string_from_gstring(data);
-  store_reset(data->s + data->ptr + 1);
-  }
+if (!data) data = string_get(1);
+(void) string_from_gstring(data);
+store_reset(data->s + data->ptr + 1);
 
 /* Copy the last dn into eldap_dn */
 
