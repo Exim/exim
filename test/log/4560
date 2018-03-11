@@ -100,3 +100,6 @@
 1999-03-02 09:44:33 10HmbP-0005vi-00 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmbQ-0005vi-00 H=(xxx) [127.0.0.1] Warning: ARC-FAIL
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for a@test.ex

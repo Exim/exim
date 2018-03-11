@@ -1,6 +1,8 @@
 # Exim test configuration 4560
 
 SERVER=
+VALUE=
+INSERT=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -18,7 +20,9 @@ queue_only
 begin acl
 
 check_data:
-  warn	!verify =	arc
+  warn	!verify =	arc VALUE
+	INSERT
+
 .ifdef OPTION
   accept
 .else

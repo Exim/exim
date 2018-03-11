@@ -347,6 +347,31 @@ exim -DSERVER=server -DNOTDAEMON -q
 #
 #
 #
+killdaemon
+#
+exim -DSERVER=server -DVALUE=/pass -DINSERT='log_message=ARC-FAIL' -bd -oX PORT_D
+****
+#
+# We just send this in for reception, bare, to check the "arc" verify can take options
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<a@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
 #
 #
 #
@@ -354,6 +379,5 @@ exim -DSERVER=server -DNOTDAEMON -q
 #
 #
 killdaemon
-#
 no_stdout_check
 no_msglog_check

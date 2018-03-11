@@ -1543,7 +1543,7 @@ static verify_type_t verify_type_list[] = {
     { US"recipient",	  	VERIFY_RCPT,	 	ACL_BIT_RCPT,	FALSE, 0 },
     { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
 #ifdef EXPERIMENTAL_ARC
-    { US"arc",			VERIFY_ARC,	 	ACL_BIT_DATA,	TRUE , 0 },
+    { US"arc",			VERIFY_ARC,	 	ACL_BIT_DATA,	FALSE , 0 },
 #endif
   };
 
