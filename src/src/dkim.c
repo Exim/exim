@@ -791,7 +791,7 @@ gstring *
 authres_dkim(gstring * g)
 {
 pdkim_signature * sig;
-int start;
+int start = 0;		/* compiler quietening */
 
 DEBUG(D_acl) start = g->ptr;
 

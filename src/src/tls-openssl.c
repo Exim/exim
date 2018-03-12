@@ -1857,8 +1857,6 @@ if (expcerts && *expcerts)
       */
       if (file)
 	{
-	tls_ext_ctx_cb * cbinfo = host
-	  ? client_static_cbinfo : server_static_cbinfo;
 	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
 
 	SSL_CTX_set_client_CA_list(sctx, names);

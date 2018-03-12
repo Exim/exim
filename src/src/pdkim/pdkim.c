@@ -792,7 +792,7 @@ pdkim_signature * sig;
 
 for (b = ctx->bodyhash; b; b = b->next)		/* Finish hashes */
   {
-  DEBUG(D_acl) debug_printf("PDKIM: finish bodyhash %d/%d/%d len %d\n",
+  DEBUG(D_acl) debug_printf("PDKIM: finish bodyhash %d/%d/%d len %ld\n",
 	    b->hashtype, b->canon_method, b->bodylength, b->signed_body_bytes);
   exim_sha_finish(&b->body_hash_ctx, &b->bh);
   }
@@ -1922,12 +1922,12 @@ for (b = ctx->bodyhash; b; b = b->next)
      && canon_method == b->canon_method
      && bodylength == b->bodylength)
     {
-    DEBUG(D_receive) debug_printf("PDKIM: using existing bodyhash %d/%d/%d\n",
+    DEBUG(D_receive) debug_printf("PDKIM: using existing bodyhash %d/%d/%ld\n",
 				  hashtype, canon_method, bodylength);
     return b;
     }
 
-DEBUG(D_receive) debug_printf("PDKIM: new bodyhash %d/%d/%d\n",
+DEBUG(D_receive) debug_printf("PDKIM: new bodyhash %d/%d/%ld\n",
 			      hashtype, canon_method, bodylength);
 b = store_get(sizeof(pdkim_bodyhash));
 b->next = ctx->bodyhash;
