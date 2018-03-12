@@ -733,6 +733,7 @@ else if (isgroup)
       fprintf(new, "#define FIXED_NEVER_USERS     %d", j);
       for (i = 0; i < j; i++) fprintf(new, ", %d", (unsigned int)vector[i]);
       fprintf(new, "\n");
+      free(vector);
       }
     continue;
     }
