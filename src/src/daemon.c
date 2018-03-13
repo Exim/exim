@@ -563,18 +563,13 @@ if (pid == 0)
 
     /* Reclaim up the store used in accepting this message */
 
-    return_path = sender_address = NULL;
-    authenticated_sender = NULL;
-    sending_ip_address = NULL;
-    deliver_host_address = deliver_host =
-    deliver_domain_orig = deliver_localpart_orig = NULL;
-    dnslist_domain = dnslist_matched = NULL;
-    callout_address = NULL;
-#ifndef DISABLE_DKIM
-    dkim_cur_signer = NULL;
-#endif
-    acl_var_m = NULL;
-    store_reset(reset_point);
+      {
+      int r = receive_messagecount;
+      BOOL q = queue_only_policy;
+      smtp_reset(reset_point);
+      queue_only_policy = q;
+      receive_messagecount = r;
+      }
 
     /* If queue_only is set or if there are too many incoming connections in
     existence, session_local_queue_only will be TRUE. If it is not, check

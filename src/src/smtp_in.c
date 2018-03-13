@@ -1947,13 +1947,13 @@ return TRUE;
 *************************************************/
 
 /* This function is called whenever the SMTP session is reset from
-within either of the setup functions.
+within either of the setup functions; also from the daemon loop.
 
 Argument:   the stacking pool storage reset point
 Returns:    nothing
 */
 
-static void
+void
 smtp_reset(void *reset_point)
 {
 recipients_list = NULL;
@@ -1997,9 +1997,8 @@ bmi_verdicts = NULL;
 #endif
 dnslist_domain = dnslist_matched = NULL;
 #ifndef DISABLE_DKIM
-dkim_signers = NULL;
-dkim_disable_verify = FALSE;
-dkim_collect_input = FALSE;
+dkim_cur_signer = dkim_signers = NULL;
+dkim_disable_verify = dkim_collect_input = FALSE;
 #endif
 dsn_ret = 0;
 dsn_envid = NULL;
@@ -2008,10 +2007,7 @@ deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
 prdr_requested = FALSE;
 #endif
 #ifdef SUPPORT_SPF
-spf_header_comment = NULL;
-spf_received = NULL;
-spf_result = NULL;
-spf_smtp_comment = NULL;
+spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
 #endif
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
