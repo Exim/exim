@@ -86,6 +86,11 @@ JH/25 Fix utf8_downconvert propagation through a redirect router.  Previously it
 JH/27 Bug 2251: Fix ldap lookups that return a single attribute having zero-
       length value.  Previously this would segfault.
 
+JH/28 Ensure that variables possibly set during message acceptance are marked
+      dead before release of memory in the daemon loop.  This stops complaints
+      about them when the debug_store option is enabled.  Discovered specifically
+      for sender_rate_period, but applies to a whole set of variables.
+
 
 Exim version 4.90
 -----------------
