@@ -354,7 +354,7 @@ the released memory. */
 
 newlength = bc + b->length - CS ptr;
 #ifndef COMPILE_UTILITY
-if (running_in_test_harness || debug_store)
+if (debug_store)
   {
   assert_no_variables(ptr, newlength, filename, linenumber);
   if (running_in_test_harness)
@@ -379,7 +379,7 @@ if (yield_length[store_pool] < STOREPOOL_MIN_SIZE &&
   {
   b = b->next;
 #ifndef COMPILE_UTILITY
-  if (running_in_test_harness || debug_store)
+  if (debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
 			filename, linenumber);
 #endif
@@ -393,7 +393,7 @@ b->next = NULL;
 while ((b = bb))
   {
 #ifndef COMPILE_UTILITY
-  if (running_in_test_harness || debug_store)
+  if (debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
 			filename, linenumber);
 #endif

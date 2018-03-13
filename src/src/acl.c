@@ -2240,8 +2240,7 @@ error messages based on rate limits obtained from a table lookup. */
 size, which must be greater than or equal to zero. Zero is useful for
 rate measurement as opposed to rate limiting. */
 
-sender_rate_limit = string_nextinlist(&arg, &sep, NULL, 0);
-if (sender_rate_limit == NULL)
+if (!(sender_rate_limit = string_nextinlist(&arg, &sep, NULL, 0)))
   return ratelimit_error(log_msgptr, "sender rate limit not set");
 
 limit = Ustrtod(sender_rate_limit, &ss);
@@ -2257,9 +2256,8 @@ if (limit < 0.0 || *ss != '\0')
 constant. This must be strictly greater than zero, because zero leads to
 run-time division errors. */
 
-sender_rate_period = string_nextinlist(&arg, &sep, NULL, 0);
-if (sender_rate_period == NULL) period = -1.0;
-else period = readconf_readtime(sender_rate_period, 0, FALSE);
+period = !(sender_rate_period = string_nextinlist(&arg, &sep, NULL, 0))
+  ? -1.0 : readconf_readtime(sender_rate_period, 0, FALSE);
 if (period <= 0.0)
   return ratelimit_error(log_msgptr,
     "\"%s\" is not a time value", sender_rate_period);
@@ -2271,8 +2269,7 @@ count = 1.0;
 
 /* Parse the other options. */
 
-while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
-       != NULL)
+while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size)))
   {
   if (strcmpic(ss, US"leaky") == 0) leaky = TRUE;
   else if (strcmpic(ss, US"strict") == 0) strict = TRUE;
@@ -2309,25 +2306,24 @@ while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
     zero and let the recorded rate decay as if nothing happened. */
     RATE_SET(mode, PER_MAIL);
     if (where > ACL_WHERE_NOTSMTP) badacl = TRUE;
-      else count = message_size < 0 ? 0.0 : (double)message_size;
+    else count = message_size < 0 ? 0.0 : (double)message_size;
     }
   else if (strcmpic(ss, US"per_addr") == 0)
     {
     RATE_SET(mode, PER_RCPT);
     if (where != ACL_WHERE_RCPT) badacl = TRUE, unique = US"*";
-      else unique = string_sprintf("%s@%s", deliver_localpart, deliver_domain);
+    else unique = string_sprintf("%s@%s", deliver_localpart, deliver_domain);
     }
   else if (strncmpic(ss, US"count=", 6) == 0)
     {
     uschar *e;
     count = Ustrtod(ss+6, &e);
     if (count < 0.0 || *e != '\0')
-      return ratelimit_error(log_msgptr,
-	"\"%s\" is not a positive number", ss);
+      return ratelimit_error(log_msgptr, "\"%s\" is not a positive number", ss);
     }
   else if (strncmpic(ss, US"unique=", 7) == 0)
     unique = string_copy(ss + 7);
-  else if (key == NULL)
+  else if (!key)
     key = string_copy(ss);
   else
     key = string_sprintf("%s/%s", key, ss);
@@ -2361,8 +2357,8 @@ If there is no sender_host_address (e.g. -bs or acl_not_smtp) then we simply
 omit it. The smoothing constant (sender_rate_period) and the per_xxx options
 are added to the key because they alter the meaning of the stored data. */
 
-if (key == NULL)
-  key = (sender_host_address == NULL)? US"" : sender_host_address;
+if (!key)
+  key = !sender_host_address ? US"" : sender_host_address;
 
 key = string_sprintf("%s/%s/%s%s",
   sender_rate_period,
@@ -2383,30 +2379,30 @@ old_pool = store_pool;
 
 if (readonly)
   anchor = &ratelimiters_cmd;
-else switch(mode) {
-case RATE_PER_CONN:
-  anchor = &ratelimiters_conn;
-  store_pool = POOL_PERM;
-  break;
-case RATE_PER_BYTE:
-case RATE_PER_MAIL:
-case RATE_PER_ALLRCPTS:
-  anchor = &ratelimiters_mail;
-  break;
-case RATE_PER_ADDR:
-case RATE_PER_CMD:
-case RATE_PER_RCPT:
-  anchor = &ratelimiters_cmd;
-  break;
-default:
-  anchor = NULL; /* silence an "unused" complaint */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "internal ACL error: unknown ratelimit mode %d", mode);
-  break;
-}
+else switch(mode)
+  {
+  case RATE_PER_CONN:
+    anchor = &ratelimiters_conn;
+    store_pool = POOL_PERM;
+    break;
+  case RATE_PER_BYTE:
+  case RATE_PER_MAIL:
+  case RATE_PER_ALLRCPTS:
+    anchor = &ratelimiters_mail;
+    break;
+  case RATE_PER_ADDR:
+  case RATE_PER_CMD:
+  case RATE_PER_RCPT:
+    anchor = &ratelimiters_cmd;
+    break;
+  default:
+    anchor = NULL; /* silence an "unused" complaint */
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "internal ACL error: unknown ratelimit mode %d", mode);
+    break;
+  }
 
-t = tree_search(*anchor, key);
-if (t != NULL)
+if ((t = tree_search(*anchor, key)))
   {
   dbd = t->data.ptr;
   /* The following few lines duplicate some of the code below. */
@@ -2434,7 +2430,7 @@ dbd = NULL;
 
 gettimeofday(&tv, NULL);
 
-if (dbdb != NULL)
+if (dbdb)
   {
   /* Locate the basic ratelimit block inside the DB data. */
   HDEBUG(D_acl) debug_printf_indent("ratelimit found key in database\n");
@@ -2445,7 +2441,7 @@ if (dbdb != NULL)
   filter because we want its size to change if the limit changes. Note that
   we keep the dbd pointer for copying the rate into the new data block. */
 
-  if(unique != NULL && tv.tv_sec > dbdb->bloom_epoch + period)
+  if(unique && tv.tv_sec > dbdb->bloom_epoch + period)
     {
     HDEBUG(D_acl) debug_printf_indent("ratelimit discarding old Bloom filter\n");
     dbdb = NULL;
@@ -2453,7 +2449,7 @@ if (dbdb != NULL)
 
   /* Sanity check. */
 
-  if(unique != NULL && dbdb_size < sizeof(*dbdb))
+  if(unique && dbdb_size < sizeof(*dbdb))
     {
     HDEBUG(D_acl) debug_printf_indent("ratelimit discarding undersize Bloom filter\n");
     dbdb = NULL;
@@ -2463,9 +2459,9 @@ if (dbdb != NULL)
 /* Allocate a new data block if the database lookup failed
 or the Bloom filter passed its age limit. */
 
-if (dbdb == NULL)
+if (!dbdb)
   {
-  if (unique == NULL)
+  if (!unique)
     {
     /* No Bloom filter. This basic ratelimit block is initialized below. */
     HDEBUG(D_acl) debug_printf_indent("ratelimit creating new rate data block\n");
@@ -2492,7 +2488,7 @@ if (dbdb == NULL)
     /* Preserve any basic ratelimit data (which is our longer-term memory)
     by copying it from the discarded block. */
 
-    if (dbd != NULL)
+    if (dbd)
       {
       dbdb->dbd = *dbd;
       dbd = &dbdb->dbd;
@@ -2506,7 +2502,7 @@ counted. We skip this code in readonly mode for efficiency, because any
 changes to the filter will be discarded and because count is already set to
 zero. */
 
-if (unique != NULL && !readonly)
+if (unique && !readonly)
   {
   /* We identify unique events using a Bloom filter. (You can find my
   notes on Bloom filters at http://fanf.livejournal.com/81696.html)
@@ -2588,7 +2584,7 @@ if (unique != NULL && !readonly)
 the new one, otherwise update the block from the database. The initial rate
 is what would be computed by the code below for an infinite interval. */
 
-if (dbd == NULL)
+if (!dbd)
   {
   HDEBUG(D_acl) debug_printf_indent("ratelimit initializing new key's rate data\n");
   dbd = &dbdb->dbd;
@@ -2680,7 +2676,7 @@ else
 This matters for edge cases such as a limit of zero, when the client
 should be completely blocked. */
 
-rc = (dbd->rate < limit)? FAIL : OK;
+rc = dbd->rate < limit ? FAIL : OK;
 
 /* Update the state if the rate is low or if we are being strict. If we
 are in leaky mode and the sender's rate is too high, we do not update

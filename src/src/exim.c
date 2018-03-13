@@ -1624,6 +1624,8 @@ testing harness; do a fast initial check, and then the whole thing. */
 
 running_in_test_harness =
   *running_status == '<' && Ustrcmp(running_status, "<<<testing>>>") == 0;
+if (running_in_test_harness)
+  debug_store = TRUE;
 
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
 at the start of a program; however, it seems that some environments do not
