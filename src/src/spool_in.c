@@ -206,49 +206,13 @@ return TRUE;
 
 
 
-/*************************************************
-*             Read spool header file             *
-*************************************************/
-
-/* This function reads a spool header file and places the data into the
-appropriate global variables. The header portion is always read, but header
-structures are built only if read_headers is set true. It isn't, for example,
-while generating -bp output.
-
-It may be possible for blocks of nulls (binary zeroes) to get written on the
-end of a file if there is a system crash during writing. It was observed on an
-earlier version of Exim that omitted to fsync() the files - this is thought to
-have been the cause of that incident, but in any case, this code must be robust
-against such an event, and if such a file is encountered, it must be treated as
-malformed.
-
-As called from deliver_message() (at least) we are running as root.
-
-Arguments:
-  name          name of the header file, including the -H
-  read_headers  TRUE if in-store header structures are to be built
-  subdir_set    TRUE is message_subdir is already set
-
-Returns:        spool_read_OK        success
-                spool_read_notopen   open failed
-                spool_read_enverror  error in the envelope portion
-                spool_read_hdrerror  error in the header portion
-*/
-
-int
-spool_read_header(uschar *name, BOOL read_headers, BOOL subdir_set)
-{
-FILE *f = NULL;
-int n;
-int rcount = 0;
-long int uid, gid;
-BOOL inheader = FALSE;
-uschar *p;
-
 /* Reset all the global variables to their default values. However, there is
 one exception. DO NOT change the default value of dont_deliver, because it may
 be forced by an external setting. */
 
+void
+spool_clear_header_globals(void)
+{
 acl_var_c = acl_var_m = NULL;
 authenticated_id = NULL;
 authenticated_sender = NULL;
@@ -328,6 +292,53 @@ message_utf8_downconvert = 0;
 
 dsn_ret = 0;
 dsn_envid = NULL;
+}
+
+
+/*************************************************
+*             Read spool header file             *
+*************************************************/
+
+/* This function reads a spool header file and places the data into the
+appropriate global variables. The header portion is always read, but header
+structures are built only if read_headers is set true. It isn't, for example,
+while generating -bp output.
+
+It may be possible for blocks of nulls (binary zeroes) to get written on the
+end of a file if there is a system crash during writing. It was observed on an
+earlier version of Exim that omitted to fsync() the files - this is thought to
+have been the cause of that incident, but in any case, this code must be robust
+against such an event, and if such a file is encountered, it must be treated as
+malformed.
+
+As called from deliver_message() (at least) we are running as root.
+
+Arguments:
+  name          name of the header file, including the -H
+  read_headers  TRUE if in-store header structures are to be built
+  subdir_set    TRUE is message_subdir is already set
+
+Returns:        spool_read_OK        success
+                spool_read_notopen   open failed
+                spool_read_enverror  error in the envelope portion
+                spool_read_hdrerror  error in the header portion
+*/
+
+int
+spool_read_header(uschar *name, BOOL read_headers, BOOL subdir_set)
+{
+FILE *f = NULL;
+int n;
+int rcount = 0;
+long int uid, gid;
+BOOL inheader = FALSE;
+uschar *p;
+
+/* Reset all the global variables to their default values. However, there is
+one exception. DO NOT change the default value of dont_deliver, because it may
+be forced by an external setting. */
+
+spool_clear_header_globals();
 
 /* Generate the full name and open the file. If message_subdir is already
 set, just look in the given directory. Otherwise, look in both the split
