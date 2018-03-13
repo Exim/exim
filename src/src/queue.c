@@ -601,9 +601,7 @@ for (i = queue_run_in_order ? -1 : 0;
 
       /* Recover store used when reading the header */
 
-      received_protocol = NULL;
-      sender_address = sender_ident = NULL;
-      authenticated_id = authenticated_sender = NULL;
+      spool_clear_header_globals();
       store_reset(reset_point2);
       if (!wanted) continue;      /* With next message */
       }

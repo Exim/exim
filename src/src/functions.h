@@ -456,13 +456,14 @@ extern int     smtp_write_command(smtp_outblock *, int, const char *, ...) PRINT
 extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);
 #endif
-extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
+extern void    spool_clear_header_globals(void);
 extern uschar *spool_dname(const uschar *, uschar *);
 extern uschar *spool_fname(const uschar *, const uschar *, const uschar *, const uschar *);
-extern uschar *spool_sname(const uschar *, uschar *);
+extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern int     spool_open_datafile(uschar *);
 extern int     spool_open_temp(uschar *);
 extern int     spool_read_header(uschar *, BOOL, BOOL);
+extern uschar *spool_sname(const uschar *, uschar *);
 extern int     spool_write_header(uschar *, int, uschar **);
 extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);

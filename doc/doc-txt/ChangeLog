@@ -145,6 +145,8 @@ JH/28 Ensure that variables possibly set during message acceptance are marked
       dead before release of memory in the daemon loop.  This stops complaints
       about them when the debug_store option is enabled.  Discovered specifically
       for sender_rate_period, but applies to a whole set of variables.
+      Do the same for the queue-runner loop, for variables set from spool
+      message files.
 
 
 Exim version 4.90
