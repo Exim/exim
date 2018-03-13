@@ -1,8 +1,10 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaX-0005vi-00 arc_state: <none>
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for za@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
@@ -11,13 +13,16 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 arc_state: <none>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbA-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => za@test.ex <zza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbB-0005vi-00"
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
@@ -26,18 +31,22 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbC-0005vi-00 arc_state: <none>
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zmza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbD-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => mza@test.ex <zmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbD-0005vi-00"
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbE-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmbD-0005vi-00 => za@test.ex <mza@test.ex> R=mlist T=tmlist H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbF-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbF-0005vi-00"
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
@@ -46,23 +55,29 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbG-0005vi-00 arc_state: <none>
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zzmza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbH-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for zmza@test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => zmza@test.ex <zzmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbH-0005vi-00"
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbI-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
 1999-03-02 09:44:33 10HmbH-0005vi-00 => mza@test.ex <zmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbI-0005vi-00"
 1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbJ-0005vi-00 arc_state: <fail>
+1999-03-02 09:44:33 10HmbJ-0005vi-00 reason:    <AMS body hash miscompare>
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for za@test.ex
 1999-03-02 09:44:33 10HmbI-0005vi-00 => za@test.ex <mza@test.ex> R=mlist T=tmlist H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbJ-0005vi-00"
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbK-0005vi-00 arc_state: <fail>
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
 1999-03-02 09:44:33 10HmbJ-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbK-0005vi-00"
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
@@ -71,13 +86,16 @@
 1999-03-02 09:44:33 10HmbK-0005vi-00 => a <a@test.ex> R=d1 T=tfile
 1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbL-0005vi-00 arc_state: <none>
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for zza@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbM-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmbL-0005vi-00 => za@test.ex <zza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbM-0005vi-00"
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbN-0005vi-00 arc_state: <pass>
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbM-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbN-0005vi-00"
 1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
@@ -88,10 +106,13 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmbO-0005vi-00 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=1517535263 [verification succeeded]
 1999-03-02 09:44:33 10HmbO-0005vi-00 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=1517535248 [verification failed - body hash mismatch (body probably modified in transit)]
+1999-03-02 09:44:33 10HmbO-0005vi-00 arc_state: <fail>
+1999-03-02 09:44:33 10HmbO-0005vi-00 reason:    <AMS body hash miscompare>
 1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for za@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmbP-0005vi-00 DKIM: d=dmarc.org s=clochette c=simple/simple a=rsa-sha256 b=1024 t=1517535263 [verification succeeded]
 1999-03-02 09:44:33 10HmbP-0005vi-00 DKIM: d=convivian.com s=default c=simple/simple a=rsa-sha256 b=1024 t=1517535248 [verification failed - body hash mismatch (body probably modified in transit)]
+1999-03-02 09:44:33 10HmbP-0005vi-00 arc_state: <fail>
 1999-03-02 09:44:33 10HmbP-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for a@test.ex
 1999-03-02 09:44:33 10HmbO-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbP-0005vi-00"
 1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
@@ -102,4 +123,5 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmbQ-0005vi-00 H=(xxx) [127.0.0.1] Warning: ARC-FAIL
+1999-03-02 09:44:33 10HmbQ-0005vi-00 arc_state: <none>
 1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss for a@test.ex

@@ -2009,6 +2009,9 @@ prdr_requested = FALSE;
 #ifdef SUPPORT_SPF
 spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
 #endif
+#ifdef EXPERIMENTAL_ARC
+arc_state = arc_state_reason = NULL;
+#endif
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
 #endif

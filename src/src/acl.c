@@ -1698,7 +1698,8 @@ switch(vp->value)
     uschar * cond;
 
     if (!(arc_state = acl_verify_arc())) return DEFER;
-    DEBUG(D_acl) debug_printf_indent("ARC verify result %s\n", arc_state);
+    DEBUG(D_acl) debug_printf_indent("ARC verify result %s %s%s%s\n", arc_state,
+      arc_state_reason ? "(":"", arc_state_reason, arc_state_reason ? ")":"");
 
     if (!condlist) condlist = US"none:pass";
     while ((cond = string_nextinlist(&condlist, &csep, NULL, 0)))

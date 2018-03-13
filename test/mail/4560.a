@@ -171,12 +171,12 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	id 10HmbK-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=3; cv=fail; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=TSTRZa5Pb1FTxQ2M5heDeAZTQ6mg/qETgzXrxUA9Aa9GkofMft7JnWyPuM5ZZm9f0BWydQUD24
-	  omdjyXmK78wyfDoSDS1Zzau16bByabyDgb7tF3K5qMYTNEosX0aJskb6h/NqBRd5RMlhyt3OOK
-	  zGEfd5TI5pS16ghs9I6oB88=;
+	 b=uamKZbfYVEc5YSkTjyr588o4KIEF8g6bZ1RzC46wkJifmP0pML666Vvc0lTSsf5MmMcBLl+fTV
+	  kVUTGZYjjRU1eTVNShszYPk5LBUPH2nY8h1th4PFsHNxLRzP4sSOEGc4yZjYsG8zYkDGgEPzLH
+	  Uw0J+Oa0vRcx2ZW+jZrrd5U=;
 ARC-Authentication-Results: i=3; test.ex;
 	iprev=pass (localhost);
-	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=31zA4VNQZ2yhHUh+7vWASIL9kKqo6pSym1QghgPyUkM=;
 	h=Subject;
@@ -185,7 +185,7 @@ ARC-Message-Signature: i=3; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	  DsScgtJ2MqYbikFuA0LxRIA=;
 Authentication-Results: test.ex;
 	iprev=pass (localhost);
-	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
@@ -300,14 +300,14 @@ Received: from localhost ([127.0.0.1] helo=test.ex)
 	id 10HmbP-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 ARC-Seal: i=2; cv=fail; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
-	 b=kyA9Jr7oTw0RjbIMJuRSDVS34QV/o7rR2vk8j9OoOrJCc4SGYoFdnwOPuZ0xnJ7PC6VBYqFuaF
-	  0roSJ1UkJk7NJLjfw4UXF1gF01z+EBahwpYpLE1K7+wuejYBiu83ksxeNbMaejGCZGXRgTrx4N
-	  r8h8iR9p7dSbp6/B7CxxoSg=;
+	 b=MQwdR5nlxQNXdo/J3hK8voFybIpzoj3/32eQHLm8rJ0zOfAiJEOB4TKsvhRvn+ErtTRzoQsCrk
+	  aY4hSDnUsxPbgawzMeC3QpidYlXOyfNrS6B4wBoaRM2pbAIZytVT0MjZu9g+qrUnv2cOsveQI3
+	  ApDVpyZaYfDdcepyBOm5//4=;
 ARC-Authentication-Results: i=2; test.ex;
 	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;
 	dkim=fail (body hash mismatch; body probably modified in transit)
 		 header.d=convivian.com header.s=default header.a=rsa-sha256;
-	arc=fail (i=1) header.s=default arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.client-ip=127.0.0.1
 ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
 	bh=DXU/xKzzQYeoYB254nZ0AzNm7z2YZ//FpTnhgIjPyt8=;
 	h=Sender:Content-Type:Reply-To:From:List-Subscribe:List-Help:List-Post:
@@ -320,7 +320,7 @@ Authentication-Results: test.ex;
 	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;
 	dkim=fail (body hash mismatch; body probably modified in transit)
 		 header.d=convivian.com header.s=default header.a=rsa-sha256;
-	arc=fail (i=1) header.s=default arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.client-ip=127.0.0.1
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)

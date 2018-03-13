@@ -23,6 +23,10 @@ check_data:
   warn	!verify =	arc VALUE
 	INSERT
 
+  warn	logwrite =	arc_state: <$arc_state>
+	condition =	${if def:arc_state_reason}
+	logwrite =	reason:    <$arc_state_reason>
+
 .ifdef OPTION
   accept
 .else

@@ -221,6 +221,7 @@ struct arc_set *arc_received;	       /* highest ARC instance evaluation struct *
 extern int     arc_received_instance;  /* highest ARC instance number in headers */
 extern int     arc_oldest_pass;        /* lowest passing instance number in headers */
 extern const uschar *arc_state;	       /* verification state */
+extern const uschar *arc_state_reason;
 #endif
 extern BOOL    allow_utf8_domains;     /* For experimenting */
 extern uschar *authenticated_fail_id;  /* ID that failed authentication */

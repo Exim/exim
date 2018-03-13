@@ -66,7 +66,7 @@ typedef struct arc_set {
   arc_line *		hdr_ams;
   arc_line *		hdr_as;
 
-  BOOL			ams_verify_done;
+  const uschar *	ams_verify_done;
   BOOL			ams_verify_passed;
 } arc_set;
 
@@ -495,7 +495,10 @@ for (h = header_list; h; h = h->next)
   rprev = r;
 
   if ((e = arc_try_header(ctx, h, FALSE)))
-    return e;
+    {
+    arc_state_reason = string_sprintf("collecting headers: %s", e);
+    return US"fail";
+    }
   }
 headers_rlist = r;
 
@@ -644,7 +647,7 @@ return pdkim_set_bodyhash(dkim_verify_ctx,
 and without a DKIM v= tag.
 */
 
-static uschar *
+static const uschar *
 arc_ams_verify(arc_ctx * ctx, arc_set * as)
 {
 arc_line * ams = as->hdr_ams;
@@ -656,7 +659,7 @@ ev_ctx vctx;
 int hashtype;
 const uschar * errstr;
 
-as->ams_verify_done = TRUE;
+as->ams_verify_done = US"in-progress";
 
 /* Check the AMS has all the required tags:
    "a="  algorithm
@@ -668,14 +671,20 @@ as->ams_verify_done = TRUE;
 */
 if (  !ams->a.data || !ams->b.data || !ams->bh.data || !ams->d.data
    || !ams->h.data || !ams->s.data)
+  {
+  as->ams_verify_done = arc_state_reason = US"required tag missing";
   return US"fail";
+  }
 
 
 /* The bodyhash should have been created earlier, and the dkim code should
 have managed calculating it during message input.  Find the reference to it. */
 
 if (!(b = arc_ams_setup_vfy_bodyhash(ams)))
+  {
+  as->ams_verify_done = arc_state_reason = US"internal hash setup error";
   return US"fail";
+  }
 
 DEBUG(D_acl)
   {
@@ -699,7 +708,7 @@ if (  !ams->bh.data
     pdkim_hexprint(sighash.data, sighash.len);
     debug_printf("ARC i=%d AMS Body hash did NOT match\n", as->instance);
     }
-  return US"body hash compare mismatch";
+  return as->ams_verify_done = arc_state_reason = US"AMS body hash miscompare";
   }
 
 DEBUG(D_acl) debug_printf("ARC i=%d AMS Body hash compared OK\n", as->instance);
@@ -707,7 +716,7 @@ DEBUG(D_acl) debug_printf("ARC i=%d AMS Body hash compared OK\n", as->instance);
 /* Get the public key from DNS */
 
 if (!(p = arc_line_to_pubkey(ams)))
-  return US"pubkey problem";
+  return as->ams_verify_done = arc_state_reason = US"pubkey problem";
 
 /* We know the b-tag blob is of a nul-term string, so safe as a string */
 pdkim_decode_base64(ams->b.data, &sighash);
@@ -719,6 +728,7 @@ arc_get_verify_hhash(ctx, ams, &hhash);
 if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx)))
   {
   DEBUG(D_acl) debug_printf("ARC verify init: %s\n", errstr);
+  as->ams_verify_done = arc_state_reason = US"internal sigverify init error";
   return US"fail";
   }
 
@@ -728,7 +738,7 @@ if ((errstr = exim_dkim_verify(&vctx,
 	  pdkim_hashes[hashtype].exim_hashmethod, &hhash, &sighash)))
   {
   DEBUG(D_acl) debug_printf("ARC i=%d AMS verify %s\n", as->instance, errstr);
-  return US"ams sig verify fail";
+  return as->ams_verify_done = arc_state_reason = US"AMS sig nonverify";
   }
 
 DEBUG(D_acl) debug_printf("ARC i=%d AMS verify pass\n", as->instance);
@@ -761,8 +771,9 @@ for(inst = 0; as; as = as->next)
      || arc_cv_match(as->hdr_as, US"fail")
      )
     {
-    DEBUG(D_acl) debug_printf("ARC i=%d fail"
-      " (cv, sequence or missing header)\n", as->instance);
+    arc_state_reason = string_sprintf("i=%d fail"
+      " (cv, sequence or missing header)", as->instance);
+    DEBUG(D_acl) debug_printf("ARC %s\n", arc_state_reason);
     ret = US"fail";
     }
 
@@ -775,6 +786,7 @@ for(inst = 0; as; as = as->next)
       ams_fail_found = TRUE;
     else
       arc_oldest_pass = inst;
+  arc_state_reason = NULL;
   }
 
 arc_received = ctx->arcset_chain_last;
@@ -785,7 +797,12 @@ if (ret)
 /* We can skip the latest-AMS validation, if we already did it. */
 
 as = ctx->arcset_chain_last;
-if (as->ams_verify_done ? !as->ams_verify_passed : !!arc_ams_verify(ctx, as))
+if (as->ams_verify_done && !as->ams_verify_passed)
+  {
+  arc_state_reason = as->ams_verify_done;
+  return US"fail";
+  }
+if (!!arc_ams_verify(ctx, as))
   return US"fail";
 
 return NULL;
@@ -822,7 +839,10 @@ DEBUG(D_acl) debug_printf("ARC: AS vfy i=%d\n", as->instance);
 if (  as->instance == 1 && !arc_cv_match(hdr_as, US"none")
    || arc_cv_match(hdr_as, US"none") && as->instance != 1
    )
+  {
+  arc_state_reason = US"seal cv state";
   return US"fail";
+  }
 
 /*
        3.  Initialize a hash function corresponding to the "a" tag of
@@ -835,6 +855,7 @@ if (!exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
   {
   DEBUG(D_acl)
       debug_printf("ARC: hash setup error, possibly nonhandled hashtype\n");
+  arc_state_reason = US"seal hash setup error";
   return US"fail";
   }
 
@@ -931,6 +952,7 @@ if ((errstr = exim_dkim_verify(&vctx,
   {
   DEBUG(D_acl)
     debug_printf("ARC i=%d AS headers verify: %s\n", as->instance, errstr);
+  arc_state_reason = US"seal sigverify init error";
   return US"fail";
   }
 
@@ -1690,7 +1712,10 @@ if (arc_state)
   if (arc_received_instance > 0)
     {
     g = string_append(g, 3, US" (i=",
-      string_sprintf("%d", arc_received_instance), US") header.s=");
+      string_sprintf("%d", arc_received_instance), US")");
+    if (arc_state_reason)
+      g = string_append(g, 3, US"(", arc_state_reason, US")");
+    g = string_catn(g, US" header.s=", 10);
     highest_ams = arc_received->hdr_ams;
     g = string_catn(g, highest_ams->s.data, highest_ams->s.len);
 

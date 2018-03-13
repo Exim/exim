@@ -461,6 +461,10 @@ static var_entry var_table[] = {
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
   { "address_pipe",        vtype_stringptr,   &address_pipe },
+#ifdef EXPERIMENTAL_ARC
+  { "arc_state",           vtype_stringptr,   &arc_state },
+  { "arc_state_reason",    vtype_stringptr,   &arc_state_reason },
+#endif
   { "authenticated_fail_id",vtype_stringptr,  &authenticated_fail_id },
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
   { "authenticated_sender",vtype_stringptr,   &authenticated_sender },
