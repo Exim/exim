@@ -15,8 +15,8 @@ SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< HELO    ?
 LOG: smtp_syntax_error MAIN
-  SMTP syntax error in "HELO    ?" U=CALLER NULL character(s) present (shown as '?')
-SMTP>> 501 NULL characters are not allowed in SMTP commands
+  SMTP syntax error in "HELO    ?" U=CALLER NUL character(s) present (shown as '?')
+SMTP>> 501 NUL characters are not allowed in SMTP commands
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
