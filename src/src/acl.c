@@ -4477,7 +4477,7 @@ switch (where)
   }
 
 deliver_domain = deliver_localpart = deliver_address_data =
-  sender_address_data = NULL;
+  deliver_domain_data = sender_address_data = NULL;
 
 /* A DISCARD response is permitted only for message ACLs, excluding the PREDATA
 ACL, which is really in the middle of an SMTP command. */
