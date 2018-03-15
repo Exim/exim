@@ -7839,6 +7839,17 @@ ${lookup redis{set keyname ${quote_redis:objvalue plus}}}
 ${lookup redis{get keyname}}
 .endd
 
+As of release 4.91, "lightweight" support for Redis Cluster is available.
+Requires &%redis_servers%& list to contain all the servers in the cluster, all
+of which must be reachable from the running exim instance. If the cluster has
+master/slave replication, the list must contain all the master and slave
+servers.
+
+When the Redis Cluster returns a "MOVED" response to a query, exim does not
+immediately follow the redirection but treats the response as a DEFER, moving on
+to the next server in the &%redis_servers%& list until the correct server is
+reached.
+
 .ecindex IIDfidalo1
 .ecindex IIDfidalo2
 

@@ -48,6 +48,11 @@ Version 4.91
 
 14: A dane:fail event, intended to facilitate reporting.
 
+15. "Lightweight" support for Redis Cluster. Requires redis_servers list to
+    contain all the servers in the cluster, all of which must be reachable from
+    the running exim instance. If the cluster has master/slave replication, the
+    list must contain all the master and slave servers.
+
 
 Version 4.90
 ------------
