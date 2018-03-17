@@ -38903,7 +38903,8 @@ The result can either
 be a valid RSA private key in ASCII armor (.pem file), including line breaks
 .new
 .next
-with GnuTLS 3.6.0 or later, be a valid Ed25519 private key (same format as above)
+with GnuTLS 3.6.0 or OpenSSL 1.1.1 or later,
+be a valid Ed25519 private key (same format as above)
 .wen
 .next
 start with a slash, in which case it is treated as a file that contains
@@ -39114,7 +39115,8 @@ The key record selector string.
 .vitem &%$dkim_algo%&
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
 .new
-If running under GnuTLS 3.6.0 or later, may also be 'ed25519-sha256'.
+If running under GnuTLS 3.6.0 or OpenSSL 1.1.1 or later,
+may also be 'ed25519-sha256'.
 The "_CRYPTO_SIGN_ED25519" macro will be defined if support is present
 for EC keys.
 .wen

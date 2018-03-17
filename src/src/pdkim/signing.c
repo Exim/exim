@@ -88,7 +88,7 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 {
-gnutls_datum_t k = { .data = privkey_pem, .size = Ustrlen(privkey_pem) };
+gnutls_datum_t k = { .data = (void *)privkey_pem, .size = Ustrlen(privkey_pem) };
 gnutls_x509_privkey_t x509_key;
 int rc;
 
@@ -716,7 +716,7 @@ if (!(sign_ctx->key = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL)))
 
 sign_ctx->keytype =
 #ifdef SIGN_HAVE_ED25519
-	EVP_PKEY_type(EVP_PKEY_id(sign_ctx->key)) == EVP_PKEY_EC
+	EVP_PKEY_type(EVP_PKEY_id(sign_ctx->key)) == EVP_PKEY_ED25519
 	  ? KEYTYPE_ED25519 : KEYTYPE_RSA;
 #else
 	KEYTYPE_RSA;
@@ -727,7 +727,7 @@ return NULL;
 
 
 /* allocate mem for signature (when signing) */
-/* hash & sign data.  Could be incremental
+/* hash & sign data.  Incremental not supported.
 
 Return: NULL for success with the signaature in the sig blob, or an error string */
 
@@ -740,31 +740,36 @@ size_t siglen;
 
 switch (hash)
   {
+  case HASH_NULL:	md = NULL;	   break;	/* Ed25519 signing */
   case HASH_SHA1:	md = EVP_sha1();   break;
   case HASH_SHA2_256:	md = EVP_sha256(); break;
   case HASH_SHA2_512:	md = EVP_sha512(); break;
   default:		return US"nonhandled hash type";
   }
 
-/* Create the Message Digest Context */
-/*XXX renamed to EVP_MD_CTX_new() in 1.1.0 */
-if(  (ctx = EVP_MD_CTX_create())
-
-/* Initialise the DigestSign operation */
-  && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
-
- /* Call update with the message */
-   && EVP_DigestSignUpdate(ctx, data->data, data->len) > 0
-
- /* Finalise the DigestSign operation */
- /* First call EVP_DigestSignFinal with a NULL sig parameter to obtain the length of the
-  * signature. Length is returned in slen */
-   && EVP_DigestSignFinal(ctx, NULL, &siglen) > 0
-
- /* Allocate memory for the signature based on size in slen */
+#ifdef SIGN_HAVE_ED25519
+if (  (ctx = EVP_MD_CTX_new())
+   && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
+   && EVP_DigestSign(ctx, NULL, &siglen, NULL, 0) > 0
    && (sig->data = store_get(siglen))
 
- /* Obtain the signature (slen could change here!) */
+   /* Obtain the signature (slen could change here!) */
+   && EVP_DigestSign(ctx, sig->data, &siglen), data->data, data->len > 0
+   )
+  {
+  EVP_MD_CTX_destroy(ctx);
+  sig->len = siglen;
+  return NULL;
+  }
+#else
+/*XXX renamed to EVP_MD_CTX_new() in 1.1.0 */
+if (  (ctx = EVP_MD_CTX_create())
+   && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
+   && EVP_DigestSignUpdate(ctx, data->data, data->len) > 0
+   && EVP_DigestSignFinal(ctx, NULL, &siglen) > 0
+   && (sig->data = store_get(siglen))
+ 
+   /* Obtain the signature (slen could change here!) */
    && EVP_DigestSignFinal(ctx, sig->data, &siglen) > 0
    )
   {
@@ -772,6 +777,7 @@ if(  (ctx = EVP_MD_CTX_create())
   sig->len = siglen;
   return NULL;
   }
+#endif
 
 if (ctx) EVP_MD_CTX_destroy(ctx);
 return US ERR_error_string(ERR_get_error(), NULL);
@@ -788,31 +794,18 @@ exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
 const uschar * s = pubkey->data;
 uschar * ret = NULL;
 
-if (fmt != KEYFMT_DER) return US"pubkey format not handled";
 switch(fmt)
   {
   case KEYFMT_DER:
-    /*XXX ok, this fails for EC:
-    error:0609E09C:digital envelope routines:pkey_set_type:unsupported algorithm
-    */
-
     /*XXX hmm, we never free this */
     if (!(verify_ctx->key = d2i_PUBKEY(NULL, &s, pubkey->len)))
       ret = US ERR_error_string(ERR_get_error(), NULL);
     break;
 #ifdef SIGN_HAVE_ED25519
   case KEYFMT_ED25519_BARE:
-    {
-    BIGNUM * x;
-    EC_KEY * eck;
-    if (  !(x = BN_bin2bn(s, pubkey->len, NULL))
-       || !(eck = EC_KEY_new_by_curve_name(NID_ED25519))
-       || !EC_KEY_set_public_key_affine_coordinates(eck, x, NULL)
-       || !(verify_ctx->key = EVP_PKEY_new())
-       || !EVP_PKEY_assign_EC_KEY(verify_ctx->key, eck)
-       )
+    if (!(verify_ctx->key = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, NULL,
+							s, pubkey->len)))
       ret = US ERR_error_string(ERR_get_error(), NULL);
-    }
     break;
 #endif
   default:
@@ -826,8 +819,7 @@ return ret;
 
 
 
-/* verify signature (of hash)
-(pre-EC coding; of data if "notyet" code, The latter could be incremental)
+/* verify signature (of hash, except Ed25519 where of-data)
 (given pubkey & alleged sig)
 Return: NULL for success, or an error string */
 
@@ -836,45 +828,30 @@ exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data, blob * sig)
 {
 const EVP_MD * md;
 
-/*XXX OpenSSL does not seem to have Ed25519 support yet. Reportedly BoringSSL does,
-but that's a nonstable API and not recommended (by its owner, Google) for external use. */
-
 switch (hash)
   {
+  case HASH_NULL:	md = NULL;	   break;
   case HASH_SHA1:	md = EVP_sha1();   break;
   case HASH_SHA2_256:	md = EVP_sha256(); break;
   case HASH_SHA2_512:	md = EVP_sha512(); break;
   default:		return US"nonhandled hash type";
   }
 
-#ifdef notyet_SIGN_HAVE_ED25519
+#ifdef SIGN_HAVE_ED25519
+if (!md)
   {
   EVP_MD_CTX * ctx;
 
-  /*XXX renamed to EVP_MD_CTX_new() in 1.1.0 */
-  if (
-        (ctx = EVP_MD_CTX_create())
-
-  /* Initialize `key` with a public key */
+  if (  (ctx = EVP_MD_CTX_new())
      && EVP_DigestVerifyInit(ctx, NULL, md, NULL, verify_ctx->key) > 0
-
-  /* add data to be hashed (call multiple times if needed) */
-
-     && EVP_DigestVerifyUpdate(ctx, data->data, data->len) > 0
-
-  /* finish off the hash and check the offered signature */
-
-     && EVP_DigestVerifyFinal(ctx, sig->data, sig->len) > 0
+     && EVP_DigestVerify(ctx, sig->data, sig->len, data->data, data->len) > 0
      )
-    {
-    EVP_MD_CTX_destroy(ctx);	/* renamed to _free in 1.1.0 */
-    return NULL;
-    }
+    { EVP_MD_CTX_free(ctx); return NULL; }
 
   if (ctx) EVP_MD_CTX_free(ctx);
-  return US ERR_error_string(ERR_get_error(), NULL);
   }
-#else
+else
+#endif
   {
   EVP_PKEY_CTX * ctx;
 
@@ -888,9 +865,8 @@ switch (hash)
     { EVP_PKEY_CTX_free(ctx); return NULL; }
 
   if (ctx) EVP_PKEY_CTX_free(ctx);
-  return US ERR_error_string(ERR_get_error(), NULL);
   }
-#endif
+return US ERR_error_string(ERR_get_error(), NULL);
 }
 
 

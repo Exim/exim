@@ -30,6 +30,7 @@
 
 typedef enum hashmethod {
   HASH_BADTYPE,
+  HASH_NULL,
   HASH_SHA1,
 
   HASH_SHA2_256,

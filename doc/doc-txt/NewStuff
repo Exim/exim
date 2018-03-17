@@ -34,7 +34,7 @@ Version 4.91
     under OpenSSL version 1.1.1 or later.
 
  9. DKIM operations can now use the Ed25519 algorithm in addition to RSA, under
-    GnuTLS 3.6.0 or later.
+    GnuTLS 3.6.0 or OpenSSL 1.1.1 or later.
 
 10. Builtin feature-macros _CRYPTO_HASH_SHA3 and _CRYPTO_SIGN_ED25519, library
     version dependent.

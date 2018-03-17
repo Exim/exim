@@ -55,6 +55,8 @@ the relevant directory into the rpath stamped into the binary:
     USE_OPENSSL_PC=openssl
     LDFLAGS+=-ldl -Wl,-rpath,/opt/openssl/lib
 
+[jgh: I've see /usr/local/lib used]
+
 The -ldl is needed by OpenSSL 1.0.2+ on Linux and is not needed on most
 other platforms.  The LDFLAGS is needed because `pkg-config` doesn't know
 how to emit information about RPATH-stamping, but we can still leverage
@@ -94,6 +96,7 @@ is to run:
 
     readelf -d $(which exim) | grep RPATH
 
+[jgh: I've seen that spelled RUNPATH]
 
 Very Advanced
 -------------

@@ -1390,6 +1390,24 @@ DEBUG(D_acl) debug_printf(
 
 /* Import public key */
 
+/* Normally we use the signature a= tag to tell us the pubkey format.
+When signing under debug we do a test-import of the pubkey, and at that
+time we do not have a signature so we must interpret the pubkey k= tag
+instead.  Assume writing on the sig is ok in that case. */
+
+if (sig->keytype < 0)
+  {
+  int i;
+  for(i = 0; i < nelem(pdkim_keytypes); i++)
+    if (Ustrcmp(p->keytype, pdkim_keytypes[i]) == 0)
+      { sig->keytype = i; goto k_ok; }
+  DEBUG(D_acl) debug_printf("verify_init: unhandled keytype %s\n", p->keytype);
+  sig->verify_status =      PDKIM_VERIFY_INVALID;
+  sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
+  return NULL;
+  }
+k_ok:
+
 if ((*errstr = exim_dkim_verify_init(&p->key,
 	    sig->keytype == KEYTYPE_ED25519 ? KEYFMT_ED25519_BARE : KEYFMT_DER,
 	    vctx)))
@@ -1662,7 +1680,12 @@ for (sig = ctx->sig; sig; sig = sig->next)
   if (ctx->flags & PDKIM_MODE_SIGN)
     {
     hashmethod hm = sig->keytype == KEYTYPE_ED25519
-      ? HASH_SHA2_512 : pdkim_hashes[sig->hashtype].exim_hashmethod;
+#if defined(SIGN_OPENSSL)
+      ? HASH_NULL
+#else
+      ? HASH_SHA2_512
+#endif
+      : pdkim_hashes[sig->hashtype].exim_hashmethod;
 
 #ifdef SIGN_HAVE_ED25519
     /* For GCrypt, and for EC, we pass the hash-of-headers to the signing
@@ -1675,8 +1698,6 @@ for (sig = ctx->sig; sig; sig = sig->next)
       hhash.len = hdata->ptr;
       }
 
-/*XXX extend for non-RSA algos */
-/*- done for GnuTLS */
     if ((*err = exim_dkim_sign(&sctx, hm, &hhash, &sig->sighash)))
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "signing: %s", *err);
@@ -1696,6 +1717,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   else
     {
     ev_ctx vctx;
+    hashmethod hm;
 
     /* Make sure we have all required signature tags */
     if (!(  sig->domain        && *sig->domain
@@ -1764,12 +1786,17 @@ for (sig = ctx->sig; sig; sig = sig->next)
 	}
       }
 
+    hm = sig->keytype == KEYTYPE_ED25519
+#if defined(SIGN_OPENSSL)
+      ? HASH_NULL
+#else
+      ? HASH_SHA2_512
+#endif
+      : pdkim_hashes[sig->hashtype].exim_hashmethod;
+
     /* Check the signature */
-/*XXX extend for non-RSA algos */
-/*- done for GnuTLS */
-    if ((*err = exim_dkim_verify(&vctx,
-				pdkim_hashes[sig->hashtype].exim_hashmethod,
-				&hhash, &sig->sighash)))
+
+    if ((*err = exim_dkim_verify(&vctx, hm, &hhash, &sig->sighash)))
       {
       DEBUG(D_acl) debug_printf("headers verify: %s\n", *err);
       sig->verify_status =      PDKIM_VERIFY_FAIL;
