@@ -479,7 +479,7 @@ DISABLE_MAL_MKS=yes
 # LDFLAGS += -lsrs_alt
 
 # Uncomment the following line to add DMARC checking capability, implemented
-# using libopendmarc libraries.  You must have SPF support enabled also.
+# using libopendmarc libraries. You must have SPF and DKIM support enabled also.
 # EXPERIMENTAL_DMARC=yes
 # DMARC_TLD_FILE= /etc/exim/opendmarc.tlds
 # CFLAGS += -I/usr/local/include
@@ -487,7 +487,7 @@ DISABLE_MAL_MKS=yes
 
 # Uncomment the following line to add ARC (Authenticated Received Chain)
 # support.  You must have SPF and DKIM support enabled also.
-# EXPERIMENTAL_ARC
+# EXPERIMENTAL_ARC=yes
 
 # Uncomment the following lines to add Brightmail AntiSpam support. You need
 # to have the Brightmail client SDK installed. Please check the experimental

@@ -594,7 +594,7 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 
 /* DANE w/o DNSSEC is useless */
 #if defined(SUPPORT_DANE) && defined(DISABLE_DNSSEC)
-# undef DISABLE_DNSSEC
+# error DANE support requires DNSSEC support
 #endif
 
 /* Some platforms (FreeBSD, OpenBSD, Solaris) do not seem to define this */
