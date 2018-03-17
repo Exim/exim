@@ -2016,6 +2016,12 @@ prdr_requested = FALSE;
 #ifdef EXPERIMENTAL_SPF
 spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
 #endif
+#ifdef EXPERIMENTAL_DMARC
+dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
+dmarc_ar_header = dmarc_domain_policy = dmarc_forensic_sender =
+dmarc_history_file = dmarc_status = dmarc_status_text =
+dmarc_tld_file = dmarc_used_domain = NULL;
+#endif
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
 #endif
