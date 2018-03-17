@@ -754,7 +754,7 @@ if (  (ctx = EVP_MD_CTX_new())
    && (sig->data = store_get(siglen))
 
    /* Obtain the signature (slen could change here!) */
-   && EVP_DigestSign(ctx, sig->data, &siglen), data->data, data->len > 0
+   && EVP_DigestSign(ctx, sig->data, &siglen, data->data, data->len) > 0
    )
   {
   EVP_MD_CTX_destroy(ctx);
