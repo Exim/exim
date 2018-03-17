@@ -94,6 +94,17 @@ JH/28 Ensure that variables possibly set during message acceptance are marked
       message files.  Do the same for the SMTP per-message loop, for certain
       variables indirectly set in ACL operations.
 
+JH/29 Bug 2250: Fix a longstanding bug in heavily-pipelined SMTP input (such
+      as a multi-recipient message from a mailinglist manager).  The coding had
+      an arbitrary cutoff number of characters while checking for more input;
+      enforced by writing a NUL into the buffer.  This corrupted long / fast
+      input.   The problem was exposed more widely when more pipelineing of SMTP
+      responses was introduced, and one Exim system was feeding another.
+      The symptom is log complaints of SMTP syntax error (NUL chars) on the
+      receiving system, and refused recipients seen by the sending system
+      (propating to people being dropped from mailing lists).
+      Discovered and pinpointed by David Carter.
+
 
 Exim version 4.90
 -----------------

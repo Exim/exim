@@ -359,9 +359,6 @@ rc = smtp_getc(GETC_BUFFER_UNLIMITED);
 if (rc < 0) return TRUE;      /* End of file or error */
 
 smtp_ungetc(rc);
-rc = smtp_inend - smtp_inptr;
-if (rc > 150) rc = 150;
-smtp_inptr[rc] = 0;
 return FALSE;
 }
 
@@ -439,9 +436,10 @@ if (!smtp_out) return FALSE;
 fflush(smtp_out);
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 
-/* Limit amount read, so non-message data is not fed to DKIM */
+/* Limit amount read, so non-message data is not fed to DKIM.
+Take care to not touch the safety NUL at the end of the buffer. */
 
-rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
+rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE-1, lim));
 save_errno = errno;
 alarm(0);
 if (rc <= 0)
@@ -2429,10 +2427,12 @@ else
     (sender_host_address ? protocols : protocols_local) [pnormal];
 
 /* Set up the buffer for inputting using direct read() calls, and arrange to
-call the local functions instead of the standard C ones. */
+call the local functions instead of the standard C ones.  Place a NUL at the
+end of the buffer to safety-stop C-string reads from it. */
 
 if (!(smtp_inbuffer = US malloc(IN_BUFFER_SIZE)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malloc() failed for SMTP input buffer");
+smtp_inbuffer[IN_BUFFER_SIZE-1] = '\0';
 
 receive_getc = smtp_getc;
 receive_getbuf = smtp_getbuf;
@@ -5684,7 +5684,7 @@ while (done <= 0)
     if (smtp_inend >= smtp_inbuffer + IN_BUFFER_SIZE)
       smtp_inend = smtp_inbuffer + IN_BUFFER_SIZE - 1;
     c = smtp_inend - smtp_inptr;
-    if (c > 150) c = 150;
+    if (c > 150) c = 150;	/* limit logged amount */
     smtp_inptr[c] = 0;
     incomplete_transaction_log(US"sync failure");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
