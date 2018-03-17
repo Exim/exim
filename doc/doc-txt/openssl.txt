@@ -49,22 +49,21 @@ When you copy `src/EDITME` to `Local/Makefile` to make your build edits,
 choose the pkg-config approach in that file, but also tell Exim to add
 the relevant directory into the rpath stamped into the binary:
 
+    PKG_CONFIG_PATH=/opt/openssl/lib/pkgconfig
+
     SUPPORT_TLS=yes
     USE_OPENSSL_PC=openssl
-    LDFLAGS=-ldl -Wl,-rpath,/opt/openssl/lib
+    LDFLAGS+=-ldl -Wl,-rpath,/opt/openssl/lib
 
 The -ldl is needed by OpenSSL 1.0.2+ on Linux and is not needed on most
-other platforms.
+other platforms.  The LDFLAGS is needed because `pkg-config` doesn't know
+how to emit information about RPATH-stamping, but we can still leverage
+`pkg-config` for everything else.
 
-Then tell pkg-config how to find the configuration files for your new
-OpenSSL install, and build Exim:
+Then build Exim:
 
-    export PKG_CONFIG_PATH=/opt/openssl/lib/pkgconfig
     make
     sudo make install
-
-(From Exim 4.89, you can put that `PKG_CONFIG_PATH` directly into
- your `Local/Makefile` file.)
 
 
 Confirming
