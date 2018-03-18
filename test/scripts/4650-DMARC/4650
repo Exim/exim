@@ -1,0 +1,32 @@
+# acl variables and authresults
+#
+# SPF is a problem.  We use libspf2 to do the work, and it
+# does the DNS lookups, so we cannot intercept them in the testsuite's usual fashion
+# to provide values for testcases.
+#
+# For now just check that what should be working syntax does not cause us to fall over.
+# Be careful with envelope-domains used for testcases, as real DNS lookups will be done.
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+client HOSTIPV4 PORT_D
+??? 220
+HELO testclient
+??? 250
+MAIL FROM:<a@example.com>
+??? 250
+RCPT TO:<fred@test.ex>
+??? 250
+DATA
+??? 3
+Subject: test
+From: z@example.com
+
+body line
+.
+??? 250
+QUIT
+****
+#
+killdaemon
+no_msglog_check

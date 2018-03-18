@@ -1138,6 +1138,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^Waiting for MySQL server to answer/;
     next if /mysqladmin: CREATE DATABASE failed; .* database exists/;
 
+    # Not all builds include DMARC
+    next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
+
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
     # of the files that are obtained using readdir() varies from system to
