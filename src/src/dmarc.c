@@ -93,7 +93,6 @@ dmarc_status       = US"none";
 dmarc_abort        = FALSE;
 dmarc_pass_fail    = US"skipped";
 dmarc_used_domain  = US"";
-dmarc_ar_header    = NULL;
 dmarc_has_been_checked = FALSE;
 header_from_sender = NULL;
 spf_sender_domain  = NULL;
@@ -140,13 +139,15 @@ return OK;
 
 
 /* dmarc_store_data stores the header data so that subsequent
- * dmarc_process can access the data */
+dmarc_process can access the data */
 
-int dmarc_store_data(header_line *hdr) {
-  /* No debug output because would change every test debug output */
-  if (dmarc_disable_verify != TRUE)
-    from_header = hdr;
-  return OK;
+int
+dmarc_store_data(header_line *hdr)
+{
+/* No debug output because would change every test debug output */
+if (!dmarc_disable_verify)
+  from_header = hdr;
+return OK;
 }
 
 
@@ -208,8 +209,8 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
 }
 
 /* dmarc_process adds the envelope sender address to the existing
-   context (if any), retrieves the result, sets up expansion
-   strings and evaluates the condition outcome. */
+context (if any), retrieves the result, sets up expansion
+strings and evaluates the condition outcome. */
 
 int
 dmarc_process()
@@ -223,10 +224,7 @@ u_char **ruf; /* forensic report addressees, if called for */
 
 /* ACLs have "control=dmarc_disable_verify" */
 if (dmarc_disable_verify)
-  {
-  dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
   return OK;
-  }
 
 /* Store the header From: sender domain for this part of DMARC.
  * If there is no from_header struct, then it's likely this message
@@ -464,7 +462,7 @@ if (!dmarc_abort && !sender_host_authenticated)
     log_write(0, LOG_MAIN|LOG_PANIC, "failure to read DMARC alignment: %s",
 			     opendmarc_policy_status_to_str(libdm_status));
 
-  if (has_dmarc_record == TRUE)
+  if (has_dmarc_record)
     {
     log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
 			   "spf_align=%s dkim_align=%s enforcement='%s'",
@@ -479,13 +477,10 @@ if (!dmarc_abort && !sender_host_authenticated)
     }
   }
 
-/* set some global variables here */
-dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
-
 /* shut down libopendmarc */
-if ( dmarc_pctx != NULL )
+if (dmarc_pctx)
   (void) opendmarc_policy_connect_shutdown(dmarc_pctx);
-if ( dmarc_disable_verify == FALSE )
+if (!dmarc_disable_verify)
   (void) opendmarc_policy_library_shutdown(&dmarc_ctx);
 
 return OK;
@@ -595,41 +590,14 @@ if (what == DMARC_VERIFY_STATUS)
 return US"";
 }
 
-uschar *
-dmarc_auth_results_header(header_line *from_header, uschar *hostname)
+
+gstring *
+authres_dmarc(gstring * g)
 {
-uschar *hdr_tmp    = US"";
-
-/* Allow a server hostname to be passed to this function, but is
- * currently unused */
-if (!hostname)
-  hostname = primary_hostname;
-hdr_tmp = string_sprintf("%s %s;", DMARC_AR_HEADER, hostname);
-
-#if 0
-/* I don't think this belongs here, but left it here commented out
- * because it was a lot of work to get working right. */
-if (spf_response != NULL) {
-  uschar *dmarc_ar_spf = US"";
-  int sr               = 0;
-  sr = spf_response->result;
-  dmarc_ar_spf = (sr == SPF_RESULT_NEUTRAL)  ? US"neutral" :
-		 (sr == SPF_RESULT_PASS)     ? US"pass" :
-		 (sr == SPF_RESULT_FAIL)     ? US"fail" :
-		 (sr == SPF_RESULT_SOFTFAIL) ? US"softfail" :
-		 US"none";
-  hdr_tmp = string_sprintf("%s spf=%s (%s) smtp.mail=%s;",
-			   hdr_tmp, dmarc_ar_spf_result,
-			   spf_response->header_comment,
-			   expand_string(US"$sender_address") );
-}
-#endif
-
-hdr_tmp = string_sprintf("%s dmarc=%s", hdr_tmp, dmarc_pass_fail);
+g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
 if (header_from_sender)
-  hdr_tmp = string_sprintf("%s header.from=%s",
-			   hdr_tmp, header_from_sender);
-return hdr_tmp;
+  g = string_append(g, 2, US"header.from=", header_from_sender);
+return g;
 }
 
 # endif /* SUPPORT_SPF */

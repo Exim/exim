@@ -112,15 +112,18 @@ extern void    auth_show_supported(FILE *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
-extern gstring *authres_smtpauth(gstring *);
-#ifdef SUPPORT_SPF
-extern gstring *authres_spf(gstring *);
+#ifdef EXPERIMENTAL_ARC
+extern gstring *authres_arc(gstring *);
 #endif
 #ifndef DISABLE_DKIM
 extern gstring *authres_dkim(gstring *);
 #endif
-#ifdef EXPERIMENTAL_ARC
-extern gstring *authres_arc(gstring *);
+#ifdef EXPERIMENTAL_DMARC
+extern gstring *authres_dmarc(gstring *);
+#endif
+extern gstring *authres_smtpauth(gstring *);
+#ifdef SUPPORT_SPF
+extern gstring *authres_spf(gstring *);
 #endif
 
 extern uschar *b64encode(uschar *, int);

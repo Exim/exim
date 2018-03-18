@@ -518,7 +518,6 @@ static var_entry var_table[] = {
   { "dkim_verify_status",  vtype_stringptr,   &dkim_verify_status },
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  { "dmarc_ar_header",     vtype_stringptr,   &dmarc_ar_header },
   { "dmarc_domain_policy", vtype_stringptr,   &dmarc_domain_policy },
   { "dmarc_status",        vtype_stringptr,   &dmarc_status },
   { "dmarc_status_text",   vtype_stringptr,   &dmarc_status_text },
@@ -4148,6 +4147,9 @@ while (*s != 0)
 #endif
 #ifndef DISABLE_DKIM
       yield = authres_dkim(yield);
+#endif
+#ifdef EXPERIMENTAL_DMARC
+      yield = authres_dmarc(yield);
 #endif
 #ifdef EXPERIMENTAL_ARC
       yield = authres_arc(yield);

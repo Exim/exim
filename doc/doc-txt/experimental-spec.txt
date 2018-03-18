@@ -548,9 +548,8 @@ expansion variables are available:
     are "none", "reject" and "quarantine".  It is blank when there
     is any error, including no DMARC record.
 
-  o $dmarc_ar_header
-    This is the entire Authentication-Results header which you can
-    add using an add_header modifier.
+A now-redundant variable $dmarc_ar_header has now been withdrawn.
+Use the ${authresults } expansion instead.
 
 
 5. How to enable DMARC advanced operation:

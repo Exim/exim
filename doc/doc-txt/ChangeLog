@@ -160,6 +160,9 @@ JH/29 Bug 2250: Fix a longstanding bug in heavily-pipelined SMTP input (such
       (propating to people being dropped from mailing lists).
       Discovered and pinpointed by David Carter.
 
+JH/30 The (EXPERIMENTAL_DMARC) variable $dmarc_ar_header is withdrawn, being
+      replaced by the ${authresults } expansion.
+
 
 Exim version 4.90
 -----------------
