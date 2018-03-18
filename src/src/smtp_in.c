@@ -2011,7 +2011,7 @@ spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
 dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
 dmarc_domain_policy = dmarc_forensic_sender =
 dmarc_history_file = dmarc_status = dmarc_status_text =
-dmarc_tld_file = dmarc_used_domain = NULL;
+dmarc_used_domain = NULL;
 #endif
 #ifdef EXPERIMENTAL_ARC
 arc_state = arc_state_reason = NULL;
