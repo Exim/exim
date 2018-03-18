@@ -84,7 +84,6 @@ dmarc_init()
 {
 int *netmask   = NULL;   /* Ignored */
 int is_ipv6    = 0;
-char *tld_file = dmarc_tld_file ? CS dmarc_tld_file : DMARC_TLD_FILE;
 
 /* Set some sane defaults.  Also clears previous results when
  * multiple messages in one connection. */
@@ -111,22 +110,27 @@ if (libdm_status != DMARC_PARSE_OKAY)
 		       opendmarc_policy_status_to_str(libdm_status));
   dmarc_abort = TRUE;
   }
-if (dmarc_tld_file == NULL)
-  dmarc_abort = TRUE;
-else if (opendmarc_tld_read_file(tld_file, NULL, NULL, NULL))
+if (!dmarc_tld_file)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list %s: %d",
-		       tld_file, errno);
+  DEBUG(D_receive) debug_printf("DMARC: no dmarc_tld_file\n");
   dmarc_abort = TRUE;
   }
-if (sender_host_address == NULL)
+else if (opendmarc_tld_read_file(dmarc_tld_file, NULL, NULL, NULL))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list %s: %d",
+		       dmarc_tld_file, errno);
   dmarc_abort = TRUE;
+  }
+if (!sender_host_address)
+  {
+  DEBUG(D_receive) debug_printf("DMARC: no sender_host_address\n");
+  dmarc_abort = TRUE;
+  }
 /* This catches locally originated email and startup errors above. */
 if (!dmarc_abort)
   {
   is_ipv6 = string_is_ip_address(sender_host_address, netmask) == 6;
-  dmarc_pctx = opendmarc_policy_connect_init(sender_host_address, is_ipv6);
-  if (dmarc_pctx == NULL)
+  if (!(dmarc_pctx = opendmarc_policy_connect_init(sender_host_address, is_ipv6)))
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
       "DMARC failure creating policy context: ip=%s", sender_host_address);
@@ -232,9 +236,12 @@ if (dmarc_disable_verify)
  * the entire DMARC system if we can't find a From: header....or if
  * there was a previous error.
  */
-if (!from_header || dmarc_abort)
+if (!from_header)
+  {
+  DEBUG(D_receive) debug_printf("DMARC: no From: header\n");
   dmarc_abort = TRUE;
-else
+  }
+else if (!dmarc_abort)
   {
     uschar * errormsg;
     int dummy, domain;
@@ -594,9 +601,12 @@ return US"";
 gstring *
 authres_dmarc(gstring * g)
 {
-g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
-if (header_from_sender)
-  g = string_append(g, 2, US"header.from=", header_from_sender);
+if (dmarc_has_been_checked)
+  {
+  g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
+  if (header_from_sender)
+    g = string_append(g, 2, US"header.from=", header_from_sender);
+  }
 return g;
 }
 
