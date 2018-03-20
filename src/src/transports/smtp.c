@@ -3004,15 +3004,21 @@ else
     uschar * s = sx.ob->arc_sign;
     if (s)
       {
-      if (!(sx.ob->dkim.arc_signspec = expand_string(s)))
+      if (!(sx.ob->dkim.arc_signspec = s = expand_string(s)))
 	{
-	message = US"failed to expand arc_sign";
-	sx.ok = FALSE;
-	goto SEND_FAILED;
+	if (!expand_string_forcedfail)
+	  {
+	  message = US"failed to expand arc_sign";
+	  sx.ok = FALSE;
+	  goto SEND_FAILED;
+	  }
 	}
-      /* Ask dkim code to hash the body for ARC */
-      (void) arc_ams_setup_sign_bodyhash();
-      sx.ob->dkim.force_bodyhash = TRUE;
+      else if (*s)
+	{
+	/* Ask dkim code to hash the body for ARC */
+	(void) arc_ams_setup_sign_bodyhash();
+	sx.ob->dkim.force_bodyhash = TRUE;
+	}
       }
     }
 # endif
