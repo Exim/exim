@@ -864,6 +864,7 @@ enum {
 #define topt_use_bdat		0x100  /* prepend chunks with RFC3030 BDAT header */
 #define topt_output_string	0x200  /* create string rather than write to fd */
 #define topt_continuation	0x400  /* do not reset buffer */
+#define topt_not_socket		0x800  /* cannot do socket-only syscalls */
 
 /* Options for smtp_write_command */
 

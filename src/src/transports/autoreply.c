@@ -694,15 +694,17 @@ if (return_message)
     :
     US"------ This is a copy of the message, including all the headers.\n";
   transport_ctx tctx = {
-    {fileno(f)},
-    tblock,
-    addr,
-    NULL, NULL,
-    (tblock->body_only ? topt_no_headers : 0) |
-    (tblock->headers_only ? topt_no_body : 0) |
-    (tblock->return_path_add ? topt_add_return_path : 0) |
-    (tblock->delivery_date_add ? topt_add_delivery_date : 0) |
-    (tblock->envelope_to_add ? topt_add_envelope_to : 0)
+    .u = {.fd = fileno(f)},
+    .tblock = tblock,
+    .addr = addr,
+    .check_string = NULL,
+    .escape_string =  NULL,
+    .options = (tblock->body_only ? topt_no_headers : 0)
+    	| (tblock->headers_only ? topt_no_body : 0)
+    	| (tblock->return_path_add ? topt_add_return_path : 0)
+    	| (tblock->delivery_date_add ? topt_add_delivery_date : 0)
+    	| (tblock->envelope_to_add ? topt_add_envelope_to : 0)
+	| topt_not_socket
   };
 
   if (bounce_return_size_limit > 0 && !tblock->headers_only)

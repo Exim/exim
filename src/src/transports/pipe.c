@@ -566,12 +566,11 @@ const uschar *envlist = ob->environment;
 uschar *cmd, *ss;
 uschar *eol = ob->use_crlf ? US"\r\n" : US"\n";
 transport_ctx tctx = {
-  {0},
-  tblock,
-  addr,
-  ob->check_string,
-  ob->escape_string,
-  ob->options /* set at initialization time */
+  .tblock = tblock,
+  .addr = addr,
+  .check_string = ob->check_string,
+  .escape_string = ob->escape_string,
+  ob->options | topt_not_socket /* set at initialization time */
 };
 
 DEBUG(D_transport) debug_printf("%s transport entered\n", tblock->name);

@@ -163,6 +163,8 @@ JH/29 Bug 2250: Fix a longstanding bug in heavily-pipelined SMTP input (such
 JH/30 The (EXPERIMENTAL_DMARC) variable $dmarc_ar_header is withdrawn, being
       replaced by the ${authresults } expansion.
 
+JH/31 Bug 2257: Fix pipe transport to not use a socket-only syscall.
+
 
 Exim version 4.90
 -----------------
