@@ -561,18 +561,18 @@ for (p = raw_hdr; ; p++)
 	    break;
 	  case 'a':					/* algorithm */
 	    {
-	    uschar * s = Ustrchr(cur_val->s, '-');
+	    const uschar * list = cur_val->s;
+	    int sep = '-';
+	    uschar * elem;
 
-	    for(i = 0; i < nelem(pdkim_keytypes); i++)
-	      if (Ustrncmp(cur_val->s, pdkim_keytypes[i], s - cur_val->s) == 0)
-		{ sig->keytype = i; break; }
-	    if (sig->keytype < 0)
-	      log_write(0, LOG_MAIN,
-		"DKIM: ignoring signature due to nonhandled keytype in a=%s",
-		cur_val->s);
-
-	    sig->hashtype = pdkim_hashname_to_hashtype(++s, 0);
-	    break;
+	    if ((elem = string_nextinlist(&list, &sep, NULL, 0)))
+	      for(i = 0; i < nelem(pdkim_keytypes); i++)
+		if (Ustrcmp(elem, pdkim_keytypes[i]) == 0)
+		  { sig->keytype = i; break; }
+	    if ((elem = string_nextinlist(&list, &sep, NULL, 0)))
+	      for (i = 0; i < nelem(pdkim_hashes); i++)
+		if (Ustrcmp(elem, pdkim_hashes[i].dkim_hashname) == 0)
+		  { sig->hashtype = i; break; }
 	    }
 
 	  case 'c':					/* canonicalization */
