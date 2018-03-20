@@ -1416,7 +1416,7 @@ arcset = string_append(NULL, 10,
 	  ARC_HDR_AS,
 	  US" i=", string_sprintf("%d", instance),
 	  US"; cv=", status,
-	  US"; a=rsa-sha256; c=relaxed; d=", identity,		/*XXX hardwired */
+	  US"; a=rsa-sha256; d=", identity,			/*XXX hardwired */
 	  US"; s=", selector,					/*XXX same as AMS */
 	  US";\r\n\t b=;");
 
