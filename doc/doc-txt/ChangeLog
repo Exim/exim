@@ -105,6 +105,8 @@ JH/29 Bug 2250: Fix a longstanding bug in heavily-pipelined SMTP input (such
       (propating to people being dropped from mailing lists).
       Discovered and pinpointed by David Carter.
 
+JH/31 Bug 2257: Fix pipe transport to not use a socket-only syscall.
+
 
 Exim version 4.90
 -----------------

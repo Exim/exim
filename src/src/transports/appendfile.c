@@ -945,9 +945,7 @@ copy_mbx_message(int to_fd, int from_fd, off_t saved_size)
 int used;
 off_t size;
 struct stat statbuf;
-transport_ctx tctx = {{0}};
-
-tctx.u.fd = to_fd;
+transport_ctx tctx = { .u={.fd = to_fd}, .options = topt_not_socket };
 
 /* If the current mailbox size is zero, write a header block */
 
@@ -2921,12 +2919,12 @@ at initialization time. */
 if (yield == OK)
   {
   transport_ctx tctx = {
-    {fd},
-    tblock,
-    addr,
-    ob->check_string,
-    ob->escape_string,
-    ob->options
+    .u = {.fd=fd},
+    .tblock = tblock,
+    .addr = addr,
+    .check_string = ob->check_string,
+    .escape_string = ob->escape_string,
+    .options =  ob->options | topt_not_socket
   };
   if (!transport_write_message(&tctx, 0))
     yield = DEFER;
