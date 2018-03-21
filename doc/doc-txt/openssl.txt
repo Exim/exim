@@ -42,6 +42,10 @@ something else.  `/opt/exim/openssl` perhaps.
     make
     make install
 
+On some systems, the linker uses `-rpath` instead of `-R`; on such systems,
+replace the parameter starting `-Wl` with: `-Wl,-rpath,/opt/openssl/lib`.
+There are more variations on less common systems.
+
 You now have an installed OpenSSL under /opt/openssl which will not be
 used by any system programs.
 
