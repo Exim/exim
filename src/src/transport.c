@@ -263,7 +263,8 @@ for (i = 0; i < 100; i++)
 	tls_out.active == fd ? tls_write(FALSE, block, len, more) :
 #endif
 #ifdef MSG_MORE
-	more ? send(fd, block, len, MSG_MORE) :
+	more && !(tctx->options & topt_not_socket)
+	  ? send(fd, block, len, MSG_MORE) :
 #endif
 	write(fd, block, len);
 
