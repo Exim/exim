@@ -710,6 +710,7 @@ static var_entry var_table[] = {
   { "spf_header_comment",  vtype_stringptr,   &spf_header_comment },
   { "spf_received",        vtype_stringptr,   &spf_received },
   { "spf_result",          vtype_stringptr,   &spf_result },
+  { "spf_result_guessed",  vtype_bool,        &spf_result_guessed },
   { "spf_smtp_comment",    vtype_stringptr,   &spf_smtp_comment },
 #endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },

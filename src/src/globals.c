@@ -1382,6 +1382,7 @@ uschar *spf_guess              = US"v=spf1 a/24 mx/24 ptr ?all";
 uschar *spf_header_comment     = NULL;
 uschar *spf_received           = NULL;
 uschar *spf_result             = NULL;
+BOOL    spf_result_guessed     = FALSE;
 uschar *spf_smtp_comment       = NULL;
 #endif
 

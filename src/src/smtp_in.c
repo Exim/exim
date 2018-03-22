@@ -2006,6 +2006,7 @@ prdr_requested = FALSE;
 #endif
 #ifdef SUPPORT_SPF
 spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
+spf_result_guessed = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DMARC
 dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;

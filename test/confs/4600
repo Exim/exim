@@ -13,7 +13,7 @@ begin acl
 check_rcpt:
   accept	hosts = 	HOSTIPV4
 		spf_guess =	pass
-		logwrite =	spf_result         $spf_result
+		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)
 		logwrite =	spf_header_comment $spf_header_comment
 		logwrite =	spf_smtp_comment   $spf_smtp_comment
 		logwrite =	spf_received       $spf_received
@@ -28,7 +28,7 @@ check_rcpt:
 		logwrite =	${authresults {$primary_hostname}}
 
   deny
-		logwrite =	spf_result         $spf_result
+		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)
 		logwrite =	spf_header_comment $spf_header_comment
 		logwrite =	spf_smtp_comment   $spf_smtp_comment
 		logwrite =	spf_received       $spf_received

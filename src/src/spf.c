@@ -112,7 +112,10 @@ else
   {
   /* get SPF result */
   if (action == SPF_PROCESS_FALLBACK)
+    {
     SPF_request_query_fallback(spf_request, &spf_response, CS spf_guess);
+    spf_result_guessed = TRUE;
+    }
   else
     SPF_request_query_mailfrom(spf_request, &spf_response);
 
@@ -151,10 +154,17 @@ return FAIL;
 gstring *
 authres_spf(gstring * g)
 {
+uschar * s;
 if (!spf_result) return g;
 
-return string_append(g, 4, US";\n\tspf=", spf_result,
-         US" smtp.mailfrom=", expand_string(US"$sender_address_domain"));
+g = string_append(g, 2, US";\n\tspf=", spf_result);
+if (spf_result_guessed)
+  g = string_cat(g, US" (best guess record for domain)");
+
+s = expand_string(US"$sender_address_domain");
+return s && *s
+  ? string_append(g, 2, US" smtp.mailfrom=", s)
+  : string_cat(g, US" smtp.mailfrom=<>");
 }
 
 

@@ -12891,6 +12891,7 @@ is compiled with the content-scanning extension. For details, see section
 .vitem &$spf_header_comment$& &&&
        &$spf_received$& &&&
        &$spf_result$& &&&
+       &$spf_result_guessed$& &&&
        &$spf_smtp_comment$&
 These variables are only available if Exim is built with SPF support.
 For details see section &<<SECSPF>>&.
@@ -39347,6 +39348,11 @@ variables:
   This contains the outcome of the SPF check in string form,
   one of pass, fail, softfail, none, neutral, permerror or
   temperror.
+
+.vitem &$spf_result_guessed$&
+.vindex &$spf_result_guessed$&
+  This boolean is trus only if a best-guess operation was used
+  and required in order to obtain a result.
 
 .vitem &$spf_smtp_comment$&
 .vindex &$spf_smtp_comment$&

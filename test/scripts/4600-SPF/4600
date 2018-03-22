@@ -19,11 +19,21 @@ rcpt to:<fred@test.ex>
 ??? 550
 quit
 ****
+client HOSTIPV4 PORT_D
+??? 220
+helo testclient
+??? 250
+mail from:<b@test.example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 550
+quit
+****
 client 127.0.0.1 PORT_D
 ??? 220
 helo testclient
 ??? 250
-mail from:<b@example.com>
+mail from:<c@example.com>
 ??? 250
 rcpt to:<fred@test.ex>
 ??? 250

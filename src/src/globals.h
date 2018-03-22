@@ -881,6 +881,7 @@ extern uschar *spf_guess;              /* spf best-guess record */
 extern uschar *spf_header_comment;     /* spf header comment */
 extern uschar *spf_received;           /* Received-SPF: header */
 extern uschar *spf_result;             /* spf result in string form */
+extern BOOL    spf_result_guessed;     /* spf result is of best-guess operation */
 extern uschar *spf_smtp_comment;       /* spf comment to include in SMTP reply */
 #endif
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */

@@ -605,7 +605,7 @@ if (dmarc_has_been_checked)
   {
   g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
   if (header_from_sender)
-    g = string_append(g, 2, US"header.from=", header_from_sender);
+    g = string_append(g, 2, US" header.from=", header_from_sender);
   }
 return g;
 }
