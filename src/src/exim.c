@@ -187,7 +187,15 @@ DEBUG(D_process_info) debug_printf("set_process_info: %s", process_info);
 va_end(ap);
 }
 
+/***********************************************
+*            Handler for SIGTERM               *
+***********************************************/
 
+static void
+term_handler(int sig)
+{
+  exit(1);
+}
 
 
 /*************************************************
@@ -1677,6 +1685,10 @@ descriptive text. */
 
 set_process_info("initializing");
 os_restarting_signal(SIGUSR1, usr1_handler);
+
+/* If running in a dockerized environment, the TERM signal is only
+delegated to the PID 1 if we request it by setting an signal handler */
+if (getpid() == 1) signal(SIGTERM, term_handler);
 
 /* SIGHUP is used to get the daemon to reconfigure. It gets set as appropriate
 in the daemon code. For the rest of Exim's uses, we ignore it. */

@@ -165,6 +165,9 @@ JH/30 The (EXPERIMENTAL_DMARC) variable $dmarc_ar_header is withdrawn, being
 
 JH/31 Bug 2257: Fix pipe transport to not use a socket-only syscall.
 
+HS/03 Set a handler for SIGTERM and call exit(3) if running as PID 1. This
+      allows proper process termination in container environments.
+
 
 Exim version 4.90
 -----------------
