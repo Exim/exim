@@ -1375,7 +1375,7 @@ while ((methodspec = string_nextinlist(&resinfo, &sep, NULL, 0)))
          (c = *s) && c != ';' && c != ' ' && c != '\r' && c != '\n'; ) s++;
     return string_copyn(methodspec, s - methodspec);
     }
-return NULL;
+return US"none";
 }
 
 
