@@ -171,6 +171,9 @@ JH/31 Bug 2257: Fix pipe transport to not use a socket-only syscall.
 HS/03 Set a handler for SIGTERM and call exit(3) if running as PID 1. This
       allows proper process termination in container environments.
 
+JH/32 Bug 2258: Fix spool_wireformat in combination with LMTP transport.
+      Previously the "final dot" had a newline after it; ensure it is CR,LF.
+
 
 Exim version 4.90
 -----------------
