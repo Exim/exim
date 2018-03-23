@@ -15,6 +15,9 @@ GF/01 DEFER rather than ERROR on redis cluster MOVED response.
      next server in the list. For a cluster of N elements, all N servers must
      be defined in redis_servers.
 
+GF/02 Catch and remove uninitialized value warning in exiqsumm
+      Check for existence of @ARGV before looking at $ARGV[0]
+
 JH/01 Replace the store_release() internal interface with store_newblock(),
       which internalises the check required to safely use the old one, plus
       the allocate and data copy operations duplicated in both (!) of the
