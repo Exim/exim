@@ -1712,11 +1712,19 @@ for (sig = ctx->sig; sig; sig = sig->next)
       sig->verify_ext_status = PDKIM_VERIFY_INVALID_SIGNATURE_ERROR;
 
       DEBUG(D_acl) debug_printf(
-	  " Error in DKIM-Signature header: tags missing or invalid\n"
-	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+	  " Error in DKIM-Signature header: tags missing or invalid (%s)\n"
+	  "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n",
+	  !(sig->domain && *sig->domain) ? "d="
+	  : !(sig->selector && *sig->selector) ? "s="
+	  : !(sig->headernames && *sig->headernames) ? "h="
+	  : !sig->bodyhash.data ? "bh="
+	  : !sig->sighash.data ? "b="
+	  : sig->keytype < 0 || sig->hashtype < 0 ? "a="
+	  : "v="
+	  );
       goto NEXT_VERIFY;
       }
-
+ 
     /* Make sure sig uses supported DKIM version (only v1) */
     if (sig->version != 1)
       {
