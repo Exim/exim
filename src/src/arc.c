@@ -564,11 +564,11 @@ while ((hn = string_nextinlist(&headernames, &sep, NULL, 0)))
       break;
       }
 
-/* Finally add in the signature header (with the b= tag stripped) */
+/* Finally add in the signature header (with the b= tag stripped); no CRLF */
 
 s = ams->rawsig_no_b_val.data, len = ams->rawsig_no_b_val.len;
 if (relaxed)
-  len = Ustrlen(s = pdkim_relax_header_n(s, len, TRUE));
+  len = Ustrlen(s = pdkim_relax_header_n(s, len, FALSE));
 DEBUG(D_acl) pdkim_quoteprint(s, len);
 exim_sha_update(&hhash_ctx, s, len);
 
@@ -865,6 +865,8 @@ if (!exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
            header canonicalization defined in Section 3.4.2 of
            [RFC6376].  Pass the canonicalized result to the hash
            function.
+
+Headers are CRLF-separated, but the last one is not crlf-terminated.
 */
 
 DEBUG(D_acl) debug_printf("ARC: AS header data for verification:\n");
@@ -895,7 +897,7 @@ for (as2 = ctx->arcset_chain;
   al = as2->hdr_as;
   if (as2->instance == as->instance)
     s = pdkim_relax_header_n(al->rawsig_no_b_val.data,
-					al->rawsig_no_b_val.len, TRUE);
+					al->rawsig_no_b_val.len, FALSE);
   else if (!(s = al->relaxed))
     al->relaxed = s = pdkim_relax_header_n(al->complete->text,
 					    al->complete->slen, TRUE);
@@ -952,7 +954,7 @@ if ((errstr = exim_dkim_verify(&vctx,
   {
   DEBUG(D_acl)
     debug_printf("ARC i=%d AS headers verify: %s\n", as->instance, errstr);
-  arc_state_reason = US"seal sigverify init error";
+  arc_state_reason = US"seal sigverify error";
   return US"fail";
   }
 
@@ -1328,10 +1330,8 @@ if (g->s[g->ptr - 1] == ':') g->ptr--;
 g = string_catn(g, US";\r\n\tb=;", 7);
 
 /* Include the pseudo-header in the accumulation */
-/*XXX should that be prepended rather than appended? */
-/*XXX also need to include at the verify stage */
 
-s = pdkim_relax_header_n(g->s + ams_off, g->ptr - ams_off, TRUE);
+s = pdkim_relax_header_n(g->s + ams_off, g->ptr - ams_off, FALSE);
 hdata = string_cat(hdata, s);
 
 /* Calculate the signature from the accumulation */
@@ -1440,7 +1440,7 @@ for (as = Ustrcmp(status, US"fail") == 0
   h = as->hdr_ams->complete;
   hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, TRUE));
   h = as->hdr_as->complete;
-  hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, TRUE));
+  hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, !!as->next));
   }
 
 /* Calculate the signature from the accumulation */
