@@ -1132,9 +1132,10 @@ if (!(tctx->options & topt_no_body))
   if (len != 0) return FALSE;
   }
 
-/* Finished with the check string */
+/* Finished with the check string, and spool-format consideration */
 
 nl_check_length = nl_escape_length = 0;
+spool_file_wireformat = FALSE;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
@@ -1401,6 +1402,7 @@ filter was not NL, insert a NL to make the SMTP protocol work. */
 if (yield)
   {
   nl_check_length = nl_escape_length = 0;
+  spool_file_wireformat = FALSE;
   if (  tctx->options & topt_end_dot
      && ( last_filter_was_NL
         ? !write_chunk(tctx, US".\n", 2)

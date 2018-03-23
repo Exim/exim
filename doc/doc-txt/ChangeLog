@@ -107,6 +107,9 @@ JH/29 Bug 2250: Fix a longstanding bug in heavily-pipelined SMTP input (such
 
 JH/31 Bug 2257: Fix pipe transport to not use a socket-only syscall.
 
+JH/32 Bug 2258: Fix spool_wireformat in combination with LMTP transport.
+      Previously the "final dot" had a newline after it; ensure it is CR,LF.
+
 
 Exim version 4.90
 -----------------
