@@ -39351,7 +39351,7 @@ variables:
 
 .vitem &$spf_result_guessed$&
 .vindex &$spf_result_guessed$&
-  This boolean is trus only if a best-guess operation was used
+  This boolean is true only if a best-guess operation was used
   and required in order to obtain a result.
 
 .vitem &$spf_smtp_comment$&
