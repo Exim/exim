@@ -36,6 +36,13 @@ Extract the current source of OpenSSL.  Change into that directory.
 This assumes that `/opt/openssl` is not in use.  If it is, pick
 something else.  `/opt/exim/openssl` perhaps.
 
+If you pick a location shared amongst various local packages, such as
+`/usr/local` on Linux, then the new OpenSSL will be used by all of those
+packages.  If that's what you want, great!  If instead you want to
+ensure that only software you explicitly set to use the newer OpenSSL
+will try to use the new OpenSSL, then stick to something like
+`/opt/openssl`.
+
     ./config --prefix=/opt/openssl --openssldir=/etc/ssl  \
         -L/opt/openssl/lib -Wl,-R/opt/openssl/lib         \
         enable-ssl-trace shared
@@ -58,8 +65,6 @@ the relevant directory into the rpath stamped into the binary:
     SUPPORT_TLS=yes
     USE_OPENSSL_PC=openssl
     LDFLAGS+=-ldl -Wl,-rpath,/opt/openssl/lib
-
-[jgh: I've see /usr/local/lib used]
 
 The -ldl is needed by OpenSSL 1.0.2+ on Linux and is not needed on most
 other platforms.  The LDFLAGS is needed because `pkg-config` doesn't know
@@ -100,7 +105,22 @@ is to run:
 
     readelf -d $(which exim) | grep RPATH
 
-[jgh: I've seen that spelled RUNPATH]
+It is important to use `RPATH` and not `RUNPATH`!
+
+The gory details about `RUNPATH` (skip unless interested):
+The OpenSSL library might be opened indirectly by some other library
+which Exim depends upon.  If the executable does have `RUNPATH` then
+that will inhibit using either of `RPATH` or `RUNPATH` from the
+executable for finding the OpenSSL library when that other library tries
+to load it.
+In fact, if the intermediate library has a `RUNPATH` stamped into it,
+then this will block `RPATH` too, and will create problems with Exim.
+If you're in such a situation, and those libraries were supplied to you
+instead of built by you, then you're reaching the limits of sane
+repairability and it's time to prioritize rebuilding your mail-server
+hosts to be a current OS release which natively pulls in an
+upstream-supported OpenSSL, or stick to the OS releases of Exim.
+
 
 Very Advanced
 -------------
