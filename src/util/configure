@@ -582,7 +582,6 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 PACKAGE_URL=
 
-ac_unique_file="listtests"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -622,9 +621,7 @@ ac_includes_default="\
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 LOADED_OPT
-LOADED
-CLIENT_GNUTLS
-CLIENT_SSL
+B64_GNUTLS
 BIND_8_COMPAT
 EGREP
 GREP
@@ -3218,17 +3215,6 @@ fi
 
 done
 
-for ac_header in openssl/crypto.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "openssl/crypto.h" "ac_cv_header_openssl_crypto_h" "$ac_includes_default"
-if test "x$ac_cv_header_openssl_crypto_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_OPENSSL_CRYPTO_H 1
-_ACEOF
- CLIENT_SSL=bin/client-ssl
-fi
-
-done
 
 for ac_header in gnutls/gnutls.h
 do :
@@ -3237,7 +3223,7 @@ if test "x$ac_cv_header_gnutls_gnutls_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_GNUTLS_GNUTLS_H 1
 _ACEOF
- CLIENT_GNUTLS=bin/client-gnutls
+ B64_GNUTLS=ed25519_privkey_pem_to_pubkey_raw_b64
 fi
 
 done
@@ -3245,21 +3231,7 @@ done
 
 
 
-
 host_os=`uname -s`
-
-case $CC-$host_os in
-  gcc-*linux* | gcc-*Linux* | gcc-*LINUX* | gcc-FreeBSD)
-    LOADED=bin/loaded
-    LOADED_OPT="-shared -fPIC"
-    echo "Using gcc on $host_os: will compile dynamically loaded module"
-    ;;
-  *)
-    LOADED=
-    echo "Will not compile dynamically loaded module: not known OS/CC combination"
-    ;;
-esac
-
 
 case $host_os in
   Darwin)

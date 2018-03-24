@@ -556,7 +556,7 @@ sel2._domainkey TXT "v=DKIM1; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDXRFf+VhT+
 ; EC signing, using Ed25519
 ; - needs GnuTLS 3.6.0 (fedora rawhide has that)
 ;           certtool --generate-privkey --key-type=ed25519 --outfile=dkim_ed25519.private
-;           bin/ed25519_privkey_pem_to_pubkey_raw_b64 dkim_ed25519.private
+;           ../src/util/ed25519_privkey_pem_to_pubkey_raw_b64 dkim_ed25519.private
 
 sed._domainkey TXT "v=DKIM1; k=ed25519; p=sPs07Vu29FpHT/80UXUcYHFOHifD4o2ZlP2+XUh9g6E="
 

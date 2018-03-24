@@ -1,0 +1,32 @@
+# This Makefile builds support programs for Exim
+
+##############################################################################
+# These variables are set by the configure script.
+
+CC=@CC@
+CFLAGS=@CFLAGS@ @BIND_8_COMPAT@ @DEFS@
+LDFLAGS=@LDFLAGS@
+B64_GNUTLS=@B64_GNUTLS@
+LIBS=@LIBS@
+
+SRC = @srcdir@/src
+
+##############################################################################
+
+BINARIES =	$(B64_GNUTLS)
+
+# List of targets
+
+all:            binaries
+
+binaries:	$(BINARIES)
+
+ed25519_privkey_pem_to_pubkey_raw_b64:     $(SRC)/ed25519_privkey_pem_to_pubkey_raw_b64.c Makefile
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -o ed25519_privkey_pem_to_pubkey_raw_b64 \
+			$(SRC)/ed25519_privkey_pem_to_pubkey_raw_b64.c  -lgnutls -lgcrypt $(LIBS)
+
+clean:;         rm -rf $(BINARIES)
+
+FORCE:
+
+# End
