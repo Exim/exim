@@ -148,9 +148,9 @@ JH/28 Ensure that variables possibly set during message acceptance are marked
       dead before release of memory in the daemon loop.  This stops complaints
       about them when the debug_store option is enabled.  Discovered specifically
       for sender_rate_period, but applies to a whole set of variables.
-      Do the same for the queue-runner loop, for variables set from spool
-      message files.  Do the same for the SMTP per-message loop, for certain
-      variables indirectly set in ACL operations.
+      Do the same for the queue-runner and queue-list loops, for variables set
+      from spool message files.  Do the same for the SMTP per-message loop, for
+      certain variables indirectly set in ACL operations.
 
 JH/29 Bug 2250: Fix a longstanding bug in heavily-pipelined SMTP input (such
       as a multi-recipient message from a mailinglist manager).  The coding had

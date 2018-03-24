@@ -854,7 +854,10 @@ if (option >= 8) option -= 8;
 /* Now scan the chain and print information, resetting store used
 each time. */
 
-for (reset_point = store_get(0); f; f = f->next)
+for (reset_point = store_get(0);
+    f;
+    spool_clear_header_globals(), store_reset(reset_point), f = f->next
+    )
   {
   int rc, save_errno;
   int size = 0;
@@ -863,7 +866,8 @@ for (reset_point = store_get(0); f; f = f->next)
   message_size = 0;
   message_subdir[0] = f->dir_uschar;
   rc = spool_read_header(f->text, FALSE, count <= 0);
-  if (rc == spool_read_notopen && errno == ENOENT && count <= 0) goto next;
+  if (rc == spool_read_notopen && errno == ENOENT && count <= 0)
+    continue;
   save_errno = errno;
 
   env_read = (rc == spool_read_OK || rc == spool_read_hdrerror);
@@ -933,7 +937,7 @@ for (reset_point = store_get(0); f; f = f->next)
     if (rc != spool_read_hdrerror)
       {
       printf("\n\n");
-      goto next;
+      continue;
       }
     }
 
@@ -948,24 +952,14 @@ for (reset_point = store_get(0); f; f = f->next)
       tree_node *delivered =
         tree_search(tree_nonrecipients, recipients_list[i].address);
       if (!delivered || option != 1)
-        printf("        %s %s\n", (delivered != NULL)? "D":" ",
-          recipients_list[i].address);
+        printf("        %s %s\n",
+	  delivered ? "D" : " ", recipients_list[i].address);
       if (delivered) delivered->data.val = TRUE;
       }
     if (option == 2 && tree_nonrecipients)
       queue_list_extras(tree_nonrecipients);
     printf("\n");
     }
-
-next:
-  received_protocol = NULL;
-  sender_fullhost = sender_helo_name =
-  sender_rcvhost = sender_host_address = sender_address = sender_ident = NULL;
-  sender_host_authenticated = authenticated_sender = authenticated_id = NULL;
-  interface_address = NULL;
-  acl_var_m = NULL;
-
-  store_reset(reset_point);
   }
 }
 
