@@ -1536,7 +1536,8 @@ selector = string_nextinlist(&signspec, &sep, NULL, 0);
 if (  !*identity | !*selector
    || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0)) || !*privkey)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "ARC: bad signing-specification");
+  log_write(0, LOG_MAIN|LOG_PANIC, "ARC: bad signing-specification (%s)",
+    !*identity ? "identity" : !*selector ? "selector" : "private-key");
   return NULL;
   }
 if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
