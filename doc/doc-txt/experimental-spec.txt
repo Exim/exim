@@ -802,7 +802,8 @@ arc_sign = <admd-identifier> : <selector> : <privkey>
 An option on the smtp transport, which constructs and prepends to the message
 an ARC set of headers.  The textually-first Authentication-Results: header
 is used as a basis (you must have added one on entry to the ADMD).
-Expanded; if unset, empty or forced-failure then no signing is done.
+Expanded as a whole; if unset, empty or forced-failure then no signing is done.
+If it is set, all three elements must be non-empty.
 
 
 
