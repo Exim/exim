@@ -9154,6 +9154,7 @@ If the ACL returns defer the result is a forced-fail.  Otherwise the expansion f
 .vitem "&*${authresults{*&<&'authserv-id'&>&*}}*&"
 .cindex authentication "results header"
 .cindex headers "authentication-results:"
+.cindex authentication "expansion item"
 This item returns a string suitable for insertion as an
 &'Authentication-Results"'&
 header line.
@@ -9172,6 +9173,7 @@ Example use (as an ACL modifier):
 .code
       add_header = :at_start:${authresults {$primary_hostname}}
 .endd
+This is safe even if no authentication reselts are available.
 .wen
 
 
@@ -11935,6 +11937,13 @@ sufficient on its own for the success of a host name lookup. If the reverse
 lookup succeeds, but there is a lookup problem such as a timeout when checking
 the result, the name is not accepted, and &$host_lookup_deferred$& is set to
 &"1"&. See also &$sender_host_name$&.
+
+.new
+.cindex authentication "expansion item"
+Performing these checks sets up information used by the
+&$authresults$& expansion item.
+.wen
+
 
 .vitem &$host_lookup_failed$&
 .vindex "&$host_lookup_failed$&"
@@ -26105,6 +26114,12 @@ public name) of the authenticator driver that successfully authenticated the
 client from which the message was received. This variable is empty if there was
 no successful authentication.
 
+.new
+.cindex authentication "expansion item"
+Successful authentication sets up information used by the
+&$authresults$& expansion item.
+.wen
+
 
 
 
@@ -39001,6 +39016,12 @@ To evaluate the signature in the ACL a large number of expansion variables
 containing the signature status and its details are set up during the
 runtime of the ACL.
 
+.new
+.cindex authentication "expansion item"
+Performing verification sets up information used by the
+&$authresults$& expansion item.
+.wen
+
 Calling the ACL only for existing signatures is not sufficient to build
 more advanced policies. For that reason, the global option
 &%dkim_verify_signers%&, and a global expansion variable
@@ -39261,6 +39282,12 @@ There is no Exim involvement on the trasmission of messages; publishing certain
 DNS records is all that is required.
 
 For verification, an ACL condition and an expansion lookup are provided.
+.new
+.cindex authentication "expansion item"
+Performing verification sets up information used by the
+&$authresults$& expansion item.
+.wen
+
 
 .cindex SPF "ACL condition"
 .cindex ACL "spf condition"

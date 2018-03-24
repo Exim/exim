@@ -523,6 +523,9 @@ Of course, you can also use any other lookup method that Exim
 supports, including LDAP, Postgres, MySQL, etc, as long as the
 result is a list of colon-separated strings.
 
+Performing the check sets up information used by the
+${authresults } expansion item.
+
 Several expansion variables are set before the DATA ACL is
 processed, and you can use them in this ACL.  The following
 expansion variables are available:
@@ -587,7 +590,6 @@ b. Configure, somewhere before the DATA ACL, the control option to
   warn    dmarc_status   = accept : none : off
           !authenticated = *
           log_message    = DMARC DEBUG: $dmarc_status $dmarc_used_domain
-          add_header     = $dmarc_ar_header
 
   warn    dmarc_status   = !accept
           !authenticated = *
@@ -605,6 +607,8 @@ b. Configure, somewhere before the DATA ACL, the control option to
   deny    dmarc_status   = reject
           !authenticated = *
           message        = Message from $dmarc_used_domain failed sender's DMARC policy, REJECT
+
+  warn    add_header     = :at_start:${authresults {$primary_hostname}}
 
 
 
