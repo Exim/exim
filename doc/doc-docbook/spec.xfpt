@@ -38932,6 +38932,20 @@ is set.
 .endlist
 
 .new
+To generate keys under OpenSSL:
+.code
+openssl genrsa -out dkim_rsa.private 2048
+openssl rsa -in dkim_rsa.private -out /dev/stdout -pubout -outform PEM
+.endd
+Take the base-64 lines from the output of the second command, concatenated,
+for the DNS TXT record.
+
+Under GnuTLS:
+.code
+certtool --generate-privkey --rsa --bits=2048 --password='' -8 --outfile=dkim_rsa.private
+certtool --load-privkey=dkim_rsa.private --pubkey-info
+.endd
+
 Note that RFC 8301 says:
 .code
 Signers MUST use RSA keys of at least 1024 bits for all keys.
