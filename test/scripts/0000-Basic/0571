@@ -6,7 +6,7 @@ should fail
 .
 ****
 #
-exim -f bill@29.29.29.com -odq ok1@test.ex
+exim -oMai CALLER -f bill@29.29.29.com -odq ok1@test.ex
 should pass
 .
 ****

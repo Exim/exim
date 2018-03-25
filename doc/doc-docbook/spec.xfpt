@@ -11595,10 +11595,15 @@ preserve some of the authentication information in the variable
 user/password authenticator configuration might preserve the user name for use
 in the routers. Note that this is not the same information that is saved in
 &$sender_host_authenticated$&.
+
 When a message is submitted locally (that is, not over a TCP connection)
 the value of &$authenticated_id$& is normally the login name of the calling
 process. However, a trusted user can override this by means of the &%-oMai%&
 command line option.
+.new
+This second case also sets up inforamtion used by the
+&$authresults$& expansion item.
+.wen
 
 .vitem &$authenticated_fail_id$&
 .cindex "authentication" "fail" "id"
@@ -38939,6 +38944,7 @@ openssl rsa -in dkim_rsa.private -out /dev/stdout -pubout -outform PEM
 .endd
 Take the base-64 lines from the output of the second command, concatenated,
 for the DNS TXT record.
+See section 3.6 of RFC6376 for the record specification.
 
 Under GnuTLS:
 .code

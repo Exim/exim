@@ -434,6 +434,7 @@ uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;
 uschar *authenticated_sender   = NULL;
 BOOL    authentication_failed  = FALSE;
+BOOL    authentication_local   = FALSE;
 auth_instance  *auths          = NULL;
 uschar *auth_advertise_hosts   = US"*";
 auth_instance auth_defaults    = {

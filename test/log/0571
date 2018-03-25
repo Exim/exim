@@ -1,4 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 F=<ted@29.29.0.com> rejected by non-SMTP ACL: cannot test auto-keyed dnslists condition in non-SMTP ACL
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmaZ-0005vi-00 authresults: Authentication-Results: myhost.test.ex;\n	local=pass (non-smtp, myhost.test.ex) u=CALLER
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= bill@29.29.29.com U=CALLER P=local S=sss

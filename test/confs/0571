@@ -27,8 +27,8 @@ acl_not_smtp =  ${if def:sender_address \
 begin acl
 
 acl_29_29_29:
-  deny    dnslists = test.ex/$sender_address_domain
-  accept
+  deny    dnslists =	test.ex/$sender_address_domain
+  accept  logwrite =	authresults: ${authresults {$primary_hostname}}
 
 acl_29_29_0:
   deny    dnslists = test.ex

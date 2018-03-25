@@ -228,6 +228,7 @@ extern uschar *authenticated_fail_id;  /* ID that failed authentication */
 extern uschar *authenticated_id;       /* ID that was authenticated */
 extern uschar *authenticated_sender;   /* From AUTH on MAIL */
 extern BOOL    authentication_failed;  /* TRUE if AUTH was tried and failed */
+extern BOOL    authentication_local;   /* TRUE if non-smtp (implicit authentication) */
 extern uschar *auth_advertise_hosts;   /* Only advertise to these */
 extern auth_info auths_available[];    /* Vector of available auth mechanisms */
 extern auth_instance *auths;           /* Chain of instantiated auths */

@@ -3572,15 +3572,16 @@ else
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
-    if (acl_not_smtp != NULL)
+    if (acl_not_smtp)
       {
       uschar *user_msg, *log_msg;
+      authentication_local = TRUE;
       rc = acl_check(ACL_WHERE_NOTSMTP, NULL, acl_not_smtp, &user_msg, &log_msg);
       if (rc == DISCARD)
         {
         recipients_count = 0;
         blackholed_by = US"non-SMTP ACL";
-        if (log_msg != NULL)
+        if (log_msg)
           blackhole_log_msg = string_sprintf(": %s", log_msg);
         }
       else if (rc != OK)
@@ -3595,11 +3596,11 @@ else
         /* The ACL can specify where rejections are to be logged, possibly
         nowhere. The default is main and reject logs. */
 
-        if (log_reject_target != 0)
+        if (log_reject_target)
           log_write(0, log_reject_target, "F=<%s> rejected by non-SMTP ACL: %s",
             sender_address, log_msg);
 
-        if (user_msg == NULL) user_msg = US"local configuration problem";
+        if (!user_msg) user_msg = US"local configuration problem";
         if (smtp_batched_input)
           {
           moan_smtp_batch(NULL, "%d %s", 550, user_msg);

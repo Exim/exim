@@ -1662,6 +1662,21 @@ return yield;
 
 
 
+/* Append a "local" element to an Autherntication-Results: header
+if this was a non-smtp message.
+*/
+
+static gstring *
+authres_local(gstring * g, const uschar * sysname)
+{
+if (!authentication_local)
+  return g;
+g = string_append(g, 3, US";\n\tlocal=pass (non-smtp, ", sysname, US")");
+if (authenticated_id) g = string_append(g, 2, " u=", authenticated_id);
+return g;
+}
+
+
 /* Append an "iprev" element to an Autherntication-Results: header
 if we have attempted to get the calling host's name.
 */
@@ -4141,6 +4156,7 @@ while (*s != 0)
 			US"Authentication-Results: ", sub_arg[0], US"; none");
       yield->ptr -= 6;
 
+      yield = authres_local(yield, sub_arg[0]);
       yield = authres_iprev(yield);
       yield = authres_smtpauth(yield);
 #ifdef SUPPORT_SPF
