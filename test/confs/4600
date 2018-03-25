@@ -11,7 +11,7 @@ acl_smtp_rcpt = check_rcpt
 begin acl
 
 check_rcpt:
-  accept	hosts = 	HOSTIPV4
+  accept	condition =	${if eq {$received_port}{PORT_D}}
 		spf_guess =	pass
 		logwrite =	spf_result         $spf_result (guess <$spf_result_guessed>)
 		logwrite =	spf_header_comment $spf_header_comment
@@ -19,7 +19,7 @@ check_rcpt:
 		logwrite =	spf_received       $spf_received
 		logwrite =	${authresults {$primary_hostname}}
 
-  accept	hosts =		127.0.0.1
+  accept	condition =	${if eq {$received_port}{PORT_S}}
 		spf =		pass : softfail : neutral
 		logwrite =	spf_result         $spf_result
 		logwrite =	spf_header_comment $spf_header_comment

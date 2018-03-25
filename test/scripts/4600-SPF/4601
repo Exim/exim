@@ -7,9 +7,9 @@
 # For now just check that what should be working syntax does not cause us to fall over.
 # Be careful with envelope-domains used for testcases, as real DNS lookups will be done.
 #
-exim -bd -DSERVER=server -oX PORT_D
+exim -bd -DSERVER=server -oX PORT_D:PORT_S
 ****
-client HOSTIPV4 PORT_D
+client 127.0.0.1 PORT_D
 ??? 220
 helo testclient
 ??? 250
@@ -19,7 +19,7 @@ rcpt to:<fred@test.ex>
 ??? 250
 quit
 ****
-client 127.0.0.1 PORT_D
+client 127.0.0.1 PORT_S
 ??? 220
 helo testclient
 ??? 250
