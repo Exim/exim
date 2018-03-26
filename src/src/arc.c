@@ -993,6 +993,12 @@ acl_verify_arc(void)
 arc_ctx ctx = { NULL };
 const uschar * res;
 
+if (!dkim_verify_ctx)
+  {
+  DEBUG(D_acl) debug_printf("ARC: no DKIM verify context\n");
+  return NULL;
+  }
+
 /* AS evaluation, per
 https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-10#section-6
 */
