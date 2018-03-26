@@ -632,7 +632,6 @@ if (dkim_domain)
   for this domain. */
 
   if (!(dkim_sel = expand_string(dkim->dkim_selector)))
-  if (!(dkim_signing_selector = expand_string(dkim->dkim_selector)))
     { errwhen = US"dkim_selector"; goto expand_bad; }
 
   while ((dkim_signing_selector = string_nextinlist(&dkim_sel, &sel_sep,
