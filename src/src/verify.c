@@ -1033,10 +1033,10 @@ no_conn:
         cutthrough.delivery= FALSE;
         HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
         }
-      if (ob->dkim.dkim_domain)
+      if (ob->dkim.dkim_domain || ob->arc_sign)
         {
         cutthrough.delivery= FALSE;
-        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
+        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM or ARC signing\n");
         }
       }
 
