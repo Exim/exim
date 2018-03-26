@@ -724,7 +724,7 @@ the queuefile driver.
 The transport only takes one option:
 
 * directory - This is used to specify the directory messages should be
-copied to
+copied to.  Expanded.
 
 The generic transport options (body_only, current_directory, disable_logging,
 debug_print, delivery_date_add, envelope_to_add, event_action, group,

@@ -96,6 +96,7 @@ and data files to the destination directory
 Arguments:
   tb		the transport block
   addr          address_item being processed
+  dstpath	destination directory name
   sdfd          int Source directory fd
   ddfd          int Destination directory fd
   link_file     BOOL use linkat instead of data copy
@@ -106,18 +107,16 @@ Returns:       TRUE if all went well, FALSE otherwise
 
 static BOOL
 copy_spool_files(transport_instance * tb, address_item * addr,
-  int sdfd, int ddfd, BOOL link_file, int srcfd)
+  const uschar * dstpath, int sdfd, int ddfd, BOOL link_file, int srcfd)
 {
 BOOL is_hdr_file = srcfd < 0;
 const uschar * suffix = srcfd < 0 ? US"H" : US"D";
 int dstfd;
 const uschar * filename = string_sprintf("%s-%s", message_id, suffix);
 const uschar * srcpath = spool_fname(US"input", message_subdir, message_id, suffix);
-const uschar * dstpath = string_sprintf("%s/%s-%s",
-  ((queuefile_transport_options_block *) tb->options_block)->dirname,
-  message_id, suffix);
-const uschar * s;
-const uschar * op;
+const uschar * s, * op;
+
+dstpath = string_sprintf("%s/%s-%s", dstpath, message_id, suffix);
 
 if (link_file)
   {
@@ -175,7 +174,7 @@ queuefile_transport_options_block * ob =
   (queuefile_transport_options_block *) tblock->options_block;
 BOOL can_link;
 uschar * sourcedir = spool_dname(US"input", message_subdir);
-uschar * s;
+uschar * s, * dstdir;
 struct stat dstatbuf, sstatbuf;
 int ddfd = -1, sdfd = -1;
 
@@ -189,18 +188,25 @@ DEBUG(D_transport)
 # define O_NOFOLLOW 0
 #endif
 
-if (ob->dirname[0] != '/')
+if (!(dstdir = expand_string(ob->dirname)))
+  {
+  addr->message = string_sprintf("%s transport: failed to expand dirname option",
+    tblock->name);
+  addr->transport_return = DEFER;
+  return FALSE;
+  }
+if (*dstdir != '/')
   {
   addr->transport_return = PANIC;
   addr->message = string_sprintf("%s transport directory: "
-    "%s is not absolute", tblock->name, ob->dirname);
+    "%s is not absolute", tblock->name, dstdir);
   return FALSE;
   }
 
 /* Open the source and destination directories and check if they are
 on the same filesystem, so we can hard-link files rather than copying. */
 
-if (  (s = ob->dirname,
+if (  (s = dstdir,
        (ddfd = Uopen(s, O_RDONLY | O_DIRECTORY | O_NOFOLLOW, 0)) < 0)
    || (s = sourcedir,
        (sdfd = Uopen(sourcedir, O_RDONLY | O_DIRECTORY | O_NOFOLLOW, 0)) < 0)
@@ -214,8 +220,8 @@ if (  (s = ob->dirname,
   return FALSE;
   }
 
-if (  (s = ob->dirname, fstat(ddfd, &dstatbuf) < 0)
-   || (s = sourcedir,   fstat(sdfd, &sstatbuf) < 0)
+if (  (s = dstdir,    fstat(ddfd, &dstatbuf) < 0)
+   || (s = sourcedir, fstat(sdfd, &sstatbuf) < 0)
    )
   {
   addr->transport_return = PANIC;
@@ -240,18 +246,19 @@ if (dont_deliver)
 DEBUG(D_transport)
   debug_printf("%s transport, copying header file\n", tblock->name);
 
-if (!copy_spool_files(tblock, addr, sdfd, ddfd, can_link, -1))
+if (!copy_spool_files(tblock, addr, dstdir, sdfd, ddfd, can_link, -1))
   goto RETURN;
 
 DEBUG(D_transport)
   debug_printf("%s transport, copying data file\n", tblock->name);
 
-if (!copy_spool_files(tblock, addr, sdfd, ddfd, can_link, deliver_datafile))
+if (!copy_spool_files(tblock, addr, dstdir, sdfd, ddfd, can_link,
+	deliver_datafile))
   {
   DEBUG(D_transport)
     debug_printf("%s transport, copying data file failed, "
       "unlinking the header file\n", tblock->name);
-  Uunlink(string_sprintf("%s/%s-H", ob->dirname, message_id));
+  Uunlink(string_sprintf("%s/%s-H", dstdir, message_id));
   goto RETURN;
   }
 

@@ -23,7 +23,7 @@ begin transports
 
 scan:
   driver = queuefile
-  directory = test-mail/subdir
+  directory = ${if = {0}{0} {test-mail/subdir}{}}
 
 # ----- Retry -----
 
