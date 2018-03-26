@@ -160,6 +160,10 @@ JH/28 Ensure that variables possibly set during message acceptance are marked
 PP/02 DANE: add dane_require_tls_ciphers SMTP Transport option; if unset,
       tls_require_ciphers is used as before.
 
+JH/34 Re-introduce enforcement of no cutthrough delivery on transports having
+      transport-filters or DKIM-signing.  The restriction was lost in the
+      consolidation of verify-callout and delivery SMTP handling.
+
 
 Exim version 4.90
 -----------------
