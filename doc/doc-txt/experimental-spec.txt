@@ -819,6 +819,10 @@ Caveats:
    should try to stick to one ADMD, so pick a primary domain and use that for
    AR headers and outbound signing.
 
+Signing is not compatible with cutthrough delivery; any (before expansion)
+value set for the option will result in cutthrough delivery not being
+used via the transport in question.
+
 
 
 --------------------------------------------------------------
