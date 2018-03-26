@@ -1026,6 +1026,20 @@ no_conn:
     here is where we want to leave the conn open.  Ditto for a lazy-close
     verify. */
 
+    if (cutthrough.delivery)
+      {
+      if (addr->transport->filter_command)
+        {
+        cutthrough.delivery= FALSE;
+        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of transport filter\n");
+        }
+      if (ob->dkim.dkim_domain)
+        {
+        cutthrough.delivery= FALSE;
+        HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of DKIM signing\n");
+        }
+      }
+
     if (  (cutthrough.delivery || options & vopt_callout_hold)
        && rcpt_count == 1
        && done

@@ -178,6 +178,10 @@ JH/33 SPF: remove support for the "spf" ACL condition outcome values "err_temp"
       and "err_perm", deprecated since 4.83 when the RFC-defined words
       "temperror" and "permerror" were introduced.
 
+JH/34 Re-introduce enforcement of no cutthrough delivery on transports having
+      transport-filters or DKIM-signing.  The restriction was lost in the
+      consolidation of verify-callout and delivery SMTP handling.
+
 
 Exim version 4.90
 -----------------
