@@ -39349,18 +39349,11 @@ its domain as well.  This should be treated like "none".
 
 .vitem &%permerror%&
 This indicates a syntax error in the SPF record of the queried domain.
-You may deny messages when this occurs. (Changed in 4.83)
+You may deny messages when this occurs.
 
 .vitem &%temperror%&
 This indicates a temporary error during all processing, including Exim's
 SPF processing.  You may defer messages when this occurs.
-(Changed in 4.83)
-
-.vitem &%err_temp%&
-Same as permerror, deprecated in 4.83, will be removed in a future release.
-
-.vitem &%err_perm%&
-Same as temperror, deprecated in 4.83, will be removed in a future release.
 .endlist
 
 You can prefix each string with an exclamation mark to  invert
