@@ -183,6 +183,10 @@ JH/34 Re-introduce enforcement of no cutthrough delivery on transports having
       consolidation of verify-callout and delivery SMTP handling.
       Extend the restriction to also cover ARC-signing.
 
+JH/35 Cutthrough: for a final-dot response timeout (and nonunderstood responses)
+      in defer=pass mode supply a 450 to the initiator.  Previously the message
+      would be spooled.
+
 
 Exim version 4.90
 -----------------

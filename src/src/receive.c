@@ -4157,9 +4157,11 @@ if(cutthrough.fd >= 0 && cutthrough.delivery)
     case '4':	/* Temp-reject. Keep spoolfiles and accept, unless defer-pass mode.
       		... for which, pass back the exact error */
       if (cutthrough.defer_pass) smtp_reply = string_copy_malloc(msg);
-      /*FALLTRHOUGH*/
+      cutthrough_done = TMP_REJ;		/* Avoid the usual immediate delivery attempt */
+      break;					/* message_id needed for SMTP accept below */
 
     default:	/* Unknown response, or error.  Treat as temp-reject.         */
+      if (cutthrough.defer_pass) smtp_reply = US"450 Onward transmission not accepted";
       cutthrough_done = TMP_REJ;		/* Avoid the usual immediate delivery attempt */
       break;					/* message_id needed for SMTP accept below */
 

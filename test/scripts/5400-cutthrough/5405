@@ -174,6 +174,30 @@ DATA
 QUIT
 ****
 #
+# conn-drop (at DATA-dot), option "pass".  Should tmp-rej source, at DATA.
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 good rcpt
+DATA
+354 Send data
+.
+>*eof
+****
+exim -DCONTROL=/defer=pass -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userj@domain.com>
+DATA
+
+.
+QUIT
+****
+#
 #########################################################
 #, Now using a conn opened by a recipient verify
 #
