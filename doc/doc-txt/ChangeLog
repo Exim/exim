@@ -110,6 +110,10 @@ JH/31 Bug 2257: Fix pipe transport to not use a socket-only syscall.
 JH/32 Bug 2258: Fix spool_wireformat in combination with LMTP transport.
       Previously the "final dot" had a newline after it; ensure it is CR,LF.
 
+JH/34 Re-introduce enforcement of no cutthrough delivery on transports having
+      transport-filters or DKIM-signing.  The restriction was lost in the
+      consolidation of verify-callout and delivery SMTP handling.
+
 
 Exim version 4.90
 -----------------
