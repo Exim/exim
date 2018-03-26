@@ -38967,19 +38967,16 @@ for some transition period.
 The "_CRYPTO_SIGN_ED25519" macro will be defined if support is present
 for EC keys.
 
-As of writing, producing EC key materials is not well supported
-by the major libraries.  OpenSSL 1.1.1 and GnuTLS 3.6.0 can create private keys:
+OpenSSL 1.1.1 and GnuTLS 3.6.0 can create Ed25519 private keys:
 .code
 openssl genpkey -algorithm ed25519 -out dkim_ed25519.private
 certtool --generate-privkey --key-type=ed25519 --outfile=dkim_ed25519.private
 .endd
 
-To help in producing the required public key value for a DNS record
-the release package &_util/_& directory contains source for a utility
-buildable with GnuTLS 3.6.0;
-use it like this:
+To produce the required public key value for a DNS record:
 .code
-ed25519_privkey_pem_to_pubkey_raw_b64 dkim_ed25519.private
+openssl pkey -outform DER -pubout -in dkim_ed25519.private | tail -c +13 | base64
+certtool --load_privkey=dkim_ed25519.private --pubkey_info --outder | tail -c +13 | base64
 .endd
 .wen
 
