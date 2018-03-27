@@ -1,0 +1,57 @@
+# ARC verify, bad chain
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# This should fail verify (not a complete chain).
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<a@test.ex>
+??? 250
+DATA
+??? 354
+ARC-Seal: i=2; cv=none; a=rsa-sha256; d=test.ex; s=r201803;
+      b=HxjMzNcj7OX+I9Vr1Xr14AGgAci/CI8JxspaeoNT7TBsiOAtZ+YDBBSqXe6fqX3mHQEwpnXrdz
+       PCMIU1SF3ZiBtqWaLBPhStfuNQl5cw+TWXC60rOwCD2bxuBqubM/3AZLMPzIpm62MUYUUGaxwi
+       +LssT4F237WN88Lu4g5vqi8=;
+ARC-Authentication-Results: i=2; test.ex;
+     iprev=fail;
+     auth=pass (PLAIN) smtp.auth=fred@test.ex
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed; d=test.ex; s=r201803;
+     bh=52LTOZoDLUGP5RZMMrrjLkwTKuJ59wx4n3rL9RKBtgg=;
+     h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:Message-ID:Subject:
+       From:To:Content-Transfer-Encoding:Content-Type:MIME-Version:Date:Message-ID:
+       Subject:From:To;
+     b=LYAs/k3m790qXfftAVQxqHFCUkqcavgcpKnbEje3MgCmpCiYzeeusloVSjyFx6Mdo0XkN0GSZb
+       HXOCRGaJVnpU9V1QzdIqvz/I7DAyWl53XsKxl9YhsuaeuMMgPpqWpYkp0mOIo3Mtg+VdbF2DKd
+       O8BRJnqfkZkGUqMUJzdaYMU=;
+Authentication-Results: test.ex;
+     iprev=fail;
+     auth=pass (PLAIN) smtp.auth=fred@test.ex
+Received: from [127.0.0.1]
+To: a@test.ex
+From: Jeremy Harris <b@test.ex>
+Subject: another test
+Message-ID: <3885245d-3bae-66a2-7a1e-0dbceae2fb50@test.ex>
+Date: Mon, 26 Mar 2018 10:55:18 +0100
+
+This is a simple test.
+.
+??? 250
+QUIT
+??? 221
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+killdaemon
+no_stdout_check
+no_msglog_check

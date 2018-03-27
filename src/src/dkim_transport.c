@@ -151,8 +151,11 @@ if (!rc) return FALSE;
 
 /* Get signatures for headers plus spool data file */
 
-dkim->dot_stuffed = !!(save_options & topt_end_dot);
+#ifdef EXPERIMENTAL_ARC
+arc_sign_init();
+#endif
 
+dkim->dot_stuffed = !!(save_options & topt_end_dot);
 if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
 				    hdrs, dkim, &errstr)))
   if (!(rc = dkt_sign_fail(dkim, &errno)))
@@ -263,6 +266,10 @@ if (!rc)
   save_errno = errno;
   goto CLEANUP;
   }
+
+#ifdef EXPERIMENTAL_ARC
+arc_sign_init();
+#endif
 
 /* Feed the file to the goats^W DKIM lib */
 

@@ -93,6 +93,7 @@ extern void    acl_var_write(uschar *, uschar *, void *);
 extern void   *arc_ams_setup_sign_bodyhash(void);
 extern const uschar *arc_header_feed(gstring *, BOOL);
 extern gstring *arc_sign(const uschar *, gstring *, uschar **);
+extern void     arc_sign_init(void);
 extern const uschar *acl_verify_arc(void);
 #endif
 
