@@ -631,6 +631,7 @@ arc_ams_setup_vfy_bodyhash(arc_line * ams)
 int canon_head, canon_body;
 long bodylen;
 
+if (!ams->c.data) ams->c.data = US"simple";	/* RFC 6376 (DKIM) default */
 pdkim_cstring_to_canons(ams->c.data, ams->c.len, &canon_head, &canon_body);
 bodylen = ams->l.data
 	? strtol(CS string_copyn(ams->l.data, ams->l.len), NULL, 10) : -1;
@@ -771,10 +772,10 @@ for(inst = 0; as; as = as->next)
      || arc_cv_match(as->hdr_as, US"fail")
      )
     {
-    arc_state_reason = string_sprintf("i=%d fail"
+    arc_state_reason = string_sprintf("i=%d"
       " (cv, sequence or missing header)", as->instance);
-    DEBUG(D_acl) debug_printf("ARC %s\n", arc_state_reason);
-    ret = US"fail";
+    DEBUG(D_acl) debug_printf("ARC chain fail at %s\n", arc_state_reason);
+    return US"fail";
     }
 
   /* Evaluate the oldest-pass AMS validation while we're here.
@@ -1102,8 +1103,7 @@ return r;
 
 
 /* Walk the given headers strings identifying each header, and construct
-a reverse-order list.  Also parse ARC-chain headers and build the chain
-struct, retaining pointers into the string.
+a reverse-order list.
 */
 
 static hdr_rlist *
@@ -1486,6 +1486,14 @@ return pdkim_set_bodyhash(&dkim_sign_ctx,
 
 
 
+void
+arc_sign_init(void)
+{
+memset(&arc_sign_ctx, 0, sizeof(arc_sign_ctx));
+}
+
+
+
 /* A "normal" header line, identified by DKIM processing.  These arrive before
 the call to arc_sign(), which carries any newly-created DKIM headers - and
 those go textually before the normal ones in the message.
@@ -1551,12 +1559,8 @@ if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
 
 DEBUG(D_transport) debug_printf("ARC: sign for %s\n", identity);
 
-/*
-- scan headers for existing ARC chain & A-R (with matching system-identfier)
-  - paniclog & skip on problems (no A-R)
-*/
-
-/* Make an rlist of any new DKIM headers, then add the "normals" rlist to it */
+/* Make an rlist of any new DKIM headers, then add the "normals" rlist to it.
+Then scan the list for an A-R header. */
 
 string_from_gstring(sigheaders);
 if ((rheaders = arc_sign_scan_headers(&arc_sign_ctx, sigheaders)))
@@ -1568,22 +1572,34 @@ if ((rheaders = arc_sign_scan_headers(&arc_sign_ctx, sigheaders)))
   }
 else
   rheaders = headers_rlist;
+
 /* Finally, build a normal-order headers list */
 /*XXX only needed for hunt-the-AR? */
-{
-header_line * hnext = NULL;
-for (; rheaders; hnext = rheaders->h, rheaders = rheaders->prev)
-  rheaders->h->next = hnext;
-headers = hnext;
-}
-
-instance = arc_sign_ctx.arcset_chain_last ? arc_sign_ctx.arcset_chain_last->instance + 1 : 1;
+  {
+  header_line * hnext = NULL;
+  for (; rheaders; hnext = rheaders->h, rheaders = rheaders->prev)
+    rheaders->h->next = hnext;
+  headers = hnext;
+  }
 
 if (!(arc_sign_find_ar(headers, identity, &ar)))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "ARC: no Authentication-Results header for signing");
   return sigheaders ? sigheaders : string_get(0);
   }
+
+/* We previously built the data-struct for the existing ARC chain, if any, using a headers
+feed from the DKIM module.  Use that to give the instance number for the ARC set we are
+about to build. */
+
+DEBUG(D_transport)
+  if (arc_sign_ctx.arcset_chain_last)
+    debug_printf("ARC: existing chain highest instance: %d\n",
+      arc_sign_ctx.arcset_chain_last->instance);
+  else
+    debug_printf("ARC: no existing chain\n");
+
+instance = arc_sign_ctx.arcset_chain_last ? arc_sign_ctx.arcset_chain_last->instance + 1 : 1;
 
 /*
 - Generate AAR
@@ -1732,6 +1748,8 @@ if (arc_state)
     if (sender_host_address)
       g = string_append(g, 2, US" smtp.client-ip=", sender_host_address);
     }
+  else if (arc_state_reason)
+    g = string_append(g, 3, US" (", arc_state_reason, US")");
   DEBUG(D_acl) debug_printf("ARC:  authres '%.*s'\n",
 		  g->ptr - start - 3, g->s + start + 3);
   }

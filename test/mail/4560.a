@@ -192,7 +192,7 @@ This is a generic mailinglist footer
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
 	iprev=pass (localhost);
-	arc=fail (i=3) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+	arc=fail (i=3 (cv, sequence or missing header))
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
@@ -321,7 +321,7 @@ Authentication-Results: test.ex;
 	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;
 	dkim=fail (body hash mismatch; body probably modified in transit)
 		 header.d=convivian.com header.s=default header.a=rsa-sha256;
-	arc=fail (i=2) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1
+	arc=fail (i=2 (cv, sequence or missing header))
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)
