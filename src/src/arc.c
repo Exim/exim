@@ -1239,7 +1239,7 @@ else
 if (  (errstr = exim_dkim_signing_init(privkey, &sctx))
    || (errstr = exim_dkim_sign(&sctx, hm, &hhash, sig)))
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "ARC: %s signing: %s\n", why, errstr);
+  log_write(0, LOG_MAIN, "ARC: %s signing: %s\n", why, errstr);
   return FALSE;
   }
 return TRUE;
@@ -1550,12 +1550,12 @@ selector = string_nextinlist(&signspec, &sep, NULL, 0);
 if (  !*identity | !*selector
    || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0)) || !*privkey)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "ARC: bad signing-specification (%s)",
+  log_write(0, LOG_MAIN, "ARC: bad signing-specification (%s)",
     !*identity ? "identity" : !*selector ? "selector" : "private-key");
-  return NULL;
+  return sigheaders ? sigheaders : string_get(0);
   }
 if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
-  return NULL;
+  return sigheaders ? sigheaders : string_get(0);
 
 DEBUG(D_transport) debug_printf("ARC: sign for %s\n", identity);
 
@@ -1584,7 +1584,7 @@ else
 
 if (!(arc_sign_find_ar(headers, identity, &ar)))
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "ARC: no Authentication-Results header for signing");
+  log_write(0, LOG_MAIN, "ARC: no Authentication-Results header for signing");
   return sigheaders ? sigheaders : string_get(0);
   }
 
