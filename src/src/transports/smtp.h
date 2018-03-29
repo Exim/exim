@@ -32,6 +32,7 @@ typedef struct {
 #ifdef SUPPORT_DANE
   uschar *hosts_try_dane;
   uschar *hosts_require_dane;
+  uschar *dane_require_tls_ciphers;
 #endif
   uschar *hosts_try_fastopen;
 #ifndef DISABLE_PRDR

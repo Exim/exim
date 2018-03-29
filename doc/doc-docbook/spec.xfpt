@@ -23941,6 +23941,24 @@ For testing purposes, this value can be overridden by the &%-oB%& command line
 option.
 
 
+.new
+.option dane_require_tls_ciphers smtp string&!! unset
+.cindex "TLS" "requiring specific ciphers for DANE"
+.cindex "cipher" "requiring specific"
+.cindex DANE "TLS ciphers"
+This option may be used to override &%tls_require_ciphers%& for connections
+where DANE has been determined to be in effect.
+If not set, then &%tls_require_ciphers%& will be used.
+Normal SMTP delivery is not able to make strong demands of TLS cipher
+configuration, because delivery will fall back to plaintext.  Once DANE has
+been determined to be in effect, there is no plaintext fallback and making the
+TLS cipherlist configuration stronger will increase security, rather than
+counter-intuitively decreasing it.
+If the option expands to be empty or is forced to fail, then it will
+be treated as unset and &%tls_require_ciphers%& will be used instead.
+.wen
+
+
 .option data_timeout smtp time 5m
 This sets a timeout for the transmission of each block in the data portion of
 the message. As a result, the overall timeout for a message depends on the size

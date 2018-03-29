@@ -1681,7 +1681,7 @@ else
 			1, 0))
 	 || (rc = dane_verify_crt_raw(s, certlist, lsize,
 			gnutls_certificate_type_get(state->session),
-			r, 0, 
+			r, 0,
 # ifdef GNUTLS_BROKEN_DANE_VALIDATION
 			usage == (1 << DANESSL_USAGE_DANE_EE)
 			? DANE_VFLAG_ONLY_CHECK_EE_USAGE : 0,
@@ -2260,6 +2260,7 @@ smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tb->options_block;
 int rc;
 exim_gnutls_state_st * state = NULL;
+uschar *cipher_list = NULL;
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
   verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
@@ -2269,9 +2270,26 @@ BOOL request_ocsp = require_ocsp ? TRUE
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
 
+#ifdef SUPPORT_DANE
+if (ob->dane_require_tls_ciphers)
+  {
+  /* not using expand_check_tlsvar because not yet in state */
+  if (!expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
+      &cipher_list, errstr))
+    return DEFER;
+  if (cipher_list && *cipher_list)
+    cipher_list = ob->dane_require_tls_ciphers;
+  else
+    cipher_list = ob->tls_require_ciphers;
+  }
+#endif
+
+if (!cipher_list)
+  cipher_list = ob->tls_require_ciphers;
+
 if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
     ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
-    ob->tls_require_ciphers, &state, errstr)) != OK)
+    cipher_list, &state, errstr)) != OK)
   return rc;
 
   {
