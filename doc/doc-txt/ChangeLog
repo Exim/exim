@@ -187,6 +187,9 @@ JH/35 Cutthrough: for a final-dot response timeout (and nonunderstood responses)
       in defer=pass mode supply a 450 to the initiator.  Previously the message
       would be spooled.
 
+PP/02 DANE: add dane_require_tls_ciphers SMTP Transport option; if unset,
+      tls_require_ciphers is used as before.
+
 
 Exim version 4.90
 -----------------
