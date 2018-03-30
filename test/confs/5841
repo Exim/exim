@@ -31,6 +31,7 @@ begin routers
 client:
   driver =		dnslookup
   condition =		${if eq {SERVER}{}}
+  ignore_target_hosts = <; 0::0/0
   dnssec_request_domains = *
   self =		send
   transport =		send_to_server
