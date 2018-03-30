@@ -14,6 +14,7 @@ Version 4.91
 
  2. DANE is now supported under GnuTLS version 3.0.0 or later.  Both GnuTLS and
     OpenSSL versions are moved to mainline support from Experimental.
+    New SMTP transport option "dane_require_tls_ciphers".
 
  3. Feature macros for the compiled-in set of malware scanner interfaces.
 

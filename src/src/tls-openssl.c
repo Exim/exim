@@ -904,7 +904,7 @@ We do not free the stack since it could be needed a second time for
 SNI handling.
 
 Separately we might try to replace using OCSP_basic_verify() - which seems to not
-be a public interface into the OpenSSL library (there's no manual entry) - 
+be a public interface into the OpenSSL library (there's no manual entry) -
 But what with?  We also use OCSP_basic_verify in the client stapling callback.
 And there we NEED it; we must verify that status... unless the
 library does it for us anyway?  */
@@ -2300,8 +2300,23 @@ if (rc != OK) return rc;
 tls_out.certificate_verified = FALSE;
 client_verify_callback_called = FALSE;
 
-if (!expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
-    &expciphers, errstr))
+expciphers = NULL;
+#ifdef SUPPORT_DANE
+if (tlsa_dnsa)
+  {
+  /* We fall back to tls_require_ciphers if unset, empty or forced failure, but
+  other failures should be treated as problems. */
+  if (ob->dane_require_tls_ciphers &&
+      !expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
+        &expciphers, errstr))
+    return FAIL;
+  if (expciphers && *expciphers == '\0')
+    expciphers = NULL;
+  }
+#endif
+if (!expciphers &&
+    !expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
+      &expciphers, errstr))
   return FAIL;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they

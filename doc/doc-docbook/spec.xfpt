@@ -23913,6 +23913,24 @@ For testing purposes, this value can be overridden by the &%-oB%& command line
 option.
 
 
+.new
+.option dane_require_tls_ciphers smtp string&!! unset
+.cindex "TLS" "requiring specific ciphers for DANE"
+.cindex "cipher" "requiring specific"
+.cindex DANE "TLS ciphers"
+This option may be used to override &%tls_require_ciphers%& for connections
+where DANE has been determined to be in effect.
+If not set, then &%tls_require_ciphers%& will be used.
+Normal SMTP delivery is not able to make strong demands of TLS cipher
+configuration, because delivery will fall back to plaintext.  Once DANE has
+been determined to be in effect, there is no plaintext fallback and making the
+TLS cipherlist configuration stronger will increase security, rather than
+counter-intuitively decreasing it.
+If the option expands to be empty or is forced to fail, then it will
+be treated as unset and &%tls_require_ciphers%& will be used instead.
+.wen
+
+
 .option data_timeout smtp time 5m
 This sets a timeout for the transmission of each block in the data portion of
 the message. As a result, the overall timeout for a message depends on the size
@@ -28068,8 +28086,7 @@ that DNS lookups they do for the server have not been tampered with.  The domain
 to this server, its A record, its TLSA record and any associated CNAME records must all be covered by
 DNSSEC.
 2) add TLSA DNS records.  These say what the server certificate for a TLS connection should be.
-3) offer a server certificate, or certificate chain, in TLS connections which is traceable to the one
-defined by (one of?) the TSLA records
+3) offer a server certificate, or certificate chain, in TLS connections which is is anchored by one of the TLSA records.
 
 There are no changes to Exim specific to server-side operation of DANE.
 Support for client-side operation of DANE can be included at compile time by defining SUPPORT_DANE=yes
@@ -28124,8 +28141,9 @@ This modification of hosts_request_ocsp is only done if it has the default value
 those who use &%hosts_require_ocsp%&, should consider the interaction with DANE in their OCSP settings.
 
 
-For client-side DANE there are two new smtp transport options, &%hosts_try_dane%& and &%hosts_require_dane%&.
-The latter variant will result in failure if the target host is not DNSSEC-secured.
+For client-side DANE there are three new smtp transport options, &%hosts_try_dane%&, &%hosts_require_dane%&
+and &%dane_require_tls_ciphers%&.
+The require variant will result in failure if the target host is not DNSSEC-secured.
 
 DANE will only be usable if the target host has DNSSEC-secured MX, A and TLSA records.
 
@@ -28133,6 +28151,14 @@ A TLSA lookup will be done if either of the above options match and the host-loo
 If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
 will be required for the host.  If it does not, the host will not
 be used; there is no fallback to non-DANE or non-TLS.
+
+If DANE is requested and usable, then the TLS cipher list configuration
+prefers to use the option &%dane_require_tls_ciphers%& and falls
+back to &%tls_require_ciphers%& only if that is unset.
+This lets you configure "decent crypto" for DANE and "better than nothing
+crypto" as the default.  Note though that while GnuTLS lets the string control
+which versions of TLS/SSL will be negotiated, OpenSSL does not and you're
+limited to ciphersuite constraints.
 
 If DANE is requested and useable (see above) the following transport options are ignored:
 .code
