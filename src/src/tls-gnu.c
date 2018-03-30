@@ -2271,16 +2271,14 @@ BOOL request_ocsp = require_ocsp ? TRUE
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
 
 #ifdef SUPPORT_DANE
-if (ob->dane_require_tls_ciphers)
+if (tlsa_dnsa && ob->dane_require_tls_ciphers)
   {
   /* not using expand_check_tlsvar because not yet in state */
   if (!expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
       &cipher_list, errstr))
     return DEFER;
-  if (cipher_list && *cipher_list)
-    cipher_list = ob->dane_require_tls_ciphers;
-  else
-    cipher_list = ob->tls_require_ciphers;
+  cipher_list = cipher_list && *cipher_list
+    ? ob->dane_require_tls_ciphers : ob->tls_require_ciphers;
   }
 #endif
 
