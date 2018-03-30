@@ -5,6 +5,15 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim 4.next
+----------
+
+JH/01 Remove code calling the customisable local_scan function, unless a new
+      definition "HAVE_LOCAL_SCAN=yes" is present in the Local/Makefile.
+
+JH/02 Bug 1007: Avoid doing logging from signal-handlers, as that can result in
+      non-signal-safe funxtions being used.
+
 Since Exim version 4.90
 -----------------------
 

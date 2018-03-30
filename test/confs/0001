@@ -95,7 +95,6 @@ no_local_from_check
 local_from_prefix = *-
 local_from_suffix = =*
 local_interfaces =
-local_scan_timeout = 10s
 local_sender_retain
 localhost_number = "3 "
 log_selector =  \

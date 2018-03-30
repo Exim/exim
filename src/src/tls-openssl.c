@@ -2469,7 +2469,16 @@ if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
 		  MIN(ssl_xfer_buffer_size, lim));
 error = SSL_get_error(server_ssl, inbytes);
-alarm(0);
+if (smtp_receive_timeout > 0) alarm(0);
+
+if (had_command_timeout)		/* set by signal handler */
+  smtp_command_timeout_exit();		/* does not return */
+if (had_command_sigterm)
+  smtp_command_sigterm_exit();
+if (had_data_timeout)
+  smtp_data_timeout_exit();
+if (had_data_sigint)
+  smtp_data_sigint_exit();
 
 /* SSL_ERROR_ZERO_RETURN appears to mean that the SSL session has been
 closed down, not that the socket itself has been closed down. Revert to

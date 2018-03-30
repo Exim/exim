@@ -33,8 +33,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 End of script
 accept: condition test succeeded in ACL "chk_data"
 end of ACL "chk_data": ACCEPT
-calling local_scan(); timeout=300
-local_scan() returned 0 NULL
  ┌considering: ${tod_full}
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000

@@ -427,6 +427,53 @@ log_write(L_smtp_incomplete_transaction, LOG_MAIN|LOG_SENDER|LOG_RECIPIENTS,
 
 
 
+void
+smtp_command_timeout_exit(void)
+{
+log_write(L_lost_incoming_connection,
+	  LOG_MAIN, "SMTP command timeout on%s connection from %s",
+	  tls_in.active >= 0 ? " TLS" : "", host_and_ident(FALSE));
+if (smtp_batched_input)
+  moan_smtp_batch(NULL, "421 SMTP command timeout"); /* Does not return */
+smtp_notquit_exit(US"command-timeout", US"421",
+  US"%s: SMTP command timeout - closing connection",
+  smtp_active_hostname);
+exim_exit(EXIT_FAILURE, US"receiving");
+}
+
+void
+smtp_command_sigterm_exit(void)
+{
+log_write(0, LOG_MAIN, "%s closed after SIGTERM", smtp_get_connection_info());
+if (smtp_batched_input)
+  moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
+smtp_notquit_exit(US"signal-exit", US"421",
+  US"%s: Service not available - closing connection", smtp_active_hostname);
+exim_exit(EXIT_FAILURE, US"receiving");
+}
+
+void
+smtp_data_timeout_exit(void)
+{
+log_write(L_lost_incoming_connection,
+  LOG_MAIN, "SMTP data timeout (message abandoned) on connection from %s F=<%s>",
+  sender_fullhost ? sender_fullhost : US"local process", sender_address);
+receive_bomb_out(US"data-timeout", US"SMTP incoming data timeout");
+/* Does not return */
+}
+
+void
+smtp_data_sigint_exit(void)
+{
+log_write(0, LOG_MAIN, "%s closed after %s",
+  smtp_get_connection_info(), had_data_sigint == SIGTERM ? "SIGTERM":"SIGINT");
+receive_bomb_out(US"signal-exit",
+  US"Service not available - SIGTERM or SIGINT received");
+/* Does not return */
+}
+
+
+
 /* Refill the buffer, and notify DKIM verification code.
 Return false for error or EOF.
 */
@@ -443,18 +490,28 @@ if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 
 rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE, lim));
 save_errno = errno;
-alarm(0);
+if (smtp_receive_timeout > 0) alarm(0);
 if (rc <= 0)
   {
   /* Must put the error text in fixed store, because this might be during
   header reading, where it releases unused store above the header. */
   if (rc < 0)
     {
+    if (had_command_timeout)		/* set by signal handler */
+      smtp_command_timeout_exit();	/* does not return */
+    if (had_command_sigterm)
+      smtp_command_sigterm_exit();
+    if (had_data_timeout)
+      smtp_data_timeout_exit();
+    if (had_data_sigint)
+      smtp_data_sigint_exit();
+
     smtp_had_error = save_errno;
     smtp_read_error = string_copy_malloc(
       string_sprintf(" (error: %s)", strerror(save_errno)));
     }
-  else smtp_had_eof = 1;
+  else
+    smtp_had_eof = 1;
   return FALSE;
   }
 #ifndef DISABLE_DKIM
@@ -916,16 +973,7 @@ Returns:  nothing
 static void
 command_timeout_handler(int sig)
 {
-sig = sig;    /* Keep picky compilers happy */
-log_write(L_lost_incoming_connection,
-          LOG_MAIN, "SMTP command timeout on%s connection from %s",
-          (tls_in.active >= 0)? " TLS" : "",
-          host_and_ident(FALSE));
-if (smtp_batched_input)
-  moan_smtp_batch(NULL, "421 SMTP command timeout");  /* Does not return */
-smtp_notquit_exit(US"command-timeout", US"421",
-  US"%s: SMTP command timeout - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE, US"receiving");
+had_command_timeout = sig;
 }
 
 
@@ -943,13 +991,7 @@ Returns:  nothing
 static void
 command_sigterm_handler(int sig)
 {
-sig = sig;    /* Keep picky compilers happy */
-log_write(0, LOG_MAIN, "%s closed after SIGTERM", smtp_get_connection_info());
-if (smtp_batched_input)
-  moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
-smtp_notquit_exit(US"signal-exit", US"421",
-  US"%s: Service not available - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE, US"receiving");
+had_command_sigterm = sig;
 }
 
 
@@ -1509,6 +1551,7 @@ int ptr = 0;
 smtp_cmd_list *p;
 BOOL hadnull = FALSE;
 
+had_command_timeout = 0;
 os_non_restarting_signal(SIGALRM, command_timeout_handler);
 
 while ((c = (receive_getc)(buffer_lim)) != '\n' && c != EOF)
@@ -3801,6 +3844,7 @@ cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
 
 /* Set the local signal handler for SIGTERM - it tries to end off tidily */
 
+had_command_sigterm = 0;
 os_non_restarting_signal(SIGTERM, command_sigterm_handler);
 
 /* Batched SMTP is handled in a different function. */

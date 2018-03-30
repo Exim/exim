@@ -195,7 +195,9 @@ static optionlist optionlist_config[] = {
   { "local_from_prefix",        opt_stringptr,   &local_from_prefix },
   { "local_from_suffix",        opt_stringptr,   &local_from_suffix },
   { "local_interfaces",         opt_stringptr,   &local_interfaces },
+#ifdef HAVE_LOCAL_SCAN
   { "local_scan_timeout",       opt_time,        &local_scan_timeout },
+#endif
   { "local_sender_retain",      opt_bool,        &local_sender_retain },
   { "localhost_number",         opt_stringptr,   &host_number_string },
   { "log_file_path",            opt_stringptr,   &log_file_path },

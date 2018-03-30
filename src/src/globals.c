@@ -770,6 +770,10 @@ uschar *gecos_name             = NULL;
 uschar *gecos_pattern          = NULL;
 rewrite_rule  *global_rewrite_rules = NULL;
 
+volatile sig_atomic_t had_command_timeout = 0;
+volatile sig_atomic_t had_command_sigterm = 0;
+volatile sig_atomic_t had_data_timeout    = 0;
+volatile sig_atomic_t had_data_sigint     = 0;
 uschar *headers_charset        = US HEADERS_CHARSET;
 int     header_insert_maxlen   = 64 * 1024;
 header_line  *header_last      = NULL;
@@ -853,8 +857,10 @@ uschar *local_interfaces       = US"<; ::0 ; 0.0.0.0";
 uschar *local_interfaces       = US"0.0.0.0";
 #endif
 
+#ifdef HAVE_LOCAL_SCAN
 uschar *local_scan_data        = NULL;
 int     local_scan_timeout     = 5*60;
+#endif
 BOOL    local_sender_retain    = FALSE;
 gid_t   local_user_gid         = (gid_t)(-1);
 uid_t   local_user_uid         = (uid_t)(-1);

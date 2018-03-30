@@ -8,6 +8,7 @@
 /* Code for receiving a message and setting up spool files. */
 
 #include "exim.h"
+#include <setjmp.h>
 
 #ifdef EXPERIMENTAL_DCC
 extern int dcc_ok;
@@ -27,6 +28,12 @@ static uschar *spool_name = US"";
 
 enum CH_STATE {LF_SEEN, MID_LINE, CR_SEEN};
 
+#ifdef HAVE_LOCAL_SCAN
+jmp_buf local_scan_env;		/* error-handling context for local_scan */
+unsigned had_local_scan_crash;
+unsigned had_local_scan_timeout;
+#endif
+
 
 /*************************************************
 *      Non-SMTP character reading functions      *
@@ -40,7 +47,27 @@ changing the pointer variables.) */
 int
 stdin_getc(unsigned lim)
 {
-return getc(stdin);
+int c = getc(stdin);
+
+if (had_data_timeout)
+  {
+  fprintf(stderr, "exim: timed out while reading - message abandoned\n");
+  log_write(L_lost_incoming_connection,
+            LOG_MAIN, "timed out while reading local message");
+  receive_bomb_out(US"data-timeout", NULL);   /* Does not return */
+  }
+if (had_data_sigint)
+  {
+  if (filter_test == FTEST_NONE)
+    {
+    fprintf(stderr, "\nexim: %s received - message abandoned\n",
+      had_data_sigint == SIGTERM ? "SIGTERM" : "SIGINT");
+    log_write(0, LOG_MAIN, "%s received while reading local message",
+      had_data_sigint == SIGTERM ? "SIGTERM" : "SIGINT");
+    }
+  receive_bomb_out(US"signal-exit", NULL);    /* Does not return */
+  }
+return c;
 }
 
 int
@@ -316,11 +343,13 @@ if (spool_name[0] != '\0')
 
 /* Now close the file if it is open, either as a fd or a stream. */
 
-if (data_file != NULL)
+if (data_file)
   {
   (void)fclose(data_file);
   data_file = NULL;
-} else if (data_fd >= 0) {
+  }
+else if (data_fd >= 0)
+  {
   (void)close(data_fd);
   data_fd = -1;
   }
@@ -361,37 +390,29 @@ Returns:   nothing
 static void
 data_timeout_handler(int sig)
 {
-uschar *msg = NULL;
-
-sig = sig;    /* Keep picky compilers happy */
-
-if (smtp_input)
-  {
-  msg = US"SMTP incoming data timeout";
-  log_write(L_lost_incoming_connection,
-            LOG_MAIN, "SMTP data timeout (message abandoned) on connection "
-            "from %s F=<%s>",
-            (sender_fullhost != NULL)? sender_fullhost : US"local process",
-            sender_address);
-  }
-else
-  {
-  fprintf(stderr, "exim: timed out while reading - message abandoned\n");
-  log_write(L_lost_incoming_connection,
-            LOG_MAIN, "timed out while reading local message");
-  }
-
-receive_bomb_out(US"data-timeout", msg);   /* Does not return */
+had_data_timeout = sig;
 }
 
 
 
+#ifdef HAVE_LOCAL_SCAN
 /*************************************************
 *              local_scan() timeout              *
 *************************************************/
 
 /* Handler function for timeouts that occur while running a local_scan()
-function.
+function.  Posix recommends against calling longjmp() from a signal-handler,
+but the GCC manual says you can so we will, and trust that it's better than
+calling probably non-signal-safe funxtions during logging from within the
+handler, even with other compilers.
+
+See also https://cwe.mitre.org/data/definitions/745.html which also lists
+it as unsafe.
+
+This is all because we have no control over what might be written for a
+local-scan function, so cannot sprinkle had-signal checks after each
+call-site.  At least with the default "do-nothing" function we won't
+ever get here.
 
 Argument:  the signal number
 Returns:   nothing
@@ -400,11 +421,8 @@ Returns:   nothing
 static void
 local_scan_timeout_handler(int sig)
 {
-sig = sig;    /* Keep picky compilers happy */
-log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function timed out - "
-  "message temporarily rejected (size %d)", message_size);
-/* Does not return */
-receive_bomb_out(US"local-scan-timeout", US"local verification problem");
+had_local_scan_timeout = sig;
+siglongjmp(local_scan_env, 1);
 }
 
 
@@ -423,11 +441,11 @@ Returns:   nothing
 static void
 local_scan_crash_handler(int sig)
 {
-log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function crashed with "
-  "signal %d - message temporarily rejected (size %d)", sig, message_size);
-/* Does not return */
-receive_bomb_out(US"local-scan-error", US"local verification problem");
+had_local_scan_crash = sig;
+siglongjmp(local_scan_env, 1);
 }
+
+#endif /*HAVE_LOCAL_SCAN*/
 
 
 /*************************************************
@@ -444,26 +462,7 @@ Returns:   nothing
 static void
 data_sigterm_sigint_handler(int sig)
 {
-uschar *msg = NULL;
-
-if (smtp_input)
-  {
-  msg = US"Service not available - SIGTERM or SIGINT received";
-  log_write(0, LOG_MAIN, "%s closed after %s", smtp_get_connection_info(),
-    (sig == SIGTERM)? "SIGTERM" : "SIGINT");
-  }
-else
-  {
-  if (filter_test == FTEST_NONE)
-    {
-    fprintf(stderr, "\nexim: %s received - message abandoned\n",
-      (sig == SIGTERM)? "SIGTERM" : "SIGINT");
-    log_write(0, LOG_MAIN, "%s received while reading local message",
-      (sig == SIGTERM)? "SIGTERM" : "SIGINT");
-    }
-  }
-
-receive_bomb_out(US"signal-exit", msg);    /* Does not return */
+had_data_sigint = sig;
 }
 
 
@@ -1678,6 +1677,7 @@ int dmarc_up = 0;
 uschar *timestamp;
 int tslen;
 
+
 /* Release any open files that might have been cached while preparing to
 accept the message - e.g. by verifying addresses - because reading a message
 might take a fair bit of real time. */
@@ -1751,7 +1751,9 @@ received_time = message_id_tv;
 /* If SMTP input, set the special handler for timeouts. The alarm() calls
 happen in the smtp_getc() function when it refills its buffer. */
 
-if (smtp_input) os_non_restarting_signal(SIGALRM, data_timeout_handler);
+had_data_timeout = 0;
+if (smtp_input)
+  os_non_restarting_signal(SIGALRM, data_timeout_handler);
 
 /* If not SMTP input, timeout happens only if configured, and we just set a
 single timeout for the whole message. */
@@ -1764,6 +1766,7 @@ else if (receive_timeout > 0)
 
 /* SIGTERM and SIGINT are caught always. */
 
+had_data_sigint = 0;
 signal(SIGTERM, data_sigterm_sigint_handler);
 signal(SIGINT, data_sigterm_sigint_handler);
 
@@ -3633,47 +3636,70 @@ dcc_ok = 0;
 #endif
 
 
+#ifdef HAVE_LOCAL_SCAN
 /* The final check on the message is to run the scan_local() function. The
 version supplied with Exim always accepts, but this is a hook for sysadmins to
 supply their own checking code. The local_scan() function is run even when all
 the recipients have been discarded. */
-/*XXS could we avoid this for the standard case, given that few people will use it? */
 
 lseek(data_fd, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
 
 /* Arrange to catch crashes in local_scan(), so that the -D file gets
 deleted, and the incident gets logged. */
 
-os_non_restarting_signal(SIGSEGV, local_scan_crash_handler);
-os_non_restarting_signal(SIGFPE, local_scan_crash_handler);
-os_non_restarting_signal(SIGILL, local_scan_crash_handler);
-os_non_restarting_signal(SIGBUS, local_scan_crash_handler);
+if (sigsetjmp(local_scan_env, 1) == 0)
+  {
+  had_local_scan_crash = 0;
+  os_non_restarting_signal(SIGSEGV, local_scan_crash_handler);
+  os_non_restarting_signal(SIGFPE, local_scan_crash_handler);
+  os_non_restarting_signal(SIGILL, local_scan_crash_handler);
+  os_non_restarting_signal(SIGBUS, local_scan_crash_handler);
 
-DEBUG(D_receive) debug_printf("calling local_scan(); timeout=%d\n",
-  local_scan_timeout);
-local_scan_data = NULL;
+  DEBUG(D_receive) debug_printf("calling local_scan(); timeout=%d\n",
+    local_scan_timeout);
+  local_scan_data = NULL;
 
-os_non_restarting_signal(SIGALRM, local_scan_timeout_handler);
-if (local_scan_timeout > 0) alarm(local_scan_timeout);
-rc = local_scan(data_fd, &local_scan_data);
-alarm(0);
-os_non_restarting_signal(SIGALRM, sigalrm_handler);
+  had_local_scan_timeout = 0;
+  os_non_restarting_signal(SIGALRM, local_scan_timeout_handler);
+  if (local_scan_timeout > 0) alarm(local_scan_timeout);
+  rc = local_scan(data_fd, &local_scan_data);
+  alarm(0);
+  os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
-enable_dollar_recipients = FALSE;
+  enable_dollar_recipients = FALSE;
 
-store_pool = POOL_MAIN;   /* In case changed */
-DEBUG(D_receive) debug_printf("local_scan() returned %d %s\n", rc,
-  local_scan_data);
+  store_pool = POOL_MAIN;   /* In case changed */
+  DEBUG(D_receive) debug_printf("local_scan() returned %d %s\n", rc,
+    local_scan_data);
 
-os_non_restarting_signal(SIGSEGV, SIG_DFL);
-os_non_restarting_signal(SIGFPE, SIG_DFL);
-os_non_restarting_signal(SIGILL, SIG_DFL);
-os_non_restarting_signal(SIGBUS, SIG_DFL);
+  os_non_restarting_signal(SIGSEGV, SIG_DFL);
+  os_non_restarting_signal(SIGFPE, SIG_DFL);
+  os_non_restarting_signal(SIGILL, SIG_DFL);
+  os_non_restarting_signal(SIGBUS, SIG_DFL);
+  }
+else
+  {
+  if (had_local_scan_crash)
+    {
+    log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function crashed with "
+      "signal %d - message temporarily rejected (size %d)",
+      had_local_scan_crash, message_size);
+    /* Does not return */
+    receive_bomb_out(US"local-scan-error", US"local verification problem");
+    }
+  if (had_local_scan_timeout)
+    {
+    log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function timed out - "
+      "message temporarily rejected (size %d)", message_size);
+    /* Does not return */
+    receive_bomb_out(US"local-scan-timeout", US"local verification problem");
+    }
+  }
 
 /* The length check is paranoia against some runaway code, and also because
 (for a success return) lines in the spool file are read into big_buffer. */
 
-if (local_scan_data != NULL)
+if (local_scan_data)
   {
   int len = Ustrlen(local_scan_data);
   if (len > LOCAL_SCAN_MAX_RETURN) len = LOCAL_SCAN_MAX_RETURN;
@@ -3705,7 +3731,7 @@ the spool file gets corrupted. Ensure that all recipients are qualified. */
 
 if (rc == LOCAL_SCAN_ACCEPT)
   {
-  if (local_scan_data != NULL)
+  if (local_scan_data)
     {
     uschar *s;
     for (s = local_scan_data; *s != 0; s++) if (*s == '\n') *s = ' ';
@@ -3798,6 +3824,7 @@ the message to be abandoned. */
 
 signal(SIGTERM, SIG_IGN);
 signal(SIGINT, SIG_IGN);
+#endif	/* HAVE_LOCAL_SCAN */
 
 
 /* Ensure the first time flag is set in the newly-received message. */
@@ -4328,9 +4355,11 @@ starting. */
 
 if (blackholed_by)
   {
-  const uschar *detail = local_scan_data
-    ? string_printing(local_scan_data)
-    : string_sprintf("(%s discarded recipients)", blackholed_by);
+  const uschar *detail =
+#ifdef HAVE_LOCAL_SCAN
+    local_scan_data ? string_printing(local_scan_data) :
+#endif
+    string_sprintf("(%s discarded recipients)", blackholed_by);
   log_write(0, LOG_MAIN, "=> blackhole %s%s", detail, blackhole_log_msg);
   log_write(0, LOG_MAIN, "Completed");
   message_id[0] = 0;
