@@ -5,15 +5,15 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
-Since Exim version 4.90
------------------------
+Exim version 4.91
+-----------------
 
 GF/01 DEFER rather than ERROR on redis cluster MOVED response.
-     When redis_servers is set to a list of > 1 element, and the Redis servers
-     in that list are in cluster configuration, convert the REDIS_REPLY_ERROR
-     case of MOVED into a DEFER case instead, thus moving the query onto the
-     next server in the list. For a cluster of N elements, all N servers must
-     be defined in redis_servers.
+      When redis_servers is set to a list of > 1 element, and the Redis servers
+      in that list are in cluster configuration, convert the REDIS_REPLY_ERROR
+      case of MOVED into a DEFER case instead, thus moving the query onto the
+      next server in the list. For a cluster of N elements, all N servers must
+      be defined in redis_servers.
 
 GF/02 Catch and remove uninitialized value warning in exiqsumm
       Check for existence of @ARGV before looking at $ARGV[0]
