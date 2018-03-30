@@ -1,3 +1,9 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : invalid response from scanner: 'blah	[E]'
+### (non-internal) scanner error -> paniclog
+1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : 451 SCAN Engine error 13 Permission denied
 1999-03-02 09:44:33 10HmaY-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : timeout from scanner
 1999-03-02 09:44:33 10HmaZ-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : timeout from scanner
+### internal scanner error, no panic log
+
+******** SERVER ********
+### (non-internal) scanner error -> paniclog
+### internal scanner error, no panic log

@@ -8,9 +8,9 @@
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself
-250 OK id=10HmaZ-0005vi-00
+250 OK id=10HmbA-0005vi-00
 221 myhost.test.ex closing connection
-### clean and error | multiline response
+### scanner tmpfail -> defer
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at test.ex
 250-SIZE 52428800
@@ -21,6 +21,17 @@
 250 Accepted
 354 Enter message, ending with "." on a line by itself
 451 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at test.ex
@@ -44,7 +55,7 @@ Connection request
 >LF>FLAGS -fullfiles
 >LF>FLAGS +extra
 >LF>200 FLAGS OK
-<SCAN TESTSUITE/spool/scan/10HmaZ-0005vi-00
+<SCAN TESTSUITE/spool/scan/10HmbA-0005vi-00
 >LF>210 SCAN DATA
 >LF>/bin/clean1\x09[+]
 >LF>/bin/clean2\x09[+]
@@ -52,24 +63,36 @@ Connection request
 <QUIT
 Expected EOF read from client
 End of script
-### clean and error | multiline response
+### scanner tmpfail -> defer
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
 <SCAN TESTSUITE/spool/scan/10HmaX-0005vi-00
 >LF>210 SCAN DATA
->LF>/bin/ok\x09[+]
->LF>/bin/error\x09[E]0.0
->LF>/bin/infected\x09[L]0.0\x090 This is not even EICAR!
->LF>200 SCAN OK
-Unexpected EOF read from client
+>LF>/bin/error\x09[E]0.0\x09Error 13 Permission\\ denied
+>LF>451 SCAN Engine error 13 Permission denied
+<QUIT
+Expected EOF read from client
+End of script
 Listening on TESTSUITE/eximdir/avast_sock ... 
 Connection request
 >LF>220 ready
 <SCAN TESTSUITE/spool/scan/10HmaY-0005vi-00
 >LF>210 SCAN DATA
 >LF>/bin/clean\x09[+]
->LF>v\\ i\\ a\\ r\\ u\\ s\x09[L]9.9\x099 This ist not even an EICAR test virus.
+>LF>v\\ i\\ a\\ r\\ u\\ s\x09[L]9.0\x090 This\\ is\\ not\\ even\\ an\\ EICAR\\ test\\ virus.
+>LF>200 SCAN OK
+<QUIT
+Expected EOF read from client
+End of script
+Listening on TESTSUITE/eximdir/avast_sock ... 
+Connection request
+>LF>220 ready
+<SCAN TESTSUITE/spool/scan/10HmaZ-0005vi-00
+>LF>210 SCAN DATA
+>LF>/bin/clean\x09[+]
+>LF>/bin/error\x09[E]0.0\x09Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
+>LF>v\\ i\\ a\\ r\\ u\\ s\x09[L]9.0\x090 This\\ is\\ not\\ even\\ an\\ EICAR\\ test\\ virus.
 >LF>200 SCAN OK
 <QUIT
 Expected EOF read from client

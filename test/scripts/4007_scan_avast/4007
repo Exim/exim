@@ -28,13 +28,13 @@ quit
 ****
 #
 #
-#
+### (non-internal) scanner error -> paniclog
 server DIR/eximdir/avast_sock
 >LF>220 ready
 <SCAN
 >LF>210 SCAN DATA
->LF>blah	[E]
->LF>200 SCAN OK
+>LF>blah	[E]0.0	Error 13 Permission\\ denied
+>LF>451 SCAN Engine error 13 Permission denied
 <QUIT
 *eof
 ****
@@ -59,7 +59,7 @@ server DIR/eximdir/avast_sock
 >LF>220 ready
 <SCAN
 >LF>210 SCAN DATA
->LF>b\\ l\\ a\\ h	[L]9.9	9 VNAME
+>LF>b\\ l\\ a\\ h	[L]9.0	0 VNAME
 >LF>200 SCAN OK
 <QUIT
 *eof
@@ -114,6 +114,32 @@ rcpt to:<userx@test.ex>
 data
 Date: Fri, 17 Dec 2004 14:35:01 +0100
 Subject: message should be accepted despite timeout
+
+.
+quit
+****
+#
+#
+### internal scanner error, no panic log
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>blah	[E]0.0	Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: defer this one, the scanner had an error
 
 .
 quit

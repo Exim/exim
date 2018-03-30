@@ -1,7 +1,7 @@
 ### clean |  multiline response
-### clean and error | multiline response
-1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : invalid response from scanner: '/bin/error	[E]0.0'
+### scanner tmpfail -> defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 malware acl condition: avast TESTSUITE/eximdir/avast_sock : 451 SCAN Engine error 13 Permission denied
 
 ******** SERVER ********
 ### clean |  multiline response
-### clean and error | multiline response
+### scanner tmpfail -> defer

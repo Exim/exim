@@ -31,15 +31,13 @@ quit
 ****
 #
 #
-### clean and error | multiline response
+### scanner tmpfail -> defer
 server DIR/eximdir/avast_sock
 >LF>220 ready
 <SCAN
 >LF>210 SCAN DATA
->LF>/bin/ok	[+]
->LF>/bin/error	[E]0.0
->LF>/bin/infected	[L]0.0	0 This is not even EICAR!
->LF>200 SCAN OK
+>LF>/bin/error	[E]0.0	Error 13 Permission\\ denied
+>LF>451 SCAN Engine error 13 Permission denied
 <QUIT
 *eof
 ****
@@ -59,13 +57,41 @@ quit
 ****
 #
 #
-# clean and infected | multiline response
+# clean and infected -> reject
 server DIR/eximdir/avast_sock
 >LF>220 ready
 <SCAN
 >LF>210 SCAN DATA
 >LF>/bin/clean	[+]
->LF>v\\ i\\ a\\ r\\ u\\ s	[L]9.9	9 This ist not even an EICAR test virus.
+>LF>v\\ i\\ a\\ r\\ u\\ s	[L]9.0	0 This\\ is\\ not\\ even\\ an\\ EICAR\\ test\\ virus.
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT="/defer_ok"
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****
+#
+#
+# clean, error, infected -> reject
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>/bin/clean	[+]
+>LF>/bin/error	[E]0.0	Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
+>LF>v\\ i\\ a\\ r\\ u\\ s	[L]9.0	0 This\\ is\\ not\\ even\\ an\\ EICAR\\ test\\ virus.
 >LF>200 SCAN OK
 <QUIT
 *eof

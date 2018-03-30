@@ -31895,7 +31895,12 @@ $ socat UNIX:/var/run/avast/scan.sock STDIO:
     PACK
 .endd
 
-Only the first virus detected will be reported.
+A paniclog entry is logged and the message is deferred (except the
+malware condition uses "defer_ok") if the scanner returns a tmpfail
+(e.g. on license issues, or permission problems). If the scanner can't
+scan a file for internal reasons (e.g. decompression bomb), this is
+treated as an infection and malware_name is set to the error message.
+We do this err on the safe side.
 
 
 .vitem &%aveserver%&
