@@ -12,6 +12,7 @@ If you want to implement your own version, you should copy this file to, say
 Local/local_scan.c, and edit the copy. To use your version instead of the
 default, you must set
 
+HAVE_LOCAL_SCAN=yes
 LOCAL_SCAN_SOURCE=Local/local_scan.c
 
 in your Local/Makefile. This makes it easy to copy your version for use with
