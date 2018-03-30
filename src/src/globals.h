@@ -492,6 +492,10 @@ extern uschar *gecos_name;             /* To be expanded when pattern matches */
 extern uschar *gecos_pattern;          /* Pattern to match */
 extern rewrite_rule *global_rewrite_rules;  /* Chain of rewriting rules */
 
+extern volatile sig_atomic_t had_command_timeout;   /* Alarm sighandler called */
+extern volatile sig_atomic_t had_command_sigterm;   /* TERM  sighandler called */
+extern volatile sig_atomic_t had_data_timeout;      /* Alarm sighandler called */
+extern volatile sig_atomic_t had_data_sigint;       /* TERM/INT  sighandler called */
 extern int     header_insert_maxlen;   /* Max for inserting headers */
 extern int     header_maxsize;         /* Max total length for header */
 extern int     header_line_maxsize;    /* Max for an individual line */
@@ -544,10 +548,12 @@ extern BOOL    local_from_check;       /* For adding Sender: (global value) */
 extern uschar *local_from_prefix;      /* Permitted prefixes */
 extern uschar *local_from_suffix;      /* Permitted suffixes */
 extern uschar *local_interfaces;       /* For forcing specific interfaces */
+#ifdef HAVE_LOCAL_SCAN
 extern uschar *local_scan_data;        /* Text returned by local_scan() */
 extern optionlist local_scan_options[];/* Option list for local_scan() */
 extern int     local_scan_options_count; /* Size of the list */
 extern int     local_scan_timeout;     /* Timeout for local_scan() */
+#endif
 extern BOOL    local_sender_retain;    /* Retain Sender: (with no From: check) */
 extern gid_t   local_user_gid;         /* As it says; may be set in routers */
 extern uid_t   local_user_uid;         /* As it says; may be set in routers */

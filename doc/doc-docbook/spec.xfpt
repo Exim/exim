@@ -32736,10 +32736,15 @@ code. The incident is logged on the main and reject logs.
 .section "Building Exim to use a local scan function" "SECID207"
 .cindex "&[local_scan()]& function" "building Exim to use"
 To make use of the local scan function feature, you must tell Exim where your
-function is before building Exim, by setting LOCAL_SCAN_SOURCE in your
+function is before building Exim, by setting
+.new
+both HAVE_LOCAL_SCAN and
+.wen
+LOCAL_SCAN_SOURCE in your
 &_Local/Makefile_&. A recommended place to put it is in the &_Local_&
 directory, so you might set
 .code
+HAVE_LOCAL_SCAN=yes
 LOCAL_SCAN_SOURCE=Local/local_scan.c
 .endd
 for example. The function must be called &[local_scan()]&. It is called by

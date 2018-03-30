@@ -231,7 +231,9 @@ host_lookup_failed = FALSE;
 interface_address = NULL;
 interface_port = 0;
 local_error_message = FALSE;
+#ifdef HAVE_LOCAL_SCAN
 local_scan_data = NULL;
+#endif
 max_received_linelength = 0;
 message_linecount = 0;
 received_protocol = NULL;
@@ -589,8 +591,10 @@ for (;;)
       sender_local = TRUE;
     else if (Ustrcmp(big_buffer, "-localerror") == 0)
       local_error_message = TRUE;
+#ifdef HAVE_LOCAL_SCAN
     else if (Ustrncmp(p, "ocal_scan ", 10) == 0)
       local_scan_data = string_copy(big_buffer + 12);
+#endif
     break;
 
     case 'm':

@@ -206,8 +206,6 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
 >>
-calling local_scan(); timeout=300
-local_scan() returned 0 NULL
 Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
@@ -389,8 +387,6 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
   X-Warning: This is a test blacklisting message
 >>
-calling local_scan(); timeout=300
-local_scan() returned 0 NULL
 Writing spool header file: TESTSUITE/spool//input//hdr.pppp
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0

@@ -95,8 +95,6 @@ check set acl_m9 = $acl_m9; data
                  = ; rcpt; data
 accept: condition test succeeded in ACL "data"
 end of ACL "data": ACCEPT
-calling local_scan(); timeout=300
-local_scan() returned 0 NULL
 LOG: MAIN
   <= x@y H=(something) [V4NET.0.0.0] P=esmtp S=sss
 SMTP>> 250 OK id=10HmaX-0005vi-00

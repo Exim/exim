@@ -71,6 +71,7 @@ Do not put spaces between # and the 'define'.
 #define FIXED_NEVER_USERS         "root"
 
 #define HAVE_CRYPT16
+#define HAVE_LOCAL_SCAN
 #define HAVE_SA_LEN
 #define HEADERS_CHARSET           "ISO-8859-1"
 #define HEADER_ADD_BUFFER_SIZE    (8192 * 4)
