@@ -1563,6 +1563,7 @@ $munges =
                   dkim_(canon|domain|private_key|selector|sign_headers|strict|hash|identity)
                   |gnutls_require_(kx|mac|protocols)
                   |hosts_(requ(est|ire)|try)_(dane|ocsp)
+		  |dane_require_tls_ciphers
                   |hosts_(avoid|nopass|noproxy|require|verify_avoid)_tls
                   |socks_proxy
                   |tls_[^ ]*
