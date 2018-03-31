@@ -1,0 +1,30 @@
+# DANE client: ciphers option
+#
+gnutls
+exim -DSERVER=server -bd -oX PORT_D
+****
+
+### Baseline, dane unused
+exim -odf CALLER@localhost.test.ex
+Testing
+****
+### Baseline, dane used
+exim -odf CALLER@dane256ee.test.ex
+Testing
+****
+#
+#
+### Dane cipher specified, dane unused
+# Since dane unused, should get the same cipher as the baseline
+exim -odf -DOPT=NONE:+VERS-TLS-ALL:+MAC-ALL:+RSA:+CAMELLIA-256-GCM:+SIGN-ALL:+COMP-NULL CALLER@localhost.test.ex
+Testing
+****
+### Dane cipher specified, dane used
+# Should get the cipher specified here
+exim -odf -DOPT=NONE:+VERS-TLS-ALL:+MAC-ALL:+RSA:+CAMELLIA-256-GCM:+SIGN-ALL:+COMP-NULL CALLER@dane256ee.test.ex
+Testing
+****
+#
+#
+killdaemon
+no_msglog_check

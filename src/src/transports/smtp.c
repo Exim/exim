@@ -38,6 +38,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, connect_timeout) },
   { "connection_max_messages", opt_int | opt_public,
       (void *)offsetof(transport_instance, connection_max_messages) },
+# ifdef SUPPORT_DANE
+  { "dane_require_tls_ciphers", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dane_require_tls_ciphers) },
+# endif
   { "data_timeout",         opt_time,
       (void *)offsetof(smtp_transport_options_block, data_timeout) },
   { "delay_after_cutoff", opt_bool,
@@ -225,6 +229,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #ifdef SUPPORT_DANE
   .hosts_try_dane =		NULL,
   .hosts_require_dane =		NULL,
+  .dane_require_tls_ciphers =	NULL,
 #endif
   .hosts_try_fastopen =		NULL,
 #ifndef DISABLE_PRDR

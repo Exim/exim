@@ -1,0 +1,62 @@
+# Exim test configuration 5841
+# DANE/OpenSSL - ciphers option
+
+SERVER=
+OPT=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept logwrite = "rcpt ACL"
+
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
+
+tls_advertise_hosts = *
+
+# Set certificate only if server
+CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
+
+tls_certificate = ${if eq {SERVER}{server} {CDIR2/fullchain.pem}fail}
+tls_privatekey =  ${if eq {SERVER}{server} {CDIR2/server1.example.com.unlocked.key}fail}
+
+# Permit two specific ciphers
+tls_require_ciphers = ECDHE-RSA-CAMELLIA256-SHA384:ECDHE-RSA-AES256-GCM-SHA384
+
+# ----- Routers -----
+begin routers
+
+client:
+  driver =		dnslookup
+  condition =		${if eq {SERVER}{}}
+  ignore_target_hosts = <; 0::0/0
+  dnssec_request_domains = *
+  self =		send
+  transport =		send_to_server
+  errors_to =		""
+
+server:
+  driver =		redirect
+  data =		:blackhole:
+
+# ----- Transports -----
+begin transports
+
+send_to_server:
+  driver =			smtp
+  allow_localhost
+  port =			PORT_D
+  hosts_try_dane =		*
+  tls_verify_certificates =	CDIR2/ca_chain.pem
+
+  # Some commonly-available cipher, we hope
+  tls_require_ciphers =		ECDHE-RSA-AES256-GCM-SHA384
+  dane_require_tls_ciphers =	OPT
+
+# ----- Retry -----
+begin retry
+* * F,5d,10s
+
+# End

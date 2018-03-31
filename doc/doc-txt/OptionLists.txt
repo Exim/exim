@@ -149,12 +149,13 @@ current_directory                    string          unset         transports   
 daemon_smtp_ports                    string          unset         main              1.75  pluralised in 4.21
 daemon_startup_retries               int             9             main              4.52
 daemon_startup_sleep                 time            30s           main              4.52
+dane_require_tls_ciphers             string*         unset         smtp              4.91
 data                                 string          unset         redirect          4.00
 data_timeout                         time            5m            smtp
 debug_print                          string*         unset         authenticators    4.00
                                                      unset         routers           4.00
                                                      unset         transports        2.00
-debug_store                          boolean         false         main		     4.90
+debug_store                          boolean         false         main              4.90
 delay_after_cutoff                   boolean         true          smtp
 delay_warning                        time list       24h           main
 delay_warning_condition              string*         +             main              1.73
@@ -300,10 +301,12 @@ hosts_override                       boolean         false         smtp         
 hosts_randomize                      boolean         false         manualroute       4.00
                                                      false         smtp              3.14
 hosts_require_auth                   host list       unset         smtp              4.00
+hosts_require_dane                   host list       unset         smtp              4.91 (4.85 experimental)
 hosts_require_ocsp                   host list       unset         smtp              4.82 if experimental_ocsp
 hosts_require_tls                    host list       unset         smtp              3.20
 hosts_treat_as_local                 domain list     unset         main              1.95
 hosts_try_auth                       host list       unset         smtp              4.00
+hosts_try_dane                       host list       unset         smtp              4.91 (4.85 experimental)
 hosts_try_fastopen                   host list       unset         smtp              4.88
 hosts_try_prdr                       host list       unset         smtp              4.82 if experimental_prdr
 ibase_servers                        string          unset         main              4.23
