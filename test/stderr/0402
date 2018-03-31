@@ -133,8 +133,6 @@ Data file written for message 10HmaX-0005vi-00
 P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-calling local_scan(); timeout=300
-local_scan() returned 0 NULL
  ┌considering: ${tod_full}
  ├──expanding: ${tod_full}
  └─────result: Tue, 2 Mar 1999 09:44:33 +0000
