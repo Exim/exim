@@ -110,3 +110,57 @@ Subject: message should be rejected
 .
 quit
 ****
+#
+#
+# clean, error -> reject
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>/bin/clean	[+]
+>LF>/bin/error	[E]0.0	Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION= -DINSERT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be rejected
+
+.
+quit
+****
+#
+#
+# clean, error (pass_unscanned) -> accept
+server DIR/eximdir/avast_sock
+>LF>220 ready
+<SCAN
+>LF>210 SCAN DATA
+>LF>/bin/clean	[+]
+>LF>/bin/error	[E]0.0	Error 42110 The\\ file\\ is\\ a\\ decompression\\ bomb
+>LF>200 SCAN OK
+<QUIT
+*eof
+****
+#
+#
+#
+exim -odi -bs -DOPTION=pass_unscanned -DINSERT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be accepted
+
+.
+quit
+****

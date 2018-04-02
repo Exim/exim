@@ -54,6 +54,10 @@ Version 4.91
     the running exim instance. If the cluster has master/slave replication, the
     list must contain all the master and slave servers.
 
+16. Add an option to the Avast scanner interface: "pass_unscanned". This
+    allows to treat unscanned files as clean. Files may be unscanned for
+    several reasons: decompression bombs, broken archives.
+
 
 Version 4.90
 ------------

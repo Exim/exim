@@ -190,11 +190,11 @@ JH/35 Cutthrough: for a final-dot response timeout (and nonunderstood responses)
 PP/02 DANE: add dane_require_tls_ciphers SMTP Transport option; if unset,
       tls_require_ciphers is used as before.
 
-HS/03 Malware Avast: Better match the Avast multiline protocol.
-      Only tmpfails from the scanner are written to the paniclog, as
-      they may require admin intervention (permission denied, license
-      issues). Other scanner errors (like decompression bombs) do not
-      cause a paniclog entry.
+HS/03 Malware Avast: Better match the Avast multiline protocol. Add
+      "pass_unscanned".  Only tmpfails from the scanner are written to
+      the paniclog, as they may require admin intervention (permission
+      denied, license issues). Other scanner errors (like decompression
+      bombs) do not cause a paniclog entry.
 
 
 Exim version 4.90

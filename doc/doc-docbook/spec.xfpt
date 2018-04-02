@@ -31858,9 +31858,7 @@ If the value of &%av_scanner%& starts with a dollar character, it is expanded
 before use.
 The usual list-parsing of the content (see &<<SECTlistconstruct>>&) applies.
 The following scanner types are supported in this release,
-.new
 though individual ones can be included or not at build time:
-.wen
 
 .vlist
 .vitem &%avast%&
@@ -31874,11 +31872,22 @@ which can be either a full path to a UNIX socket,
 or host and port specifiers separated by white space.
 The host may be a name or an IP address; the port is either a
 single number or a pair of numbers with a dash between.
-Any further options are given, on separate lines,
-to the daemon as options before the main scan command.
+A list of options may follow. These options are interpreted on the
+Exim's side of the malware scanner, or are given on separate lines to
+the daemon as options before the main scan command.
+
+.new
+.cindex &`pass_unscanned`& "avast"
+If &`pass_unscanned`&
+is set, any files the Avast scanner can't scan (e.g.
+decompression bombs, or invalid archives) are considered clean. Use with
+care.
+.wen
+
 For example:
 .code
 av_scanner = avast:/var/run/avast/scan.sock:FLAGS -fullfiles:SENSITIVITY -pup
+av_scanner = avast:/var/run/avast/scan.sock:pass_unscanned:FLAGS -fullfiles:SENSITIVITY -pup
 av_scanner = avast:192.168.2.22 5036
 .endd
 If you omit the argument, the default path
@@ -31895,13 +31904,9 @@ $ socat UNIX:/var/run/avast/scan.sock STDIO:
     PACK
 .endd
 
-A paniclog entry is logged and the message is deferred (except the
-malware condition uses "defer_ok") if the scanner returns a tmpfail
-(e.g. on license issues, or permission problems). If the scanner can't
-scan a file for internal reasons (e.g. decompression bomb), this is
-treated as an infection and malware_name is set to the error message.
-We do this err on the safe side.
-
+If the scanner returns a temporary failure (e.g. license issues, or
+permission problems), the message is deferred and a paniclog entry is
+written.  The usual &`defer_ok`& option is available.
 
 .vitem &%aveserver%&
 .cindex "virus scanners" "Kaspersky"
@@ -31952,7 +31957,7 @@ av_scanner = clamd:192.0.2.3 1234 : 192.0.2.4 1234
 If the value of av_scanner points to a UNIX socket file or contains the
 &`local`&
 option, then the ClamAV interface will pass a filename containing the data
-to be scanned, which will should normally result in less I/O happening and be
+to be scanned, which should normally result in less I/O happening and be
 more efficient.  Normally in the TCP case, the data is streamed to ClamAV as
 Exim does not assume that there is a common filesystem with the remote host.
 
