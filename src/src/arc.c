@@ -21,6 +21,8 @@
 extern pdkim_ctx * dkim_verify_ctx;
 extern pdkim_ctx dkim_sign_ctx;
 
+#define ARC_SIGN_OPT_TSTAMP	BIT(0)
+
 /******************************************************************************/
 
 typedef struct hdr_rlist {
@@ -1272,7 +1274,7 @@ return g;
 static gstring *
 arc_sign_append_ams(gstring * g, arc_ctx * ctx, int instance,
   const uschar * identity, const uschar * selector, blob * bodyhash,
-  hdr_rlist * rheaders, const uschar * privkey)
+  hdr_rlist * rheaders, const uschar * privkey, unsigned options)
 {
 uschar * s;
 gstring * hdata = NULL;
@@ -1288,11 +1290,15 @@ header_line * h = (header_line *)(al+1);
 /* Construct the to-be-signed AMS pseudo-header: everything but the sig. */
 
 ams_off = g->ptr;
-g = string_append(g, 10,
+g = string_append(g, 7,
       ARC_HDR_AMS,
       US" i=", string_sprintf("%d", instance),
       US"; a=rsa-sha256; c=relaxed; d=", identity,		/*XXX hardwired */
-      US"; s=", selector,
+      US"; s=", selector);
+if (options & ARC_SIGN_OPT_TSTAMP)
+  g = string_append(g, 2,
+      US"; t=", string_sprintf("%lu", (u_long)time(NULL)));
+g = string_append(g, 3,
       US";\r\n\tbh=", pdkim_encode_base64(bodyhash),
       US";\r\n\th=");
 
@@ -1390,7 +1396,7 @@ return US"none";
 static gstring *
 arc_sign_prepend_as(gstring * arcset_interim, arc_ctx * ctx,
   int instance, const uschar * identity, const uschar * selector, blob * ar,
-  const uschar * privkey)
+  const uschar * privkey, unsigned options)
 {
 gstring * arcset;
 arc_set * as;
@@ -1417,12 +1423,16 @@ blob sig;
 
 /* Construct the AS except for the signature */
 
-arcset = string_append(NULL, 10,
+arcset = string_append(NULL, 9,
 	  ARC_HDR_AS,
 	  US" i=", string_sprintf("%d", instance),
 	  US"; cv=", status,
 	  US"; a=rsa-sha256; d=", identity,			/*XXX hardwired */
-	  US"; s=", selector,					/*XXX same as AMS */
+	  US"; s=", selector);					/*XXX same as AMS */
+if (options & ARC_SIGN_OPT_TSTAMP)
+  arcset = string_append(arcset, 2,
+      US"; t=", string_sprintf("%lu", (u_long)time(NULL)));
+arcset = string_cat(arcset,
 	  US";\r\n\t b=;");
 
 h->slen = arcset->ptr;
@@ -1520,7 +1530,8 @@ The dkim_exim_sign() function has already been called, so will have hashed the
 message body for us so long as we requested a hash previously.
 
 Arguments:
-  signspec	Three-element colon-sep list: identity, selector, privkey
+  signspec	Three-element colon-sep list: identity, selector, privkey.
+		Optional fourth element: comma-sep list of options.
 		Already expanded
   sigheaders	Any signature headers already generated, eg. by DKIM, or NULL
   errstr	Error string
@@ -1533,7 +1544,8 @@ Return value
 gstring *
 arc_sign(const uschar * signspec, gstring * sigheaders, uschar ** errstr)
 {
-const uschar * identity, * selector, * privkey;
+const uschar * identity, * selector, * privkey, * opts, * s;
+unsigned options = 0;
 int sep = 0;
 header_line * headers;
 hdr_rlist * rheaders;
@@ -1555,6 +1567,14 @@ if (  !*identity | !*selector
   }
 if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
   return sigheaders ? sigheaders : string_get(0);
+
+if ((opts = string_nextinlist(&signspec, &sep, NULL, 0)))
+  {
+  int osep = ',';
+  while ((s = string_nextinlist(&opts, &osep, NULL, 0)))
+    if (Ustrcmp(s, "timestamps") == 0)
+      options |= ARC_SIGN_OPT_TSTAMP;
+  }
 
 DEBUG(D_transport) debug_printf("ARC: sign for %s\n", identity);
 
@@ -1617,7 +1637,7 @@ g = arc_sign_append_aar(g, &arc_sign_ctx, identity, instance, &ar);
 
 b = arc_ams_setup_sign_bodyhash();
 g = arc_sign_append_ams(g, &arc_sign_ctx, instance, identity, selector,
-      &b->bh, headers_rlist, privkey);
+      &b->bh, headers_rlist, privkey, options);
 
 /*
 - Generate AS
@@ -1632,7 +1652,8 @@ g = arc_sign_append_ams(g, &arc_sign_ctx, instance, identity, selector,
         including self (but with an empty b= in self)
 */
 
-g = arc_sign_prepend_as(g, &arc_sign_ctx, instance, identity, selector, &ar, privkey);
+g = arc_sign_prepend_as(g, &arc_sign_ctx, instance, identity, selector, &ar,
+      privkey, options);
 
 /* Finally, append the dkim headers and return the lot. */
 
