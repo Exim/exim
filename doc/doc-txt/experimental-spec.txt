@@ -798,12 +798,19 @@ Receive log lines for an ARC pass will be tagged "ARC".
 
 Signing
 --
-arc_sign = <admd-identifier> : <selector> : <privkey>
+arc_sign = <admd-identifier> : <selector> : <privkey> [ : <options> ]
 An option on the smtp transport, which constructs and prepends to the message
 an ARC set of headers.  The textually-first Authentication-Results: header
 is used as a basis (you must have added one on entry to the ADMD).
 Expanded as a whole; if unset, empty or forced-failure then no signing is done.
 If it is set, all three elements must be non-empty.
+
+The fourth element is optional, and if present consists of a comma-separated list
+of options.  The only option implemented so far is
+  timestamps    Add a t= tag to the generated AMS and AS headers, with the
+                current time.
+
+[As of writing, gmail insist that a t= tag on the AS is mandatory]
 
 Caveats:
  * There must be an Authentication-Results header, presumably added by an ACL
