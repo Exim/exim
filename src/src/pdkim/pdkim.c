@@ -792,7 +792,7 @@ pdkim_signature * sig;
 
 for (b = ctx->bodyhash; b; b = b->next)		/* Finish hashes */
   {
-  DEBUG(D_acl) debug_printf("PDKIM: finish bodyhash %d/%d/%d len %ld\n",
+  DEBUG(D_acl) debug_printf("PDKIM: finish bodyhash %d/%d/%ld len %ld\n",
 	    b->hashtype, b->canon_method, b->bodylength, b->signed_body_bytes);
   exim_sha_finish(&b->body_hash_ctx, &b->bh);
   }
