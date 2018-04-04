@@ -22,6 +22,9 @@ extern pdkim_ctx * dkim_verify_ctx;
 extern pdkim_ctx dkim_sign_ctx;
 
 #define ARC_SIGN_OPT_TSTAMP	BIT(0)
+#define ARC_SIGN_OPT_EXPIRE	BIT(1)
+
+#define ARC_SIGN_DEFAULT_EXPIRE_DELTA (60 * 60 * 24 * 30)	/* one month */
 
 /******************************************************************************/
 
@@ -86,6 +89,8 @@ typedef struct arc_ctx {
 #define HDR_AR		US"Authentication-Results:"
 #define HDRLEN_AR	23
 
+static time_t now;
+static time_t expire;
 static hdr_rlist * headers_rlist;
 static arc_ctx arc_sign_ctx = { NULL };
 
@@ -1298,7 +1303,10 @@ g = string_append(g, 7,
       US"; s=", selector);
 if (options & ARC_SIGN_OPT_TSTAMP)
   g = string_append(g, 2,
-      US"; t=", string_sprintf("%lu", (u_long)time(NULL)));
+      US"; t=", string_sprintf("%lu", (u_long)now));
+if (options & ARC_SIGN_OPT_EXPIRE)
+  g = string_append(g, 2,
+      US"; x=", string_sprintf("%lu", (u_long)expire));
 g = string_append(g, 3,
       US";\r\n\tbh=", pdkim_encode_base64(bodyhash),
       US";\r\n\th=");
@@ -1432,7 +1440,7 @@ arcset = string_append(NULL, 9,
 	  US"; s=", selector);					/*XXX same as AMS */
 if (options & ARC_SIGN_OPT_TSTAMP)
   arcset = string_append(arcset, 2,
-      US"; t=", string_sprintf("%lu", (u_long)time(NULL)));
+      US"; t=", string_sprintf("%lu", (u_long)now));
 arcset = string_cat(arcset,
 	  US";\r\n\t b=;");
 
@@ -1555,6 +1563,8 @@ int instance;
 gstring * g = NULL;
 pdkim_bodyhash * b;
 
+expire = now = 0;
+
 /* Parse the signing specification */
 
 identity = string_nextinlist(&signspec, &sep, NULL, 0);
@@ -1574,7 +1584,29 @@ if ((opts = string_nextinlist(&signspec, &sep, NULL, 0)))
   int osep = ',';
   while ((s = string_nextinlist(&opts, &osep, NULL, 0)))
     if (Ustrcmp(s, "timestamps") == 0)
+      {
       options |= ARC_SIGN_OPT_TSTAMP;
+      if (!now) now = time(NULL);
+      }
+    else if (Ustrncmp(s, "expire", 6) == 0)
+      {
+      options |= ARC_SIGN_OPT_EXPIRE;
+      if (*(s += 6) == '=')
+	if (*++s == '+')
+	  {
+	  if (!(expire = (time_t)atoi(++s)))
+	    expire = ARC_SIGN_DEFAULT_EXPIRE_DELTA;
+	  if (!now) now = time(NULL);
+	  expire += now;
+	  }
+	else
+	  expire = (time_t)atol(s);
+      else
+	{
+	if (!now) now = time(NULL);
+	expire = now + ARC_SIGN_DEFAULT_EXPIRE_DELTA;
+	}
+      }
   }
 
 DEBUG(D_transport) debug_printf("ARC: sign for %s\n", identity);
