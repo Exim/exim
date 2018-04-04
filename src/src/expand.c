@@ -1687,7 +1687,9 @@ static gstring *
 authres_iprev(gstring * g)
 {
 if (sender_host_name)
-  return string_append(g, 3, US";\n\tiprev=pass (", sender_host_name, US")");
+  return string_append(g, sender_host_address ? 5 : 3,
+    US";\n\tiprev=pass (", sender_host_name, US")",
+    US" smtp.client-ip=", sender_host_address);
 if (host_lookup_deferred)
   return string_catn(g, US";\n\tiprev=temperror", 19);
 if (host_lookup_failed)
