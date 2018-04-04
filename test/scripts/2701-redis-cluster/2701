@@ -43,7 +43,7 @@ ${lookup redis{get ${quote_redis:01t67it}}}
 #
 sleep 5
 perl
-my @pidfiles = ( "DIR/redis-cluster/node1/node1.pid", "DIR/redis-cluster/node2/" );
+my @pidfiles = ( "DIR/redis-cluster/node1/node1.pid", "DIR/redis-cluster/node2/node2.pid" );
 foreach my $pidfile (@pidfiles) {
   if ( -f $pidfile ) {
     open (my $fh, "<", $pidfile);
