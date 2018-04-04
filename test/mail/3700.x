@@ -1,9 +1,9 @@
 From ok@test.ex Tue Mar 02 09:44:33 1999
 Authentication-Results: myhost.test.ex;
-	iprev=pass (localhost);
+	iprev=pass (localhost) smtp.client-ip=127.0.0.1;
 	auth=pass (tls) x509.auth="Phil Pennock"
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtpsa (TLSv1:ke-RSA-AES256-SHA:xxx)
+	by myhost.test.ex with esmtpsa (TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256)
 	(Exim x.yz)
 	(envelope-from <ok@test.ex>)
 	id 10HmaZ-0005vi-00
