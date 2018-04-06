@@ -196,6 +196,10 @@ HS/03 Malware Avast: Better match the Avast multiline protocol. Add
       denied, license issues). Other scanner errors (like decompression
       bombs) do not cause a paniclog entry.
 
+JH/36 Fix reinitialisation of DKIM logging variable between messages.
+      Previously it was possible to log spurious information in receive log
+      lines.
+
 
 Exim version 4.90
 -----------------

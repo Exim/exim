@@ -1617,8 +1617,8 @@ int  i;
 int  rc = FAIL;
 int  msg_size = 0;
 int  process_info_len = Ustrlen(process_info);
-int  error_rc = (error_handling == ERRORS_SENDER)?
-       errors_sender_rc : EXIT_FAILURE;
+int  error_rc = error_handling == ERRORS_SENDER
+	? errors_sender_rc : EXIT_FAILURE;
 int  header_size = 256;
 int  start, end, domain;
 int  id_resolution;
