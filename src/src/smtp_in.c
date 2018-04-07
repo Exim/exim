@@ -2039,12 +2039,18 @@ bmi_verdicts = NULL;
 dnslist_domain = dnslist_matched = NULL;
 #ifndef DISABLE_DKIM
 dkim_cur_signer = dkim_signers =
-dkim_signing_domain = dkim_signing_selector = NULL;
+dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
 dkim_cur_signer = dkim_signers = dkim_signing_domain = dkim_signing_selector = NULL;
 dkim_disable_verify = dkim_collect_input = FALSE;
 dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;
 dkim_key_length = 0;
 dkim_verify_signers = US"$dkim_signers";
+#endif
+#ifdef EXPERIMENTAL_DMARC
+dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
+dmarc_ar_header = dmarc_domain_policy = dmarc_forensic_sender =
+dmarc_history_file = dmarc_status = dmarc_status_text = dmarc_tld_file =
+dmarc_used_domain = NULL;
 #endif
 dsn_ret = 0;
 dsn_envid = NULL;
