@@ -30,7 +30,6 @@ pdkim_ctx dkim_sign_ctx;
 
 int dkim_verify_oldpool;
 pdkim_ctx *dkim_verify_ctx = NULL;
-pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
 static const uschar * dkim_collect_error = NULL;
 
@@ -313,7 +312,8 @@ dkim_collect_input = FALSE;
 
 /* Finish DKIM operation and fetch link to signatures chain */
 
-rc = pdkim_feed_finish(dkim_verify_ctx, &dkim_signatures, &errstr);
+rc = pdkim_feed_finish(dkim_verify_ctx, (pdkim_signature **)&dkim_signatures,
+			&errstr);
 if (rc != PDKIM_OK && errstr)
   log_write(0, LOG_MAIN, "DKIM: validation error: %s", errstr);
 
@@ -395,7 +395,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
     them here. This is easy since a domain and selector is guaranteed
     to be in a signature. The other dkim_* expansion items are
     dynamically fetched from dkim_cur_sig at expansion time (see
-    function below). */
+    dkim_exim_expand_query() below). */
 
     dkim_cur_sig = sig;
     dkim_signing_domain = US sig->domain;

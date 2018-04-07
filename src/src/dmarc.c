@@ -28,7 +28,6 @@ OPENDMARC_STATUS_T  libdm_status, action, dmarc_policy;
 OPENDMARC_STATUS_T  da, sa, action;
 BOOL dmarc_abort  = FALSE;
 uschar *dmarc_pass_fail = US"skipped";
-extern pdkim_signature  *dkim_signatures;
 header_line *from_header   = NULL;
 extern SPF_response_t   *spf_response;
 int dmarc_spf_ares_result  = 0;
@@ -217,7 +216,7 @@ dmarc_process()
 int sr, origin;             /* used in SPF section */
 int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
 int tmp_ans, c;
-pdkim_signature *sig  = NULL;
+pdkim_signature * sig = dkim_signatures;
 BOOL has_dmarc_record = TRUE;
 u_char **ruf; /* forensic report addressees, if called for */
 
@@ -238,27 +237,27 @@ if (!from_header || dmarc_abort)
   dmarc_abort = TRUE;
 else
   {
-    uschar * errormsg;
-    int dummy, domain;
-    uschar * p;
-    uschar saveend;
+  uschar * errormsg;
+  int dummy, domain;
+  uschar * p;
+  uschar saveend;
 
-    parse_allow_group = TRUE;
-    p = parse_find_address_end(from_header->text, FALSE);
-    saveend = *p; *p = '\0';
-    if ((header_from_sender = parse_extract_address(from_header->text, &errormsg,
-                                &dummy, &dummy, &domain, FALSE)))
-      header_from_sender += domain;
-    *p = saveend;
+  parse_allow_group = TRUE;
+  p = parse_find_address_end(from_header->text, FALSE);
+  saveend = *p; *p = '\0';
+  if ((header_from_sender = parse_extract_address(from_header->text, &errormsg,
+			      &dummy, &dummy, &domain, FALSE)))
+    header_from_sender += domain;
+  *p = saveend;
 
-    /* The opendmarc library extracts the domain from the email address, but
-     * only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
-    if (!header_from_sender || (strcmp( CCS header_from_sender, "") == 0))
-      dmarc_abort = TRUE;
-    libdm_status = dmarc_abort ?
-      DMARC_PARSE_OKAY :
-      opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
-    if (libdm_status != DMARC_PARSE_OKAY)
+  /* The opendmarc library extracts the domain from the email address, but
+   * only try to store it if it's not empty.  Otherwise, skip out of DMARC. */
+  if (!header_from_sender || (strcmp( CCS header_from_sender, "") == 0))
+    dmarc_abort = TRUE;
+  libdm_status = dmarc_abort
+    ? DMARC_PARSE_OKAY
+    : opendmarc_policy_store_from_domain(dmarc_pctx, header_from_sender);
+  if (libdm_status != DMARC_PARSE_OKAY)
     {
     log_write(0, LOG_MAIN|LOG_PANIC,
 	      "failure to store header From: in DMARC: %s, header was '%s'",
@@ -271,6 +270,8 @@ else
  * instead do this in the ACLs.  */
 if (!dmarc_abort && !sender_host_authenticated)
   {
+  uschar * dmarc_domain;
+
   /* Use the envelope sender domain for this part of DMARC */
   spf_sender_domain = expand_string(US"$sender_address_domain");
   if (!spf_response)
@@ -325,11 +326,11 @@ if (!dmarc_abort && !sender_host_authenticated)
 
   /* Now we cycle through the dkim signature results and put into
    * the opendmarc context, further building the DMARC reply.  */
-  sig = dkim_signatures;
   dkim_history_buffer = US"";
   while (sig)
     {
     int dkim_result, dkim_ares_result, vs, ves;
+
     vs  = sig->verify_status & ~PDKIM_VERIFY_POLICY;
     ves = sig->verify_ext_status;
     dkim_result = vs == PDKIM_VERIFY_PASS ? DMARC_POLICY_DKIM_OUTCOME_PASS :
@@ -398,9 +399,9 @@ if (!dmarc_abort && !sender_host_authenticated)
       }
 
   /* Can't use exim's string manipulation functions so allocate memory
-   * for libopendmarc using its max hostname length definition. */
+  for libopendmarc using its max hostname length definition. */
 
-  uschar *dmarc_domain = US calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
+  dmarc_domain = US calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
   libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx,
     dmarc_domain, DMARC_MAXHOSTNAMELEN-1);
   dmarc_used_domain = string_copy(dmarc_domain);
@@ -411,8 +412,7 @@ if (!dmarc_abort && !sender_host_authenticated)
       "failure to read domainname used for DMARC lookup: %s",
       opendmarc_policy_status_to_str(libdm_status));
 
-  libdm_status = opendmarc_get_policy_to_enforce(dmarc_pctx);
-  dmarc_policy = libdm_status;
+  dmarc_policy = libdm_status = opendmarc_get_policy_to_enforce(dmarc_pctx);
   switch(libdm_status)
     {
     case DMARC_POLICY_ABSENT:     /* No DMARC record found */
@@ -464,7 +464,7 @@ if (!dmarc_abort && !sender_host_authenticated)
     log_write(0, LOG_MAIN|LOG_PANIC, "failure to read DMARC alignment: %s",
 			     opendmarc_policy_status_to_str(libdm_status));
 
-  if (has_dmarc_record == TRUE)
+  if (has_dmarc_record)
     {
     log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
 			   "spf_align=%s dkim_align=%s enforcement='%s'",
@@ -483,9 +483,9 @@ if (!dmarc_abort && !sender_host_authenticated)
 dmarc_ar_header = dmarc_auth_results_header(from_header, NULL);
 
 /* shut down libopendmarc */
-if ( dmarc_pctx != NULL )
+if (dmarc_pctx)
   (void) opendmarc_policy_connect_shutdown(dmarc_pctx);
-if ( dmarc_disable_verify == FALSE )
+if (!dmarc_disable_verify)
   (void) opendmarc_policy_library_shutdown(&dmarc_ctx);
 
 return OK;

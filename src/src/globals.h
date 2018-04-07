@@ -395,6 +395,7 @@ extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP i
 extern uschar *dkim_cur_signer;        /* Expansion variable, holds the current "signer" domain or identity during a acl_smtp_dkim run */
 extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 extern int     dkim_key_length;        /* Expansion variable, length of signing key in bits */
+extern void   *dkim_signatures;	       /* Actually a (pdkim_signature *) but most files do not need to know */
 extern uschar *dkim_signers;           /* Expansion variable, holds colon-separated list of domains and identities that have signed a message */
 extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
 extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */

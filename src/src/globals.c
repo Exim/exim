@@ -672,6 +672,7 @@ BOOL    dkim_collect_input       = FALSE;
 uschar *dkim_cur_signer          = NULL;
 BOOL    dkim_disable_verify      = FALSE;
 int     dkim_key_length          = 0;
+void   *dkim_signatures		 = NULL;
 uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
