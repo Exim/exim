@@ -760,7 +760,6 @@ arc_headers_check(arc_ctx * ctx)
 arc_set * as;
 int inst;
 BOOL ams_fail_found = FALSE;
-uschar * ret = NULL;
 
 if (!(as = ctx->arcset_chain))
   return US"none";
@@ -792,20 +791,20 @@ for(inst = 0; as; as = as->next)
 
 arc_received = ctx->arcset_chain_last;
 arc_received_instance = inst;
-if (ret)
-  return ret;
 
 /* We can skip the latest-AMS validation, if we already did it. */
 
 as = ctx->arcset_chain_last;
-if (as->ams_verify_done && !as->ams_verify_passed)
+if (!as->ams_verify_passed)
   {
-  arc_state_reason = as->ams_verify_done;
-  return US"fail";
+  if (as->ams_verify_done)
+    {
+    arc_state_reason = as->ams_verify_done;
+    return US"fail";
+    }
+  if (!!arc_ams_verify(ctx, as))
+    return US"fail";
   }
-if (!!arc_ams_verify(ctx, as))
-  return US"fail";
-
 return NULL;
 }
 
