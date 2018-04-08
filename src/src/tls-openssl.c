@@ -1601,9 +1601,15 @@ if (init_options)
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
 
-/* Disable session cache unconditionally */
-
+/* We'd like to disable session cache unconditionally, but foolish Outlook
+Express clients then give up the first TLS connection and make a second one
+(which works).  Only when there is an IMAP service on the same machine.
+Presumably OE is trying to use the cache for A on B.  Leave it enabled for
+now, until we work out a decent way of presenting control to the config.  It
+will never be used because we use a new context every time. */
+#ifdef notdef
 (void) SSL_CTX_set_session_cache_mode(ctx, SSL_SESS_CACHE_OFF);
+#endif
 
 /* Initialize with DH parameters if supplied */
 /* Initialize ECDH temp key parameter selection */

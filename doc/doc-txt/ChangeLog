@@ -200,6 +200,9 @@ JH/36 Fix reinitialisation of DKIM logging variable between messages.
       Previously it was possible to log spurious information in receive log
       lines.
 
+JH/37 Bug 2255: Revert the disable of the OpenSSL session caching.  This
+      triggered odd behaviour from Outlook Express clients.
+
 
 Exim version 4.90
 -----------------
