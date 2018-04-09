@@ -357,7 +357,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
           error_out = FAIL;
           goto ERROR_OUT;
         }
-        if (&gbufdesc_out.length != 0) {
+        if (gbufdesc_out.length != 0) {
           error_out = auth_get_data(&from_client,
               gbufdesc_out.value, gbufdesc_out.length);
           if (error_out != OK)
