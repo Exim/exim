@@ -46,6 +46,7 @@ Version 4.91
     Authentication-Results: header.
 
 13. EXPERIMENTAL_ARC.  See the experimental.spec file.
+    See also new util/renew-opendmarc-tlds.sh script for use with DMARC/ARC.
 
 14: A dane:fail event, intended to facilitate reporting.
 

@@ -203,6 +203,9 @@ JH/36 Fix reinitialisation of DKIM logging variable between messages.
 JH/37 Bug 2255: Revert the disable of the OpenSSL session caching.  This
       triggered odd behaviour from Outlook Express clients.
 
+PP/03 Add util/renew-opendmarc-tlds.sh script for safe renewal of public
+      suffix list.
+
 
 Exim version 4.90
 -----------------

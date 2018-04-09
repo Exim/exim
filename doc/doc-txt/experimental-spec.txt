@@ -436,6 +436,7 @@ dmarc_tld_file      Defines the location of a text file of valid
                     during domain parsing. Maintained by Mozilla,
                     the most current version can be downloaded
                     from a link at http://publicsuffix.org/list/.
+                    See also util/renew-opendmarc-tlds.sh script.
 
 Optional:
 dmarc_history_file  Defines the location of a file to log results
