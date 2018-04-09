@@ -2015,9 +2015,7 @@ spf_result_guessed = FALSE;
 #endif
 #ifdef EXPERIMENTAL_DMARC
 dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
-dmarc_domain_policy = dmarc_forensic_sender =
-dmarc_history_file = dmarc_status = dmarc_status_text =
-dmarc_used_domain = NULL;
+dmarc_domain_policy = dmarc_status = dmarc_status_text = dmarc_used_domain = NULL;
 #endif
 #ifdef EXPERIMENTAL_ARC
 arc_state = arc_state_reason = NULL;

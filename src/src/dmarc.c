@@ -474,8 +474,8 @@ if (!dmarc_abort && !sender_host_authenticated)
     log_write(0, LOG_MAIN, "DMARC results: spf_domain=%s dmarc_domain=%s "
 			   "spf_align=%s dkim_align=%s enforcement='%s'",
 			   spf_sender_domain, dmarc_used_domain,
-			   (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?"yes":"no",
-			   (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?"yes":"no",
+			   sa==DMARC_POLICY_SPF_ALIGNMENT_PASS  ?"yes":"no",
+			   da==DMARC_POLICY_DKIM_ALIGNMENT_PASS ?"yes":"no",
 			   dmarc_status_text);
     history_file_status = dmarc_write_history_file();
     /* Now get the forensic reporting addresses, if any */
@@ -493,7 +493,7 @@ if (!dmarc_disable_verify)
 return OK;
 }
 
-int
+static int
 dmarc_write_history_file()
 {
 int history_file_fd;
@@ -503,7 +503,10 @@ u_char **rua; /* aggregate report addressees */
 uschar *history_buffer = NULL;
 
 if (!dmarc_history_file)
+  {
+  DEBUG(D_receive) debug_printf("DMARC history file not set\n");
   return DMARC_HIST_DISABLED;
+  }
 history_file_fd = log_create(dmarc_history_file);
 
 if (history_file_fd < 0)

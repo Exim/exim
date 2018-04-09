@@ -5,5 +5,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_status_text <No DMARC record>
 1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_used_domain <example.com>
 1999-03-02 09:44:33 10HmaX-0005vi-00 dmarc_domain_policy <>
-1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	spf=fail smtp.mailfrom=example.com;\n	dmarc=noneheader.from=example.com
+1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex;\n	spf=fail smtp.mailfrom=example.com;\n	dmarc=none header.from=example.com
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@example.com H=(testclient) [ip4.ip4.ip4.ip4] P=smtp S=sss
