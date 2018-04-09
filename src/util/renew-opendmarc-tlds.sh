@@ -24,7 +24,8 @@
 # This should be "pretty portable"; the only things it depends upon are:
 #  * a POSIX shell which additionally implements 'local' (dash works)
 #  * the 'curl' command; change the fetch_candidate() function to replace that
-#  * the 'stat' command, to get the size of a file; change size_of() if need be
+#  * the 'stat' command, to get the size of a file; else Perl
+#    + change size_of() if need be; it's defined per-OS
 #  * the 'hexdump' command and /dev/urandom existing
 #    + used when invoked with 'cron', to avoid retrieving on a minute boundary
 #      and contending with many other automated systems.
@@ -84,8 +85,10 @@ case $(uname -s) in
 Linux)
 	size_of() { stat -c %s "$1"; }
 	;;
-*)  # optimism?
-	size_of() { stat -c %s "$1"; }
+*)
+	# why do we live in a world where Perl is the safe portable solution
+	# to getting the size of a file?
+	size_of() { perl -le 'print((stat($ARGV[0]))[7])' -- "$1"; }
 	;;
 esac
 
