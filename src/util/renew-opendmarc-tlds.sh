@@ -13,7 +13,7 @@
 # Create a cron-job as the Exim run-time user to invoke this daily, with a
 # single parameter, 'cron'.  Eg:
 #
-#    3 4 * * *    /usr/local/sbin/renew-opendmarc-tlds.sh cron
+#    3 4 * * *	  /usr/local/sbin/renew-opendmarc-tlds.sh cron
 #
 # That will, at 3 minutes past the 4th hour (in whatever timezone cron is
 # running it) invoke this script with 'cron'; we will then sleep between 10 and
@@ -77,9 +77,17 @@ fetch_candidate() {
 	curl --user-agent "$CurlUserAgent" -fSs -o "${WorkingFile}" "${URL}"
 }
 
-size_of() {
-	stat -c %s "$1"
-}
+case $(uname -s) in
+*BSD|Darwin)
+	size_of() { stat -f %z "$1"; }
+	;;
+Linux)
+	size_of() { stat -c %s "$1"; }
+	;;
+*)  # optimism?
+	size_of() { stat -c %s "$1"; }
+	;;
+esac
 
 sanity_check_candidate() {
 	local new_size prev_size re
