@@ -1,0 +1,48 @@
+# ARC sign, DKIM header interactions
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# Random-ish input message, having a DKIM header
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<za@test.ex>
+??? 250
+DATA
+??? 354
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=example.com; s=sel; h=List-Archive;
+	 bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=uslVEq1LzHDR2ACoSTiErsGhe
+	GcuqL5no/4XYjsEJOIXkKFp4FFTj7QTcblHqyqsjgd5Dgs7zuFV4U3lwU9jSZtqJNQI+BtYZ5dS48
+	sjr9PbLiguw8rAv5eDXBQKi5XcNCnZlUnWEjl10OXEgJZ9UXdKToWHpSfWEw1nFvOlKAfPBfkznnA
+	EOQXSTJOTanLpr7EZ4Yw5LWE+9BWJfnl6snn6W0mmJl4tbfEXEV1ZzOxdQF1rwjJqmojoCG36Z+v5
+	sWKswl7HgSlKo2GKgxh9zIIhoxg5+7zfmHdKUQ2/6zuR8nqjDAjl3bSdOMgZVM0L6G6EMxQP6Sj6f
+	oEr6ePt9A==;
+From: mrgus@text.ex
+To: bakawolf@yahoo.com
+Date: Thu, 19 Nov 2015 17:00:07 -0700
+Message-ID: <qwerty1234@disco-zombie.net>
+Subject: simple test
+
+This is a simple test.
+.
+??? 250
+QUIT
+??? 221
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+killdaemon
+no_stdout_check
+no_msglog_check

@@ -1,0 +1,75 @@
+# Exim test configuration 4562
+
+SERVER=
+VALUE=
+INSERT=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+
+log_selector = +received_recipients +dkim_verbose
+queue_only
+
+# ----- ACL -----
+begin acl
+
+check_data:
+  warn	!verify =	arc VALUE
+	INSERT
+
+  warn	logwrite =	arc_state: <$arc_state>
+	condition =	${if def:arc_state_reason}
+	logwrite =	reason:    <$arc_state_reason>
+
+.ifdef OPTION
+  accept
+.else
+  accept add_header =	:at_start:${authresults {$primary_hostname}}
+.endif
+  
+# ----- Routers -----
+
+begin routers
+
+d1:
+  driver = accept
+  local_parts = ^a
+  transport = tfile
+
+redir:
+  driver =	redirect
+  data =	${substr_1:$local_part}@$domain
+  redirect_router = fwd
+
+fwd:
+  driver =	accept
+  transport =	tsmtp
+
+# ----- Transports -----
+
+begin transports
+
+tfile:
+  driver =	appendfile
+  file =	DIR/test-mail/$local_part
+  user =	CALLER
+
+tsmtp:
+  driver =	smtp
+  hosts =	127.0.0.1
+  port =	PORT_D
+  allow_localhost
+  dkim_domain =	$primary_hostname
+  dkim_selector = sel
+  dkim_private_key = DIR/aux-fixed/dkim/dkim.private
+.ifndef OPTION
+  arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
+.endif
+
+# End

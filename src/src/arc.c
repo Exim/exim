@@ -1565,18 +1565,17 @@ string_from_gstring(sigheaders);
 if ((rheaders = arc_sign_scan_headers(&arc_sign_ctx, sigheaders)))
   {
   hdr_rlist ** rp;
-  for (rp = &rheaders; *rp; ) rp = &(*rp)->prev;
-  *rp = headers_rlist;
-  headers_rlist = rheaders;
+  for (rp = &headers_rlist; *rp; ) rp = &(*rp)->prev;
+  *rp = rheaders;
   }
-else
-  rheaders = headers_rlist;
 
 /* Finally, build a normal-order headers list */
 /*XXX only needed for hunt-the-AR? */
+/*XXX also, we really should be accepting any number of ADMD-matching ARs */
   {
   header_line * hnext = NULL;
-  for (; rheaders; hnext = rheaders->h, rheaders = rheaders->prev)
+  for (rheaders = headers_rlist; rheaders;
+       hnext = rheaders->h, rheaders = rheaders->prev)
     rheaders->h->next = hnext;
   headers = hnext;
   }
