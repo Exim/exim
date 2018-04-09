@@ -36501,6 +36501,7 @@ selection marked by asterisks:
 &` queue_time_overall         `&  time on queue for whole message
 &` pid                        `&  Exim process id
 &` proxy                      `&  proxy address on <= and => lines
+&` receive_time               `&  time taken to receive message
 &` received_recipients        `&  recipients on <= lines
 &` received_sender            `&  sender on <= lines
 &`*rejected_header            `&  header contents on reject log
