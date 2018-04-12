@@ -448,12 +448,11 @@ available in other formats (HTML, PostScript, PDF, and Texinfo). Section
 .section "FTP and web sites" "SECID2"
 .cindex "web site"
 .cindex "FTP site"
-The primary site for Exim source distributions is currently the University of
-Cambridge's FTP site, whose contents are described in &'Where to find the Exim
-distribution'& below. In addition, there is a web site and an FTP site at
-&%exim.org%&. These are now also hosted at the University of Cambridge. The
-&%exim.org%& site was previously hosted for a number of years by Energis
-Squared, formerly Planet Online Ltd, whose support I gratefully acknowledge.
+.new
+The primary site for Exim source distributions is the &%exim.org%& FTP site,
+available over HTTPS, HTTP and FTP.  These services, and the &%exim.org%&
+website, are hosted at the University of Cambridge.
+.wen
 
 .cindex "wiki"
 .cindex "FAQ"
@@ -462,12 +461,18 @@ differently formatted versions of the documentation. A recent addition to the
 online information is the Exim wiki (&url(http://wiki.exim.org)),
 which contains what used to be a separate FAQ, as well as various other
 examples, tips, and know-how that have been contributed by Exim users.
+.new
+The wiki site should always redirect to the correct place, which is currently
+provided by GitHub, and is open to editing by anyone with a GitHub account.
+.wen
 
 .cindex Bugzilla
 An Exim Bugzilla exists at &url(https://bugs.exim.org). You can use
 this to report bugs, and also to add items to the wish list. Please search
 first to check that you are not duplicating a previous entry.
-
+.new
+Please do not ask for configuration help in the bug-tracker.
+.wen
 
 
 .section "Mailing lists" "SECID3"
@@ -505,26 +510,45 @@ message to the &'exim-dev'& mailing list and have it discussed.
 
 .section "Where to find the Exim distribution" "SECTavail"
 .cindex "FTP site"
+.cindex "HTTPS download site"
 .cindex "distribution" "ftp site"
-The master ftp site for the Exim distribution is
+.cindex "distribution" "https site"
+.new
+The master distribution site for the Exim distribution is
 .display
-&*ftp://ftp.exim.org/pub/exim*&
+&*https://downloads.exim.org/*&
 .endd
-The file references that follow are relative to the &_exim_& directories at
-these sites. There are now quite a number of independent mirror sites around
+The service is available over HTTPS, HTTP and FTP.
+We encourage people to migrate to HTTPS.
+
+The content served at &'https://downloads.exim.org/'& is identical to the
+content served at &'https://ftp.exim.org/pub/exim'& and
+&'ftp://ftp.exim.org/pub/exim'&.
+
+If accessing via a hostname containing &'ftp'&, then the file references that
+follow are relative to the &_exim_& directories at these sites.
+If accessing via the hostname &'downloads'& then the subdirectories described
+here are top-level directories.
+.wen
+
+There are now quite a number of independent mirror sites around
 the world. Those that I know about are listed in the file called &_Mirrors_&.
 
-Within the &_exim_& directory there are subdirectories called &_exim3_& (for
+Within the top exim directory there are subdirectories called &_exim3_& (for
 previous Exim 3 distributions), &_exim4_& (for the latest Exim 4
 distributions), and &_Testing_& for testing versions. In the &_exim4_&
 subdirectory, the current release can always be found in files called
 .display
+&_exim-n.nn.tar.xz_&
 &_exim-n.nn.tar.gz_&
 &_exim-n.nn.tar.bz2_&
 .endd
-where &'n.nn'& is the highest such version number in the directory. The two
+where &'n.nn'& is the highest such version number in the directory. The three
 files contain identical data; the only difference is the type of compression.
-The &_.bz2_& file is usually a lot smaller than the &_.gz_& file.
+.new
+The &_.xz_& file is usually the smallest, while the &_.gz_& file is the
+most portable to old systems.
+.wen
 
 .cindex "distribution" "signing details"
 .cindex "distribution" "public key"
@@ -538,17 +562,16 @@ PGP key, a version of which can be found in the release directory in the file
 &_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
 such as &'pool.sks-keyservers.net'&.
 
-At time of last update, releases were being made by Phil Pennock and signed with
-key &'0x403043153903637F'&, although that key is expected to be replaced in 2013.
-A trust path from Nigel's key to Phil's can be observed at
-&url(https://www.security.spodhuis.org/exim-trustpath).
-
-Releases have also been authorized to be performed by Todd Lyons who signs with
-key &'0xC4F4F94804D29EBA'&. A direct trust path exists between previous RE Phil
-Pennock and Todd Lyons through a common associate.
+.new
+At time of last update, releases were being made by Jeremy Harris and signed
+with key &'0xBCE58C8CE41F32DF'&.  Other recent keys used for signing are those
+of Heiko Schlittermann, &'0x26101B62F69376CE'&,
+and of Phil Pennock, &'0x4D1E900E14C1CC04'&.
+.wen
 
 The signatures for the tar bundles are in:
 .display
+&_exim-n.nn.tar.xz.asc_&
 &_exim-n.nn.tar.gz.asc_&
 &_exim-n.nn.tar.bz2.asc_&
 .endd
@@ -566,8 +589,10 @@ inside the &_exim4_& directory of the FTP site:
 &_exim-postscript-n.nn.tar.gz_&
 &_exim-texinfo-n.nn.tar.gz_&
 .endd
+.new
 These tar files contain only the &_doc_& directory, not the complete
-distribution, and are also available in &_.bz2_& as well as &_.gz_& forms.
+distribution, and are also available in &_.bz2_& and &_.xz_& forms.
+.wen
 
 
 .section "Limitations" "SECID6"
