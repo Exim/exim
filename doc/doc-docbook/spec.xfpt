@@ -3863,7 +3863,7 @@ alternate queue is used, named by the following argument.
 .vitem &%-MCK%&
 .oindex "&%-MCK%&"
 This option is not intended for use by external callers. It is used internally
-by Exim in conjunction with the &%-MC%& option. It signifies that an
+by Exim in conjunction with the &%-MC%& option. It signifies that a
 remote host supports the ESMTP &_CHUNKING_& extension.
 
 .vitem &%-MCP%&
@@ -7871,7 +7871,7 @@ of which must be reachable from the running exim instance. If the cluster has
 master/slave replication, the list must contain all the master and slave
 servers.
 
-When the Redis Cluster returns a "MOVED" response to a query, exim does not
+When the Redis Cluster returns a "MOVED" response to a query, Exim does not
 immediately follow the redirection but treats the response as a DEFER, moving on
 to the next server in the &%redis_servers%& list until the correct server is
 reached.
@@ -9184,8 +9184,8 @@ This item returns a string suitable for insertion as an
 &'Authentication-Results"'&
 header line.
 The given <&'authserv-id'&> is included in the result; typically this
-will ba a domain name identifying the system performing the authentications.
-Methods that may be present in the result include:
+will be a domain name identifying the system performing the authentications.
+Methods that might be present in the result include:
 .code
 none
 iprev
@@ -9198,7 +9198,7 @@ Example use (as an ACL modifier):
 .code
       add_header = :at_start:${authresults {$primary_hostname}}
 .endd
-This is safe even if no authentication reselts are available.
+This is safe even if no authentication results are available.
 .wen
 
 
@@ -16991,10 +16991,10 @@ tests of Exim without using the standard spool.
 
 .option spool_wireformat main boolean false
 .cindex "spool directory" "file formats"
-If this option is set, Exim may for some messages use an alternate format
+If this option is set, Exim may for some messages use an alternative format
 for data-files in the spool which matches the wire format.
 Doing this permits more efficient message reception and transmission.
-Currently it is only done for messages received using the EMSTP CHUNKING
+Currently it is only done for messages received using the ESMTP CHUNKING
 option.
 
 The following variables will not have useful values:
@@ -17007,7 +17007,7 @@ $body_zerocount
 Users of the local_scan() API (see &<<CHAPlocalscan>>&),
 and any external programs which are passed a reference to a message data file
 (except via the &"regex"&, &"malware"& or &"spam"&) ACL conditions)
-will need to be aware of the potential different format.
+will need to be aware of the different formats potentially available.
 
 Using any of the ACL conditions noted will negate the reception benefit
 (as a Unix-mbox-format file is constructed for them).
@@ -26260,8 +26260,8 @@ deliver the message unauthenticated.
 
 Note that the hostlist test for whether to do authentication can be
 confused if name-IP lookups change between the time the peer is decided
-on and the transport running.  For example, with a manualroute
-router given a host name, and DNS "round-robin" use by that name: if
+upon and the time that the transport runs.  For example, with a manualroute
+router given a host name, and with DNS "round-robin" used by that name: if
 the local resolver cache times out between the router and the transport
 running, the transport may get an IP for the name for its authentication
 check which does not match the connection peer IP.
@@ -27254,7 +27254,7 @@ The history of port numbers for TLS in SMTP is a little messy and has been
 contentious.  As of RFC 8314, the common practice of using the historically
 allocated port 465 for "email submission but with TLS immediately upon connect
 instead of using STARTTLS" is officially blessed by the IETF, and recommended
-in preference to STARTTLS.
+by them in preference to STARTTLS.
 
 The name originally assigned to the port was &"ssmtp"& or &"smtps"&, but as
 clarity emerged over the dual roles of SMTP, for MX delivery and Email
@@ -27265,8 +27265,8 @@ standardized, but many clients kept using it, even as the TCP port number was
 reassigned for other use.
 Thus you may encounter guidance claiming that you shouldn't enable use of
 this port.
-In practice, a number of mail-clients have only supported submissions, not
-submission with STARTTLS upgrade.
+In practice, a number of mail-clients have only ever supported submissions,
+not submission with STARTTLS upgrade.
 Ideally, offer both submission (587) and submissions (465) service.
 
 Exim supports TLS-on-connect by means of the &%tls_on_connect_ports%&
@@ -28164,6 +28164,9 @@ the entire certificate chain from CA to server-certificate.  If a public CA is u
 DANE-TA is commonly used for several services and/or servers, each having a TLSA query-domain CNAME record,
 all of which point to a single TLSA record.
 
+Another approach which should be seriously considered is to use DANE with a certificate
+from a public CA, because of another technology, "MTA-STS", described below.
+
 The TLSA record should have a Selector field of SPKI(1) and a Matching Type field of SHA2-512(2).
 
 At the time of writing, &url(https://www.huque.com/bin/gen_tlsa)
@@ -28250,6 +28253,28 @@ The &$event_data$& will be one of the Result Types defined in
 Section 4.3 of that document.
 
 Under GnuTLS, DANE is only supported from version 3.0.0 onwards.
+
+DANE is specified in published RFCs and decouples certificate authority trust
+selection from a "race to the bottom" of "you must trust everything for mail
+to get through".  There is an alternative technology called MTA-STS, which
+instead publishes MX trust anchor information on an HTTPS website.  At the
+time this text was last updated, MTA-STS was still a draft, not yet an RFC.
+Exim has no support for MTA-STS as a client, but Exim mail server operators
+can choose to publish information describing their TLS configuration using
+MTA-STS to let those clients who do use that protocol derive trust
+information.
+
+The MTA-STS design requires a certificate from a public Certificate Authority
+which is recognized by clients sending to you.  That selection is outside your
+control.
+
+The most interoperable course of action is probably to use
+&url(https://letsencrypt.org/,Let's Encrypt), with automated certificate
+renewal; to publish the anchor information in DNSSEC-secured DNS via TLSA
+records for DANE clients (such as Exim and Postfix) and to publish anchor
+information for MTA-STS as well.  This is what is done for the &'exim.org'&
+domain itself (with caveats around occasionally broken MTA-STS because of
+incompatible specification changes prior to reaching RFC status).
 .wen
 
 
@@ -29464,7 +29489,7 @@ and cannot depend on content of received headers.
 Note also that headers cannot be
 modified by any of the post-data ACLs (DATA, MIME and DKIM).
 Headers may be modified by routers (subject to the above) and transports.
-The Received-By: header is generated as soon as the body reception starts,
+The &'Received-By:'& header is generated as soon as the body reception starts,
 rather than the traditional time after the full message is received;
 this will affect the timestamp.
 
@@ -32064,7 +32089,7 @@ For example:
 .code
 av_scanner = f-protd:localhost 10200-10204
 .endd
-If you omit the argument, the default values show above are used.
+If you omit the argument, the default values shown above are used.
 
 .vitem &%f-prot6d%&
 .cindex "virus scanners" "f-prot6d"
@@ -39043,8 +39068,16 @@ certtool --load_privkey=dkim_ed25519.private --pubkey_info --outder | tail -c +1
 .wen
 
 .option dkim_hash smtp string&!! sha256
-Can be set alternatively to &"sha1"& to use an alternate hash
-method.
+.new
+Can be set to any one of the supported hash methods, which are:
+.ilist
+&`sha1`& &-- should not be used, is old and insecure
+.next
+&`sha256`& &-- the default
+.next
+&`sha512`& &-- possibly more secure but less well supported
+.endlist
+.wen
 
 .new
 Note that RFC 8301 says:
@@ -39372,8 +39405,8 @@ This includes retransmissions done by traditional forwarders.
 SPF verification support is built into Exim if SUPPORT_SPF=yes is set in
 &_Local/Makefile_&.  The support uses the &_libspf2_& library
 &url(http://www.libspf2.org/).
-There is no Exim involvement on the trasmission of messages; publishing certain
-DNS records is all that is required.
+There is no Exim involvement in the transmission of messages;
+publishing certain DNS records is all that is required.
 
 For verification, an ACL condition and an expansion lookup are provided.
 .new
@@ -39522,7 +39555,7 @@ address as the key and an IP address as the database:
   ${lookup {username@domain} spf {ip.ip.ip.ip}}
 .endd
 
-The lookup will return the same result strings as they can appear in
+The lookup will return the same result strings as can appear in
 &$spf_result$& (pass,fail,softfail,neutral,none,err_perm,err_temp).
 Currently, only IPv4 addresses are supported.
 
