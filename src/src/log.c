@@ -161,11 +161,11 @@ len = Ustrlen(s);
 #ifndef NO_OPENLOG
 if (!syslog_open)
   {
-  #ifdef SYSLOG_LOG_PID
+# ifdef SYSLOG_LOG_PID
   openlog(CS syslog_processname, LOG_PID|LOG_CONS, syslog_facility);
-  #else
+# else
   openlog(CS syslog_processname, LOG_CONS, syslog_facility);
-  #endif
+# endif
   syslog_open = TRUE;
   }
 #endif
@@ -183,9 +183,9 @@ for (pass = 0; pass < 2; pass++)
     int plen = tlen;
     uschar *nlptr = Ustrchr(ss, '\n');
     if (nlptr != NULL) plen = nlptr - ss;
-    #ifndef SYSLOG_LONG_LINES
+#ifndef SYSLOG_LONG_LINES
     if (plen > MAX_SYSLOG_LEN) plen = MAX_SYSLOG_LEN;
-    #endif
+#endif
     tlen -= plen;
     if (ss[plen] == '\n') tlen--;    /* chars left */
 
@@ -195,7 +195,7 @@ for (pass = 0; pass < 2; pass++)
         syslog(priority, "%.*s", plen, ss);
       else
         syslog(priority, "[%d%c%d] %.*s", i,
-          (ss[plen] == '\n' && tlen != 0)? '\\' : '/',
+          ss[plen] == '\n' && tlen != 0 ? '\\' : '/',
           linecount, plen, ss);
       }
     ss += plen;
@@ -232,7 +232,7 @@ if (s1)
   {
   write_syslog(LOG_CRIT, s1);
   if (debug_file) debug_printf("%s\n", s1);
-  if (log_stderr != NULL && log_stderr != debug_file)
+  if (log_stderr && log_stderr != debug_file)
     fprintf(log_stderr, "%s\n", s1);
   }
 if (receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
@@ -432,20 +432,19 @@ char afterwards if at the start, otherwise one before. */
 
 else if (string_datestamp_offset >= 0)
   {
-  uschar *from = buffer + string_datestamp_offset;
-  uschar *to = from + string_datestamp_length;
+  uschar * from = buffer + string_datestamp_offset;
+  uschar * to = from + string_datestamp_length;
+
   if (from == buffer || from[-1] == '/')
     {
     if (!isalnum(*to)) to++;
     }
   else
-    {
     if (!isalnum(from[-1])) from--;
-    }
 
-  /* This strcpy is ok, because we know that to is a substring of from. */
-
-  Ustrcpy(from, to);
+  /* This copy is ok, because we know that to is a substring of from. But
+  due to overlap we must use memmove() not Ustrcpy(). */
+  memmove(from, to, Ustrlen(to)+1);
   }
 
 /* If the file name is too long, it is an unrecoverable disaster */
@@ -749,11 +748,11 @@ original log line that caused the problem. Afterwards, expire. */
 
 if (panic_recurseflag)
   {
-  uschar *extra = (panic_save_buffer == NULL)? US"" : panic_save_buffer;
-  if (debug_file != NULL) debug_printf("%s%s", extra, log_buffer);
-  if (log_stderr != NULL && log_stderr != debug_file)
+  uschar *extra = panic_save_buffer ? panic_save_buffer : US"";
+  if (debug_file) debug_printf("%s%s", extra, log_buffer);
+  if (log_stderr && log_stderr != debug_file)
     fprintf(log_stderr, "%s%s", extra, log_buffer);
-  if (*extra != 0) write_syslog(LOG_CRIT, extra);
+  if (*extra) write_syslog(LOG_CRIT, extra);
   write_syslog(LOG_CRIT, log_buffer);
   die(US"exim: could not open panic log - aborting: see message(s) above",
     US"Unexpected log failure, please try later");
@@ -790,12 +789,14 @@ if (!path_inspected)
     int sep = ':';              /* Fixed separator - outside use */
     uschar *s;
     const uschar *ss = log_file_path;
+
     logging_mode = 0;
     while ((s = string_nextinlist(&ss, &sep, log_buffer, LOG_BUFFER_SIZE)))
       {
       if (Ustrcmp(s, "syslog") == 0)
         logging_mode |= LOG_MODE_SYSLOG;
-      else if ((logging_mode & LOG_MODE_FILE) != 0) multiple = TRUE;
+      else if (logging_mode & LOG_MODE_FILE)
+	multiple = TRUE;
       else
         {
         logging_mode |= LOG_MODE_FILE;
@@ -825,7 +826,7 @@ if (!path_inspected)
   /* Set up the ultimate default if necessary. Then revert to the old store
   pool, and record that we've sorted out the path. */
 
-  if ((logging_mode & LOG_MODE_FILE) != 0 && file_path[0] == 0)
+  if (logging_mode & LOG_MODE_FILE  &&  !file_path[0])
     file_path = string_sprintf("%s/log/%%slog", spool_directory);
   store_pool = old_pool;
   path_inspected = TRUE;
@@ -863,12 +864,12 @@ DEBUG(D_any|D_v)
     }
 
   ptr += sprintf(CS ptr, "%s%s%s%s\n  ",
-    ((flags & LOG_MAIN) != 0)?    " MAIN"   : "",
-    ((flags & LOG_PANIC) != 0)?   " PANIC"  : "",
-    ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE)? " DIE" : "",
-    ((flags & LOG_REJECT) != 0)?  " REJECT" : "");
+    flags & LOG_MAIN ?    " MAIN"   : "",
+    flags & LOG_PANIC ?   " PANIC"  : "",
+    (flags & LOG_PANIC_DIE) == LOG_PANIC_DIE ? " DIE" : "",
+    flags & LOG_REJECT ?  " REJECT" : "");
 
-  if ((flags & LOG_CONFIG) != 0) ptr = log_config_info(ptr, flags);
+  if (flags & LOG_CONFIG) ptr = log_config_info(ptr, flags);
 
   va_start(ap, format);
   if (!string_vformat(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer)-1, format, ap))
@@ -882,7 +883,7 @@ DEBUG(D_any|D_v)
 
 /* If no log file is specified, we are in a mess. */
 
-if ((flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)) == 0)
+if (!(flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "log_write called with no log "
     "flags set");
 
@@ -914,7 +915,7 @@ if (LOGGING(pid))
 if (really_exim && message_id[0] != 0)
   ptr += sprintf(CS ptr, "%s ", message_id);
 
-if ((flags & LOG_CONFIG) != 0) ptr = log_config_info(ptr, flags);
+if (flags & LOG_CONFIG) ptr = log_config_info(ptr, flags);
 
 va_start(ap, format);
 if (!string_vformat(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer)-1, format, ap))
@@ -925,16 +926,17 @@ va_end(ap);
 /* Add the raw, unrewritten, sender to the message if required. This is done
 this way because it kind of fits with LOG_RECIPIENTS. */
 
-if ((flags & LOG_SENDER) != 0 &&
-    ptr < log_buffer + LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
+if (   flags & LOG_SENDER
+    && ptr < log_buffer + LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
   ptr += sprintf(CS ptr, " from <%s>", raw_sender);
 
 /* Add list of recipients to the message if required; the raw list,
 before rewriting, was saved in raw_recipients. There may be none, if an ACL
 discarded them all. */
 
-if ((flags & LOG_RECIPIENTS) != 0 && ptr < log_buffer + LOG_BUFFER_SIZE - 6 &&
-     raw_recipients_count > 0)
+if (  flags & LOG_RECIPIENTS
+   && ptr < log_buffer + LOG_BUFFER_SIZE - 6
+   && raw_recipients_count > 0)
   {
   int i;
   ptr += sprintf(CS ptr, " for");
@@ -955,14 +957,15 @@ or unless there is no log_stderr (expn called from daemon, for example). */
 
 if (!really_exim || log_testing_mode)
   {
-  if (debug_selector == 0 && log_stderr != NULL &&
-      (selector == 0 || (selector & log_selector[0]) != 0))
-    {
+  if (  !debug_selector
+     && log_stderr
+     && (selector == 0 || (selector & log_selector[0]) != 0)
+    )
     if (host_checking)
       fprintf(log_stderr, "LOG: %s", CS(log_buffer + 20));  /* no timestamp */
     else
       fprintf(log_stderr, "%s", CS log_buffer);
-    }
+
   if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE, US"");
   return;
   }
@@ -1033,11 +1036,11 @@ which case the flags are altered above. If there are any header lines (i.e. if
 the rejection is happening after the DATA phase), log the recipients and the
 headers. */
 
-if ((flags & LOG_REJECT) != 0)
+if (flags & LOG_REJECT)
   {
   header_line *h;
 
-  if (header_list != NULL && LOGGING(rejected_header))
+  if (header_list && LOGGING(rejected_header))
     {
     if (recipients_count > 0)
       {
@@ -1092,15 +1095,15 @@ if ((flags & LOG_REJECT) != 0)
 
   /* Write to syslog or to a log file */
 
-  if ((logging_mode & LOG_MODE_SYSLOG) != 0 &&
-      (syslog_duplication || (flags & LOG_PANIC) == 0))
+  if (  logging_mode & LOG_MODE_SYSLOG
+     && (syslog_duplication || !(flags & LOG_PANIC)))
     write_syslog(LOG_NOTICE, log_buffer);
 
   /* Check for a change to the rejectlog file name when datestamping is in
   operation. This happens at midnight, at which point we want to roll over
   the file. Closing it has the desired effect. */
 
-  if ((logging_mode & LOG_MODE_FILE) != 0)
+  if (logging_mode & LOG_MODE_FILE)
     {
     struct stat statbuf;
 
@@ -1122,7 +1125,6 @@ if ((flags & LOG_REJECT) != 0)
     happening. */
 
     if (rejectlogfd >= 0)
-      {
       if (Ustat(rejectlog_name, &statbuf) < 0 ||
            statbuf.st_ino != rejectlog_inode)
         {
@@ -1130,7 +1132,6 @@ if ((flags & LOG_REJECT) != 0)
         rejectlogfd = -1;
         rejectlog_inode = 0;
         }
-      }
 
     /* Open the file if necessary, and write the data */
 
@@ -1155,24 +1156,24 @@ open, there will be a recursive call to log_write(). We detect this above and
 attempt to write to the system log as a last-ditch try at telling somebody. In
 all cases except mua_wrapper, try to write to log_stderr. */
 
-if ((flags & LOG_PANIC) != 0)
+if (flags & LOG_PANIC)
   {
-  if (log_stderr != NULL && log_stderr != debug_file && !mua_wrapper)
+  if (log_stderr && log_stderr != debug_file && !mua_wrapper)
     fprintf(log_stderr, "%s", CS log_buffer);
 
-  if ((logging_mode & LOG_MODE_SYSLOG) != 0)
+  if (logging_mode & LOG_MODE_SYSLOG)
     write_syslog(LOG_ALERT, log_buffer);
 
   /* If this panic logging was caused by a failure to open the main log,
   the original log line is in panic_save_buffer. Make an attempt to write it. */
 
-  if ((logging_mode & LOG_MODE_FILE) != 0)
+  if (logging_mode & LOG_MODE_FILE)
     {
     panic_recurseflag = TRUE;
     open_log(&paniclogfd, lt_panic, NULL);  /* Won't return on failure */
     panic_recurseflag = FALSE;
 
-    if (panic_save_buffer != NULL)
+    if (panic_save_buffer)
       {
       int i = write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
       i = i;	/* compiler quietening */
