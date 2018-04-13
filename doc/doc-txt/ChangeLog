@@ -14,6 +14,11 @@ JH/01 Remove code calling the customisable local_scan function, unless a new
 JH/02 Bug 1007: Avoid doing logging from signal-handlers, as that can result in
       non-signal-safe funxtions being used.
 
+JH/03 Fix syslog logging for syslog_timestamp=no and log_selector +millisec.
+      Previously the millisecond value corrupted the output.
+      Fix also for syslog_pid=no and log_selector +pid, for which the pid
+      corrupted the output.
+
 Since Exim version 4.90
 -----------------------
 
