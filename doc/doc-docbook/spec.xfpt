@@ -39221,13 +39221,13 @@ This variable can be overwritten using an ACL 'set' modifier.
 This might, for instance, be done to enforce a policy restriction on
 hash-method or key-size:
 .code
-  warn	condition =	${if eq {$dkim_verify_status}{pass}}
-	condition =	${if eq {$length_3:$dkim_algo}{rsa}}
-	condition =	${if or {eq {$dkim_algo}{rsa-sha1}} \
-				{< {$dkim_key_length}{1024}} }
-	logwrite =	NOTE: forcing dkim verify fail (was pass)
-	set dkim_verify_status = fail
-	set dkim_verify_reason = hash too weak or key too short
+  warn condition       = ${if eq {$dkim_verify_status}{pass}}
+       condition       = ${if eq {${length_3:$dkim_algo}}{rsa}}
+       condition       = ${if or {{eq {$dkim_algo}{rsa-sha1}} \
+                                  {< {$dkim_key_length}{1024}}}}
+       logwrite        = NOTE: forcing DKIM verify fail (was pass)
+       set dkim_verify_status = fail
+       set dkim_verify_reason = hash too weak or key too short
 .endd
 
 After all the DKIM ACL runs have completed, the value becomes a
