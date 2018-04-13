@@ -39222,7 +39222,7 @@ This might, for instance, be done to enforce a policy restriction on
 hash-method or key-size:
 .code
   warn	condition =	${if eq {$dkim_verify_status}{pass}}
-	condition =	${if eq {$len_3:$dkim_algo}{rsa}}
+	condition =	${if eq {$length_3:$dkim_algo}{rsa}}
 	condition =	${if or {eq {$dkim_algo}{rsa-sha1}} \
 				{< {$dkim_key_length}{1024}} }
 	logwrite =	NOTE: forcing dkim verify fail (was pass)
