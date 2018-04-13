@@ -206,6 +206,10 @@ JH/37 Bug 2255: Revert the disable of the OpenSSL session caching.  This
 PP/03 Add util/renew-opendmarc-tlds.sh script for safe renewal of public
       suffix list.
 
+JH/38 DKIM: accept Ed25519 pubkeys in SubjectPublicKeyInfo-wrapped form,
+      since the IETF WG has not yet settled on that versus the original
+      "bare" representation.
+
 
 Exim version 4.90
 -----------------

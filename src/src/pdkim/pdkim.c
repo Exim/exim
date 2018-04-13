@@ -80,7 +80,7 @@ const pdkim_hashtype pdkim_hashes[] = {
 const uschar * pdkim_keytypes[] = {
   [KEYTYPE_RSA] =	US"rsa",
 #ifdef SIGN_HAVE_ED25519
-  [KEYTYPE_ED25519] =	US"ed25519",		/* Works for 3.6.0 GnuTLS */
+  [KEYTYPE_ED25519] =	US"ed25519",		/* Works for 3.6.0 GnuTLS, OpenSSL 1.1.1 */
 #endif
 
 #ifdef notyet_EC_dkim_extensions	/* https://tools.ietf.org/html/draft-srose-dkim-ecc-00 */
@@ -1336,6 +1336,28 @@ return string_from_gstring(hdr);
 
 /* -------------------------------------------------------------------------- */
 
+/* According to draft-ietf-dcrup-dkim-crypto-07 "keys are 256 bits" (referring
+to DNS, hence the pubkey).  Check for more than 32 bytes; if so assume the
+alternate possible representation (still) being discussed: a
+SubjectPublickeyInfo wrapped key - and drop all but the trailing 32-bytes (it
+should be a DER, with exactly 12 leading bytes - but we could accept a BER also,
+which could be any size).  We still rely on the crypto library for checking for
+undersize.
+
+When the RFC is published this should be re-addressed. */
+
+static void
+check_bare_ed25519_pubkey(pdkim_pubkey * p)
+{
+int excess = p->key.len - 32;
+if (excess > 0)
+  {
+  DEBUG(D_acl) debug_printf("PDKIM: unexpected pubkey len %lu\n", p->key.len);
+  p->key.data += excess; p->key.len = 32;
+  }
+}
+
+
 static pdkim_pubkey *
 pdkim_key_from_dns(pdkim_ctx * ctx, pdkim_signature * sig, ev_ctx * vctx,
   const uschar ** errstr)
@@ -1407,6 +1429,9 @@ if (sig->keytype < 0)
   return NULL;
   }
 k_ok:
+
+if (sig->keytype == KEYTYPE_ED25519)
+  check_bare_ed25519_pubkey(p);
 
 if ((*errstr = exim_dkim_verify_init(&p->key,
 	    sig->keytype == KEYTYPE_ED25519 ? KEYFMT_ED25519_BARE : KEYFMT_DER,

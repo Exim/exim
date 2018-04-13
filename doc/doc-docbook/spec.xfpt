@@ -39067,6 +39067,11 @@ To produce the required public key value for a DNS record:
 openssl pkey -outform DER -pubout -in dkim_ed25519.private | tail -c +13 | base64
 certtool --load_privkey=dkim_ed25519.private --pubkey_info --outder | tail -c +13 | base64
 .endd
+
+Note that the format
+of Ed25519 keys in DNS has not yet been decided; this release supports
+both of the leading candidates at this time, a future release will
+probably drop support for whichever proposal loses
 .wen
 
 .option dkim_hash smtp string&!! sha256
