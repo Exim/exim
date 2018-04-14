@@ -210,6 +210,11 @@ JH/38 DKIM: accept Ed25519 pubkeys in SubjectPublicKeyInfo-wrapped form,
       since the IETF WG has not yet settled on that versus the original
       "bare" representation.
 
+JH/39 Fix syslog logging for syslog_timestamp=no and log_selector +millisec.
+      Previously the millisecond value corrupted the output.
+      Fix also for syslog_pid=no and log_selector +pid, for which the pid
+      corrupted the output.
+
 
 Exim version 4.90
 -----------------

@@ -134,22 +134,27 @@ can get here if there is a failure to open the panic log.)
 
 Arguments:
   priority       syslog priority
-  s              the string to be written, the string may be modified!
+  s              the string to be written
 
 Returns:         nothing
 */
 
 static void
-write_syslog(int priority, uschar *s)
+write_syslog(int priority, const uschar *s)
 {
 int len, pass;
 int linecount = 0;
 
 if (running_in_test_harness) return;
 
-if (!syslog_timestamp) s += log_timezone ? 26 : 20;
 if (!syslog_pid && LOGGING(pid))
-    memmove(s + pid_position[0], s + pid_position[1], pid_position[1] - pid_position[0]);
+  s = string_sprintf("%.*s%s", (int)pid_position[0], s, s + pid_position[1]);
+if (!syslog_timestamp)
+  {
+  len = log_timezone ? 26 : 20;
+  if (LOGGING(millisec)) len += 4;
+  s += len;
+  }
 
 len = Ustrlen(s);
 
@@ -172,7 +177,7 @@ for (pass = 0; pass < 2; pass++)
   {
   int i;
   int tlen;
-  uschar *ss = s;
+  const uschar * ss = s;
   for (i = 1, tlen = len; tlen > 0; i++)
     {
     int plen = tlen;
