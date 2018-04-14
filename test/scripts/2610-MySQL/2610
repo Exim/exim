@@ -83,4 +83,4 @@ perl
 system 'mysqladmin --protocol=TCP -P PORT_N -u root shutdown';
 ****
 killdaemon
-#sudo rm -fr DIR/mysql
+sudo rm -fr DIR/mysql
