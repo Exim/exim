@@ -28,6 +28,27 @@ Fortunately, this is easy.
 So this only applies if you build Exim yourself.
 
 
+Insecure versions and ciphers
+-----------------------------
+
+Email delivery to MX hosts is usually done with automatic fallback to
+plaintext if TLS could not be negotiated.  There are good historical reasons
+for this.  You can and should avoid it by using DNSSEC for signing your DNS
+and publishing TLSA records, to enable "DANE" security.  This signals to
+senders that they should be able to verify your certificates, and that they
+should not fallback to cleartext.
+
+In the absence of DANE, trying to increase the security of TLS by removing
+support for older generations of ciphers and protocols will actually _lower_
+the security, because the clients fallback to plaintext and retry anyway.  As
+a result, you should give serious thought to enabling older features which are
+no longer default in OpenSSL.
+
+The examples below explicitly enable ssl3 and weak ciphers.
+
+We don't like this, but reality doesn't care and is messy.
+
+
 Build
 -----
 
@@ -45,7 +66,8 @@ will try to use the new OpenSSL, then stick to something like
 
     ./config --prefix=/opt/openssl --openssldir=/etc/ssl  \
         -L/opt/openssl/lib -Wl,-R/opt/openssl/lib         \
-        enable-ssl-trace shared
+        enable-ssl-trace shared                           \
+        enable-ssl3 enable-ssl3-method enable-weak-ssl-ciphers
     make
     make install
 
