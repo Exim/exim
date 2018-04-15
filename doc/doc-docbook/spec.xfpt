@@ -31991,10 +31991,19 @@ Any further elements are per-server (non-global) options.
 These per-server options are supported:
 .code
 retry=<timespec>	Retry on connect fail
+fdpass						Pass an open read-only file descriptor to clamd. Ignored for TCP sockets.
 .endd
 
 The &`retry`& option specifies a time after which a single retry for
 a failed connect is made.  The default is to not retry.
+
+The &`fdpass`& option requests to use the zFILDES command to send an open
+read-only file descriptor to clamd. The advantage is, that clamd does not need
+any special access permissions on either Exim's scan directory or the files it
+should scan. This allows users to further restrict clamd enhancing the security
+of the system by disallowing clamd to open arbitrary files by its own. The
+disadvantage is, that clamd does not know the name of the file it scans. It will
+log a string like "fd[10]" instead of the file's name.
 
 If a Unix socket file is specified, only one server is supported.
 
