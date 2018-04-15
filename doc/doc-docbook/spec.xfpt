@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.90"
+.set previousversion "4.91"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -448,11 +448,9 @@ available in other formats (HTML, PostScript, PDF, and Texinfo). Section
 .section "FTP and web sites" "SECID2"
 .cindex "web site"
 .cindex "FTP site"
-.new
 The primary site for Exim source distributions is the &%exim.org%& FTP site,
 available over HTTPS, HTTP and FTP.  These services, and the &%exim.org%&
 website, are hosted at the University of Cambridge.
-.wen
 
 .cindex "wiki"
 .cindex "FAQ"
@@ -461,18 +459,14 @@ differently formatted versions of the documentation. A recent addition to the
 online information is the Exim wiki (&url(http://wiki.exim.org)),
 which contains what used to be a separate FAQ, as well as various other
 examples, tips, and know-how that have been contributed by Exim users.
-.new
 The wiki site should always redirect to the correct place, which is currently
 provided by GitHub, and is open to editing by anyone with a GitHub account.
-.wen
 
 .cindex Bugzilla
 An Exim Bugzilla exists at &url(https://bugs.exim.org). You can use
 this to report bugs, and also to add items to the wish list. Please search
 first to check that you are not duplicating a previous entry.
-.new
 Please do not ask for configuration help in the bug-tracker.
-.wen
 
 
 .section "Mailing lists" "SECID3"
@@ -513,7 +507,6 @@ message to the &'exim-dev'& mailing list and have it discussed.
 .cindex "HTTPS download site"
 .cindex "distribution" "ftp site"
 .cindex "distribution" "https site"
-.new
 The master distribution site for the Exim distribution is
 .display
 &*https://downloads.exim.org/*&
@@ -529,7 +522,6 @@ If accessing via a hostname containing &'ftp'&, then the file references that
 follow are relative to the &_exim_& directories at these sites.
 If accessing via the hostname &'downloads'& then the subdirectories described
 here are top-level directories.
-.wen
 
 There are now quite a number of independent mirror sites around
 the world. Those that I know about are listed in the file called &_Mirrors_&.
@@ -545,10 +537,8 @@ subdirectory, the current release can always be found in files called
 .endd
 where &'n.nn'& is the highest such version number in the directory. The three
 files contain identical data; the only difference is the type of compression.
-.new
 The &_.xz_& file is usually the smallest, while the &_.gz_& file is the
 most portable to old systems.
-.wen
 
 .cindex "distribution" "signing details"
 .cindex "distribution" "public key"
@@ -562,12 +552,10 @@ PGP key, a version of which can be found in the release directory in the file
 &_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
 such as &'pool.sks-keyservers.net'&.
 
-.new
 At time of last update, releases were being made by Jeremy Harris and signed
 with key &'0xBCE58C8CE41F32DF'&.  Other recent keys used for signing are those
 of Heiko Schlittermann, &'0x26101B62F69376CE'&,
 and of Phil Pennock, &'0x4D1E900E14C1CC04'&.
-.wen
 
 The signatures for the tar bundles are in:
 .display
@@ -589,10 +577,8 @@ inside the &_exim4_& directory of the FTP site:
 &_exim-postscript-n.nn.tar.gz_&
 &_exim-texinfo-n.nn.tar.gz_&
 .endd
-.new
 These tar files contain only the &_doc_& directory, not the complete
 distribution, and are also available in &_.bz2_& and &_.xz_& forms.
-.wen
 
 
 .section "Limitations" "SECID6"
@@ -3187,10 +3173,8 @@ If invoked by an admin user, then &%macro%&, &%macro_list%& and &%macros%&
 are available, similarly to the drivers.  Because macros are sometimes used
 for storing passwords, this option is restricted.
 The output format is one item per line.
-.new
 For the "-bP macro <name>" form, if no such macro is found
 the exit status will be nonzero.
-.wen
 
 .vitem &%-bp%&
 .oindex "&%-bp%&"
@@ -7864,7 +7848,6 @@ ${lookup redis{set keyname ${quote_redis:objvalue plus}}}
 ${lookup redis{get keyname}}
 .endd
 
-.new
 As of release 4.91, "lightweight" support for Redis Cluster is available.
 Requires &%redis_servers%& list to contain all the servers in the cluster, all
 of which must be reachable from the running exim instance. If the cluster has
@@ -7875,7 +7858,6 @@ When the Redis Cluster returns a "MOVED" response to a query, Exim does not
 immediately follow the redirection but treats the response as a DEFER, moving on
 to the next server in the &%redis_servers%& list until the correct server is
 reached.
-.wen
 
 .ecindex IIDfidalo1
 .ecindex IIDfidalo2
@@ -9175,7 +9157,6 @@ the expansion result is an empty string.
 If the ACL returns defer the result is a forced-fail.  Otherwise the expansion fails.
 
 
-.new
 .vitem "&*${authresults{*&<&'authserv-id'&>&*}}*&"
 .cindex authentication "results header"
 .cindex headers "authentication-results:"
@@ -9199,7 +9180,6 @@ Example use (as an ACL modifier):
       add_header = :at_start:${authresults {$primary_hostname}}
 .endd
 This is safe even if no authentication results are available.
-.wen
 
 
 .vitem "&*${certextract{*&<&'field'&>&*}{*&<&'certificate'&>&*}&&&
@@ -10715,10 +10695,8 @@ with 256 being the default.
 
 The &%sha3%& expansion item is only supported if Exim has been
 compiled with GnuTLS 3.5.0 or later,
-.new
 or OpenSSL 1.1.1 or later.
 The macro "_CRYPTO_HASH_SHA3" will be defined if it is supported.
-.wen
 
 
 .vitem &*${stat:*&<&'string'&>&*}*&
@@ -11625,10 +11603,8 @@ When a message is submitted locally (that is, not over a TCP connection)
 the value of &$authenticated_id$& is normally the login name of the calling
 process. However, a trusted user can override this by means of the &%-oMai%&
 command line option.
-.new
 This second case also sets up inforamtion used by the
 &$authresults$& expansion item.
-.wen
 
 .vitem &$authenticated_fail_id$&
 .cindex "authentication" "fail" "id"
@@ -11968,11 +11944,9 @@ lookup succeeds, but there is a lookup problem such as a timeout when checking
 the result, the name is not accepted, and &$host_lookup_deferred$& is set to
 &"1"&. See also &$sender_host_name$&.
 
-.new
 .cindex authentication "expansion item"
 Performing these checks sets up information used by the
 &$authresults$& expansion item.
-.wen
 
 
 .vitem &$host_lookup_failed$&
@@ -12926,7 +12900,6 @@ A number of variables whose names start with &$spam$& are available when Exim
 is compiled with the content-scanning extension. For details, see section
 &<<SECTscanspamass>>&.
 
-.new
 .vitem &$spf_header_comment$& &&&
        &$spf_received$& &&&
        &$spf_result$& &&&
@@ -12934,7 +12907,6 @@ is compiled with the content-scanning extension. For details, see section
        &$spf_smtp_comment$&
 These variables are only available if Exim is built with SPF support.
 For details see section &<<SECSPF>>&.
-.wen
 
 .vitem &$spool_directory$&
 .vindex "&$spool_directory$&"
@@ -16932,11 +16904,9 @@ See section &<<SECTscanspamass>>& for more details.
 
 
 
-.new
 .option spf_guess main string "v=spf1 a/24 mx/24 ptr ?all"
 This option is available when Exim is compiled with SPF support.
 See section &<<SECSPF>>& for more details.
-.wen
 
 
 
@@ -17259,13 +17229,11 @@ generated for every connection.
 This option specifies a certificate revocation list. The expanded value must
 be the name of a file that contains CRLs in PEM format.
 
-.new
 Under OpenSSL the option can specify a directory with CRL files.
 
 &*Note:*& Under OpenSSL the option must, if given, supply a CRL
 for each signing element of the certificate chain (i.e. all but the leaf).
 For the file variant this can be multiple PEM blocks in the one file.
-.wen
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
@@ -17392,11 +17360,9 @@ Certificate Authority.
 
 Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
 
-.new
 For GnuTLS 3.5.6 or later the expanded value of this option can be a list
 of files, to match a list given for the &%tls_certificate%& option.
 The ordering of the two lists must match.
-.wen
 
 
 .option tls_on_connect_ports main "string list" unset
@@ -18859,9 +18825,7 @@ records.
 MX records of equal priority are sorted by Exim into a random order. Exim then
 looks for address records for the host names obtained from MX or SRV records.
 When a host has more than one IP address, they are sorted into a random order,
-.new
 except that IPv6 addresses are sorted before IPv4 addresses. If all the
-.wen
 IP addresses found are discarded by a setting of the &%ignore_target_hosts%&
 generic option, the router declines.
 
@@ -18994,7 +18958,6 @@ However, it will result in any message with mistyped domains
 also being queued.
 
 
-.new
 .option ipv4_only "string&!!" unset
 .cindex IPv6 disabling
 .cindex DNS "IPv6 disabling"
@@ -19010,7 +18973,6 @@ The string is expanded, and if the result is anything but a forced failure,
 or an empty string, or one of the strings “0” or “no” or “false”
 (checked without regard to the case of the letters),
 A records are sorted before AAAA records (inverting the default).
-.wen
 
 .option mx_domains dnslookup "domain list&!!" unset
 .cindex "MX record" "required to exist"
@@ -19637,12 +19599,10 @@ also look in &_/etc/hosts_& or other sources of information.
 &%bydns%&: look up address records for the hosts directly in the DNS; fail if
 no address records are found. If there is a temporary DNS error (such as a
 timeout), delivery is deferred.
-.new
 .next
 &%ipv4_only%&: in direct DNS lookups, look up only A records.
 .next
 &%ipv4_prefer%&: in direct DNS lookups, sort A records before AAAA records.
-.wen
 .endlist
 
 For example:
@@ -23968,7 +23928,6 @@ For testing purposes, this value can be overridden by the &%-oB%& command line
 option.
 
 
-.new
 .option dane_require_tls_ciphers smtp string&!! unset
 .cindex "TLS" "requiring specific ciphers for DANE"
 .cindex "cipher" "requiring specific"
@@ -23983,7 +23942,6 @@ TLS cipherlist configuration stronger will increase security, rather than
 counter-intuitively decreasing it.
 If the option expands to be empty or is forced to fail, then it will
 be treated as unset and &%tls_require_ciphers%& will be used instead.
-.wen
 
 
 .option data_timeout smtp time 5m
@@ -24307,7 +24265,6 @@ Exim will request a Certificate Status on a
 TLS session for any host that matches this list.
 &%tls_verify_certificates%& should also be set for the transport.
 
-.new
 .option hosts_require_dane smtp "host list&!!" unset
 .cindex DANE "transport options"
 .cindex DANE "requiring for certain servers"
@@ -24316,7 +24273,6 @@ TLSA record is present for any host matching the list,
 and that a DANE-verified TLS connection is made.
 There will be no fallback to in-clear communication.
 See section &<<SECDANE>>&.
-.wen
 
 .option hosts_require_ocsp smtp "host list&!!" unset
 .cindex "TLS" "requiring for certain servers"
@@ -24347,7 +24303,6 @@ This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
 BDAT will not be used in conjunction with a transport filter.
 
-.new
 .option hosts_try_dane smtp "host list&!!" unset
 .cindex DANE "transport options"
 .cindex DANE "attempting for certain servers"
@@ -24357,7 +24312,6 @@ If found and verified by DNSSEC,
 a DANE-verified TLS connection is made to that host;
 there will be no fallback to in-clear communication.
 See section &<<SECDANE>>&.
-.wen
 
 .option hosts_try_fastopen smtp "host list&!!" unset
 .cindex "fast open, TCP" "enabling, in client"
@@ -26164,11 +26118,9 @@ public name) of the authenticator driver that successfully authenticated the
 client from which the message was received. This variable is empty if there was
 no successful authentication.
 
-.new
 .cindex authentication "expansion item"
 Successful authentication sets up information used by the
 &$authresults$& expansion item.
-.wen
 
 
 
@@ -28121,7 +28073,6 @@ Open-source PKI book, available online at
 
 
 
-.new
 .section DANE "SECDANE"
 .cindex DANE
 DNS-based Authentication of Named Entities, as applied to SMTP over TLS, provides assurance to a client that
@@ -28277,7 +28228,6 @@ records for DANE clients (such as Exim and Postfix) and to publish anchor
 information for MTA-STS as well.  This is what is done for the &'exim.org'&
 domain itself (with caveats around occasionally broken MTA-STS because of
 incompatible specification changes prior to reaching RFC status).
-.wen
 
 
 
@@ -31928,13 +31878,11 @@ A list of options may follow. These options are interpreted on the
 Exim's side of the malware scanner, or are given on separate lines to
 the daemon as options before the main scan command.
 
-.new
 .cindex &`pass_unscanned`& "avast"
 If &`pass_unscanned`&
 is set, any files the Avast scanner can't scan (e.g.
 decompression bombs, or invalid archives) are considered clean. Use with
 care.
-.wen
 
 For example:
 .code
@@ -36503,11 +36451,9 @@ A delivery set up by a router configured with
 failed. The delivery was discarded.
 .endlist olist
 .next
-.new
 .cindex DKIM "log line"
 &'DKIM: d='&&~&~Verbose results of a DKIM verification attempt, if enabled for
 logging and the message has a DKIM signature header.
-.wen
 .endlist ilist
 
 
@@ -36644,7 +36590,6 @@ precision, eg. &`DT=0.304s`&.
 &%delivery_size%&: For each delivery, the size of message delivered is added to
 the &"=>"& line, tagged with S=.
 .next
-.new
 .cindex log "DKIM verification"
 .cindex DKIM "verification logging"
 &%dkim%&: For message acceptance log lines, when an DKIM signature in the header
@@ -36653,7 +36598,6 @@ verifies successfully a tag of DKIM is added, with one of the verified domains.
 .cindex log "DKIM verification"
 .cindex DKIM "verification logging"
 &%dkim_verbose%&: A log entry is written for each attempted DKIM verification.
-.wen
 .next
 .cindex "log" "dnslist defer"
 .cindex "DNS list" "logging defer"
@@ -36775,14 +36719,12 @@ precision, eg. &`QT=1.578s`&.
 the local host is logged as QT=<&'time'&> on &"Completed"& lines, for
 example, &`QT=3m45s`&. The clock starts when Exim starts to receive the
 message, so it includes reception time as well as the total delivery time.
-.new
 .next
 .cindex "log" "receive duration"
 &%receive_time%&: For each message, the amount of real time it has taken to
 perform the reception is logged as RT=<&'time'&>, for example, &`RT=1s`&.
 If millisecond logging is enabled, short times will be shown with greater
 precision, eg. &`RT=0.204s`&.
-.wen
 .next
 .cindex "log" "recipients"
 &%received_recipients%&: The recipients of a message are listed in the main log
@@ -36940,10 +36882,8 @@ unchanged, or whether they should be rendered as escape sequences.
 &%tls_certificate_verified%&: An extra item is added to <= and => log lines
 when TLS is in use. The item is &`CV=yes`& if the peer's certificate was
 verified
-.new
 using a CA trust anchor,
 &`CA=dane`& if using a DNS trust anchor,
-.wen
 and &`CV=no`& if not.
 .next
 .cindex "log" "TLS cipher"
@@ -38916,11 +38856,9 @@ linked to a domain which that entity controls.  It permits reputation to
 be tracked on a per-domain basis, rather than merely upon source IP address.
 DKIM is documented in RFC 6376.
 
-.new
 As DKIM relies on the message being unchanged in transit, messages handled
 by a mailing-list (which traditionally adds to the message) will not match
 any original DKIM signature.
-.wen
 
 DKIM support is compiled into Exim by default if TLS support is present.
 It can be disabled by setting DISABLE_DKIM=yes in &_Local/Makefile_&.
@@ -38941,7 +38879,6 @@ In typical Exim style, the verification implementation does not include any
 default "policy". Instead it enables you to build your own policy using
 Exim's standard controls.
 
-.new
 Please note that verification of DKIM signatures in incoming mail is turned
 on by default for logging (in the <= line) purposes.
 
@@ -38955,7 +38892,6 @@ signature status. Here is an example (with line-breaks added for clarity):
     c=relaxed/relaxed a=rsa-sha1
     i=@facebookmail.com t=1252484542 [verification succeeded]
 .endd
-.wen
 
 You might want to turn off DKIM verification processing entirely for internal
 or relay mail sources. To do that, set the &%dkim_disable_verify%& ACL
@@ -38967,7 +38903,6 @@ senders).
 .section "Signing outgoing messages" "SECDKIMSIGN"
 .cindex "DKIM" "signing"
 
-.new
 For signing to be usable you must have published a DKIM record in DNS.
 Note that RFC 8301 says:
 .code
@@ -38982,7 +38917,6 @@ in the DNS record is different between RSA and EC keys;
 for the former it is the base64 of the ASN.1 for the RSA public key
 (equivalent to the private-key .pem with the header/trailer stripped)
 but for EC keys it is the base64 of the pure key; no ASN.1 wrapping.
-.wen
 
 Signing is enabled by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
@@ -39011,11 +38945,9 @@ You can use the &%$dkim_domain%& and
 The result can either
 .ilist
 be a valid RSA private key in ASCII armor (.pem file), including line breaks
-.new
 .next
 with GnuTLS 3.6.0 or OpenSSL 1.1.1 or later,
 be a valid Ed25519 private key (same format as above)
-.wen
 .next
 start with a slash, in which case it is treated as a file that contains
 the private key
@@ -39025,7 +38957,6 @@ be signed. This case will not result in an error, even if &%dkim_strict%&
 is set.
 .endlist
 
-.new
 To generate keys under OpenSSL:
 .code
 openssl genrsa -out dkim_rsa.private 2048
@@ -39072,10 +39003,8 @@ Note that the format
 of Ed25519 keys in DNS has not yet been decided; this release supports
 both of the leading candidates at this time, a future release will
 probably drop support for whichever proposal loses.
-.wen
 
 .option dkim_hash smtp string&!! sha256
-.new
 Can be set to any one of the supported hash methods, which are:
 .ilist
 &`sha1`& &-- should not be used, is old and insecure
@@ -39084,14 +39013,11 @@ Can be set to any one of the supported hash methods, which are:
 .next
 &`sha512`& &-- possibly more secure but less well supported
 .endlist
-.wen
 
-.new
 Note that RFC 8301 says:
 .code
 rsa-sha1 MUST NOT be used for signing or verifying.
 .endd
-.wen
 
 .option dkim_identity smtp string&!! unset
 If set after expansion, the value is used to set an "i=" tag in
@@ -39150,11 +39076,9 @@ To evaluate the signature in the ACL a large number of expansion variables
 containing the signature status and its details are set up during the
 runtime of the ACL.
 
-.new
 .cindex authentication "expansion item"
 Performing verification sets up information used by the
 &$authresults$& expansion item.
-.wen
 
 Calling the ACL only for existing signatures is not sufficient to build
 more advanced policies. For that reason, the global option
@@ -39270,14 +39194,11 @@ The key record selector string.
 
 .vitem &%$dkim_algo%&
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
-.new
 If running under GnuTLS 3.6.0 or OpenSSL 1.1.1 or later,
 may also be 'ed25519-sha256'.
 The "_CRYPTO_SIGN_ED25519" macro will be defined if support is present
 for EC keys.
-.wen
 
-.new
 Note that RFC 8301 says:
 .code
 rsa-sha1 MUST NOT be used for signing or verifying.
@@ -39288,7 +39209,6 @@ algorithms (currently, rsa-sha1) have permanently failed evaluation
 
 To enforce this you must have a DKIM ACL which checks this variable
 and overwrites the &$dkim_verify_status$& variable as discussed above.
-.wen
 
 .vitem &%$dkim_canon_body%&
 The body canonicalization method. One of 'relaxed' or 'simple'.
@@ -39317,9 +39237,7 @@ UNIX timestamp reflecting the date and time when the signer wants the
 signature to be treated as "expired". When this was not specified by the
 signer, "9999999999999" is returned. This makes it possible to do useful
 integer size comparisons against this value.
-.new
 Note that Exim does not check this value.
-.wen
 
 .vitem &%$dkim_headernames%&
 A colon-separated list of names of headers included in the signature.
@@ -39344,7 +39262,6 @@ Notes from the key record (tag n=).
 .vitem &%$dkim_key_length%&
 Number of bits in the key.
 
-.new
 Note that RFC 8301 says:
 .code
 Verifiers MUST NOT consider signatures using RSA keys of
@@ -39354,7 +39271,6 @@ less than 1024 bits as valid signatures.
 To enforce this you must have a DKIM ACL which checks this variable
 and overwrites the &$dkim_verify_status$& variable as discussed above.
 As EC keys are much smaller, the check should only do this for RSA keys.
-.wen
 
 .endlist
 
@@ -39398,7 +39314,6 @@ for more information of what they mean.
 
 
 
-.new
 .section "SPF (Sender Policy Framework)" SECSPF
 .cindex SPF verification
 
@@ -39416,11 +39331,9 @@ There is no Exim involvement in the transmission of messages;
 publishing certain DNS records is all that is required.
 
 For verification, an ACL condition and an expansion lookup are provided.
-.new
 .cindex authentication "expansion item"
 Performing verification sets up information used by the
 &$authresults$& expansion item.
-.wen
 
 
 .cindex SPF "ACL condition"
@@ -39567,8 +39480,6 @@ The lookup will return the same result strings as can appear in
 Currently, only IPv4 addresses are supported.
 
 
-. wen-for SPF section
-.wen
 
 
 . ////////////////////////////////////////////////////////////////////////////
@@ -39784,9 +39695,7 @@ ${utf8_localpart_from_alabel:str}
 
 .cindex utf8 "address downconversion"
 .cindex i18n "utf8 address downconversion"
-.new
 The RCPT ACL
-.wen
 may use the following modifier:
 .display
 control = utf8_downconvert
