@@ -145,8 +145,6 @@ write_syslog(int priority, const uschar *s)
 int len, pass;
 int linecount = 0;
 
-if (running_in_test_harness) return;
-
 if (!syslog_pid && LOGGING(pid))
   s = string_sprintf("%.*s%s", (int)pid_position[0], s, s + pid_position[1]);
 if (!syslog_timestamp)
@@ -159,7 +157,7 @@ if (!syslog_timestamp)
 len = Ustrlen(s);
 
 #ifndef NO_OPENLOG
-if (!syslog_open)
+if (!syslog_open && !running_in_test_harness)
   {
 # ifdef SYSLOG_LOG_PID
   openlog(CS syslog_processname, LOG_PID|LOG_CONS, syslog_facility);
@@ -189,15 +187,23 @@ for (pass = 0; pass < 2; pass++)
     tlen -= plen;
     if (ss[plen] == '\n') tlen--;    /* chars left */
 
-    if (pass == 0) linecount++; else
-      {
+    if (pass == 0)
+      linecount++;
+    else if (running_in_test_harness)
+      if (linecount == 1)
+        fprintf(stderr, "SYSLOG: '%.*s'\n", plen, ss);
+      else
+        fprintf(stderr, "SYSLOG: '[%d%c%d] %.*s'\n", i,
+          ss[plen] == '\n' && tlen != 0 ? '\\' : '/',
+          linecount, plen, ss);
+    else
       if (linecount == 1)
         syslog(priority, "%.*s", plen, ss);
       else
         syslog(priority, "[%d%c%d] %.*s", i,
           ss[plen] == '\n' && tlen != 0 ? '\\' : '/',
           linecount, plen, ss);
-      }
+
     ss += plen;
     if (*ss == '\n') ss++;
     }

@@ -1,0 +1,28 @@
+# Exim test configuration 0615
+
+keep_environment = PATH
+exim_path = EXIM_PATH
+spool_directory = DIR/spool
+
+log_file_path = DIR/spool/log/%slog : syslog
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+tls_advertise_hosts =
+
+primary_hostname = myhost.test.ex
+queue_only
+
+# ----- Main settings -----
+
+log_selector = LOG_SELECTOR
+log_timezone = TIMES
+
+syslog_timestamp = ARG1
+syslog_pid = ARG2
+
+acl_not_smtp = accept logwrite = msg
+
+
+# End

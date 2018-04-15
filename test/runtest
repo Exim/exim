@@ -490,6 +490,11 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d(\s[+-]\d\d\d\d)?\s/1999-03-02 09:44:33 /gx;
   s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\.\d{3}(\s[+-]\d\d\d\d)?\s/2017-07-30 18:51:05.712 /gx;
   s/^Logwrite\s"\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Logwrite "1999-03-02 09:44:33/gx;
+  # Date/time in syslog test
+  s/^SYSLOG:\s\'\K\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\s/2017-07-30 18:51:05 /gx;
+  s/^SYSLOG:\s\'\K\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\.\d{3}\s/2017-07-30 18:51:05.712 /gx;
+  s/^SYSLOG:\s\'\K\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\s[+-]\d\d\d\d\s/2017-07-30 18:51:05 +9999 /gx;
+  s/^SYSLOG:\s\'\K\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\.\d{3}\s[+-]\d\d\d\d\s/2017-07-30 18:51:05.712 +9999 /gx;
 
   s/((D|[RQD]T)=)\d+s/$1qqs/g;
   s/((D|[RQD]T)=)\d\.\d{3}s/$1q.qqqs/g;
@@ -675,8 +680,12 @@ RESET_AFTER_EXTRA_LINE_READ:
   s"test-mail/temp\.\d+\."test-mail/temp.pppp.";
 
   # Optional pid in log lines
-  s/^(\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d)(\s[+-]\d\d\d\d|)(\s\[\d+\])/
-    "$1$2 [" . new_value($3, "%s", \$next_pid) . "]"/gxe;
+  s/^(\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d)(\.\d{3}|)(\s[+-]\d{4}|)(\s\[\d+\])/
+    "$1$2$3 [" . new_value($4, "%s", \$next_pid) . "]"/gxe;
+
+  # Optional pid in syslog test lines
+  s/^(SYSLOG:\s\'([-0-9]{10}\s[:.0-9]{8,12}\s([-+]\d{4}\s)?|))(\[\d+\] )/
+    "$1\[" . new_value($4, "%s", \$next_pid) . "]"/gxe;
 
   # Detect a daemon stderr line with a pid and save the pid for subsequent
   # removal from following lines.
