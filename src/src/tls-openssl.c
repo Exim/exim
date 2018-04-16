@@ -2505,10 +2505,12 @@ if (error == SSL_ERROR_ZERO_RETURN)
   if (SSL_get_shutdown(server_ssl) == SSL_RECEIVED_SHUTDOWN)
  	SSL_shutdown(server_ssl);
 
+#ifndef DISABLE_OCSP
   sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
+  server_static_cbinfo->verify_stack = NULL;
+#endif
   SSL_free(server_ssl);
   SSL_CTX_free(server_ctx);
-  server_static_cbinfo->verify_stack = NULL;
   server_ctx = NULL;
   server_ssl = NULL;
   tls_in.active = -1;
@@ -2782,11 +2784,13 @@ if (shutdown)
     }
   }
 
+#ifndef DISABLE_OCSP
 if (is_server)
   {
   sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
   server_static_cbinfo->verify_stack = NULL;
   }
+#endif
 
 SSL_CTX_free(*ctxp);
 SSL_free(*sslp);
