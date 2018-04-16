@@ -2037,6 +2037,10 @@ bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
 dnslist_domain = dnslist_matched = NULL;
+#ifdef SUPPORT_SPF
+spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
+spf_result_guessed = FALSE;
+#endif
 #ifndef DISABLE_DKIM
 dkim_cur_signer = dkim_signers =
 dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
@@ -2048,32 +2052,18 @@ dkim_verify_signers = US"$dkim_signers";
 #endif
 #ifdef EXPERIMENTAL_DMARC
 dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
-dmarc_ar_header = dmarc_domain_policy = dmarc_forensic_sender =
+dmarc_domain_policy = dmarc_forensic_sender =
 dmarc_history_file = dmarc_status = dmarc_status_text = dmarc_tld_file =
 dmarc_used_domain = NULL;
 #endif
-#ifdef EXPERIMENTAL_DMARC
-dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
-dmarc_ar_header = dmarc_domain_policy = dmarc_forensic_sender =
-dmarc_history_file = dmarc_status = dmarc_status_text = dmarc_tld_file =
-dmarc_used_domain = NULL;
+#ifdef EXPERIMENTAL_ARC
+arc_state = arc_state_reason = NULL;
 #endif
 dsn_ret = 0;
 dsn_envid = NULL;
 deliver_host = deliver_host_address = NULL;	/* Can be set by ACL */
 #ifndef DISABLE_PRDR
 prdr_requested = FALSE;
-#endif
-#ifdef SUPPORT_SPF
-spf_header_comment = spf_received = spf_result = spf_smtp_comment = NULL;
-spf_result_guessed = FALSE;
-#endif
-#ifdef EXPERIMENTAL_DMARC
-dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
-dmarc_domain_policy = dmarc_status = dmarc_status_text = dmarc_used_domain = NULL;
-#endif
-#ifdef EXPERIMENTAL_ARC
-arc_state = arc_state_reason = NULL;
 #endif
 #ifdef SUPPORT_I18N
 message_smtputf8 = FALSE;
