@@ -813,7 +813,7 @@ for (sig = dkim_signatures; sig; sig = sig->next)
           g = string_cat(g, US"permerror (overlong public key record)\n\t\t"); break;
         case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:
         case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:
-          g = string_cat(g, US"neutral (syntax error in public key record)\n\t\t");
+          g = string_cat(g, US"neutral (public key record import problem)\n\t\t");
           break;
         case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR:
           g = string_cat(g, US"neutral (signature tag missing or invalid)\n\t\t");

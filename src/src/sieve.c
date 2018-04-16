@@ -21,7 +21,7 @@
 #include "exim.h"
 
 #if HAVE_ICONV
-#include <iconv.h>
+# include <iconv.h>
 #endif
 
 /* Define this for RFC compliant \r\n end-of-line terminators.      */
@@ -153,8 +153,10 @@ static uschar str_cc_c[]="Cc";
 static const struct String str_cc={ str_cc_c, 2 };
 static uschar str_bcc_c[]="Bcc";
 static const struct String str_bcc={ str_bcc_c, 3 };
+#ifdef ENVELOPE_AUTH
 static uschar str_auth_c[]="auth";
 static const struct String str_auth={ str_auth_c, 4 };
+#endif
 static uschar str_sender_c[]="Sender";
 static const struct String str_sender={ str_sender_c, 6 };
 static uschar str_resent_from_c[]="Resent-From";
@@ -3379,7 +3381,6 @@ while (*filter->pc)
             {
             uschar *mime_body,*reason_end;
             static const uschar nlnl[]="\r\n\r\n";
-	    gstring * g;
 
             for
               (

@@ -1553,7 +1553,7 @@ if (addr->return_file >= 0 && addr->return_filename)
           log_write(0, LOG_MAIN, "<%s>: %s transport output: %s",
             addr->address, tb->name, sp);
           }
-        (void)fclose(f);
+      (void)fclose(f);
       }
 
     /* Handle returning options, but only if there is an address to return
@@ -7720,9 +7720,10 @@ wording. */
 	    addr->address);
         if ((hu = addr->host_used) && hu->name)
 	  {
-	  const uschar * s;
 	  fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
 #ifdef EXPERIMENTAL_DSN_INFO
+	  {
+	  const uschar * s;
 	  if (hu->address)
 	    {
 	    uschar * p = hu->port == 25
@@ -7735,6 +7736,7 @@ wording. */
 	    fprintf(f, "X-Remote-MTA-helo-response: X-str; %s\n", s);
 	  if ((s = addr->message) && *s)
 	    fprintf(f, "X-Exim-Diagnostic: X-str; %s\n", s);
+	  }
 #endif
 	  print_dsn_diagnostic_code(addr, f);
 	  }

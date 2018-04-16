@@ -129,7 +129,6 @@ uschar * hdrs;
 gstring * dkim_signature;
 int hsize;
 const uschar * errstr;
-uschar * verrstr;
 BOOL rc;
 
 DEBUG(D_transport) debug_printf("dkim signing direct-mode\n");
@@ -166,12 +165,14 @@ if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
 
 #ifdef EXPERIMENTAL_ARC
 if (dkim->arc_signspec)			/* Prepend ARC headers */
-  if (!(dkim_signature =
-	arc_sign(dkim->arc_signspec, dkim_signature, &verrstr)))
+  {
+  uschar * e;
+  if (!(dkim_signature = arc_sign(dkim->arc_signspec, dkim_signature, &e)))
     {
-    *err = verrstr;
+    *err = e;
     return FALSE;
     }
+  }
 #endif
 
 /* Write the signature and headers into the deliver-out-buffer.  This should

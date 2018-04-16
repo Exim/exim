@@ -1752,6 +1752,7 @@ else
 *        Set up for verifying certificates       *
 *************************************************/
 
+#ifndef DISABLE_OCSP
 /* Load certs from file, return TRUE on success */
 
 static BOOL
@@ -1769,6 +1770,7 @@ while ((x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
 BIO_free(bp);
 return TRUE;
 }
+#endif
 
 
 
