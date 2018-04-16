@@ -26,6 +26,27 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.91
+-----------------
+
+ * DANE and SPF have been promoted from Experimental to Supported status, thus
+   the options to enable them in Local/Makefile have been renamed.
+   See current src/EDITME for full details, including changes in dependencies,
+   but loosely: replace EXPERIMENTAL_SPF with SUPPORT_SPF and replace
+   EXPERIMENTAL_DANE with SUPPORT_DANE.
+
+ * Ancient ClamAV stream support, long deprecated by ClamAV, has been removed;
+   if you were building with WITH_OLD_CLAMAV_STREAM enabled then your problems
+   have marginally increased.
+
+ * A number of logging changes; if relying upon the previous DKIM additional
+   log-line, explicit log_selector configuration is needed to keep it.
+
+ * Other incompatible changes in EXPERIMENTAL_* features, read NewStuff and
+   ChangeLog carefully if relying upon an experimental feature such as DMARC.
+   Note that this includes changes to SPF as it was promoted into Supported.
+
+
 Exim version 4.89
 -----------------
 
