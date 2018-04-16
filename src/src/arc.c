@@ -1568,7 +1568,7 @@ expire = now = 0;
 
 identity = string_nextinlist(&signspec, &sep, NULL, 0);
 selector = string_nextinlist(&signspec, &sep, NULL, 0);
-if (  !*identity | !*selector
+if (  !*identity || !*selector
    || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0)) || !*privkey)
   {
   log_write(0, LOG_MAIN, "ARC: bad signing-specification (%s)",
