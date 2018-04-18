@@ -30790,7 +30790,7 @@ restrictions, to get the TXT record. As a byproduct of this, there is also
 a check that the IP being tested is indeed on the first list. The first
 domain is the one that is put in &$dnslist_domain$&. For example:
 .code
-reject message  = \
+deny message  = \
          rejected because $sender_host_address is blacklisted \
          at $dnslist_domain\n$dnslist_text
        dnslists = \
@@ -30808,7 +30808,7 @@ If you are interested in more than one merged list, the same list must be
 given several times, but because the results of the DNS lookups are cached,
 the DNS calls themselves are not repeated. For example:
 .code
-reject dnslists = \
+deny dnslists = \
          http.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.2 : \
          socks.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.3 : \
          misc.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.4 : \
