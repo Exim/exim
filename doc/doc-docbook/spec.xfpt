@@ -30969,13 +30969,15 @@ rest of the ACL.
 
 The &%leaky%& (default) option means that the client's recorded rate is not
 updated if it is above the limit. The effect of this is that Exim measures the
-client's average rate of successfully sent email, which cannot be greater than
-the maximum allowed. If the client is over the limit it may suffer some
-counter-measures (as specified in the ACL), but it will still be able to send
-email at the configured maximum rate, whatever the rate of its attempts. This
+client's average rate of successfully sent email,
+.new
+up to the given limit.
+This is appropriate if the countermeasure when the condition is true
+consists of refusing the message, and
 is generally the better choice if you have clients that retry automatically.
-For example, it does not prevent a sender with an over-aggressive retry rate
-from getting any email through.
+If the action when true is anything more complex then this option is
+likely not what is wanted.
+.wen
 
 The &%strict%& option means that the client's recorded rate is always
 updated. The effect of this is that Exim measures the client's average rate
