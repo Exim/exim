@@ -2340,7 +2340,7 @@ if (leaky + strict + readonly > 1)
   return ratelimit_error(log_msgptr, "conflicting update modes");
 if (badacl && (leaky || strict) && !noupdate)
   return ratelimit_error(log_msgptr,
-    "\"%s\" must not have /leaky or /strict option in %s ACL",
+    "\"%s\" must not have /leaky or /strict option, or cannot be used in %s ACL",
     ratelimit_option_string[mode], acl_wherenames[where]);
 
 /* Set the default values of any unset options. In readonly mode we
