@@ -39037,7 +39037,7 @@ tag value.  Note that Exim does not check the value.
 This option sets the canonicalization method used when signing a message.
 The DKIM RFC currently supports two methods: "simple" and "relaxed".
 The option defaults to "relaxed" when unset. Note: the current implementation
-only supports using the same canonicalization method for both headers and body.
+only supports signing with the same canonicalization method for both headers and body.
 
 .option dkim_strict smtp string&!! unset
 This  option  defines  how  Exim  behaves  when  signing a message that
@@ -39071,21 +39071,27 @@ name will be appended.
 .section "Verifying DKIM signatures in incoming mail" "SECDKIMVFY"
 .cindex "DKIM" "verification"
 
-Verification of DKIM signatures in SMTP incoming email is implemented via the
-&%acl_smtp_dkim%& ACL. By default, this ACL is called once for each
+.new
+Verification of DKIM signatures in SMTP incoming email is done for all
+messages for which an ACL control &%dkim_disable_verify%& has not been set.
+.cindex authentication "expansion item"
+Performing verification sets up information used by the
+&$authresults$& expansion item.
+.wen
+
+.new The results of that verification are then made available to the
+&%acl_smtp_dkim%& ACL, &new(which can examine and modify them).
+By default, this ACL is called once for each
 syntactically(!) correct signature in the incoming message.
 A missing ACL definition defaults to accept.
 If any ACL call does not accept, the message is not accepted.
 If a cutthrough delivery was in progress for the message, that is
 summarily dropped (having wasted the transmission effort).
 
-To evaluate the signature in the ACL a large number of expansion variables
+To evaluate the &new(verification result) in the ACL
+a large number of expansion variables
 containing the signature status and its details are set up during the
 runtime of the ACL.
-
-.cindex authentication "expansion item"
-Performing verification sets up information used by the
-&$authresults$& expansion item.
 
 Calling the ACL only for existing signatures is not sufficient to build
 more advanced policies. For that reason, the global option
