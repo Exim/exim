@@ -605,7 +605,7 @@ dnslookup:
 # smarthost:
 #   driver = manualroute
 #   domains = ! +local_domains
-#   transport = remote_smtp
+#   transport = smarthost_smtp
 #   route_data = MAIL.HOSTNAME.FOR.CENTRAL.SERVER.EXAMPLE
 #   ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
 #   no_more
@@ -725,6 +725,38 @@ begin transports
 remote_smtp:
   driver = smtp
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+
+
+# This transport is used for delivering messages to a smarthost, if the
+# smarthost router is enabled.  This starts from the same basis as
+# "remote_smtp" but then turns on various security options, because
+# we assume that if you're told "use smarthost.example.org as the smarthost"
+# then there will be TLS available, with a verifiable certificate for that
+# hostname, using decent TLS.
+
+smarthost_smtp:
+  driver = smtp
+  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+  multi_domain
+  #
+.ifdef _HAVE_TLS
+  # Comment out any of these which you have to, then file a Support
+  # request with your smarthost provider to get things fixed:
+  hosts_require_tls = *
+  tls_sni = $host
+  tls_verify_hosts = *
+  # As long as tls_verify_hosts is enabled, this won't matter, but if you
+  # have to comment it out then this will at least log whether you succeed
+  # or not:
+  tls_try_verify_hosts = *
+  #
+.ifdef _HAVE_OPENSSL
+  tls_require_ciphers = HIGH:@STRENGTH
+.endif
+.ifdef _HAVE_GNUTLS
+  tls_require_ciphers = NONE:+VERS-TLS1.2:SECURE192
+.endif
+.endif
 
 
 # This transport is used for local delivery to user mailboxes in traditional
