@@ -225,6 +225,13 @@ never_users = root
 host_lookup = *
 
 
+# The setting below causes Exim to try to initialize the system resolver
+# library with DNSSEC support.  It has no effect if your library lacks
+# DNSSEC support.
+
+dns_dnssec_ok = 1
+
+
 # The settings below cause Exim to make RFC 1413 (ident) callbacks
 # for all incoming SMTP calls. You can limit the hosts to which these
 # calls are made, and/or change the timeout that is used. If you set
@@ -593,6 +600,7 @@ dnslookup:
   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
 # if ipv6-enabled then instead use:
 # ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
+  dnssec_request_domains = *
   no_more
 
 
@@ -725,6 +733,10 @@ begin transports
 remote_smtp:
   driver = smtp
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+.ifdef _HAVE_DANE
+  dnssec_request_domains = *
+  hosts_try_dane = *
+.endif
 
 
 # This transport is used for delivering messages to a smarthost, if the
@@ -751,10 +763,10 @@ smarthost_smtp:
   tls_try_verify_hosts = *
   #
 .ifdef _HAVE_OPENSSL
-  tls_require_ciphers = HIGH:@STRENGTH
+  tls_require_ciphers = HIGH:!aNULL:@STRENGTH
 .endif
 .ifdef _HAVE_GNUTLS
-  tls_require_ciphers = NONE:+VERS-TLS1.2:SECURE192
+  tls_require_ciphers = SECURE192:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
 .endif
 .endif
 
