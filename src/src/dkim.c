@@ -34,6 +34,8 @@ pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig = NULL;
 static const uschar * dkim_collect_error = NULL;
 
+#define DKIM_MAX_SIGNATURES 20
+
 
 
 /*XXX the caller only uses the first record if we return multiple.
@@ -115,7 +117,7 @@ if (dkim_verify_ctx)
 /* Create new context */
 
 dkim_verify_ctx = pdkim_init_verify(&dkim_exim_query_dns_txt, dot_stuffing);
-dkim_collect_input = !!dkim_verify_ctx;
+dkim_collect_input = dkim_verify_ctx ? DKIM_MAX_SIGNATURES : 0;
 dkim_collect_error = NULL;
 
 /* Start feed up with any cached data */
@@ -137,7 +139,7 @@ if (  dkim_collect_input
   dkim_collect_error = pdkim_errstr(rc);
   log_write(0, LOG_MAIN,
 	     "DKIM: validation error: %.100s", dkim_collect_error);
-  dkim_collect_input = FALSE;
+  dkim_collect_input = 0;
   }
 store_pool = dkim_verify_oldpool;
 }
@@ -309,7 +311,7 @@ if (dkim_collect_error)
   goto out;
   }
 
-dkim_collect_input = FALSE;
+dkim_collect_input = 0;
 
 /* Finish DKIM operation and fetch link to signatures chain */
 

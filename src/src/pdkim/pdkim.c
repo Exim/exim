@@ -192,6 +192,7 @@ switch(status)
   case PDKIM_ERR_RSA_SIGNING:	return US"SIGNING";
   case PDKIM_ERR_LONG_LINE:	return US"LONG_LINE";
   case PDKIM_ERR_BUFFER_TOO_SMALL:	return US"BUFFER_TOO_SMALL";
+  case PDKIM_ERR_EXCESS_SIGS:	return US"EXCESS_SIGS";
   case PDKIM_SIGN_PRIVKEY_WRAP:	return US"PRIVKEY_WRAP";
   case PDKIM_SIGN_PRIVKEY_B64D:	return US"PRIVKEY_B64D";
   default: return US"(unknown)";
@@ -1008,6 +1009,13 @@ else
       while (last_sig->next) last_sig = last_sig->next;
       last_sig->next = sig;
       }
+
+    if (--dkim_collect_input == 0)
+      {
+      ctx->headers = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header->s);
+      ctx->cur_header->s[ctx->cur_header->ptr = 0] = '\0';
+      return PDKIM_ERR_EXCESS_SIGS;
+      }
     }
 
   /* all headers are stored for signature verification */
@@ -1033,7 +1041,7 @@ int p, rc;
 if (!data)
   pdkim_body_complete(ctx);
 
-else for (p = 0; p<len; p++)
+else for (p = 0; p < len; p++)
   {
   uschar c = data[p];
 
