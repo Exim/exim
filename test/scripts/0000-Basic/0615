@@ -1,0 +1,109 @@
+# syslog logging
+#
+# basic
+exim -DLOG_SELECTOR="" -DTIMES=no -DARG1=no -DARG2=no fred@test.ex
+****
+# plus tz
+exim -DLOG_SELECTOR="" -DTIMES=yes -DARG1=no -DARG2=no fred@test.ex
+****
+# plus ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=no -DARG1=no -DARG2=no fred@test.ex
+****
+# plus tz + ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=yes -DARG1=no -DARG2=no fred@test.ex
+****
+# plus pid
+exim -DLOG_SELECTOR="+pid" -DTIMES=no -DARG1=no -DARG2=no fred@test.ex
+****
+# plus pid + tz
+exim -DLOG_SELECTOR="+pid" -DTIMES=yes -DARG1=no -DARG2=no fred@test.ex
+****
+# plus pid + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=no -DARG1=no -DARG2=no fred@test.ex
+****
+# plus pid + tz + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=yes -DARG1=no -DARG2=no fred@test.ex
+****
+#
+#
+# syslog plus pid
+# basic
+exim -DLOG_SELECTOR="" -DTIMES=no -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus tz
+exim -DLOG_SELECTOR="" -DTIMES=yes -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=no -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus tz + ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=yes -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus pid
+exim -DLOG_SELECTOR="+pid" -DTIMES=no -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus pid + tz
+exim -DLOG_SELECTOR="+pid" -DTIMES=yes -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus pid + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=no -DARG1=no -DARG2=yes fred@test.ex
+****
+# plus pid + tz + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=yes -DARG1=no -DARG2=yes fred@test.ex
+****
+#
+#
+# syslog plus time
+# basic
+exim -DLOG_SELECTOR="" -DTIMES=no -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus tz
+exim -DLOG_SELECTOR="" -DTIMES=yes -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=no -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus tz + ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=yes -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus pid
+exim -DLOG_SELECTOR="+pid" -DTIMES=no -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus pid + tz
+exim -DLOG_SELECTOR="+pid" -DTIMES=yes -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus pid + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=no -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus pid + tz + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=yes -DARG1=yes -DARG2=no fred@test.ex
+****
+#
+#
+# syslog plus pid + time
+# basic
+exim -DLOG_SELECTOR="" -DTIMES=no -DARG1=yes -DARG2=yes fred@test.ex
+****
+# plus tz
+exim -DLOG_SELECTOR="" -DTIMES=yes -DARG1=yes -DARG2=yes fred@test.ex
+****
+# plus ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=no -DARG1=yes -DARG2=yes fred@test.ex
+****
+# plus tz + ms
+exim -DLOG_SELECTOR="+millisec" -DTIMES=yes -DARG1=yes -DARG2=yes fred@test.ex
+****
+# plus pid
+exim -DLOG_SELECTOR="+pid" -DTIMES=no -DARG1=yes -DARG2=yes fred@test.ex
+****
+# plus pid + tz
+exim -DLOG_SELECTOR="+pid" -DTIMES=yes -DARG1=yes -DARG2=no fred@test.ex
+****
+# plus pid + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=no -DARG1=yes -DARG2=yes fred@test.ex
+****
+# plus pid + tz + ms
+exim -DLOG_SELECTOR="+millisec +pid" -DTIMES=yes -DARG1=yes -DARG2=yes fred@test.ex
+****
+#
+no_msglog_check
