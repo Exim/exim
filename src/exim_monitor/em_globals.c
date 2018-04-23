@@ -139,7 +139,7 @@ uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
 uschar *dkim_verify_signers      = US"$dkim_signers";
-BOOL    dkim_collect_input       = FALSE;
+unsigned dkim_collect_input      = 0;
 BOOL    dkim_disable_verify      = FALSE;
 #endif
 

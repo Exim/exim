@@ -263,7 +263,7 @@ bmi_verdicts = NULL;
 #ifndef DISABLE_DKIM
 dkim_signers = NULL;
 dkim_disable_verify = FALSE;
-dkim_collect_input = FALSE;
+dkim_collect_input = 0;
 #endif
 
 #ifdef SUPPORT_TLS

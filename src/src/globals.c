@@ -669,7 +669,7 @@ BOOL    disable_ipv6           = FALSE;
 BOOL    disable_logging        = FALSE;
 
 #ifndef DISABLE_DKIM
-BOOL    dkim_collect_input       = FALSE;
+unsigned dkim_collect_input      = 0;
 uschar *dkim_cur_signer          = NULL;
 BOOL    dkim_disable_verify      = FALSE;
 int     dkim_key_length          = 0;

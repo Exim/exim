@@ -595,7 +595,7 @@ uschar * log_msg;
 for(;;)
   {
 #ifndef DISABLE_DKIM
-  BOOL dkim_save;
+  unsigned dkim_save;
 #endif
 
   if (chunking_data_left > 0)
@@ -606,7 +606,7 @@ for(;;)
   receive_ungetc = lwr_receive_ungetc;
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
-  dkim_collect_input = FALSE;
+  dkim_collect_input = 0;
 #endif
 
   /* Unless PIPELINING was offered, there should be no next command
@@ -2045,7 +2045,8 @@ spf_result_guessed = FALSE;
 dkim_cur_signer = dkim_signers =
 dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
 dkim_cur_signer = dkim_signers = dkim_signing_domain = dkim_signing_selector = NULL;
-dkim_disable_verify = dkim_collect_input = FALSE;
+dkim_disable_verify = FALSE;
+dkim_collect_input = 0;
 dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;
 dkim_key_length = 0;
 dkim_verify_signers = US"$dkim_signers";

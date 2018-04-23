@@ -12,7 +12,11 @@ JH/01 Remove code calling the customisable local_scan function, unless a new
       definition "HAVE_LOCAL_SCAN=yes" is present in the Local/Makefile.
 
 JH/02 Bug 1007: Avoid doing logging from signal-handlers, as that can result in
-      non-signal-safe funxtions being used.
+      non-signal-safe functions being used.
+
+JH/03 Bug 2269: When presented with a received message having a stupidly large
+      number of DKIM-Signature headers, disable DKIM verification to avoid
+      a resource-consumption attack.  The limit is set at twenty.
 
 
 Exim version 4.91

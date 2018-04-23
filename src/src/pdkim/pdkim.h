@@ -48,8 +48,9 @@
 #define PDKIM_ERR_RSA_SIGNING      -102
 #define PDKIM_ERR_LONG_LINE        -103
 #define PDKIM_ERR_BUFFER_TOO_SMALL -104
-#define PDKIM_SIGN_PRIVKEY_WRAP    -105
-#define PDKIM_SIGN_PRIVKEY_B64D    -106
+#define PDKIM_ERR_EXCESS_SIGS	   -105
+#define PDKIM_SIGN_PRIVKEY_WRAP    -106
+#define PDKIM_SIGN_PRIVKEY_B64D    -107
 
 /* -------------------------------------------------------------------------- */
 /* Main/Extended verification status */
