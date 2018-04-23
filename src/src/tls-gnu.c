@@ -2511,12 +2511,20 @@ sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
   MIN(ssl_xfer_buffer_size, lim));
-alarm(0);
+if (smtp_receive_timeout > 0) alarm(0);
 
-/* Timeouts do not get this far; see command_timeout_handler().
-   A zero-byte return appears to mean that the TLS session has been
-   closed down, not that the socket itself has been closed down. Revert to
-   non-TLS handling. */
+if (had_command_timeout)		/* set by signal handler */
+  smtp_command_timeout_exit();		/* does not return */
+if (had_command_sigterm)
+  smtp_command_sigterm_exit();
+if (had_data_timeout)
+  smtp_data_timeout_exit();
+if (had_data_sigint)
+  smtp_data_sigint_exit();
+
+/* Timeouts do not get this far.  A zero-byte return appears to mean that the
+TLS session has been closed down, not that the socket itself has been closed
+down. Revert to non-TLS handling. */
 
 if (sigalrm_seen)
   {

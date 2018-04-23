@@ -221,7 +221,7 @@ if (host_lookup_deferred) fprintf(f, "-host_lookup_deferred\n");
 if (host_lookup_failed) fprintf(f, "-host_lookup_failed\n");
 if (sender_local) fprintf(f, "-local\n");
 if (local_error_message) fprintf(f, "-localerror\n");
-if (local_scan_data != NULL) fprintf(f, "-local_scan %s\n", local_scan_data);
+if (local_scan_data) fprintf(f, "-local_scan %s\n", local_scan_data);
 #ifdef WITH_CONTENT_SCAN
 if (spam_bar)       fprintf(f,"-spam_bar %s\n",       spam_bar);
 if (spam_score)     fprintf(f,"-spam_score %s\n",     spam_score);
@@ -231,7 +231,7 @@ if (deliver_manual_thaw) fprintf(f, "-manual_thaw\n");
 if (sender_set_untrusted) fprintf(f, "-sender_set_untrusted\n");
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-if (bmi_verdicts != NULL) fprintf(f, "-bmi_verdicts %s\n", bmi_verdicts);
+if (bmi_verdicts) fprintf(f, "-bmi_verdicts %s\n", bmi_verdicts);
 #endif
 
 #ifdef SUPPORT_TLS

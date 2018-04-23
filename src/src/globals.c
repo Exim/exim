@@ -770,6 +770,10 @@ uschar *gecos_name             = NULL;
 uschar *gecos_pattern          = NULL;
 rewrite_rule  *global_rewrite_rules = NULL;
 
+volatile sig_atomic_t had_command_timeout = 0;
+volatile sig_atomic_t had_command_sigterm = 0;
+volatile sig_atomic_t had_data_timeout    = 0;
+volatile sig_atomic_t had_data_sigint     = 0;
 uschar *headers_charset        = US HEADERS_CHARSET;
 int     header_insert_maxlen   = 64 * 1024;
 header_line  *header_last      = NULL;

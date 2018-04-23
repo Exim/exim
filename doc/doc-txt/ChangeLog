@@ -5,6 +5,13 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Since version 4.91
+------------------
+
+JH/02 Bug 1007: Avoid doing logging from signal-handlers, as that can result in
+      non-signal-safe functions being used.
+
+
 Exim version 4.91
 -----------------
 
