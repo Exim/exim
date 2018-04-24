@@ -382,7 +382,7 @@ static uschar *
 arc_insert_hdr(arc_ctx * ctx, header_line * h, unsigned off, unsigned hoff,
   BOOL instance_only)
 {
-int i;
+unsigned i;
 arc_set * as;
 arc_line * al = store_get(sizeof(arc_line)), ** alp;
 uschar * e;
@@ -395,6 +395,7 @@ if ((e = arc_parse_line(al, h, off, instance_only)))
   return US"line parse";
   }
 if (!(i = arc_instance_from_hdr(al)))	return US"instance find";
+if (i > 50)				return US"overlarge instance number";
 if (!(as = arc_find_set(ctx, i)))	return US"set find";
 if (*(alp = (arc_line **)(US as + hoff))) return US"dup hdr";
 
