@@ -26,6 +26,7 @@ check_data:
   warn	logwrite =	arc_state: <$arc_state>
 	condition =	${if def:arc_state_reason}
 	logwrite =	reason:    <$arc_state_reason>
+	logwrite =	domains:   <$arc_domains>
 
 .ifdef OPTION
   accept

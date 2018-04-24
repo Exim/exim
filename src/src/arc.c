@@ -93,6 +93,7 @@ static time_t now;
 static time_t expire;
 static hdr_rlist * headers_rlist;
 static arc_ctx arc_sign_ctx = { NULL };
+static arc_ctx arc_verify_ctx = { NULL };
 
 
 /******************************************************************************/
@@ -998,8 +999,9 @@ Return:  The ARC state, or NULL on error.
 const uschar *
 acl_verify_arc(void)
 {
-arc_ctx ctx = { NULL };
 const uschar * res;
+
+memset(&arc_verify_ctx, 0, sizeof(arc_verify_ctx));
 
 if (!dkim_verify_ctx)
   {
@@ -1014,7 +1016,7 @@ https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-10#section-6
        none, the ARC state is "none" and the algorithm stops here.
 */
 
-if ((res = arc_vfy_collect_hdrs(&ctx)))
+if ((res = arc_vfy_collect_hdrs(&arc_verify_ctx)))
   goto out;
 
 /* 2.  If the form of any ARC set is invalid (e.g., does not contain
@@ -1032,7 +1034,7 @@ if ((res = arc_vfy_collect_hdrs(&ctx)))
        then the chain state is "fail" and the algorithm stops here.
 */
 
-if ((res = arc_headers_check(&ctx)))
+if ((res = arc_headers_check(&arc_verify_ctx)))
   goto out;
 
 /* 4.  For each ARC-Seal from the "N"th instance to the first, apply the
@@ -1074,7 +1076,7 @@ if ((res = arc_headers_check(&ctx)))
        the algorithm is complete.
 */
 
-if ((res = arc_verify_seals(&ctx)))
+if ((res = arc_verify_seals(&arc_verify_ctx)))
   goto out;
 
 res = US"pass";
@@ -1771,6 +1773,26 @@ return is_vfy ? arc_header_vfy_feed(g) : arc_header_sign_feed(g);
 
 
 /******************************************************************************/
+
+/* Construct the list of domains from the ARC chain after validation */
+
+uschar *
+fn_arc_domains(void)
+{
+arc_set * as;
+gstring * g = NULL;
+
+if (!arc_state || Ustrcmp(arc_state, "pass") != 0)
+  return US"";
+
+for(as = arc_verify_ctx.arcset_chain; as; as = as->next)
+  {
+  blob * d = &as->hdr_as->d;
+  g = string_append_listele_n(g, ':', d->data, d->len);
+  }
+return g ? g->s : US"";
+}
+
 
 /* Construct an Authenticate-Results header portion, for the ARC module */
 

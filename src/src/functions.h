@@ -95,6 +95,7 @@ extern const uschar *arc_header_feed(gstring *, BOOL);
 extern gstring *arc_sign(const uschar *, gstring *, uschar **);
 extern void     arc_sign_init(void);
 extern const uschar *acl_verify_arc(void);
+extern uschar * fn_arc_domains(void);
 #endif
 
 extern void    assert_no_variables(void *, int, const char *, int);

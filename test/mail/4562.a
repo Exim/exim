@@ -1,0 +1,60 @@
+From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+Authentication-Results: test.ex;
+	iprev=pass (localhost) smtp.client-ip=127.0.0.1;
+	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha256;
+	dkim=fail (body hash mismatch; body probably modified in transit)
+		 header.d=example.com header.s=sel header.a=rsa-sha256;
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+Received: from localhost ([127.0.0.1] helo=test.ex)
+	by test.ex with esmtp (Exim x.yz)
+	(envelope-from <CALLER@bloggs.com>)
+	id 10HmaY-0005vi-00
+	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=test.ex; s=sel;
+	 b=1J94ImExSjtnwHY/c/aN3BX/xlnQfi6CPdGQvbeSdsbCCEtOqK9547tA54tYFh8beeVECAR0xu
+	  9fCSAjZ/0WM7mrxKNMbWkoHNoejUhNkcxJOtFmiS/0JKPQGk8HTE7FHLbogUQvEJoVBBnqo6xW
+	  nFtzlI3JfLnWvB3FQ316xLs=;
+ARC-Authentication-Results: i=1; test.ex;
+	dkim=fail (body hash mismatch; body probably modified in transit)
+		 header.d=example.com header.s=sel header.a=rsa-sha256;
+	arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=test.ex; s=sel;
+	bh=3UbbJTudPxmejzh7U1Zg33U3QT+16kfV2eOTvMeiEis=;
+	h=Subject:Message-ID:Date:To:From:DKIM-Signature:DKIM-Signature;
+	b=cOGacpDRcKUs8d6NK5vfwKQ9OJ3QbHRjxkBgZr2goYGe4M+9/tWjxgbwrpFGkgqqqVE1iHxp73
+	  XiycAmipwr0J+Hu1PjkqIXLIY+LsCY+Oq/g1roC2VnphFpfQjaelQQxAIk8RSvmhvIN0WWZG5V
+	  UYCQCkQeY+URg26dYoPZRoY=;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=test.ex;
+	s=sel; h=Subject:Message-ID:Date:To:From:Sender:Reply-To:Cc:MIME-Version:
+	Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=3UbbJTudPxmejzh7U1Zg33U3QT+16kfV2eOTvMeiEis=; b=kN1wFOnQGZMmJkwnBgDwrqe3xg
+	+YlqMcd3tS2KBPcnA71tzAKBiX+QMrcIkp9PgEiJkHOCbM44SEoW/GT/aN0FqeGUuIoZ22nNc9wJq
+	9u4dqiZV6L0EFx0+BmAcKN/Ban7hsQASjP8USIMomgaG9ymJhrkOoDcQhkQTBriYt91c=;
+Authentication-Results: test.ex;
+	dkim=fail (body hash mismatch; body probably modified in transit)
+		 header.d=example.com header.s=sel header.a=rsa-sha256;
+	arc=none
+Received: from [127.0.0.1] (helo=xxx)
+	by test.ex with smtp (Exim x.yz)
+	(envelope-from <CALLER@bloggs.com>)
+	id 10HmaX-0005vi-00
+	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=example.com; s=sel; h=List-Archive;
+	 bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=; b=uslVEq1LzHDR2ACoSTiErsGhe
+	GcuqL5no/4XYjsEJOIXkKFp4FFTj7QTcblHqyqsjgd5Dgs7zuFV4U3lwU9jSZtqJNQI+BtYZ5dS48
+	sjr9PbLiguw8rAv5eDXBQKi5XcNCnZlUnWEjl10OXEgJZ9UXdKToWHpSfWEw1nFvOlKAfPBfkznnA
+	EOQXSTJOTanLpr7EZ4Yw5LWE+9BWJfnl6snn6W0mmJl4tbfEXEV1ZzOxdQF1rwjJqmojoCG36Z+v5
+	sWKswl7HgSlKo2GKgxh9zIIhoxg5+7zfmHdKUQ2/6zuR8nqjDAjl3bSdOMgZVM0L6G6EMxQP6Sj6f
+	oEr6ePt9A==;
+From: mrgus@text.ex
+To: bakawolf@yahoo.com
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-ID: <qwerty1234@disco-zombie.net>
+Subject: simple test
+
+This is a simple test.
+

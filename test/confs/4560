@@ -24,6 +24,7 @@ check_data:
 	INSERT
 
   warn	logwrite =	arc_state: <$arc_state>
+	logwrite =	domains:   <$arc_domains>
 	condition =	${if def:arc_state_reason}
 	logwrite =	reason:    <$arc_state_reason>
 

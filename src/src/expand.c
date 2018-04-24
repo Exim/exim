@@ -462,6 +462,7 @@ static var_entry var_table[] = {
   { "address_file",        vtype_stringptr,   &address_file },
   { "address_pipe",        vtype_stringptr,   &address_pipe },
 #ifdef EXPERIMENTAL_ARC
+  { "arc_domains",         vtype_string_func, &fn_arc_domains },
   { "arc_state",           vtype_stringptr,   &arc_state },
   { "arc_state_reason",    vtype_stringptr,   &arc_state_reason },
 #endif
@@ -1934,13 +1935,13 @@ switch (vp->type)
   case vtype_reply:                          /* Get reply address */
     s = find_header(US"reply-to:", exists_only, newsize, TRUE,
       headers_charset);
-    if (s != NULL) while (isspace(*s)) s++;
-    if (s == NULL || *s == 0)
+    if (s) while (isspace(*s)) s++;
+    if (!s || !*s)
       {
       *newsize = 0;                            /* For the *s==0 case */
       s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
       }
-    if (s != NULL)
+    if (s)
       {
       uschar *t;
       while (isspace(*s)) s++;
@@ -1948,7 +1949,7 @@ switch (vp->type)
       while (t > s && isspace(t[-1])) t--;
       *t = 0;
       }
-    return (s == NULL)? US"" : s;
+    return s ? s : US"";
 
   case vtype_string_func:
     {
