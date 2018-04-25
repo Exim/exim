@@ -797,7 +797,8 @@ There are three new variables: $arc_state, $arc_state_reason, $arc_domains:
 
   $arc_state		One of pass, fail, none
   $arc_state_reason	(if fail, why)
-  $arc_domains		(if pass) colon-sep list of ARC chain domains
+  $arc_domains		colon-sep list of ARC chain domains, in chain order.
+			problematic elements may have empty list elements
 
 Receive log lines for an ARC pass will be tagged "ARC".
 

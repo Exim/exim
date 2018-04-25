@@ -1780,15 +1780,25 @@ uschar *
 fn_arc_domains(void)
 {
 arc_set * as;
+unsigned inst;
 gstring * g = NULL;
 
-if (!arc_state || Ustrcmp(arc_state, "pass") != 0)
-  return US"";
-
-for(as = arc_verify_ctx.arcset_chain; as; as = as->next)
+for (as = arc_verify_ctx.arcset_chain, inst = 1; as; as = as->next, inst++)
   {
-  blob * d = &as->hdr_as->d;
-  g = string_append_listele_n(g, ':', d->data, d->len);
+  arc_line * hdr_as = as->hdr_as;
+  if (hdr_as)
+    {
+    blob * d = &hdr_as->d;
+
+    for (; inst < as->instance; inst++)
+      g = string_catn(g, ":", 1);
+
+    g = d->data && d->len
+      ? string_append_listele_n(g, ':', d->data, d->len)
+      : string_catn(g, ":", 1);
+    }
+  else
+    g = string_catn(g, ":", 1);
   }
 return g ? g->s : US"";
 }
