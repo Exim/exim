@@ -770,22 +770,25 @@ arc_set * as;
 int inst;
 BOOL ams_fail_found = FALSE;
 
-if (!(as = ctx->arcset_chain))
+if (!(as = ctx->arcset_chain_last))
   return US"none";
 
-for(inst = 0; as; as = as->next)
+for(inst = as->instance; as; as = as->prev, inst--)
   {
-  if (  as->instance != ++inst
-     || !as->hdr_aar || !as->hdr_ams || !as->hdr_as
-     || arc_cv_match(as->hdr_as, US"fail")
-     )
-    {
-    arc_state_reason = string_sprintf("i=%d"
-      " (cv, sequence or missing header)", as->instance);
-    DEBUG(D_acl) debug_printf("ARC chain fail at %s\n", arc_state_reason);
-    return US"fail";
-    }
+  if (as->instance != inst)
+    arc_state_reason = string_sprintf("i=%d (sequence; expected %d)",
+      as->instance, inst);
+  else if (!as->hdr_aar || !as->hdr_ams || !as->hdr_as)
+    arc_state_reason = string_sprintf("i=%d (missing header)", as->instance);
+  else if (arc_cv_match(as->hdr_as, US"fail"))
+    arc_state_reason = string_sprintf("i=%d (cv)", as->instance);
+  else
+    goto good;
 
+  DEBUG(D_acl) debug_printf("ARC chain fail at %s\n", arc_state_reason);
+  return US"fail";
+
+  good:
   /* Evaluate the oldest-pass AMS validation while we're here.
   It does not affect the AS chain validation but is reported as
   auxilary info. */
@@ -797,9 +800,15 @@ for(inst = 0; as; as = as->next)
       arc_oldest_pass = inst;
   arc_state_reason = NULL;
   }
+if (inst != 0)
+  {
+  arc_state_reason = string_sprintf("(sequence; expected i=%d)", inst);
+  DEBUG(D_acl) debug_printf("ARC chain fail %s\n", arc_state_reason);
+  return US"fail";
+  }
 
 arc_received = ctx->arcset_chain_last;
-arc_received_instance = inst;
+arc_received_instance = arc_received->instance;
 
 /* We can skip the latest-AMS validation, if we already did it. */
 

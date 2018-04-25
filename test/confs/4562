@@ -23,10 +23,11 @@ check_data:
   warn	!verify =	arc VALUE
 	INSERT
 
-  warn	logwrite =	arc_state: <$arc_state>
+  warn	logwrite =	arc_state:      <$arc_state>
+	logwrite =	arc_oldest_pass <$arc_oldest_pass>
+	logwrite =	domains:        <$arc_domains>
 	condition =	${if def:arc_state_reason}
-	logwrite =	reason:    <$arc_state_reason>
-	logwrite =	domains:   <$arc_domains>
+	logwrite =	reason:         <$arc_state_reason>
 
 .ifdef OPTION
   accept

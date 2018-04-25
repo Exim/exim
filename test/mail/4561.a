@@ -1,6 +1,6 @@
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	arc=fail (i=2 (cv, sequence or missing header))
+	arc=fail ((sequence; expected i=1))
 Received: from [127.0.0.1] (helo=xxx)
 	by test.ex with smtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)

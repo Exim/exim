@@ -463,6 +463,7 @@ static var_entry var_table[] = {
   { "address_pipe",        vtype_stringptr,   &address_pipe },
 #ifdef EXPERIMENTAL_ARC
   { "arc_domains",         vtype_string_func, &fn_arc_domains },
+  { "arc_oldest_pass",     vtype_int,         &arc_oldest_pass },
   { "arc_state",           vtype_stringptr,   &arc_state },
   { "arc_state_reason",    vtype_stringptr,   &arc_state_reason },
 #endif

@@ -18,6 +18,10 @@ JH/03 Bug 2269: When presented with a received message having a stupidly large
       number of DKIM-Signature headers, disable DKIM verification to avoid
       a resource-consumption attack.  The limit is set at twenty.
 
+JH/04 Add variables $arc_domains, $arc_oldest_pass for ARC verify.  Fix the
+      report of oldest_pass in ${authres } in consequence, and separate out
+      some descriptions of reasons for verification fail.
+
 
 Exim version 4.91
 -----------------
