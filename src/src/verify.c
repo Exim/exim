@@ -787,7 +787,7 @@ tls_retry_connection:
       The sync_responses() would need to be taught about it and we'd
       need another return code filtering out to here.
 
-      Avoid using a SIZE option on the MAIL for all randon-rcpt checks.
+      Avoid using a SIZE option on the MAIL for all random-rcpt checks.
       */
 
       sx.avoid_option = OPTION_SIZE;

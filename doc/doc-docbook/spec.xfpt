@@ -15082,7 +15082,7 @@ server. This reduces security slightly, but improves interworking with older
 implementations of TLS.
 
 
-option gnutls_allow_auto_pkcs11 main boolean unset
+.option gnutls_allow_auto_pkcs11 main boolean unset
 This option will let GnuTLS (2.12.0 or later) autoload PKCS11 modules with
 the p11-kit configuration files in &_/etc/pkcs11/modules/_&.
 
@@ -17369,7 +17369,7 @@ The ordering of the two lists must match.
 .cindex SSMTP
 .cindex SMTPS
 This option specifies a list of incoming SSMTP (aka SMTPS) ports that should
-operate the obsolete SSMTP (SMTPS) protocol, where a TLS session is immediately
+operate the SSMTP (SMTPS) protocol, where a TLS session is immediately
 set up without waiting for the client to issue a STARTTLS command. For
 further details, see section &<<SECTsupobssmt>>&.
 
