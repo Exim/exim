@@ -1800,20 +1800,20 @@ for (as = arc_verify_ctx.arcset_chain, inst = 1; as; as = as->next, inst++)
     blob * d = &hdr_as->d;
 
     for (; inst < as->instance; inst++)
-      g = string_catn(g, ":", 1);
+      g = string_catn(g, US":", 1);
 
     g = d->data && d->len
       ? string_append_listele_n(g, ':', d->data, d->len)
-      : string_catn(g, ":", 1);
+      : string_catn(g, US":", 1);
     }
   else
-    g = string_catn(g, ":", 1);
+    g = string_catn(g, US":", 1);
   }
 return g ? g->s : US"";
 }
 
 
-/* Construct an Authenticate-Results header portion, for the ARC module */
+/* Construct an Authentication-Results header portion, for the ARC module */
 
 gstring *
 authres_arc(gstring * g)

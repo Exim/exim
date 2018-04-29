@@ -1666,7 +1666,7 @@ return yield;
 
 
 
-/* Append a "local" element to an Autherntication-Results: header
+/* Append a "local" element to an Authentication-Results: header
 if this was a non-smtp message.
 */
 
@@ -1681,7 +1681,7 @@ return g;
 }
 
 
-/* Append an "iprev" element to an Autherntication-Results: header
+/* Append an "iprev" element to an Authentication-Results: header
 if we have attempted to get the calling host's name.
 */
 
