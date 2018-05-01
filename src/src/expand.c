@@ -1525,10 +1525,7 @@ can also return a concatenation of all the header lines. When concatenating
 specific headers that contain lists of addresses, a comma is inserted between
 them. Otherwise we use a straight concatenation. Because some messages can have
 pathologically large number of lines, there is a limit on the length that is
-returned. Also, to avoid massive store use which would result from using
-string_cat() as it copies and extends strings, we do a preliminary pass to find
-out exactly how much store will be needed. On "normal" messages this will be
-pretty trivial.
+returned.
 
 Arguments:
   name          the name of the header, without the leading $header_ or $h_,
@@ -1540,7 +1537,7 @@ Arguments:
 		  just return a string that is not "" and not "0" if the header
 		  exists
 		FH_WANT_RAW
-		  set if called for $rh_ or $rheader_ variables; no processing,
+		  set if called for $rh_ or $rheader_ items; no processing,
 		  other than concatenating, will be done on the header. Also used
 		  for $message_headers_raw.
 		FH_WANT_LIST
