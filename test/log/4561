@@ -5,6 +5,9 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 domains:        <::test.ex>
 1999-03-02 09:44:33 10HmaX-0005vi-00 arc_oldest_pass <0>
 1999-03-02 09:44:33 10HmaX-0005vi-00 reason:         <(sequence; expected i=1)>
+1999-03-02 09:44:33 10HmaX-0005vi-00 lh_A-R:         < test.ex;\n     iprev=fail;\n     auth=pass (PLAIN) smtp.auth=fred@test.ex>
+1999-03-02 09:44:33 10HmaX-0005vi-00 lh-ams:         < i=2; test.ex;\n     iprev=fail;\n     auth=pass (PLAIN) smtp.auth=fred@test.ex>
+1999-03-02 09:44:33 10HmaX-0005vi-00 oldest-p-ams:   <>
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=3885245d-3bae-66a2-7a1e-0dbceae2fb50@test.ex for a@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a <a@test.ex> R=d1 T=tfile

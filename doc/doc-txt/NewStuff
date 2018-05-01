@@ -9,6 +9,11 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.92
 --------------
 
+ 1. ${l_header:<name>} and ${l_h:<name>} expansion items, giving a colon-sep
+    list when there are multiple headers having a given name.  This matters
+    when individual headers are wrapped onto multiple lines; with previous
+    facilities hard to parse.
+
 Version 4.91
 --------------
 

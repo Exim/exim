@@ -1042,33 +1042,16 @@ uschar *
 fn_hdrs_added(void)
 {
 gstring * g = NULL;
-header_line * h = acl_added_headers;
-uschar * s;
-uschar * cp;
+header_line * h;
 
-if (!h) return NULL;
-
-do
+for (h = acl_added_headers; h; h = h->next)
   {
-  s = h->text;
-  while ((cp = Ustrchr(s, '\n')) != NULL)
-    {
-    if (cp[1] == '\0') break;
-
-    /* contains embedded newline; needs doubling */
-    g = string_catn(g, s, cp-s+1);
-    g = string_catn(g, US"\n", 1);
-    s = cp+1;
-    }
-  /* last bit of header */
-
-/*XXX could we use add_listele? */
-  g = string_catn(g, s, cp-s+1);	/* newline-sep list */
+  int i = h->slen;
+  if (h->text[i-1] == '\n') i--;
+  g = string_append_listele_n(g, '\n', h->text, i);
   }
-while((h = h->next));
 
-g->s[g->ptr - 1] = '\0';	/* overwrite last newline */
-return g->s;
+return g ? g->s : NULL;
 }
 
 
@@ -2865,7 +2848,7 @@ int rc = OK;
 int sep = -'/';
 #endif
 
-for (; cb != NULL; cb = cb->next)
+for (; cb; cb = cb->next)
   {
   const uschar *arg;
   int control_type;

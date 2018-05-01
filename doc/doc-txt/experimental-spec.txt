@@ -801,6 +801,14 @@ There are three new variables: $arc_state, $arc_state_reason, $arc_domains:
 			problematic elements may have empty list elements
   $arc_oldest_pass	lowest passing instance number of chain
 
+Example:
+  logwrite = oldest-p-ams: <${reduce {$lh_ARC-Authentication-Results:} \
+				{} \
+				{${if = {$arc_oldest_pass} \
+					{${extract {i}{${extract {1}{;}{$item}}}}} \
+					{$item} {$value}}} \
+			    }>
+
 Receive log lines for an ARC pass will be tagged "ARC".
 
 

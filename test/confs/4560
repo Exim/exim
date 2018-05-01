@@ -26,8 +26,16 @@ check_data:
   warn	logwrite =	arc_state:      <$arc_state>
 	logwrite =	domains:        <$arc_domains>
 	logwrite =	arc_oldest_pass <$arc_oldest_pass>
-	condition =	${if def:arc_state_reason}
 	logwrite =	reason:         <$arc_state_reason>
+	logwrite =	lh_A-R:         <$lh_Authentication-Results:>
+	logwrite =	lh-ams:         <$lh_ARC-Authentication-Results:>
+#	logwrite =	oldest-p-ams:   <${listextract {$arc_oldest_pass} {$lh_ARC-Authentication-Results:}}>
+	logwrite =	oldest-p-ams:   <${reduce {$lh_ARC-Authentication-Results:} \
+						{} \
+						{${if = {$arc_oldest_pass} \
+							{${extract {i}{${extract {1}{;}{$item}}}}} \
+							{$item} {$value}}} \
+					}>
 
 .ifdef OPTION
   accept

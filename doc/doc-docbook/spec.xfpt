@@ -9434,11 +9434,14 @@ letters appear. For example:
         &*$h_*&<&'header&~name'&>&*:*&" &&&
        "&*$bheader_*&<&'header&~name'&>&*:*&&~or&~&&&
         &*$bh_*&<&'header&~name'&>&*:*&" &&&
+       "&*$lheader_*&<&'header&~name'&>&*:*&&~or&~&&&
+        &*$lh_*&<&'header&~name'&>&*:*&"
        "&*$rheader_*&<&'header&~name'&>&*:*&&~or&~&&&
         &*$rh_*&<&'header&~name'&>&*:*&"
 .cindex "expansion" "header insertion"
 .vindex "&$header_$&"
 .vindex "&$bheader_$&"
+.vindex "&$lheader_$&"
 .vindex "&$rheader_$&"
 .cindex "header lines" "in expansion strings"
 .cindex "header lines" "character sets"
@@ -9451,13 +9454,22 @@ The newline that terminates a header line is not included in the expansion, but
 internal newlines (caused by splitting the header line over several physical
 lines) may be present.
 
-The difference between &%rheader%&, &%bheader%&, and &%header%& is in the way
+The difference between the four pairs of expansions is in the way
 the data in the header line is interpreted.
 
 .ilist
 .cindex "white space" "in header lines"
 &%rheader%& gives the original &"raw"& content of the header line, with no
 processing at all, and without the removal of leading and trailing white space.
+
+.next
+.cindex "list" "of header lines"
+&%lheader%& gives a colon-separated list, one element per header when there
+are multiple headers with a given name.
+Any embedded colon characters within an element are doubled, so normal Exim
+list-processing facilities can be used.
+The terminating newline of each element is removed; in other respects
+the content is &"raw"&.
 
 .next
 .cindex "base64 encoding" "in header lines"

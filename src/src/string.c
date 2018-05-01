@@ -1051,6 +1051,26 @@ return list;
 
 
 
+/* A slightly-bogus listmaker utility; the separator is a string so
+can be multiple chars - there is no checking for the element content
+containing any of the separator. */
+
+gstring *
+string_append2_listele_n(gstring * list, const uschar * sepstr,
+ const uschar * ele, unsigned len)
+{
+const uschar * sp;
+
+if (list && list->ptr)
+  list = string_cat(list, sepstr);
+
+list = string_catn(list, ele, len);
+(void) string_from_gstring(list);
+return list;
+}
+
+
+
 /************************************************/
 /* Create a growable-string with some preassigned space */
 

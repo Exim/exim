@@ -817,6 +817,10 @@ static uschar *mtable_setid[] =
 static uschar *mtable_sticky[] =
   { US"--T", US"--t", US"-wT", US"-wt", US"r-T", US"r-t", US"rwT", US"rwt" };
 
+/* flags for find_header() */
+#define FH_EXISTS_ONLY	BIT(0)
+#define FH_WANT_RAW	BIT(1)
+#define FH_WANT_LIST	BIT(2)
 
 
 /*************************************************
@@ -1529,14 +1533,20 @@ pretty trivial.
 Arguments:
   name          the name of the header, without the leading $header_ or $h_,
                 or NULL if a concatenation of all headers is required
-  exists_only   TRUE if called from a def: test; don't need to build a string;
-                just return a string that is not "" and not "0" if the header
-                exists
   newsize       return the size of memory block that was obtained; may be NULL
                 if exists_only is TRUE
-  want_raw      TRUE if called for $rh_ or $rheader_ variables; no processing,
-                other than concatenating, will be done on the header. Also used
-                for $message_headers_raw.
+  flags		FH_EXISTS_ONLY
+		  set if called from a def: test; don't need to build a string;
+		  just return a string that is not "" and not "0" if the header
+		  exists
+		FH_WANT_RAW
+		  set if called for $rh_ or $rheader_ variables; no processing,
+		  other than concatenating, will be done on the header. Also used
+		  for $message_headers_raw.
+		FH_WANT_LIST
+		  Double colon chars in the content, and replace newline with
+		  colon between each element when concatenating; returning a
+		  colon-sep list (elements might contain newlines)
   charset       name of charset to translate MIME words to; used only if
                 want_raw is false; if NULL, no translation is done (this is
                 used for $bh_ and $bheader_)
@@ -1546,121 +1556,100 @@ Returns:        NULL if the header does not exist, else a pointer to a new
 */
 
 static uschar *
-find_header(uschar *name, BOOL exists_only, int *newsize, BOOL want_raw,
-  uschar *charset)
+find_header(uschar *name, int *newsize, unsigned flags, uschar *charset)
 {
-BOOL found = name == NULL;
-int comma = 0;
-int len = found? 0 : Ustrlen(name);
-int i;
-uschar *yield = NULL;
-uschar *ptr = NULL;
+BOOL found = !name;
+int len = name ? Ustrlen(name) : 0;
+BOOL comma = FALSE;
+header_line * h;
+gstring * g = NULL;
 
-/* Loop for two passes - saves code repetition */
+for (h = header_list; h; h = h->next)
+  if (h->type != htype_old && h->text)  /* NULL => Received: placeholder */
+    if (!name || (len <= h->slen && strncmpic(name, h->text, len) == 0))
+      {
+      uschar * s, * t;
+      size_t inc;
 
-for (i = 0; i < 2; i++)
-  {
-  int size = 0;
-  header_line *h;
+      if (flags & FH_EXISTS_ONLY)
+	return US"1";  /* don't need actual string */
 
-  for (h = header_list; size < header_insert_maxlen && h; h = h->next)
-    if (h->type != htype_old && h->text)  /* NULL => Received: placeholder */
-      if (!name || (len <= h->slen && strncmpic(name, h->text, len) == 0))
-        {
-        int ilen;
-        uschar *t;
+      found = TRUE;
+      s = h->text + len;		/* text to insert */
+      if (!(flags & FH_WANT_RAW))	/* unless wanted raw, */
+	while (isspace(*s)) s++;	/* remove leading white space */
+      t = h->text + h->slen;		/* end-point */
 
-        if (exists_only) return US"1";      /* don't need actual string */
-        found = TRUE;
-        t = h->text + len;                  /* text to insert */
-        if (!want_raw)                      /* unless wanted raw, */
-          while (isspace(*t)) t++;          /* remove leading white space */
-        ilen = h->slen - (t - h->text);     /* length to insert */
+      /* Unless wanted raw, remove trailing whitespace, including the
+      newline. */
 
-        /* Unless wanted raw, remove trailing whitespace, including the
-        newline. */
+      if (flags & FH_WANT_LIST)
+	while (t > s && t[-1] == '\n') t--;
+      else if (!(flags & FH_WANT_RAW))
+	{
+	while (t > s && isspace(t[-1])) t--;
 
-        if (!want_raw)
-          while (ilen > 0 && isspace(t[ilen-1])) ilen--;
+	/* Set comma if handling a single header and it's one of those
+	that contains an address list, except when asked for raw headers. Only
+	need to do this once. */
 
-        /* Set comma = 1 if handling a single header and it's one of those
-        that contains an address list, except when asked for raw headers. Only
-        need to do this once. */
+	if (name && !comma && Ustrchr("BCFRST", h->type)) comma = TRUE;
+	}
 
-        if (!want_raw && name && comma == 0 &&
-            Ustrchr("BCFRST", h->type) != NULL)
-          comma = 1;
+      /* Trim the header roughly if we're approaching limits */
+      inc = t - s;
+      if ((g ? g->ptr : 0) + inc > header_insert_maxlen)
+	inc = header_insert_maxlen - (g ? g->ptr : 0);
 
-        /* First pass - compute total store needed; second pass - compute
-        total store used, including this header. */
+      /* For raw just copy the data; for a list, add the data as a colon-sep
+      list-element; for comma-list add as an unchecked comma,newline sep
+      list-elemment; for other nonraw add as an unchecked newline-sep list (we
+      stripped trailing WS above including the newline). We ignore the potential
+      expansion due to colon-doubling, just leaving the loop if the limit is met
+      or exceeded. */
 
-        size += ilen + comma + 1;  /* +1 for the newline */
+      if (flags & FH_WANT_LIST)
+        g = string_append_listele_n(g, ':', s, (unsigned)inc);
+      else if (flags & FH_WANT_RAW)
+	{
+	g = string_catn(g, s, (unsigned)inc);
+	(void) string_from_gstring(g);
+	}
+      else if (inc > 0)
+	if (comma)
+	  g = string_append2_listele_n(g, US",\n", s, (unsigned)inc);
+	else
+	  g = string_append2_listele_n(g, US"\n", s, (unsigned)inc);
 
-        /* Second pass - concatenate the data, up to a maximum. Note that
-        the loop stops when size hits the limit. */
+      if (g && g->ptr >= header_insert_maxlen) break;
+      }
 
-        if (i != 0)
-          {
-          if (size > header_insert_maxlen)
-            {
-            ilen -= size - header_insert_maxlen - 1;
-            comma = 0;
-            }
-          Ustrncpy(ptr, t, ilen);
-          ptr += ilen;
-
-          /* For a non-raw header, put in the comma if needed, then add
-          back the newline we removed above, provided there was some text in
-          the header. */
-
-          if (!want_raw && ilen > 0)
-            {
-            if (comma != 0) *ptr++ = ',';
-            *ptr++ = '\n';
-            }
-          }
-        }
-
-  /* At end of first pass, return NULL if no header found. Then truncate size
-  if necessary, and get the buffer to hold the data, returning the buffer size.
-  */
-
-  if (i == 0)
-    {
-    if (!found) return NULL;
-    if (size > header_insert_maxlen) size = header_insert_maxlen;
-    *newsize = size + 1;
-    ptr = yield = store_get(*newsize);
-    }
-  }
+if (!found) return NULL;	/* No header found */
+if (!g) return US"";
 
 /* That's all we do for raw header expansion. */
 
-if (want_raw)
-  *ptr = 0;
+*newsize = g->size;
+if (flags & FH_WANT_RAW)
+  return g->s;
 
-/* Otherwise, remove a final newline and a redundant added comma. Then we do
-RFC 2047 decoding, translating the charset if requested. The rfc2047_decode2()
-function can return an error with decoded data if the charset translation
-fails. If decoding fails, it returns NULL. */
+/* Otherwise do RFC 2047 decoding, translating the charset if requested.
+The rfc2047_decode2() function can return an error with decoded data if the
+charset translation fails. If decoding fails, it returns NULL. */
 
 else
   {
   uschar *decoded, *error;
-  if (ptr > yield && ptr[-1] == '\n') ptr--;
-  if (ptr > yield && comma != 0 && ptr[-1] == ',') ptr--;
-  *ptr = 0;
-  decoded = rfc2047_decode2(yield, check_rfc2047_length, charset, '?', NULL,
+
+  decoded = rfc2047_decode2(g->s, check_rfc2047_length, charset, '?', NULL,
     newsize, &error);
-  if (error != NULL)
+  if (error)
     {
     DEBUG(D_any) debug_printf("*** error in RFC 2047 decoding: %s\n"
-      "    input was: %s\n", error, yield);
+      "    input was: %s\n", error, g->s);
     }
-  if (decoded != NULL) yield = decoded;
+  return decoded ? decoded : g->s;
   }
-
-return yield;
 }
 
 
@@ -1711,6 +1700,7 @@ generated from a system filter, but not elsewhere. */
 static uschar *
 fn_recipients(void)
 {
+uschar * s;
 gstring * g = NULL;
 int i;
 
@@ -1718,11 +1708,10 @@ if (!enable_dollar_recipients) return NULL;
 
 for (i = 0; i < recipients_count; i++)
   {
-  /*XXX variant of list_appendele? */
-  if (i != 0) g = string_catn(g, US", ", 2);
-  g = string_cat(g, recipients_list[i].address);
+  s = recipients_list[i].address;
+  g = string_append2_listele_n(g, US", ", s, Ustrlen(s));
   }
-return string_from_gstring(g);
+return g ? g->s : NULL;
 }
 
 
@@ -1866,10 +1855,11 @@ switch (vp->type)
     return (domain == NULL)? US"" : domain + 1;
 
   case vtype_msgheaders:
-    return find_header(NULL, exists_only, newsize, FALSE, NULL);
+    return find_header(NULL, newsize, exists_only ? FH_EXISTS_ONLY : 0, NULL);
 
   case vtype_msgheaders_raw:
-    return find_header(NULL, exists_only, newsize, TRUE, NULL);
+    return find_header(NULL, newsize,
+		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW, NULL);
 
   case vtype_msgbody:                        /* Pointer to msgbody string */
   case vtype_msgbody_end:                    /* Ditto, the end of the msg */
@@ -1934,13 +1924,16 @@ switch (vp->type)
     return tod_stamp(tod_log_datestamp_daily);
 
   case vtype_reply:                          /* Get reply address */
-    s = find_header(US"reply-to:", exists_only, newsize, TRUE,
-      headers_charset);
+    s = find_header(US"reply-to:", newsize,
+		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
+		headers_charset);
     if (s) while (isspace(*s)) s++;
     if (!s || !*s)
       {
       *newsize = 0;                            /* For the *s==0 case */
-      s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
+      s = find_header(US"from:", newsize,
+		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
+		headers_charset);
       }
     if (s)
       {
@@ -2229,50 +2222,52 @@ switch(cond_type)
   yield == NULL we are in a skipping state, and don't care about the answer. */
 
   case ECOND_DEF:
-  if (*s != ':')
     {
-    expand_string_message = US"\":\" expected after \"def\"";
-    return NULL;
-    }
+    uschar * t;
 
-  s = read_name(name, 256, s+1, US"_");
-
-  /* Test for a header's existence. If the name contains a closing brace
-  character, this may be a user error where the terminating colon has been
-  omitted. Set a flag to adjust a subsequent error message in this case. */
-
-  if (Ustrncmp(name, "h_", 2) == 0 ||
-      Ustrncmp(name, "rh_", 3) == 0 ||
-      Ustrncmp(name, "bh_", 3) == 0 ||
-      Ustrncmp(name, "header_", 7) == 0 ||
-      Ustrncmp(name, "rheader_", 8) == 0 ||
-      Ustrncmp(name, "bheader_", 8) == 0)
-    {
-    s = read_header_name(name, 256, s);
-    /* {-for-text-editors */
-    if (Ustrchr(name, '}') != NULL) malformed_header = TRUE;
-    if (yield != NULL) *yield =
-      (find_header(name, TRUE, NULL, FALSE, NULL) != NULL) == testfor;
-    }
-
-  /* Test for a variable's having a non-empty value. A non-existent variable
-  causes an expansion failure. */
-
-  else
-    {
-    uschar *value = find_variable(name, TRUE, yield == NULL, NULL);
-    if (value == NULL)
+    if (*s != ':')
       {
-      expand_string_message = (name[0] == 0)?
-        string_sprintf("variable name omitted after \"def:\"") :
-        string_sprintf("unknown variable \"%s\" after \"def:\"", name);
-      check_variable_error_message(name);
+      expand_string_message = US"\":\" expected after \"def\"";
       return NULL;
       }
-    if (yield != NULL) *yield = (value[0] != 0) == testfor;
-    }
 
-  return s;
+    s = read_name(name, 256, s+1, US"_");
+
+    /* Test for a header's existence. If the name contains a closing brace
+    character, this may be a user error where the terminating colon has been
+    omitted. Set a flag to adjust a subsequent error message in this case. */
+
+    if (  ( *(t = name) == 'h'
+	  || (*t == 'r' || *t == 'l' || *t == 'b') && *++t == 'h'
+	  )
+       && (*++t == '_' || Ustrncmp(t, "eader_", 6) == 0)
+       )
+      {
+      s = read_header_name(name, 256, s);
+      /* {-for-text-editors */
+      if (Ustrchr(name, '}') != NULL) malformed_header = TRUE;
+      if (yield) *yield =
+	(find_header(name, NULL, FH_EXISTS_ONLY, NULL) != NULL) == testfor;
+      }
+
+    /* Test for a variable's having a non-empty value. A non-existent variable
+    causes an expansion failure. */
+
+    else
+      {
+      if (!(t = find_variable(name, TRUE, yield == NULL, NULL)))
+	{
+	expand_string_message = (name[0] == 0)?
+	  string_sprintf("variable name omitted after \"def:\"") :
+	  string_sprintf("unknown variable \"%s\" after \"def:\"", name);
+	check_variable_error_message(name);
+	return NULL;
+	}
+      if (yield) *yield = (t[0] != 0) == testfor;
+      }
+
+    return s;
+    }
 
 
   /* first_delivery tests for first delivery attempt */
@@ -3979,6 +3974,7 @@ while (*s != 0)
     int len;
     int newsize = 0;
     gstring * g = NULL;
+    uschar * t;
 
     s = read_name(name, sizeof(name), s, US"_");
 
@@ -3996,17 +3992,19 @@ while (*s != 0)
 
     /* Header */
 
-    if (Ustrncmp(name, "h_", 2) == 0 ||
-        Ustrncmp(name, "rh_", 3) == 0 ||
-        Ustrncmp(name, "bh_", 3) == 0 ||
-        Ustrncmp(name, "header_", 7) == 0 ||
-        Ustrncmp(name, "rheader_", 8) == 0 ||
-        Ustrncmp(name, "bheader_", 8) == 0)
+    if (  ( *(t = name) == 'h'
+          || (*t == 'r' || *t == 'l' || *t == 'b') && *++t == 'h'
+	  )
+       && (*++t == '_' || Ustrncmp(t, "eader_", 6) == 0)
+       )
       {
-      BOOL want_raw = (name[0] == 'r')? TRUE : FALSE;
-      uschar *charset = (name[0] == 'b')? NULL : headers_charset;
+      unsigned flags = *name == 'r' ? FH_WANT_RAW
+		      : *name == 'l' ? FH_WANT_RAW|FH_WANT_LIST
+		      : 0;
+      uschar * charset = *name == 'b' ? NULL : headers_charset;
+
       s = read_header_name(name, sizeof(name), s);
-      value = find_header(name, FALSE, &newsize, want_raw, charset);
+      value = find_header(name, &newsize, flags, charset);
 
       /* If we didn't find the header, and the header contains a closing brace
       character, this may be a user error where the terminating colon
