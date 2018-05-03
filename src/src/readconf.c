@@ -690,7 +690,7 @@ for (m = macros; m; m = m->next)
     if (!m->command_line && !redef)
       {
       log_write(0, LOG_CONFIG|LOG_PANIC, "macro \"%s\" is already "
-       "defined (use \"==\" if you want to redefine it", name);
+       "defined (use \"==\" if you want to redefine it)", name);
       return FALSE;
       }
     break;
