@@ -1624,7 +1624,7 @@ int  id_resolution;
 int  had_zero = 0;
 int  prevlines_length = 0;
 
-register int ptr = 0;
+int ptr = 0;
 
 BOOL contains_resent_headers = FALSE;
 BOOL extracted_ignored = FALSE;
@@ -2479,11 +2479,9 @@ if (extract_recip)
         /* Check on maximum */
 
         if (recipients_max > 0 && ++rcount > recipients_max)
-          {
           give_local_error(ERRMESS_TOOMANYRECIP, US"too many recipients",
             US"message rejected: ", error_rc, stdin, NULL);
           /* Does not return */
-          }
 
         /* Make a copy of the address, and remove any internal newlines. These
         may be present as a result of continuations of the header line. The
@@ -3074,8 +3072,8 @@ if (next)
   {
   uschar *s = next->text;
   int len = next->slen;
-  len = fwrite(s, 1, len, data_file);  len = len; /* compiler quietening */
-  body_linecount++;                 /* Assumes only 1 line */
+  if (fwrite(s, 1, len, data_file) == len) /* "if" for compiler quietening */
+    body_linecount++;                 /* Assumes only 1 line */
   }
 
 /* Note that we might already be at end of file, or the logical end of file
@@ -3093,7 +3091,8 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
       : read_message_bdat_smtp(data_file);
     receive_linecount++;                /* The terminating "." line */
     }
-  else message_ended = read_message_data(data_file);
+  else
+    message_ended = read_message_data(data_file);
 
   receive_linecount += body_linecount;  /* For BSMTP errors mainly */
   message_linecount += body_linecount;
@@ -3264,22 +3263,17 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
   else
     {
     if (!bad_addresses)
-      {
       if (extracted_ignored)
         fprintf(stderr, "exim: all -t recipients overridden by command line\n");
       else
         fprintf(stderr, "exim: no recipients in message\n");
-      }
     else
       {
       fprintf(stderr, "exim: invalid address%s",
-        (bad_addresses->next == NULL)? ":" : "es:\n");
-      while (bad_addresses != NULL)
-        {
+        bad_addresses->next ? "es:\n" : ":");
+      for ( ; bad_addresses; bad_addresses = bad_addresses->next)
         fprintf(stderr, "  %s: %s\n", bad_addresses->text1,
           bad_addresses->text2);
-        bad_addresses = bad_addresses->next;
-        }
       }
     }
 
@@ -3605,10 +3599,8 @@ else
 
         if (!user_msg) user_msg = US"local configuration problem";
         if (smtp_batched_input)
-          {
           moan_smtp_batch(NULL, "%d %s", 550, user_msg);
           /* Does not return */
-          }
         else
           {
           fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
@@ -3685,15 +3677,15 @@ else
     log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function crashed with "
       "signal %d - message temporarily rejected (size %d)",
       had_local_scan_crash, message_size);
-    /* Does not return */
     receive_bomb_out(US"local-scan-error", US"local verification problem");
+    /* Does not return */
     }
   if (had_local_scan_timeout)
     {
     log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function timed out - "
       "message temporarily rejected (size %d)", message_size);
-    /* Does not return */
     receive_bomb_out(US"local-scan-timeout", US"local verification problem");
+    /* Does not return */
     }
   }
 
@@ -3805,10 +3797,8 @@ else
       goto TIDYUP;                  /* Skip to end of function */
       }
     else
-      {
       moan_smtp_batch(NULL, "%s %s", smtp_code, errmsg);
       /* Does not return */
-      }
     }
   else
     {
@@ -3863,12 +3853,12 @@ hold onto the lock. In a -bh run, or if the message is to be blackholed, we
 don't write the header file, and we unlink the data file. If writing the header
 file fails, we have failed to accept this message. */
 
-if (host_checking || blackholed_by != NULL)
+if (host_checking || blackholed_by)
   {
   header_line *h;
   Uunlink(spool_name);
   msg_size = 0;                                  /* Compute size for log line */
-  for (h = header_list; h != NULL; h = h->next)
+  for (h = header_list; h; h = h->next)
     if (h->type != '*') msg_size += h->slen;
   }
 
@@ -3915,14 +3905,32 @@ that is in the file, but we do add one extra for the notional blank line that
 precedes the data. This total differs from message_size in that it include the
 added Received: header and any other headers that got created locally. */
 
-fflush(data_file);
+if (fflush(data_file))
+  {
+  errmsg = string_sprintf("Spool write error: %s", strerror(errno));
+  log_write(0, LOG_MAIN, "%s\n", errmsg);
+  Uunlink(spool_name);           /* Lose the data file */
+
+  if (smtp_input)
+    {
+    smtp_reply = US"451 Error in writing spool file";
+    message_id[0] = 0;          /* Indicate no message accepted */
+    goto TIDYUP;
+    }
+  else
+    {
+    fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+    give_local_error(ERRMESS_IOERR, errmsg, US"", error_rc, data_file,
+      header_list);
+    /* Does not return */
+    }
+  }
 fstat(data_fd, &statbuf);
 
 msg_size += statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
 
 /* Generate a "message received" log entry. We do this by building up a dynamic
-string as required. Since we commonly want to add two items at a time, use a
-macro to simplify the coding. We log the arrival of a new message while the
+string as required.  We log the arrival of a new message while the
 file is still locked, just in case the machine is *really* fast, and delivers
 it first! Include any message id that is in the message - since the syntax of a
 message id is actually an addr-spec, we can use the parse routine to canonicalize
@@ -4054,29 +4062,28 @@ people. */
 if (message_logs && !blackholed_by)
   {
   int fd;
-
-  spool_name = spool_fname(US"msglog", message_subdir, message_id, US"");
+  uschar * m_name = spool_fname(US"msglog", message_subdir, message_id, US"");
   
-  if (  (fd = Uopen(spool_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) < 0
+  if (  (fd = Uopen(m_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) < 0
      && errno == ENOENT
      )
     {
     (void)directory_make(spool_directory,
 			spool_sname(US"msglog", message_subdir),
 			MSGLOG_DIRECTORY_MODE, TRUE);
-    fd = Uopen(spool_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE);
+    fd = Uopen(m_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE);
     }
 
   if (fd < 0)
     log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't open message log %s: %s",
-      spool_name, strerror(errno));
+      m_name, strerror(errno));
   else
     {
     FILE *message_log = fdopen(fd, "a");
-    if (message_log == NULL)
+    if (!message_log)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't fdopen message log %s: %s",
-        spool_name, strerror(errno));
+        m_name, strerror(errno));
       (void)close(fd);
       }
     else
@@ -4118,7 +4125,7 @@ Of course, since TCP/IP is asynchronous, there is always a chance that the
 connection will vanish between the time of this test and the sending of the
 response, but the chance of this happening should be small. */
 
-if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
+if (smtp_input && sender_host_address && !sender_host_notsocket &&
     !receive_smtp_buffered())
   {
   struct timeval tv;
@@ -4146,7 +4153,7 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 
       /* Delete the files for this aborted message. */
 
-      Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+      Uunlink(spool_name);
       Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
       Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 
@@ -4206,8 +4213,8 @@ if(!smtp_reply)
 #endif
   {
   log_write(0, LOG_MAIN |
-    (LOGGING(received_recipients)? LOG_RECIPIENTS : 0) |
-    (LOGGING(received_sender)? LOG_SENDER : 0),
+    (LOGGING(received_recipients) ? LOG_RECIPIENTS : 0) |
+    (LOGGING(received_sender) ? LOG_SENDER : 0),
     "%s", g->s);
 
   /* Log any control actions taken by an ACL or local_scan(). */
@@ -4224,32 +4231,38 @@ store_reset(g);   /* The store for the main log message can be reused */
 
 /* If the message is frozen, and freeze_tell is set, do the telling. */
 
-if (deliver_freeze && freeze_tell != NULL && freeze_tell[0] != 0)
-  {
+if (deliver_freeze && freeze_tell && freeze_tell[0])
   moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
     "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
     message_id, frozen_by, sender_address);
-  }
 
 
 /* Either a message has been successfully received and written to the two spool
 files, or an error in writing the spool has occurred for an SMTP message, or
-an SMTP message has been rejected for policy reasons. (For a non-SMTP message
-we will have already given up because there's no point in carrying on!) In
-either event, we must now close (and thereby unlock) the data file. In the
-successful case, this leaves the message on the spool, ready for delivery. In
-the error case, the spool file will be deleted. Then tidy up store, interact
-with an SMTP call if necessary, and return.
+an SMTP message has been rejected for policy reasons, or a message was passed on
+by cutthrough delivery. (For a non-SMTP message we will have already given up
+because there's no point in carrying on!) For non-cutthrough we must now close
+(and thereby unlock) the data file. In the successful case, this leaves the
+message on the spool, ready for delivery. In the error case, the spool file will
+be deleted. Then tidy up store, interact with an SMTP call if necessary, and
+return.
+
+For cutthrough we hold the data file locked until we have deleted it, otherwise
+a queue-runner could grab it in the window.
 
 A fflush() was done earlier in the expectation that any write errors on the
 data file will be flushed(!) out thereby. Nevertheless, it is theoretically
 possible for fclose() to fail - but what to do? What has happened to the lock
-if this happens? */
+if this happens?  We can at least log it; if it is observed on some platform
+then we can think about properly declaring the message not-received. */
 
 
 TIDYUP:
-process_info[process_info_len] = 0;                /* Remove message id */
-if (data_file != NULL) (void)fclose(data_file);    /* Frees the lock */
+process_info[process_info_len] = 0;			/* Remove message id */
+if (data_file && cutthrough_done == NOT_TRIED)
+  if (fclose(data_file))				/* Frees the lock */
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "spoolfile error on close: %s", strerror(errno));
 
 /* Now reset signal handlers to their defaults */
 
@@ -4307,8 +4320,8 @@ if (smtp_input)
     /* smtp_reply is set non-empty */
 
     else if (smtp_reply[0] != 0)
-      if (fake_response != OK && (smtp_reply[0] == '2'))
-        smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
+      if (fake_response != OK && smtp_reply[0] == '2')
+        smtp_respond(fake_response == DEFER ? US"450" : US"550", 3, TRUE,
           fake_response_text);
       else
         smtp_printf("%.1024s\r\n", FALSE, smtp_reply);
@@ -4319,7 +4332,7 @@ if (smtp_input)
 	log_write(0, LOG_MAIN, "Completed");/* Delivery was done */
       case PERM_REJ:
 							 /* Delete spool files */
-	Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+	Uunlink(spool_name);
 	Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
 	Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 	break;
@@ -4327,7 +4340,7 @@ if (smtp_input)
       case TMP_REJ:
 	if (cutthrough.defer_pass)
 	  {
-	  Uunlink(spool_fname(US"input", message_subdir, message_id, US"-D"));
+	  Uunlink(spool_name);
 	  Uunlink(spool_fname(US"input", message_subdir, message_id, US"-H"));
 	  Uunlink(spool_fname(US"msglog", message_subdir, message_id, US""));
 	  }
@@ -4336,6 +4349,8 @@ if (smtp_input)
       }
     if (cutthrough_done != NOT_TRIED)
       {
+      if (data_file)
+	(void) fclose(data_file);  /* Frees the lock; do not care if error */
       message_id[0] = 0;	  /* Prevent a delivery from starting */
       cutthrough.delivery = cutthrough.callout_hold_only = FALSE;
       cutthrough.defer_pass = FALSE;
