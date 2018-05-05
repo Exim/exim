@@ -4228,22 +4228,30 @@ if (deliver_freeze && freeze_tell != NULL && freeze_tell[0] != 0)
 
 /* Either a message has been successfully received and written to the two spool
 files, or an error in writing the spool has occurred for an SMTP message, or
-an SMTP message has been rejected for policy reasons. (For a non-SMTP message
-we will have already given up because there's no point in carrying on!) In
-either event, we must now close (and thereby unlock) the data file. In the
-successful case, this leaves the message on the spool, ready for delivery. In
-the error case, the spool file will be deleted. Then tidy up store, interact
-with an SMTP call if necessary, and return.
+an SMTP message has been rejected for policy reasons, or a message was passed on
+by cutthrough delivery. (For a non-SMTP message we will have already given up
+because there's no point in carrying on!) For non-cutthrough we must now close
+(and thereby unlock) the data file. In the successful case, this leaves the
+message on the spool, ready for delivery. In the error case, the spool file will
+be deleted. Then tidy up store, interact with an SMTP call if necessary, and
+return.
+
+For cutthrough we hold the data file locked until we have deleted it, otherwise
+a queue-runner could grab it in the window.
 
 A fflush() was done earlier in the expectation that any write errors on the
 data file will be flushed(!) out thereby. Nevertheless, it is theoretically
 possible for fclose() to fail - but what to do? What has happened to the lock
-if this happens? */
+if this happens?  We can at least log it; if it is observed on some platform
+then we can think about properly declaring the message not-received. */
 
 
 TIDYUP:
-process_info[process_info_len] = 0;                /* Remove message id */
-if (data_file != NULL) (void)fclose(data_file);    /* Frees the lock */
+process_info[process_info_len] = 0;			/* Remove message id */
+if (data_file && cutthrough_done == NOT_TRIED)
+  if (fclose(data_file))				/* Frees the lock */
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "spoolfile error on close: %s", strerror(errno));
 
 /* Now reset signal handlers to their defaults */
 
@@ -4330,6 +4338,8 @@ if (smtp_input)
       }
     if (cutthrough_done != NOT_TRIED)
       {
+      if (data_file)
+	(void) fclose(data_file);  /* Frees the lock; do not care if error */
       message_id[0] = 0;	  /* Prevent a delivery from starting */
       cutthrough.delivery = cutthrough.callout_hold_only = FALSE;
       cutthrough.defer_pass = FALSE;

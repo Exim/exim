@@ -15,6 +15,11 @@ JH/03 Bug 2269: When presented with a received message having a stupidly large
       number of DKIM-Signature headers, disable DKIM verification to avoid
       a resource-consumption attack.  The limit is set at twenty.
 
+JH/05 Bug 2273: Cutthrough delivery left a window where the received messsage
+      files in the spool were present and unlocked.  A queue-runner could spot
+      them, resulting in a duplicate delivery.  Fix that by doing the unlock
+      after the unlink.  Investigation by Time Stewart.
+
 
 Exim version 4.91
 -----------------
