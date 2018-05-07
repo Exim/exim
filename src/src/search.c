@@ -464,10 +464,10 @@ Returns:       a pointer to a dynamic string containing the answer,
 static uschar *
 internal_search_find(void *handle, uschar *filename, uschar *keystring)
 {
-tree_node *t = (tree_node *)handle;
-search_cache *c = (search_cache *)(t->data.ptr);
-expiring_data *e;
-uschar *data = NULL;
+tree_node * t = (tree_node *)handle;
+search_cache * c = (search_cache *)(t->data.ptr);
+expiring_data * e = NULL;	/* compiler quietening */
+uschar * data = NULL;
 int search_type = t->name[0] - '0';
 int old_pool = store_pool;
 

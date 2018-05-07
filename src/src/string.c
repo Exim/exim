@@ -1059,8 +1059,6 @@ gstring *
 string_append2_listele_n(gstring * list, const uschar * sepstr,
  const uschar * ele, unsigned len)
 {
-const uschar * sp;
-
 if (list && list->ptr)
   list = string_cat(list, sepstr);
 

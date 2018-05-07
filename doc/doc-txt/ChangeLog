@@ -25,8 +25,8 @@ JH/04 Add variables $arc_domains, $arc_oldest_pass for ARC verify.  Fix the
 JH/05 Bug 2273: Cutthrough delivery left a window where the received messsage
       files in the spool were present and unlocked.  A queue-runner could spot
       them, resulting in a duplicate delivery.  Fix that by doing the unlock
-      after the unlink.  Investigation by Time Stewart.  Take the opportunity to
-      add more error-checking on spoofile handling while that code is being
+      after the unlink.  Investigation by Tim Stewart.  Take the opportunity to
+      add more error-checking on spoolfile handling while that code is being
       messed with.
 
 
