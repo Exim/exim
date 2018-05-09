@@ -5152,6 +5152,8 @@ if (recipients_arg >= argc && !extract_recipients && !smtp_input)
   {
   if (version_printed)
     {
+    if (Ustrchr(config_main_filelist, ':'))
+      printf("Configuration file search path is %s\n", config_main_filelist);
     printf("Configuration file is %s\n", config_main_filename);
     return EXIT_SUCCESS;
     }
