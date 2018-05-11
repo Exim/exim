@@ -35,9 +35,7 @@ uschar message_subdir[2];
 uschar buffer[16384];
 uschar *temp_string;
 uschar *mbox_path;
-FILE *mbox_file = NULL;
-FILE *data_file = NULL;
-FILE *yield = NULL;
+FILE *mbox_file = NULL, *l_data_file = NULL, *yield = NULL;
 header_line *my_headerlist;
 struct stat statbuf;
 int i, j;
@@ -108,21 +106,25 @@ if (!spool_mbox_ok)
     goto OUT;
     }
 
-  /* copy body file */
-  if (!source_file_override)
+  /* Copy body file.  If the main receive still has it open then it is holding
+  a lock, and we must not close it (which releases the lock), so just use the
+  global file handle. */
+  if (source_file_override)
+    l_data_file = Ufopen(source_file_override, "rb");
+  else if (spool_data_file)
+    l_data_file = spool_data_file;
+  else
     {
     message_subdir[1] = '\0';
     for (i = 0; i < 2; i++)
       {
       message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
       temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
-      if ((data_file = Ufopen(temp_string, "rb"))) break;
+      if ((l_data_file = Ufopen(temp_string, "rb"))) break;
       }
     }
-  else
-    data_file = Ufopen(source_file_override, "rb");
 
-  if (!data_file)
+  if (!l_data_file)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Could not open datafile for message %s",
       message_id);
@@ -131,7 +133,7 @@ if (!spool_mbox_ok)
 
   /* The code used to use this line, but it doesn't work in Cygwin.
 
-      (void)fread(data_buffer, 1, 18, data_file);
+      (void)fread(data_buffer, 1, 18, l_data_file);
 
      What's happening is that spool_mbox used to use an fread to jump over the
      file header. That fails under Cygwin because the header is locked, but
@@ -139,23 +141,23 @@ if (!spool_mbox_ok)
      explicitly, because the one in the file is parted of the locked area.  */
 
   if (!source_file_override)
-    (void)fseek(data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
+    (void)fseek(l_data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
 
   do
     {
     uschar * s;
 
     if (!spool_file_wireformat || source_file_override)
-      j = fread(buffer, 1, sizeof(buffer), data_file);
+      j = fread(buffer, 1, sizeof(buffer), l_data_file);
     else						/* needs CRLF -> NL */
-      if ((s = US fgets(CS buffer, sizeof(buffer), data_file)))
+      if ((s = US fgets(CS buffer, sizeof(buffer), l_data_file)))
 	{
 	uschar * p = s + Ustrlen(s) - 1;
 
 	if (*p == '\n' && p[-1] == '\r')
 	  *--p = '\n';
 	else if (*p == '\r')
-	  ungetc(*p--, data_file);
+	  ungetc(*p--, l_data_file);
 
 	j = p - buffer;
 	}
@@ -190,7 +192,7 @@ else
   *mbox_file_size = statbuf.st_size;
 
 OUT:
-if (data_file) (void)fclose(data_file);
+if (l_data_file && !spool_data_file) (void)fclose(l_data_file);
 if (mbox_file) (void)fclose(mbox_file);
 store_reset(reset_point);
 return yield;

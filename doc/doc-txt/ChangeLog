@@ -32,6 +32,14 @@ JH/05 Bug 2273: Cutthrough delivery left a window where the received messsage
 PP/01 Refuse to open a spool data file (*-D) if it's a symlink.
       No known attacks, no CVE, this is defensive hardening.
 
+JH/06 Bug 2275: The MIME ACL unlocked the received message files early, and
+      a queue-runner could start a delivery while other operations were ongoing.
+      Cutthrough delivery was a common victim, resulting in duplicate delivery.
+      Found and investigated by Tim Stewart.  Fix by using the open message data
+      file handle rather than opening another, and not locally closing it (which
+      releases a lock) for that case, while creating the temporary .eml format
+      file for the MIME ACL.  Also applies to "regex" and "spam" ACL conditions.
+
 
 Exim version 4.91
 -----------------

@@ -893,6 +893,7 @@ extern BOOL    spf_result_guessed;     /* spf result is of best-guess operation 
 extern uschar *spf_smtp_comment;       /* spf comment to include in SMTP reply */
 #endif
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
+extern FILE   *spool_data_file;	       /* handle for -D file */
 extern uschar *spool_directory;        /* Name of spool directory */
 extern BOOL    spool_file_wireformat;  /* current -D file has CRLF rather than NL */
 extern BOOL    spool_wireformat;       /* can write wireformat -D files */

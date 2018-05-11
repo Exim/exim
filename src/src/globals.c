@@ -1395,6 +1395,7 @@ uschar *spf_smtp_comment       = NULL;
 #endif
 
 BOOL    split_spool_directory  = FALSE;
+FILE   *spool_data_file	       = NULL;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
 BOOL    spool_file_wireformat  = FALSE;
