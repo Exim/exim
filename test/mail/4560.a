@@ -479,3 +479,23 @@ http://lists.dmarc.org/mailman/listinfo/arc-discuss
 
 --===============2728806607597782871==--
 
+From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
+Authentication-Results: test.ex;
+	iprev=pass (localhost);
+	arc=none
+Received: from localhost ([127.0.0.1] helo=test.ex)
+	by test.ex with esmtp (Exim x.yz)
+	(envelope-from <CALLER@bloggs.com>)
+	id 10HmbS-0005vi-00
+	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Authentication-Results: test.ex;
+	arc=none
+Received: from [127.0.0.1] (helo=xxx)
+	by test.ex with smtp (Exim x.yz)
+	(envelope-from <CALLER@bloggs.com>)
+	id 10HmbR-0005vi-00
+	for za@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: Test
+
+This is a test body.
+

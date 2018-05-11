@@ -76,7 +76,11 @@ tsmtp:
   port =	PORT_D
   allow_localhost
 .ifndef OPTION
+.ifdef BAD
+  arc_sign =	$primary_hostname : sel : MISSING_KEY
+.else
   arc_sign =	$primary_hostname : sel : DIR/aux-fixed/dkim/dkim.private
+.endif
 .endif
 
 tmlist:

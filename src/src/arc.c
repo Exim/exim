@@ -1632,7 +1632,9 @@ g = arc_sign_append_ams(g, &arc_sign_ctx, instance, identity, selector,
         including self (but with an empty b= in self)
 */
 
-g = arc_sign_prepend_as(g, &arc_sign_ctx, instance, identity, selector, &ar, privkey);
+if (g)
+  g = arc_sign_prepend_as(g, &arc_sign_ctx, instance, identity, selector, &ar,
+      privkey);
 
 /* Finally, append the dkim headers and return the lot. */
 

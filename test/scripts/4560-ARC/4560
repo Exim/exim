@@ -388,6 +388,40 @@ exim -DSERVER=server -DNOTDAEMON -q
 ****
 #
 #
+# Check attemtping to sign, with a missing keyfile
+# It starts off bare, so the forwarder reception gets an ARC status of "none".
+# The outbound tries to sign it with that.
+#
+client 127.0.0.1 PORT_D
+??? 220
+HELO xxx
+??? 250
+MAIL FROM:<CALLER@bloggs.com>
+??? 250
+RCPT TO:<za@test.ex>
+??? 250
+DATA
+??? 354
+Subject: Test
+
+This is a test body.
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -DSERVER=server -DNOTDAEMON -DBAD -q
+****
+exim -DSERVER=server -DNOTDAEMON -q
+****
+#
+#
+#
+#
+#
+#
+#
 #
 killdaemon
 #
