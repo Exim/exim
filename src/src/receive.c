@@ -22,7 +22,6 @@ extern int dcc_ok;
 *                Local static variables          *
 *************************************************/
 
-static FILE   *data_file = NULL;
 static int     data_fd = -1;
 static uschar *spool_name = US"";
 
@@ -341,10 +340,10 @@ if (spool_name[0] != '\0')
 
 /* Now close the file if it is open, either as a fd or a stream. */
 
-if (data_file)
+if (spool_data_file)
   {
-  (void)fclose(data_file);
-  data_file = NULL;
+  (void)fclose(spool_data_file);
+  spool_data_file = NULL;
   }
 else if (data_fd >= 0)
   {
@@ -1445,10 +1444,12 @@ if (rc == DISCARD)
   {
   recipients_count = 0;
   *blackholed_by_ptr = US"MIME ACL";
+  cancel_cutthrough_connection(TRUE, US"mime acl discard");
   }
 else if (rc != OK)
   {
   Uunlink(spool_name);
+  cancel_cutthrough_connection(TRUE, US"mime acl not ok");
   unspool_mbox();
 #ifdef EXPERIMENTAL_DCC
   dcc_ok = 0;
@@ -1706,7 +1707,7 @@ header names list to be the normal list. Indicate there is no data file open
 yet, initialize the size and warning count, and deal with no size limit. */
 
 message_id[0] = 0;
-data_file = NULL;
+spool_data_file = NULL;
 data_fd = -1;
 spool_name = US"";
 message_size = 0;
@@ -3048,7 +3049,7 @@ the first line of the file (containing the message ID) because otherwise there
 are problems when Exim is run under Cygwin (I'm told). See comments in
 spool_in.c, where the same locking is done. */
 
-data_file = fdopen(data_fd, "w+");
+spool_data_file = fdopen(data_fd, "w+");
 lock_data.l_type = F_WRLCK;
 lock_data.l_whence = SEEK_SET;
 lock_data.l_start = 0;
@@ -3065,31 +3066,32 @@ data line (which was read as a header but then turned out not to have the right
 format); write it (remembering that it might contain binary zeros). The result
 of fwrite() isn't inspected; instead we call ferror() below. */
 
-fprintf(data_file, "%s-D\n", message_id);
+fprintf(spool_data_file, "%s-D\n", message_id);
 if (next)
   {
   uschar *s = next->text;
   int len = next->slen;
-  len = fwrite(s, 1, len, data_file);  len = len; /* compiler quietening */
-  body_linecount++;                 /* Assumes only 1 line */
+  if (fwrite(s, 1, len, spool_data_file) == len) /* "if" for compiler quietening */
+    body_linecount++;                 /* Assumes only 1 line */
   }
 
 /* Note that we might already be at end of file, or the logical end of file
 (indicated by '.'), or might have encountered an error while writing the
 message id or "next" line. */
 
-if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
+if (!ferror(spool_data_file) && !(receive_feof)() && message_ended != END_DOT)
   {
   if (smtp_input)
     {
     message_ended = chunking_state <= CHUNKING_OFFERED
-      ? read_message_data_smtp(data_file)
+      ? read_message_data_smtp(spool_data_file)
       : spool_wireformat
-      ? read_message_bdat_smtp_wire(data_file)
-      : read_message_bdat_smtp(data_file);
+      ? read_message_bdat_smtp_wire(spool_data_file)
+      : read_message_bdat_smtp(spool_data_file);
     receive_linecount++;                /* The terminating "." line */
     }
-  else message_ended = read_message_data(data_file);
+  else
+    message_ended = read_message_data(spool_data_file);
 
   receive_linecount += body_linecount;  /* For BSMTP errors mainly */
   message_linecount += body_linecount;
@@ -3136,10 +3138,10 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
 	}
       else
 	{
-	fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+	fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
 	give_local_error(ERRMESS_TOOBIG,
 	  string_sprintf("message too big (max=%d)", thismessage_size_limit),
-	  US"message rejected: ", error_rc, data_file, header_list);
+	  US"message rejected: ", error_rc, spool_data_file, header_list);
 	/* Does not return */
 	}
       break;
@@ -3169,8 +3171,8 @@ we can then give up. Note that for SMTP input we must swallow the remainder of
 the input in cases of output errors, since the far end doesn't expect to see
 anything until the terminating dot line is sent. */
 
-if (fflush(data_file) == EOF || ferror(data_file) ||
-    EXIMfsync(fileno(data_file)) < 0 || (receive_ferror)())
+if (fflush(spool_data_file) == EOF || ferror(spool_data_file) ||
+    EXIMfsync(fileno(spool_data_file)) < 0 || (receive_ferror)())
   {
   uschar *msg_errno = US strerror(errno);
   BOOL input_error = (receive_ferror)() != 0;
@@ -3198,8 +3200,8 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 
   else
     {
-    fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
-    give_local_error(ERRMESS_IOERR, msg, US"", error_rc, data_file,
+    fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+    give_local_error(ERRMESS_IOERR, msg, US"", error_rc, spool_data_file,
       header_list);
     /* Does not return */
     }
@@ -3240,7 +3242,7 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
       }
     }
 
-  fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+  fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
 
   /* If configured to send errors to the sender, but this fails, force
   a failure error code. We use a special one for no recipients so that it
@@ -3254,7 +3256,7 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
           (bad_addresses == NULL)?
             (extracted_ignored? ERRMESS_IGADDRESS : ERRMESS_NOADDRESS) :
           (recipients_list == NULL)? ERRMESS_BADNOADDRESS : ERRMESS_BADADDRESS,
-          bad_addresses, header_list, data_file, FALSE))
+          bad_addresses, header_list, spool_data_file, FALSE))
       error_rc = (bad_addresses == NULL)? EXIT_NORECIPIENTS : EXIT_FAILURE;
     }
   else
@@ -3282,7 +3284,7 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
   if (recipients_count == 0 || error_handling == ERRORS_STDERR)
     {
     Uunlink(spool_name);
-    (void)fclose(data_file);
+    (void)fclose(spool_data_file);
     exim_exit(error_rc, US"receiving");
     }
   }
@@ -3607,9 +3609,9 @@ else
           }
         else
           {
-          fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+          fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
           give_local_error(ERRMESS_LOCAL_ACL, user_msg,
-            US"message rejected by non-SMTP ACL: ", error_rc, data_file,
+            US"message rejected by non-SMTP ACL: ", error_rc, spool_data_file,
               header_list);
           /* Does not return */
           }
@@ -3807,9 +3809,9 @@ else
     }
   else
     {
-    fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+    fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
     give_local_error(ERRMESS_LOCAL_SCAN, errmsg,
-      US"message rejected by local scan code: ", error_rc, data_file,
+      US"message rejected by local scan code: ", error_rc, spool_data_file,
         header_list);
     /* Does not return */
     }
@@ -3882,8 +3884,8 @@ else
       }
     else
       {
-      fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
-      give_local_error(ERRMESS_IOERR, errmsg, US"", error_rc, data_file,
+      fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+      give_local_error(ERRMESS_IOERR, errmsg, US"", error_rc, spool_data_file,
         header_list);
       /* Does not return */
       }
@@ -3909,7 +3911,7 @@ that is in the file, but we do add one extra for the notional blank line that
 precedes the data. This total differs from message_size in that it include the
 added Received: header and any other headers that got created locally. */
 
-fflush(data_file);
+fflush(spool_data_file);
 fstat(data_fd, &statbuf);
 
 msg_size += statbuf.st_size - SPOOL_DATA_START_OFFSET + 1;
@@ -4248,10 +4250,13 @@ then we can think about properly declaring the message not-received. */
 
 TIDYUP:
 process_info[process_info_len] = 0;			/* Remove message id */
-if (data_file && cutthrough_done == NOT_TRIED)
-  if (fclose(data_file))				/* Frees the lock */
+if (spool_data_file && cutthrough_done == NOT_TRIED)
+  {
+  if (fclose(spool_data_file))				/* Frees the lock */
     log_write(0, LOG_MAIN|LOG_PANIC,
       "spoolfile error on close: %s", strerror(errno));
+  spool_data_file = NULL;
+  }
 
 /* Now reset signal handlers to their defaults */
 
@@ -4338,8 +4343,11 @@ if (smtp_input)
       }
     if (cutthrough_done != NOT_TRIED)
       {
-      if (data_file)
-	(void) fclose(data_file);  /* Frees the lock; do not care if error */
+      if (spool_data_file)
+	{
+	(void) fclose(spool_data_file);  /* Frees the lock; do not care if error */
+	spool_data_file = NULL;
+	}
       message_id[0] = 0;	  /* Prevent a delivery from starting */
       cutthrough.delivery = cutthrough.callout_hold_only = FALSE;
       cutthrough.defer_pass = FALSE;
