@@ -40,6 +40,9 @@ JH/06 Bug 2275: The MIME ACL unlocked the received message files early, and
       releases a lock) for that case, while creating the temporary .eml format
       file for the MIME ACL.  Also applies to "regex" and "spam" ACL conditions.
 
+JH/07 Bug 177: Make a random-recipient callout success visible in ACL, by setting
+      $sender_verify_failure/$recipient_verify_failure to "random".
+
 
 Exim version 4.91
 -----------------

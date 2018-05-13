@@ -196,6 +196,7 @@ else
       case ccache_accept:
 	HDEBUG(D_verify)
 	  debug_printf("callout cache: domain accepts random addresses\n");
+	*failure_ptr = US"random";
 	dbfn_close(dbm_file);
 	return TRUE;     /* Default yield is OK */
 
@@ -802,6 +803,7 @@ tls_retry_connection:
 	    new_domain_record.random_result = ccache_accept;
 	    yield = OK;		/* Only usable verify result we can return */
 	    done = TRUE;
+	    *failure_ptr = US"random";
 	    goto no_conn;
 	  case FAIL:		/* rejected: the preferred result */
 	    new_domain_record.random_result = ccache_reject;
@@ -1657,9 +1659,9 @@ else ko_prefix = cr = US"";
 
 if (parse_find_at(address) == NULL)
   {
-  if ((options & vopt_qualify) == 0)
+  if (!(options & vopt_qualify))
     {
-    if (f != NULL)
+    if (f)
       respond_printf(f, "%sA domain is required for \"%s\"%s\n",
         ko_prefix, address, cr);
     *failure_ptr = US"qualify";
@@ -1677,7 +1679,7 @@ DEBUG(D_verify)
 /* Rewrite and report on it. Clear the domain and local part caches - these
 may have been set by domains and local part tests during an ACL. */
 
-if (global_rewrite_rules != NULL)
+if (global_rewrite_rules)
   {
   uschar *old = address;
   address = rewrite_address(address, options & vopt_is_recipient, FALSE,
@@ -1686,21 +1688,21 @@ if (global_rewrite_rules != NULL)
     {
     for (i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->localpart_cache[i] = 0;
     for (i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->domain_cache[i] = 0;
-    if (f != NULL && !expn) fprintf(f, "Address rewritten as: %s\n", address);
+    if (f && !expn) fprintf(f, "Address rewritten as: %s\n", address);
     }
   }
 
 /* If this is the real sender address, we must update sender_address at
 this point, because it may be referred to in the routers. */
 
-if ((options & (vopt_fake_sender|vopt_is_recipient)) == 0)
+if (!(options & (vopt_fake_sender|vopt_is_recipient)))
   sender_address = address;
 
 /* If the address was rewritten to <> no verification can be done, and we have
 to return OK. This rewriting is permitted only for sender addresses; for other
 addresses, such rewriting fails. */
 
-if (address[0] == 0) return OK;
+if (!address[0]) return OK;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of a transport used by verification. Reset them
@@ -1752,7 +1754,7 @@ while (addr_new)
   if (testflag(addr, af_pfr))
     {
     allok = FALSE;
-    if (f != NULL)
+    if (f)
       {
       BOOL allow;
 
@@ -1763,8 +1765,8 @@ while (addr_new)
         }
       else
         {
-        allow = (addr->address[0] == '|')?
-          testflag(addr, af_allow_pipe) : testflag(addr, af_allow_file);
+        allow = addr->address[0] == '|'
+          ? testflag(addr, af_allow_pipe) : testflag(addr, af_allow_file);
         fprintf(f, "%s -> %s", addr->parent->address, addr->address);
         }
 

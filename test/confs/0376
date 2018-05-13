@@ -36,6 +36,10 @@ check_recipient:
          !verify  = sender/callout=postmaster_mailfrom=pmsend@a.domain
   deny    hosts   = V4NET.0.0.9
          !verify  = sender/callout=fullpostmaster
+  warn   !hosts   = V4NET.0.0.10
+	  condition = ${if def:sender_verify_failure}
+	  logwrite = ($sender_verify_failure)
+
   deny    hosts   = V4NET.0.0.10
          !verify  = recipient/callout=postmaster_mailfrom=pmsend@b.domain,\
                       use_postmaster,random/defer_ok

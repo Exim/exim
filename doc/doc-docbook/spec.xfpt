@@ -31160,6 +31160,15 @@ connection, HELO, or MAIL).
 The main use of these variables is expected to be to distinguish between
 rejections of MAIL and rejections of RCPT in callouts.
 
+.new
+The above variables may also be set after a &*successful*&
+address verification to:
+
+.ilist
+&%random%&: A random local-part callout succeeded
+.endlist
+.wen
+
 
 
 
