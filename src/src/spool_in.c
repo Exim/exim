@@ -57,9 +57,17 @@ for (i = 0; i < 2; i++)
   fname = spool_fname(US"input", message_subdir, id, US"-D");
   DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
 
+  /* We protect against symlink attacks both in not propagating the
+   * file-descriptor to other processes as we exec, and also ensuring that we
+   * don't even open symlinks.
+   * No -D file inside the spool area should be a symlink.
+   */
   if ((fd = Uopen(fname,
 #ifdef O_CLOEXEC
 		      O_CLOEXEC |
+#endif
+#ifdef O_NOFOLLOW
+		      O_NOFOLLOW |
 #endif
 		      O_RDWR | O_APPEND, 0)) >= 0)
     break;

@@ -29,6 +29,9 @@ JH/05 Bug 2273: Cutthrough delivery left a window where the received messsage
       add more error-checking on spoolfile handling while that code is being
       messed with.
 
+PP/01 Refuse to open a spool data file (*-D) if it's a symlink.
+      No known attacks, no CVE, this is defensive hardening.
+
 
 Exim version 4.91
 -----------------
