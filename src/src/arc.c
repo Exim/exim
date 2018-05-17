@@ -1258,6 +1258,9 @@ if (  (errstr = exim_dkim_signing_init(privkey, &sctx))
    || (errstr = exim_dkim_sign(&sctx, hm, &hhash, sig)))
   {
   log_write(0, LOG_MAIN, "ARC: %s signing: %s\n", why, errstr);
+  DEBUG(D_transport)
+    debug_printf("private key, or private-key file content, was: '%s'\n",
+      privkey);
   return FALSE;
   }
 return TRUE;

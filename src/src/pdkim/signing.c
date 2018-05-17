@@ -90,14 +90,17 @@ exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 {
 gnutls_datum_t k = { .data = (void *)privkey_pem, .size = Ustrlen(privkey_pem) };
 gnutls_x509_privkey_t x509_key;
+const uschar * where;
 int rc;
 
-if (  (rc = gnutls_x509_privkey_init(&x509_key))
-   || (rc = gnutls_x509_privkey_import(x509_key, &k, GNUTLS_X509_FMT_PEM))
+if (  (where = US"internal init", rc = gnutls_x509_privkey_init(&x509_key))
    || (rc = gnutls_privkey_init(&sign_ctx->key))
-   || (rc = gnutls_privkey_import_x509(sign_ctx->key, x509_key, 0))
+   || (where = US"privkey PEM-block import",
+       rc = gnutls_x509_privkey_import(x509_key, &k, GNUTLS_X509_FMT_PEM))
+   || (where = US"internal privkey transfer",
+       rc = gnutls_privkey_import_x509(sign_ctx->key, x509_key, 0))
    )
-  return CUS gnutls_strerror(rc);
+  return string_sprintf("%s: %s", where, gnutls_strerror(rc));
 
 switch (rc = gnutls_privkey_get_pk_algorithm(sign_ctx->key, NULL))
   {
@@ -712,7 +715,8 @@ exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 BIO * bp = BIO_new_mem_buf(privkey_pem, -1);
 
 if (!(sign_ctx->key = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL)))
-  return US ERR_error_string(ERR_get_error(), NULL);
+  return string_sprintf("privkey PEM-block import: %s",
+		       	ERR_error_string(ERR_get_error(), NULL));
 
 sign_ctx->keytype =
 #ifdef SIGN_HAVE_ED25519
