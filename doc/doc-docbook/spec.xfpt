@@ -39261,6 +39261,12 @@ strict enforcement should code the check explicitly.
 The number of signed body bytes. If zero ("0"), the body is unsigned. If no
 limit was set by the signer, "9999999999999" is returned. This makes sure
 that this variable always expands to an integer value.
+.new
+&*Note:*& The presence of the signature tag specifying a signing body length
+is one possible route to spoofing of valid DKIM signatures.
+A paranoid implementation might wish to regard signature where this variable
+shows less than the "no limit" return as being invalid.
+.wen
 
 .vitem &%$dkim_created%&
 UNIX timestamp reflecting the date and time when the signature was created.
