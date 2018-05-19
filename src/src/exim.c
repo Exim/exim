@@ -4091,8 +4091,11 @@ if (((debug_selector & D_any) != 0 || LOGGING(arguments))
   Ustrcpy(p, "cwd= (failed)");
 
   Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
+  p += 4 + Ustrlen(initial_cwd);
+  /* in case p is near the end and we don't provide enough space for
+   * string_format to be willing to write. */
+  *p = '\0';
 
-  while (*p) p++;
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
   while (*p) p++;
   for (i = 0; i < argc; i++)
