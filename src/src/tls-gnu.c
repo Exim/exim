@@ -790,7 +790,7 @@ if ((rc = gnutls_x509_privkey_generate(pkey, GNUTLS_PK_RSA,
   goto err;
 
 where = US"configuring cert";
-now = 0;
+now = 1;
 if (  (rc = gnutls_x509_crt_set_version(cert, 3))
    || (rc = gnutls_x509_crt_set_serial(cert, &now, sizeof(now)))
    || (rc = gnutls_x509_crt_set_activation_time(cert, now = time(NULL)))

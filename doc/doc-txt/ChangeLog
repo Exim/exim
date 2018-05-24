@@ -28,6 +28,9 @@ JH/06 Bug 2275: The MIME ACL unlocked the received message files early, and
       releases a lock) for that case, while creating the temporary .eml format
       file for the MIME ACL.  Also applies to "regex" and "spam" ACL conditions.
 
+JH/08 When generating a selfsigned cert, use serial number 1 since zero is not
+      legitimate.
+
 
 Exim version 4.91
 -----------------
