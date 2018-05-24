@@ -43,6 +43,9 @@ JH/06 Bug 2275: The MIME ACL unlocked the received message files early, and
 JH/07 Bug 177: Make a random-recipient callout success visible in ACL, by setting
       $sender_verify_failure/$recipient_verify_failure to "random".
 
+JH/08 When generating a selfsigned cert, use serial number 1 since zero is not
+      legitimate.
+
 
 Exim version 4.91
 -----------------

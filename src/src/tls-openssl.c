@@ -1000,7 +1000,7 @@ if (!EVP_PKEY_assign_RSA(pkey, rsa))
   goto err;
 
 X509_set_version(x509, 2);				/* N+1 - version 3 */
-ASN1_INTEGER_set(X509_get_serialNumber(x509), 0);
+ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
 X509_gmtime_adj(X509_get_notBefore(x509), 0);
 X509_gmtime_adj(X509_get_notAfter(x509), (long)60 * 60);	/* 1 hour */
 X509_set_pubkey(x509, pkey);
