@@ -4084,7 +4084,7 @@ Don't attempt it if logging is disabled, or if listing variables or if
 verifying/testing addresses or expansions. */
 
 if (  (debug_selector & D_any  ||  LOGGING(arguments))
-      && really_exim && !list_options && !checking)
+   && really_exim && !list_options && !checking)
   {
   int i;
   uschar *p = big_buffer;

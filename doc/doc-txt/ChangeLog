@@ -46,6 +46,9 @@ JH/07 Bug 177: Make a random-recipient callout success visible in ACL, by settin
 JH/08 When generating a selfsigned cert, use serial number 1 since zero is not
       legitimate.
 
+JH/09 Bug 2274: Fix logging of cmdline args when starting in an unlinked cwd.
+      Previously this would segfault.
+
 
 Exim version 4.91
 -----------------
