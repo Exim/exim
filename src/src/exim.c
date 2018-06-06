@@ -4083,18 +4083,23 @@ a debugging feature for finding out what arguments certain MUAs actually use.
 Don't attempt it if logging is disabled, or if listing variables or if
 verifying/testing addresses or expansions. */
 
-if (((debug_selector & D_any) != 0 || LOGGING(arguments))
+if (  (debug_selector & D_any  ||  LOGGING(arguments))
       && really_exim && !list_options && !checking)
   {
   int i;
   uschar *p = big_buffer;
   Ustrcpy(p, "cwd= (failed)");
 
-  Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
-  p += 4 + Ustrlen(initial_cwd);
-  /* in case p is near the end and we don't provide enough space for
-   * string_format to be willing to write. */
-  *p = '\0';
+  if (!initial_cwd)
+    p += 13;
+  else
+    {
+    Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
+    p += 4 + Ustrlen(initial_cwd);
+    /* in case p is near the end and we don't provide enough space for
+     * string_format to be willing to write. */
+    *p = '\0';
+    }
 
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
   while (*p) p++;
