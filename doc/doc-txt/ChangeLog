@@ -49,6 +49,9 @@ JH/08 When generating a selfsigned cert, use serial number 1 since zero is not
 JH/09 Bug 2274: Fix logging of cmdline args when starting in an unlinked cwd.
       Previously this would segfault.
 
+JH/10 Fix ARC signing for case when DKIM signing failed.  Previously this would
+      segfault.
+
 
 Exim version 4.91
 -----------------
