@@ -1638,7 +1638,7 @@ if (g)
 
 /* Finally, append the dkim headers and return the lot. */
 
-g = string_catn(g, sigheaders->s, sigheaders->ptr);
+if (sigheaders) g = string_catn(g, sigheaders->s, sigheaders->ptr);
 (void) string_from_gstring(g);
 gstring_reset_unused(g);
 return g;
