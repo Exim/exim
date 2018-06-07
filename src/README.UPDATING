@@ -26,6 +26,14 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.92
+-----------------
+
+ * Exim used to manually follow CNAME chains, to a limited depth.  In this
+   day-and-age we expect the resolver to be doing this for us, so the loop
+   is limited to one retry unless the (new) config option dns_cname_loops
+   is changed.
+
 Exim version 4.91
 -----------------
 

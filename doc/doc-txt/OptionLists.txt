@@ -182,6 +182,7 @@ dmarc_history_file                   string          unset         main         
 dmarc_tld_file                       string          unset         main              4.82 if experimental_dmarc
 dns_again_means_nonexist             domain list     unset         main              1.89
 dns_check_names_pattern              string          +             main              2.11
+dns_cname_loops                      integer         0             main              4.92 Set to 9 for older behaviour
 dns_csa_search_limit                 integer         5             main              4.60
 dns_csa_use_reverse                  boolean         true          main              4.60
 dns_dnssec_ok                        integer         -1            main              4.82

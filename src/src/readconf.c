@@ -123,6 +123,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
+  { "dns_cname_loops",		opt_int,	 &dns_cname_loops },
   { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },
   { "dns_csa_use_reverse",      opt_bool,        &dns_csa_use_reverse },
   { "dns_dnssec_ok",            opt_int,         &dns_dnssec_ok },

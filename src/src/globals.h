@@ -421,6 +421,7 @@ extern BOOL    dmarc_enable_forensic;  /* Set via ACL control statement. When se
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
 extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standard) */
+extern int     dns_cname_loops;	       /* Follow CNAMEs returned by resolver to this depth */
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
 #ifdef SUPPORT_DANE
 extern int     dns_dane_ok;            /* Ok to use DANE when checking TLS authenticity */

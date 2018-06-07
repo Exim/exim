@@ -11,6 +11,7 @@ spool_directory = TESTSUITE/spool
 log_file_path = TESTSUITE/spool/log/%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
+dns_cname_loops = 9
 chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 tls_advertise_hosts =

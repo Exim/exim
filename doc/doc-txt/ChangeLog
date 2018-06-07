@@ -52,6 +52,13 @@ JH/09 Bug 2274: Fix logging of cmdline args when starting in an unlinked cwd.
 JH/10 Fix ARC signing for case when DKIM signing failed.  Previously this would
       segfault.
 
+JH/11 Bug 2264: Exim now only follows CNAME chains one step by default. We'd
+      like zero, since the resolver should be doing this for us, But we need one
+      as a CNAME but no MX presence gets the CNAME returned; we need to check
+      that doesn't point to an MX to declare it "no MX returned" rather than
+      "error, loop".  A new main option is added so the older capability of
+      following some limited number of chain links is maintained.
+
 
 Exim version 4.91
 -----------------

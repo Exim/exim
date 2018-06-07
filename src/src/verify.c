@@ -3411,9 +3411,8 @@ else
 
   /* If the lookup succeeded, cache the RHS address. The code allows for
   more than one address - this was for complete generality and the possible
-  use of A6 records. However, A6 records have been reduced to experimental
-  status (August 2001) and may die out. So they may never get used at all,
-  let alone in dnsbl records. However, leave the code here, just in case.
+  use of A6 records. However, A6 records are no longer supported. Leave the code
+  here, just in case.
 
   Quite apart from one A6 RR generating multiple addresses, there are DNS
   lists that return more than one A record, so we must handle multiple

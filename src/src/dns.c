@@ -674,10 +674,10 @@ if ((previous = tree_search(tree_dns_fails, node_name)))
   {
   DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: using cached value %s\n",
     name, dns_text_type(type),
-      (previous->data.val == DNS_NOMATCH)? "DNS_NOMATCH" :
-      (previous->data.val == DNS_NODATA)? "DNS_NODATA" :
-      (previous->data.val == DNS_AGAIN)? "DNS_AGAIN" :
-      (previous->data.val == DNS_FAIL)? "DNS_FAIL" : "??");
+      previous->data.val == DNS_NOMATCH ? "DNS_NOMATCH" :
+      previous->data.val == DNS_NODATA ? "DNS_NODATA" :
+      previous->data.val == DNS_AGAIN ? "DNS_AGAIN" :
+      previous->data.val == DNS_FAIL ? "DNS_FAIL" : "??");
   return previous->data.val;
   }
 
@@ -836,6 +836,8 @@ return DNS_SUCCEED;
 /* Look up the given domain name, using the given type. Follow CNAMEs if
 necessary, but only so many times. There aren't supposed to be CNAME chains in
 the DNS, but you are supposed to cope with them if you find them.
+By default, follow one CNAME since a resolver has been seen, faced with
+an MX request and a CNAME (to an A) but no MX present, returning the CNAME.
 
 The assumption is made that if the resolver gives back records of the
 requested type *and* a CNAME, we don't need to make another call to look up
@@ -871,9 +873,14 @@ int i;
 const uschar *orig_name = name;
 BOOL secure_so_far = TRUE;
 
-/* Loop to follow CNAME chains so far, but no further... */
+/* By default, assume the resolver follows CNAME chains (and returns NODATA for
+an unterminated one). If it also does that for a CNAME loop, fine; if it returns
+a CNAME (maybe the last?) whine about it.  However, retain the coding for dumb
+resolvers hiding behind a config variable. Loop to follow CNAME chains so far,
+but no further...  The testsuite tests the latter case, mostly assuming that the
+former will work. */
 
-for (i = 0; i < 10; i++)
+for (i = 0; i <= dns_cname_loops; i++)
   {
   uschar * data;
   dns_record *rr, cname_rr, type_rr;

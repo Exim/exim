@@ -13873,6 +13873,7 @@ listed in more than one group.
 .row &%av_scanner%&                  "specify virus scanner"
 .row &%check_rfc2047_length%&        "check length of RFC 2047 &""encoded &&&
                                       words""&"
+.row &%dns_cname_loops%&             "follow CNAMEs returned by resolver"
 .row &%dns_csa_search_limit%&        "control CSA parent search depth"
 .row &%dns_csa_use_reverse%&         "en/disable CSA IP reverse search"
 .row &%header_maxsize%&              "total size of message header"
@@ -14774,6 +14775,19 @@ DNS, as described in more detail in section &<<SECTverifyCSA>>&.
 This option controls whether or not an IP address, given as a CSA domain, is
 reversed and looked up in the reverse DNS, as described in more detail in
 section &<<SECTverifyCSA>>&.
+
+.new
+.option dns_cname_loops main integer 1
+.cindex DNS "CNAME following"
+This option controls the following of CNAME chains, needed if the resolver does
+not do it internally.
+As of 2018 most should, and the default can be left.
+If you have an ancient one, a value of 10 is likely needed.
+
+The default value of one CNAME-follow is needed
+thanks to the observed return for an MX request,
+given no MX presence but a CNAME to an A, of the CNAME.
+.wen
 
 
 .option dns_dnssec_ok main integer -1

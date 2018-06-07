@@ -698,6 +698,7 @@ BOOL    dmarc_enable_forensic   = FALSE;
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;
 BOOL    dns_csa_use_reverse    = TRUE;
+int	dns_cname_loops	       = 1;
 #ifdef SUPPORT_DANE
 int     dns_dane_ok            = -1;
 #endif
