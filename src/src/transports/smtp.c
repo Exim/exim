@@ -63,6 +63,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dkim.dkim_sign_headers) },
   { "dkim_strict", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dkim.dkim_strict) },
+  { "dkim_timestamps", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim.dkim_timestamps) },
 #endif
   { "dns_qualify_single",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
@@ -295,6 +297,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
     .dkim_sign_headers =	NULL,
     .dkim_strict =		NULL,
     .dkim_hash =		US"sha256",
+    .dkim_timestamps =		NULL,
     .dot_stuffed =		FALSE,
     .force_bodyhash =		FALSE,
 # ifdef EXPERIMENTAL_ARC

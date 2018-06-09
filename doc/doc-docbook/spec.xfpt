@@ -23976,14 +23976,15 @@ the message. As a result, the overall timeout for a message depends on the size
 of the message. Its value must not be zero. See also &%final_timeout%&.
 
 
-.option dkim_domain smtp string list&!! unset
-.option dkim_selector smtp string&!! unset
-.option dkim_private_key smtp string&!! unset
 .option dkim_canon smtp string&!! unset
-.option dkim_strict smtp string&!! unset
-.option dkim_sign_headers smtp string&!! "per RFC"
+.option dkim_domain smtp string list&!! unset
 .option dkim_hash smtp string&!! sha256
 .option dkim_identity smtp string&!! unset
+.option dkim_private_key smtp string&!! unset
+.option dkim_selector smtp string&!! unset
+.option dkim_strict smtp string&!! unset
+.option dkim_sign_headers smtp string&!! "per RFC"
+.option dkim_timestamps smtp string&!! unset
 DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
 
 
@@ -39101,6 +39102,18 @@ will be signed.
 If a '+' prefix if used, all headers that are present with this name
 will be signed, and one signature added for a missing header with the
 name will be appended.
+
+.new
+.option dkim_timestamps smtp integer&!! unset
+This option controls the inclusion of timestamp information in the signature.
+If not set, no such information will be included.
+Otherwise, must be an unsigned number giving an offset in seconds from the current time
+for the expiry tag
+(eg. 1209600 for two weeks);
+both creation (t=) and expiry (x=) tags will be included.
+
+RFC 6376 lists these tags as RECOMMENDED.
+.wen
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECDKIMVFY"

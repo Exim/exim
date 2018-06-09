@@ -878,6 +878,7 @@ struct ob_dkim {
   uschar *dkim_sign_headers;
   uschar *dkim_strict;
   uschar *dkim_hash;
+  uschar *dkim_timestamps;
   BOOL    dot_stuffed;
   BOOL    force_bodyhash;
 #ifdef EXPERIMENTAL_ARC

@@ -11,8 +11,8 @@ From: second@example.com
 content
 ****
 #
-# single header, oversigned
-exim -DOPT=From:From -odf b@test.ex
+# single header, oversigned, with timestamps
+exim -DOPT=From:From -DTIMES=10 -odf b@test.ex
 From: nobody@example.com
 
 content

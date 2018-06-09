@@ -645,6 +645,8 @@ if (dkim_domain)
     uschar * dkim_private_key_expanded;
     uschar * dkim_hash_expanded;
     uschar * dkim_identity_expanded = NULL;
+    uschar * dkim_timestamps_expanded = NULL;
+    unsigned long tval = 0, xval = 0;
 
     /* Get canonicalization to use */
 
@@ -695,6 +697,13 @@ if (dkim_domain)
       else if (!*dkim_identity_expanded)
 	dkim_identity_expanded = NULL;
 
+    if (dkim->dkim_timestamps)
+      if (!(dkim_timestamps_expanded = expand_string(dkim->dkim_timestamps)))
+	{ errwhen = US"dkim_timestamps"; goto expand_bad; }
+      else
+	xval = (tval = (unsigned long) time(NULL))
+	      + strtoul(dkim_timestamps_expanded, NULL, 10);
+
     if (!(sig = pdkim_init_sign(&dkim_sign_ctx, dkim_signing_domain,
 			  dkim_signing_selector,
 			  dkim_private_key_expanded,
@@ -708,7 +717,7 @@ if (dkim_domain)
 			CS dkim_sign_headers_expanded,
 			CS dkim_identity_expanded,
 			pdkim_canon,
-			pdkim_canon, -1, 0, 0);
+			pdkim_canon, -1, tval, xval);
 
     if (!pdkim_set_sig_bodyhash(&dkim_sign_ctx, sig))
       goto bad;

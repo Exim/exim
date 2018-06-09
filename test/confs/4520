@@ -67,6 +67,9 @@ send_to_server:
 .ifdef STRICT
   dkim_strict =		STRICT
 .endif
+.ifdef TIMES
+  dkim_timestamps =	TIMES
+.endif
 
 file:
   driver =	appendfile

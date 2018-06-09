@@ -169,6 +169,7 @@ dkim_private_key                     string*         unset         smtp         
 dkim_selector                        string*         unset         smtp              4.70
 dkim_sign_headers                    string*         (RFC4871)     smtp              4.70
 dkim_strict                          string*         unset         smtp              4.70
+dkim_timestamps                      integer*        unset         smtp              4.92
 dkim_verify_signers                  string*         $dkim_signers main              4.70
 directory                            string*         unset         appendfile
 directory_file                       string*         +             appendfile
