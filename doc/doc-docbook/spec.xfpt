@@ -26769,7 +26769,7 @@ authenticator only. There is only one option:
 
 .option server_socket dovecot string unset
 
-This option must specify the socket that is the interface to Dovecot
+This option must specify the UNIX socket that is the interface to Dovecot
 authentication. The &%public_name%& option must specify an authentication
 mechanism that Dovecot is configured to support. You can have several
 authenticators for different mechanisms. For example:
