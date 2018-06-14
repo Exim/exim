@@ -59,6 +59,8 @@ JH/11 Bug 2264: Exim now only follows CNAME chains one step by default. We'd
       "error, loop".  A new main option is added so the older capability of
       following some limited number of chain links is maintained.
 
+JH/12 Add client-ip info to non-pass iprev ${authres } lines.
+
 
 Exim version 4.91
 -----------------
