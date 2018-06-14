@@ -61,6 +61,11 @@ JH/11 Bug 2264: Exim now only follows CNAME chains one step by default. We'd
 
 JH/12 Add client-ip info to non-pass iprev ${authres } lines.
 
+JH/13 For receent Openssl versions (1.1 onward) use modern generic protocol
+      methods.  These should support TLS 1.3; they arrived with TLS 1.3 and the
+      now-deprecated earlier definitions used only specified the range up to TLS
+      1.2 (in the older-version library docs).
+
 
 Exim version 4.91
 -----------------

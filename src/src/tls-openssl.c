@@ -70,6 +70,7 @@ functions from the OpenSSL library. */
 # if OPENSSL_VERSION_NUMBER >= 0x010100000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 #  define EXIM_HAVE_OPENSSL_DH_BITS
+#  define EXIM_HAVE_OPENSSL_TLS_METHOD
 # endif
 # if OPENSSL_VERSION_NUMBER >= 0x010000000L \
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
@@ -1216,7 +1217,11 @@ if (!reexpand_tls_files_for_sni)
 not confident that memcpy wouldn't break some internal reference counting.
 Especially since there's a references struct member, which would be off. */
 
+#ifdef EXIM_HAVE_OPENSSL_TLS_METHOD
+if (!(server_sni = SSL_CTX_new(TLS_server_method())))
+#else
 if (!(server_sni = SSL_CTX_new(SSLv23_server_method())))
+#endif
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   DEBUG(D_tls) debug_printf("SSL_CTX_new() failed: %s\n", ssl_errstring);
@@ -1545,7 +1550,11 @@ when OpenSSL is built without SSLv2 support.
 By disabling with openssl_options, we can let admins re-enable with the
 existing knob. */
 
+#ifdef EXIM_HAVE_OPENSSL_TLS_METHOD
+if (!(ctx = SSL_CTX_new(host ? TLS_client_method() : TLS_server_method())))
+#else
 if (!(ctx = SSL_CTX_new(host ? SSLv23_client_method() : SSLv23_server_method())))
+#endif
   return tls_error(US"SSL_CTX_new", host, NULL, errstr);
 
 /* It turns out that we need to seed the random number generator this early in
@@ -1635,7 +1644,7 @@ if ((rc = tls_expand_session_files(ctx, cbinfo, errstr)) != OK)
     }
 # endif
 
-if (host == NULL)		/* server */
+if (!host)		/* server */
   {
 # ifndef DISABLE_OCSP
   /* We check u_ocsp.server.file, not server.response, because we care about if
@@ -1704,15 +1713,13 @@ Returns:    nothing
 static void
 construct_cipher_name(SSL *ssl, uschar *cipherbuf, int bsize, int *bits)
 {
-/* With OpenSSL 1.0.0a, this needs to be const but the documentation doesn't
+/* With OpenSSL 1.0.0a, 'c' needs to be const but the documentation doesn't
 yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
 the accessor functions use const in the prototype. */
-const SSL_CIPHER *c;
-const uschar *ver;
 
-ver = (const uschar *)SSL_get_version(ssl);
+const uschar * ver = CUS SSL_get_version(ssl);
+const SSL_CIPHER * c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
 
-c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
 SSL_CIPHER_get_bits(c, bits);
 
 string_format(cipherbuf, bsize, "%s:%s:%u", ver,
@@ -2360,7 +2367,7 @@ else
       client_static_cbinfo, errstr)) != OK)
     return rc;
 
-if ((client_ssl = SSL_new(client_ctx)) == NULL)
+if (!(client_ssl = SSL_new(client_ctx)))
   return tls_error(US"SSL_new", host, NULL, errstr);
 SSL_set_session_id_context(client_ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(client_ssl, fd);
@@ -2847,8 +2854,11 @@ while (*s != 0) { if (*s == '_') *s = '-'; s++; }
 
 err = NULL;
 
-ctx = SSL_CTX_new(SSLv23_server_method());
-if (!ctx)
+#ifdef EXIM_HAVE_OPENSSL_TLS_METHOD
+if (!(ctx = SSL_CTX_new(TLS_server_method())))
+#else
+if (!(ctx = SSL_CTX_new(SSLv23_server_method())))
+#endif
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   return string_sprintf("SSL_CTX_new() failed: %s", ssl_errstring);
