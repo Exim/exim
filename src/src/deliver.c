@@ -7291,7 +7291,7 @@ if (addr_senddsn)
 	"MIME-Version: 1.0\n\n"
 
 	"--%s\n"
-	"Content-type: text/plain; charset=us-ascii\n\n"
+	"Content-type: text/plain; charset=utf-8\n\n"
 
 	"This message was created automatically by mail delivery software.\n"
 	" ----- The following addresses had successful delivery notifications -----\n",
@@ -7560,7 +7560,7 @@ while (addr_failed)
 
       /* output human readable part as text/plain section */
       fprintf(f, "--%s\n"
-	  "Content-type: text/plain; charset=us-ascii\n\n",
+	  "Content-type: text/plain; charset=utf-8\n\n",
 	bound);
 
       if ((emf_text = next_emf(emf, US"intro")))
@@ -8165,7 +8165,7 @@ else if (addr_defer != (address_item *)(+1))
 
         /* output human readable part as text/plain section */
         fprintf(f, "--%s\n"
-	    "Content-type: text/plain; charset=us-ascii\n\n",
+	    "Content-type: text/plain; charset=utf-8\n\n",
 	  bound);
 
         if ((wmf_text = next_emf(wmf, US"intro")))
