@@ -1,5 +1,5 @@
 # Exim test configuration 4008
-# Content-scan: cmsline interface
+# Content-scan: cmdline interface
 
 .include DIR/aux-var/std_conf_prefix
 
