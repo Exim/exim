@@ -493,7 +493,7 @@ if (ferror(mbox_file))
 
 /* we're done sending, close socket for writing */
 if (!sd->is_rspamd)
-  shutdown(spamd_cctx.sock,SHUT_WR);
+  shutdown(spamd_cctx.sock, SHUT_WR);
 
 /* read spamd response using what's left of the timeout.  */
 memset(spamd_buffer, 0, sizeof(spamd_buffer));
