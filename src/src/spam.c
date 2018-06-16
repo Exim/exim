@@ -371,9 +371,8 @@ start = time(NULL);
 if (sd->is_rspamd)
   {				/* rspamd variant */
   uschar *req_str;
-  const uschar * helo;
-  const uschar * fcrdns;
-  const uschar * authid;
+  const char *helo;
+  const char *fcrdns;
 
   req_str = string_sprintf("CHECK RSPAMC/1.3\r\nContent-length: %lu\r\n"
     "Queue-Id: %s\r\nFrom: <%s>\r\nRecipient-Number: %d\r\n",
@@ -386,12 +385,10 @@ if (sd->is_rspamd)
     req_str = string_sprintf("%sHostname: %s\r\n", req_str, fcrdns);
   if (sender_host_address != NULL)
     req_str = string_sprintf("%sIP: %s\r\n", req_str, sender_host_address);
-  if ((authid = expand_string(US"$authenticated_id")) != NULL && *authid != '\0')
-    req_str = string_sprintf("%sUser: %s\r\n", req_str, authid);
   req_str = string_sprintf("%s\r\n", req_str);
   wrote = send(spamd_cctx.sock, req_str->s, req_str->ptr, 0);
   }
-else
+  else
   {				/* spamassassin variant */
   (void)string_format(spamd_buffer,
 	  sizeof(spamd_buffer),
@@ -401,7 +398,6 @@ else
   /* send our request */
   wrote = send(spamd_cctx.sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
   }
-
 if (wrote == -1)
   {
   (void)close(spamd_cctx.sock);
