@@ -1217,16 +1217,22 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/(DKIM: validation error: )error:[0-9A-F]{8}:rsa routines:(?:(?i)int_rsa_verify|CRYPTO_internal):(?:bad signature|algorithm mismatch)$/$1Public key signature verification has failed./;
 
     # DKIM timestamps
-    s/(DKIM: d=.*) t=([0-9]*) x=([0-9]*)(?{ return $3 - $2; }) /$1 t=T x=T+$^R /;
+    if ( /(DKIM: d=.*) t=([0-9]*) x=([0-9]*) / )
+      {
+      my ($prefix, $t_diff) = ($1, $3 - $2);
+      s/DKIM: d=.* t=[0-9]* x=[0-9]* /${prefix} t=T x=T+${t_diff} /;
+      }
     }
 
   # ======== mail ========
 
   elsif ($is_mail)
     {
-    # DKIM timestamps
-    if ( /^\s+t=[0-9]*; x=[0-9]*; b=[A-Za-z0-9+\/]+$/ ) {
-      s/^(\s+)t=([0-9]*); x=([0-9]*);(?{ return $3 - $2; }) b=[A-Za-z0-9+\/]+$/$1t=T; x=T+$^R; b=bbbb;/;
+    # DKIM timestamps, and signatures depending thereon
+    if ( /^(\s+)t=([0-9]*); x=([0-9]*); b=[A-Za-z0-9+\/]+$/ )
+      {
+      my ($indent, $t_diff) = ($1, $3 - $2);
+      s/.*/${indent}t=T; x=T+${t_diff}; b=bbbb;/;
       <IN>;
       <IN>;
       }
