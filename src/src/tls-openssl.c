@@ -1999,6 +1999,10 @@ if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers, errstr)
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
 were historically separated by underscores. So that I can use either form in my
 tests, and also for general convenience, we turn underscores into hyphens here.
+
+XXX SSL_CTX_set_cipher_list() is replaced by SSL_CTX_set_ciphersuites()
+for TLS 1.3 .  Since we do not call it at present we get the default list:
+TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
 */
 
 if (expciphers)

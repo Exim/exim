@@ -27417,7 +27417,10 @@ the size of the generated prime, so it might still be too large.
 .oindex "&%tls_require_ciphers%&" "OpenSSL"
 There is a function in the OpenSSL library that can be passed a list of cipher
 suites before the cipher negotiation takes place. This specifies which ciphers
-are acceptable. The list is colon separated and may contain names like
+.new
+are acceptable for TLS versions prior to 1.3.
+.wen
+The list is colon separated and may contain names like
 DES-CBC3-SHA. Exim passes the expanded value of &%tls_require_ciphers%&
 directly to this function call.
 Many systems will install the OpenSSL manual-pages, so you may have
@@ -27481,6 +27484,18 @@ This example will prefer ECDSA-authenticated ciphers over RSA ones:
 .code
 tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
 .endd
+
+.new
+For TLS version 1.3 the control available is less fine-grained
+and Exim does not provide access to it at present.
+The value of the &%tls_require_ciphers%& option is ignored when
+TLS version 1.3 is negociated.
+
+As of writing the library default cipher suite list for TLSv1.3 is
+.code
+TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
+.endd
+.wen
 
 
 .section "Requiring specific ciphers or other parameters in GnuTLS" &&&

@@ -544,6 +544,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   #   TLSv1.1:AES256-SHA:256
   #   TLSv1.2:AES256-GCM-SHA384:256
   #   TLSv1.2:DHE-RSA-AES256-SHA:256
+  #   TLSv1.3:TLS_AES_256_GCM_SHA384:256
   #   TLS1.2:DHE_RSA_AES_128_CBC_SHA1:128
   # We also need to handle the ciphersuite without the TLS part present, for
   # client-ssl's output.  We also see some older forced ciphersuites, but
@@ -553,9 +554,13 @@ RESET_AFTER_EXTRA_LINE_READ:
   #
   # Retain the authentication algorith field as we want to test that.
 
-  s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.[12]:/$1TLSv1:/xg;
+  s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.[123]:/$1TLSv1:/xg;
   s/((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA)(?!:)/ke-$3-AES256-SHA/g;
   s/((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA):(128|256)/ke-$3-AES256-SHA:xxx/g;
+
+  # OpenSSL TLSv1.3 - unsure what to do about the authentication-variant testcases now,
+  # as it seems the protocol no longer supports a user choice.
+  s/TLS_AES(_256)_GCM_SHA384:256/TLS-AES256-SHA:xxx/g;
 
   # LibreSSL
   # TLSv1:AES256-GCM-SHA384:256
