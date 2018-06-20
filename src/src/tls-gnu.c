@@ -125,7 +125,7 @@ typedef struct exim_gnutls_state {
   BOOL			trigger_sni_changes;
   BOOL			have_set_peerdn;
   const struct host_item *host;
-  gnutls_x509_crt_t 	peercert;
+  gnutls_x509_crt_t	peercert;
   uschar		*peerdn;
   uschar		*ciphersuite;
   uschar		*received_sni;
@@ -2241,7 +2241,7 @@ return TRUE;
 
 Arguments:
   fd                the fd of the connection
-  host              connected host (for messages)
+  host              connected host (for messages and option-tests)
   addr              the first address (not used)
   tb                transport (always smtp)
   tlsa_dnsa	    non-NULL, either request or require dane for this host, and
@@ -2264,8 +2264,9 @@ tls_client_start(int fd, host_item *host,
 #endif
     tls_support * tlsp, uschar ** errstr)
 {
-smtp_transport_options_block *ob =
-  (smtp_transport_options_block *)tb->options_block;
+smtp_transport_options_block *ob = tb
+  ? (smtp_transport_options_block *)tb->options_block
+  : &smtp_transport_option_defaults;
 int rc;
 exim_gnutls_state_st * state = NULL;
 uschar *cipher_list = NULL;
@@ -2375,7 +2376,7 @@ if (request_ocsp)
 #endif
 
 #ifndef DISABLE_EVENT
-if (tb->event_action)
+if (tb && tb->event_action)
   {
   state->event_action = tb->event_action;
   gnutls_session_set_ptr(state->session, state);
@@ -2477,7 +2478,7 @@ would tamper with the TLS session in the parent process).
 Arguments:
   ct_ctx	client context pointer, or NULL for the one global server context
   shutdown	1 if TLS close-alert is to be sent,
- 		2 if also response to be waited for
+		2 if also response to be waited for
 
 Returns:     nothing
 */
@@ -2678,7 +2679,7 @@ Arguments:
   len       size of buffer
 
 Returns:    the number of bytes read
-            -1 after a failed read
+            -1 after a failed read, including EOF
 */
 
 int

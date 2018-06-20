@@ -74,6 +74,7 @@ JH/15 Rework TLS client-side context management.  Stop using a global, and
       connection is using TLS; with cutthrough connections this is quite likely.
 
 JH/16 Fix ARC verification to do AS checks in reverse order.
+JH/16 Support a "tls" option on the ${readsocket } expansion item.
 
 
 Exim version 4.91

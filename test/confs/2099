@@ -1,0 +1,16 @@
+# Exim test configuration 2019
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+log_selector = +tls_peerdn
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+# End

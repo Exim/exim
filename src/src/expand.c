@@ -3550,6 +3550,26 @@ return yield;
 }
 
 
+#ifdef SUPPORT_TLS
+static gstring *
+cat_file_tls(void * tls_ctx, gstring * yield, uschar * eol)
+{
+int rc;
+uschar * s;
+uschar buffer[1024];
+
+while ((rc = tls_read(tls_ctx, buffer, sizeof(buffer))) > 0)
+  for (s = buffer; rc--; s++)
+    yield = eol && *s == '\n'
+      ? string_cat(yield, eol) : string_catn(yield, s, 1);
+
+/* We assume that all errors, and any returns of zero bytes,
+are actually EOF. */
+
+(void) string_from_gstring(yield);
+return yield;
+}
+#endif
 
 
 /*************************************************
@@ -4801,9 +4821,15 @@ while (*s != 0)
       int timeout = 5;
       int save_ptr = yield->ptr;
       FILE *f;
-      uschar *arg;
-      uschar *sub_arg[4];
+      uschar * arg;
+      uschar * sub_arg[4];
+      uschar * server_name = NULL;
+      host_item host;
       BOOL do_shutdown = TRUE;
+#ifdef SUPPORT_TLS
+      BOOL do_tls = FALSE;
+      void * tls_ctx = NULL;
+#endif
       blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
@@ -4846,10 +4872,14 @@ while (*s != 0)
 
 	while ((item = string_nextinlist(&list, &sep, NULL, 0)))
 	  if (Ustrncmp(item, US"shutdown=", 9) == 0)
-	    if (Ustrcmp(item + 9, US"no") == 0)
-	      do_shutdown = FALSE;
+	    { if (Ustrcmp(item + 9, US"no") == 0) do_shutdown = FALSE; }
+#ifdef SUPPORT_TLS
+	  else if (Ustrncmp(item, US"tls=", 4) == 0)
+	    { if (Ustrcmp(item + 9, US"no") != 0) do_tls = TRUE; }
+#endif
         }
-      else sub_arg[3] = NULL;                     /* No eol if no timeout */
+      else
+	sub_arg[3] = NULL;                     /* No eol if no timeout */
 
       /* If skipping, we don't actually do anything. Otherwise, arrange to
       connect to either an IP or a Unix socket. */
@@ -4861,8 +4891,10 @@ while (*s != 0)
         if (Ustrncmp(sub_arg[0], "inet:", 5) == 0)
           {
           int port;
-          uschar * server_name = sub_arg[0] + 5;
-          uschar * port_name = Ustrrchr(server_name, ':');
+          uschar * port_name;
+
+          server_name = sub_arg[0] + 5;
+          port_name = Ustrrchr(server_name, ':');
 
           /* Sort out the port */
 
@@ -4898,11 +4930,12 @@ while (*s != 0)
             }
 
 	  fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
-		  timeout, NULL, &expand_string_message, &reqstr);
+		  timeout, &host, &expand_string_message,
+		  do_tls ? NULL : &reqstr);
 	  callout_address = NULL;
 	  if (fd < 0)
               goto SOCK_FAIL;
-	  reqstr.len = 0;
+	  if (!do_tls) reqstr.len = 0;
           }
 
         /* Handle a Unix domain socket */
@@ -4922,6 +4955,7 @@ while (*s != 0)
           sockun.sun_family = AF_UNIX;
           sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1),
             sub_arg[0]);
+	  server_name = sockun.sun_path;
 
           sigalrm_seen = FALSE;
           alarm(timeout);
@@ -4938,9 +4972,26 @@ while (*s != 0)
               "%s: %s", sub_arg[0], strerror(errno));
             goto SOCK_FAIL;
             }
+	  host.name = server_name;
+	  host.address = US"";
           }
 
         DEBUG(D_expand) debug_printf_indent("connected to socket %s\n", sub_arg[0]);
+
+#ifdef SUPPORT_TLS
+	if (do_tls)
+	  {
+	  tls_support tls_dummy = {0};
+	  uschar * errstr;
+
+	  if (!(tls_ctx = tls_client_start(fd, &host, NULL, NULL, NULL,
+	  			&tls_dummy, &errstr)))
+	    {
+	    expand_string_message = string_sprintf("TLS connect failed: %s", errstr);
+	    goto SOCK_FAIL;
+	    }
+	  }
+#endif
 
 	/* Allow sequencing of test actions */
 	if (running_in_test_harness) millisleep(100);
@@ -4951,7 +5002,11 @@ while (*s != 0)
           {
           DEBUG(D_expand) debug_printf_indent("writing \"%s\" to socket\n",
             reqstr.data);
-          if (write(fd, reqstr.data, reqstr.len) != reqstr.len)
+          if ( (
+#ifdef SUPPORT_TLS
+	      tls_ctx ? tls_write(tls_ctx, reqstr.data, reqstr.len, FALSE) :
+#endif
+			write(fd, reqstr.data, reqstr.len)) != reqstr.len)
             {
             expand_string_message = string_sprintf("request write to socket "
               "failed: %s", strerror(errno));
@@ -4964,7 +5019,7 @@ while (*s != 0)
         system doesn't have this function, make it conditional. */
 
 #ifdef SHUT_WR
-	if (do_shutdown) shutdown(fd, SHUT_WR);
+	if (!tls_ctx && do_shutdown) shutdown(fd, SHUT_WR);
 #endif
 
 	if (running_in_test_harness) millisleep(100);
@@ -4972,12 +5027,26 @@ while (*s != 0)
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */
 
-        f = fdopen(fd, "rb");
+	if (!tls_ctx)
+	  f = fdopen(fd, "rb");
         sigalrm_seen = FALSE;
         alarm(timeout);
-        yield = cat_file(f, yield, sub_arg[3]);
+        yield =
+#ifdef SUPPORT_TLS
+	  tls_ctx ? cat_file_tls(tls_ctx, yield, sub_arg[3]) :
+#endif
+		    cat_file(f, yield, sub_arg[3]);
         alarm(0);
-        (void)fclose(f);
+
+#ifdef SUPPORT_TLS
+	if (tls_ctx)
+	  {
+	  tls_close(tls_ctx, TRUE);
+	  close(fd);
+	  }
+	else
+#endif
+	  (void)fclose(f);
 
         /* After a timeout, we restore the pointer in the result, that is,
         make sure we add nothing from the socket. */

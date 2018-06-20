@@ -1,0 +1,14 @@
+# ${readsocket (IPv4 TLS)
+need_ipv4
+#
+exim -DSERVER=server -tls-on-connect -bd -oX PORT_D
+****
+#
+#
+millisleep 500
+exim -be
+1 >>${readsocket{inet:thisloop:PORT_D}{QUIT\n}{2s:tls=yes}}<<
+****
+millisleep 500
+#
+killdaemon

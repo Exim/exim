@@ -9878,15 +9878,26 @@ extend what can be done. Firstly, you can vary the timeout. For example:
 .code
 ${readsocket{/socket/name}{request string}{3s}}
 .endd
+
 The third argument is a list of options, of which the first element is the timeout
 and must be present if the argument is given.
 Further elements are options of form &'name=value'&.
-One option type is currently recognised, defining whether (the default)
+Two option types is currently recognised: shutdown and tls.
+The first defines whether (the default)
 or not a shutdown is done on the connection after sending the request.
 Example, to not do so (preferred, eg. by some webservers):
 .code
 ${readsocket{/socket/name}{request string}{3s:shutdown=no}}
 .endd
+.new
+The second, tls, controls the use of TLS on the connection.  Example:
+.code
+${readsocket{/socket/name}{request string}{3s:tls=yes}}
+.endd
+The default is to not use TLS.
+If it is enabled, a shutdown as descripbed above is never done.
+.wen
+
 A fourth argument allows you to change any newlines that are in the data
 that is read, in the same way as for &%readfile%& (see above). This example
 turns them into spaces:

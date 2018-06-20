@@ -14,6 +14,9 @@ Version 4.92
     when individual headers are wrapped onto multiple lines; with previous
     facilities hard to parse.
 
+ 2. The ${readsocket } expansion item now takes a "tls" option, doing the
+    obvious thing.
+
 Version 4.91
 --------------
 

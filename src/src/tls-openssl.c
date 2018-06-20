@@ -436,7 +436,7 @@ else
 
   if (  tlsp == &tls_out
      && ((verify_cert_hostnames = client_static_cbinfo->verify_cert_hostnames)))
-     	/* client, wanting hostname check */
+	/* client, wanting hostname check */
     {
 
 #ifdef EXIM_HAVE_OPENSSL_CHECKHOST
@@ -1094,7 +1094,7 @@ if (!cbinfo->certificate)
   {
   if (!cbinfo->is_server)		/* client */
     return OK;
-  					/* server */
+					/* server */
   if (tls_install_selfsign(sctx, errstr) != OK)
     return DEFER;
   }
@@ -2032,14 +2032,14 @@ server_verify_callback_called = FALSE;
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
   rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL,
-  			FALSE, verify_callback_server, errstr);
+			FALSE, verify_callback_server, errstr);
   if (rc != OK) return rc;
   server_verify_optional = FALSE;
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
   rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL,
-  			TRUE, verify_callback_server, errstr);
+			TRUE, verify_callback_server, errstr);
   if (rc != OK) return rc;
   server_verify_optional = TRUE;
   }
@@ -2251,11 +2251,11 @@ return DEFER;
 
 Argument:
   fd               the fd of the connection
-  host             connected host (for messages)
-  addr             the first address
+  host             connected host (for messages and option-tests)
+  addr             the first address (for some randomness; can be NULL)
   tb               transport (always smtp)
   tlsa_dnsa        tlsa lookup, if DANE, else null
-  tlsp		   record details of channel configuration
+  tlsp		   record details of channel configuration here; must be non-NULL
   errstr	   error string pointer
 
 Returns:           Pointer to TLS session context, or NULL on error
@@ -2269,8 +2269,9 @@ tls_client_start(int fd, host_item *host, address_item *addr,
 #endif
   tls_support * tlsp, uschar ** errstr)
 {
-smtp_transport_options_block * ob =
-  (smtp_transport_options_block *)tb->options_block;
+smtp_transport_options_block * ob = tb
+  ? (smtp_transport_options_block *)tb->options_block
+  : &smtp_transport_option_defaults;
 exim_openssl_client_tls_ctx * exim_client_ctx;
 static uschar peerdn[256];
 uschar * expciphers;
@@ -2457,7 +2458,7 @@ if (request_ocsp)
 #endif
 
 #ifndef DISABLE_EVENT
-client_static_cbinfo->event_action = tb->event_action;
+client_static_cbinfo->event_action = tb ? tb->event_action : NULL;
 #endif
 
 /* There doesn't seem to be a built-in timeout on connection. */
@@ -2666,7 +2667,7 @@ Arguments:
   len       size of buffer
 
 Returns:    the number of bytes read
-            -1 after a failed read
+            -1 after a failed read, including EOF
 
 Only used by the client-side TLS.
 */

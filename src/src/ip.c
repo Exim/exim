@@ -262,6 +262,7 @@ if (fastopen_blob && tcp_fastopen_ok)
     DEBUG(D_transport|D_v)
       debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
 	address, (unsigned long)fastopen_blob->len);
+    /*XXX also seen on successful TFO, sigh */
     tcp_out_fastopen = fastopen_blob->len > 0 ?  2 : 1;
     }
   else if (errno == EINPROGRESS)	/* expected if we had no cookie for peer */
@@ -339,7 +340,7 @@ return -1;
 Arguments:
   type          SOCK_DGRAM or SOCK_STREAM
   af            AF_INET6 or AF_INET for the socket type
-  address       the remote address, in text form
+  hostname	host name, or ip address (as text)
   portlo,porthi the remote port range
   timeout       a timeout
   connhost	if not NULL, host_item to be filled in with connection details

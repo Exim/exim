@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 [NULL] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
+1999-03-02 09:44:33 [NULL] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="thisloop"
+
+******** SERVER ********
