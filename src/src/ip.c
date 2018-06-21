@@ -591,7 +591,7 @@ getting interrupted, and the possibility of select() returning with a positive
 result but no ready descriptor. Is this in fact possible?
 
 Arguments:
-  sock        the socket
+  cctx        the connection context (socket fd, possibly TLS context)
   buffer      to read into
   bufsize     the buffer size
   timeout     the timeout
@@ -601,24 +601,24 @@ Returns:      > 0 => that much data read
 */
 
 int
-ip_recv(int sock, uschar *buffer, int buffsize, int timeout)
+ip_recv(client_conn_ctx * cctx, uschar * buffer, int buffsize, int timeout)
 {
 int rc;
 
-if (!fd_ready(sock, timeout))
+if (!fd_ready(cctx->sock, timeout))
   return -1;
 
 /* The socket is ready, read from it (via TLS if it's active). On EOF (i.e.
 close down of the connection), set errno to zero; otherwise leave it alone. */
 
 #ifdef SUPPORT_TLS
-if (tls_out.active == sock)
-  rc = tls_read(FALSE, buffer, buffsize);
-else if (tls_in.active == sock)
-  rc = tls_read(TRUE, buffer, buffsize);
+if (cctx->tls_ctx)					/* client TLS */
+  rc = tls_read(cctx->tls_ctx, buffer, buffsize);
+else if (tls_in.active.sock == cctx->sock)		/* server TLS */
+  rc = tls_read(NULL, buffer, buffsize);
 else
 #endif
-  rc = recv(sock, buffer, buffsize, 0);
+  rc = recv(cctx->sock, buffer, buffsize, 0);
 
 if (rc > 0) return rc;
 if (rc == 0) errno = 0;

@@ -193,7 +193,7 @@ uschar *user_name;
 uschar user_name_buffer[128];
 unsigned long mbox_size;
 FILE *mbox_file;
-int spamd_sock = -1;
+client_conn_ctx spamd_cctx = {.sock = -1};
 uschar spamd_buffer[32600];
 int i, j, offset, result;
 uschar spamd_version[8];
@@ -344,14 +344,14 @@ start = time(NULL);
     for (;;)
       {
       /*XXX could potentially use TFO early-data here */
-      if (  (spamd_sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0
+      if (  (spamd_cctx.sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0
          || sd->retry <= 0
 	 )
 	break;
       DEBUG(D_acl) debug_printf_indent("spamd: server %s: retry conn\n", sd->hostspec);
       while (sd->retry > 0) sd->retry = sleep(sd->retry);
       }
-    if (spamd_sock >= 0)
+    if (spamd_cctx.sock >= 0)
       break;
 
     log_write(0, LOG_MAIN, "%s spamd: %s", loglabel, errstr);
@@ -367,8 +367,8 @@ start = time(NULL);
     }
   }
 
-(void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
-/* now we are connected to spamd on spamd_sock */
+(void)fcntl(spamd_cctx.sock, F_SETFL, O_NONBLOCK);
+/* now we are connected to spamd on spamd_cctx.sock */
 if (sd->is_rspamd)
   {
   gstring * req_str;
@@ -392,7 +392,7 @@ if (sd->is_rspamd)
   if ((s = expand_string(US"$authenticated_id")) && *s)
     req_str = string_append(req_str, 3, "User: ", s, "\r\n");
   req_str = string_catn(req_str, US"\r\n", 2);
-  wrote = send(spamd_sock, req_str->s, req_str->ptr, 0);
+  wrote = send(spamd_cctx.sock, req_str->s, req_str->ptr, 0);
   }
 else
   {				/* spamassassin variant */
@@ -402,12 +402,12 @@ else
 	  user_name,
 	  mbox_size);
   /* send our request */
-  wrote = send(spamd_sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
+  wrote = send(spamd_cctx.sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
   }
 
 if (wrote == -1)
   {
-  (void)close(spamd_sock);
+  (void)close(spamd_cctx.sock);
   log_write(0, LOG_MAIN|LOG_PANIC,
        "%s spamd %s send failed: %s", loglabel, callout_address, strerror(errno));
   goto defer;
@@ -424,10 +424,10 @@ if (wrote == -1)
  *       broken in more recent versions (up to 10.4).
  */
 #ifndef NO_POLL_H
-pollfd.fd = spamd_sock;
+pollfd.fd = spamd_cctx.sock;
 pollfd.events = POLLOUT;
 #endif
-(void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
+(void)fcntl(spamd_cctx.sock, F_SETFL, O_NONBLOCK);
 do
   {
   read = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
@@ -443,8 +443,8 @@ again:
     select_tv.tv_sec = 1;
     select_tv.tv_usec = 0;
     FD_ZERO(&select_fd);
-    FD_SET(spamd_sock, &select_fd);
-    result = select(spamd_sock+1, NULL, &select_fd, NULL, &select_tv);
+    FD_SET(spamd_cctx.sock, &select_fd);
+    result = select(spamd_cctx.sock+1, NULL, &select_fd, NULL, &select_tv);
 #endif
 /* End Erik's patch */
 
@@ -462,16 +462,16 @@ again:
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	  "%s timed out writing spamd %s, socket", loglabel, callout_address);
 	}
-      (void)close(spamd_sock);
+      (void)close(spamd_cctx.sock);
       goto defer;
       }
 
-    wrote = send(spamd_sock,spamd_buffer + offset,read - offset,0);
+    wrote = send(spamd_cctx.sock,spamd_buffer + offset,read - offset,0);
     if (wrote == -1)
       {
       log_write(0, LOG_MAIN|LOG_PANIC,
 	  "%s %s on spamd %s socket", loglabel, callout_address, strerror(errno));
-      (void)close(spamd_sock);
+      (void)close(spamd_cctx.sock);
       goto defer;
       }
     if (offset + wrote != read)
@@ -487,7 +487,7 @@ if (ferror(mbox_file))
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
     "%s error reading spool file: %s", loglabel, strerror(errno));
-  (void)close(spamd_sock);
+  (void)close(spamd_cctx.sock);
   goto defer;
   }
 
@@ -495,12 +495,12 @@ if (ferror(mbox_file))
 
 /* we're done sending, close socket for writing */
 if (!sd->is_rspamd)
-  shutdown(spamd_sock,SHUT_WR);
+  shutdown(spamd_cctx.sock,SHUT_WR);
 
 /* read spamd response using what's left of the timeout.  */
 memset(spamd_buffer, 0, sizeof(spamd_buffer));
 offset = 0;
-while ((i = ip_recv(spamd_sock,
+while ((i = ip_recv(&spamd_cctx,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
 		   sd->timeout - time(NULL) + start)) > 0)
@@ -512,12 +512,12 @@ if (i <= 0 && errno != 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
        "%s error reading from spamd %s, socket: %s", loglabel, callout_address, strerror(errno));
-  (void)close(spamd_sock);
+  (void)close(spamd_cctx.sock);
   return DEFER;
   }
 
 /* reading done */
-(void)close(spamd_sock);
+(void)close(spamd_cctx.sock);
 
 if (sd->is_rspamd)
   {				/* rspamd variant of reply */

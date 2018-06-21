@@ -411,11 +411,11 @@ HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
   more ? " (more expected)" : "");
 
 #ifdef SUPPORT_TLS
-if (tls_out.active == outblock->sock)
-  rc = tls_write(FALSE, outblock->buffer, n, more);
+if (outblock->cctx->tls_ctx)
+  rc = tls_write(outblock->cctx->tls_ctx, outblock->buffer, n, more);
 else
 #endif
-  rc = send(outblock->sock, outblock->buffer, n,
+  rc = send(outblock->cctx->sock, outblock->buffer, n,
 #ifdef MSG_MORE
 	    more ? MSG_MORE : 0
 #else
@@ -546,7 +546,7 @@ read_response_line(smtp_inblock *inblock, uschar *buffer, int size, int timeout)
 uschar *p = buffer;
 uschar *ptr = inblock->ptr;
 uschar *ptrend = inblock->ptrend;
-int sock = inblock->sock;
+client_conn_ctx * cctx = inblock->cctx;
 
 /* Loop for reading multiple packets or reading another packet after emptying
 a previously-read one. */
@@ -584,7 +584,7 @@ for (;;)
 
   /* Need to read a new input packet. */
 
-  if((rc = ip_recv(sock, inblock->buffer, inblock->buffersize, timeout)) <= 0)
+  if((rc = ip_recv(cctx, inblock->buffer, inblock->buffersize, timeout)) <= 0)
     {
     DEBUG(D_deliver|D_transport|D_acl)
       debug_printf_indent(errno ? "  SMTP(%s)<<\n" : "  SMTP(closed)<<\n",

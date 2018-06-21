@@ -1646,11 +1646,13 @@ if (!continue_hostname)
 
   /* Make the TCP connection */
 
-  sx->inblock.sock = sx->outblock.sock =
+  sx->cctx.sock =
     smtp_connect(sx->host, sx->host_af, sx->interface,
 		  sx->ob->connect_timeout, sx->tblock);
+  sx->cctx.tls_ctx = NULL;
+  sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
 
-  if (sx->inblock.sock < 0)
+  if (sx->cctx.sock < 0)
     {
     uschar * msg = NULL;
     if (sx->verify)
@@ -1703,7 +1705,7 @@ if (!continue_hostname)
     BOOL good_response;
 
 #ifdef TCP_QUICKACK
-    (void) setsockopt(sx->inblock.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+    (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
 #endif
     good_response = smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
       '2', sx->ob->command_timeout);
@@ -1882,16 +1884,18 @@ separate - we could match up by host ip+port as a bodge. */
 
 else
   {
-  if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+  if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     {
-    sx->inblock.sock = sx->outblock.sock = cutthrough.fd;
+    sx->cctx = cutthrough.cctx;
     sx->host->port = sx->port = cutthrough.host.port;
     }
   else
     {
-    sx->inblock.sock = sx->outblock.sock = 0;	/* stdin */
+    sx->cctx.sock = 0;				/* stdin */
+    sx->cctx.tls_ctx = NULL;
     smtp_port_for_connect(sx->host, sx->port);	/* Record the port that was used */
     }
+  sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   smtp_command = big_buffer;
   sx->helo_data = NULL;		/* ensure we re-expand ob->helo_data */
 
@@ -1899,7 +1903,8 @@ else
   held-open verify connection with TLS, nothing more to do. */
 
   if (  continue_proxy_cipher
-     || (cutthrough.fd >= 0 && cutthrough.callout_hold_only && cutthrough.is_tls)
+     || (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only
+         && cutthrough.is_tls)
      )
     {
     sx->peer_offered = smtp_peer_options;
@@ -1959,18 +1964,19 @@ if (  smtp_peer_options & OPTION_TLS
     {
     address_item * addr;
     uschar * errstr;
-    int rc = tls_client_start(sx->inblock.sock, sx->host, sx->addrlist, sx->tblock,
+    sx->cctx.tls_ctx = tls_client_start(sx->cctx.sock, sx->host,
+			    sx->addrlist, sx->tblock,
 # ifdef SUPPORT_DANE
 			     sx->dane ? &tlsa_dnsa : NULL,
 # endif
-			     &errstr);
+			     &tls_out, &errstr);
 
-    /* TLS negotiation failed; give an error. From outside, this function may
-    be called again to try in clear on a new connection, if the options permit
-    it for this host. */
-
-    if (rc != OK)
+    if (!sx->cctx.tls_ctx)
       {
+      /* TLS negotiation failed; give an error. From outside, this function may
+      be called again to try in clear on a new connection, if the options permit
+      it for this host. */
+
 # ifdef SUPPORT_DANE
       if (sx->dane)
         {
@@ -2013,7 +2019,7 @@ another process, and so we won't have expanded helo_data above. We have to
 expand it here. $sending_ip_address and $sending_port are set up right at the
 start of the Exim process (in exim.c). */
 
-if (tls_out.active >= 0)
+if (tls_out.active.sock >= 0)
   {
   char *greeting_cmd;
   BOOL good_response;
@@ -2091,7 +2097,7 @@ we skip this. */
 
 if (continue_hostname == NULL
 #ifdef SUPPORT_TLS
-    || tls_out.active >= 0
+    || tls_out.active.sock >= 0
 #endif
     )
   {
@@ -2270,7 +2276,11 @@ if (sx->send_quit)
   (void)smtp_write_command(&sx->outblock, SCMD_FLUSH, "QUIT\r\n");
 
 #ifdef SUPPORT_TLS
-tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+if (sx->cctx.tls_ctx)
+  {
+  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+  sx->cctx.tls_ctx = NULL;
+  }
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
@@ -2281,14 +2291,14 @@ remote_max_parallel is forced to 1 when delivering over an existing connection,
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 if (sx->send_quit)
   {
-  shutdown(sx->outblock.sock, SHUT_WR);
-  if (fcntl(sx->inblock.sock, F_SETFL, O_NONBLOCK) == 0)
-    for (rc = 16; read(sx->inblock.sock, sx->inbuffer, sizeof(sx->inbuffer)) > 0 && rc > 0;)
+  shutdown(sx->cctx.sock, SHUT_WR);
+  if (fcntl(sx->cctx.sock, F_SETFL, O_NONBLOCK) == 0)
+    for (rc = 16; read(sx->cctx.sock, sx->inbuffer, sizeof(sx->inbuffer)) > 0 && rc > 0;)
       rc--;				/* drain socket */
   sx->send_quit = FALSE;
   }
-(void)close(sx->inblock.sock);
-sx->inblock.sock = sx->outblock.sock = -1;
+(void)close(sx->cctx.sock);
+sx->cctx.sock = -1;
 
 #ifndef DISABLE_EVENT
 (void) event_raise(sx->tblock->event_action, US"tcp:close", NULL);
@@ -2624,6 +2634,7 @@ Do blocking full-size writes, and reads under a timeout.  Once both input
 channels are closed, exit the process.
 
 Arguments:
+  ct_ctx	tls context
   buf		space to use for buffering
   bufsiz	size of buffer
   pfd		pipe filedescriptor array; [0] is comms to proxied process
@@ -2631,10 +2642,11 @@ Arguments:
 */
 
 void
-smtp_proxy_tls(uschar * buf, size_t bsize, int * pfd, int timeout)
+smtp_proxy_tls(void * ct_ctx, uschar * buf, size_t bsize, int * pfd,
+  int timeout)
 {
 fd_set rfds, efds;
-int max_fd = MAX(pfd[0], tls_out.active) + 1;
+int max_fd = MAX(pfd[0], tls_out.active.sock) + 1;
 int rc, i, fd_bits, nbytes;
 
 close(pfd[1]);
@@ -2647,7 +2659,7 @@ if ((rc = fork()))
 if (running_in_test_harness) millisleep(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
-FD_SET(tls_out.active, &rfds);
+FD_SET(tls_out.active.sock, &rfds);
 FD_SET(pfd[0], &rfds);
 
 for (fd_bits = 3; fd_bits; )
@@ -2673,21 +2685,21 @@ for (fd_bits = 3; fd_bits; )
       goto done;
       }
 
-    if (FD_ISSET(tls_out.active, &efds) || FD_ISSET(pfd[0], &efds))
+    if (FD_ISSET(tls_out.active.sock, &efds) || FD_ISSET(pfd[0], &efds))
       {
       DEBUG(D_transport) debug_printf("select: exceptional cond on %s fd\n",
 	FD_ISSET(pfd[0], &efds) ? "proxy" : "tls");
       goto done;
       }
     }
-  while (rc < 0 || !(FD_ISSET(tls_out.active, &rfds) || FD_ISSET(pfd[0], &rfds)));
+  while (rc < 0 || !(FD_ISSET(tls_out.active.sock, &rfds) || FD_ISSET(pfd[0], &rfds)));
 
   /* handle inbound data */
-  if (FD_ISSET(tls_out.active, &rfds))
-    if ((rc = tls_read(FALSE, buf, bsize)) <= 0)
+  if (FD_ISSET(tls_out.active.sock, &rfds))
+    if ((rc = tls_read(ct_ctx, buf, bsize)) <= 0)
       {
       fd_bits &= ~1;
-      FD_CLR(tls_out.active, &rfds);
+      FD_CLR(tls_out.active.sock, &rfds);
       shutdown(pfd[0], SHUT_WR);
       timeout = 5;
       }
@@ -2697,19 +2709,19 @@ for (fd_bits = 3; fd_bits; )
 	if ((i = write(pfd[0], buf + nbytes, rc - nbytes)) < 0) goto done;
       }
   else if (fd_bits & 1)
-    FD_SET(tls_out.active, &rfds);
+    FD_SET(tls_out.active.sock, &rfds);
 
   /* handle outbound data */
   if (FD_ISSET(pfd[0], &rfds))
     if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
       fd_bits = 0;
-      tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+      tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);
       }
     else
       {
       for (nbytes = 0; rc - nbytes > 0; nbytes += i)
-	if ((i = tls_write(FALSE, buf + nbytes, rc - nbytes, FALSE)) < 0)
+	if ((i = tls_write(ct_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
 	  goto done;
       }
   else if (fd_bits & 2)
@@ -2952,7 +2964,7 @@ if (!(sx.peer_offered & OPTION_CHUNKING) && !sx.ok)
 else
   {
   transport_ctx tctx = {
-    {sx.inblock.sock},
+    {sx.cctx.sock},		/*XXX will this need TLS info? */
     tblock,
     addrlist,
     US".", US"..",    /* Escaping strings */
@@ -3465,7 +3477,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
      || continue_more
      || (
 #ifdef SUPPORT_TLS
-	   (  tls_out.active < 0  &&  !continue_proxy_cipher
+	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
            || verify_check_given_host(&sx.ob->hosts_nopass_tls, host) != OK
 	   )
         &&
@@ -3503,7 +3515,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
     if (sx.ok)
       {
       int pfd[2];
-      int socket_fd = sx.inblock.sock;
+      int socket_fd = sx.cctx.sock;
 
 
       if (sx.first_addr != NULL)         /* More addresses still to be sent */
@@ -3518,7 +3530,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
       the connection still open. */
 
 #ifdef SUPPORT_TLS
-      if (tls_out.active >= 0)
+      if (tls_out.active.sock >= 0)
 	if (  continue_more
 	   || verify_check_given_host(&sx.ob->hosts_noproxy_tls, host) == OK)
 	  {
@@ -3528,7 +3540,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  a new EHLO. If we don't get a good response, we don't attempt to pass
 	  the socket on. */
 
-	  tls_close(FALSE, TLS_SHUTDOWN_WAIT);
+	  tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
 	  smtp_peer_options = smtp_peer_options_wrap;
 	  sx.ok = !sx.smtps
 	    && smtp_write_command(&sx.outblock, SCMD_FLUSH,
@@ -3576,14 +3588,14 @@ propagate it from the initial
 	get logging done asap.  Which way to place the work makes assumptions
 	about post-fork prioritisation which may not hold on all platforms. */
 #ifdef SUPPORT_TLS
-	if (tls_out.active >= 0)
+	if (tls_out.active.sock >= 0)
 	  {
 	  int pid = fork();
 	  if (pid == 0)		/* child; fork again to disconnect totally */
 	    {
 	    if (running_in_test_harness) millisleep(100); /* let parent debug out */
 	    /* does not return */
-	    smtp_proxy_tls(sx.buffer, sizeof(sx.buffer), pfd,
+	    smtp_proxy_tls(sx.cctx.tls_ctx, sx.buffer, sizeof(sx.buffer), pfd,
 			    sx.ob->command_timeout);
 	    }
 
@@ -3593,8 +3605,10 @@ propagate it from the initial
 	    close(pfd[0]);
 	    /* tidy the inter-proc to disconn the proxy proc */
 	    waitpid(pid, NULL, 0);
-	    tls_close(FALSE, TLS_NO_SHUTDOWN);
-	    (void)close(sx.inblock.sock);
+	    tls_close(sx.cctx.tls_ctx, TLS_NO_SHUTDOWN);
+	    sx.cctx.tls_ctx = NULL;
+	    (void)close(sx.cctx.sock);
+	    sx.cctx.sock = -1;
 	    continue_transport = NULL;
 	    continue_hostname = NULL;
 	    return yield;
@@ -3639,7 +3653,7 @@ if (sx.send_quit) (void)smtp_write_command(&sx.outblock, SCMD_FLUSH, "QUIT\r\n")
 END_OFF:
 
 #ifdef SUPPORT_TLS
-tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
@@ -3655,12 +3669,12 @@ case continue_more won't get set. */
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 if (sx.send_quit)
   {
-  shutdown(sx.outblock.sock, SHUT_WR);
-  if (fcntl(sx.inblock.sock, F_SETFL, O_NONBLOCK) == 0)
-    for (rc = 16; read(sx.inblock.sock, sx.inbuffer, sizeof(sx.inbuffer)) > 0 && rc > 0;)
+  shutdown(sx.cctx.sock, SHUT_WR);
+  if (fcntl(sx.cctx.sock, F_SETFL, O_NONBLOCK) == 0)
+    for (rc = 16; read(sx.cctx.sock, sx.inbuffer, sizeof(sx.inbuffer)) > 0 && rc > 0;)
       rc--;				/* drain socket */
   }
-(void)close(sx.inblock.sock);
+(void)close(sx.cctx.sock);
 
 #ifndef DISABLE_EVENT
 (void) event_raise(tblock->event_action, US"tcp:close", NULL);
@@ -3696,19 +3710,24 @@ smtp_transport_closedown(transport_instance *tblock)
 {
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tblock->options_block;
+client_conn_ctx cctx;
 smtp_inblock inblock;
 smtp_outblock outblock;
 uschar buffer[256];
 uschar inbuffer[4096];
 uschar outbuffer[16];
 
-inblock.sock = fileno(stdin);
+/*XXX really we need an active-smtp-client ctx, rather than assuming stdout */
+cctx.sock = fileno(stdin);
+cctx.tls_ctx = cctx.sock == tls_out.active.sock ? tls_out.active.tls_ctx : NULL;
+
+inblock.cctx = &cctx;
 inblock.buffer = inbuffer;
 inblock.buffersize = sizeof(inbuffer);
 inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
 
-outblock.sock = inblock.sock;
+outblock.cctx = &cctx;
 outblock.buffersize = sizeof(outbuffer);
 outblock.buffer = outbuffer;
 outblock.ptr = outbuffer;
@@ -3718,7 +3737,7 @@ outblock.authenticating = FALSE;
 (void)smtp_write_command(&outblock, SCMD_FLUSH, "QUIT\r\n");
 (void)smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
   ob->command_timeout);
-(void)close(inblock.sock);
+(void)close(cctx.sock);
 }
 
 
@@ -3819,7 +3838,7 @@ DEBUG(D_transport)
   if (continue_hostname)
     debug_printf("already connected to %s [%s] (on fd %d)\n",
       continue_hostname, continue_host_address,
-      cutthrough.fd >= 0 ? cutthrough.fd : 0);
+      cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0);
   }
 
 /* Set the flag requesting that these hosts be added to the waiting
@@ -4604,21 +4623,27 @@ retry_non_continued:
 
   if (continue_hostname && !continue_host_tried)
     {
-    int fd = cutthrough.fd >= 0 ? cutthrough.fd : 0;
+    int fd = cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0;
 
     DEBUG(D_transport) debug_printf("no hosts match already-open connection\n");
 #ifdef SUPPORT_TLS
-    if (tls_out.active == fd)
+    /* A TLS conn could be open for a cutthrough, but not for a plain continued-
+    transport */
+/*XXX doublecheck that! */
+
+    if (cutthrough.cctx.sock >= 0 && cutthrough.is_tls)
       {
-      (void) tls_write(FALSE, US"QUIT\r\n", 6, FALSE);
-      tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+      (void) tls_write(cutthrough.cctx.tls_ctx, US"QUIT\r\n", 6, FALSE);
+      tls_close(cutthrough.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+      cutthrough.cctx.tls_ctx = NULL;
+      cutthrough.is_tls = FALSE;
       }
     else
 #else
       (void) write(fd, US"QUIT\r\n", 6);
 #endif
     (void) close(fd);
-    cutthrough.fd = -1;
+    cutthrough.cctx.sock = -1;
     continue_hostname = NULL;
     goto retry_non_continued;
     }

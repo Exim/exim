@@ -1181,7 +1181,7 @@ switch(where)
   case ACL_WHERE_DKIM:
   case ACL_WHERE_MIME:
   case ACL_WHERE_DATA:
-    if (  cutthrough.fd >= 0 && cutthrough.delivery
+    if (  cutthrough.cctx.sock >= 0 && cutthrough.delivery
        && (acl_removed_headers || acl_added_headers))
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Header modification in data ACLs"
@@ -2995,7 +2995,7 @@ We have to create the Received header now rather than at the end of reception,
 so the timestamp behaviour is a change to the normal case.
 Having created it, send the headers to the destination. */
 
-if (cutthrough.fd >= 0 && cutthrough.delivery)
+if (cutthrough.cctx.sock >= 0 && cutthrough.delivery)
   {
   if (received_count > received_headers_max)
     {
@@ -4179,7 +4179,7 @@ for this message. */
 
    XXX We do not handle queue-only, freezing, or blackholes.
 */
-if(cutthrough.fd >= 0 && cutthrough.delivery)
+if(cutthrough.cctx.sock >= 0 && cutthrough.delivery)
   {
   uschar * msg = cutthrough_finaldot();	/* Ask the target system to accept the message */
 					/* Logging was done in finaldot() */

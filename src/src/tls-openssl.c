@@ -117,7 +117,9 @@ static const uschar *sid_ctx = US"exim";
 Simple case: client, `client_ctx`
  As a client, we can be doing a callout or cut-through delivery while receiving
  a message.  So we have a client context, which should have options initialised
- from the SMTP Transport.
+ from the SMTP Transport.  We may also concurrently want to make TLS connections
+ to utility daemons, so client-contexts are allocated and passed around in call
+ args rather than using a gobal.
 
 Server:
  There are two cases: with and without ServerNameIndication from the client.
@@ -131,9 +133,12 @@ Server:
  configuration.
 */
 
-static SSL_CTX *client_ctx = NULL;
+typedef struct {
+  SSL_CTX *	ctx;
+  SSL *		ssl;
+} exim_openssl_client_tls_ctx;
+
 static SSL_CTX *server_ctx = NULL;
-static SSL     *client_ssl = NULL;
 static SSL     *server_ssl = NULL;
 
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
@@ -1975,7 +1980,7 @@ static uschar cipherbuf[256];
 
 /* Check for previous activation */
 
-if (tls_in.active >= 0)
+if (tls_in.active.sock >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", NULL, US"", errstr);
   smtp_printf("554 Already in TLS\r\n", FALSE);
@@ -2130,7 +2135,8 @@ receive_feof = tls_feof;
 receive_ferror = tls_ferror;
 receive_smtp_buffered = tls_smtp_buffered;
 
-tls_in.active = fileno(smtp_out);
+tls_in.active.sock = fileno(smtp_out);
+tls_in.active.tls_ctx = NULL;	/* not using explicit ctx for server-side */
 return OK;
 }
 
@@ -2249,23 +2255,23 @@ Argument:
   addr             the first address
   tb               transport (always smtp)
   tlsa_dnsa        tlsa lookup, if DANE, else null
+  tlsp		   record details of channel configuration
   errstr	   error string pointer
 
-Returns:           OK on success
-                   FAIL otherwise - note that tls_error() will not give DEFER
-                     because this is not a server
+Returns:           Pointer to TLS session context, or NULL on error
 */
 
-int
+void *
 tls_client_start(int fd, host_item *host, address_item *addr,
   transport_instance * tb,
 #ifdef SUPPORT_DANE
   dns_answer * tlsa_dnsa,
 #endif
-  uschar ** errstr)
+  tls_support * tlsp, uschar ** errstr)
 {
 smtp_transport_options_block * ob =
   (smtp_transport_options_block *)tb->options_block;
+exim_openssl_client_tls_ctx * exim_client_ctx;
 static uschar peerdn[256];
 uschar * expciphers;
 int rc;
@@ -2276,8 +2282,13 @@ BOOL request_ocsp = FALSE;
 BOOL require_ocsp = FALSE;
 #endif
 
+rc = store_pool;
+store_pool = POOL_PERM;
+exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx));
+store_pool = rc;
+
 #ifdef SUPPORT_DANE
-tls_out.tlsa_usage = 0;
+tlsp->tlsa_usage = 0;
 #endif
 
 #ifndef DISABLE_OCSP
@@ -2308,15 +2319,15 @@ tls_out.tlsa_usage = 0;
   }
 #endif
 
-rc = tls_init(&client_ctx, host, NULL,
+rc = tls_init(&exim_client_ctx->ctx, host, NULL,
     ob->tls_certificate, ob->tls_privatekey,
 #ifndef DISABLE_OCSP
     (void *)(long)request_ocsp,
 #endif
     addr, &client_static_cbinfo, errstr);
-if (rc != OK) return rc;
+if (rc != OK) return NULL;
 
-tls_out.certificate_verified = FALSE;
+tlsp->certificate_verified = FALSE;
 client_verify_callback_called = FALSE;
 
 expciphers = NULL;
@@ -2328,7 +2339,7 @@ if (tlsa_dnsa)
   if (ob->dane_require_tls_ciphers &&
       !expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
         &expciphers, errstr))
-    return FAIL;
+    return NULL;
   if (expciphers && *expciphers == '\0')
     expciphers = NULL;
   }
@@ -2336,7 +2347,7 @@ if (tlsa_dnsa)
 if (!expciphers &&
     !expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
       &expciphers, errstr))
-  return FAIL;
+  return NULL;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
 are separated by underscores. So that I can use either form in my tests, and
@@ -2347,62 +2358,74 @@ if (expciphers)
   uschar *s = expciphers;
   while (*s) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
-  if (!SSL_CTX_set_cipher_list(client_ctx, CS expciphers))
-    return tls_error(US"SSL_CTX_set_cipher_list", host, NULL, errstr);
+  if (!SSL_CTX_set_cipher_list(exim_client_ctx->ctx, CS expciphers))
+    {
+    tls_error(US"SSL_CTX_set_cipher_list", host, NULL, errstr);
+    return NULL;
+    }
   }
 
 #ifdef SUPPORT_DANE
 if (tlsa_dnsa)
   {
-  SSL_CTX_set_verify(client_ctx,
+  SSL_CTX_set_verify(exim_client_ctx->ctx,
     SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
     verify_callback_client_dane);
 
   if (!DANESSL_library_init())
-    return tls_error(US"library init", host, NULL, errstr);
-  if (DANESSL_CTX_init(client_ctx) <= 0)
-    return tls_error(US"context init", host, NULL, errstr);
+    {
+    tls_error(US"library init", host, NULL, errstr);
+    return NULL;
+    }
+  if (DANESSL_CTX_init(exim_client_ctx->ctx) <= 0)
+    {
+    tls_error(US"context init", host, NULL, errstr);
+    return NULL;
+    }
   }
 else
 
 #endif
 
-  if ((rc = tls_client_basic_ctx_init(client_ctx, host, ob,
-      client_static_cbinfo, errstr)) != OK)
-    return rc;
+  if (tls_client_basic_ctx_init(exim_client_ctx->ctx, host, ob,
+	client_static_cbinfo, errstr) != OK)
+    return NULL;
 
-if (!(client_ssl = SSL_new(client_ctx)))
-  return tls_error(US"SSL_new", host, NULL, errstr);
-SSL_set_session_id_context(client_ssl, sid_ctx, Ustrlen(sid_ctx));
-SSL_set_fd(client_ssl, fd);
-SSL_set_connect_state(client_ssl);
+if (!(exim_client_ctx->ssl = SSL_new(exim_client_ctx->ctx)))
+  {
+  tls_error(US"SSL_new", host, NULL, errstr);
+  return NULL;
+  }
+SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
+SSL_set_fd(exim_client_ctx->ssl, fd);
+SSL_set_connect_state(exim_client_ctx->ssl);
 
 if (ob->tls_sni)
   {
-  if (!expand_check(ob->tls_sni, US"tls_sni", &tls_out.sni, errstr))
-    return FAIL;
-  if (!tls_out.sni)
+  if (!expand_check(ob->tls_sni, US"tls_sni", &tlsp->sni, errstr))
+    return NULL;
+  if (!tlsp->sni)
     {
     DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n");
     }
-  else if (!Ustrlen(tls_out.sni))
-    tls_out.sni = NULL;
+  else if (!Ustrlen(tlsp->sni))
+    tlsp->sni = NULL;
   else
     {
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
-    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_out.sni);
-    SSL_set_tlsext_host_name(client_ssl, tls_out.sni);
+    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tlsp->sni);
+    SSL_set_tlsext_host_name(exim_client_ctx->ssl, tlsp->sni);
 #else
     log_write(0, LOG_MAIN, "SNI unusable with this OpenSSL library version; ignoring \"%s\"\n",
-          tls_out.sni);
+          tlsp->sni);
 #endif
     }
   }
 
 #ifdef SUPPORT_DANE
 if (tlsa_dnsa)
-  if ((rc = dane_tlsa_load(client_ssl, host, tlsa_dnsa, errstr)) != OK)
-    return rc;
+  if (dane_tlsa_load(exim_client_ctx->ssl, host, tlsa_dnsa, errstr) != OK)
+    return NULL;
 #endif
 
 #ifndef DISABLE_OCSP
@@ -2427,9 +2450,9 @@ if (request_ocsp)
 
 if (request_ocsp)
   {
-  SSL_set_tlsext_status_type(client_ssl, TLSEXT_STATUSTYPE_ocsp);
+  SSL_set_tlsext_status_type(exim_client_ctx->ssl, TLSEXT_STATUSTYPE_ocsp);
   client_static_cbinfo->u_ocsp.client.verify_required = require_ocsp;
-  tls_out.ocsp = OCSP_NOT_RESP;
+  tlsp->ocsp = OCSP_NOT_RESP;
   }
 #endif
 
@@ -2442,33 +2465,36 @@ client_static_cbinfo->event_action = tb->event_action;
 DEBUG(D_tls) debug_printf("Calling SSL_connect\n");
 sigalrm_seen = FALSE;
 alarm(ob->command_timeout);
-rc = SSL_connect(client_ssl);
+rc = SSL_connect(exim_client_ctx->ssl);
 alarm(0);
 
 #ifdef SUPPORT_DANE
 if (tlsa_dnsa)
-  DANESSL_cleanup(client_ssl);
+  DANESSL_cleanup(exim_client_ctx->ssl);
 #endif
 
 if (rc <= 0)
-  return tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL,
-    errstr);
+  {
+  tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL, errstr);
+  return NULL;
+  }
 
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
-peer_cert(client_ssl, &tls_out, peerdn, sizeof(peerdn));
+peer_cert(exim_client_ctx->ssl, tlsp, peerdn, sizeof(peerdn));
 
-construct_cipher_name(client_ssl, cipherbuf, sizeof(cipherbuf), &tls_out.bits);
-tls_out.cipher = cipherbuf;
+construct_cipher_name(exim_client_ctx->ssl, cipherbuf, sizeof(cipherbuf), &tlsp->bits);
+tlsp->cipher = cipherbuf;
 
 /* Record the certificate we presented */
   {
-  X509 * crt = SSL_get_certificate(client_ssl);
-  tls_out.ourcert = crt ? X509_dup(crt) : NULL;
+  X509 * crt = SSL_get_certificate(exim_client_ctx->ssl);
+  tlsp->ourcert = crt ? X509_dup(crt) : NULL;
   }
 
-tls_out.active = fd;
-return OK;
+tlsp->active.sock = fd;
+tlsp->active.tls_ctx = exim_client_ctx;
+return exim_client_ctx;
 }
 
 
@@ -2503,53 +2529,55 @@ if (had_data_sigint)
 closed down, not that the socket itself has been closed down. Revert to
 non-SSL handling. */
 
-if (error == SSL_ERROR_ZERO_RETURN)
+switch(error)
   {
-  DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
+  case SSL_ERROR_NONE:
+    break;
 
-  receive_getc = smtp_getc;
-  receive_getbuf = smtp_getbuf;
-  receive_get_cache = smtp_get_cache;
-  receive_ungetc = smtp_ungetc;
-  receive_feof = smtp_feof;
-  receive_ferror = smtp_ferror;
-  receive_smtp_buffered = smtp_buffered;
+  case SSL_ERROR_ZERO_RETURN:
+    DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
 
-  if (SSL_get_shutdown(server_ssl) == SSL_RECEIVED_SHUTDOWN)
- 	SSL_shutdown(server_ssl);
+    receive_getc = smtp_getc;
+    receive_getbuf = smtp_getbuf;
+    receive_get_cache = smtp_get_cache;
+    receive_ungetc = smtp_ungetc;
+    receive_feof = smtp_feof;
+    receive_ferror = smtp_ferror;
+    receive_smtp_buffered = smtp_buffered;
+
+    if (SSL_get_shutdown(server_ssl) == SSL_RECEIVED_SHUTDOWN)
+	  SSL_shutdown(server_ssl);
 
 #ifndef DISABLE_OCSP
-  sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
-  server_static_cbinfo->verify_stack = NULL;
+    sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
+    server_static_cbinfo->verify_stack = NULL;
 #endif
-  SSL_free(server_ssl);
-  SSL_CTX_free(server_ctx);
-  server_ctx = NULL;
-  server_ssl = NULL;
-  tls_in.active = -1;
-  tls_in.bits = 0;
-  tls_in.cipher = NULL;
-  tls_in.peerdn = NULL;
-  tls_in.sni = NULL;
+    SSL_free(server_ssl);
+    SSL_CTX_free(server_ctx);
+    server_ctx = NULL;
+    server_ssl = NULL;
+    tls_in.active.sock = -1;
+    tls_in.active.tls_ctx = NULL;
+    tls_in.bits = 0;
+    tls_in.cipher = NULL;
+    tls_in.peerdn = NULL;
+    tls_in.sni = NULL;
 
-  return FALSE;
-  }
+    return FALSE;
 
-/* Handle genuine errors */
+  /* Handle genuine errors */
+  case SSL_ERROR_SSL:
+    ERR_error_string(ERR_get_error(), ssl_errstring);
+    log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
+    ssl_xfer_error = TRUE;
+    return FALSE;
 
-else if (error == SSL_ERROR_SSL)
-  {
-  ERR_error_string(ERR_get_error(), ssl_errstring);
-  log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
-  ssl_xfer_error = TRUE;
-  return FALSE;
-  }
-
-else if (error != SSL_ERROR_NONE)
-  {
-  DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
-  ssl_xfer_error = TRUE;
-  return FALSE;
+  default:
+    DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
+    DEBUG(D_tls) if (error == SSL_ERROR_SYSCALL)
+      debug_printf(" - syscall %s\n", strerror(errno));
+    ssl_xfer_error = TRUE;
+    return FALSE;
   }
 
 #ifndef DISABLE_DKIM
@@ -2633,6 +2661,7 @@ return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm || SSL_pending(server_ssl) > 0;
 
 /*
 Arguments:
+  ct_ctx    client context pointer, or NULL for the one global server context
   buff      buffer of data
   len       size of buffer
 
@@ -2643,9 +2672,9 @@ Only used by the client-side TLS.
 */
 
 int
-tls_read(BOOL is_server, uschar *buff, size_t len)
+tls_read(void * ct_ctx, uschar *buff, size_t len)
 {
-SSL *ssl = is_server ? server_ssl : client_ssl;
+SSL * ssl = ct_ctx ? ((exim_openssl_client_tls_ctx *)ct_ctx)->ssl : server_ssl;
 int inbytes;
 int error;
 
@@ -2676,7 +2705,7 @@ return inbytes;
 
 /*
 Arguments:
-  is_server channel specifier
+  ct_ctx    client context pointer, or NULL for the one global server context
   buff      buffer of data
   len       number of bytes
   more	    further data expected soon
@@ -2688,10 +2717,10 @@ Used by both server-side and client-side TLS.
 */
 
 int
-tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
+tls_write(void * ct_ctx, const uschar *buff, size_t len, BOOL more)
 {
 int outbytes, error, left;
-SSL *ssl = is_server ? server_ssl : client_ssl;
+SSL * ssl = ct_ctx ? ((exim_openssl_client_tls_ctx *)ct_ctx)->ssl : server_ssl;
 static gstring * corked = NULL;
 
 DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
@@ -2702,7 +2731,7 @@ DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
 one stream does it, in one context (i.e. no store reset).  Currently it is used
 for the responses to the received SMTP MAIL , RCPT, DATA sequence, only. */
 
-if (is_server && (more || corked))
+if (!ct_ctx && (more || corked))
   {
   corked = string_catn(corked, buff, len);
   if (more)
@@ -2714,7 +2743,7 @@ if (is_server && (more || corked))
 
 for (left = len; left > 0;)
   {
-  DEBUG(D_tls) debug_printf("SSL_write(SSL, %p, %d)\n", buff, left);
+  DEBUG(D_tls) debug_printf("SSL_write(%p, %p, %d)\n", ssl, buff, left);
   outbytes = SSL_write(ssl, CS buff, left);
   error = SSL_get_error(ssl, outbytes);
   DEBUG(D_tls) debug_printf("outbytes=%d error=%d\n", outbytes, error);
@@ -2759,6 +2788,7 @@ daemon, to shut down the TLS library, without actually doing a shutdown (which
 would tamper with the SSL session in the parent process).
 
 Arguments:
+  ct_ctx	client TLS context pointer, or NULL for the one global server context
   shutdown	1 if TLS close-alert is to be sent,
  		2 if also response to be waited for
 
@@ -2768,11 +2798,12 @@ Used by both server-side and client-side TLS.
 */
 
 void
-tls_close(BOOL is_server, int shutdown)
+tls_close(void * ct_ctx, int shutdown)
 {
-SSL_CTX **ctxp = is_server ? &server_ctx : &client_ctx;
-SSL **sslp = is_server ? &server_ssl : &client_ssl;
-int *fdp = is_server ? &tls_in.active : &tls_out.active;
+exim_openssl_client_tls_ctx * o_ctx = ct_ctx;
+SSL_CTX **ctxp = o_ctx ? &o_ctx->ctx : &server_ctx;
+SSL **sslp =     o_ctx ? &o_ctx->ssl : &server_ssl;
+int *fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
 
 if (*fdp < 0) return;  /* TLS was not active */
 
@@ -2798,7 +2829,7 @@ if (shutdown)
   }
 
 #ifndef DISABLE_OCSP
-if (is_server)
+if (!o_ctx)		/* server side */
   {
   sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
   server_static_cbinfo->verify_stack = NULL;

@@ -340,7 +340,7 @@ fd_set fds;
 struct timeval tzero;
 
 #ifdef SUPPORT_TLS
-if (tls_in.active >= 0)
+if (tls_in.active.sock >= 0)
  return !tls_could_read();
 #endif
 
@@ -429,7 +429,7 @@ smtp_command_timeout_exit(void)
 {
 log_write(L_lost_incoming_connection,
 	  LOG_MAIN, "SMTP command timeout on%s connection from %s",
-	  tls_in.active >= 0 ? " TLS" : "", host_and_ident(FALSE));
+	  tls_in.active.sock >= 0 ? " TLS" : "", host_and_ident(FALSE));
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout"); /* Does not return */
 smtp_notquit_exit(US"command-timeout", US"421",
@@ -922,9 +922,9 @@ if (rcpt_in_progress)
 /* Now write the string */
 
 #ifdef SUPPORT_TLS
-if (tls_in.active >= 0)
+if (tls_in.active.sock >= 0)
   {
-  if (tls_write(TRUE, big_buffer, Ustrlen(big_buffer), more) < 0)
+  if (tls_write(NULL, big_buffer, Ustrlen(big_buffer), more) < 0)
     smtp_write_error = -1;
   }
 else
@@ -951,7 +951,7 @@ Returns:    0 for no error; -1 after an error
 int
 smtp_fflush(void)
 {
-if (tls_in.active < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
+if (tls_in.active.sock < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
 return smtp_write_error;
 }
 
@@ -3686,7 +3686,7 @@ switch(rc)
 
     received_protocol =
       (sender_host_address ? protocols : protocols_local)
-	[pextend + pauthed + (tls_in.active >= 0 ? pcrpted:0)];
+	[pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
     *s = *ss = US"235 Authentication succeeded";
     authenticated_by = au;
     break;
@@ -3780,7 +3780,7 @@ else
   smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 
 #ifdef SUPPORT_TLS
-tls_close(TRUE, TLS_SHUTDOWN_NOWAIT);
+tls_close(NULL, TLS_SHUTDOWN_NOWAIT);
 #endif
 
 log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
@@ -3891,7 +3891,7 @@ while (done <= 0)
 
 #ifdef AUTH_TLS
   /* Check once per STARTTLS or SSL-on-connect for a TLS AUTH */
-  if (  tls_in.active >= 0
+  if (  tls_in.active.sock >= 0
      && tls_in.peercert
      && tls_in.certificate_verified
      && cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd
@@ -4108,7 +4108,7 @@ while (done <= 0)
 
       host_build_sender_fullhost();  /* Rebuild */
       set_process_info("handling%s incoming connection from %s",
-        (tls_in.active >= 0)? " TLS" : "", host_and_ident(FALSE));
+        (tls_in.active.sock >= 0)? " TLS" : "", host_and_ident(FALSE));
 
       /* Verify if configured. This doesn't give much security, but it does
       make some people happy to be able to do it. If helo_required is set,
@@ -4364,7 +4364,7 @@ while (done <= 0)
       secure connection. */
 
 #ifdef SUPPORT_TLS
-      if (tls_in.active < 0 &&
+      if (tls_in.active.sock < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
         g = string_catn(g, smtp_code, 3);
@@ -4402,7 +4402,7 @@ while (done <= 0)
     has been seen. */
 
 #ifdef SUPPORT_TLS
-    if (tls_in.active >= 0) (void)tls_write(TRUE, g->s, g->ptr, FALSE); else
+    if (tls_in.active.sock >= 0) (void)tls_write(NULL, g->s, g->ptr, FALSE); else
 #endif
 
       {
@@ -4425,7 +4425,7 @@ while (done <= 0)
 	[ (esmtp
 	  ? pextend + (sender_host_authenticated ? pauthed : 0)
 	  : pnormal)
-	+ (tls_in.active >= 0 ? pcrpted : 0)
+	+ (tls_in.active.sock >= 0 ? pcrpted : 0)
 	];
     cancel_cutthrough_connection(TRUE, US"sent EHLO response");
     smtp_reset(reset_point);
@@ -5213,7 +5213,7 @@ while (done <= 0)
       ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
       to get the DATA command sent. */
 
-      if (acl_smtp_predata == NULL && cutthrough.fd < 0)
+      if (acl_smtp_predata == NULL && cutthrough.cctx.sock < 0)
 	rc = OK;
       else
 	{
@@ -5367,7 +5367,7 @@ while (done <= 0)
       {
       DEBUG(D_any)
         debug_printf("Non-empty input buffer after STARTTLS; naive attack?\n");
-      if (tls_in.active < 0)
+      if (tls_in.active.sock < 0)
         smtp_inend = smtp_inptr = smtp_inbuffer;
       /* and if TLS is already active, tls_server_start() should fail */
       }
@@ -5410,7 +5410,7 @@ while (done <= 0)
 	  [ (esmtp
 	    ? pextend + (sender_host_authenticated ? pauthed : 0)
 	    : pnormal)
-	  + (tls_in.active >= 0 ? pcrpted : 0)
+	  + (tls_in.active.sock >= 0 ? pcrpted : 0)
 	  ];
 
       sender_host_auth_pubname = sender_host_authenticated = NULL;
@@ -5470,7 +5470,7 @@ while (done <= 0)
 	smtp_printf("554 Security failure\r\n", FALSE);
 	break;
       }
-    tls_close(TRUE, TLS_SHUTDOWN_NOWAIT);
+    tls_close(NULL, TLS_SHUTDOWN_NOWAIT);
     break;
     #endif
 
@@ -5512,7 +5512,7 @@ while (done <= 0)
       buffer[0] = 0;
       Ustrcat(buffer, " AUTH");
       #ifdef SUPPORT_TLS
-      if (tls_in.active < 0 &&
+      if (tls_in.active.sock < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         Ustrcat(buffer, " STARTTLS");
       #endif

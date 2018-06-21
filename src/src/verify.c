@@ -39,7 +39,7 @@ static tree_node *dnsbl_cache = NULL;
 #define MT_NOT 1
 #define MT_ALL 2
 
-static uschar cutthrough_response(int, char, uschar **, int);
+static uschar cutthrough_response(client_conn_ctx *, char, uschar **, int);
 
 
 
@@ -410,10 +410,11 @@ if (addr->transport == cutthrough.addr.transport)
 
 	/* Match!  Send the RCPT TO, set done from the response */
 	done =
-	  smtp_write_command(&ctblock, SCMD_FLUSH, "RCPT TO:<%.1000s>\r\n",
-	    transport_rcpt_address(addr,
-	       addr->transport->rcpt_include_affixes)) >= 0 &&
-	  cutthrough_response(cutthrough.fd, '2', &resp, CUTTHROUGH_DATA_TIMEOUT) == '2';
+	     smtp_write_command(&ctblock, SCMD_FLUSH, "RCPT TO:<%.1000s>\r\n",
+	      transport_rcpt_address(addr,
+		 addr->transport->rcpt_include_affixes)) >= 0
+	  && cutthrough_response(&cutthrough.cctx, '2', &resp,
+	      CUTTHROUGH_DATA_TIMEOUT) == '2';
 
 	/* This would go horribly wrong if a callout fail was ignored by ACL.
 	We punt by abandoning cutthrough on a reject, like the
@@ -612,7 +613,7 @@ that conn for verification purposes (and later delivery also).  Simplest
 coding means skipping this whole loop and doing the append separately.  */
 
   /* Can we re-use an open cutthrough connection? */
-  if (  cutthrough.fd >= 0
+  if (  cutthrough.cctx.sock >= 0
      && (options & (vopt_callout_recipsender | vopt_callout_recippmaster))
 	== vopt_callout_recipsender
      && !random_local_part
@@ -823,11 +824,11 @@ tls_retry_connection:
 	      debug_printf_indent("problem after random/rset/mfrom; reopen conn\n");
 	    random_local_part = NULL;
 #ifdef SUPPORT_TLS
-	    tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+	    tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
 #endif
 	    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
-	    (void)close(sx.inblock.sock);
-	    sx.inblock.sock = sx.outblock.sock = -1;
+	    (void)close(sx.cctx.sock);
+	    sx.cctx.sock = -1;
 #ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
 			      US"tcp:close", NULL);
@@ -1059,7 +1060,7 @@ no_conn:
 	   == vopt_callout_recipsender
        && !random_local_part
        && !pm_mailfrom
-       && cutthrough.fd < 0
+       && cutthrough.cctx.sock < 0
        && !sx.lmtp
        )
       {
@@ -1068,8 +1069,9 @@ no_conn:
 	? "cutthrough delivery" : "potential further verifies and delivery");
 
       cutthrough.callout_hold_only = !cutthrough.delivery;
-      cutthrough.is_tls =	tls_out.active >= 0;
-      cutthrough.fd =	sx.outblock.sock;	/* We assume no buffer in use in the outblock */
+      cutthrough.is_tls =	tls_out.active.sock >= 0;
+      /* We assume no buffer in use in the outblock */
+      cutthrough.cctx =		sx.cctx;
       cutthrough.nrcpt =	1;
       cutthrough.transport =	addr->transport->name;
       cutthrough.interface =	interface;
@@ -1094,7 +1096,7 @@ no_conn:
       ctblock.buffersize = sizeof(ctbuffer);
       ctblock.ptr = ctbuffer;
       /* ctblock.cmd_count = 0; ctblock.authenticating = FALSE; */
-      ctblock.sock = cutthrough.fd;
+      ctblock.cctx = &cutthrough.cctx;
       }
     else
       {
@@ -1110,14 +1112,18 @@ no_conn:
 	  '2', 1);
 	}
 
-      if (sx.inblock.sock >= 0)
+      if (sx.cctx.sock >= 0)
 	{
 #ifdef SUPPORT_TLS
-	tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+	if (sx.cctx.tls_ctx)
+	  {
+	  tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+	  sx.cctx.tls_ctx = NULL;
+	  }
 #endif
 	HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
-	(void)close(sx.inblock.sock);
-	sx.inblock.sock = sx.outblock.sock = -1;
+	(void)close(sx.cctx.sock);
+	sx.cctx.sock = -1;
 #ifndef DISABLE_EVENT
 	(void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
 #endif
@@ -1210,14 +1216,16 @@ return rc;
 static BOOL
 cutthrough_send(int n)
 {
-if(cutthrough.fd < 0)
+if(cutthrough.cctx.sock < 0)
   return TRUE;
 
 if(
 #ifdef SUPPORT_TLS
-   tls_out.active == cutthrough.fd ? tls_write(FALSE, ctblock.buffer, n, FALSE) :
+   cutthrough.is_tls
+   ? tls_write(cutthrough.cctx.tls_ctx, ctblock.buffer, n, FALSE)
+   :
 #endif
-   send(cutthrough.fd, ctblock.buffer, n, 0) > 0
+     send(cutthrough.cctx.sock, ctblock.buffer, n, 0) > 0
   )
 {
   transport_count += n;
@@ -1249,8 +1257,8 @@ return TRUE;
 static BOOL
 cutthrough_puts(uschar * cp, int n)
 {
-if (cutthrough.fd < 0)       return TRUE;
-if (_cutthrough_puts(cp, n)) return TRUE;
+if (cutthrough.cctx.sock < 0) return TRUE;
+if (_cutthrough_puts(cp, n))  return TRUE;
 cancel_cutthrough_connection(TRUE, US"transmit failed");
 return FALSE;
 }
@@ -1301,7 +1309,7 @@ cutthrough_data_puts(US"\r\n", 2);
 
 /* Get and check response from cutthrough target */
 static uschar
-cutthrough_response(int fd, char expect, uschar ** copy, int timeout)
+cutthrough_response(client_conn_ctx * cctx, char expect, uschar ** copy, int timeout)
 {
 smtp_inblock inblock;
 uschar inbuffer[4096];
@@ -1311,8 +1319,7 @@ inblock.buffer = inbuffer;
 inblock.buffersize = sizeof(inbuffer);
 inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
-inblock.sock = fd;
-/* this relies on (inblock.sock == tls_out.active) */
+inblock.cctx = cctx;
 if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, timeout))
   cancel_cutthrough_connection(TRUE, US"target timeout on read");
 
@@ -1334,7 +1341,7 @@ return responsebuffer[0];
 BOOL
 cutthrough_predata(void)
 {
-if(cutthrough.fd < 0 || cutthrough.callout_hold_only)
+if(cutthrough.cctx.sock < 0 || cutthrough.callout_hold_only)
   return FALSE;
 
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> DATA\n");
@@ -1342,7 +1349,7 @@ cutthrough_puts(US"DATA\r\n", 6);
 cutthrough_flush_send();
 
 /* Assume nothing buffered.  If it was it gets ignored. */
-return cutthrough_response(cutthrough.fd, '3', NULL, CUTTHROUGH_DATA_TIMEOUT) == '3';
+return cutthrough_response(&cutthrough.cctx, '3', NULL, CUTTHROUGH_DATA_TIMEOUT) == '3';
 }
 
 
@@ -1369,7 +1376,7 @@ cutthrough_headers_send(void)
 {
 transport_ctx tctx;
 
-if(cutthrough.fd < 0 || cutthrough.callout_hold_only)
+if(cutthrough.cctx.sock < 0 || cutthrough.callout_hold_only)
   return FALSE;
 
 /* We share a routine with the mainline transport to handle header add/remove/rewrites,
@@ -1377,7 +1384,7 @@ if(cutthrough.fd < 0 || cutthrough.callout_hold_only)
 */
 HDEBUG(D_acl) debug_printf_indent("----------- start cutthrough headers send -----------\n");
 
-tctx.u.fd = cutthrough.fd;
+tctx.u.fd = cutthrough.cctx.sock;
 tctx.tblock = cutthrough.addr.transport;
 tctx.addr = &cutthrough.addr;
 tctx.check_string = US".";
@@ -1396,25 +1403,31 @@ return TRUE;
 static void
 close_cutthrough_connection(const uschar * why)
 {
-int fd = cutthrough.fd;
+int fd = cutthrough.cctx.sock;
 if(fd >= 0)
   {
   /* We could be sending this after a bunch of data, but that is ok as
      the only way to cancel the transfer in dataphase is to drop the tcp
      conn before the final dot.
   */
+  client_conn_ctx tmp_ctx = cutthrough.cctx;
   ctblock.ptr = ctbuffer;
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
   _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
   _cutthrough_flush_send();
-  cutthrough.fd = -1;			/* avoid recursion via read timeout */
+  cutthrough.cctx.sock = -1;		/* avoid recursion via read timeout */
   cutthrough.nrcpt = 0;			/* permit re-cutthrough on subsequent message */
 
   /* Wait a short time for response, and discard it */
-  cutthrough_response(fd, '2', NULL, 1);
+  cutthrough_response(&tmp_ctx, '2', NULL, 1);
 
 #ifdef SUPPORT_TLS
-  tls_close(FALSE, TLS_SHUTDOWN_NOWAIT);
+  if (cutthrough.is_tls)
+    {
+    tls_close(cutthrough.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+    cutthrough.cctx.tls_ctx = NULL;
+    cutthrough.is_tls = FALSE;
+    }
 #endif
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
   (void)close(fd);
@@ -1435,9 +1448,10 @@ cutthrough.delivery = cutthrough.callout_hold_only = FALSE;
 void
 release_cutthrough_connection(const uschar * why)
 {
-if (cutthrough.fd < 0) return;
+if (cutthrough.cctx.sock < 0) return;
 HDEBUG(D_acl) debug_printf_indent("release cutthrough conn: %s\n", why);
-cutthrough.fd = -1;
+cutthrough.cctx.sock = -1;
+cutthrough.cctx.tls_ctx = NULL;
 cutthrough.delivery = cutthrough.callout_hold_only = FALSE;
 }
 
@@ -1463,7 +1477,8 @@ if(  !cutthrough_puts(US".", 1)
   )
   return cutthrough.addr.message;
 
-res = cutthrough_response(cutthrough.fd, '2', &cutthrough.addr.message, CUTTHROUGH_DATA_TIMEOUT);
+res = cutthrough_response(&cutthrough.cctx, '2', &cutthrough.addr.message,
+	CUTTHROUGH_DATA_TIMEOUT);
 for (addr = &cutthrough.addr; addr; addr = addr->next)
   {
   addr->message = cutthrough.addr.message;
@@ -2681,7 +2696,8 @@ Side effect: any received ident value is put in sender_ident (NULL otherwise)
 void
 verify_get_ident(int port)
 {
-int sock, host_af, qlen;
+client_conn_ctx ident_conn_ctx = {0};
+int host_af, qlen;
 int received_sender_port, received_interface_port, n;
 uschar *p;
 blob early_data;
@@ -2701,9 +2717,9 @@ to the incoming interface address. If the sender host address is an IPv6
 address, the incoming interface address will also be IPv6. */
 
 host_af = Ustrchr(sender_host_address, ':') == NULL ? AF_INET : AF_INET6;
-if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return;
+if ((ident_conn_ctx.sock = ip_socket(SOCK_STREAM, host_af)) < 0) return;
 
-if (ip_bind(sock, host_af, interface_address, 0) < 0)
+if (ip_bind(ident_conn_ctx.sock, host_af, interface_address, 0) < 0)
   {
   DEBUG(D_ident) debug_printf("bind socket for ident failed: %s\n",
     strerror(errno));
@@ -2717,7 +2733,7 @@ qlen = snprintf(CS buffer, sizeof(buffer), "%d , %d\r\n",
 early_data.data = buffer;
 early_data.len = qlen;
 
-if (ip_connect(sock, host_af, sender_host_address, port,
+if (ip_connect(ident_conn_ctx.sock, host_af, sender_host_address, port,
 		rfc1413_query_timeout, &early_data) < 0)
   {
   if (errno == ETIMEDOUT && LOGGING(ident_timeout))
@@ -2741,7 +2757,7 @@ for (;;)
   int size = sizeof(buffer) - (p - buffer);
 
   if (size <= 0) goto END_OFF;   /* Buffer filled without seeing \n. */
-  count = ip_recv(sock, p, size, rfc1413_query_timeout);
+  count = ip_recv(&ident_conn_ctx, p, size, rfc1413_query_timeout);
   if (count <= 0) goto END_OFF;  /* Read error or EOF */
 
   /* Scan what we just read, to see if we have reached the terminating \r\n. Be
@@ -2806,7 +2822,7 @@ sender_ident = US string_printing(string_copyn(p, 127));
 DEBUG(D_ident) debug_printf("sender_ident = %s\n", sender_ident);
 
 END_OFF:
-(void)close(sock);
+(void)close(ident_conn_ctx.sock);
 return;
 }
 

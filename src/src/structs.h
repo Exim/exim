@@ -780,15 +780,21 @@ md5;
 typedef struct sha1 {
   unsigned int H[5];
   unsigned int length;
-  }
-sha1;
+} sha1;
+
+/* A client-initiated connection. If TLS, the second element is non-NULL */
+typedef struct {
+  int	sock;
+  void * tls_ctx;
+} client_conn_ctx;
+
 
 /* Structure used to hold incoming packets of SMTP responses for a specific
 socket. The packets which may contain multiple lines (and in some cases,
 multiple responses). */
 
 typedef struct smtp_inblock {
-  int     sock;                   /* the socket */
+  client_conn_ctx * cctx;	  /* the connection */
   int     buffersize;             /* the size of the buffer */
   uschar *ptr;                    /* current position in the buffer */
   uschar *ptrend;                 /* end of data in the buffer */
@@ -800,7 +806,7 @@ specific socket. The packets which may contain multiple lines when pipelining
 is in use. */
 
 typedef struct smtp_outblock {
-  int     sock;                   /* the socket */
+  client_conn_ctx * cctx;	  /* the connection */
   int     cmd_count;              /* count of buffered commands */
   int     buffersize;             /* the size of the buffer */
   BOOL    authenticating;         /* TRUE when authenticating */

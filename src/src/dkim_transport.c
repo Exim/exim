@@ -56,7 +56,7 @@ DEBUG(D_transport) debug_printf("send file fd=%d\n", out_fd);
    to the socket. However only if we don't use TLS,
    as then there's another layer of indirection
    before the data finally hits the socket. */
-if (tls_out.active != out_fd)
+if (tls_out.active.sock != out_fd)
   {
   ssize_t copied = 0;
 
@@ -84,8 +84,8 @@ else
     while (sread)
       {
 #ifdef SUPPORT_TLS
-      wwritten = tls_out.active == out_fd
-	? tls_write(FALSE, p, sread, FALSE)
+      wwritten = tls_out.active.sock == out_fd
+	? tls_write(tls_out.active.tls_ctx, p, sread, FALSE)
 	: write(out_fd, CS p, sread);
 #else
       wwritten = write(out_fd, CS p, sread);

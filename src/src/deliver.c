@@ -4478,7 +4478,7 @@ for (delivery_count = 0; addr_remote; delivery_count++)
   treat it as if it is a continued connection (apart from the counter used
   for the log line mark). */
 
-  if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+  if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     {
     DEBUG(D_deliver)
       debug_printf("lazy-callout-close: have conn still open from verification\n");
@@ -4985,12 +4985,13 @@ all pipes, so I do not see a reason to use non-blocking IO here
   release its TLS library context (if any) as responsibility was passed to
   the delivery child process. */
 
-  if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+  if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     {
 #ifdef SUPPORT_TLS
-    tls_close(FALSE, TLS_NO_SHUTDOWN);
+    if (cutthrough.is_tls)
+      tls_close(cutthrough.cctx.tls_ctx, TLS_NO_SHUTDOWN);
 #endif
-    (void) close(cutthrough.fd);
+    (void) close(cutthrough.cctx.sock);
     release_cutthrough_connection(US"passed to transport proc");
     }
 
@@ -8528,9 +8529,9 @@ delivery_re_exec(int exec_type)
 {
 uschar * where;
 
-if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
+if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
   {
-  int pfd[2], channel_fd = cutthrough.fd, pid;
+  int pfd[2], channel_fd = cutthrough.cctx.sock, pid;
 
   smtp_peer_options = cutthrough.peer_options;
   continue_sequence = 0;
@@ -8554,7 +8555,8 @@ if (cutthrough.fd >= 0 && cutthrough.callout_hold_only)
       {
       if (running_in_test_harness) millisleep(100); /* let parent debug out */
       /* does not return */
-      smtp_proxy_tls(big_buffer, big_buffer_size, pfd, 5*60);
+      smtp_proxy_tls(cutthrough.cctx.tls_ctx, big_buffer, big_buffer_size,
+		      pfd, 5*60);
       }
 
     DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);

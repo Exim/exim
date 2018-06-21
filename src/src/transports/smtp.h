@@ -146,8 +146,9 @@ typedef struct {
   address_item *	next_addr;
   address_item *	sync_addr;
 
-  smtp_inblock  inblock;
-  smtp_outblock outblock;
+  client_conn_ctx	cctx;
+  smtp_inblock		inblock;
+  smtp_outblock		outblock;
   uschar	buffer[DELIVER_BUFFER_SIZE];
   uschar	inbuffer[4096];
   uschar	outbuffer[4096];

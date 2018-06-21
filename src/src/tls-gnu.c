@@ -213,7 +213,7 @@ second connection.
 XXX But see gnutls_session_get_ptr()
 */
 
-static exim_gnutls_state_st state_server, state_client;
+static exim_gnutls_state_st state_server;
 
 /* dh_params are initialised once within the lifetime of a process using TLS;
 if we used TLS in a long-lived daemon, we'd have to reconsider this.  But we
@@ -448,7 +448,8 @@ gnutls_datum_t channel;
 #endif
 tls_support * tlsp = state->tlsp;
 
-tlsp->active = state->fd_out;
+tlsp->active.sock = state->fd_out;
+tlsp->active.tls_ctx = state;
 
 cipher = gnutls_cipher_get(state->session);
 /* returns size in "bytes" */
@@ -1262,6 +1263,7 @@ tls_init(
     const uschar *crl,
     const uschar *require_ciphers,
     exim_gnutls_state_st **caller_state,
+    tls_support * tlsp,
     uschar ** errstr)
 {
 exim_gnutls_state_st *state;
@@ -1310,9 +1312,15 @@ if (!exim_gnutls_base_init_done)
 
 if (host)
   {
-  state = &state_client;
+  /* For client-side sessions we allocate a context. This lets us run
+  several in parallel. */
+  int old_pool = store_pool;
+  store_pool = POOL_PERM;
+  state = store_get(sizeof(exim_gnutls_state_st));
+  store_pool = old_pool;
+
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
-  state->tlsp = &tls_out;
+  state->tlsp = tlsp;
   DEBUG(D_tls) debug_printf("initialising GnuTLS client session\n");
   rc = gnutls_init(&state->session, GNUTLS_CLIENT);
   }
@@ -1320,7 +1328,7 @@ else
   {
   state = &state_server;
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
-  state->tlsp = &tls_in;
+  state->tlsp = tlsp;
   DEBUG(D_tls) debug_printf("initialising GnuTLS server session\n");
   rc = gnutls_init(&state->session, GNUTLS_SERVER);
   }
@@ -1980,7 +1988,7 @@ int rc;
 exim_gnutls_state_st * state = NULL;
 
 /* Check for previous activation */
-if (tls_in.active >= 0)
+if (tls_in.active.sock >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", "", NULL, errstr);
   smtp_printf("554 Already in TLS\r\n", FALSE);
@@ -1994,7 +2002,7 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
 
 if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
     NULL, tls_verify_certificates, tls_crl,
-    require_ciphers, &state, errstr)) != OK) return rc;
+    require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
 
 /* If this is a host for which certificate verification is mandatory or
 optional, set up appropriately. */
@@ -2241,26 +2249,27 @@ Arguments:
 		    Which implies cert must be requested and supplied, dane
 		    verify must pass, and cert verify irrelevant (incl.
 		    hostnames), and (caller handled) require_tls
+  tlsp		    record details of channel configuration
   errstr	    error string pointer
 
-Returns:            OK/DEFER/FAIL (because using common functions),
-                    but for a client, DEFER and FAIL have the same meaning
+Returns:            Pointer to TLS session context, or NULL on error
 */
 
-int
+void *
 tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED,
     transport_instance * tb,
 #ifdef SUPPORT_DANE
     dns_answer * tlsa_dnsa,
 #endif
-    uschar ** errstr)
+    tls_support * tlsp, uschar ** errstr)
 {
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tb->options_block;
 int rc;
 exim_gnutls_state_st * state = NULL;
 uschar *cipher_list = NULL;
+
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
   verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
@@ -2276,7 +2285,7 @@ if (tlsa_dnsa && ob->dane_require_tls_ciphers)
   /* not using expand_check_tlsvar because not yet in state */
   if (!expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
       &cipher_list, errstr))
-    return DEFER;
+    return NULL;
   cipher_list = cipher_list && *cipher_list
     ? ob->dane_require_tls_ciphers : ob->tls_require_ciphers;
   }
@@ -2285,10 +2294,10 @@ if (tlsa_dnsa && ob->dane_require_tls_ciphers)
 if (!cipher_list)
   cipher_list = ob->tls_require_ciphers;
 
-if ((rc = tls_init(host, ob->tls_certificate, ob->tls_privatekey,
+if (tls_init(host, ob->tls_certificate, ob->tls_privatekey,
     ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
-    cipher_list, &state, errstr)) != OK)
-  return rc;
+    cipher_list, &state, tlsp, errstr) != OK)
+  return NULL;
 
   {
   int dh_min_bits = ob->tls_dh_min_bits;
@@ -2357,9 +2366,11 @@ if (request_ocsp)
   DEBUG(D_tls) debug_printf("TLS: will request OCSP stapling\n");
   if ((rc = gnutls_ocsp_status_request_enable_client(state->session,
 		    NULL, 0, NULL)) != OK)
-    return tls_error(US"cert-status-req",
-		    gnutls_strerror(rc), state->host, errstr);
-  tls_out.ocsp = OCSP_NOT_RESP;
+    {
+    tls_error(US"cert-status-req", gnutls_strerror(rc), state->host, errstr);
+    return NULL;
+    }
+  tlsp->ocsp = OCSP_NOT_RESP;
   }
 #endif
 
@@ -2387,20 +2398,26 @@ while (rc == GNUTLS_E_AGAIN || rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
+  {
   if (sigalrm_seen)
     {
     gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_USER_CANCELED);
-    return tls_error(US"gnutls_handshake", "timed out", state->host, errstr);
+    tls_error(US"gnutls_handshake", "timed out", state->host, errstr);
     }
   else
-    return tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host, errstr);
+    tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host, errstr);
+  return NULL;
+  }
 
 DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify late */
 
 if (!verify_certificate(state, errstr))
-  return tls_error(US"certificate verification failed", *errstr, state->host, errstr);
+  {
+  tls_error(US"certificate verification failed", *errstr, state->host, errstr);
+  return NULL;
+  }
 
 #ifndef DISABLE_OCSP
 if (require_ocsp)
@@ -2425,24 +2442,25 @@ if (require_ocsp)
 
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)
     {
-    tls_out.ocsp = OCSP_FAILED;
-    return tls_error(US"certificate status check failed", NULL, state->host, errstr);
+    tlsp->ocsp = OCSP_FAILED;
+    tls_error(US"certificate status check failed", NULL, state->host, errstr);
+    return NULL;
     }
   DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
-  tls_out.ocsp = OCSP_VFIED;
+  tlsp->ocsp = OCSP_VFIED;
   }
 #endif
 
 /* Figure out peer DN, and if authenticated, etc. */
 
-if ((rc = peer_status(state, errstr)) != OK)
-  return rc;
+if (peer_status(state, errstr) != OK)
+  return NULL;
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
 extract_exim_vars_from_tls_state(state);
 
-return OK;
+return state;
 }
 
 
@@ -2457,6 +2475,7 @@ daemon, to shut down the TLS library, without actually doing a shutdown (which
 would tamper with the TLS session in the parent process).
 
 Arguments:
+  ct_ctx	client context pointer, or NULL for the one global server context
   shutdown	1 if TLS close-alert is to be sent,
  		2 if also response to be waited for
 
@@ -2464,11 +2483,11 @@ Returns:     nothing
 */
 
 void
-tls_close(BOOL is_server, int shutdown)
+tls_close(void * ct_ctx, int shutdown)
 {
-exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
+exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
 
-if (!state->tlsp || state->tlsp->active < 0) return;  /* TLS was not active */
+if (!state->tlsp || state->tlsp->active.sock < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
@@ -2484,15 +2503,10 @@ gnutls_deinit(state->session);
 gnutls_certificate_free_credentials(state->x509_cred);
 
 
-state->tlsp->active = -1;
+state->tlsp->active.sock = -1;
+state->tlsp->active.tls_ctx = NULL;
 if (state->xfer_buffer) store_free(state->xfer_buffer);
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
-
-if (!state_server.session && !state_client.session)
-  {
-  gnutls_global_deinit();
-  exim_gnutls_base_init_done = FALSE;
-  }
 }
 
 
@@ -2549,7 +2563,8 @@ else if (inbytes == 0)
   gnutls_certificate_free_credentials(state->x509_cred);
 
   state->session = NULL;
-  state->tlsp->active = -1;
+  state->tlsp->active.sock = -1;
+  state->tlsp->active.tls_ctx = NULL;
   state->tlsp->bits = 0;
   state->tlsp->certificate_verified = FALSE;
   tls_channelbinding_b64 = NULL;
@@ -2658,6 +2673,7 @@ return state_server.xfer_buffer_lwm < state_server.xfer_buffer_hwm
 then the caller must feed DKIM.
 
 Arguments:
+  ct_ctx    client context pointer, or NULL for the one global server context
   buff      buffer of data
   len       size of buffer
 
@@ -2666,9 +2682,9 @@ Returns:    the number of bytes read
 */
 
 int
-tls_read(BOOL is_server, uschar *buff, size_t len)
+tls_read(void * ct_ctx, uschar *buff, size_t len)
 {
-exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
+exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
 ssize_t inbytes;
 
 if (len > INT_MAX)
@@ -2704,7 +2720,7 @@ return -1;
 
 /*
 Arguments:
-  is_server channel specifier
+  ct_ctx    client context pointer, or NULL for the one global server context
   buff      buffer of data
   len       number of bytes
   more	    more data expected soon
@@ -2714,11 +2730,11 @@ Returns:    the number of bytes after a successful write,
 */
 
 int
-tls_write(BOOL is_server, const uschar *buff, size_t len, BOOL more)
+tls_write(void * ct_ctx, const uschar * buff, size_t len, BOOL more)
 {
 ssize_t outbytes;
 size_t left = len;
-exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
+exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
 #ifdef SUPPORT_CORK
 static BOOL corked = FALSE;
 

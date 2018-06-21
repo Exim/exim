@@ -242,7 +242,7 @@ for (i = 0; i < 100; i++)
     {
     rc =
 #ifdef SUPPORT_TLS
-	tls_out.active == fd ? tls_write(FALSE, block, len, more) :
+	tls_out.active.sock == fd ? tls_write(tls_out.active.tls_ctx, block, len, more) :
 #endif
 #ifdef MSG_MORE
 	more && !(tctx->options & topt_not_socket)
@@ -260,7 +260,7 @@ for (i = 0; i < 100; i++)
 
     rc =
 #ifdef SUPPORT_TLS
-	tls_out.active == fd ? tls_write(FALSE, block, len, more) :
+	tls_out.active.sock == fd ? tls_write(tls_out.active.tls_ctx, block, len, more) :
 #endif
 #ifdef MSG_MORE
 	more && !(tctx->options & topt_not_socket)
@@ -1075,7 +1075,7 @@ dkim signing,  when we had CHUNKING input.  */
 if (  spool_file_wireformat
    && !(tctx->options & (topt_no_body | topt_end_dot))
    && !nl_check_length
-   && tls_out.active != tctx->u.fd
+   && tls_out.active.sock != tctx->u.fd
    )
   {
   ssize_t copied = 0;
@@ -1877,12 +1877,12 @@ if (smtp_peer_options & OPTION_PIPE)		argv[i++] = US"-MCP";
 if (smtp_peer_options & OPTION_SIZE)		argv[i++] = US"-MCS";
 #ifdef SUPPORT_TLS
 if (smtp_peer_options & OPTION_TLS)
-  if (tls_out.active >= 0 || continue_proxy_cipher)
+  if (tls_out.active.sock >= 0 || continue_proxy_cipher)
     {
     argv[i++] = US"-MCt";
     argv[i++] = sending_ip_address;
     argv[i++] = string_sprintf("%d", sending_port);
-    argv[i++] = tls_out.active >= 0 ? tls_out.cipher : continue_proxy_cipher;
+    argv[i++] = tls_out.active.sock >= 0 ? tls_out.cipher : continue_proxy_cipher;
     }
   else
     argv[i++] = US"-MCT";

@@ -80,7 +80,7 @@ cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
 typedef struct {
-  int     active;             /* fd/socket when in a TLS session */
+  client_conn_ctx active;     /* fd/socket when in a TLS session, and ptr to TLS context */
   int     bits;               /* bits used in TLS session */
   BOOL    certificate_verified; /* Client certificate verified */
 #ifdef SUPPORT_DANE
@@ -314,7 +314,7 @@ typedef struct {
   unsigned     delivery:1;             /* When to attempt */
   unsigned     defer_pass:1;           /* Pass 4xx to caller rather than spooling */
   unsigned     is_tls:1;	       /* Conn has TLS active */
-  int          fd;                     /* Open connection */
+  client_conn_ctx cctx;                /* Open connection */
   int          nrcpt;                  /* Count of addresses */
   uschar *     transport;	       /* Name of transport */
   uschar *     interface;              /* (address of) */

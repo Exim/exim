@@ -98,10 +98,11 @@ BOOL    move_frozen_messages   = FALSE;
 
 /* These variables are outside the #ifdef because it keeps the code less
 cluttered in several places (e.g. during logging) if we can always refer to
-them. Also, the tls_ variables are now always visible. */
+them. Also, the tls_ variables are now always visible.  Note that these are
+only used for smtp connections, not for service-daemon access. */
 
 tls_support tls_in = {
- .active =		-1,
+ .active =		{.sock = -1},
  .bits =		0,
  .certificate_verified = FALSE,
 #ifdef SUPPORT_DANE
@@ -118,7 +119,7 @@ tls_support tls_in = {
  .ocsp =		OCSP_NOT_REQ
 };
 tls_support tls_out = {
- .active =		-1,
+ .active =		{.sock = -1},
  .bits =		0,
  .certificate_verified = FALSE,
 #ifdef SUPPORT_DANE
@@ -559,7 +560,7 @@ cut_t   cutthrough = {
   .delivery =		FALSE,				/* when to attempt */
   .defer_pass =		FALSE,				/* on defer: spool locally */
   .is_tls =		FALSE,				/* not a TLS conn yet */
-  .fd =			-1,				/* open connection */
+  .cctx =		{.sock = -1},			/* open connection */
   .nrcpt =		0,				/* number of addresses */
 };
 

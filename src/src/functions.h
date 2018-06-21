@@ -44,13 +44,13 @@ extern uschar * tls_cert_fprt_md5(void *);
 extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
 
-extern int     tls_client_start(int, host_item *, address_item *,
+extern void *  tls_client_start(int, host_item *, address_item *,
 		 transport_instance *,
 # ifdef SUPPORT_DANE
 		dns_answer *,
 # endif
-		uschar **);
-extern void    tls_close(BOOL, int);
+		tls_support *, uschar **);
+extern void    tls_close(void *, int);
 extern BOOL    tls_could_read(void);
 extern int     tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
@@ -60,11 +60,11 @@ extern int     tls_getc(unsigned);
 extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(void);
 extern int     tls_import_cert(const uschar *, void **);
-extern int     tls_read(BOOL, uschar *, size_t);
+extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(const uschar *, uschar **);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
-extern int     tls_write(BOOL, const uschar *, size_t, BOOL);
+extern int     tls_write(void *, const uschar *, size_t, BOOL);
 extern uschar *tls_validate_require_cipher(void);
 extern void    tls_version_report(FILE *);
 # ifndef USE_GNUTLS
@@ -271,7 +271,7 @@ extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **, const blob *);
 extern int     ip_get_address_family(int);
 extern void    ip_keepalive(int, const uschar *, BOOL);
-extern int     ip_recv(int, uschar *, int, int);
+extern int     ip_recv(client_conn_ctx *, uschar *, int, int);
 extern int     ip_socket(int, int);
 
 extern int     ip_tcpsocket(const uschar *, uschar **, int);
@@ -449,7 +449,7 @@ extern void    smtp_get_cache(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
-extern void    smtp_proxy_tls(uschar *, size_t, int *, int);
+extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
 extern void    smtp_reset(void *);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);

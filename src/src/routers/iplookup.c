@@ -230,7 +230,8 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
 
   for (h = host; h; h = h->next)
     {
-    int host_af, query_socket;
+    int host_af;
+    client_conn_ctx query_cctx = {0};
 
     /* Skip any hosts for which we have no address */
 
@@ -241,9 +242,9 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
 
     host_af = (Ustrchr(h->address, ':') != NULL)? AF_INET6 : AF_INET;
 
-    query_socket = ip_socket(ob->protocol == ip_udp ? SOCK_DGRAM:SOCK_STREAM,
+    query_cctx.sock = ip_socket(ob->protocol == ip_udp ? SOCK_DGRAM:SOCK_STREAM,
       host_af);
-    if (query_socket < 0)
+    if (query_cctx.sock < 0)
       {
       if (ob->optional) return PASS;
       addr->message = string_sprintf("failed to create socket in %s router",
@@ -256,10 +257,10 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     router will timeout later on the read call). */
 /*XXX could take advantage of TFO */
 
-    if (ip_connect(query_socket, host_af, h->address,ob->port, ob->timeout,
+    if (ip_connect(query_cctx.sock, host_af, h->address,ob->port, ob->timeout,
 		ob->protocol == ip_udp ? NULL : &tcp_fastopen_nodata) < 0)
       {
-      close(query_socket);
+      close(query_cctx.sock);
       DEBUG(D_route)
         debug_printf("connection to %s failed: %s\n", h->address,
           strerror(errno));
@@ -268,18 +269,18 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
 
     /* Send the query. If it fails, just continue with the next address. */
 
-    if (send(query_socket, query, query_len, 0) < 0)
+    if (send(query_cctx.sock, query, query_len, 0) < 0)
       {
       DEBUG(D_route) debug_printf("send to %s failed\n", h->address);
-      (void)close(query_socket);
+      (void)close(query_cctx.sock);
       continue;
       }
 
     /* Read the response and close the socket. If the read fails, try the
     next IP address. */
 
-    count = ip_recv(query_socket, reply, sizeof(reply) - 1, ob->timeout);
-    (void)close(query_socket);
+    count = ip_recv(&query_cctx, reply, sizeof(reply) - 1, ob->timeout);
+    (void)close(query_cctx.sock);
     if (count <= 0)
       {
       DEBUG(D_route) debug_printf("%s from %s\n", (errno == ETIMEDOUT)?

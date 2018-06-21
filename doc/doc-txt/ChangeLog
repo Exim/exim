@@ -68,6 +68,11 @@ JH/13 For receent Openssl versions (1.1 onward) use modern generic protocol
 
 JH/14 Bug 2284: Fix DKIM signing for body lines starting with a pair of dots.
 
+JH/15 Rework TLS client-side context management.  Stop using a global, and
+      explicitly pass a context around.  This enables future use of TLS for
+      connections to service-daemons (eg. malware scanning) while a client smtp
+      connection is using TLS; with cutthrough connections this is quite likely.
+
 
 Exim version 4.91
 -----------------
