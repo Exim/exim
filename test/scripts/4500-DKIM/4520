@@ -67,10 +67,17 @@ content
 ****
 #
 # check that an empty dkim_privatekey overrides dkim_strict
-exim -DOPT=From -DSTRICT=true -DSELECTOR=none -odf a@test.ex
+exim -DOPT=From -DSTRICT=true -DSELECTOR=none -odf e@test.ex
 From: nobody@example.com
 
 content
+****
+#
+# single header signed, body line starting with dot
+exim -DOPT=From -odf f@test.ex
+From: nobody@example.com
+
+..content
 ****
 #
 millisleep 500

@@ -154,7 +154,10 @@ if (!rc) return FALSE;
 arc_sign_init();
 #endif
 
-dkim->dot_stuffed = !!(save_options & topt_end_dot);
+/* The dotstuffed status of the datafile depends on whether it was stored
+in wireformat. */
+
+dkim->dot_stuffed = spool_file_wireformat;
 if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
 				    hdrs, dkim, &errstr)))
   if (!(rc = dkt_sign_fail(dkim, &errno)))
@@ -272,7 +275,9 @@ if (!rc)
 arc_sign_init();
 #endif
 
-/* Feed the file to the goats^W DKIM lib */
+/* Feed the file to the goats^W DKIM lib.  At this point the dotstuffed
+status of the file depends on the output of transport_write_message() just
+above, which should be the result of the end_dot flag in tctx->options. */
 
 dkim->dot_stuffed = !!(options & topt_end_dot);
 if (!(dkim_signature = dkim_exim_sign(dkim_fd, 0, NULL, dkim, &errstr)))

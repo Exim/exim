@@ -66,6 +66,8 @@ JH/13 For receent Openssl versions (1.1 onward) use modern generic protocol
       now-deprecated earlier definitions used only specified the range up to TLS
       1.2 (in the older-version library docs).
 
+JH/14 Bug 2284: Fix DKIM signing for body lines starting with a pair of dots.
+
 
 Exim version 4.91
 -----------------
