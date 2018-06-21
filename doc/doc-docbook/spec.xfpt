@@ -27489,7 +27489,7 @@ tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
 For TLS version 1.3 the control available is less fine-grained
 and Exim does not provide access to it at present.
 The value of the &%tls_require_ciphers%& option is ignored when
-TLS version 1.3 is negociated.
+TLS version 1.3 is negotiated.
 
 As of writing the library default cipher suite list for TLSv1.3 is
 .code
