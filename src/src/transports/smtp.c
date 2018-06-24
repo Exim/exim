@@ -2717,6 +2717,7 @@ for (fd_bits = 3; fd_bits; )
       {
       fd_bits = 0;
       tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);
+      ct_ctx = NULL;
       }
     else
       {
@@ -3541,6 +3542,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  the socket on. */
 
 	  tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+	  sx.cctx.tls_ctx = NULL;
 	  smtp_peer_options = smtp_peer_options_wrap;
 	  sx.ok = !sx.smtps
 	    && smtp_write_command(&sx.outblock, SCMD_FLUSH,
@@ -3654,6 +3656,7 @@ END_OFF:
 
 #ifdef SUPPORT_TLS
 tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+sx.cctx.tls_ctx = NULL;
 #endif
 
 /* Close the socket, and return the appropriate value, first setting
