@@ -39,6 +39,8 @@ JH/10 Fix ARC signing for case when DKIM signing failed.  Previously this would
 
 JH/14 Bug 2284: Fix DKIM signing for body lines starting with a pair of dots.
 
+JH/16 Fix ARC verification to do AS checks in reverse order.
+
 
 Exim version 4.91
 -----------------

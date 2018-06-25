@@ -805,18 +805,24 @@ An option on the smtp transport, which constructs and prepends to the message
 an ARC set of headers.  The textually-first Authentication-Results: header
 is used as a basis (you must have added one on entry to the ADMD).
 Expanded as a whole; if unset, empty or forced-failure then no signing is done.
-If it is set, all three elements must be non-empty.
+If it is set, all of the first three elements must be non-empty.
 
 Caveats:
  * There must be an Authentication-Results header, presumably added by an ACL
    while receiving the message, for the same ADMD, for arc_sign to succeed.
    This requires careful coordination between inbound and outbound logic.
+
+   Only one A-R header is taken account of.  This is a limitation versus
+   the ARC spec (which says that all A-R headers from within the ADMD must
+   be used).
+
  * If passing a message to another system, such as a mailing-list manager
    (MLM), between receipt and sending, be wary of manipulations to headers made
    by the MLM.
    + For instance, Mailman with REMOVE_DKIM_HEADERS==3 might improve
      deliverability in a pre-ARC world, but that option also renames the
      Authentication-Results header, which breaks signing.
+
  * Even if you use multiple DKIM keys for different domains, the ARC concept
    should try to stick to one ADMD, so pick a primary domain and use that for
    AR headers and outbound signing.
