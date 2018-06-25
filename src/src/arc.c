@@ -984,16 +984,13 @@ return NULL;
 static const uschar *
 arc_verify_seals(arc_ctx * ctx)
 {
-arc_set * as = ctx->arcset_chain;
+arc_set * as = ctx->arcset_chain_last;
 
 if (!as)
   return US"none";
 
-while (as)
-  {
-  if (arc_seal_verify(ctx, as)) return US"fail";
-  as = as->next;
-  }
+for ( ; as; as = as->prev) if (arc_seal_verify(ctx, as)) return US"fail";
+
 DEBUG(D_acl) debug_printf("ARC: AS vfy overall pass\n");
 return NULL;
 }

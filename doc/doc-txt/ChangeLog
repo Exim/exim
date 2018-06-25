@@ -73,6 +73,8 @@ JH/15 Rework TLS client-side context management.  Stop using a global, and
       connections to service-daemons (eg. malware scanning) while a client smtp
       connection is using TLS; with cutthrough connections this is quite likely.
 
+JH/16 Fix ARC verification to do AS checks in reverse order.
+
 
 Exim version 4.91
 -----------------
