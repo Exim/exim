@@ -4981,10 +4981,13 @@ while (*s != 0)
 #ifdef SUPPORT_TLS
 	if (do_tls)
 	  {
-	  tls_support tls_dummy = {0};
+	  tls_support tls_dummy = {.sni=NULL};
 	  uschar * errstr;
 
-	  if (!(tls_ctx = tls_client_start(fd, &host, NULL, NULL, NULL,
+	  if (!(tls_ctx = tls_client_start(fd, &host, NULL, NULL,
+# ifdef SUPPORT_DANE
+				NULL,
+# endif
 	  			&tls_dummy, &errstr)))
 	    {
 	    expand_string_message = string_sprintf("TLS connect failed: %s", errstr);
