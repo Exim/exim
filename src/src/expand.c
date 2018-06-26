@@ -4826,10 +4826,8 @@ while (*s != 0)
       uschar * server_name = NULL;
       host_item host;
       BOOL do_shutdown = TRUE;
-#ifdef SUPPORT_TLS
-      BOOL do_tls = FALSE;
-      void * tls_ctx = NULL;
-#endif
+      BOOL do_tls = FALSE;	/* Only set under SUPPORT_TLS */
+      void * tls_ctx = NULL;	/* ditto		      */
       blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
@@ -4934,8 +4932,9 @@ while (*s != 0)
 		  do_tls ? NULL : &reqstr);
 	  callout_address = NULL;
 	  if (fd < 0)
-              goto SOCK_FAIL;
-	  if (!do_tls) reqstr.len = 0;
+	    goto SOCK_FAIL;
+	  if (!do_tls)
+	    reqstr.len = 0;
           }
 
         /* Handle a Unix domain socket */

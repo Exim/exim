@@ -8531,7 +8531,7 @@ uschar * where;
 
 if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
   {
-  int pfd[2], channel_fd = cutthrough.cctx.sock, pid;
+  int channel_fd = cutthrough.cctx.sock;
 
   smtp_peer_options = cutthrough.peer_options;
   continue_sequence = 0;
@@ -8539,6 +8539,8 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
 #ifdef SUPPORT_TLS
   if (cutthrough.is_tls)
     {
+    int pfd[2], pid;
+
     smtp_peer_options |= OPTION_TLS;
     sending_ip_address = cutthrough.snd_ip;
     sending_port = cutthrough.snd_port;

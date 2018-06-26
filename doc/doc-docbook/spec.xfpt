@@ -29903,9 +29903,10 @@ warn   hosts           = +internal_hosts
 warn   message         = Remove internal headers
        remove_header   = $acl_c_ihdrs
 .endd
-Removed header lines are accumulated during the MAIL, RCPT, and predata ACLs.
-They are removed from the message before processing the DATA and MIME ACLs.
-There is no harm in attempting to remove the same header twice nor is removing
+Header names for removal are accumulated during the MAIL, RCPT, and predata ACLs.
+Matching header lines are removed from the message before processing the DATA and MIME ACLs.
+If multiple header lines match, all are removed.
+There is no harm in attempting to remove the same header twice nor in removing
 a non-existent header. Further header lines to be removed may be accumulated
 during the DATA and MIME ACLs, after which they are removed from the message,
 if present. In the case of non-SMTP messages, headers to be removed are
