@@ -32265,20 +32265,14 @@ deny message = This message contains malware ($malware_name)
 .endd
 
 
-.section "Scanning with SpamAssassin and Rspamd" "SECTscanspamass"
+.section "Scanning with SpamAssassin" "SECTscanspamass"
 .cindex "content scanning" "for spam"
 .cindex "spam scanning"
 .cindex "SpamAssassin"
-.cindex "Rspamd"
 The &%spam%& ACL condition calls SpamAssassin's &%spamd%& daemon to get a spam
-score and a report for the message.
-Support is also provided for Rspamd.
-
-For more information about installation and configuration of SpamAssassin or
-Rspamd refer to their respective websites at
-&url(http://spamassassin.apache.org) and &url(http://www.rspamd.com)
-
-SpamAssassin can be installed with CPAN by running:
+score and a report for the message. You can get SpamAssassin at
+&url(http://www.spamassassin.org), or, if you have a working Perl
+installation, you can use CPAN by running:
 .code
 perl -MCPAN -e 'install Mail::SpamAssassin'
 .endd
@@ -32303,14 +32297,6 @@ timeout, Exim uses when waiting for a response from the SpamAssassin
 server (currently defaulting to 120s).  With a lower value the Linux
 connection tracking may consider your half-closed connection as dead too
 soon.
-
-
-To use Rspamd (which by default listens on all local addresses
-on TCP port 11333)
-you should add &%variant=rspamd%& after the address/port pair, for example:
-.code
-spamd_address = 127.0.0.1 11333 variant=rspamd
-.endd
 
 As of version 2.60, &%SpamAssassin%& also supports communication over UNIX
 sockets. If you want to us these, supply &%spamd_address%& with an absolute
@@ -32396,8 +32382,7 @@ The right-hand side of the &%spam%& condition specifies a name. This is
 relevant if you have set up multiple SpamAssassin profiles. If you do not want
 to scan using a specific profile, but rather use the SpamAssassin system-wide
 default profile, you can scan for an unknown name, or simply use &"nobody"&.
-Rspamd does not use this setting. However, you must put something on the
-right-hand side.
+However, you must put something on the right-hand side.
 
 The name allows you to use per-domain or per-user antispam profiles in
 principle, but this is not straightforward in practice, because a message may
@@ -32466,10 +32451,8 @@ when running in country-specific locales, which are not legal
 unencoded in headers.
 
 .vitem &$spam_action$&
-For SpamAssassin either 'reject' or 'no action' depending on the
+Either 'reject' or 'no action' depending on the
 spam score versus threshold.
-For Rspamd, the recommended action.
-
 .endlist
 
 The &%spam%& condition caches its results unless expansion in

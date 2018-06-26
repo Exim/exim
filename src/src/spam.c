@@ -16,7 +16,7 @@
 uschar spam_score_buffer[16];
 uschar spam_score_int_buffer[16];
 uschar spam_bar_buffer[128];
-uschar spam_action_buffer[32];
+uschar * spam_action_buffer;
 uschar spam_report_buffer[32600];
 uschar prev_user_name[128] = "";
 int spam_ok = 0;
@@ -30,7 +30,6 @@ static int
 spamd_param_init(spamd_address_container *spamd)
 {
 /* default spamd server weight, time and priority value */
-spamd->is_rspamd = FALSE;
 spamd->is_failed = FALSE;
 spamd->weight = SPAMD_WEIGHT;
 spamd->timeout = SPAMD_TIMEOUT;
@@ -93,12 +92,6 @@ if (Ustrncmp(param, "time=", 5) == 0)
     return 1; /* skip spamd server */
 
   return 0; /* OK */
-  }
-
-if (Ustrcmp(param, "variant=rspamd") == 0)
-  {
-  spamd->is_rspamd = TRUE;
-  return 0;
   }
 
 if (Ustrncmp(param, "tmo=", 4) == 0)
@@ -368,42 +361,15 @@ start = time(NULL);
   }
 
 (void)fcntl(spamd_cctx.sock, F_SETFL, O_NONBLOCK);
-/* now we are connected to spamd on spamd_cctx.sock */
-if (sd->is_rspamd)
-  {
-  gstring * req_str;
-  const uschar * s;
+/* now we are connected to spamd on spamd_sock */
 
-  req_str = string_append(NULL, 8,
-    "CHECK RSPAMC/1.3\r\nContent-length: ", string_sprintf("%lu\r\n", mbox_size),
-    "Queue-Id: ", message_id,
-    "\r\nFrom: <", sender_address,
-    ">\r\nRecipient-Number: ", string_sprintf("%d\r\n", recipients_count));
-
-  for (i = 0; i < recipients_count; i ++)
-    req_str = string_append(req_str, 3,
-      "Rcpt: <", recipients_list[i].address, ">\r\n");
-  if ((s = expand_string(US"$sender_helo_name")) && *s)
-    req_str = string_append(req_str, 3, "Helo: ", s, "\r\n");
-  if ((s = expand_string(US"$sender_host_name")) && *s)
-    req_str = string_append(req_str, 3, "Hostname: ", s, "\r\n");
-  if (sender_host_address)
-    req_str = string_append(req_str, 3, "IP: ", sender_host_address, "\r\n");
-  if ((s = expand_string(US"$authenticated_id")) && *s)
-    req_str = string_append(req_str, 3, "User: ", s, "\r\n");
-  req_str = string_catn(req_str, US"\r\n", 2);
-  wrote = send(spamd_cctx.sock, req_str->s, req_str->ptr, 0);
-  }
-else
-  {				/* spamassassin variant */
-  (void)string_format(spamd_buffer,
-	  sizeof(spamd_buffer),
-	  "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
-	  user_name,
-	  mbox_size);
-  /* send our request */
-  wrote = send(spamd_cctx.sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
-  }
+(void)string_format(spamd_buffer,
+	sizeof(spamd_buffer),
+	"REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
+	user_name,
+	mbox_size);
+/* send our request */
+wrote = send(spamd_cctx.sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
 
 if (wrote == -1)
   {
@@ -427,7 +393,6 @@ if (wrote == -1)
 pollfd.fd = spamd_cctx.sock;
 pollfd.events = POLLOUT;
 #endif
-(void)fcntl(spamd_cctx.sock, F_SETFL, O_NONBLOCK);
 do
   {
   read = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
@@ -494,8 +459,7 @@ if (ferror(mbox_file))
 (void)fclose(mbox_file);
 
 /* we're done sending, close socket for writing */
-if (!sd->is_rspamd)
-  shutdown(spamd_cctx.sock,SHUT_WR);
+shutdown(spamd_cctx.sock, SHUT_WR);
 
 /* read spamd response using what's left of the timeout.  */
 memset(spamd_buffer, 0, sizeof(spamd_buffer));
@@ -519,33 +483,6 @@ if (i <= 0 && errno != 0)
 /* reading done */
 (void)close(spamd_cctx.sock);
 
-if (sd->is_rspamd)
-  {				/* rspamd variant of reply */
-  int r;
-  if (  (r = sscanf(CS spamd_buffer,
-	  "RSPAMD/%7s 0 EX_OK\r\nMetric: default; %7s %lf / %lf / %lf\r\n%n",
-	  spamd_version, spamd_short_result, &spamd_score, &spamd_threshold,
-	  &spamd_reject_score, &spamd_report_offset)) != 5
-     || spamd_report_offset >= offset		/* verify within buffer */
-     )
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC,
-	      "%s cannot parse spamd %s, output: %d", loglabel, callout_address, r);
-    return DEFER;
-    }
-  /* now parse action */
-  p = &spamd_buffer[spamd_report_offset];
-
-  if (Ustrncmp(p, "Action: ", sizeof("Action: ") - 1) == 0)
-    {
-    p += sizeof("Action: ") - 1;
-    q = &spam_action_buffer[0];
-    while (*p && *p != '\r' && (q - spam_action_buffer) < sizeof(spam_action_buffer) - 1)
-      *q++ = *p++;
-    *q = '\0';
-    }
-  }
-else
   {				/* spamassassin */
   /* dig in the spamd output and put the report in a multiline header,
   if requested */
@@ -564,8 +501,7 @@ else
 	}
     }
 
-  Ustrcpy(spam_action_buffer,
-    spamd_score >= spamd_threshold ? "reject" : "no action");
+  spam_action_buffer = spamd_score >= spamd_threshold ? US"reject" : US"no action";
   }
 
 /* Create report. Since this is a multiline string,

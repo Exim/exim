@@ -34,6 +34,8 @@ Exim version 4.92
    is limited to one retry unless the (new) config option dns_cname_loops
    is changed.
 
+ * Support for Rspamd has been removed.
+
 Exim version 4.91
 -----------------
 

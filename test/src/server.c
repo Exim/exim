@@ -519,11 +519,6 @@ s = script;
 
 for (count = 0; count < connection_count; count++)
   {
-  struct {
-    int left;
-    BOOL in_use;
-  } content_length = { 0, FALSE };
-
   alarm(timeout);
   if (port <= 0)
     {
@@ -734,7 +729,6 @@ for (count = 0; count < connection_count; count++)
 
 	alarm(timeout);
 	n = read(dup_accept_socket, CS buffer+offset, s->len - offset);
-	if (content_length.in_use) content_length.left -= n;
 	if (n == 0)
 	  {
 	  printf("%sxpected EOF read from client\n",
@@ -752,9 +746,8 @@ for (count = 0; count < connection_count; count++)
 	if (data) do
 	  {
 	  n = (read(dup_accept_socket, &c, 1) == 1 && c == '.');
-	  if (content_length.in_use) content_length.left--;
 	  while (c != '\n' && read(dup_accept_socket, &c, 1) == 1)
-            if (content_length.in_use) content_length.left--;
+	    ;
 	  } while (!n);
 	else if (memcmp(ss, buffer, n) != 0)
 	  {
@@ -777,8 +770,7 @@ for (count = 0; count < connection_count; count++)
 	    goto END_OFF;
 	    }
 	  alarm(0);
-	  n = strlen(CS buffer);
-	  if (content_length.in_use) content_length.left -= (n - offset);
+	  n = (int)strlen(CS buffer);
 	  while (n > 0 && isspace(buffer[n-1])) n--;
 	  buffer[n] = 0;
 	  printf("%s\n", buffer);
@@ -792,11 +784,6 @@ for (count = 0; count < connection_count; count++)
 	  break;
 	  }
 	}
-
-	if (sscanf(CCS buffer, "<Content-length: %d", &content_length.left))
-       	  content_length.in_use = TRUE;
-	if (content_length.in_use && content_length.left <= 0)
-	  shutdown(dup_accept_socket, SHUT_RD);
       }
     }
 
