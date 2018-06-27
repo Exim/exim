@@ -72,13 +72,10 @@ JH/15 Rework TLS client-side context management.  Stop using a global, and
       explicitly pass a context around.  This enables future use of TLS for
       connections to service-daemons (eg. malware scanning) while a client smtp
       connection is using TLS; with cutthrough connections this is quite likely.
-JH/15 Support for Rspamd, as a variant of the "spam" ACL condition used for
-      connecting to a SpamAssassain "spamd" daemon for content scanning, is
-      removed.  Following changes to the protocol used for communication with
-      Rspamd it was apparently inoperable.
 
 JH/16 Fix ARC verification to do AS checks in reverse order.
-JH/16 Support a "tls" option on the ${readsocket } expansion item.
+
+JH/17 Support a "tls" option on the ${readsocket } expansion item.
 
 
 Exim version 4.91
