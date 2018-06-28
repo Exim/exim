@@ -146,10 +146,10 @@ the extra functionality, except for a few special cases such as the databases
 RUNNING THE TEST SUITE
 ----------------------
 
-(1) Download the tarball exim-testsuite-x.xx.tar.bz2 and unpack it, preferably
-    in a directory alongside an Exim source directory (see below).
+(1) Clone the git tree for Exim.  This include both the Exim source and the
+    testsuite.
 
-(2) cd into the exim-testsuite-x.xx directory.
+(2) cd into the test/ subdirectory (where this README lives).
 
 (3) Run "./configure" and then "make". This builds a few auxiliary programs that
     are written in C.
