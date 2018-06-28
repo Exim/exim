@@ -1941,7 +1941,7 @@ while (addr_new)
       else
         {
         HDEBUG(D_verify) debug_printf("Cannot do callout: neither router nor "
-          "transport provided a host list\n");
+          "transport provided a host list, or transport is not smtp\n");
         }
       }
     }
