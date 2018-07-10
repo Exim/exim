@@ -10425,7 +10425,7 @@ abbreviation &%h%& can be used when &%hash%& is used as an operator.
 .cindex "expansion" "hex to base64"
 .cindex "&%hex2b64%& expansion item"
 This operator converts a hex string into one that is base64 encoded. This can
-be useful for processing the output of the MD5 and SHA-1 hashing functions.
+be useful for processing the output of the various hashing functions.
 
 
 
@@ -26830,15 +26830,17 @@ without code changes in Exim.
 
 
 .option server_channelbinding gsasl boolean false
+Do not set this true without consulting a cryptographic engineer.
+
 Some authentication mechanisms are able to use external context at both ends
 of the session to bind the authentication to that context, and fail the
 authentication process if that context differs.  Specifically, some TLS
 ciphersuites can provide identifying information about the cryptographic
 context.
 
-This means that certificate identity and verification becomes a non-issue,
-as a man-in-the-middle attack will cause the correct client and server to
-see different identifiers and authentication will fail.
+This should have meant that certificate identity and verification becomes a
+non-issue, as a man-in-the-middle attack will cause the correct client and
+server to see different identifiers and authentication will fail.
 
 This is currently only supported when using the GnuTLS library.  This is
 only usable by mechanisms which support "channel binding"; at time of
@@ -26846,7 +26848,11 @@ writing, that's the SCRAM family.
 
 This defaults off to ensure smooth upgrade across Exim releases, in case
 this option causes some clients to start failing.  Some future release
-of Exim may switch the default to be true.
+of Exim might have switched the default to be true.
+
+However, Channel Binding in TLS has proven to be broken in current versions.
+Do not plan to rely upon this feature for security, ever, without consulting
+with a subject matter expert (a cryptographic engineer).
 
 
 .option server_hostname gsasl string&!! "see below"
@@ -28173,6 +28179,27 @@ all of which point to a single TLSA record.
 Another approach which should be seriously considered is to use DANE with a certificate
 from a public CA, because of another technology, "MTA-STS", described below.
 
+.new
+When you use DANE-TA to publish trust anchor information, you ask entities
+outside your administrative control to trust the Certificate Authority for
+connections to you.
+If using a private CA then you should expect others to still apply the
+technical criteria they'd use for a public CA to your certificates.
+In particular, you should probably try to follow current best practices for CA
+operation around hash algorithms and key sizes.
+Do not expect other organizations to lower their security expectations just
+because a particular profile might be reasonable for your own internal use.
+
+When this text was last updated, this in practice means to avoid use of SHA-1
+and MD5; if using RSA to use key sizes of at least 2048 bits (and no larger
+than 4096, for interoperability); to use keyUsage fields correctly; to use
+random serial numbers.
+The list of requirements is subject to change as best practices evolve.
+If you're not already using a private CA, or it doesn't meet these
+requirements, then we encourage you to avoid all these issues and use a public
+CA such as &url(https://letsencrypt.org/,Let's Encrypt) instead.
+.wen
+
 The TLSA record should have a Selector field of SPKI(1) and a Matching Type field of SHA2-512(2).
 
 At the time of writing, &url(https://www.huque.com/bin/gen_tlsa)
@@ -28188,6 +28215,16 @@ is useful for quickly generating TLSA records; and commands like
 are workable for 4th-field hashes.
 
 For use with the DANE-TA model, server certificates must have a correct name (SubjectName or SubjectAltName).
+
+.new
+The Certificate issued by the CA published in the DANE-TA model should be
+issued using a strong hash algorithm.
+Exim, and importantlyimportantly  various other MTAs sending to you, will not
+re-enable hash algorithms which have been disabled by default in TLS
+libraries.
+This means no MD5 and no SHA-1.  SHA2-256 is the minimum for reliable
+interoperability (and probably the maximum too, in 2018).
+.wen
 
 The use of OCSP-stapling should be considered, allowing for fast revocation of certificates (which would otherwise
 be limited by the DNS TTL on the TLSA records).  However, this is likely to only be usable with DANE-TA.  NOTE: the

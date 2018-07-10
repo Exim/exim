@@ -6,7 +6,7 @@ Using Exim 4.80+ with GnuTLS
 (3) I'm seeing:
     "(gnutls_handshake): A TLS packet with unexpected length was received"
     Why?
-(4) What's the deal with MD5?
+(4) What's the deal with MD5?  (And SHA-1?)
 (5) What happened to gnutls_require_kx / gnutls_require_mac /
     gnutls_require_protocols?
 (6) What's the deal with tls_dh_max_bits?  What's DH?
@@ -89,8 +89,8 @@ option fixes the problem, this was the cause.  See Q6.
 
 
 
-(4): What's the deal with MD5?
-------------------------------
+(4): What's the deal with MD5?  (And SHA-1?)
+--------------------------------------------
 
 MD5 is a hash algorithm.  Hash algorithms are used to reduce a lot of data
 down to a fairly short value, which is supposed to be extremely hard to
@@ -118,6 +118,10 @@ instead.  Part of the reason for paying money on a recurring basis is to cover
 the ongoing costs of proving a trust relationship, such as providing
 revocation protocols.  This is just another of those ongoing costs you have
 already paid for.
+
+The same has happened to SHA-1: there are real-world collision attacks against
+SHA-1, so SHA-1 is mostly defunct in certificates.  GnuTLS no longer supports
+its use in TLS certificates.
 
 
 
