@@ -28164,22 +28164,29 @@ Support for client-side operation of DANE can be included at compile time by def
 in &_Local/Makefile_&.
 If it has been included, the macro "_HAVE_DANE" will be defined.
 
-The TLSA record for the server may have "certificate usage" of DANE-TA(2) or DANE-EE(3).  The latter specifies
-the End Entity directly, i.e. the certificate involved is that of the server (and should be the sole one transmitted
-during the TLS handshake); this is appropriate for a single system, using a self-signed certificate.
+The TLSA record for the server may have "certificate usage" of DANE-TA(2) or DANE-EE(3).
+These are the "Trust Anchor" and "End Entity" variants.
+The latter specifies the End Entity directly, i.e. the certificate involved is that of the server
+(and if only DANE-EE is used then it should be the sole one transmitted during the TLS handshake);
+this is appropriate for a single system, using a self-signed certificate.
 DANE-TA usage is effectively declaring a specific CA to be used; this might be a private CA or a public,
-well-known one.  A private CA at simplest is just a self-signed certificate which is used to sign
-cerver certificates, but running one securely does require careful arrangement.  If a private CA is used
-then either all clients must be primed with it, or (probably simpler) the server TLS handshake must transmit
-the entire certificate chain from CA to server-certificate.  If a public CA is used then all clients must be primed with it
-(losing one advantage of DANE) - but the attack surface is reduced from all public CAs to that single CA.
+well-known one.
+A private CA at simplest is just a self-signed certificate (with certain
+attributes) which is used to sign cerver certificates, but running one securely
+does require careful arrangement.
+With DANE-TA, as implemented in Exim and commonly in other MTAs,
+the server TLS handshake must transmit the entire certificate chain from CA to server-certificate.
 DANE-TA is commonly used for several services and/or servers, each having a TLSA query-domain CNAME record,
 all of which point to a single TLSA record.
-
-Another approach which should be seriously considered is to use DANE with a certificate
-from a public CA, because of another technology, "MTA-STS", described below.
+DANE-TA and DANE-EE can both be used together.
 
 .new
+Our recommendation is to use DANE with a certificate from a public CA,
+because this enables a variety of strategies for remote clients to verify
+your certificate.
+You can then publish information both via DANE and another technology,
+"MTA-STS", described below.
+
 When you use DANE-TA to publish trust anchor information, you ask entities
 outside your administrative control to trust the Certificate Authority for
 connections to you.
@@ -28308,8 +28315,8 @@ MTA-STS to let those clients who do use that protocol derive trust
 information.
 
 The MTA-STS design requires a certificate from a public Certificate Authority
-which is recognized by clients sending to you.  That selection is outside your
-control.
+which is recognized by clients sending to you.
+That selection of which CAs are trusted by others is outside your control.
 
 The most interoperable course of action is probably to use
 &url(https://letsencrypt.org/,Let's Encrypt), with automated certificate
