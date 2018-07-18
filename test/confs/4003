@@ -1,0 +1,33 @@
+# Exim test configuration 4003
+# Content-scan: rspamd interface
+
+.include DIR/aux-var/std_conf_prefix
+
+log_selector = +subject
+primary_hostname = myhost.test.ex
+
+spamd_address = 127.0.0.1 11333 variant=rspamd
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = c_data
+
+begin acl
+
+c_data:
+  warn
+    spam = nobody
+  warn
+    log_message = $spam_action $spam_report
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+r:
+  driver = redirect
+  data = :blackhole:
+
+# End

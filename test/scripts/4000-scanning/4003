@@ -1,0 +1,51 @@
+# content scan interface: rspamd
+#
+# The spooled file for scanning includes the test-runner's user name
+# hence size varies.  Munge that.
+munge scanfile_size
+#
+server 11333
+<CHECK RSPAMC/1.3
+<Content-length:
+<Queue-Id:
+<From:
+<Recipient-Number: 1
+<Rcpt:
+<Helo:
+<User:
+<
+<From
+<X-Envelope-From
+<X-Envelope-To
+<Received:
+<	by
+<	(envelope
+<	id
+<	for
+<From:
+<Content-type: text/plain
+<Message-Id:
+<Sender:
+<Date:
+<
+<test
+>RSPAMD/1.3 0 EX_OK
+>Metric: default; True; 15.00 / 15.00 / 0.0
+>Action: reject
+>Symbol: FAKE_SYMBOL_A(15.00)
+>Symbol: FAKE_SYMBOL_B(0.00)
+>Message-ID: undef
+*eof
+****
+exim -odi -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+From: MAILER_DAEMON <>
+Content-type: text/plain
+
+test
+.
+quit
+****
