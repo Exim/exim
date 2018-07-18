@@ -31,7 +31,7 @@ QUIT
 ****
 #
 #
-# utf-8 from, Basic smtp input, no delivery
+# utf-8 from, Basic smtp input, no delivery.  Two messages in a connection.
 client 127.0.0.1 PORT_D
 ??? 220
 EHLO client
@@ -44,6 +44,17 @@ EHLO client
 MAIL FROM: <ليهمابتكلموشعربي؟@czech.Pročprostěnemluvíčesky.com> SMTPUTF8
 ??? 250
 RCPT TO: <userx@test.ex>
+??? 250
+DATA
+??? 354
+Subject: test
+
+body
+.
+??? 250
+MAIL FROM: <ليهمابتكلموشعربي؟@czech.Pročprostěnemluvíčesky.com> SMTPUTF8
+??? 250
+RCPT TO: <usery@test.ex>
 ??? 250
 DATA
 ??? 354

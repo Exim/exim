@@ -64,6 +64,21 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> .
 ??? 250
 <<< 250 OK id=10HmbA-0005vi-00
+>>> MAIL FROM: <ليهمابتكلموشعربي؟@czech.Pročprostěnemluvíčesky.com> SMTPUTF8
+??? 250
+<<< 250 OK
+>>> RCPT TO: <usery@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> 
+>>> body
+>>> .
+??? 250
+<<< 250 OK id=10HmbB-0005vi-00
 >>> QUIT
 ??? 221
 <<< 221 the.local.host.name closing connection

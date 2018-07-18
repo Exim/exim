@@ -77,6 +77,10 @@ JH/16 Fix ARC verification to do AS checks in reverse order.
 
 JH/17 Support a "tls" option on the ${readsocket } expansion item.
 
+JH/18 Bug 2287: Fix the protocol name (eg utf8esmtp) for multiple messages
+      using the SMTPUTF8 option on their MAIL FROM commands, in one connection.
+      Previously the "utf8" would be re-prepended for every additional message.
+
 
 Exim version 4.91
 -----------------
