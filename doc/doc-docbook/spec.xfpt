@@ -39286,8 +39286,10 @@ hash-method or key-size:
        set dkim_verify_reason = hash too weak or key too short
 .endd
 
-After all the DKIM ACL runs have completed, the value becomes a
+So long as a DKIM ACL is defined (it need do no more than accept),
+after all the DKIM ACL runs have completed, the value becomes a
 colon-separated list of the values after each run.
+This is maintained for the mime, prdr and data ACLs.
 
 .vitem &%$dkim_verify_reason%&
 A string giving a little bit more detail when &%$dkim_verify_status%& is either
