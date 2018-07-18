@@ -81,6 +81,10 @@ JH/18 Bug 2287: Fix the protocol name (eg utf8esmtp) for multiple messages
       using the SMTPUTF8 option on their MAIL FROM commands, in one connection.
       Previously the "utf8" would be re-prepended for every additional message.
 
+JH/19 Reject MAIL FROM commands with SMTPUTF8 when the facility was not advertised.
+      Previously thery were accepted, resulting in issues when attempting to
+      forward messages to a non-supporting MTA.
+
 
 Exim version 4.91
 -----------------

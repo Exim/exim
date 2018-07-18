@@ -4580,7 +4580,7 @@ while (done <= 0)
           if (dsn_advertised)
 	    {
             /* Check if the dsn envid has been already set */
-            if (dsn_envid != NULL)
+            if (dsn_envid)
 	      {
               synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"ENVID can be specified once only");
@@ -4669,17 +4669,21 @@ while (done <= 0)
 
 #ifdef SUPPORT_I18N
         case ENV_MAIL_OPT_UTF8:
-	  if (smtputf8_advertised)
+	  if (!smtputf8_advertised)
 	    {
-	    DEBUG(D_receive) debug_printf("smtputf8 requested\n");
-	    message_smtputf8 = allow_utf8_domains = TRUE;
-	    if (Ustrncmp(received_protocol, US"utf8", 4) != 0)
-	      {
-	      int old_pool = store_pool;
-	      store_pool = POOL_PERM;
-	      received_protocol = string_sprintf("utf8%s", received_protocol);
-	      store_pool = old_pool;
-	      }
+	    synprot_error(L_smtp_syntax_error, 501, NULL,
+	      US"SMTPUTF8 used when not advertised");
+	    goto COMMAND_LOOP;
+	    }
+
+	  DEBUG(D_receive) debug_printf("smtputf8 requested\n");
+	  message_smtputf8 = allow_utf8_domains = TRUE;
+	  if (Ustrncmp(received_protocol, US"utf8", 4) != 0)
+	    {
+	    int old_pool = store_pool;
+	    store_pool = POOL_PERM;
+	    received_protocol = string_sprintf("utf8%s", received_protocol);
+	    store_pool = old_pool;
 	    }
 	  break;
 #endif
