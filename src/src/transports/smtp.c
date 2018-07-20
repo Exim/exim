@@ -1626,9 +1626,11 @@ if (!continue_hostname)
 				  string_sprintf("DANE error: tlsa lookup %s",
 				    rc == DEFER ? "DEFER" : "FAIL"),
 				  rc, FALSE);
+# ifndef DISABLE_EVENT
 				(void) event_raise(sx->tblock->event_action,
 				  US"dane:fail", sx->dane_required
 				    ?  US"dane-required" : US"dnssec-invalid");
+# endif
 				return rc;
 	  }
       }
@@ -1637,8 +1639,10 @@ if (!continue_hostname)
       set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
 	string_sprintf("DANE error: %s lookup not DNSSEC", sx->host->name),
 	FAIL, FALSE);
+# ifndef DISABLE_EVENT
       (void) event_raise(sx->tblock->event_action,
 	US"dane:fail", US"dane-required");
+# endif
       return FAIL;
       }
     }
@@ -1983,8 +1987,10 @@ if (  smtp_peer_options & OPTION_TLS
 	log_write(0, LOG_MAIN,
 	  "DANE attempt failed; TLS connection to %s [%s]: %s",
 	  sx->host->name, sx->host->address, errstr);
+#  ifndef DISABLE_EVENT
 	(void) event_raise(sx->tblock->event_action,
 	  US"dane:fail", US"validation-failure");	/* could do with better detail */
+#  endif
 	}
 # endif
 
@@ -2079,7 +2085,7 @@ else if (  sx->smtps
   message = string_sprintf("a TLS session is required, but %s",
     smtp_peer_options & OPTION_TLS
     ? "an attempt to start TLS failed" : "the server did not offer TLS support");
-# ifdef SUPPORT_DANE
+# if defined(SUPPORT_DANE) && !defined(DISABLE_EVENT)
   if (sx->dane)
     (void) event_raise(sx->tblock->event_action, US"dane:fail",
       smtp_peer_options & OPTION_TLS
