@@ -1,0 +1,62 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@myhost.test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
+	by myhost.test.ex with esmtpS (TLS_proto_and_cipher)
+	(Exim x.yz)
+	id 10HmaZ-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: a@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  a@test.ex
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;a@test.ex
+Status: 5.0.0
+Remote-MTA: dns; ip4.ip4.ip4.ip4
+Remote-MTA: X-ip; [ip4.ip4.ip4.ip4]:1111
+X-Remote-MTA-smtp-greeting: X-str; 220 Hi there
+X-Remote-MTA-helo-response: X-str; 250 wotcher
+X-Exim-Diagnostic: X-str; a TLS session is required, but the server did not offer TLS support
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+

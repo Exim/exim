@@ -172,7 +172,6 @@ else
     if (  cache_record->result == ccache_reject
        || *from_address == 0 && cache_record->result == ccache_reject_mfnull)
       {
-      setflag(addr, af_verify_nsfail);
       HDEBUG(D_verify)
 	debug_printf("callout cache: domain gave initial rejection, or "
 	  "does not accept HELO or MAIL FROM:<>\n");
@@ -989,6 +988,13 @@ no_conn:
 	yield = FAIL;
 	done = TRUE;
 	}
+	break;
+#endif
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+      case ERRNO_REQUIRETLS:
+        addr->user_message = US"530 5.7.4 REQUIRETLS support required";
+	yield = FAIL;
+	done = TRUE;
 	break;
 #endif
       case ECONNREFUSED:
@@ -1901,16 +1907,16 @@ while (addr_new)
                 (void)host_find_byname(host, NULL, flags, NULL, TRUE);
               else
 		{
-		dnssec_domains * dnssec_domains = NULL;
+		const dnssec_domains * dsp = NULL;
 		if (Ustrcmp(tp->driver_name, "smtp") == 0)
 		  {
 		  smtp_transport_options_block * ob =
 		      (smtp_transport_options_block *) tp->options_block;
-		  dnssec_domains = &ob->dnssec;
+		  dsp = &ob->dnssec;
 		  }
 
                 (void) host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-		  dnssec_domains, NULL, NULL);
+		  dsp, NULL, NULL);
 		}
               }
             }

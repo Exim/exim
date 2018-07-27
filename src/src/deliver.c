@@ -8454,6 +8454,11 @@ if (!regex_AUTH) regex_AUTH =
 #ifdef SUPPORT_TLS
 if (!regex_STARTTLS) regex_STARTTLS =
   regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+
+# ifdef EXPERIMENTAL_REQUIRETLS
+if (!regex_REQUIRETLS) regex_REQUIRETLS =
+  regex_must_compile(US"\\n250[\\s\\-]REQUIRETLS(\\s|\\n|$)", FALSE, TRUE);
+# endif
 #endif
 
 if (!regex_CHUNKING) regex_CHUNKING =

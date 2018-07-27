@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 upgrading
+1999-03-02 09:44:33 U=CALLER F=<CALLER@myhost.test.ex> rejected RCPT <a@test.ex>: ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] : a TLS session is required, but the server did not offer TLS support
+1999-03-02 09:44:33 upgrading
+1999-03-02 09:44:33 U=CALLER F=<CALLER@myhost.test.ex> rejected RCPT <b@test.ex>: ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] : REQUIRETLS support is required from the server but it was not offered
+1999-03-02 09:44:33 upgrading
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 requiretls: yes

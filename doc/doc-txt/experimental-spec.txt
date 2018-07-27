@@ -860,6 +860,37 @@ used via the transport in question.
 
 
 
+
+REQUIRETLS support
+------------------
+Ref: https://tools.ietf.org/html/draft-ietf-uta-smtp-require-tls-03
+
+If compiled with EXPERIMENTAL_REQUIRETLS support is included for this
+feature, where a REQUIRETLS option is added to the MAIL command.
+The client may not retry in clear if the MAIL+REQUIRETLS fails (or was never
+offered), and the server accepts an obligation that any onward transmission
+by SMTP of the messages accepted will also use REQUIRETLS - or generate a
+fail DSN.
+
+The Exim implementation includes
+- a main-part option tls_advertise_requiretls; host list, default "*"
+- an observability variable $requiretls returning yes/no
+- an ACL "control = requiretls" modifier for setting the requirement
+- Log lines and Received: headers capitalise the S in the protocol
+  element: "P=esmtpS"
+
+Differences from spec:
+- we support upgrading the requirement for REQUIRETLS, including adding
+  it from cold, withing an MTA.  The spec only define the sourcing MUA
+  as being able to source the requirement, and makes no mention of upgrade.
+- No support is coded for the RequireTLS header (which can be used
+  to annul DANE and/or STS policiy). [can this be done in ACL?]
+
+Note that REQUIRETLS is only advertised once a TLS connection is acheived
+(in contrast to STARTTLS).  If you want to check the advertising, do something
+like "swaks -s 127.0.0.1 -tls -q HELO".
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

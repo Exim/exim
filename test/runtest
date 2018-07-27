@@ -1101,6 +1101,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Experimental_International
     next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
 
+    # Experimental_REQUIRETLS
+    next if / in tls_advertise_requiretls?\? no \(end of list\)/;
+
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
 
@@ -1584,7 +1587,15 @@ $munges =
     { 'stderr' => 's/(1[5-9]|23\d)\d\d msec/ssss msec/' },
 
     'tls_anycipher' =>
-    { 'mainlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /' },
+    { 'mainlog'   => 's! X=TLS\S+ ! X=TLS_proto_and_cipher !;
+		      s! DN="C=! DN="/C=!;
+		      s! DN="[^,"]*\K,!/!;
+		      s! DN="[^,"]*\K,!/!;
+		      s! DN="[^,"]*\K,!/!;
+		     ',
+      'rejectlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /',
+      'mail'      => 's/ \(TLS[^)]*\)/ (TLS_proto_and_cipher)/',
+    },
 
     'debug_pid' =>
     { 'stderr' => 's/(^\s{0,4}|(?<=Process )|(?<=child ))\d{1,5}/ppppp/g' },

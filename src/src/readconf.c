@@ -348,6 +348,9 @@ static optionlist optionlist_config[] = {
   { "timezone",                 opt_stringptr,   &timezone_string },
   { "tls_advertise_hosts",      opt_stringptr,   &tls_advertise_hosts },
 #ifdef SUPPORT_TLS
+# ifdef EXPERIMENTAL_REQUIRETLS
+  { "tls_advertise_requiretls", opt_stringptr,   &tls_advertise_requiretls },
+# endif
   { "tls_certificate",          opt_stringptr,   &tls_certificate },
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },

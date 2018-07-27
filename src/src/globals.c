@@ -161,6 +161,11 @@ uschar *tls_ocsp_file          = NULL;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
+# ifdef EXPERIMENTAL_REQUIRETLS
+uschar  tls_requiretls         = 0;	/* REQUIRETLS_MSG etc. bit #defines */
+uschar *tls_advertise_requiretls = US"*";
+const pcre *regex_REQUIRETLS   = NULL;
+# endif
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;

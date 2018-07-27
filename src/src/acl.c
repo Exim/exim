@@ -367,6 +367,9 @@ enum {
   CONTROL_NO_PIPELINING,
 
   CONTROL_QUEUE_ONLY,
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+  CONTROL_REQUIRETLS,
+#endif
   CONTROL_SUBMISSION,
   CONTROL_SUPPRESS_LOCAL_FIXUPS,
 #ifdef SUPPORT_I18N
@@ -510,6 +513,18 @@ static control_def controls_list[] = {
 	    // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
 	    ACL_BIT_NOTSMTP | ACL_BIT_MIME)
   },
+
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+[CONTROL_REQUIRETLS] =
+  { US"requiretls",		 FALSE,
+	  (unsigned)
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT | ACL_BIT_PREDATA |
+	    ACL_BIT_DATA | ACL_BIT_MIME |
+	    ACL_BIT_NOTSMTP)
+  },
+#endif
+
 [CONTROL_SUBMISSION] =
   { US"submission",              TRUE,
 	  (unsigned)
@@ -3163,6 +3178,11 @@ for (; cb; cb = cb->next)
 	cancel_cutthrough_connection(TRUE, US"queueing forced");
 	break;
 
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+	case CONTROL_REQUIRETLS:
+	tls_requiretls |= REQUIRETLS_MSG;
+	break;
+#endif
 	case CONTROL_SUBMISSION:
 	originator_name = US"";
 	submission_mode = TRUE;

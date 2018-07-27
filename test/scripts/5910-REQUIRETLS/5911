@@ -1,0 +1,125 @@
+# REQUIRETLS bounce cases
+#
+munge tls_anycipher
+#
+# Server does not offer STARTTLS
+server PORT_D
+220 Hi there
+EHLO
+250 wotcher
+QUIT
+*eof
+****
+exim -DOPT=requiretls -odf -bs
+MAIL FROM:<a@test.ex>
+RCPT TO:<a@test.ex>
+DATA
+
+.
+QUIT
+****
+# ... the resulting bounce must be delivered with REQUIRETLS
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -qf
+****
+killdaemon
+#
+#
+# Server does not offer REQUIRETLS
+# Client message upgraded in-MTA for "require"
+exim -DSERVER=server -DSRV='' -bd -oX PORT_D
+****
+exim -DOPT=requiretls -odf -bs
+MAIL FROM:<b@test.ex>
+RCPT TO:<b@test.ex>
+DATA
+
+.
+QUIT
+****
+exim -qf
+****
+exim -qf
+****
+killdaemon
+#
+#
+# Server does not offer REQUIRETLS
+# Client message received with REQUIRETLS
+exim -DSERVER=server -bd -oX PORT_S
+****
+client-ssl 127.0.0.1 PORT_S
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250 HELP
+STARTTLS
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-REQUIRETLS
+??? 250 HELP
+MAIL FROM:<b@test.ex> REQUIRETLS
+??? 250
+RCPT TO:<d@test.ex>
+??? 250
+DATA
+??? 354
+Subject: foo
+
+content
+.
+??? 250
+QUIT
+??? 221
+****
+killdaemon
+exim -DSERVER=server -DSRV='' -bd -oX PORT_D
+****
+exim -qf
+****
+exim -qf
+****
+killdaemon
+#
+#
+# Server refuses MAIL
+exim -DSERVER=server -bd -oX PORT_D
+****
+sudo exim -DOPT=requiretls -odf -f a@serverrefusethis.ex c@test.ex
+
+****
+exim -qf
+****
+exim -qf
+****
+killdaemon
+#
+# Server does not advertise REQUIRETLS, client tries to use it anyway
+exim -DSERVER=server -bd -oX PORT_D
+****
+client-ssl 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250 HELP
+MAIL FROM:<d@test.ex> REQUIRETLS
+??? 555
+QUIT
+??? 221
+???*eof
+****
+killdaemon
+no_msglog_check

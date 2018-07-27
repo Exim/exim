@@ -1,0 +1,22 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+530 5.7.4 REQUIRETLS support required
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+530 5.7.4 REQUIRETLS support required
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1225 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 Hi there
+EHLO myhost.test.ex
+250 wotcher
+QUIT
+Expected EOF read from client
+End of script

@@ -1,0 +1,72 @@
+1999-03-02 09:44:33 upgrading
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for a@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** a@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: a TLS session is required, but the server did not offer TLS support
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 == CALLER@myhost.test.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER@myhost.test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 upgrading
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for b@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** b@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock": REQUIRETLS support is required from the server but it was not offered
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@myhost.test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 == CALLER@myhost.test.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == CALLER@myhost.test.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** CALLER@myhost.test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock": REQUIRETLS support is required from the server but it was not offered
+1999-03-02 09:44:33 10HmbB-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=final T=file_a_bounce
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 Message is frozen
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 Message is frozen
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock": REQUIRETLS support is required from the server but it was not offered
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss for b@test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 Message is frozen
+1999-03-02 09:44:33 10HmbD-0005vi-00 == b@test.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbE-0005vi-00 upgrading
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= a@serverrefusethis.ex U=root P=local S=sss for c@test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** c@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock": SMTP error from remote mail server after pipelined MAIL FROM:<a@serverrefusethis.ex> SIZE=ssss REQUIRETLS: 550 Administrative prohibition
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss for a@serverrefusethis.ex
+1999-03-02 09:44:33 10HmbF-0005vi-00 == a@serverrefusethis.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 Message is frozen
+1999-03-02 09:44:33 10HmbD-0005vi-00 => b@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 Message is frozen
+1999-03-02 09:44:33 10HmbF-0005vi-00 => a@serverrefusethis.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbH-0005vi-00"
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 Message is frozen
+1999-03-02 09:44:33 10HmbG-0005vi-00 == b@test.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 10HmbH-0005vi-00 == a@serverrefusethis.ex R=bounces defer (-1): 
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 requiretls: yes
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss id=E10HmaY-0005vi-00@myhost.test.ex for CALLER@myhost.test.ex
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1224
+1999-03-02 09:44:33 requiretls: yes
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= b@test.ex H=(test.ex) [127.0.0.1] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss for d@test.ex
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no rejected MAIL <a@serverrefusethis.ex>
+1999-03-02 09:44:33 requiretls: yes
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex for b@test.ex
+1999-03-02 09:44:33 requiretls: yes
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex for a@serverrefusethis.ex
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225

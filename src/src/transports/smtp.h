@@ -133,8 +133,8 @@ typedef struct {
   int		max_rcpt;
   int		cmd_count;
 
-  uschar	peer_offered;
-  uschar	avoid_option;
+  unsigned	peer_offered;
+  unsigned	avoid_option;
   uschar *	igquotstr;
   uschar *	helo_data;
 #ifdef EXPERIMENTAL_DSN_INFO

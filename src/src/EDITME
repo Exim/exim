@@ -511,6 +511,11 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to add queuefile transport support
 # EXPERIMENTAL_QUEUEFILE=yes
 
+# Uncomment the following to add REQUIRETLS support.
+# You must also have SUPPORT_TLS enabled.
+# Ref: https://datatracker.ietf.org/doc/draft-fenton-smtp-require-tls
+# EXPERIMENTAL_REQUIRETLS=yes
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################

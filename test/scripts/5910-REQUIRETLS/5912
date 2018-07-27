@@ -1,0 +1,37 @@
+# REQUIRETLS smtp-time fails
+# Test these by having the MTA do a receipient-verify callout
+#
+# Server does not offer STARTTLS
+server PORT_D
+220 Hi there
+EHLO
+250 wotcher
+QUIT
+*eof
+****
+exim -DOPT=requiretls -DACL=verify=recipient/callout -odf -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<a@test.ex>
+QUIT
+****
+#
+# Sever does not offer REQUIRETLS
+exim -DSERVER=server -DSRV='' -bd -oX PORT_D
+****
+exim -DOPT=requiretls -DACL=verify=recipient/callout -odf -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<b@test.ex>
+QUIT
+****
+killdaemon
+#
+# Accepted callout
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -DOPT=requiretls -DACL=verify=recipient/callout -odf -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<c@test.ex>
+QUIT
+****
+killdaemon
+#

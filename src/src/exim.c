@@ -898,6 +898,9 @@ fprintf(f, "Support for:");
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(f, " Experimental_DSN_info");
 #endif
+#ifdef EXPERIMENTAL_REQUIRETLS
+  fprintf(f, " Experimental_REQUIRETLS");
+#endif
 fprintf(f, "\n");
 
 fprintf(f, "Lookups (built-in):");
@@ -2783,8 +2786,18 @@ for (i = 1; i < argc; i++)
 
 	default:  badarg = TRUE; break;
 	}
-	break;
+      break;
       }
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+    /* -MS   set REQUIRETLS on (new) message */
+
+    else if (*argrest == 'S')
+      {
+      tls_requiretls |= REQUIRETLS_MSG;
+      break;
+      }
+#endif
 
     /* -M[x]: various operations on the following list of message ids:
        -M    deliver the messages, ignoring next retry times and thawing

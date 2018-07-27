@@ -287,6 +287,9 @@ tls_free_cert(&tls_in.peercert);
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
+# if defined(EXPERIMENTAL_REQUIRETLS) && !defined(COMPILE_UTILITY)
+tls_requiretls = 0;
+# endif
 #endif
 
 #ifdef WITH_CONTENT_SCAN
@@ -649,22 +652,30 @@ for (;;)
 
 #ifdef SUPPORT_TLS
     case 't':
-    if (Ustrncmp(p, "ls_certificate_verified", 23) == 0)
-      tls_in.certificate_verified = TRUE;
-    else if (Ustrncmp(p, "ls_cipher", 9) == 0)
-      tls_in.cipher = string_copy(big_buffer + 12);
+    if (Ustrncmp(p, "ls_", 3) == 0)
+      {
+      uschar * q = p + 3;
+      if (Ustrncmp(q, "certificate_verified", 20) == 0)
+	tls_in.certificate_verified = TRUE;
+      else if (Ustrncmp(q, "cipher", 6) == 0)
+	tls_in.cipher = string_copy(big_buffer + 12);
 # ifndef COMPILE_UTILITY	/* tls support fns not built in */
-    else if (Ustrncmp(p, "ls_ourcert", 10) == 0)
-      (void) tls_import_cert(big_buffer + 13, &tls_in.ourcert);
-    else if (Ustrncmp(p, "ls_peercert", 11) == 0)
-      (void) tls_import_cert(big_buffer + 14, &tls_in.peercert);
+      else if (Ustrncmp(q, "ourcert", 7) == 0)
+	(void) tls_import_cert(big_buffer + 13, &tls_in.ourcert);
+      else if (Ustrncmp(q, "peercert", 8) == 0)
+	(void) tls_import_cert(big_buffer + 14, &tls_in.peercert);
 # endif
-    else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
-      tls_in.peerdn = string_unprinting(string_copy(big_buffer + 12));
-    else if (Ustrncmp(p, "ls_sni", 6) == 0)
-      tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
-    else if (Ustrncmp(p, "ls_ocsp", 7) == 0)
-      tls_in.ocsp = big_buffer[10] - '0';
+      else if (Ustrncmp(q, "peerdn", 6) == 0)
+	tls_in.peerdn = string_unprinting(string_copy(big_buffer + 12));
+      else if (Ustrncmp(q, "sni", 3) == 0)
+	tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
+      else if (Ustrncmp(q, "ocsp", 4) == 0)
+	tls_in.ocsp = big_buffer[10] - '0';
+# if defined(EXPERIMENTAL_REQUIRETLS) && !defined(COMPILE_UTILITY)
+      else if (Ustrncmp(q, "requiretls", 10) == 0)
+	tls_requiretls = strtol(CS big_buffer+16, NULL, 0);
+# endif
+      }
     break;
 #endif
 

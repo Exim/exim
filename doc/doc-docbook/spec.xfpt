@@ -3966,8 +3966,17 @@ the messages are active, their status is not altered. This option can be used
 only by an admin user or by the user who originally caused the message to be
 placed on the queue.
 
+. .new
+. .vitem &%-MS%&
+. .oindex "&%-MS%&"
+. .cindex REQUIRETLS
+. This option is used to request REQUIRETLS processing on the message.
+. It is used internally by Exim in conjunction with -E when generating
+. a bounce message.
+. .wen
+
 .vitem &%-Mset%&&~<&'message&~id'&>
-.oindex "&%-Mset%&
+.oindex "&%-Mset%&"
 .cindex "testing" "string expansion"
 .cindex "expansion" "testing"
 This option is useful only in conjunction with &%-be%& (that is, when testing

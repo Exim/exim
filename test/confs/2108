@@ -22,7 +22,6 @@ tls_advertise_hosts = *
 
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
-
 # ------ ACL ------
 
 begin acl

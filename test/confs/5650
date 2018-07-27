@@ -23,7 +23,7 @@ tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
 tls_privatekey = DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
 tls_crl = CRL
-tls_ocsp_file = OPT
+tls_ocsp_file = OPTION
 
 #tls_verify_hosts = HOSTIPV4
 #tls_try_verify_hosts = *

@@ -1,10 +1,10 @@
-# DKIM signing, with CHUNKING, stdin
+# DKIM signing, with CHUNKING
 #
 exim -bd -DSERVER=server -oX PORT_S
 ****
 #
 # single header signed, short message
-exim -DOPT=dkim -DLIST=From -odf -oMt sender -f sender a@test.ex
+exim -DSRV=dkim -DLIST=From -odf -oMt sender -f sender a@test.ex
 From: nobody@example.com
 From: second@example.com
 
@@ -12,7 +12,7 @@ content
 ****
 #
 # single header signed, long message
-exim -DOPT=dkim -DLIST=From -odf -oMt sender -f sender b@test.ex
+exim -DSRV=dkim -DLIST=From -odf -oMt sender -f sender b@test.ex
 From: nobody@example.com
 From: second@example.com
 

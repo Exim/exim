@@ -569,6 +569,7 @@ timeout_defer                        boolean         false         pipe         
 timeout_frozen_after                 time            0s            main              3.20
 timezone                             string          +             main              3.15
 tls_advertise_hosts                  host list       *             main              3.20
+tls_advertise_requiretls             host list       *             main              4.92 if experimental_requiretls
 tls_certificate                      string*         unset         main              3.20
                                                      unset         smtp              3.20
 tls_dh_max_bits                      integer         2236          main              4.80

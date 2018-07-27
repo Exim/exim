@@ -252,6 +252,10 @@ if (tls_in.ourcert)
   fprintf(f, "-tls_ourcert %s\n", CS big_buffer);
   }
 if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
+
+# ifdef EXPERIMENTAL_REQUIRETLS
+if (tls_requiretls)	 fprintf(f, "-tls_requiretls 0x%x\n", tls_requiretls);
+# endif
 #endif
 
 #ifdef SUPPORT_I18N
@@ -267,7 +271,7 @@ if (message_smtputf8)
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_envid %s\n", dsn_envid);
 if (dsn_envid) fprintf(f, "-dsn_envid %s\n", dsn_envid);
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_ret %d\n", dsn_ret);
-if (dsn_ret != 0) fprintf(f, "-dsn_ret %d\n", dsn_ret);
+if (dsn_ret) fprintf(f, "-dsn_ret %d\n", dsn_ret);
 
 /* To complete the envelope, write out the tree of non-recipients, followed by
 the list of recipients. These won't be disjoint the first time, when no

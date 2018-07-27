@@ -1,0 +1,133 @@
+# Exim test configuration 5910
+
+SERVER=
+
+# advertise REQUIRETLS unless commandline override
+SRV= *
+# set on commandline to add an extra rcpt-time acl condition
+ACL=
+
+exim_path = EXIM_PATH
+keep_environment =
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_mail = m
+acl_smtp_rcpt = r
+acl_not_smtp = n
+
+log_selector =  +tls_peerdn +received_recipients
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+tls_advertise_requiretls = SRV
+
+# Set certificate only if server
+
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+#tls_verify_hosts = *
+#tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+
+
+# ----- ACL -----
+
+begin acl
+
+m:
+  accept        senders = :
+  deny		condition = ${if eq {SERVER}{server}}
+		!sender_domains = test.ex : myhost.test.ex
+  accept
+ 
+r:
+  warn		condition = ${if eq {SERVER}{server}}
+		logwrite = requiretls: $requiretls
+
+# define this to upgrade messages to REQUIRETLS
+.ifdef OPT
+  warn
+		condition = ${if !bool{$requiretls}}
+		logwrite = upgrading
+		control = requiretls
+.endif
+  accept	ACL
+
+n:
+.ifdef OPT
+  accept
+		condition = ${if !bool{$requiretls}}
+		logwrite = upgrading
+		control = requiretls
+.endif
+  accept
+# ----- Routers -----
+
+begin routers
+
+bounces:
+  driver = redirect
+  condition = ${if !def:sender_address}
+  condition = ${if first_delivery}
+  data = :defer:
+  allow_defer
+
+final:
+  driver = accept
+  condition = ${if eq {$received_ip_address}{HOSTIPV4} {yes}{no}}
+  transport = file_a_bounce
+
+client:
+  driver = accept
+  transport = send_to_server
+
+
+# ----- Transports -----
+
+begin transports
+
+file_a_bounce:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = CALLER
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+  tls_certificate = DIR/aux-fixed/cert2
+  tls_privatekey = DIR/aux-fixed/cert2
+  tls_verify_certificates = DIR/aux-fixed/cert2
+  tls_try_verify_hosts = :
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

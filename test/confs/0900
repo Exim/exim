@@ -13,6 +13,9 @@ gecos_pattern = ""
 gecos_name = CALLER_NAME
 chunking_advertise_hosts = *
 tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
+.ifdef _HAVE_REQTLS
+tls_advertise_requiretls = :
+.endif
 
 
 # ----- Main settings -----
@@ -64,7 +67,7 @@ begin routers
 to_server:
   driver = accept
   condition =	${if !eq {SERVER}{server}}
-  transport =	remote_smtp${if eq {OPT}{dkim} {_dkim}}
+  transport =	remote_smtp${if eq {SRV}{dkim} {_dkim}}
   errors_to =	""
 
 fail_remote_domains:
@@ -109,7 +112,7 @@ remote_smtp_dkim:
   command_timeout = 2s
   final_timeout = 2s
 
-.ifdef OPT
+.ifdef SRV
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private

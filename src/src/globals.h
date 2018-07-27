@@ -120,6 +120,11 @@ extern uschar *tls_eccurve;            /* EC curve */
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 # endif
 extern uschar *tls_privatekey;         /* Private key file */
+# ifdef EXPERIMENTAL_REQUIRETLS
+extern uschar  tls_requiretls;         /* REQUIRETLS active for this message */
+extern uschar *tls_advertise_requiretls; /* hosts for which REQUIRETLS adv */
+extern const pcre *regex_REQUIRETLS;   /* for recognising the command */
+# endif
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */

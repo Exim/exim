@@ -1,0 +1,64 @@
+# REQUIRETLS basics
+#
+munge tls_anycipher
+#
+# Server advertises feature, onward transmission, observability
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+client-ssl 127.0.0.1 PORT_D
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250 HELP
+STARTTLS
+??? 220
+EHLO test.ex
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-REQUIRETLS
+??? 250 HELP
+MAIL FROM:<a@test.ex> REQUIRETLS
+??? 250
+RCPT TO:<dump@test.ex>
+??? 250
+DATA
+??? 354
+Subject: foo
+
+content
+.
+??? 250
+QUIT
+??? 221
+****
+#
+exim -q
+****
+exim -q
+****
+#
+#
+# upgrade in-MTA
+exim -DOPT=y -bs
+MAIL FROM:<a@test.ex>
+RCPT TO:<b@test.ex>
+DATA
+Subject: foo
+
+content 
+.
+QUIT
+****
+#
+exim -q
+****
+#
+killdaemon
+no_msglog_check

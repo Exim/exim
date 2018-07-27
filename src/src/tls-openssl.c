@@ -2156,7 +2156,7 @@ int rc;
 if (  (  !ob->tls_verify_hosts
       && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
       )
-   || (verify_check_given_host(&ob->tls_verify_hosts, host) == OK)
+   || verify_check_given_host(&ob->tls_verify_hosts, host) == OK
    )
   client_verify_optional = FALSE;
 else if (verify_check_given_host(&ob->tls_try_verify_hosts, host) == OK)

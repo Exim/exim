@@ -660,6 +660,9 @@ static var_entry var_table[] = {
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
 #endif
   { "reply_address",       vtype_reply,       NULL },
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+  { "requiretls",          vtype_bool,        &tls_requiretls },
+#endif
   { "return_path",         vtype_stringptr,   &return_path },
   { "return_size_limit",   vtype_int,         &bounce_return_size_limit },
   { "router_name",         vtype_stringptr,   &router_name },

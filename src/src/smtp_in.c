@@ -135,6 +135,9 @@ static auth_instance *authenticated_by;
 static BOOL auth_advertised;
 #ifdef SUPPORT_TLS
 static BOOL tls_advertised;
+# ifdef EXPERIMENTAL_REQUIRETLS
+static BOOL requiretls_advertised;
+# endif
 #endif
 static BOOL dsn_advertised;
 static BOOL esmtp;
@@ -256,6 +259,9 @@ enum {
 #ifdef SUPPORT_I18N
   ENV_MAIL_OPT_UTF8,
 #endif
+#ifdef EXPERIMENTAL_REQUIRETLS
+  ENV_MAIL_OPT_REQTLS,
+#endif
   };
 typedef struct {
   uschar *   name;  /* option requested during MAIL cmd */
@@ -274,6 +280,10 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"ENVID",  ENV_MAIL_OPT_ENVID,  TRUE },
 #ifdef SUPPORT_I18N
     { US"SMTPUTF8",ENV_MAIL_OPT_UTF8,  FALSE },		/* rfc6531 */
+#endif
+#ifdef EXPERIMENTAL_REQUIRETLS
+    /* https://tools.ietf.org/html/draft-ietf-uta-smtp-require-tls-03 */
+    { US"REQUIRETLS",ENV_MAIL_OPT_REQTLS,  FALSE },
 #endif
     /* keep this the last entry */
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE },
@@ -2437,6 +2447,9 @@ tls_in.ourcert = tls_in.peercert = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
 tls_advertised = FALSE;
+# ifdef EXPERIMENTAL_REQUIRETLS
+requiretls_advertised = FALSE;
+# endif
 #endif
 dsn_advertised = FALSE;
 #ifdef SUPPORT_I18N
@@ -4172,6 +4185,9 @@ while (done <= 0)
     pipelining_advertised = FALSE;
 #ifdef SUPPORT_TLS
     tls_advertised = FALSE;
+# ifdef EXPERIMENTAL_REQUIRETLS
+    requiretls_advertised = FALSE;
+# endif
 #endif
     dsn_advertised = FALSE;
 #ifdef SUPPORT_I18N
@@ -4371,6 +4387,17 @@ while (done <= 0)
         g = string_catn(g, US"-STARTTLS\r\n", 11);
         tls_advertised = TRUE;
         }
+
+# ifdef EXPERIMENTAL_REQUIRETLS
+      /* Advertise REQUIRETLS only once we are in a secure connection */
+      if (  tls_in.active.sock >= 0
+         && verify_check_host(&tls_advertise_requiretls) != FAIL)
+	{
+	g = string_catn(g, smtp_code, 3);
+	g = string_catn(g, US"-REQUIRETLS\r\n", 13);
+	requiretls_advertised = TRUE;
+	}
+# endif
 #endif
 
 #ifndef DISABLE_PRDR
@@ -4453,14 +4480,14 @@ while (done <= 0)
       break;
       }
 
-    if (sender_address != NULL)
+    if (sender_address)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,
         US"sender already given");
       break;
       }
 
-    if (smtp_cmd_data[0] == 0)
+    if (!*smtp_cmd_data)
       {
       done = synprot_error(L_smtp_protocol_error, 501, NULL,
         US"MAIL must have an address operand");
@@ -4557,7 +4584,7 @@ while (done <= 0)
             /* Check if RET has already been set */
             if (dsn_ret > 0)
 	      {
-              synprot_error(L_smtp_syntax_error, 501, NULL,
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"RET can be specified once only");
               goto COMMAND_LOOP;
 	      }
@@ -4570,7 +4597,7 @@ while (done <= 0)
             /* Check for invalid invalid value, and exit with error */
             if (dsn_ret == 0)
 	      {
-              synprot_error(L_smtp_syntax_error, 501, NULL,
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"Value for RET is invalid");
               goto COMMAND_LOOP;
 	      }
@@ -4582,7 +4609,7 @@ while (done <= 0)
             /* Check if the dsn envid has been already set */
             if (dsn_envid)
 	      {
-              synprot_error(L_smtp_syntax_error, 501, NULL,
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"ENVID can be specified once only");
               goto COMMAND_LOOP;
 	      }
@@ -4671,7 +4698,7 @@ while (done <= 0)
         case ENV_MAIL_OPT_UTF8:
 	  if (!smtputf8_advertised)
 	    {
-	    synprot_error(L_smtp_syntax_error, 501, NULL,
+	    done = synprot_error(L_smtp_syntax_error, 501, NULL,
 	      US"SMTPUTF8 used when not advertised");
 	    goto COMMAND_LOOP;
 	    }
@@ -4687,6 +4714,32 @@ while (done <= 0)
 	    }
 	  break;
 #endif
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+        case ENV_MAIL_OPT_REQTLS:
+	  {
+	  const uschar * list = value;
+	  int sep = ',';
+	  const uschar * opt;
+	  uschar * r, * t;
+
+	  if (!requiretls_advertised)
+	    {
+	    done = synprot_error(L_smtp_syntax_error, 555, NULL,
+	      US"unadvertised MAIL option: REQUIRETLS");
+	    goto COMMAND_LOOP;
+	    }
+
+	  DEBUG(D_receive) debug_printf("requiretls requested\n");
+	  tls_requiretls = REQUIRETLS_MSG;
+
+	  r = string_copy_malloc(received_protocol);
+	  if ((t = Ustrrchr(r, 's'))) *t = 'S';
+	  received_protocol = r;
+	  }
+	  break;
+#endif
+
         /* No valid option. Stick back the terminator characters and break
         the loop.  Do the name-terminator second as extract_option sets
         value==name when it found no equal-sign.
@@ -4703,6 +4756,17 @@ while (done <= 0)
          when start of the email address is reached */
       if (arg_error) break;
       }
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+    if (tls_requiretls & REQUIRETLS_MSG)
+      {
+      /* Ensure headers-only bounces whether a RET option was given or not. */
+
+      DEBUG(D_receive) if (dsn_ret == dsn_ret_full)
+	debug_printf("requiretls override: dsn_ret_full -> dsn_ret_hdrs\n");
+      dsn_ret = dsn_ret_hdrs;
+      }
+#endif
 
     /* If we have passed the threshold for rate limiting, apply the current
     delay, and update it for next time, provided this is a limited host. */
@@ -4780,8 +4844,7 @@ while (done <= 0)
     in which case just qualify the address. The flag is set above at the start
     of the SMTP connection. */
 
-    if (sender_domain == 0 && sender_address[0] != 0)
-      {
+    if (!sender_domain && *sender_address)
       if (allow_unqualified_sender)
         {
         sender_domain = Ustrlen(sender_address) + 1;
@@ -4802,7 +4865,6 @@ while (done <= 0)
         sender_address = NULL;
         break;
         }
-      }
 
     /* Apply an ACL check if one is defined, before responding. Afterwards,
     when pipelining is not advertised, do another sync check in case the ACL
@@ -4907,7 +4969,7 @@ while (done <= 0)
         /* Check whether orcpt has been already set */
         if (orcpt)
 	  {
-          synprot_error(L_smtp_syntax_error, 501, NULL,
+          done = synprot_error(L_smtp_syntax_error, 501, NULL,
             US"ORCPT can be specified once only");
           goto COMMAND_LOOP;
           }
@@ -4920,7 +4982,7 @@ while (done <= 0)
         /* Check if the notify flags have been already set */
         if (flags > 0)
 	  {
-          synprot_error(L_smtp_syntax_error, 501, NULL,
+          done = synprot_error(L_smtp_syntax_error, 501, NULL,
               US"NOTIFY can be specified once only");
           goto COMMAND_LOOP;
           }
@@ -4952,7 +5014,7 @@ while (done <= 0)
             else
 	      {
               /* Catch any strange values */
-              synprot_error(L_smtp_syntax_error, 501, NULL,
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
                 US"Invalid value for NOTIFY parameter");
               goto COMMAND_LOOP;
               }

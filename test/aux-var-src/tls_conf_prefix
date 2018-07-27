@@ -13,3 +13,7 @@ gecos_pattern = ""
 gecos_name = CALLER_NAME
 dns_cname_loops = 9
 chunking_advertise_hosts =
+
+.ifdef _HAVE_REQTLS
+tls_advertise_requiretls =
+.endif

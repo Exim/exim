@@ -2859,7 +2859,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   block. Otherwise, add a new block in the correct place; if it has to be
   before the first block, copy the first block's data to a new second block. */
 
-  if (last == NULL)
+  if (!last)
     {
     host->name = string_copy_dnsdomain(data);
     host->address = NULL;

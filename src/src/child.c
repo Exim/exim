@@ -10,6 +10,10 @@
 
 static void (*oldsignal)(int);
 
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+static uschar tls_requiretls_copy = 0;
+#endif
+
 
 /*************************************************
 *          Ensure an fd has a given value        *
@@ -73,8 +77,13 @@ child_exec_exim(int exec_type, BOOL kill_v, int *pcount, BOOL minimal,
 int first_special = -1;
 int n = 0;
 int extra = pcount ? *pcount : 0;
-uschar **argv =
-  store_get((extra + acount + MAX_CLMACROS + 18) * sizeof(char *));
+uschar **argv;
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+if (tls_requiretls) extra++;
+#endif
+
+argv = store_get((extra + acount + MAX_CLMACROS + 18) * sizeof(char *));
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
@@ -119,6 +128,11 @@ if (!minimal)
     argv[n++] = queue_name;
     }
   }
+
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+if (tls_requiretls_copy & REQUIRETLS_MSG)
+  argv[n++] = US"-MS";
+#endif
 
 /* Now add in any others that are in the call. Remember which they were,
 for more helpful diagnosis on failure. */
@@ -229,6 +243,9 @@ occur. */
 
 if (pid == 0)
   {
+#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
+  tls_requiretls_copy = tls_requiretls;
+#endif
   force_fd(pfd[pipe_read], 0);
   (void)close(pfd[pipe_write]);
   if (debug_fd > 0) force_fd(debug_fd, 2);

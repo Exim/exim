@@ -1,0 +1,20 @@
+From a@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <a@test.ex>
+Envelope-to: dump@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
+	by myhost.test.ex with esmtpS (TLS_proto_and_cipher)
+	(Exim x.yz)
+	(envelope-from <a@test.ex>)
+	id 10HmaY-0005vi-00
+	for dump@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [127.0.0.1] (helo=test.ex)
+	by myhost.test.ex with esmtpS (TLS_proto_and_cipher)
+	(Exim x.yz)
+	(envelope-from <a@test.ex>)
+	id 10HmaX-0005vi-00
+	for dump@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: foo
+
+content
+
