@@ -9,7 +9,7 @@ exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
 exim -bs -odi -DCONTROL="control=utf8_downconvert"
 EHLO client.bh
 MAIL FROM: <他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> SMTPUTF8
-RCPT TO: <user.세계의모든사람들이한국어를이해한다면얼마나좋을까@test.ex>
+RCPT TO: <user1.세계의모든사람들이한국어를이해한다면얼마나좋을까@test.ex>
 DATA
 Subject: test
 
@@ -22,7 +22,20 @@ QUIT
 exim -bs -odi -DCONTROL="control=utf8_downconvert/-1"
 EHLO client.bh
 MAIL FROM: <他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> SMTPUTF8
-RCPT TO: <zuser.세계의모든사람들이한국어를이해한다면얼마나좋을까@test.ex>
+RCPT TO: <zuser2.세계의모든사람들이한국어를이해한다면얼마나좋을까@test.ex>
+DATA
+Subject: test
+
+body
+.
+QUIT
+****
+#
+# utf-8 from, never-downconvert set by ACL, overridden by transport
+exim -bs -odi -DCONTROL="control=utf8_downconvert/0" -DSTRICT=1
+EHLO client.bh
+MAIL FROM: <他们为什么不说中文@hebrew.למההםפשוטלאמדבריםעברית.com> SMTPUTF8
+RCPT TO: <user3.세계의모든사람들이한국어를이해한다면얼마나좋을까@test.ex>
 DATA
 Subject: test
 

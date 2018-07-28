@@ -19,6 +19,8 @@ Version 4.92
 
  3. EXPERIMENTAL_REQUIRETLS.  See the experimental.spec file.
 
+ 4. If built with SUPPORT_I18N a "utf8_downconvert" option on the smtp transport.
+
 Version 4.91
 --------------
 

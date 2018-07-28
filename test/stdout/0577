@@ -14,7 +14,6 @@ gecos_name = CALLER_NAME
 dns_cname_loops = 9
 chunking_advertise_hosts =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
-tls_advertise_hosts =
 # 1 "TESTSUITE/test-config"
 # 2 "TESTSUITE/test-config"
 # 1 "TESTSUITE/confs/0577./aaa"

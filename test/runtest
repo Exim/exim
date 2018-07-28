@@ -1613,6 +1613,7 @@ $munges =
                   |hosts_(avoid|nopass|noproxy|require|verify_avoid)_tls
                   |socks_proxy
                   |tls_[^ ]*
+		  |utf8_downconvert
                   )($|[ ]=)/x'
     },
 

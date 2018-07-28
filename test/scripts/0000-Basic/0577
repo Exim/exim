@@ -1,2 +1,3 @@
 # Test different variants of .includes
+munge optional_config
 exim -bP config

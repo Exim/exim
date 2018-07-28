@@ -88,6 +88,9 @@ typedef struct {
   uschar *tls_try_verify_hosts;
   uschar *tls_verify_cert_hostnames;
 #endif
+#ifdef SUPPORT_I18N
+  uschar *utf8_downconvert;
+#endif
 #ifndef DISABLE_DKIM
   struct ob_dkim dkim;
 #endif

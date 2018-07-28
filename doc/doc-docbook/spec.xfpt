@@ -24716,6 +24716,16 @@ The &%tls_verify_certificates%& option must also be set.
 If both this option and &%tls_try_verify_hosts%& are unset
 operation is as if this option selected all hosts.
 
+.new
+.option utf8_downconvert smtp integer!! unset
+.cindex utf8 "address downconversion"
+.cindex i18n "utf8 address downconversion"
+If built with internationalization support,
+this option controls conversion of UTF-8 in message addresses
+to a-label form.
+For details see section &<<SECTi18nMTA>>&.
+.wen
+
 
 
 
@@ -39862,6 +39872,12 @@ If a value is appended it may be:
 
 If mua_wrapper is set, the utf8_downconvert control
 is initially set to -1.
+
+.new
+The smtp transport has an option &%utf8_downconvert%&.
+If set it must expand to one of the three values described above,
+and it overrides any previously set value.
+.wen
 
 
 There is no explicit support for VRFY and EXPN.

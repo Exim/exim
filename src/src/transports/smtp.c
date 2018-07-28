@@ -190,15 +190,18 @@ optionlist smtp_transport_options[] = {
   { "tls_verify_certificates", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_verify_certificates) },
   { "tls_verify_hosts",     opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, tls_verify_hosts) }
+      (void *)offsetof(smtp_transport_options_block, tls_verify_hosts) },
+#endif
+#ifdef SUPPORT_I18N
+  { "utf8_downconvert",	    opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, utf8_downconvert) },
 #endif
 };
 
 /* Size of the options list. An extern variable has to be used so that its
 address can appear in the tables drtables.c. */
 
-int smtp_transport_options_count =
-  sizeof(smtp_transport_options)/sizeof(optionlist);
+int smtp_transport_options_count = nelem(smtp_transport_options);
 
 
 #ifdef MACRO_PREDEF
@@ -286,6 +289,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_verify_hosts =		NULL,
   .tls_try_verify_hosts =	US"*",
   .tls_verify_cert_hostnames =	US"*",
+#endif
+#ifdef SUPPORT_I18N
+  .utf8_downconvert =		NULL,
 #endif
 #ifndef DISABLE_DKIM
  .dkim =
@@ -2218,6 +2224,38 @@ sx->setting_up = FALSE;
 #ifdef SUPPORT_I18N
 if (sx->addrlist->prop.utf8_msg)
   {
+  uschar * s;
+
+  /* If the transport sets a downconversion mode it overrides any set by ACL
+  for the message. */
+
+  if ((s = sx->ob->utf8_downconvert))
+    {
+    if (!(s = expand_string(s)))
+      {
+      message = string_sprintf("failed to expand utf8_downconvert: %s",
+        expand_string_message);
+      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
+      yield = DEFER;
+      goto SEND_QUIT;
+      }
+    switch (*s)
+      {
+      case '1':	sx->addrlist->prop.utf8_downcvt = TRUE;
+		sx->addrlist->prop.utf8_downcvt_maybe = FALSE;
+		break;
+      case '0':	sx->addrlist->prop.utf8_downcvt = FALSE;
+		sx->addrlist->prop.utf8_downcvt_maybe = FALSE;
+		break;
+      case '-':	if (s[1] == '1')
+		  {
+		  sx->addrlist->prop.utf8_downcvt = FALSE;
+		  sx->addrlist->prop.utf8_downcvt_maybe = TRUE;
+		  }
+		break;
+      }
+    }
+
   sx->utf8_needed = !sx->addrlist->prop.utf8_downcvt
 		    && !sx->addrlist->prop.utf8_downcvt_maybe;
   DEBUG(D_transport) if (!sx->utf8_needed)
@@ -2231,7 +2269,7 @@ if (sx->utf8_needed && !(sx->peer_offered & OPTION_UTF8))
   errno = ERRNO_UTF8_FWD;
   goto RESPONSE_FAILED;
   }
-#endif
+#endif	/*SUPPORT_I18N*/
 
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
   /*XXX should tls_requiretls actually be per-addr? */

@@ -124,5 +124,8 @@ local_delivery:
 
 rmt_smtp:
   driver = smtp
+.ifdef STRICT
+  utf8_downconvert = STRICT
+.endif
 
 # End
