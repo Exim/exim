@@ -881,12 +881,15 @@ The Exim implementation includes
 
 Differences from spec:
 - we support upgrading the requirement for REQUIRETLS, including adding
-  it from cold, withing an MTA.  The spec only define the sourcing MUA
+  it from cold, within an MTA.  The spec only define the sourcing MUA
   as being able to source the requirement, and makes no mention of upgrade.
 - No support is coded for the RequireTLS header (which can be used
-  to annul DANE and/or STS policiy). [can this be done in ACL?]
+  to annul DANE and/or STS policiy). [this can _almost_ be done in
+  transport option expansions, but not quite: it requires tha DANE-present
+  but STARTTLS-failing targets fallback to cleartext, which current DANE
+  coding specifically blocks]
 
-Note that REQUIRETLS is only advertised once a TLS connection is acheived
+Note that REQUIRETLS is only advertised once a TLS connection is achieved
 (in contrast to STARTTLS).  If you want to check the advertising, do something
 like "swaks -s 127.0.0.1 -tls -q HELO".
 
