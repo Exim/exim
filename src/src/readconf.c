@@ -2880,6 +2880,8 @@ else if (Ustrcmp(type, "macro") == 0)
       {
       if (names_only)
         printf("%s\n", CS m->name);
+      else if (no_labels)
+        printf("%s\n", CS m->replacement);
       else
         printf("%s=%s\n", CS m->name, CS m->replacement);
       if (name)

@@ -85,6 +85,8 @@ JH/19 Reject MAIL FROM commands with SMTPUTF8 when the facility was not advertis
       Previously thery were accepted, resulting in issues when attempting to
       forward messages to a non-supporting MTA.
 
+PP/02 Let -n work with printing macros too, not just options.
+
 
 Exim version 4.91
 -----------------
