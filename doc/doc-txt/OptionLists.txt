@@ -613,7 +613,7 @@ use_mbx_lock                         boolean         +             appendfile   
 use_shell                            boolean         false         pipe              1.70
 user                                 string          +             routers           4.00
                                                      unset         transports        4.00 replaces individual options
-utf8_downcvt			     integer	     unset	   smtp		     4.92 if SUPPORT_I18N
+utf8_downconvert                     integer         unset         smtp              4.92 if SUPPORT_I18N
 uucp_from_pattern                    string          +             main              1.75
 uucp_from_sender                     string*         "$1"          main              1.75
 verify                               boolean         true          routers           4.00
