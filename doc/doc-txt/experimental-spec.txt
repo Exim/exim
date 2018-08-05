@@ -709,6 +709,8 @@ an external directory retaining the exim spool format.
 
 The spool files can then be processed by external processes and then
 requeued into exim spool directories for final delivery.
+However, note carefully the warnings in the main documentation on
+qpool file formats.
 
 The motivation/inspiration for the transport is to allow external
 processes to access email queued by exim and have access to all the

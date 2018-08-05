@@ -38652,6 +38652,12 @@ two files contains the final component of its own name as its first line. This
 is insurance against disk crashes where the directory is lost but the files
 themselves are recoverable.
 
+.new
+The file formats may be changed, or new formats added, at any release.
+Spool files are not intended as an interface to other programs
+and should not be used as such.
+.wen
+
 Some people are tempted into editing -D files in order to modify messages. You
 need to be extremely careful if you do this; it is not recommended and you are
 on your own if you do it. Here are some of the pitfalls:
