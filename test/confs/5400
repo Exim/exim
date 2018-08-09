@@ -34,6 +34,11 @@ ar:
 
 begin routers
 
+redir:
+  driver = redirect
+  local_parts = ^r
+  data =	${substr_1:$local_part}@$domain
+
 dns:
   driver = dnslookup
   domains = localhost.test.ex : localhost4.test.ex : thishost.test.ex

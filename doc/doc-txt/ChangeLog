@@ -87,6 +87,11 @@ JH/19 Reject MAIL FROM commands with SMTPUTF8 when the facility was not advertis
 
 PP/02 Let -n work with printing macros too, not just options.
 
+JH/20 Bug 2296: Fix cutthrough for >1 address redirection.  Previously only
+      one parent address was copied, and bogus data was used at delivery-logging
+      time.  Either a crash (after delivery) or bogus log data could result.
+      Discovery and analysis by Tim Stewart.
+
 
 Exim version 4.91
 -----------------

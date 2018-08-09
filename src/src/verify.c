@@ -1070,6 +1070,8 @@ no_conn:
        && !sx.lmtp
        )
       {
+      address_item * parent, * caddr;
+
       HDEBUG(D_acl|D_v) debug_printf_indent("holding verify callout open for %s\n",
 	cutthrough.delivery
 	? "cutthrough delivery" : "potential further verifies and delivery");
@@ -1092,12 +1094,16 @@ no_conn:
 	cutthrough.host.address = string_copy(host->address);
 	store_pool = oldpool;
 	}
-      cutthrough.addr =		*addr;		/* Save the address_item for later logging */
+
+      /* Save the address_item and parent chain for later logging */
+      cutthrough.addr =		*addr;
       cutthrough.addr.next =	NULL;
       cutthrough.addr.host_used = &cutthrough.host;
-      if (addr->parent)
-        *(cutthrough.addr.parent = store_get(sizeof(address_item))) =
-	  *addr->parent;
+      for (caddr = &cutthrough.addr, parent = addr->parent;
+	   parent;
+	   parent = parent->parent)
+        *(caddr->parent = store_get(sizeof(address_item))) = *parent;
+
       ctblock.buffer = ctbuffer;
       ctblock.buffersize = sizeof(ctbuffer);
       ctblock.ptr = ctbuffer;
@@ -1194,7 +1200,7 @@ return yield;
    one was requested and a recipient-verify wasn't subsequently done.
 */
 int
-open_cutthrough_connection( address_item * addr )
+open_cutthrough_connection(address_item * addr)
 {
 address_item addr2;
 int rc;
@@ -1942,6 +1948,9 @@ while (addr_new)
 #endif
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
             callout_connect, options, se_mailfrom, pm_mailfrom);
+#ifdef SUPPORT_TLS
+	  deliver_set_expansions(NULL);
+#endif
           }
         }
       else
