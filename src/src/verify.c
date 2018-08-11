@@ -1101,7 +1101,7 @@ no_conn:
       cutthrough.addr.host_used = &cutthrough.host;
       for (caddr = &cutthrough.addr, parent = addr->parent;
 	   parent;
-	   parent = parent->parent)
+	   caddr = caddr->parent, parent = parent->parent)
         *(caddr->parent = store_get(sizeof(address_item))) = *parent;
 
       ctblock.buffer = ctbuffer;

@@ -10,7 +10,7 @@ OPT=
 
 primary_hostname = myhost.test.ex
 
-log_selector = +received_recipients
+log_selector = +received_recipients +all_parents
 queue_only
 
 # ----- Main settings -----
