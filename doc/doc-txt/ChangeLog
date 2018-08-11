@@ -45,6 +45,11 @@ JH/18 Bug 2287: Fix the protocol name (eg utf8esmtp) for multiple messages
       using the SMTPUTF8 option on their MAIL FROM commands, in one connection.
       Previously the "utf8" would be re-prepended for every additional message.
 
+JH/20 Bug 2296: Fix cutthrough for >1 address redirection.  Previously only
+      one parent address was copied, and bogus data was used at delivery-logging
+      time.  Either a crash (after delivery) or bogus log data could result.
+      Discovery and analysis by Tim Stewart.
+
 
 Exim version 4.91
 -----------------

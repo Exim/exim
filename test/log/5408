@@ -1,0 +1,17 @@
+**NOTE: The delivery lines in this file have been sorted.
+1999-03-02 09:44:33 rcpt for userx@domain.com
+1999-03-02 09:44:33 10HmaX-0005vi-00 >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for userx@domain.com
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 rcpt for ruserx@domain.com
+1999-03-02 09:44:33 10HmaY-0005vi-00 >> userx@domain.com <ruserx@domain.com> R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for ruserx@domain.com
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 rcpt for rruserx@domain.com
+1999-03-02 09:44:33 10HmaZ-0005vi-00 >> userx@domain.com (ruserx@domain.com) <rruserx@domain.com> R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for rruserx@domain.com
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 rcpt for rrruserx@domain.com
+1999-03-02 09:44:33 10HmbA-0005vi-00 >> userx@domain.com (ruserx@domain.com, rruserx@domain.com) <rrruserx@domain.com> R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss for rrruserx@domain.com
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

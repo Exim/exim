@@ -10,7 +10,7 @@ OPT=
 
 primary_hostname = myhost.test.ex
 
-log_selector = +received_recipients
+log_selector = +received_recipients +all_parents
 queue_only
 
 # ----- Main settings -----
@@ -33,6 +33,11 @@ ar:
 # ----- Routers -----
 
 begin routers
+
+redir:
+  driver = redirect
+  local_parts = ^r
+  data =	${substr_1:$local_part}@$domain
 
 dns:
   driver = dnslookup

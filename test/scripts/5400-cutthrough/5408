@@ -1,0 +1,115 @@
+# cutthrough_delivery with router redirections
+need_ipv4
+munge loopback
+#
+# Plain, no redirect
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<userx@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+# One redirect
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<ruserx@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+# Two redirects
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<rruserx@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+# Three redirects
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -bs
+EHLO myhost.test.ex
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<rrruserx@domain.com>
+DATA
+
+.
+QUIT
+****
+#
+#
+sortlog
+no_stdout_check
+# End
