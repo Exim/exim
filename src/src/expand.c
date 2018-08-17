@@ -1683,7 +1683,7 @@ else if (host_lookup_deferred)
   g = string_catn(g, US";\n\tiprev=temperror", 19);
 else if (host_lookup_failed)
   g = string_catn(g, US";\n\tiprev=fail", 13);
-else 
+else
   return g;
 
 if (sender_host_address)
@@ -7143,12 +7143,13 @@ while (*s != 0)
         {
         int seq_len = 0, index = 0;
         int bytes_left = 0;
-	long codepoint = -1;
+        long codepoint = -1;
+        int complete;
         uschar seq_buff[4];			/* accumulate utf-8 here */
 
         while (*sub != 0)
 	  {
-	  int complete = 0;
+	  complete = 0;
 	  uschar c = *sub++;
 
 	  if (bytes_left)
@@ -7213,6 +7214,13 @@ while (*s != 0)
 			/* ASCII character follows incomplete sequence */
 	      yield = string_catn(yield, &c, 1);
 	  }
+        /* If given a sequence truncated mid-character, we also want to report ?
+        * Eg, ${length_1:フィル} is one byte, not one character, so we expect
+        * ${utf8clean:${length_1:フィル}} to yield '?' */
+        if (bytes_left != 0)
+          {
+          yield = string_catn(yield, UTF8_REPLACEMENT_CHAR, 1);
+          }
         continue;
         }
 
@@ -7954,7 +7962,7 @@ expand_hide_passwords(uschar * s)
 {
 return (  (  Ustrstr(s, "failed to expand") != NULL
 	  || Ustrstr(s, "expansion of ")    != NULL
-	  ) 
+	  )
        && (  Ustrstr(s, "mysql")   != NULL
 	  || Ustrstr(s, "pgsql")   != NULL
 	  || Ustrstr(s, "redis")   != NULL
@@ -7964,7 +7972,7 @@ return (  (  Ustrstr(s, "failed to expand") != NULL
 	  || Ustrstr(s, "ldapi:")  != NULL
 	  || Ustrstr(s, "ldapdn:") != NULL
 	  || Ustrstr(s, "ldapm:")  != NULL
-       )  ) 
+       )  )
   ? US"Temporary internal error" : s;
 }
 

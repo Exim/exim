@@ -20,15 +20,17 @@ begin acl
 
 check_data:
   accept logwrite = \
-  			x-test-header-good1: ${utf8clean:$h_x-test-header-good1:}
- 		 logwrite = \
-  			x-test-header-good2: ${utf8clean:$h_x-test-header-good2:}
- 		 logwrite = \
-  			x-test-header-too-short: ${utf8clean:$h_x-test-header-too-short:}
- 		 logwrite = \
-  			x-test-header-too-long: ${utf8clean:$h_x-test-header-too-long:}
- 		 logwrite = \
-  			x-test-header-too-big: ${utf8clean:$h_x-test-header-too-big:}
+			x-test-header-good1: ${utf8clean:$h_x-test-header-good1:}
+		 logwrite = \
+			x-test-header-good2: ${utf8clean:$h_x-test-header-good2:}
+		 logwrite = \
+			x-test-header-too-short: ${utf8clean:$h_x-test-header-too-short:}
+		 logwrite = \
+			x-test-header-too-long: ${utf8clean:$h_x-test-header-too-long:}
+		 logwrite = \
+			x-test-header-too-big: ${utf8clean:$h_x-test-header-too-big:}
+		 log_write = \
+			x-test-header-truncated: ${utf8clean:$h_x-test-header-truncated:}
 
 
 

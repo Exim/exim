@@ -92,6 +92,10 @@ JH/20 Bug 2296: Fix cutthrough for >1 address redirection.  Previously only
       time.  Either a crash (after delivery) or bogus log data could result.
       Discovery and analysis by Tim Stewart.
 
+PP/03 Make ${utf8clean:} expansion operator detect incomplete final character.
+      Previously if the string ended mid-character, we did not insert the
+      promised '?' replacement.
+
 
 Exim version 4.91
 -----------------

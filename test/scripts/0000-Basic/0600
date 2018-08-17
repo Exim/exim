@@ -10,6 +10,7 @@ x-test-header-good2: ÃŸÃ¼Ã¶Ã¤â‚¬ÃœÃ–Ã„Â´à¤‘à¤•à¤œáá‘Œá‘•ğ«†ğ«Ÿ˜
 x-test-header-too-short: Ã.Ã.Ã.Ã¤-â‚.-Ãœ.Ã..Ã.-Â.-à..-à¤.-à¤.-á.-á‘.-á..-ğ«..ğ«Ÿ.
 x-test-header-too-long: øˆˆˆˆ-Ã¤-øˆˆˆˆ--Ã–-Ã„-Â´-à¤‘-à¤•-à¤œ-á-á‘Œ-á‘•-ø€€€€ğ«Ÿ†
 x-test-header-too-big: ÷€€€-----ó€€€
+x-test-header-truncated: ã
 Subject: This is a test message.
 
 This is a test message.
