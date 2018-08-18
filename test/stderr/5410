@@ -122,7 +122,9 @@ not using DSN
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<userx@domain.com>
 cmd buf flush ddd bytes
+sync_responses expect mail
   SMTP<< 250 OK
+sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
@@ -336,7 +338,9 @@ not using DSN
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
+sync_responses expect mail
   SMTP<< 250 OK
+sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
@@ -550,7 +554,9 @@ not using DSN
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
+sync_responses expect mail
   SMTP<< 250 OK
+sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------

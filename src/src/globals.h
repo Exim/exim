@@ -854,6 +854,7 @@ extern BOOL    smtp_enforce_sync;      /* Enforce sync rules */
 extern uschar *smtp_etrn_command;      /* Command to run */
 extern BOOL    smtp_etrn_serialize;    /* Only one at once */
 extern FILE   *smtp_in;                /* Incoming SMTP input file */
+extern BOOL    smtp_in_pipelining_advertised; /* server advertised PIPELINING */
 extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */

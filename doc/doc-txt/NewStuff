@@ -21,6 +21,8 @@ Version 4.92
 
  4. If built with SUPPORT_I18N a "utf8_downconvert" option on the smtp transport.
 
+ 5. A "pipelining" log_selector.
+
 Version 4.91
 --------------
 

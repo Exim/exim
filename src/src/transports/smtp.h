@@ -115,6 +115,7 @@ typedef struct {
   BOOL setting_up:1;
   BOOL esmtp:1;
   BOOL esmtp_sent:1;
+  BOOL pipelining_used:1;
 #ifndef DISABLE_PRDR
   BOOL prdr_active:1;
 #endif

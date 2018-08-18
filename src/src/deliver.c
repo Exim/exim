@@ -1234,6 +1234,9 @@ else
       }
     }
 
+  if (LOGGING(pipelining) && testflag(addr, af_pipelining))
+    g = string_catn(g, US" L", 2);
+
 #ifndef DISABLE_PRDR
   if (testflag(addr, af_prdr_used))
     g = string_catn(g, US" PRDR", 5);
@@ -3551,6 +3554,13 @@ while (!done)
       break;
 #endif
 
+    case 'L':
+      switch (*subid)
+	{
+	case 1: setflag(addr, af_pipelining); break;
+	}
+      break;
+
     case 'K':
       setflag(addr, af_chunking_used);
       break;
@@ -4855,6 +4865,9 @@ all pipes, so I do not see a reason to use non-blocking IO here
       if (testflag(addr, af_prdr_used))
 	rmt_dlv_checked_write(fd, 'P', '0', NULL, 0);
 #endif
+
+      if (testflag(addr, af_pipelining))
+	  rmt_dlv_checked_write(fd, 'L', '1', NULL, 0);
 
       if (testflag(addr, af_chunking_used))
 	rmt_dlv_checked_write(fd, 'K', '0', NULL, 0);

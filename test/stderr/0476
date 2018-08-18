@@ -31,8 +31,11 @@ not using DSN
   SMTP>> RCPT TO:<userx@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
+sync_responses expect mail
   SMTP<< 250 OK
+sync_responses expect rcpt
   SMTP<< 550 NO
+sync_responses expect data
   SMTP(closed)<<
 Remote host closed connection in response to pipelined DATA
 error for DATA ignored: pipelining is in use and there were no good recipients

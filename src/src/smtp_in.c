@@ -146,7 +146,6 @@ static BOOL helo_verify = FALSE;
 static BOOL helo_seen;
 static BOOL helo_accept_junk;
 static BOOL count_nonmail;
-static BOOL pipelining_advertised;
 static BOOL rcpt_smtp_response_same;
 static BOOL rcpt_in_progress;
 static int  nonmail_command_count;
@@ -389,7 +388,7 @@ static BOOL
 pipeline_response(void)
 {
 if (  !smtp_enforce_sync || !sender_host_address
-   || sender_host_notsocket || !pipelining_advertised)
+   || sender_host_notsocket || !smtp_in_pipelining_advertised)
   return FALSE;
 
 return !wouldblock_reading();
@@ -622,7 +621,7 @@ for(;;)
   /* Unless PIPELINING was offered, there should be no next command
   until after we ack that chunk */
 
-  if (!pipelining_advertised && !check_sync())
+  if (!smtp_in_pipelining_advertised && !check_sync())
     {
     unsigned n = smtp_inend - smtp_inptr;
     if (n > 32) n = 32;
@@ -2429,7 +2428,7 @@ count_nonmail = TRUE_UNSET;
 synprot_error_count = unknown_command_count = nonmail_command_count = 0;
 smtp_delay_mail = smtp_rlm_base;
 auth_advertised = FALSE;
-pipelining_advertised = FALSE;
+smtp_in_pipelining_advertised = FALSE;
 pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
 smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
@@ -4182,7 +4181,7 @@ while (done <= 0)
     that the entire reply is sent in one write(). */
 
     auth_advertised = FALSE;
-    pipelining_advertised = FALSE;
+    smtp_in_pipelining_advertised = FALSE;
 #ifdef SUPPORT_TLS
     tls_advertised = FALSE;
 # ifdef EXPERIMENTAL_REQUIRETLS
@@ -4308,7 +4307,7 @@ while (done <= 0)
         g = string_catn(g, smtp_code, 3);
         g = string_catn(g, US"-PIPELINING\r\n", 13);
         sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
-        pipelining_advertised = TRUE;
+	smtp_in_pipelining_advertised = TRUE;
         }
 
 
@@ -4873,7 +4872,7 @@ while (done <= 0)
     if (acl_smtp_mail)
       {
       rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
-      if (rc == OK && !pipelining_advertised && !check_sync())
+      if (rc == OK && !smtp_in_pipelining_advertised && !check_sync())
         goto SYNC_FAILURE;
       }
     else
@@ -4928,7 +4927,7 @@ while (done <= 0)
 
     if (sender_address == NULL)
       {
-      if (pipelining_advertised && last_was_rej_mail)
+      if (smtp_in_pipelining_advertised && last_was_rej_mail)
         {
         smtp_printf("503 sender not yet given\r\n", FALSE);
         was_rej_mail = TRUE;
@@ -5121,7 +5120,7 @@ while (done <= 0)
     else
       if (  (rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
 		    &log_msg)) == OK
-	 && !pipelining_advertised && !check_sync())
+	 && !smtp_in_pipelining_advertised && !check_sync())
         goto SYNC_FAILURE;
 
     /* The ACL was happy */
@@ -5251,7 +5250,7 @@ while (done <= 0)
           rcpt_smtp_response[len-2] = 0;
         smtp_respond(code, 3, FALSE, rcpt_smtp_response);
         }
-      if (pipelining_advertised && last_was_rcpt)
+      if (smtp_in_pipelining_advertised && last_was_rcpt)
         smtp_printf("503 Valid RCPT command must precede %s\r\n", FALSE,
 	  smtp_names[smtp_connection_had[smtp_ch_index-1]]);
       else
@@ -5461,7 +5460,7 @@ while (done <= 0)
     if ((rc = tls_server_start(tls_require_ciphers, &s)) == OK)
       {
       if (!tls_remember_esmtp)
-        helo_seen = esmtp = auth_advertised = pipelining_advertised = FALSE;
+        helo_seen = esmtp = auth_advertised = smtp_in_pipelining_advertised = FALSE;
       cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
       cmd_list[CMD_LIST_AUTH].is_mail_cmd = TRUE;
       cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
@@ -5809,7 +5808,7 @@ while (done <= 0)
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was%s advertised): "
       "rejected \"%s\" %s next input=\"%s\"",
-      pipelining_advertised? "" : " not",
+      smtp_in_pipelining_advertised ? "" : " not",
       smtp_cmd_buffer, host_and_ident(TRUE),
       string_printing(smtp_inptr));
     smtp_notquit_exit(US"synchronization-error", US"554",

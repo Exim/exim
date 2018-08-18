@@ -33,9 +33,11 @@ cmd buf flush ddd bytes
   SMTP<< 250 Sender OK
   SMTP>> RCPT TO:<userx@domain.com>
 cmd buf flush ddd bytes
+sync_responses expect rcpt
   SMTP<< 250 Recipient OK
   SMTP>> DATA
 cmd buf flush ddd bytes
+sync_responses expect data
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
 cannot use sendfile for body: spoolfile not wireformat

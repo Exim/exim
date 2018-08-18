@@ -104,6 +104,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<x@y>
 cmd buf flush ddd bytes
+sync_responses expect rcpt
   SMTP<< 250 OK
   SMTP>> QUIT
 cmd buf flush ddd bytes

@@ -795,6 +795,7 @@ responses before returning, except after I/O errors and timeouts. */
 
 if (sx->pending_MAIL)
   {
+  DEBUG(D_transport) debug_printf("%s expect mail\n", __FUNCTION__);
   count--;
   if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
@@ -846,6 +847,7 @@ while (count-- > 0)
   /* The address was accepted */
   addr->host_used = sx->host;
 
+  DEBUG(D_transport) debug_printf("%s expect rcpt\n", __FUNCTION__);
   if (smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
@@ -963,25 +965,28 @@ if (addr) sx->sync_addr = addr->next;
 /* Handle a response to DATA. If we have not had any good recipients, either
 previously or in this block, the response is ignored. */
 
-if (pending_DATA != 0 &&
-    !smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
-			'3', ob->command_timeout))
+if (pending_DATA != 0)
   {
-  int code;
-  uschar *msg;
-  BOOL pass_message;
-  if (pending_DATA > 0 || (yield & 1) != 0)
+  DEBUG(D_transport) debug_printf("%s expect data\n", __FUNCTION__);
+  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+			'3', ob->command_timeout))
     {
-    if (errno == 0 && sx->buffer[0] == '4')
+    int code;
+    uschar *msg;
+    BOOL pass_message;
+    if (pending_DATA > 0 || (yield & 1) != 0)
       {
-      errno = ERRNO_DATA4XX;
-      sx->first_addr->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
+      if (errno == 0 && sx->buffer[0] == '4')
+	{
+	errno = ERRNO_DATA4XX;
+	sx->first_addr->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
+	}
+      return -3;
       }
-    return -3;
+    (void)check_response(sx->host, &errno, 0, sx->buffer, &code, &msg, &pass_message);
+    DEBUG(D_transport) debug_printf("%s\nerror for DATA ignored: pipelining "
+      "is in use and there were no good recipients\n", msg);
     }
-  (void)check_response(sx->host, &errno, 0, sx->buffer, &code, &msg, &pass_message);
-  DEBUG(D_transport) debug_printf("%s\nerror for DATA ignored: pipelining "
-    "is in use and there were no good recipients\n", msg);
   }
 
 /* All responses read and handled; MAIL (if present) received 2xx and DATA (if
@@ -1925,7 +1930,7 @@ else
      )
     {
     sx->peer_offered = smtp_peer_options;
-    pipelining_active = !!(smtp_peer_options & OPTION_PIPE);
+    sx->pipelining_used = pipelining_active = !!(smtp_peer_options & OPTION_PIPE);
     HDEBUG(D_transport) debug_printf("continued connection, %s TLS\n",
       continue_proxy_cipher ? "proxied" : "verify conn with");
     return OK;
@@ -2214,7 +2219,7 @@ if (continue_hostname == NULL
       }
     }
   }
-pipelining_active = !!(smtp_peer_options & OPTION_PIPE);
+sx->pipelining_used = pipelining_active = !!(smtp_peer_options & OPTION_PIPE);
 
 /* The setting up of the SMTP call is now complete. Any subsequent errors are
 message-specific. */
@@ -3320,6 +3325,8 @@ else
       addr->host_used = host;
       addr->special_action = flag;
       addr->message = conf;
+
+      if (sx.pipelining_used) setflag(addr, af_pipelining);
 #ifndef DISABLE_PRDR
       if (sx.prdr_active) setflag(addr, af_prdr_used);
 #endif

@@ -1320,6 +1320,8 @@ if (sender_ident)
   g = string_append(g, 2, US" U=", sender_ident);
 if (received_protocol)
   g = string_append(g, 2, US" P=", received_protocol);
+if (LOGGING(pipelining) && smtp_in_pipelining_advertised)
+  g = string_catn(g, US" L", 2);
 return g;
 }
 

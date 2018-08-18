@@ -142,6 +142,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP>> RCPT TO:<qq@remote>
 cmd buf flush ddd bytes
+sync_responses expect rcpt
   SMTP<< 550 Unknown
   SMTP>> QUIT
 cmd buf flush ddd bytes

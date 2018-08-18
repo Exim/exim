@@ -469,6 +469,7 @@ enum {
   Li_outgoing_interface,
   Li_outgoing_port,
   Li_pid,
+  Li_pipelining,
   Li_proxy,
   Li_queue_time,
   Li_queue_time_overall,

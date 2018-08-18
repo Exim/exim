@@ -29,7 +29,9 @@ not using DSN
   SMTP>> MAIL FROM:<usera@ok.example>
   SMTP>> RCPT TO:<userb@test.ex>
 cmd buf flush ddd bytes
+sync_responses expect mail
   SMTP<< 250 OK
+sync_responses expect rcpt
   SMTP<< 250 Accepted
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
@@ -56,6 +58,7 @@ Transport port=25 replaced by host-specific port=1225
 continued connection, proxied TLS
   SMTP>> DATA
 cmd buf flush ddd bytes
+sync_responses expect data
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> writing message and terminating "."
 cannot use sendfile for body: spoolfile not wireformat

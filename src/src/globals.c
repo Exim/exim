@@ -932,6 +932,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, outgoing_interface),
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),
+  BIT_TABLE(L, pipelining),
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
   BIT_TABLE(L, proxy),
 #endif
@@ -1353,6 +1354,7 @@ double  smtp_delay_mail        = 0.0;
 double  smtp_delay_rcpt        = 0.0;
 BOOL    smtp_enforce_sync      = TRUE;
 FILE   *smtp_in                = NULL;
+BOOL    smtp_in_pipelining_advertised = FALSE;
 BOOL    smtp_input             = FALSE;
 int     smtp_load_reserve      = -1;
 int     smtp_mailcmd_count     = 0;
