@@ -9637,9 +9637,10 @@ some of the braces:
 .code
 ${length_<n>:<string>}
 .endd
-The result of this item is either the first <&'n'&> characters or the whole
+The result of this item is either the first <&'n'&> bytes or the whole
 of <&'string2'&>, whichever is the shorter. Do not confuse &%length%& with
 &%strlen%&, which gives the length of a string.
+All measurement is done in bytes and is not UTF-8 aware.
 
 
 .vitem "&*${listextract{*&<&'number'&>&*}&&&
@@ -10071,6 +10072,8 @@ ${sg{1=A 4=D 3=C}{\N(\d+)=\N}{K\$1=}}
 yields &"K1=A K4=D K3=C"&. Note the use of &`\N`& to protect the contents of
 the regular expression from string expansion.
 
+The regular expression is compiled in 8-bit mode, working against bytes
+rather than any Unicode-aware character handling.
 
 
 .vitem &*${sort{*&<&'string'&>&*}{*&<&'comparator'&>&*}{*&<&'extractor'&>&*}}*&
@@ -10127,11 +10130,11 @@ ${substr{3}{2}{$local_part}}
 If the starting offset is greater than the string length the result is the
 null string; if the length plus starting offset is greater than the string
 length, the result is the right-hand part of the string, starting from the
-given offset. The first character in the string has offset zero.
+given offset. The first byte (character) in the string has offset zero.
 
 The &%substr%& expansion item can take negative offset values to count
-from the right-hand end of its operand. The last character is offset -1, the
-second-last is offset -2, and so on. Thus, for example,
+from the right-hand end of its operand. The last byte (character) is offset -1,
+the second-last is offset -2, and so on. Thus, for example,
 .code
 ${substr{-5}{2}{1234567}}
 .endd
@@ -10148,7 +10151,7 @@ ${substr{-3}{2}{12}}
 yields &"1"&.
 
 When the second number is omitted from &%substr%&, the remainder of the string
-is taken if the offset is positive. If it is negative, all characters in the
+is taken if the offset is positive. If it is negative, all bytes (characters) in the
 string preceding the offset point are taken. For example, an offset of -1 and
 no length, as in these semantically identical examples:
 .code
@@ -10157,13 +10160,15 @@ ${substr{-1}{abcde}}
 .endd
 yields all but the last character of the string, that is, &"abcd"&.
 
+All measurement is done in bytes and is not UTF-8 aware.
+
 
 
 .vitem "&*${tr{*&<&'subject'&>&*}{*&<&'characters'&>&*}&&&
         {*&<&'replacements'&>&*}}*&"
 .cindex "expansion" "character translation"
 .cindex "&%tr%& expansion item"
-This item does single-character translation on its subject string. The second
+This item does single-character (in bytes) translation on its subject string. The second
 argument is a list of characters to be translated in the subject string. Each
 matching character is replaced by the corresponding character from the
 replacement list. For example
@@ -10174,6 +10179,9 @@ yields &`1b3de1`&. If there are duplicates in the second character string, the
 last occurrence is used. If the third string is shorter than the second, its
 last character is replicated. However, if it is empty, no translation takes
 place.
+
+All character handling is done in bytes and is not UTF-8 aware.
+
 .endlist
 
 
@@ -10192,6 +10200,8 @@ following operations can be performed:
 The string is interpreted as an RFC 2822 address, as it might appear in a
 header line, and the effective address is extracted from it. If the string does
 not parse successfully, the result is empty.
+
+The parsing correctly handles SMTPUTF8 Unicode in the string.
 
 
 .vitem &*${addresses:*&<&'string'&>&*}*&
@@ -10236,7 +10246,7 @@ It does not see the comma because it's still encoded as "=2C".  The second
 example below is passed the contents of &`$header_from:`&, meaning it gets
 de-mimed. Exim sees the decoded "," so it treats it as &*two*& email addresses.
 The third example shows that the presence of a comma is skipped when it is
-quoted.
+quoted.  The fourth example shows SMTPUTF8 handling.
 .code
 # exim -be '${addresses:From: \
 =?iso-8859-2?Q?Last=2C_First?= <user@example.com>}'
@@ -10245,6 +10255,8 @@ user@example.com
 Last:user@example.com
 # exim -be '${addresses:From: "Last, First" <user@example.com>}'
 user@example.com
+# exim -be '${addresses:フィル <フィリップ@example.jp>}'
+フィリップ@example.jp
 .endd
 
 .vitem &*${base32:*&<&'digits'&>&*}*&
@@ -10476,6 +10488,7 @@ This forces the letters in the string into lower-case, for example:
 .code
 ${lc:$local_part}
 .endd
+Case is defined per the system C locale.
 
 .vitem &*${length_*&<&'number'&>&*:*&<&'string'&>&*}*&
 .cindex "expansion" "string truncation"
@@ -10489,6 +10502,7 @@ ${length{<number>}{<string>}}
 See the description of the general &%length%& item above for details. Note that
 &%length%& is not the same as &%strlen%&. The abbreviation &%l%& can be used
 when &%length%& is used as an operator.
+All measurement is done in bytes and is not UTF-8 aware.
 
 
 .vitem &*${listcount:*&<&'string'&>&*}*&
@@ -10516,6 +10530,7 @@ matching list is returned.
 The string is interpreted as an RFC 2822 address and the local part is
 extracted from it. If the string does not parse successfully, the result is
 empty.
+The parsing correctly handles SMTPUTF8 Unicode in the string.
 
 
 .vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&
@@ -10597,6 +10612,10 @@ required to do so by the rules of RFC 2822 for quoting local parts. For
 example, a plus sign would not cause quoting (but it would for &%quote%&).
 If you are creating a new email address from the contents of &$local_part$&
 (or any other unknown data), you should always use this operator.
+
+This quoting determination is not SMTPUTF8-aware, thus quoting non-ASCII data
+will likely use the quoting form.
+Thus &'${quote_local_part:フィル}'& will always become &'"フィル"'&.
 
 
 .vitem &*${quote_*&<&'lookup-type'&>&*:*&<&'string'&>&*}*&
@@ -10761,6 +10780,7 @@ Now deprecated, a synonym for the &%base64%& expansion operator.
 .cindex "&%strlen%& expansion item"
 The item is replace by the length of the expanded string, expressed as a
 decimal number. &*Note*&: Do not confuse &%strlen%& with &%length%&.
+All measurement is done in bytes and is not UTF-8 aware.
 
 
 .vitem &*${substr_*&<&'start'&>&*_*&<&'length'&>&*:*&<&'string'&>&*}*&
@@ -10775,6 +10795,7 @@ ${substr{<start>}{<length>}{<string>}}
 .endd
 See the description of the general &%substr%& item above for details. The
 abbreviation &%s%& can be used when &%substr%& is used as an operator.
+All measurement is done in bytes and is not UTF-8 aware.
 
 .vitem &*${time_eval:*&<&'string'&>&*}*&
 .cindex "&%time_eval%& expansion item"
@@ -10797,6 +10818,7 @@ number of larger units and output in Exim's normal time format, for example,
 .cindex "expansion" "case forcing"
 .cindex "&%uc%& expansion item"
 This forces the letters in the string into upper-case.
+Case is defined per the system C locale.
 
 .vitem &*${utf8clean:*&<&'string'&>&*}*&
 .cindex "correction of invalid utf-8 sequences in strings"
@@ -10805,6 +10827,20 @@ This forces the letters in the string into upper-case.
 .cindex "expansion" "utf-8 forcing"
 .cindex "&%utf8clean%& expansion item"
 This replaces any invalid utf-8 sequence in the string by the character &`?`&.
+.new
+In versions of Exim before 4.92, this did not correctly do so for a truncated
+final codepoint's encoding, and the character would be silently dropped.
+If you must handle detection of this scenario across both sets of Exim behavior,
+the complexity will depend upon the task.
+For instance, to detect if the first character is multibyte and a 1-byte
+extraction can be successfully used as a path component (as is common for
+dividing up delivery folders), you might use:
+.code
+condition = ${if inlist{${utf8clean:${length_1:$local_part}}}{:?}{yes}{no}}
+.endd
+(which will false-positive if the first character of the local part is a
+literal question mark).
+.wen
 
 .vitem "&*${utf8_domain_to_alabel:*&<&'string'&>&*}*&" &&&
        "&*${utf8_domain_from_alabel:*&<&'string'&>&*}*&" &&&
@@ -11027,7 +11063,8 @@ the header name must be terminated by a colon if white space does not follow.
 .cindex "&%eqi%& expansion condition"
 The two substrings are first expanded. The condition is true if the two
 resulting strings are identical. For &%eq%& the comparison includes the case of
-letters, whereas for &%eqi%& the comparison is case-independent.
+letters, whereas for &%eqi%& the comparison is case-independent, where
+case is defined per the system C locale.
 
 .vitem &*exists&~{*&<&'file&~name'&>&*}*&
 .cindex "expansion" "file existence test"
@@ -11090,6 +11127,7 @@ The two substrings are first expanded. The condition is true if the first
 string is lexically greater than or equal to the second string. For &%ge%& the
 comparison includes the case of letters, whereas for &%gei%& the comparison is
 case-independent.
+Case and collation order are defined per the system C locale.
 
 .vitem &*gt&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*gti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
@@ -11101,6 +11139,7 @@ The two substrings are first expanded. The condition is true if the first
 string is lexically greater than the second string. For &%gt%& the comparison
 includes the case of letters, whereas for &%gti%& the comparison is
 case-independent.
+Case and collation order are defined per the system C locale.
 
 .vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*inlisti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
@@ -11109,6 +11148,7 @@ case-independent.
 Both strings are expanded; the second string is treated as a list of simple
 strings; if the first string is a member of the second, then the condition
 is true.
+For the case-independent &%inlisti%& condition, case is defined per the system C locale.
 
 These are simpler to use versions of the more powerful &*forany*& condition.
 Examples, and the &*forany*& equivalents:
@@ -11175,6 +11215,7 @@ The two substrings are first expanded. The condition is true if the first
 string is lexically less than or equal to the second string. For &%le%& the
 comparison includes the case of letters, whereas for &%lei%& the comparison is
 case-independent.
+Case and collation order are defined per the system C locale.
 
 .vitem &*lt&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*lti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
@@ -11186,6 +11227,7 @@ The two substrings are first expanded. The condition is true if the first
 string is lexically less than the second string. For &%lt%& the comparison
 includes the case of letters, whereas for &%lti%& the comparison is
 case-independent.
+Case and collation order are defined per the system C locale.
 
 
 .vitem &*match&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
@@ -11212,6 +11254,8 @@ metacharacter, but if there is no circumflex, the expression is not anchored,
 and it may match anywhere in the subject, not just at the start. If you want
 the pattern to match at the end of the subject, you must include the &`$`&
 metacharacter at an appropriate point.
+All character handling is done in bytes and is not UTF-8 aware,
+but we might change this in a future Exim release.
 
 .cindex "numerical variables (&$1$& &$2$& etc)" "in &%if%& expansion"
 At the start of an &%if%& expansion the values of the numeric variable

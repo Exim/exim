@@ -96,6 +96,8 @@ PP/03 Make ${utf8clean:} expansion operator detect incomplete final character.
       Previously if the string ended mid-character, we did not insert the
       promised '?' replacement.
 
+PP/04 Documentation: current string operators work on bytes, not codepoints.
+
 
 Exim version 4.91
 -----------------
