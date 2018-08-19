@@ -1147,8 +1147,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
 
     # Specific pointer values reported for DB operations change from run to run
-    s/^(returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
-    s/^(EXIM_DBCLOSE.)(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
+    s/^(\s*returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
+    s/^(\s*EXIM_DBCLOSE.)(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
 
     # Platform-dependent output during MySQL startup
     next if /PerconaFT file system space/;

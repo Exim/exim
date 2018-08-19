@@ -347,12 +347,12 @@ body_linecount=1 message_linecount=7
 DSN: set orcpt:   flags: 0
 Delivery address list:
   ph10@myhost.test.ex 
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
-failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+ failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: ph10@myhost.test.ex
@@ -397,11 +397,11 @@ search_tidyup called
 close MYSQL connection: 127.0.0.1:1223/test/root
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> ph10@myhost.test.ex <--------
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to ph10 <ph10@myhost.test.ex> transport=t1

@@ -74,11 +74,11 @@ body_linecount=0 message_linecount=7
 DSN: set orcpt:   flags: 0
 Delivery address list:
   kilos@recurse.test.ex 
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex
@@ -111,11 +111,11 @@ rewriting header lines
 rewrite_one_header: type=F:
   From: CALLER_NAME <CALLER@test.ex>
 re-routed to kilos@recurse.test.ex.test.ex
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
@@ -151,11 +151,11 @@ r3 router generated kilos@recurse.test.ex.test.ex
 routed by r3 router
   envelope to: kilos@recurse.test.ex.test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
@@ -200,11 +200,11 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> kilos@recurse.test.ex.test.ex <--------
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to kilos <kilos@recurse.test.ex.test.ex> transport=t2

@@ -169,12 +169,12 @@ body_linecount=0 message_linecount=159
 DSN: set orcpt:   flags: 0
 Delivery address list:
   userx@test.ex 
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
-failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+ failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -213,11 +213,11 @@ r2 router generated >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex
 routed by r2 router
   envelope to: userx@test.ex
   transport: <none>
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...
@@ -233,11 +233,11 @@ After routing:
 search_tidyup called
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ... <--------
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ... <>sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...> transport=t1
@@ -3364,11 +3364,11 @@ Delivery address list:
   sender@test.ex 
   sender@test.ex 
   sender@test.ex 
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: sender@test.ex
@@ -17971,11 +17971,11 @@ sender@test.ex is a duplicate address: discarded
 sender@test.ex is a duplicate address: discarded
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> sender@test.ex <--------
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
 changed uid/gid: local delivery to sender <sender@test.ex> transport=t2

@@ -5,12 +5,12 @@ configuration file is TESTSUITE/test-config
 admin user
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
-failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+ failed to open DB file TESTSUITE/spool/db/retry.lockfile: No such file or directory
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
@@ -73,11 +73,11 @@ changed uid/gid: remote delivery to x@y with transport=smtp
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
 checking status of 127.0.0.1
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (x@y)
@@ -105,11 +105,11 @@ address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
 *@127.0.0.1 in "*"? yes (matched "*")
 checking status of V4NET.0.0.0
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: (nil)
-failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: (nil)
+ failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 V4NET.0.0.0 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
@@ -136,37 +136,37 @@ Succeeded addresses:
 Failed addresses:
 Deferred addresses:
  x@y
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
-returned from EXIM_DBOPEN: 0xAAAAAAAA
-opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDWR
+ returned from EXIM_DBOPEN: 0xAAAAAAAA
+ opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match test: subject=x@y pattern=*
 y in "*"? yes (matched "*")
 x@y in "*"? yes (matched "*")
 retry for R:x@y = * 0 0
-dbfn_read: key=R:x@y
+ dbfn_read: key=R:x@y
 failing_interval=ttt message_age=ttt
 Writing retry data for R:x@y
   first failed=dddd last try=dddd next try=+1 expired=1
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
-dbfn_write: key=R:x@y
+ dbfn_write: key=R:x@y
 address match test: subject=*@V4NET.0.0.0 pattern=*
 V4NET.0.0.0 in "*"? yes (matched "*")
 *@V4NET.0.0.0 in "*"? yes (matched "*")
 retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = * 0 0
-dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
+ dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 failing_interval=ttt message_age=ttt
 on queue longer than maximum retry
 Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:1224
   first failed=dddd last try=dddd next try=+0 expired=0
   errno=dd more_errno=dd,A Network Error
-dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
+ dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 timed out: all retries expired
 LOG: MAIN
   ** x@y: retry timeout exceeded
-EXIM_DBCLOSE(0xAAAAAAAA)
-closed hints database and lockfile
+ EXIM_DBCLOSE(0xAAAAAAAA)
+ closed hints database and lockfile
 end of retry processing
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb95ced -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 Exim version x.yz ....
@@ -230,22 +230,22 @@ trusted user
 admin user
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
-locking TESTSUITE/spool/db/retry.lockfile
-locked  TESTSUITE/spool/db/retry.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
-returned from EXIM_DBOPEN: 0xAAAAAAAA
-opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
+ locking TESTSUITE/spool/db/retry.lockfile
+ locked  TESTSUITE/spool/db/retry.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/retry> dir <TESTSUITE/spool/db> flags=O_RDONLY
+ returned from EXIM_DBOPEN: 0xAAAAAAAA
+ opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
 unique = CALLER@myhost.test.ex
-dbfn_read: key=R:myhost.test.ex
-dbfn_read: key=R:CALLER@myhost.test.ex
-dbfn_read: key=R:CALLER@myhost.test.ex:<>
+ dbfn_read: key=R:myhost.test.ex
+ dbfn_read: key=R:CALLER@myhost.test.ex
+ dbfn_read: key=R:CALLER@myhost.test.ex:<>
 no domain retry record
 no address retry record
 CALLER@myhost.test.ex: queued for routing
-EXIM_DBCLOSE(0xAAAAAAAA)
-closed hints database and lockfile
+ EXIM_DBCLOSE(0xAAAAAAAA)
+ closed hints database and lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex
 --------> r0 router <--------

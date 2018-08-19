@@ -78,17 +78,17 @@ MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
-locking TESTSUITE/spool/db/callout.lockfile
-locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
-returned from EXIM_DBOPEN: 0xAAAAAAAA
-opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
-dbfn_read: key=y
+ locking TESTSUITE/spool/db/callout.lockfile
+ locked  TESTSUITE/spool/db/callout.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+ returned from EXIM_DBOPEN: 0xAAAAAAAA
+ opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+ dbfn_read: key=y
 callout cache: no domain record found for y
-dbfn_read: key=x@y
+ dbfn_read: key=x@y
 callout cache: no address record found for x@y
-EXIM_DBCLOSE(0xAAAAAAAA)
-closed hints database and lockfile
+ EXIM_DBCLOSE(0xAAAAAAAA)
+ closed hints database and lockfile
 interface=NULL port=1224
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 server ready
@@ -110,18 +110,18 @@ sync_responses expect rcpt
 cmd buf flush ddd bytes
   SMTP<< 220 OK
   SMTP(close)>>
-locking TESTSUITE/spool/db/callout.lockfile
-locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
-returned from EXIM_DBOPEN: 0xAAAAAAAA
-opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
-dbfn_write: key=y
+ locking TESTSUITE/spool/db/callout.lockfile
+ locked  TESTSUITE/spool/db/callout.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR|O_CREAT
+ returned from EXIM_DBOPEN: 0xAAAAAAAA
+ opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
+ dbfn_write: key=y
 wrote callout cache domain record for y:
   result=1 postmaster=0 random=0
-dbfn_write: key=x@y
+ dbfn_write: key=x@y
 wrote positive callout cache address record for x@y
-EXIM_DBCLOSE(0xAAAAAAAA)
-closed hints database and lockfile
+ EXIM_DBCLOSE(0xAAAAAAAA)
+ closed hints database and lockfile
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"
@@ -188,18 +188,18 @@ MUNGED: ::1 will be omitted in what follows
 get[host|ipnode]byname[2] looked up these IP addresses:
   name=127.0.0.1 address=127.0.0.1
 Attempting full verification using callout
-locking TESTSUITE/spool/db/callout.lockfile
-locked  TESTSUITE/spool/db/callout.lockfile
-EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
-returned from EXIM_DBOPEN: 0xAAAAAAAA
-opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
-dbfn_read: key=y
+ locking TESTSUITE/spool/db/callout.lockfile
+ locked  TESTSUITE/spool/db/callout.lockfile
+ EXIM_DBOPEN: file <TESTSUITE/spool/db/callout> dir <TESTSUITE/spool/db> flags=O_RDWR
+ returned from EXIM_DBOPEN: 0xAAAAAAAA
+ opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+ dbfn_read: key=y
 callout cache: found domain record for y
-dbfn_read: key=x@y
+ dbfn_read: key=x@y
 callout cache: found address record for x@y
 callout cache: address record is positive
-EXIM_DBCLOSE(0xAAAAAAAA)
-closed hints database and lockfile
+ EXIM_DBCLOSE(0xAAAAAAAA)
+ closed hints database and lockfile
 ----------- end verify ------------
 sender x@y verified ok
 accept: condition test succeeded in ACL "mail"

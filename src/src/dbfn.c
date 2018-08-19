@@ -93,6 +93,8 @@ BOOL created = FALSE;
 flock_t lock_data;
 uschar dirname[256], filename[256];
 
+DEBUG(D_hints_lookup) acl_level++;
+
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
 open it. Early versions tried to lock on the open database itself, but that
@@ -121,6 +123,7 @@ if (dbblock->lockfd < 0)
   log_write(0, LOG_MAIN, "%s",
     string_open_failed(errno, "database lock file %s", filename));
   errno = 0;      /* Indicates locking failure */
+  DEBUG(D_hints_lookup) acl_level--;
   return NULL;
   }
 
@@ -131,7 +134,7 @@ lock_data.l_type = read_only? F_RDLCK : F_WRLCK;
 lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
 
 DEBUG(D_hints_lookup|D_retry|D_route|D_deliver)
-  debug_printf("locking %s\n", filename);
+  debug_printf_indent("locking %s\n", filename);
 
 sigalrm_seen = FALSE;
 alarm(EXIMDB_LOCK_TIMEOUT);
@@ -146,10 +149,11 @@ if (rc < 0)
     errno == ETIMEDOUT ? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   errno = 0;       /* Indicates locking failure */
+  DEBUG(D_hints_lookup) acl_level--;
   return NULL;
   }
 
-DEBUG(D_hints_lookup) debug_printf("locked  %s\n", filename);
+DEBUG(D_hints_lookup) debug_printf_indent("locked  %s\n", filename);
 
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. If we are
@@ -166,7 +170,7 @@ EXIM_DBOPEN(filename, dirname, flags, EXIMDB_MODE, &(dbblock->dbptr));
 if (!dbblock->dbptr && errno == ENOENT && flags == O_RDWR)
   {
   DEBUG(D_hints_lookup)
-    debug_printf("%s appears not to exist: trying to create\n", filename);
+    debug_printf_indent("%s appears not to exist: trying to create\n", filename);
   created = TRUE;
   EXIM_DBOPEN(filename, dirname, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
   }
@@ -204,9 +208,9 @@ if (created && geteuid() == root_uid)
       Ustrcpy(lastname, ent->d_name);
       if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
-        DEBUG(D_hints_lookup) debug_printf("ensuring %s is owned by exim\n", filename);
+        DEBUG(D_hints_lookup) debug_printf_indent("ensuring %s is owned by exim\n", filename);
         if (Uchown(filename, exim_uid, exim_gid))
-          DEBUG(D_hints_lookup) debug_printf("failed setting %s to owned by exim\n", filename);
+          DEBUG(D_hints_lookup) debug_printf_indent("failed setting %s to owned by exim\n", filename);
         }
       }
 
@@ -224,15 +228,16 @@ if (!dbblock->dbptr)
         filename));
   else
     DEBUG(D_hints_lookup)
-      debug_printf("%s\n", CS string_open_failed(save_errno, "DB file %s",
+      debug_printf_indent("%s\n", CS string_open_failed(save_errno, "DB file %s",
           filename));
   (void)close(dbblock->lockfd);
   errno = save_errno;
+  DEBUG(D_hints_lookup) acl_level--;
   return NULL;
   }
 
 DEBUG(D_hints_lookup)
-  debug_printf("opened hints database %s: flags=%s\n", filename,
+  debug_printf_indent("opened hints database %s: flags=%s\n", filename,
     flags == O_RDONLY ? "O_RDONLY"
     : flags == O_RDWR ? "O_RDWR"
     : flags == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"
@@ -263,7 +268,8 @@ dbfn_close(open_db *dbblock)
 {
 EXIM_DBCLOSE(dbblock->dbptr);
 (void)close(dbblock->lockfd);
-DEBUG(D_hints_lookup) debug_printf("closed hints database and lockfile\n");
+DEBUG(D_hints_lookup)
+  { debug_printf_indent("closed hints database and lockfile\n"); acl_level--; }
 }
 
 
@@ -300,7 +306,7 @@ uschar * key_copy = store_get(klen);
 
 memcpy(key_copy, key, klen);
 
-DEBUG(D_hints_lookup) debug_printf("dbfn_read: key=%s\n", key);
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_read: key=%s\n", key);
 
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
 EXIM_DATUM_INIT(result_datum);      /* to be cleared before use. */
@@ -345,7 +351,7 @@ uschar * key_copy = store_get(klen);
 memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
 
-DEBUG(D_hints_lookup) debug_printf("dbfn_write: key=%s\n", key);
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_write: key=%s\n", key);
 
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require the datum */
 EXIM_DATUM_INIT(value_datum);       /* to be cleared before use. */
