@@ -29,7 +29,7 @@ check_data:
 			x-test-header-too-long: ${utf8clean:$h_x-test-header-too-long:}
 		 logwrite = \
 			x-test-header-too-big: ${utf8clean:$h_x-test-header-too-big:}
-		 log_write = \
+		 logwrite = \
 			x-test-header-truncated: ${utf8clean:$h_x-test-header-truncated:}
 
 
