@@ -18,5 +18,6 @@ extern void options_main(void);
 extern void options_routers(void);
 extern void options_transports(void);
 extern void options_auths(void);
+extern void options_logging(void);
 extern void params_dkim(void);
 

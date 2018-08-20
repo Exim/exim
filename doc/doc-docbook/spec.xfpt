@@ -5076,6 +5076,7 @@ The following classes of macros are defined:
 &` _DRIVER_ROUTER_*           `&  router drivers
 &` _DRIVER_TRANSPORT_*        `&  transport drivers
 &` _DRIVER_AUTHENTICATOR_*    `&  authenticator drivers
+&` _LOG_*                     `&  log_selector values
 &` _OPT_MAIN_*                `&  main config options
 &` _OPT_ROUTERS_*             `&  generic router options
 &` _OPT_TRANSPORTS_*          `&  generic transport options

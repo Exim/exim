@@ -284,6 +284,7 @@ options_main();
 options_routers();
 options_transports();
 options_auths();
+options_logging();
 }
 
 static void

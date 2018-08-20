@@ -409,6 +409,19 @@ for (ai = auths_available; ai->driver_name[0]; ai++)
   }
 }
 
+void
+options_logging(void)
+{
+bit_table * bp;
+uschar buf[64];
+
+for (bp = log_options; bp < log_options + log_options_count; bp++)
+  {
+  spf(buf, sizeof(buf), US"_LOG_%T", bp->name);
+  builtin_macro_create(buf);
+  }
+}
+
 
 #else	/*!MACRO_PREDEF*/
 

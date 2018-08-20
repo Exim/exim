@@ -23,6 +23,8 @@ Version 4.92
 
  5. A "pipelining" log_selector.
 
+ 6. Builtin macros for supported log_selector values.
+
 Version 4.91
 --------------
 
