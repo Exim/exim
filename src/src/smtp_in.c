@@ -4717,9 +4717,6 @@ while (done <= 0)
 #if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
 	  case ENV_MAIL_OPT_REQTLS:
 	    {
-	    const uschar * list = value;
-	    int sep = ',';
-	    const uschar * opt;
 	    uschar * r, * t;
 
 	    if (!requiretls_advertised)

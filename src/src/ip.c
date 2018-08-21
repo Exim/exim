@@ -250,7 +250,11 @@ if (timeout > 0) alarm(timeout);
 this peer, can send data in the SYN packet.  The peer can send data
 before it gets our ACK of its SYN,ACK - the latter is useful for
 the SMTP banner.  Other (than SMTP) cases of TCP connections can
-possibly use the data-on-syn, so support that too.  */
+possibly use the data-on-syn, so support that too.
+
+This is a Linux implementation.  It might be useable on FreeBSD; I have
+not checked.  I think MacOS has a "connectx" call for this purpose,
+rather than using "sendto" ? */
 
 if (fastopen_blob && tcp_fastopen_ok)
   {
