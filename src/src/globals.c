@@ -1355,6 +1355,7 @@ double  smtp_delay_rcpt        = 0.0;
 BOOL    smtp_enforce_sync      = TRUE;
 FILE   *smtp_in                = NULL;
 BOOL    smtp_in_pipelining_advertised = FALSE;
+BOOL    smtp_in_pipelining_used = FALSE;
 BOOL    smtp_input             = FALSE;
 int     smtp_load_reserve      = -1;
 int     smtp_mailcmd_count     = 0;

@@ -391,7 +391,9 @@ if (  !smtp_enforce_sync || !sender_host_address
    || sender_host_notsocket || !smtp_in_pipelining_advertised)
   return FALSE;
 
-return !wouldblock_reading();
+if (wouldblock_reading()) return FALSE;
+smtp_in_pipelining_used = TRUE;
+return TRUE;
 }
 
 
@@ -2428,7 +2430,7 @@ count_nonmail = TRUE_UNSET;
 synprot_error_count = unknown_command_count = nonmail_command_count = 0;
 smtp_delay_mail = smtp_rlm_base;
 auth_advertised = FALSE;
-smtp_in_pipelining_advertised = FALSE;
+smtp_in_pipelining_advertised = smtp_in_pipelining_used = FALSE;
 pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
 smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */

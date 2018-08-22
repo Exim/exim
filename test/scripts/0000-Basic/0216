@@ -109,5 +109,15 @@ Testing
 ****
 exim -M $msg1
 ****
+#
+#
+# Try to spot, in logging, offer but no uptake of PIPELINING
+exim b@test.ex
+testing
+****
+exim -DHAP=hosts_avoid_pipelining=* -M $msg2
+****
+#
+#
 killdaemon
 no_msglog_check

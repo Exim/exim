@@ -36566,7 +36566,7 @@ the following table:
 &`I   `&        local interface used
 &`id  `&        message id for incoming message
 &`K   `&        CHUNKING extension used
-&`L   `&        on &`<=`& and &`=>`& lines: PIPELINING extension offered or used
+&`L   `&        on &`<=`& and &`=>`& lines: PIPELINING extension used
 &`M8S `&        8BITMIME status for incoming message
 &`P   `&        on &`<=`& lines: protocol used
 &`    `&        on &`=>`& and &`**`& lines: return path
@@ -36677,7 +36677,7 @@ selection marked by asterisks:
 &` queue_time                 `&  time on queue for one recipient
 &` queue_time_overall         `&  time on queue for whole message
 &` pid                        `&  Exim process id
-&` pipelining                 `&  PIPELINING, advertisement on <= lines, use on => lines
+&` pipelining                 `&  PIPELINING use, on <= and => lines
 &` proxy                      `&  proxy address on <= and => lines
 &` receive_time               `&  time taken to receive message
 &` received_recipients        `&  recipients on <= lines
@@ -36880,11 +36880,14 @@ local port is a random ephemeral port.
 &%pid%&: The current process id is added to every log line, in square brackets,
 immediately after the time and date.
 .next
+.new
 .cindex log pipelining
 .cindex pipelining "logging outgoing"
 &%pipelining%&: A field is added to delivery and accept
 log lines when the ESMTP PIPELINING extension was used.
 The field is a single "L".
+On accept lines, where PIPELINING was offered but not used by the client,
+the field has a minus appended.
 .next
 .cindex "log" "queue run"
 .cindex "queue runner" "logging"

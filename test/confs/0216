@@ -1,6 +1,7 @@
 # Exim test configuration 0216
 
 SERVER=
+HAP=
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -36,6 +37,7 @@ send_to_server:
   hosts = 127.0.0.1
   port = PORT_D
   max_rcpt = 0
+  HAP
 
 
 # ----- Retry -----
