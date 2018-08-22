@@ -322,6 +322,8 @@ extern uschar *moan_check_errorcopy(uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);
 extern void    moan_smtp_batch(uschar *, const char *, ...) PRINTF_FUNCTION(2,3);
+extern BOOL    moan_send_message(uschar *, int, error_block *eblock,
+		 header_line *, FILE *, uschar *);
 extern void    moan_tell_someone(uschar *, address_item *,
                  const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);

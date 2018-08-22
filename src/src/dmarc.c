@@ -178,14 +178,11 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
     eblock = add_to_eblock(eblock, US"Sender IP Address", sender_host_address);
     eblock = add_to_eblock(eblock, US"Received Date", tod_stamp(tod_full));
     eblock = add_to_eblock(eblock, US"SPF Alignment",
-			   (sa==DMARC_POLICY_SPF_ALIGNMENT_PASS) ?US"yes":US"no");
+		     sa == DMARC_POLICY_SPF_ALIGNMENT_PASS ? US"yes" : US"no");
     eblock = add_to_eblock(eblock, US"DKIM Alignment",
-			   (da==DMARC_POLICY_DKIM_ALIGNMENT_PASS)?US"yes":US"no");
+		     da == DMARC_POLICY_DKIM_ALIGNMENT_PASS ? US"yes" : US"no");
     eblock = add_to_eblock(eblock, US"DMARC Results", dmarc_status_text);
-    /* Set a sane default envelope sender */
-    dsn_from = dmarc_forensic_sender ? dmarc_forensic_sender :
-	       dsn_from ? dsn_from :
-	       string_sprintf("do-not-reply@%s",primary_hostname);
+
     for (c = 0; ruf[c]; c++)
       {
       recipient = string_copylc(ruf[c]);
@@ -199,12 +196,8 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
       if (host_checking || f.running_in_test_harness)
 	continue;
 
-      save_sender = sender_address;
-      sender_address = recipient;
-      send_status = moan_to_sender(ERRMESS_DMARC_FORENSIC, eblock,
-				   header_list, message_file, FALSE);
-      sender_address = save_sender;
-      if (!send_status)
+      if (!moan_send_message(recipient, ERRMESS_DMARC_FORENSIC, eblock,
+			    header_list, message_file, NULL))
 	log_write(0, LOG_MAIN|LOG_PANIC,
 	  "failure to send DMARC forensic report to %s", recipient);
       }

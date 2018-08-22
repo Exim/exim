@@ -29,7 +29,7 @@ void
 moan_write_from(FILE *f)
 {
 uschar *s = expand_string(dsn_from);
-if (s == NULL)
+if (!s)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
     "Failed to expand dsn_from (using default): %s", expand_string_message);
@@ -61,7 +61,7 @@ Arguments:
 Returns:         TRUE if message successfully sent
 */
 
-static BOOL
+BOOL
 moan_send_message(uschar *recipient, int ident, error_block *eblock,
   header_line *headers, FILE *message_file, uschar *firstline)
 {
@@ -71,9 +71,31 @@ int status;
 int count = 0;
 int size_limit = bounce_return_size_limit;
 FILE * fp;
-int pid = child_open_exim(&fd);
+int pid;
 
-/* Creation of child failed */
+#ifdef EXPERIMENTAL_DMARC
+uschar * s, * s2;
+
+/* For DMARC if there is a specific sender set, expand the variable for the
+header From: and grab the address from that for the envelope FROM. */
+
+if (  ident == ERRMESS_DMARC_FORENSIC
+   && dmarc_forensic_sender
+   && (s = expand_string(dmarc_forensic_sender))
+   && *s
+   && (s2 = expand_string(string_sprintf("${address:%s}", s)))
+   && *s2
+   )
+  pid = child_open_exim2(&fd, s2, bounce_sender_authentication);
+else
+  {
+  s = NULL;
+  pid = child_open_exim(&fd);
+  }
+
+#else
+pid = child_open_exim(&fd);
+#endif
 
 if (pid < 0)
   {
@@ -88,7 +110,14 @@ else DEBUG(D_any) debug_printf("Child process %d for sending message\n", pid);
 fp = fdopen(fd, "wb");
 if (errors_reply_to) fprintf(fp, "Reply-To: %s\n", errors_reply_to);
 fprintf(fp, "Auto-Submitted: auto-replied\n");
-moan_write_from(fp);
+
+#ifdef EXPERIMENTAL_DMARC
+if (s)
+  fprintf(fp, "From: %s\n", s);
+else
+#endif
+  moan_write_from(fp);
+
 fprintf(fp, "To: %s\n", recipient);
 
 switch(ident)
@@ -203,14 +232,13 @@ switch(ident)
   case ERRMESS_DMARC_FORENSIC:
     bounce_return_message = TRUE;
     bounce_return_body    = FALSE;
-    fprintf(fp,
-          "Subject: DMARC Forensic Report for %s from IP %s\n\n",
-	  ((eblock == NULL) ? US"Unknown" : eblock->text2),
+    fprintf(fp, "Subject: DMARC Forensic Report for %s from IP %s\n\n",
+	  eblock ? eblock->text2 : US"Unknown",
           sender_host_address);
     fprintf(fp,
       "A message claiming to be from you has failed the published DMARC\n"
       "policy for your domain.\n\n");
-    while (eblock != NULL)
+    while (eblock)
       {
       fprintf(fp, "  %s: %s\n", eblock->text1, eblock->text2);
       count++;

@@ -104,6 +104,10 @@ JH/21 Change as many as possible of the global flags into one-bit bitfields; the
       that the byte-sized flag variables are not interspersed among pointer
       variables, giving a better chance of good packing by the compiler.
 
+JH/22 Bug 1896: Fix the envelope from for DMARC forensic reports to be possibly
+      non-null, to avoid issues with sites running BATV.  Previously reports were
+      sent with an empty envelope sender so looked like bounces.
+
 
 Exim version 4.91
 -----------------

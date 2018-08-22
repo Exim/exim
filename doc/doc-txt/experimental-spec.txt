@@ -447,11 +447,19 @@ dmarc_history_file  Defines the location of a file to log results
                     directory of this file is writable by the user
                     exim runs as.
 
-dmarc_forensic_sender The email address to use when sending a
+dmarc_forensic_sender Alternate email address to use when sending a
                     forensic report detailing alignment failures
                     if a sender domain's dmarc record specifies it
                     and you have configured Exim to send them.
-                    Default: do-not-reply@$default_hostname
+
+		    If set, this is expanded and used for the
+		    From: header line; the address is extracted
+		    from it and used for the envelope from.
+		    If not set, the From: header is expanded from
+		    the dsn_from option, and <> is used for the
+		    envelope from.
+
+                    Default: unset.
 
 
 3. By default, the DMARC processing will run for any remote,
