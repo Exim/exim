@@ -163,13 +163,13 @@ optionlist smtp_transport_options[] = {
   { "serialize_hosts",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, serialize_hosts) },
   { "size_addition",        opt_int,
-      (void *)offsetof(smtp_transport_options_block, size_addition) }
+      (void *)offsetof(smtp_transport_options_block, size_addition) },
 #ifdef SUPPORT_SOCKS
- ,{ "socks_proxy",          opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, socks_proxy) }
+  { "socks_proxy",          opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, socks_proxy) },
 #endif
 #ifdef SUPPORT_TLS
- ,{ "tls_certificate",      opt_stringptr,
+  { "tls_certificate",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_certificate) },
   { "tls_crl",              opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_crl) },
