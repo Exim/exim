@@ -112,12 +112,14 @@ remote_smtp_dkim:
   command_timeout = 2s
   final_timeout = 2s
 
+.ifdef _HAVE_DKIM
 .ifdef SRV
   dkim_domain =		test.ex
   dkim_selector =	sel
   dkim_private_key =	DIR/aux-fixed/dkim/dkim.private
 .ifndef HEADERS_MAXSIZE
   dkim_sign_headers =	LIST
+.endif
 .endif
 .endif
 
