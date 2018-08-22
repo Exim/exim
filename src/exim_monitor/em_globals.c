@@ -148,6 +148,10 @@ BOOL    dont_deliver           = FALSE;
 int     dsn_ret                = 0;
 uschar *dsn_envid              = NULL;
 
+struct global_flags f = {
+ .sender_local		= FALSE,
+};
+
 #ifdef WITH_CONTENT_SCAN
 int     fake_response          = OK;
 #endif
@@ -205,7 +209,6 @@ uschar *sender_host_authenticated = NULL;
 uschar *sender_host_name       = NULL;
 int     sender_host_port       = 0;
 uschar *sender_ident           = NULL;
-BOOL    sender_local           = FALSE;
 BOOL    sender_set_untrusted   = FALSE;
 uschar *smtp_active_hostname   = NULL;
 

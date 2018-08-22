@@ -157,7 +157,7 @@ if (!syslog_timestamp)
 len = Ustrlen(s);
 
 #ifndef NO_OPENLOG
-if (!syslog_open && !running_in_test_harness)
+if (!syslog_open && !f.running_in_test_harness)
   {
 # ifdef SYSLOG_LOG_PID
   openlog(CS syslog_processname, LOG_PID|LOG_CONS, syslog_facility);
@@ -189,7 +189,7 @@ for (pass = 0; pass < 2; pass++)
 
     if (pass == 0)
       linecount++;
-    else if (running_in_test_harness)
+    else if (f.running_in_test_harness)
       if (linecount == 1)
         fprintf(stderr, "SYSLOG: '%.*s'\n", plen, ss);
       else
@@ -241,7 +241,7 @@ if (s1)
   if (log_stderr && log_stderr != debug_file)
     fprintf(log_stderr, "%s\n", s1);
   }
-if (receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
+if (f.receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
 if (smtp_input) smtp_closedown(s2);
 exim_exit(EXIT_FAILURE, NULL);
 }
@@ -895,7 +895,7 @@ if (!(flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)))
 
 /* There are some weird circumstances in which logging is disabled. */
 
-if (disable_logging)
+if (f.disable_logging)
   {
   DEBUG(D_any) debug_printf("log writing disabled\n");
   return;
@@ -918,7 +918,7 @@ if (LOGGING(pid))
   if (!syslog_pid) pid_position[1] = ptr - log_buffer;	/*  … and end+1 of the PID */
   }
 
-if (really_exim && message_id[0] != 0)
+if (f.really_exim && message_id[0] != 0)
   ptr += sprintf(CS ptr, "%s ", message_id);
 
 if (flags & LOG_CONFIG) ptr = log_config_info(ptr, flags);
@@ -961,7 +961,7 @@ length = ptr - log_buffer;
 Write to log_stderr unless debugging (when it will already have been written),
 or unless there is no log_stderr (expn called from daemon, for example). */
 
-if (!really_exim || log_testing_mode)
+if (!f.really_exim || f.log_testing_mode)
   {
   if (  !debug_selector
      && log_stderr

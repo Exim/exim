@@ -601,7 +601,7 @@ else
   and cause the client to time out. So in this case we forgo the PIPELINING
   optimization. */
 
-  if (smtp_out && !disable_callout_flush) mac_smtp_fflush();
+  if (smtp_out && !f.disable_callout_flush) mac_smtp_fflush();
 
   clearflag(addr, af_verify_pmfail);  /* postmaster callout flag */
   clearflag(addr, af_verify_nsfail);  /* null sender callout flag */
@@ -1642,18 +1642,18 @@ Returns:           OK      address verified
 */
 
 int
-verify_address(address_item *vaddr, FILE *f, int options, int callout,
-  int callout_overall, int callout_connect, uschar *se_mailfrom,
+verify_address(address_item * vaddr, FILE * fp, int options, int callout,
+  int callout_overall, int callout_connect, uschar * se_mailfrom,
   uschar *pm_mailfrom, BOOL *routed)
 {
 BOOL allok = TRUE;
-BOOL full_info = (f == NULL)? FALSE : (debug_selector != 0);
+BOOL full_info = fp ? debug_selector != 0 : FALSE;
 BOOL expn         = (options & vopt_expn) != 0;
 BOOL success_on_redirect = (options & vopt_success_on_redirect) != 0;
 int i;
 int yield = OK;
 int verify_type = expn? v_expn :
-     address_test_mode? v_none :
+   f.address_test_mode? v_none :
           options & vopt_is_recipient? v_recipient : v_sender;
 address_item *addr_list;
 address_item *addr_new = NULL;
@@ -1688,8 +1688,8 @@ if (parse_find_at(address) == NULL)
   {
   if (!(options & vopt_qualify))
     {
-    if (f)
-      respond_printf(f, "%sA domain is required for \"%s\"%s\n",
+    if (fp)
+      respond_printf(fp, "%sA domain is required for \"%s\"%s\n",
         ko_prefix, address, cr);
     *failure_ptr = US"qualify";
     return FAIL;
@@ -1700,7 +1700,7 @@ if (parse_find_at(address) == NULL)
 DEBUG(D_verify)
   {
   debug_printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-  debug_printf("%s %s\n", address_test_mode? "Testing" : "Verifying", address);
+  debug_printf("%s %s\n", f.address_test_mode? "Testing" : "Verifying", address);
   }
 
 /* Rewrite and report on it. Clear the domain and local part caches - these
@@ -1715,7 +1715,7 @@ if (global_rewrite_rules)
     {
     for (i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->localpart_cache[i] = 0;
     for (i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->domain_cache[i] = 0;
-    if (f && !expn) fprintf(f, "Address rewritten as: %s\n", address);
+    if (fp && !expn) fprintf(fp, "Address rewritten as: %s\n", address);
     }
   }
 
@@ -1781,29 +1781,29 @@ while (addr_new)
   if (testflag(addr, af_pfr))
     {
     allok = FALSE;
-    if (f)
+    if (fp)
       {
       BOOL allow;
 
       if (addr->address[0] == '>')
         {
         allow = testflag(addr, af_allow_reply);
-        fprintf(f, "%s -> mail %s", addr->parent->address, addr->address + 1);
+        fprintf(fp, "%s -> mail %s", addr->parent->address, addr->address + 1);
         }
       else
         {
         allow = addr->address[0] == '|'
           ? testflag(addr, af_allow_pipe) : testflag(addr, af_allow_file);
-        fprintf(f, "%s -> %s", addr->parent->address, addr->address);
+        fprintf(fp, "%s -> %s", addr->parent->address, addr->address);
         }
 
       if (addr->basic_errno == ERRNO_BADTRANSPORT)
-        fprintf(f, "\n*** Error in setting up pipe, file, or autoreply:\n"
+        fprintf(fp, "\n*** Error in setting up pipe, file, or autoreply:\n"
           "%s\n", addr->message);
       else if (allow)
-        fprintf(f, "\n  transport = %s\n", addr->transport->name);
+        fprintf(fp, "\n  transport = %s\n", addr->transport->name);
       else
-        fprintf(f, " *** forbidden ***\n");
+        fprintf(fp, " *** forbidden ***\n");
       }
     continue;
     }
@@ -1935,7 +1935,7 @@ while (addr_new)
       if (host_list)
         {
         HDEBUG(D_verify) debug_printf("Attempting full verification using callout\n");
-        if (host_checking && !host_checking_callout)
+        if (host_checking && !f.host_checking_callout)
           {
           HDEBUG(D_verify)
             debug_printf("... callout omitted by default when host testing\n"
@@ -1976,29 +1976,29 @@ while (addr_new)
   if (rc == FAIL)
     {
     allok = FALSE;
-    if (f)
+    if (fp)
       {
       address_item *p = addr->parent;
 
-      respond_printf(f, "%s%s %s", ko_prefix,
+      respond_printf(fp, "%s%s %s", ko_prefix,
         full_info ? addr->address : address,
-        address_test_mode ? "is undeliverable" : "failed to verify");
-      if (!expn && admin_user)
+        f.address_test_mode ? "is undeliverable" : "failed to verify");
+      if (!expn && f.admin_user)
         {
         if (addr->basic_errno > 0)
-          respond_printf(f, ": %s", strerror(addr->basic_errno));
+          respond_printf(fp, ": %s", strerror(addr->basic_errno));
         if (addr->message)
-          respond_printf(f, ": %s", addr->message);
+          respond_printf(fp, ": %s", addr->message);
         }
 
       /* Show parents iff doing full info */
 
       if (full_info) while (p)
         {
-        respond_printf(f, "%s\n    <-- %s", cr, p->address);
+        respond_printf(fp, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
         }
-      respond_printf(f, "%s\n", cr);
+      respond_printf(fp, "%s\n", cr);
       }
     cancel_cutthrough_connection(TRUE, US"routing hard fail");
 
@@ -2015,29 +2015,29 @@ while (addr_new)
   else if (rc == DEFER)
     {
     allok = FALSE;
-    if (f)
+    if (fp)
       {
       address_item *p = addr->parent;
-      respond_printf(f, "%s%s cannot be resolved at this time", ko_prefix,
+      respond_printf(fp, "%s%s cannot be resolved at this time", ko_prefix,
         full_info? addr->address : address);
-      if (!expn && admin_user)
+      if (!expn && f.admin_user)
         {
         if (addr->basic_errno > 0)
-          respond_printf(f, ": %s", strerror(addr->basic_errno));
+          respond_printf(fp, ": %s", strerror(addr->basic_errno));
         if (addr->message)
-          respond_printf(f, ": %s", addr->message);
+          respond_printf(fp, ": %s", addr->message);
         else if (addr->basic_errno <= 0)
-          respond_printf(f, ": unknown error");
+          respond_printf(fp, ": unknown error");
         }
 
       /* Show parents iff doing full info */
 
       if (full_info) while (p)
         {
-        respond_printf(f, "%s\n    <-- %s", cr, p->address);
+        respond_printf(fp, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
         }
-      respond_printf(f, "%s\n", cr);
+      respond_printf(fp, "%s\n", cr);
       }
     cancel_cutthrough_connection(TRUE, US"routing soft fail");
 
@@ -2058,16 +2058,16 @@ while (addr_new)
 
     if (!addr_new)
       if (!addr_local && !addr_remote)
-        respond_printf(f, "250 mail to <%s> is discarded\r\n", address);
+        respond_printf(fp, "250 mail to <%s> is discarded\r\n", address);
       else
-        respond_printf(f, "250 <%s>\r\n", address);
+        respond_printf(fp, "250 <%s>\r\n", address);
 
     else do
       {
       address_item *addr2 = addr_new;
       addr_new = addr2->next;
       if (!addr_new) ok_prefix = US"250 ";
-      respond_printf(f, "%s<%s>\r\n", ok_prefix, addr2->address);
+      respond_printf(fp, "%s<%s>\r\n", ok_prefix, addr2->address);
       } while (addr_new);
     yield = OK;
     goto out;
@@ -2101,8 +2101,8 @@ while (addr_new)
 	  )  )
        )
       {
-      if (f) fprintf(f, "%s %s\n",
-        address, address_test_mode ? "is deliverable" : "verified");
+      if (fp) fprintf(fp, "%s %s\n",
+        address, f.address_test_mode ? "is deliverable" : "verified");
 
       /* If we have carried on to verify a child address, we want the value
       of $address_data to be that of the child */
@@ -2121,7 +2121,7 @@ while (addr_new)
   }     /* Loop for generated addresses */
 
 /* Display the full results of the successful routing, including any generated
-addresses. Control gets here only when full_info is set, which requires f not
+addresses. Control gets here only when full_info is set, which requires fp not
 to be NULL, and this occurs only when a top-level verify is called with the
 debugging switch on.
 
@@ -2131,7 +2131,7 @@ discarded, usually because of the use of :blackhole: in an alias file. */
 
 if (allok && !addr_local && !addr_remote)
   {
-  fprintf(f, "mail to %s is discarded\n", address);
+  fprintf(fp, "mail to %s is discarded\n", address);
   goto out;
   }
 
@@ -2144,10 +2144,10 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
     addr_list = addr->next;
 
-    fprintf(f, "%s", CS addr->address);
+    fprintf(fp, "%s", CS addr->address);
 #ifdef EXPERIMENTAL_SRS
     if(addr->prop.srs_sender)
-      fprintf(f, "    [srs = %s]", addr->prop.srs_sender);
+      fprintf(fp, "    [srs = %s]", addr->prop.srs_sender);
 #endif
 
     /* If the address is a duplicate, show something about it. */
@@ -2156,19 +2156,19 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
       {
       tree_node *tnode;
       if ((tnode = tree_search(tree_duplicates, addr->unique)))
-        fprintf(f, "   [duplicate, would not be delivered]");
+        fprintf(fp, "   [duplicate, would not be delivered]");
       else tree_add_duplicate(addr->unique, addr);
       }
 
     /* Now show its parents */
 
     for (p = addr->parent; p; p = p->parent)
-      fprintf(f, "\n    <-- %s", p->address);
-    fprintf(f, "\n  ");
+      fprintf(fp, "\n    <-- %s", p->address);
+    fprintf(fp, "\n  ");
 
     /* Show router, and transport */
 
-    fprintf(f, "router = %s, transport = %s\n",
+    fprintf(fp, "router = %s, transport = %s\n",
       addr->router->name, tp ? tp->name : US"unset");
 
     /* Show any hosts that are set up by a router unless the transport
@@ -2188,20 +2188,20 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
         }
       for (h = addr->host_list; h; h = h->next)
 	{
-	fprintf(f, "  host %-*s ", maxlen, h->name);
+	fprintf(fp, "  host %-*s ", maxlen, h->name);
 
 	if (h->address)
-	  fprintf(f, "[%s%-*c", h->address, maxaddlen+1 - Ustrlen(h->address), ']');
+	  fprintf(fp, "[%s%-*c", h->address, maxaddlen+1 - Ustrlen(h->address), ']');
 	else if (tp->info->local)
-	  fprintf(f, " %-*s ", maxaddlen, "");  /* Omit [unknown] for local */
+	  fprintf(fp, " %-*s ", maxaddlen, "");  /* Omit [unknown] for local */
 	else
-	  fprintf(f, "[%s%-*c", "unknown", maxaddlen+1 - 7, ']');
+	  fprintf(fp, "[%s%-*c", "unknown", maxaddlen+1 - 7, ']');
 
-        if (h->mx >= 0) fprintf(f, " MX=%d", h->mx);
-        if (h->port != PORT_NONE) fprintf(f, " port=%d", h->port);
-        if (running_in_test_harness  &&  h->dnssec == DS_YES) fputs(" AD", f);
-        if (h->status == hstatus_unusable) fputs(" ** unusable **", f);
-	fputc('\n', f);
+        if (h->mx >= 0) fprintf(fp, " MX=%d", h->mx);
+        if (h->port != PORT_NONE) fprintf(fp, " port=%d", h->port);
+        if (f.running_in_test_harness  &&  h->dnssec == DS_YES) fputs(" AD", fp);
+        if (h->status == hstatus_unusable) fputs(" ** unusable **", fp);
+	fputc('\n', fp);
         }
       }
     }
@@ -2257,7 +2257,7 @@ for (h = header_list; h && yield == OK; h = h->next)
   /* Loop for multiple addresses in the header, enabling group syntax. Note
   that we have to reset this after the header has been scanned. */
 
-  parse_allow_group = TRUE;
+  f.parse_allow_group = TRUE;
 
   while (*s)
     {
@@ -2280,11 +2280,11 @@ for (h = header_list; h && yield == OK; h = h->next)
       {
       if (h->type == htype_from || h->type == htype_sender)
         {
-        if (!allow_unqualified_sender) recipient = NULL;
+        if (!f.allow_unqualified_sender) recipient = NULL;
         }
       else
         {
-        if (!allow_unqualified_recipient) recipient = NULL;
+        if (!f.allow_unqualified_recipient) recipient = NULL;
         }
       if (recipient == NULL) errmess = US"unqualified address not permitted";
       }
@@ -2334,8 +2334,8 @@ for (h = header_list; h && yield == OK; h = h->next)
     while (isspace(*s)) s++;
     }   /* Next address */
 
-  parse_allow_group = FALSE;
-  parse_found_group = FALSE;
+  f.parse_allow_group = FALSE;
+  f.parse_found_group = FALSE;
   }     /* Next header unless yield has been set FALSE */
 
 return yield;
@@ -2417,7 +2417,7 @@ for (i = 0; i < recipients_count; i++)
     /* Loop for multiple addresses in the header, enabling group syntax. Note
     that we have to reset this after the header has been scanned. */
 
-    parse_allow_group = TRUE;
+    f.parse_allow_group = TRUE;
 
     while (*s != 0)
       {
@@ -2452,8 +2452,8 @@ for (i = 0; i < recipients_count; i++)
       while (isspace(*s)) s++;
       }   /* Next address */
 
-    parse_allow_group = FALSE;
-    parse_found_group = FALSE;
+    f.parse_allow_group = FALSE;
+    f.parse_found_group = FALSE;
     }     /* Next header (if found is false) */
 
   if (!found) return FAIL;
@@ -2554,7 +2554,7 @@ for (i = 0; i < 3 && !done; i++)
     /* Scan the addresses in the header, enabling group syntax. Note that we
     have to reset this after the header has been scanned. */
 
-    parse_allow_group = TRUE;
+    f.parse_allow_group = TRUE;
 
     while (*s != 0)
       {
@@ -2672,8 +2672,8 @@ for (i = 0; i < 3 && !done; i++)
       s = ss;
       }     /* Next address */
 
-    parse_allow_group = FALSE;
-    parse_found_group = FALSE;
+    f.parse_allow_group = FALSE;
+    f.parse_found_group = FALSE;
     }       /* Next header, unless done */
   }         /* Next header type unless done */
 
@@ -3031,8 +3031,8 @@ if (iplookup)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 
   result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL);
-  if (valueptr != NULL) *valueptr = result;
-  return (result != NULL)? OK : search_find_defer? DEFER: FAIL;
+  if (valueptr) *valueptr = result;
+  return result ? OK : f.search_find_defer ? DEFER: FAIL;
   }
 
 /* The pattern is not an IP address or network reference of any kind. That is,

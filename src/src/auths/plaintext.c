@@ -204,7 +204,7 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)))
       if (smtp_write_command(outblock, SCMD_FLUSH, "*\r\n") >= 0)
         (void) smtp_read_response(inblock, US buffer, buffsize, '2', timeout);
       }
-    if (expand_string_forcedfail)
+    if (f.expand_string_forcedfail)
       {
       *buffer = 0;       /* No message */
       return CANCELLED;

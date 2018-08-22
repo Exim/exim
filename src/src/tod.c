@@ -84,7 +84,7 @@ if (type == tod_log) type = log_timezone ? tod_log_zone : tod_log_bare;
 
 /* Convert to local time or UTC */
 
-t = timestamps_utc ? gmtime(&now.tv_sec) : localtime(&now.tv_sec);
+t = f.timestamps_utc ? gmtime(&now.tv_sec) : localtime(&now.tv_sec);
 
 switch(type)
   {
@@ -148,7 +148,7 @@ switch(type)
       struct tm local;
       memcpy(&local, t, sizeof(struct tm));
 
-      if (timestamps_utc)
+      if (f.timestamps_utc)
 	diff_hour = diff_min = 0;
       else
 	{

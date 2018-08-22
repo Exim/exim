@@ -44,7 +44,7 @@ if (rblock->extra_headers)
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
 	{
 	addr->message = string_sprintf(
 	  "%s router failed to expand add_headers item \"%s\": %s",
@@ -99,7 +99,7 @@ if (rblock->remove_headers)
   while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     if (!(s = expand_string(s)))
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
 	{
 	addr->message = string_sprintf(
 	  "%s router failed to expand remove_headers item \"%s\": %s",

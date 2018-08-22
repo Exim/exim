@@ -495,7 +495,7 @@ for (ptr = start; ptr < end; ptr++)
 
   if (  *ptr == '\r' && ptr[1] == '\n'
      && !(tctx->options & topt_use_crlf)
-     && spool_file_wireformat
+     && f.spool_file_wireformat
      )
     ptr++;
 
@@ -505,7 +505,7 @@ for (ptr = start; ptr < end; ptr++)
 
     /* Insert CR before NL if required */
 
-    if (tctx->options & topt_use_crlf && !spool_file_wireformat)
+    if (tctx->options & topt_use_crlf && !f.spool_file_wireformat)
       *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
     transport_newlines++;
@@ -723,7 +723,7 @@ for (h = header_list; h; h = h->next) if (h->type != htype_old)
 	int len;
 
 	if (i == 0)
-	  if (!(s = expand_string(s)) && !expand_string_forcedfail)
+	  if (!(s = expand_string(s)) && !f.expand_string_forcedfail)
 	    {
 	    errno = ERRNO_CHHEADER_FAIL;
 	    return FALSE;
@@ -829,7 +829,7 @@ if (tblock && (list = CUS tblock->add_headers))
 	  }
 	}
       }
-    else if (!expand_string_forcedfail)
+    else if (!f.expand_string_forcedfail)
       { errno = ERRNO_CHHEADER_FAIL; return FALSE; }
   }
 
@@ -934,8 +934,8 @@ so temporarily hide the global that adjusts for its format. */
 
 if (!(tctx->options & topt_no_headers))
   {
-  BOOL save_wireformat = spool_file_wireformat;
-  spool_file_wireformat = FALSE;
+  BOOL save_wireformat = f.spool_file_wireformat;
+  f.spool_file_wireformat = FALSE;
 
   /* Add return-path: if requested. */
 
@@ -992,11 +992,11 @@ if (!(tctx->options & topt_no_headers))
   if (!transport_headers_send(tctx, &write_chunk))
     {
 bad:
-    spool_file_wireformat = save_wireformat;
+    f.spool_file_wireformat = save_wireformat;
     return FALSE;
     }
 
-  spool_file_wireformat = save_wireformat;
+  f.spool_file_wireformat = save_wireformat;
   }
 
 /* When doing RFC3030 CHUNKING output, work out how much data would be in a
@@ -1025,7 +1025,7 @@ if (tctx->options & topt_use_bdat)
     if (size_limit > 0  &&  fsize > size_limit)
       fsize = size_limit;
     size = hsize + fsize;
-    if (tctx->options & topt_use_crlf  &&  !spool_file_wireformat)
+    if (tctx->options & topt_use_crlf  &&  !f.spool_file_wireformat)
       size += body_linecount;	/* account for CRLF-expansion */
 
     /* With topt_use_bdat we never do dot-stuffing; no need to
@@ -1072,7 +1072,7 @@ This should get used for CHUNKING output and also for writing the -K file for
 dkim signing,  when we had CHUNKING input.  */
 
 #ifdef OS_SENDFILE
-if (  spool_file_wireformat
+if (  f.spool_file_wireformat
    && !(tctx->options & (topt_no_body | topt_end_dot))
    && !nl_check_length
    && tls_out.active.sock != tctx->u.fd
@@ -1106,7 +1106,7 @@ DEBUG(D_transport) debug_printf("cannot use sendfile for body: no support\n");
 DEBUG(D_transport)
   if (!(tctx->options & topt_no_body))
     debug_printf("cannot use sendfile for body: %s\n",
-      !spool_file_wireformat ? "spoolfile not wireformat"
+      !f.spool_file_wireformat ? "spoolfile not wireformat"
       : tctx->options & topt_end_dot ? "terminating dot wanted"
       : nl_check_length ? "dot- or From-stuffing wanted"
       : "TLS output wanted");
@@ -1135,7 +1135,7 @@ if (!(tctx->options & topt_no_body))
 /* Finished with the check string, and spool-format consideration */
 
 nl_check_length = nl_escape_length = 0;
-spool_file_wireformat = FALSE;
+f.spool_file_wireformat = FALSE;
 
 /* If requested, add a terminating "." line (SMTP output). */
 
@@ -1172,12 +1172,12 @@ BOOL
 transport_write_message(transport_ctx * tctx, int size_limit)
 {
 BOOL last_filter_was_NL = TRUE;
-BOOL save_spool_file_wireformat = spool_file_wireformat;
+BOOL save_spool_file_wireformat = f.spool_file_wireformat;
 int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
 
-transport_filter_timed_out = FALSE;
+f.transport_filter_timed_out = FALSE;
 
 /* If there is no filter command set up, call the internal function that does
 the actual work, passing it the incoming fd, and return its result. */
@@ -1277,7 +1277,7 @@ if (write_pid < 0)
 
 /* When testing, let the subprocess get going */
 
-if (running_in_test_harness) millisleep(250);
+if (f.running_in_test_harness) millisleep(250);
 
 DEBUG(D_transport)
   debug_printf("process %d writing to transport filter\n", (int)write_pid);
@@ -1294,7 +1294,7 @@ no data is returned, that counts as "ended with NL" (default setting of the
 variable is TRUE).  The output should always be unix-format as we converted
 any wireformat source on writing input to the filter. */
 
-spool_file_wireformat = FALSE;
+f.spool_file_wireformat = FALSE;
 chunk_ptr = deliver_out_buffer;
 
 for (;;)
@@ -1306,7 +1306,7 @@ for (;;)
   if (sigalrm_seen)
     {
     errno = ETIMEDOUT;
-    transport_filter_timed_out = TRUE;
+    f.transport_filter_timed_out = TRUE;
     goto TIDY_UP;
     }
 
@@ -1334,7 +1334,7 @@ there has been an error, kill the processes before waiting for them, just to be
 sure. Also apply a paranoia timeout. */
 
 TIDY_UP:
-spool_file_wireformat = save_spool_file_wireformat;
+f.spool_file_wireformat = save_spool_file_wireformat;
 save_errno = errno;
 
 (void)close(fd_read);
@@ -1402,7 +1402,7 @@ filter was not NL, insert a NL to make the SMTP protocol work. */
 if (yield)
   {
   nl_check_length = nl_escape_length = 0;
-  spool_file_wireformat = FALSE;
+  f.spool_file_wireformat = FALSE;
   if (  tctx->options & topt_end_dot
      && ( last_filter_was_NL
         ? !write_chunk(tctx, US".\n", 2)
@@ -1870,7 +1870,7 @@ but we have a number of extras that may be added. */
 
 argv = CUSS child_exec_exim(CEE_RETURN_ARGV, TRUE, &i, FALSE, 0);
 
-if (smtp_authenticated)				argv[i++] = US"-MCA";
+if (f.smtp_authenticated)			argv[i++] = US"-MCA";
 if (smtp_peer_options & OPTION_CHUNKING)	argv[i++] = US"-MCK";
 if (smtp_peer_options & OPTION_DSN)		argv[i++] = US"-MCD";
 if (smtp_peer_options & OPTION_PIPE)		argv[i++] = US"-MCP";
@@ -1956,7 +1956,7 @@ if ((pid = fork()) == 0)
     DEBUG(D_transport) debug_printf("transport_pass_socket succeeded (final-pid %d)\n", pid);
     _exit(EXIT_SUCCESS);
     }
-  if (running_in_test_harness) sleep(1);
+  if (f.running_in_test_harness) sleep(1);
 
   transport_do_pass_socket(transport_name, hostname, hostaddress,
     id, socket_fd);
@@ -2247,9 +2247,9 @@ if (expand_arguments)
     else
       {
       const uschar *expanded_arg;
-      enable_dollar_recipients = allow_dollar_recipients;
+      f.enable_dollar_recipients = allow_dollar_recipients;
       expanded_arg = expand_cstring(argv[i]);
-      enable_dollar_recipients = FALSE;
+      f.enable_dollar_recipients = FALSE;
 
       if (expanded_arg == NULL)
         {

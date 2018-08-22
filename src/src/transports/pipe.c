@@ -481,7 +481,7 @@ if (expand_arguments)
 
   /* Allow $recipients in the expansion iff it comes from a system filter */
 
-  enable_dollar_recipients = addr && addr->parent &&
+  f.enable_dollar_recipients = addr && addr->parent &&
     Ustrcmp(addr->parent->address, "system-filter") == 0;
 
   if (p != NULL && (
@@ -509,11 +509,11 @@ if (expand_arguments)
   else
     argv[2] = expand_string(cmd);
 
-  enable_dollar_recipients = FALSE;
+  f.enable_dollar_recipients = FALSE;
 
   if (!argv[2])
     {
-    addr->transport_return = search_find_defer ? DEFER : expand_fail;
+    addr->transport_return = f.search_find_defer ? DEFER : expand_fail;
     addr->message = string_sprintf("Expansion of command \"%s\" "
       "in %s transport failed: %s",
       cmd, tname, expand_string_message);
@@ -679,7 +679,7 @@ envp[envcount++] = US"SHELL=/bin/sh";
 if (addr->host_list != NULL)
   envp[envcount++] = string_sprintf("HOST=%s", addr->host_list->name);
 
-if (timestamps_utc) envp[envcount++] = US"TZ=UTC";
+if (f.timestamps_utc) envp[envcount++] = US"TZ=UTC";
 else if (timezone_string != NULL && timezone_string[0] != 0)
   envp[envcount++] = string_sprintf("TZ=%s", timezone_string);
 
@@ -714,7 +714,7 @@ envp[envcount] = NULL;
 
 /* If the -N option is set, can't do any more. */
 
-if (dont_deliver)
+if (f.dont_deliver)
   {
   DEBUG(D_transport)
     debug_printf("*** delivery by %s transport bypassed by -N option",
@@ -814,7 +814,7 @@ bit here to let the sub-process get going, but it may still not complete. So we
 ignore all writing errors. (When in the test harness, we do do a short sleep so
 any debugging output is likely to be in the same order.) */
 
-if (running_in_test_harness) millisleep(500);
+if (f.running_in_test_harness) millisleep(500);
 
 DEBUG(D_transport) debug_printf("Writing message to pipe\n");
 
@@ -837,7 +837,7 @@ if (ob->message_prefix != NULL)
   uschar *prefix = expand_string(ob->message_prefix);
   if (prefix == NULL)
     {
-    addr->transport_return = search_find_defer? DEFER : PANIC;
+    addr->transport_return = f.search_find_defer? DEFER : PANIC;
     addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
       "transport) failed: %s", ob->message_prefix, tblock->name,
       expand_string_message);
@@ -881,7 +881,7 @@ if (ob->message_suffix)
   uschar *suffix = expand_string(ob->message_suffix);
   if (!suffix)
     {
-    addr->transport_return = search_find_defer? DEFER : PANIC;
+    addr->transport_return = f.search_find_defer? DEFER : PANIC;
     addr->message = string_sprintf("Expansion of \"%s\" (suffix for %s "
       "transport) failed: %s", ob->message_suffix, tblock->name,
       expand_string_message);
@@ -920,7 +920,7 @@ if (!written_ok)
   if (errno == ETIMEDOUT)
     {
     addr->message = string_sprintf("%stimeout while writing to pipe",
-      transport_filter_timed_out? "transport filter " : "");
+      f.transport_filter_timed_out ? "transport filter " : "");
     addr->transport_return = ob->timeout_defer? DEFER : FAIL;
     timeout = 1;
     }
@@ -986,7 +986,7 @@ if ((rc = child_close(pid, timeout)) != 0)
   This prevents the transport_filter timeout message from getting overwritten
   by the exit error which is not the cause of the problem. */
 
-  else if (transport_filter_timed_out)
+  else if (f.transport_filter_timed_out)
     {
     killpg(pid, SIGKILL);
     kill(outpid, SIGKILL);

@@ -2137,7 +2137,7 @@ if (parse_identifier(filter,CUS "address"))
         filter->errmsg=CUS "header string expansion failed";
         return -1;
         }
-      parse_allow_group = TRUE;
+      f.parse_allow_group = TRUE;
       while (*header_value && !*cond)
         {
         uschar *error;
@@ -2183,8 +2183,8 @@ if (parse_identifier(filter,CUS "address"))
         if (saveend == 0) break;
         header_value = end_addr + 1;
         }
-      parse_allow_group = FALSE;
-      parse_found_group = FALSE;
+      f.parse_allow_group = FALSE;
+      f.parse_found_group = FALSE;
       }
     }
   return 1;

@@ -173,7 +173,7 @@ int sock, backlog = 5;
 if (  (sock = socket(SOCK_STREAM, AF_INET, 0)) < 0
    && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &backlog, sizeof(backlog))
    )
-  tcp_fastopen_ok = TRUE;
+  f.tcp_fastopen_ok = TRUE;
 close(sock);
 # endif
 }
@@ -256,7 +256,7 @@ This is a Linux implementation.  It might be useable on FreeBSD; I have
 not checked.  I think MacOS has a "connectx" call for this purpose,
 rather than using "sendto" ? */
 
-if (fastopen_blob && tcp_fastopen_ok)
+if (fastopen_blob && f.tcp_fastopen_ok)
   {
   if ((rc = sendto(sock, fastopen_blob->data, fastopen_blob->len,
 		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
@@ -313,7 +313,7 @@ alarm(0);
 can't think of any other way of doing this. It converts a connection refused
 into a timeout if the timeout is set to 999999. */
 
-if (running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
+if (f.running_in_test_harness  && save_errno == ECONNREFUSED && timeout == 999999)
   {
   rc = -1;
   save_errno = EINTR;

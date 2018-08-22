@@ -234,7 +234,7 @@ if (rc != spool_read_OK)
     }
   else
     {
-    deliver_freeze = FALSE;
+    f.deliver_freeze = FALSE;
     sender_address = msg;
     recipients_count = 0;
     }
@@ -242,9 +242,9 @@ if (rc != spool_read_OK)
 
 /* Now set up the remaining data. */
 
-q->frozen = deliver_freeze;
+q->frozen = f.deliver_freeze;
 
-if (sender_set_untrusted)
+if (f.sender_set_untrusted)
   {
   if (sender_address[0] == 0)
     {

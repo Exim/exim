@@ -130,7 +130,7 @@ spool_write_header(uschar *id, int where, uschar **errmsg)
 int fd;
 int i;
 int size_correction;
-FILE *f;
+FILE * fp;
 header_line *h;
 struct stat statbuf;
 uschar * tname;
@@ -141,7 +141,7 @@ tname = spool_fname(US"input", message_subdir,
 
 if ((fd = spool_open_temp(tname)) < 0)
   return spool_write_error(where, errmsg, US"open", NULL, NULL);
-f = fdopen(fd, "wb");
+fp = fdopen(fd, "wb");
 DEBUG(D_receive|D_deliver) debug_printf("Writing spool header file: %s\n", tname);
 
 /* We now have an open file to which the header data is to be written. Start
@@ -150,136 +150,136 @@ identity of the submitting user, followed by the sender's address. The sender's
 address is enclosed in <> because it might be the null address. Then write the
 received time and the number of warning messages that have been sent. */
 
-fprintf(f, "%s-H\n", message_id);
-fprintf(f, "%.63s %ld %ld\n", originator_login, (long int)originator_uid,
+fprintf(fp, "%s-H\n", message_id);
+fprintf(fp, "%.63s %ld %ld\n", originator_login, (long int)originator_uid,
   (long int)originator_gid);
-fprintf(f, "<%s>\n", sender_address);
-fprintf(f, "%d %d\n", (int)received_time.tv_sec, warning_count);
+fprintf(fp, "<%s>\n", sender_address);
+fprintf(fp, "%d %d\n", (int)received_time.tv_sec, warning_count);
 
-fprintf(f, "-received_time_usec .%06d\n", (int)received_time.tv_usec);
+fprintf(fp, "-received_time_usec .%06d\n", (int)received_time.tv_usec);
 
 /* If there is information about a sending host, remember it. The HELO
 data can be set for local SMTP as well as remote. */
 
 if (sender_helo_name)
-  fprintf(f, "-helo_name %s\n", sender_helo_name);
+  fprintf(fp, "-helo_name %s\n", sender_helo_name);
 
 if (sender_host_address)
   {
-  fprintf(f, "-host_address %s.%d\n", sender_host_address, sender_host_port);
+  fprintf(fp, "-host_address %s.%d\n", sender_host_address, sender_host_port);
   if (sender_host_name)
-    fprintf(f, "-host_name %s\n", sender_host_name);
+    fprintf(fp, "-host_name %s\n", sender_host_name);
   if (sender_host_authenticated)
-    fprintf(f, "-host_auth %s\n", sender_host_authenticated);
+    fprintf(fp, "-host_auth %s\n", sender_host_authenticated);
   }
 
 /* Also about the interface a message came in on */
 
 if (interface_address)
-  fprintf(f, "-interface_address %s.%d\n", interface_address, interface_port);
+  fprintf(fp, "-interface_address %s.%d\n", interface_address, interface_port);
 
 if (smtp_active_hostname != primary_hostname)
-  fprintf(f, "-active_hostname %s\n", smtp_active_hostname);
+  fprintf(fp, "-active_hostname %s\n", smtp_active_hostname);
 
 /* Likewise for any ident information; for local messages this is
 likely to be the same as originator_login, but will be different if
 the originator was root, forcing a different ident. */
 
-if (sender_ident) fprintf(f, "-ident %s\n", sender_ident);
+if (sender_ident) fprintf(fp, "-ident %s\n", sender_ident);
 
 /* Ditto for the received protocol */
 
 if (received_protocol)
-  fprintf(f, "-received_protocol %s\n", received_protocol);
+  fprintf(fp, "-received_protocol %s\n", received_protocol);
 
 /* Preserve any ACL variables that are set. */
 
-tree_walk(acl_var_c, &acl_var_write, f);
-tree_walk(acl_var_m, &acl_var_write, f);
+tree_walk(acl_var_c, &acl_var_write, fp);
+tree_walk(acl_var_m, &acl_var_write, fp);
 
 /* Now any other data that needs to be remembered. */
 
-if (spool_file_wireformat)
-  fprintf(f, "-spool_file_wireformat\n");
+if (f.spool_file_wireformat)
+  fprintf(fp, "-spool_file_wireformat\n");
 else
-  fprintf(f, "-body_linecount %d\n", body_linecount);
-fprintf(f, "-max_received_linelength %d\n", max_received_linelength);
+  fprintf(fp, "-body_linecount %d\n", body_linecount);
+fprintf(fp, "-max_received_linelength %d\n", max_received_linelength);
 
-if (body_zerocount > 0) fprintf(f, "-body_zerocount %d\n", body_zerocount);
+if (body_zerocount > 0) fprintf(fp, "-body_zerocount %d\n", body_zerocount);
 
 if (authenticated_id)
-  fprintf(f, "-auth_id %s\n", authenticated_id);
+  fprintf(fp, "-auth_id %s\n", authenticated_id);
 if (authenticated_sender)
-  fprintf(f, "-auth_sender %s\n", authenticated_sender);
+  fprintf(fp, "-auth_sender %s\n", authenticated_sender);
 
-if (allow_unqualified_recipient) fprintf(f, "-allow_unqualified_recipient\n");
-if (allow_unqualified_sender) fprintf(f, "-allow_unqualified_sender\n");
-if (deliver_firsttime) fprintf(f, "-deliver_firsttime\n");
-if (deliver_freeze) fprintf(f, "-frozen " TIME_T_FMT "\n", deliver_frozen_at);
-if (dont_deliver) fprintf(f, "-N\n");
-if (host_lookup_deferred) fprintf(f, "-host_lookup_deferred\n");
-if (host_lookup_failed) fprintf(f, "-host_lookup_failed\n");
-if (sender_local) fprintf(f, "-local\n");
-if (local_error_message) fprintf(f, "-localerror\n");
+if (f.allow_unqualified_recipient) fprintf(fp, "-allow_unqualified_recipient\n");
+if (f.allow_unqualified_sender) fprintf(fp, "-allow_unqualified_sender\n");
+if (f.deliver_firsttime) fprintf(fp, "-deliver_firsttime\n");
+if (f.deliver_freeze) fprintf(fp, "-frozen " TIME_T_FMT "\n", deliver_frozen_at);
+if (f.dont_deliver) fprintf(fp, "-N\n");
+if (host_lookup_deferred) fprintf(fp, "-host_lookup_deferred\n");
+if (host_lookup_failed) fprintf(fp, "-host_lookup_failed\n");
+if (f.sender_local) fprintf(fp, "-local\n");
+if (f.local_error_message) fprintf(fp, "-localerror\n");
 #ifdef HAVE_LOCAL_SCAN
-if (local_scan_data) fprintf(f, "-local_scan %s\n", local_scan_data);
+if (local_scan_data) fprintf(fp, "-local_scan %s\n", local_scan_data);
 #endif
 #ifdef WITH_CONTENT_SCAN
-if (spam_bar)       fprintf(f,"-spam_bar %s\n",       spam_bar);
-if (spam_score)     fprintf(f,"-spam_score %s\n",     spam_score);
-if (spam_score_int) fprintf(f,"-spam_score_int %s\n", spam_score_int);
+if (spam_bar)       fprintf(fp,"-spam_bar %s\n",       spam_bar);
+if (spam_score)     fprintf(fp,"-spam_score %s\n",     spam_score);
+if (spam_score_int) fprintf(fp,"-spam_score_int %s\n", spam_score_int);
 #endif
-if (deliver_manual_thaw) fprintf(f, "-manual_thaw\n");
-if (sender_set_untrusted) fprintf(f, "-sender_set_untrusted\n");
+if (f.deliver_manual_thaw) fprintf(fp, "-manual_thaw\n");
+if (f.sender_set_untrusted) fprintf(fp, "-sender_set_untrusted\n");
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-if (bmi_verdicts) fprintf(f, "-bmi_verdicts %s\n", bmi_verdicts);
+if (bmi_verdicts) fprintf(fp, "-bmi_verdicts %s\n", bmi_verdicts);
 #endif
 
 #ifdef SUPPORT_TLS
-if (tls_in.certificate_verified) fprintf(f, "-tls_certificate_verified\n");
-if (tls_in.cipher)       fprintf(f, "-tls_cipher %s\n", tls_in.cipher);
+if (tls_in.certificate_verified) fprintf(fp, "-tls_certificate_verified\n");
+if (tls_in.cipher)       fprintf(fp, "-tls_cipher %s\n", tls_in.cipher);
 if (tls_in.peercert)
   {
   (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.peercert);
-  fprintf(f, "-tls_peercert %s\n", CS big_buffer);
+  fprintf(fp, "-tls_peercert %s\n", CS big_buffer);
   }
-if (tls_in.peerdn)       fprintf(f, "-tls_peerdn %s\n", string_printing(tls_in.peerdn));
-if (tls_in.sni)		 fprintf(f, "-tls_sni %s\n",    string_printing(tls_in.sni));
+if (tls_in.peerdn)       fprintf(fp, "-tls_peerdn %s\n", string_printing(tls_in.peerdn));
+if (tls_in.sni)		 fprintf(fp, "-tls_sni %s\n",    string_printing(tls_in.sni));
 if (tls_in.ourcert)
   {
   (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.ourcert);
-  fprintf(f, "-tls_ourcert %s\n", CS big_buffer);
+  fprintf(fp, "-tls_ourcert %s\n", CS big_buffer);
   }
-if (tls_in.ocsp)	 fprintf(f, "-tls_ocsp %d\n",   tls_in.ocsp);
+if (tls_in.ocsp)	 fprintf(fp, "-tls_ocsp %d\n",   tls_in.ocsp);
 
 # ifdef EXPERIMENTAL_REQUIRETLS
-if (tls_requiretls)	 fprintf(f, "-tls_requiretls 0x%x\n", tls_requiretls);
+if (tls_requiretls)	 fprintf(fp, "-tls_requiretls 0x%x\n", tls_requiretls);
 # endif
 #endif
 
 #ifdef SUPPORT_I18N
 if (message_smtputf8)
   {
-  fprintf(f, "-smtputf8\n");
+  fprintf(fp, "-smtputf8\n");
   if (message_utf8_downconvert)
-    fprintf(f, "-utf8_%sdowncvt\n", message_utf8_downconvert < 0 ? "opt" : "");
+    fprintf(fp, "-utf8_%sdowncvt\n", message_utf8_downconvert < 0 ? "opt" : "");
   }
 #endif
 
 /* Write the dsn flags to the spool header file */
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_envid %s\n", dsn_envid);
-if (dsn_envid) fprintf(f, "-dsn_envid %s\n", dsn_envid);
+if (dsn_envid) fprintf(fp, "-dsn_envid %s\n", dsn_envid);
 DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_ret %d\n", dsn_ret);
-if (dsn_ret) fprintf(f, "-dsn_ret %d\n", dsn_ret);
+if (dsn_ret) fprintf(fp, "-dsn_ret %d\n", dsn_ret);
 
 /* To complete the envelope, write out the tree of non-recipients, followed by
 the list of recipients. These won't be disjoint the first time, when no
 checking has been done. If a recipient is a "one-time" alias, it is followed by
 a space and its parent address number (pno). */
 
-tree_write(tree_nonrecipients, f);
-fprintf(f, "%d\n", recipients_count);
+tree_write(tree_nonrecipients, fp);
+fprintf(fp, "%d\n", recipients_count);
 for (i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
@@ -287,7 +287,7 @@ for (i = 0; i < recipients_count; i++)
   DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
 
   if (r->pno < 0 && r->errors_to == NULL && r->dsn_flags == 0)
-    fprintf(f, "%s\n", r->address);
+    fprintf(fp, "%s\n", r->address);
   else
     {
     uschar * errors_to = r->errors_to ? r->errors_to : US"";
@@ -295,7 +295,7 @@ for (i = 0; i < recipients_count; i++)
     adding new values upfront and add flag 0x02 */
     uschar * orcpt = r->orcpt ? r->orcpt : US"";
 
-    fprintf(f, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt),
+    fprintf(fp, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt),
       r->dsn_flags, errors_to, Ustrlen(errors_to), r->pno);
     }
 
@@ -306,14 +306,14 @@ for (i = 0; i < recipients_count; i++)
 
 /* Put a blank line before the headers */
 
-fprintf(f, "\n");
+fprintf(fp, "\n");
 
 /* Save the size of the file so far so we can subtract it from the final length
 to get the actual size of the headers. */
 
-fflush(f);
+fflush(fp);
 if (fstat(fd, &statbuf))
-  return spool_write_error(where, errmsg, US"fstat", tname, f);
+  return spool_write_error(where, errmsg, US"fstat", tname, fp);
 size_correction = statbuf.st_size;
 
 /* Finally, write out the message's headers. To make it easier to read them
@@ -326,28 +326,28 @@ size. */
 
 for (h = header_list; h; h = h->next)
   {
-  fprintf(f, "%03d%c %s", h->slen, h->type, h->text);
+  fprintf(fp, "%03d%c %s", h->slen, h->type, h->text);
   size_correction += 5;
   if (h->type == '*') size_correction += h->slen;
   }
 
 /* Flush and check for any errors while writing */
 
-if (fflush(f) != 0 || ferror(f))
-  return spool_write_error(where, errmsg, US"write", tname, f);
+if (fflush(fp) != 0 || ferror(fp))
+  return spool_write_error(where, errmsg, US"write", tname, fp);
 
 /* Force the file's contents to be written to disk. Note that fflush()
 just pushes it out of C, and fclose() doesn't guarantee to do the write
 either. That's just the way Unix works... */
 
-if (EXIMfsync(fileno(f)) < 0)
-  return spool_write_error(where, errmsg, US"sync", tname, f);
+if (EXIMfsync(fileno(fp)) < 0)
+  return spool_write_error(where, errmsg, US"sync", tname, fp);
 
 /* Get the size of the file, and close it. */
 
 if (fstat(fd, &statbuf) != 0)
   return spool_write_error(where, errmsg, US"fstat", tname, NULL);
-if (fclose(f) != 0)
+if (fclose(fp) != 0)
   return spool_write_error(where, errmsg, US"close", tname, NULL);
 
 /* Rename the file to its correct name, thereby replacing any previous

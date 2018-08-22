@@ -124,7 +124,7 @@ dkt_direct(transport_ctx * tctx, struct ob_dkim * dkim,
 {
 int save_fd = tctx->u.fd;
 int save_options = tctx->options;
-BOOL save_wireformat = spool_file_wireformat;
+BOOL save_wireformat = f.spool_file_wireformat;
 uschar * hdrs;
 gstring * dkim_signature;
 int hsize;
@@ -157,7 +157,7 @@ arc_sign_init();
 /* The dotstuffed status of the datafile depends on whether it was stored
 in wireformat. */
 
-dkim->dot_stuffed = spool_file_wireformat;
+dkim->dot_stuffed = f.spool_file_wireformat;
 if (!(dkim_signature = dkim_exim_sign(deliver_datafile, SPOOL_DATA_START_OFFSET,
 				    hdrs, dkim, &errstr)))
   if (!(rc = dkt_sign_fail(dkim, &errno)))
@@ -186,7 +186,7 @@ having already been done - but we have to say we want CRLF output format, and
 temporarily set the marker for possible already-CRLF input. */
 
 tctx->options &= ~topt_escape_headers;
-spool_file_wireformat = TRUE;
+f.spool_file_wireformat = TRUE;
 transport_write_reset(0);
 if (  (  dkim_signature
       && dkim_signature->ptr > 0
@@ -196,7 +196,7 @@ if (  (  dkim_signature
    )
   return FALSE;
 
-spool_file_wireformat = save_wireformat;
+f.spool_file_wireformat = save_wireformat;
 tctx->options = save_options | topt_no_headers | topt_continuation;
 
 if (!(transport_write_message(tctx, 0)))

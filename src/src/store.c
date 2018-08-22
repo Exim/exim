@@ -194,7 +194,7 @@ linenumber = linenumber;
 #else
 DEBUG(D_memory)
   {
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     debug_printf("---%d Get %5d\n", store_pool, size);
   else
     debug_printf("---%d Get %6p %5d %-14s %4d\n", store_pool,
@@ -286,7 +286,7 @@ linenumber = linenumber;
 #else
 DEBUG(D_memory)
   {
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     debug_printf("---%d Ext %5d\n", store_pool, newsize);
   else
     debug_printf("---%d Ext %6p %5d %-14s %4d\n", store_pool, ptr, newsize,
@@ -357,7 +357,7 @@ newlength = bc + b->length - CS ptr;
 if (debug_store)
   {
   assert_no_variables(ptr, newlength, filename, linenumber);
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     {
     (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
     memset(ptr, 0xF0, newlength);
@@ -411,7 +411,7 @@ linenumber = linenumber;
 #else
 DEBUG(D_memory)
   {
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     debug_printf("---%d Rst    ** %d\n", store_pool, pool_malloc);
   else
     debug_printf("---%d Rst %6p    ** %-14s %4d %d\n", store_pool, ptr,
@@ -462,13 +462,13 @@ for (b = chainbase[store_pool]; b; b = b->next)
     linenumber = linenumber;
 #else
     DEBUG(D_memory)
-      if (running_in_test_harness)
+      if (f.running_in_test_harness)
         debug_printf("-Release       %d\n", pool_malloc);
       else
         debug_printf("-Release %6p %-20s %4d %d\n", (void *)bb, filename,
           linenumber, pool_malloc);
 
-    if (running_in_test_harness)
+    if (f.running_in_test_harness)
       memset(bb, 0xF0, bb->length+ALIGNED_SIZEOF_STOREBLOCK);
 #endif  /* COMPILE_UTILITY */
 
@@ -558,7 +558,7 @@ linenumber = linenumber;
 /* If running in test harness, spend time making sure all the new store
 is not filled with zeros so as to catch problems. */
 
-if (running_in_test_harness)
+if (f.running_in_test_harness)
   {
   memset(yield, 0xF0, (size_t)size);
   DEBUG(D_memory) debug_printf("--Malloc %5d %d %d\n", size, pool_malloc,
@@ -598,7 +598,7 @@ linenumber = linenumber;
 #else
 DEBUG(D_memory)
   {
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     debug_printf("----Free\n");
   else
     debug_printf("----Free %6p %-20s %4d\n", block, filename, linenumber);

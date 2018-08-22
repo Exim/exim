@@ -94,7 +94,7 @@ if (clmacro_count > 0)
   memcpy(argv + n, clmacros, clmacro_count * sizeof(uschar *));
   n += clmacro_count;
   }
-if (config_changed)
+if (f.config_changed)
   {
   argv[n++] = US"-C";
   argv[n++] = config_main_filename;
@@ -117,9 +117,9 @@ if (!minimal)
     if (debug_selector != 0)
       argv[n++] = string_sprintf("-d=0x%x", debug_selector);
     }
-  if (dont_deliver) argv[n++] = US"-N";
-  if (queue_smtp) argv[n++] = US"-odqs";
-  if (synchronous_delivery) argv[n++] = US"-odi";
+  if (f.dont_deliver) argv[n++] = US"-N";
+  if (f.queue_smtp) argv[n++] = US"-odqs";
+  if (f.synchronous_delivery) argv[n++] = US"-odi";
   if (connection_max_messages >= 0)
     argv[n++] = string_sprintf("-oB%d", connection_max_messages);
   if (*queue_name)
@@ -249,7 +249,7 @@ if (pid == 0)
   force_fd(pfd[pipe_read], 0);
   (void)close(pfd[pipe_write]);
   if (debug_fd > 0) force_fd(debug_fd, 2);
-  if (running_in_test_harness && !queue_only)
+  if (f.running_in_test_harness && !queue_only)
     {
     if (sender_authentication != NULL)
       child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 9,

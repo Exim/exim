@@ -358,7 +358,7 @@ if (rdata->isfile)
   }
 else data = rdata->string;
 
-*filtertype = system_filtering? FILTER_EXIM : rda_is_filter(data);
+*filtertype = f.system_filtering ? FILTER_EXIM : rda_is_filter(data);
 
 /* Filter interpretation is done by a general function that is also called from
 the filter testing option (-bf). There are two versions: one for Exim filtering
@@ -566,7 +566,7 @@ DEBUG(D_route) debug_printf("rda_interpret (%s): %s\n",
 data = expand_string(rdata->string);
 if (data == NULL)
   {
-  if (expand_string_forcedfail) return FF_NOTDELIVERED;
+  if (f.expand_string_forcedfail) return FF_NOTDELIVERED;
   *error = string_sprintf("failed to expand \"%s\": %s", rdata->string,
     expand_string_message);
   return FF_ERROR;
@@ -672,7 +672,7 @@ if ((pid = fork()) == 0)
   original header lines that were removed, and then any header lines that were
   added but not subsequently removed. */
 
-  if (system_filtering)
+  if (f.system_filtering)
     {
     int i = 0;
     header_line *h;
@@ -825,7 +825,7 @@ if (eblockp)
 /* If this is a system filter, read the identify of any original header lines
 that were removed, and then read data for any new ones that were added. */
 
-if (system_filtering)
+if (f.system_filtering)
   {
   int hn = 0;
   header_line *h = header_list;

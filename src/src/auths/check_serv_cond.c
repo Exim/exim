@@ -102,7 +102,7 @@ again later. */
 
 if (cond == NULL)
   {
-  if (expand_string_forcedfail) return FAIL;
+  if (f.expand_string_forcedfail) return FAIL;
   auth_defer_msg = expand_string_message;
   return DEFER;
   }

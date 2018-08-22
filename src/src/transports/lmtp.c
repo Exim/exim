@@ -490,7 +490,7 @@ if (ob->cmd)
     return FALSE;
 
   /* If the -N option is set, can't do any more. Presume all has gone well. */
-  if (dont_deliver)
+  if (f.dont_deliver)
     goto MINUS_N;
 
 /* As this is a local transport, we are already running with the required
@@ -528,7 +528,7 @@ else
     }
 
   /* If the -N option is set, can't do any more. Presume all has gone well. */
-  if (dont_deliver)
+  if (f.dont_deliver)
     goto MINUS_N;
 
   sockun.sun_family = AF_UNIX;

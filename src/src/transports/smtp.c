@@ -1024,7 +1024,7 @@ smtp_auth(uschar *buffer, unsigned bufsize, address_item *addrlist, host_item *h
 int require_auth;
 uschar *fail_reason = US"server did not advertise AUTH support";
 
-smtp_authenticated = FALSE;
+f.smtp_authenticated = FALSE;
 client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
 require_auth = verify_check_given_host(&ob->hosts_require_auth, host);
 
@@ -1054,7 +1054,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
     If one is found, attempt to authenticate by calling its client function.
     */
 
-    for (au = auths; !smtp_authenticated && au; au = au->next)
+    for (au = auths; !f.smtp_authenticated && au; au = au->next)
       {
       uschar *p = names;
       if (!au->client ||
@@ -1104,7 +1104,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	switch(rc)
 	  {
 	  case OK:
-	  smtp_authenticated = TRUE;   /* stops the outer loop */
+	  f.smtp_authenticated = TRUE;   /* stops the outer loop */
 	  client_authenticator = au->name;
 	  if (au->set_client_id != NULL)
 	    client_authenticated_id = expand_string(au->set_client_id);
@@ -1152,7 +1152,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 
 /* If we haven't authenticated, but are required to, give up. */
 
-if (require_auth == OK && !smtp_authenticated)
+if (require_auth == OK && !f.smtp_authenticated)
   {
   set_errno_nohost(addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
@@ -1171,7 +1171,7 @@ Arguments
   addrlist      chain of potential addresses to deliver
   ob		transport options
 
-Globals		smtp_authenticated
+Globals		f.smtp_authenticated
 		client_authenticated_sender
 Return	True on error, otherwise buffer has (possibly empty) terminated string
 */
@@ -1183,7 +1183,7 @@ smtp_mail_auth_str(uschar *buffer, unsigned bufsize, address_item *addrlist,
 uschar *local_authenticated_sender = authenticated_sender;
 
 #ifdef notdef
-  debug_printf("smtp_mail_auth_str: as<%s> os<%s> SA<%s>\n", authenticated_sender, ob->authenticated_sender, smtp_authenticated?"Y":"N");
+  debug_printf("smtp_mail_auth_str: as<%s> os<%s> SA<%s>\n", authenticated_sender, ob->authenticated_sender, f.smtp_authenticated?"Y":"N");
 #endif
 
 if (ob->authenticated_sender != NULL)
@@ -1191,7 +1191,7 @@ if (ob->authenticated_sender != NULL)
   uschar *new = expand_string(ob->authenticated_sender);
   if (new == NULL)
     {
-    if (!expand_string_forcedfail)
+    if (!f.expand_string_forcedfail)
       {
       uschar *message = string_sprintf("failed to expand "
         "authenticated_sender: %s", expand_string_message);
@@ -1204,7 +1204,7 @@ if (ob->authenticated_sender != NULL)
 
 /* Add the authenticated sender address if present */
 
-if ((smtp_authenticated || ob->authenticated_sender_force) &&
+if ((f.smtp_authenticated || ob->authenticated_sender_force) &&
     local_authenticated_sender != NULL)
   {
   string_format(buffer, bufsize, " AUTH=%s",
@@ -2662,7 +2662,7 @@ for (addr = sx->first_addr, address_count = 0;
   BOOL no_flush;
   uschar * rcpt_addr;
 
-  if (tcp_out_fastopen && !tcp_out_fastopen_logged)
+  if (tcp_out_fastopen && !f.tcp_out_fastopen_logged)
     {
     setflag(addr, af_tcp_fastopen_conn);
     if (tcp_out_fastopen > 1) setflag(addr, af_tcp_fastopen);
@@ -2721,7 +2721,7 @@ for (addr = sx->first_addr, address_count = 0;
     }
   }      /* Loop for next address */
 
-tcp_out_fastopen_logged = TRUE;
+f.tcp_out_fastopen_logged = TRUE;
 sx->next_addr = addr;
 return 0;
 }
@@ -2761,7 +2761,7 @@ if ((rc = fork()))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
   }
 
-if (running_in_test_harness) millisleep(100); /* let parent debug out */
+if (f.running_in_test_harness) millisleep(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active.sock, &rfds);
@@ -2835,7 +2835,7 @@ for (fd_bits = 3; fd_bits; )
   }
 
 done:
-  if (running_in_test_harness) millisleep(100);	/* let logging complete */
+  if (f.running_in_test_harness) millisleep(100);	/* let logging complete */
   exim_exit(0, US"TLS proxy");
 }
 #endif
@@ -3127,7 +3127,7 @@ else
       {
       if (!(sx.ob->dkim.arc_signspec = s = expand_string(s)))
 	{
-	if (!expand_string_forcedfail)
+	if (!f.expand_string_forcedfail)
 	  {
 	  message = US"failed to expand arc_sign";
 	  sx.ok = FALSE;
@@ -3571,7 +3571,7 @@ hosts_nopass_tls. */
 DEBUG(D_transport)
   debug_printf("ok=%d send_quit=%d send_rset=%d continue_more=%d "
     "yield=%d first_address is %sNULL\n", sx.ok, sx.send_quit,
-    sx.send_rset, continue_more, yield, sx.first_addr ? "not " : "");
+    sx.send_rset, f.continue_more, yield, sx.first_addr ? "not " : "");
 
 if (sx.completed_addr && sx.ok && sx.send_quit)
   {
@@ -3582,7 +3582,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
   t_compare.current_sender_address = sender_address;
 
   if (  sx.first_addr != NULL
-     || continue_more
+     || f.continue_more
      || (
 #ifdef SUPPORT_TLS
 	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
@@ -3639,7 +3639,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 
 #ifdef SUPPORT_TLS
       if (tls_out.active.sock >= 0)
-	if (  continue_more
+	if (  f.continue_more
 	   || verify_check_given_host(&sx.ob->hosts_noproxy_tls, host) == OK)
 	  {
 	  /* Before passing the socket on, or returning to caller with it still
@@ -3657,7 +3657,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	    && smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
 				      '2', sx.ob->command_timeout);
 
-	  if (sx.ok && continue_more)
+	  if (sx.ok && f.continue_more)
 	    return yield;		/* More addresses for another run */
 	  }
 	else
@@ -3677,7 +3677,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  }
       else
 #endif
-	if (continue_more)
+	if (f.continue_more)
 	  return yield;			/* More addresses for another run */
 
       /* If the socket is successfully passed, we mustn't send QUIT (or
@@ -3702,7 +3702,7 @@ propagate it from the initial
 	  int pid = fork();
 	  if (pid == 0)		/* child; fork again to disconnect totally */
 	    {
-	    if (running_in_test_harness) millisleep(100); /* let parent debug out */
+	    if (f.running_in_test_harness) millisleep(100); /* let parent debug out */
 	    /* does not return */
 	    smtp_proxy_tls(sx.cctx.tls_ctx, sx.buffer, sizeof(sx.buffer), pfd,
 			    sx.ob->command_timeout);
@@ -4000,7 +4000,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
         {
         addrlist->message = string_sprintf("failed to expand list of hosts "
           "\"%s\" in %s transport: %s", s, tblock->name, expand_string_message);
-        addrlist->transport_return = search_find_defer ? DEFER : PANIC;
+        addrlist->transport_return = f.search_find_defer ? DEFER : PANIC;
         return FALSE;     /* Only top address has status */
         }
       DEBUG(D_transport) debug_printf("expanded list of hosts \"%s\" to "
@@ -4288,7 +4288,7 @@ retry_non_continued:
     were not in it. We don't want to hold up all SMTP deliveries! Except when
     doing a two-stage queue run, don't do this if forcing. */
 
-    if ((!deliver_force || queue_2stage) && (queue_smtp ||
+    if ((!f.deliver_force || f.queue_2stage) && (f.queue_smtp ||
         match_isinlist(addrlist->domain,
 	  (const uschar **)&queue_smtp_domains, 0,
           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK))
@@ -4452,7 +4452,7 @@ retry_non_continued:
     /* This is not for real; don't do the delivery. If there are
     any remaining hosts, list them. */
 
-    if (dont_deliver)
+    if (f.dont_deliver)
       {
       host_item *host2;
       set_errno_nohost(addrlist, 0, NULL, OK, FALSE);
@@ -4823,7 +4823,7 @@ for (addr = addrlist; addr; addr = addr->next)
       setflag(addr, af_retry_skipped);
       }
 
-  if (queue_smtp)    /* no deliveries attempted */
+  if (f.queue_smtp)    /* no deliveries attempted */
     {
     addr->transport_return = DEFER;
     addr->basic_errno = 0;

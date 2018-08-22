@@ -142,7 +142,7 @@ for (rule = rewrite_rules;
     uschar *key = expand_string(rule->key);
     if (key == NULL)
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand \"%s\" while "
           "checking for SMTP rewriting: %s", rule->key, expand_string_message);
       continue;
@@ -203,7 +203,7 @@ for (rule = rewrite_rules;
 
   if (new == NULL)
     {
-    if (expand_string_forcedfail)
+    if (f.expand_string_forcedfail)
       { if ((rule->flags & rewrite_quit) != 0) break; else continue; }
 
     expand_string_message = expand_hide_passwords(expand_string_message);
@@ -465,7 +465,7 @@ while (isspace(*s)) s++;
 DEBUG(D_rewrite)
   debug_printf("rewrite_one_header: type=%c:\n  %s", h->type, h->text);
 
-parse_allow_group = TRUE;     /* Allow group syntax */
+f.parse_allow_group = TRUE;     /* Allow group syntax */
 
 /* Loop for multiple addresses in the header. We have to go through them all
 in case any need qualifying, even if there's no rewriting. Pathological headers
@@ -544,8 +544,8 @@ while (*s != 0)
 
     /* Can only qualify if permitted; if not, no rewrite. */
 
-    if (changed && ((is_recipient && !allow_unqualified_recipient) ||
-                    (!is_recipient && !allow_unqualified_sender)))
+    if (changed && ((is_recipient && !f.allow_unqualified_recipient) ||
+                    (!is_recipient && !f.allow_unqualified_sender)))
       {
       store_reset(loop_reset_point);
       continue;
@@ -673,8 +673,8 @@ while (*s != 0)
     }
   }
 
-parse_allow_group = FALSE;  /* Reset group flags */
-parse_found_group = FALSE;
+f.parse_allow_group = FALSE;  /* Reset group flags */
+f.parse_found_group = FALSE;
 
 /* If a rewrite happened and "replace" is true, put the new header into the
 chain following the old one, and mark the old one as replaced. */

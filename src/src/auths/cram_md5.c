@@ -175,7 +175,7 @@ int i, rc, len;
 /* If we are running in the test harness, always send the same challenge,
 an example string taken from the RFC. */
 
-if (running_in_test_harness)
+if (f.running_in_test_harness)
   challenge = US"<1896.697170952@postoffice.reston.mci.net>";
 
 /* No data should have been sent with the AUTH command */
@@ -212,7 +212,7 @@ the given name. */
 
 if (secret == NULL)
   {
-  if (expand_string_forcedfail) return FAIL;
+  if (f.expand_string_forcedfail) return FAIL;
   auth_defer_msg = expand_string_message;
   return DEFER;
   }
@@ -278,7 +278,7 @@ or ERROR, as appropriate. */
 
 if (!secret || !name)
   {
-  if (expand_string_forcedfail)
+  if (f.expand_string_forcedfail)
     {
     *buffer = 0;           /* No message */
     return CANCELLED;

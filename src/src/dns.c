@@ -693,7 +693,7 @@ if ((previous = tree_search(tree_dns_fails, node_name)))
     DEBUG(D_dns)
       debug_printf("DNS name '%s' utf8 conversion to alabel failed: %s\n", name,
         errstr);
-    host_find_failed_syntax = TRUE;
+    f.host_find_failed_syntax = TRUE;
     return DNS_NOMATCH;
     }
   name = alabel;
@@ -738,7 +738,7 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
     DEBUG(D_dns)
       debug_printf("DNS name syntax check failed: %s (%s)\n", name,
         dns_text_type(type));
-    host_find_failed_syntax = TRUE;
+    f.host_find_failed_syntax = TRUE;
     return DNS_NOMATCH;
     }
   }
@@ -761,7 +761,7 @@ if ((type == T_A || type == T_AAAA) && string_is_ip_address(name, NULL) != 0)
 (res_search), we call fakens_search(), which recognizes certain special
 domains, and interfaces to a fake nameserver for certain special zones. */
 
-dnsa->answerlen = running_in_test_harness
+dnsa->answerlen = f.running_in_test_harness
   ? fakens_search(name, type, dnsa->answer, sizeof(dnsa->answer))
   : res_search(CCS name, C_IN, type, dnsa->answer, sizeof(dnsa->answer));
 

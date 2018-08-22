@@ -606,7 +606,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
 
   if (!ss)
     {
-    if (expand_string_forcedfail) continue;
+    if (f.expand_string_forcedfail) continue;
     *perror = string_sprintf("failed to expand \"%s\" for require_files: %s",
       check, expand_string_message);
     goto RETURN_DEFER;
@@ -854,7 +854,7 @@ deliver_localpart_data = NULL;
 sender_data = NULL;
 local_user_gid = (gid_t)(-1);
 local_user_uid = (uid_t)(-1);
-search_find_defer = FALSE;
+f.search_find_defer = FALSE;
 
 /* Skip this router if not verifying and it has verify_only set */
 
@@ -866,7 +866,7 @@ if ((verify == v_none || verify == v_expn) && r->verify_only)
 
 /* Skip this router if testing an address (-bt) and address_test is not set */
 
-if (address_test_mode && !r->address_test)
+if (f.address_test_mode && !r->address_test)
   {
   DEBUG(D_route) debug_printf("%s router skipped: address_test is unset\n",
     r->name);
@@ -958,7 +958,7 @@ if (r->router_home_directory)
   uschar *router_home = expand_string(r->router_home_directory);
   if (!router_home)
     {
-    if (!expand_string_forcedfail)
+    if (!f.expand_string_forcedfail)
       {
       *perror = string_sprintf("failed to expand \"%s\" for "
         "router_home_directory: %s", r->router_home_directory,
@@ -1003,7 +1003,7 @@ if (r->condition)
   DEBUG(D_route) debug_printf("checking \"condition\" \"%.80s\"...\n", r->condition);
   if (!expand_check_condition(r->condition, r->name, US"router"))
     {
-    if (search_find_defer)
+    if (f.search_find_defer)
       {
       *perror = US"condition check lookup defer";
       DEBUG(D_route) debug_printf("%s\n", *perror);
@@ -1474,7 +1474,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   /* There are some weird cases where logging is disabled */
 
-  disable_logging = r->disable_logging;
+  f.disable_logging = r->disable_logging;
 
   /* Record the last router to handle the address, and set the default
   next router. */
@@ -1620,7 +1620,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     deliver_address_data = expand_string(r->address_data);
     if (!deliver_address_data)
       {
-      if (expand_string_forcedfail)
+      if (f.expand_string_forcedfail)
         {
         DEBUG(D_route) debug_printf("forced failure in expansion of \"%s\" "
             "(address_data): decline action taken\n", r->address_data);
@@ -1766,7 +1766,7 @@ if (!r)
       uschar *expmessage = expand_string(addr->router->cannot_route_message);
       if (!expmessage)
         {
-        if (!expand_string_forcedfail)
+        if (!f.expand_string_forcedfail)
           log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
             "cannot_route_message in %s router: %s", addr->router->name,
             expand_string_message);
@@ -1835,7 +1835,7 @@ if (r->translate_ip_address)
 
     if (!newaddress)
       {
-      if (expand_string_forcedfail) continue;
+      if (f.expand_string_forcedfail) continue;
       addr->basic_errno = ERRNO_EXPANDFAIL;
       addr->message = string_sprintf("translate_ip_address expansion "
         "failed: %s", expand_string_message);
@@ -1923,7 +1923,7 @@ if (yield == DEFER && addr->message)
 
 deliver_set_expansions(NULL);
 router_name = NULL;
-disable_logging = FALSE;
+f.disable_logging = FALSE;
 return yield;
 }
 

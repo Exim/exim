@@ -927,7 +927,7 @@ int rc;
 uschar *ss = expand_string(condition);
 if (ss == NULL)
   {
-  if (!expand_string_forcedfail && !search_find_defer)
+  if (!f.expand_string_forcedfail && !f.search_find_defer)
     log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand condition \"%s\" "
       "for %s %s: %s", condition, m1, m2, expand_string_message);
   return FALSE;
@@ -1662,7 +1662,7 @@ if this was a non-smtp message.
 static gstring *
 authres_local(gstring * g, const uschar * sysname)
 {
-if (!authentication_local)
+if (!f.authentication_local)
   return g;
 g = string_append(g, 3, US";\n\tlocal=pass (non-smtp, ", sysname, US")");
 if (authenticated_id) g = string_append(g, 2, " u=", authenticated_id);
@@ -1707,7 +1707,7 @@ uschar * s;
 gstring * g = NULL;
 int i;
 
-if (!enable_dollar_recipients) return NULL;
+if (!f.enable_dollar_recipients) return NULL;
 
 for (i = 0; i < recipients_count; i++)
   {
@@ -1799,7 +1799,7 @@ val = vp->value;
 switch (vp->type)
   {
   case vtype_filter_int:
-    if (!filter_running) return NULL;
+    if (!f.filter_running) return NULL;
     /* Fall through */
     /* VVVVVVVVVVVV */
   case vtype_int:
@@ -2276,7 +2276,7 @@ switch(cond_type)
   /* first_delivery tests for first delivery attempt */
 
   case ECOND_FIRST_DELIVERY:
-  if (yield != NULL) *yield = deliver_firsttime == testfor;
+  if (yield != NULL) *yield = f.deliver_firsttime == testfor;
   return s;
 
 
@@ -2431,7 +2431,7 @@ switch(cond_type)
 	  break;
 
 	case DEFER:
-          expand_string_forcedfail = TRUE;
+          f.expand_string_forcedfail = TRUE;
 	  /*FALLTHROUGH*/
 	default:
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
@@ -3258,8 +3258,8 @@ want this string. Set skipping in the call in the fail case (this will always
 be the case if we were already skipping). */
 
 sub1 = expand_string_internal(s, TRUE, &s, !yes, TRUE, resetok);
-if (sub1 == NULL && (yes || !expand_string_forcedfail)) goto FAILED;
-expand_string_forcedfail = FALSE;
+if (sub1 == NULL && (yes || !f.expand_string_forcedfail)) goto FAILED;
+f.expand_string_forcedfail = FALSE;
 if (*s++ != '}')
   {
   errwhere = US"'yes' part did not end with '}'";
@@ -3288,8 +3288,8 @@ while (isspace(*s)) s++;
 if (*s == '{')
   {
   sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE, resetok);
-  if (sub2 == NULL && (!yes || !expand_string_forcedfail)) goto FAILED;
-  expand_string_forcedfail = FALSE;
+  if (sub2 == NULL && (!yes || !f.expand_string_forcedfail)) goto FAILED;
+  f.expand_string_forcedfail = FALSE;
   if (*s++ != '}')
     {
     errwhere = US"'no' part did not start with '{'";
@@ -3324,7 +3324,7 @@ else if (*s != '}')
 	}
       expand_string_message =
         string_sprintf("\"%s\" failed and \"fail\" requested", type);
-      expand_string_forcedfail = TRUE;
+      f.expand_string_forcedfail = TRUE;
       goto FAILED;
       }
     }
@@ -3931,7 +3931,7 @@ DEBUG(D_expand)
     : "considering",
     string);
 
-expand_string_forcedfail = FALSE;
+f.expand_string_forcedfail = FALSE;
 expand_string_message = US"";
 
 while (*s != 0)
@@ -4158,7 +4158,7 @@ while (*s != 0)
 	  continue;
 
 	case DEFER:
-          expand_string_forcedfail = TRUE;
+          f.expand_string_forcedfail = TRUE;
 	  /*FALLTHROUGH*/
 	default:
           expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
@@ -4456,7 +4456,7 @@ while (*s != 0)
           }
         lookup_value = search_find(handle, filename, key, partial, affix,
           affixlen, starflags, &expand_setup);
-        if (search_find_defer)
+        if (f.search_find_defer)
           {
           expand_string_message =
             string_sprintf("lookup of \"%s\" gave DEFER: %s",
@@ -4565,7 +4565,7 @@ while (*s != 0)
           expand_string_message =
             string_sprintf("Perl subroutine \"%s\" returned undef to force "
               "failure", sub_arg[0]);
-          expand_string_forcedfail = TRUE;
+          f.expand_string_forcedfail = TRUE;
           }
         goto EXPAND_FAILED;
         }
@@ -4573,7 +4573,7 @@ while (*s != 0)
       /* Yield succeeded. Ensure forcedfail is unset, just in case it got
       set during a callback from Perl. */
 
-      expand_string_forcedfail = FALSE;
+      f.expand_string_forcedfail = FALSE;
       yield = new_yield;
       continue;
       }
@@ -4823,7 +4823,7 @@ while (*s != 0)
       int fd;
       int timeout = 5;
       int save_ptr = yield->ptr;
-      FILE *f;
+      FILE * fp;
       uschar * arg;
       uschar * sub_arg[4];
       uschar * server_name = NULL;
@@ -4999,7 +4999,7 @@ while (*s != 0)
 #endif
 
 	/* Allow sequencing of test actions */
-	if (running_in_test_harness) millisleep(100);
+	if (f.running_in_test_harness) millisleep(100);
 
         /* Write the request string, if not empty or already done */
 
@@ -5027,20 +5027,20 @@ while (*s != 0)
 	if (!tls_ctx && do_shutdown) shutdown(fd, SHUT_WR);
 #endif
 
-	if (running_in_test_harness) millisleep(100);
+	if (f.running_in_test_harness) millisleep(100);
 
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */
 
 	if (!tls_ctx)
-	  f = fdopen(fd, "rb");
+	  fp = fdopen(fd, "rb");
         sigalrm_seen = FALSE;
         alarm(timeout);
         yield =
 #ifdef SUPPORT_TLS
 	  tls_ctx ? cat_file_tls(tls_ctx, yield, sub_arg[3]) :
 #endif
-		    cat_file(f, yield, sub_arg[3]);
+		    cat_file(fp, yield, sub_arg[3]);
         alarm(0);
 
 #ifdef SUPPORT_TLS
@@ -5051,7 +5051,7 @@ while (*s != 0)
 	  }
 	else
 #endif
-	  (void)fclose(f);
+	  (void)fclose(fp);
 
         /* After a timeout, we restore the pointer in the result, that is,
         make sure we add nothing from the socket. */
@@ -6318,7 +6318,7 @@ while (*s != 0)
       else
         {
         expand_string_message = result == NULL ? US"(no message)" : result;
-        if(status == FAIL_FORCED) expand_string_forcedfail = TRUE;
+        if(status == FAIL_FORCED) f.expand_string_forcedfail = TRUE;
           else if(status != FAIL)
             log_write(0, LOG_MAIN|LOG_PANIC, "dlfunc{%s}{%s} failed (%d): %s",
               argv[0], argv[1], status, expand_string_message);
@@ -6936,7 +6936,7 @@ while (*s != 0)
               "missing in expanding ${addresses:%s}", --sub);
             goto EXPAND_FAILED;
             }
-        parse_allow_group = TRUE;
+        f.parse_allow_group = TRUE;
 
         for (;;)
           {
@@ -6985,7 +6985,7 @@ while (*s != 0)
         separator. */
 
         if (yield->ptr != save_ptr) yield->ptr--;
-        parse_allow_group = FALSE;
+        f.parse_allow_group = FALSE;
         continue;
         }
 
@@ -7704,9 +7704,9 @@ DEBUG(D_expand)
     string);
   debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
     "error message: %s\n",
-    expand_string_forcedfail ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+    f.expand_string_forcedfail ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
     expand_string_message);
-  if (expand_string_forcedfail)
+  if (f.expand_string_forcedfail)
     debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
   }
 if (resetok_p && !resetok) *resetok_p = FALSE;
@@ -7731,7 +7731,7 @@ if (Ustrpbrk(string, "$\\") != NULL)
   int old_pool = store_pool;
   uschar * s;
 
-  search_find_defer = FALSE;
+  f.search_find_defer = FALSE;
   malformed_header = FALSE;
   store_pool = POOL_MAIN;
     s = expand_string_internal(string, FALSE, NULL, FALSE, TRUE, NULL);
@@ -7924,7 +7924,7 @@ if (svalue == NULL) { *rvalue = bvalue; return OK; }
 expanded = expand_string(svalue);
 if (expanded == NULL)
   {
-  if (expand_string_forcedfail)
+  if (f.expand_string_forcedfail)
     {
     DEBUG(dbg_opt) debug_printf("expansion of \"%s\" forced failure\n", oname);
     *rvalue = bvalue;
@@ -8181,9 +8181,9 @@ while (fgets(buffer, sizeof(buffer), stdin) != NULL)
     }
   else
     {
-    if (search_find_defer) printf("search_find deferred\n");
+    if (f.search_find_defer) printf("search_find deferred\n");
     printf("Failed: %s\n", expand_string_message);
-    if (expand_string_forcedfail) printf("Forced failure\n");
+    if (f.expand_string_forcedfail) printf("Forced failure\n");
     printf("\n");
     }
   }

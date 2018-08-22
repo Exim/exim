@@ -475,7 +475,7 @@ int old_pool = store_pool;
 the callers don't have to test for NULL, set an empty string. */
 
 search_error_message = US"";
-search_find_defer = FALSE;
+f.search_find_defer = FALSE;
 
 DEBUG(D_lookup) debug_printf("internal_search_find: file=\"%s\"\n  "
   "type=%s key=\"%s\"\n", filename,
@@ -521,7 +521,7 @@ else
 
   if (lookup_list[search_type]->find(c->handle, filename, keystring, keylength,
       &data, &search_error_message, &do_cache) == DEFER)
-    search_find_defer = TRUE;
+    f.search_find_defer = TRUE;
 
   /* A record that has been found is now in data, which is either NULL
   or points to a bit of dynamic store. Cache the result of the lookup if
@@ -564,7 +564,7 @@ DEBUG(D_lookup)
   {
   if (data)
     debug_printf("lookup yielded: %s\n", data);
-  else if (search_find_defer)
+  else if (f.search_find_defer)
     debug_printf("lookup deferred: %s\n", search_error_message);
   else debug_printf("lookup failed\n");
   }
@@ -669,7 +669,7 @@ DEBUG(D_lookup)
 entry but could have been partial, flag to set up variables. */
 
 yield = internal_search_find(handle, filename, keystring);
-if (search_find_defer) return NULL;
+if (f.search_find_defer) return NULL;
 if (yield != NULL) { if (partial >= 0) set_null_wild = TRUE; }
 
 /* Not matched a complete entry; handle partial lookups, but only if the full
@@ -692,7 +692,7 @@ else if (partial >= 0)
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf("trying partial match %s\n", keystring2);
     yield = internal_search_find(handle, filename, keystring2);
-    if (search_find_defer) return NULL;
+    if (f.search_find_defer) return NULL;
     }
 
   /* The key in its entirety did not match a wild entry; try chopping off
@@ -730,7 +730,7 @@ else if (partial >= 0)
 
       DEBUG(D_lookup) debug_printf("trying partial match %s\n", keystring3);
       yield = internal_search_find(handle, filename, keystring3);
-      if (search_find_defer) return NULL;
+      if (f.search_find_defer) return NULL;
       if (yield != NULL)
         {
         /* First variable is the wild part; second is the fixed part. Take care
@@ -772,7 +772,7 @@ if (yield == NULL && (starflags & SEARCH_STARAT) != 0)
     DEBUG(D_lookup) debug_printf("trying default match %s\n", atat);
     yield = internal_search_find(handle, filename, atat);
     *atat = savechar;
-    if (search_find_defer) return NULL;
+    if (f.search_find_defer) return NULL;
 
     if (yield != NULL && expand_setup != NULL && *expand_setup >= 0)
       {

@@ -1674,8 +1674,8 @@ switch(vp->value)
     /* We can test the result of optional HELO verification that might have
     occurred earlier. If not, we can attempt the verification now. */
 
-    if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
-    return helo_verified ? OK : FAIL;
+    if (!f.helo_verified && !f.helo_verify_failed) smtp_verify_helo();
+    return f.helo_verified ? OK : FAIL;
 
   case VERIFY_CSA:
     /* Do Client SMTP Authorization checks in a separate function, and turn the
@@ -1907,7 +1907,7 @@ if (verify_header_sender)
       {
       if (!*user_msgptr && *log_msgptr)
         *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
-      if (rc == DEFER) acl_temp_details = TRUE;
+      if (rc == DEFER) f.acl_temp_details = TRUE;
       }
     }
   }
@@ -2060,7 +2060,7 @@ else
     addr2.user_message : addr2.message;
 
   /* Allow details for temporary error if the address is so flagged. */
-  if (testflag((&addr2), af_pass_message)) acl_temp_details = TRUE;
+  if (testflag((&addr2), af_pass_message)) f.acl_temp_details = TRUE;
 
   /* Make $address_data visible */
   deliver_address_data = addr2.prop.address_data;
@@ -2902,10 +2902,10 @@ for (; cb; cb = cb->next)
     arg = cb->arg;
   else if (!(arg = expand_string(cb->arg)))
     {
-    if (expand_string_forcedfail) continue;
+    if (f.expand_string_forcedfail) continue;
     *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
       cb->arg, expand_string_message);
-    return search_find_defer ? DEFER : ERROR;
+    return f.search_find_defer ? DEFER : ERROR;
     }
 
   /* Show condition, and expanded condition if it's different */
@@ -3027,7 +3027,7 @@ for (; cb; cb = cb->next)
       switch(control_type)
 	{
 	case CONTROL_AUTH_UNADVERTISED:
-	allow_auth_unadvertised = TRUE;
+	f.allow_auth_unadvertised = TRUE;
 	break;
 
 	#ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -3038,22 +3038,22 @@ for (; cb; cb = cb->next)
 
 	#ifndef DISABLE_DKIM
 	case CONTROL_DKIM_VERIFY:
-	dkim_disable_verify = TRUE;
+	f.dkim_disable_verify = TRUE;
 	#ifdef EXPERIMENTAL_DMARC
 	/* Since DKIM was blocked, skip DMARC too */
-	dmarc_disable_verify = TRUE;
-	dmarc_enable_forensic = FALSE;
+	f.dmarc_disable_verify = TRUE;
+	f.dmarc_enable_forensic = FALSE;
 	#endif
 	break;
 	#endif
 
 	#ifdef EXPERIMENTAL_DMARC
 	case CONTROL_DMARC_VERIFY:
-	dmarc_disable_verify = TRUE;
+	f.dmarc_disable_verify = TRUE;
 	break;
 
 	case CONTROL_DMARC_FORENSIC:
-	dmarc_enable_forensic = TRUE;
+	f.dmarc_enable_forensic = TRUE;
 	break;
 	#endif
 
@@ -3118,24 +3118,24 @@ for (; cb; cb = cb->next)
 
 	#ifdef WITH_CONTENT_SCAN
 	case CONTROL_NO_MBOX_UNSPOOL:
-	no_mbox_unspool = TRUE;
+	f.no_mbox_unspool = TRUE;
 	break;
 	#endif
 
 	case CONTROL_NO_MULTILINE:
-	no_multiline_responses = TRUE;
+	f.no_multiline_responses = TRUE;
 	break;
 
 	case CONTROL_NO_PIPELINING:
-	pipelining_enable = FALSE;
+	f.pipelining_enable = FALSE;
 	break;
 
 	case CONTROL_NO_DELAY_FLUSH:
-	disable_delay_flush = TRUE;
+	f.disable_delay_flush = TRUE;
 	break;
 
 	case CONTROL_NO_CALLOUT_FLUSH:
-	disable_callout_flush = TRUE;
+	f.disable_callout_flush = TRUE;
 	break;
 
 	case CONTROL_FAKEREJECT:
@@ -3157,7 +3157,7 @@ for (; cb; cb = cb->next)
 	break;
 
 	case CONTROL_FREEZE:
-	deliver_freeze = TRUE;
+	f.deliver_freeze = TRUE;
 	deliver_frozen_at = time(NULL);
 	freeze_tell = freeze_tell_config;       /* Reset to configured value */
 	if (Ustrncmp(p, "/no_tell", 8) == 0)
@@ -3174,7 +3174,7 @@ for (; cb; cb = cb->next)
 	break;
 
 	case CONTROL_QUEUE_ONLY:
-	queue_only_policy = TRUE;
+	f.queue_only_policy = TRUE;
 	cancel_cutthrough_connection(TRUE, US"queueing forced");
 	break;
 
@@ -3185,14 +3185,14 @@ for (; cb; cb = cb->next)
 #endif
 	case CONTROL_SUBMISSION:
 	originator_name = US"";
-	submission_mode = TRUE;
+	f.submission_mode = TRUE;
 	while (*p == '/')
 	  {
 	  if (Ustrncmp(p, "/sender_retain", 14) == 0)
 	    {
 	    p += 14;
-	    active_local_sender_retain = TRUE;
-	    active_local_from_check = FALSE;
+	    f.active_local_sender_retain = TRUE;
+	    f.active_local_from_check = FALSE;
 	    }
 	  else if (Ustrncmp(p, "/domain=", 8) == 0)
 	    {
@@ -3257,7 +3257,7 @@ for (; cb; cb = cb->next)
 	break;
 
 	case CONTROL_SUPPRESS_LOCAL_FIXUPS:
-	suppress_local_fixups = TRUE;
+	f.suppress_local_fixups = TRUE;
 	break;
 
 	case CONTROL_CUTTHROUGH_DELIVERY:
@@ -3274,9 +3274,9 @@ for (; cb; cb = cb->next)
 	  ignored = US"PRDR active";
 	else
 	  {
-	  if (deliver_freeze)
+	  if (f.deliver_freeze)
 	    ignored = US"frozen";
-	  else if (queue_only_policy)
+	  else if (f.queue_only_policy)
 	    ignored = US"queue-only";
 	  else if (fake_response == FAIL)
 	    ignored = US"fakereject";
@@ -3404,7 +3404,7 @@ for (; cb; cb = cb->next)
 
         else
           {
-          if (smtp_out != NULL && !disable_delay_flush)
+          if (smtp_out != NULL && !f.disable_delay_flush)
 	    mac_smtp_fflush();
 
 #if !defined(NO_POLL_H) && defined (POLLRDHUP)
@@ -3456,9 +3456,9 @@ for (; cb; cb = cb->next)
 
     #ifdef EXPERIMENTAL_DMARC
     case ACLC_DMARC_STATUS:
-    if (!dmarc_has_been_checked)
+    if (!f.dmarc_has_been_checked)
       dmarc_process();
-    dmarc_has_been_checked = TRUE;
+    f.dmarc_has_been_checked = TRUE;
     /* used long way of dmarc_exim_expand_query() in case we need more
      * view into the process in the future. */
     rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
@@ -3772,7 +3772,7 @@ if ((BIT(rc) & msgcond[verb]) != 0)
     expmessage = expand_string(user_message);
     if (!expmessage)
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message \"%s\": %s",
           user_message, expand_string_message);
       }
@@ -3785,7 +3785,7 @@ if ((BIT(rc) & msgcond[verb]) != 0)
     expmessage = expand_string(log_message);
     if (!expmessage)
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand ACL message \"%s\": %s",
           log_message, expand_string_message);
       }
@@ -3973,7 +3973,7 @@ if (acl_level == 0)
   {
   if (!(ss = expand_string(s)))
     {
-    if (expand_string_forcedfail) return OK;
+    if (f.expand_string_forcedfail) return OK;
     *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s", s,
       expand_string_message);
     return ERROR;
@@ -4075,7 +4075,7 @@ while (acl != NULL)
     && (where == ACL_WHERE_QUIT || where == ACL_WHERE_NOTQUIT);
 
   *log_msgptr = *user_msgptr = NULL;
-  acl_temp_details = FALSE;
+  f.acl_temp_details = FALSE;
 
   HDEBUG(D_acl) debug_printf_indent("processing \"%s\"\n", verbs[acl->verb]);
 
@@ -4097,12 +4097,10 @@ while (acl != NULL)
       {
       if (search_error_message != NULL && *search_error_message != 0)
         *log_msgptr = search_error_message;
-      if (smtp_return_error_details) acl_temp_details = TRUE;
+      if (smtp_return_error_details) f.acl_temp_details = TRUE;
       }
     else
-      {
-      acl_temp_details = TRUE;
-      }
+      f.acl_temp_details = TRUE;
     if (acl->verb != ACL_WARN) return DEFER;
     break;
 
@@ -4158,7 +4156,7 @@ while (acl != NULL)
       {
       HDEBUG(D_acl) debug_printf_indent("end of %s: DEFER\n", acl_name);
       if (acl_quit_check) goto badquit;
-      acl_temp_details = TRUE;
+      f.acl_temp_details = TRUE;
       return DEFER;
       }
     break;
@@ -4291,10 +4289,10 @@ for (i = 0; i < 9; i++) acl_arg[i] = sav_arg[i];
 return ret;
 
 bad:
-if (expand_string_forcedfail) return ERROR;
+if (f.expand_string_forcedfail) return ERROR;
 *log_msgptr = string_sprintf("failed to expand ACL string \"%s\": %s",
   tmp, expand_string_message);
-return search_find_defer?DEFER:ERROR;
+return f.search_find_defer ? DEFER : ERROR;
 }
 
 
@@ -4425,7 +4423,7 @@ switch (where)
   case ACL_WHERE_PRDR:
 #endif
 
-    if (host_checking_callout)	/* -bhc mode */
+    if (f.host_checking_callout)	/* -bhc mode */
       cancel_cutthrough_connection(TRUE, US"host-checking mode");
 
     else if (  rc == OK
@@ -4441,7 +4439,7 @@ switch (where)
 	  while (*s) s++;
 	  do --s; while (!isdigit(*s));
 	  if (*--s && isdigit(*s) && *--s && isdigit(*s)) *user_msgptr = s;
-	  acl_temp_details = TRUE;
+	  f.acl_temp_details = TRUE;
 	  }
 	else
 	  {

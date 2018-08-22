@@ -224,7 +224,7 @@ debug_print_string(ablock->server_debug_string);    /* customized debug */
 clearpass = expand_string(ob->spa_serverpassword);
 if (clearpass == NULL)
   {
-  if (expand_string_forcedfail)
+  if (f.expand_string_forcedfail)
     {
     DEBUG(D_auth) debug_printf("auth_spa_server(): forced failure while "
       "expanding spa_serverpassword\n");
@@ -289,7 +289,7 @@ char *username, *password;
 
 if (!(username = CS expand_string(ob->spa_username)))
   {
-  if (expand_string_forcedfail) return CANCELLED;
+  if (f.expand_string_forcedfail) return CANCELLED;
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
    "authenticator: %s", ob->spa_username, ablock->name,
    expand_string_message);
@@ -298,7 +298,7 @@ if (!(username = CS expand_string(ob->spa_username)))
 
 if (!(password = CS expand_string(ob->spa_password)))
   {
-  if (expand_string_forcedfail) return CANCELLED;
+  if (f.expand_string_forcedfail) return CANCELLED;
   string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
    "authenticator: %s", ob->spa_password, ablock->name,
    expand_string_message);
@@ -309,7 +309,7 @@ if (ob->spa_domain)
   {
   if (!(domain = CS expand_string(ob->spa_domain)))
     {
-    if (expand_string_forcedfail) return CANCELLED;
+    if (f.expand_string_forcedfail) return CANCELLED;
     string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
 		  "authenticator: %s", ob->spa_domain, ablock->name,
 		  expand_string_message);

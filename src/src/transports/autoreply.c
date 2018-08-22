@@ -290,7 +290,7 @@ uschar *message_id = NULL;
 header_line *h;
 time_t now = time(NULL);
 time_t once_repeat_sec = 0;
-FILE *f;
+FILE *fp;
 FILE *ff = NULL;
 
 autoreply_transport_options_block *ob =
@@ -403,7 +403,7 @@ if (ob->never_mail)
 
 /* If the -N option is set, can't do any more. */
 
-if (dont_deliver)
+if (f.dont_deliver)
   {
   DEBUG(D_transport)
     debug_printf("*** delivery by %s transport bypassed by -N option\n",
@@ -577,14 +577,14 @@ if (pid < 0)
 as the -t option is used. The "headers" stuff *must* be last in case there
 are newlines in it which might, if placed earlier, screw up other headers. */
 
-f = fdopen(fd, "wb");
+fp = fdopen(fd, "wb");
 
-if (from) fprintf(f, "From: %s\n", from);
-if (reply_to) fprintf(f, "Reply-To: %s\n", reply_to);
-if (to) fprintf(f, "To: %s\n", to);
-if (cc) fprintf(f, "Cc: %s\n", cc);
-if (bcc) fprintf(f, "Bcc: %s\n", bcc);
-if (subject) fprintf(f, "Subject: %s\n", subject);
+if (from) fprintf(fp, "From: %s\n", from);
+if (reply_to) fprintf(fp, "Reply-To: %s\n", reply_to);
+if (to) fprintf(fp, "To: %s\n", to);
+if (cc) fprintf(fp, "Cc: %s\n", cc);
+if (bcc) fprintf(fp, "Bcc: %s\n", bcc);
+if (subject) fprintf(fp, "Subject: %s\n", subject);
 
 /* Generate In-Reply-To from the message_id header; there should
 always be one, but code defensively. */
@@ -596,7 +596,7 @@ if (h)
   {
   message_id = Ustrchr(h->text, ':') + 1;
   while (isspace(*message_id)) message_id++;
-  fprintf(f, "In-Reply-To: %s", message_id);
+  fprintf(fp, "In-Reply-To: %s", message_id);
   }
 
 /* Generate a References header if there is at least one of Message-ID:,
@@ -618,7 +618,7 @@ the position inside the thread, up to a maximum of 12 altogether. */
 
 if (h || message_id)
   {
-  fprintf(f, "References:");
+  fprintf(fp, "References:");
   if (h)
     {
     uschar *s, *id, *error;
@@ -627,7 +627,7 @@ if (h || message_id)
     int i;
 
     s = Ustrchr(h->text, ':') + 1;
-    parse_allow_group = FALSE;
+    f.parse_allow_group = FALSE;
     while (*s != 0 && (s = parse_message_id(s, &id, &error)) != NULL)
       {
       if (reference_count == nelem(referenced_ids))
@@ -638,28 +638,28 @@ if (h || message_id)
         }
       else referenced_ids[reference_count++] = id;
       }
-    for (i = 0; i < reference_count; ++i) fprintf(f, " %s", referenced_ids[i]);
+    for (i = 0; i < reference_count; ++i) fprintf(fp, " %s", referenced_ids[i]);
     }
 
   /* The message id will have a newline on the end of it. */
 
-  if (message_id) fprintf(f, " %s", message_id);
-  else fprintf(f, "\n");
+  if (message_id) fprintf(fp, " %s", message_id);
+  else fprintf(fp, "\n");
   }
 
 /* Add an Auto-Submitted: header */
 
-fprintf(f, "Auto-Submitted: auto-replied\n");
+fprintf(fp, "Auto-Submitted: auto-replied\n");
 
 /* Add any specially requested headers */
 
-if (headers) fprintf(f, "%s\n", headers);
-fprintf(f, "\n");
+if (headers) fprintf(fp, "%s\n", headers);
+fprintf(fp, "\n");
 
 if (text)
   {
-  fprintf(f, "%s", CS text);
-  if (text[Ustrlen(text)-1] != '\n') fprintf(f, "\n");
+  fprintf(fp, "%s", CS text);
+  if (text[Ustrlen(text)-1] != '\n') fprintf(fp, "\n");
   }
 
 if (ff)
@@ -675,9 +675,9 @@ if (ff)
           debug_printf("error while expanding line from file:\n  %s\n  %s\n",
             big_buffer, expand_string_message);
         }
-      fprintf(f, "%s", s ? CS s : CS big_buffer);
+      fprintf(fp, "%s", s ? CS s : CS big_buffer);
       }
-    else fprintf(f, "%s", CS big_buffer);
+    else fprintf(fp, "%s", CS big_buffer);
     }
   (void) fclose(ff);
   }
@@ -694,7 +694,7 @@ if (return_message)
     :
     US"------ This is a copy of the message, including all the headers.\n";
   transport_ctx tctx = {
-    .u = {.fd = fileno(f)},
+    .u = {.fd = fileno(fp)},
     .tblock = tblock,
     .addr = addr,
     .check_string = NULL,
@@ -714,23 +714,23 @@ if (return_message)
       DELIVER_IN_BUFFER_SIZE;
     if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
       {
-      fprintf(f, "\n%s"
+      fprintf(fp, "\n%s"
 "------ The body of the message is " OFF_T_FMT " characters long; only the first\n"
 "------ %d or so are included here.\n\n", rubric, statbuf.st_size,
         (max/1000)*1000);
       }
-    else fprintf(f, "\n%s\n", rubric);
+    else fprintf(fp, "\n%s\n", rubric);
     }
-  else fprintf(f, "\n%s\n", rubric);
+  else fprintf(fp, "\n%s\n", rubric);
 
-  fflush(f);
+  fflush(fp);
   transport_count = 0;
   transport_write_message(&tctx, bounce_return_size_limit);
   }
 
 /* End the message and wait for the child process to end; no timeout. */
 
-(void)fclose(f);
+(void)fclose(fp);
 rc = child_close(pid, 0);
 
 /* Update the "sent to" log whatever the yield. This errs on the side of

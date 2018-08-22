@@ -91,13 +91,13 @@ dmarc_status       = US"none";
 dmarc_abort        = FALSE;
 dmarc_pass_fail    = US"skipped";
 dmarc_used_domain  = US"";
-dmarc_has_been_checked = FALSE;
+f.dmarc_has_been_checked = FALSE;
 header_from_sender = NULL;
 spf_sender_domain  = NULL;
 spf_human_readable = NULL;
 
 /* ACLs have "control=dmarc_disable_verify" */
-if (dmarc_disable_verify == TRUE)
+if (f.dmarc_disable_verify == TRUE)
   return OK;
 
 (void) memset(&dmarc_ctx, '\0', sizeof dmarc_ctx);
@@ -148,7 +148,7 @@ int
 dmarc_store_data(header_line *hdr)
 {
 /* No debug output because would change every test debug output */
-if (!dmarc_disable_verify)
+if (!f.dmarc_disable_verify)
   from_header = hdr;
 return OK;
 }
@@ -164,7 +164,7 @@ error_block *eblock = NULL;
 FILE *message_file = NULL;
 
 /* Earlier ACL does not have *required* control=dmarc_enable_forensic */
-if (!dmarc_enable_forensic)
+if (!f.dmarc_enable_forensic)
   return;
 
 if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
@@ -195,8 +195,8 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
       recipient += 7;
       DEBUG(D_receive)
 	debug_printf("DMARC forensic report to %s%s\n", recipient,
-	     (host_checking || running_in_test_harness) ? " (not really)" : "");
-      if (host_checking || running_in_test_harness)
+	     (host_checking || f.running_in_test_harness) ? " (not really)" : "");
+      if (host_checking || f.running_in_test_harness)
 	continue;
 
       save_sender = sender_address;
@@ -226,7 +226,7 @@ BOOL has_dmarc_record = TRUE;
 u_char **ruf; /* forensic report addressees, if called for */
 
 /* ACLs have "control=dmarc_disable_verify" */
-if (dmarc_disable_verify)
+if (f.dmarc_disable_verify)
   return OK;
 
 /* Store the header From: sender domain for this part of DMARC.
@@ -247,7 +247,7 @@ else if (!dmarc_abort)
   uschar * p;
   uschar saveend;
 
-  parse_allow_group = TRUE;
+  f.parse_allow_group = TRUE;
   p = parse_find_address_end(from_header->text, FALSE);
   saveend = *p; *p = '\0';
   if ((header_from_sender = parse_extract_address(from_header->text, &errormsg,
@@ -487,7 +487,7 @@ if (!dmarc_abort && !sender_host_authenticated)
 /* shut down libopendmarc */
 if (dmarc_pctx)
   (void) opendmarc_policy_connect_shutdown(dmarc_pctx);
-if (!dmarc_disable_verify)
+if (!f.dmarc_disable_verify)
   (void) opendmarc_policy_library_shutdown(&dmarc_ctx);
 
 return OK;
@@ -558,8 +558,8 @@ history_buffer = string_sprintf(
 /* Write the contents to the history file */
 DEBUG(D_receive)
   debug_printf("DMARC logging history data for opendmarc reporting%s\n",
-	     (host_checking || running_in_test_harness) ? " (not really)" : "");
-if (host_checking || running_in_test_harness)
+	     (host_checking || f.running_in_test_harness) ? " (not really)" : "");
+if (host_checking || f.running_in_test_harness)
   {
   DEBUG(D_receive)
     debug_printf("DMARC history data for debugging:\n%s", history_buffer);
@@ -584,7 +584,7 @@ return DMARC_HIST_OK;
 uschar *
 dmarc_exim_expand_query(int what)
 {
-if (dmarc_disable_verify || !dmarc_pctx)
+if (f.dmarc_disable_verify || !dmarc_pctx)
   return dmarc_exim_expand_defaults(what);
 
 if (what == DMARC_VERIFY_STATUS)
@@ -596,7 +596,7 @@ uschar *
 dmarc_exim_expand_defaults(int what)
 {
 if (what == DMARC_VERIFY_STATUS)
-  return dmarc_disable_verify ?  US"off" : US"none";
+  return f.dmarc_disable_verify ?  US"off" : US"none";
 return US"";
 }
 
@@ -604,7 +604,7 @@ return US"";
 gstring *
 authres_dmarc(gstring * g)
 {
-if (dmarc_has_been_checked)
+if (f.dmarc_has_been_checked)
   {
   g = string_append(g, 2, US";\n\tdmarc=", dmarc_pass_fail);
   if (header_from_sender)

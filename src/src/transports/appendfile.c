@@ -310,7 +310,7 @@ for (i = 0; i < 5; i++)
       {
       *errmsg = string_sprintf("Expansion of \"%s\" in %s transport failed: "
         "%s", q, tblock->name, expand_string_message);
-      return search_find_defer ? DEFER : FAIL;
+      return f.search_find_defer ? DEFER : FAIL;
       }
 
     d = Ustrtod(s, &rest);
@@ -1435,7 +1435,7 @@ DEBUG(D_transport)
 
 /* If the -N option is set, can't do any more. */
 
-if (dont_deliver)
+if (f.dont_deliver)
   {
   DEBUG(D_transport)
     debug_printf("*** delivery by %s transport bypassed by -N option\n",
@@ -2551,7 +2551,7 @@ else
     $message_size is accurately known. */
 
     if (nametag != NULL && expand_string(nametag) == NULL &&
-        !expand_string_forcedfail)
+        !f.expand_string_forcedfail)
       {
       addr->transport_return = PANIC;
       addr->message = string_sprintf("Expansion of \"%s\" (maildir_tag "
@@ -2688,7 +2688,7 @@ else
       uschar *s = expand_string(ob->mailstore_prefix);
       if (s == NULL)
         {
-        if (!expand_string_forcedfail)
+        if (!f.expand_string_forcedfail)
           {
           addr->transport_return = PANIC;
           addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
@@ -2717,7 +2717,7 @@ else
       uschar *s = expand_string(ob->mailstore_suffix);
       if (s == NULL)
         {
-        if (!expand_string_forcedfail)
+        if (!f.expand_string_forcedfail)
           {
           addr->transport_return = PANIC;
           addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
@@ -3080,7 +3080,7 @@ if (yield != OK)
         }
       else   /* Want a repeatable time when in test harness */
         {
-        addr->more_errno = running_in_test_harness ? 10 :
+        addr->more_errno = f.running_in_test_harness ? 10 :
           (int)time(NULL) - statbuf.st_mtime;
         }
       DEBUG(D_transport)

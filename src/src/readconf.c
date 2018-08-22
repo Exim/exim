@@ -2423,7 +2423,7 @@ if (!ol)
 /* Non-admin callers cannot see options that have been flagged secure by the
 "hide" prefix. */
 
-if (!admin_user && ol->type & opt_secure)
+if (!f.admin_user && ol->type & opt_secure)
   {
   if (no_labels)
     printf("%s\n", hidden);
@@ -2782,7 +2782,7 @@ if (!type)
 
   if (Ustrcmp(name, "config") == 0)
     {
-    print_config(admin_user, no_labels);
+    print_config(f.admin_user, no_labels);
     return TRUE;
     }
 
@@ -2883,7 +2883,7 @@ else if (Ustrcmp(type, "macro") == 0)
   {
   /* People store passwords in macros and they were previously not available
   for printing.  So we have an admin_users restriction. */
-  if (!admin_user)
+  if (!f.admin_user)
     {
     fprintf(stderr, "exim: permission denied\n");
     return FALSE;
@@ -3290,7 +3290,7 @@ if (Uchdir("/") < 0)
 /* Check the status of the file we have opened, if we have retained root
 privileges and the file isn't /dev/null (which *should* be 0666). */
 
-if (trusted_config && Ustrcmp(filename, US"/dev/null"))
+if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
   {
   if (fstat(fileno(config_file), &statbuf) != 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to stat configuration file %s",
@@ -4416,7 +4416,7 @@ void
 readconf_save_config(const uschar *s)
 {
 save_config_line(string_sprintf("# Exim Configuration (%s)",
-  running_in_test_harness ? US"X" : s));
+  f.running_in_test_harness ? US"X" : s));
 }
 
 static void

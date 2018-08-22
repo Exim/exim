@@ -228,7 +228,218 @@ const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
 
 int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
 
-/* General global variables */
+/******************************************************************************/
+/* General global variables.  Boolean flags are done as a group
+so that only one bit each is needed, packed, for all those we never
+need to take a pointer - and only a char for the rest.
+This means a struct, unfortunately since it clutters the sourcecode. */
+
+struct global_flags f =
+{
+	.acl_temp_details       = FALSE,
+	.active_local_from_check = FALSE,
+	.active_local_sender_retain = FALSE,
+	.address_test_mode      = FALSE,
+	.admin_user             = FALSE,
+	.allow_auth_unadvertised= FALSE,
+	.allow_unqualified_recipient = TRUE,    /* For local messages */
+	.allow_unqualified_sender = TRUE,       /* Reset for SMTP */
+	.authentication_local   = FALSE,
+
+	.background_daemon      = TRUE,
+
+	.chunking_offered       = FALSE,
+	.config_changed         = FALSE,
+	.continue_more          = FALSE,
+
+	.daemon_listen          = FALSE,
+	.debug_daemon           = FALSE,
+	.deliver_firsttime      = FALSE,
+	.deliver_force          = FALSE,
+	.deliver_freeze         = FALSE,
+	.deliver_force_thaw     = FALSE,
+	.deliver_manual_thaw    = FALSE,
+	.deliver_selectstring_regex = FALSE,
+	.deliver_selectstring_sender_regex = FALSE,
+	.disable_callout_flush  = FALSE,
+	.disable_delay_flush    = FALSE,
+	.disable_logging        = FALSE,
+#ifndef DISABLE_DKIM
+	.dkim_disable_verify      = FALSE,
+#endif
+#ifdef EXPERIMENTAL_DMARC
+	.dmarc_has_been_checked  = FALSE,
+	.dmarc_disable_verify    = FALSE,
+	.dmarc_enable_forensic   = FALSE,
+#endif
+	.dont_deliver           = FALSE,
+	.dot_ends               = TRUE,
+
+	.enable_dollar_recipients = FALSE,
+	.expand_string_forcedfail = FALSE,
+
+	.filter_running         = FALSE,
+
+	.header_rewritten       = FALSE,
+	.helo_verified          = FALSE,
+	.helo_verify_failed     = FALSE,
+	.host_checking_callout  = FALSE,
+	.host_find_failed_syntax= FALSE,
+
+	.inetd_wait_mode        = FALSE,
+	.is_inetd               = FALSE,
+
+	.local_error_message    = FALSE,
+	.log_testing_mode       = FALSE,
+
+#ifdef WITH_CONTENT_SCAN
+	.no_mbox_unspool        = FALSE,
+#endif
+	.no_multiline_responses = FALSE,
+
+	.parse_allow_group      = FALSE,
+	.parse_found_group      = FALSE,
+	.pipelining_enable      = TRUE,
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
+	.proxy_session_failed   = FALSE,
+#endif
+
+	.queue_2stage           = FALSE,
+	.queue_only_policy      = FALSE,
+	.queue_run_first_delivery = FALSE,
+	.queue_run_force        = FALSE,
+	.queue_run_local        = FALSE,
+	.queue_running          = FALSE,
+	.queue_smtp             = FALSE,
+
+	.really_exim            = TRUE,
+	.receive_call_bombout   = FALSE,
+	.recipients_discarded   = FALSE,
+/* BOOL    rfc821_domains         = FALSE;  <<< on the way out */
+	.running_in_test_harness = FALSE,
+
+	.search_find_defer      = FALSE,
+	.sender_address_forced  = FALSE,
+	.sender_host_notsocket  = FALSE,
+	.sender_host_unknown    = FALSE,
+	.sender_local           = FALSE,
+	.sender_name_forced     = FALSE,
+	.sender_set_untrusted   = FALSE,
+/* BOOL    sender_verified_responded = FALSE; /* never used? */
+	.smtp_authenticated     = FALSE,
+	.smtp_in_pipelining_advertised = FALSE,
+	.smtp_in_pipelining_used = FALSE,
+	.spool_file_wireformat  = FALSE,
+	.submission_mode        = FALSE,
+	.suppress_local_fixups  = FALSE,
+	.suppress_local_fixups_default = FALSE,
+	.synchronous_delivery   = FALSE,
+	.system_filtering       = FALSE,
+
+	.tcp_fastopen_ok        = FALSE,
+	.tcp_in_fastopen        = FALSE,
+	.tcp_in_fastopen_logged = FALSE,
+	.tcp_out_fastopen_logged= FALSE,
+	.timestamps_utc         = FALSE,
+	.transport_filter_timed_out = FALSE,
+	.trusted_caller         = FALSE,
+	.trusted_config         = TRUE,
+};
+
+/******************************************************************************/
+/* These are the flags which are either variables or mainsection options,
+so an address is needed for access, or are exported to local_scan. */
+
+BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
+BOOL    allow_domain_literals  = FALSE;
+BOOL    allow_mx_to_ip         = FALSE;
+BOOL    allow_utf8_domains     = FALSE;
+BOOL    authentication_failed  = FALSE;
+
+BOOL    bounce_return_body     = TRUE;
+BOOL    bounce_return_message  = TRUE;
+BOOL    check_rfc2047_length   = TRUE;
+BOOL    commandline_checks_require_admin = FALSE;
+
+#ifdef EXPERIMENTAL_DCC
+BOOL    dcc_direct_add_header  = FALSE;
+#endif
+BOOL    debug_store            = FALSE;
+BOOL    delivery_date_remove   = TRUE;
+BOOL    deliver_drop_privilege = FALSE;
+#ifdef ENABLE_DISABLE_FSYNC
+BOOL    disable_fsync          = FALSE;
+#endif
+BOOL    disable_ipv6           = FALSE;
+BOOL    dns_csa_use_reverse    = TRUE;
+BOOL    drop_cr                = FALSE;         /* No longer used */
+
+BOOL    envelope_to_remove     = TRUE;
+BOOL    exim_gid_set           = TRUE;          /* This gid is always set */
+BOOL    exim_uid_set           = TRUE;          /* This uid is always set */
+BOOL    extract_addresses_remove_arguments = TRUE;
+
+BOOL    host_checking          = FALSE;
+BOOL    host_lookup_deferred   = FALSE;
+BOOL    host_lookup_failed     = FALSE;
+BOOL    ignore_fromline_local  = FALSE;
+
+BOOL    local_from_check       = TRUE;
+BOOL    local_sender_retain    = FALSE;
+BOOL    log_timezone           = FALSE;
+BOOL    message_body_newlines  = FALSE;
+BOOL    message_logs           = TRUE;
+#ifdef SUPPORT_I18N
+BOOL    message_smtputf8       = FALSE;
+#endif
+BOOL    mua_wrapper            = FALSE;
+
+BOOL    preserve_message_logs  = FALSE;
+BOOL    print_topbitchars      = FALSE;
+BOOL    prod_requires_admin    = TRUE;
+#if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
+BOOL    proxy_session          = FALSE;
+#endif
+
+BOOL    queue_list_requires_admin = TRUE;
+BOOL    queue_only             = FALSE;
+BOOL    queue_only_load_latch  = TRUE;
+BOOL    queue_only_override    = TRUE;
+BOOL    queue_run_in_order     = FALSE;
+BOOL    recipients_max_reject  = FALSE;
+BOOL    return_path_remove     = TRUE;
+
+BOOL    smtp_batched_input     = FALSE;
+BOOL    sender_helo_dnssec     = FALSE;
+BOOL    sender_host_dnssec     = FALSE;
+BOOL    smtp_accept_keepalive  = TRUE;
+BOOL    smtp_check_spool_space = TRUE;
+BOOL    smtp_enforce_sync      = TRUE;
+BOOL    smtp_etrn_serialize    = TRUE;
+BOOL    smtp_input             = FALSE;
+BOOL    smtp_return_error_details = FALSE;
+#ifdef SUPPORT_SPF
+BOOL    spf_result_guessed     = FALSE;
+#endif
+BOOL    split_spool_directory  = FALSE;
+BOOL    spool_wireformat       = FALSE;
+#ifdef EXPERIMENTAL_SRS
+BOOL    srs_usehash            = TRUE;
+BOOL    srs_usetimestamp       = TRUE;
+#endif
+BOOL    strict_acl_vars        = FALSE;
+BOOL    strip_excess_angle_brackets = FALSE;
+BOOL    strip_trailing_dot     = FALSE;
+BOOL    syslog_duplication     = TRUE;
+BOOL    syslog_pid             = TRUE;
+BOOL    syslog_timestamp       = TRUE;
+BOOL    system_filter_gid_set  = FALSE;
+BOOL    system_filter_uid_set  = FALSE;
+
+BOOL    tcp_nodelay            = TRUE;
+BOOL    write_rejectlog        = TRUE;
+
+/******************************************************************************/
 
 header_line *acl_added_headers = NULL;
 tree_node *acl_anchor          = NULL;
@@ -268,7 +479,6 @@ uschar *acl_smtp_rcpt          = NULL;
 uschar *acl_smtp_starttls      = NULL;
 uschar *acl_smtp_vrfy          = NULL;
 
-BOOL    acl_temp_details       = FALSE;
 tree_node *acl_var_c           = NULL;
 tree_node *acl_var_m           = NULL;
 uschar *acl_verify_message     = NULL;
@@ -327,9 +537,6 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
 				   US"0"        /* unknown; not relevant */
                                  };
 
-BOOL    active_local_from_check = FALSE;
-BOOL    active_local_sender_retain = FALSE;
-BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
 uschar *add_environment        = NULL;
 address_item  *addr_duplicate  = NULL;
 
@@ -416,17 +623,9 @@ address_item address_defaults = {
 
 uschar *address_file           = NULL;
 uschar *address_pipe           = NULL;
-BOOL    address_test_mode      = FALSE;
 tree_node *addresslist_anchor  = NULL;
 int     addresslist_count      = 0;
 gid_t  *admin_groups           = NULL;
-BOOL    admin_user             = FALSE;
-BOOL    allow_auth_unadvertised= FALSE;
-BOOL    allow_domain_literals  = FALSE;
-BOOL    allow_mx_to_ip         = FALSE;
-BOOL    allow_unqualified_recipient = TRUE;    /* For local messages */
-BOOL    allow_unqualified_sender = TRUE;       /* Reset for SMTP */
-BOOL    allow_utf8_domains	= FALSE;
 
 #ifdef EXPERIMENTAL_ARC
 struct arc_set *arc_received	= NULL;
@@ -439,8 +638,6 @@ const uschar *arc_state_reason	= NULL;
 uschar *authenticated_fail_id  = NULL;
 uschar *authenticated_id       = NULL;
 uschar *authenticated_sender   = NULL;
-BOOL    authentication_failed  = FALSE;
-BOOL    authentication_local   = FALSE;
 auth_instance  *auths          = NULL;
 uschar *auth_advertise_hosts   = US"*";
 auth_instance auth_defaults    = {
@@ -467,11 +664,9 @@ uschar *auth_defer_user_msg    = US"";
 uschar *auth_vars[AUTH_VARS];
 int     auto_thaw              = 0;
 #ifdef WITH_CONTENT_SCAN
-BOOL    av_failed              = FALSE;
+int     av_failed              = FALSE;	/* boolean but accessed as vtype_int*/
 uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */
 #endif
-
-BOOL    background_daemon      = TRUE;
 
 #if BASE_62 == 62
 uschar *base62_chars=
@@ -499,9 +694,7 @@ int     body_zerocount         = 0;
 uschar *bounce_message_file    = NULL;
 uschar *bounce_message_text    = NULL;
 uschar *bounce_recipient       = NULL;
-BOOL    bounce_return_body     = TRUE;
 int     bounce_return_linesize_limit = 998;
-BOOL    bounce_return_message  = TRUE;
 int     bounce_return_size_limit = 100*1024;
 uschar *bounce_sender_authentication = NULL;
 
@@ -514,14 +707,12 @@ uschar *callout_random_local_part = US"$primary_hostname-$tod_epoch-testing";
 uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W](?>[a-z0-9/_-]*[^\\W])?)+(\\.?)$";
 int     check_log_inodes       = 100;
 int     check_log_space        = 10*1024;	/* 10K Kbyte == 10MB */
-BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 100;
 int     check_spool_space      = 10*1024;	/* 10K Kbyte == 10MB */
 
 uschar *chunking_advertise_hosts = US"*";
 unsigned chunking_datasize     = 0;
 unsigned chunking_data_left    = 0;
-BOOL    chunking_offered       = FALSE;
 chunking_state_t chunking_state= CHUNKING_NOT_OFFERED;
 const pcre *regex_CHUNKING     = NULL;
 
@@ -530,8 +721,6 @@ uschar *client_authenticated_id = NULL;
 uschar *client_authenticated_sender = NULL;
 int     clmacro_count          = 0;
 uschar *clmacros[MAX_CLMACROS];
-BOOL    commandline_checks_require_admin = FALSE;
-BOOL    config_changed         = FALSE;
 FILE   *config_file            = NULL;
 const uschar *config_filename  = NULL;
 int     config_lineno          = 0;
@@ -555,7 +744,6 @@ int     connection_max_messages= -1;
 uschar *continue_proxy_cipher  = NULL;
 uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
-BOOL    continue_more          = FALSE;
 int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 
@@ -569,20 +757,17 @@ cut_t   cutthrough = {
   .nrcpt =		0,				/* number of addresses */
 };
 
-BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
 int     daemon_startup_retries = 9;
 int     daemon_startup_sleep   = 30;
 
 #ifdef EXPERIMENTAL_DCC
-BOOL    dcc_direct_add_header  = FALSE;
 uschar *dcc_header             = NULL;
 uschar *dcc_result             = NULL;
 uschar *dccifd_address         = US"/usr/local/dcc/var/dccifd";
 uschar *dccifd_options         = US"header";
 #endif
 
-BOOL    debug_daemon           = FALSE;
 int     debug_fd               = -1;
 FILE   *debug_file             = NULL;
 int     debug_notall[]         = {
@@ -625,7 +810,6 @@ bit_table debug_options[]      = { /* must be in alphabetical order */
 int     debug_options_count    = nelem(debug_options);
 
 unsigned int debug_selector    = 0;
-BOOL    debug_store            = FALSE;
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=
   US"${if or {"
@@ -633,17 +817,12 @@ uschar *delay_warning_condition=
             "{ match{$h_precedence:}{(?i)bulk|list|junk} }"
             "{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }"
             "} {no}{yes}}";
-BOOL    delivery_date_remove   = TRUE;
 uschar *deliver_address_data   = NULL;
 int     deliver_datafile       = -1;
 const uschar *deliver_domain   = NULL;
 uschar *deliver_domain_data    = NULL;
 const uschar *deliver_domain_orig = NULL;
 const uschar *deliver_domain_parent = NULL;
-BOOL    deliver_drop_privilege = FALSE;
-BOOL    deliver_firsttime      = FALSE;
-BOOL    deliver_force          = FALSE;
-BOOL    deliver_freeze         = FALSE;
 time_t  deliver_frozen_at      = 0;
 uschar *deliver_home           = NULL;
 const uschar *deliver_host     = NULL;
@@ -657,27 +836,15 @@ uschar *deliver_localpart_orig = NULL;
 uschar *deliver_localpart_parent = NULL;
 uschar *deliver_localpart_prefix = NULL;
 uschar *deliver_localpart_suffix = NULL;
-BOOL    deliver_force_thaw     = FALSE;
-BOOL    deliver_manual_thaw    = FALSE;
 uschar *deliver_out_buffer     = NULL;
 int     deliver_queue_load_max = -1;
 address_item  *deliver_recipients = NULL;
 uschar *deliver_selectstring   = NULL;
-BOOL    deliver_selectstring_regex = FALSE;
 uschar *deliver_selectstring_sender = NULL;
-BOOL    deliver_selectstring_sender_regex = FALSE;
-BOOL    disable_callout_flush  = FALSE;
-BOOL    disable_delay_flush    = FALSE;
-#ifdef ENABLE_DISABLE_FSYNC
-BOOL    disable_fsync          = FALSE;
-#endif
-BOOL    disable_ipv6           = FALSE;
-BOOL    disable_logging        = FALSE;
 
 #ifndef DISABLE_DKIM
 unsigned dkim_collect_input      = 0;
 uschar *dkim_cur_signer          = NULL;
-BOOL    dkim_disable_verify      = FALSE;
 int     dkim_key_length          = 0;
 void   *dkim_signatures		 = NULL;
 uschar *dkim_signers             = NULL;
@@ -689,7 +856,6 @@ uschar *dkim_verify_status	 = NULL;
 uschar *dkim_verify_reason	 = NULL;
 #endif
 #ifdef EXPERIMENTAL_DMARC
-BOOL    dmarc_has_been_checked  = FALSE;
 uschar *dmarc_domain_policy     = NULL;
 uschar *dmarc_forensic_sender   = NULL;
 uschar *dmarc_history_file      = NULL;
@@ -697,13 +863,10 @@ uschar *dmarc_status            = NULL;
 uschar *dmarc_status_text       = NULL;
 uschar *dmarc_tld_file          = NULL;
 uschar *dmarc_used_domain       = NULL;
-BOOL    dmarc_disable_verify    = FALSE;
-BOOL    dmarc_enable_forensic   = FALSE;
 #endif
 
 uschar *dns_again_means_nonexist = NULL;
 int     dns_csa_search_limit   = 5;
-BOOL    dns_csa_use_reverse    = TRUE;
 int	dns_cname_loops	       = 1;
 #ifdef SUPPORT_DANE
 int     dns_dane_ok            = -1;
@@ -720,13 +883,8 @@ uschar *dnslist_text           = NULL;
 uschar *dnslist_value          = NULL;
 tree_node *domainlist_anchor   = NULL;
 int     domainlist_count       = 0;
-BOOL    dont_deliver           = FALSE;
-BOOL    dot_ends               = TRUE;
-BOOL    drop_cr                = FALSE;         /* No longer used */
 uschar *dsn_from               = US DEFAULT_DSN_FROM;
 
-BOOL    enable_dollar_recipients = FALSE;
-BOOL    envelope_to_remove     = TRUE;
 int     errno_quota            = ERRNO_QUOTA;
 uschar *errors_copy            = NULL;
 int     error_handling         = ERRORS_SENDER;
@@ -741,19 +899,15 @@ const uschar *event_name         = NULL;	/* event name variable */
 
 
 gid_t   exim_gid               = EXIM_GID;
-BOOL    exim_gid_set           = TRUE;          /* This gid is always set */
 uschar *exim_path              = US BIN_DIRECTORY "/exim"
                         "\0<---------------Space to patch exim_path->";
 uid_t   exim_uid               = EXIM_UID;
-BOOL    exim_uid_set           = TRUE;          /* This uid is always set */
 int     expand_level	       = 0;		/* Nesting depth, indent for debug */
 int     expand_forbid          = 0;
 int     expand_nlength[EXPAND_MAXN+1];
 int     expand_nmax            = -1;
 uschar *expand_nstring[EXPAND_MAXN+1];
-BOOL    expand_string_forcedfail = FALSE;
 uschar *expand_string_message;
-BOOL    extract_addresses_remove_arguments = TRUE;
 uschar *extra_local_interfaces = NULL;
 
 int     fake_response          = OK;
@@ -762,7 +916,6 @@ uschar *fake_response_text     = US"Your message has been rejected but is "
                                    "legitimate message, it may still be "
                                    "delivered to the target recipient(s).";
 int     filter_n[FILTER_VARIABLE_COUNT];
-BOOL    filter_running         = FALSE;
 int     filter_sn[FILTER_VARIABLE_COUNT];
 int     filter_test            = FTEST_NONE;
 uschar *filter_test_sfile      = NULL;
@@ -808,23 +961,15 @@ header_name header_names[] = {
 
 int header_names_size          = nelem(header_names);
 
-BOOL    header_rewritten       = FALSE;
 uschar *helo_accept_junk_hosts = NULL;
 uschar *helo_allow_chars       = US"";
 uschar *helo_lookup_domains    = US"@ : @[]";
 uschar *helo_try_verify_hosts  = NULL;
-BOOL    helo_verified          = FALSE;
-BOOL    helo_verify_failed     = FALSE;
 uschar *helo_verify_hosts      = NULL;
 const uschar *hex_digits       = CUS"0123456789abcdef";
 uschar *hold_domains           = NULL;
-BOOL    host_checking          = FALSE;
-BOOL    host_checking_callout  = FALSE;
 uschar *host_data              = NULL;
-BOOL    host_find_failed_syntax= FALSE;
 uschar *host_lookup            = NULL;
-BOOL    host_lookup_deferred   = FALSE;
-BOOL    host_lookup_failed     = FALSE;
 uschar *host_lookup_order      = US"bydns:byaddr";
 uschar *host_lookup_msg        = US"";
 int     host_number            = 0;
@@ -836,14 +981,11 @@ uschar *hosts_treat_as_local   = NULL;
 uschar *hosts_connection_nolog = NULL;
 
 int     ignore_bounce_errors_after = 10*7*24*60*60;  /* 10 weeks */
-BOOL    ignore_fromline_local  = FALSE;
 uschar *ignore_fromline_hosts  = NULL;
-BOOL    inetd_wait_mode        = FALSE;
 int     inetd_wait_timeout     = -1;
 uschar *initial_cwd            = NULL;
 uschar *interface_address      = NULL;
 int     interface_port         = -1;
-BOOL    is_inetd               = FALSE;
 uschar *iterate_item           = NULL;
 
 int     journal_fd             = -1;
@@ -854,8 +996,6 @@ int     keep_malformed         = 4*24*60*60;    /* 4 days */
 
 uschar *eldap_dn               = NULL;
 int     load_average           = -2;
-BOOL    local_error_message    = FALSE;
-BOOL    local_from_check       = TRUE;
 uschar *local_from_prefix      = NULL;
 uschar *local_from_suffix      = NULL;
 
@@ -869,7 +1009,6 @@ uschar *local_interfaces       = US"0.0.0.0";
 uschar *local_scan_data        = NULL;
 int     local_scan_timeout     = 5*60;
 #endif
-BOOL    local_sender_retain    = FALSE;
 gid_t   local_user_gid         = (gid_t)(-1);
 uid_t   local_user_uid         = (uid_t)(-1);
 
@@ -970,8 +1109,6 @@ int     log_reject_target      = 0;
 unsigned int log_selector[log_selector_size]; /* initialized in main() */
 uschar *log_selector_string    = NULL;
 FILE   *log_stderr             = NULL;
-BOOL    log_testing_mode       = FALSE;
-BOOL    log_timezone           = FALSE;
 uschar *login_sender_address   = NULL;
 uschar *lookup_dnssec_authenticated = NULL;
 int     lookup_open_max        = 25;
@@ -987,7 +1124,6 @@ int     max_username_length    = 0;
 int     message_age            = 0;
 uschar *message_body           = NULL;
 uschar *message_body_end       = NULL;
-BOOL    message_body_newlines  = FALSE;
 int     message_body_size      = 0;
 int     message_body_visible   = 500;
 int     message_ended          = END_NOTSTARTED;
@@ -999,11 +1135,9 @@ struct timeval message_id_tv   = { 0, 0 };
 uschar  message_id_option[MESSAGE_ID_LENGTH + 3];
 uschar *message_id_external;
 int     message_linecount      = 0;
-BOOL    message_logs           = TRUE;
 int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
 #ifdef SUPPORT_I18N
-BOOL    message_smtputf8       = FALSE;
 int     message_utf8_downconvert = 0;	/* -1 ifneeded; 0 never; 1 always */
 #endif
 uschar  message_subdir[2]      = { 0, 0 };
@@ -1029,13 +1163,7 @@ int     mime_is_rfc822         = 0;
 int     mime_part_count        = -1;
 #endif
 
-BOOL    mua_wrapper            = FALSE;
-
 uid_t  *never_users            = NULL;
-#ifdef WITH_CONTENT_SCAN
-BOOL    no_mbox_unspool        = FALSE;
-#endif
-BOOL    no_multiline_responses = FALSE;
 
 const int on                   = 1;	/* for setsockopt */
 const int off                  = 0;
@@ -1048,20 +1176,14 @@ uid_t   originator_uid;
 uschar *override_local_interfaces = NULL;
 uschar *override_pid_file_path = NULL;
 
-BOOL    parse_allow_group      = FALSE;
-BOOL    parse_found_group      = FALSE;
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
-BOOL    pipelining_enable      = TRUE;
 uschar *pipelining_advertise_hosts = US"*";
-BOOL    preserve_message_logs  = FALSE;
 uschar *primary_hostname       = NULL;
-BOOL    print_topbitchars      = FALSE;
 uschar  process_info[PROCESS_INFO_SIZE];
 int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
-BOOL    prod_requires_admin    = TRUE;
 
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
 uschar *hosts_proxy            = US"";
@@ -1069,8 +1191,6 @@ uschar *proxy_external_address = US"";
 int     proxy_external_port    = 0;
 uschar *proxy_local_address    = US"";
 int     proxy_local_port       = 0;
-BOOL    proxy_session          = FALSE;
-BOOL    proxy_session_failed   = FALSE;
 #endif
 
 uschar *prvscheck_address      = NULL;
@@ -1080,26 +1200,14 @@ uschar *prvscheck_result       = NULL;
 
 const uschar *qualify_domain_recipient = NULL;
 uschar *qualify_domain_sender  = NULL;
-BOOL    queue_2stage           = FALSE;
 uschar *queue_domains          = NULL;
 int     queue_interval         = -1;
-BOOL    queue_list_requires_admin = TRUE;
 uschar *queue_name             = US"";
-BOOL    queue_only             = FALSE;
 uschar *queue_only_file        = NULL;
 int     queue_only_load        = -1;
-BOOL    queue_only_load_latch  = TRUE;
-BOOL    queue_only_override    = TRUE;
-BOOL    queue_only_policy      = FALSE;
-BOOL    queue_run_first_delivery = FALSE;
-BOOL    queue_run_force        = FALSE;
-BOOL    queue_run_in_order     = FALSE;
-BOOL    queue_run_local        = FALSE;
 uschar *queue_run_max          = US"5";
 pid_t   queue_run_pid          = (pid_t)0;
 int     queue_run_pipe         = -1;
-BOOL    queue_running          = FALSE;
-BOOL    queue_smtp             = FALSE;
 uschar *queue_smtp_domains     = NULL;
 
 unsigned int random_seed       = 0;
@@ -1116,8 +1224,6 @@ int     rcpt_fail_count        = 0;
 int     rcpt_defer_count       = 0;
 gid_t   real_gid;
 uid_t   real_uid;
-BOOL    really_exim            = TRUE;
-BOOL    receive_call_bombout   = FALSE;
 int     receive_linecount      = 0;
 int     receive_messagecount   = 0;
 int     receive_timeout        = 0;
@@ -1151,11 +1257,9 @@ uschar *recipient_data         = NULL;
 uschar *recipient_unqualified_hosts = NULL;
 uschar *recipient_verify_failure = NULL;
 int     recipients_count       = 0;
-BOOL    recipients_discarded   = FALSE;
 recipient_item  *recipients_list = NULL;
 int     recipients_list_max    = 0;
 int     recipients_max         = 0;
-BOOL    recipients_max_reject  = FALSE;
 const pcre *regex_AUTH         = NULL;
 const pcre *regex_check_dns_names = NULL;
 const pcre *regex_From         = NULL;
@@ -1179,11 +1283,9 @@ int     retry_interval_max     = 24*60*60;
 int     retry_maximum_timeout  = 0;        /* set from retry config */
 retry_config  *retries         = NULL;
 uschar *return_path            = NULL;
-BOOL    return_path_remove     = TRUE;
 int     rewrite_existflags     = 0;
 uschar *rfc1413_hosts          = US"@[]";
 int     rfc1413_query_timeout  = 0;
-/* BOOL    rfc821_domains         = FALSE;  <<< on the way out */
 uid_t   root_gid               = ROOT_GID;
 uid_t   root_uid               = ROOT_UID;
 
@@ -1271,7 +1373,6 @@ router_instance  router_defaults = {
 uschar *router_name            = NULL;
 
 ip_address_item *running_interfaces = NULL;
-BOOL    running_in_test_harness = FALSE;
 
 /* This is a weird one. The following string gets patched in the binary by the
 script that sets up a copy of Exim for running in the test harness. It seems
@@ -1286,49 +1387,38 @@ uschar *running_status         = US">>>running<<<" "\0EXTRA";
 int     runrc                  = 0;
 
 uschar *search_error_message   = NULL;
-BOOL    search_find_defer      = FALSE;
 uschar *self_hostname          = NULL;
 uschar *sender_address         = NULL;
 unsigned int sender_address_cache[(MAX_NAMED_LIST * 2)/32];
 uschar *sender_address_data    = NULL;
-BOOL    sender_address_forced  = FALSE;
 uschar *sender_address_unrewritten = NULL;
 uschar *sender_data            = NULL;
 unsigned int sender_domain_cache[(MAX_NAMED_LIST * 2)/32];
 uschar *sender_fullhost        = NULL;
-BOOL    sender_helo_dnssec     = FALSE;
 uschar *sender_helo_name       = NULL;
 uschar **sender_host_aliases   = &no_aliases;
 uschar *sender_host_address    = NULL;
 uschar *sender_host_authenticated = NULL;
 uschar *sender_host_auth_pubname  = NULL;
 unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32];
-BOOL    sender_host_dnssec     = FALSE;
 uschar *sender_host_name       = NULL;
 int     sender_host_port       = 0;
-BOOL    sender_host_notsocket  = FALSE;
-BOOL    sender_host_unknown    = FALSE;
 uschar *sender_ident           = NULL;
-BOOL    sender_local           = FALSE;
-BOOL    sender_name_forced     = FALSE;
 uschar *sender_rate            = NULL;
 uschar *sender_rate_limit      = NULL;
 uschar *sender_rate_period     = NULL;
 uschar *sender_rcvhost         = NULL;
-BOOL    sender_set_untrusted   = FALSE;
 uschar *sender_unqualified_hosts = NULL;
 uschar *sender_verify_failure = NULL;
 address_item *sender_verified_list  = NULL;
 address_item *sender_verified_failed = NULL;
 int     sender_verified_rc     = -1;
-BOOL    sender_verified_responded = FALSE;
 uschar *sending_ip_address     = NULL;
 int     sending_port           = -1;
 SIGNAL_BOOL sigalrm_seen       = FALSE;
 uschar **sighup_argv           = NULL;
 int     slow_lookup_log        = 0;	/* millisecs, zero disables */
 int     smtp_accept_count      = 0;
-BOOL    smtp_accept_keepalive  = TRUE;
 int     smtp_accept_max        = 20;
 int     smtp_accept_max_nonmail= 10;
 uschar *smtp_accept_max_nonmail_hosts = US"*";
@@ -1338,12 +1428,9 @@ int     smtp_accept_queue      = 0;
 int     smtp_accept_queue_per_connection = 10;
 int     smtp_accept_reserve    = 0;
 uschar *smtp_active_hostname   = NULL;
-BOOL    smtp_authenticated     = FALSE;
 uschar *smtp_banner            = US"$smtp_active_hostname ESMTP "
                              "Exim $version_number $tod_full"
                              "\0<---------------Space to patch smtp_banner->";
-BOOL    smtp_batched_input     = FALSE;
-BOOL    smtp_check_spool_space = TRUE;
 int     smtp_ch_index          = 0;
 uschar *smtp_cmd_argument      = NULL;
 uschar *smtp_cmd_buffer        = NULL;
@@ -1352,16 +1439,11 @@ uschar  smtp_connection_had[SMTP_HBUFF_SIZE];
 int     smtp_connect_backlog   = 20;
 double  smtp_delay_mail        = 0.0;
 double  smtp_delay_rcpt        = 0.0;
-BOOL    smtp_enforce_sync      = TRUE;
 FILE   *smtp_in                = NULL;
-BOOL    smtp_in_pipelining_advertised = FALSE;
-BOOL    smtp_in_pipelining_used = FALSE;
-BOOL    smtp_input             = FALSE;
 int     smtp_load_reserve      = -1;
 int     smtp_mailcmd_count     = 0;
 FILE   *smtp_out               = NULL;
 uschar *smtp_etrn_command      = NULL;
-BOOL    smtp_etrn_serialize    = TRUE;
 int     smtp_max_synprot_errors= 3;
 int     smtp_max_unknown_commands = 3;
 uschar *smtp_notquit_reason    = NULL;
@@ -1372,7 +1454,6 @@ uschar *smtp_read_error        = US"";
 int     smtp_receive_timeout   = 5*60;
 uschar *smtp_receive_timeout_s = NULL;
 uschar *smtp_reserve_hosts     = NULL;
-BOOL    smtp_return_error_details = FALSE;
 int     smtp_rlm_base          = 0;
 double  smtp_rlm_factor        = 0.0;
 int     smtp_rlm_limit         = 0;
@@ -1400,16 +1481,12 @@ uschar *spf_guess              = US"v=spf1 a/24 mx/24 ptr ?all";
 uschar *spf_header_comment     = NULL;
 uschar *spf_received           = NULL;
 uschar *spf_result             = NULL;
-BOOL    spf_result_guessed     = FALSE;
 uschar *spf_smtp_comment       = NULL;
 #endif
 
-BOOL    split_spool_directory  = FALSE;
 FILE   *spool_data_file	       = NULL;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
-BOOL    spool_file_wireformat  = FALSE;
-BOOL    spool_wireformat       = FALSE;
 #ifdef EXPERIMENTAL_SRS
 uschar *srs_config             = NULL;
 uschar *srs_db_address         = NULL;
@@ -1422,26 +1499,14 @@ uschar *srs_orig_sender        = NULL;
 uschar *srs_recipient          = NULL;
 uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
-BOOL    srs_usehash            = TRUE;
-BOOL    srs_usetimestamp       = TRUE;
 #endif
-BOOL    strict_acl_vars        = FALSE;
 int     string_datestamp_offset= -1;
 int     string_datestamp_length= 0;
 int     string_datestamp_type  = -1;
-BOOL    strip_excess_angle_brackets = FALSE;
-BOOL    strip_trailing_dot     = FALSE;
 uschar *submission_domain      = NULL;
-BOOL    submission_mode        = FALSE;
 uschar *submission_name        = NULL;
-BOOL    suppress_local_fixups  = FALSE;
-BOOL    suppress_local_fixups_default = FALSE;
-BOOL    synchronous_delivery   = FALSE;
-BOOL    syslog_duplication     = TRUE;
 int     syslog_facility        = LOG_MAIL;
-BOOL    syslog_pid             = TRUE;
 uschar *syslog_processname     = US"exim";
-BOOL    syslog_timestamp       = TRUE;
 uschar *system_filter          = NULL;
 
 uschar *system_filter_directory_transport = NULL;
@@ -1450,25 +1515,16 @@ uschar *system_filter_pipe_transport = NULL;
 uschar *system_filter_reply_transport = NULL;
 
 gid_t   system_filter_gid      = 0;
-BOOL    system_filter_gid_set  = FALSE;
 uid_t   system_filter_uid      = (uid_t)-1;
-BOOL    system_filter_uid_set  = FALSE;
-BOOL    system_filtering       = FALSE;
 
-BOOL    tcp_fastopen_ok        = FALSE;
 blob	tcp_fastopen_nodata    = { .data = NULL, .len = 0 };
-BOOL    tcp_in_fastopen        = FALSE;
-BOOL    tcp_in_fastopen_logged = FALSE;
-BOOL    tcp_nodelay            = TRUE;
 int     tcp_out_fastopen       = 0;
-BOOL    tcp_out_fastopen_logged= FALSE;
 #ifdef USE_TCP_WRAPPERS
 uschar *tcp_wrappers_daemon_name = US TCP_WRAPPERS_DAEMON_NAME;
 #endif
 int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;
-BOOL    timestamps_utc         = FALSE;
 
 transport_instance  *transports = NULL;
 
@@ -1534,7 +1590,6 @@ uschar *transport_name          = NULL;
 int     transport_newlines;
 const uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;
-BOOL    transport_filter_timed_out = FALSE;
 int     transport_write_timeout= 0;
 
 tree_node  *tree_dns_fails     = NULL;
@@ -1542,8 +1597,6 @@ tree_node  *tree_duplicates    = NULL;
 tree_node  *tree_nonrecipients = NULL;
 tree_node  *tree_unusable      = NULL;
 
-BOOL    trusted_caller         = FALSE;
-BOOL    trusted_config         = TRUE;
 gid_t  *trusted_groups         = NULL;
 uid_t  *trusted_users          = NULL;
 uschar *timezone_string        = US TIMEZONE_DEFAULT;
@@ -1589,7 +1642,6 @@ uschar *warn_message_file      = NULL;
 int     warning_count          = 0;
 uschar *warnmsg_delay          = NULL;
 uschar *warnmsg_recipients     = NULL;
-BOOL    write_rejectlog        = TRUE;
 
 
 /*  End of globals.c */

@@ -306,7 +306,7 @@ if (dkim_collect_error)
   log_write(0, LOG_MAIN,
       "DKIM: Error during validation, disabling signature verification: %.100s",
       dkim_collect_error);
-  dkim_disable_verify = TRUE;
+  f.dkim_disable_verify = TRUE;
   goto out;
   }
 
@@ -381,7 +381,7 @@ dkim_verify_status = US"none";
 dkim_verify_reason = US"";
 dkim_cur_signer = id;
 
-if (dkim_disable_verify || !id || !dkim_verify_ctx)
+if (f.dkim_disable_verify || !id || !dkim_verify_ctx)
   return OK;
 
 /* Find signatures to run ACL on */
@@ -453,7 +453,7 @@ switch (what)
 uschar *
 dkim_exim_expand_query(int what)
 {
-if (!dkim_verify_ctx || dkim_disable_verify || !dkim_cur_sig)
+if (!dkim_verify_ctx || f.dkim_disable_verify || !dkim_cur_sig)
   return dkim_exim_expand_defaults(what);
 
 switch (what)

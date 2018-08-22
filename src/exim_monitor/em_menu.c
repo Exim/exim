@@ -680,7 +680,7 @@ if (spool_read_header(buffer, TRUE, FALSE) != spool_read_OK)
 
 if (sender_address != NULL)
   {
-  text_showf(text, "%s sender: <%s>\n", sender_local? "Local" : "Remote",
+  text_showf(text, "%s sender: <%s>\n", f.sender_local ? "Local" : "Remote",
     sender_address);
   }
 

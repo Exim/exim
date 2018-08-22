@@ -373,7 +373,7 @@ Returns:     nothing
 void
 queue_run(uschar *start_id, uschar *stop_id, BOOL recurse)
 {
-BOOL force_delivery = queue_run_force || deliver_selectstring != NULL ||
+BOOL force_delivery = f.queue_run_force || deliver_selectstring != NULL ||
   deliver_selectstring_sender != NULL;
 const pcre *selectstring_regex = NULL;
 const pcre *selectstring_regex_sender = NULL;
@@ -390,10 +390,10 @@ on TCP/IP channels have queue_run_pid set, but not queue_running. */
 
 queue_domains = NULL;
 queue_smtp_domains = NULL;
-queue_smtp = queue_2stage;
+f.queue_smtp = f.queue_2stage;
 
 queue_run_pid = getpid();
-queue_running = TRUE;
+f.queue_running = TRUE;
 
 /* Log the true start of a queue run, and fancy options */
 
@@ -402,11 +402,11 @@ if (!recurse)
   uschar extras[8];
   uschar *p = extras;
 
-  if (queue_2stage) *p++ = 'q';
-  if (queue_run_first_delivery) *p++ = 'i';
-  if (queue_run_force) *p++ = 'f';
-  if (deliver_force_thaw) *p++ = 'f';
-  if (queue_run_local) *p++ = 'l';
+  if (f.queue_2stage) *p++ = 'q';
+  if (f.queue_run_first_delivery) *p++ = 'i';
+  if (f.queue_run_force) *p++ = 'f';
+  if (f.deliver_force_thaw) *p++ = 'f';
+  if (f.queue_run_local) *p++ = 'l';
   *p = 0;
 
   p = big_buffer;
@@ -416,11 +416,11 @@ if (!recurse)
     p += sprintf(CS p, " -q%s", extras);
 
   if (deliver_selectstring)
-    p += sprintf(CS p, " -R%s %s", deliver_selectstring_regex? "r" : "",
+    p += sprintf(CS p, " -R%s %s", f.deliver_selectstring_regex? "r" : "",
       deliver_selectstring);
 
   if (deliver_selectstring_sender)
-    p += sprintf(CS p, " -S%s %s", deliver_selectstring_sender_regex? "r" : "",
+    p += sprintf(CS p, " -S%s %s", f.deliver_selectstring_sender_regex? "r" : "",
       deliver_selectstring_sender);
 
   log_detail = string_copy(big_buffer);
@@ -433,10 +433,10 @@ if (!recurse)
 
 /* If deliver_selectstring is a regex, compile it. */
 
-if (deliver_selectstring && deliver_selectstring_regex)
+if (deliver_selectstring && f.deliver_selectstring_regex)
   selectstring_regex = regex_must_compile(deliver_selectstring, TRUE, FALSE);
 
-if (deliver_selectstring_sender && deliver_selectstring_sender_regex)
+if (deliver_selectstring_sender && f.deliver_selectstring_sender_regex)
   selectstring_regex_sender =
     regex_must_compile(deliver_selectstring_sender, TRUE, FALSE);
 
@@ -459,7 +459,7 @@ for (i = queue_run_in_order ? -1 : 0;
      i <= (queue_run_in_order ? -1 : subcount);
      i++)
   {
-  queue_filename *f;
+  queue_filename * fq;
   void *reset_point1 = store_get(0);
 
   DEBUG(D_queue_run)
@@ -472,9 +472,9 @@ for (i = queue_run_in_order ? -1 : 0;
       debug_printf("queue running subdirectory '%c'\n", subdirs[i]);
     }
 
-  for (f = queue_get_spool_list(i, subdirs, &subcount, !queue_run_in_order);
-       f;
-       f = f->next)
+  for (fq = queue_get_spool_list(i, subdirs, &subcount, !queue_run_in_order);
+       fq;
+       fq = fq->next)
     {
     pid_t pid;
     int status;
@@ -485,7 +485,7 @@ for (i = queue_run_in_order ? -1 : 0;
     /* Unless deliveries are forced, if deliver_queue_load_max is non-negative,
     check that the load average is low enough to permit deliveries. */
 
-    if (!queue_run_force && deliver_queue_load_max >= 0)
+    if (!f.queue_run_force && deliver_queue_load_max >= 0)
       if ((load_average = os_getloadavg()) > deliver_queue_load_max)
         {
         log_write(L_queue_run, LOG_MAIN, "Abandon queue run: %s (load %.2f, max %.2f)",
@@ -502,15 +502,15 @@ for (i = queue_run_in_order ? -1 : 0;
 
     /* Skip this message unless it's within the ID limits */
 
-    if (stop_id && Ustrncmp(f->text, stop_id, MESSAGE_ID_LENGTH) > 0)
+    if (stop_id && Ustrncmp(fq->text, stop_id, MESSAGE_ID_LENGTH) > 0)
       continue;
-    if (start_id && Ustrncmp(f->text, start_id, MESSAGE_ID_LENGTH) < 0)
+    if (start_id && Ustrncmp(fq->text, start_id, MESSAGE_ID_LENGTH) < 0)
       continue;
 
     /* Check that the message still exists */
 
-    message_subdir[0] = f->dir_uschar;
-    if (Ustat(spool_fname(US"input", message_subdir, f->text, US""), &statbuf) < 0)
+    message_subdir[0] = fq->dir_uschar;
+    if (Ustat(spool_fname(US"input", message_subdir, fq->text, US""), &statbuf) < 0)
       continue;
 
     /* There are some tests that require the reading of the header file. Ensure
@@ -520,10 +520,10 @@ for (i = queue_run_in_order ? -1 : 0;
     message when many are not going to be delivered. */
 
     if (deliver_selectstring || deliver_selectstring_sender ||
-        queue_run_first_delivery)
+        f.queue_run_first_delivery)
       {
       BOOL wanted = TRUE;
-      BOOL orig_dont_deliver = dont_deliver;
+      BOOL orig_dont_deliver = f.dont_deliver;
       void *reset_point2 = store_get(0);
 
       /* Restore the original setting of dont_deliver after reading the header,
@@ -531,14 +531,14 @@ for (i = queue_run_in_order ? -1 : 0;
       follow. If the message is chosen for delivery, the header is read again
       in the deliver_message() function, in a subprocess. */
 
-      if (spool_read_header(f->text, FALSE, TRUE) != spool_read_OK) continue;
-      dont_deliver = orig_dont_deliver;
+      if (spool_read_header(fq->text, FALSE, TRUE) != spool_read_OK) continue;
+      f.dont_deliver = orig_dont_deliver;
 
       /* Now decide if we want to deliver this message. As we have read the
       header file, we might as well do the freeze test now, and save forking
       another process. */
 
-      if (deliver_freeze && !deliver_force_thaw)
+      if (f.deliver_freeze && !f.deliver_force_thaw)
         {
         log_write(L_skip_delivery, LOG_MAIN, "Message is frozen");
         wanted = FALSE;
@@ -546,9 +546,9 @@ for (i = queue_run_in_order ? -1 : 0;
 
       /* Check first_delivery in the case when there are no message logs. */
 
-      else if (queue_run_first_delivery && !deliver_firsttime)
+      else if (f.queue_run_first_delivery && !f.deliver_firsttime)
         {
-        DEBUG(D_queue_run) debug_printf("%s: not first delivery\n", f->text);
+        DEBUG(D_queue_run) debug_printf("%s: not first delivery\n", fq->text);
         wanted = FALSE;
         }
 
@@ -559,7 +559,7 @@ for (i = queue_run_in_order ? -1 : 0;
       /* Sender matching */
 
       else if (  deliver_selectstring_sender
-	      && !(deliver_selectstring_sender_regex
+	      && !(f.deliver_selectstring_sender_regex
 		  ? (pcre_exec(selectstring_regex_sender, NULL,
 		      CS sender_address, Ustrlen(sender_address), 0, PCRE_EOPT,
 		      NULL, 0) >= 0)
@@ -568,7 +568,7 @@ for (i = queue_run_in_order ? -1 : 0;
 	      )   )
         {
         DEBUG(D_queue_run) debug_printf("%s: sender address did not match %s\n",
-          f->text, deliver_selectstring_sender);
+          fq->text, deliver_selectstring_sender);
         wanted = FALSE;
         }
 
@@ -580,7 +580,7 @@ for (i = queue_run_in_order ? -1 : 0;
         for (i = 0; i < recipients_count; i++)
           {
           uschar *address = recipients_list[i].address;
-          if (  (deliver_selectstring_regex
+          if (  (f.deliver_selectstring_regex
 		? (pcre_exec(selectstring_regex, NULL, CS address,
 		     Ustrlen(address), 0, PCRE_EOPT, NULL, 0) >= 0)
                 : (strstric(address, deliver_selectstring, FALSE) != NULL)
@@ -594,7 +594,7 @@ for (i = queue_run_in_order ? -1 : 0;
           {
           DEBUG(D_queue_run)
             debug_printf("%s: no recipient address matched %s\n",
-              f->text, deliver_selectstring);
+              fq->text, deliver_selectstring);
           wanted = FALSE;
           }
         }
@@ -642,14 +642,14 @@ for (i = queue_run_in_order ? -1 : 0;
     /* Now deliver the message; get the id by cutting the -H off the file
     name. The return of the process is zero if a delivery was attempted. */
 
-    set_process_info("running queue: %s", f->text);
-    f->text[SPOOL_NAME_LENGTH-2] = 0;
+    set_process_info("running queue: %s", fq->text);
+    fq->text[SPOOL_NAME_LENGTH-2] = 0;
     if ((pid = fork()) == 0)
       {
       int rc;
-      if (running_in_test_harness) millisleep(100);
+      if (f.running_in_test_harness) millisleep(100);
       (void)close(pfd[pipe_read]);
-      rc = deliver_message(f->text, force_delivery, FALSE);
+      rc = deliver_message(fq->text, force_delivery, FALSE);
       _exit(rc == DELIVER_NOT_ATTEMPTED);
       }
     if (pid < 0)
@@ -660,20 +660,20 @@ for (i = queue_run_in_order ? -1 : 0;
     then wait for the first level process to terminate. */
 
     (void)close(pfd[pipe_write]);
-    set_process_info("running queue: waiting for %s (%d)", f->text, pid);
+    set_process_info("running queue: waiting for %s (%d)", fq->text, pid);
     while (wait(&status) != pid);
 
     /* A zero return means a delivery was attempted; turn off the force flag
     for any subsequent calls unless queue_force is set. */
 
-    if ((status & 0xffff) == 0) force_delivery = queue_run_force;
+    if ((status & 0xffff) == 0) force_delivery = f.queue_run_force;
 
     /* If the process crashed, tell somebody */
 
     else if ((status & 0x00ff) != 0)
       log_write(0, LOG_MAIN|LOG_PANIC,
         "queue run: process %d crashed with signal %d while delivering %s",
-        (int)pid, status & 0x00ff, f->text);
+        (int)pid, status & 0x00ff, fq->text);
 
     /* Before continuing, wait till the pipe gets closed at the far end. This
     tells us that any children created by the delivery to re-use any SMTP
@@ -690,7 +690,7 @@ for (i = queue_run_in_order ? -1 : 0;
     /* If we are in the test harness, and this is not the first of a 2-stage
     queue run, update fudged queue times. */
 
-    if (running_in_test_harness && !queue_2stage)
+    if (f.running_in_test_harness && !f.queue_2stage)
       {
       uschar *fqtnext = Ustrchr(fudged_queue_times, '/');
       if (fqtnext != NULL) fudged_queue_times = fqtnext + 1;
@@ -720,9 +720,9 @@ for (i = queue_run_in_order ? -1 : 0;
 /* If queue_2stage is true, we do it all again, with the 2stage flag
 turned off. */
 
-if (queue_2stage)
+if (f.queue_2stage)
   {
-  queue_2stage = FALSE;
+  f.queue_2stage = FALSE;
   queue_run(start_id, stop_id, TRUE);
   }
 
@@ -820,7 +820,7 @@ int i;
 int subcount;
 int now = (int)time(NULL);
 void *reset_point;
-queue_filename *f = NULL;
+queue_filename * qf = NULL;
 uschar subdirs[64];
 
 /* If given a list of messages, build a chain containing their ids. */
@@ -835,7 +835,7 @@ if (count > 0)
     sprintf(CS next->text, "%s-H", list[i]);
     next->dir_uschar = '*';
     next->next = NULL;
-    if (i == 0) f = next; else last->next = next;
+    if (i == 0) qf = next; else last->next = next;
     last = next;
     }
   }
@@ -843,7 +843,7 @@ if (count > 0)
 /* Otherwise get a list of the entire queue, in order if necessary. */
 
 else
-  f = queue_get_spool_list(
+  qf = queue_get_spool_list(
           -1,             /* entire queue */
           subdirs,        /* for holding sub list */
           &subcount,      /* for subcount */
@@ -855,8 +855,8 @@ if (option >= 8) option -= 8;
 each time. */
 
 for (reset_point = store_get(0);
-    f;
-    spool_clear_header_globals(), store_reset(reset_point), f = f->next
+    qf;
+    spool_clear_header_globals(), store_reset(reset_point), qf = qf->next
     )
   {
   int rc, save_errno;
@@ -864,8 +864,8 @@ for (reset_point = store_get(0);
   BOOL env_read;
 
   message_size = 0;
-  message_subdir[0] = f->dir_uschar;
-  rc = spool_read_header(f->text, FALSE, count <= 0);
+  message_subdir[0] = qf->dir_uschar;
+  rc = spool_read_header(qf->text, FALSE, count <= 0);
   if (rc == spool_read_notopen && errno == ENOENT && count <= 0)
     continue;
   save_errno = errno;
@@ -877,7 +877,7 @@ for (reset_point = store_get(0);
     int ptr;
     FILE *jread;
     struct stat statbuf;
-    uschar * fname = spool_fname(US"input", message_subdir, f->text, US"");
+    uschar * fname = spool_fname(US"input", message_subdir, qf->text, US"");
 
     ptr = Ustrlen(fname)-1;
     fname[ptr] = 'D';
@@ -912,12 +912,12 @@ for (reset_point = store_get(0);
     }
 
   fprintf(stdout, "%s ", string_format_size(size, big_buffer));
-  for (i = 0; i < 16; i++) fputc(f->text[i], stdout);
+  for (i = 0; i < 16; i++) fputc(qf->text[i], stdout);
 
   if (env_read && sender_address)
     {
     printf(" <%s>", sender_address);
-    if (sender_set_untrusted) printf(" (%s)", originator_login);
+    if (f.sender_set_untrusted) printf(" (%s)", originator_login);
     }
 
   if (rc != spool_read_OK)
@@ -926,7 +926,7 @@ for (reset_point = store_get(0);
     if (save_errno == ERRNO_SPOOLFORMAT)
       {
       struct stat statbuf;
-      uschar * fname = spool_fname(US"input", message_subdir, f->text, US"");
+      uschar * fname = spool_fname(US"input", message_subdir, qf->text, US"");
 
       if (Ustat(fname, &statbuf) == 0)
         printf("*** spool format error: size=" OFF_T_FMT " ***",
@@ -941,7 +941,7 @@ for (reset_point = store_get(0);
       }
     }
 
-  if (deliver_freeze) printf(" *** frozen ***");
+  if (f.deliver_freeze) printf(" *** frozen ***");
 
   printf("\n");
 
@@ -1008,7 +1008,7 @@ if (action >= MSG_SHOW_BODY)
   int fd, i, rc;
   uschar *subdirectory, *suffix;
 
-  if (!admin_user)
+  if (!f.admin_user)
     {
     printf("Permission denied\n");
     return FALSE;
@@ -1070,7 +1070,7 @@ if ((deliver_datafile = spool_open_datafile(id)) < 0)
     {
     yield = FALSE;
     printf("Spool data file for %s does not exist\n", id);
-    if (action != MSG_REMOVE || !admin_user) return FALSE;
+    if (action != MSG_REMOVE || !f.admin_user) return FALSE;
     printf("Continuing, to ensure all files removed\n");
     }
   else
@@ -1095,7 +1095,7 @@ if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
     printf("Spool read error for %s: %s\n", spoolname, strerror(errno));
   else
     printf("Spool format error for %s\n", spoolname);
-  if (action != MSG_REMOVE || !admin_user)
+  if (action != MSG_REMOVE || !f.admin_user)
     {
     (void)close(deliver_datafile);
     deliver_datafile = -1;
@@ -1109,7 +1109,7 @@ message. Only admin users may freeze/thaw, add/cancel recipients, or otherwise
 mess about, but the original sender is permitted to remove a message. That's
 why we leave this check until after the headers are read. */
 
-if (!admin_user && (action != MSG_REMOVE || real_uid != originator_uid))
+if (!f.admin_user && (action != MSG_REMOVE || real_uid != originator_uid))
   {
   printf("Permission denied\n");
   (void)close(deliver_datafile);
@@ -1141,15 +1141,15 @@ switch(action)
 
 
   case MSG_FREEZE:
-  if (deliver_freeze)
+  if (f.deliver_freeze)
     {
     yield = FALSE;
     printf("is already frozen\n");
     }
   else
     {
-    deliver_freeze = TRUE;
-    deliver_manual_thaw = FALSE;
+    f.deliver_freeze = TRUE;
+    f.deliver_manual_thaw = FALSE;
     deliver_frozen_at = time(NULL);
     if (spool_write_header(id, SW_MODIFYING, &errmsg) >= 0)
       {
@@ -1166,15 +1166,15 @@ switch(action)
 
 
   case MSG_THAW:
-  if (!deliver_freeze)
+  if (!f.deliver_freeze)
     {
     yield = FALSE;
     printf("is not frozen\n");
     }
   else
     {
-    deliver_freeze = FALSE;
-    deliver_manual_thaw = TRUE;
+    f.deliver_freeze = FALSE;
+    f.deliver_manual_thaw = TRUE;
     if (spool_write_header(id, SW_MODIFYING, &errmsg) >= 0)
       {
       printf("is no longer frozen\n");
@@ -1407,11 +1407,10 @@ Returns:    nothing
 void
 queue_check_only(void)
 {
-BOOL *set;
 int sep = 0;
 struct stat statbuf;
 const uschar *s;
-uschar *ss, *name;
+uschar *ss;
 uschar buffer[1024];
 
 if (queue_only_file == NULL) return;
@@ -1421,20 +1420,20 @@ while ((ss = string_nextinlist(&s, &sep, buffer, sizeof(buffer))) != NULL)
   {
   if (Ustrncmp(ss, "smtp", 4) == 0)
     {
-    name = US"queue_smtp";
-    set = &queue_smtp;
     ss += 4;
+    if (Ustat(ss, &statbuf) == 0)
+      {
+      f.queue_smtp = TRUE;
+      DEBUG(D_receive) debug_printf("queue_smtp set because %s exists\n", ss);
+      }
     }
   else
     {
-    name = US"queue_only";
-    set = &queue_only;
-    }
-
-  if (Ustat(ss, &statbuf) == 0)
-    {
-    *set = TRUE;
-    DEBUG(D_receive) debug_printf("%s set because %s exists\n", name, ss);
+    if (Ustat(ss, &statbuf) == 0)
+      {
+      queue_only = TRUE;
+      DEBUG(D_receive) debug_printf("queue_only set because %s exists\n", ss);
+      }
     }
   }
 }

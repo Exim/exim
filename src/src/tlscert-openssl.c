@@ -156,7 +156,7 @@ else
 
     else
       {
-      if (!timestamps_utc)	/* decoded string in local TZ */
+      if (!f.timestamps_utc)	/* decoded string in local TZ */
 	{				/* shift to local TZ */
 	restore_tz(tz);
 	mod_tz = FALSE;

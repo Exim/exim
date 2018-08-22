@@ -950,7 +950,7 @@ switch (command)
         yield = FALSE;
         }
 
-      if (!system_filtering && second_argument.b != TRUE_UNSET)
+      if (!f.system_filtering && second_argument.b != TRUE_UNSET)
         {
         *error_pointer = string_sprintf("header addition and removal is "
           "available only in system filters: near line %d of filter file",
@@ -1452,7 +1452,7 @@ switch (c->type)
   scan Cc: (hence the FALSE argument). */
 
   case cond_personal:
-  yield = system_filtering? FALSE : filter_personal(c->left.a, FALSE);
+  yield = f.system_filtering? FALSE : filter_personal(c->left.a, FALSE);
   break;
 
   case cond_delivered:
@@ -1471,14 +1471,14 @@ switch (c->type)
   and filter testing and verification. */
 
   case cond_firsttime:
-  yield = filter_test != FTEST_NONE || message_id[0] == 0 || deliver_firsttime;
+  yield = filter_test != FTEST_NONE || message_id[0] == 0 || f.deliver_firsttime;
   break;
 
   /* Only TRUE if a message is actually being processed; FALSE for address
   testing and verification. */
 
   case cond_manualthaw:
-  yield = message_id[0] != 0 && deliver_manual_thaw;
+  yield = message_id[0] != 0 && f.deliver_manual_thaw;
   break;
 
   /* The foranyaddress condition loops through a list of addresses */
@@ -1494,7 +1494,7 @@ switch (c->type)
     }
 
   yield = FALSE;
-  parse_allow_group = TRUE;     /* Allow group syntax */
+  f.parse_allow_group = TRUE;     /* Allow group syntax */
 
   while (*pp != 0)
     {
@@ -1526,8 +1526,8 @@ switch (c->type)
     pp = p + 1;
     }
 
-  parse_allow_group = FALSE;      /* Reset group syntax flags */
-  parse_found_group = FALSE;
+  f.parse_allow_group = FALSE;      /* Reset group syntax flags */
+  f.parse_found_group = FALSE;
   break;
 
   /* All other conditions have left and right values that need expanding;
@@ -1774,7 +1774,7 @@ while (commands != NULL)
 
     s = expargs[1];
 
-    if (s != NULL && !system_filtering)
+    if (s != NULL && !f.system_filtering)
       {
       uschar *ownaddress = expand_string(US"$local_part@$domain");
       if (strcmpic(ownaddress, s) != 0)
@@ -2521,7 +2521,7 @@ while filtering, and zero the variables. */
 
 expect_endif = 0;
 output_indent = 0;
-filter_running = TRUE;
+f.filter_running = TRUE;
 for (i = 0; i < FILTER_VARIABLE_COUNT; i++) filter_n[i] = 0;
 
 /* To save having to pass certain values about all the time, make them static.
@@ -2590,7 +2590,7 @@ before returning. Reset the header decoding charset. */
 
 if (log_fd >= 0) (void)close(log_fd);
 expand_nmax = -1;
-filter_running = FALSE;
+f.filter_running = FALSE;
 headers_charset = save_headers_charset;
 
 DEBUG(D_route) debug_printf("Filter: end of processing\n");

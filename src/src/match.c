@@ -297,14 +297,13 @@ else if (!mac_islookup(search_type, lookup_querystyle))
 for; partial matching is all handled inside search_find(). Note that there is
 no search_close() because of the caching arrangements. */
 
-handle = search_open(filename, search_type, 0, NULL, NULL);
-if (handle == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-  search_error_message);
+if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 result = search_find(handle, filename, keyquery, partial, affix, affixlen,
   starflags, &expand_setup);
 
-if (result == NULL) return search_find_defer? DEFER : FAIL;
-if (valueptr != NULL) *valueptr = result;
+if (!result) return f.search_find_defer? DEFER : FAIL;
+if (valueptr) *valueptr = result;
 
 expand_nmax = expand_setup;
 return OK;
@@ -494,7 +493,7 @@ else
 
   if (!list)
     {
-    if (expand_string_forcedfail)
+    if (f.expand_string_forcedfail)
       {
       HDEBUG(D_lists) debug_printf("expansion of \"%s\" forced failure: "
         "assume not in this list\n", *listptr);

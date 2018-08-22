@@ -658,7 +658,7 @@ if (*s != '@' && *s != '<')
   end of string will produce a null local_part and therefore fail. We don't
   need to keep updating t, as the phrase isn't to be kept. */
 
-  while (*s != '<' && (!parse_allow_group || *s != ':'))
+  while (*s != '<' && (!f.parse_allow_group || *s != ':'))
     {
     s = read_local_part(s, t, errorptr, FALSE);
     if (*errorptr)
@@ -670,8 +670,8 @@ if (*s != '@' && *s != '<')
 
   if (*s == ':')
     {
-    parse_found_group = TRUE;
-    parse_allow_group = FALSE;
+    f.parse_found_group = TRUE;
+    f.parse_allow_group = FALSE;
     s++;
     goto RESTART;
     }
@@ -790,10 +790,10 @@ move it back past white space if necessary. */
 PARSE_SUCCEEDED:
 if (*s != 0)
   {
-  if (parse_found_group && *s == ';')
+  if (f.parse_found_group && *s == ';')
     {
-    parse_found_group = FALSE;
-    parse_allow_group = TRUE;
+    f.parse_found_group = FALSE;
+    f.parse_allow_group = TRUE;
     }
   else
     {
@@ -824,10 +824,10 @@ We might have an empty address in a group - the caller can choose to ignore
 this. We must, however, keep the flags correct. */
 
 PARSE_FAILED:
-if (parse_found_group && *s == ';')
+if (f.parse_found_group && *s == ';')
   {
-  parse_found_group = FALSE;
-  parse_allow_group = TRUE;
+  f.parse_found_group = FALSE;
+  f.parse_allow_group = TRUE;
   }
 return NULL;
 }
@@ -2149,7 +2149,7 @@ allow_utf8_domains = FALSE;
 
 printf("Testing parse_extract_address with group syntax\n");
 
-parse_allow_group = TRUE;
+f.parse_allow_group = TRUE;
 while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
   {
   uschar *out;

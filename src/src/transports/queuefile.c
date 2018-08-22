@@ -232,7 +232,7 @@ if (  (s = dstdir,    fstat(ddfd, &dstatbuf) < 0)
   }
 can_link = (dstatbuf.st_dev == sstatbuf.st_dev);
 
-if (dont_deliver)
+if (f.dont_deliver)
   {
   DEBUG(D_transport)
     debug_printf("*** delivery by %s transport bypassed by -N option\n",

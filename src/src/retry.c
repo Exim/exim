@@ -217,7 +217,7 @@ if (host_retry_record)
   /* We have not reached the next try time. Check for the ultimate address
   timeout if the host has not expired. */
 
-  if (now < host_retry_record->next_try && !deliver_force)
+  if (now < host_retry_record->next_try && !f.deliver_force)
     {
     if (!host_retry_record->expired &&
         retry_ultimate_address_timeout(host_key, domain,
@@ -245,7 +245,7 @@ unless the ultimate address timeout has been reached. */
 if (message_retry_record)
   {
   *retry_message_key = message_key;
-  if (now < message_retry_record->next_try && !deliver_force)
+  if (now < message_retry_record->next_try && !f.deliver_force)
     {
     if (!retry_ultimate_address_timeout(host_key, domain,
         message_retry_record, now))

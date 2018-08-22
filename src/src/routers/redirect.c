@@ -359,7 +359,7 @@ while (generated)
 
   /* Don't do the "one_time" thing for the first pass of a 2-stage queue run. */
 
-  if (ob->one_time && !queue_2stage)
+  if (ob->one_time && !f.queue_2stage)
     {
     for (parent = addr; parent->parent; parent = parent->parent) ;
     next->onetime_parent = parent->address;
@@ -577,7 +577,7 @@ addr_prop.utf8_downcvt_maybe = addr->prop.utf8_downcvt_maybe;
 /* When verifying and testing addresses, the "logwrite" command in filters
 must be bypassed. */
 
-if (verify == v_none && !address_test_mode) options |= RDO_REALLOG;
+if (verify == v_none && !f.address_test_mode) options |= RDO_REALLOG;
 
 /* Sort out the fixed or dynamic uid/gid. This uid is used (a) for reading the
 file (and interpreting a filter) and (b) for running the transports for
@@ -786,7 +786,7 @@ switch (frc)
   high so that their completion does not mark the original address done. */
 
   case FF_FREEZE:
-  if (!deliver_manual_thaw)
+  if (!f.deliver_manual_thaw)
     {
     if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop))
       != OK) return xrc;
@@ -855,7 +855,7 @@ if (eblock != NULL)
   if (!moan_skipped_syntax_errors(
         rblock->name,                            /* For message content */
         eblock,                                  /* Ditto */
-        (verify != v_none || address_test_mode)?
+        (verify != v_none || f.address_test_mode)?
           NULL : ob->syntax_errors_to,           /* Who to mail */
         generated != NULL,                       /* True if not all failed */
         ob->syntax_errors_text))                 /* Custom message */
@@ -887,7 +887,7 @@ generated anything. Log what happened to this address, and return DISCARD. */
 
 if (frc == FF_DELIVERED)
   {
-  if (generated == NULL && verify == v_none && !address_test_mode)
+  if (generated == NULL && verify == v_none && !f.address_test_mode)
     {
     log_write(0, LOG_MAIN, "=> %s <%s> R=%s", discarded, addr->address,
       rblock->name);

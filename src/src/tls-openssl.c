@@ -960,7 +960,7 @@ supply_response:
 return;
 
 bad:
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     {
     extern char ** environ;
     uschar ** p;

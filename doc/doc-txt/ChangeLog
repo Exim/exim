@@ -98,6 +98,12 @@ PP/03 Make ${utf8clean:} expansion operator detect incomplete final character.
 
 PP/04 Documentation: current string operators work on bytes, not codepoints.
 
+JH/21 Change as many as possible of the global flags into one-bit bitfields; these
+      should pack well giving a smaller memory footprint so better caching and
+      therefore performance.  Group the declarations where this can't be done so
+      that the byte-sized flag variables are not interspersed among pointer
+      variables, giving a better chance of good packing by the compiler.
+
 
 Exim version 4.91
 -----------------

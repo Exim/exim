@@ -76,7 +76,7 @@ if (rewrite)
     if (newh != NULL)
       {
       h = newh;
-      header_rewritten = TRUE;
+      f.header_rewritten = TRUE;
       }
     }
   }

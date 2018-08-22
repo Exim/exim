@@ -69,7 +69,7 @@ expand_check(const uschar *s, const uschar *name, uschar **result, uschar ** err
 if (!s)
   *result = NULL;
 else if (  !(*result = expand_string(US s)) /* need to clean up const more */
-	&& !expand_string_forcedfail
+	&& !f.expand_string_forcedfail
 	)
   {
   *errstr = US"Internal error";

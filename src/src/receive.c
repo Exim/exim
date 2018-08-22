@@ -109,7 +109,7 @@ BOOL
 receive_check_set_sender(uschar *newsender)
 {
 uschar *qnewsender;
-if (trusted_caller) return TRUE;
+if (f.trusted_caller) return TRUE;
 if (!newsender || !untrusted_set_sender) return FALSE;
 qnewsender = Ustrchr(newsender, '@')
   ? newsender : string_sprintf("%s@%s", newsender, qualify_domain_sender);
@@ -619,7 +619,7 @@ register int linelength = 0;
 
 /* Handle the case when only EOF terminates the message */
 
-if (!dot_ends)
+if (!f.dot_ends)
   {
   register int last_ch = '\n';
 
@@ -1023,7 +1023,7 @@ int ch;
 
 DEBUG(D_receive) debug_printf("CHUNKING: %s\n",
 	fout ? "writing spoolfile in wire format" : "flushing input");
-spool_file_wireformat = TRUE;
+f.spool_file_wireformat = TRUE;
 
 for (;;)
   {
@@ -1311,17 +1311,17 @@ if (sender_fullhost)
       string_sprintf(" I=[%s]:%d", interface_address, interface_port));
     }
   }
-if (tcp_in_fastopen && !tcp_in_fastopen_logged)
+if (f.tcp_in_fastopen && !f.tcp_in_fastopen_logged)
   {
   g = string_catn(g, US" TFO", 4);
-  tcp_in_fastopen_logged = TRUE;
+  f.tcp_in_fastopen_logged = TRUE;
   }
 if (sender_ident)
   g = string_append(g, 2, US" U=", sender_ident);
 if (received_protocol)
   g = string_append(g, 2, US" P=", received_protocol);
-if (LOGGING(pipelining) && smtp_in_pipelining_advertised)
-  g = string_catn(g, US" L-", smtp_in_pipelining_used ? 2 : 3);
+if (LOGGING(pipelining) && f.smtp_in_pipelining_advertised)
+  g = string_catn(g, US" L-", f.smtp_in_pipelining_used ? 2 : 3);
 return g;
 }
 
@@ -1730,7 +1730,7 @@ message_linecount = body_linecount = body_zerocount =
 #ifndef DISABLE_DKIM
 /* Call into DKIM to set up the context.  In CHUNKING mode
 we clear the dot-stuffing flag */
-if (smtp_input && !smtp_batched_input && !dkim_disable_verify)
+if (smtp_input && !smtp_batched_input && !f.dkim_disable_verify)
   dkim_exim_verify_init(chunking_state <= CHUNKING_OFFERED);
 #endif
 
@@ -1862,7 +1862,7 @@ for (;;)
   prevent further reading), and break out of the loop, having freed the
   empty header, and set next = NULL to indicate no data line. */
 
-  if (ptr == 0 && ch == '.' && dot_ends)
+  if (ptr == 0 && ch == '.' && f.dot_ends)
     {
     ch = (receive_getc)(GETC_BUFFER_UNLIMITED);
     if (ch == '\r')
@@ -1935,7 +1935,7 @@ for (;;)
 
     log_write(0, LOG_MAIN, "ridiculously long message header received from "
       "%s (more than %d characters): message abandoned",
-      sender_host_unknown? sender_ident : sender_fullhost, header_maxsize);
+      f.sender_host_unknown ? sender_ident : sender_fullhost, header_maxsize);
 
     if (smtp_input)
       {
@@ -2059,7 +2059,7 @@ for (;;)
      && regex_match_and_setup(regex_From, next->text, 0, -1)
      )
     {
-    if (!sender_address_forced)
+    if (!f.sender_address_forced)
       {
       uschar *uucp_sender = expand_string(uucp_from_sender);
       if (!uucp_sender)
@@ -2081,11 +2081,11 @@ for (;;)
             {
             sender_address = newsender;
 
-            if (trusted_caller || filter_test != FTEST_NONE)
+            if (f.trusted_caller || filter_test != FTEST_NONE)
               {
               authenticated_sender = NULL;
               originator_name = US"";
-              sender_local = FALSE;
+              f.sender_local = FALSE;
               }
 
             if (filter_test != FTEST_NONE)
@@ -2156,7 +2156,7 @@ for (;;)
       {
       log_write(0, LOG_MAIN, "overlong message header line received from "
         "%s (more than %d characters): message abandoned",
-        sender_host_unknown? sender_ident : sender_fullhost,
+        f.sender_host_unknown ? sender_ident : sender_fullhost,
         header_line_maxsize);
 
       if (smtp_input)
@@ -2383,9 +2383,9 @@ for (h = header_list->next; h; h = h->next)
     set.) */
 
     case htype_sender:
-      h->type =    !active_local_sender_retain
-		&& (  sender_local && !trusted_caller && !suppress_local_fixups
-		   || submission_mode
+      h->type =    !f.active_local_sender_retain
+		&& (  f.sender_local && !f.trusted_caller && !f.suppress_local_fixups
+		   || f.submission_mode
 		   )
 		&& (!resents_exist || is_resent)
 	? htype_old : htype_sender;
@@ -2471,7 +2471,7 @@ if (extract_recip)
       uschar *s = Ustrchr(h->text, ':') + 1;
       while (isspace(*s)) s++;
 
-      parse_allow_group = TRUE;          /* Allow address group syntax */
+      f.parse_allow_group = TRUE;          /* Allow address group syntax */
 
       while (*s != 0)
         {
@@ -2551,8 +2551,8 @@ if (extract_recip)
         while (isspace(*s)) s++;
         }    /* Next address */
 
-      parse_allow_group = FALSE;      /* Reset group syntax flags */
-      parse_found_group = FALSE;
+      f.parse_allow_group = FALSE;      /* Reset group syntax flags */
+      f.parse_found_group = FALSE;
 
       /* If this was the bcc: header, mark it "old", which means it
       will be kept on the spool, but not transmitted as part of the
@@ -2660,7 +2660,7 @@ messages. This can be user-configured if required, but we had better flatten
 any illegal characters therein. */
 
 if (  !msgid_header
-   && ((!sender_host_address && !suppress_local_fixups) || submission_mode))
+   && ((!sender_host_address && !f.suppress_local_fixups) || f.submission_mode))
   {
   uschar *p;
   uschar *id_text = US"";
@@ -2673,7 +2673,7 @@ if (  !msgid_header
     uschar *new_id_domain = expand_string(message_id_domain);
     if (!new_id_domain)
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC,
           "expansion of \"%s\" (message_id_header_domain) "
           "failed: %s", message_id_domain, expand_string_message);
@@ -2694,7 +2694,7 @@ if (  !msgid_header
     uschar *new_id_text = expand_string(message_id_text);
     if (!new_id_text)
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC,
           "expansion of \"%s\" (message_id_header_text) "
           "failed: %s", message_id_text, expand_string_message);
@@ -2746,7 +2746,7 @@ untrusted user to set anything in the envelope (which might then get info
 From:) but we still want to ensure a valid Sender: if it is required. */
 
 if (  !from_header
-   && ((!sender_host_address && !suppress_local_fixups) || submission_mode))
+   && ((!sender_host_address && !f.suppress_local_fixups) || f.submission_mode))
   {
   uschar *oname = US"";
 
@@ -2757,8 +2757,8 @@ if (  !from_header
 
   if (!sender_host_address)
     {
-    if (!trusted_caller || sender_name_forced ||
-         (!smtp_input && !sender_address_forced))
+    if (!f.trusted_caller || f.sender_name_forced ||
+         (!smtp_input && !f.sender_address_forced))
       oname = originator_name;
     }
 
@@ -2777,12 +2777,12 @@ if (  !from_header
       resent_prefix, oname, *oname ? " <" : "");
     fromend = *oname ? US">" : US"";
 
-    if (sender_local || local_error_message)
+    if (f.sender_local || f.local_error_message)
       header_add(htype_from, "%s%s@%s%s\n", fromstart,
         local_part_quote(originator_login), qualify_domain_sender,
         fromend);
 
-    else if (submission_mode && authenticated_id)
+    else if (f.submission_mode && authenticated_id)
       {
       if (!submission_domain)
         header_add(htype_from, "%s%s@%s%s\n", fromstart,
@@ -2829,9 +2829,9 @@ here. If the From: header contains more than one address, then the call to
 parse_extract_address fails, and a Sender: header is inserted, as required. */
 
 if (  from_header
-   && (  active_local_from_check
-      && (  sender_local && !trusted_caller && !suppress_local_fixups
-	 || submission_mode && authenticated_id
+   && (  f.active_local_from_check
+      && (  f.sender_local && !f.trusted_caller && !f.suppress_local_fixups
+	 || f.submission_mode && authenticated_id
    )  )  )
   {
   BOOL make_sender = TRUE;
@@ -2842,7 +2842,7 @@ if (  from_header
       &start, &end, &domain, FALSE);
   uschar *generated_sender_address;
 
-  generated_sender_address = submission_mode
+  generated_sender_address = f.submission_mode
     ? !submission_domain
     ? string_sprintf("%s@%s",
 	local_part_quote(authenticated_id), qualify_domain_sender)
@@ -2880,19 +2880,19 @@ if (  from_header
   appropriate rewriting rules. */
 
   if (make_sender)
-    if (submission_mode && !submission_name)
+    if (f.submission_mode && !submission_name)
       header_add(htype_sender, "%sSender: %s\n", resent_prefix,
         generated_sender_address);
     else
       header_add(htype_sender, "%sSender: %s <%s>\n",
         resent_prefix,
-        submission_mode? submission_name : originator_name,
+        f.submission_mode ? submission_name : originator_name,
         generated_sender_address);
 
   /* Ensure that a non-null envelope sender address corresponds to the
   submission mode sender address. */
 
-  if (submission_mode && *sender_address)
+  if (f.submission_mode && *sender_address)
     {
     if (!sender_address_unrewritten)
       sender_address_unrewritten = sender_address;
@@ -2957,7 +2957,7 @@ As per Message-Id, we prepend if resending, else append.
 */
 
 if (  !date_header_exists
-   && ((!sender_host_address && !suppress_local_fixups) || submission_mode))
+   && ((!sender_host_address && !f.suppress_local_fixups) || f.submission_mode))
   header_add_at_position(!resents_exist, NULL, FALSE, htype_other,
     "%sDate: %s\n", resent_prefix, tod_stamp(tod_full));
 
@@ -3333,10 +3333,10 @@ $message_body_end can be extracted if needed. Allow $recipients in expansions.
 deliver_datafile = data_fd;
 user_msg = NULL;
 
-enable_dollar_recipients = TRUE;
+f.enable_dollar_recipients = TRUE;
 
 if (recipients_count == 0)
-  blackholed_by = recipients_discarded ? US"MAIL ACL" : US"RCPT ACL";
+  blackholed_by = f.recipients_discarded ? US"MAIL ACL" : US"RCPT ACL";
 
 else
   {
@@ -3346,7 +3346,7 @@ else
     {
 
 #ifndef DISABLE_DKIM
-    if (!dkim_disable_verify)
+    if (!f.dkim_disable_verify)
       {
       /* Finish verification */
       dkim_exim_verify_finish();
@@ -3575,7 +3575,7 @@ else
     if (acl_not_smtp)
       {
       uschar *user_msg, *log_msg;
-      authentication_local = TRUE;
+      f.authentication_local = TRUE;
       rc = acl_check(ACL_WHERE_NOTSMTP, NULL, acl_not_smtp, &user_msg, &log_msg);
       if (rc == DISCARD)
         {
@@ -3619,8 +3619,8 @@ else
 
   /* The applicable ACLs have been run */
 
-  if (deliver_freeze) frozen_by = US"ACL";     /* for later logging */
-  if (queue_only_policy) queued_by = US"ACL";
+  if (f.deliver_freeze) frozen_by = US"ACL";     /* for later logging */
+  if (f.queue_only_policy) queued_by = US"ACL";
   }
 
 #ifdef WITH_CONTENT_SCAN
@@ -3662,7 +3662,7 @@ if (sigsetjmp(local_scan_env, 1) == 0)
   alarm(0);
   os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
-  enable_dollar_recipients = FALSE;
+  f.enable_dollar_recipients = FALSE;
 
   store_pool = POOL_MAIN;   /* In case changed */
   DEBUG(D_receive) debug_printf("local_scan() returned %d %s\n", rc,
@@ -3704,9 +3704,9 @@ if (local_scan_data)
 
 if (rc == LOCAL_SCAN_ACCEPT_FREEZE)
   {
-  if (!deliver_freeze)         /* ACL might have already frozen */
+  if (!f.deliver_freeze)         /* ACL might have already frozen */
     {
-    deliver_freeze = TRUE;
+    f.deliver_freeze = TRUE;
     deliver_frozen_at = time(NULL);
     frozen_by = US"local_scan()";
     }
@@ -3714,9 +3714,9 @@ if (rc == LOCAL_SCAN_ACCEPT_FREEZE)
   }
 else if (rc == LOCAL_SCAN_ACCEPT_QUEUE)
   {
-  if (!queue_only_policy)      /* ACL might have already queued */
+  if (!f.queue_only_policy)      /* ACL might have already queued */
     {
-    queue_only_policy = TRUE;
+    f.queue_only_policy = TRUE;
     queued_by = US"local_scan()";
     }
   rc = LOCAL_SCAN_ACCEPT;
@@ -3823,7 +3823,7 @@ signal(SIGINT, SIG_IGN);
 
 /* Ensure the first time flag is set in the newly-received message. */
 
-deliver_firsttime = TRUE;
+f.deliver_firsttime = TRUE;
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 if (bmi_run == 1)
@@ -3847,8 +3847,8 @@ memcpy(received_header->text + received_header->slen - tslen - 1,
 
 if (mua_wrapper)
   {
-  deliver_freeze = FALSE;
-  queue_only_policy = FALSE;
+  f.deliver_freeze = FALSE;
+  f.queue_only_policy = FALSE;
   }
 
 /* Keep the data file open until we have written the header file, in order to
@@ -4093,9 +4093,9 @@ if (message_logs && !blackholed_by)
       {
       uschar *now = tod_stamp(tod_log);
       fprintf(message_log, "%s Received from %s\n", now, g->s+3);
-      if (deliver_freeze) fprintf(message_log, "%s frozen by %s\n", now,
+      if (f.deliver_freeze) fprintf(message_log, "%s frozen by %s\n", now,
         frozen_by);
-      if (queue_only_policy) fprintf(message_log,
+      if (f.queue_only_policy) fprintf(message_log,
         "%s no immediate delivery: queued%s%s by %s\n", now,
         *queue_name ? " in " : "", *queue_name ? CS queue_name : "",
 	queued_by);
@@ -4108,7 +4108,7 @@ if (message_logs && !blackholed_by)
 arrival, and outputting an SMTP response. While writing to the log, set a flag
 to cause a call to receive_bomb_out() if the log cannot be opened. */
 
-receive_call_bombout = TRUE;
+f.receive_call_bombout = TRUE;
 
 /* Before sending an SMTP response in a TCP/IP session, we check to see if the
 connection has gone away. This can only be done if there is no unconsumed input
@@ -4128,7 +4128,7 @@ Of course, since TCP/IP is asynchronous, there is always a chance that the
 connection will vanish between the time of this test and the sending of the
 response, but the chance of this happening should be small. */
 
-if (smtp_input && sender_host_address && !sender_host_notsocket &&
+if (smtp_input && sender_host_address && !f.sender_host_notsocket &&
     !receive_smtp_buffered())
   {
   struct timeval tv;
@@ -4222,19 +4222,19 @@ if(!smtp_reply)
 
   /* Log any control actions taken by an ACL or local_scan(). */
 
-  if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
-  if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
+  if (f.deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
+  if (f.queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
     "no immediate delivery: queued%s%s by %s",
     *queue_name ? " in " : "", *queue_name ? CS queue_name : "",       
     queued_by);
   }
-receive_call_bombout = FALSE;
+f.receive_call_bombout = FALSE;
 
 store_reset(g);   /* The store for the main log message can be reused */
 
 /* If the message is frozen, and freeze_tell is set, do the telling. */
 
-if (deliver_freeze && freeze_tell && freeze_tell[0])
+if (f.deliver_freeze && freeze_tell && freeze_tell[0])
   moan_tell_someone(freeze_tell, NULL, US"Message frozen on arrival",
     "Message %s was frozen on arrival by %s.\nThe sender is <%s>.\n",
     message_id, frozen_by, sender_address);

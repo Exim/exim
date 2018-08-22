@@ -183,7 +183,7 @@ DEBUG(D_route)
 if (ob->check_srv)
   {
   if (  !(srv_service = expand_string(ob->check_srv))
-     && !expand_string_forcedfail)
+     && !f.expand_string_forcedfail)
     {
     addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
       rblock->name, ob->check_srv, expand_string_message);
@@ -266,12 +266,12 @@ for (;;)
   if (  ob->ipv4_only
      && expand_check_condition(ob->ipv4_only, rblock->name, US"router"))
     flags = flags & ~HOST_FIND_BY_AAAA | HOST_FIND_IPV4_ONLY;
-  else if (search_find_defer)
+  else if (f.search_find_defer)
     return DEFER;
   if (  ob->ipv4_prefer
      && expand_check_condition(ob->ipv4_prefer, rblock->name, US"router"))
     flags |= HOST_FIND_IPV4_FIRST;
-  else if (search_find_defer)
+  else if (f.search_find_defer)
     return DEFER;
 
   /* Set up the rest of the initial host item. Others may get chained on if
@@ -399,7 +399,7 @@ for (;;)
   /* If there's a syntax error, do not continue with any widening, and note
   the error. */
 
-  if (host_find_failed_syntax)
+  if (f.host_find_failed_syntax)
     {
     addr->message = string_sprintf("mail domain \"%s\" is syntactically "
       "invalid", h.name);

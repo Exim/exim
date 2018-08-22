@@ -75,7 +75,7 @@ for (i = 0; i < 2; i++)
   if (errno == ENOENT)
     {
     if (i == 0) continue;
-    if (!queue_running)
+    if (!f.queue_running)
       log_write(0, LOG_MAIN, "Spool%s%s file %s-D not found",
 	*queue_name ? US" Q=" : US"",
 	*queue_name ? queue_name : US"",
@@ -224,21 +224,21 @@ spool_clear_header_globals(void)
 acl_var_c = acl_var_m = NULL;
 authenticated_id = NULL;
 authenticated_sender = NULL;
-allow_unqualified_recipient = FALSE;
-allow_unqualified_sender = FALSE;
+f.allow_unqualified_recipient = FALSE;
+f.allow_unqualified_sender = FALSE;
 body_linecount = 0;
 body_zerocount = 0;
-deliver_firsttime = FALSE;
-deliver_freeze = FALSE;
+f.deliver_firsttime = FALSE;
+f.deliver_freeze = FALSE;
 deliver_frozen_at = 0;
-deliver_manual_thaw = FALSE;
-/* dont_deliver must NOT be reset */
+f.deliver_manual_thaw = FALSE;
+/* f.dont_deliver must NOT be reset */
 header_list = header_last = NULL;
 host_lookup_deferred = FALSE;
 host_lookup_failed = FALSE;
 interface_address = NULL;
 interface_port = 0;
-local_error_message = FALSE;
+f.local_error_message = FALSE;
 #ifdef HAVE_LOCAL_SCAN
 local_scan_data = NULL;
 #endif
@@ -255,11 +255,11 @@ sender_host_name = NULL;
 sender_host_port = 0;
 sender_host_authenticated = NULL;
 sender_ident = NULL;
-sender_local = FALSE;
-sender_set_untrusted = FALSE;
+f.sender_local = FALSE;
+f.sender_set_untrusted = FALSE;
 smtp_active_hostname = primary_hostname;
 #ifndef COMPILE_UTILITY
-spool_file_wireformat = FALSE;
+f.spool_file_wireformat = FALSE;
 #endif
 tree_nonrecipients = NULL;
 
@@ -270,7 +270,7 @@ bmi_verdicts = NULL;
 
 #ifndef DISABLE_DKIM
 dkim_signers = NULL;
-dkim_disable_verify = FALSE;
+f.dkim_disable_verify = FALSE;
 dkim_collect_input = 0;
 #endif
 
@@ -340,7 +340,7 @@ Returns:        spool_read_OK        success
 int
 spool_read_header(uschar *name, BOOL read_headers, BOOL subdir_set)
 {
-FILE *f = NULL;
+FILE * fp = NULL;
 int n;
 int rcount = 0;
 long int uid, gid;
@@ -362,7 +362,7 @@ for (n = 0; n < 2; n++)
   if (!subdir_set)
     message_subdir[0] = split_spool_directory == (n == 0) ? name[5] : 0;
 
-  if ((f = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
+  if ((fp = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
     break;
   if (n != 0 || subdir_set || errno != ENOENT)
     return spool_read_notopen;
@@ -377,7 +377,7 @@ DEBUG(D_deliver) debug_printf("reading spool file %s\n", name);
 /* The first line of a spool file contains the message id followed by -H (i.e.
 the file name), in order to make the file self-identifying. */
 
-if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 if (Ustrlen(big_buffer) != MESSAGE_ID_LENGTH + 3 ||
     Ustrncmp(big_buffer, name, MESSAGE_ID_LENGTH + 2) != 0)
   goto SPOOL_FORMAT_ERROR;
@@ -389,7 +389,7 @@ negative uids and gids. The second contains the mail address of the message's
 sender, enclosed in <>. The third contains the time the message was received,
 and the number of warning messages for delivery delays that have been sent. */
 
-if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 
 p = big_buffer + Ustrlen(big_buffer);
 while (p > big_buffer && isspace(p[-1])) p--;
@@ -410,7 +410,7 @@ originator_uid = (uid_t)uid;
 originator_gid = (gid_t)gid;
 
 /* envelope from */
-if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 n = Ustrlen(big_buffer);
 if (n < 3 || big_buffer[0] != '<' || big_buffer[n-2] != '>')
   goto SPOOL_FORMAT_ERROR;
@@ -420,7 +420,7 @@ Ustrncpy(sender_address, big_buffer+1, n-3);
 sender_address[n-3] = 0;
 
 /* time */
-if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 if (sscanf(CS big_buffer, TIME_T_FMT " %d", &received_time.tv_sec, &warning_count) != 2)
   goto SPOOL_FORMAT_ERROR;
 received_time.tv_usec = 0;
@@ -450,7 +450,7 @@ p = big_buffer + 2;
 for (;;)
   {
   int len;
-  if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+  if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
   while (  (len = Ustrlen(big_buffer)) == big_buffer_size-1
 	&& big_buffer[len-1] != '\n'
@@ -461,7 +461,7 @@ for (;;)
     buf = store_get_perm(big_buffer_size *= 2);
     memcpy(buf, big_buffer, --len);
     big_buffer = buf;
-    if (Ufgets(big_buffer+len, big_buffer_size-len, f) == NULL)
+    if (Ufgets(big_buffer+len, big_buffer_size-len, fp) == NULL)
       goto SPOOL_READ_ERROR;
     }
   big_buffer[len-1] = 0;
@@ -488,14 +488,14 @@ for (;;)
       if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);
-      if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+      if (fread(node->data.ptr, 1, count+1, fp) < count) goto SPOOL_READ_ERROR;
       ((uschar*)node->data.ptr)[count] = 0;
       }
 
     else if (Ustrcmp(p, "llow_unqualified_recipient") == 0)
-      allow_unqualified_recipient = TRUE;
+      f.allow_unqualified_recipient = TRUE;
     else if (Ustrcmp(p, "llow_unqualified_sender") == 0)
-      allow_unqualified_sender = TRUE;
+      f.allow_unqualified_sender = TRUE;
 
     else if (Ustrncmp(p, "uth_id", 6) == 0)
       authenticated_id = string_copy(big_buffer + 9);
@@ -529,7 +529,7 @@ for (;;)
       node->data.ptr = store_get(count + 1);
       /* We sanity-checked the count, so disable the Coverity error */
       /* coverity[tainted_data] */
-      if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+      if (fread(node->data.ptr, 1, count+1, fp) < count) goto SPOOL_READ_ERROR;
       (US node->data.ptr)[count] = '\0';
       }
     break;
@@ -547,7 +547,7 @@ for (;;)
 
     case 'd':
     if (Ustrcmp(p, "eliver_firsttime") == 0)
-      deliver_firsttime = TRUE;
+      f.deliver_firsttime = TRUE;
     /* Check if the dsn flags have been set in the header file */
     else if (Ustrncmp(p, "sn_ret", 6) == 0)
       dsn_ret= atoi(CS big_buffer + 8);
@@ -558,7 +558,7 @@ for (;;)
     case 'f':
     if (Ustrncmp(p, "rozen", 5) == 0)
       {
-      deliver_freeze = TRUE;
+      f.deliver_freeze = TRUE;
       if (sscanf(CS big_buffer+7, TIME_T_FMT, &deliver_frozen_at) != 1)
 	goto SPOOL_READ_ERROR;
       }
@@ -599,9 +599,9 @@ for (;;)
 
     case 'l':
     if (Ustrcmp(p, "ocal") == 0)
-      sender_local = TRUE;
+      f.sender_local = TRUE;
     else if (Ustrcmp(big_buffer, "-localerror") == 0)
-      local_error_message = TRUE;
+      f.local_error_message = TRUE;
 #ifdef HAVE_LOCAL_SCAN
     else if (Ustrncmp(p, "ocal_scan ", 10) == 0)
       local_scan_data = string_copy(big_buffer + 12);
@@ -609,13 +609,13 @@ for (;;)
     break;
 
     case 'm':
-    if (Ustrcmp(p, "anual_thaw") == 0) deliver_manual_thaw = TRUE;
+    if (Ustrcmp(p, "anual_thaw") == 0) f.deliver_manual_thaw = TRUE;
     else if (Ustrncmp(p, "ax_received_linelength", 22) == 0)
       max_received_linelength = Uatoi(big_buffer + 24);
     break;
 
     case 'N':
-    if (*p == 0) dont_deliver = TRUE;   /* -N */
+    if (*p == 0) f.dont_deliver = TRUE;   /* -N */
     break;
 
     case 'r':
@@ -631,7 +631,7 @@ for (;;)
 
     case 's':
     if (Ustrncmp(p, "ender_set_untrusted", 19) == 0)
-      sender_set_untrusted = TRUE;
+      f.sender_set_untrusted = TRUE;
 #ifdef WITH_CONTENT_SCAN
     else if (Ustrncmp(p, "pam_bar ", 8) == 0)
       spam_bar = string_copy(big_buffer + 10);
@@ -642,7 +642,7 @@ for (;;)
 #endif
 #ifndef COMPILE_UTILITY
     else if (Ustrncmp(p, "pool_file_wireformat", 20) == 0)
-      spool_file_wireformat = TRUE;
+      f.spool_file_wireformat = TRUE;
 #endif
 #if defined(SUPPORT_I18N) && !defined(COMPILE_UTILITY)
     else if (Ustrncmp(p, "mtputf8", 7) == 0)
@@ -701,7 +701,7 @@ host_build_sender_fullhost();
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver)
-  debug_printf("sender_local=%d ident=%s\n", sender_local,
+  debug_printf("sender_local=%d ident=%s\n", f.sender_local,
     (sender_ident == NULL)? US"unset" : sender_ident);
 #endif  /* COMPILE_UTILITY */
 
@@ -709,7 +709,7 @@ DEBUG(D_deliver)
 containing "XX", indicating no tree. */
 
 if (Ustrncmp(big_buffer, "XX\n", 3) != 0 &&
-  !read_nonrecipients_tree(&tree_nonrecipients, f, big_buffer, big_buffer_size))
+  !read_nonrecipients_tree(&tree_nonrecipients, fp, big_buffer, big_buffer_size))
     goto SPOOL_FORMAT_ERROR;
 
 #ifndef COMPILE_UTILITY
@@ -724,7 +724,7 @@ DEBUG(D_deliver)
 buffer. It contains the count of recipients which follow on separate lines.
 Apply an arbitrary sanity check.*/
 
-if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 if (sscanf(CS big_buffer, "%d", &rcount) != 1 || rcount > 16384)
   goto SPOOL_FORMAT_ERROR;
 
@@ -748,7 +748,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   uschar *errors_to = NULL;
   uschar *p;
 
-  if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+  if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
   nn = Ustrlen(big_buffer);
   if (nn < 2) goto SPOOL_FORMAT_ERROR;
 
@@ -888,17 +888,17 @@ always, in order to check on the format of the file, but only create a header
 list if requested to do so. */
 
 inheader = TRUE;
-if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 if (big_buffer[0] != '\n') goto SPOOL_FORMAT_ERROR;
 
-while ((n = fgetc(f)) != EOF)
+while ((n = fgetc(fp)) != EOF)
   {
   header_line *h;
   uschar flag[4];
   int i;
 
   if (!isdigit(n)) goto SPOOL_FORMAT_ERROR;
-  if(ungetc(n, f) == EOF  ||  fscanf(f, "%d%c ", &n, flag) == EOF)
+  if(ungetc(n, fp) == EOF  ||  fscanf(fp, "%d%c ", &n, flag) == EOF)
     goto SPOOL_READ_ERROR;
   if (flag[0] != '*') message_size += n;  /* Omit non-transmitted headers */
 
@@ -918,7 +918,7 @@ while ((n = fgetc(f)) != EOF)
 
     for (i = 0; i < n; i++)
       {
-      int c = fgetc(f);
+      int c = fgetc(fp);
       if (c == 0 || c == EOF) goto SPOOL_FORMAT_ERROR;
       if (c == '\n' && h->type != htype_old) message_linecount++;
       h->text[i] = c;
@@ -930,7 +930,7 @@ while ((n = fgetc(f)) != EOF)
 
   else for (i = 0; i < n; i++)
     {
-    int c = fgetc(f);
+    int c = fgetc(fp);
     if (c == 0 || c == EOF) goto SPOOL_FORMAT_ERROR;
     }
   }
@@ -946,7 +946,7 @@ DEBUG(D_deliver) debug_printf("body_linecount=%d message_linecount=%d\n",
 
 message_linecount += body_linecount;
 
-fclose(f);
+fclose(fp);
 return spool_read_OK;
 
 
@@ -963,7 +963,7 @@ if (errno != 0)
   DEBUG(D_any) debug_printf("Error while reading spool file %s\n", name);
 #endif  /* COMPILE_UTILITY */
 
-  fclose(f);
+  fclose(fp);
   errno = n;
   return inheader? spool_read_hdrerror : spool_read_enverror;
   }
@@ -974,7 +974,7 @@ SPOOL_FORMAT_ERROR:
 DEBUG(D_any) debug_printf("Format error in spool file %s\n", name);
 #endif  /* COMPILE_UTILITY */
 
-fclose(f);
+fclose(fp);
 errno = ERRNO_SPOOLFORMAT;
 return inheader? spool_read_hdrerror : spool_read_enverror;
 }

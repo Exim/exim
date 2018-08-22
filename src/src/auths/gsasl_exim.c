@@ -554,7 +554,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
 
       tmps = CS expand_string(ob->server_password);
       if (tmps == NULL) {
-        sasl_error_should_defer = expand_string_forcedfail ? FALSE : TRUE;
+        sasl_error_should_defer = f.expand_string_forcedfail ? FALSE : TRUE;
         HDEBUG(D_auth) debug_printf("server_password expansion failed, so "
             "can't tell GNU SASL library the password for %s\n", auth_vars[0]);
         return GSASL_AUTHENTICATION_ERROR;

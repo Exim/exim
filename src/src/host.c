@@ -84,7 +84,7 @@ if (limit < 1)
   return 0;
 if (random_seed == 0)
   {
-  if (running_in_test_harness) random_seed = 42; else
+  if (f.running_in_test_harness) random_seed = 42; else
     {
     int p = (int)getpid();
     random_seed = (int)time(NULL) ^ ((p << 16) | p);
@@ -1674,7 +1674,7 @@ HDEBUG(D_host_lookup)
 /* For testing the case when a lookup does not complete, we have a special
 reserved IP address. */
 
-if (running_in_test_harness &&
+if (f.running_in_test_harness &&
     Ustrcmp(sender_host_address, "99.99.99.99") == 0)
   {
   HDEBUG(D_host_lookup)
@@ -1798,7 +1798,7 @@ NB host_lookup_msg must be in permanent store.  */
 
 if (sender_host_name == NULL)
   {
-  if (host_checking || !log_testing_mode)
+  if (host_checking || !f.log_testing_mode)
     log_write(L_host_lookup_failed, LOG_MAIN, "no host name found for IP "
       "address %s", sender_host_address);
   host_lookup_msg = US" (failed to find host name from IP address)";
@@ -2011,7 +2011,7 @@ lookups here (except when testing standalone). */
 /* Initialize the flag that gets set for DNS syntax check errors, so that the
 interface to this function can be similar to host_find_bydns. */
 
-host_find_failed_syntax = FALSE;
+f.host_find_failed_syntax = FALSE;
 
 /* Loop to look up both kinds of address in an IPv6 world */
 
@@ -2033,7 +2033,7 @@ for (i = 1; i <= times;
   if (slow_lookup_log) time_msec = get_time_in_ms();
 
   #if HAVE_IPV6
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     hostdata = host_fake_gethostbyname(host->name, af, &error_num);
   else
     {
@@ -2046,7 +2046,7 @@ for (i = 1; i <= times;
     }
 
   #else    /* not HAVE_IPV6 */
-  if (running_in_test_harness)
+  if (f.running_in_test_harness)
     hostdata = host_fake_gethostbyname(host->name, AF_INET, &error_num);
   else
     {
@@ -2171,7 +2171,7 @@ if (host->address == NULL)
 
   HDEBUG(D_host_lookup) debug_printf("%s\n", msg);
   if (temp_error) goto RETURN_AGAIN;
-  if (host_checking || !log_testing_mode)
+  if (host_checking || !f.log_testing_mode)
     log_write(L_host_lookup_failed, LOG_MAIN, "%s", msg);
   return HOST_FIND_FAILED;
   }
@@ -2592,7 +2592,7 @@ if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
 dns_init((whichrrs & HOST_FIND_QUALIFY_SINGLE) != 0,
          (whichrrs & HOST_FIND_SEARCH_PARENTS) != 0,
 	 dnssec_request);
-host_find_failed_syntax = FALSE;
+f.host_find_failed_syntax = FALSE;
 
 /* First, if requested, look for SRV records. The service name is given; we
 assume TCP protocol. DNS domain names are constrained to a maximum of 256
@@ -3268,7 +3268,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else if (Ustrcmp(buffer, "require_dnssec")    == 0) require_dnssec = TRUE;
   else if (Ustrcmp(buffer, "no_require_dnssec") == 0) require_dnssec = FALSE;
   else if (Ustrcmp(buffer, "test_harness") == 0)
-    running_in_test_harness = !running_in_test_harness;
+    f.running_in_test_harness = !f.running_in_test_harness;
   else if (Ustrcmp(buffer, "ipv6") == 0) disable_ipv6 = !disable_ipv6;
   else if (Ustrcmp(buffer, "res_debug") == 0)
     {

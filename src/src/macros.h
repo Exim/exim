@@ -24,7 +24,7 @@ a string as a text string. This is sometimes useful for debugging output. */
 /* When running in the test harness, the load average is fudged. */
 
 #define OS_GETLOADAVG() \
-  (running_in_test_harness? (test_harness_load_avg += 10) : os_getloadavg())
+  (f.running_in_test_harness? (test_harness_load_avg += 10) : os_getloadavg())
 
 
 /* The address_item structure has a struct full of 1-bit flags. These macros

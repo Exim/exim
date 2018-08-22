@@ -420,7 +420,7 @@ if (exim_tvcmp(&now_tv, then_tv) <= 0)
 
   DEBUG(D_transport|D_receive)
     {
-    if (!running_in_test_harness)
+    if (!f.running_in_test_harness)
       {
       debug_printf("tick check: " TIME_T_FMT ".%06lu " TIME_T_FMT ".%06lu\n",
         then_tv->tv_sec, (long) then_tv->tv_usec,
@@ -563,7 +563,7 @@ else
   if ((debug_selector & D_resolver) == 0) (void)close(1);  /* stdout */
   if (debug_selector == 0)                                 /* stderr */
     {
-    if (!synchronous_delivery)
+    if (!f.synchronous_delivery)
       {
       (void)close(2);
       log_stderr = NULL;
@@ -793,193 +793,193 @@ Returns:    nothing
 */
 
 static void
-show_whats_supported(FILE * f)
+show_whats_supported(FILE * fp)
 {
 auth_info * authi;
 
-DEBUG(D_any) {} else show_db_version(f);
+DEBUG(D_any) {} else show_db_version(fp);
 
-fprintf(f, "Support for:");
+fprintf(fp, "Support for:");
 #ifdef SUPPORT_CRYPTEQ
-  fprintf(f, " crypteq");
+  fprintf(fp, " crypteq");
 #endif
 #if HAVE_ICONV
-  fprintf(f, " iconv()");
+  fprintf(fp, " iconv()");
 #endif
 #if HAVE_IPV6
-  fprintf(f, " IPv6");
+  fprintf(fp, " IPv6");
 #endif
 #ifdef HAVE_SETCLASSRESOURCES
-  fprintf(f, " use_setclassresources");
+  fprintf(fp, " use_setclassresources");
 #endif
 #ifdef SUPPORT_PAM
-  fprintf(f, " PAM");
+  fprintf(fp, " PAM");
 #endif
 #ifdef EXIM_PERL
-  fprintf(f, " Perl");
+  fprintf(fp, " Perl");
 #endif
 #ifdef EXPAND_DLFUNC
-  fprintf(f, " Expand_dlfunc");
+  fprintf(fp, " Expand_dlfunc");
 #endif
 #ifdef USE_TCP_WRAPPERS
-  fprintf(f, " TCPwrappers");
+  fprintf(fp, " TCPwrappers");
 #endif
 #ifdef SUPPORT_TLS
 # ifdef USE_GNUTLS
-  fprintf(f, " GnuTLS");
+  fprintf(fp, " GnuTLS");
 # else
-  fprintf(f, " OpenSSL");
+  fprintf(fp, " OpenSSL");
 # endif
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
-  fprintf(f, " translate_ip_address");
+  fprintf(fp, " translate_ip_address");
 #endif
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  fprintf(f, " move_frozen_messages");
+  fprintf(fp, " move_frozen_messages");
 #endif
 #ifdef WITH_CONTENT_SCAN
-  fprintf(f, " Content_Scanning");
+  fprintf(fp, " Content_Scanning");
 #endif
 #ifdef SUPPORT_DANE
-  fprintf(f, " DANE");
+  fprintf(fp, " DANE");
 #endif
 #ifndef DISABLE_DKIM
-  fprintf(f, " DKIM");
+  fprintf(fp, " DKIM");
 #endif
 #ifndef DISABLE_DNSSEC
-  fprintf(f, " DNSSEC");
+  fprintf(fp, " DNSSEC");
 #endif
 #ifndef DISABLE_EVENT
-  fprintf(f, " Event");
+  fprintf(fp, " Event");
 #endif
 #ifdef SUPPORT_I18N
-  fprintf(f, " I18N");
+  fprintf(fp, " I18N");
 #endif
 #ifndef DISABLE_OCSP
-  fprintf(f, " OCSP");
+  fprintf(fp, " OCSP");
 #endif
 #ifndef DISABLE_PRDR
-  fprintf(f, " PRDR");
+  fprintf(fp, " PRDR");
 #endif
 #ifdef SUPPORT_PROXY
-  fprintf(f, " PROXY");
+  fprintf(fp, " PROXY");
 #endif
 #ifdef SUPPORT_SOCKS
-  fprintf(f, " SOCKS");
+  fprintf(fp, " SOCKS");
 #endif
 #ifdef SUPPORT_SPF
-  fprintf(f, " SPF");
+  fprintf(fp, " SPF");
 #endif
 #ifdef TCP_FASTOPEN
   deliver_init();
-  if (tcp_fastopen_ok) fprintf(f, " TCP_Fast_Open");
+  if (f.tcp_fastopen_ok) fprintf(fp, " TCP_Fast_Open");
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  fprintf(f, " Experimental_LMDB");
+  fprintf(fp, " Experimental_LMDB");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
-  fprintf(f, " Experimental_QUEUEFILE");
+  fprintf(fp, " Experimental_QUEUEFILE");
 #endif
 #ifdef EXPERIMENTAL_SRS
-  fprintf(f, " Experimental_SRS");
+  fprintf(fp, " Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_ARC
-  fprintf(f, " Experimental_ARC");
+  fprintf(fp, " Experimental_ARC");
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  fprintf(f, " Experimental_Brightmail");
+  fprintf(fp, " Experimental_Brightmail");
 #endif
 #ifdef EXPERIMENTAL_DCC
-  fprintf(f, " Experimental_DCC");
+  fprintf(fp, " Experimental_DCC");
 #endif
 #ifdef EXPERIMENTAL_DMARC
-  fprintf(f, " Experimental_DMARC");
+  fprintf(fp, " Experimental_DMARC");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
-  fprintf(f, " Experimental_DSN_info");
+  fprintf(fp, " Experimental_DSN_info");
 #endif
 #ifdef EXPERIMENTAL_REQUIRETLS
-  fprintf(f, " Experimental_REQUIRETLS");
+  fprintf(fp, " Experimental_REQUIRETLS");
 #endif
-fprintf(f, "\n");
+fprintf(fp, "\n");
 
-fprintf(f, "Lookups (built-in):");
+fprintf(fp, "Lookups (built-in):");
 #if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-  fprintf(f, " lsearch wildlsearch nwildlsearch iplsearch");
+  fprintf(fp, " lsearch wildlsearch nwildlsearch iplsearch");
 #endif
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-  fprintf(f, " cdb");
+  fprintf(fp, " cdb");
 #endif
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-  fprintf(f, " dbm dbmjz dbmnz");
+  fprintf(fp, " dbm dbmjz dbmnz");
 #endif
 #if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-  fprintf(f, " dnsdb");
+  fprintf(fp, " dnsdb");
 #endif
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-  fprintf(f, " dsearch");
+  fprintf(fp, " dsearch");
 #endif
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-  fprintf(f, " ibase");
+  fprintf(fp, " ibase");
 #endif
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-  fprintf(f, " ldap ldapdn ldapm");
+  fprintf(fp, " ldap ldapdn ldapm");
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  fprintf(f, " lmdb");
+  fprintf(fp, " lmdb");
 #endif
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-  fprintf(f, " mysql");
+  fprintf(fp, " mysql");
 #endif
 #if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-  fprintf(f, " nis nis0");
+  fprintf(fp, " nis nis0");
 #endif
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-  fprintf(f, " nisplus");
+  fprintf(fp, " nisplus");
 #endif
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-  fprintf(f, " oracle");
+  fprintf(fp, " oracle");
 #endif
 #if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-  fprintf(f, " passwd");
+  fprintf(fp, " passwd");
 #endif
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-  fprintf(f, " pgsql");
+  fprintf(fp, " pgsql");
 #endif
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-  fprintf(f, " redis");
+  fprintf(fp, " redis");
 #endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-  fprintf(f, " sqlite");
+  fprintf(fp, " sqlite");
 #endif
 #if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-  fprintf(f, " testdb");
+  fprintf(fp, " testdb");
 #endif
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-  fprintf(f, " whoson");
+  fprintf(fp, " whoson");
 #endif
-fprintf(f, "\n");
+fprintf(fp, "\n");
 
-auth_show_supported(f);
-route_show_supported(f);
-transport_show_supported(f);
+auth_show_supported(fp);
+route_show_supported(fp);
+transport_show_supported(fp);
 
 #ifdef WITH_CONTENT_SCAN
-malware_show_supported(f);
+malware_show_supported(fp);
 #endif
 
 if (fixed_never_users[0] > 0)
   {
   int i;
-  fprintf(f, "Fixed never_users: ");
+  fprintf(fp, "Fixed never_users: ");
   for (i = 1; i <= (int)fixed_never_users[0] - 1; i++)
-    fprintf(f, "%d:", (unsigned int)fixed_never_users[i]);
-  fprintf(f, "%d\n", (unsigned int)fixed_never_users[i]);
+    fprintf(fp, "%d:", (unsigned int)fixed_never_users[i]);
+  fprintf(fp, "%d\n", (unsigned int)fixed_never_users[i]);
   }
 
-fprintf(f, "Configure owner: %d:%d\n", config_uid, config_gid);
+fprintf(fp, "Configure owner: %d:%d\n", config_uid, config_gid);
 
-fprintf(f, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
+fprintf(fp, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 
 /* Everything else is details which are only worth reporting when debugging.
 Perhaps the tls_version_report should move into this too. */
@@ -989,9 +989,9 @@ DEBUG(D_any) do {
 
 /* clang defines __GNUC__ (at least, for me) so test for it first */
 #if defined(__clang__)
-  fprintf(f, "Compiler: CLang [%s]\n", __clang_version__);
+  fprintf(fp, "Compiler: CLang [%s]\n", __clang_version__);
 #elif defined(__GNUC__)
-  fprintf(f, "Compiler: GCC [%s]\n",
+  fprintf(fp, "Compiler: GCC [%s]\n",
 # ifdef __VERSION__
       __VERSION__
 # else
@@ -999,29 +999,29 @@ DEBUG(D_any) do {
 # endif
       );
 #else
-  fprintf(f, "Compiler: <unknown>\n");
+  fprintf(fp, "Compiler: <unknown>\n");
 #endif
 
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
-  fprintf(f, "Library version: Glibc: Compile: %d.%d\n",
+  fprintf(fp, "Library version: Glibc: Compile: %d.%d\n",
 	       	__GLIBC__, __GLIBC_MINOR__);
   if (__GLIBC_PREREQ(2, 1))
-    fprintf(f, "                        Runtime: %s\n",
+    fprintf(fp, "                        Runtime: %s\n",
 	       	gnu_get_libc_version());
 #endif
 
-show_db_version(f);
+show_db_version(fp);
 
 #ifdef SUPPORT_TLS
-  tls_version_report(f);
+  tls_version_report(fp);
 #endif
 #ifdef SUPPORT_I18N
-  utf8_version_report(f);
+  utf8_version_report(fp);
 #endif
 
   for (authi = auths_available; *authi->driver_name != '\0'; ++authi)
     if (authi->version_report)
-      (*authi->version_report)(f);
+      (*authi->version_report)(fp);
 
   /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it
@@ -1031,7 +1031,7 @@ show_db_version(f);
 #endif
 #define QUOTE(X) #X
 #define EXPAND_AND_QUOTE(X) QUOTE(X)
-  fprintf(f, "Library version: PCRE: Compile: %d.%d%s\n"
+  fprintf(fp, "Library version: PCRE: Compile: %d.%d%s\n"
              "                       Runtime: %s\n",
           PCRE_MAJOR, PCRE_MINOR,
           EXPAND_AND_QUOTE(PCRE_PRERELEASE) "",
@@ -1042,17 +1042,17 @@ show_db_version(f);
   init_lookup_list();
   for (i = 0; i < lookup_list_count; i++)
     if (lookup_list[i]->version_report)
-      lookup_list[i]->version_report(f);
+      lookup_list[i]->version_report(fp);
 
 #ifdef WHITELIST_D_MACROS
-  fprintf(f, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
+  fprintf(fp, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
 #else
-  fprintf(f, "WHITELIST_D_MACROS unset\n");
+  fprintf(fp, "WHITELIST_D_MACROS unset\n");
 #endif
 #ifdef TRUSTED_CONFIG_LIST
-  fprintf(f, "TRUSTED_CONFIG_LIST: \"%s\"\n", TRUSTED_CONFIG_LIST);
+  fprintf(fp, "TRUSTED_CONFIG_LIST: \"%s\"\n", TRUSTED_CONFIG_LIST);
 #else
-  fprintf(f, "TRUSTED_CONFIG_LIST unset\n");
+  fprintf(fp, "TRUSTED_CONFIG_LIST unset\n");
 #endif
 
 } while (0);
@@ -1633,9 +1633,9 @@ OS_INIT
 /* Check a field which is patched when we are running Exim within its
 testing harness; do a fast initial check, and then the whole thing. */
 
-running_in_test_harness =
+f.running_in_test_harness =
   *running_status == '<' && Ustrcmp(running_status, "<<<testing>>>") == 0;
-if (running_in_test_harness)
+if (f.running_in_test_harness)
   debug_store = TRUE;
 
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
@@ -1799,7 +1799,7 @@ message has been sent). */
 if ((namelen == 5 && Ustrcmp(argv[0], "rmail") == 0) ||
     (namelen  > 5 && Ustrncmp(argv[0] + namelen - 6, "/rmail", 6) == 0))
   {
-  dot_ends = FALSE;
+  f.dot_ends = FALSE;
   called_as = US"-rmail";
   errors_sender_rc = EXIT_SUCCESS;
   }
@@ -1921,7 +1921,7 @@ for (i = 1; i < argc; i++)
     {
     switchchar = arg[3];
     argrest += 2;
-    queue_2stage = TRUE;
+    f.queue_2stage = TRUE;
     }
 
   /* Make -r synonymous with -f, since it is a documented alias */
@@ -1992,8 +1992,8 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'd')
       {
-      daemon_listen = TRUE;
-      if (*(++argrest) == 'f') background_daemon = FALSE;
+      f.daemon_listen = TRUE;
+      if (*(++argrest) == 'f') f.background_daemon = FALSE;
         else if (*argrest != 0) { badarg = TRUE; break; }
       }
 
@@ -2065,8 +2065,8 @@ for (i = 1; i < argc; i++)
       {
       if (++i >= argc) { badarg = TRUE; break; }
       sender_host_address = argv[i];
-      host_checking = checking = log_testing_mode = TRUE;
-      host_checking_callout = argrest[1] == 'c';
+      host_checking = checking = f.log_testing_mode = TRUE;
+      f.host_checking_callout = argrest[1] == 'c';
       message_logs = FALSE;
       }
 
@@ -2123,8 +2123,8 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "nq") == 0)
       {
-      allow_unqualified_sender = FALSE;
-      allow_unqualified_recipient = FALSE;
+      f.allow_unqualified_sender = FALSE;
+      f.allow_unqualified_recipient = FALSE;
       }
 
     /* -bpxx: List the contents of the mail queue, in various forms. If
@@ -2223,18 +2223,18 @@ for (i = 1; i < argc; i++)
     /* -bt: address testing mode */
 
     else if (Ustrcmp(argrest, "t") == 0)
-      address_test_mode = checking = log_testing_mode = TRUE;
+      f.address_test_mode = checking = f.log_testing_mode = TRUE;
 
     /* -bv: verify addresses */
 
     else if (Ustrcmp(argrest, "v") == 0)
-      verify_address_mode = checking = log_testing_mode = TRUE;
+      verify_address_mode = checking = f.log_testing_mode = TRUE;
 
     /* -bvs: verify sender addresses */
 
     else if (Ustrcmp(argrest, "vs") == 0)
       {
-      verify_address_mode = checking = log_testing_mode = TRUE;
+      verify_address_mode = checking = f.log_testing_mode = TRUE;
       verify_as_sender = TRUE;
       }
 
@@ -2247,16 +2247,16 @@ for (i = 1; i < argc; i++)
       printf("%s\n", CS version_copyright);
       version_printed = TRUE;
       show_whats_supported(stdout);
-      log_testing_mode = TRUE;
+      f.log_testing_mode = TRUE;
       }
 
     /* -bw: inetd wait mode, accept a listening socket as stdin */
 
     else if (*argrest == 'w')
       {
-      inetd_wait_mode = TRUE;
-      background_daemon = FALSE;
-      daemon_listen = TRUE;
+      f.inetd_wait_mode = TRUE;
+      f.background_daemon = FALSE;
+      f.daemon_listen = TRUE;
       if (*(++argrest) != '\0')
         {
         inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE);
@@ -2310,7 +2310,7 @@ for (i = 1; i < argc; i++)
             && real_uid != config_uid
             #endif
             )
-          trusted_config = FALSE;
+          f.trusted_config = FALSE;
         else
           {
           FILE *trust_list = Ufopen(TRUSTED_CONFIG_LIST, "rb");
@@ -2332,7 +2332,7 @@ for (i = 1; i < argc; i++)
                    ) ||                            /* or */
                 (statbuf.st_mode & 2) != 0)        /* world writeable */
               {
-              trusted_config = FALSE;
+              f.trusted_config = FALSE;
               fclose(trust_list);
               }
 	    else
@@ -2364,7 +2364,7 @@ for (i = 1; i < argc; i++)
                 int sep = 0;
                 const uschar *list = argrest;
                 uschar *filename;
-                while (trusted_config && (filename = string_nextinlist(&list,
+                while (f.trusted_config && (filename = string_nextinlist(&list,
                         &sep, big_buffer, big_buffer_size)) != NULL)
                   {
                   for (i=0; i < nr_configs; i++)
@@ -2374,7 +2374,7 @@ for (i = 1; i < argc; i++)
                     }
                   if (i == nr_configs)
                     {
-                    trusted_config = FALSE;
+                    f.trusted_config = FALSE;
                     break;
                     }
                   }
@@ -2383,24 +2383,24 @@ for (i = 1; i < argc; i++)
               else
                 {
                 /* No valid prefixes found in trust_list file. */
-                trusted_config = FALSE;
+                f.trusted_config = FALSE;
                 }
               }
 	    }
           else
             {
             /* Could not open trust_list file. */
-            trusted_config = FALSE;
+            f.trusted_config = FALSE;
             }
           }
       #else
         /* Not root; don't trust config */
-        trusted_config = FALSE;
+        f.trusted_config = FALSE;
       #endif
         }
 
       config_main_filelist = argrest;
-      config_changed = TRUE;
+      f.config_changed = TRUE;
       }
     break;
 
@@ -2482,7 +2482,7 @@ for (i = 1; i < argc; i++)
       debug_file = NULL;
       if (*argrest == 'd')
         {
-        debug_daemon = TRUE;
+        f.debug_daemon = TRUE;
         argrest++;
         }
       if (*argrest != 0)
@@ -2501,7 +2501,7 @@ for (i = 1; i < argc; i++)
     message_reference at it, for logging. */
 
     case 'E':
-    local_error_message = TRUE;
+    f.local_error_message = TRUE;
     if (mac_ismsgid(argrest)) message_reference = argrest;
     break;
 
@@ -2538,7 +2538,7 @@ for (i = 1; i < argc; i++)
         { badarg = TRUE; break; }
       }
     originator_name = argrest;
-    sender_name_forced = TRUE;
+    f.sender_name_forced = TRUE;
     break;
 
 
@@ -2592,7 +2592,7 @@ for (i = 1; i < argc; i++)
           return EXIT_FAILURE;
           }
         }
-      sender_address_forced = TRUE;
+      f.sender_address_forced = TRUE;
       }
     break;
 
@@ -2623,7 +2623,7 @@ for (i = 1; i < argc; i++)
     not to be documented for sendmail but mailx (at least) uses it) */
 
     case 'i':
-    if (*argrest == 0) dot_ends = FALSE; else badarg = TRUE;
+    if (*argrest == 0) f.dot_ends = FALSE; else badarg = TRUE;
     break;
 
 
@@ -2714,7 +2714,7 @@ for (i = 1; i < argc; i++)
 	  return EXIT_FAILURE;
 	  }
 
-      if (running_in_test_harness) millisleep(500);
+      if (f.running_in_test_harness) millisleep(500);
       break;
       }
 
@@ -2726,7 +2726,7 @@ for (i = 1; i < argc; i++)
     precedes -MC (see above). The flag indicates that the host to which
     Exim is connected has accepted an AUTH sequence. */
 
-	case 'A': smtp_authenticated = TRUE; break;
+	case 'A': f.smtp_authenticated = TRUE; break;
 
     /* -MCD: set the smtp_use_dsn flag; this indicates that the host
        that exim is connected to supports the esmtp extension DSN */
@@ -2823,7 +2823,7 @@ for (i = 1; i < argc; i++)
     else if (*argrest == 0)
       {
       msg_action = MSG_DELIVER;
-      forced_delivery = deliver_force_thaw = TRUE;
+      forced_delivery = f.deliver_force_thaw = TRUE;
       }
     else if (Ustrcmp(argrest, "ar") == 0)
       {
@@ -2933,7 +2933,7 @@ for (i = 1; i < argc; i++)
     case 'N':
     if (*argrest == 0)
       {
-      dont_deliver = TRUE;
+      f.dont_deliver = TRUE;
       debug_selector |= D_v;
       debug_file = stderr;
       }
@@ -3011,7 +3011,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "db") == 0)
       {
-      synchronous_delivery = FALSE;
+      f.synchronous_delivery = FALSE;
       arg_queue_only = FALSE;
       queue_only_set = TRUE;
       }
@@ -3022,7 +3022,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "df") == 0 || Ustrcmp(argrest, "di") == 0)
       {
-      synchronous_delivery = TRUE;
+      f.synchronous_delivery = TRUE;
       arg_queue_only = FALSE;
       queue_only_set = TRUE;
       }
@@ -3031,7 +3031,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "dq") == 0)
       {
-      synchronous_delivery = FALSE;
+      f.synchronous_delivery = FALSE;
       arg_queue_only = TRUE;
       queue_only_set = TRUE;
       }
@@ -3041,7 +3041,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "dqs") == 0)
       {
-      queue_smtp = TRUE;
+      f.queue_smtp = TRUE;
       arg_queue_only = FALSE;
       queue_only_set = TRUE;
       }
@@ -3055,7 +3055,7 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "i") == 0 ||
              Ustrcmp(argrest, "itrue") == 0)
-      dot_ends = FALSE;
+      f.dot_ends = FALSE;
 
     /* -oM*: Set various characteristics for an incoming message; actually
     acted on for trusted callers only. */
@@ -3098,7 +3098,7 @@ for (i = 1; i < argc; i++)
             fprintf(stderr,"-oMm must be a valid message ID\n");
             exit(EXIT_FAILURE);
           }
-        if (!trusted_config)
+        if (!f.trusted_config)
           {
             fprintf(stderr,"-oMm must be called by a trusted user/config\n");
             exit(EXIT_FAILURE);
@@ -3246,7 +3246,7 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'q')
       {
-      queue_2stage = TRUE;
+      f.queue_2stage = TRUE;
       argrest++;
       }
 
@@ -3254,7 +3254,7 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'i')
       {
-      queue_run_first_delivery = TRUE;
+      f.queue_run_first_delivery = TRUE;
       argrest++;
       }
 
@@ -3263,10 +3263,10 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'f')
       {
-      queue_run_force = TRUE;
+      f.queue_run_force = TRUE;
       if (*++argrest == 'f')
         {
-        deliver_force_thaw = TRUE;
+        f.deliver_force_thaw = TRUE;
         argrest++;
         }
       }
@@ -3275,7 +3275,7 @@ for (i = 1; i < argc; i++)
 
     if (*argrest == 'l')
       {
-      queue_run_local = TRUE;
+      f.queue_run_local = TRUE;
       argrest++;
       }
 
@@ -3333,9 +3333,9 @@ for (i = 1; i < argc; i++)
       for (i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
-          if (i != 2) queue_run_force = TRUE;
-          if (i >= 2) deliver_selectstring_regex = TRUE;
-          if (i == 1 || i == 4) deliver_force_thaw = TRUE;
+          if (i != 2) f.queue_run_force = TRUE;
+          if (i >= 2) f.deliver_selectstring_regex = TRUE;
+          if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
           argrest += Ustrlen(rsopts[i]);
           }
       }
@@ -3378,9 +3378,9 @@ for (i = 1; i < argc; i++)
       for (i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
-          if (i != 2) queue_run_force = TRUE;
-          if (i >= 2) deliver_selectstring_sender_regex = TRUE;
-          if (i == 1 || i == 4) deliver_force_thaw = TRUE;
+          if (i != 2) f.queue_run_force = TRUE;
+          if (i >= 2) f.deliver_selectstring_sender_regex = TRUE;
+          if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
           argrest += Ustrlen(rsopts[i]);
           }
       }
@@ -3405,7 +3405,7 @@ for (i = 1; i < argc; i++)
     tested. Otherwise variability of clock ticks etc. cause problems. */
 
     case 'T':
-    if (running_in_test_harness && Ustrcmp(argrest, "qt") == 0)
+    if (f.running_in_test_harness && Ustrcmp(argrest, "qt") == 0)
       fudged_queue_times = argv[++i];
     else badarg = TRUE;
     break;
@@ -3422,7 +3422,7 @@ for (i = 1; i < argc; i++)
     else if (Ustrcmp(argrest, "i") == 0)
       {
       extract_recipients = TRUE;
-      dot_ends = FALSE;
+      f.dot_ends = FALSE;
       }
 
     /* -tls-on-connect: don't wait for STARTTLS (for old clients) */
@@ -3522,26 +3522,26 @@ if (usage_wanted) exim_usage(called_as);
 /* Arguments have been processed. Check for incompatibilities. */
 if ((
     (smtp_input || extract_recipients || recipients_arg < argc) &&
-    (daemon_listen || queue_interval >= 0 || bi_option ||
+    (f.daemon_listen || queue_interval >= 0 || bi_option ||
       test_retry_arg >= 0 || test_rewrite_arg >= 0 ||
       filter_test != FTEST_NONE || (msg_action_arg > 0 && !one_msg_action))
     ) ||
     (
     msg_action_arg > 0 &&
-    (daemon_listen || queue_interval > 0 || list_options ||
+    (f.daemon_listen || queue_interval > 0 || list_options ||
       (checking && msg_action != MSG_LOAD) ||
       bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0)
     ) ||
     (
-    (daemon_listen || queue_interval > 0) &&
+    (f.daemon_listen || queue_interval > 0) &&
     (sender_address != NULL || list_options || list_queue || checking ||
       bi_option)
     ) ||
     (
-    daemon_listen && queue_interval == 0
+    f.daemon_listen && queue_interval == 0
     ) ||
     (
-    inetd_wait_mode && queue_interval >= 0
+    f.inetd_wait_mode && queue_interval >= 0
     ) ||
     (
     list_options &&
@@ -3550,11 +3550,11 @@ if ((
     ) ||
     (
     verify_address_mode &&
-    (address_test_mode || smtp_input || extract_recipients ||
+    (f.address_test_mode || smtp_input || extract_recipients ||
       filter_test != FTEST_NONE || bi_option)
     ) ||
     (
-    address_test_mode && (smtp_input || extract_recipients ||
+    f.address_test_mode && (smtp_input || extract_recipients ||
       filter_test != FTEST_NONE || bi_option)
     ) ||
     (
@@ -3582,8 +3582,8 @@ if (debug_selector != 0)
   {
   debug_file = stderr;
   debug_fd = fileno(debug_file);
-  background_daemon = FALSE;
-  if (running_in_test_harness) millisleep(100);   /* lets caller finish */
+  f.background_daemon = FALSE;
+  if (f.running_in_test_harness) millisleep(100);   /* lets caller finish */
   if (debug_selector != D_v)    /* -v only doesn't show this */
     {
     debug_printf("Exim version %s uid=%ld gid=%ld pid=%d D=%x\n",
@@ -3719,10 +3719,10 @@ values (such as the path name). If running in the test harness, pretend that
 configuration file changes and macro definitions haven't happened. */
 
 if ((                                            /* EITHER */
-    (!trusted_config ||                          /* Config changed, or */
+    (!f.trusted_config ||                          /* Config changed, or */
      !macros_trusted(opt_D_used)) &&		 /*  impermissible macros and */
     real_uid != root_uid &&                      /* Not root, and */
-    !running_in_test_harness                     /* Not fudged */
+    !f.running_in_test_harness                     /* Not fudged */
     ) ||                                         /*   OR   */
     expansion_test                               /* expansion testing */
     ||                                           /*   OR   */
@@ -3743,7 +3743,7 @@ if ((                                            /* EITHER */
   this causes unlogged successful deliveries.  */
 
   if ((log_stderr != NULL) && (real_uid != exim_uid))
-    really_exim = FALSE;
+    f.really_exim = FALSE;
   }
 
 /* Privilege is to be retained for the moment. It may be dropped later,
@@ -3790,7 +3790,7 @@ This needs to happen before we read the main configuration. */
 init_lookup_list();
 
 #ifdef SUPPORT_I18N
-if (running_in_test_harness) smtputf8_advertise_hosts = NULL;
+if (f.running_in_test_harness) smtputf8_advertise_hosts = NULL;
 #endif
 
 /* Read the main runtime configuration data; this gives up if there
@@ -3839,17 +3839,17 @@ since some actions can be performed by non-admin users. Instead, set admin_user
 for later interrogation. */
 
 if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
-  admin_user = TRUE;
+  f.admin_user = TRUE;
 else
   {
   int i, j;
-  for (i = 0; i < group_count && !admin_user; i++)
+  for (i = 0; i < group_count && !f.admin_user; i++)
     if (group_list[i] == exim_gid)
-      admin_user = TRUE;
+      f.admin_user = TRUE;
     else if (admin_groups)
-      for (j = 1; j <= (int)admin_groups[0] && !admin_user; j++)
+      for (j = 1; j <= (int)admin_groups[0] && !f.admin_user; j++)
         if (admin_groups[j] == group_list[i])
-          admin_user = TRUE;
+          f.admin_user = TRUE;
   }
 
 /* Another group of privileged users are the trusted users. These are root,
@@ -3858,29 +3858,29 @@ are permitted to specify sender_addresses with -f on the command line, and
 other message parameters as well. */
 
 if (real_uid == root_uid || real_uid == exim_uid)
-  trusted_caller = TRUE;
+  f.trusted_caller = TRUE;
 else
   {
   int i, j;
 
   if (trusted_users)
-    for (i = 1; i <= (int)trusted_users[0] && !trusted_caller; i++)
+    for (i = 1; i <= (int)trusted_users[0] && !f.trusted_caller; i++)
       if (trusted_users[i] == real_uid)
-        trusted_caller = TRUE;
+        f.trusted_caller = TRUE;
 
   if (trusted_groups)
-    for (i = 1; i <= (int)trusted_groups[0] && !trusted_caller; i++)
+    for (i = 1; i <= (int)trusted_groups[0] && !f.trusted_caller; i++)
       if (trusted_groups[i] == real_gid)
-        trusted_caller = TRUE;
-      else for (j = 0; j < group_count && !trusted_caller; j++)
+        f.trusted_caller = TRUE;
+      else for (j = 0; j < group_count && !f.trusted_caller; j++)
         if (trusted_groups[i] == group_list[j])
-          trusted_caller = TRUE;
+          f.trusted_caller = TRUE;
   }
 
 /* At this point, we know if the user is privileged and some command-line
 options become possibly impermissible, depending upon the configuration file. */
 
-if (checking && commandline_checks_require_admin && !admin_user) {
+if (checking && commandline_checks_require_admin && !f.admin_user) {
   fprintf(stderr, "exim: those command-line flags are set to require admin\n");
   exit(EXIT_FAILURE);
 }
@@ -3923,7 +3923,7 @@ if (sender_address != NULL)
 
 if (cmdline_syslog_name != NULL)
   {
-  if (admin_user)
+  if (f.admin_user)
     {
     syslog_processname = cmdline_syslog_name;
     log_file_path = string_copy(CUS"syslog");
@@ -3965,7 +3965,7 @@ if (Ustrlen(syslog_processname) > 32)
     "syslog_processname is longer than 32 chars: aborting");
 
 if (log_oneline)
-  if (admin_user)
+  if (f.admin_user)
     {
     log_write(0, LOG_MAIN, "%s", log_oneline);
     return EXIT_SUCCESS;
@@ -4007,7 +4007,7 @@ this. We have to make a new environment if TZ is wrong, but don't bother if
 timestamps_utc is set, because then all times are in UTC anyway. */
 
 if (timezone_string && strcmpic(timezone_string, US"UTC") == 0)
-  timestamps_utc = TRUE;
+  f.timestamps_utc = TRUE;
 else
   {
   uschar *envtz = US getenv("TZ");
@@ -4060,14 +4060,14 @@ Exim user", but it hasn't, because either the -D option set macros, or the
       trusted configuration file (when deliver_drop_privilege is false). */
 
 if (  removed_privilege
-   && (!trusted_config || opt_D_used)
+   && (!f.trusted_config || opt_D_used)
    && real_uid == exim_uid)
   if (deliver_drop_privilege)
-    really_exim = TRUE; /* let logging work normally */
+    f.really_exim = TRUE; /* let logging work normally */
   else
     log_write(0, LOG_MAIN|LOG_PANIC,
       "exim user lost privilege for using %s option",
-      trusted_config? "-D" : "-C");
+      f.trusted_config? "-D" : "-C");
 
 /* Start up Perl interpreter if Perl support is configured and there is a
 perl_startup option, and the configuration or the command line specifies
@@ -4097,7 +4097,7 @@ Don't attempt it if logging is disabled, or if listing variables or if
 verifying/testing addresses or expansions. */
 
 if (  (debug_selector & D_any  ||  LOGGING(arguments))
-   && really_exim && !list_options && !checking)
+   && f.really_exim && !list_options && !checking)
   {
   int i;
   uschar *p = big_buffer;
@@ -4198,8 +4198,8 @@ if (bi_option)
 configuration file.  We leave these prints here to ensure that syslog setup,
 logfile setup, and so on has already happened. */
 
-if (trusted_caller) DEBUG(D_any) debug_printf("trusted user\n");
-if (admin_user) DEBUG(D_any) debug_printf("admin user\n");
+if (f.trusted_caller) DEBUG(D_any) debug_printf("trusted user\n");
+if (f.admin_user) DEBUG(D_any) debug_printf("admin user\n");
 
 /* Only an admin user may start the daemon or force a queue run in the default
 configuration, but the queue run restriction can be relaxed. Only an admin
@@ -4209,14 +4209,14 @@ passwords, etc. in lookup queries). Only an admin user may request a queue
 count. Only an admin user can use the test interface to scan for email
 (because Exim will be in the spool dir and able to look at mails). */
 
-if (!admin_user)
+if (!f.admin_user)
   {
   BOOL debugset = (debug_selector & ~D_v) != 0;
-  if (deliver_give_up || daemon_listen || malware_test_file ||
+  if (deliver_give_up || f.daemon_listen || malware_test_file ||
      (count_queue && queue_list_requires_admin) ||
      (list_queue && queue_list_requires_admin) ||
      (queue_interval >= 0 && prod_requires_admin) ||
-     (debugset && !running_in_test_harness))
+     (debugset && !f.running_in_test_harness))
     {
     fprintf(stderr, "exim:%s permission denied\n", debugset? " debugging" : "");
     exit(EXIT_FAILURE);
@@ -4231,9 +4231,9 @@ regression testing. */
 
 if (real_uid != root_uid && real_uid != exim_uid &&
      (continue_hostname != NULL ||
-       (dont_deliver &&
-         (queue_interval >= 0 || daemon_listen || msg_action_arg > 0)
-       )) && !running_in_test_harness)
+       (f.dont_deliver &&
+         (queue_interval >= 0 || f.daemon_listen || msg_action_arg > 0)
+       )) && !f.running_in_test_harness)
   {
   fprintf(stderr, "exim: Permission denied\n");
   return EXIT_FAILURE;
@@ -4244,7 +4244,7 @@ real, but are permitted when checking things (-be, -bv, -bt, -bh, -bf, -bF).
 Note that authority for performing certain actions on messages is tested in the
 queue_action() function. */
 
-if (!trusted_caller && !checking)
+if (!f.trusted_caller && !checking)
   {
   sender_host_name = sender_host_address = interface_address =
     sender_ident = received_protocol = NULL;
@@ -4267,9 +4267,9 @@ else
 /* If the caller is trusted, then they can use -G to suppress_local_fixups. */
 if (flag_G)
   {
-  if (trusted_caller)
+  if (f.trusted_caller)
     {
-    suppress_local_fixups = suppress_local_fixups_default = TRUE;
+    f.suppress_local_fixups = f.suppress_local_fixups_default = TRUE;
     DEBUG(D_acl) debug_printf("suppress_local_fixups forced on by -G\n");
     }
   else
@@ -4304,7 +4304,7 @@ if (smtp_input)
 
       if (real_uid == root_uid || real_uid == exim_uid || interface_port < 1024)
         {
-        is_inetd = TRUE;
+        f.is_inetd = TRUE;
         sender_host_address = host_ntoa(-1, (struct sockaddr *)(&inetd_sock),
           NULL, &sender_host_port);
         if (mua_wrapper) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Input from "
@@ -4327,7 +4327,7 @@ root. There will be further calls later for each message received. */
 #ifdef LOAD_AVG_NEEDS_ROOT
 if (receiving_message &&
       (queue_only_load >= 0 ||
-        (is_inetd && smtp_load_reserve >= 0)
+        (f.is_inetd && smtp_load_reserve >= 0)
       ))
   {
   load_average = OS_GETLOADAVG();
@@ -4359,7 +4359,7 @@ to the state Exim usually runs in. */
 
 if (!unprivileged &&                      /* originally had root AND */
     !removed_privilege &&                 /* still got root AND      */
-    !daemon_listen &&                     /* not starting the daemon */
+    !f.daemon_listen &&                     /* not starting the daemon */
     queue_interval <= 0 &&                /* (either kind of daemon) */
       (                                   /*    AND EITHER           */
       deliver_drop_privilege ||           /* requested unprivileged  */
@@ -4367,7 +4367,7 @@ if (!unprivileged &&                      /* originally had root AND */
         queue_interval < 0 &&             /* not running the queue   */
         (msg_action_arg < 0 ||            /*       and               */
           msg_action != MSG_DELIVER) &&   /* not delivering and      */
-        (!checking || !address_test_mode) /* not address checking    */
+        (!checking || !f.address_test_mode) /* not address checking    */
    )  ) )
   exim_setugid(exim_uid, exim_gid, TRUE, US"privilege not needed");
 
@@ -4462,7 +4462,7 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
   }
 
 /* We used to set up here to skip reading the ACL section, on
- (msg_action_arg > 0 || (queue_interval == 0 && !daemon_listen)
+ (msg_action_arg > 0 || (queue_interval == 0 && !f.daemon_listen)
 Now, since the intro of the ${acl } expansion, ACL definitions may be
 needed in transports so we lost the optimisation. */
 
@@ -4658,13 +4658,13 @@ message. */
 
 if (msg_action_arg > 0 && msg_action != MSG_LOAD)
   {
-  if (prod_requires_admin && !admin_user)
+  if (prod_requires_admin && !f.admin_user)
     {
     fprintf(stderr, "exim: Permission denied\n");
     exim_exit(EXIT_FAILURE, US"main");
     }
   set_process_info("delivering specified messages");
-  if (deliver_give_up) forced_delivery = deliver_force_thaw = TRUE;
+  if (deliver_give_up) forced_delivery = f.deliver_force_thaw = TRUE;
   for (i = msg_action_arg; i < argc; i++)
     {
     int status;
@@ -4691,7 +4691,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
 /* If only a single queue run is requested, without SMTP listening, we can just
 turn into a queue runner, with an optional starting message id. */
 
-if (queue_interval == 0 && !daemon_listen)
+if (queue_interval == 0 && !f.daemon_listen)
   {
   DEBUG(D_queue_run) debug_printf("Single queue run%s%s%s%s\n",
     (start_queue_run_id == NULL)? US"" : US" starting at ",
@@ -4728,7 +4728,7 @@ for (i = 0;;)
 
     if (!originator_name)
       {
-      if (!sender_address || (!trusted_caller && filter_test == FTEST_NONE))
+      if (!sender_address || (!f.trusted_caller && filter_test == FTEST_NONE))
         {
         uschar *name = US pw->pw_gecos;
         uschar *amp = Ustrchr(name, '&');
@@ -4793,7 +4793,7 @@ for (i = 0;;)
 configuration specifies something to use. When running in the test harness,
 any setting of unknown_login overrides the actual name. */
 
-if (originator_login == NULL || running_in_test_harness)
+if (originator_login == NULL || f.running_in_test_harness)
   {
   if (unknown_login != NULL)
     {
@@ -4828,7 +4828,7 @@ returns. We leave this till here so that the originator_ fields are available
 for incoming messages via the daemon. The daemon cannot be run in mua_wrapper
 mode. */
 
-if (daemon_listen || inetd_wait_mode || queue_interval > 0)
+if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
   {
   if (mua_wrapper)
     {
@@ -4852,7 +4852,7 @@ originator_* variables set. */
 
 if (test_rewrite_arg >= 0)
   {
-  really_exim = FALSE;
+  f.really_exim = FALSE;
   if (test_rewrite_arg >= argc)
     {
     printf("-brw needs an address argument\n");
@@ -4867,9 +4867,9 @@ unless a trusted caller supplies a sender address with -f, or is passing in the
 message via SMTP (inetd invocation or otherwise). */
 
 if ((sender_address == NULL && !smtp_input) ||
-    (!trusted_caller && filter_test == FTEST_NONE))
+    (!f.trusted_caller && filter_test == FTEST_NONE))
   {
-  sender_local = TRUE;
+  f.sender_local = TRUE;
 
   /* A trusted caller can supply authenticated_sender and authenticated_id
   via -oMas and -oMai and if so, they will already be set. Otherwise, force
@@ -4902,14 +4902,14 @@ if ((!smtp_input && sender_address == NULL) ||
        !checking))                       /* Not running tests, including filter tests */
     {
     sender_address = originator_login;
-    sender_address_forced = FALSE;
+    f.sender_address_forced = FALSE;
     sender_address_domain = 0;
     }
   }
 
 /* Remember whether an untrusted caller set the sender address */
 
-sender_set_untrusted = sender_address != originator_login && !trusted_caller;
+f.sender_set_untrusted = sender_address != originator_login && !f.trusted_caller;
 
 /* Ensure that the sender address is fully qualified unless it is the empty
 address, which indicates an error message, or doesn't exist (root caller, smtp
@@ -4928,7 +4928,7 @@ predicated upon the sender. If no arguments are given, read addresses from
 stdin. Set debug_level to at least D_v to get full output for address testing.
 */
 
-if (verify_address_mode || address_test_mode)
+if (verify_address_mode || f.address_test_mode)
   {
   int exit_value = 0;
   int flags = vopt_qualify;
@@ -4988,7 +4988,7 @@ if (expansion_test)
   if (msg_action_arg > 0 && msg_action == MSG_LOAD)
     {
     uschar spoolname[256];  /* Not big_buffer; used in spool_read_header() */
-    if (!admin_user)
+    if (!f.admin_user)
       {
       fprintf(stderr, "exim: permission denied\n");
       exit(EXIT_FAILURE);
@@ -5026,11 +5026,11 @@ if (expansion_test)
 
   /* Only admin users may see config-file macros this way */
 
-  if (!admin_user) macros_user = macros = mlast = NULL;
+  if (!f.admin_user) macros_user = macros = mlast = NULL;
 
   /* Allow $recipients for this testing */
 
-  enable_dollar_recipients = TRUE;
+  f.enable_dollar_recipients = TRUE;
 
   /* Expand command line items */
 
@@ -5080,7 +5080,7 @@ if (raw_active_hostname != NULL)
   uschar *nah = expand_string(raw_active_hostname);
   if (nah == NULL)
     {
-    if (!expand_string_forcedfail)
+    if (!f.expand_string_forcedfail)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand \"%s\" "
         "(smtp_active_hostname): %s", raw_active_hostname,
         expand_string_message);
@@ -5103,7 +5103,7 @@ if (host_checking)
   if (!sender_ident_set)
     {
     sender_ident = NULL;
-    if (running_in_test_harness && sender_host_port != 0 &&
+    if (f.running_in_test_harness && sender_host_port != 0 &&
         interface_address != NULL && interface_port != 0)
       verify_get_ident(1413);
     }
@@ -5121,8 +5121,8 @@ if (host_checking)
   smtp_input = TRUE;
   smtp_in = stdin;
   smtp_out = stdout;
-  sender_local = FALSE;
-  sender_host_notsocket = TRUE;
+  f.sender_local = FALSE;
+  f.sender_host_notsocket = TRUE;
   debug_file = stderr;
   debug_fd = fileno(debug_file);
   fprintf(stdout, "\n**** SMTP testing session as if from host %s\n"
@@ -5206,11 +5206,11 @@ to override any SMTP queueing. */
 
 if (mua_wrapper)
   {
-  synchronous_delivery = TRUE;
+  f.synchronous_delivery = TRUE;
   arg_error_handling = ERRORS_STDERR;
   remote_max_parallel = 1;
   deliver_drop_privilege = TRUE;
-  queue_smtp = FALSE;
+  f.queue_smtp = FALSE;
   queue_smtp_domains = NULL;
 #ifdef SUPPORT_I18N
   message_utf8_downconvert = -1;	/* convert-if-needed */
@@ -5233,7 +5233,7 @@ if (!smtp_input) error_handling = arg_error_handling;
 logging being sent down the socket and make an identd call to get the
 sender_ident. */
 
-else if (is_inetd)
+else if (f.is_inetd)
   {
   (void)fclose(stderr);
   exim_nullstd();                       /* Re-open to /dev/null */
@@ -5253,13 +5253,13 @@ if (sender_host_address && !sender_fullhost)
   host_build_sender_fullhost();
   set_process_info("handling incoming connection from %s via -oMa",
     sender_fullhost);
-  sender_host_notsocket = TRUE;
+  f.sender_host_notsocket = TRUE;
   }
 
 /* Otherwise, set the sender host as unknown except for inetd calls. This
 prevents host checking in the case of -bs not from inetd and also for -bS. */
 
-else if (!is_inetd) sender_host_unknown = TRUE;
+else if (!f.is_inetd) f.sender_host_unknown = TRUE;
 
 /* If stdout does not exist, then dup stdin to stdout. This can happen
 if exim is started from inetd. In this case fd 0 will be set to the socket,
@@ -5275,7 +5275,7 @@ batch/HELO/EHLO/AUTH/TLS. */
 
 if (smtp_input)
   {
-  if (!is_inetd) set_process_info("accepting a local %sSMTP message from <%s>",
+  if (!f.is_inetd) set_process_info("accepting a local %sSMTP message from <%s>",
     smtp_batched_input? "batched " : "",
     (sender_address!= NULL)? sender_address : originator_login);
   }
@@ -5372,7 +5372,7 @@ this is logically inconsistent. In other words, it doesn't like the paranoia.
 As a consequence of this, the waitpid() below is now excluded if we are sure
 that SIG_IGN works. */
 
-if (!synchronous_delivery)
+if (!f.synchronous_delivery)
   {
   #ifdef SA_NOCLDWAIT
   struct sigaction act;
@@ -5427,10 +5427,10 @@ while (more)
       if (smtp_batched_input && acl_not_smtp_start != NULL)
         {
         uschar *user_msg, *log_msg;
-        enable_dollar_recipients = TRUE;
+        f.enable_dollar_recipients = TRUE;
         (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
           &user_msg, &log_msg);
-        enable_dollar_recipients = FALSE;
+        f.enable_dollar_recipients = FALSE;
         }
 
       /* Now get the data for the message */
@@ -5467,8 +5467,8 @@ while (more)
 
     /* These options cannot be changed dynamically for non-SMTP messages */
 
-    active_local_sender_retain = local_sender_retain;
-    active_local_from_check = local_from_check;
+    f.active_local_sender_retain = local_sender_retain;
+    f.active_local_from_check = local_from_check;
 
     /* Save before any rewriting */
 
@@ -5521,7 +5521,7 @@ while (more)
 	  allow_utf8_domains = b;
 	}
 #endif
-        if (domain == 0 && !allow_unqualified_recipient)
+        if (domain == 0 && !f.allow_unqualified_recipient)
           {
           recipient = NULL;
           errmess = US"unqualified recipient address not allowed";
@@ -5575,10 +5575,10 @@ while (more)
     if (acl_not_smtp_start)
       {
       uschar *user_msg, *log_msg;
-      enable_dollar_recipients = TRUE;
+      f.enable_dollar_recipients = TRUE;
       (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
         &user_msg, &log_msg);
-      enable_dollar_recipients = FALSE;
+      f.enable_dollar_recipients = FALSE;
       }
 
     /* Pause for a while waiting for input.  If none received in that time,
@@ -5710,7 +5710,7 @@ while (more)
   are ignored. */
 
   if (mua_wrapper)
-    local_queue_only = queue_only_policy = deliver_freeze = FALSE;
+    local_queue_only = f.queue_only_policy = f.deliver_freeze = FALSE;
 
   /* Log the queueing here, when it will get a message id attached, but
   not if queue_only is set (case 0). Case 1 doesn't happen here (too many
@@ -5735,7 +5735,7 @@ while (more)
       }
     }
 
-  else if (queue_only_policy || deliver_freeze)
+  else if (f.queue_only_policy || f.deliver_freeze)
     cancel_cutthrough_connection(TRUE, US"no delivery; queueing");
 
   /* Else do the delivery unless the ACL or local_scan() called for queue only
@@ -5787,7 +5787,7 @@ while (more)
       /* In the parent, wait if synchronous delivery is required. This will
       always be the case in MUA wrapper mode. */
 
-      if (synchronous_delivery)
+      if (f.synchronous_delivery)
 	{
 	int status;
 	while (wait(&status) != pid);

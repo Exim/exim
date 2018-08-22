@@ -259,7 +259,7 @@ if (smtp_accept_max_per_host != NULL)
   uschar *expanded = expand_string(smtp_accept_max_per_host);
   if (expanded == NULL)
     {
-    if (!expand_string_forcedfail)
+    if (!f.expand_string_forcedfail)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
         "failed for %s: %s", whofrom->s, expand_string_message);
     }
@@ -387,7 +387,7 @@ if (pid == 0)
     uschar * nah = expand_string(raw_active_hostname);
     if (!nah)
       {
-      if (!expand_string_forcedfail)
+      if (!f.expand_string_forcedfail)
         {
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand \"%s\" "
           "(smtp_active_hostname): %s", raw_active_hostname,
@@ -441,7 +441,7 @@ if (pid == 0)
   finding the id, but turn it on again afterwards so that information about the
   incoming connection is output. */
 
-  if (debug_daemon) debug_selector = 0;
+  if (f.debug_daemon) debug_selector = 0;
   verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
   debug_selector = save_debug_selector;
@@ -453,7 +453,7 @@ if (pid == 0)
   /* Now disable debugging permanently if it's required only for the daemon
   process. */
 
-  if (debug_daemon) debug_selector = 0;
+  if (f.debug_daemon) debug_selector = 0;
 
   /* If there are too many child processes for immediate delivery,
   set the session_local_queue_only flag, which is initialized from the
@@ -565,9 +565,9 @@ if (pid == 0)
 
       {
       int r = receive_messagecount;
-      BOOL q = queue_only_policy;
+      BOOL q = f.queue_only_policy;
       smtp_reset(reset_point);
-      queue_only_policy = q;
+      f.queue_only_policy = q;
       receive_messagecount = r;
       }
 
@@ -629,7 +629,7 @@ if (pid == 0)
     If we are not root, we have to re-exec exim unless deliveries are being
     done unprivileged. */
 
-    else if (!queue_only_policy && !deliver_freeze)
+    else if (!f.queue_only_policy && !f.deliver_freeze)
       {
       pid_t dpid;
 
@@ -927,7 +927,7 @@ debugging lines get the pid added. */
 
 DEBUG(D_any|D_v) debug_selector |= D_pid;
 
-if (inetd_wait_mode)
+if (f.inetd_wait_mode)
   {
   listen_socket_count = 1;
   listen_sockets = store_get(sizeof(int));
@@ -966,7 +966,7 @@ if (inetd_wait_mode)
   }
 
 
-if (inetd_wait_mode || daemon_listen)
+if (f.inetd_wait_mode || f.daemon_listen)
   {
   /* If any option requiring a load average to be available during the
   reception of a message is set, call os_getloadavg() while we are root
@@ -1048,7 +1048,7 @@ The preparation code decodes options and sets up the relevant data. We do this
 first, so that we can return non-zero if there are any syntax errors, and also
 write to stderr. */
 
-if (daemon_listen && !inetd_wait_mode)
+if (f.daemon_listen && !f.inetd_wait_mode)
   {
   int *default_smtp_port;
   int sep;
@@ -1270,7 +1270,7 @@ if (daemon_listen && !inetd_wait_mode)
 
   } /* daemon_listen but not inetd_wait_mode */
 
-if (daemon_listen)
+if (f.daemon_listen)
   {
 
   /* Do a sanity check on the max connects value just to save us from getting
@@ -1310,7 +1310,7 @@ Then disconnect from the controlling terminal, Most modern Unixes seem to have
 setsid() for getting rid of the controlling terminal. For any OS that doesn't,
 setsid() can be #defined as a no-op, or as something else. */
 
-if (background_daemon || inetd_wait_mode)
+if (f.background_daemon || f.inetd_wait_mode)
   {
   log_close_all();    /* Just in case anything was logged earlier */
   search_tidyup();    /* Just in case any were used in reading the config. */
@@ -1321,7 +1321,7 @@ if (background_daemon || inetd_wait_mode)
   log_stderr = NULL;  /* So no attempt to copy paniclog output */
   }
 
-if (background_daemon)
+if (f.background_daemon)
   {
   /* If the parent process of this one has pid == 1, we are re-initializing the
   daemon as the result of a SIGHUP. In this case, there is no need to do
@@ -1342,7 +1342,7 @@ if (background_daemon)
 /* We are now in the disconnected, daemon process (unless debugging). Set up
 the listening sockets if required. */
 
-if (daemon_listen && !inetd_wait_mode)
+if (f.daemon_listen && !f.inetd_wait_mode)
   {
   int sk;
   ip_address_item *ipa;
@@ -1420,7 +1420,7 @@ if (daemon_listen && !inetd_wait_mode)
     listen() stage instead. */
 
 #ifdef TCP_FASTOPEN
-    tcp_fastopen_ok = TRUE;
+    f.tcp_fastopen_ok = TRUE;
 #endif
     for(;;)
       {
@@ -1463,7 +1463,7 @@ if (daemon_listen && !inetd_wait_mode)
 		    &smtp_connect_backlog, sizeof(smtp_connect_backlog)))
       {
       DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
-      tcp_fastopen_ok = FALSE;
+      f.tcp_fastopen_ok = FALSE;
       }
 #endif
 
@@ -1525,7 +1525,7 @@ automatically. Consequently, Exim 4 writes a pid file only
 
 The variable daemon_write_pid is used to control this. */
 
-if (running_in_test_harness || write_pid)
+if (f.running_in_test_harness || write_pid)
   {
   FILE *f;
 
@@ -1591,7 +1591,7 @@ sigalrm_seen = (queue_interval > 0);
 /* Log the start up of a daemon - at least one of listening or queue running
 must be set up. */
 
-if (inetd_wait_mode)
+if (f.inetd_wait_mode)
   {
   uschar *p = big_buffer;
 
@@ -1609,7 +1609,7 @@ if (inetd_wait_mode)
   sigalrm_seen = 1;
   }
 
-else if (daemon_listen)
+else if (f.daemon_listen)
   {
   int i, j;
   int smtp_ports = 0;
@@ -1812,7 +1812,7 @@ for (;;)
           leave the above message, because it ties up with the "child ended"
           debugging messages. */
 
-          if (debug_daemon) debug_selector = 0;
+          if (f.debug_daemon) debug_selector = 0;
 
           /* Close any open listening sockets in the child */
 
@@ -1837,11 +1837,11 @@ for (;;)
             signal(SIGALRM, SIG_DFL);
             *p++ = '-';
             *p++ = 'q';
-            if (queue_2stage) *p++ = 'q';
-            if (queue_run_first_delivery) *p++ = 'i';
-            if (queue_run_force) *p++ = 'f';
-            if (deliver_force_thaw) *p++ = 'f';
-            if (queue_run_local) *p++ = 'l';
+            if (f.queue_2stage) *p++ = 'q';
+            if (f.queue_run_first_delivery) *p++ = 'i';
+            if (f.queue_run_force) *p++ = 'f';
+            if (f.deliver_force_thaw) *p++ = 'f';
+            if (f.queue_run_local) *p++ = 'l';
             *p = 0;
 	    extra[0] = queue_name
 	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
@@ -1851,13 +1851,13 @@ for (;;)
 
             if (deliver_selectstring)
               {
-              extra[extracount++] = deliver_selectstring_regex ? US"-Rr" : US"-R";
+              extra[extracount++] = f.deliver_selectstring_regex ? US"-Rr" : US"-R";
               extra[extracount++] = deliver_selectstring;
               }
 
             if (deliver_selectstring_sender)
               {
-              extra[extracount++] = deliver_selectstring_sender_regex
+              extra[extracount++] = f.deliver_selectstring_sender_regex
 	        ? US"-Sr" : US"-S";
               extra[extracount++] = deliver_selectstring_sender;
               }
@@ -1915,7 +1915,7 @@ for (;;)
   new OS. In fact, the later addition of listening on specific interfaces only
   requires this way of working anyway. */
 
-  if (daemon_listen)
+  if (f.daemon_listen)
     {
     int sk, lcount, select_errno;
     int max_socket = 0;

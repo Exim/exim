@@ -197,7 +197,7 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
     addr->message =
       string_sprintf("lookup of host \"%s\" failed in %s router%s",
         h->name, rblock->name,
-        host_find_failed_syntax? ": syntax error in name" : "");
+        f.host_find_failed_syntax? ": syntax error in name" : "");
 
     if (hff_code == hff_defer) return DEFER;
     if (hff_code == hff_fail) return FAIL;

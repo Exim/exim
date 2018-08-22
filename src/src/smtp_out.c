@@ -45,7 +45,7 @@ if (!istring) return TRUE;
 
 if (!(expint = expand_string(istring)))
   {
-  if (expand_string_forcedfail) return TRUE;
+  if (f.expand_string_forcedfail) return TRUE;
   addr->transport_return = PANIC;
   addr->message = string_sprintf("failed to expand \"interface\" "
       "option for %s: %s", msg, expand_string_message);

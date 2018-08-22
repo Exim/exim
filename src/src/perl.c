@@ -62,7 +62,7 @@ XS(xs_expand_string)
   ST(0) = sv_newmortal();
   if (str != NULL)
     sv_setpv(ST(0), CCS  str);
-  else if (!expand_string_forcedfail)
+  else if (!f.expand_string_forcedfail)
     croak("syntax error in Exim::expand_string argument: %s",
       expand_string_message);
 }

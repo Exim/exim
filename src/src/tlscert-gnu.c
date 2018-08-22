@@ -113,7 +113,7 @@ if (mod && Ustrcmp(mod, "int") == 0)
   return string_sprintf("%u", (unsigned)t);
 
 cp = store_get(len);
-if (timestamps_utc)
+if (f.timestamps_utc)
   {
   uschar * tz = to_tz(US"GMT0");
   len = strftime(CS cp, len, "%b %e %T %Y %Z", gmtime(&t));

@@ -147,7 +147,7 @@ if (!spool_mbox_ok)
     {
     uschar * s;
 
-    if (!spool_file_wireformat || source_file_override)
+    if (!f.spool_file_wireformat || source_file_override)
       j = fread(buffer, 1, sizeof(buffer), l_data_file);
     else						/* needs CRLF -> NL */
       if ((s = US fgets(CS buffer, sizeof(buffer), l_data_file)))
@@ -209,7 +209,7 @@ unspool_mbox(void)
 spam_ok = 0;
 malware_ok = 0;
 
-if (spool_mbox_ok && !no_mbox_unspool)
+if (spool_mbox_ok && !f.no_mbox_unspool)
   {
   uschar *mbox_path;
   uschar *file_path;

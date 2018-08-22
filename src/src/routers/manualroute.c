@@ -319,7 +319,7 @@ configuration problem. */
 
 if (newhostlist == NULL)
   {
-  if (expand_string_forcedfail) return DECLINE;
+  if (f.expand_string_forcedfail) return DECLINE;
   addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
     rblock->name, hostlist, expand_string_message);
   return DEFER;

@@ -374,7 +374,7 @@ return FALSE;
 static BOOL
 check_sync(void)
 {
-if (!smtp_enforce_sync || !sender_host_address || sender_host_notsocket)
+if (!smtp_enforce_sync || !sender_host_address || f.sender_host_notsocket)
   return TRUE;
 
 return wouldblock_reading();
@@ -388,11 +388,11 @@ static BOOL
 pipeline_response(void)
 {
 if (  !smtp_enforce_sync || !sender_host_address
-   || sender_host_notsocket || !smtp_in_pipelining_advertised)
+   || f.sender_host_notsocket || !f.smtp_in_pipelining_advertised)
   return FALSE;
 
 if (wouldblock_reading()) return FALSE;
-smtp_in_pipelining_used = TRUE;
+f.smtp_in_pipelining_used = TRUE;
 return TRUE;
 }
 
@@ -623,7 +623,7 @@ for(;;)
   /* Unless PIPELINING was offered, there should be no next command
   until after we ack that chunk */
 
-  if (!smtp_in_pipelining_advertised && !check_sync())
+  if (!f.smtp_in_pipelining_advertised && !check_sync())
     {
     unsigned n = smtp_inend - smtp_inptr;
     if (n > 32) n = 32;
@@ -1520,7 +1520,7 @@ bad:
     }
   else
     {
-    proxy_session_failed = TRUE;
+    f.proxy_session_failed = TRUE;
     DEBUG(D_receive)
       debug_printf("Failure to extract proxied host, only QUIT allowed\n");
     }
@@ -1606,7 +1606,7 @@ for (p = cmd_list; p < cmd_list_end; p++)
   {
 #ifdef SUPPORT_PROXY
   /* Only allow QUIT command if Proxy Protocol parsing failed */
-  if (proxy_session && proxy_session_failed && p->cmd != QUIT_CMD)
+  if (proxy_session && f.proxy_session_failed && p->cmd != QUIT_CMD)
     continue;
 #endif
   if (  p->len
@@ -1621,7 +1621,7 @@ for (p = cmd_list; p < cmd_list_end; p++)
         check_sync &&                                  /* Local flag set */
         smtp_enforce_sync &&                           /* Global flag set */
         sender_host_address != NULL &&                 /* Not local input */
-        !sender_host_notsocket)                        /* Really is a socket */
+        !f.sender_host_notsocket)                        /* Really is a socket */
       return BADSYN_CMD;
 
     /* The variables $smtp_command and $smtp_command_argument point into the
@@ -1660,7 +1660,7 @@ for (p = cmd_list; p < cmd_list_end; p++)
 
 #ifdef SUPPORT_PROXY
 /* Only allow QUIT command if Proxy Protocol parsing failed */
-if (proxy_session && proxy_session_failed)
+if (proxy_session && f.proxy_session_failed)
   return PROXY_FAIL_IGNORE_CMD;
 #endif
 
@@ -1670,7 +1670,7 @@ if (  smtp_inptr < smtp_inend		/* Outstanding input */
    && check_sync			/* Local flag set */
    && smtp_enforce_sync			/* Global flag set */
    && sender_host_address		/* Not local input */
-   && !sender_host_notsocket)		/* Really is a socket */
+   && !f.sender_host_notsocket)		/* Really is a socket */
   return BADSYN_CMD;
 
 return OTHER_CMD;
@@ -1747,10 +1747,10 @@ const uschar * hostname = sender_fullhost
 if (host_checking)
   return string_sprintf("SMTP connection from %s", hostname);
 
-if (sender_host_unknown || sender_host_notsocket)
+if (f.sender_host_unknown || f.sender_host_notsocket)
   return string_sprintf("SMTP connection from %s", sender_ident);
 
-if (is_inetd)
+if (f.is_inetd)
   return string_sprintf("SMTP connection from %s (via inetd)", hostname);
 
 if (LOGGING(incoming_interface) && interface_address != NULL)
@@ -1835,7 +1835,7 @@ for (i = 0; i < smtp_ch_index; i++)
 if (!(s = string_from_gstring(g))) s = US"";
 
 log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
-  tcp_in_fastopen ? US"TFO " : US"",
+  f.tcp_in_fastopen ? US"TFO " : US"",
   host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
 }
 
@@ -2015,20 +2015,20 @@ message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;
 acl_removed_headers = NULL;
-queue_only_policy = FALSE;
+f.queue_only_policy = FALSE;
 rcpt_smtp_response = NULL;
 rcpt_smtp_response_same = TRUE;
 rcpt_in_progress = FALSE;
-deliver_freeze = FALSE;                              /* Can be set by ACL */
+f.deliver_freeze = FALSE;                              /* Can be set by ACL */
 freeze_tell = freeze_tell_config;                    /* Can be set by ACL */
 fake_response = OK;                                  /* Can be set by ACL */
 #ifdef WITH_CONTENT_SCAN
-no_mbox_unspool = FALSE;                             /* Can be set by ACL */
+f.no_mbox_unspool = FALSE;                             /* Can be set by ACL */
 #endif
-submission_mode = FALSE;                             /* Can be set by ACL */
-suppress_local_fixups = suppress_local_fixups_default; /* Can be set by ACL */
-active_local_from_check = local_from_check;          /* Can be set by ACL */
-active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
+f.submission_mode = FALSE;                             /* Can be set by ACL */
+f.suppress_local_fixups = f.suppress_local_fixups_default; /* Can be set by ACL */
+f.active_local_from_check = local_from_check;          /* Can be set by ACL */
+f.active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sending_ip_address = NULL;
 return_path = sender_address = NULL;
 sender_data = NULL;				     /* Can be set by ACL */
@@ -2056,14 +2056,14 @@ spf_result_guessed = FALSE;
 dkim_cur_signer = dkim_signers =
 dkim_signing_domain = dkim_signing_selector = dkim_signatures = NULL;
 dkim_cur_signer = dkim_signers = dkim_signing_domain = dkim_signing_selector = NULL;
-dkim_disable_verify = FALSE;
+f.dkim_disable_verify = FALSE;
 dkim_collect_input = 0;
 dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;
 dkim_key_length = 0;
 dkim_verify_signers = US"$dkim_signers";
 #endif
 #ifdef EXPERIMENTAL_DMARC
-dmarc_has_been_checked = dmarc_disable_verify = dmarc_enable_forensic = FALSE;
+f.dmarc_has_been_checked = f.dmarc_disable_verify = f.dmarc_enable_forensic = FALSE;
 dmarc_domain_policy = dmarc_status = dmarc_status_text =
 dmarc_used_domain = NULL;
 #endif
@@ -2226,7 +2226,7 @@ while (done <= 0)
 
       if (  !sender_domain
          && sender_address[0] != 0 && sender_address[0] != '@')
-	if (allow_unqualified_sender)
+	if (f.allow_unqualified_sender)
 	  {
 	  sender_address = rewrite_address_qualify(sender_address, FALSE);
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted "
@@ -2282,7 +2282,7 @@ while (done <= 0)
       add it to the list of recipients. */
 
       if (!recipient_domain)
-	if (allow_unqualified_recipient)
+	if (f.allow_unqualified_recipient)
 	  {
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
 	    recipient);
@@ -2388,7 +2388,7 @@ if (  getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
    )
   {
   DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
-  tcp_in_fastopen = TRUE;
+  f.tcp_in_fastopen = TRUE;
   }
 # endif
 }
@@ -2430,15 +2430,15 @@ count_nonmail = TRUE_UNSET;
 synprot_error_count = unknown_command_count = nonmail_command_count = 0;
 smtp_delay_mail = smtp_rlm_base;
 auth_advertised = FALSE;
-smtp_in_pipelining_advertised = smtp_in_pipelining_used = FALSE;
-pipelining_enable = TRUE;
+f.smtp_in_pipelining_advertised = f.smtp_in_pipelining_used = FALSE;
+f.pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
 smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
 
 /* If receiving by -bs from a trusted user, or testing with -bh, we allow
 authentication settings from -oMaa to remain in force. */
 
-if (!host_checking && !sender_host_notsocket)
+if (!host_checking && !f.sender_host_notsocket)
   sender_host_auth_pubname = sender_host_authenticated = NULL;
 authenticated_by = NULL;
 
@@ -2528,7 +2528,7 @@ the flag sender_host_notsocket is used to suppress it.
 If smtp_accept_max and smtp_accept_reserve are set, keep some connections in
 reserve for certain hosts and/or networks. */
 
-if (!sender_host_unknown)
+if (!f.sender_host_unknown)
   {
   int rc;
   BOOL reserved_host = FALSE;
@@ -2572,7 +2572,7 @@ if (!sender_host_unknown)
     #define OPTSTYLE 3
   #endif
 
-  if (!host_checking && !sender_host_notsocket)
+  if (!host_checking && !f.sender_host_notsocket)
     {
     #if OPTSTYLE == 1
     EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
@@ -2719,7 +2719,7 @@ if (!sender_host_unknown)
   setting is an attempt to get rid of some hanging connections that stick in
   read() when the remote end (usually a dialup) goes away. */
 
-  if (smtp_accept_keepalive && !sender_host_notsocket)
+  if (smtp_accept_keepalive && !f.sender_host_notsocket)
     ip_keepalive(fileno(smtp_out), sender_host_address, FALSE);
 
   /* If the current host matches host_lookup, set the name by doing a
@@ -2850,10 +2850,10 @@ if (!sender_host_unknown)
   addresses in the headers. For a site that permits no qualification, this
   won't take long, however. */
 
-  allow_unqualified_sender =
+  f.allow_unqualified_sender =
     verify_check_host(&sender_unqualified_hosts) == OK;
 
-  allow_unqualified_recipient =
+  f.allow_unqualified_recipient =
     verify_check_host(&recipient_unqualified_hosts) == OK;
 
   /* Determine whether HELO/EHLO is required for this host. The requirement
@@ -2878,7 +2878,7 @@ if (smtp_batched_input) return TRUE;
 
 #ifdef SUPPORT_PROXY
 proxy_session = FALSE;
-proxy_session_failed = FALSE;
+f.proxy_session_failed = FALSE;
 if (check_proxy_protocol_host())
   setup_proxy_protocol_host();
 #endif
@@ -3083,7 +3083,7 @@ smtp_respond(uschar* code, int codelen, BOOL final, uschar *msg)
 int esclen = 0;
 uschar *esc = US"";
 
-if (!final && no_multiline_responses) return;
+if (!final && f.no_multiline_responses) return;
 
 if (codelen > 4)
   {
@@ -3119,7 +3119,7 @@ for (;;)
     smtp_printf("%.3s%c%.*s%s\r\n", !final, code, final ? ' ':'-', esclen, esc, msg);
     return;
     }
-  else if (nl[1] == 0 || no_multiline_responses)
+  else if (nl[1] == 0 || f.no_multiline_responses)
     {
     smtp_printf("%.3s%c%.*s%.*s\r\n", !final, code, final ? ' ':'-', esclen, esc,
       (int)(nl - msg), msg);
@@ -3349,7 +3349,7 @@ interactions between temp_details and return_error_details. One day it should
 be re-implemented in a tidier fashion. */
 
 else
-  if (acl_temp_details && user_msg)
+  if (f.acl_temp_details && user_msg)
     {
     if (  smtp_return_error_details
        && sender_verified_failed
@@ -3519,27 +3519,27 @@ if (sender_helo_name == NULL)
 else if (sender_host_address == NULL)
   {
   HDEBUG(D_receive) debug_printf("no client IP address: assume success\n");
-  helo_verified = TRUE;
+  f.helo_verified = TRUE;
   }
 
 /* Deal with the more common case when there is a sending IP address */
 
 else if (sender_helo_name[0] == '[')
   {
-  helo_verified = Ustrncmp(sender_helo_name+1, sender_host_address,
+  f.helo_verified = Ustrncmp(sender_helo_name+1, sender_host_address,
     Ustrlen(sender_host_address)) == 0;
 
 #if HAVE_IPV6
-  if (!helo_verified)
+  if (!f.helo_verified)
     {
     if (strncmpic(sender_host_address, US"::ffff:", 7) == 0)
-      helo_verified = Ustrncmp(sender_helo_name + 1,
+      f.helo_verified = Ustrncmp(sender_helo_name + 1,
         sender_host_address + 7, Ustrlen(sender_host_address) - 7) == 0;
     }
 #endif
 
   HDEBUG(D_receive)
-    { if (helo_verified) debug_printf("matched host address\n"); }
+    { if (f.helo_verified) debug_printf("matched host address\n"); }
   }
 
 /* Do a reverse lookup if one hasn't already given a positive or negative
@@ -3554,7 +3554,7 @@ else
   /* If a host name is known, check it and all its aliases. */
 
   if (sender_host_name)
-    if ((helo_verified = strcmpic(sender_host_name, sender_helo_name) == 0))
+    if ((f.helo_verified = strcmpic(sender_host_name, sender_helo_name) == 0))
       {
       sender_helo_dnssec = sender_host_dnssec;
       HDEBUG(D_receive) debug_printf("matched host name\n");
@@ -3563,19 +3563,19 @@ else
       {
       uschar **aliases = sender_host_aliases;
       while (*aliases)
-        if ((helo_verified = strcmpic(*aliases++, sender_helo_name) == 0))
+        if ((f.helo_verified = strcmpic(*aliases++, sender_helo_name) == 0))
 	  {
 	  sender_helo_dnssec = sender_host_dnssec;
 	  break;
 	  }
 
-      HDEBUG(D_receive) if (helo_verified)
+      HDEBUG(D_receive) if (f.helo_verified)
           debug_printf("matched alias %s\n", *(--aliases));
       }
 
   /* Final attempt: try a forward lookup of the helo name */
 
-  if (!helo_verified)
+  if (!f.helo_verified)
     {
     int rc;
     host_item h;
@@ -3597,7 +3597,7 @@ else
       for (hh = &h; hh; hh = hh->next)
         if (Ustrcmp(hh->address, sender_host_address) == 0)
           {
-          helo_verified = TRUE;
+          f.helo_verified = TRUE;
 	  if (h.dnssec == DS_YES) sender_helo_dnssec = TRUE;
           HDEBUG(D_receive)
 	    {
@@ -3610,7 +3610,7 @@ else
     }
   }
 
-if (!helo_verified) helo_verify_failed = TRUE;  /* We've tried ... */
+if (!f.helo_verified) f.helo_verify_failed = TRUE;  /* We've tried ... */
 return yield;
 }
 
@@ -3757,7 +3757,7 @@ static int
 qualify_recipient(uschar ** recipient, uschar * smtp_cmd_data, uschar * tag)
 {
 int rd;
-if (allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
+if (f.allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
   {
   DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
     *recipient);
@@ -3859,7 +3859,7 @@ for the host). Note: we do NOT reset AUTH at this point. */
 smtp_reset(reset_point);
 message_ended = END_NOTSTARTED;
 
-chunking_state = chunking_offered ? CHUNKING_OFFERED : CHUNKING_NOT_OFFERED;
+chunking_state = f.chunking_offered ? CHUNKING_OFFERED : CHUNKING_NOT_OFFERED;
 
 cmd_list[CMD_LIST_RSET].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_HELO].is_mail_cmd = TRUE;
@@ -3962,7 +3962,7 @@ while (done <= 0)
       authentication_failed = TRUE;
       cmd_list[CMD_LIST_AUTH].is_mail_cmd = FALSE;
 
-      if (!auth_advertised && !allow_auth_unadvertised)
+      if (!auth_advertised && !f.allow_auth_unadvertised)
 	{
 	done = synprot_error(L_smtp_protocol_error, 503, NULL,
 	  US"AUTH command used when not advertised");
@@ -4021,7 +4021,7 @@ while (done <= 0)
 
       for (au = auths; au; au = au->next)
 	if (strcmpic(s, au->public_name) == 0 && au->server &&
-	    (au->advertised || allow_auth_unadvertised))
+	    (au->advertised || f.allow_auth_unadvertised))
 	  break;
 
       if (au)
@@ -4100,9 +4100,9 @@ while (done <= 0)
       is set, ensure that the HELO name matches the actual host. If helo_verify
       is set, do the same check, but softly. */
 
-      if (!sender_host_unknown)
+      if (!f.sender_host_unknown)
 	{
-	BOOL old_helo_verified = helo_verified;
+	BOOL old_helo_verified = f.helo_verified;
 	uschar *p = smtp_cmd_data;
 
 	while (*p != 0 && !isspace(*p)) { *p = tolower(*p); p++; }
@@ -4131,11 +4131,11 @@ while (done <= 0)
 	now obsolescent, since the verification can now be requested selectively
 	at ACL time. */
 
-	helo_verified = helo_verify_failed = sender_helo_dnssec = FALSE;
+	f.helo_verified = f.helo_verify_failed = sender_helo_dnssec = FALSE;
 	if (helo_required || helo_verify)
 	  {
 	  BOOL tempfail = !smtp_verify_helo();
-	  if (!helo_verified)
+	  if (!f.helo_verified)
 	    {
 	    if (helo_required)
 	      {
@@ -4144,7 +4144,7 @@ while (done <= 0)
 	      log_write(0, LOG_MAIN|LOG_REJECT, "%srejected \"%s %s\" from %s",
 		tempfail? "temporarily " : "",
 		hello, sender_helo_name, host_and_ident(FALSE));
-	      helo_verified = old_helo_verified;
+	      f.helo_verified = old_helo_verified;
 	      break;                   /* End of HELO/EHLO processing */
 	      }
 	    HDEBUG(D_all) debug_printf("%s verification failed but host is in "
@@ -4183,7 +4183,7 @@ while (done <= 0)
       that the entire reply is sent in one write(). */
 
       auth_advertised = FALSE;
-      smtp_in_pipelining_advertised = FALSE;
+      f.smtp_in_pipelining_advertised = FALSE;
 #ifdef SUPPORT_TLS
       tls_advertised = FALSE;
 # ifdef EXPERIMENTAL_REQUIRETLS
@@ -4303,13 +4303,13 @@ while (done <= 0)
 	/* Exim is quite happy with pipelining, so let the other end know that
 	it is safe to use it, unless advertising is disabled. */
 
-	if (pipelining_enable &&
+	if (f.pipelining_enable &&
 	    verify_check_host(&pipelining_advertise_hosts) == OK)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-PIPELINING\r\n", 13);
 	  sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
-	  smtp_in_pipelining_advertised = TRUE;
+	  f.smtp_in_pipelining_advertised = TRUE;
 	  }
 
 
@@ -4371,7 +4371,7 @@ while (done <= 0)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-CHUNKING\r\n", 11);
-	  chunking_offered = TRUE;
+	  f.chunking_offered = TRUE;
 	  chunking_state = CHUNKING_OFFERED;
 	  }
 
@@ -4843,7 +4843,7 @@ while (done <= 0)
       of the SMTP connection. */
 
       if (!sender_domain && *sender_address)
-	if (allow_unqualified_sender)
+	if (f.allow_unqualified_sender)
 	  {
 	  sender_domain = Ustrlen(sender_address) + 1;
 	  sender_address = rewrite_address_qualify(sender_address, FALSE);
@@ -4871,7 +4871,7 @@ while (done <= 0)
       if (acl_smtp_mail)
 	{
 	rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
-	if (rc == OK && !smtp_in_pipelining_advertised && !check_sync())
+	if (rc == OK && !f.smtp_in_pipelining_advertised && !check_sync())
 	  goto SYNC_FAILURE;
 	}
       else
@@ -4898,7 +4898,7 @@ while (done <= 0)
 	  smtp_user_msg(US"250", user_msg);
 	  }
 	smtp_delay_rcpt = smtp_rlr_base;
-	recipients_discarded = (rc == DISCARD);
+	f.recipients_discarded = (rc == DISCARD);
 	was_rej_mail = FALSE;
 	}
       else
@@ -4926,7 +4926,7 @@ while (done <= 0)
 
       if (sender_address == NULL)
 	{
-	if (smtp_in_pipelining_advertised && last_was_rej_mail)
+	if (f.smtp_in_pipelining_advertised && last_was_rej_mail)
 	  {
 	  smtp_printf("503 sender not yet given\r\n", FALSE);
 	  was_rej_mail = TRUE;
@@ -5114,12 +5114,12 @@ while (done <= 0)
       there may be a delay in this, re-check for a synchronization error
       afterwards, unless pipelining was advertised. */
 
-      if (recipients_discarded)
+      if (f.recipients_discarded)
 	rc = DISCARD;
       else
 	if (  (rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
 		      &log_msg)) == OK
-	   && !smtp_in_pipelining_advertised && !check_sync())
+	   && !f.smtp_in_pipelining_advertised && !check_sync())
 	  goto SYNC_FAILURE;
 
       /* The ACL was happy */
@@ -5156,7 +5156,7 @@ while (done <= 0)
 	log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> RCPT %s: "
 	  "discarded by %s ACL%s%s", host_and_ident(TRUE),
 	  sender_address_unrewritten? sender_address_unrewritten : sender_address,
-	  smtp_cmd_argument, recipients_discarded? "MAIL" : "RCPT",
+	  smtp_cmd_argument, f.recipients_discarded? "MAIL" : "RCPT",
 	  log_msg ? US": " : US"", log_msg ? log_msg : US"");
 	}
 
@@ -5226,14 +5226,14 @@ while (done <= 0)
       receive_getc = bdat_getc;
       receive_ungetc = bdat_ungetc;
 
-      dot_ends = FALSE;
+      f.dot_ends = FALSE;
 
       goto DATA_BDAT;
       }
 
     case DATA_CMD:
       HAD(SCH_DATA);
-      dot_ends = TRUE;
+      f.dot_ends = TRUE;
 
       DATA_BDAT:		/* Common code for DATA and BDAT */
       if (!discarded && recipients_count <= 0)
@@ -5249,7 +5249,7 @@ while (done <= 0)
 	    rcpt_smtp_response[len-2] = 0;
 	  smtp_respond(code, 3, FALSE, rcpt_smtp_response);
 	  }
-	if (smtp_in_pipelining_advertised && last_was_rcpt)
+	if (f.smtp_in_pipelining_advertised && last_was_rcpt)
 	  smtp_printf("503 Valid RCPT command must precede %s\r\n", FALSE,
 	    smtp_names[smtp_connection_had[smtp_ch_index-1]]);
 	else
@@ -5284,10 +5284,10 @@ while (done <= 0)
 	else
 	  {
 	  uschar * acl = acl_smtp_predata ? acl_smtp_predata : US"accept";
-	  enable_dollar_recipients = TRUE;
+	  f.enable_dollar_recipients = TRUE;
 	  rc = acl_check(ACL_WHERE_PREDATA, NULL, acl, &user_msg,
 	    &log_msg);
-	  enable_dollar_recipients = FALSE;
+	  f.enable_dollar_recipients = FALSE;
 	  if (rc == OK && !check_sync())
 	    goto SYNC_FAILURE;
 
@@ -5377,13 +5377,13 @@ while (done <= 0)
 	done = smtp_handle_acl_fail(ACL_WHERE_EXPN, rc, user_msg, log_msg);
       else
 	{
-	BOOL save_log_testing_mode = log_testing_mode;
-	address_test_mode = log_testing_mode = TRUE;
+	BOOL save_log_testing_mode = f.log_testing_mode;
+	f.address_test_mode = f.log_testing_mode = TRUE;
 	(void) verify_address(deliver_make_addr(smtp_cmd_data, FALSE),
 	  smtp_out, vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1,
 	  NULL, NULL, NULL);
-	address_test_mode = FALSE;
-	log_testing_mode = save_log_testing_mode;    /* true for -bh */
+	f.address_test_mode = FALSE;
+	f.log_testing_mode = save_log_testing_mode;    /* true for -bh */
 	}
       break;
 
@@ -5459,7 +5459,7 @@ while (done <= 0)
       if ((rc = tls_server_start(tls_require_ciphers, &s)) == OK)
 	{
 	if (!tls_remember_esmtp)
-	  helo_seen = esmtp = auth_advertised = smtp_in_pipelining_advertised = FALSE;
+	  helo_seen = esmtp = auth_advertised = f.smtp_in_pipelining_advertised = FALSE;
 	cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
 	cmd_list[CMD_LIST_AUTH].is_mail_cmd = TRUE;
 	cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
@@ -5604,8 +5604,8 @@ while (done <= 0)
       if (sender_address || recipients_count > 0)
 	log_write(L_lost_incoming_connection, LOG_MAIN,
 	  "unexpected %s while reading SMTP command from %s%s%s D=%s",
-	  sender_host_unknown ? "EOF" : "disconnection",
-	  tcp_in_fastopen && !tcp_in_fastopen_logged ? US"TFO " : US"",
+	  f.sender_host_unknown ? "EOF" : "disconnection",
+	  f.tcp_in_fastopen && !f.tcp_in_fastopen_logged ? US"TFO " : US"",
 	  host_and_ident(FALSE), smtp_read_error,
 	  string_timesince(&smtp_connection_start)
 	  );
@@ -5613,7 +5613,7 @@ while (done <= 0)
       else
 	log_write(L_smtp_connection, LOG_MAIN, "%s %slost%s D=%s",
 	  smtp_get_connection_info(),
-	  tcp_in_fastopen && !tcp_in_fastopen_logged ? US"TFO " : US"",
+	  f.tcp_in_fastopen && !f.tcp_in_fastopen_logged ? US"TFO " : US"",
 	  smtp_read_error,
 	  string_timesince(&smtp_connection_start)
 	  );
@@ -5808,7 +5808,7 @@ while (done <= 0)
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
 	"(next input sent too soon: pipelining was%s advertised): "
 	"rejected \"%s\" %s next input=\"%s\"",
-	smtp_in_pipelining_advertised ? "" : " not",
+	f.smtp_in_pipelining_advertised ? "" : " not",
 	smtp_cmd_buffer, host_and_ident(TRUE),
 	string_printing(smtp_inptr));
       smtp_notquit_exit(US"synchronization-error", US"554",
