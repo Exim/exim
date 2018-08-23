@@ -131,28 +131,35 @@ to the circular buffer that holds a list of the last n received. */
 *                Local static variables          *
 *************************************************/
 
-static auth_instance *authenticated_by;
-static BOOL auth_advertised;
+static struct {
+  BOOL auth_advertised			:1;
 #ifdef SUPPORT_TLS
-static BOOL tls_advertised;
+  BOOL tls_advertised			:1;
 # ifdef EXPERIMENTAL_REQUIRETLS
-static BOOL requiretls_advertised;
+  BOOL requiretls_advertised		:1;
 # endif
 #endif
-static BOOL dsn_advertised;
-static BOOL esmtp;
-static BOOL helo_required = FALSE;
-static BOOL helo_verify = FALSE;
-static BOOL helo_seen;
-static BOOL helo_accept_junk;
-static BOOL count_nonmail;
-static BOOL rcpt_smtp_response_same;
-static BOOL rcpt_in_progress;
-static int  nonmail_command_count;
-static BOOL smtp_exit_function_called = 0;
+  BOOL dsn_advertised			:1;
+  BOOL esmtp				:1;
+  BOOL helo_required			:1;
+  BOOL helo_verify			:1;
+  BOOL helo_seen			:1;
+  BOOL helo_accept_junk			:1;
+  BOOL rcpt_smtp_response_same		:1;
+  BOOL rcpt_in_progress			:1;
+  BOOL smtp_exit_function_called	:1;
 #ifdef SUPPORT_I18N
-static BOOL smtputf8_advertised;
+  BOOL smtputf8_advertised		:1;
 #endif
+} fl = {
+  .helo_required = FALSE,
+  .helo_verify = FALSE,
+  .smtp_exit_function_called = FALSE,
+};
+
+static auth_instance *authenticated_by;
+static int  count_nonmail;
+static int  nonmail_command_count;
 static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
@@ -920,14 +927,14 @@ be tidier to have it only in one place, but when it was added, it was easier to
 do it that way, so as not to have to mess with the code for the RCPT command,
 which sometimes uses smtp_printf() and sometimes smtp_respond(). */
 
-if (rcpt_in_progress)
+if (fl.rcpt_in_progress)
   {
   if (rcpt_smtp_response == NULL)
     rcpt_smtp_response = string_copy(big_buffer);
-  else if (rcpt_smtp_response_same &&
+  else if (fl.rcpt_smtp_response_same &&
            Ustrcmp(rcpt_smtp_response, big_buffer) != 0)
-    rcpt_smtp_response_same = FALSE;
-  rcpt_in_progress = FALSE;
+    fl.rcpt_smtp_response_same = FALSE;
+  fl.rcpt_in_progress = FALSE;
   }
 
 /* Now write the string */
@@ -1886,7 +1893,7 @@ check_helo(uschar *s)
 {
 uschar *start = s;
 uschar *end = s + Ustrlen(s);
-BOOL yield = helo_accept_junk;
+BOOL yield = fl.helo_accept_junk;
 
 /* Discard any previous helo name */
 
@@ -2017,8 +2024,8 @@ acl_added_headers = NULL;
 acl_removed_headers = NULL;
 f.queue_only_policy = FALSE;
 rcpt_smtp_response = NULL;
-rcpt_smtp_response_same = TRUE;
-rcpt_in_progress = FALSE;
+fl.rcpt_smtp_response_same = TRUE;
+fl.rcpt_in_progress = FALSE;
 f.deliver_freeze = FALSE;                              /* Can be set by ACL */
 freeze_tell = freeze_tell_config;                    /* Can be set by ACL */
 fake_response = OK;                                  /* Can be set by ACL */
@@ -2424,16 +2431,16 @@ smtp_ch_index = 0;
 
 /* Default values for certain variables */
 
-helo_seen = esmtp = helo_accept_junk = FALSE;
+fl.helo_seen = fl.esmtp = fl.helo_accept_junk = FALSE;
 smtp_mailcmd_count = 0;
 count_nonmail = TRUE_UNSET;
 synprot_error_count = unknown_command_count = nonmail_command_count = 0;
 smtp_delay_mail = smtp_rlm_base;
-auth_advertised = FALSE;
+fl.auth_advertised = FALSE;
 f.smtp_in_pipelining_advertised = f.smtp_in_pipelining_used = FALSE;
 f.pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
-smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
+fl.smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
 
 /* If receiving by -bs from a trusted user, or testing with -bh, we allow
 authentication settings from -oMaa to remain in force. */
@@ -2447,14 +2454,14 @@ tls_in.cipher = tls_in.peerdn = NULL;
 tls_in.ourcert = tls_in.peercert = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
-tls_advertised = FALSE;
+fl.tls_advertised = FALSE;
 # ifdef EXPERIMENTAL_REQUIRETLS
-requiretls_advertised = FALSE;
+fl.requiretls_advertised = FALSE;
 # endif
 #endif
-dsn_advertised = FALSE;
+fl.dsn_advertised = FALSE;
 #ifdef SUPPORT_I18N
-smtputf8_advertised = FALSE;
+fl.smtputf8_advertised = FALSE;
 #endif
 
 /* Reset ACL connection variables */
@@ -2859,14 +2866,14 @@ if (!f.sender_host_unknown)
   /* Determine whether HELO/EHLO is required for this host. The requirement
   can be hard or soft. */
 
-  helo_required = verify_check_host(&helo_verify_hosts) == OK;
-  if (!helo_required)
-    helo_verify = verify_check_host(&helo_try_verify_hosts) == OK;
+  fl.helo_required = verify_check_host(&helo_verify_hosts) == OK;
+  if (!fl.helo_required)
+    fl.helo_verify = verify_check_host(&helo_try_verify_hosts) == OK;
 
   /* Determine whether this hosts is permitted to send syntactic junk
   after a HELO or EHLO command. */
 
-  helo_accept_junk = verify_check_host(&helo_accept_junk_hosts) == OK;
+  fl.helo_accept_junk = verify_check_host(&helo_accept_junk_hosts) == OK;
   }
 
 /* For batch SMTP input we are now done. */
@@ -3097,14 +3104,14 @@ be tidier to have it only in one place, but when it was added, it was easier to
 do it that way, so as not to have to mess with the code for the RCPT command,
 which sometimes uses smtp_printf() and sometimes smtp_respond(). */
 
-if (rcpt_in_progress)
+if (fl.rcpt_in_progress)
   {
   if (rcpt_smtp_response == NULL)
     rcpt_smtp_response = string_copy(msg);
-  else if (rcpt_smtp_response_same &&
+  else if (fl.rcpt_smtp_response_same &&
            Ustrcmp(rcpt_smtp_response, msg) != 0)
-    rcpt_smtp_response_same = FALSE;
-  rcpt_in_progress = FALSE;
+    fl.rcpt_smtp_response_same = FALSE;
+  fl.rcpt_in_progress = FALSE;
   }
 
 /* Now output the message, splitting it up into multiple lines if necessary.
@@ -3291,8 +3298,8 @@ unless the sender_verify_fail log selector has been turned off. */
 if (sender_verified_failed &&
     !testflag(sender_verified_failed, af_sverify_told))
   {
-  BOOL save_rcpt_in_progress = rcpt_in_progress;
-  rcpt_in_progress = FALSE;  /* So as not to treat these as the error */
+  BOOL save_rcpt_in_progress = fl.rcpt_in_progress;
+  fl.rcpt_in_progress = FALSE;  /* So as not to treat these as the error */
 
   setflag(sender_verified_failed, af_sverify_told);
 
@@ -3324,7 +3331,7 @@ if (sender_verified_failed &&
         sender_verified_failed->address,
         sender_verified_failed->user_message));
 
-  rcpt_in_progress = save_rcpt_in_progress;
+  fl.rcpt_in_progress = save_rcpt_in_progress;
   }
 
 /* Sort out text for logging */
@@ -3437,13 +3444,13 @@ uschar *log_msg = NULL;
 
 /* Check for recursive acll */
 
-if (smtp_exit_function_called)
+if (fl.smtp_exit_function_called)
   {
   log_write(0, LOG_PANIC, "smtp_notquit_exit() called more than once (%s)",
     reason);
   return;
   }
-smtp_exit_function_called = TRUE;
+fl.smtp_exit_function_called = TRUE;
 
 /* Call the not-QUIT ACL, if there is one, unless no reason is given. */
 
@@ -3962,7 +3969,7 @@ while (done <= 0)
       authentication_failed = TRUE;
       cmd_list[CMD_LIST_AUTH].is_mail_cmd = FALSE;
 
-      if (!auth_advertised && !f.allow_auth_unadvertised)
+      if (!fl.auth_advertised && !f.allow_auth_unadvertised)
 	{
 	done = synprot_error(L_smtp_protocol_error, 503, NULL,
 	  US"AUTH command used when not advertised");
@@ -4058,13 +4065,13 @@ while (done <= 0)
     case HELO_CMD:
       HAD(SCH_HELO);
       hello = US"HELO";
-      esmtp = FALSE;
+      fl.esmtp = FALSE;
       goto HELO_EHLO;
 
     case EHLO_CMD:
       HAD(SCH_EHLO);
       hello = US"EHLO";
-      esmtp = TRUE;
+      fl.esmtp = TRUE;
 
     HELO_EHLO:      /* Common code for HELO and EHLO */
       cmd_list[CMD_LIST_HELO].is_mail_cmd = FALSE;
@@ -4132,12 +4139,12 @@ while (done <= 0)
 	at ACL time. */
 
 	f.helo_verified = f.helo_verify_failed = sender_helo_dnssec = FALSE;
-	if (helo_required || helo_verify)
+	if (fl.helo_required || fl.helo_verify)
 	  {
 	  BOOL tempfail = !smtp_verify_helo();
 	  if (!f.helo_verified)
 	    {
-	    if (helo_required)
+	    if (fl.helo_required)
 	      {
 	      smtp_printf("%d %s argument does not match calling host\r\n", FALSE,
 		tempfail? 451 : 550, hello);
@@ -4182,17 +4189,17 @@ while (done <= 0)
       some broken systems expect each response to be in a single packet, arrange
       that the entire reply is sent in one write(). */
 
-      auth_advertised = FALSE;
+      fl.auth_advertised = FALSE;
       f.smtp_in_pipelining_advertised = FALSE;
 #ifdef SUPPORT_TLS
-      tls_advertised = FALSE;
+      fl.tls_advertised = FALSE;
 # ifdef EXPERIMENTAL_REQUIRETLS
-      requiretls_advertised = FALSE;
+      fl.requiretls_advertised = FALSE;
 # endif
 #endif
-      dsn_advertised = FALSE;
+      fl.dsn_advertised = FALSE;
 #ifdef SUPPORT_I18N
-      smtputf8_advertised = FALSE;
+      fl.smtputf8_advertised = FALSE;
 #endif
 
       smtp_code = US"250 ";        /* Default response code plus space*/
@@ -4238,7 +4245,7 @@ while (done <= 0)
       /* If we received EHLO, we must create a multiline response which includes
       the functions supported. */
 
-      if (esmtp)
+      if (fl.esmtp)
 	{
 	g->s[3] = '-';
 
@@ -4278,7 +4285,7 @@ while (done <= 0)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-DSN\r\n", 6);
-	  dsn_advertised = TRUE;
+	  fl.dsn_advertised = TRUE;
 	  }
 
 	/* Advertise ETRN/VRFY/EXPN if there's are ACL checking whether a host is
@@ -4351,7 +4358,7 @@ while (done <= 0)
 		  g = string_catn(g, smtp_code, 3);
 		  g = string_catn(g, US"-AUTH", 5);
 		  first = FALSE;
-		  auth_advertised = TRUE;
+		  fl.auth_advertised = TRUE;
 		  }
 		saveptr = g->ptr;
 		g = string_catn(g, US" ", 1);
@@ -4386,7 +4393,7 @@ while (done <= 0)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-STARTTLS\r\n", 11);
-	  tls_advertised = TRUE;
+	  fl.tls_advertised = TRUE;
 	  }
 
 # ifdef EXPERIMENTAL_REQUIRETLS
@@ -4396,7 +4403,7 @@ while (done <= 0)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-REQUIRETLS\r\n", 13);
-	  requiretls_advertised = TRUE;
+	  fl.requiretls_advertised = TRUE;
 	  }
 # endif
 #endif
@@ -4416,7 +4423,7 @@ while (done <= 0)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-SMTPUTF8\r\n", 11);
-	  smtputf8_advertised = TRUE;
+	  fl.smtputf8_advertised = TRUE;
 	  }
 #endif
 
@@ -4445,12 +4452,12 @@ while (done <= 0)
 	  memmove(cr, cr + 1, (g->ptr--) - (cr - g->s));
 	debug_printf("SMTP>> %s", g->s);
 	}
-      helo_seen = TRUE;
+      fl.helo_seen = TRUE;
 
       /* Reset the protocol and the state, abandoning any previous message. */
       received_protocol =
 	(sender_host_address ? protocols : protocols_local)
-	  [ (esmtp
+	  [ (fl.esmtp
 	    ? pextend + (sender_host_authenticated ? pauthed : 0)
 	    : pnormal)
 	  + (tls_in.active.sock >= 0 ? pcrpted : 0)
@@ -4473,7 +4480,7 @@ while (done <= 0)
       was_rej_mail = TRUE;               /* Reset if accepted */
       env_mail_type_t * mail_args;       /* Sanity check & validate args */
 
-      if (helo_required && !helo_seen)
+      if (fl.helo_required && !fl.helo_seen)
 	{
 	smtp_printf("503 HELO or EHLO required\r\n", FALSE);
 	log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL from %s: no "
@@ -4517,7 +4524,7 @@ while (done <= 0)
 
       /* Loop, checking for ESMTP additions to the MAIL FROM command. */
 
-      if (esmtp) for(;;)
+      if (fl.esmtp) for(;;)
 	{
 	uschar *name, *value, *end;
 	unsigned long int size;
@@ -4580,7 +4587,7 @@ while (done <= 0)
 	  is included only if configured in at build time. */
 
 	  case ENV_MAIL_OPT_RET:
-	    if (dsn_advertised)
+	    if (fl.dsn_advertised)
 	      {
 	      /* Check if RET has already been set */
 	      if (dsn_ret > 0)
@@ -4605,7 +4612,7 @@ while (done <= 0)
 	      }
 	    break;
 	  case ENV_MAIL_OPT_ENVID:
-	    if (dsn_advertised)
+	    if (fl.dsn_advertised)
 	      {
 	      /* Check if the dsn envid has been already set */
 	      if (dsn_envid)
@@ -4697,7 +4704,7 @@ while (done <= 0)
 
 #ifdef SUPPORT_I18N
 	  case ENV_MAIL_OPT_UTF8:
-	    if (!smtputf8_advertised)
+	    if (!fl.smtputf8_advertised)
 	      {
 	      done = synprot_error(L_smtp_syntax_error, 501, NULL,
 		US"SMTPUTF8 used when not advertised");
@@ -4721,7 +4728,7 @@ while (done <= 0)
 	    {
 	    uschar * r, * t;
 
-	    if (!requiretls_advertised)
+	    if (!fl.requiretls_advertised)
 	      {
 	      done = synprot_error(L_smtp_syntax_error, 555, NULL,
 		US"unadvertised MAIL option: REQUIRETLS");
@@ -4917,7 +4924,7 @@ while (done <= 0)
     case RCPT_CMD:
       HAD(SCH_RCPT);
       rcpt_count++;
-      was_rcpt = rcpt_in_progress = TRUE;
+      was_rcpt = fl.rcpt_in_progress = TRUE;
 
       /* There must be a sender address; if the sender was rejected and
       pipelining was advertised, we assume the client was pipelining, and do not
@@ -4955,14 +4962,14 @@ while (done <= 0)
       orcpt = NULL;
       flags = 0;
 
-      if (esmtp) for(;;)
+      if (fl.esmtp) for(;;)
 	{
 	uschar *name, *value;
 
 	if (!extract_option(&name, &value))
 	  break;
 
-	if (dsn_advertised && strcmpic(name, US"ORCPT") == 0)
+	if (fl.dsn_advertised && strcmpic(name, US"ORCPT") == 0)
 	  {
 	  /* Check whether orcpt has been already set */
 	  if (orcpt)
@@ -4975,7 +4982,7 @@ while (done <= 0)
 	  DEBUG(D_receive) debug_printf("DSN orcpt: %s\n", orcpt);
 	  }
 
-	else if (dsn_advertised && strcmpic(name, US"NOTIFY") == 0)
+	else if (fl.dsn_advertised && strcmpic(name, US"NOTIFY") == 0)
 	  {
 	  /* Check if the notify flags have been already set */
 	  if (flags > 0)
@@ -5238,7 +5245,7 @@ while (done <= 0)
       DATA_BDAT:		/* Common code for DATA and BDAT */
       if (!discarded && recipients_count <= 0)
 	{
-	if (rcpt_smtp_response_same && rcpt_smtp_response != NULL)
+	if (fl.rcpt_smtp_response_same && rcpt_smtp_response != NULL)
 	  {
 	  uschar *code = US"503";
 	  int len = Ustrlen(rcpt_smtp_response);
@@ -5392,7 +5399,7 @@ while (done <= 0)
 
     case STARTTLS_CMD:
       HAD(SCH_STARTTLS);
-      if (!tls_advertised)
+      if (!fl.tls_advertised)
 	{
 	done = synprot_error(L_smtp_protocol_error, 503, NULL,
 	  US"STARTTLS command used when not advertised");
@@ -5459,7 +5466,7 @@ while (done <= 0)
       if ((rc = tls_server_start(tls_require_ciphers, &s)) == OK)
 	{
 	if (!tls_remember_esmtp)
-	  helo_seen = esmtp = auth_advertised = f.smtp_in_pipelining_advertised = FALSE;
+	  fl.helo_seen = fl.esmtp = fl.auth_advertised = f.smtp_in_pipelining_advertised = FALSE;
 	cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
 	cmd_list[CMD_LIST_AUTH].is_mail_cmd = TRUE;
 	cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
@@ -5473,7 +5480,7 @@ while (done <= 0)
 	  }
 	received_protocol =
 	  (sender_host_address ? protocols : protocols_local)
-	    [ (esmtp
+	    [ (fl.esmtp
 	      ? pextend + (sender_host_authenticated ? pauthed : 0)
 	      : pnormal)
 	    + (tls_in.active.sock >= 0 ? pcrpted : 0)
