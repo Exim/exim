@@ -4,6 +4,7 @@
 
 
 #include <sys/types.h>
+#include <sys/param.h>
 
 #define HAVE_BSD_GETLOADAVG
 #define HAVE_SETCLASSRESOURCES
@@ -12,6 +13,14 @@
 #define SIOCGIFCONF_GIVES_ADDR
 #define HAVE_SRANDOMDEV
 #define HAVE_ARC4RANDOM
+
+/* Applications should not call arc4random_stir() explicitly after
+ * FreeBSD r227520 (approximately 1000002).
+ * Set NOT_HAVE_ARC4RANDOM_STIR if the version released is past
+ * that point. */
+#if __FreeBSD_version >= 1000002
+# define NOT_HAVE_ARC4RANDOM_STIR
+#endif
 
 typedef struct flock flock_t;
 
@@ -36,9 +45,8 @@ typedef struct flock flock_t;
 #if __FreeBSD__ >= 10
 # define LIBICONV_PLUG
 #endif
-/* for more specific version constraints, include <sys/param.h> and look at
- * __FreeBSD_version */
-
+/* for more specific version constraints, look at __FreeBSD_version
+ * from <sys/param.h> */
 
 /* When using DKIM, setting OS_SENDFILE can increase
 performance on outgoing mail a bit. */
