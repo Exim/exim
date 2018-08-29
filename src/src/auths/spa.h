@@ -33,7 +33,6 @@ extern auth_spa_options_block auth_spa_option_defaults;
 
 extern void auth_spa_init(auth_instance *);
 extern int auth_spa_server(auth_instance *, uschar *);
-extern int auth_spa_client(auth_instance *, smtp_inblock *,
-                                 smtp_outblock *, int, uschar *, int);
+extern int auth_spa_client(auth_instance *, void *, int, uschar *, int);
 
 /* End of spa.h */

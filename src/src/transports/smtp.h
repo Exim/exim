@@ -182,9 +182,6 @@ extern void smtp_transport_closedown(transport_instance *);
 
 
 
-extern int     smtp_auth(uschar *, unsigned, address_item *, host_item *,
-		 smtp_transport_options_block *, BOOL,
-		 smtp_inblock *, smtp_outblock *);
 extern BOOL    smtp_mail_auth_str(uschar *, unsigned,
 		 address_item *, smtp_transport_options_block *);
 

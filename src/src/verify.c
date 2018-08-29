@@ -14,7 +14,7 @@ caching was contributed by Kevin Fleming (but I hacked it around a bit). */
 
 #define CUTTHROUGH_CMD_TIMEOUT  30	/* timeout for cutthrough-routing calls */
 #define CUTTHROUGH_DATA_TIMEOUT 60	/* timeout for cutthrough-routing calls */
-static smtp_outblock ctblock;
+static smtp_context ctctx;
 uschar ctbuffer[8192];
 
 
@@ -409,7 +409,7 @@ if (addr->transport == cutthrough.addr.transport)
 
 	/* Match!  Send the RCPT TO, set done from the response */
 	done =
-	     smtp_write_command(&ctblock, SCMD_FLUSH, "RCPT TO:<%.1000s>\r\n",
+	     smtp_write_command(&ctctx, SCMD_FLUSH, "RCPT TO:<%.1000s>\r\n",
 	      transport_rcpt_address(addr,
 		 addr->transport->rcpt_include_affixes)) >= 0
 	  && cutthrough_response(&cutthrough.cctx, '2', &resp,
@@ -814,9 +814,8 @@ tls_retry_connection:
 	    XXX We don't care about that for postmaster_full.  Should we? */
 
 	    if ((done =
-	      smtp_write_command(&sx.outblock, SCMD_FLUSH, "RSET\r\n") >= 0 &&
-	      smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
-		'2', callout)))
+	      smtp_write_command(&sx, SCMD_FLUSH, "RSET\r\n") >= 0 &&
+	      smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', callout)))
 	      break;
 
 	    HDEBUG(D_acl|D_v)
@@ -911,9 +910,8 @@ tls_retry_connection:
       cancel_cutthrough_connection(TRUE, US"postmaster verify");
       HDEBUG(D_acl|D_v) debug_printf_indent("Cutthrough cancelled by presence of postmaster verify\n");
 
-      done = smtp_write_command(&sx.outblock, SCMD_FLUSH, "RSET\r\n") >= 0
-          && smtp_read_response(&sx.inblock, sx.buffer,
-				sizeof(sx.buffer), '2', callout);
+      done = smtp_write_command(&sx, SCMD_FLUSH, "RSET\r\n") >= 0
+          && smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', callout);
 
       if (done)
 	{
@@ -936,9 +934,9 @@ tls_retry_connection:
 	  done = TRUE;
 	else
 	  done = (options & vopt_callout_fullpm) != 0
-	      && smtp_write_command(&sx.outblock, SCMD_FLUSH,
+	      && smtp_write_command(&sx, SCMD_FLUSH,
 			    "RCPT TO:<postmaster>\r\n") >= 0
-	      && smtp_read_response(&sx.inblock, sx.buffer,
+	      && smtp_read_response(&sx, sx.buffer,
 			    sizeof(sx.buffer), '2', callout);
 
 	/* Sort out the cache record */
@@ -1104,11 +1102,11 @@ no_conn:
 	   caddr = caddr->parent, parent = parent->parent)
         *(caddr->parent = store_get(sizeof(address_item))) = *parent;
 
-      ctblock.buffer = ctbuffer;
-      ctblock.buffersize = sizeof(ctbuffer);
-      ctblock.ptr = ctbuffer;
-      /* ctblock.cmd_count = 0; ctblock.authenticating = FALSE; */
-      ctblock.cctx = &cutthrough.cctx;
+      ctctx.outblock.buffer = ctbuffer;
+      ctctx.outblock.buffersize = sizeof(ctbuffer);
+      ctctx.outblock.ptr = ctbuffer;
+      /* ctctx.outblock.cmd_count = 0; ctctx.outblock.authenticating = FALSE; */
+      ctctx.outblock.cctx = &cutthrough.cctx;
       }
     else
       {
@@ -1117,11 +1115,10 @@ no_conn:
         cancel_cutthrough_connection(TRUE, US"not usable for cutthrough");
       if (sx.send_quit)
 	{
-	(void) smtp_write_command(&sx.outblock, SCMD_FLUSH, "QUIT\r\n");
+	(void) smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
 
 	/* Wait a short time for response, and discard it */
-	smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
-	  '2', 1);
+	smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', 1);
 	}
 
       if (sx.cctx.sock >= 0)
@@ -1234,14 +1231,14 @@ if(cutthrough.cctx.sock < 0)
 if(
 #ifdef SUPPORT_TLS
    cutthrough.is_tls
-   ? tls_write(cutthrough.cctx.tls_ctx, ctblock.buffer, n, FALSE)
+   ? tls_write(cutthrough.cctx.tls_ctx, ctctx.outblock.buffer, n, FALSE)
    :
 #endif
-     send(cutthrough.cctx.sock, ctblock.buffer, n, 0) > 0
+     send(cutthrough.cctx.sock, ctctx.outblock.buffer, n, 0) > 0
   )
 {
   transport_count += n;
-  ctblock.ptr= ctblock.buffer;
+  ctctx.outblock.ptr= ctctx.outblock.buffer;
   return TRUE;
 }
 
@@ -1256,11 +1253,11 @@ _cutthrough_puts(uschar * cp, int n)
 {
 while(n--)
  {
- if(ctblock.ptr >= ctblock.buffer+ctblock.buffersize)
-   if(!cutthrough_send(ctblock.buffersize))
+ if(ctctx.outblock.ptr >= ctctx.outblock.buffer+ctctx.outblock.buffersize)
+   if(!cutthrough_send(ctctx.outblock.buffersize))
      return FALSE;
 
- *ctblock.ptr++ = *cp++;
+ *ctctx.outblock.ptr++ = *cp++;
  }
 return TRUE;
 }
@@ -1286,7 +1283,7 @@ return;
 static BOOL
 _cutthrough_flush_send(void)
 {
-int n = ctblock.ptr - ctblock.buffer;
+int n = ctctx.outblock.ptr - ctctx.outblock.buffer;
 
 if(n>0)
   if(!cutthrough_send(n))
@@ -1323,16 +1320,16 @@ cutthrough_data_puts(US"\r\n", 2);
 static uschar
 cutthrough_response(client_conn_ctx * cctx, char expect, uschar ** copy, int timeout)
 {
-smtp_inblock inblock;
+smtp_context sx;
 uschar inbuffer[4096];
 uschar responsebuffer[4096];
 
-inblock.buffer = inbuffer;
-inblock.buffersize = sizeof(inbuffer);
-inblock.ptr = inbuffer;
-inblock.ptrend = inbuffer;
-inblock.cctx = cctx;
-if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, timeout))
+sx.inblock.buffer = inbuffer;
+sx.inblock.buffersize = sizeof(inbuffer);
+sx.inblock.ptr = inbuffer;
+sx.inblock.ptrend = inbuffer;
+sx.inblock.cctx = cctx;
+if(!smtp_read_response(&sx, responsebuffer, sizeof(responsebuffer), expect, timeout))
   cancel_cutthrough_connection(TRUE, US"target timeout on read");
 
 if(copy)
@@ -1423,7 +1420,7 @@ if(fd >= 0)
      conn before the final dot.
   */
   client_conn_ctx tmp_ctx = cutthrough.cctx;
-  ctblock.ptr = ctbuffer;
+  ctctx.outblock.ptr = ctbuffer;
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
   _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
   _cutthrough_flush_send();
@@ -1445,7 +1442,7 @@ if(fd >= 0)
   (void)close(fd);
   HDEBUG(D_acl) debug_printf_indent("----------- cutthrough shutdown (%s) ------------\n", why);
   }
-ctblock.ptr = ctbuffer;
+ctctx.outblock.ptr = ctbuffer;
 }
 
 void

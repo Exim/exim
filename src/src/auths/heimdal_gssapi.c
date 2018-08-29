@@ -82,8 +82,8 @@ auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults = {
 /* Dummy values */
 void auth_heimdal_gssapi_init(auth_instance *ablock) {}
 int auth_heimdal_gssapi_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_heimdal_gssapi_client(auth_instance *ablock, smtp_inblock *inblock,
-  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+int auth_heimdal_gssapi_client(auth_instance *ablock, void * sx,
+  int timeout, uschar *buffer, int buffsize) {return 0;}
 void auth_heimdal_gssapi_version_report(FILE *f) {}
 
 #else   /*!MACRO_PREDEF*/
@@ -578,8 +578,7 @@ exim_gssapi_error_defer(uschar *store_reset_point,
 int
 auth_heimdal_gssapi_client(
   auth_instance *ablock,                 /* authenticator block */
-  smtp_inblock *inblock,                 /* connection inblock */
-  smtp_outblock *outblock,               /* connection outblock */
+  void * sx,				 /* connection */
   int timeout,                           /* command timeout */
   uschar *buffer,                        /* buffer for reading response */
   int buffsize)                          /* size of buffer */

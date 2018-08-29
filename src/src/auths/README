@@ -68,7 +68,7 @@ CLIENT AUTHENTICATION
 The third function performs authentication as a client. It receives a pointer
 to the instance block, and four further arguments:
 
-  The smtp_inblock item for the connection to the remote host.
+  The smtp_context item for the connection to the remote host.
 
   The normal command-reading timeout value.
 

@@ -76,8 +76,8 @@ auth_spa_options_block auth_spa_option_defaults = {
 /* Dummy values */
 void auth_spa_init(auth_instance *ablock) {}
 int auth_spa_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_spa_client(auth_instance *ablock, smtp_inblock *inblock,
-  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+int auth_spa_client(auth_instance *ablock, void * sx, int timeout,
+    uschar *buffer, int buffsize) {return 0;}
 
 #else   /*!MACRO_PREDEF*/
 
@@ -268,8 +268,7 @@ return FAIL;
 int
 auth_spa_client(
   auth_instance *ablock,                 /* authenticator block */
-  smtp_inblock *inblock,                 /* connection inblock */
-  smtp_outblock *outblock,               /* connection outblock */
+  void * sx,				 /* connection */
   int timeout,                           /* command timeout */
   uschar *buffer,                        /* buffer for reading response */
   int buffsize)                          /* size of buffer */
@@ -306,7 +305,6 @@ if (!(password = CS expand_string(ob->spa_password)))
   }
 
 if (ob->spa_domain)
-  {
   if (!(domain = CS expand_string(ob->spa_domain)))
     {
     if (f.expand_string_forcedfail) return CANCELLED;
@@ -315,16 +313,14 @@ if (ob->spa_domain)
 		  expand_string_message);
     return ERROR;
     }
-  }
 
 /* Original code */
 
-if (smtp_write_command(outblock, SCMD_FLUSH, "AUTH %s\r\n",
-    ablock->public_name) < 0)
+if (smtp_write_command(sx, SCMD_FLUSH, "AUTH %s\r\n", ablock->public_name) < 0)
   return FAIL_SEND;
 
 /* wait for the 3XX OK message */
-if (!smtp_read_response(inblock, US buffer, buffsize, '3', timeout))
+if (!smtp_read_response(sx, US buffer, buffsize, '3', timeout))
   return FAIL;
 
 DSPA("\n\n%s authenticator: using domain %s\n\n", ablock->name, domain);
@@ -336,11 +332,11 @@ spa_bits_to_base64 (US msgbuf, (unsigned char*)&request,
 DSPA("\n\n%s authenticator: sending request (%s)\n\n", ablock->name, msgbuf);
 
 /* send the encrypted password */
-if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)
+if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)
   return FAIL_SEND;
 
 /* wait for the auth challenge */
-if (!smtp_read_response(inblock, US buffer, buffsize, '3', timeout))
+if (!smtp_read_response(sx, US buffer, buffsize, '3', timeout))
   return FAIL;
 
 /* convert the challenge into the challenge struct */
@@ -353,14 +349,14 @@ spa_bits_to_base64 (US msgbuf, (unsigned char*)&response,
 DSPA("\n\n%s authenticator: challenge response (%s)\n\n", ablock->name, msgbuf);
 
 /* send the challenge response */
-if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)
+if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", msgbuf) < 0)
        return FAIL_SEND;
 
 /* If we receive a success response from the server, authentication
 has succeeded. There may be more data to send, but is there any point
 in provoking an error here? */
 
-if (smtp_read_response(inblock, US buffer, buffsize, '2', timeout))
+if (smtp_read_response(sx, US buffer, buffsize, '2', timeout))
   return OK;
 
 /* Not a success response. If errno != 0 there is some kind of transmission

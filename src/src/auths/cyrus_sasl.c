@@ -68,8 +68,8 @@ auth_cyrus_sasl_options_block auth_cyrus_sasl_option_defaults = {
 /* Dummy values */
 void auth_cyrus_sasl_init(auth_instance *ablock) {}
 int auth_cyrus_sasl_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_cyrus_sasl_client(auth_instance *ablock, smtp_inblock *inblock,
-  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+int auth_cyrus_sasl_client(auth_instance *ablock, void * sx,
+  int timeout, uschar *buffer, int buffsize) {return 0;}
 void auth_cyrus_sasl_version_report(FILE *f) {}
 
 #else   /*!MACRO_PREDEF*/
@@ -529,8 +529,7 @@ auth_cyrus_sasl_version_report(FILE *f)
 int
 auth_cyrus_sasl_client(
   auth_instance *ablock,                 /* authenticator block */
-  smtp_inblock *inblock,                 /* input connection */
-  smtp_outblock *outblock,               /* output connection */
+  void * sx,			 	 /* connexction */
   int timeout,                           /* command timeout */
   uschar *buffer,                          /* for reading response */
   int buffsize)                          /* size of buffer */

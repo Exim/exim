@@ -452,7 +452,7 @@ extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
 extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int);
-extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
+extern BOOL    smtp_read_response(void *, uschar *, int, int, int);
 extern void    smtp_reset(void *);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
@@ -462,7 +462,7 @@ extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
 extern BOOL    smtp_verify_helo(void);
-extern int     smtp_write_command(smtp_outblock *, int, const char *, ...) PRINTF_FUNCTION(3,4);
+extern int     smtp_write_command(void *, int, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);

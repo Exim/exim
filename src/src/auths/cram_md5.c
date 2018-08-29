@@ -52,8 +52,8 @@ auth_cram_md5_options_block auth_cram_md5_option_defaults = {
 /* Dummy values */
 void auth_cram_md5_init(auth_instance *ablock) {}
 int auth_cram_md5_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_cram_md5_client(auth_instance *ablock, smtp_inblock *inblock,
-  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+int auth_cram_md5_client(auth_instance *ablock, void *sx, int timeout,
+    uschar *buffer, int buffsize) {return 0;}
 
 #else	/*!MACRO_PREDEF*/
 
@@ -259,8 +259,7 @@ return auth_check_serv_cond(ablock);
 int
 auth_cram_md5_client(
   auth_instance *ablock,                 /* authenticator block */
-  smtp_inblock *inblock,                 /* input connection */
-  smtp_outblock *outblock,               /* output connection */
+  void * sx,				 /* smtp connextion */
   int timeout,                           /* command timeout */
   uschar *buffer,                        /* for reading response */
   int buffsize)                          /* size of buffer */
@@ -293,10 +292,9 @@ if (!secret || !name)
 /* Initiate the authentication exchange and read the challenge, which arrives
 in base 64. */
 
-if (smtp_write_command(outblock, SCMD_FLUSH, "AUTH %s\r\n",
-		       	ablock->public_name) < 0)
+if (smtp_write_command(sx, SCMD_FLUSH, "AUTH %s\r\n", ablock->public_name) < 0)
   return FAIL_SEND;
-if (!smtp_read_response(inblock, buffer, buffsize, '3', timeout))
+if (!smtp_read_response(sx, buffer, buffsize, '3', timeout))
   return FAIL;
 
 if (b64decode(buffer + 4, &challenge) < 0)
@@ -324,10 +322,10 @@ in big_buffer, but b64encode() returns its result in working store,
 so calling smtp_write_command(), which uses big_buffer, is OK. */
 
 buffer[0] = 0;
-if (smtp_write_command(outblock, SCMD_FLUSH, "%s\r\n", b64encode(big_buffer,
+if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
-return smtp_read_response(inblock, US buffer, buffsize, '2', timeout)
+return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
   ? OK : FAIL;
 }
 #endif  /* STAND_ALONE */

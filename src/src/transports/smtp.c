@@ -797,7 +797,7 @@ if (sx->pending_MAIL)
   {
   DEBUG(D_transport) debug_printf("%s expect mail\n", __FUNCTION__);
   count--;
-  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+  if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
     DEBUG(D_transport) debug_printf("bad response for MAIL\n");
@@ -813,7 +813,7 @@ if (sx->pending_MAIL)
         }
       while (count-- > 0)
         {
-        if (!smtp_read_response(&sx->inblock, flushbuffer, sizeof(flushbuffer),
+        if (!smtp_read_response(sx, flushbuffer, sizeof(flushbuffer),
                    '2', ob->command_timeout)
             && (errno != 0 || flushbuffer[0] == 0))
           break;
@@ -848,7 +848,7 @@ while (count-- > 0)
   addr->host_used = sx->host;
 
   DEBUG(D_transport) debug_printf("%s expect rcpt\n", __FUNCTION__);
-  if (smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+  if (smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
     yield |= 1;
@@ -968,7 +968,7 @@ previously or in this block, the response is ignored. */
 if (pending_DATA != 0)
   {
   DEBUG(D_transport) debug_printf("%s expect data\n", __FUNCTION__);
-  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+  if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			'3', ob->command_timeout))
     {
     int code;
@@ -1001,11 +1001,8 @@ return yield;
 /* Do the client side of smtp-level authentication */
 /*
 Arguments:
+  sx		smtp connection
   buffer	EHLO response from server (gets overwritten)
-  addrlist      chain of potential addresses to deliver
-  host          host to deliver to
-  ob		transport options
-  ibp, obp	comms channel control blocks
 
 Returns:
   OK			Success, or failed (but not required): global "smtp_authenticated" set
@@ -1016,23 +1013,22 @@ Returns:
   FAIL			- response
 */
 
-int
-smtp_auth(uschar *buffer, unsigned bufsize, address_item *addrlist, host_item *host,
-    smtp_transport_options_block *ob, BOOL is_esmtp,
-    smtp_inblock *ibp, smtp_outblock *obp)
+static int
+smtp_auth(smtp_context * sx, uschar * buffer, unsigned bufsize)
 {
+smtp_transport_options_block * ob = sx->ob;
 int require_auth;
 uschar *fail_reason = US"server did not advertise AUTH support";
 
 f.smtp_authenticated = FALSE;
 client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
-require_auth = verify_check_given_host(&ob->hosts_require_auth, host);
+require_auth = verify_check_given_host(&ob->hosts_require_auth, sx->host);
 
-if (is_esmtp && !regex_AUTH) regex_AUTH =
+if (sx->esmtp && !regex_AUTH) regex_AUTH =
     regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
 	  FALSE, TRUE);
 
-if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
+if (sx->esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
   {
   uschar *names = string_copyn(expand_nstring[1], expand_nlength[1]);
   expand_nmax = -1;                          /* reset */
@@ -1041,7 +1037,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
   regex match above. */
 
   if (require_auth == OK ||
-      verify_check_given_host(&ob->hosts_try_auth, host) == OK)
+      verify_check_given_host(&ob->hosts_try_auth, sx->host) == OK)
     {
     auth_instance *au;
     fail_reason = US"no common mechanisms were found";
@@ -1089,10 +1085,10 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	that reflections don't show it. */
 
 	fail_reason = US"authentication attempt(s) failed";
-	obp->authenticating = TRUE;
-	rc = (au->info->clientcode)(au, ibp, obp,
+	sx->outblock.authenticating = TRUE;
+	rc = (au->info->clientcode)(au, sx,
 	  ob->command_timeout, buffer, bufsize);
-	obp->authenticating = FALSE;
+	sx->outblock.authenticating = FALSE;
 	DEBUG(D_transport) debug_printf("%s authenticator yielded %d\n",
 	  au->name, rc);
 
@@ -1120,7 +1116,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	  case FAIL:
 	  if (errno != 0 || buffer[0] != '5') return FAIL;
 	  log_write(0, LOG_MAIN, "%s authenticator failed H=%s [%s] %s",
-	    au->name, host->name, host->address, buffer);
+	    au->name, sx->host->name, sx->host->address, buffer);
 	  break;
 
 	  /* Failure by some other means. In effect, the authenticator
@@ -1132,14 +1128,14 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 	  case CANCELLED:
 	  if (*buffer != 0)
 	    log_write(0, LOG_MAIN, "%s authenticator cancelled "
-	      "authentication H=%s [%s] %s", au->name, host->name,
-	      host->address, buffer);
+	      "authentication H=%s [%s] %s", au->name, sx->host->name,
+	      sx->host->address, buffer);
 	  break;
 
 	  /* Internal problem, message in buffer. */
 
 	  case ERROR:
-	  set_errno_nohost(addrlist, ERRNO_AUTHPROB, string_copy(buffer),
+	  set_errno_nohost(sx->addrlist, ERRNO_AUTHPROB, string_copy(buffer),
 		    DEFER, FALSE);
 	  return ERROR;
 	  }
@@ -1154,7 +1150,7 @@ if (is_esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
 
 if (require_auth == OK && !f.smtp_authenticated)
   {
-  set_errno_nohost(addrlist, ERRNO_AUTHFAIL,
+  set_errno_nohost(sx->addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
     FALSE);
   return DEFER;
@@ -1436,7 +1432,7 @@ there may be more writes (like, the chunk data) done soon. */
 
 if (chunk_size > 0)
   {
-  if((cmd_count = smtp_write_command(&sx->outblock,
+  if((cmd_count = smtp_write_command(sx,
 	      flags & tc_reap_prev ? SCMD_FLUSH : SCMD_MORE,
 	      "BDAT %u%s\r\n", chunk_size, flags & tc_chunk_last ? " LAST" : "")
      ) < 0) return ERROR;
@@ -1479,7 +1475,7 @@ if (sx->pending_BDAT)
   {
   DEBUG(D_transport) debug_printf("look for one response for BDAT\n");
 
-  if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2',
+  if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
        ob->command_timeout))
     {
     if (errno == 0 && sx->buffer[0] == '4')
@@ -1729,7 +1725,7 @@ if (!continue_hostname)
 #ifdef TCP_QUICKACK
     (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
 #endif
-    good_response = smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+    good_response = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
       '2', sx->ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
     sx->smtp_greeting = string_copy(sx->buffer);
@@ -1819,11 +1815,11 @@ goto SEND_QUIT;
 
   if (sx->esmtp)
     {
-    if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "%s %s\r\n",
+    if (smtp_write_command(sx, SCMD_FLUSH, "%s %s\r\n",
          sx->lmtp ? "LHLO" : "EHLO", sx->helo_data) < 0)
       goto SEND_FAILED;
     sx->esmtp_sent = TRUE;
-    if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2',
+    if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
            sx->ob->command_timeout))
       {
       if (errno != 0 || sx->buffer[0] == 0 || sx->lmtp)
@@ -1852,10 +1848,9 @@ goto SEND_QUIT;
     if (sx->esmtp_sent && (n = Ustrlen(sx->buffer)) < sizeof(sx->buffer)/2)
       { rsp = sx->buffer + n + 1; n = sizeof(sx->buffer) - n; }
 
-    if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "HELO %s\r\n", sx->helo_data) < 0)
+    if (smtp_write_command(sx, SCMD_FLUSH, "HELO %s\r\n", sx->helo_data) < 0)
       goto SEND_FAILED;
-    good_response = smtp_read_response(&sx->inblock, rsp, n,
-      '2', sx->ob->command_timeout);
+    good_response = smtp_read_response(sx, rsp, n, '2', sx->ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
     sx->helo_response = string_copy(rsp);
 #endif
@@ -1955,7 +1950,7 @@ if (  smtp_peer_options & OPTION_TLS
    )  )
   {
   uschar buffer2[4096];
-  if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "STARTTLS\r\n") < 0)
+  if (smtp_write_command(sx, SCMD_FLUSH, "STARTTLS\r\n") < 0)
     goto SEND_FAILED;
 
   /* If there is an I/O error, transmission of this message is deferred. If
@@ -1965,7 +1960,7 @@ if (  smtp_peer_options & OPTION_TLS
   STARTTLS, we carry on. This means we will try to send the message in clear,
   unless the host is in hosts_require_tls (tested below). */
 
-  if (!smtp_read_response(&sx->inblock, buffer2, sizeof(buffer2), '2',
+  if (!smtp_read_response(sx, buffer2, sizeof(buffer2), '2',
       sx->ob->command_timeout))
     {
     if (  errno != 0
@@ -2060,7 +2055,7 @@ if (tls_out.active.sock >= 0)
   /* For SMTPS we need to wait for the initial OK response. */
   if (sx->smtps)
     {
-    good_response = smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+    good_response = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
       '2', sx->ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
     sx->smtp_greeting = string_copy(sx->buffer);
@@ -2077,10 +2072,10 @@ if (tls_out.active.sock >= 0)
       debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
     }
 
-  if (smtp_write_command(&sx->outblock, SCMD_FLUSH, "%s %s\r\n",
+  if (smtp_write_command(sx, SCMD_FLUSH, "%s %s\r\n",
         sx->lmtp ? "LHLO" : greeting_cmd, sx->helo_data) < 0)
     goto SEND_FAILED;
-  good_response = smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer),
+  good_response = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
     '2', sx->ob->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
   sx->helo_response = string_copy(sx->buffer);
@@ -2209,8 +2204,7 @@ if (continue_hostname == NULL
     the business. The host name and address must be available when the
     authenticator's client driver is running. */
 
-    switch (yield = smtp_auth(sx->buffer, sizeof(sx->buffer), sx->addrlist, sx->host,
-			      sx->ob, sx->esmtp, &sx->inblock, &sx->outblock))
+    switch (yield = smtp_auth(sx, sx->buffer, sizeof(sx->buffer)))
       {
       default:		goto SEND_QUIT;
       case OK:		break;
@@ -2373,7 +2367,7 @@ FAILED:
 SEND_QUIT:
 
 if (sx->send_quit)
-  (void)smtp_write_command(&sx->outblock, SCMD_FLUSH, "QUIT\r\n");
+  (void)smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n");
 
 #ifdef SUPPORT_TLS
 if (sx->cctx.tls_ctx)
@@ -2611,7 +2605,7 @@ sx->pending_MAIL = TRUE;     /* The block starts with MAIL */
     }
 #endif
 
-  rc = smtp_write_command(&sx->outblock, pipelining_active ? SCMD_BUFFER : SCMD_FLUSH,
+  rc = smtp_write_command(sx, pipelining_active ? SCMD_BUFFER : SCMD_FLUSH,
 	  "MAIL FROM:<%s>%s\r\n", s, sx->buffer);
   }
 
@@ -2623,7 +2617,7 @@ switch(rc)
     return -5;
 
   case +1:                /* Cmd was sent */
-    if (!smtp_read_response(&sx->inblock, sx->buffer, sizeof(sx->buffer), '2',
+    if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
        sx->ob->command_timeout))
       {
       if (errno == 0 && sx->buffer[0] == '4')
@@ -2695,7 +2689,7 @@ for (addr = sx->first_addr, address_count = 0;
     }
 #endif
 
-  count = smtp_write_command(&sx->outblock, no_flush ? SCMD_BUFFER : SCMD_FLUSH,
+  count = smtp_write_command(sx, no_flush ? SCMD_BUFFER : SCMD_FLUSH,
     "RCPT TO:<%s>%s%s\r\n", rcpt_addr, sx->igquotstr, sx->buffer);
 
   if (count < 0) return -5;
@@ -3033,7 +3027,7 @@ to send is. */
 if (  !(sx.peer_offered & OPTION_CHUNKING)
    && (sx.ok || (pipelining_active && !mua_wrapper)))
   {
-  int count = smtp_write_command(&sx.outblock, SCMD_FLUSH, "DATA\r\n");
+  int count = smtp_write_command(&sx, SCMD_FLUSH, "DATA\r\n");
 
   if (count < 0) goto SEND_FAILED;
   switch(sync_responses(&sx, count, sx.ok ? +1 : -1))
@@ -3196,7 +3190,7 @@ else
    * with per non-PRDR. */
   if(sx.prdr_active)
     {
-    sx.ok = smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer), '3',
+    sx.ok = smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '3',
       sx.ob->final_timeout);
     if (!sx.ok && errno == 0) switch(sx.buffer[0])
       {
@@ -3217,7 +3211,7 @@ else
 
   if (!sx.lmtp)
     {
-    sx.ok = smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer), '2',
+    sx.ok = smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2',
       sx.ob->final_timeout);
     if (!sx.ok && errno == 0 && sx.buffer[0] == '4')
       {
@@ -3281,7 +3275,7 @@ else
       if (sx.lmtp)
 #endif
         {
-        if (!smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer), '2',
+        if (!smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2',
             sx.ob->final_timeout))
           {
           if (errno != 0 || sx.buffer[0] == 0) goto RESPONSE_FAILED;
@@ -3363,7 +3357,7 @@ else
 	/* PRDR - get the final, overall response.  For any non-success
 	upgrade all the address statuses. */
 
-        sx.ok = smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer), '2',
+        sx.ok = smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2',
           sx.ob->final_timeout);
         if (!sx.ok)
 	  {
@@ -3599,13 +3593,13 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
     BOOL pass_message;
 
     if (sx.send_rset)
-      if (! (sx.ok = smtp_write_command(&sx.outblock, SCMD_FLUSH, "RSET\r\n") >= 0))
+      if (! (sx.ok = smtp_write_command(&sx, SCMD_FLUSH, "RSET\r\n") >= 0))
         {
         msg = US string_sprintf("send() to %s [%s] failed: %s", host->name,
           host->address, strerror(errno));
         sx.send_quit = FALSE;
         }
-      else if (! (sx.ok = smtp_read_response(&sx.inblock, sx.buffer,
+      else if (! (sx.ok = smtp_read_response(&sx, sx.buffer,
 		  sizeof(sx.buffer), '2', sx.ob->command_timeout)))
         {
         int code;
@@ -3652,9 +3646,9 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  sx.cctx.tls_ctx = NULL;
 	  smtp_peer_options = smtp_peer_options_wrap;
 	  sx.ok = !sx.smtps
-	    && smtp_write_command(&sx.outblock, SCMD_FLUSH,
-				      "EHLO %s\r\n", sx.helo_data) >= 0
-	    && smtp_read_response(&sx.inblock, sx.buffer, sizeof(sx.buffer),
+	    && smtp_write_command(&sx, SCMD_FLUSH, "EHLO %s\r\n", sx.helo_data)
+		>= 0
+	    && smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer),
 				      '2', sx.ob->command_timeout);
 
 	  if (sx.ok && f.continue_more)
@@ -3757,7 +3751,7 @@ This change is being made on 31-Jul-98. After over a year of trouble-free
 operation, the old commented-out code was removed on 17-Sep-99. */
 
 SEND_QUIT:
-if (sx.send_quit) (void)smtp_write_command(&sx.outblock, SCMD_FLUSH, "QUIT\r\n");
+if (sx.send_quit) (void)smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
 
 END_OFF:
 
@@ -3821,8 +3815,7 @@ smtp_transport_closedown(transport_instance *tblock)
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)tblock->options_block;
 client_conn_ctx cctx;
-smtp_inblock inblock;
-smtp_outblock outblock;
+smtp_context sx;
 uschar buffer[256];
 uschar inbuffer[4096];
 uschar outbuffer[16];
@@ -3831,22 +3824,21 @@ uschar outbuffer[16];
 cctx.sock = fileno(stdin);
 cctx.tls_ctx = cctx.sock == tls_out.active.sock ? tls_out.active.tls_ctx : NULL;
 
-inblock.cctx = &cctx;
-inblock.buffer = inbuffer;
-inblock.buffersize = sizeof(inbuffer);
-inblock.ptr = inbuffer;
-inblock.ptrend = inbuffer;
+sx.inblock.cctx = &cctx;
+sx.inblock.buffer = inbuffer;
+sx.inblock.buffersize = sizeof(inbuffer);
+sx.inblock.ptr = inbuffer;
+sx.inblock.ptrend = inbuffer;
 
-outblock.cctx = &cctx;
-outblock.buffersize = sizeof(outbuffer);
-outblock.buffer = outbuffer;
-outblock.ptr = outbuffer;
-outblock.cmd_count = 0;
-outblock.authenticating = FALSE;
+sx.outblock.cctx = &cctx;
+sx.outblock.buffersize = sizeof(outbuffer);
+sx.outblock.buffer = outbuffer;
+sx.outblock.ptr = outbuffer;
+sx.outblock.cmd_count = 0;
+sx.outblock.authenticating = FALSE;
 
-(void)smtp_write_command(&outblock, SCMD_FLUSH, "QUIT\r\n");
-(void)smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-  ob->command_timeout);
+(void)smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
+(void)smtp_read_response(&sx, buffer, sizeof(buffer), '2', ob->command_timeout);
 (void)close(cctx.sock);
 }
 

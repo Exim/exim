@@ -444,7 +444,7 @@ return TRUE;
 any error message.
 
 Arguments:
-  outblock   contains buffer for pipelining, and socket
+  sx	     SMTP connection, contains buffer for pipelining, and socket
   mode       buffer, write-with-more-likely, write
   format     a format, starting with one of
              of HELO, MAIL FROM, RCPT TO, DATA, ".", or QUIT.
@@ -457,8 +457,9 @@ Returns:     0 if command added to pipelining buffer, with nothing transmitted
 */
 
 int
-smtp_write_command(smtp_outblock * outblock, int mode, const char *format, ...)
+smtp_write_command(void * sx, int mode, const char *format, ...)
 {
+smtp_outblock * outblock = &((smtp_context *)sx)->outblock;
 int count;
 int rc = 0;
 va_list ap;
@@ -623,7 +624,8 @@ also returned after a reading error. In this case buffer[0] will be zero, and
 the error code will be in errno.
 
 Arguments:
-  inblock   the SMTP input block (contains holding buffer, socket, etc.)
+  sx        the SMTP connection (contains input block with holding buffer,
+		socket, etc.)
   buffer    where to put the response
   size      the size of the buffer
   okdigit   the expected first digit of the response
@@ -633,9 +635,10 @@ Returns:    TRUE if a valid, non-error response was received; else FALSE
 */
 
 BOOL
-smtp_read_response(smtp_inblock *inblock, uschar *buffer, int size, int okdigit,
+smtp_read_response(void * sx, uschar *buffer, int size, int okdigit,
    int timeout)
 {
+smtp_inblock * inblock = &((smtp_context *)sx)->inblock;
 uschar *ptr = buffer;
 int count;
 

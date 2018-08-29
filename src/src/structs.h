@@ -420,8 +420,7 @@ typedef struct auth_info {
     uschar *);                    /* rest of AUTH command */
   int (*clientcode)(              /* client function */
     struct auth_instance *,
-    struct smtp_inblock *,        /* socket and input buffer */
-    struct smtp_outblock *,       /* socket and output buffer */
+    void *,			  /* smtp conn, with socket, output and input buffers */
     int,                          /* command timeout */
     uschar *,                     /* buffer for reading response */
     int);                         /* sizeof buffer */
