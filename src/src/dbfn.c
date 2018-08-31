@@ -382,6 +382,8 @@ dbfn_delete(open_db *dbblock, const uschar *key)
 int klen = Ustrlen(key) + 1;
 uschar * key_copy = store_get(klen);
 
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_delete: key=%s\n", key);
+
 memcpy(key_copy, key, klen);
 EXIM_DATUM key_datum;
 EXIM_DATUM_INIT(key_datum);         /* Some DBM libraries require clearing */
@@ -414,6 +416,8 @@ dbfn_scan(open_db *dbblock, BOOL start, EXIM_CURSOR **cursor)
 EXIM_DATUM key_datum, value_datum;
 uschar *yield;
 value_datum = value_datum;    /* dummy; not all db libraries use this */
+
+DEBUG(D_hints_lookup) debug_printf_indent("dbfn_scan\n");
 
 /* Some dbm require an initialization */
 
