@@ -1364,6 +1364,7 @@ order in which they are tested. The individual configuration options are
 described in more detail in chapter &<<CHAProutergeneric>>&.
 
 .ilist
+.cindex affix "router precondition"
 The &%local_part_prefix%& and &%local_part_suffix%& options can specify that
 the local parts handled by the router may or must have certain prefixes and/or
 suffixes. If a mandatory affix (prefix or suffix) is not present, the router is
@@ -1400,6 +1401,7 @@ of domains that it defines.
 .vindex "&$local_part_prefix$&"
 .vindex "&$local_part$&"
 .vindex "&$local_part_suffix$&"
+.cindex affix "router precondition"
 If the &%local_parts%& option is set, the local part of the address must be in
 the set of local parts that it defines. If &%local_part_prefix%& or
 &%local_part_suffix%& is in use, the prefix or suffix is removed from the local
@@ -2900,12 +2902,14 @@ actually being delivered.
 
 .vitem &%-bfp%&&~<&'prefix'&>
 .oindex "&%-bfp%&"
+.cindex affix "filter testing"
 This sets the prefix of the local part of the recipient address when a filter
 file is being tested by means of the &%-bf%& option. The default is an empty
 prefix.
 
 .vitem &%-bfs%&&~<&'suffix'&>
 .oindex "&%-bfs%&"
+.cindex affix "filter testing"
 This sets the suffix of the local part of the recipient address when a filter
 file is being tested by means of the &%-bf%& option. The default is an empty
 suffix.
@@ -12097,6 +12101,7 @@ once.
 
 .vindex "&$local_part_prefix$&"
 .vindex "&$local_part_suffix$&"
+.cindex affix variables
 If a local part prefix or suffix has been recognized, it is not included in the
 value of &$local_part$& during routing and subsequent delivery. The values of
 any prefix or suffix are in &$local_part_prefix$& and
@@ -12149,6 +12154,7 @@ variable expands to nothing.
 
 .vitem &$local_part_prefix$&
 .vindex "&$local_part_prefix$&"
+.cindex affix variables
 When an address is being routed or delivered, and a
 specific prefix for the local part was recognized, it is available in this
 variable, having been removed from &$local_part$&.
@@ -18264,6 +18270,7 @@ and &%user%& and the discussion in chapter &<<CHAPenvironment>>&.
 
 
 .option local_part_prefix routers&!? "string list" unset
+.cindex affix "router precondition"
 .cindex "router" "prefix for local part"
 .cindex "prefix" "for local part, used in router"
 If this option is set, the router is skipped unless the local part starts with
