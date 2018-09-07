@@ -1257,6 +1257,9 @@ switch(action)
       {
       log_write(0, LOG_MAIN, "removed by %s", username);
       log_write(0, LOG_MAIN, "Completed");
+#ifndef DISABLE_EVENT
+      (void) event_raise(event_action, US"msg:complete", NULL);
+#endif
       }
     break;
     }
