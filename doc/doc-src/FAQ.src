@@ -5740,82 +5740,14 @@ Q1701: I am trying to set up an Exim server that uses a self-signed certificate
        to enable my clients to use TLS. However, clients other than Exim
        refuse to accept this certificate. What's wrong?
 
-A1701: It seems that some clients require that the certificate presented by
-       the server be a user (also called ``leaf'' or ``site'') certificate, and not
-       a self-signed certificate. In this situation, the self-signed
-       certificate must be installed on the client as a trusted root
-       \*certification authority*\ (CA), and the certificate used by the server
-       must be a user certificate signed with that self-signed certificate.
+A1701: Don't use a self-signed certificate today.  Use a certificate from a
+       certificate authority, whether your own private certificate authority or
+       a free CA such as Let's Encrypt.
 
-       For information on creating self-signed CA certificates and using them
-       to sign user certificates, see the \*General implementation overview*\
-       chapter of the Open-source PKI book, available online at
-       \?http://ospkibook.sourceforge.net/?\. Here is a quick overview. First,
-       read this message:
+       The exim.org setup uses Let's Encrypt, using the lego tooling and a small
+       shell wrapper to let the certificates be automatically renewed via cron.
 
-       \?http://www.FreeBSD.org/cgi/mid.cgi?id=3C3F3A93.C1ECF9B0%40mindspring.com?\
-
-       Then, follow the instructions found on these two (consecutive) pages:
-
-       \?http://ospkibook.sourceforge.net/docs/OSPKI-2.4.6/OSPKI/initialisation.htm?\
-       \?http://ospkibook.sourceforge.net/docs/OSPKI-2.4.6/OSPKI/keygensign.htm?\
-
-       Two points on the PKI Book literature:
-
-       (1) It's assumed that it's okay to use a passphrase-protected key to
-           encrypt the user/site/leaf certificate. If this isn't acceptable,
-           you seem to be able to strip out the passphrase as follows:
-
-==>          openssl rsa -in user.key -our user.key.new
-             mv user.key.new
-
-           This should be done immediately after \(user.key)\ is created.
-
-       (2) The \*sign.sh*\ script is available in the \*mod_ssl*\ distribution,
-           available at \?http://www.modssl.org/source/?\.
-
-       Having followed the instructions, you end up with the following files:
-
-       (a) \(ca.crt)\
-
-       This file should be installed into the client software as a trusted
-       root certification authority. In Windows XP, this can be done as follows:
-
-       \#\#Call the file \(ca_cert.cer)\
-       [[br]]
-       \#\#Double-click on the file
-       [[br]]
-       \#\#"Install Certificate";
-       [[br]]
-       \#\#"Next"
-       [[br]]
-       \#\#"Place all certificates in the following store"
-       [[br]]
-       \#\#"Browse..."
-       [[br]]
-       \#\#"Trusted Root Certification Authorities"
-       [[br]]
-       \#\#"OK"
-       [[br]]
-       \#\#"Next"
-       [[br]]
-       \#\#"Finish"
-       [[br]]
-       \#\#"Yes"
-       [[br]]
-       \#\#"OK"
-
-       (b) \(user.crt)\ and \(user.key)\
-
-       These files should be installed into the server software. In Exim, this
-       can be done by adding these lines to the configuration file:
-
-==>      tls_certificate = /usr/local/etc/exim/tls_cert
-         tls_privatekey = /usr/local/etc/exim/tls_key
-
-       Then install \(user.crt)\ and \(user.key)\ under the names \(tls_cert)\
-       and \(tls_key)\ in the appropriate directory.
-
+       \?https://github.com/xenolf/lego?\
 
 Q1702: How can I arrange for Exim to advertise support for SMTP authentication
        only when the session is encrypted?

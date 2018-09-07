@@ -392,7 +392,7 @@ very wide interest.
 An &"easier"& discussion of Exim which provides more in-depth explanatory,
 introductory, and tutorial material can be found in a book entitled &'The Exim
 SMTP Mail Server'& (second edition, 2007), published by UIT Cambridge
-(&url(http://www.uit.co.uk/exim-book/)).
+(&url(https://www.uit.co.uk/exim-book/)).
 
 This book also contains a chapter that gives a general introduction to SMTP and
 Internet mail. Inevitably, however, the book is unlikely to be fully up-to-date
@@ -456,7 +456,7 @@ website, are hosted at the University of Cambridge.
 .cindex "FAQ"
 As well as Exim distribution tar files, the Exim web site contains a number of
 differently formatted versions of the documentation. A recent addition to the
-online information is the Exim wiki (&url(http://wiki.exim.org)),
+online information is the Exim wiki (&url(https://wiki.exim.org)),
 which contains what used to be a separate FAQ, as well as various other
 examples, tips, and know-how that have been contributed by Exim users.
 The wiki site should always redirect to the correct place, which is currently
@@ -487,7 +487,7 @@ If you are using a Debian distribution of Exim, you may wish to subscribe to
 the Debian-specific mailing list &'pkg-exim4-users@lists.alioth.debian.org'&
 via this web page:
 .display
-&url(http://lists.alioth.debian.org/mailman/listinfo/pkg-exim4-users)
+&url(https://alioth-lists.debian.net/cgi-bin/mailman/listinfo/pkg-exim4-users)
 .endd
 Please ask Debian-specific questions on this list and not on the general Exim
 lists.
@@ -509,14 +509,14 @@ message to the &'exim-dev'& mailing list and have it discussed.
 .cindex "distribution" "https site"
 The master distribution site for the Exim distribution is
 .display
-&*https://downloads.exim.org/*&
+.url(https://downloads.exim.org/)
 .endd
 The service is available over HTTPS, HTTP and FTP.
 We encourage people to migrate to HTTPS.
 
-The content served at &'https://downloads.exim.org/'& is identical to the
-content served at &'https://ftp.exim.org/pub/exim'& and
-&'ftp://ftp.exim.org/pub/exim'&.
+The content served at &url(https://downloads.exim.org/) is identical to the
+content served at &url(https://ftp.exim.org/pub/exim) and
+&url(ftp://ftp.exim.org/pub/exim).
 
 If accessing via a hostname containing &'ftp'&, then the file references that
 follow are relative to the &_exim_& directories at these sites.
@@ -771,7 +771,7 @@ Foundation; either version 2 of the License, or (at your option) any later
 version.
 This code implements Dan Bernstein's Constant DataBase (cdb) spec. Information,
 the spec and sample code for cdb can be obtained from
-&url(http://www.pobox.com/~djb/cdb.html). This implementation borrows
+&url(https://cr.yp.to/cdb.html). This implementation borrows
 some code from Dan Bernstein's implementation (which has no license
 restrictions applied to it).
 .endblockquote
@@ -825,7 +825,7 @@ Redistributions of any form whatsoever must retain the following
 acknowledgment:
 
 &"This product includes software developed by Computing Services
-at Carnegie Mellon University (&url(http://www.cmu.edu/computing/)."&
+at Carnegie Mellon University (&url(https://www.cmu.edu/computing/)."&
 
 CARNEGIE MELLON UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO
 THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
@@ -1696,7 +1696,7 @@ or set PCRE_CONFIG=yes to use the installed &(pcre-config)& command.
 If your operating system has no
 PCRE support then you will need to obtain and build the current PCRE
 from &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/).
-More information on PCRE is available at &url(http://www.pcre.org/).
+More information on PCRE is available at &url(https://www.pcre.org/).
 
 .section "DBM libraries" "SECTdb"
 .cindex "DBM libraries" "discussion of"
@@ -1749,14 +1749,18 @@ the traditional &'ndbm'& interface.
 .next
 To complicate things further, there are several very different versions of the
 Berkeley DB package. Version 1.85 was stable for a very long time, releases
-2.&'x'& and 3.&'x'& were current for a while, but the latest versions are now
-numbered 4.&'x'&. Maintenance of some of the earlier releases has ceased. All
-versions of Berkeley DB can be obtained from
-&url(http://www.sleepycat.com/).
+2.&'x'& and 3.&'x'& were current for a while, but the latest versions when Exim last revamped support were numbered 4.&'x'&.
+Maintenance of some of the earlier releases has ceased. All versions of
+Berkeley DB could be obtained from
+&url(http://www.sleepycat.com/), which is now a redirect to their new owner's
+page with far newer versions listed.
+It is probably wise to plan to move your storage configurations away from
+Berkeley DB format, as today there are smaller and simpler alternatives more
+suited to Exim's usage model.
 .next
 .cindex "&'tdb'& DBM library"
 Yet another DBM library, called &'tdb'&, is available from
-&url(http://download.sourceforge.net/tdb). It has its own interface, and also
+&url(https://sourceforge.net/projects/tdb/files/). It has its own interface, and also
 operates on a single file.
 .endlist
 
@@ -1869,7 +1873,7 @@ supports the &[iconv()]& function.
 
 However, some of the operating systems that supply &[iconv()]& do not support
 very many conversions. The GNU &%libiconv%& library (available from
-&url(http://www.gnu.org/software/libiconv/)) can be installed on such
+&url(https://www.gnu.org/software/libiconv/)) can be installed on such
 systems to remedy this deficiency, as well as on systems that do not supply
 &[iconv()]& at all. After installing &%libiconv%&, you should add
 .code
@@ -2957,7 +2961,7 @@ acceptable or not. See section &<<SECTcheckaccess>>&.
 Features such as authentication and encryption, where the client input is not
 plain text, cannot easily be tested with &%-bh%&. Instead, you should use a
 specialized SMTP test program such as
-&url(http://jetmore.org/john/code/#swaks,swaks).
+&url(https://www.jetmore.org/john/code/swaks/,swaks).
 
 .vitem &%-bhc%&&~<&'IP&~address'&>
 .oindex "&%-bhc%&"
@@ -6335,6 +6339,9 @@ online Perl manpages, in
 many Perl reference books, and also in
 Jeffrey Friedl's &'Mastering Regular Expressions'&, which is published by
 O'Reilly (see &url(http://www.oreilly.com/catalog/regex2/)).
+. --- the http: URL here redirects to another page with the ISBN in the URL
+. --- where trying to use https: just redirects back to http:, so sticking
+. --- to the old URL for now.  2018-09-07.
 
 The documentation for the syntax and semantics of the regular expressions that
 are supported by PCRE is included in the PCRE distribution, and no further
@@ -6501,13 +6508,15 @@ The following single-key lookup types are implemented:
 string without a terminating binary zero. The cdb format is designed for
 indexed files that are read frequently and never updated, except by total
 re-creation. As such, it is particularly suitable for large files containing
-aliases or other indexed data referenced by an MTA. Information about cdb can
-be found in several places:
+aliases or other indexed data referenced by an MTA. Information about cdb and
+tools for building the files can be found in several places:
 .display
-&url(http://www.pobox.com/~djb/cdb.html)
-&url(ftp://ftp.corpit.ru/pub/tinycdb/)
-&url(http://packages.debian.org/stable/utils/freecdb.html)
+&url(https://cr.yp.to/cdb.html)
+&url(http://www.corpit.ru/mjt/tinycdb.html)
+&url(https://packages.debian.org/stable/utils/freecdb)
+&url(https://github.com/philpennock/cdbtools) (in Go)
 .endd
+. --- 2018-09-07: corpit.ru http:-only
 A cdb distribution is not needed in order to build Exim with cdb support,
 because the code for reading cdb files is included directly in Exim itself.
 However, no means of building or testing cdb files is provided with Exim, so
@@ -6788,6 +6797,7 @@ not likely to be useful in normal operation.
 .next
 .cindex "whoson lookup type"
 .cindex "lookup" "whoson"
+. --- still http:-only, 2018-09-07
 &(whoson)&: &'Whoson'& (&url(http://whoson.sourceforge.net)) is a protocol that
 allows a server to check whether a particular (dynamically allocated) IP
 address is currently allocated to a known (trusted) user and, optionally, to
@@ -11371,7 +11381,7 @@ matched using &%match_ip%&.
 .cindex "expansion" "PAM authentication test"
 .cindex "&%pam%& expansion condition"
 &'Pluggable Authentication Modules'&
-(&url(http://www.kernel.org/pub/linux/libs/pam/)) are a facility that is
+(&url(https://mirrors.edge.kernel.org/pub/linux/libs/pam/)) are a facility that is
 available in the latest releases of Solaris and in some GNU/Linux
 distributions. The Exim support, which is intended for use in conjunction with
 the SMTP AUTH command, is available only if Exim is compiled with
@@ -11404,11 +11414,7 @@ server_condition = ${if pam{$auth2:${sg{$auth3}{:}{::}}}}
 In some operating systems, PAM authentication can be done only from a process
 running as root. Since Exim is running as the Exim user when receiving
 messages, this means that PAM cannot be used directly in those systems.
-A patched version of the &'pam_unix'& module that comes with the
-Linux PAM package is available from &url(http://www.e-admin.de/pam_exim/).
-The patched module allows one special uid/gid combination, in addition to root,
-to authenticate. If you build the patched module to allow the Exim user and
-group, PAM can then be used from an Exim authenticator.
+. --- 2018-09-07: the pam_exim modified variant has gone, removed claims re using Exim via that
 
 
 .vitem &*pwcheck&~{*&<&'string1'&>&*:*&<&'string2'&>&*}*&
@@ -14197,7 +14203,7 @@ feel that in today's Internet, this causes more problems than it solves.
 It now defaults to true.
 A more detailed analysis of the issues is provided by Dan Bernstein:
 .display
-&url(http://cr.yp.to/smtp/8bitmime.html)
+&url(https://cr.yp.to/smtp/8bitmime.html)
 .endd
 
 To log received 8BITMIME status use
@@ -15178,7 +15184,7 @@ This option will let GnuTLS (2.12.0 or later) autoload PKCS11 modules with
 the p11-kit configuration files in &_/etc/pkcs11/modules/_&.
 
 See
-&url(http://www.gnutls.org/manual/gnutls.html#Smart-cards-and-HSMs)
+&url(https://www.gnutls.org/manual/gnutls.html#Smart-cards-and-HSMs)
 for documentation.
 
 
@@ -26733,8 +26739,8 @@ fixed_cram:
 .scindex IIDcyrauth2 "authenticators" "&(cyrus_sasl)&"
 .cindex "Cyrus" "SASL library"
 .cindex "Kerberos"
-The code for this authenticator was provided by Matthew Byng-Maddick of A L
-Digital Ltd (&url(http://www.aldigital.co.uk)).
+The code for this authenticator was provided by Matthew Byng-Maddick while
+at A L Digital Ltd.
 
 The &(cyrus_sasl)& authenticator provides server support for the Cyrus SASL
 library implementation of the RFC 2222 (&"Simple Authentication and Security
@@ -27098,7 +27104,7 @@ The &(spa)& authenticator provides client support for Microsoft's &'Secure
 Password Authentication'& mechanism,
 which is also sometimes known as NTLM (NT LanMan). The code for client side of
 this authenticator was contributed by Marc Prud'hommeaux, and much of it is
-taken from the Samba project (&url(http://www.samba.org)). The code for the
+taken from the Samba project (&url(https://www.samba.org/)). The code for the
 server side was subsequently contributed by Tom Kistner. The mechanism works as
 follows:
 
@@ -27604,11 +27610,11 @@ aware of future feature enhancements of GnuTLS.
 
 Documentation of the strings accepted may be found in the GnuTLS manual, under
 "Priority strings".  This is online as
-&url(http://www.gnutls.org/manual/html_node/Priority-Strings.html),
+&url(https://www.gnutls.org/manual/html_node/Priority-Strings.html),
 but beware that this relates to GnuTLS 3, which may be newer than the version
 installed on your system.  If you are using GnuTLS 3,
 then the example code
-&url(http://www.gnutls.org/manual/gnutls.html#Listing-the-ciphersuites-in-a-priority-string)
+&url(https://www.gnutls.org/manual/gnutls.html#Listing-the-ciphersuites-in-a-priority-string)
 on that site can be used to test a given string.
 
 For example:
@@ -28104,21 +28110,28 @@ connections to new processes if TLS has been used.
 .section "Certificates and all that" "SECTcerandall"
 .cindex "certificate" "references to discussion"
 In order to understand fully how TLS works, you need to know about
-certificates, certificate signing, and certificate authorities. This is not the
-place to give a tutorial, especially as I do not know very much about it
-myself. Some helpful introduction can be found in the FAQ for the SSL addition
-to Apache, currently at
+certificates, certificate signing, and certificate authorities.
+This is a large topic and an introductory guide is unsuitable for the Exim
+reference manual, so instead we provide pointers to existing documentation.
+
+The Apache web-server was for a long time the canonical guide, so their
+documentation is a good place to start; their SSL module's Introduction
+document is currently at
 .display
-&url(http://www.modssl.org/docs/2.7/ssl_faq.html#ToC24)
+.url(https://httpd.apache.org/docs/current/ssl/ssl_intro.html)
 .endd
-Other parts of the &'modssl'& documentation are also helpful, and have
-links to further files.
+and their FAQ is at
+.display
+&url(https://httpd.apache.org/docs/current/ssl/ssl_faq.html)
+.endd
+
 Eric Rescorla's book, &'SSL and TLS'&, published by Addison-Wesley (ISBN
-0-201-61598-3), contains both introductory and more in-depth descriptions.
-Some sample programs taken from the book are available from
-.display
-&url(http://www.rtfm.com/openssl-examples/)
-.endd
+0-201-61598-3) in 2001, contains both introductory and more in-depth
+descriptions.
+More recently Ivan Ristić's book &'Bulletproof SSL and TLS'&,
+published by Feisty Duck (ISBN 978-1907117046) in 2013 is good.
+Ivan is the author of the popular TLS testing tools at
+&url(https://www.ssllabs.com/).
 
 
 .section "Certificate chains" "SECID186"
@@ -28190,7 +28203,7 @@ signed with that self-signed certificate.
 For information on creating self-signed CA certificates and using them to sign
 user certificates, see the &'General implementation overview'& chapter of the
 Open-source PKI book, available online at
-&url(http://ospkibook.sourceforge.net/).
+&url(https://sourceforge.net/projects/ospkibook/).
 .ecindex IIDencsmtp1
 .ecindex IIDencsmtp2
 
@@ -30546,6 +30559,10 @@ connection (assuming long-enough TTL).
 Exim does not share information between multiple incoming
 connections (but your local name server cache should be active).
 
+There are a number of DNS lists to choose from, some commercial, some free,
+or free for small deployments.  An overview can be found at
+&url(https://en.wikipedia.org/wiki/Comparison_of_DNS_blacklists).
+
 
 
 .section "Specifying the IP address for a DNS list lookup" "SECID201"
@@ -30567,8 +30584,7 @@ MX hosts or nameservers of an email sender address. For an example, see section
 .section "DNS lists keyed on domain names" "SECID202"
 .cindex "DNS list" "keyed by domain name"
 There are some lists that are keyed on domain names rather than inverted IP
-addresses (see for example the &'domain based zones'& link at
-&url(http://www.rfc-ignorant.org/)). No reversing of components is used
+addresses.  No reversing of components is used
 with these lists. You can change the name that is looked up in a DNS list by
 listing it after the domain name, introduced by a slash. For example,
 .code
@@ -32084,7 +32100,7 @@ written.  The usual &`defer_ok`& option is available.
 .vitem &%aveserver%&
 .cindex "virus scanners" "Kaspersky"
 This is the scanner daemon of Kaspersky Version 5. You can get a trial version
-at &url(http://www.kaspersky.com). This scanner type takes one option,
+at &url(https://www.kaspersky.com/). This scanner type takes one option,
 which is the path to the daemon's UNIX socket. The default is shown in this
 example:
 .code
@@ -32095,7 +32111,7 @@ av_scanner = aveserver:/var/run/aveserver
 .vitem &%clamd%&
 .cindex "virus scanners" "clamd"
 This daemon-type scanner is GPL and free. You can get it at
-&url(http://www.clamav.net/). Some older versions of clamd do not seem to
+&url(https://www.clamav.net/). Some older versions of clamd do not seem to
 unpack MIME containers, so it used to be recommended to unpack MIME attachments
 in the MIME ACL. This is no longer believed to be necessary.
 
@@ -32189,7 +32205,7 @@ av_scanner = cmdline:\
 .endd
 .vitem &%drweb%&
 .cindex "virus scanners" "DrWeb"
-The DrWeb daemon scanner (&url(http://www.sald.com/)) interface
+The DrWeb daemon scanner (&url(https://www.sald.ru/)) interface
 takes one option,
 either a full path to a UNIX socket,
 or host and port specifiers separated by white space.
@@ -32226,7 +32242,7 @@ If you omit the argument, the default values show above are used.
 
 .vitem &%fsecure%&
 .cindex "virus scanners" "F-Secure"
-The F-Secure daemon scanner (&url(http://www.f-secure.com)) takes one
+The F-Secure daemon scanner (&url(https://www.f-secure.com/)) takes one
 argument which is the path to a UNIX socket. For example:
 .code
 av_scanner = fsecure:/path/to/.fsav
@@ -32247,9 +32263,13 @@ The default path is &_/var/run/AvpCtl_&.
 
 .vitem &%mksd%&
 .cindex "virus scanners" "mksd"
-This is a daemon type scanner that is aimed mainly at Polish users, though some
-parts of documentation are now available in English. You can get it at
-&url(http://linux.mks.com.pl/). The only option for this scanner type is
+This was a daemon type scanner that is aimed mainly at Polish users,
+though some documentation was available in English.
+The history can be shown at &url(https://en.wikipedia.org/wiki/Mks_vir)
+and this appears to be a candidate for removal from Exim, unless
+we are informed of other virus scanners which use the same protocol
+to integrate.
+The only option for this scanner type is
 the maximum number of processes used simultaneously to scan the attachments,
 provided that mksd has
 been run with at least the same number of child processes. For example:
@@ -32281,7 +32301,7 @@ specify an empty element to get this.
 .vitem &%sophie%&
 .cindex "virus scanners" "Sophos and Sophie"
 Sophie is a daemon that uses Sophos' &%libsavi%& library to scan for viruses.
-You can get Sophie at &url(http://www.clanfield.info/sophie/). The only option
+You can get Sophie at &url(http://sophie.sourceforge.net/). The only option
 for this scanner type is the path to the UNIX socket that Sophie uses for
 client communication. For example:
 .code
@@ -32385,7 +32405,7 @@ Support is also provided for Rspamd.
 
 For more information about installation and configuration of SpamAssassin or
 Rspamd refer to their respective websites at
-&url(http://spamassassin.apache.org) and &url(http://www.rspamd.com)
+&url(https://spamassassin.apache.org/) and &url(https://www.rspamd.com/)
 
 SpamAssassin can be installed with CPAN by running:
 .code
@@ -35574,7 +35594,7 @@ the address, giving a suitable error message.
 .cindex "VERP"
 .cindex "Variable Envelope Return Paths"
 .cindex "envelope sender"
-Variable Envelope Return Paths &-- see &url(http://cr.yp.to/proto/verp.txt) &--
+Variable Envelope Return Paths &-- see &url(https://cr.yp.to/proto/verp.txt) &--
 are a way of helping mailing list administrators discover which subscription
 address is the cause of a particular delivery failure. The idea is to encode
 the original recipient address in the outgoing envelope sender address, so that
@@ -37152,7 +37172,7 @@ the next chapter. The utilities described here are:
 
 Another utility that might be of use to sites with many MTAs is Tom Kistner's
 &'exilog'&. It provides log visualizations across multiple Exim servers. See
-&url(http://duncanthrax.net/exilog/) for details.
+&url(https://duncanthrax.net/exilog/) for details.
 
 
 
@@ -37420,8 +37440,8 @@ assuming you have used the name &"exim"& for the Exim user. You can run
 .cindex "&'eximstats'&"
 A Perl script called &'eximstats'& is provided for extracting statistical
 information from log files. The output is either plain text, or HTML.
-Exim log files are also supported by the &'Lire'& system produced by the
-LogReport Foundation &url(http://www.logreport.org).
+. --- 2018-09-07: LogReport's Lire appears to be dead; website is a Yahoo Japan
+. --- 404 error and everything else points to that.
 
 The &'eximstats'& script has been hacked about quite a bit over time. The
 latest version is the result of some extensive revision by Steve Campbell. A
@@ -39541,13 +39561,14 @@ for more information of what they mean.
 SPF is a mechanism whereby a domain may assert which IP addresses may transmit
 messages with its domain in the envelope from, documented by RFC 7208.
 For more information on SPF see &url(http://www.openspf.org).
+. --- 2018-09-07: still not https
 
 Messages sent by a system not authorised will fail checking of such assertions.
 This includes retransmissions done by traditional forwarders.
 
 SPF verification support is built into Exim if SUPPORT_SPF=yes is set in
 &_Local/Makefile_&.  The support uses the &_libspf2_& library
-&url(http://www.libspf2.org/).
+&url(https://www.libspf2.org/).
 There is no Exim involvement in the transmission of messages;
 publishing certain DNS records is all that is required.
 
@@ -39658,6 +39679,7 @@ SPF, but it is supported by the same framework that enables SPF
 capability.
 Refer to &url(http://www.openspf.org/FAQ/Best_guess_record)
 for a description of what it means.
+. --- 2018-09-07: still not https:
 
 To access this feature, simply use the spf_guess condition in place
 of the spf one.  For example:
@@ -39726,10 +39748,8 @@ that uses &"Proxy Protocol"& to speak to it.
 To include this support, include &"SUPPORT_PROXY=yes"&
 in Local/Makefile.
 
-It was built on specifications from:
-(&url(http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt)).
-That URL was revised in May 2014 to version 2 spec:
-(&url(http://git.1wt.eu/web?p=haproxy.git;a=commitdiff;h=afb768340c9d7e50d8e)).
+It was built on the HAProxy specification, found at
+&url(https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt).
 
 The purpose of this facility is so that an application load balancer,
 such as HAProxy, can sit in front of several Exim servers
