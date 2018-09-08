@@ -1775,7 +1775,8 @@ goodcert:
 
 #ifdef SUPPORT_DANE
 tlsa_prob:
-  *errstr = string_sprintf("TLSA record problem: %s", dane_strerror(rc));
+  *errstr = string_sprintf("TLSA record problem: %s",
+    rc == DANE_E_REQUESTED_DATA_NOT_AVAILABLE ? "none usable" : dane_strerror(rc));
 #endif
 
 badcert:

@@ -470,6 +470,25 @@ DNSSEC dane256tak            A      HOSTIPV4
 DNSSEC _1225._tcp.dane256tak TLSA 2 1 1 73e279c0f5f5a9ee9851bbbc39023603d7b266acfd0764419c3b07cc380b79f9
 
 
+; full MX, both TA & EE modes, cert is selfsigned
+; for testing an issue in the gnutls impl
+;
+; tas:
+; openssl x509 -in aux-fixed/cert1 -fingerprint -sha256 -noout \
+; | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
+;
+DNSSEC mxdane256tas           MX  1  dane256tas
+DNSSEC dane256tas             A      HOSTIPV4
+DNSSEC _1225._tcp.dane256tas  TLSA 2 0 1 34d3624101b954d667c1a5ac18078b196cd17fbd61e23df73249c1afab747124
+DNSSEC mxdane256task          MX  1  dane256task
+DNSSEC dane256task            A      HOSTIPV4
+DNSSEC _1225._tcp.dane256task TLSA 2 1 1 c1241d8cc61401079437240467a47e21db921d3398883cd9bb038cc461d7beab
+DNSSEC mxdane256ees           MX  1  dane256ees
+DNSSEC dane256ees             A      HOSTIPV4
+DNSSEC _1225._tcp.dane256ees  TLSA 3 1 1 c1241d8cc61401079437240467a47e21db921d3398883cd9bb038cc461d7beab
+
+
+
 ; A multiple-return MX where all TLSA lookups defer
 DNSSEC mxdanelazy           MX  1   danelazy
 DNSSEC                      MX  2   danelazy2

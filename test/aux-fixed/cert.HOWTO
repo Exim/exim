@@ -1,0 +1,4 @@
+openssl req -x509 -config cert.config -newkey rsa:2048 -keyout key.pem -out cert.pem -days 7000
+cat key.pem cert.pem > cert1
+# or cert2, as needed.  Mind the day count above does not blow the Y2038 barrier.
+rm cert.pem key.pem

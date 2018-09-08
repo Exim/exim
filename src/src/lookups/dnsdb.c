@@ -150,7 +150,7 @@ store as possible later, so we preallocate the result here */
 
 gstring * yield = string_get(256);
 
-dns_record *rr;
+dns_record * rr;
 dns_answer dnsa;
 dns_scan dnss;
 
@@ -421,7 +421,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       else if (type == T_TLSA)
         {
         uint8_t usage, selector, matching_type;
-        uint16_t i, payload_length;
+        uint16_t payload_length;
         uschar s[MAX_TLSA_EXPANDED_SIZE];
 	uschar * sp = s;
         uschar * p = US rr->data;
@@ -434,10 +434,8 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
         sp += sprintf(CS s, "%d%c%d%c%d%c", usage, *outsep2,
 		selector, *outsep2, matching_type, *outsep2);
         /* Now append the cert/identifier, one hex char at a time */
-        for (i=0;
-             i < payload_length && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4);
-             i++)
-          sp += sprintf(CS sp, "%02x", (unsigned char)p[i]);
+	while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
+          sp += sprintf(CS sp, "%02x", *p++);
 
         yield = string_cat(yield, s);
         }

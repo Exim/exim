@@ -1247,7 +1247,29 @@ switch (rc)
     return DEFER; /* just defer this TLS'd conn */
 
   case DNS_SUCCEED:
-    if (sec) return OK;
+    if (sec)
+      {
+      DEBUG(D_transport)
+	{
+	dns_scan dnss;
+	dns_record * rr;
+	for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_TLSA)
+	  {
+	  uint16_t payload_length = rr->size - 3;
+	  uschar s[MAX_TLSA_EXPANDED_SIZE], * sp = s, * p = US rr->data;
+
+	  sp += sprintf(CS sp, "%d ", *p++); /* usage */
+	  sp += sprintf(CS sp, "%d ", *p++); /* selector */
+	  sp += sprintf(CS sp, "%d ", *p++); /* matchtype */
+	  while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
+	    sp += sprintf(CS sp, "%02x", *p++);
+
+	  debug_printf(" %s\n", s);
+	  }
+	}
+      return OK;
+      }
     log_write(0, LOG_MAIN,
       "DANE error: TLSA lookup for %s not DNSSEC", host->name);
     /*FALLTRHOUGH*/
