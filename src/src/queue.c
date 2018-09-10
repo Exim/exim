@@ -994,6 +994,7 @@ uschar *doing = NULL;
 uschar *username;
 uschar *errmsg;
 uschar spoolname[32];
+extern int acl_where;
 
 /* Set the global message_id variable, used when re-writing spool files. This
 also causes message ids to be added to log messages. */
@@ -1257,6 +1258,12 @@ switch(action)
       {
       log_write(0, LOG_MAIN, "removed by %s", username);
       log_write(0, LOG_MAIN, "Completed");
+#ifndef DISABLE_EVENT
+      /* Set a known context for any ACLs we call via expansions */
+      acl_where = ACL_WHERE_DELIVERY;
+      (void) event_raise(event_action, US"msg:complete", NULL);
+      acl_where = ACL_WHERE_UNKNOWN;
+#endif
       }
     break;
     }

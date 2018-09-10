@@ -851,7 +851,7 @@ if (action)
   if (!(s = expand_string(action)) && *expand_string_message)
     log_write(0, LOG_MAIN|LOG_PANIC,
       "failed to expand event_action %s in %s: %s\n",
-      event, transport_name, expand_string_message);
+      event, transport_name == NULL ? US"main" : transport_name, expand_string_message);
 
   event_name = event_data = NULL;
 
