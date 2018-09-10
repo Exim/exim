@@ -509,7 +509,7 @@ message to the &'exim-dev'& mailing list and have it discussed.
 .cindex "distribution" "https site"
 The master distribution site for the Exim distribution is
 .display
-.url(https://downloads.exim.org/)
+&url(https://downloads.exim.org/)
 .endd
 The service is available over HTTPS, HTTP and FTP.
 We encourage people to migrate to HTTPS.
@@ -28125,7 +28125,7 @@ The Apache web-server was for a long time the canonical guide, so their
 documentation is a good place to start; their SSL module's Introduction
 document is currently at
 .display
-.url(https://httpd.apache.org/docs/current/ssl/ssl_intro.html)
+&url(https://httpd.apache.org/docs/current/ssl/ssl_intro.html)
 .endd
 and their FAQ is at
 .display
