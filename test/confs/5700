@@ -35,6 +35,7 @@ ev_msg_fail:
 	    refused by fdqn <$host> \
 	    local_part <$local_part> \
 	    domain <$domain> \
+	    errstr <$event_data> \
 
     accept logwrite = . \
 	    local_part <$local_part> \

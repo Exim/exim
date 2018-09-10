@@ -40089,6 +40089,8 @@ with the event type:
 .display
 &`dane:fail            `& failure reason
 &`msg:delivery         `& smtp confirmation message
+&`msg:fail:internal    `& failure reason
+&`msg:fail:delivery    `& smtp error message
 &`msg:rcpt:host:defer  `& error string
 &`msg:rcpt:defer       `& error string
 &`msg:host:defer       `& error string

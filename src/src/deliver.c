@@ -6171,19 +6171,19 @@ if (process_recipients != RECIP_IGNORE)
         /* RECIP_DEFER is set when a system filter freezes a message. */
 
         case RECIP_DEFER:
-        new->next = addr_defer;
-        addr_defer = new;
-        break;
+	  new->next = addr_defer;
+	  addr_defer = new;
+	  break;
 
 
         /* RECIP_FAIL_FILTER is set when a system filter has obeyed a "fail"
         command. */
 
         case RECIP_FAIL_FILTER:
-        new->message =
-          filter_message ? filter_message : US"delivery cancelled";
-        setflag(new, af_pass_message);
-        goto RECIP_QUEUE_FAILED;   /* below */
+	  new->message =
+	    filter_message ? filter_message : US"delivery cancelled";
+	  setflag(new, af_pass_message);
+	  goto RECIP_QUEUE_FAILED;   /* below */
 
 
         /* RECIP_FAIL_TIMEOUT is set when a message is frozen, but is older
@@ -6193,15 +6193,15 @@ if (process_recipients != RECIP_IGNORE)
         been logged. */
 
         case RECIP_FAIL_TIMEOUT:
-        new->message  = US"delivery cancelled; message timed out";
-        goto RECIP_QUEUE_FAILED;   /* below */
+	  new->message  = US"delivery cancelled; message timed out";
+	  goto RECIP_QUEUE_FAILED;   /* below */
 
 
         /* RECIP_FAIL is set when -Mg has been used. */
 
         case RECIP_FAIL:
-        new->message  = US"delivery cancelled by administrator";
-        /* Fall through */
+	  new->message  = US"delivery cancelled by administrator";
+	  /* Fall through */
 
         /* Common code for the failure cases above. If this is not a bounce
         message, put the address on the failed list so that it is used to
@@ -6209,11 +6209,11 @@ if (process_recipients != RECIP_IGNORE)
         The incident has already been logged. */
 
         RECIP_QUEUE_FAILED:
-        if (sender_address[0] != 0)
-          {
-          new->next = addr_failed;
-          addr_failed = new;
-          }
+	  if (sender_address[0])
+	    {
+	    new->next = addr_failed;
+	    addr_failed = new;
+	    }
         break;
 
 
@@ -6222,17 +6222,17 @@ if (process_recipients != RECIP_IGNORE)
         is a bounce message, it will get frozen. */
 
         case RECIP_FAIL_LOOP:
-        new->message = US"Too many \"Received\" headers - suspected mail loop";
-        post_process_one(new, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
-        break;
+	  new->message = US"Too many \"Received\" headers - suspected mail loop";
+	  post_process_one(new, FAIL, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
+	  break;
 
 
         /* Value should be RECIP_ACCEPT; take this as the safe default. */
 
         default:
-        if (!addr_new) addr_new = new; else addr_last->next = new;
-        addr_last = new;
-        break;
+	  if (!addr_new) addr_new = new; else addr_last->next = new;
+	  addr_last = new;
+	  break;
         }
 
 #ifndef DISABLE_EVENT

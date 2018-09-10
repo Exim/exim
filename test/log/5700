@@ -78,7 +78,7 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
 1999-03-02 09:44:33 10HmbB-0005vi-00 ** userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY
 1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:fail:delivery
-1999-03-02 09:44:33 10HmbB-0005vi-00 . refused by fdqn <127.0.0.1> local_part <userx> domain <domain1>
+1999-03-02 09:44:33 10HmbB-0005vi-00 . refused by fdqn <127.0.0.1> local_part <userx> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY>
 1999-03-02 09:44:33 10HmbB-0005vi-00 userx@domain1: error ignored
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:complete
