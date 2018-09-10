@@ -111,3 +111,12 @@ A message we will cancel from the queue
 ****
 exim -odi -Mg $msg1
 ****
+#
+#
+#
+#
+exim -odq userx@domain1
+A message we will remove from the queue
+****
+exim -odi -Mrm $msg1
+****
