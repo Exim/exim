@@ -1248,8 +1248,10 @@ if (  !init_dh(server_sni, cbinfo->dhparam, NULL, &dummy_errstr)
    )
   return SSL_TLSEXT_ERR_NOACK;
 
-if (cbinfo->server_cipher_list)
-  SSL_CTX_set_cipher_list(server_sni, CS cbinfo->server_cipher_list);
+if (  cbinfo->server_cipher_list
+   && !SSL_CTX_set_cipher_list(server_sni, CS cbinfo->server_cipher_list))
+  return SSL_TLSEXT_ERR_NOACK;
+
 #ifndef DISABLE_OCSP
 if (cbinfo->u_ocsp.server.file)
   {
