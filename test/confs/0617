@@ -1,0 +1,40 @@
+# Exim test configuration 0617
+
+.include DIR/aux-var/std_conf_prefix
+
+# ----- Routers -----
+
+begin routers
+
+route_userx:
+  driver = redirect
+  local_parts = userx
+  errors_to = dump@domain1
+  allow_filter
+  file = DIR/aux-fixed/TESTNUM.filter
+  user = EXIMUSER
+  no_more
+
+dump_bounces:
+  driver = redirect
+  local_parts = dump
+  data = :blackhole:
+  no_more
+
+route_smtp:
+  driver = manualroute
+  route_list = * 127.0.0.1 byname
+  errors_to = dump@domain1
+  self = send
+  transport = smtp
+  no_more
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+# End
