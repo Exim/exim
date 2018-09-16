@@ -253,14 +253,19 @@ dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof)
 int rc;
 struct flock lock_data;
 BOOL read_only = flags == O_RDONLY;
-uschar dirname[256], filename[256];
+uschar * dirname, * filename;
 
 /* The first thing to do is to open a separate file on which to lock. This
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
-snprintf(CS dirname, sizeof(dirname), "%s/db", spool_directory);
-snprintf(CS filename, sizeof(filename), "%.54s/%.200s.lockfile", dirname, name);
+#ifdef COMPILE_UTILITY
+asprintf(CSS &dirname, "%s/db", spool_directory);
+asprintf(CSS &filename, "%s/%s.lockfile", dirname, name);
+#else
+dirname = string_sprintf("%s/db", spool_directory);
+filename = string_sprintf("%s/%s.lockfile", dirname, name);
+#endif
 
 dbblock->lockfd = Uopen(filename, flags, 0);
 if (dbblock->lockfd < 0)
@@ -273,7 +278,7 @@ if (dbblock->lockfd < 0)
 /* Now we must get a lock on the opened lock file; do this with a blocking
 lock that times out. */
 
-lock_data.l_type = read_only? F_RDLCK : F_WRLCK;
+lock_data.l_type = read_only ? F_RDLCK : F_WRLCK;
 lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
 
 sigalrm_seen = FALSE;
@@ -296,7 +301,11 @@ if (rc < 0)
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. */
 
-snprintf(CS filename, sizeof(filename), "%s/%s", dirname, name);
+#ifdef COMPILE_UTILITY
+asprintf(CSS &filename, "%s/%s", dirname, name);
+#else
+filename = string_sprintf("%s/%s", dirname, name);
+#endif
 EXIM_DBOPEN(filename, dirname, flags, 0, &(dbblock->dbptr));
 
 if (!dbblock->dbptr)

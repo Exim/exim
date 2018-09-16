@@ -116,6 +116,10 @@ JH/24 Bug 2310: Raise a msg:fail:internal event for each undelivered recipient,
       and a msg:complete for the whole, when a message is manually reoved using
       -Mrm.  Developement by Matthias Kurz, hacked on by JH.
 
+JH/25 Avoid fixed-size buffers for pathnames in DB access.  This required using
+      a "Gnu special" function, asprintf() in the DB utility binary builds; I
+      hope that is portable enough.
+
 
 Exim version 4.91
 -----------------
