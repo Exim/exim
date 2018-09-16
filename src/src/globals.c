@@ -315,7 +315,6 @@ struct global_flags f =
 	.really_exim            = TRUE,
 	.receive_call_bombout   = FALSE,
 	.recipients_discarded   = FALSE,
-/* BOOL    rfc821_domains         = FALSE;  <<< on the way out */
 	.running_in_test_harness = FALSE,
 
 	.search_find_defer      = FALSE,
@@ -325,7 +324,6 @@ struct global_flags f =
 	.sender_local           = FALSE,
 	.sender_name_forced     = FALSE,
 	.sender_set_untrusted   = FALSE,
-/* BOOL    sender_verified_responded = FALSE; /* never used? */
 	.smtp_authenticated     = FALSE,
 	.smtp_in_pipelining_advertised = FALSE,
 	.smtp_in_pipelining_used = FALSE,

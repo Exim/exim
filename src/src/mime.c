@@ -338,17 +338,16 @@ while(!done)
     if ( ((c == '\t') || (c == ' ')) && (header_value_mode == 1) )
       continue;
 
-      /* we have hit a non-whitespace char, start copying value data */
-      header_value_mode = 2;
+    /* we have hit a non-whitespace char, start copying value data */
+    header_value_mode = 2;
 
-      if (c == '"')       /* flip "quoted" mode */
-        header_value_mode = header_value_mode==2 ? 3 : 2;
+    if (c == '"')       /* flip "quoted" mode */
+      header_value_mode = header_value_mode==2 ? 3 : 2;
 
-      /* leave value mode on unquoted ';' */
-      if (header_value_mode == 2 && c == ';') {
-        header_value_mode = 0;
-      };
-      /* -------------------------------- */
+    /* leave value mode on unquoted ';' */
+    if (header_value_mode == 2 && c == ';')
+      header_value_mode = 0;
+    /* -------------------------------- */
     }
   else
     {

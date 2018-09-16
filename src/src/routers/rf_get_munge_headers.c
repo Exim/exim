@@ -109,8 +109,9 @@ if (rblock->remove_headers)
       }
     else if (*s)
       g = string_append_listele(g, ':', s);
-    if (g)
-      *remove_headers = g->s;
+
+  if (g)
+    *remove_headers = g->s;
   }
 
 return OK;

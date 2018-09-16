@@ -3638,7 +3638,9 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 
     if (sx.ok)
       {
+#ifdef SUPPORT_TLS
       int pfd[2];
+#endif
       int socket_fd = sx.cctx.sock;
 
 

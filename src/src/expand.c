@@ -4957,7 +4957,7 @@ while (*s != 0)
           sockun.sun_family = AF_UNIX;
           sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1),
             sub_arg[0]);
-	  server_name = sockun.sun_path;
+	  server_name = US sockun.sun_path;
 
           sigalrm_seen = FALSE;
           alarm(timeout);
@@ -6372,7 +6372,9 @@ while (*s != 0)
     int c;
     uschar *arg = NULL;
     uschar *sub;
+#ifdef SUPPORT_TLS
     var_entry *vp = NULL;
+#endif
 
     /* Owing to an historical mis-design, an underscore may be part of the
     operator name, or it may introduce arguments.  We therefore first scan the

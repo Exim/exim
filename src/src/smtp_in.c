@@ -2367,6 +2367,7 @@ return done - 2;  /* Convert yield values */
 
 
 
+#ifdef SUPPORT_TLS
 static BOOL
 smtp_log_tls_fail(uschar * errstr)
 {
@@ -2378,6 +2379,7 @@ if (Ustrncmp(conn_info, US"SMTP ", 5) == 0) conn_info += 5;
 log_write(0, LOG_MAIN, "TLS error on %s %s", conn_info, errstr);
 return FALSE;
 }
+#endif
 
 
 

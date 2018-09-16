@@ -888,16 +888,17 @@ for (i = 0; i < 3; i++)
         for (;; addr = addr->next)
           {
           setflag(addr, af_retry_timedout);
-          addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
-            string_sprintf("%s: retry timeout exceeded", addr->message);
-          addr->user_message = (addr->user_message == NULL)?
-            US"retry timeout exceeded" :
-            string_sprintf("%s: retry timeout exceeded", addr->user_message);
+          addr->message = addr->message
+            ? string_sprintf("%s: retry timeout exceeded", addr->message)
+	    : US"retry timeout exceeded";
+          addr->user_message = addr->user_message
+	    ? string_sprintf("%s: retry timeout exceeded", addr->user_message)
+	    : US"retry timeout exceeded";
           log_write(0, LOG_MAIN, "** %s%s%s%s: retry timeout exceeded",
             addr->address,
-           (addr->parent == NULL)? US"" : US" <",
-           (addr->parent == NULL)? US"" : addr->parent->address,
-           (addr->parent == NULL)? US"" : US">");
+            addr->parent ? US" <" : US"",
+            addr->parent ? addr->parent->address : US"",
+            addr->parent ? US">" : US"");
 
           if (addr == endaddr) break;
           }

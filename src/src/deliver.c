@@ -1095,7 +1095,7 @@ static uschar buf[sizeof("0.000s")];
 if (diff->tv_sec >= 5 || !LOGGING(millisec))
   return readconf_printtime((int)diff->tv_sec);
 
-sprintf(CS buf, "%d.%03ds", (int)diff->tv_sec, (int)diff->tv_usec/1000);
+sprintf(CS buf, "%u.%03us", (uint)diff->tv_sec, (uint)diff->tv_usec/1000);
 return buf;
 }
 
@@ -8597,6 +8597,7 @@ else
   }
 return;		/* compiler quietening; control does not reach here. */
 
+#ifdef SUPPORT_TLS
 fail:
   log_write(0,
     LOG_MAIN | (exec_type == CEE_EXEC_EXIT ? LOG_PANIC : LOG_PANIC_DIE),
@@ -8606,6 +8607,7 @@ fail:
   Note: this must be _exit(), not exit(). */
 
   _exit(EX_EXECFAILED);
+#endif
 }
 
 /* vi: aw ai sw=2

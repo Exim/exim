@@ -72,9 +72,9 @@ switch(type)
 
   case tod_zulu:
     t = gmtime(&now.tv_sec);
-    (void) sprintf(CS timebuf, "%04d%02d%02d%02d%02d%02dZ",
-      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min,
-      t->tm_sec);
+    (void) sprintf(CS timebuf, "%04u%02u%02u%02u%02u%02uZ",
+      1900 + (uint)t->tm_year, 1 + (uint)t->tm_mon, (uint)t->tm_mday, (uint)t->tm_hour, (uint)t->tm_min,
+      (uint)t->tm_sec);
     return timebuf;
   }
 
@@ -91,14 +91,15 @@ switch(type)
   case tod_log_bare:          /* Format used in logging without timezone */
 #ifndef COMPILE_UTILITY
     if (LOGGING(millisec))
-      sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
-      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday,
-      t->tm_hour, t->tm_min, t->tm_sec, (int)(now.tv_usec/1000));
+      sprintf(CS timebuf, "%04u-%02u-%02u %02u:%02u:%02u.%03u",
+	1900 + (uint)t->tm_year, 1 + (uint)t->tm_mon, (uint)t->tm_mday,
+	(uint)t->tm_hour, (uint)t->tm_min, (uint)t->tm_sec,
+	(uint)(now.tv_usec/1000));
     else
 #endif
-      sprintf(CS timebuf, "%04d-%02d-%02d %02d:%02d:%02d",
-      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday,
-      t->tm_hour, t->tm_min, t->tm_sec);
+      sprintf(CS timebuf, "%04u-%02u-%02u %02u:%02u:%02u",
+	1900 + (uint)t->tm_year, 1 + (uint)t->tm_mon, (uint)t->tm_mday,
+	(uint)t->tm_hour, (uint)t->tm_min, (uint)t->tm_sec);
 
     break;
 
@@ -108,20 +109,21 @@ switch(type)
 #ifdef TESTING_LOG_DATESTAMP
   case tod_log_datestamp_daily:
   case tod_log_datestamp_monthly:
-    sprintf(CS timebuf, "%04d%02d%02d%02d%02d",
-      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min);
+    sprintf(CS timebuf, "%04u%02u%02u%02u%02u",
+      1900 + (uint)t->tm_year, 1 + (uint)t->tm_mon, (uint)t->tm_mday,
+      (uint)t->tm_hour, (uint)t->tm_min);
     break;
 
 #else
   case tod_log_datestamp_daily:
-    sprintf(CS timebuf, "%04d%02d%02d",
-      1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday);
+    sprintf(CS timebuf, "%04u%02u%02u",
+      1900 + (uint)t->tm_year, 1 + (uint)t->tm_mon, (uint)t->tm_mday);
     break;
 
   case tod_log_datestamp_monthly:
 #ifndef COMPILE_UTILITY
-    sprintf(CS timebuf, "%04d%02d",
-      1900 + t->tm_year, 1 + t->tm_mon);
+    sprintf(CS timebuf, "%04u%02u",
+      1900 + (uint)t->tm_year, 1 + (uint)t->tm_mon);
 #endif
     break;
 #endif
@@ -169,16 +171,16 @@ switch(type)
 #ifndef COMPILE_UTILITY
 	  if (LOGGING(millisec))
 	    (void) sprintf(CS timebuf,
-	      "%04d-%02d-%02d %02d:%02d:%02d.%03d %+03d%02d",
-	      1900 + local.tm_year, 1 + local.tm_mon, local.tm_mday,
-	      local.tm_hour, local.tm_min, local.tm_sec, (int)(now.tv_usec/1000),
+	      "%04u-%02u-%02u %02u:%02u:%02u.%03u %+03d%02d",
+	      1900 + (uint)local.tm_year, 1 + (uint)local.tm_mon, (uint)local.tm_mday,
+	      (uint)local.tm_hour, (uint)local.tm_min, (uint)local.tm_sec, (uint)(now.tv_usec/1000),
 	      diff_hour, diff_min);
 	  else
 #endif
 	    (void) sprintf(CS timebuf,
-	      "%04d-%02d-%02d %02d:%02d:%02d %+03d%02d",
-	      1900 + local.tm_year, 1 + local.tm_mon, local.tm_mday,
-	      local.tm_hour, local.tm_min, local.tm_sec,
+	      "%04u-%02u-%02u %02u:%02u:%02u %+03d%02d",
+	      1900 + (uint)local.tm_year, 1 + (uint)local.tm_mon, (uint)local.tm_mday,
+	      (uint)local.tm_hour, (uint)local.tm_min, (uint)local.tm_sec,
 	      diff_hour, diff_min);
 	  break;
 
@@ -192,7 +194,7 @@ switch(type)
 	case tod_mbx:
 	    {
 	    int len;
-	    (void) sprintf(CS timebuf, "%02d-", local.tm_mday);
+	    (void) sprintf(CS timebuf, "%02u-", (uint)local.tm_mday);
 	    len = Ustrlen(timebuf);
 	    len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b-%Y %H:%M:%S",
 	      &local);
@@ -207,7 +209,7 @@ switch(type)
 	default:
 	    {
 	    int len = Ustrftime(timebuf, sizeof(timebuf), "%a, ", &local);
-	    (void) sprintf(CS timebuf + len, "%02d ", local.tm_mday);
+	    (void) sprintf(CS timebuf + len, "%02u ", (uint)local.tm_mday);
 	    len += Ustrlen(timebuf + len);
 	    len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b %Y %H:%M:%S",
 	      &local);
