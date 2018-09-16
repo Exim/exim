@@ -1,0 +1,25 @@
+# Filter file which makes use of "unseen noerror deliver" commands
+#
+exim -odq userx@domain1
+This message will also be delivered to usery
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL
+250 OK
+RCPT
+250 OK
+RCPT
+550 Not that one
+DATA
+354 More...
+.
+250 OK
+QUIT
+220 OK
+****
+exim -qqf
+****

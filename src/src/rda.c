@@ -718,11 +718,13 @@ if ((pid = fork()) == 0)
     for (addr = *generated; addr; addr = addr->next)
       {
       int reply_options = 0;
+      int ig_err = addr->prop.ignore_error ? 1 : 0;
 
       if (  rda_write_string(fd, addr->address) != 0
          || write(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
          || write(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
          || rda_write_string(fd, addr->prop.errors_address) != 0
+         || write(fd, &ig_err, sizeof(ig_err)) != sizeof(ig_err)
 	 )
 	goto bad;
 
@@ -887,9 +889,13 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     /* Next comes the mode and the flags fields */
 
-    if (read(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode) ||
-        read(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags) ||
-        !rda_read_string(fd, &addr->prop.errors_address)) goto DISASTER;
+    if (  read(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
+       || read(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
+       || !rda_read_string(fd, &addr->prop.errors_address)
+       || read(fd, &i, sizeof(i)) != sizeof(i)
+       )
+      goto DISASTER;
+    addr->prop.ignore_error = (i != 0);
 
     /* Next comes a possible setting for $thisaddress and any numerical
     variables for pipe expansion, terminated by a NULL string. The maximum

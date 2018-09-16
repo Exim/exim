@@ -50,6 +50,10 @@ JH/20 Bug 2296: Fix cutthrough for >1 address redirection.  Previously only
       time.  Either a crash (after delivery) or bogus log data could result.
       Discovery and analysis by Tim Stewart.
 
+JH/23 Bug 2318: Fix the noerror command within filters.  It wasn't working.
+      The ignore_error flag wasn't being returned from the filter subprocess so
+      was not set for later routers.  Investigation and fix by Matthias Kurz.
+
 
 Exim version 4.91
 -----------------

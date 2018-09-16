@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@domain1 R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** usery@domain1 <userx@domain1> R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one
+1999-03-02 09:44:33 10HmaX-0005vi-00 usery@domain1 <userx@domain1>: error ignored
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qqf
