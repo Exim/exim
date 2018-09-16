@@ -1255,6 +1255,38 @@ switch(action)
       else printf("has been removed or did not exist\n");
     if (removed)
       {
+#ifndef DISABLE_EVENT
+      for (i = 0; i < recipients_count; i++)
+	{
+	tree_node *delivered =
+	  tree_search(tree_nonrecipients, recipients_list[i].address);
+	if (!delivered)
+	  {
+	  uschar * save_local = deliver_localpart;
+	  const uschar * save_domain = deliver_domain;
+	  uschar * addr = recipients_list[i].address, * errmsg = NULL;
+	  int start, end, dom;
+
+	  if (!parse_extract_address(addr, &errmsg, &start, &end, &dom, TRUE))
+	    log_write(0, LOG_MAIN|LOG_PANIC,
+	      "failed to parse address '%.100s'\n: %s", addr, errmsg);
+	  else
+	    {
+	    deliver_localpart =
+	      string_copyn(addr+start, dom ? (dom-1) - start : end - start);
+	    deliver_domain = dom
+	      ? CUS string_copyn(addr+dom, end - dom) : CUS"";
+
+	    event_raise(event_action, US"msg:fail:internal",
+	      string_sprintf("message removed by %s", username));
+
+	    deliver_localpart = save_local;
+	    deliver_domain = save_domain;
+	    }
+	  }
+	}
+      (void) event_raise(event_action, US"msg:complete", NULL);
+#endif
       log_write(0, LOG_MAIN, "removed by %s", username);
       log_write(0, LOG_MAIN, "Completed");
       }
@@ -1264,9 +1296,8 @@ switch(action)
 
   case MSG_MARK_ALL_DELIVERED:
   for (i = 0; i < recipients_count; i++)
-    {
     tree_add_nonrecipient(recipients_list[i].address);
-    }
+
   if (spool_write_header(id, SW_MODIFYING, &errmsg) >= 0)
     {
     printf("has been modified\n");

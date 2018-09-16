@@ -4449,6 +4449,12 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
   int yield = EXIT_SUCCESS;
   set_process_info("acting on specified messages");
 
+  /* ACL definitions may be needed when removing a message (-Mrm) because
+  event_action gets expanded */
+
+  if (msg_action == MSG_REMOVE)
+    readconf_rest();
+
   if (!one_msg_action)
     {
     for (i = msg_action_arg; i < argc; i++)

@@ -96,3 +96,20 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:complete
 1999-03-02 09:44:33 10HmbC-0005vi-00 . finished: 10HmbC-0005vi-00
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbE-0005vi-00 . local_part <userx> domain <domain1> reason <message removed by CALLER>
+1999-03-02 09:44:33 10HmbE-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbE-0005vi-00 . finished: 10HmbE-0005vi-00
+1999-03-02 09:44:33 10HmbE-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 address <usery@domain1> marked delivered by CALLER
+1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbF-0005vi-00 . local_part <userx> domain <domain1> reason <message removed by CALLER>
+1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbF-0005vi-00 . local_part <userz> domain <domain1> reason <message removed by CALLER>
+1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbF-0005vi-00 . finished: 10HmbF-0005vi-00
+1999-03-02 09:44:33 10HmbF-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed

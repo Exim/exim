@@ -851,7 +851,7 @@ if (action)
   if (!(s = expand_string(action)) && *expand_string_message)
     log_write(0, LOG_MAIN|LOG_PANIC,
       "failed to expand event_action %s in %s: %s\n",
-      event, transport_name, expand_string_message);
+      event, transport_name ? transport_name : US"main", expand_string_message);
 
   event_name = event_data = NULL;
 
@@ -6240,17 +6240,23 @@ if (process_recipients != RECIP_IGNORE)
 	{
 	uschar * save_local =  deliver_localpart;
 	const uschar * save_domain = deliver_domain;
+	uschar * addr = new->address, * errmsg = NULL;
+	int start, end, dom;
 
-	deliver_localpart = expand_string(
-		      string_sprintf("${local_part:%s}", new->address));
-	deliver_domain =    expand_string(
-		      string_sprintf("${domain:%s}", new->address));
+	if (!parse_extract_address(addr, &errmsg, &start, &end, &dom, TRUE))
+	  log_write(0, LOG_MAIN|LOG_PANIC,
+                "failed to parse address '%.100s': %s\n", addr, errmsg);
+	else
+	  {
+	  deliver_localpart =
+	    string_copyn(addr+start, dom ? (dom-1) - start : end - start);
+	  deliver_domain = dom ? CUS string_copyn(addr+dom, end - dom) : CUS"";
 
-	(void) event_raise(event_action,
-		      US"msg:fail:internal", new->message);
+	  event_raise(event_action, US"msg:fail:internal", new->message);
 
-	deliver_localpart = save_local;
-	deliver_domain =    save_domain;
+	  deliver_localpart = save_local;
+	  deliver_domain = save_domain;
+	  }
 	}
 #endif
       }
