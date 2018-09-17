@@ -113,12 +113,17 @@ JH/23 Bug 2318: Fix the noerror command within filters.  It wasn't working.
       was not set for later routers.  Investigation and fix by Matthias Kurz.
 
 JH/24 Bug 2310: Raise a msg:fail:internal event for each undelivered recipient,
-      and a msg:complete for the whole, when a message is manually reoved using
+      and a msg:complete for the whole, when a message is manually removed using
       -Mrm.  Developement by Matthias Kurz, hacked on by JH.
 
 JH/25 Avoid fixed-size buffers for pathnames in DB access.  This required using
       a "Gnu special" function, asprintf() in the DB utility binary builds; I
       hope that is portable enough.
+
+JH/26 Bug 2311: Fix DANE-TA verification under GnuTLS.  Previously it was also
+      requiring a known-CA anchor certificate; make it now rely entirely on the
+      TLSA as an anchor.  Checking the name on the leaf cert against the name
+      on the A-record for the host is still done for TA (but not for EE mode).
 
 
 Exim version 4.91

@@ -1,5 +1,5 @@
-### TLSA (3 1 1)
-### TLSA (3 1 2)
+### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
+### TLSA (3 1 2) (            SHA2-512)
 ### Recipient callout
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -65,7 +65,7 @@
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
-### TLSA (2 0 1)
+### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
@@ -84,10 +84,10 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
 
 ******** SERVER ********
-### TLSA (3 1 1)
-### TLSA (3 1 2)
+### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
+### TLSA (3 1 2) (            SHA2-512)
 ### Recipient callout
-### TLSA (2 0 1)
+### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)

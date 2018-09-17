@@ -45,7 +45,7 @@
 1999-03-02 09:44:33 10HmbP-0005vi-00 == CALLER@danebroken2.test.ex R=client T=send_to_server defer (-37) H=danebroken2.test.ex [127.0.0.1]: TLS session: (certificate verification failed): Verification failed. CA constrains were violated. 
 1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken3.test.ex
 1999-03-02 09:44:33 10HmbQ-0005vi-00 DANE error: TLSA lookup for danebroken3.test.ex not DNSSEC
-1999-03-02 09:44:33 10HmbQ-0005vi-00 => CALLER@danebroken3.test.ex R=client T=send_to_server H=danebroken3.test.ex [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbR-0005vi-00"
+1999-03-02 09:44:33 10HmbQ-0005vi-00 => CALLER@danebroken3.test.ex R=client T=send_to_server H=danebroken3.test.ex [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no DN="CN=server1.example.com" C="250 OK id=10HmbR-0005vi-00"
 1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbS-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken4.test.ex
 1999-03-02 09:44:33 10HmbS-0005vi-00 DANE error: TLSA lookup for danebroken4.test.ex not DNSSEC
@@ -53,7 +53,7 @@
 1999-03-02 09:44:33 10HmbS-0005vi-00 CALLER@danebroken4.test.ex: error ignored
 1999-03-02 09:44:33 10HmbS-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbT-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken5.test.ex
-1999-03-02 09:44:33 10HmbT-0005vi-00 => CALLER@danebroken5.test.ex R=client T=send_to_server H=danebroken5.test.ex [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbU-0005vi-00"
+1999-03-02 09:44:33 10HmbT-0005vi-00 => CALLER@danebroken5.test.ex R=client T=send_to_server H=danebroken5.test.ex [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no DN="CN=server1.example.com" C="250 OK id=10HmbU-0005vi-00"
 1999-03-02 09:44:33 10HmbT-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbV-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken6.test.ex
 1999-03-02 09:44:33 10HmbV-0005vi-00 ** CALLER@danebroken6.test.ex R=client T=send_to_server: DANE error: danebroken6.test.ex lookup not DNSSEC

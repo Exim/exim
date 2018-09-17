@@ -1625,8 +1625,7 @@ else
 # ifdef GNUTLS_BROKEN_DANE_VALIDATION
     /* Split the TLSA records into two sets, TA and EE selectors.  Run the
     dane-verification separately so that we know which selector verified;
-    then we know whether to do CA-chain-verification and name-verification
-    (needed for TA but not EE). */
+    then we know whether to do name-verification (needed for TA but not EE). */
 
     if (usage == ((1<<DANESSL_USAGE_DANE_TA) | (1<<DANESSL_USAGE_DANE_EE)))
       {						/* a mixed-usage bundle */
@@ -1708,20 +1707,31 @@ else
       *errstr = US str.data;	/* don't bother to free */
       goto badcert;
       }
-    state->peer_dane_verified = TRUE;
 
 # ifdef GNUTLS_BROKEN_DANE_VALIDATION
     /* If a TA-mode TLSA record was used for verification we must additionally
-    verify the CA chain and the cert name.  For EE-mode, skip it. */
+    verify the cert name (but not the CA chain).  For EE-mode, skip it. */
 
     if (usage & (1 << DANESSL_USAGE_DANE_EE))
 # endif
       {
-      state->peer_cert_verified = TRUE;
+      state->peer_dane_verified = state->peer_cert_verified = TRUE;
       goto goodcert;
       }
+# ifdef GNUTLS_BROKEN_DANE_VALIDATION
+    /* Assume that the name on the A-record is the one that should be matching
+    the cert.  An alternate view is that the domain part of the email address
+    is also permissible. */
+
+    if (gnutls_x509_crt_check_hostname(state->tlsp->peercert,
+	  CS state->host->name))
+      {
+      state->peer_dane_verified = state->peer_cert_verified = TRUE;
+      goto goodcert;
+      }
+# endif
     }
-#endif
+#endif	/*SUPPORT_DANE*/
 
   rc = gnutls_certificate_verify_peers2(state->session, &verify);
   }
