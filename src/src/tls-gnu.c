@@ -2158,7 +2158,7 @@ static void
 tls_client_setup_hostname_checks(host_item * host, exim_gnutls_state_st * state,
   smtp_transport_options_block * ob)
 {
-if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
+if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
   {
   state->exp_tls_verify_cert_hostnames =
 #ifdef SUPPORT_I18N
@@ -2284,9 +2284,9 @@ uschar *cipher_list = NULL;
 
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
-  verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
+  verify_check_given_host(CUSS &ob->hosts_require_ocsp, host) == OK;
 BOOL request_ocsp = require_ocsp ? TRUE
-  : verify_check_given_host(&ob->hosts_request_ocsp, host) == OK;
+  : verify_check_given_host(CUSS &ob->hosts_request_ocsp, host) == OK;
 #endif
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
@@ -2346,7 +2346,7 @@ else
 	  && !ob->tls_verify_hosts
 	  && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
 	  )
-	|| verify_check_given_host(&ob->tls_verify_hosts, host) == OK
+	|| verify_check_given_host(CUSS &ob->tls_verify_hosts, host) == OK
        )
   {
   tls_client_setup_hostname_checks(host, state, ob);
@@ -2355,7 +2355,7 @@ else
   state->verify_requirement = VERIFY_REQUIRED;
   gnutls_certificate_server_set_request(state->session, GNUTLS_CERT_REQUIRE);
   }
-else if (verify_check_given_host(&ob->tls_try_verify_hosts, host) == OK)
+else if (verify_check_given_host(CUSS &ob->tls_try_verify_hosts, host) == OK)
   {
   tls_client_setup_hostname_checks(host, state, ob);
   DEBUG(D_tls)

@@ -570,7 +570,7 @@ extern int     verify_check_headers(uschar **);
 extern int     verify_check_header_names_ascii(uschar **);
 extern int     verify_check_host(uschar **);
 extern int     verify_check_notblind(void);
-extern int     verify_check_given_host(uschar **, host_item *);
+extern int     verify_check_given_host(const uschar **, const host_item *);
 extern int     verify_check_this_host(const uschar **, unsigned int *,
 	         const uschar*, const uschar *, const uschar **);
 extern address_item *verify_checked_sender(uschar *);

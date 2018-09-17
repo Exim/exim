@@ -1022,7 +1022,7 @@ uschar *fail_reason = US"server did not advertise AUTH support";
 
 f.smtp_authenticated = FALSE;
 client_authenticator = client_authenticated_id = client_authenticated_sender = NULL;
-require_auth = verify_check_given_host(&ob->hosts_require_auth, sx->host);
+require_auth = verify_check_given_host(CUSS &ob->hosts_require_auth, sx->host);
 
 if (sx->esmtp && !regex_AUTH) regex_AUTH =
     regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
@@ -1037,7 +1037,7 @@ if (sx->esmtp && regex_match_and_setup(regex_AUTH, buffer, 0, -1))
   regex match above. */
 
   if (require_auth == OK ||
-      verify_check_given_host(&ob->hosts_try_auth, sx->host) == OK)
+      verify_check_given_host(CUSS &ob->hosts_try_auth, sx->host) == OK)
     {
     auth_instance *au;
     fail_reason = US"no common mechanisms were found";
@@ -1569,7 +1569,7 @@ sx->dsn_all_lasthop = TRUE;
 #if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
 sx->dane = FALSE;
 sx->dane_required =
-  verify_check_given_host(&sx->ob->hosts_require_dane, sx->host) == OK;
+  verify_check_given_host(CUSS &sx->ob->hosts_require_dane, sx->host) == OK;
 #endif
 
 if ((sx->max_rcpt = sx->tblock->max_addresses) == 0) sx->max_rcpt = 999999;
@@ -1650,7 +1650,7 @@ if (!continue_hostname)
     if (sx->host->dnssec == DS_YES)
       {
       if(  sx->dane_required
-	|| verify_check_given_host(&sx->ob->hosts_try_dane, sx->host) == OK
+	|| verify_check_given_host(CUSS &sx->ob->hosts_try_dane, sx->host) == OK
 	)
 	switch (rc = tlsa_lookup(sx->host, &tlsa_dnsa, sx->dane_required))
 	  {
@@ -1819,7 +1819,7 @@ goto SEND_QUIT;
   mailers use upper case for some reason (the RFC is quite clear about case
   independence) so, for peace of mind, I gave in. */
 
-  sx->esmtp = verify_check_given_host(&sx->ob->hosts_avoid_esmtp, sx->host) != OK;
+  sx->esmtp = verify_check_given_host(CUSS &sx->ob->hosts_avoid_esmtp, sx->host) != OK;
 
   /* Alas; be careful, since this goto is not an error-out, so conceivably
   we might set data between here and the target which we assume to exist
@@ -1966,9 +1966,9 @@ for error analysis. */
 #ifdef SUPPORT_TLS
 if (  smtp_peer_options & OPTION_TLS
    && !suppress_tls
-   && verify_check_given_host(&sx->ob->hosts_avoid_tls, sx->host) != OK
+   && verify_check_given_host(CUSS &sx->ob->hosts_avoid_tls, sx->host) != OK
    && (  !sx->verify
-      || verify_check_given_host(&sx->ob->hosts_verify_avoid_tls, sx->host) != OK
+      || verify_check_given_host(CUSS &sx->ob->hosts_verify_avoid_tls, sx->host) != OK
    )  )
   {
   uschar buffer2[4096];
@@ -2116,7 +2116,7 @@ else if (  sx->smtps
 # ifdef EXPERIMENTAL_REQUIRETLS
 	|| tls_requiretls & REQUIRETLS_MSG
 # endif
-	|| verify_check_given_host(&sx->ob->hosts_require_tls, sx->host) == OK
+	|| verify_check_given_host(CUSS &sx->ob->hosts_require_tls, sx->host) == OK
 	)
   {
   errno =
@@ -2184,14 +2184,14 @@ if (continue_hostname == NULL
     the current host matches hosts_avoid_pipelining, don't do it. */
 
     if (  sx->peer_offered & OPTION_PIPE
-       && verify_check_given_host(&sx->ob->hosts_avoid_pipelining, sx->host) != OK)
+       && verify_check_given_host(CUSS &sx->ob->hosts_avoid_pipelining, sx->host) != OK)
       smtp_peer_options |= OPTION_PIPE;
 
     DEBUG(D_transport) debug_printf("%susing PIPELINING\n",
       smtp_peer_options & OPTION_PIPE ? "" : "not ");
 
     if (  sx->peer_offered & OPTION_CHUNKING
-       && verify_check_given_host(&sx->ob->hosts_try_chunking, sx->host) != OK)
+       && verify_check_given_host(CUSS &sx->ob->hosts_try_chunking, sx->host) != OK)
       sx->peer_offered &= ~OPTION_CHUNKING;
 
     if (sx->peer_offered & OPTION_CHUNKING)
@@ -2199,7 +2199,7 @@ if (continue_hostname == NULL
 
 #ifndef DISABLE_PRDR
     if (  sx->peer_offered & OPTION_PRDR
-       && verify_check_given_host(&sx->ob->hosts_try_prdr, sx->host) != OK)
+       && verify_check_given_host(CUSS &sx->ob->hosts_try_prdr, sx->host) != OK)
       sx->peer_offered &= ~OPTION_PRDR;
 
     if (sx->peer_offered & OPTION_PRDR)
@@ -3602,7 +3602,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
      || (
 #ifdef SUPPORT_TLS
 	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
-           || verify_check_given_host(&sx.ob->hosts_nopass_tls, host) != OK
+           || verify_check_given_host(CUSS &sx.ob->hosts_nopass_tls, host) != OK
 	   )
         &&
 #endif
@@ -3658,7 +3658,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 #ifdef SUPPORT_TLS
       if (tls_out.active.sock >= 0)
 	if (  f.continue_more
-	   || verify_check_given_host(&sx.ob->hosts_noproxy_tls, host) == OK)
+	   || verify_check_given_host(CUSS &sx.ob->hosts_noproxy_tls, host) == OK)
 	  {
 	  /* Before passing the socket on, or returning to caller with it still
 	  open, we must shut down TLS.  Not all MTAs allow for the continuation
@@ -4435,7 +4435,7 @@ retry_non_continued:
     sending the message down a pre-existing connection. */
 
     if (  !continue_hostname
-       && verify_check_given_host(&ob->serialize_hosts, host) == OK)
+       && verify_check_given_host(CUSS &ob->serialize_hosts, host) == OK)
       {
       serialize_key = string_sprintf("host-serialize-%s", host->name);
       if (!enq_start(serialize_key, 1))
@@ -4576,7 +4576,7 @@ retry_non_continued:
       if (  rc == DEFER
 	 && first_addr->basic_errno == ERRNO_TLSFAILURE
 	 && ob->tls_tempfail_tryclear
-	 && verify_check_given_host(&ob->hosts_require_tls, host) != OK
+	 && verify_check_given_host(CUSS &ob->hosts_require_tls, host) != OK
 	 )
         {
         log_write(0, LOG_MAIN,

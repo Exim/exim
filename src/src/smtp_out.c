@@ -264,7 +264,7 @@ requested some early-data then include that in the TFO request. */
 else
   {
 #ifdef TCP_FASTOPEN
-  if (verify_check_given_host(&ob->hosts_try_fastopen, host) == OK)
+  if (verify_check_given_host(CUSS &ob->hosts_try_fastopen, host) == OK)
     fastopen_blob = early_data ? early_data : &tcp_fastopen_nodata;
 #endif
 

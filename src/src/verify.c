@@ -693,7 +693,7 @@ tls_retry_connection:
     if (  yield == DEFER
        && addr->basic_errno == ERRNO_TLSFAILURE
        && ob->tls_tempfail_tryclear
-       && verify_check_given_host(&ob->hosts_require_tls, host) != OK
+       && verify_check_given_host(CUSS &ob->hosts_require_tls, host) != OK
        )
       {
       log_write(0, LOG_MAIN,
@@ -3244,9 +3244,9 @@ return rc;
 *      Check the given host item matches a list  *
 *************************************************/
 int
-verify_check_given_host(uschar **listptr, host_item *host)
+verify_check_given_host(const uschar **listptr, const host_item *host)
 {
-return verify_check_this_host(CUSS listptr, NULL, host->name, host->address, NULL);
+return verify_check_this_host(listptr, NULL, host->name, host->address, NULL);
 }
 
 /*************************************************
