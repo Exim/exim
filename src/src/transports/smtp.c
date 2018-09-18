@@ -2015,6 +2015,7 @@ if (  smtp_peer_options & OPTION_TLS
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
       it for this host. */
+      DEBUG(D_tls) debug_printf("TLS session fail: %s\n", errstr);
 
 # ifdef SUPPORT_DANE
       if (sx->dane)
@@ -4746,6 +4747,7 @@ retry_non_continued:
           "hosts_max_try (message older than host's retry time)\n");
         }
       }
+    if (f.running_in_test_harness) millisleep(500); /* let server debug out */
     }   /* End of loop for trying multiple hosts. */
 
   /* If we failed to find a matching host in the list, for an already-open

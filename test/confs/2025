@@ -17,8 +17,7 @@ queue_run_in_order
 
 tls_advertise_hosts = *
 
-tls_require_ciphers = ${if eq{$sender_host_address}{HOSTIPV4}\
-                      {NONE}{SECURE256}}
+tls_require_ciphers = NORMAL:-VERS-ALL:+VERS-TLS1.2:-MAC-ALL:+SHA256
 
 # Set certificate only if server
 
@@ -45,9 +44,10 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
-  hosts_require_tls = HOSTIPV4
   port = PORT_D
-
+  hosts_require_tls = HOSTIPV4
+  tls_require_ciphers = NORMAL:-VERS-ALL:+VERS-TLS1.2:-MAC-ALL:+SHA\
+	 ${if eq{$host}{HOSTIPV4} {384} {256} }
 
 # ----- Retry -----
 

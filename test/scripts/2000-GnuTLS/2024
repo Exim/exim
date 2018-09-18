@@ -2,6 +2,13 @@
 gnutls
 exim -DSERVER=server -bd -oX PORT_D
 ****
+#
+#
+# This one has a cert, but the server isn't expecting it.
+# Earlier versions of GnuTLS would send it despite the server giving a list of acceptable ones, and the
+# server would fail its verification.  Now the client correctly doesn't send it; the mainlog reflects
+# this, the custom munge patches output with old GnuTLS (I hope; not actually tested).
+munge gnutls_bad_clientcert
 client-gnutls HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
 ??? 220
 ehlo rhu.barb
@@ -15,6 +22,8 @@ starttls
 ??? 220
 ****
 killdaemon
+#
+# Here the server really doesn't have a cert
 exim -DSERVER=server -DCERT=/non/exist -bd -oX PORT_D
 ****
 client-gnutls HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
