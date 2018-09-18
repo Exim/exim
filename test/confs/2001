@@ -27,6 +27,9 @@ tls_verify_hosts = *
 tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
 
 
+# so we can decode in wireshark
+tls_require_ciphers = NORMAL:-KX-ALL:+RSA
+
 # ----- Routers -----
 
 begin routers

@@ -27773,7 +27773,7 @@ session with a client, you must set either &%tls_verify_hosts%& or
 apply to all TLS connections. For any host that matches one of these options,
 Exim requests a certificate as part of the setup of the TLS session. The
 contents of the certificate are verified by comparing it with a list of
-expected certificates.
+expected trust-anchors or certificates.
 These may be the system default set (depending on library version),
 an explicit file or,
 depending on library version, a directory, identified by
@@ -27789,6 +27789,9 @@ certificate. You can compute the relevant hash by running the command
 openssl x509 -hash -noout -in /cert/file
 .endd
 where &_/cert/file_& contains a single certificate.
+
+There is no checking of names of the client against the certificate
+Subject Name or Subject Alternate Names.
 
 The difference between &%tls_verify_hosts%& and &%tls_try_verify_hosts%& is
 what happens if the client does not supply a certificate, or if the certificate
@@ -27950,6 +27953,11 @@ Failure to verify fails the TLS connection unless either of the
 The &%tls_verify_hosts%& and &%tls_try_verify_hosts%& options restrict
 certificate verification to the listed servers.  Verification either must
 or need not succeed respectively.
+
+The &%tls_verify_cert_hostnames%& option lists hosts for which additional
+checks are made: that the host name (the one in the DNS A record)
+is valid for the certificate.
+The option defaults to always checking.
 
 The &(smtp)& transport has two OCSP-related options:
 &%hosts_require_ocsp%&; a host-list for which a Certificate Status
@@ -28256,7 +28264,7 @@ this is appropriate for a single system, using a self-signed certificate.
 DANE-TA usage is effectively declaring a specific CA to be used; this might be a private CA or a public,
 well-known one.
 A private CA at simplest is just a self-signed certificate (with certain
-attributes) which is used to sign cerver certificates, but running one securely
+attributes) which is used to sign server certificates, but running one securely
 does require careful arrangement.
 With DANE-TA, as implemented in Exim and commonly in other MTAs,
 the server TLS handshake must transmit the entire certificate chain from CA to server-certificate.

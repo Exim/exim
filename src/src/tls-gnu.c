@@ -124,7 +124,7 @@ typedef struct exim_gnutls_state {
   BOOL			peer_dane_verified;
   BOOL			trigger_sni_changes;
   BOOL			have_set_peerdn;
-  const struct host_item *host;
+  const struct host_item *host;		/* NULL if server */
   gnutls_x509_crt_t	peercert;
   uschar		*peerdn;
   uschar		*ciphersuite;
@@ -1757,23 +1757,23 @@ if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
 
 else
   {
-  if (state->exp_tls_verify_cert_hostnames)
+  /* Client side, check the server's certificate name versus the name on the
+  A-record for the connection we made.  What to do for server side - what name
+  to use for client?  We document that there is no such checking for server
+  side. */
+
+  if (  state->exp_tls_verify_cert_hostnames
+     && !gnutls_x509_crt_check_hostname(state->tlsp->peercert,
+		CS state->exp_tls_verify_cert_hostnames)
+     )
     {
-    int sep = 0;
-    const uschar * list = state->exp_tls_verify_cert_hostnames;
-    uschar * name;
-    while ((name = string_nextinlist(&list, &sep, NULL, 0)))
-      if (gnutls_x509_crt_check_hostname(state->tlsp->peercert, CS name))
-	break;
-    if (!name)
-      {
-      DEBUG(D_tls)
-	debug_printf("TLS certificate verification failed: cert name mismatch\n");
-      if (state->verify_requirement >= VERIFY_REQUIRED)
-	goto badcert;
-      return TRUE;
-      }
+    DEBUG(D_tls)
+      debug_printf("TLS certificate verification failed: cert name mismatch\n");
+    if (state->verify_requirement >= VERIFY_REQUIRED)
+      goto badcert;
+    return TRUE;
     }
+
   state->peer_cert_verified = TRUE;
   DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=\"%s\"\n",
       state->peerdn ? state->peerdn : US"<unset>");
@@ -2591,6 +2591,7 @@ else if (inbytes == 0)
 
 else if (inbytes < 0)
   {
+debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
   record_io_error(state, (int) inbytes, US"recv", NULL);
   state->xfer_error = TRUE;
   return FALSE;
@@ -2718,7 +2719,11 @@ if (inbytes == 0)
   {
   DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
   }
-else record_io_error(state, (int)inbytes, US"recv", NULL);
+else
+{
+debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
+record_io_error(state, (int)inbytes, US"recv", NULL);
+}
 
 return -1;
 }
@@ -2765,6 +2770,7 @@ while (left > 0)
   DEBUG(D_tls) debug_printf("outbytes=" SSIZE_T_FMT "\n", outbytes);
   if (outbytes < 0)
     {
+debug_printf("%s: err from gnutls_record_send(\n", __FUNCTION__);
     record_io_error(state, outbytes, US"send", NULL);
     return -1;
     }
