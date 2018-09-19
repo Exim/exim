@@ -2158,10 +2158,10 @@ int rc;
 if (  (  !ob->tls_verify_hosts
       && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
       )
-   || verify_check_given_host(&ob->tls_verify_hosts, host) == OK
+   || verify_check_given_host(CUSS &ob->tls_verify_hosts, host) == OK
    )
   client_verify_optional = FALSE;
-else if (verify_check_given_host(&ob->tls_try_verify_hosts, host) == OK)
+else if (verify_check_given_host(CUSS &ob->tls_try_verify_hosts, host) == OK)
   client_verify_optional = TRUE;
 else
   return OK;
@@ -2171,7 +2171,7 @@ if ((rc = setup_certs(ctx, ob->tls_verify_certificates,
       errstr)) != OK)
   return rc;
 
-if (verify_check_given_host(&ob->tls_verify_cert_hostnames, host) == OK)
+if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
   {
   cbinfo->verify_cert_hostnames =
 #ifdef SUPPORT_I18N
@@ -2311,14 +2311,14 @@ tlsp->tlsa_usage = 0;
 # endif
 
   if ((require_ocsp =
-	verify_check_given_host(&ob->hosts_require_ocsp, host) == OK))
+	verify_check_given_host(CUSS &ob->hosts_require_ocsp, host) == OK))
     request_ocsp = TRUE;
   else
 # ifdef SUPPORT_DANE
     if (!request_ocsp)
 # endif
       request_ocsp =
-	verify_check_given_host(&ob->hosts_request_ocsp, host) == OK;
+	verify_check_given_host(CUSS &ob->hosts_request_ocsp, host) == OK;
   }
 #endif
 
@@ -2444,9 +2444,9 @@ if (request_ocsp)
     {	/* Re-eval now $tls_out_tlsa_usage is populated.  If
     	this means we avoid the OCSP request, we wasted the setup
 	cost in tls_init(). */
-    require_ocsp = verify_check_given_host(&ob->hosts_require_ocsp, host) == OK;
+    require_ocsp = verify_check_given_host(CUSS &ob->hosts_require_ocsp, host) == OK;
     request_ocsp = require_ocsp
-      || verify_check_given_host(&ob->hosts_request_ocsp, host) == OK;
+      || verify_check_given_host(CUSS &ob->hosts_request_ocsp, host) == OK;
     }
   }
 # endif
