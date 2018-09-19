@@ -104,6 +104,7 @@ set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.
 address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
 *@127.0.0.1 in "*"? yes (matched "*")
+set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
 checking status of V4NET.0.0.0
  locking TESTSUITE/spool/db/retry.lockfile
  locked  TESTSUITE/spool/db/retry.lockfile
@@ -120,12 +121,11 @@ set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NE
 added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224: errno=dd more_errno=dd,A flags=2
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run smtp for x@y in subprocess)
 search_tidyup called
-set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
-set_process_info: pppp delivering 10HmaX-0005vi-00
 reading retry information for T:V4NET.0.0.0:V4NET.0.0.0:1224 from subprocess
   added retry item
 reading retry information for R:x@y from subprocess
   added retry item
+set_process_info: pppp delivering 10HmaX-0005vi-00
 LOG: MAIN
   == x@y R=r1 T=smtp defer (dd): Network Error H=127.0.0.1 [127.0.0.1]
 changed uid/gid: post-delivery tidying
