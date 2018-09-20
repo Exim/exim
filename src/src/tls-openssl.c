@@ -51,7 +51,7 @@ functions from the OpenSSL library. */
 # define EXIM_HAVE_RAND_PSEUDO
 #endif
 #if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
-# define EXIM_HAVE_SHA256	/*MMMM*/
+# define EXIM_HAVE_SHA256
 #endif
 
 /*
@@ -82,7 +82,7 @@ functions from the OpenSSL library. */
     || LIBRESSL_VERSION_NUMBER >= 0x20010000L
 # if !defined(OPENSSL_NO_ECDH)
 #  if OPENSSL_VERSION_NUMBER >= 0x0090800fL
-#   define EXIM_HAVE_ECDH	/*MMMM*/
+#   define EXIM_HAVE_ECDH
 #  endif
 #  if OPENSSL_VERSION_NUMBER >= 0x10002000L
 #   define EXIM_HAVE_OPENSSL_EC_NIST2NID
@@ -98,6 +98,142 @@ functions from the OpenSSL library. */
 #ifdef EXIM_HAVE_OPENSSL_CHECKHOST
 # include <openssl/x509v3.h>
 #endif
+
+/*************************************************
+*        OpenSSL option parse                    *
+*************************************************/
+
+typedef struct exim_openssl_option {
+  uschar *name;
+  long    value;
+} exim_openssl_option;
+/* We could use a macro to expand, but we need the ifdef and not all the
+options document which version they were introduced in.  Policylet: include
+all options unless explicitly for DTLS, let the administrator choose which
+to apply.
+
+This list is current as of:
+  ==>  1.0.1b  <==
+Plus SSL_OP_SAFARI_ECDHE_ECDSA_BUG from 2013-June patch/discussion on openssl-dev
+Plus SSL_OP_NO_TLSv1_3 for 1.1.2-dev
+*/
+static exim_openssl_option exim_openssl_options[] = {
+/* KEEP SORTED ALPHABETICALLY! */
+#ifdef SSL_OP_ALL
+  { US"all", SSL_OP_ALL },
+#endif
+#ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
+  { US"allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },
+#endif
+#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+  { US"cipher_server_preference", SSL_OP_CIPHER_SERVER_PREFERENCE },
+#endif
+#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
+  { US"dont_insert_empty_fragments", SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS },
+#endif
+#ifdef SSL_OP_EPHEMERAL_RSA
+  { US"ephemeral_rsa", SSL_OP_EPHEMERAL_RSA },
+#endif
+#ifdef SSL_OP_LEGACY_SERVER_CONNECT
+  { US"legacy_server_connect", SSL_OP_LEGACY_SERVER_CONNECT },
+#endif
+#ifdef SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER
+  { US"microsoft_big_sslv3_buffer", SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER },
+#endif
+#ifdef SSL_OP_MICROSOFT_SESS_ID_BUG
+  { US"microsoft_sess_id_bug", SSL_OP_MICROSOFT_SESS_ID_BUG },
+#endif
+#ifdef SSL_OP_MSIE_SSLV2_RSA_PADDING
+  { US"msie_sslv2_rsa_padding", SSL_OP_MSIE_SSLV2_RSA_PADDING },
+#endif
+#ifdef SSL_OP_NETSCAPE_CHALLENGE_BUG
+  { US"netscape_challenge_bug", SSL_OP_NETSCAPE_CHALLENGE_BUG },
+#endif
+#ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
+  { US"netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
+#endif
+#ifdef SSL_OP_NO_COMPRESSION
+  { US"no_compression", SSL_OP_NO_COMPRESSION },
+#endif
+#ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
+  { US"no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
+#endif
+#ifdef SSL_OP_NO_SSLv2
+  { US"no_sslv2", SSL_OP_NO_SSLv2 },
+#endif
+#ifdef SSL_OP_NO_SSLv3
+  { US"no_sslv3", SSL_OP_NO_SSLv3 },
+#endif
+#ifdef SSL_OP_NO_TICKET
+  { US"no_ticket", SSL_OP_NO_TICKET },
+#endif
+#ifdef SSL_OP_NO_TLSv1
+  { US"no_tlsv1", SSL_OP_NO_TLSv1 },
+#endif
+#ifdef SSL_OP_NO_TLSv1_1
+#if SSL_OP_NO_TLSv1_1 == 0x00000400L
+  /* Error in chosen value in 1.0.1a; see first item in CHANGES for 1.0.1b */
+#warning OpenSSL 1.0.1a uses a bad value for SSL_OP_NO_TLSv1_1, ignoring
+#else
+  { US"no_tlsv1_1", SSL_OP_NO_TLSv1_1 },
+#endif
+#endif
+#ifdef SSL_OP_NO_TLSv1_2
+  { US"no_tlsv1_2", SSL_OP_NO_TLSv1_2 },
+#endif
+#ifdef SSL_OP_NO_TLSv1_3
+  { US"no_tlsv1_3", SSL_OP_NO_TLSv1_3 },
+#endif
+#ifdef SSL_OP_SAFARI_ECDHE_ECDSA_BUG
+  { US"safari_ecdhe_ecdsa_bug", SSL_OP_SAFARI_ECDHE_ECDSA_BUG },
+#endif
+#ifdef SSL_OP_SINGLE_DH_USE
+  { US"single_dh_use", SSL_OP_SINGLE_DH_USE },
+#endif
+#ifdef SSL_OP_SINGLE_ECDH_USE
+  { US"single_ecdh_use", SSL_OP_SINGLE_ECDH_USE },
+#endif
+#ifdef SSL_OP_SSLEAY_080_CLIENT_DH_BUG
+  { US"ssleay_080_client_dh_bug", SSL_OP_SSLEAY_080_CLIENT_DH_BUG },
+#endif
+#ifdef SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG
+  { US"sslref2_reuse_cert_type_bug", SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG },
+#endif
+#ifdef SSL_OP_TLS_BLOCK_PADDING_BUG
+  { US"tls_block_padding_bug", SSL_OP_TLS_BLOCK_PADDING_BUG },
+#endif
+#ifdef SSL_OP_TLS_D5_BUG
+  { US"tls_d5_bug", SSL_OP_TLS_D5_BUG },
+#endif
+#ifdef SSL_OP_TLS_ROLLBACK_BUG
+  { US"tls_rollback_bug", SSL_OP_TLS_ROLLBACK_BUG },
+#endif
+};
+
+#ifndef MACRO_PREDEF
+static int exim_openssl_options_size = nelem(exim_openssl_options);
+#endif
+
+#ifdef MACRO_PREDEF
+void
+options_tls(void)
+{
+struct exim_openssl_option * o;
+uschar buf[64];
+
+for (o = exim_openssl_options;
+     o < exim_openssl_options + nelem(exim_openssl_options); o++)
+  {
+  /* Trailing X is workaround for problem with _OPT_OPENSSL_NO_TLSV1
+  being a ".ifdef _OPT_OPENSSL_NO_TLSV1_3" match */
+
+  spf(buf, sizeof(buf), US"_OPT_OPENSSL_%T_X", o->name);
+  builtin_macro_create(buf);
+  }
+}
+#else
+
+/******************************************************************************/
 
 /* Structure for collecting random data for seeding. */
 
@@ -3061,110 +3197,6 @@ Arguments:
 Returns   success or failure in parsing
 */
 
-struct exim_openssl_option {
-  uschar *name;
-  long    value;
-};
-/* We could use a macro to expand, but we need the ifdef and not all the
-options document which version they were introduced in.  Policylet: include
-all options unless explicitly for DTLS, let the administrator choose which
-to apply.
-
-This list is current as of:
-  ==>  1.0.1b  <==
-Plus SSL_OP_SAFARI_ECDHE_ECDSA_BUG from 2013-June patch/discussion on openssl-dev
-*/
-static struct exim_openssl_option exim_openssl_options[] = {
-/* KEEP SORTED ALPHABETICALLY! */
-#ifdef SSL_OP_ALL
-  { US"all", SSL_OP_ALL },
-#endif
-#ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
-  { US"allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },
-#endif
-#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
-  { US"cipher_server_preference", SSL_OP_CIPHER_SERVER_PREFERENCE },
-#endif
-#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-  { US"dont_insert_empty_fragments", SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS },
-#endif
-#ifdef SSL_OP_EPHEMERAL_RSA
-  { US"ephemeral_rsa", SSL_OP_EPHEMERAL_RSA },
-#endif
-#ifdef SSL_OP_LEGACY_SERVER_CONNECT
-  { US"legacy_server_connect", SSL_OP_LEGACY_SERVER_CONNECT },
-#endif
-#ifdef SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER
-  { US"microsoft_big_sslv3_buffer", SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER },
-#endif
-#ifdef SSL_OP_MICROSOFT_SESS_ID_BUG
-  { US"microsoft_sess_id_bug", SSL_OP_MICROSOFT_SESS_ID_BUG },
-#endif
-#ifdef SSL_OP_MSIE_SSLV2_RSA_PADDING
-  { US"msie_sslv2_rsa_padding", SSL_OP_MSIE_SSLV2_RSA_PADDING },
-#endif
-#ifdef SSL_OP_NETSCAPE_CHALLENGE_BUG
-  { US"netscape_challenge_bug", SSL_OP_NETSCAPE_CHALLENGE_BUG },
-#endif
-#ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
-  { US"netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
-#endif
-#ifdef SSL_OP_NO_COMPRESSION
-  { US"no_compression", SSL_OP_NO_COMPRESSION },
-#endif
-#ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-  { US"no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
-#endif
-#ifdef SSL_OP_NO_SSLv2
-  { US"no_sslv2", SSL_OP_NO_SSLv2 },
-#endif
-#ifdef SSL_OP_NO_SSLv3
-  { US"no_sslv3", SSL_OP_NO_SSLv3 },
-#endif
-#ifdef SSL_OP_NO_TICKET
-  { US"no_ticket", SSL_OP_NO_TICKET },
-#endif
-#ifdef SSL_OP_NO_TLSv1
-  { US"no_tlsv1", SSL_OP_NO_TLSv1 },
-#endif
-#ifdef SSL_OP_NO_TLSv1_1
-#if SSL_OP_NO_TLSv1_1 == 0x00000400L
-  /* Error in chosen value in 1.0.1a; see first item in CHANGES for 1.0.1b */
-#warning OpenSSL 1.0.1a uses a bad value for SSL_OP_NO_TLSv1_1, ignoring
-#else
-  { US"no_tlsv1_1", SSL_OP_NO_TLSv1_1 },
-#endif
-#endif
-#ifdef SSL_OP_NO_TLSv1_2
-  { US"no_tlsv1_2", SSL_OP_NO_TLSv1_2 },
-#endif
-#ifdef SSL_OP_SAFARI_ECDHE_ECDSA_BUG
-  { US"safari_ecdhe_ecdsa_bug", SSL_OP_SAFARI_ECDHE_ECDSA_BUG },
-#endif
-#ifdef SSL_OP_SINGLE_DH_USE
-  { US"single_dh_use", SSL_OP_SINGLE_DH_USE },
-#endif
-#ifdef SSL_OP_SINGLE_ECDH_USE
-  { US"single_ecdh_use", SSL_OP_SINGLE_ECDH_USE },
-#endif
-#ifdef SSL_OP_SSLEAY_080_CLIENT_DH_BUG
-  { US"ssleay_080_client_dh_bug", SSL_OP_SSLEAY_080_CLIENT_DH_BUG },
-#endif
-#ifdef SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG
-  { US"sslref2_reuse_cert_type_bug", SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG },
-#endif
-#ifdef SSL_OP_TLS_BLOCK_PADDING_BUG
-  { US"tls_block_padding_bug", SSL_OP_TLS_BLOCK_PADDING_BUG },
-#endif
-#ifdef SSL_OP_TLS_D5_BUG
-  { US"tls_d5_bug", SSL_OP_TLS_D5_BUG },
-#endif
-#ifdef SSL_OP_TLS_ROLLBACK_BUG
-  { US"tls_rollback_bug", SSL_OP_TLS_ROLLBACK_BUG },
-#endif
-};
-static int exim_openssl_options_size =
-  sizeof(exim_openssl_options)/sizeof(struct exim_openssl_option);
 
 
 static BOOL
@@ -3265,6 +3297,7 @@ for (s=option_spec; *s != '\0'; /**/)
 return TRUE;
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of tls-openssl.c */

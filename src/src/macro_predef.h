@@ -20,4 +20,7 @@ extern void options_transports(void);
 extern void options_auths(void);
 extern void options_logging(void);
 extern void params_dkim(void);
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+extern void options_tls(void);
+#endif
 

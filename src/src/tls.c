@@ -19,6 +19,15 @@ functions from the OpenSSL or GNU TLS libraries. */
 #include "exim.h"
 #include "transports/smtp.h"
 
+#if defined(MACRO_PREDEF) && defined(SUPPORT_TLS)
+# ifndef USE_GNUTLS
+#  include "macro_predef.h"
+#  include "tls-openssl.c"
+# endif
+#endif
+
+#ifndef MACRO_PREDEF
+
 /* This module is compiled only when it is specifically requested in the
 build-time configuration. However, some compilers don't like compiling empty
 modules, so keep them happy with a dummy when skipping the rest. Make it
@@ -355,6 +364,7 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
 return FALSE;
 }
 #endif	/*SUPPORT_TLS*/
+#endif	/*!MACRO_PREDEF*/
 
 /* vi: aw ai sw=2
 */

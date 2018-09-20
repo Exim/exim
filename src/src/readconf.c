@@ -15,6 +15,9 @@ implementation of the conditional .ifdef etc. */
 # include "macro_predef.h"
 #endif
 
+#define READCONF_DEBUG	if (FALSE)	/* Change to TRUE to enable */
+
+
 static uschar * syslog_facility_str;
 static void fn_smtp_receive_timeout(const uschar *, const uschar *);
 
@@ -627,7 +630,7 @@ macro_create(const uschar * name, const uschar * val, BOOL command_line)
 {
 macro_item * m = store_get(sizeof(macro_item));
 
-/* fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val); */
+READCONF_DEBUG fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val);
 m->next = NULL;
 m->command_line = command_line;
 m->namelen = Ustrlen(name);
@@ -820,7 +823,7 @@ if (*s) for (m = *s == '_' ? macros : macros_user; m; m = m->next)
     {
     int moveby;
 
-/* fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss); */
+    READCONF_DEBUG fprintf(stderr, "%s: matched '%s' in '%s'\n", __FUNCTION__, m->name, ss);
     /* Expand the buffer if necessary */
 
     while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)

@@ -285,6 +285,9 @@ options_routers();
 options_transports();
 options_auths();
 options_logging();
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+options_tls();
+#endif
 }
 
 static void
