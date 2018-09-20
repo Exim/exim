@@ -43,6 +43,7 @@ check_recipient:
          !encrypted = *
 	  logwrite = cipher: $tls_in_cipher
 # This appears to lie. Despite what's on the wire, it returns the last cert loaded.
+# Fixed in OpenSSL 1.1.1 ?  Testcase golden logfile has the incorrect value.
   warn    logwrite =  ${if def:tls_in_ourcert \
 		{Our cert SN: <${certextract{subject}{$tls_in_ourcert}}>} \
 		{We did not present a cert}}

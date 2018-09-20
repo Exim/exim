@@ -20,6 +20,10 @@ tls_try_verify_hosts = 127.0.0.1
 tls_verify_hosts = HOSTIPV4
 tls_verify_certificates = DIR/aux-fixed/cert1
 
+tls_require_ciphers = -ALL:kRSA
+.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
+openssl_options = +no_tlsv1_3
+.endif
 # ----- Routers -----
 
 begin routers
