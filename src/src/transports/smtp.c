@@ -1254,19 +1254,20 @@ switch (rc)
 	dns_scan dnss;
 	dns_record * rr;
 	for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
-	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_TLSA)
-	  {
-	  uint16_t payload_length = rr->size - 3;
-	  uschar s[MAX_TLSA_EXPANDED_SIZE], * sp = s, * p = US rr->data;
+	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+	  if (rr->type == T_TLSA && rr->size > 3)
+	    {
+	    uint16_t payload_length = rr->size - 3;
+	    uschar s[MAX_TLSA_EXPANDED_SIZE], * sp = s, * p = US rr->data;
 
-	  sp += sprintf(CS sp, "%d ", *p++); /* usage */
-	  sp += sprintf(CS sp, "%d ", *p++); /* selector */
-	  sp += sprintf(CS sp, "%d ", *p++); /* matchtype */
-	  while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
-	    sp += sprintf(CS sp, "%02x", *p++);
+	    sp += sprintf(CS sp, "%d ", *p++); /* usage */
+	    sp += sprintf(CS sp, "%d ", *p++); /* selector */
+	    sp += sprintf(CS sp, "%d ", *p++); /* matchtype */
+	    while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
+	      sp += sprintf(CS sp, "%02x", *p++);
 
-	  debug_printf(" %s\n", s);
-	  }
+	    debug_printf(" %s\n", s);
+	    }
 	}
       return OK;
       }

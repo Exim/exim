@@ -885,7 +885,7 @@ for (i = 0; i <= dns_cname_loops; i++)
   uschar * data;
   dns_record *rr, cname_rr, type_rr;
   dns_scan dnss;
-  int datalen, rc;
+  int rc;
 
   /* DNS lookup failures get passed straight back. */
 
@@ -947,8 +947,8 @@ for (i = 0; i <= dns_cname_loops; i++)
     return DNS_FAIL;
 
   data = store_get(256);
-  if ((datalen = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
-    cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256)) < 0)
+  if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+      cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256) < 0)
     return DNS_FAIL;
   name = data;
 

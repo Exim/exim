@@ -2337,7 +2337,7 @@ if (DANESSL_init(ssl, NULL, hostnames) != 1)
 for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
-    ) if (rr->type == T_TLSA)
+    ) if (rr->type == T_TLSA && rr->size > 3)
   {
   const uschar * p = rr->data;
   uint8_t usage, selector, mtype;

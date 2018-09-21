@@ -2207,7 +2207,7 @@ dane_data_len = store_get(i * sizeof(int));
 for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
      rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
-    ) if (rr->type == T_TLSA)
+    ) if (rr->type == T_TLSA && rr->size > 3)
   {
   const uschar * p = rr->data;
   uint8_t usage = p[0], sel = p[1], type = p[2];
@@ -2774,7 +2774,7 @@ while (left > 0)
   DEBUG(D_tls) debug_printf("outbytes=" SSIZE_T_FMT "\n", outbytes);
   if (outbytes < 0)
     {
-debug_printf("%s: err from gnutls_record_send(\n", __FUNCTION__);
+    DEBUG(D_tls) debug_printf("%s: gnutls_record_send err\n", __FUNCTION__);
     record_io_error(state, outbytes, US"send", NULL);
     return -1;
     }
