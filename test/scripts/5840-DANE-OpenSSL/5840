@@ -52,7 +52,7 @@ killdaemon
 # Check we get a CV and TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
-exim -odf CALLER@thishost.test.ex
+exim -odf -DDETAILS=ca CALLER@thishost.test.ex
 Testing
 ****
 exim -DOPT=no_certname -qf

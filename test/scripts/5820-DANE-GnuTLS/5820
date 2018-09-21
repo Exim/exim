@@ -2,11 +2,11 @@
 #
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
-### TLSA (3 1 1)
+### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
 exim -odq CALLER@dane256ee.test.ex
 Testing
 ****
-### TLSA (3 1 2)
+### TLSA (3 1 2) (            SHA2-512)
 exim -odq CALLER@mxdane512ee.test.ex
 Testing
 ****
@@ -24,7 +24,7 @@ killdaemon
 #
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
-### TLSA (2 0 1)
+### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 exim -odf CALLER@mxdane256ta.test.ex
 Testing
 ****
@@ -44,7 +44,7 @@ killdaemon
 # Check we get a CV and TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
-exim -odf CALLER@thishost.test.ex
+exim -odf -DDETAILS=ca CALLER@thishost.test.ex
 Testing
 ****
 exim -DOPT=no_certname -qf

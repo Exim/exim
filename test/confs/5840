@@ -75,7 +75,7 @@ send_to_server:
   hosts_require_dane = HOSTIPV4
   tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
   tls_try_verify_hosts = thishost.test.ex
-  tls_verify_certificates = CDIR2/ca_chain.pem
+  tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
 
 
 

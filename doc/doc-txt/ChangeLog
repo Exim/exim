@@ -54,6 +54,11 @@ JH/23 Bug 2318: Fix the noerror command within filters.  It wasn't working.
       The ignore_error flag wasn't being returned from the filter subprocess so
       was not set for later routers.  Investigation and fix by Matthias Kurz.
 
+JH/26 Bug 2311: Fix DANE-TA verification under GnuTLS.  Previously it was also
+      requiring a known-CA anchor certificate; make it now rely entirely on the
+      TLSA as an anchor.  Checking the name on the leaf cert against the name
+      on the A-record for the host is still done for TA (but not for EE mode).
+
 
 Exim version 4.91
 -----------------
