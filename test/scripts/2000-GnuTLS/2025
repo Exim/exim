@@ -7,5 +7,6 @@ Testing
 ****
 exim -qf
 ****
+millisleep 500
 killdaemon
 no_msglog_check

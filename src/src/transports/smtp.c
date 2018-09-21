@@ -4598,6 +4598,7 @@ retry_non_continued:
           "hosts_max_try (message older than host's retry time)\n");
         }
       }
+    if (running_in_test_harness) millisleep(500); /* let server debug out */
     }   /* End of loop for trying multiple hosts. */
 
   /* If we failed to find a matching host in the list, for an already-open

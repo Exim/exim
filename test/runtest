@@ -586,6 +586,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/No certificate was found/The peer did not send any certificate/g;
 #(dodgy test?)  s/\(certificate verification failed\): invalid/\(gnutls_handshake\): The peer did not send any certificate./g;
   s/\(gnutls_priority_set\): No or insufficient priorities were set/\(gnutls_handshake\): Could not negotiate a supported cipher suite/g;
+  s/\(gnutls_handshake\): \KNo supported cipher suites have been found.$/Could not negotiate a supported cipher suite./;
 
   # (this new one is a generic channel-read error, but the testsuite
   # only hits it in one place)
@@ -1529,6 +1530,11 @@ $munges =
 
     'gnutls_handshake' =>
     { 'mainlog' => 's/\(gnutls_handshake\): Error in the push function/\(gnutls_handshake\): A TLS packet with unexpected length was received/' },
+
+    'gnutls_bad_clientcert' =>
+    { 'mainlog' => 's/\(certificate verification failed\): certificate invalid/\(gnutls_handshake\): The peer did not send any certificate./',
+      'stdout'  => 's/Succeeded in starting TLS/A TLS fatal alert has been received.\nFailed to start TLS'
+    },
 
     'optional_events' =>
     { 'stdout' => '/event_action =/' },

@@ -1590,6 +1590,7 @@ uint verify;
 if (state->verify_requirement == VERIFY_NONE)
   return TRUE;
 
+DEBUG(D_tls) debug_printf("TLS: checking peer certificate\n");
 *errstr = NULL;
 
 if ((rc = peer_status(state, errstr)) != OK)
@@ -2059,7 +2060,10 @@ if (!state->tlsp->on_connect)
   }
 
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
-that the GnuTLS library doesn't. */
+that the GnuTLS library doesn't.
+From 3.1.0 there is gnutls_handshake_set_timeout() - but it requires you
+to set (and clear down afterwards) up a pull-timeout callback function that does
+a select, so we're no better off unless avoiding signals becomes an issue. */
 
 gnutls_transport_set_ptr2(state->session,
     (gnutls_transport_ptr_t)(long) fileno(smtp_in),

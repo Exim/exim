@@ -23,7 +23,7 @@ tls_certificate = ${if eq {SERVER}{server} {CDIR2/fullchain.pem}fail}
 tls_privatekey =  ${if eq {SERVER}{server} {CDIR2/server1.example.com.unlocked.key}fail}
 
 # Permit two specific ciphers
-tls_require_ciphers = NONE:+VERS-TLS-ALL:+MAC-ALL:+RSA:+AES-128-CBC:+CAMELLIA-256-GCM:+SIGN-ALL:+COMP-NULL
+tls_require_ciphers = NORMAL:-KX-ALL:+RSA:-CIPHER-ALL:+AES-128-CBC:+CAMELLIA-256-GCM
 
 # ----- Routers -----
 begin routers
@@ -52,7 +52,7 @@ send_to_server:
   tls_verify_certificates =	CDIR2/ca_chain.pem
 
   # Some commonly-available cipher, we hope
-  tls_require_ciphers =		NONE:+VERS-TLS-ALL:+MAC-ALL:+RSA:+AES-128-CBC:+SIGN-ALL:+COMP-NULL
+  tls_require_ciphers =		NORMAL:-CIPHER-ALL:+AES-128-CBC
   dane_require_tls_ciphers =	OPT
 
 # ----- Retry -----
