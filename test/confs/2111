@@ -23,6 +23,9 @@ tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_verify_hosts = *
 tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
 
+.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
+openssl_options = +no_tlsv1_3
+.endif
 
 # ----- Routers -----
 
@@ -47,7 +50,7 @@ send_to_server:
   port = PORT_D
   tls_certificate = DIR/aux-fixed/cert2
   tls_privatekey = DIR/aux-fixed/cert2
-  tls_require_ciphers = IDEA-CBC-MD5 \
+  tls_require_ciphers = IDEA-CBC-MD5:\
     ${if eq{$host_address}{127.0.0.1}{:AES256-SHA:RSA_ARCFOUR_SHA}}
 
 # End

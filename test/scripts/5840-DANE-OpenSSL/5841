@@ -15,12 +15,12 @@ Testing
 #
 ### Dane cipher specified, dane unused
 # Since dane unused, should get the same cipher as the baseline
-exim -odf -DOPT=ECDHE-RSA-CAMELLIA256-SHA384 CALLER@localhost.test.ex
+exim -odf -DLIST=ECDHE-RSA-CAMELLIA256-SHA384 CALLER@localhost.test.ex
 Testing
 ****
 ### Dane cipher specified, dane used
 # Should get the cipher specified here
-exim -odf -DOPT=ECDHE-RSA-CAMELLIA256-SHA384 CALLER@dane256ee.test.ex
+exim -odf -DLIST=ECDHE-RSA-CAMELLIA256-SHA384 CALLER@dane256ee.test.ex
 Testing
 ****
 #
