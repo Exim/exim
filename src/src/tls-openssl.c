@@ -432,10 +432,12 @@ for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
   X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
   if(tmp_obj->type == X509_LU_X509)
     {
-    X509 * current_cert= tmp_obj->data.x509;
-    X509_NAME_oneline(X509_get_subject_name(current_cert), CS name, sizeof(name));
-	name[sizeof(name)-1] = '\0';
-    debug_printf(" %s\n", name);
+    X509_NAME * sn = X509_get_subject_name(tmp_obj->data.x509);
+    if (X509_NAME_oneline(sn, CS name, sizeof(name)))
+      {
+      name[sizeof(name)-1] = '\0';
+      debug_printf(" %s\n", name);
+      }
     }
   }
 }
@@ -516,14 +518,20 @@ Returns:     0 if verification should fail, otherwise 1
 */
 
 static int
-verify_callback(int preverify_ok, X509_STORE_CTX *x509ctx,
-  tls_support *tlsp, BOOL *calledp, BOOL *optionalp)
+verify_callback(int preverify_ok, X509_STORE_CTX * x509ctx,
+  tls_support * tlsp, BOOL * calledp, BOOL * optionalp)
 {
 X509 * cert = X509_STORE_CTX_get_current_cert(x509ctx);
 int depth = X509_STORE_CTX_get_error_depth(x509ctx);
 uschar dn[256];
 
-X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
+if (!X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn)))
+  {
+  DEBUG(D_tls) debug_printf("X509_NAME_oneline() error\n");
+  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
+    tlsp == &tls_out ? deliver_host_address : sender_host_address);
+  return 0;
+  }
 dn[sizeof(dn)-1] = '\0';
 
 if (preverify_ok == 0)
@@ -669,7 +677,13 @@ int depth = X509_STORE_CTX_get_error_depth(x509ctx);
 BOOL dummy_called, optional = FALSE;
 #endif
 
-X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn));
+if (!X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn)))
+  {
+  DEBUG(D_tls) debug_printf("X509_NAME_oneline() error\n");
+  log_write(0, LOG_MAIN, "[%s] SSL verify error: internal error",
+    deliver_host_address);
+  return 0;
+  }
 dn[sizeof(dn)-1] = '\0';
 
 DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s depth %d %s\n",
@@ -1873,25 +1887,27 @@ DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);
 
 
 static void
-peer_cert(SSL * ssl, tls_support * tlsp, uschar * peerdn, unsigned bsize)
+peer_cert(SSL * ssl, tls_support * tlsp, uschar * peerdn, unsigned siz)
 {
 /*XXX we might consider a list-of-certs variable for the cert chain.
 SSL_get_peer_cert_chain(SSL*).  We'd need a new variable type and support
 in list-handling functions, also consider the difference between the entire
 chain and the elements sent by the peer. */
 
+tlsp->peerdn = NULL;
+
 /* Will have already noted peercert on a verify fail; possibly not the leaf */
 if (!tlsp->peercert)
   tlsp->peercert = SSL_get_peer_certificate(ssl);
 /* Beware anonymous ciphers which lead to server_cert being NULL */
 if (tlsp->peercert)
-  {
-  X509_NAME_oneline(X509_get_subject_name(tlsp->peercert), CS peerdn, bsize);
-  peerdn[bsize-1] = '\0';
-  tlsp->peerdn = peerdn;		/*XXX a static buffer... */
-  }
-else
-  tlsp->peerdn = NULL;
+  if (!X509_NAME_oneline(X509_get_subject_name(tlsp->peercert), CS peerdn, siz))
+    { DEBUG(D_tls) debug_printf("X509_NAME_oneline() error\n"); }
+  else
+    {
+    peerdn[siz-1] = '\0';
+    tlsp->peerdn = peerdn;		/*XXX a static buffer... */
+    }
 }
 
 
