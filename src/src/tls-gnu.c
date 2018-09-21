@@ -2198,7 +2198,7 @@ dane_data_len = store_get(i * sizeof(int));
 for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
      rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
-    ) if (rr->type == T_TLSA)
+    ) if (rr->type == T_TLSA && rr->size > 3)
   {
   const uschar * p = rr->data;
   uint8_t usage = p[0], sel = p[1], type = p[2];
