@@ -260,8 +260,9 @@ ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
 #ifdef COMPILE_UTILITY
-asprintf(CSS &dirname, "%s/db", spool_directory);
-asprintf(CSS &filename, "%s/%s.lockfile", dirname, name);
+if (  asprintf(CSS &dirname, "%s/db", spool_directory) < 0
+   || asprintf(CSS &filename, "%s/%s.lockfile", dirname, name) < 0)
+  return NULL;
 #else
 dirname = string_sprintf("%s/db", spool_directory);
 filename = string_sprintf("%s/%s.lockfile", dirname, name);
@@ -302,7 +303,7 @@ if (rc < 0)
 exclusive access to the database, so we can go ahead and open it. */
 
 #ifdef COMPILE_UTILITY
-asprintf(CSS &filename, "%s/%s", dirname, name);
+if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
 #else
 filename = string_sprintf("%s/%s", dirname, name);
 #endif
