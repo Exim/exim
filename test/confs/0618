@@ -1,0 +1,88 @@
+# Exim test configuration 0618
+
+SERVER =
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+.ifdef OPT
+dsn_advertise_hosts = *
+.endif
+delay_warning = 3s : 24h
+
+accept_8bitmime = false
+pipelining_advertise_hosts = :
+
+trusted_users = CALLER
+acl_smtp_rcpt = rcpt
+
+log_selector = +received_recipients
+queue_only
+queue_run_in_order
+
+
+event_action = ${acl {ev_log}}
+
+#
+
+begin acl
+
+ev_log:
+  accept logwrite = event $event_name
+
+rcpt:
+  accept hosts =	HOSTIPV4
+
+  deny	local_parts =	rmt_reject
+  defer	local_parts =	rmt_defer
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver =	accept
+  condition =	${if eq {127.0.0.1}{$sender_host_address}}
+  transport =	tofile
+
+r2:
+  driver =	manualroute
+  local_parts =	^rmt_.*
+  route_list =	* 127.0.0.1::PORT_D
+  self =	send
+  transport =	smtp
+
+r3:
+  driver =	manualroute
+  local_parts =	deferred
+  route_list =	* 127.0.0.1::PORT_S
+  self =	send
+  transport =	bad_tpt
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver =	smtp
+  event_action = ${acl {ev_log}}
+
+bad_tpt:
+  driver =	smtp
+  connect_timeout = 1s
+  event_action = ${acl {ev_log}}
+
+tofile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  event_action = ${acl {ev_log}}
+
+begin retry
+
+*	*	F,1m,3s
+# End

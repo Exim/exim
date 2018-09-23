@@ -1,0 +1,14 @@
+From b@dump.ex Tue Mar 02 09:44:33 1999
+Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <b@dump.ex>)
+	id 10HmaZ-0005vi-00
+	for rmt_accept@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [ip4.ip4.ip4.ip4] (helo=testclient)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <b@dump.ex>)
+	id 10HmaY-0005vi-00
+	for rmt_accept@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+
+

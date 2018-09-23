@@ -487,7 +487,7 @@ if (recipients_count >= recipients_list_max)
   {
   recipient_item *oldlist = recipients_list;
   int oldmax = recipients_list_max;
-  recipients_list_max = recipients_list_max? 2*recipients_list_max : 50;
+  recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
   recipients_list = store_get(recipients_list_max * sizeof(recipient_item));
   if (oldlist != NULL)
     memcpy(recipients_list, oldlist, oldmax * sizeof(recipient_item));

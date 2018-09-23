@@ -7254,7 +7254,6 @@ for (addr_dsntmp = addr_succeed; addr_dsntmp; addr_dsntmp = addr_dsntmp->next)
   if (  (  addr_dsntmp->dsn_aware != dsn_support_yes
 	|| addr_dsntmp->dsn_flags & rf_dsnlasthop
         )
-     && addr_dsntmp->dsn_flags & rf_dsnflags
      && addr_dsntmp->dsn_flags & rf_notify_success
      )
     {
@@ -7321,11 +7320,9 @@ if (addr_senddsn)
 	 addr_dsntmp = addr_dsntmp->next)
       fprintf(f, "<%s> (relayed %s)\n\n",
 	addr_dsntmp->address,
-	(addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1
-	  ? "via non DSN router"
-	  : addr_dsntmp->dsn_aware == dsn_support_no
-	  ? "to non-DSN-aware mailer"
-	  : "via non \"Remote SMTP\" router"
+	addr_dsntmp->dsn_flags & rf_dsnlasthop ? "via non DSN router"
+	: addr_dsntmp->dsn_aware == dsn_support_no ? "to non-DSN-aware mailer"
+	: "via non \"Remote SMTP\" router"
 	);
 
     fprintf(f, "--%s\n"
@@ -7360,7 +7357,7 @@ if (addr_senddsn)
 	  addr_dsntmp->host_used->name);
       else
 	fprintf(f, "Diagnostic-Code: X-Exim; relayed via non %s router\n\n",
-	  (addr_dsntmp->dsn_flags & rf_dsnlasthop) == 1 ? "DSN" : "SMTP");
+	  addr_dsntmp->dsn_flags & rf_dsnlasthop ? "DSN" : "SMTP");
       }
 
     fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
@@ -7441,9 +7438,8 @@ while (addr_failed)
   mark the recipient done. */
 
   if (  addr_failed->prop.ignore_error
-     || (  addr_failed->dsn_flags & rf_dsnflags
-        && (addr_failed->dsn_flags & rf_notify_failure) != rf_notify_failure
-     )  )
+     || addr_failed->dsn_flags & (rf_dsnflags & ~rf_notify_failure)
+     )
     {
     addr = addr_failed;
     addr_failed = addr->next;
@@ -8080,8 +8076,8 @@ else if (addr_defer != (address_item *)(+1))
 
   if (  !f.queue_2stage
      && delivery_attempted
-     && (  ((addr_defer->dsn_flags & rf_dsnflags) == 0)
-        || (addr_defer->dsn_flags & rf_notify_delay) == rf_notify_delay
+     && (  !(addr_defer->dsn_flags & rf_dsnflags)
+        || addr_defer->dsn_flags & rf_notify_delay
 	)
      && delay_warning[1] > 0
      && sender_address[0] != 0

@@ -3909,7 +3909,7 @@ while (done <= 0)
   int c;
   auth_instance *au;
   uschar *orcpt = NULL;
-  int flags;
+  int dsn_flags;
   gstring * g;
 
 #ifdef AUTH_TLS
@@ -4962,7 +4962,7 @@ while (done <= 0)
 
       /* Set the DSN flags orcpt and dsn_flags from the session*/
       orcpt = NULL;
-      flags = 0;
+      dsn_flags = 0;
 
       if (fl.esmtp) for(;;)
 	{
@@ -4987,14 +4987,14 @@ while (done <= 0)
 	else if (fl.dsn_advertised && strcmpic(name, US"NOTIFY") == 0)
 	  {
 	  /* Check if the notify flags have been already set */
-	  if (flags > 0)
+	  if (dsn_flags > 0)
 	    {
 	    done = synprot_error(L_smtp_syntax_error, 501, NULL,
 		US"NOTIFY can be specified once only");
 	    goto COMMAND_LOOP;
 	    }
 	  if (strcmpic(value, US"NEVER") == 0)
-	    flags |= rf_notify_never;
+	    dsn_flags |= rf_notify_never;
 	  else
 	    {
 	    uschar *p = value;
@@ -5006,17 +5006,17 @@ while (done <= 0)
 	      if (strcmpic(p, US"SUCCESS") == 0)
 		{
 		DEBUG(D_receive) debug_printf("DSN: Setting notify success\n");
-		flags |= rf_notify_success;
+		dsn_flags |= rf_notify_success;
 		}
 	      else if (strcmpic(p, US"FAILURE") == 0)
 		{
 		DEBUG(D_receive) debug_printf("DSN: Setting notify failure\n");
-		flags |= rf_notify_failure;
+		dsn_flags |= rf_notify_failure;
 		}
 	      else if (strcmpic(p, US"DELAY") == 0)
 		{
 		DEBUG(D_receive) debug_printf("DSN: Setting notify delay\n");
-		flags |= rf_notify_delay;
+		dsn_flags |= rf_notify_delay;
 		}
 	      else
 		{
@@ -5027,7 +5027,7 @@ while (done <= 0)
 		}
 	      p = pp;
 	      }
-	      DEBUG(D_receive) debug_printf("DSN Flags: %x\n", flags);
+	      DEBUG(D_receive) debug_printf("DSN Flags: %x\n", dsn_flags);
 	    }
 	  }
 
@@ -5145,7 +5145,7 @@ while (done <= 0)
 
 	/* Set the dsn flags in the recipients_list */
 	recipients_list[recipients_count-1].orcpt = orcpt;
-	recipients_list[recipients_count-1].dsn_flags = flags;
+	recipients_list[recipients_count-1].dsn_flags = dsn_flags;
 
 	DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n",
 	  recipients_list[recipients_count-1].orcpt,

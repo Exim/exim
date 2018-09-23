@@ -1672,16 +1672,15 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     pw = &pwcopy;
     }
 
-  /* Run the router, and handle the consequences. */
-
-  /* ... but let us check on DSN before. If this should be the last hop for DSN
-  set flag. */
+  /* If this should be the last hop for DSN flag the addr. */
 
   if (r->dsn_lasthop && !(addr->dsn_flags & rf_dsnlasthop))
     {
     addr->dsn_flags |= rf_dsnlasthop;
     HDEBUG(D_route) debug_printf("DSN: last hop for %s\n", addr->address);
     }
+
+  /* Run the router, and handle the consequences. */
 
   HDEBUG(D_route) debug_printf("calling %s router\n", r->name);
 
