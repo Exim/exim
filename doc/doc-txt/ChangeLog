@@ -125,6 +125,10 @@ JH/26 Bug 2311: Fix DANE-TA verification under GnuTLS.  Previously it was also
       TLSA as an anchor.  Checking the name on the leaf cert against the name
       on the A-record for the host is still done for TA (but not for EE mode).
 
+JH/27 Fix logging of proxy address.  Previously, a pointless "PRX=[]:0" would be
+      included in delivery lines for non-proxied connections, when compiled with
+      SUPPORT_SOCKS and running with proxy logging enabled.
+
 
 Exim version 4.91
 -----------------
