@@ -1053,10 +1053,10 @@ uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
 
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
-uschar *hosts_proxy            = US"";
-uschar *proxy_external_address = US"";
+uschar *hosts_proxy            = NULL;
+uschar *proxy_external_address = NULL;
 int     proxy_external_port    = 0;
-uschar *proxy_local_address    = US"";
+uschar *proxy_local_address    = NULL;
 int     proxy_local_port       = 0;
 BOOL    proxy_session          = FALSE;
 BOOL    proxy_session_failed   = FALSE;
