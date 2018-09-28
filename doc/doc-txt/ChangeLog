@@ -134,6 +134,9 @@ JH/28 Bug 2314: Fire msg:fail:delivery event even when error is being ignored.
       move the existing event to fire before the normal logging of message
       failure so that custom logging is bracketed by normal logging.
 
+JH/29 Bug 2322: A "fail" command in a non-system filter (file) now fires the
+      msg:fail:internal event.  Developement by Matthias Kurz.
+
 
 Exim version 4.91
 -----------------

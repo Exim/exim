@@ -1,0 +1,5 @@
+# System filter which triggers fail command results in event.
+#
+exim -odi userx@domain1
+Processed by a system filter which triggers fail command.
+****

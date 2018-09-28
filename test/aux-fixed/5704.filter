@@ -1,0 +1,4 @@
+# Exim filter
+
+if not error_message
+then fail text "failed in system filter file" endif

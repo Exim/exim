@@ -1,0 +1,12 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 cancelled by system filter: failed in system filter file
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmaX-0005vi-00 . local_part <userx> domain <domain1> reason <failed in system filter file>
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@the.local.host.name> R=dump_bounces
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaY-0005vi-00 . finished: 10HmaY-0005vi-00
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaX-0005vi-00 . finished: 10HmaX-0005vi-00

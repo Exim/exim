@@ -1,0 +1,28 @@
+# Exim test configuration 5704
+
+.include DIR/aux-var/std_conf_prefix
+
+# ----- Main settings -----
+
+system_filter = DIR/aux-fixed/TESTNUM.filter
+
+event_action = ${acl {logger}}
+
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
+
+# ----- Routers -----
+
+begin routers
+
+dump_bounces:
+  driver = redirect
+  senders = :
+  data = :blackhole:
+
+# ----- Transports -----
+
+# End
