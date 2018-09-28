@@ -1,0 +1,20 @@
+# Raise msg:fail:delivery when an error of a failed bounce gets ignored.
+#
+exim -odq userx@domain1
+Try to deliver this message to usery via a filter deliver "redirect".
+However that fails. Later the bounce also fails.
+****
+server PORT_S 2
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL
+250 OK
+RCPT
+550 Not that one
+QUIT
+220 OK
+****
+exim -qqf
+****

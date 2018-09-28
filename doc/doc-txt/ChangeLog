@@ -129,6 +129,11 @@ JH/27 Fix logging of proxy address.  Previously, a pointless "PRX=[]:0" would be
       included in delivery lines for non-proxied connections, when compiled with
       SUPPORT_SOCKS and running with proxy logging enabled.
 
+JH/28 Bug 2314: Fire msg:fail:delivery event even when error is being ignored.
+      Developement by Matthias Kurz, tweaked by JH.  While in that bit of code,
+      move the existing event to fire before the normal logging of message
+      failure so that custom logging is bracketed by normal logging.
+
 
 Exim version 4.91
 -----------------

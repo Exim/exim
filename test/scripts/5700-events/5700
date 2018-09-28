@@ -29,7 +29,7 @@ exim -qqf
 #
 #
 #
-exim -odq userx@domain2
+exim -odq userx@expansionfail
 A deliverable message which will hit a coding error in the config
 ****
 server PORT_S

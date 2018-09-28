@@ -1,0 +1,40 @@
+# Exim test configuration 5701
+
+.include DIR/aux-var/std_conf_prefix
+
+# ----- Main settings -----
+
+event_action = ${acl {logger}}
+
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
+
+# ----- Routers -----
+
+begin routers
+
+router_filter:
+  driver = redirect
+  reply_transport = reply
+  local_parts = userx-filter
+  allow_filter
+  data = #Exim filter\n seen mail text "This is an autoreply."
+  user = EXIMUSER
+
+others:
+  driver = redirect
+  data = :blackhole:
+
+# ----- Transports -----
+
+begin transports
+
+reply:
+  driver = autoreply
+  to = $reply_address
+  event_action = ${acl {logger}}
+
+# End

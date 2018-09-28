@@ -1,0 +1,19 @@
+# Events for syntactically invalid generated recipient on autoreply
+#
+exim -odi userx-filter@domain1
+Subject: Bad from
+From: "something" x@y
+
+This is a test with a syntactically bad From: line and we process it
+with a filter and fire events.
+****
+#
+#
+#
+#
+exim -odi userx-filter@domain1
+Subject: Good from
+From: "User X" <userx@domain1>
+
+This is a test we process with a filter and fire events.
+****

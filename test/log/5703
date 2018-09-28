@@ -1,0 +1,32 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1]:1111
+1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaX-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:fail:delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 . refused by fdqn <127.0.0.1> local_part <usery> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one>
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** usery@domain1 <userx@domain1> R=route_smtp T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@domain1>: 550 Not that one
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1]:1111
+1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaY-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:host:defer
+1999-03-02 09:44:33 10HmaY-0005vi-00 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
+1999-03-02 09:44:33 10HmaY-0005vi-00 == CALLER@the.local.host.name R=route_smtp T=smtp defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** CALLER@the.local.host.name: retry timeout exceeded
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:fail:delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 . refused by fdqn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errstr <Remote host closed connection in response to initial connection: retry timeout exceeded>
+1999-03-02 09:44:33 10HmaY-0005vi-00 CALLER@the.local.host.name: error ignored
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaY-0005vi-00 . finished: 10HmaY-0005vi-00
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaX-0005vi-00 . finished: 10HmaX-0005vi-00
+1999-03-02 09:44:33 End queue run: pid=pppp -qqf

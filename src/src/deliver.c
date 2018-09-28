@@ -890,6 +890,7 @@ deliver_host =   addr->host_used ? addr->host_used->name : NULL;
 	  addr->host_used
           || Ustrcmp(addr->transport->driver_name, "smtp") == 0
 	  || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
+	  || Ustrcmp(addr->transport->driver_name, "autoreply") == 0
 	 ? addr->message : NULL);
 
 deliver_host_port =    save_port;
@@ -1383,6 +1384,16 @@ failure_log(address_item * addr, uschar * driver_kind, uschar * now)
 void * reset_point;
 gstring * g = reset_point = string_get(256);
 
+#ifndef DISABLE_EVENT
+/* Message failures for which we will send a DSN get their event raised
+later so avoid doing it here. */
+
+if (  !addr->prop.ignore_error
+   && !(addr->dsn_flags & (rf_dsnflags & ~rf_notify_failure))
+   )
+  msg_event_raise(US"msg:fail:delivery", addr);
+#endif
+
 /* Build up the log line for the message and main logs */
 
 /* Create the address string for logging. Must not do this earlier, because
@@ -1430,10 +1441,6 @@ else
   deliver_msglog("%s %s\n", now, g->s);
 
 log_write(0, LOG_MAIN, "** %s", g->s);
-
-#ifndef DISABLE_EVENT
-msg_event_raise(US"msg:fail:delivery", addr);
-#endif
 
 store_reset(reset_point);
 return;
@@ -7445,6 +7452,9 @@ while (addr_failed)
     addr_failed = addr->next;
     if (addr->return_filename) Uunlink(addr->return_filename);
 
+#ifndef DISABLE_EVENT
+    msg_event_raise(US"msg:fail:delivery", addr);
+#endif
     log_write(0, LOG_MAIN, "%s%s%s%s: error ignored",
       addr->address,
       !addr->parent ? US"" : US" <",

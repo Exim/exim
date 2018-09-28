@@ -1,0 +1,17 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@the.local.host.name>
+250 OK
+RCPT TO:<usery@domain1>
+550 Not that one
+QUIT
+220 OK
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+End of script

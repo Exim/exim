@@ -1,0 +1,74 @@
+ev_tcp:
+    accept condition = ${if eq {$event_name}{tcp:connect}}
+	   logwrite = . [$host_address]:$host_port
+    accept condition = ${if eq {$event_name}{tcp:close}}
+	   logwrite = . [$sending_ip_address] -> \
+			[$host_address]:$host_port
+    accept
+
+ev_smtp:
+    accept
+	   logwrite = . [$sending_ip_address] -> \
+			[$host_address]:$host_port
+	   logwrite = . banner <$event_data>
+
+ev_msg_fail:
+    accept condition = ${if eq {$event_name}{msg:fail:delivery}}
+	   logwrite = . \
+	    refused by fdqn <$host> \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    errstr <$event_data> \
+
+    accept logwrite = . \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    reason <$event_data>
+
+ev_msg_log:
+    accept logwrite = . \
+	    $acl_arg1 \
+	    ip <$host_address> \
+	    port <$host_port> \
+	    fqdn <$host> \
+	    local_part <$local_part> \
+	    domain <$domain> \
+	    $acl_arg2 \
+	    router <$router_name> \
+	    transport <$transport_name>
+
+ev_msg:
+    accept condition = ${if eq {fail} {${listextract{2}{$event_name}}}}
+	   acl = ev_msg_fail
+
+    accept condition = ${if eq {$event_name}{msg:complete}}
+	   logwrite = . finished: $message_exim_id
+
+    accept condition = ${if eq {$domain}{expansionfail}}
+	   logwrite = $this_expansion_will_fail
+
+    accept condition = ${if eq {$event_name}{msg:delivery}}
+	   acl = ev_msg_log delivery "confirmation <$event_data>"
+
+    accept condition = ${if eq {$event_name}{msg:host:defer}}
+	   acl = ev_msg_log "host deferral" \
+			"errno <$event_defer_errno> errstr <$event_data>"
+
+    accept condition = ${if eq {$event_name}{msg:rcpt:defer}}
+	   set acl_m_ev_lkup =	${eval:$event_defer_errno & 0xff}
+	   set acl_m_ev_lkup =	${if = {$acl_m_ev_lkup}{65} {A} \
+				{ ${if = {$acl_m_ev_lkup}{77} {MX} \
+				  {$acl_m_ev_lkup}}}}
+	   set acl_m_ev_code =  4${eval:$event_defer_errno >>8}
+	   acl = ev_msg_log "rcpt deferral" \
+			"err <$event_defer_errno>:<$acl_m_ev_lkup:$acl_m_ev_code> \
+			errstr <$event_data>"
+
+logger:
+    warn   logwrite = event $event_name
+    accept condition = ${if eq {tcp} {${listextract{1}{$event_name}}}}
+	   acl = ev_tcp
+    accept condition = ${if eq {smtp} {${listextract{1}{$event_name}}}}
+	   acl = ev_smtp
+    accept condition = ${if eq {msg} {${listextract{1}{$event_name}}}}
+	   acl = ev_msg

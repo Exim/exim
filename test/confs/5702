@@ -1,15 +1,10 @@
-# Exim test configuration 5700
+# Exim test configuration 5702
 
 .include DIR/aux-var/std_conf_prefix
 
-
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
-acl_smtp_data = accept
-
 event_action = ${acl {logger}}
-
 
 # ----- ACL -----
 
@@ -17,24 +12,24 @@ begin acl
 
 .include DIR/aux-fixed/event-logger-acl
 
-
 # ----- Routers -----
 
 begin routers
 
-dump_bounces:
+route_userx:
   driver = redirect
-  senders = :
-  data = :blackhole:
+  local_parts = userx
+  allow_filter
+  file = DIR/aux-fixed/TESTNUM.filter
+  user = EXIMUSER
+  no_more
 
-others:
+route_smtp:
   driver = manualroute
   route_list = * 127.0.0.1 byname
   self = send
   transport = smtp
-  errors_to = ""
   no_more
-
 
 # ----- Transports -----
 
@@ -43,8 +38,6 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
-  command_timeout = 1s
-  final_timeout = 1s
-  event_action =   ${acl {logger}}
+  event_action = ${acl {logger}}
 
 # End

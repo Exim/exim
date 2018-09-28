@@ -1,0 +1,20 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** >**bad-reply** <userx-filter@domain1> R=router_filter T=reply: filter autoreply generated syntactically invalid recipient
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:fail:delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 . refused by fdqn <> local_part <>**bad-reply**> domain <> errstr <filter autoreply generated syntactically invalid recipient>
+1999-03-02 09:44:33 10HmaX-0005vi-00 >**bad-reply** <userx-filter@domain1>: error ignored
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaX-0005vi-00 . finished: 10HmaX-0005vi-00
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <userx@domain1> R=others
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . finished: 10HmaZ-0005vi-00
+1999-03-02 09:44:33 10HmaY-0005vi-00 => >userx@domain1 <userx-filter@domain1> R=router_filter T=reply
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 . delivery ip <> port <0> fqdn <> local_part <>userx@domain1> domain <domain1> confirmation <> router <router_filter> transport <reply>
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmaY-0005vi-00 . finished: 10HmaY-0005vi-00
