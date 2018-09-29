@@ -1,0 +1,32 @@
+# Exim test configuration 5705
+
+.include DIR/aux-var/std_conf_prefix
+
+# ----- Main settings -----
+
+event_action = ${acl {logger}}
+
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
+
+# ----- Routers -----
+
+begin routers
+
+filter_fail:
+  driver = redirect
+  local_parts = userx
+  allow_filter
+  allow_fail
+  user = EXIMUSER
+  data = :fail: this filter failed
+
+dump_bounces:
+  driver = redirect
+  senders = :
+  data = :blackhole:
+
+# End
