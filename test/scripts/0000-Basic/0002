@@ -895,6 +895,13 @@ ${extract json {2} {${extract json{IDs} {\{"other":"foo", "IDs": [116, 943, 234]
 
 ${extract json {seconds} { \{"hours":0, "mins":0, "seconds":59\} }}
 ${extract json {seconds} {${extract json {2} { ["irrelevant", \{"hours":0, "mins":0, "seconds":59\}] }}}}
+
+${extract json{IDs}{ \{"IDs": \{"1":116, "2":943, "3":234\}\} }}
+expect: {"1":116, "2":943, "3":234}
+
+${extract json{IDs}{ \{"id": \{"a":101, "b":102\}, "IDs": \{"1":116, "2":943, "3":234\}\} }}
+expect: {"1":116, "2":943, "3":234}
+
 ****
 # Test "escape" with print_topbitchars
 exim -be -DPTBC=print_topbitchars
