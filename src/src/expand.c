@@ -3869,6 +3869,8 @@ static uschar *
 dewrap(uschar * s, const uschar * wrap)
 {
 uschar * p = s;
+unsigned depth = 0;
+BOOL quotesmode = wrap[0] == wrap[1];
 
 while (isspace(*p)) p++;
 
@@ -3879,11 +3881,15 @@ if (*p == *wrap)
   while (*p)
     {
     if (*p == '\\') p++;
+    else if (!quotesmode && *p == wrap[-1]) depth++;
     else if (*p == *wrap)
-      {
-      *p = '\0';
-      return s;
-      }
+      if (depth == 0)
+	{
+	*p = '\0';
+	return s;
+	}
+      else
+	depth--;
     p++;
     }
   }
@@ -3917,7 +3923,9 @@ for (item = s;
     case '}': object_depth--; break;
     }
 *list = *s ? s+1 : s;
-return string_copyn(item, s - item);
+item = string_copyn(item, s - item);
+DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
+return US item;
 }
 
 
