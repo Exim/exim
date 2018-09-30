@@ -9374,6 +9374,27 @@ ${extract{Z}{A=... B=...}{$value} fail }
 This forces an expansion failure (see section &<<SECTforexpfai>>&);
 {<&'string2'&>} must be present for &"fail"& to be recognized.
 
+.new
+.vitem "&*${extract json{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
+       {*&<&'string3'&>&*}}*&"
+.cindex "expansion" "extracting from JSON object"
+.cindex JSON expansions
+The key and <&'string1'&> are first expanded separately. Leading and trailing
+white space is removed from the key (but not from any of the strings). The key
+must not be empty and must not consist entirely of digits.
+The expanded <&'string1'&> must be of the form:
+.display
+{ <&'"key1"'&> : <&'value1'&> ,  <&'"key2"'&> , <&'value2'&> ... }
+.endd
+.vindex "&$value$&"
+The braces, commas and colons, and the quoting of the member name are required;
+the spaces are optional.
+Matching of the key against the member names is done case-sensitively.
+. XXX should be a UTF-8 compare
+
+The results of matching are handled as above.
+.wen
+
 
 .vitem "&*${extract{*&<&'number'&>&*}{*&<&'separators'&>&*}&&&
         {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
@@ -9404,6 +9425,19 @@ ${extract{-4}{:}{x:42:99:& Mailer::/bin/bash}}
 .endd
 yields &"99"&. Two successive separators mean that the field between them is
 empty (for example, the fifth field above).
+
+
+.new
+.vitem "&*${extract json{*&<&'number'&>&*}}&&&
+        {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
+.cindex "expansion" "extracting from JSON array"
+.cindex JSON expansions
+The <&'number'&> argument must consist entirely of decimal digits,
+apart from leading and trailing white space, which is ignored.
+
+Field selection and result handling is as above;
+there is no choice of field separator.
+.wen
 
 
 .vitem &*${filter{*&<&'string'&>&*}{*&<&'condition'&>&*}}*&

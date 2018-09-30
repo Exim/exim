@@ -25,6 +25,8 @@ Version 4.92
 
  6. Builtin macros for supported log_selector and openssl_options values.
 
+ 7. JSON variants of the ${extract } expansion item.
+
 Version 4.91
 --------------
 

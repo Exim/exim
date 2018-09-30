@@ -874,6 +874,27 @@ ${if ={1}{1} {true}{${if ={1}{1} {true}{${if ={1}{1}{true}fail}}}}}
 ${env {USER}}
 ${env {NO_SUCH_VARIABLE} {oops, success} {correct}}
 
+# JSON
+
+${extract json {Url} \
+  {   \{ \"Url\":    \"http://www.example.com/image/481989943\",\
+	 \"Height\": 125,\
+	 \"Width\":  100\
+      \} \
+  } \
+ }
+${extract json {Width} \
+  {   \{ \"Url\":    \"http://www.example.com/image/481989943\",\
+	 \"Height\": 125,\
+	 \"Width\":  100\
+      \} \
+  } \
+ }
+${extract json {2} {[116, 943, 234, 38793]} }
+${extract json {2} {${extract json{IDs} {\{"other":"foo", "IDs": [116, 943, 234]\} }}} }
+
+${extract json {seconds} { \{"hours":0, "mins":0, "seconds":59\} }}
+${extract json {seconds} {${extract json {2} { ["irrelevant", \{"hours":0, "mins":0, "seconds":59\}] }}}}
 ****
 # Test "escape" with print_topbitchars
 exim -be -DPTBC=print_topbitchars

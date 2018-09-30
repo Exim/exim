@@ -1133,20 +1133,20 @@ Returns:    NULL if the subfield was not found, or
 */
 
 static uschar *
-expand_getkeyed(uschar *key, const uschar *s)
+expand_getkeyed(uschar * key, const uschar * s)
 {
 int length = Ustrlen(key);
 while (isspace(*s)) s++;
 
 /* Loop to search for the key */
 
-while (*s != 0)
+while (*s)
   {
   int dkeylength;
-  uschar *data;
-  const uschar *dkey = s;
+  uschar * data;
+  const uschar * dkey = s;
 
-  while (*s != 0 && *s != '=' && !isspace(*s)) s++;
+  while (*s && *s != '=' && !isspace(*s)) s++;
   dkeylength = s - dkey;
   while (isspace(*s)) s++;
   if (*s == '=') while (isspace((*(++s))));
@@ -1257,17 +1257,17 @@ return fieldtext;
 static uschar *
 expand_getlistele(int field, const uschar * list)
 {
-const uschar * tlist= list;
-int sep= 0;
+const uschar * tlist = list;
+int sep = 0;
 uschar dummy;
 
-if(field<0)
+if (field < 0)
   {
-  for(field++; string_nextinlist(&tlist, &sep, &dummy, 1); ) field++;
-  sep= 0;
+  for (field++; string_nextinlist(&tlist, &sep, &dummy, 1); ) field++;
+  sep = 0;
   }
-if(field==0) return NULL;
-while(--field>0 && (string_nextinlist(&list, &sep, &dummy, 1))) ;
+if (field == 0) return NULL;
+while (--field > 0 && (string_nextinlist(&list, &sep, &dummy, 1))) ;
 return string_nextinlist(&list, &sep, NULL, 0);
 }
 
@@ -3849,6 +3849,79 @@ return x;
 
 
 
+/* Return pointer to dewrapped string, with enclosing specified chars removed.
+The given string is modified on return.  Leading whitespace is skipped while
+looking for the opening wrap character, then the rest is scanned for the trailing
+(non-escaped) wrap character.  A backslash in the string will act as an escape.
+
+A nul is written over the trailing wrap, and a pointer to the char after the
+leading wrap is returned.
+
+Arguments:
+  s	String for de-wrapping
+  wrap  Two-char string, the first being the opener, second the closer wrapping
+        character
+Return:
+  Pointer to de-wrapped string, or NULL on error (with expand_string_message set).
+*/
+
+static uschar *
+dewrap(uschar * s, const uschar * wrap)
+{
+uschar * p = s;
+
+while (isspace(*p)) p++;
+
+if (*p == *wrap)
+  {
+  s = ++p;
+  wrap++;
+  while (*p)
+    {
+    if (*p == '\\') p++;
+    else if (*p == *wrap)
+      {
+      *p = '\0';
+      return s;
+      }
+    p++;
+    }
+  }
+expand_string_message = string_sprintf("missing '%c'", *wrap);
+return NULL;
+}
+
+
+/* Pull off the leading array or object element, returning
+a copy in an allocated string.  Update the list pointer.
+
+The element may itself be an abject or array.
+*/
+
+uschar *
+json_nextinlist(const uschar ** list)
+{
+unsigned array_depth = 0, object_depth = 0;
+const uschar * s = *list, * item;
+
+while (isspace(*s)) s++;
+
+for (item = s;
+     *s && (*s != ',' || array_depth != 0 || object_depth != 0);
+     s++)
+  switch (*s)
+    {
+    case '[': array_depth++; break;
+    case ']': array_depth--; break;
+    case '{': object_depth++; break;
+    case '}': object_depth--; break;
+    }
+*list = *s ? s+1 : s;
+return string_copyn(item, s - item);
+}
+
+
+
 /*************************************************
 *                 Expand string                  *
 *************************************************/
@@ -5554,6 +5627,16 @@ while (*s != 0)
       uschar *sub[3];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
+      enum {extract_basic, extract_json} fmt = extract_basic;
+
+      while (isspace(*s)) s++;
+
+      /* Check for a format-variant specifier */
+
+      if (*s != '{')					/*}*/
+	{
+	if (Ustrncmp(s, "json", 4) == 0) {fmt = extract_json; s += 4;}
+	}
 
       /* While skipping we cannot rely on the data for expansions being
       available (eg. $item) hence cannot decide on numeric vs. keyed.
@@ -5561,11 +5644,10 @@ while (*s != 0)
 
       if (skipping)
 	{
-        while (isspace(*s)) s++;
-        for (j = 5; j > 0 && *s == '{'; j--)
+        for (j = 5; j > 0 && *s == '{'; j--)			/*'}'*/
 	  {
           if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
-	    goto EXPAND_FAILED;					/*{*/
+	    goto EXPAND_FAILED;					/*'{'*/
           if (*s++ != '}')
 	    {
 	    expand_string_message = US"missing '{' for arg of extract";
@@ -5573,13 +5655,13 @@ while (*s != 0)
 	    }
 	  while (isspace(*s)) s++;
 	  }
-	if (  Ustrncmp(s, "fail", 4) == 0
+	if (  Ustrncmp(s, "fail", 4) == 0			/*'{'*/
 	   && (s[4] == '}' || s[4] == ' ' || s[4] == '\t' || !s[4])
 	   )
 	  {
 	  s += 4;
 	  while (isspace(*s)) s++;
-	  }
+	  }							/*'{'*/
 	if (*s != '}')
 	  {
 	  expand_string_message = US"missing '}' closing extract";
@@ -5589,11 +5671,11 @@ while (*s != 0)
 
       else for (i = 0, j = 2; i < j; i++) /* Read the proper number of arguments */
         {
-        while (isspace(*s)) s++;
-        if (*s == '{') 						/*}*/
+	while (isspace(*s)) s++;
+        if (*s == '{') 						/*'}'*/
           {
           sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
-          if (sub[i] == NULL) goto EXPAND_FAILED;		/*{*/
+          if (sub[i] == NULL) goto EXPAND_FAILED;		/*'{'*/
           if (*s++ != '}')
 	    {
 	    expand_string_message = string_sprintf(
@@ -5604,7 +5686,7 @@ while (*s != 0)
           /* After removal of leading and trailing white space, the first
           argument must not be empty; if it consists entirely of digits
           (optionally preceded by a minus sign), this is a numerical
-          extraction, and we expect 3 arguments. */
+          extraction, and we expect 3 arguments (normal) or 2 (json). */
 
           if (i == 0)
             {
@@ -5635,7 +5717,7 @@ while (*s != 0)
 	    if (*p == 0)
 	      {
 	      field_number *= x;
-	      j = 3;               /* Need 3 args */
+	      if (fmt != extract_json) j = 3;               /* Need 3 args */
 	      field_number_set = TRUE;
 	      }
             }
@@ -5651,9 +5733,83 @@ while (*s != 0)
       /* Extract either the numbered or the keyed substring into $value. If
       skipping, just pretend the extraction failed. */
 
-      lookup_value = skipping? NULL : field_number_set?
-        expand_gettokened(field_number, sub[1], sub[2]) :
-        expand_getkeyed(sub[0], sub[1]);
+      if (skipping)
+	lookup_value = NULL;
+      else switch (fmt)
+	{
+	case extract_basic:
+	  lookup_value = field_number_set
+	    ? expand_gettokened(field_number, sub[1], sub[2])
+	    : expand_getkeyed(sub[0], sub[1]);
+	  break;
+
+	case extract_json:
+	  {
+	  uschar * s, * item;
+	  const uschar * list;
+
+	  /* Array: Bracket-enclosed and comma-separated.
+	  Object: Brace-enclosed, comma-sep list of name:value pairs */
+
+	  if (!(s = dewrap(sub[1], field_number_set ? US"[]" : US"{}")))
+	    {
+	    expand_string_message =
+	      string_sprintf("%s wrapping %s for extract json",
+		expand_string_message,
+		field_number_set ? "array" : "object");
+	    goto EXPAND_FAILED_CURLY;
+	    }
+
+	  list = s;
+	  if (field_number_set)
+	    {
+	    if (field_number <= 0)
+	      {
+	      expand_string_message = US"first argument of \"extract\" must "
+		"be greater than zero";
+	      goto EXPAND_FAILED;
+	      }
+	    while (field_number > 0 && (item = json_nextinlist(&list)))
+	      field_number--;
+	    s = item;
+	    lookup_value = s;
+	    while (*s) s++;
+	    while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	    }
+	  else
+	    {
+	    lookup_value = NULL;
+	    while ((item = json_nextinlist(&list)))
+	      {
+	      /* Item is:  string name-sep value.  string is quoted.
+	      Dequote the string and compare with the search key. */
+
+	      if (!(item = dewrap(item, US"\"\"")))
+		{
+		expand_string_message =
+		  string_sprintf("%s wrapping string key for extract json",
+		    expand_string_message);
+		goto EXPAND_FAILED_CURLY;
+		}
+	      if (Ustrcmp(item, sub[0]) == 0)	/*XXX should be a UTF8-compare */
+		{
+		s = item + strlen(item) + 1;
+		while (isspace(*s)) s++;
+		if (*s != ':')
+		  {
+		  expand_string_message = string_sprintf(
+		    "missing object value-separator for extract json");
+		  goto EXPAND_FAILED_CURLY;
+		  }
+		s++;
+		while (isspace(*s)) s++;
+		lookup_value = s;
+		break;
+		}
+	      }
+	    }
+	  }
+	}
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */
@@ -5753,7 +5909,7 @@ while (*s != 0)
       /* Extract the numbered element into $value. If
       skipping, just pretend the extraction failed. */
 
-      lookup_value = skipping? NULL : expand_getlistele(field_number, sub[1]);
+      lookup_value = skipping ? NULL : expand_getlistele(field_number, sub[1]);
 
       /* If no string follows, $value gets substituted; otherwise there can
       be yes/no strings, as for lookup or if. */
