@@ -854,6 +854,12 @@ xyz
 > yes
 > match_address:   no
 > 
+> primary_hostname: myhost.test.ex
+> match:  cdab
+> Failed: "if" failed and "fail" requested
+> yes
+> match_address:   no
+> 
 > -be Sender host name and address etc, all unset
 > -oMa  sender_host_address = 
 >       sender_host_port = 0

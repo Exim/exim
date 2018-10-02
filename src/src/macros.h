@@ -362,6 +362,7 @@ masks, alternating between sequential bit index and corresponding mask. */
 
 /* Options bits for debugging. DEBUG_BIT() declares both a bit index and the
 corresponding mask. Di_all is a special value recognized by decode_bits().
+These must match the debug_options table in globals.c .
 
 Exim's code assumes in a number of places that the debug_selector is one
 word, and this is exposed in the local_scan ABI. The D_v and D_local_scan bit
@@ -391,6 +392,7 @@ enum {
   DEBUG_BIT(load),
   DEBUG_BIT(lookup),
   DEBUG_BIT(memory),
+  DEBUG_BIT(noutf8),
   DEBUG_BIT(pid),
   DEBUG_BIT(process_info),
   DEBUG_BIT(queue_run),
@@ -412,6 +414,7 @@ enum {
 
 #define D_any                        (D_all & \
                                        ~(D_v           | \
+					 D_noutf8      | \
                                          D_pid         | \
                                          D_timestamp)  )
 
@@ -422,6 +425,7 @@ enum {
                                          D_load        | \
                                          D_local_scan  | \
                                          D_memory      | \
+					 D_noutf8      | \
                                          D_pid         | \
                                          D_timestamp   | \
                                          D_resolver))

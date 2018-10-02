@@ -3620,7 +3620,8 @@ are:
                     &<<CHAPlocalscan>>&)
 &`lookup         `& general lookup code and all lookups
 &`memory         `& memory handling
-&`pid            `& add pid to debug output lines
+&`noutf8         `& modifier: avoid UTF-8 line-drawing
+&`pid            `& modifier: add pid to debug output lines
 &`process_info   `& setting info for the process log
 &`queue_run      `& queue runs
 &`receive        `& general message reception logic
@@ -3628,7 +3629,7 @@ are:
 &`retry          `& retry handling
 &`rewrite        `& address rewriting
 &`route          `& address routing
-&`timestamp      `& add timestamp to debug output lines
+&`timestamp      `& modifier: add timestamp to debug output lines
 &`tls            `& TLS logic
 &`transport      `& transports
 &`uid            `& changes of uid/gid and looking up uid/gid
@@ -3659,6 +3660,15 @@ run in parallel.
 The &`timestamp`& selector causes the current time to be inserted at the start
 of all debug output lines. This can be useful when trying to track down delays
 in processing.
+
+.new
+.cindex debugging "UTF-8 in"
+.cindex UTF-8 "in debug output"
+The &`noutf8`& selector disables the use of 
+UTF-8 line-drawing characters to group related information.
+When disabled. ascii-art is used instead.
+Using the &`+all`& option does not set this modifier,
+.wen
 
 If the &%debug_print%& option is set in any driver, it produces output whenever
 any debugging is selected, or if &%-v%& is used.

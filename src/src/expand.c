@@ -4006,11 +4006,15 @@ BOOL resetok = TRUE;
 
 expand_level++;
 DEBUG(D_expand)
-  debug_printf_indent(UTF8_DOWN_RIGHT "%s: %s\n",
-    skipping
-    ? UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ "scanning"
-    : "considering",
-    string);
+  DEBUG(D_noutf8)
+    debug_printf_indent("/%s: %s\n",
+      skipping ? "---scanning" : "considering", string);
+  else
+    debug_printf_indent(UTF8_DOWN_RIGHT "%s: %s\n",
+      skipping
+      ? UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ "scanning"
+      : "considering",
+      string);
 
 f.expand_string_forcedfail = FALSE;
 expand_string_message = US"";
@@ -4299,15 +4303,21 @@ while (*s != 0)
       if (next_s == NULL) goto EXPAND_FAILED;  /* message already set */
 
       DEBUG(D_expand)
-	{
-        debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-	  "condition: %.*s\n",
-	  (int)(next_s - s), s);
-        debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-	  UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-	  "result: %s\n",
-	  cond ? "true" : "false");
-	}
+	DEBUG(D_noutf8)
+	  {
+	  debug_printf_indent("|--condition: %.*s\n", (int)(next_s - s), s);
+	  debug_printf_indent("|-----result: %s\n", cond ? "true" : "false");
+	  }
+	else
+	  {
+	  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+	    "condition: %.*s\n",
+	    (int)(next_s - s), s);
+	  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+	    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+	    "result: %s\n",
+	    cond ? "true" : "false");
+	  }
 
       s = next_s;
 
@@ -7831,19 +7841,28 @@ if (resetok) store_reset(yield->s + (yield->size = yield->ptr + 1));
 else if (resetok_p) *resetok_p = FALSE;
 
 DEBUG(D_expand)
-  {
-  debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
-    "expanding: %.*s\n",
-    (int)(s - string), string);
-  debug_printf_indent("%s"
-    UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-    "result: %s\n",
-    skipping ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
-    yield->s);
-  if (skipping)
-    debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-      "skipping: result is not used\n");
-  }
+  DEBUG(D_noutf8)
+    {
+    debug_printf_indent("|--expanding: %.*s\n", (int)(s - string), string);
+    debug_printf_indent("%sresult: %s\n",
+      skipping ? "|-----" : "\\_____", yield->s);
+    if (skipping)
+      debug_printf_indent("\\___skipping: result is not used\n");
+    }
+  else
+    {
+    debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
+      "expanding: %.*s\n",
+      (int)(s - string), string);
+    debug_printf_indent("%s"
+      UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+      "result: %s\n",
+      skipping ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+      yield->s);
+    if (skipping)
+      debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+	"skipping: result is not used\n");
+    }
 expand_level--;
 return yield->s;
 
@@ -7865,16 +7884,25 @@ that is a bad idea, because expand_string_message is in dynamic store. */
 EXPAND_FAILED:
 if (left) *left = s;
 DEBUG(D_expand)
-  {
-  debug_printf_indent(UTF8_VERT_RIGHT "failed to expand: %s\n",
-    string);
-  debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
-    "error message: %s\n",
-    f.expand_string_forcedfail ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
-    expand_string_message);
-  if (f.expand_string_forcedfail)
-    debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
-  }
+  DEBUG(D_noutf8)
+    {
+    debug_printf_indent("|failed to expand: %s\n", string);
+    debug_printf_indent("%serror message: %s\n",
+      f.expand_string_forcedfail ? "|---" : "\\___", expand_string_message);
+    if (f.expand_string_forcedfail)
+      debug_printf_indent("\\failure was forced\n");
+    }
+  else
+    {
+    debug_printf_indent(UTF8_VERT_RIGHT "failed to expand: %s\n",
+      string);
+    debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+      "error message: %s\n",
+      f.expand_string_forcedfail ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
+      expand_string_message);
+    if (f.expand_string_forcedfail)
+      debug_printf_indent(UTF8_UP_RIGHT "failure was forced\n");
+    }
 if (resetok_p && !resetok) *resetok_p = FALSE;
 expand_level--;
 return NULL;

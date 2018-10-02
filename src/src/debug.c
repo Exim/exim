@@ -212,11 +212,19 @@ if (indent > 0)
   {
   int i;
   for (i = indent >> 2; i > 0; i--)
-    {
-    Ustrcpy(debug_ptr, "   " UTF8_VERT_2DASH);
-    debug_ptr += 6;	/* 3 spaces + 3 UTF-8 octets */
-    debug_prefix_length += 6;
-    }
+    DEBUG(D_noutf8)
+      {
+      Ustrcpy(debug_ptr, "   !");
+      debug_ptr += 4;	/* 3 spaces + shriek */
+      debug_prefix_length += 4;
+      }
+    else
+      {
+      Ustrcpy(debug_ptr, "   " UTF8_VERT_2DASH);
+      debug_ptr += 6;	/* 3 spaces + 3 UTF-8 octets */
+      debug_prefix_length += 6;
+      }
+
   Ustrncpy(debug_ptr, "   ", indent &= 3);
   debug_ptr += indent;
   debug_prefix_length += indent;

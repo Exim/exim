@@ -770,9 +770,11 @@ int     debug_fd               = -1;
 FILE   *debug_file             = NULL;
 int     debug_notall[]         = {
   Di_memory,
+  Di_noutf8,
   -1
 };
-bit_table debug_options[]      = { /* must be in alphabetical order */
+bit_table debug_options[]      = { /* must be in alphabetical order and use
+				 only the enum values from macro.h */
   BIT_TABLE(D, acl),
   BIT_TABLE(D, all),
   BIT_TABLE(D, auth),
@@ -791,6 +793,7 @@ bit_table debug_options[]      = { /* must be in alphabetical order */
   BIT_TABLE(D, local_scan),
   BIT_TABLE(D, lookup),
   BIT_TABLE(D, memory),
+  BIT_TABLE(D, noutf8),
   BIT_TABLE(D, pid),
   BIT_TABLE(D, process_info),
   BIT_TABLE(D, queue_run),

@@ -27,6 +27,8 @@ Version 4.92
 
  7. JSON variants of the ${extract } expansion item.
 
+ 8. A "noutf8" debug option, for disabling the UTF-8 characters in debug output.
+
 Version 4.91
 --------------
 

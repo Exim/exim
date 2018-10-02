@@ -84,6 +84,89 @@ LOG: MAIN PANIC
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+ /considering: primary_hostname: $primary_hostname
+ |--expanding: primary_hostname: $primary_hostname
+ \_____result: primary_hostname: myhost.test.ex
+ /considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  /considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |--expanding: abcd
+  \_____result: abcd
+  /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |--expanding: \N^([ab]+)(\w+)$\N
+  \_____result: ^([ab]+)(\w+)$
+ |--condition: match{abcd}{\N^([ab]+)(\w+)$\N}
+ |-----result: true
+  /considering: $2$1}fail}
+  |--expanding: $2$1
+  \_____result: cdab
+ |--expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ \_____result: match:  cdab
+ /considering: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  /considering: wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |--expanding: wxyz
+  \_____result: wxyz
+  /considering: \N^([ab]+)(\w+)$\N}{$2$1}fail}
+  |--expanding: \N^([ab]+)(\w+)$\N
+  \_____result: ^([ab]+)(\w+)$
+ |--condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
+ |-----result: false
+  /---scanning: $2$1}fail}
+  |--expanding: $2$1
+  |-----result: 
+  \___skipping: result is not used
+ |failed to expand: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+ |---error message: "if" failed and "fail" requested
+ \failure was forced
+ /considering: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  /considering: 1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |--expanding: 1
+  \_____result: 1
+  /considering: 1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |--expanding: 1
+  \_____result: 1
+ |--condition: eq {1}{1}
+ |-----result: true
+  /considering: yes}{${lookup{xx}lsearch{/non/exist}}}}
+  |--expanding: yes
+  \_____result: yes
+  /---scanning: ${lookup{xx}lsearch{/non/exist}}}}
+   /---scanning: xx}lsearch{/non/exist}}}}
+   |--expanding: xx
+   |-----result: xx
+   \___skipping: result is not used
+   /---scanning: /non/exist}}}}
+   |--expanding: /non/exist
+   |-----result: /non/exist
+   \___skipping: result is not used
+  |--expanding: ${lookup{xx}lsearch{/non/exist}}
+  |-----result: 
+  \___skipping: result is not used
+ |--expanding: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+ \_____result: yes
+ /considering: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+  /considering: a.b.c}{a.b.c}{yes}{no}}
+  |--expanding: a.b.c
+  \_____result: a.b.c
+  /considering: a.b.c}{yes}{no}}
+  |--expanding: a.b.c
+  \_____result: a.b.c
+LOG: MAIN PANIC
+  no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
+ |--condition: match_address{a.b.c}{a.b.c}
+ |-----result: false
+  /---scanning: yes}{no}}
+  |--expanding: yes
+  |-----result: yes
+  \___skipping: result is not used
+  /considering: no}}
+  |--expanding: no
+  \_____result: no
+ |--expanding: a.b.c
+ \_____result: match_address:   no
+>>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
  ┌considering: -oMa  sender_host_address = $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  └─────result: -oMa  sender_host_address = V4NET.0.0.1
