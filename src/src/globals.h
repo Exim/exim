@@ -988,7 +988,7 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 
 extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
-extern int     tcp_out_fastopen;       /* 0: no  1: conn used  2: useful */
+extern tfo_state_t tcp_out_fastopen;   /* 0: no  1: conn used  2: useful */
 #ifdef USE_TCP_WRAPPERS
 extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
 #endif

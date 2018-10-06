@@ -163,12 +163,12 @@ if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
        '# echo -n "00000000-00000000-00000000-0000000" >/proc/sys/net/ipv4/tcp_fastopen_key'
       The kernel seems to be counting unack'd packets. */
 
-    case 1:
+    case TFO_ATTEMPTED:
       if (tinfo.tcpi_unacked > 1)
 	{
 	DEBUG(D_transport|D_v)
 	  debug_printf("TCP_FASTOPEN tcpi_unacked %d\n", tinfo.tcpi_unacked);
-	tcp_out_fastopen = 2;
+	tcp_out_fastopen = TFO_USED;
 	}
       break;
 
@@ -178,11 +178,11 @@ if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
 
       /* If there was data-on-SYN but we had to retrasnmit it, declare no TFO */
 
-    case 2:
+    case TFO_USED:
       if (!(tinfo.tcpi_options & TCPI_OPT_SYN_DATA))
 	{
 	DEBUG(D_transport|D_v) debug_printf("TFO: had to retransmit\n");
-	tcp_out_fastopen = 0;
+	tcp_out_fastopen = TFO_NOT_USED;
 	}
       break;
 #endif

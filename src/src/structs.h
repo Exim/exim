@@ -65,6 +65,10 @@ typedef enum {	CHUNKING_NOT_OFFERED = -1,
 		CHUNKING_ACTIVE,
 		CHUNKING_LAST} chunking_state_t;
 
+typedef enum {	TFO_NOT_USED = 0,
+		TFO_ATTEMPTED,
+		TFO_USED } tfo_state_t;
+
 /* Structure for holding information about a host for use mainly by routers,
 but also used when checking lists of hosts and when transporting. Looking up
 host addresses is done using this structure. */
