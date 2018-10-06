@@ -803,7 +803,7 @@ standard header.
 	Note that it would be wise to strip incoming messages of A-R headers
 	that claim to be from our own <admd-identifier>.
 
-There are three new variables: $arc_state, $arc_state_reason, $arc_domains:
+There are four new variables:
 
   $arc_state		One of pass, fail, none
   $arc_state_reason	(if fail, why)
