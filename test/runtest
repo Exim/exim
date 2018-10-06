@@ -567,7 +567,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   #
   # TLSversion : "TLS" - C_iph_er - MAC : ???
   #
-  s/:TLS_AES(_256)_GCM_SHA384:256/:ke-RSA-AES256-SHA:xxx/g;
+  s/TLS_AES(_256)?_GCM_SHA384(?!:)/ke-RSA-AES256-SHA/g;
+  s/:TLS_AES(_256)?_GCM_SHA384:256/:ke-RSA-AES256-SHA:xxx/g;
 
   # LibreSSL
   # TLSv1:AES256-GCM-SHA384:256
