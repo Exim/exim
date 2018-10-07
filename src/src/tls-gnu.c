@@ -39,6 +39,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #include <gnutls/x509.h>
 /* man-page is incorrect, gnutls_rnd() is not in gnutls.h: */
 #include <gnutls/crypto.h>
+
 /* needed to disable PKCS11 autoload unless requested */
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 # include <gnutls/pkcs11.h>
@@ -59,6 +60,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030014
 # define SUPPORT_SYSDEFAULT_CABUNDLE
+#endif
+#if GNUTLS_VERSION_NUMBER >= 0x030104
+# define GNUTLS_CERT_VFY_STATUS_PRINT
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030109
 # define SUPPORT_CORK
@@ -1743,8 +1747,24 @@ if (rc < 0 || verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED))
   {
   state->peer_cert_verified = FALSE;
   if (!*errstr)
+    {
+#ifdef GNUTLS_CERT_VFY_STATUS_PRINT
+    DEBUG(D_tls)
+      {
+      gnutls_datum_t txt;
+
+      if (gnutls_certificate_verification_status_print(verify,
+	    gnutls_certificate_type_get(state->session), &txt, 0)
+	  == GNUTLS_E_SUCCESS)
+	{
+	debug_printf("%s\n", txt.data);
+	gnutls_free(txt.data);
+	}
+      }
+#endif
     *errstr = verify & GNUTLS_CERT_REVOKED
       ? US"certificate revoked" : US"certificate invalid";
+    }
 
   DEBUG(D_tls)
     debug_printf("TLS certificate verification failed (%s): peerdn=\"%s\"\n",
