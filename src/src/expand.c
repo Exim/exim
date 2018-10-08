@@ -5811,7 +5811,7 @@ while (*s != 0)
 		}
 	      if (Ustrcmp(item, sub[0]) == 0)	/*XXX should be a UTF8-compare */
 		{
-		s = item + strlen(item) + 1;
+		s = item + Ustrlen(item) + 1;
 		while (isspace(*s)) s++;
 		if (*s != ':')
 		  {

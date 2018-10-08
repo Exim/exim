@@ -824,7 +824,7 @@ if (*s) for (m = *s == '_' ? macros : macros_user; m; m = m->next)
     int moveby;
 
     READCONF_DEBUG fprintf(stderr, "%s: matched '%s' in '%.*s'\n", __FUNCTION__,
-      m->name, strlen(ss)-1, ss);
+      m->name, (int) Ustrlen(ss)-1, ss);
     /* Expand the buffer if necessary */
 
     while (*newlen - m->namelen + m->replen + 1 > big_buffer_size)

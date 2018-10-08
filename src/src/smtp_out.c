@@ -149,7 +149,6 @@ struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
 if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
-  {
   switch (tcp_out_fastopen)
     {
       /* This is a somewhat dubious detection method; totally undocumented so likely
@@ -172,7 +171,7 @@ if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
 	}
       break;
 
-#ifdef notdef		/* This seems to always fire, meaning that we cannot tell
+#  ifdef notdef		/* This seems to always fire, meaning that we cannot tell
 			whether the server accepted data we sent.  For now assume
 			that it did. */
 
@@ -185,10 +184,10 @@ if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
 	tcp_out_fastopen = TFO_NOT_USED;
 	}
       break;
-#endif
-    }
 
-  }
+  default: break;	/* compiler quietening */
+#  endif
+    }
 # endif
 }
 #endif
