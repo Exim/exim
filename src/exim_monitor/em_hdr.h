@@ -87,11 +87,12 @@ anything. */
 
 #include <pcre.h>
 
-/* Includes from the main source of Exim. We need to have MAXPACKET defined for
-the benefit of structs.h. One of these days I should tidy up this interface so
-that this kind of kludge isn't needed. */
+/* Includes from the main source of Exim.  One of these days I should tidy up
+this interface so that this kind of kludge isn't needed. */
 
-#define MAXPACKET 1024
+#ifndef NS_MAXMSG
+# define NS_MAXMSG 65535
+#endif
 typedef void hctx;
 
 #include "config.h"

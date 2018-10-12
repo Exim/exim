@@ -743,11 +743,12 @@ typedef struct {
   const uschar *data;                   /* pointer to data */
 } dns_record;
 
-/* Structure for holding the result of a DNS query. */
+/* Structure for holding the result of a DNS query.  A touch over
+64k big, so take care to release as soon as possible. */
 
 typedef struct {
   int     answerlen;              /* length of the answer */
-  uschar  answer[MAXPACKET];      /* the answer itself */
+  uschar  answer[NS_MAXMSG];      /* the answer itself */
 } dns_answer;
 
 /* Structure for holding the intermediate data while scanning a DNS answer

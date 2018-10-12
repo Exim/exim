@@ -639,6 +639,10 @@ up nameservers that produce this error continually, so there is the option of
 providing a list of domains for which this is treated as a non-existent
 host.
 
+The dns_answer structure is pretty big; enough to hold a max-sized DNS message
+- so best allocated from fast-release memory.  As of writing, all our callers
+use a stack-auto variable.
+
 Arguments:
   dnsa      pointer to dns_answer structure
   name      name to look up
@@ -1101,7 +1105,7 @@ switch (type)
 	  && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
 	  && ntohs(h->qdcount) == 1 && ntohs(h->ancount) == 0
 	  && ntohs(h->nscount) >= 1)
-	    dnsa->answerlen = MAXPACKET;
+	    dnsa->answerlen = sizeof(dnsa->answer);
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
 	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)

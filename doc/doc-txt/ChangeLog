@@ -137,6 +137,11 @@ JH/28 Bug 2314: Fire msg:fail:delivery event even when error is being ignored.
 JH/29 Bug 2322: A "fail" command in a non-system filter (file) now fires the
       msg:fail:internal event.  Developement by Matthias Kurz.
 
+JH/30 Bug 2329: Increase buffer size used for dns lookup from 2k, which was
+      far too smal for todays use of crypto signatures stored there.  Go all
+      the way to the max DNS message size of 64kB, even though this might be
+      overmuch for IOT constrained device use.
+
 
 Exim version 4.91
 -----------------

@@ -284,18 +284,6 @@ disabused of the notion. Luckily, since EX_OK is not used, it didn't matter.] */
 #include <arpa/nameser.h>
 
 
-/* If arpa/nameser.h defines a maximum name server packet size, use it,
-provided it is greater than 2048. Otherwise go for a default. PACKETSZ was used
-for this, but it seems that NS_PACKETSZ is coming into use. */
-
-#if defined(NS_PACKETSZ) && NS_PACKETSZ >= 2048
-  #define MAXPACKET NS_PACKETSZ
-#elif defined(PACKETSZ) && PACKETSZ >= 2048
-  #define MAXPACKET PACKETSZ
-#else
-  #define MAXPACKET 2048
-#endif
-
 /* While IPv6 is still young the definitions of T_AAAA and T_A6 may not be
 included in arpa/nameser.h. Fudge them here. */
 
