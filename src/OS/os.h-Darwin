@@ -45,4 +45,7 @@ updating Exim to use the newer interface. */
 /* default is non-const */
 #define ICONV_ARG2_TYPE const char **
 
+/* seems arpa/nameser.h does not define this */
+#define NS_MAXMSG 65535
+
 /* End */
