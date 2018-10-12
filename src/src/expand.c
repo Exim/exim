@@ -1687,7 +1687,7 @@ else
   return g;
 
 if (sender_host_address)
-  g = string_append(g, 2, US" smtp.client-ip=", sender_host_address);
+  g = string_append(g, 2, US" smtp.remote-ip=", sender_host_address);
 return g;
 }
 

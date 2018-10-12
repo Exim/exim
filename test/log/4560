@@ -62,8 +62,8 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 domains:        <test.ex:test.ex>
 1999-03-02 09:44:33 10HmbC-0005vi-00 arc_oldest_pass <1>
 1999-03-02 09:44:33 10HmbC-0005vi-00 reason:         <>
-1999-03-02 09:44:33 10HmbC-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbC-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbC-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbC-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbC-0005vi-00 oldest-p-ams:   <i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbB-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
@@ -98,9 +98,9 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 domains:        <test.ex:test.ex>
 1999-03-02 09:44:33 10HmbF-0005vi-00 arc_oldest_pass <2>
 1999-03-02 09:44:33 10HmbF-0005vi-00 reason:         <>
-1999-03-02 09:44:33 10HmbF-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbF-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbF-0005vi-00 oldest-p-ams:   <i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1>
+1999-03-02 09:44:33 10HmbF-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbF-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbF-0005vi-00 oldest-p-ams:   <i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1>
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for za@test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => za@test.ex <mza@test.ex> R=mlist T=tmlist H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbF-0005vi-00"
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
@@ -110,9 +110,9 @@
 1999-03-02 09:44:33 10HmbG-0005vi-00 domains:        <test.ex:test.ex:test.ex>
 1999-03-02 09:44:33 10HmbG-0005vi-00 arc_oldest_pass <2>
 1999-03-02 09:44:33 10HmbG-0005vi-00 reason:         <>
-1999-03-02 09:44:33 10HmbG-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.client-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbG-0005vi-00 lh-ams:         < i=3; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.client-ip=127.0.0.1: i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbG-0005vi-00 oldest-p-ams:   <i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1>
+1999-03-02 09:44:33 10HmbG-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbG-0005vi-00 lh-ams:         < i=3; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=2 smtp.remote-ip=127.0.0.1: i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbG-0005vi-00 oldest-p-ams:   <i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1>
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
 1999-03-02 09:44:33 10HmbF-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbG-0005vi-00"
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
@@ -146,8 +146,8 @@
 1999-03-02 09:44:33 10HmbJ-0005vi-00 domains:        <test.ex:test.ex>
 1999-03-02 09:44:33 10HmbJ-0005vi-00 arc_oldest_pass <1>
 1999-03-02 09:44:33 10HmbJ-0005vi-00 reason:         <>
-1999-03-02 09:44:33 10HmbJ-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbJ-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbJ-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbJ-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbJ-0005vi-00 oldest-p-ams:   <i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for mza@test.ex
 1999-03-02 09:44:33 10HmbI-0005vi-00 => mza@test.ex <zmza@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbJ-0005vi-00"
@@ -158,8 +158,8 @@
 1999-03-02 09:44:33 10HmbK-0005vi-00 domains:        <test.ex:test.ex>
 1999-03-02 09:44:33 10HmbK-0005vi-00 arc_oldest_pass <0>
 1999-03-02 09:44:33 10HmbK-0005vi-00 reason:         <AMS body hash miscompare>
-1999-03-02 09:44:33 10HmbK-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbK-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbK-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbK-0005vi-00 lh-ams:         < i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbK-0005vi-00 oldest-p-ams:   <>
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for za@test.ex
 1999-03-02 09:44:33 10HmbJ-0005vi-00 => za@test.ex <mza@test.ex> R=mlist T=tmlist H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbK-0005vi-00"
@@ -170,8 +170,8 @@
 1999-03-02 09:44:33 10HmbL-0005vi-00 domains:        <test.ex:test.ex:test.ex>
 1999-03-02 09:44:33 10HmbL-0005vi-00 arc_oldest_pass <0>
 1999-03-02 09:44:33 10HmbL-0005vi-00 reason:         <i=3 (cv)>
-1999-03-02 09:44:33 10HmbL-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
-1999-03-02 09:44:33 10HmbL-0005vi-00 lh-ams:         < i=3; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.client-ip=127.0.0.1: i=2; test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbL-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=2) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbL-0005vi-00 lh-ams:         < i=3; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=fail (i=2)(AMS body hash miscompare) header.s=sel arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: i=2; test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbL-0005vi-00 oldest-p-ams:   <>
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss for a@test.ex
 1999-03-02 09:44:33 10HmbK-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbL-0005vi-00"
@@ -206,7 +206,7 @@
 1999-03-02 09:44:33 10HmbO-0005vi-00 domains:        <test.ex>
 1999-03-02 09:44:33 10HmbO-0005vi-00 arc_oldest_pass <1>
 1999-03-02 09:44:33 10HmbO-0005vi-00 reason:         <>
-1999-03-02 09:44:33 10HmbO-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.client-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1: test.ex;\n	arc=none>
+1999-03-02 09:44:33 10HmbO-0005vi-00 lh_A-R:         < test.ex;\n	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;\n	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1: test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbO-0005vi-00 lh-ams:         < i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbO-0005vi-00 oldest-p-ams:   <i=1; test.ex;\n	arc=none>
 1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss ARC for a@test.ex
@@ -234,8 +234,8 @@
 1999-03-02 09:44:33 10HmbQ-0005vi-00 domains:        <convivian.com:test.ex>
 1999-03-02 09:44:33 10HmbQ-0005vi-00 arc_oldest_pass <0>
 1999-03-02 09:44:33 10HmbQ-0005vi-00 reason:         <i=2 (cv)>
-1999-03-02 09:44:33 10HmbQ-0005vi-00 lh_A-R:         < test.ex;\n	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=convivian.com header.s=default header.a=rsa-sha256;\n	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.client-ip=127.0.0.1: dragon.trusteddomain.org; sender-id=fail (NotPermitted) header.sender=arc-discuss-bounces@dmarc.org; spf=fail (NotPermitted) smtp.mfrom=arc-discuss-bounces@dmarc.org: dragon.trusteddomain.org; dkim=pass\n reason="1024-bit key"\n header.d=convivian.com header.i=@convivian.com header.b=LHXEAl5e;\n dkim-adsp=pass: dragon.trusteddomain.org;\n sender-id=pass header.from=jered@convivian.com;\n spf=pass smtp.mfrom=jered@convivian.com>
-1999-03-02 09:44:33 10HmbQ-0005vi-00 lh-ams:         < i=2; test.ex;\n	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=convivian.com header.s=default header.a=rsa-sha256;\n	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.client-ip=127.0.0.1: i=1; mailhub.convivian.com; none>
+1999-03-02 09:44:33 10HmbQ-0005vi-00 lh_A-R:         < test.ex;\n	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=convivian.com header.s=default header.a=rsa-sha256;\n	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: dragon.trusteddomain.org; sender-id=fail (NotPermitted) header.sender=arc-discuss-bounces@dmarc.org; spf=fail (NotPermitted) smtp.mfrom=arc-discuss-bounces@dmarc.org: dragon.trusteddomain.org; dkim=pass\n reason="1024-bit key"\n header.d=convivian.com header.i=@convivian.com header.b=LHXEAl5e;\n dkim-adsp=pass: dragon.trusteddomain.org;\n sender-id=pass header.from=jered@convivian.com;\n spf=pass smtp.mfrom=jered@convivian.com>
+1999-03-02 09:44:33 10HmbQ-0005vi-00 lh-ams:         < i=2; test.ex;\n	dkim=pass header.d=dmarc.org header.s=clochette header.a=rsa-sha256;\n	dkim=fail (body hash mismatch; body probably modified in transit)\n		 header.d=convivian.com header.s=default header.a=rsa-sha256;\n	arc=fail (i=1)(AMS body hash miscompare) header.s=default arc.oldest-pass=0 smtp.remote-ip=127.0.0.1: i=1; mailhub.convivian.com; none>
 1999-03-02 09:44:33 10HmbQ-0005vi-00 oldest-p-ams:   <>
 1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@bloggs.com H=localhost (test.ex) [127.0.0.1] P=esmtp S=sss DKIM=dmarc.org id=1426665656.110316.1517535248039.JavaMail.zimbra@convivian.com for a@test.ex
 1999-03-02 09:44:33 10HmbP-0005vi-00 => a@test.ex <za@test.ex> R=fwd T=tsmtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbQ-0005vi-00"

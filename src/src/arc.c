@@ -1840,7 +1840,7 @@ if (arc_state)
       US" arc.oldest-pass=", string_sprintf("%d", arc_oldest_pass));
 
     if (sender_host_address)
-      g = string_append(g, 2, US" smtp.client-ip=", sender_host_address);
+      g = string_append(g, 2, US" smtp.remote-ip=", sender_host_address);
     }
   else if (arc_state_reason)
     g = string_append(g, 3, US" (", arc_state_reason, US")");
