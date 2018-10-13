@@ -8,6 +8,7 @@
 # option on the SYN, but the fast-output SMTP banner will not
 # be seen unless you also deliberately emulate a long path:
 # 'sudo tc qdisc add dev lo root netem delay 50ms'
+# You'll need iproute-tc installed, for the tc command.
 # You'll need kernel-modules-extra installed, or you get
 # an unhelpful error from RTNETLINK.
 # To tidy up:  'sudo tc qdisc delete dev lo root'

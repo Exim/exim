@@ -1,10 +1,10 @@
 From CALLER@bloggs.com Tue Mar 02 09:44:33 1999
 Authentication-Results: test.ex;
-	iprev=pass (localhost) smtp.client-ip=127.0.0.1;
+	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	dkim=pass header.d=test.ex header.s=sel header.a=rsa-sha256;
 	dkim=fail (body hash mismatch; body probably modified in transit)
 		 header.d=example.com header.s=sel header.a=rsa-sha256;
-	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.client-ip=127.0.0.1
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
 Received: from localhost ([127.0.0.1] helo=test.ex)
 	by test.ex with esmtp (Exim x.yz)
 	(envelope-from <CALLER@bloggs.com>)

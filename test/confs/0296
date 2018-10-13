@@ -6,7 +6,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-admin_groups = CALLER
+admin_groups = CALLERGROUP
 trusted_users = CALLER
 system_filter = DIR/aux-fixed/TESTNUM.Filter
 

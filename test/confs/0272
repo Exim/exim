@@ -84,7 +84,7 @@ r10:
   driver = redirect
   domains = r10
   file = DIR/aux-var/TESTNUM.exim
-  owngroups = CALLER
+  owngroups = CALLERGROUP
 
 r11:
   driver = redirect

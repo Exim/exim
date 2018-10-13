@@ -1017,7 +1017,7 @@ one-off things to be done.
 CLIENT SCRIPTS
 --------------
 
-Lines in client scripts are of two kinds:
+Lines in client scripts are of several kinds:
 
 (1) If a line begins with three question marks and a space, the rest of the
     line defines the start of expected output from the server. If what is

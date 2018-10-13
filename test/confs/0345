@@ -9,7 +9,7 @@ domainlist local_domains = test.ex
 
 qualify_domain = test.ex
 ignore_bounce_errors_after = 0s
-admin_groups = CALLER
+admin_groups = CALLERGROUP
 
 
 # ----- Routers -----

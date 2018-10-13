@@ -10,7 +10,7 @@ exim userr@test.ex
 Testing
 ****
 # this will pass the cert verify including name check
-exim users@test.ex
+exim user_s@test.ex
 Testing
 ****
 # this will fail to verify the cert name but carry on (try-verify mode)

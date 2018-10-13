@@ -40,7 +40,7 @@ Testing
 #
 exim -z 'this will pass the cert verify including name check'
 ****
-exim users@test.ex
+exim user_s@test.ex
 Testing
 ****
 #

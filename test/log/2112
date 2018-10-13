@@ -9,7 +9,7 @@
 1999-03-02 09:44:33 this will fail to verify the cert name and fallback to unencrypted
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userr@test.ex
 1999-03-02 09:44:33 this will pass the cert verify including name check
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for users@test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for user_s@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: depth=0 error=unable to get local issuer certificate cert=/CN=server1.example.com
 1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=client_x T=send_to_server_failcert defer (-37) H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: TLS session: (SSL_connect): error: <<detail omitted>>
@@ -31,7 +31,7 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 => userr@test.ex R=client_r T=send_to_server_req_failname H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbG-0005vi-00"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 no IP address found for host noway.example.com
-1999-03-02 09:44:33 10HmbC-0005vi-00 => users@test.ex R=client_s T=send_to_server_req_passname H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbH-0005vi-00"
+1999-03-02 09:44:33 10HmbC-0005vi-00 => user_s@test.ex R=client_s T=send_to_server_req_passname H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbH-0005vi-00"
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
@@ -44,4 +44,4 @@
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmbA-0005vi-00@myhost.test.ex for userq@test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbB-0005vi-00@myhost.test.ex for userr@test.ex
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbC-0005vi-00@myhost.test.ex for users@test.ex
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbC-0005vi-00@myhost.test.ex for user_s@test.ex

@@ -7,12 +7,12 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-good1:
-1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-good2:
-1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-short:
-1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-long:
-1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-big:
-1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-truncated:
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-good1: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-good2: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-short: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-long: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-too-big: 
+1999-03-02 09:44:33 10HmaY-0005vi-00 x-test-header-truncated: 
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

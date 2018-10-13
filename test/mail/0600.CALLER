@@ -11,13 +11,14 @@ x-test-header-good2: ÃŸÃ¼Ã¶Ã¤â‚¬ÃœÃ–Ã„Â´à¤‘à¤•à¤œáá‘Œá‘•ğ«†ğ«Ÿ˜
 x-test-header-too-short: Ã.Ã.Ã.Ã¤-â‚.-Ãœ.Ã..Ã.-Â.-à..-à¤.-à¤.-á.-á‘.-á..-ğ«..ğ«Ÿ.
 x-test-header-too-long: øˆˆˆˆ-Ã¤-øˆˆˆˆ--Ã–-Ã„-Â´-à¤‘-à¤•-à¤œ-á-á‘Œ-á‘•-ø€€€€ğ«Ÿ†
 x-test-header-too-big: ÷€€€-----ó€€€
+x-test-header-truncated: ã
 Subject: This is a test message.
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER@the.local.host.name
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-local-user: uid=CALLER_UID gid=CALLER_GID
 X-body-linecount: 3
-X-message-linecount: 16
+X-message-linecount: 17
 X-received-count: 1
 
 This is a test message.
