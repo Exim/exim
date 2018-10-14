@@ -267,7 +267,7 @@ if (na < argc) connection_count = atoi(argv[na]);
 if (initial_pause > 0)
   {
   if (debug)
-    printf("%d: Inital pause of %d seconds\n", time(NULL), initial_pause);
+    printf("%ld: Inital pause of %d seconds\n", (long)time(NULL), initial_pause);
   else
     printf("Inital pause of %d seconds\n", initial_pause);
   while (initial_pause > 0)

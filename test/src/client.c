@@ -429,7 +429,7 @@ if (certificate != NULL)
   {
   rc = gnutls_certificate_set_x509_key_file(x509_cred, CS certificate,
     CS privatekey, GNUTLS_X509_FMT_PEM);
-  if (rc < 0) gnutls_error("gnutls_certificate", rc);
+  if (rc < 0) gnutls_error(US"gnutls_certificate", rc);
   }
 
 /* Associate the parameters with the x509 credentials structure. */
@@ -1169,7 +1169,7 @@ SSL_CTX_set_info_callback(srv.ctx, (void (*)())info_callback);
 #ifdef HAVE_GNUTLS
 if (certfile != NULL) printf("Certificate file = %s\n", certfile);
 if (keyfile != NULL) printf("Key file = %s\n", keyfile);
-tls_init(certfile, keyfile);
+tls_init(US certfile, US keyfile);
 tls_session = tls_session_init();
 #ifdef HAVE_OCSP
 if (ocsp_stapling)

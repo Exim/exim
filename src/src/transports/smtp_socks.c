@@ -85,7 +85,7 @@ else if (Ustrncmp(opt, "name=", 5) == 0)
 else if (Ustrncmp(opt, "pass=", 5) == 0)
   sob->auth_pwd = opt + 5;
 else if (Ustrncmp(opt, "port=", 5) == 0)
-  sob->port = atoi(opt + 5);
+  sob->port = atoi(CCS opt + 5);
 else if (Ustrncmp(opt, "tmo=", 4) == 0)
   sob->timeout = atoi(CCS opt + 4);
 else if (Ustrncmp(opt, "pri=", 4) == 0)
