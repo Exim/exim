@@ -364,7 +364,7 @@ tls_error(uschar * prefix, const host_item * host, uschar * msg, uschar ** errst
 {
 if (!msg)
   {
-  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
   msg = US ssl_errstring;
   }
 
@@ -408,7 +408,7 @@ if (!(rsa_key = RSA_generate_key(keylength, RSA_F4, NULL, NULL)))
 #endif
 
   {
-  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
   log_write(0, LOG_MAIN|LOG_PANIC, "TLS error (RSA_generate_key): %s",
     ssl_errstring);
   return NULL;
@@ -744,9 +744,33 @@ Returns:    nothing
 static void
 info_callback(SSL *s, int where, int ret)
 {
-where = where;
-ret = ret;
-DEBUG(D_tls) debug_printf("SSL info: %s\n", SSL_state_string_long(s));
+DEBUG(D_tls)
+  {
+  const uschar * str;
+
+  if (where & SSL_ST_CONNECT)
+     str = "SSL_connect";
+  else if (where & SSL_ST_ACCEPT)
+     str = "SSL_accept";
+  else
+     str = "SSL info (undefined)";
+
+  if (where & SSL_CB_LOOP)
+     debug_printf("%s: %s\n", str, SSL_state_string_long(s));
+  else if (where & SSL_CB_ALERT)
+    debug_printf("SSL3 alert %s:%s:%s\n",
+	  str = where & SSL_CB_READ ? "read" : "write",
+	  SSL_alert_type_string_long(ret), SSL_alert_desc_string_long(ret));
+  else if (where & SSL_CB_EXIT)
+     if (ret == 0)
+	debug_printf("%s: failed in %s\n", str, SSL_state_string_long(s));
+     else if (ret < 0)
+	debug_printf("%s: error in %s\n", str, SSL_state_string_long(s));
+  else if (where & SSL_CB_HANDSHAKE_START)
+     debug_printf("%s: hshake start: %s\n", str, SSL_state_string_long(s));
+  else if (where & SSL_CB_HANDSHAKE_DONE)
+     debug_printf("%s: hshake done: %s\n", str, SSL_state_string_long(s));
+  }
 }
 
 
@@ -1069,7 +1093,7 @@ if ((i = OCSP_basic_verify(basic_response, sk, NULL, verify_flags)) < 0)
   {
   DEBUG(D_tls)
     {
-    ERR_error_string(ERR_get_error(), ssl_errstring);
+    ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
     debug_printf("OCSP response verify failure: %s\n", US ssl_errstring);
     }
   goto bad;
@@ -1378,7 +1402,7 @@ if (!(server_sni = SSL_CTX_new(TLS_server_method())))
 if (!(server_sni = SSL_CTX_new(SSLv23_server_method())))
 #endif
   {
-  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
   DEBUG(D_tls) debug_printf("SSL_CTX_new() failed: %s\n", ssl_errstring);
   return SSL_TLSEXT_ERR_NOACK;
   }
@@ -2722,7 +2746,7 @@ switch(error)
 
   /* Handle genuine errors */
   case SSL_ERROR_SSL:
-    ERR_error_string(ERR_get_error(), ssl_errstring);
+    ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
     log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
     ssl_xfer_error = TRUE;
     return FALSE;
@@ -2905,7 +2929,7 @@ for (left = len; left > 0;)
   switch (error)
     {
     case SSL_ERROR_SSL:
-      ERR_error_string(ERR_get_error(), ssl_errstring);
+      ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
       log_write(0, LOG_MAIN, "TLS error (SSL_write): %s", ssl_errstring);
       return -1;
 
@@ -2978,7 +3002,7 @@ if (shutdown)
 
   if (rc < 0) DEBUG(D_tls)
     {
-    ERR_error_string(ERR_get_error(), ssl_errstring);
+    ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
     debug_printf("SSL_shutdown: %s\n", ssl_errstring);
     }
   }
@@ -3050,7 +3074,7 @@ if (!(ctx = SSL_CTX_new(TLS_server_method())))
 if (!(ctx = SSL_CTX_new(SSLv23_server_method())))
 #endif
   {
-  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
   return string_sprintf("SSL_CTX_new() failed: %s", ssl_errstring);
   }
 
@@ -3059,7 +3083,7 @@ DEBUG(D_tls)
 
 if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
   {
-  ERR_error_string(ERR_get_error(), ssl_errstring);
+  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
   err = string_sprintf("SSL_CTX_set_cipher_list(%s) failed: %s",
 		      expciphers, ssl_errstring);
   }
