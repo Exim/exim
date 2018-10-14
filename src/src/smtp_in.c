@@ -5508,7 +5508,9 @@ while (done <= 0)
 
       /* Hard failure. Reject everything except QUIT or closed connection. One
       cause for failure is a nested STARTTLS, in which case tls_in.active remains
-      set, but we must still reject all incoming commands. */
+      set, but we must still reject all incoming commands.  Another is a handshake
+      failure - and there may some encrypted data still in the pipe to us, which we
+      see as garbage commands. */
 
       DEBUG(D_tls) debug_printf("TLS failed to start\n");
       while (done <= 0) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))

@@ -21,6 +21,15 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:[...]:SSL alert number 40
 Failed to start TLS
+>>> noop
+??? 554 Security failure
+<<< 554 Security failure
+>>> quit
+????554 Security failure
+??? 221
+<<< 221 myhost.test.ex closing connection
+???*
+Expected EOF read
 End of script
 ### No certificate, certificate optional at TLS time, required by ACL
 Connecting to 127.0.0.1 port 1225 ... connected
@@ -153,6 +162,9 @@ Key file = aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net
 Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:[...]:SSL alert number 48
 Failed to start TLS
+>>> noop
+??? 554 Security failure
+<<< 554 Security failure
 End of script
 ### Bad certificate, certificate optional at TLS time, reject at ACL time
 Connecting to 127.0.0.1 port 1225 ... connected
@@ -214,6 +226,9 @@ Key file = aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.c
 Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert certificate revoked:[...]:SSL alert number 44
 Failed to start TLS
+>>> noop
+??? 554 Security failure
+<<< 554 Security failure
 End of script
 ### Revoked certificate, certificate optional at TLS time, reject at ACL time
 Connecting to 127.0.0.1 port 1225 ... connected

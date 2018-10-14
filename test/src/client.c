@@ -553,32 +553,32 @@ while (fgets(CS outbuffer, sizeof(outbuffer), f) != NULL)
   /* Expect incoming */
 
   if (  strncmp(CS outbuffer, "???", 3) == 0
-     && (outbuffer[3] == ' ' || outbuffer[3] == '*')
+     && (outbuffer[3] == ' ' || outbuffer[3] == '*' || outbuffer[3] == '?')
      )
     {
     unsigned char *lineptr;
     unsigned exp_eof = outbuffer[3] == '*';
+    unsigned resp_optional = outbuffer[3] == '?';
 
     printf("%s\n", outbuffer);
     n = unescape_buf(outbuffer, n);
 
+nextinput:
     if (*inptr == 0)   /* Refill input buffer */
       {
+      alarm(timeout);
       if (srv->tls_active)
         {
         #ifdef HAVE_OPENSSL
-        rc = SSL_read (srv->ssl, inbuffer, bsiz - 1);
+        rc = SSL_read(srv->ssl, inbuffer, bsiz - 1);
         #endif
         #ifdef HAVE_GNUTLS
         rc = gnutls_record_recv(tls_session, CS inbuffer, bsiz - 1);
         #endif
         }
       else
-        {
-        alarm(timeout);
         rc = read(srv->sock, inbuffer, bsiz);
-        alarm(0);
-        }
+      alarm(0);
 
       if (rc < 0)
 	{
@@ -618,19 +618,31 @@ while (fgets(CS outbuffer, sizeof(outbuffer), f) != NULL)
       if (*inptr == '\n') inptr++;
       }
 
-    printf("<<< %s\n", lineptr);
     if (strncmp(CS lineptr, CS outbuffer + 4, n - 4) != 0)
-      {
-      printf("\n******** Input mismatch ********\n");
-      exit(79);
-      }
+      if (resp_optional)
+	{
+	inptr = lineptr;	/* consume scriptline, not inputline */
+	continue;
+	}
+      else
+	{
+	printf("<<< %s\n", lineptr);
+	printf("\n******** Input mismatch ********\n");
+	exit(79);
+	}
+
+    /* input matched script */
+
+    if (resp_optional)
+      goto nextinput;		/* consume inputline, not scriptline */
+
+    printf("<<< %s\n", lineptr);
 
     #ifdef HAVE_TLS
     if (srv->sent_starttls)
       {
       if (lineptr[0] == '2')
         {
-int rc;
 	unsigned int verify;
 
         printf("Attempting to start TLS\n");
@@ -1219,7 +1231,8 @@ do_file(&srv, stdin, timeout, inbuffer, sizeof(inbuffer), inptr);
 
 printf("End of script\n");
 shutdown(srv.sock, SHUT_WR);
-while (read(srv.sock, inbuffer, sizeof(inbuffer)) > 0) ;
+if (fcntl(srv.sock, F_SETFL, O_NONBLOCK) == 0)
+  while (read(srv.sock, inbuffer, sizeof(inbuffer)) > 0) ;
 close(srv.sock);
 
 exit(0);
