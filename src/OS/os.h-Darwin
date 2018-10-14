@@ -48,4 +48,9 @@ updating Exim to use the newer interface. */
 /* seems arpa/nameser.h does not define this */
 #define NS_MAXMSG 65535
 
+/* There may be very many supplementary groups for the user. See notes
+in "man 2 getgroups". */
+#define _DARWIN_UNLIMITED_GETGROUPS
+#define EXIM_GROUPLIST_SIZE 64
+
 /* End */

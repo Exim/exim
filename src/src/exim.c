@@ -628,10 +628,10 @@ if (euid == root_uid || euid != uid || egid != gid || igflag)
 DEBUG(D_uid)
   {
   int group_count, save_errno;
-  gid_t group_list[NGROUPS_MAX];
+  gid_t group_list[EXIM_GROUPLIST_SIZE];
   debug_printf("changed uid/gid: %s\n  uid=%ld gid=%ld pid=%ld\n", msg,
     (long int)geteuid(), (long int)getegid(), (long int)getpid());
-  group_count = getgroups(NGROUPS_MAX, group_list);
+  group_count = getgroups(nelem(group_list), group_list);
   save_errno = errno;
   debug_printf("  auxiliary group list:");
   if (group_count > 0)
@@ -1541,7 +1541,7 @@ struct passwd *pw;
 struct stat statbuf;
 pid_t passed_qr_pid = (pid_t)0;
 int passed_qr_pipe = -1;
-gid_t group_list[NGROUPS_MAX];
+gid_t group_list[EXIM_GROUPLIST_SIZE];
 
 /* For the -bI: flag */
 enum commandline_info info_flag = CMDINFO_NONE;
@@ -3532,7 +3532,7 @@ check on the additional groups for the admin user privilege - can't do that
 till after reading the config, which might specify the exim gid. Therefore,
 save the group list here first. */
 
-if ((group_count = getgroups(NGROUPS_MAX, group_list)) < 0)
+if ((group_count = getgroups(nelem(group_list), group_list)) < 0)
   exim_fail("exim: getgroups() failed: %s\n", strerror(errno));
 
 /* There is a fundamental difference in some BSD systems in the matter of

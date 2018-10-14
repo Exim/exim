@@ -591,5 +591,11 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # define POLLRDHUP (POLLIN | POLLHUP)
 #endif
 
+/* Some platforms (Darwin) have to define a larger limit on groups membership */
+
+#ifndef EXIM_GROUPLIST_SIZE
+# define EXIM_GROUPLIST_SIZE NGROUPS_MAX
+#endif
+
 #endif
 /* End of exim.h */
