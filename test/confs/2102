@@ -33,6 +33,9 @@ tls_verify_hosts = HOSTIPV4
 tls_verify_certificates = DRSA/server2.example.com/ca_chain.pem
 
 
+.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
+openssl_options = +no_tlsv1_3
+.endif
 # ------ ACL ------
 
 begin acl

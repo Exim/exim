@@ -569,12 +569,31 @@ nextinput:
       alarm(timeout);
       if (srv->tls_active)
         {
-        #ifdef HAVE_OPENSSL
+#ifdef HAVE_OPENSSL
+	int error;
         rc = SSL_read(srv->ssl, inbuffer, bsiz - 1);
-        #endif
-        #ifdef HAVE_GNUTLS
+	if (rc <= 0)
+          switch (error = SSL_get_error(srv->ssl, rc))
+	    {
+	    case SSL_ERROR_ZERO_RETURN:
+	      break;
+	    case SSL_ERROR_SYSCALL:
+	      printf("%s\n", ERR_error_string(ERR_get_error(), NULL)); break;
+	      rc = -1;
+	    case SSL_ERROR_SSL:
+	      printf("%s\n", ERR_error_string(ERR_get_error(), NULL)); break;
+	      SSL_shutdown(srv->ssl);
+	      SSL_free(srv->ssl);
+	      srv->tls_active = FALSE;
+	      goto nextinput;
+	    default:
+	      printf("SSL error code %d\n", error);
+	    }
+
+#endif
+#ifdef HAVE_GNUTLS
         rc = gnutls_record_recv(tls_session, CS inbuffer, bsiz - 1);
-        #endif
+#endif
         }
       else
         rc = read(srv->sock, inbuffer, bsiz);
@@ -591,6 +610,8 @@ nextinput:
           printf("Expected EOF read\n");
 	  continue;
 	  }
+	else if (resp_optional)
+	  continue;	/* next scriptline */
 	else
 	  {
 	  printf("Unexpected EOF read\n");

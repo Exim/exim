@@ -1,8 +1,10 @@
 # TLS server: general ops and certificate extractions
 #
-# NOTE: current OpenSSL libraries return faulty my-cert information
-# when more than one is loaded, which the conf for this testcase does.
+# NOTE: OpenSSL libraries return faulty my-cert information prior to OpenSSL 1.1.1
+# when more than one cert is loaded, which the conf for this testcase does.
 # As a result the expansion done and logged is misleading.
+# While the golden log output is set to the misleading result, the testcase
+# will unfortunately fail on the fixed OpenSSL versions.
 #
 # Make RSA authentication the only acceptable
 exim -DSERVER=server -DORDER=RSA -bd -oX PORT_D
@@ -96,6 +98,8 @@ killdaemon
 #
 # make ECDSA authentication preferred
 # DEFAULT:+RSA should work but does not seem to
+# also, will fail under TLS1.3 because there is no choice of auth
+# - so we disable that in the conf
 exim -DSERVER=server -DORDER=ECDSA:RSA:!COMPLEMENTOFDEFAULT -bd -oX PORT_D
 ****
 client-ssl 127.0.0.1 PORT_D
