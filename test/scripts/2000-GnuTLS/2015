@@ -4,7 +4,7 @@ exim -DSERVER=server -bd -oX PORT_D
 ****
 client-gnutls 127.0.0.1 PORT_D
 ??? 220
-ehlo rhu.barb
+ehlo timeout.rhu.barb
 ??? 250-
 ??? 250-
 ??? 250-
@@ -18,7 +18,7 @@ starttls_wait
 ****
 client-gnutls 127.0.0.1 PORT_D
 ??? 220
-ehlo rhu.barb
+ehlo close.rhu.barb
 ??? 250-
 ??? 250-
 ??? 250-
@@ -28,4 +28,5 @@ ehlo rhu.barb
 starttls_wait
 ??? 220
 ****
+millisleep 500
 killdaemon

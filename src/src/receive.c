@@ -1623,7 +1623,7 @@ int  error_rc = error_handling == ERRORS_SENDER
 	? errors_sender_rc : EXIT_FAILURE;
 int  header_size = 256;
 int  start, end, domain;
-int  id_resolution;
+int  id_resolution = 0;
 int  had_zero = 0;
 int  prevlines_length = 0;
 
@@ -2625,7 +2625,7 @@ the message, if necessary (we hope it won't be). */
 
 if (host_number_string)
   {
-  id_resolution = (BASE_62 == 62)? 5000 : 10000;
+  id_resolution = BASE_62 == 62 ? 5000 : 10000;
   sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
     string_base62((long int)(
       host_number * (1000000/id_resolution) +
@@ -2637,7 +2637,7 @@ appropriate resolution. */
 
 else
   {
-  id_resolution = (BASE_62 == 62)? 500 : 1000;
+  id_resolution = BASE_62 == 62 ? 500 : 1000;
   sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
     string_base62((long int)(message_id_tv.tv_usec/id_resolution)) + 4);
   }
@@ -3893,16 +3893,6 @@ else
 
 receive_messagecount++;
 
-/* In SMTP sessions we may receive several in one connection. After each one,
-we wait for the clock to tick at the level of message-id granularity. This is
-so that the combination of time+pid is unique, even on systems where the pid
-can be re-used within our time interval. We can't shorten the interval without
-re-designing the message-id. See comments above where the message id is
-created. This is Something For The Future. */
-
-message_id_tv.tv_usec = (message_id_tv.tv_usec/id_resolution) * id_resolution;
-exim_wait_tick(&message_id_tv, id_resolution);
-
 /* Add data size to written header size. We do not count the initial file name
 that is in the file, but we do add one extra for the notional blank line that
 precedes the data. This total differs from message_size in that it include the
@@ -4261,6 +4251,23 @@ then we can think about properly declaring the message not-received. */
 
 
 TIDYUP:
+/* In SMTP sessions we may receive several messages in one connection. After
+each one, we wait for the clock to tick at the level of message-id granularity.
+This is so that the combination of time+pid is unique, even on systems where the
+pid can be re-used within our time interval. We can't shorten the interval
+without re-designing the message-id. See comments above where the message id is
+created. This is Something For The Future.
+Do this wait any time we have created a message-id, even if we rejected the
+message.  This gives unique IDs for logging done by ACLs. */
+
+if (id_resolution != 0)
+  {
+  message_id_tv.tv_usec = (message_id_tv.tv_usec/id_resolution) * id_resolution;
+  exim_wait_tick(&message_id_tv, id_resolution);
+  id_resolution = 0;
+  }
+
+
 process_info[process_info_len] = 0;			/* Remove message id */
 if (spool_data_file && cutthrough_done == NOT_TRIED)
   {

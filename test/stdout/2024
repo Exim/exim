@@ -3,9 +3,9 @@ Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
->>> ehlo rhu.barb
+>>> ehlo rhu1.barb
 ??? 250-
-<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
+<<< 250-myhost.test.ex Hello rhu1.barb [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
@@ -22,15 +22,17 @@ Key file = aux-fixed/cert2
 Attempting to start TLS
 A TLS fatal alert has been received.
 Failed to start TLS
+>>> nop
+????554
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Certificate file = aux-fixed/cert2
 Key file = aux-fixed/cert2
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
->>> ehlo rhu.barb
+>>> ehlo rhu2.barb
 ??? 250-
-<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
+<<< 250-myhost.test.ex Hello rhu2.barb [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-

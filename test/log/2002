@@ -19,7 +19,6 @@
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
-1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer cert:
 1999-03-02 09:44:33 ver 3
@@ -47,3 +46,4 @@
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_ECDSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.

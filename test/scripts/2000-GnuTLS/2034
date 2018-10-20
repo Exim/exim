@@ -5,7 +5,7 @@ exim -DSERVER=server -bd -oX PORT_D
 # timeout case
 client 127.0.0.1 PORT_D
 ??? 220
-ehlo rhu.barb
+ehlo rhu1.barb
 ??? 250-
 ??? 250-
 ??? 250-
@@ -20,7 +20,7 @@ starttls
 # bad TLS negotiation case
 client 127.0.0.1 PORT_D
 ??? 220
-ehlo rhu.barb
+ehlo rhu2.barb
 ??? 250-
 ??? 250-
 ??? 250-
@@ -31,4 +31,5 @@ starttls
 ??? 220
 bogus
 ****
+millisleep 500
 killdaemon
