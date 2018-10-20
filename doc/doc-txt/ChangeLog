@@ -142,6 +142,10 @@ JH/30 Bug 2329: Increase buffer size used for dns lookup from 2k, which was
       the way to the max DNS message size of 64kB, even though this might be
       overmuch for IOT constrained device use.
 
+JH/31 Fix a bad use of a copy function, which could be used to pointlessly
+      copy a string over itself.  The library routine is documented as not
+      supporting overlapping copies, and on MacOS it actually raised a SIGABRT.
+
 
 Exim version 4.91
 -----------------

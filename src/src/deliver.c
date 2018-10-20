@@ -5586,7 +5586,8 @@ message size. This use of strcpy() is OK because the length id is checked when
 it is obtained from a command line (the -M or -q options), and otherwise it is
 known to be a valid message id. */
 
-Ustrcpy(message_id, id);
+if (id != message_id)
+  Ustrcpy(message_id, id);
 f.deliver_force = forced;
 return_count = 0;
 message_size = 0;
