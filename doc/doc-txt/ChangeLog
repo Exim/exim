@@ -509,7 +509,7 @@ JH/26 Fix DKIM bug: when the pseudoheader generated for signing was exactly
       line, the header hash was calculated to an incorrect value thanks to
       the (relaxed) space the fold became.
 
-HS/02 Fix Bug 2130: large writes from the transport subprocess where chunked
+HS/02 Fix Bug 2130: large writes from the transport subprocess were chunked
       and confused the parent.
 
 JH/27 Fix SOCKS bug: an unitialized pointer was deref'd by the transport process

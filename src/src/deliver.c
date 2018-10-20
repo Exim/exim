@@ -3315,8 +3315,8 @@ small items (less than PIPE_BUF, which seems to be at least 512 in any Unix and
 often bigger) so even if we are reading while the subprocess is still going, we
 should never have only a partial item in the buffer.
 
-hs12: This assumption is not true anymore, since we got quit large items (certificate
-information and such)
+hs12: This assumption is not true anymore, since we get quite large items (certificate
+information and such).
 
 Argument:
   poffset     the offset of the parlist item
@@ -4685,12 +4685,10 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   search_tidyup();
 
-
   if ((pid = fork()) == 0)
     {
     int fd = pfd[pipe_write];
     host_item *h;
-    DEBUG(D_deliver) debug_selector |= D_pid;  // hs12
 
     /* Setting this global in the subprocess means we need never clear it */
     transport_name = tp->name;
