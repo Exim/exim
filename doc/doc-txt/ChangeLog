@@ -63,6 +63,10 @@ JH/27 Fix logging of proxy address.  Previously, a pointless "PRX=[]:0" would be
       included in delivery lines for non-proxied connections, when compiled with
       SUPPORT_SOCKS and running with proxy logging enabled.
 
+JH/31 Fix a bad use of a copy function, which could be used to pointlessly
+      copy a string over itself.  The library routine is documented as not
+      supporting overlapping copies, and on MacOS it actually raised a SIGABRT.
+
 
 Exim version 4.91
 -----------------
