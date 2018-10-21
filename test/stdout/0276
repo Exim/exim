@@ -24,7 +24,7 @@ EHLO myhost.test.ex
 250 OK
 MAIL FROM:<CALLER@test.ex>
 250 OK
-RCPT TO:<userx@test.ex>
+RCPT TO:<usery@test.ex>
 250 OK
 DATA
 500 NO

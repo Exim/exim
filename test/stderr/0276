@@ -43,14 +43,14 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
          250 OK
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP<< 250 OK
-  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> RCPT TO:<usery@test.ex>
   SMTP<< 250 OK
   SMTP>> DATA
   SMTP<< 500 NO
   SMTP>> QUIT
   SMTP(close)>>
 LOG: MAIN
-  ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 500 NO
+  ** usery@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after DATA: 500 NO
 LOG: MAIN
   <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
 delivering 10HmbA-0005vi-00

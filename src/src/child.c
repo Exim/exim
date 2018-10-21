@@ -517,13 +517,18 @@ for(;;)
   if (rc == pid)
     {
     int lowbyte = status & 255;
-    if (lowbyte == 0) yield = (status >> 8) & 255;
-      else yield = -lowbyte;
+    yield = lowbyte == 0 ? (status >> 8) & 255 : -lowbyte;
     break;
     }
   if (rc < 0)
     {
-    yield = (errno == EINTR && sigalrm_seen)? -256 : -257;
+    /* This "shouldn't happen" test does happen on MacOS: for some reason
+    I do not understand we seems to get an alarm signal despite not having
+    an active alarm set. There seems to be only one, so just go round again. */
+
+    if (errno == EINTR && sigalrm_seen && timeout <= 0) continue;
+
+    yield = (errno == EINTR && sigalrm_seen) ? -256 : -257;
     break;
     }
   }
