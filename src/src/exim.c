@@ -1492,6 +1492,7 @@ int  recipients_arg = argc;
 int  sender_address_domain = 0;
 int  test_retry_arg = -1;
 int  test_rewrite_arg = -1;
+gid_t original_egid;
 BOOL arg_queue_only = FALSE;
 BOOL bi_option = FALSE;
 BOOL checking = FALSE;
@@ -1818,6 +1819,7 @@ if ((namelen == 10 && Ustrcmp(argv[0], "newaliases") == 0) ||
 normally be root, but in some esoteric environments it may not be. */
 
 original_euid = geteuid();
+original_egid = getegid();
 
 /* Get the real uid and gid. If the caller is root, force the effective uid/gid
 to be the same as the real ones. This makes a difference only if Exim is setuid
@@ -3546,6 +3548,11 @@ over a single group - the current group, which is always the first group in the
 list. Calling setgroups() with zero groups on a "different" system results in
 an error return. The following code should cope with both types of system.
 
+ Unfortunately, recent MacOS, which should be a FreeBSD, "helpfully" succeeds
+ the "setgroups() with zero groups" - and changes the egid.
+ Thanks to that we had to stash the original_egid above, for use below
+ in the call to exim_setugid().
+
 However, if this process isn't running as root, setgroups() can't be used
 since you have to be root to run it, even if throwing away groups. Not being
 root here happens only in some unusual configurations. We just ignore the
@@ -3605,7 +3612,7 @@ the real uid to the effective so that subsequent re-execs of Exim are done by a
 privileged user. */
 
 else
-  exim_setugid(geteuid(), getegid(), FALSE, US"forcing real = effective");
+  exim_setugid(geteuid(), original_egid, FALSE, US"forcing real = effective");
 
 /* If testing a filter, open the file(s) now, before wasting time doing other
 setups and reading the message. */
