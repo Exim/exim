@@ -2101,11 +2101,11 @@ state->fd_in = fileno(smtp_in);
 state->fd_out = fileno(smtp_out);
 
 sigalrm_seen = FALSE;
-if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 do
   rc = gnutls_handshake(state->session);
 while (rc == GNUTLS_E_AGAIN ||  rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
-alarm(0);
+ALARM_CLR(0);
 
 if (rc != GNUTLS_E_SUCCESS)
   {
@@ -2427,11 +2427,11 @@ DEBUG(D_tls) debug_printf("about to gnutls_handshake\n");
 /* There doesn't seem to be a built-in timeout on connection. */
 
 sigalrm_seen = FALSE;
-alarm(ob->command_timeout);
+ALARM(ob->command_timeout);
 do
   rc = gnutls_handshake(state->session);
 while (rc == GNUTLS_E_AGAIN || rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
-alarm(0);
+ALARM_CLR(0);
 
 if (rc != GNUTLS_E_SUCCESS)
   {
@@ -2530,9 +2530,9 @@ if (shutdown)
   DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
     shutdown > 1 ? " (with response-wait)" : "");
 
-  alarm(2);
+  ALARM(2);
   gnutls_bye(state->session, shutdown > 1 ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
-  alarm(0);
+  ALARM_CLR(0);
   }
 
 gnutls_deinit(state->session);
@@ -2558,10 +2558,10 @@ DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
   state->session, state->xfer_buffer, ssl_xfer_buffer_size);
 
 sigalrm_seen = FALSE;
-if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
   MIN(ssl_xfer_buffer_size, lim));
-if (smtp_receive_timeout > 0) alarm(0);
+if (smtp_receive_timeout > 0) ALARM_CLR(0);
 
 if (had_command_timeout)		/* set by signal handler */
   smtp_command_timeout_exit();		/* does not return */

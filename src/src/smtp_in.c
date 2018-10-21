@@ -499,14 +499,14 @@ smtp_refill(unsigned lim)
 int rc, save_errno;
 if (!smtp_out) return FALSE;
 fflush(smtp_out);
-if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 
 /* Limit amount read, so non-message data is not fed to DKIM.
 Take care to not touch the safety NUL at the end of the buffer. */
 
 rc = read(fileno(smtp_in), smtp_inbuffer, MIN(IN_BUFFER_SIZE-1, lim));
 save_errno = errno;
-if (smtp_receive_timeout > 0) alarm(0);
+if (smtp_receive_timeout > 0) ALARM_CLR(0);
 if (rc <= 0)
   {
   /* Must put the error text in fixed store, because this might be during

@@ -256,7 +256,7 @@ for (i = 0; i < 100; i++)
 
   else
     {
-    alarm(local_timeout);
+    ALARM(local_timeout);
 
     rc =
 #ifdef SUPPORT_TLS
@@ -269,7 +269,7 @@ for (i = 0; i < 100; i++)
 	write(fd, block, len);
 
     save_errno = errno;
-    local_timeout = alarm(0);
+    local_timeout = ALARM_CLR(0);
     if (sigalrm_seen)
       {
       errno = ETIMEDOUT;
@@ -1300,9 +1300,9 @@ chunk_ptr = deliver_out_buffer;
 for (;;)
   {
   sigalrm_seen = FALSE;
-  alarm(transport_filter_timeout);
+  ALARM(transport_filter_timeout);
   len = read(fd_read, deliver_in_buffer, DELIVER_IN_BUFFER_SIZE);
-  alarm(0);
+  ALARM_CLR(0);
   if (sigalrm_seen)
     {
     errno = ETIMEDOUT;

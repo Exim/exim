@@ -1787,7 +1787,7 @@ for (;;)
         }
 
       sigalrm_seen = FALSE;
-      alarm(resignal_interval);
+      ALARM(resignal_interval);
       }
 
     else
@@ -1900,7 +1900,7 @@ for (;;)
       /* Reset the alarm clock */
 
       sigalrm_seen = FALSE;
-      alarm(queue_interval);
+      ALARM(queue_interval);
       }
 
     } /* sigalrm_seen */
@@ -2087,7 +2087,7 @@ for (;;)
       getpid());
     for (sk = 0; sk < listen_socket_count; sk++)
       (void)close(listen_sockets[sk]);
-    alarm(0);
+    ALARM_CLR(0);
     signal(SIGHUP, SIG_IGN);
     sighup_argv[0] = exim_path;
     exim_nullstd();

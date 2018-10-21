@@ -32,5 +32,5 @@ DATA
 QUIT
 200 OK
 ****
-exim -v -odi userx@test.ex
+exim -v -odi usery@test.ex
 ****

@@ -137,9 +137,9 @@ DEBUG(D_hints_lookup|D_retry|D_route|D_deliver)
   debug_printf_indent("locking %s\n", filename);
 
 sigalrm_seen = FALSE;
-alarm(EXIMDB_LOCK_TIMEOUT);
+ALARM(EXIMDB_LOCK_TIMEOUT);
 rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
-alarm(0);
+ALARM_CLR(0);
 
 if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)

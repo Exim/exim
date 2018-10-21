@@ -507,7 +507,7 @@ int yield;
 if (timeout > 0)
   {
   sigalrm_seen = FALSE;
-  alarm(timeout);
+  ALARM(timeout);
   }
 
 for(;;)
@@ -528,7 +528,7 @@ for(;;)
     }
   }
 
-if (timeout > 0) alarm(0);
+if (timeout > 0) ALARM_CLR(0);
 
 signal(SIGCHLD, oldsignal);   /* restore */
 return yield;

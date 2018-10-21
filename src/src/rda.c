@@ -110,7 +110,7 @@ if (saved_errno == ENOENT)
   slash = Ustrrchr(big_buffer, '/');
   Ustrcpy(slash+1, ".");
 
-  alarm(30);
+  ALARM(30);
   rc = Ustat(big_buffer, &statbuf);
   if (rc != 0 && errno == EACCES && !sigalrm_seen)
     {
@@ -118,7 +118,7 @@ if (saved_errno == ENOENT)
     rc = Ustat(big_buffer, &statbuf);
     }
   saved_errno = errno;
-  alarm(0);
+  ALARM_CLR(0);
 
   DEBUG(D_route) debug_printf("stat(%s)=%d\n", big_buffer, rc);
   }

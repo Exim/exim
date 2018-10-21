@@ -922,7 +922,7 @@ int rc;
 printf("Testing restarting signal; wait for handler message, then type a line\n");
 strcpy(buffer, "*** default ***\n");
 os_restarting_signal(SIGALRM, sigalrm_handler);
-alarm(2);
+ALARM(2);
 if ((rc = read(fd, buffer, sizeof(buffer))) < 0)
   printf("No data read\n");
 else
@@ -930,12 +930,12 @@ else
   buffer[rc] = 0;
   printf("Read: %s", buffer);
   }
-alarm(0);
+ALARM_CLR(0);
 
 printf("Testing non-restarting signal; should read no data after handler message\n");
 strcpy(buffer, "*** default ***\n");
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
-alarm(2);
+ALARM(2);
 if ((rc = read(fd, buffer, sizeof(buffer))) < 0)
   printf("No data read\n");
 else
@@ -943,7 +943,7 @@ else
   buffer[rc] = 0;
   printf("Read: %s", buffer);
   }
-alarm(0);
+ALARM_CLR(0);
 
 printf("Testing load averages (last test - ^C to kill)\n");
 for (;;)

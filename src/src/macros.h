@@ -1047,4 +1047,20 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define TLS_SHUTDOWN_WAIT	2
 
 
+#ifdef COMPILE_UTILITY
+# define ALARM(seconds) alarm(seconds);
+# define ALARM_CLR(seconds) alarm(seconds);
+#else
+/* For debugging of odd alarm-signal problems, stash caller info while the
+alarm is active.  Clear it down on cancelling the alarm so we can tell there
+should not be one active. */
+
+# define ALARM(seconds) \
+    debug_selector & D_any \
+    ? (sigalarm_setter = CCS __FUNCTION__, alarm(seconds)) : alarm(seconds);
+# define ALARM_CLR(seconds) \
+    debug_selector & D_any \
+    ? (sigalarm_setter = NULL, alarm(seconds)) : alarm(seconds);
+#endif
+
 /* End of macros.h */

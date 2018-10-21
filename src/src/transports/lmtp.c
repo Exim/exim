@@ -299,10 +299,10 @@ for (;;)
 
     *readptr = 0;           /* In case nothing gets read */
     sigalrm_seen = FALSE;
-    alarm(timeout);
+    ALARM(timeout);
     rc = Ufgets(readptr, size-1, f);
     save_errno = errno;
-    alarm(0);
+    ALARM_CLR(0);
     errno = save_errno;
 
     if (rc != NULL) break;  /* A line has been read */

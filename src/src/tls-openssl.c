@@ -2263,9 +2263,9 @@ SSL_set_accept_state(server_ssl);
 DEBUG(D_tls) debug_printf("Calling SSL_accept\n");
 
 sigalrm_seen = FALSE;
-if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 rc = SSL_accept(server_ssl);
-alarm(0);
+ALARM_CLR(0);
 
 if (rc <= 0)
   {
@@ -2643,9 +2643,9 @@ client_static_cbinfo->event_action = tb ? tb->event_action : NULL;
 
 DEBUG(D_tls) debug_printf("Calling SSL_connect\n");
 sigalrm_seen = FALSE;
-alarm(ob->command_timeout);
+ALARM(ob->command_timeout);
 rc = SSL_connect(exim_client_ctx->ssl);
-alarm(0);
+ALARM_CLR(0);
 
 #ifdef SUPPORT_DANE
 if (tlsa_dnsa)
@@ -2689,11 +2689,11 @@ int inbytes;
 DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
   ssl_xfer_buffer, ssl_xfer_buffer_size);
 
-if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
+if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
 		  MIN(ssl_xfer_buffer_size, lim));
 error = SSL_get_error(server_ssl, inbytes);
-if (smtp_receive_timeout > 0) alarm(0);
+if (smtp_receive_timeout > 0) ALARM_CLR(0);
 
 if (had_command_timeout)		/* set by signal handler */
   smtp_command_timeout_exit();		/* does not return */
@@ -2995,9 +2995,9 @@ if (shutdown)
   if (  (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
      && shutdown > 1)
     {
-    alarm(2);
+    ALARM(2);
     rc = SSL_shutdown(*sslp);		/* wait for response */
-    alarm(0);
+    ALARM_CLR(0);
     }
 
   if (rc < 0) DEBUG(D_tls)

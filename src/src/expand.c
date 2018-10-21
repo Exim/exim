@@ -5051,9 +5051,9 @@ while (*s != 0)
 	  server_name = US sockun.sun_path;
 
           sigalrm_seen = FALSE;
-          alarm(timeout);
+          ALARM(timeout);
           rc = connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun));
-          alarm(0);
+          ALARM_CLR(0);
           if (sigalrm_seen)
             {
             expand_string_message = US "socket connect timed out";
@@ -5126,13 +5126,13 @@ while (*s != 0)
 	if (!tls_ctx)
 	  fp = fdopen(fd, "rb");
         sigalrm_seen = FALSE;
-        alarm(timeout);
+        ALARM(timeout);
         yield =
 #ifdef SUPPORT_TLS
 	  tls_ctx ? cat_file_tls(tls_ctx, yield, sub_arg[3]) :
 #endif
 		    cat_file(fp, yield, sub_arg[3]);
-        alarm(0);
+        ALARM_CLR(0);
 
 #ifdef SUPPORT_TLS
 	if (tls_ctx)
@@ -5265,9 +5265,9 @@ while (*s != 0)
 	resetok = FALSE;
         f = fdopen(fd_out, "rb");
         sigalrm_seen = FALSE;
-        alarm(60);
+        ALARM(60);
 	lookup_value = string_from_gstring(cat_file(f, NULL, NULL));
-        alarm(0);
+        ALARM_CLR(0);
         (void)fclose(f);
 
         /* Wait for the process to finish, applying the timeout, and inspect its

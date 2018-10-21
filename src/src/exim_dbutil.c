@@ -284,9 +284,9 @@ lock_data.l_whence = lock_data.l_start = lock_data.l_len = 0;
 
 sigalrm_seen = FALSE;
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
-alarm(EXIMDB_LOCK_TIMEOUT);
+ALARM(EXIMDB_LOCK_TIMEOUT);
 rc = fcntl(dbblock->lockfd, F_SETLKW, &lock_data);
-alarm(0);
+ALARM_CLR(0);
 
 if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)

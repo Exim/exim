@@ -243,7 +243,7 @@ timer, thereby allowing the inbuilt OS timeout to operate. */
 
 callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
-if (timeout > 0) alarm(timeout);
+if (timeout > 0) ALARM(timeout);
 
 #if defined(TCP_FASTOPEN) && defined(MSG_FASTOPEN)
 /* TCP Fast Open, if the system has a cookie from a previous call to
@@ -307,7 +307,7 @@ legacy_connect:
   }
 
 save_errno = errno;
-alarm(0);
+ALARM_CLR(0);
 
 /* There is a testing facility for simulating a connection timeout, as I
 can't think of any other way of doing this. It converts a connection refused

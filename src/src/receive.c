@@ -1764,7 +1764,7 @@ single timeout for the whole message. */
 else if (receive_timeout > 0)
   {
   os_non_restarting_signal(SIGALRM, data_timeout_handler);
-  alarm(receive_timeout);
+  ALARM(receive_timeout);
   }
 
 /* SIGTERM and SIGINT are caught always. */
@@ -3657,9 +3657,9 @@ if (sigsetjmp(local_scan_env, 1) == 0)
 
   had_local_scan_timeout = 0;
   os_non_restarting_signal(SIGALRM, local_scan_timeout_handler);
-  if (local_scan_timeout > 0) alarm(local_scan_timeout);
+  if (local_scan_timeout > 0) ALARM(local_scan_timeout);
   rc = local_scan(data_fd, &local_scan_data);
-  alarm(0);
+  ALARM_CLR(0);
   os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
   f.enable_dollar_recipients = FALSE;

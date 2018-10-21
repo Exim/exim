@@ -884,10 +884,10 @@ if (dofcntl)
   {
   if (fcntltime > 0)
     {
-    alarm(fcntltime);
+    ALARM(fcntltime);
     yield = fcntl(fd, F_SETLKW, &lock_data);
     save_errno = errno;
-    alarm(0);
+    ALARM_CLR(0);
     errno = save_errno;
     }
   else yield = fcntl(fd, F_SETLK, &lock_data);
@@ -899,10 +899,10 @@ if (doflock && (yield >= 0))
   int flocktype = (fcntltype == F_WRLCK) ? LOCK_EX : LOCK_SH;
   if (flocktime > 0)
     {
-    alarm(flocktime);
+    ALARM(flocktime);
     yield = flock(fd, flocktype);
     save_errno = errno;
-    alarm(0);
+    ALARM_CLR(0);
     errno = save_errno;
     }
   else yield = flock(fd, flocktype | LOCK_NB);
