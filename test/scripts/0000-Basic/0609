@@ -3,6 +3,8 @@ munge debug_pid
 need_ipv4
 #
 # We want the debug note of a truncated delay
+# "delay cancelled by peer close"
+#
 exim -d-all+acl -DSERVER=server -odq -bd -oX PORT_D
 ****
 #

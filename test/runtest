@@ -1075,12 +1075,14 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Some DBM libraries seem to make DBM files on opening with O_RDWR without
     # O_CREAT; other's don't. In the latter case there is some debugging output
     # which is not present in the former. Skip the relevant lines (there are
-    # two of them).
+    # three of them).
 
-    if (/TESTSUITE\/spool\/db\/\S+ appears not to exist: trying to create/)
+    if (/returned from EXIM_DBOPEN: \(nil\)/)
       {
-      $_ = <IN>;
-      next;
+      $_ .= <IN>;
+      s?\Q$parm_cwd\E?TESTSUITE?g;
+      if (/TESTSUITE\/spool\/db\/\S+ appears not to exist: trying to create/)
+	{ $_ = <IN>; next; }
       }
 
     # Some tests turn on +expand debugging to check on expansions.
@@ -1112,6 +1114,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Experimental_REQUIRETLS
     next if / in tls_advertise_requiretls?\? no \(end of list\)/;
+
+    # TCP Fast Open
+    next if /^setsockopt FASTOPEN: Network Error/;
 
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
