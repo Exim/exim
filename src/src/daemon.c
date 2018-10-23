@@ -1459,7 +1459,8 @@ if (f.daemon_listen && !f.inetd_wait_mode)
         debug_printf("listening on %s port %d\n", ipa->address, ipa->port);
 
 #ifdef TCP_FASTOPEN
-    if (setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
+    if (  f.tcp_fastopen_ok
+       && setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
 		    &smtp_connect_backlog, sizeof(smtp_connect_backlog)))
       {
       DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
