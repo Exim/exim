@@ -4,6 +4,7 @@ need_ipv4
 #
 # We want the debug note of a truncated delay
 # "delay cancelled by peer close"
+# This is known to fail on MacOS, which lacks the require POLLRDHUP.
 #
 exim -d-all+acl -DSERVER=server -odq -bd -oX PORT_D
 ****

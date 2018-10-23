@@ -3404,7 +3404,7 @@ for (; cb; cb = cb->next)
 
         else
           {
-          if (smtp_out != NULL && !f.disable_delay_flush)
+          if (smtp_out && !f.disable_delay_flush)
 	    mac_smtp_fflush();
 
 #if !defined(NO_POLL_H) && defined (POLLRDHUP)
@@ -3421,16 +3421,16 @@ for (; cb; cb = cb->next)
 	      HDEBUG(D_acl) debug_printf_indent("delay cancelled by peer close\n");
 	    }
 #else
-        /* It appears to be impossible to detect that a TCP/IP connection has
-        gone away without reading from it. This means that we cannot shorten
-        the delay below if the client goes away, because we cannot discover
-        that the client has closed its end of the connection. (The connection
-        is actually in a half-closed state, waiting for the server to close its
-        end.) It would be nice to be able to detect this state, so that the
-        Exim process is not held up unnecessarily. However, it seems that we
-        can't. The poll() function does not do the right thing, and in any case
-        it is not always available.
-        */
+	  /* Lacking POLLRDHUP it appears to be impossible to detect that a
+	  TCP/IP connection has gone away without reading from it. This means
+	  that we cannot shorten the delay below if the client goes away,
+	  because we cannot discover that the client has closed its end of the
+	  connection. (The connection is actually in a half-closed state,
+	  waiting for the server to close its end.) It would be nice to be able
+	  to detect this state, so that the Exim process is not held up
+	  unnecessarily. However, it seems that we can't. The poll() function
+	  does not do the right thing, and in any case it is not always
+	  available.  */
 
           while (delay > 0) delay = sleep(delay);
 #endif
