@@ -169,13 +169,13 @@ switch(fmt)
   {
   case KEYFMT_DER:
     if ((rc = gnutls_pubkey_import(verify_ctx->key, &k, GNUTLS_X509_FMT_DER)))
-      ret = gnutls_strerror(rc);
+      ret = US gnutls_strerror(rc);
     break;
 #ifdef SIGN_HAVE_ED25519
   case KEYFMT_ED25519_BARE:
     if ((rc = gnutls_pubkey_import_ecc_raw(verify_ctx->key,
 					  GNUTLS_ECC_CURVE_ED25519, &k, NULL)))
-      ret = gnutls_strerror(rc);
+      ret = US gnutls_strerror(rc);
     break;
 #endif
   default:
@@ -203,7 +203,7 @@ if (verify_ctx->keytype == KEYTYPE_ED25519)
   {
   if ((rc = gnutls_pubkey_verify_data2(verify_ctx->key,
 				      GNUTLS_SIGN_EDDSA_ED25519, 0, &k, &s)) < 0)
-    ret = gnutls_strerror(rc);
+    ret = US gnutls_strerror(rc);
   }
 else
 #endif
@@ -218,7 +218,7 @@ else
     }
 
   if ((rc = gnutls_pubkey_verify_hash2(verify_ctx->key, algo, 0, &k, &s)) < 0)
-    ret = gnutls_strerror(rc);
+    ret = US gnutls_strerror(rc);
   }
 
 gnutls_pubkey_deinit(verify_ctx->key);

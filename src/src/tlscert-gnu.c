@@ -255,14 +255,14 @@ unsigned int crit;
 int ret;
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
-  oid, idx, CS cp1, &siz, &crit);
+  CS oid, idx, CS cp1, &siz, &crit);
 if (ret != GNUTLS_E_SHORT_MEMORY_BUFFER)
   return g_err("ge0", __FUNCTION__, ret);
 
 cp1 = store_get(siz*4 + 1);
 
 ret = gnutls_x509_crt_get_extension_by_oid ((gnutls_x509_crt_t)cert,
-  oid, idx, CS cp1, &siz, &crit);
+  CS oid, idx, CS cp1, &siz, &crit);
 if (ret < 0)
   return g_err("ge1", __FUNCTION__, ret);
 

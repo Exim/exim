@@ -1057,7 +1057,7 @@ should not be one active. */
 
 # define ALARM(seconds) \
     debug_selector & D_any \
-    ? (sigalarm_setter = CCS __FUNCTION__, alarm(seconds)) : alarm(seconds);
+    ? (sigalarm_setter = CUS __FUNCTION__, alarm(seconds)) : alarm(seconds);
 # define ALARM_CLR(seconds) \
     debug_selector & D_any \
     ? (sigalarm_setter = NULL, alarm(seconds)) : alarm(seconds);

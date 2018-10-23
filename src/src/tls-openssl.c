@@ -749,17 +749,17 @@ DEBUG(D_tls)
   const uschar * str;
 
   if (where & SSL_ST_CONNECT)
-     str = "SSL_connect";
+     str = US"SSL_connect";
   else if (where & SSL_ST_ACCEPT)
-     str = "SSL_accept";
+     str = US"SSL_accept";
   else
-     str = "SSL info (undefined)";
+     str = US"SSL info (undefined)";
 
   if (where & SSL_CB_LOOP)
      debug_printf("%s: %s\n", str, SSL_state_string_long(s));
   else if (where & SSL_CB_ALERT)
     debug_printf("SSL3 alert %s:%s:%s\n",
-	  str = where & SSL_CB_READ ? "read" : "write",
+	  str = where & SSL_CB_READ ? US"read" : US"write",
 	  SSL_alert_type_string_long(ret), SSL_alert_desc_string_long(ret));
   else if (where & SSL_CB_EXIT)
      if (ret == 0)

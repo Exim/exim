@@ -266,7 +266,7 @@ before, for now. */
 
 #define exim_gnutls_err_check(rc, Label) do { \
   if ((rc) != GNUTLS_E_SUCCESS) \
-    return tls_error((Label), gnutls_strerror(rc), host, errstr); \
+    return tls_error((Label), US gnutls_strerror(rc), host, errstr); \
   } while (0)
 
 #define expand_check_tlsvar(Varname, errstr) \
@@ -332,11 +332,11 @@ Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(const uschar *prefix, const char *msg, const host_item *host,
+tls_error(const uschar *prefix, const uschar *msg, const host_item *host,
   uschar ** errstr)
 {
 if (errstr)
-  *errstr = string_sprintf("(%s)%s%s", prefix, msg ? ": " : "", msg ? msg : "");
+  *errstr = string_sprintf("(%s)%s%s", prefix, msg ? ": " : "", msg ? msg : US"");
 return host ? FAIL : DEFER;
 }
 
@@ -361,14 +361,14 @@ Returns:   nothing
 static void
 record_io_error(exim_gnutls_state_st *state, int rc, uschar *when, uschar *text)
 {
-const char * msg;
+const uschar * msg;
 uschar * errstr;
 
 if (rc == GNUTLS_E_FATAL_ALERT_RECEIVED)
-  msg = CS string_sprintf("%s: %s", US gnutls_strerror(rc),
+  msg = string_sprintf("%s: %s", US gnutls_strerror(rc),
     US gnutls_alert_get_name(gnutls_alert_get(state->session)));
 else
-  msg = gnutls_strerror(rc);
+  msg = US gnutls_strerror(rc);
 
 (void) tls_error(when, msg, state->host, &errstr);
 
@@ -561,7 +561,7 @@ else if (Ustrcmp(exp_tls_dhparam, "none") == 0)
 else if (exp_tls_dhparam[0] != '/')
   {
   if (!(m.data = US std_dh_prime_named(exp_tls_dhparam)))
-    return tls_error(US"No standard prime named", CS exp_tls_dhparam, NULL, errstr);
+    return tls_error(US"No standard prime named", exp_tls_dhparam, NULL, errstr);
   m.size = Ustrlen(m.data);
   }
 else
@@ -624,7 +624,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
     {
     saved_errno = errno;
     (void)close(fd);
-    return tls_error(US"TLS cache stat failed", strerror(saved_errno), NULL, errstr);
+    return tls_error(US"TLS cache stat failed", US strerror(saved_errno), NULL, errstr);
     }
   if (!S_ISREG(statbuf.st_mode))
     {
@@ -636,21 +636,21 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
     saved_errno = errno;
     (void)close(fd);
     return tls_error(US"fdopen(TLS cache stat fd) failed",
-        strerror(saved_errno), NULL, errstr);
+        US strerror(saved_errno), NULL, errstr);
     }
 
   m.size = statbuf.st_size;
   if (!(m.data = malloc(m.size)))
     {
     fclose(fp);
-    return tls_error(US"malloc failed", strerror(errno), NULL, errstr);
+    return tls_error(US"malloc failed", US strerror(errno), NULL, errstr);
     }
   if (!(sz = fread(m.data, m.size, 1, fp)))
     {
     saved_errno = errno;
     fclose(fp);
     free(m.data);
-    return tls_error(US"fread failed", strerror(saved_errno), NULL, errstr);
+    return tls_error(US"fread failed", US strerror(saved_errno), NULL, errstr);
     }
   fclose(fp);
 
@@ -686,11 +686,11 @@ if (rc < 0)
 
   if ((PATH_MAX - Ustrlen(filename)) < 10)
     return tls_error(US"Filename too long to generate replacement",
-        CS filename, NULL, errstr);
+        filename, NULL, errstr);
 
-  temp_fn = string_copy(US "%s.XXXXXXX");
+  temp_fn = string_copy(US"%s.XXXXXXX");
   if ((fd = mkstemp(CS temp_fn)) < 0)	/* modifies temp_fn */
-    return tls_error(US"Unable to open temp file", strerror(errno), NULL, errstr);
+    return tls_error(US"Unable to open temp file", US strerror(errno), NULL, errstr);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
   /* GnuTLS overshoots!
@@ -727,7 +727,7 @@ if (rc < 0)
     exim_gnutls_err_check(rc, US"gnutls_dh_params_export_pkcs3(NULL) sizing");
   m.size = sz;
   if (!(m.data = malloc(m.size)))
-    return tls_error(US"memory allocation failed", strerror(errno), NULL, errstr);
+    return tls_error(US"memory allocation failed", US strerror(errno), NULL, errstr);
 
   /* this will return a size 1 less than the allocation size above */
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
@@ -743,19 +743,19 @@ if (rc < 0)
     {
     free(m.data);
     return tls_error(US"TLS cache write D-H params failed",
-        strerror(errno), NULL, errstr);
+        US strerror(errno), NULL, errstr);
     }
   free(m.data);
   if ((sz = write_to_fd_buf(fd, US"\n", 1)) != 1)
     return tls_error(US"TLS cache write D-H params final newline failed",
-        strerror(errno), NULL, errstr);
+        US strerror(errno), NULL, errstr);
 
   if ((rc = close(fd)))
-    return tls_error(US"TLS cache write close() failed", strerror(errno), NULL, errstr);
+    return tls_error(US"TLS cache write close() failed", US strerror(errno), NULL, errstr);
 
   if (Urename(temp_fn, filename) < 0)
     return tls_error(string_sprintf("failed to rename \"%s\" as \"%s\"",
-          temp_fn, filename), strerror(errno), NULL, errstr);
+          temp_fn, filename), US strerror(errno), NULL, errstr);
 
   DEBUG(D_tls) debug_printf("wrote D-H parameters to file \"%s\"\n", filename);
   }
@@ -828,7 +828,7 @@ out:
   return rc;
 
 err:
-  rc = tls_error(where, gnutls_strerror(rc), NULL, errstr);
+  rc = tls_error(where, US gnutls_strerror(rc), NULL, errstr);
   goto out;
 }
 
@@ -851,7 +851,7 @@ int rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
 if (rc < 0)
   return tls_error(
     string_sprintf("cert/key setup: cert=%s key=%s", certfile, keyfile),
-    gnutls_strerror(rc), host, errstr);
+    US gnutls_strerror(rc), host, errstr);
 return -rc;
 }
 
@@ -1522,14 +1522,14 @@ if (cert_list == NULL || cert_list_size == 0)
       cert_list, cert_list_size);
   if (state->verify_requirement >= VERIFY_REQUIRED)
     return tls_error(US"certificate verification failed",
-        "no certificate received from peer", state->host, errstr);
+        US"no certificate received from peer", state->host, errstr);
   return OK;
   }
 
 ct = gnutls_certificate_type_get(state->session);
 if (ct != GNUTLS_CRT_X509)
   {
-  const char *ctn = gnutls_certificate_type_get_name(ct);
+  const uschar *ctn = US gnutls_certificate_type_get_name(ct);
   DEBUG(D_tls)
     debug_printf("TLS: peer cert not X.509 but instead \"%s\"\n", ctn);
   if (state->verify_requirement >= VERIFY_REQUIRED)
@@ -1545,7 +1545,7 @@ if (ct != GNUTLS_CRT_X509)
       DEBUG(D_tls) debug_printf("TLS: peer cert problem: %s: %s\n", \
 	(Label), gnutls_strerror(rc)); \
       if (state->verify_requirement >= VERIFY_REQUIRED) \
-	return tls_error((Label), gnutls_strerror(rc), state->host, errstr); \
+	return tls_error((Label), US gnutls_strerror(rc), state->host, errstr); \
       return OK; \
       } \
     } while (0)
@@ -2022,7 +2022,7 @@ exim_gnutls_state_st * state = NULL;
 /* Check for previous activation */
 if (tls_in.active.sock >= 0)
   {
-  tls_error(US"STARTTLS received after TLS started", "", NULL, errstr);
+  tls_error(US"STARTTLS received after TLS started", US "", NULL, errstr);
   smtp_printf("554 Already in TLS\r\n", FALSE);
   return FAIL;
   }
@@ -2115,12 +2115,12 @@ if (rc != GNUTLS_E_SUCCESS)
 
   if (sigalrm_seen)
     {
-    tls_error(US"gnutls_handshake", "timed out", NULL, errstr);
+    tls_error(US"gnutls_handshake", US"timed out", NULL, errstr);
     gnutls_db_remove_session(state->session);
     }
   else
     {
-    tls_error(US"gnutls_handshake", gnutls_strerror(rc), NULL, errstr);
+    tls_error(US"gnutls_handshake", US gnutls_strerror(rc), NULL, errstr);
     (void) gnutls_alert_send_appropriate(state->session, rc);
     gnutls_deinit(state->session);
     gnutls_certificate_free_credentials(state->x509_cred);
@@ -2251,7 +2251,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
     }
 
   tls_out.tlsa_usage |= 1<<usage;
-  dane_data[i] = p;
+  dane_data[i] = CS p;
   dane_data_len[i++] = rr->size;
   }
 
@@ -2403,7 +2403,7 @@ if (request_ocsp)
   if ((rc = gnutls_ocsp_status_request_enable_client(state->session,
 		    NULL, 0, NULL)) != OK)
     {
-    tls_error(US"cert-status-req", gnutls_strerror(rc), state->host, errstr);
+    tls_error(US"cert-status-req", US gnutls_strerror(rc), state->host, errstr);
     return NULL;
     }
   tlsp->ocsp = OCSP_NOT_RESP;
@@ -2438,10 +2438,10 @@ if (rc != GNUTLS_E_SUCCESS)
   if (sigalrm_seen)
     {
     gnutls_alert_send(state->session, GNUTLS_AL_FATAL, GNUTLS_A_USER_CANCELED);
-    tls_error(US"gnutls_handshake", "timed out", state->host, errstr);
+    tls_error(US"gnutls_handshake", US"timed out", state->host, errstr);
     }
   else
-    tls_error(US"gnutls_handshake", gnutls_strerror(rc), state->host, errstr);
+    tls_error(US"gnutls_handshake", US gnutls_strerror(rc), state->host, errstr);
   return NULL;
   }
 
@@ -2473,7 +2473,7 @@ if (require_ocsp)
       gnutls_free(printed.data);
       }
     else
-      (void) tls_error(US"ocsp decode", gnutls_strerror(rc), state->host, errstr);
+      (void) tls_error(US"ocsp decode", US gnutls_strerror(rc), state->host, errstr);
     }
 
   if (gnutls_ocsp_status_request_is_checked(state->session, 0) == 0)

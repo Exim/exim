@@ -114,7 +114,7 @@ if (!dmarc_tld_file)
   DEBUG(D_receive) debug_printf("DMARC: no dmarc_tld_file\n");
   dmarc_abort = TRUE;
   }
-else if (opendmarc_tld_read_file(dmarc_tld_file, NULL, NULL, NULL))
+else if (opendmarc_tld_read_file(CS dmarc_tld_file, NULL, NULL, NULL))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list %s: %d",
 		       dmarc_tld_file, errno);

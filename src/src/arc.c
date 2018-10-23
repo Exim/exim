@@ -1605,13 +1605,13 @@ if ((opts = string_nextinlist(&signspec, &sep, NULL, 0)))
       if (*(s += 6) == '=')
 	if (*++s == '+')
 	  {
-	  if (!(expire = (time_t)atoi(++s)))
+	  if (!(expire = (time_t)atoi(CS ++s)))
 	    expire = ARC_SIGN_DEFAULT_EXPIRE_DELTA;
 	  if (!now) now = time(NULL);
 	  expire += now;
 	  }
 	else
-	  expire = (time_t)atol(s);
+	  expire = (time_t)atol(CS s);
       else
 	{
 	if (!now) now = time(NULL);
