@@ -119,6 +119,10 @@ sub flavour {
         $etc = shift;
     }
 
+    if (open(my $f, '-|', 'openssl version')) {
+	<$f> =~ /1.1.1/ && return "openssl_1_1_1";
+    }
+
     if (open(my $f, '<', "$etc/os-release")) {
         local $_ = join '', <$f>;
         my ($id) = /^ID="?(.*?)"?\s*$/m;
@@ -137,7 +141,7 @@ sub flavour {
 
 sub flavours {
     my %h = map { /\.(\S+)$/, 1 }
-            grep { !/\.orig$/ } glob('stdout/*.*'), glob('stderr/*.*');
+            grep { !/\.orig$/ } glob('stdout/*.*'), glob('stderr/*.*'), glob('log/*.*');
     return sort keys %h;
 }
 
@@ -174,7 +178,7 @@ typical files in the F</etc> directory.
 
 =item B<flavours>()
 
-Return a list of available flavours. It does so by scanning F<stdout/> and
+Return a list of available flavours. It does so by scanning F<log/>, F<stdout/> and
 F<stderr/> for I<flavour> files (extensions after the numerical prefix.
 
 =back

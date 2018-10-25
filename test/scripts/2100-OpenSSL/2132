@@ -1,6 +1,8 @@
 # TLS server: server ca cert from directory
 exim -DSERVER=server -bd -oX PORT_D
 ****
+#
+### Should accept message
 client-ssl 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
@@ -24,6 +26,7 @@ This is a test encrypted message.
 quit
 ??? 221
 ****
+### Should accept message (with a difficult env-from)
 client-ssl 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
@@ -47,7 +50,8 @@ This is a test encrypted message.
 quit
 ??? 221
 ****
-client-ssl HOSTIPV4 PORT_D
+### client cert verify required; none given
+client-ssl -t2 HOSTIPV4 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -58,10 +62,12 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
-+++ 1
-help
+noop
+????554
+noop
 ??? 554
 ****
+### client cert verify required; good one supplied
 client-ssl HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
 ??? 220
 ehlo rhu.barb

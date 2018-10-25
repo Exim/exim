@@ -2,7 +2,7 @@
 exim -DSERVER=server -bd -oX PORT_D
 ****
 ### No certificate, certificate required
-client-ssl HOSTIPV4 PORT_D
+client-ssl -t2 HOSTIPV4 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -14,10 +14,12 @@ ehlo rhu.barb
 starttls
 ??? 220
 noop
+????554 Security failure
+noop
 ??? 554 Security failure
 quit
 ????554 Security failure
-??? 221
+????221
 ???*
 ****
 ### No certificate, certificate optional at TLS time, required by ACL
@@ -92,6 +94,8 @@ ehlo rhu.barb
 starttls
 ??? 220
 noop
+????554 Security failure
+noop
 ??? 554 Security failure
 ****
 ### Bad certificate, certificate optional at TLS time, reject at ACL time
@@ -132,6 +136,8 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+noop
+????554 Security failure
 noop
 ??? 554 Security failure
 ****

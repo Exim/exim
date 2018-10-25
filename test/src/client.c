@@ -578,18 +578,24 @@ nextinput:
 	    case SSL_ERROR_ZERO_RETURN:
 	      break;
 	    case SSL_ERROR_SYSCALL:
-	      printf("%s\n", ERR_error_string(ERR_get_error(), NULL)); break;
+	      printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
 	      rc = -1;
+	      break;
 	    case SSL_ERROR_SSL:
-	      printf("%s\n", ERR_error_string(ERR_get_error(), NULL)); break;
+	      printf("%s\nTLS terminated\n", ERR_error_string(ERR_get_error(), NULL));
 	      SSL_shutdown(srv->ssl);
 	      SSL_free(srv->ssl);
 	      srv->tls_active = FALSE;
+	      {	/* OpenSSL leaves it in restartsys mode */
+	      struct sigaction act = {.sa_handler = sigalrm_handler_flag, .sa_flags = 0};
+	      sigalrm_seen = 1;
+	      sigaction(SIGALRM, &act, NULL);
+	      }
+	      *inptr = 0;
 	      goto nextinput;
 	    default:
 	      printf("SSL error code %d\n", error);
 	    }
-
 #endif
 #ifdef HAVE_GNUTLS
         rc = gnutls_record_recv(tls_session, CS inbuffer, bsiz - 1);
@@ -601,6 +607,8 @@ nextinput:
 
       if (rc < 0)
 	{
+	if (errno == EINTR && sigalrm_seen && resp_optional)
+	  continue;	/* next scriptline */
         printf("Read error %s\n", strerror(errno));
         exit(81);
 	}

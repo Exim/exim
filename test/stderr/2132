@@ -1,3 +1,7 @@
+### Should accept message
+### Should accept message (with a difficult env-from)
+### client cert verify required; none given
+### client cert verify required; good one supplied
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -8,3 +12,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 
 ******** SERVER ********
+### Should accept message
+### Should accept message (with a difficult env-from)
+### client cert verify required; none given
+### client cert verify required; good one supplied

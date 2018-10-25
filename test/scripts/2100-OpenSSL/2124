@@ -1,7 +1,7 @@
 # TLS server: empty/non-existent certificate file
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client-ssl HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+client-ssl -t2 HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -12,6 +12,10 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
+noop
+????554 Security failure
+noop
+??? 554 Security failure
 ****
 killdaemon
 exim -DSERVER=server -DCERT=/non/exist -bd -oX PORT_D
