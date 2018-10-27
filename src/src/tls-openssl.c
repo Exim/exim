@@ -71,6 +71,8 @@ functions from the OpenSSL library. */
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 #  define EXIM_HAVE_OPENSSL_DH_BITS
 #  define EXIM_HAVE_OPENSSL_TLS_METHOD
+# else
+#  define EXIM_NEED_OPENSSL_INIT
 # endif
 # if OPENSSL_VERSION_NUMBER >= 0x010000000L \
     && (OPENSSL_VERSION_NUMBER & 0x0000ff000L) >= 0x000002000L
@@ -1714,8 +1716,10 @@ cbinfo->host = host;
 cbinfo->event_action = NULL;
 #endif
 
+#ifdef EXIM_NEED_OPENSSL_INIT
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
+#endif
 
 #ifdef EXIM_HAVE_SHA256
 /* SHA256 is becoming ever more popular. This makes sure it gets added to the
@@ -3056,8 +3060,10 @@ uschar *s, *expciphers, *err;
 /* this duplicates from tls_init(), we need a better "init just global
 state, for no specific purpose" singleton function of our own */
 
+#ifdef EXIM_NEED_OPENSSL_INIT
 SSL_load_error_strings();
 OpenSSL_add_ssl_algorithms();
+#endif
 #if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
 /* SHA256 is becoming ever more popular. This makes sure it gets added to the
 list of available digests. */

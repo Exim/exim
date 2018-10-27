@@ -51,7 +51,7 @@ in "man 2 getgroups". */
 #define _DARWIN_UNLIMITED_GETGROUPS
 #define EXIM_GROUPLIST_SIZE 64
 
-/* TCP Fast Open: Darwin uses a connectex() call
+/* TCP Fast Open: Darwin uses a connectx() call
 rather than a modified sendto() */
 #define EXIM_TFO_CONNECTX
 

@@ -266,7 +266,7 @@ if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
   space = receive_statvfs(TRUE, &inodes);
 
   DEBUG(D_receive)
-    debug_printf("spool directory space = %dK inodes = %d "
+    debug_printf("spool directory space = " PR_EXIM_ARITH "K inodes = %d "
       "check_space = " PR_EXIM_ARITH "K inodes = %d msg_size = %d\n",
       space, inodes, check_spool_space, check_spool_inodes, msg_size);
 
@@ -284,15 +284,15 @@ if (check_log_space > 0 || check_log_inodes > 0)
   space = receive_statvfs(FALSE, &inodes);
 
   DEBUG(D_receive)
-    debug_printf("log directory space = %dK inodes = %d "
+    debug_printf("log directory space = " PR_EXIM_ARITH "K inodes = %d "
       "check_space = " PR_EXIM_ARITH "K inodes = %d\n",
       space, inodes, check_log_space, check_log_inodes);
 
-  if ((space >= 0 && space < check_log_space) ||
-      (inodes >= 0 && inodes < check_log_inodes))
+  if (  space >= 0 && space < check_log_space
+     || inodes >= 0 && inodes < check_log_inodes)
     {
-    log_write(0, LOG_MAIN, "log directory space check failed: space=%d "
-      "inodes=%d", space, inodes);
+    log_write(0, LOG_MAIN, "log directory space check failed: space=" PR_EXIM_ARITH
+      " inodes=%d", space, inodes);
     return FALSE;
     }
   }

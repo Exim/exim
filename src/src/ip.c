@@ -320,7 +320,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
       fastopen_blob->len > 0 ? "with"  : "no");
     if (!fastopen_blob->data)
       {
-      tcp_out_fastopen = TFO_ATTEMPTED;		/* we tried; unknown if useful yet */
+      tcp_out_fastopen = TFO_ATTEMPTED_NODATA;		/* we tried; unknown if useful yet */
       rc = 0;
       }
     else	/* assume that no data was queued; block in send */
