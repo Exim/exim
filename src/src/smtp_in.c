@@ -3465,6 +3465,9 @@ if (acl_smtp_notquit && reason)
       log_msg);
   }
 
+/* If the connection was dropped, we certainly are no longer talking TLS */
+tls_in.active.sock = -1;
+
 /* Write an SMTP response if we are expected to give one. As the default
 responses are all internal, they should always fit in the buffer, but code a
 warning, just in case. Note that string_vformat() still leaves a complete
