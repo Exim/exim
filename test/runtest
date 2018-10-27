@@ -2656,7 +2656,7 @@ GetOptions(
     'valgrind' => \$valgrind,
     'range=s{2}'       => \my @range_wanted,
     'test=i@'          => \my @tests_wanted,
-    'flavor|flavour=s' => $flavour,
+    'flavor|flavour=s' => \$flavour,
     'help'             => sub { pod2usage(-exit => 0) },
     'man'              => sub {
         pod2usage(
