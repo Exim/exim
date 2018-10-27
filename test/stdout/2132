@@ -1,3 +1,4 @@
+### Should accept message
 Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -37,6 +38,7 @@ Succeeded in starting TLS
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
+### Should accept message (with a difficult env-from)
 Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -76,6 +78,7 @@ Succeeded in starting TLS
 ??? 221
 <<< 221 myhost.test.ex closing connection
 End of script
+### client cert verify required; none given
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -98,11 +101,13 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:[...]:SSL alert number 40
 Failed to start TLS
-+++ 1
->>> help
+>>> noop
+????554
+>>> noop
 ??? 554
 <<< 554 Security failure
 End of script
+### client cert verify required; good one supplied
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 Certificate file = TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem
 Key file = TESTSUITE/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key
@@ -152,3 +157,9 @@ End of script
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 503 STARTTLS command used when not advertised
 221 myhost.test.ex closing connection
+
+******** SERVER ********
+### Should accept message
+### Should accept message (with a difficult env-from)
+### client cert verify required; none given
+### client cert verify required; good one supplied

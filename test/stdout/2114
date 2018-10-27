@@ -22,12 +22,13 @@ Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert handshake failure:[...]:SSL alert number 40
 Failed to start TLS
 >>> noop
+????554 Security failure
+>>> noop
 ??? 554 Security failure
 <<< 554 Security failure
 >>> quit
 ????554 Security failure
-??? 221
-<<< 221 myhost.test.ex closing connection
+????221
 ???*
 Expected EOF read
 End of script
@@ -163,6 +164,8 @@ Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:tlsv1 alert unknown ca:[...]:SSL alert number 48
 Failed to start TLS
 >>> noop
+????554 Security failure
+>>> noop
 ??? 554 Security failure
 <<< 554 Security failure
 End of script
@@ -226,6 +229,8 @@ Key file = aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.c
 Attempting to start TLS
 pppp:error:dddddddd:SSL routines:ssl3_read_bytes:sslv3 alert certificate revoked:[...]:SSL alert number 44
 Failed to start TLS
+>>> noop
+????554 Security failure
 >>> noop
 ??? 554 Security failure
 <<< 554 Security failure

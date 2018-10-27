@@ -36,6 +36,9 @@ ripped from the openssl ocsp and s_client utilities. */
 #include <unistd.h>
 #include <utime.h>
 
+/* Set to TRUE to enable debug output */
+#define DEBUG if (FALSE)
+
 #ifdef AF_INET6
 #define HAVE_IPV6 1
 #endif
@@ -571,7 +574,9 @@ nextinput:
         {
 #ifdef HAVE_OPENSSL
 	int error;
+	DEBUG { printf("call SSL_read\n"); fflush(stdout); }
         rc = SSL_read(srv->ssl, inbuffer, bsiz - 1);
+	DEBUG { printf("SSL_read: %d\n", rc); fflush(stdout); }
 	if (rc <= 0)
           switch (error = SSL_get_error(srv->ssl, rc))
 	    {
@@ -592,6 +597,7 @@ nextinput:
 	      sigaction(SIGALRM, &act, NULL);
 	      }
 	      *inptr = 0;
+	      DEBUG { printf("go round\n"); fflush(stdout); }
 	      goto nextinput;
 	    default:
 	      printf("SSL error code %d\n", error);
@@ -602,7 +608,11 @@ nextinput:
 #endif
         }
       else
-        rc = read(srv->sock, inbuffer, bsiz);
+	{
+	DEBUG { printf("call read\n"); fflush(stdout); }
+	rc = read(srv->sock, inbuffer, bsiz);
+	DEBUG { printf("read: %d\n", rc); fflush(stdout); }
+	}
       alarm(0);
 
       if (rc < 0)
@@ -638,6 +648,7 @@ nextinput:
         inptr = inbuffer;
         }
       }
+    DEBUG { printf("read: '%s'\n", inptr); fflush(stdout); }
 
     lineptr = inptr;
     while (*inptr != 0 && *inptr != '\r' && *inptr != '\n') inptr++;
@@ -660,12 +671,19 @@ nextinput:
 	exit(79);
 	}
 
-    /* input matched script */
+    /* Input matched script.  Output the inputline, unless optional  */
+    DEBUG { printf("read matched\n"); fflush(stdout); }
 
-    if (resp_optional)
-      goto nextinput;		/* consume inputline, not scriptline */
+    if (!resp_optional)
+	printf("<<< %s\n", lineptr);
+    else
 
-    printf("<<< %s\n", lineptr);
+    /* If there is further input after this line, consume inputline but not
+    scriptline in case there are several matching.  Nonmatches are dealt with
+    above. */
+
+	if (*inptr != 0)
+	  goto nextinput;
 
     #ifdef HAVE_TLS
     if (srv->sent_starttls)
