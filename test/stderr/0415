@@ -6,10 +6,7 @@ LOG: PANIC DIE
   extra characters follow integer value for check_spool_space
 LOG: PANIC DIE
   Exim configuration error in line 16 of TESTSUITE/test-config:
-  integer "4000000000.123" is too large (overflow)
-LOG: PANIC DIE
-  Exim configuration error in line 16 of TESTSUITE/test-config:
-  integer "4000000.123" is too large (overflow)
+  integer "4000000000000000.123" is too large (overflow)
 LOG: PANIC DIE
   Exim configuration error in line 18 of TESTSUITE/test-config:
   absolute value of integer "999999999999999999" is too large (overflow)
