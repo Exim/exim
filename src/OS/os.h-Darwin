@@ -51,10 +51,8 @@ in "man 2 getgroups". */
 #define _DARWIN_UNLIMITED_GETGROUPS
 #define EXIM_GROUPLIST_SIZE 64
 
-/* TCP_FASTOPEN support.  For the moment, claim there is none
-(the probe fails; unsure why).
-Sometime in the future need to investigate connectex(). */
-
-#define EXIM_TFO_PROBE
+/* TCP Fast Open: Darwin uses a connectex() call
+rather than a modified sendto() */
+#define EXIM_TFO_CONNECTX
 
 /* End */

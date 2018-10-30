@@ -5021,6 +5021,7 @@ while (*s != 0)
             port = ntohs(service_info->s_port);
             }
 
+	  /*XXX we trust that the request is idempotent.  Hmm. */
 	  fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
 		  timeout, &host, &expand_string_message,
 		  do_tls ? NULL : &reqstr);

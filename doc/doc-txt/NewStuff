@@ -29,6 +29,8 @@ Version 4.92
 
  8. A "noutf8" debug option, for disabling the UTF-8 characters in debug output.
 
+ 9. TCP Fast Open support on MacOS.
+
 Version 4.91
 --------------
 

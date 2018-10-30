@@ -196,7 +196,7 @@ Arguments:
   port        the remote port
   timeout     a timeout (zero for indefinite timeout)
   fastopen_blob    non-null iff TCP_FASTOPEN can be used; may indicate early-data to
-		be sent in SYN segment
+		be sent in SYN segment.  Any such data must be idempotent.
 
 Returns:      0 on success; -1 on failure, with errno set
 */
@@ -245,19 +245,19 @@ callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
 if (timeout > 0) ALARM(timeout);
 
-#if defined(TCP_FASTOPEN) && defined(MSG_FASTOPEN)
+#ifdef TCP_FASTOPEN
 /* TCP Fast Open, if the system has a cookie from a previous call to
 this peer, can send data in the SYN packet.  The peer can send data
 before it gets our ACK of its SYN,ACK - the latter is useful for
 the SMTP banner.  Other (than SMTP) cases of TCP connections can
-possibly use the data-on-syn, so support that too.
-
-This is a Linux implementation.  It might be useable on FreeBSD; I have
-not checked.  I think MacOS has a "connectx" call for this purpose,
-rather than using "sendto" ? */
+possibly use the data-on-syn, so support that too. */
 
 if (fastopen_blob && f.tcp_fastopen_ok)
   {
+# ifdef MSG_FASTOPEN
+  /* This is a Linux implementation.  It might be useable on FreeBSD; I have
+  not checked. */
+
   if ((rc = sendto(sock, fastopen_blob->data, fastopen_blob->len,
 		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
 	/* seen for with-data, experimental TFO option, with-cookie case */
@@ -292,9 +292,44 @@ if (fastopen_blob && f.tcp_fastopen_ok)
       debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
     goto legacy_connect;
     }
+# endif
+# ifdef EXIM_TFO_CONNECTX
+  /* MacOS */
+  sa_endpoints_t ends = {
+    .sae_srcif = 0, .sae_srcaddr = NULL, .sae_srcaddrlen = 0,
+    .sae_dstaddr = s_ptr, .sae_dstaddrlen = s_len };
+  struct iovec iov = {
+    .iov_base = fastopen_blob->data, .iov_len = fastopen_blob->len };
+  size_t len;
+
+  if ((rc = connectx(sock, &ends, SAE_ASSOCID_ANY,
+	     CONNECT_DATA_IDEMPOTENT, &iov, 1, &len, NULL)) == 0)
+    {
+    DEBUG(D_transport|D_v)
+      debug_printf("TFO mode connection attempt to %s, %lu data\n",
+	address, (unsigned long)fastopen_blob->len);
+    tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_USED : TFO_ATTEMPTED;
+
+    if (len != fastopen_blob->len)
+      DEBUG(D_transport|D_v)
+	debug_printf(" only queued %lu data!\n", (unsigned long)len);
+    }
+  else if (errno == EINPROGRESS)
+    {
+    DEBUG(D_transport|D_v) debug_printf("TFO mode sendto, %s data: EINPROGRESS\n",
+      fastopen_blob->len > 0 ? "with"  : "no");
+    if (!fastopen_blob->data)
+      {
+      tcp_out_fastopen = TFO_ATTEMPTED;		/* we tried; unknown if useful yet */
+      rc = 0;
+      }
+    else	/* assume that no data was queued; block in send */
+      rc = send(sock, fastopen_blob->data, fastopen_blob->len, 0);
+    }
+# endif
   }
 else
-#endif
+#endif	/*TCP_FASTOPEN*/
   {
 legacy_connect:
   DEBUG(D_transport|D_v) if (fastopen_blob)
@@ -350,7 +385,7 @@ Arguments:
   connhost	if not NULL, host_item to be filled in with connection details
   errstr        pointer for allocated string on error
   fastopen_blob	with SOCK_STREAM, if non-null, request TCP Fast Open.
-		Additionally, optional early-data to send
+		Additionally, optional idempotent early-data to send
 
 Return:
   socket fd, or -1 on failure (having allocated an error string)

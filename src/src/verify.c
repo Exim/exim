@@ -2745,6 +2745,7 @@ qlen = snprintf(CS buffer, sizeof(buffer), "%d , %d\r\n",
 early_data.data = buffer;
 early_data.len = qlen;
 
+/*XXX we trust that the query is idempotent */
 if (ip_connect(ident_conn_ctx.sock, host_af, sender_host_address, port,
 		rfc1413_query_timeout, &early_data) < 0)
   {

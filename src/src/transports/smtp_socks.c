@@ -297,6 +297,7 @@ for(;;)
   proxy.address = proxy.name = sob->proxy_host;
   proxy_af = Ustrchr(sob->proxy_host, ':') ? AF_INET6 : AF_INET;
 
+  /*XXX we trust that the method-select command is idempotent */
   if ((fd = smtp_sock_connect(&proxy, proxy_af, sob->port,
 	      interface, tb, sob->timeout, &early_data)) >= 0)
     {

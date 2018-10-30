@@ -1458,7 +1458,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
       else
         debug_printf("listening on %s port %d\n", ipa->address, ipa->port);
 
-#ifdef TCP_FASTOPEN
+#if defined(TCP_FASTOPEN) && !defined(__APPLE__)
     if (  f.tcp_fastopen_ok
        && setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
 		    &smtp_connect_backlog, sizeof(smtp_connect_backlog)))
@@ -1471,7 +1471,19 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     /* Start listening on the bound socket, establishing the maximum backlog of
     connections that is allowed. On success, continue to the next address. */
 
-    if (listen(listen_sockets[sk], smtp_connect_backlog) >= 0) continue;
+    if (listen(listen_sockets[sk], smtp_connect_backlog) >= 0)
+      {
+#if defined(TCP_FASTOPEN) && defined(__APPLE__)
+      if (  f.tcp_fastopen_ok
+	 && setsockopt(listen_sockets[sk], IPPROTO_TCP, TCP_FASTOPEN,
+		      &on, sizeof(on)))
+	{
+	DEBUG(D_any) debug_printf("setsockopt FASTOPEN: %s\n", strerror(errno));
+	f.tcp_fastopen_ok = FALSE;
+	}
+#endif
+      continue;
+      }
 
     /* Listening has failed. In an IPv6 environment, as for bind(), if listen()
     fails with the error EADDRINUSE and we are doing IPv4 wildcard listening

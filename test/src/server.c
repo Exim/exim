@@ -298,7 +298,7 @@ else
       printf("IPv6 socket creation failed: %s\n", strerror(errno));
       exit(1);
       }
-#ifdef TCP_FASTOPEN
+#if defined(TCP_FASTOPEN) && !defined(__APPLE__)
     if (tfo)
       {
       int backlog = 5;
@@ -330,7 +330,7 @@ else
       printf("IPv4 socket creation failed: %s\n", strerror(errno));
       exit(1);
       }
-#ifdef TCP_FASTOPEN
+#if defined(TCP_FASTOPEN) && !defined(__APPLE__)
     if (tfo)
       {
       int backlog = 5;
@@ -438,16 +438,21 @@ error because it means that the IPv6 socket will handle IPv4 connections. Don't
 output anything, because it will mess up the test output, which will be
 different for systems that do this and those that don't. */
 
-for (i = 0; i <= skn; i++)
+for (i = 0; i <= skn; i++) if (listen_socket[i] >= 0)
   {
-  if (listen_socket[i] >= 0 && listen(listen_socket[i], 5) < 0)
-    {
+  if (listen(listen_socket[i], 5) < 0)
     if (i != v4n || listen_socket[v6n] < 0 || errno != EADDRINUSE)
       {
       printf("listen() failed: %s\n", strerror(errno));
       exit(1);
       }
-    }
+
+#if defined(TCP_FASTOPEN) && defined(__APPLE__)
+  if (  tfo
+     && setsockopt(listen_socket[v4n], IPPROTO_TCP, TCP_FASTOPEN, &on, sizeof(on))
+     && debug)
+      printf("setsockopt TCP_FASTOPEN: %s\n", strerror(errno));
+#endif
   }
 
 

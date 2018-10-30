@@ -194,7 +194,8 @@ if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
 
 
 /* Arguments as for smtp_connect(), plus
-  early_data	if non-NULL, data to be sent - preferably in the TCP SYN segment
+  early_data	if non-NULL, idenmpotent data to be sent -
+		preferably in the TCP SYN segment
 
 Returns:      connected socket number, or -1 with errno set
 */
