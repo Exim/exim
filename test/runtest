@@ -1117,7 +1117,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if / in tls_advertise_requiretls?\? no \(end of list\)/;
 
     # TCP Fast Open
-    next if /^setsockopt FASTOPEN: Network Error/;
+    next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
 
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
