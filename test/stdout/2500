@@ -1,4 +1,6 @@
-> 2500.tst
-> FAIL
+> ok:         2500.tst
+> fail:       FAIL
+> Failed: failed to open TESTSUITE/dir_not_here for directory search: No such file or directory
+> fail(case): FAIL
 > Failed: failed to open TESTSUITE/AUX-fixed for directory search: No such file or directory
 > 

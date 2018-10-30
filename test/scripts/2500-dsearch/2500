@@ -1,6 +1,9 @@
 # dsearch lookup
+# This test will fail on a case-insensitive filesystem (e.g. MacOS default)
 exim -be
-${lookup{TESTNUM.tst}dsearch{DIR/aux-fixed}{$value}{FAIL}}
-${lookup{TESTNUM.TST}dsearch{DIR/aux-fixed}{$value}{FAIL}}
-${lookup{TESTNUM.TST}dsearch{DIR/AUX-fixed}{$value}{FAIL}}
+ok:         ${lookup{TESTNUM.tst}		dsearch{DIR/aux-fixed}{$value}{FAIL}}
+fail:       ${lookup{TESTNUM.file_not_here}	dsearch{DIR/aux-fixed}{$value}{FAIL}}
+fail:       ${lookup{TESTNUM.tst}		dsearch{DIR/dir_not_here}{$value}{FAIL}}
+fail(case): ${lookup{TESTNUM.TST}		dsearch{DIR/aux-fixed}{$value}{FAIL}}
+fail(case): ${lookup{TESTNUM.TST}		dsearch{DIR/AUX-fixed}{$value}{FAIL}}
 ****
