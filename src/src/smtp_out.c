@@ -148,46 +148,50 @@ tfo_out_check(int sock)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
-if (getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
-  switch (tcp_out_fastopen)
-    {
-      /* This is a somewhat dubious detection method; totally undocumented so likely
-      to fail in future kernels.  There seems to be no documented way.  What we really
-      want to know is if the server sent smtp-banner data before our ACK of his SYN,ACK
-      hit him.  What this (possibly?) detects is whether we sent a TFO cookie with our
-      SYN, as distinct from a TFO request.  This gets a false-positive when the server
-      key is rotated; we send the old one (which this test sees) but the server returns
-      the new one and does not send its SMTP banner before we ACK his SYN,ACK.
-       To force that rotation case:
-       '# echo -n "00000000-00000000-00000000-0000000" >/proc/sys/net/ipv4/tcp_fastopen_key'
-      The kernel seems to be counting unack'd packets. */
+switch (tcp_out_fastopen)
+  {
+    /* This is a somewhat dubious detection method; totally undocumented so likely
+    to fail in future kernels.  There seems to be no documented way.  What we really
+    want to know is if the server sent smtp-banner data before our ACK of his SYN,ACK
+    hit him.  What this (possibly?) detects is whether we sent a TFO cookie with our
+    SYN, as distinct from a TFO request.  This gets a false-positive when the server
+    key is rotated; we send the old one (which this test sees) but the server returns
+    the new one and does not send its SMTP banner before we ACK his SYN,ACK.
+     To force that rotation case:
+     '# echo -n "00000000-00000000-00000000-0000000" >/proc/sys/net/ipv4/tcp_fastopen_key'
+    The kernel seems to be counting unack'd packets. */
 
-    case TFO_ATTEMPTED:
-      if (tinfo.tcpi_unacked > 1)
+  case TFO_ATTEMPTED_NODATA:
+    if (  getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
+       && tinfo.tcpi_state == TCP_SYN_SENT
+       && tinfo.tcpi_unacked > 1
+       )
+      {
+      DEBUG(D_transport|D_v)
+	debug_printf("TCP_FASTOPEN tcpi_unacked %d\n", tinfo.tcpi_unacked);
+      tcp_out_fastopen = TFO_USED_NODATA;
+      }
+    break;
+
+    /* When called after waiting for received data we should be able
+    to tell if data we sent was accepted. */
+
+  case TFO_ATTEMPTED_DATA:
+    if (  getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
+       && tinfo.tcpi_state == TCP_ESTABLISHED
+       )
+      if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
 	{
-	DEBUG(D_transport|D_v)
-	  debug_printf("TCP_FASTOPEN tcpi_unacked %d\n", tinfo.tcpi_unacked);
-	tcp_out_fastopen = TFO_USED;
+	DEBUG(D_transport|D_v) debug_printf("TFO: data was acked\n");
+	tcp_out_fastopen = TFO_USED_DATA;
 	}
-      break;
-
-#  ifdef notdef		/* This seems to always fire, meaning that we cannot tell
-			whether the server accepted data we sent.  For now assume
-			that it did. */
-
-      /* If there was data-on-SYN but we had to retrasnmit it, declare no TFO */
-
-    case TFO_USED:
-      if (!(tinfo.tcpi_options & TCPI_OPT_SYN_DATA))
+      else
 	{
 	DEBUG(D_transport|D_v) debug_printf("TFO: had to retransmit\n");
 	tcp_out_fastopen = TFO_NOT_USED;
 	}
-      break;
-
-  default: break;	/* compiler quietening */
-#  endif
-    }
+    break;
+  }
 # endif
 }
 #endif
@@ -259,7 +263,8 @@ if (interface && ip_bind(sock, host_af, interface, 0) < 0)
 
 /* Connect to the remote host, and add keepalive to the socket before returning
 it, if requested.  If the build supports TFO, request it - and if the caller
-requested some early-data then include that in the TFO request. */
+requested some early-data then include that in the TFO request.  If there is
+early-data but no TFO support, send it after connecting. */
 
 else
   {
@@ -271,8 +276,16 @@ else
   if (ip_connect(sock, host_af, host->address, port, timeout, fastopen_blob) < 0)
     save_errno = errno;
   else if (early_data && !fastopen_blob && early_data->data && early_data->len)
+    {
+    HDEBUG(D_transport|D_acl|D_v)
+      debug_printf("sending %ld nonTFO early-data\n", (long)early_data->len);
+
+#ifdef TCP_QUICKACK
+    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
     if (send(sock, early_data->data, early_data->len, 0) < 0)
       save_errno = errno;
+    }
   }
 
 /* Either bind() or connect() failed */
@@ -291,12 +304,13 @@ if (save_errno != 0)
   return -1;
   }
 
-/* Both bind() and connect() succeeded */
+/* Both bind() and connect() succeeded, and any early-data */
 
 else
   {
   union sockaddr_46 interface_sock;
   EXIM_SOCKLEN_T size = sizeof(interface_sock);
+
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("connected\n");
   if (getsockname(sock, (struct sockaddr *)(&interface_sock), &size) == 0)
     sending_ip_address = host_ntoa(-1, &interface_sock, NULL, &sending_port);
@@ -307,9 +321,10 @@ else
     close(sock);
     return -1;
     }
+
   if (ob->keepalive) ip_keepalive(sock, host->address, TRUE);
 #ifdef TCP_FASTOPEN
-  if (fastopen_blob) tfo_out_check(sock);
+  tfo_out_check(sock);
 #endif
   return sock;
   }
@@ -343,45 +358,62 @@ non-IPv6 systems, to enable the code to be less messy. However, on such systems
 host->address will always be an IPv4 address.
 
 Arguments:
-  host        host item containing name and address and port
-  host_af     AF_INET or AF_INET6
-  interface   outgoing interface address or NULL
-  timeout     timeout value or 0
-  tb          transport
+  sc	      details for making connection: host, af, interface, transport
+  early_data  if non-NULL, data to be sent - preferably in the TCP SYN segment
 
 Returns:      connected socket number, or -1 with errno set
 */
 
 int
-smtp_connect(host_item *host, int host_af, uschar *interface,
-  int timeout, transport_instance * tb)
+smtp_connect(smtp_connect_args * sc, const blob * early_data)
 {
-int port = host->port;
-#ifdef SUPPORT_SOCKS
-smtp_transport_options_block * ob =
-  (smtp_transport_options_block *)tb->options_block;
-#endif
+int port = sc->host->port;
+smtp_transport_options_block * ob = sc->ob;
 
-callout_address = string_sprintf("[%s]:%d", host->address, port);
+callout_address = string_sprintf("[%s]:%d", sc->host->address, port);
 
 HDEBUG(D_transport|D_acl|D_v)
   {
   uschar * s = US" ";
-  if (interface) s = string_sprintf(" from %s ", interface);
+  if (sc->interface) s = string_sprintf(" from %s ", sc->interface);
 #ifdef SUPPORT_SOCKS
   if (ob->socks_proxy) s = string_sprintf("%svia proxy ", s);
 #endif
-  debug_printf_indent("Connecting to %s %s%s... ", host->name, callout_address, s);
+  debug_printf_indent("Connecting to %s %s%s... ", sc->host->name, callout_address, s);
   }
 
 /* Create and connect the socket */
 
 #ifdef SUPPORT_SOCKS
 if (ob->socks_proxy)
-  return socks_sock_connect(host, host_af, port, interface, tb, timeout);
+  {
+  int sock = socks_sock_connect(sc->host, sc->host_af, port, sc->interface,
+				sc->tblock, ob->connect_timeout);
+  
+  if (sock >= 0)
+    {
+    if (early_data && early_data->data && early_data->len)
+      if (send(sock, early_data->data, early_data->len, 0) < 0)
+	{
+	int save_errno = errno;
+	HDEBUG(D_transport|D_acl|D_v)
+	  {
+	  debug_printf_indent("failed: %s", CUstrerror(save_errno));
+	  if (save_errno == ETIMEDOUT)
+	    debug_printf(" (timeout=%s)", readconf_printtime(ob->connect_timeout));
+	  debug_printf("\n");
+	  }
+	(void)close(sock);
+	sock = -1;
+	errno = save_errno;
+	}
+    }
+  return sock;
+  }
 #endif
 
-return smtp_sock_connect(host, host_af, port, interface, tb, timeout, NULL);
+return smtp_sock_connect(sc->host, sc->host_af, port, sc->interface,
+			  sc->tblock, ob->connect_timeout, early_data);
 }
 
 
@@ -415,13 +447,33 @@ if (outblock->cctx->tls_ctx)
   rc = tls_write(outblock->cctx->tls_ctx, outblock->buffer, n, more);
 else
 #endif
-  rc = send(outblock->cctx->sock, outblock->buffer, n,
+
+  {
+  if (outblock->conn_args)
+    {
+    blob early_data = { .data = outblock->buffer, .len = n };
+
+    /* We ignore the more-flag if we're doing a connect with early-data, which
+    means we won't get BDAT+data. A pity, but wise due to the idempotency
+    requirement: TFO with data can, in rare cases, replay the data to the
+    receiver. */
+
+    if (  (outblock->cctx->sock = smtp_connect(outblock->conn_args, &early_data))
+       < 0)
+      return FALSE;
+    outblock->conn_args = NULL;
+    rc = n;
+    }
+  else
+
+    rc = send(outblock->cctx->sock, outblock->buffer, n,
 #ifdef MSG_MORE
-	    more ? MSG_MORE : 0
+	      more ? MSG_MORE : 0
 #else
-	    0
+	      0
 #endif
-	   );
+	     );
+  }
 
 if (rc <= 0)
   {
@@ -633,27 +685,37 @@ Arguments:
 
 Returns:    TRUE if a valid, non-error response was received; else FALSE
 */
+/*XXX could move to smtp transport; no other users */
 
 BOOL
-smtp_read_response(void * sx, uschar *buffer, int size, int okdigit,
+smtp_read_response(void * sx0, uschar *buffer, int size, int okdigit,
    int timeout)
 {
-smtp_inblock * inblock = &((smtp_context *)sx)->inblock;
+smtp_context * sx = sx0;
 uschar *ptr = buffer;
-int count;
+int count = 0;
 
 errno = 0;  /* Ensure errno starts out zero */
+
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+if (sx->pending_BANNER || sx->pending_EHLO)
+  if (smtp_reap_early_pipe(sx, &count) != OK)
+    {
+    DEBUG(D_transport) debug_printf("failed reaping pipelined cmd responsess\n");
+    return FALSE;
+    }
+#endif
 
 /* This is a loop to read and concatenate the lines that make up a multi-line
 response. */
 
 for (;;)
   {
-  if ((count = read_response_line(inblock, ptr, size, timeout)) < 0)
+  if ((count = read_response_line(&sx->inblock, ptr, size, timeout)) < 0)
     return FALSE;
 
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf_indent("  %s %s\n", (ptr == buffer)? "SMTP<<" : "      ", ptr);
+    debug_printf_indent("  %s %s\n", ptr == buffer ? "SMTP<<" : "      ", ptr);
 
   /* Check the format of the response: it must start with three digits; if
   these are followed by a space or end of line, the response is complete. If
@@ -686,6 +748,10 @@ for (;;)
   *ptr++ = '\n';
   size -= count + 1;
   }
+
+#ifdef TCP_FASTOPEN
+  tfo_out_check(sx->cctx.sock);
+#endif
 
 /* Return a value that depends on the SMTP return code. On some systems a
 non-zero value of errno has been seen at this point, so ensure it is zero,

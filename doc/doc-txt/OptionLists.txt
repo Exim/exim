@@ -54,7 +54,7 @@ acl_not_smtp_mime                    string*         unset         main         
 acl_smtp_auth                        string*         unset         main              4.00
 acl_smtp_connect                     string*         unset         main              4.11
 acl_smtp_data                        string*         unset         main              4.00
-acl_smtp_data_prdr                   string*         unset         main              4.82 with experimental_prdr
+acl_smtp_data_prdr                   string*         unset         main              4.82 with experimental_prdr, 4.83 unless disable_prdr
 acl_smtp_dkim                        string*         unset         main              4.70 unless disable_dkim
 acl_smtp_etrn                        string*         unset         main              4.00
 acl_smtp_expn                        string*         unset         main              4.00
@@ -300,6 +300,7 @@ hosts_max_try_hardlimit              integer         50            smtp         
 hosts_nopass_tls                     host list       unset         smtp              4.00
 hosts_noproxy_tls                    host list       "*"           smtp              4.90
 hosts_override                       boolean         false         smtp              2.11
+hosts_pipe_connect		     host_list	     unset	   smtp		     4.93 if experimental_pipe_connect
 hosts_randomize                      boolean         false         manualroute       4.00
                                                      false         smtp              3.14
 hosts_require_auth                   host list       unset         smtp              4.00
@@ -412,6 +413,7 @@ pid_file_path                        string          ++            main
 pipe_as_creator                      boolean         false         pipe
 pipe_transport                       string*         unset         redirect          4.00
 pipelining_advertise_hosts           host list       "*"           main              4.14
+pipelining__connect_advertise_hosts  host list       "*"           main              4.92 if experimental_pipe_connect
 port                                 integer         0             iplookup          4.00
                                      string          "smtp"        smtp
 preserve_message_logs                boolean         false         main

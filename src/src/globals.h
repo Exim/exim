@@ -251,6 +251,11 @@ extern struct global_flags {
  BOOL   sender_name_forced		:1; /* Set by -F */
  BOOL   sender_set_untrusted		:1; /* Sender set by untrusted caller */
  BOOL   smtp_authenticated		:1; /* Sending client has authenticated */
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+ BOOL   smtp_in_early_pipe_advertised	:1; /* server advertised PIPE_CONNECT */
+ BOOL	smtp_in_early_pipe_no_auth	:1; /* too many authenticator names */
+ BOOL   smtp_in_early_pipe_used		:1; /* client did send early data */
+#endif
  BOOL   smtp_in_pipelining_advertised	:1; /* server advertised PIPELINING */
  BOOL   smtp_in_pipelining_used		:1; /* server noted client using PIPELINING */
  BOOL   spool_file_wireformat		:1; /* current -D file has CRLF rather than NL */
@@ -262,6 +267,7 @@ extern struct global_flags {
 
  BOOL   tcp_fastopen_ok			:1; /* appears to be supported by kernel */
  BOOL   tcp_in_fastopen			:1; /* conn usefully used fastopen */
+ BOOL   tcp_in_fastopen_data		:1; /* fastopen carried data */
  BOOL   tcp_in_fastopen_logged		:1; /* one-time logging */
  BOOL   tcp_out_fastopen_logged		:1; /* one-time logging */
  BOOL   timestamps_utc			:1; /* Use UTC for all times */
@@ -734,6 +740,9 @@ extern uschar *override_pid_file_path; /* Value of -oP argument */
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+extern uschar *pipe_connect_advertise_hosts; /* for banner/EHLO pipelining */
+#endif
 extern uschar *pipelining_advertise_hosts; /* As it says */
 #ifndef DISABLE_PRDR
 extern BOOL    prdr_enable;            /* As it says */
@@ -813,6 +822,9 @@ extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+extern const pcre  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
+#endif
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
 extern const pcre  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern uschar *regex_vars[];           /* $regexN variables */
@@ -989,7 +1001,7 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 
 extern blob    tcp_fastopen_nodata;    /* for zero-data TFO connect requests */
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
-extern tfo_state_t tcp_out_fastopen;   /* 0: no  1: conn used  2: useful */
+extern tfo_state_t tcp_out_fastopen;   /* TCP fast open */
 #ifdef USE_TCP_WRAPPERS
 extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
 #endif

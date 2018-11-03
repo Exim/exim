@@ -1,0 +1,63 @@
+# test config 4050
+# Pipelining the early part of the SMTP conversation
+
+CONNECTCOND=
+CONTROL=
+RETRY=7d
+
+keep_environment = PATH
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+dns_cname_loops = 9
+chunking_advertise_hosts =
+tls_advertise_hosts =
+
+pipelining_connect_advertise_hosts = CONNECTCOND
+retry_data_expire = RETRY
+log_selector = +received_recipients +pipelining
+queue_only
+
+acl_smtp_rcpt = accept
+
+#
+begin routers
+
+server:
+  driver =	redirect
+  condition =	${if eq {SERVER}{server}}
+  data =	:blackhole:
+
+clientbounce:
+  driver =	redirect
+  condition =	${if !def:sender_address}
+  data =	:blackhole:
+
+client:
+  driver =	manualroute
+  route_data =	127.0.0.1::PORT_D
+  self =	send
+  transport =	smtp
+
+#
+begin transports
+
+smtp:
+  driver =		smtp
+  hosts_pipe_connect =	CONTROL
+  max_rcpt =		1
+
+#
+begin retry
+
+* * F,5d,1d
+

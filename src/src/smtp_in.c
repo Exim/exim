@@ -145,6 +145,9 @@ static struct {
   BOOL helo_verify			:1;
   BOOL helo_seen			:1;
   BOOL helo_accept_junk			:1;
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  BOOL pipe_connect_acceptable		:1;
+#endif
   BOOL rcpt_smtp_response_same		:1;
   BOOL rcpt_in_progress			:1;
   BOOL smtp_exit_function_called	:1;
@@ -404,6 +407,18 @@ return TRUE;
 }
 
 
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+static BOOL
+pipeline_connect_sends(void)
+{
+if (!sender_host_address || f.sender_host_notsocket || !fl.pipe_connect_acceptable)
+  return FALSE;
+
+if (wouldblock_reading()) return FALSE;
+f.smtp_in_early_pipe_used = TRUE;
+return TRUE;
+}
+#endif
 
 /*************************************************
 *          Log incomplete transactions           *
@@ -1842,7 +1857,7 @@ for (i = 0; i < smtp_ch_index; i++)
 if (!(s = string_from_gstring(g))) s = US"";
 
 log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
-  f.tcp_in_fastopen ? US"TFO " : US"",
+  f.tcp_in_fastopen ? f.tcp_in_fastopen_data ? US"TFO* " : US"TFO " : US"",
   host_and_ident(FALSE), string_timesince(&smtp_connection_start), s);
 }
 
@@ -2392,13 +2407,17 @@ tfo_in_check(void)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
-if (  getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
-   && tinfo.tcpi_state == TCP_SYN_RECV
-   )
-  {
-  DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
-  f.tcp_in_fastopen = TRUE;
-  }
+if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
+  if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
+    {
+    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (ACKd data-on-SYN)\n");
+    f.tcp_in_fastopen_data = f.tcp_in_fastopen = TRUE;
+    }
+  else if (tinfo.tcpi_state == TCP_SYN_RECV)
+    {
+    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
+    f.tcp_in_fastopen = TRUE;
+    }
 # endif
 }
 #endif
@@ -2987,22 +3006,39 @@ while (*p);
 /* Before we write the banner, check that there is no input pending, unless
 this synchronisation check is disabled. */
 
-if (!check_sync())
-  {
-  unsigned n = smtp_inend - smtp_inptr;
-  if (n > 32) n = 32;
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+fl.pipe_connect_acceptable =
+  sender_host_address && verify_check_host(&pipe_connect_advertise_hosts) == OK;
 
-  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
-    "synchronization error (input sent without waiting for greeting): "
-    "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-    string_printing(string_copyn(smtp_inptr, n)));
-  smtp_printf("554 SMTP synchronization error\r\n", FALSE);
-  return FALSE;
-  }
+if (!check_sync())
+  if (fl.pipe_connect_acceptable)
+    f.smtp_in_early_pipe_used = TRUE;
+  else
+#else
+if (!check_sync())
+#endif
+    {
+    unsigned n = smtp_inend - smtp_inptr;
+    if (n > 32) n = 32;
+
+    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
+      "synchronization error (input sent without waiting for greeting): "
+      "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
+      string_printing(string_copyn(smtp_inptr, n)));
+    smtp_printf("554 SMTP synchronization error\r\n", FALSE);
+    return FALSE;
+    }
 
 /* Now output the banner */
+/*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
 
-smtp_printf("%s", FALSE, string_from_gstring(ss));
+smtp_printf("%s",
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  fl.pipe_connect_acceptable && pipeline_connect_sends(),
+#else
+  FALSE,
+#endif
+  string_from_gstring(ss));
 
 /* Attempt to see if we sent the banner before the last ACK of the 3-way
 handshake arrived.  If so we must have managed a TFO. */
@@ -3953,7 +3989,13 @@ while (done <= 0)
 	    US &off, sizeof(off));
 #endif
 
-  switch(smtp_read_command(TRUE, GETC_BUFFER_UNLIMITED))
+  switch(smtp_read_command(
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+	  !fl.pipe_connect_acceptable,
+#else
+	  TRUE,
+#endif
+	  GETC_BUFFER_UNLIMITED))
     {
     /* The AUTH command is not permitted to occur inside a transaction, and may
     occur successfully only once per connection. Actually, that isn't quite
@@ -4186,7 +4228,12 @@ while (done <= 0)
 	  host_build_sender_fullhost();  /* Rebuild */
 	  break;
 	  }
-	else if (!check_sync()) goto SYNC_FAILURE;
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+	else if (!fl.pipe_connect_acceptable && !check_sync())
+#else
+	else if (!check_sync())
+#endif
+	  goto SYNC_FAILURE;
 
       /* Generate an OK reply. The default string includes the ident if present,
       and also the IP address if present. Reflecting back the ident is intended
@@ -4315,13 +4362,22 @@ while (done <= 0)
 	/* Exim is quite happy with pipelining, so let the other end know that
 	it is safe to use it, unless advertising is disabled. */
 
-	if (f.pipelining_enable &&
-	    verify_check_host(&pipelining_advertise_hosts) == OK)
+	if (  f.pipelining_enable
+	   && verify_check_host(&pipelining_advertise_hosts) == OK)
 	  {
 	  g = string_catn(g, smtp_code, 3);
 	  g = string_catn(g, US"-PIPELINING\r\n", 13);
 	  sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
 	  f.smtp_in_pipelining_advertised = TRUE;
+
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+	  if (fl.pipe_connect_acceptable)
+	    {
+	    f.smtp_in_early_pipe_advertised = TRUE;
+	    g = string_catn(g, smtp_code, 3);
+	    g = string_catn(g, US"-" EARLY_PIPE_FEATURE_NAME "\r\n", EARLY_PIPE_FEATURE_LEN+3);
+	    }
+#endif
 	  }
 
 
@@ -4442,7 +4498,14 @@ while (done <= 0)
       has been seen. */
 
 #ifdef SUPPORT_TLS
-      if (tls_in.active.sock >= 0) (void)tls_write(NULL, g->s, g->ptr, FALSE); else
+      if (tls_in.active.sock >= 0)
+	(void)tls_write(NULL, g->s, g->ptr,
+# ifdef EXPERIMENTAL_PIPE_CONNECT
+			fl.pipe_connect_acceptable && pipeline_connect_sends());
+# else
+			FALSE);
+# endif
+      else
 #endif
 
 	{
@@ -5247,7 +5310,10 @@ while (done <= 0)
       HAD(SCH_DATA);
       f.dot_ends = TRUE;
 
-      DATA_BDAT:		/* Common code for DATA and BDAT */
+    DATA_BDAT:		/* Common code for DATA and BDAT */
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+      fl.pipe_connect_acceptable = FALSE;
+#endif
       if (!discarded && recipients_count <= 0)
 	{
 	if (fl.rcpt_smtp_response_same && rcpt_smtp_response != NULL)
@@ -5619,7 +5685,11 @@ while (done <= 0)
 	log_write(L_lost_incoming_connection, LOG_MAIN,
 	  "unexpected %s while reading SMTP command from %s%s%s D=%s",
 	  f.sender_host_unknown ? "EOF" : "disconnection",
-	  f.tcp_in_fastopen && !f.tcp_in_fastopen_logged ? US"TFO " : US"",
+	  f.tcp_in_fastopen_logged
+	  ? US""
+	  : f.tcp_in_fastopen
+	  ? f.tcp_in_fastopen_data ? US"TFO* " : US"TFO "
+	  : US"",
 	  host_and_ident(FALSE), smtp_read_error,
 	  string_timesince(&smtp_connection_start)
 	  );

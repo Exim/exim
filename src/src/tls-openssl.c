@@ -2909,10 +2909,22 @@ DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
 "more" is notified.  This hack is only ok if small amounts are involved AND only
 one stream does it, in one context (i.e. no store reset).  Currently it is used
 for the responses to the received SMTP MAIL , RCPT, DATA sequence, only. */
+/*XXX + if PIPE_COMMAND, banner & ehlo-resp for smmtp-on-connect. Suspect there's
+a store reset there. */
 
 if (!ct_ctx && (more || corked))
   {
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  int save_pool = store_pool;
+  store_pool = POOL_PERM;
+#endif
+
   corked = string_catn(corked, buff, len);
+
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  store_pool = save_pool;
+#endif
+
   if (more)
     return len;
   buff = CUS corked->s;

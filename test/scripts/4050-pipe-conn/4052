@@ -1,0 +1,243 @@
+# pipelined-connect, cache invalidation
+#
+#
+# Not attempted without a cache entry
+exim -bd -DSERVER=server -DCONNECTCOND=* -oX PORT_D
+****
+#
+exim nocache@test.ex
+Subject test 1
+
+****
+exim -DCONTROL=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+#
+# Go for it.  This one should do early-pipelinng.
+exim hascache@test.ex
+Subject test 2
+
+****
+exim -DCONTROL=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+# Check that client doesn't try when the cache entry is too old
+# It will however create a new entry
+sleep 2
+#
+exim client_old@test.ex
+Subject test 3
+
+****
+exim -DRETRY=1s -DCONTROL=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+killdaemon
+#
+#
+#
+sudo rm DIR/spool/db/misc
+#
+# Check that the cache is invalidated on SMTP errors from the server for the banner
+#
+server PORT_D 3
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+.
+>250 message accepted
+<QUIT
+>220 bye
+*eof
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+.
+>250 message accepted
+<QUIT
+>220 bye
+*eof
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>450 sorry no banner for you today
+>550 sync error
+>550 sync error
+>550 sync error
+>550 sync error
+<QUIT
+>>220 bye
+*eof
+****
+exim -DCONTROL=127.0.0.1 -odi nocache2@test.ex withcache2@test.ex badbanner@test.ex
+body 2
+****
+#
+# Check that the cache is not invalidated on SMTP errors from the server after early-pipelining
+#
+server PORT_D 6
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+.
+>250 message accepted
+<QUIT
+>220 bye
+*eof
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+.
+>250 message accepted
+<QUIT
+>220 bye
+*eof
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>220 banner
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+>250 mail good
+>250 rcpt good
+>550 obscure data error
+<QUIT
+>>220 bye
+*eof
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>220 banner
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+>250 mail good
+>550 rcpt refused
+>550 data cmd rejected - no valid recipient
+<QUIT
+>>220 bye
+*eof
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>220 banner
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+>550 mail cmd refused
+>550 rcpt cmd rejected - no valid mail
+>550 data cmd rejected - no valid mail
+<QUIT
+>>220 bye
+*eof
+*sleep 2
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+.
+>250 message accepted
+<QUIT
+>220 bye
+*eof
+****
+exim -DCONTROL=127.0.0.1 -odi nocache@test.ex withcache@test.ex baddata@test.ex badrcpt@test.ex badmail@test.ex withcache2@test.ex
+body
+****
+#
+#
+# Check that the cache is updated on a change of advertised extensions
+# The conn will be made pipelined anyway (because we don't find out early)
+# but it's the DB dump that matters.  Unfortunately the dump doesn't show
+# us the (binary) record content, only the key.  So you need to look at the
+# debug output after all.
+server PORT_D 1
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250-STARTTLS
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+.
+>250 message accepted
+<QUIT
+>220 bye
+*eof
+****
+exim -d-all+transport -DCONTROL=127.0.0.1 -odi extchange@test.ex
+body
+****
+dump misc
+#
+no_msglog_check

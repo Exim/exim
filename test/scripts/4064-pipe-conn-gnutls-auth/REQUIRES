@@ -1,0 +1,3 @@
+support Experimental_PIPE_CONNECT
+support GnuTLS
+authenticator plaintext

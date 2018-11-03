@@ -16,6 +16,9 @@ tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
 .ifdef _HAVE_REQTLS
 tls_advertise_requiretls = :
 .endif
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif
 
 
 # ----- Main settings -----

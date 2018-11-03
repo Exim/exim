@@ -1,0 +1,62 @@
+# test config 4056
+# Early-pipe, AUTH (no TLS!)
+
+keep_environment = PATH
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+dns_cname_loops = 9
+chunking_advertise_hosts =
+tls_advertise_hosts =
+
+pipelining_connect_advertise_hosts = *
+auth_advertise_hosts = *
+log_selector = +pipelining
+queue_only
+
+acl_smtp_rcpt = accept
+
+#
+begin routers
+
+server:
+  driver =	redirect
+  condition =	${if eq {SERVER}{server}}
+  data =	:blackhole:
+
+client:
+  driver =	manualroute
+  route_data =	127.0.0.1::PORT_D
+  self =	send
+  transport =	smtp
+
+#
+begin transports
+
+smtp:
+  driver =		smtp
+  hosts_pipe_connect =	*
+  hosts_require_auth =	*
+
+#
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+
+  server_condition = "\
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
+
+  client_send =	^userx^secret
+

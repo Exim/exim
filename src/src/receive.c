@@ -1314,7 +1314,7 @@ if (sender_fullhost)
   }
 if (f.tcp_in_fastopen && !f.tcp_in_fastopen_logged)
   {
-  g = string_catn(g, US" TFO", 4);
+  g = string_catn(g, US" TFO*", f.tcp_in_fastopen_data ? 5 : 4);
   f.tcp_in_fastopen_logged = TRUE;
   }
 if (sender_ident)
@@ -1322,7 +1322,17 @@ if (sender_ident)
 if (received_protocol)
   g = string_append(g, 2, US" P=", received_protocol);
 if (LOGGING(pipelining) && f.smtp_in_pipelining_advertised)
-  g = string_catn(g, US" L-", f.smtp_in_pipelining_used ? 2 : 3);
+  {
+  g = string_catn(g, US" L", 2);
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  if (f.smtp_in_early_pipe_used)
+    g = string_catn(g, US"*", 1);
+  else if (f.smtp_in_early_pipe_advertised)
+    g = string_catn(g, US".", 1);
+#endif
+  if (!f.smtp_in_pipelining_used)
+    g = string_catn(g, US"-", 1);
+  }
 return g;
 }
 

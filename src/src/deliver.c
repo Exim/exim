@@ -798,7 +798,7 @@ if (LOGGING(proxy) && proxy_local_address)
 g = d_log_interface(g);
 
 if (testflag(addr, af_tcp_fastopen))
-  g = string_catn(g, US" TFO", 4);
+  g = string_catn(g, US" TFO*", testflag(addr, af_tcp_fastopen_data) ? 5 : 4);
 
 return g;
 }
@@ -1247,8 +1247,15 @@ else
       }
     }
 
-  if (LOGGING(pipelining) && testflag(addr, af_pipelining))
-    g = string_catn(g, US" L", 2);
+  if (LOGGING(pipelining))
+    {
+    if (testflag(addr, af_pipelining))
+      g = string_catn(g, US" L", 2);
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+    if (testflag(addr, af_early_pipe))
+      g = string_catn(g, US"*", 1);
+#endif
+    }
 
 #ifndef DISABLE_PRDR
   if (testflag(addr, af_prdr_used))
@@ -3576,6 +3583,9 @@ while (!done)
     case 'L':
       switch (*subid)
 	{
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+	case 2: setflag(addr, af_early_pipe);	/*FALLTHROUGH*/
+#endif
 	case 1: setflag(addr, af_pipelining); break;
 	}
       break;
@@ -3587,6 +3597,7 @@ while (!done)
     case 'T':
       setflag(addr, af_tcp_fastopen_conn);
       if (*subid > '0') setflag(addr, af_tcp_fastopen);
+      if (*subid > '1') setflag(addr, af_tcp_fastopen_data);
       break;
 
     case 'D':
@@ -4884,6 +4895,11 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #endif
 
       if (testflag(addr, af_pipelining))
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+	if (testflag(addr, af_early_pipe))
+	  rmt_dlv_checked_write(fd, 'L', '2', NULL, 0);
+	else
+#endif
 	  rmt_dlv_checked_write(fd, 'L', '1', NULL, 0);
 
       if (testflag(addr, af_chunking_used))
@@ -4891,7 +4907,9 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
       if (testflag(addr, af_tcp_fastopen_conn))
 	rmt_dlv_checked_write(fd, 'T',
-	  testflag(addr, af_tcp_fastopen) ? '1' : '0', NULL, 0);
+	  testflag(addr, af_tcp_fastopen) ? testflag(addr, af_tcp_fastopen_data)
+	  ? '2' : '1' : '0',
+	  NULL, 0);
 
       memcpy(big_buffer, &addr->dsn_aware, sizeof(addr->dsn_aware));
       rmt_dlv_checked_write(fd, 'D', '0', big_buffer, sizeof(addr->dsn_aware));
@@ -7305,7 +7323,7 @@ if (addr_senddsn)
     }
   else  /* Creation of child succeeded */
     {
-    FILE *f = fdopen(fd, "wb");
+    FILE * f = fdopen(fd, "wb");
     /* header only as required by RFC. only failure DSN needs to honor RET=FULL */
     uschar * bound;
     transport_ctx tctx = {{0}};
@@ -7386,8 +7404,10 @@ if (addr_senddsn)
 
     /* Write the original email out */
 
-    tctx.u.fd = fileno(f);
+    tctx.u.fd = fd;
     tctx.options = topt_add_return_path | topt_no_body;
+    /*XXX hmm, retval ignored.
+    Could error for any number of reasons, and they are not handled. */
     transport_write_message(&tctx, 0);
     fflush(f);
 
@@ -7855,6 +7875,7 @@ wording. */
 	tctx.options = topt;
 	tb.add_headers = dsnnotifyhdr;
 
+	/*XXX no checking for failure!  buggy! */
 	transport_write_message(&tctx, 0);
 	}
       fflush(fp);
@@ -8321,6 +8342,7 @@ else if (addr_defer != (address_item *)(+1))
         return_path = sender_address;   /* In case not previously set */
 
         /* Write the original email out */
+	/*XXX no checking for failure!  buggy! */
         transport_write_message(&tctx, 0);
         fflush(f);
 
@@ -8484,8 +8506,7 @@ if (!regex_SIZE) regex_SIZE =
   regex_must_compile(US"\\n250[\\s\\-]SIZE(\\s|\\n|$)", FALSE, TRUE);
 
 if (!regex_AUTH) regex_AUTH =
-  regex_must_compile(US"\\n250[\\s\\-]AUTH\\s+([\\-\\w\\s]+)(?:\\n|$)",
-    FALSE, TRUE);
+  regex_must_compile(AUTHS_REGEX, FALSE, TRUE);
 
 #ifdef SUPPORT_TLS
 if (!regex_STARTTLS) regex_STARTTLS =
@@ -8515,6 +8536,11 @@ if (!regex_DSN) regex_DSN  =
 
 if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
   regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
+
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+if (!regex_EARLY_PIPE) regex_EARLY_PIPE =
+  regex_must_compile(US"\\n250[\\s\\-]" EARLY_PIPE_FEATURE_NAME "(\\s|\\n|$)", FALSE, TRUE);
+#endif
 }
 
 

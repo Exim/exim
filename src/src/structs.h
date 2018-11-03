@@ -66,8 +66,10 @@ typedef enum {	CHUNKING_NOT_OFFERED = -1,
 		CHUNKING_LAST} chunking_state_t;
 
 typedef enum {	TFO_NOT_USED = 0,
-		TFO_ATTEMPTED,
-		TFO_USED } tfo_state_t;
+		TFO_ATTEMPTED_NODATA,
+		TFO_ATTEMPTED_DATA,
+		TFO_USED_NODATA,
+		TFO_USED_DATA } tfo_state_t;
 
 /* Structure for holding information about a host for use mainly by routers,
 but also used when checking lists of hosts and when transporting. Looking up
@@ -618,7 +620,11 @@ typedef struct address_item {
     BOOL af_bad_reply:1;		/* filter could not generate autoreply */
     BOOL af_tcp_fastopen_conn:1;	/* delivery connection used TCP Fast Open */
     BOOL af_tcp_fastopen:1;		/* delivery usefully used TCP Fast Open */
+    BOOL af_tcp_fastopen_data:1;	/* delivery sent SMTP commands on TCP Fast Open */
     BOOL af_pipelining:1;		/* delivery used (traditional) pipelining */
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+    BOOL af_early_pipe:1;		/* delivery used connect-time pipelining */
+#endif
 #ifndef DISABLE_PRDR
     BOOL af_prdr_used:1;		/* delivery used SMTP PRDR */
 #endif
@@ -787,6 +793,15 @@ typedef struct sha1 {
   unsigned int length;
 } sha1;
 
+/* Information for making an smtp connection */
+typedef struct {
+  transport_instance *  tblock;
+  void *		ob;	/* smtp_transport_options_block * */
+  host_item *           host;
+  int                   host_af;
+  uschar *              interface;
+} smtp_connect_args;
+
 /* A client-initiated connection. If TLS, the second element is non-NULL */
 typedef struct {
   int	sock;
@@ -817,6 +832,8 @@ typedef struct smtp_outblock {
   BOOL    authenticating;         /* TRUE when authenticating */
   uschar *ptr;                    /* current position in the buffer */
   uschar *buffer;                 /* the buffer itself */
+
+  smtp_connect_args * conn_args;  /* to make connection, if not yet made */
 } smtp_outblock;
 
 /* Structure to hold information about the source of redirection information */

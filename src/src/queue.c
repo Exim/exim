@@ -1135,7 +1135,7 @@ switch(action)
     deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
     deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
     tctx.u.fd = 1;
-    transport_write_message(&tctx, 0);
+    (void) transport_write_message(&tctx, 0);
     break;
     }
 

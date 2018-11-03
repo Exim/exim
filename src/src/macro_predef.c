@@ -201,6 +201,9 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_REQUIRETLS
   builtin_macro_create(US"_HAVE_REQTLS");
 #endif
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  builtin_macro_create(US"_HAVE_PIPE_CONNECT");
+#endif
 
 #ifdef LOOKUP_LSEARCH
   builtin_macro_create(US"_HAVE_LOOKUP_LSEARCH");

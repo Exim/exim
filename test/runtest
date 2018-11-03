@@ -1119,6 +1119,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # TCP Fast Open
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
 
+    # Experimental_PIPE_CONNECT
+    next if / in (pipelining_connect_advertise_hosts|hosts_pipe_connect)?\? no /;
+
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;
 
@@ -1628,9 +1631,11 @@ $munges =
     { 'stdout' => '/^(
                   dkim_(canon|domain|private_key|selector|sign_headers|strict|hash|identity|timestamps)
                   |gnutls_require_(kx|mac|protocols)
+		  |hosts_pipe_connect
                   |hosts_(requ(est|ire)|try)_(dane|ocsp)
 		  |dane_require_tls_ciphers
                   |hosts_(avoid|nopass|noproxy|require|verify_avoid)_tls
+                  |pipelining_connect_advertise_hosts
                   |socks_proxy
                   |tls_[^ ]*
 		  |utf8_downconvert

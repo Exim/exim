@@ -325,6 +325,11 @@ struct global_flags f =
 	.sender_name_forced     = FALSE,
 	.sender_set_untrusted   = FALSE,
 	.smtp_authenticated     = FALSE,
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+	.smtp_in_early_pipe_advertised = FALSE,
+	.smtp_in_early_pipe_no_auth = FALSE,
+	.smtp_in_early_pipe_used = FALSE,
+#endif
 	.smtp_in_pipelining_advertised = FALSE,
 	.smtp_in_pipelining_used = FALSE,
 	.spool_file_wireformat  = FALSE,
@@ -336,6 +341,7 @@ struct global_flags f =
 
 	.tcp_fastopen_ok        = FALSE,
 	.tcp_in_fastopen        = FALSE,
+	.tcp_in_fastopen_data   = FALSE,
 	.tcp_in_fastopen_logged = FALSE,
 	.tcp_out_fastopen_logged= FALSE,
 	.timestamps_utc         = FALSE,
@@ -1180,6 +1186,9 @@ uschar *override_pid_file_path = NULL;
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+uschar *pipe_connect_advertise_hosts = US"*";
+#endif
 uschar *pipelining_advertise_hosts = US"*";
 uschar *primary_hostname       = NULL;
 uschar  process_info[PROCESS_INFO_SIZE];
@@ -1267,6 +1276,9 @@ const pcre *regex_From         = NULL;
 const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+const pcre *regex_EARLY_PIPE   = NULL;
+#endif
 const pcre *regex_ismsgid      = NULL;
 const pcre *regex_smtp_code    = NULL;
 uschar *regex_vars[REGEX_VARS];

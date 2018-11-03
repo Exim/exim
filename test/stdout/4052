@@ -1,0 +1,201 @@
++++++++++++++++++++++++++++
+07-Mar-2000 12:21:52 127.0.0.1:1225.EHLO
+
+******** SERVER ********
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+R
+>250 message accepted
+<QUIT
+>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+R
+>250 message accepted
+<QUIT
+>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>450 sorry no banner for you today
+>550 sync error
+>550 sync error
+>550 sync error
+>550 sync error
+<QUIT
+>>220 bye
+Expected EOF read from client
+End of script
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+R
+>250 message accepted
+<QUIT
+>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+R
+>250 message accepted
+<QUIT
+>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>220 banner
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+>250 mail good
+>250 rcpt good
+>550 obscure data error
+<QUIT
+>>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>220 banner
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+>250 mail good
+>550 rcpt refused
+>550 data cmd rejected - no valid recipient
+<QUIT
+>>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+*sleep 2
+<EHLO
+<MAIL
+<RCPT
+<DATA
+>220 banner
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+>550 mail cmd refused
+>550 rcpt cmd rejected - no valid mail
+>550 data cmd rejected - no valid mail
+<QUIT
+>>220 bye
+Expected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+*sleep 2
+>220 banner
+<EHLO
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250 ok
+<MAIL
+>250 mail-from accepted
+<RCPT
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+R
+>250 message accepted
+<QUIT
+>220 bye
+Expected EOF read from client
+End of script
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+>220 banner
+<EHLO the.local.host.name
+>250-esmtp-resp
+>250-PIPELINING
+>250-X_PIPE_CONNECT
+>250-STARTTLS
+>250 ok
+<MAIL FROM:<CALLER@the.local.host.name>
+>250 mail-from accepted
+<RCPT TO:<extchange@test.ex>
+>250 rcpt-to accepted
+<DATA
+>354 data go-ahead
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbG-0005vi-00
+	for extchange@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
+>250 message accepted
+<QUIT
+>220 bye
+Expected EOF read from client
+End of script

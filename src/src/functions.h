@@ -435,8 +435,7 @@ extern void    smtp_command_sigterm_exit(void);
 extern void    smtp_data_timeout_exit(void);
 extern void    smtp_data_sigint_exit(void);
 extern uschar *smtp_cmd_hist(void);
-extern int     smtp_connect(host_item *, int, uschar *, int,
-	       	 transport_instance *);
+extern int     smtp_connect(smtp_connect_args *, const blob *);
 extern int     smtp_sock_connect(host_item *, int, int, uschar *,
 		 transport_instance * tb, int, const blob *);
 extern int     smtp_feof(void);

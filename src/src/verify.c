@@ -669,12 +669,12 @@ coding means skipping this whole loop and doing the append separately.  */
         addr->message);
 
     sx.addrlist = addr;
-    sx.host = host;
-    sx.host_af = host_af,
+    sx.conn_args.host = host;
+    sx.conn_args.host_af = host_af,
     sx.port = port;
-    sx.interface = interface;
+    sx.conn_args.interface = interface;
     sx.helo_data = tf->helo_data;
-    sx.tblock = addr->transport;
+    sx.conn_args.tblock = addr->transport;
     sx.verify = TRUE;
 
 tls_retry_connection:
@@ -1320,7 +1320,7 @@ cutthrough_data_puts(US"\r\n", 2);
 static uschar
 cutthrough_response(client_conn_ctx * cctx, char expect, uschar ** copy, int timeout)
 {
-smtp_context sx;
+smtp_context sx = {0};
 uschar inbuffer[4096];
 uschar responsebuffer[4096];
 

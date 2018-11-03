@@ -904,6 +904,86 @@ Note that REQUIRETLS is only advertised once a TLS connection is achieved
 like "swaks -s 127.0.0.1 -tls -q HELO".
 
 
+
+
+Early pipelining support
+------------------------
+Ref: https://datatracker.ietf.org/doc/draft-harris-early-pipe/
+
+If compiled with EXPERIMENTAL_PIPE_CONNECT support is included for this feature.
+The server advertises the feature in its EHLO response, currently using the name
+"X_PIPE_CONNECT" (this will change, some time in the future).
+A client may cache this information, along with the rest of the EHLO response,
+and use it for later connections.  Those later ones can send esmtp commands before
+a banner is received.
+
+Up to 1.5 roundtrip times can be taken out of cleartext connections, 2.5 on
+STARTTLS connections.
+
+In combination with the traditional PIPELINING feature the following example
+sequences are possible (among others):
+
+(client)                (server)
+
+EHLO,MAIL,RCPT,DATA ->
+                     <- banner,EHLO-resp,MAIL-ack,RCPT-ack,DATA-goahead
+message-data        ->
+------
+
+EHLO,MAIL,RCPT,BDAT              ->
+                                  <- banner,EHLO-resp,MAIL-ack,RCPT-ack
+message-data                     ->
+------
+
+EHLO,STARTTLS                     ->
+                                   <- banner,EHLO-resp,TLS-goahead
+TLS1.2-client-hello               ->
+                                   <- TLS-server-hello,cert,hello-done
+client-Kex,change-cipher,finished ->
+                                   <- change-cipher,finshed
+EHLO,MAIL,RCPT,DATA               ->
+                                   <- EHLO-resp,MAIL-ack,RCPT-ack,DATA-goahead
+
+------
+(tls-on-connect)
+TLS1.2-client-hello               ->
+                                   <- TLS-server-hello,cert,hello-done
+client-Kex,change-cipher,finished ->
+                                   <- change-cipher,finshed
+                                   <- banner
+EHLO,MAIL,RCPT,DATA               ->
+                                   <- EHLO-resp,MAIL-ack,RCPT-ack,DATA-goahead
+
+Where the initial client packet is SMTP, it can combine with the TCP Fast Open
+feature and be sent in the TCP SYN.
+
+
+A main-section option "pipelining_connect_advertise_hosts" (default: *)
+and an smtp transport option "hosts_pipe_connect" (default: unset)
+control the feature.
+
+If the "pipelining" log_selector is enabled, the "L" field in server <=
+log lines has a period appended if the feature was advertised but not used;
+or has an asterisk appended if the feature was used.  In client => lines
+the "L" field has an asterisk appended if the feature was used.
+
+The "retry_data_expire" option controls cache invalidation.
+Entries are also rewritten (or cleared) if the adverised features
+change.
+
+
+NOTE: since the EHLO command must be constructed before the connection is
+made it cannot depend on the interface IP address that will be used.
+Transport configurations should be checked for this.  An example avoidance:
+
+ helo_data =	${if def:sending_ip_address \
+		   {${lookup dnsdb{>! ptr=$sending_ip_address} \
+			{${sg{$value} {^([^!]*).*\$} {\$1}}} fail}} \
+		   {$primary_hostname}}
+
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

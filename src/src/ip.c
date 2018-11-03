@@ -264,10 +264,10 @@ if (fastopen_blob && f.tcp_fastopen_ok)
 	/* seen for with-data, proper TFO opt, with-cookie case */
     {
     DEBUG(D_transport|D_v)
-      debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
+      debug_printf("TFO mode connection attempt to %s, %lu data\n",
 	address, (unsigned long)fastopen_blob->len);
     /*XXX also seen on successful TFO, sigh */
-    tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_USED : TFO_ATTEMPTED;
+    tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_ATTEMPTED_DATA : TFO_ATTEMPTED_NODATA;
     }
   else if (errno == EINPROGRESS)	/* expected if we had no cookie for peer */
 	/* seen for no-data, proper TFO option, both cookie-request and with-cookie cases */
@@ -280,7 +280,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
       fastopen_blob->len > 0 ? "with"  : "no");
     if (!fastopen_blob->data)
       {
-      tcp_out_fastopen = TFO_ATTEMPTED;		/* we tried; unknown if useful yet */
+      tcp_out_fastopen = TFO_ATTEMPTED_NODATA;		/* we tried; unknown if useful yet */
       rc = 0;
       }
     else

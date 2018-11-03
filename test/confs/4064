@@ -1,0 +1,72 @@
+# test config 4064
+# Early-pipe, AUTH, GnuTLS
+
+keep_environment = PATH
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+spool_directory = DIR/spool
+
+.ifdef SERVER
+log_file_path = DIR/spool/log/SERVER%slog
+.else
+log_file_path = DIR/spool/log/%slog
+.endif
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+dns_cname_loops = 9
+chunking_advertise_hosts = OPT
+tls_advertise_hosts = *
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+# Avoid ECDHE key-exchange so that we can wireshark-decode
+.ifdef _HAVE_GNUTLS
+tls_require_ciphers = NORMAL:-KX-ALL:+RSA
+.endif
+
+pipelining_connect_advertise_hosts = *
+auth_advertise_hosts = *
+
+log_selector = +received_recipients +pipelining
+queue_only
+
+acl_smtp_rcpt = accept
+
+#
+begin routers
+
+server:
+  driver =	redirect
+  condition =	${if eq {SERVER}{server}}
+  data =	:blackhole:
+
+client:
+  driver =	manualroute
+  route_data =	127.0.0.1::PORT_D
+  self =	send
+  transport =	smtp
+
+#
+begin transports
+
+smtp:
+  driver =		smtp
+  hosts_pipe_connect =	*
+  tls_verify_hosts =
+  tls_try_verify_hosts =
+  hosts_require_auth =	*
+
+#
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+
+  server_advertise_condition = ${if eq{$tls_in_cipher}{}{no}{yes}}
+  server_condition = "\
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
+
+  client_send =	^userx^secret
+

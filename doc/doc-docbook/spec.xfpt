@@ -36965,6 +36965,7 @@ immediately after the time and date.
 &%pipelining%&: A field is added to delivery and accept
 log lines when the ESMTP PIPELINING extension was used.
 The field is a single "L".
+
 On accept lines, where PIPELINING was offered but not used by the client,
 the field has a minus appended.
 .next

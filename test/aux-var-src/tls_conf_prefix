@@ -17,3 +17,6 @@ chunking_advertise_hosts =
 .ifdef _HAVE_REQTLS
 tls_advertise_requiretls =
 .endif
+.ifdef _HAVE_PIPE_CONNECT
+pipelining_connect_advertise_hosts = :
+.endif

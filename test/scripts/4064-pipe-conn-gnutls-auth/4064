@@ -1,0 +1,60 @@
+# starttls
+#
+# Not attempted without a cache entry
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+exim nocache@test.ex
+Subject test 1
+
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+#
+# Go for it.  This one should do early-pipelinng.
+exim hascache@test.ex
+Subject test 2
+
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+killdaemon
+#
+#
+#
+# And again with CHUNKING
+sudo rm DIR/spool/db/misc
+exim -bd -DSERVER=server -DOPT=* -oX PORT_D
+****
+#
+exim nocache@test.ex
+Subject test 4
+
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+#
+# Go for it
+exim chunking@test.ex
+Subject test 5
+
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+killdaemon
+no_msglog_check

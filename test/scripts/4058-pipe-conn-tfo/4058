@@ -1,0 +1,78 @@
+# Early-pipelining, with TFO
+#
+#
+# Packet delays so we can see TFO operational in packet captures
+sudo perl
+system ("tc qdisc add dev lo root netem delay 50ms");
+****
+#
+# Wipe any stored TFO cookie, to start from known state.
+sudo perl
+system ("ip tcp_metrics delete 127.0.0.1");
+****
+#
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# No early-pipe cache yet.  Run one through to prime it;
+# this should not use early-pipe despite both the client & server being enabled.
+# Should also prime the TFO cookie cache.
+exim nocache@test.ex
+Subject: tfo test
+
+Testing
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+#
+# Having primed the cache, this one should use it.
+exim hascache@test.ex
+Subject: tfo test 2
+
+Testing
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+killdaemon
+#
+# Again, with CHUNKING
+sudo rm DIR/spool/db/misc
+exim -bd -DSERVER=server -DOPT=* -oX PORT_D
+****
+#
+exim nocache@test.ex
+Subject: tfo test 3
+
+Testing
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+exim chunking@test.ex
+Subject: tfo test 4
+
+Testing
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+killdaemon
+#
+sudo perl
+system ("tc qdisc delete dev lo root");
+****
+#
+no_msglog_check

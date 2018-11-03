@@ -46,6 +46,9 @@ typedef struct {
   uschar *hosts_avoid_tls;
   uschar *hosts_verify_avoid_tls;
   uschar *hosts_avoid_pipelining;
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  uschar *hosts_pipe_connect;
+#endif
   uschar *hosts_avoid_esmtp;
 #ifdef SUPPORT_TLS
   uschar *hosts_nopass_tls;
@@ -99,20 +102,26 @@ typedef struct {
 #endif
 } smtp_transport_options_block;
 
+#define SOB (smtp_transport_options_block *)
+
+
 /* smtp connect context */
 typedef struct {
   uschar *		from_addr;
   address_item *	addrlist;
-  host_item *		host;
-  int			host_af;
+
+  smtp_connect_args	conn_args;
   int			port;
-  uschar *		interface;
 
   BOOL verify:1;
   BOOL lmtp:1;
   BOOL smtps:1;
   BOOL ok:1;
   BOOL setting_up:1;
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  BOOL early_pipe_ok:1;
+  BOOL early_pipe_active:1;
+#endif
   BOOL esmtp:1;
   BOOL esmtp_sent:1;
   BOOL pipelining_used:1;
@@ -126,6 +135,10 @@ typedef struct {
 #if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
   BOOL dane:1;
   BOOL dane_required:1;
+#endif
+#ifdef EXPERIMENTAL_PIPE_CONNECT
+  BOOL pending_BANNER:1;
+  BOOL pending_EHLO:1;
 #endif
   BOOL pending_MAIL:1;
   BOOL pending_BDAT:1;
@@ -145,6 +158,7 @@ typedef struct {
   uschar *	smtp_greeting;
   uschar *	helo_response;
 #endif
+  ehlo_resp_precis	ehlo_resp;
 
   address_item *	first_addr;
   address_item *	next_addr;
@@ -156,13 +170,11 @@ typedef struct {
   uschar	buffer[DELIVER_BUFFER_SIZE];
   uschar	inbuffer[4096];
   uschar	outbuffer[4096];
-
-  transport_instance *			tblock;
-  smtp_transport_options_block *	ob;
 } smtp_context;
 
 extern int smtp_setup_conn(smtp_context *, BOOL);
 extern int smtp_write_mail_and_rcpt_cmds(smtp_context *, int *);
+extern int smtp_reap_early_pipe(smtp_context *, int *);
 
 
 /* Data for reading the private options. */

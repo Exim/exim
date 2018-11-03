@@ -17,7 +17,8 @@ Version 4.92
  2. The ${readsocket } expansion item now takes a "tls" option, doing the
     obvious thing.
 
- 3. EXPERIMENTAL_REQUIRETLS.  See the experimental.spec file.
+ 3. EXPERIMENTAL_REQUIRETLS and EXPERIMENTAL_PIPE_CONNECT optional build
+    features.  See the experimental.spec file.
 
  4. If built with SUPPORT_I18N a "utf8_downconvert" option on the smtp transport.
 

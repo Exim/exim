@@ -1,0 +1,103 @@
+# pipelined connect, server
+
+# not advertised when not wanted
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO testclient
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250 HELP
+QUIT
+??? 221
+****
+killdaemon
+#
+# advertised when wanted
+exim -bd -DSERVER=server -DCONNECTCOND=127.0.0.1 -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+??? 220
+EHLO testclient
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-X_PIPE_CONNECT
+??? 250 HELP
+QUIT
+??? 221
+****
+killdaemon
+#
+# Client does not wait for banner
+exim -bd -DSERVER=server -DCONNECTCOND=127.0.0.1 -oX PORT_D
+****
+#
+client 127.0.0.1 PORT_D
+EHLO testclient
+??? 220
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-X_PIPE_CONNECT
+??? 250 HELP
+QUIT
+??? 221
+****
+# No banner wait; pipelined MAIL
+client 127.0.0.1 PORT_D
+EHLO testclient\r\nMAIL FROM:<a@test.ex>
+??? 220
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-X_PIPE_CONNECT
+??? 250 HELP
+??? 250
+QUIT
+??? 221
+****
+# No banner wait; pipelined MAIL,RCPT
+client 127.0.0.1 PORT_D
+EHLO testclient\r\nMAIL FROM:<a@test.ex>\r\nRCPT TO:<a@test.ex>
+??? 220
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-X_PIPE_CONNECT
+??? 250 HELP
+??? 250
+??? 250
+QUIT
+??? 221
+****
+# No banner wait; pipelined MAIL,RCPT,DATA
+client 127.0.0.1 PORT_D
+EHLO testclient\r\nMAIL FROM:<a@test.ex>\r\nRCPT TO:<a@test.ex>\r\nDATA
+??? 220
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-X_PIPE_CONNECT
+??? 250 HELP
+??? 250
+??? 250
+??? 354
+.
+??? 250
+QUIT
+??? 221
+****
+#
+killdaemon
+no_msglog_check
