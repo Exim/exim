@@ -158,7 +158,9 @@ typedef struct {
   uschar *	smtp_greeting;
   uschar *	helo_response;
 #endif
+#ifdef EXPERIMENTAL_PIPE_CONNECT
   ehlo_resp_precis	ehlo_resp;
+#endif
 
   address_item *	first_addr;
   address_item *	next_addr;
