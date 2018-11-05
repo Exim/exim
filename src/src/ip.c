@@ -308,7 +308,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
     DEBUG(D_transport|D_v)
       debug_printf("TFO mode connection attempt to %s, %lu data\n",
 	address, (unsigned long)fastopen_blob->len);
-    tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_USED : TFO_ATTEMPTED;
+    tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_ATTEMPTED_DATA : TFO_ATTEMPTED_NODATA;
 
     if (len != fastopen_blob->len)
       DEBUG(D_transport|D_v)
