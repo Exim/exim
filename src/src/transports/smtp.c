@@ -3449,9 +3449,7 @@ sx.conn_args.interface = interface;
 sx.helo_data = NULL;
 sx.conn_args.tblock = tblock;
 sx.verify = FALSE;
-#ifdef EXPERIMENTAL_PIPE_CONNECT
 sx.sync_addr = sx.first_addr = addrlist;
-#endif
 
 /* Get the channel set up ready for a message (MAIL FROM being the next
 SMTP command to send */
