@@ -44,6 +44,11 @@ rcpt:
 
 begin routers
 
+r_dump:
+  driver =	redirect
+  domains =	dump.ex
+  data =	:blackhole:
+
 r1:
   driver =	accept
   condition =	${if eq {127.0.0.1}{$sender_host_address}}

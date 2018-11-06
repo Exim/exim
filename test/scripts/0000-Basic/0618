@@ -16,6 +16,8 @@ killdaemon
 # Server does advertise when told.  Client requests no bounces, and this one gets a reject.
 exim -DSERVER=server -DOPT=y -bd -oX PORT_D
 ****
+exim -z rej/never
+****
 client HOSTIPV4 PORT_D
 ??? 220
 EHLO testclient
@@ -37,7 +39,12 @@ Subject: test
 QUIT
 ??? 221
 ****
-# Client requests delivery notification; the server supports DSN to takes responsibility
+exim -q
+****
+#
+# Client requests delivery notification; the server supports DSN so takes responsibility
+exim -z accept/success
+****
 client HOSTIPV4 PORT_D
 ??? 220
 EHLO testclient
@@ -57,9 +64,22 @@ Subject: test
 QUIT
 ??? 221
 ****
-# Client requests notification of deferral.  First time of trying, the
-# queue-time probably has not hit the 1st retry time yet, so no DSN will
-# be sent and the message remains queued.
+# MSA send msg to MDA
+exim -q
+****
+# deliver msg at MDA
+exim -q
+****
+# deliver notification from MDA
+exim -q
+****
+#
+# Client requests notification of deferral.  First time of trying, we get
+# a defer but queue-time probably has not hit the 1st retry time yet, so no DSN
+# will be sent and the message remains queued.  Later, after a sleep, we will
+# try again.
+exim -z defer/delay
+****
 client HOSTIPV4 PORT_D
 ??? 220
 EHLO testclient
@@ -79,7 +99,12 @@ Subject: test
 QUIT
 ??? 221
 ****
+exim -q
+****
+#
 # Clients requests no DSNs, and this one gets deferred
+exim -z defer/never
+****
 client HOSTIPV4 PORT_D
 ??? 220
 EHLO testclient
@@ -99,11 +124,16 @@ Subject: test
 QUIT
 ??? 221
 ****
-# This attemmpt the set of all the above, for the first time.
 exim -q
 ****
 sleep 3
-# Second time, for the queued deferrals.  Final delivery for the acceptance.
+#
+#
+#
+# Second time, for the queued deferrals.
+# We should see the notify for c@dump.ex but not d@dump.ex
+exim -z playout
+****
 exim -q
 ****
 killdaemon
