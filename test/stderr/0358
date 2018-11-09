@@ -48,13 +48,13 @@ locking TESTSUITE/spool/db/retry.lockfile
 retry for R:usery@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:usery@test.ex:<CALLER@test.ex>
-  first failed=dddd last try=dddd next try=+1 expired=0
+  first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Temporary error
  userx@test.ex
 retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:userx@test.ex:<CALLER@test.ex>
-  first failed=dddd last try=dddd next try=+1 expired=0
+  first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -128,7 +128,7 @@ deleted retry information for R:test.ex
 retry for R:usery@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:usery@test.ex:<CALLER@test.ex>
-  first failed=dddd last try=dddd next try=+2 expired=0
+  first failed=dddd last try=dddd next try=+4 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<usery@test.ex>: 451 Temporary error
  userx@test.ex
 deleted retry information for R:userx@test.ex
@@ -136,7 +136,7 @@ deleted retry information for R:test.ex
 retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:userx@test.ex:<CALLER@test.ex>
-  first failed=dddd last try=dddd next try=+2 expired=0
+  first failed=dddd last try=dddd next try=+4 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
 LOG: queue_run MAIN

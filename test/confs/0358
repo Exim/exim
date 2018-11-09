@@ -32,6 +32,6 @@ t1:
 
 begin retry
 
-*   *   F,3s,1s; G,1h,2s,2
+*   *   F,6s,2s; G,1h,4s,2
 
 # End

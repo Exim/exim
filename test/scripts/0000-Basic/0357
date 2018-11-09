@@ -16,7 +16,7 @@ exim -odi -d-all+retry userx
 Testing 1
 ****
 dump retry
-sleep 1
+sleep 2
 server PORT_S
 220 ESMTP
 EHLO
@@ -31,7 +31,7 @@ QUIT
 exim -q -d-all+retry
 ****
 dump retry
-sleep 3
+sleep 6
 server PORT_S
 220 ESMTP
 EHLO

@@ -31,7 +31,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 retry for R:x@y:<CALLER@myhost.test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
 Writing retry data for R:x@y:<CALLER@myhost.test.ex>
-  first failed=dddd last try=dddd next try=+1 expired=0
+  first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@y>: 451 Temporary error
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

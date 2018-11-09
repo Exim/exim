@@ -30,6 +30,6 @@ smtp:
 
 begin retry
 
-* * F,10s,1s
+* * F,10s,2s
 
 # End

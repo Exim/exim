@@ -1,12 +1,12 @@
 +++++++++++++++++++++++++++
   R:userx@test.ex:<CALLER@test.ex> -44 13121 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
-first failed = time last try = time2 next try = time2 + 1
-+++++++++++++++++++++++++++
-  R:userx@test.ex:<CALLER@test.ex> -44 13121 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
-first failed = time last try = time2 next try = time2 + 1
+first failed = time last try = time2 next try = time2 + 2
 +++++++++++++++++++++++++++
   R:userx@test.ex:<CALLER@test.ex> -44 13121 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 first failed = time last try = time2 next try = time2 + 2
++++++++++++++++++++++++++++
+  R:userx@test.ex:<CALLER@test.ex> -44 13121 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
+first failed = time last try = time2 next try = time2 + 4
 
 ******** SERVER ********
 Listening on port 1224 ... 

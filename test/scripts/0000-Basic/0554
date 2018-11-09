@@ -37,5 +37,7 @@ QUIT
 ****
 exim -odi -d-all+retry -M $msg1
 ****
+#
 dump retry
 no_msglog_check
+#
