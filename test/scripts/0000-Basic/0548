@@ -2,6 +2,12 @@
 # In this test, the primary host (normal IP address) defers the recipient, and
 # the secondary host (loopback address) defers the connection.
 #
+#XXX the test is relying on one-second accuracy, which is too tight.
+# The measured time is only one-second precision, so certain to sometime
+# straddle a boundary, even ignoring scheduling and I/O-wait issues.
+# Consider a factor of (?) two, in the retry section of the conf/ file
+# and +1 /2 after the diff operation (runtest:463).
+#
 need_ipv4
 #
 exim -DSERVER=server -bd -oX PORT_D
@@ -11,13 +17,13 @@ Test message
 ****
 # defers from both
 dump retry
-millisleep 2100
+millisleep 4200
 # At this point, the primary host retry rule ehould have timed out
 # and the secondary is ready for a retry
 exim -q
 ****
 dump retry
-millisleep 2100
+millisleep 4200
 # This should be similar
 exim -q
 ****
@@ -29,7 +35,7 @@ exim -odi usery@test.ex
 Test message 2.
 ****
 dump retry
-millisleep 2000
+millisleep 4000
 exim -q
 ****
 killdaemon
