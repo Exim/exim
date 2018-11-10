@@ -14,7 +14,7 @@ sleep 3
 exim -odi -q
 ****
 #
-# This should add two entries for "localhost.test.ex" (ipv4, ipv6)
+# This should add two entries for "thisloop.test.ex" (ip4, 127.0.0.1)
 exim -odi usery@complex
 Test message 2
 ****
@@ -32,7 +32,7 @@ Test message
 ****
 dump retry
 #
-# expanded option, giving false, should add another localhost entry, without IP
+# expanded option, giving false, should add another 'thisloop.test.ex' entry, without IP
 exim -odi -DRETRY='retry_include_ip_address=${if eq{with}{$local_part} {yes}{no}}' without@complex
 Test message
 ****

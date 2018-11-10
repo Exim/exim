@@ -476,6 +476,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # more_errno values in exim_dumpdb output which are times
   s/T:(\S+)\s-22\s(\S+)\s/T:$1 -22 xxxx /;
 
+  # port numbers
+  s/T:([a-z.]+(:[0-9.]+)?):$parm_port_n /T:$1:PORT_N /;
+
 
   # ======== Dates and times ========
 

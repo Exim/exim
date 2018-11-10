@@ -40,7 +40,7 @@ begin transports
 
 smtp:
   driver = smtp
-  port = 999
+  port = PORT_N
   RETRY
 
 
@@ -64,7 +64,7 @@ rcpt4xx.test.ex              rcpt_4xx      F,10d,1m
 *@@                          *             F,5d,6m
 lsearch*@;DIR/aux-fixed/TESTNUM.rlist  *             F,1d,3m
 *.star.ex                    *             F,3d,10m
-!*.not.ex                    *             F,2d,15m
+!*.not.ex                    *             F,2d,20m
 *                            *             F,12d,150m
 
 # End
