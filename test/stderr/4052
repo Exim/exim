@@ -28,7 +28,7 @@ not using DSN
   SMTP>> RCPT TO:<extchange@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
-Connecting to 127.0.0.1 [127.0.0.1]:1225 ... sending 87 nonTFO early-data
+Connecting to 127.0.0.1 [127.0.0.1]:1225 ... sending dd nonTFO early-data
 connected
 smtp_reap_early_pipe expect banner
   SMTP<< 220 banner

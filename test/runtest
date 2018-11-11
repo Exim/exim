@@ -476,7 +476,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # more_errno values in exim_dumpdb output which are times
   s/T:(\S+)\s-22\s(\S+)\s/T:$1 -22 xxxx /;
 
-  # port numbers
+  # port numbers in dumpdb output
   s/T:([a-z.]+(:[0-9.]+)?):$parm_port_n /T:$1:PORT_N /;
 
 
@@ -1166,8 +1166,8 @@ RESET_AFTER_EXTRA_LINE_READ:
       s/Address family not supported by protocol family/Network Error/;
       s/Network is unreachable/Network Error/;
       }
-
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
+    s/^(Connecting to .* \.\.\. sending) \d+ (nonTFO early-data)$/$1 dd $2/;
 
     # Specific pointer values reported for DB operations change from run to run
     s/^(\s*returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;
