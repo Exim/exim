@@ -24569,9 +24569,16 @@ variable that contains an outgoing port.
 
 If the value of this option begins with a digit it is taken as a port number;
 otherwise it is looked up using &[getservbyname()]&. The default value is
-normally &"smtp"&, but if &%protocol%& is set to &"lmtp"&, the default is
-&"lmtp"&. If the expansion fails, or if a port number cannot be found, delivery
+normally &"smtp"&,
+but if &%protocol%& is set to &"lmtp"& the default is &"lmtp"&
+and if &%protocol%& is set to &"smtps"& the default is &"smtps"&.
+If the expansion fails, or if a port number cannot be found, delivery
 is deferred.
+
+.new
+Note that at least one Linux distribution has been seen failing
+to put &"smtps"& in its &"/etc/services"& file, resulting is such deferrals.
+.wen
 
 
 
@@ -24589,7 +24596,11 @@ over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 If this option is set to &"smtps"&, the default value for the &%port%& option
 changes to &"smtps"&, and the transport initiates TLS immediately after
 connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
-The Internet standards bodies strongly discourage use of this mode.
+.new
+The Internet standards bodies used to strongly discourage use of this mode,
+but as of RFC 8314 it is perferred over STARTTLS for message submission
+(as distinct from MTA-MTA communication).
+.wen
 
 
 .option retry_include_ip_address smtp boolean&!! true
