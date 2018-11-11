@@ -43,7 +43,7 @@ server:
 
 client:
   driver =	manualroute
-  route_data =	127.0.0.1::PORT_D
+  route_data =	127.0.0.1
   self =	send
   transport =	smtp
 
@@ -54,6 +54,7 @@ smtp:
   driver =		smtp
   hosts_pipe_connect =	CONTROL
   protocol =		smtps
+  port =		PORT_D
   tls_verify_hosts =
   tls_try_verify_hosts =
 
