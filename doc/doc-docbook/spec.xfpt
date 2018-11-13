@@ -10032,7 +10032,7 @@ expansion items.
 
 .vitem &*$rheader_*&<&'header&~name'&>&*:*&&~or&~&*$rh_*&<&'header&~name'&>&*:*&
 This item inserts &"raw"& header lines. It is described with the &%header%&
-expansion item above.
+expansion item in section &<<SECTexpansionitems>>& above.
 
 .vitem "&*${run{*&<&'command'&>&*&~*&<&'args'&>&*}{*&<&'string1'&>&*}&&&
         {*&<&'string2'&>&*}}*&"
@@ -11991,6 +11991,7 @@ This is not strictly an expansion variable. It is expansion syntax for
 inserting the message header line with the given name. Note that the name must
 be terminated by colon or white space, because it may contain a wide variety of
 characters. Note also that braces must &'not'& be used.
+See the full description in section &<<SECTexpansionitems>>& above.
 
 .vitem &$headers_added$&
 .vindex "&$headers_added$&"
