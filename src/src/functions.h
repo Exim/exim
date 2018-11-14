@@ -492,6 +492,7 @@ extern uschar *string_copy_malloc(const uschar *);
 extern uschar *string_copylc(const uschar *);
 extern uschar *string_copynlc(uschar *, int);
 extern uschar *string_dequote(const uschar **);
+extern gstring *string_fmt_append(gstring *, const char *, ...) ALMOST_PRINTF(2,3);
 extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
 extern uschar *string_format_size(int, uschar *);
 extern uschar *string_from_gstring(gstring *);
@@ -515,7 +516,7 @@ extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_localpart_alabel_to_utf8(const uschar *, uschar **);
 extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
 #endif
-extern BOOL    string_vformat(uschar *, int, const char *, va_list);
+extern gstring *string_vformat(gstring *, BOOL, const char *, va_list);
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);

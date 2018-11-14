@@ -2173,14 +2173,15 @@ static int
 ratelimit_error(uschar **log_msgptr, const char *format, ...)
 {
 va_list ap;
-uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
+gstring * g =
+  string_cat(NULL, US"error in arguments to \"ratelimit\" condition: ");
+
 va_start(ap, format);
-if (!string_vformat(buffer, sizeof(buffer), format, ap))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "string_sprintf expansion was longer than " SIZE_T_FMT, sizeof(buffer));
+g = string_vformat(g, TRUE, format, ap);
 va_end(ap);
-*log_msgptr = string_sprintf(
-  "error in arguments to \"ratelimit\" condition: %s", buffer);
+
+gstring_reset_unused(g);
+*log_msgptr = string_from_gstring(g);
 return ERROR;
 }
 

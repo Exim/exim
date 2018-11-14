@@ -913,18 +913,20 @@ call another vararg function, only a function which accepts a va_list. */
 void
 smtp_vprintf(const char *format, BOOL more, va_list ap)
 {
+gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
 BOOL yield;
 
-yield = string_vformat(big_buffer, big_buffer_size, format, ap);
+yield = !! string_vformat(&gs, FALSE, format, ap);
+string_from_gstring(&gs);
 
 DEBUG(D_receive)
   {
   void *reset_point = store_get(0);
   uschar *msg_copy, *cr, *end;
-  msg_copy = string_copy(big_buffer);
-  end = msg_copy + Ustrlen(msg_copy);
+  msg_copy = string_copy(gs.s);
+  end = msg_copy + gs.ptr;
   while ((cr = Ustrchr(msg_copy, '\r')) != NULL)   /* lose CRs */
-  memmove(cr, cr + 1, (end--) - cr);
+    memmove(cr, cr + 1, (end--) - cr);
   debug_printf("SMTP>> %s", msg_copy);
   store_reset(reset_point);
   }
@@ -957,13 +959,13 @@ if (fl.rcpt_in_progress)
 #ifdef SUPPORT_TLS
 if (tls_in.active.sock >= 0)
   {
-  if (tls_write(NULL, big_buffer, Ustrlen(big_buffer), more) < 0)
+  if (tls_write(NULL, gs.s, gs.ptr, more) < 0)
     smtp_write_error = -1;
   }
 else
 #endif
 
-if (fprintf(smtp_out, "%s", big_buffer) < 0) smtp_write_error = -1;
+if (fprintf(smtp_out, "%s", gs.s) < 0) smtp_write_error = -1;
 }
 
 
@@ -3518,13 +3520,13 @@ if (code && defaultrespond)
     smtp_respond(code, 3, TRUE, user_msg);
   else
     {
-    uschar buffer[128];
+    gstring * g;
     va_list ap;
+
     va_start(ap, defaultrespond);
-    if (!string_vformat(buffer, sizeof(buffer), CS defaultrespond, ap))
-      log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_notquit_exit()");
-    smtp_printf("%s %s\r\n", FALSE, code, buffer);
+    g = string_vformat(NULL, TRUE, CS defaultrespond, ap);
     va_end(ap);
+    smtp_printf("%s %s\r\n", FALSE, code, string_from_gstring(g));
     }
   mac_smtp_fflush();
   }

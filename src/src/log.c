@@ -554,23 +554,18 @@ Arguments:
 Returns:      updated pointer
 */
 
-static uschar *
-log_config_info(uschar *ptr, int flags)
+static gstring *
+log_config_info(gstring * g, int flags)
 {
-Ustrcpy(ptr, "Exim configuration error");
-ptr += 24;
+g = string_cat(g, US"Exim configuration error");
 
 if (flags & (LOG_CONFIG_FOR & ~LOG_CONFIG))
-  {
-  Ustrcpy(ptr, " for ");
-  return ptr + 5;
-  }
+  return string_cat(g, US" for ");
 
 if (flags & (LOG_CONFIG_IN & ~LOG_CONFIG))
-  ptr += sprintf(CS ptr, " in line %d of %s", config_lineno, config_filename);
+  g = string_fmt_append(g, " in line %d of %s", config_lineno, config_filename);
 
-Ustrcpy(ptr, ":\n  ");
-return ptr + 4;
+return string_catn(g, US":\n  ", 4);
 }
 
 
@@ -742,9 +737,10 @@ void
 log_write(unsigned int selector, int flags, const char *format, ...)
 {
 uschar * ptr;
-int length;
 int paniclogfd;
 ssize_t written_len;
+gstring gs = { .size = LOG_BUFFER_SIZE-1, .ptr = 0, .s = log_buffer };
+gstring * g;
 va_list ap;
 
 /* If panic_recurseflag is set, we have failed to open the panic log. This is
@@ -851,10 +847,8 @@ in one go so that it doesn't get split when multi-processing. */
 DEBUG(D_any|D_v)
   {
   int i;
-  ptr = log_buffer;
 
-  Ustrcpy(ptr, "LOG:");
-  ptr += 4;
+  g = string_catn(&gs, US"LOG:", 4);
 
   /* Show the selector that was passed into the call. */
 
@@ -862,31 +856,34 @@ DEBUG(D_any|D_v)
     {
     unsigned int bitnum = log_options[i].bit;
     if (bitnum < BITWORDSIZE && selector == BIT(bitnum))
-      {
-      *ptr++ = ' ';
-      Ustrcpy(ptr, log_options[i].name);
-      while (*ptr) ptr++;
-      }
+      g = string_fmt_append(g, " %s", log_options[i].name);
     }
 
-  ptr += sprintf(CS ptr, "%s%s%s%s\n  ",
+  g = string_fmt_append(g, "%s%s%s%s\n  ",
     flags & LOG_MAIN ?    " MAIN"   : "",
     flags & LOG_PANIC ?   " PANIC"  : "",
     (flags & LOG_PANIC_DIE) == LOG_PANIC_DIE ? " DIE" : "",
     flags & LOG_REJECT ?  " REJECT" : "");
 
-  if (flags & LOG_CONFIG) ptr = log_config_info(ptr, flags);
+  if (flags & LOG_CONFIG) g = log_config_info(g, flags);
 
   va_start(ap, format);
-  if (!string_vformat(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer)-1, format, ap))
-    Ustrcpy(ptr, "**** log string overflowed log buffer ****");
+  i = g->ptr;
+  if (!string_vformat(g, FALSE, format, ap))
+    {
+    g->ptr = i;
+    g = string_cat(g, US"**** log string overflowed log buffer ****");
+    }
   va_end(ap);
 
-  while(*ptr) ptr++;
-  Ustrcat(ptr, "\n");
-  debug_printf("%s", log_buffer);
-  }
+  g->size = LOG_BUFFER_SIZE;
+  g = string_catn(g, US"\n", 1);
+  debug_printf("%s", string_from_gstring(g));
 
+  gs.size = LOG_BUFFER_SIZE-1;	/* Having used the buffer for debug output, */
+  gs.ptr = 0;			/* reset it for the real use. */
+  gs.s = log_buffer;
+  }
 /* If no log file is specified, we are in a mess. */
 
 if (!(flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)))
@@ -908,54 +905,59 @@ if (!write_rejectlog) flags &= ~LOG_REJECT;
 /* Create the main message in the log buffer. Do not include the message id
 when called by a utility. */
 
-ptr = log_buffer;
-ptr += sprintf(CS ptr, "%s ", tod_stamp(tod_log));
+g = string_fmt_append(&gs, "%s ", tod_stamp(tod_log));
 
 if (LOGGING(pid))
   {
-  if (!syslog_pid) pid_position[0] = ptr - log_buffer;	/* remember begin … */
-  ptr += sprintf(CS ptr, "[%d] ", (int)getpid());
-  if (!syslog_pid) pid_position[1] = ptr - log_buffer;	/*  … and end+1 of the PID */
+  if (!syslog_pid) pid_position[0] = g->ptr;		/* remember begin … */
+  g = string_fmt_append(g, "[%d] ", (int)getpid());
+  if (!syslog_pid) pid_position[1] = g->ptr;		/*  … and end+1 of the PID */
   }
 
 if (f.really_exim && message_id[0] != 0)
-  ptr += sprintf(CS ptr, "%s ", message_id);
+  g = string_fmt_append(g, "%s ", message_id);
 
-if (flags & LOG_CONFIG) ptr = log_config_info(ptr, flags);
+if (flags & LOG_CONFIG)
+  g = log_config_info(g, flags);
 
 va_start(ap, format);
-if (!string_vformat(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer)-1, format, ap))
-  Ustrcpy(ptr, "**** log string overflowed log buffer ****\n");
-while(*ptr) ptr++;
+  {
+  int i = g->ptr;
+  if (!string_vformat(g, FALSE, format, ap))
+    {
+    g->ptr = i;
+    g = string_cat(g, US"**** log string overflowed log buffer ****\n");
+    }
+  }
 va_end(ap);
 
 /* Add the raw, unrewritten, sender to the message if required. This is done
 this way because it kind of fits with LOG_RECIPIENTS. */
 
 if (   flags & LOG_SENDER
-    && ptr < log_buffer + LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
-  ptr += sprintf(CS ptr, " from <%s>", raw_sender);
+   && g->ptr < LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
+  g = string_fmt_append(g, " from <%s>", raw_sender);
 
 /* Add list of recipients to the message if required; the raw list,
 before rewriting, was saved in raw_recipients. There may be none, if an ACL
 discarded them all. */
 
 if (  flags & LOG_RECIPIENTS
-   && ptr < log_buffer + LOG_BUFFER_SIZE - 6
+   && g->ptr < LOG_BUFFER_SIZE - 6
    && raw_recipients_count > 0)
   {
   int i;
-  ptr += sprintf(CS ptr, " for");
+  g = string_fmt_append(g, " for");
   for (i = 0; i < raw_recipients_count; i++)
     {
     uschar * s = raw_recipients[i];
-    if (log_buffer + LOG_BUFFER_SIZE - ptr < Ustrlen(s) + 3) break;
-    ptr += sprintf(CS ptr, " %s", s);
+    if (LOG_BUFFER_SIZE - g->ptr < Ustrlen(s) + 3) break;
+    g = string_fmt_append(g, " %s", s);
     }
   }
 
-ptr += sprintf(CS  ptr, "\n");
-length = ptr - log_buffer;
+g = string_catn(g, US"\n", 1);
+string_from_gstring(g);
 
 /* Handle loggable errors when running a utility, or when address testing.
 Write to log_stderr unless debugging (when it will already have been written),
@@ -1028,10 +1030,10 @@ if (  flags & LOG_MAIN
 
     /* Failing to write to the log is disastrous */
 
-    written_len = write_to_fd_buf(mainlogfd, log_buffer, length);
-    if (written_len != length)
+    written_len = write_to_fd_buf(mainlogfd, g->s, g->ptr);
+    if (written_len != g->ptr)
       {
-      log_write_failed(US"main log", length, written_len);
+      log_write_failed(US"main log", g->ptr, written_len);
       /* That function does not return */
       }
     }
@@ -1048,34 +1050,39 @@ if (flags & LOG_REJECT)
 
   if (header_list && LOGGING(rejected_header))
     {
+    uschar * p = g->s + g->ptr;
+    int i;
+
     if (recipients_count > 0)
       {
-      int i;
-
       /* List the sender */
 
-      string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
+      string_format(p, LOG_BUFFER_SIZE - g->ptr,
         "Envelope-from: <%s>\n", sender_address);
-      while (*ptr) ptr++;
+      while (*p) p++;
+      g->ptr = p - g->s;
 
       /* List up to 5 recipients */
 
-      string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
+      string_format(p, LOG_BUFFER_SIZE - g->ptr,
         "Envelope-to: <%s>\n", recipients_list[0].address);
-      while (*ptr) ptr++;
+      while (*p) p++;
+      g->ptr = p - g->s;
 
       for (i = 1; i < recipients_count && i < 5; i++)
         {
-        string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer), "    <%s>\n",
+        string_format(p, LOG_BUFFER_SIZE - g->ptr, "    <%s>\n",
           recipients_list[i].address);
-        while (*ptr) ptr++;
+	while (*p) p++;
+	g->ptr = p - g->s;
         }
 
       if (i < recipients_count)
         {
-        (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
+        string_format(p, LOG_BUFFER_SIZE - g->ptr,
           "    ...\n");
-        while (*ptr) ptr++;
+	while (*p) p++;
+	g->ptr = p - g->s;
         }
       }
 
@@ -1083,27 +1090,25 @@ if (flags & LOG_REJECT)
 
     for (h = header_list; h; h = h->next) if (h->text)
       {
-      BOOL fitted = string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
+      BOOL fitted = string_format(p, LOG_BUFFER_SIZE - g->ptr,
         "%c %s", h->type, h->text);
-      while(*ptr) ptr++;
+      while (*p) p++;
+      g->ptr = p - g->s;
       if (!fitted)         /* Buffer is full; truncate */
         {
-        ptr -= 100;        /* For message and separator */
-        if (ptr[-1] == '\n') ptr--;
-        Ustrcpy(ptr, "\n*** truncated ***\n");
-        while (*ptr) ptr++;
+        g->ptr -= 100;        /* For message and separator */
+        if (g->s[g->ptr-1] == '\n') g->ptr--;
+        g = string_cat(g, US"\n*** truncated ***\n");
         break;
         }
       }
-
-    length = ptr - log_buffer;
     }
 
   /* Write to syslog or to a log file */
 
   if (  logging_mode & LOG_MODE_SYSLOG
      && (syslog_duplication || !(flags & LOG_PANIC)))
-    write_syslog(LOG_NOTICE, log_buffer);
+    write_syslog(LOG_NOTICE, string_from_gstring(g));
 
   /* Check for a change to the rejectlog file name when datestamping is in
   operation. This happens at midnight, at which point we want to roll over
@@ -1147,10 +1152,10 @@ if (flags & LOG_REJECT)
       if (fstat(rejectlogfd, &statbuf) >= 0) rejectlog_inode = statbuf.st_ino;
       }
 
-    written_len = write_to_fd_buf(rejectlogfd, log_buffer, length);
-    if (written_len != length)
+    written_len = write_to_fd_buf(rejectlogfd, g->s, g->ptr);
+    if (written_len != g->ptr)
       {
-      log_write_failed(US"reject log", length, written_len);
+      log_write_failed(US"reject log", g->ptr, written_len);
       /* That function does not return */
       }
     }
@@ -1165,7 +1170,7 @@ all cases except mua_wrapper, try to write to log_stderr. */
 if (flags & LOG_PANIC)
   {
   if (log_stderr && log_stderr != debug_file && !mua_wrapper)
-    fprintf(log_stderr, "%s", CS log_buffer);
+    fprintf(log_stderr, "%s", CS string_from_gstring(g));
 
   if (logging_mode & LOG_MODE_SYSLOG)
     write_syslog(LOG_ALERT, log_buffer);
@@ -1185,14 +1190,14 @@ if (flags & LOG_PANIC)
       i = i;	/* compiler quietening */
       }
 
-    written_len = write_to_fd_buf(paniclogfd, log_buffer, length);
-    if (written_len != length)
+    written_len = write_to_fd_buf(paniclogfd, g->s, g->ptr);
+    if (written_len != g->ptr)
       {
       int save_errno = errno;
       write_syslog(LOG_CRIT, log_buffer);
       sprintf(CS log_buffer, "write failed on panic log: length=%d result=%d "
-        "errno=%d (%s)", length, (int)written_len, save_errno, strerror(save_errno));
-      write_syslog(LOG_CRIT, log_buffer);
+        "errno=%d (%s)", g->ptr, (int)written_len, save_errno, strerror(save_errno));
+      write_syslog(LOG_CRIT, string_from_gstring(g));
       flags |= LOG_PANIC_DIE;
       }
 

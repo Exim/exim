@@ -174,15 +174,22 @@ Returns:   nothing
 void
 set_process_info(const char *format, ...)
 {
-int len = sprintf(CS process_info, "%5d ", (int)getpid());
+gstring gs = { .size = PROCESS_INFO_SIZE - 2, .ptr = 0, .s = process_info };
+gstring * g;
+int len;
 va_list ap;
+
+g = string_fmt_append(&gs, "%5d ", (int)getpid());
+len = g->ptr;
 va_start(ap, format);
-if (!string_vformat(process_info + len, PROCESS_INFO_SIZE - len - 2, format, ap))
-  Ustrcpy(process_info + len, "**** string overflowed buffer ****");
-len = Ustrlen(process_info);
-process_info[len+0] = '\n';
-process_info[len+1] = '\0';
-process_info_len = len + 1;
+if (!string_vformat(g, FALSE, format, ap))
+  {
+  gs.ptr = len;
+  g = string_cat(&gs, US"**** string overflowed buffer ****");
+  }
+g = string_catn(g, US"\n", 1);
+string_from_gstring(g);
+process_info_len = g->ptr;
 DEBUG(D_process_info) debug_printf("set_process_info: %s", process_info);
 va_end(ap);
 }

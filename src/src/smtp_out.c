@@ -512,34 +512,34 @@ int
 smtp_write_command(void * sx, int mode, const char *format, ...)
 {
 smtp_outblock * outblock = &((smtp_context *)sx)->outblock;
-int count;
 int rc = 0;
-va_list ap;
 
 if (format)
   {
+  gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
+  va_list ap;
+
   va_start(ap, format);
-  if (!string_vformat(big_buffer, big_buffer_size, CS format, ap))
+  if (!string_vformat(&gs, FALSE, CS format, ap))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
       "SMTP");
   va_end(ap);
-  count = Ustrlen(big_buffer);
+  string_from_gstring(&gs);
 
-  if (count > outblock->buffersize)
+  if (gs.ptr > outblock->buffersize)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
       "SMTP");
 
-  if (count > outblock->buffersize - (outblock->ptr - outblock->buffer))
+  if (gs.ptr > outblock->buffersize - (outblock->ptr - outblock->buffer))
     {
     rc = outblock->cmd_count;                 /* flush resets */
     if (!flush_buffer(outblock, SCMD_FLUSH)) return -1;
     }
 
-  Ustrncpy(CS outblock->ptr, big_buffer, count);
-  outblock->ptr += count;
+  Ustrncpy(CS outblock->ptr, gs.s, gs.ptr);
+  outblock->ptr += gs.ptr;
   outblock->cmd_count++;
-  count -= 2;
-  big_buffer[count] = 0;     /* remove \r\n for error message */
+  gs.ptr -= 2; string_from_gstring(&gs); /* remove \r\n for error message */
 
   /* We want to hide the actual data sent in AUTH transactions from reflections
   and logs. While authenticating, a flag is set in the outblock to enable this.

@@ -233,18 +233,26 @@ if (indent > 0)
 /* Use the checked formatting routine to ensure that the buffer
 does not overflow. Ensure there's space for a newline at the end. */
 
-if (!string_vformat(debug_ptr,
-     sizeof(debug_buffer) - (debug_ptr - debug_buffer) - 1, format, ap))
   {
-  uschar *s = US"**** debug string too long - truncated ****\n";
-  uschar *p = debug_buffer + Ustrlen(debug_buffer);
-  int maxlen = sizeof(debug_buffer) - Ustrlen(s) - 3;
-  if (p > debug_buffer + maxlen) p = debug_buffer + maxlen;
-  if (p > debug_buffer && p[-1] != '\n') *p++ = '\n';
-  Ustrcpy(p, s);
+  gstring gs = { .size = (int)sizeof(debug_buffer) - 1,
+		.ptr = debug_ptr - debug_buffer,
+		.s = debug_buffer };
+  if (!string_vformat(&gs, FALSE, format, ap))
+    {
+    uschar * s = US"**** debug string too long - truncated ****\n";
+    uschar * p = gs.s + gs.ptr;
+    int maxlen = gs.size - Ustrlen(s) - 2;
+    if (p > gs.s + maxlen) p = gs.s + maxlen;
+    if (p > gs.s && p[-1] != '\n') *p++ = '\n';
+    Ustrcpy(p, s);
+    while(*debug_ptr) debug_ptr++;
+    }
+  else
+    {
+    string_from_gstring(&gs);
+    debug_ptr = gs.s + gs.ptr;
+    }
   }
-
-while(*debug_ptr) debug_ptr++;
 
 /* Output the line if it is complete. If we added any prefix data and there
 are internal newlines, make sure the prefix is on the continuation lines,

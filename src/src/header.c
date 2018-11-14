@@ -98,12 +98,14 @@ header_line **hptr;
 
 uschar *p, *q;
 uschar buffer[HEADER_ADD_BUFFER_SIZE];
+gstring gs = { .size = HEADER_ADD_BUFFER_SIZE, .ptr = 0, .s = buffer };
 
 if (!header_last) return;
 
-if (!string_vformat(buffer, sizeof(buffer), format, ap))
+if (!string_vformat(&gs, FALSE, format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "string too long in header_add: "
-    "%.100s ...", buffer);
+    "%.100s ...", string_from_gstring(&gs));
+string_from_gstring(&gs);
 
 /* Find where to insert this header */
 

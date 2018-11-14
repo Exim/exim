@@ -2594,12 +2594,13 @@ characters, so the code below should be safe. */
 
 if (whichrrs & HOST_FIND_BY_SRV)
   {
-  uschar buffer[300];
-  uschar *temp_fully_qualified_name = buffer;
+  gstring * g;
+  uschar * temp_fully_qualified_name;
   int prefix_length;
 
-  (void)sprintf(CS buffer, "_%s._tcp.%n%.256s", srv_service, &prefix_length,
-    host->name);
+  g = string_fmt_append(NULL, "_%s._tcp.%n%.256s",
+	srv_service, &prefix_length, host->name);
+  temp_fully_qualified_name = string_from_gstring(g);
   ind_type = T_SRV;
 
   /* Search for SRV records. If the fully qualified name is different to
@@ -2608,7 +2609,8 @@ if (whichrrs & HOST_FIND_BY_SRV)
 
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup_timerwrap(&dnsa, buffer, ind_type, CUSS &temp_fully_qualified_name);
+  rc = dns_lookup_timerwrap(&dnsa, temp_fully_qualified_name, ind_type,
+	CUSS &temp_fully_qualified_name);
 
   DEBUG(D_dns)
     if ((dnssec_request || dnssec_require)
@@ -2624,7 +2626,7 @@ if (whichrrs & HOST_FIND_BY_SRV)
       { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
     }
 
-  if (temp_fully_qualified_name != buffer && fully_qualified_name != NULL)
+  if (temp_fully_qualified_name != g->s && fully_qualified_name != NULL)
     *fully_qualified_name = temp_fully_qualified_name + prefix_length;
 
   /* On DNS failures, we give the "try again" error unless the domain is

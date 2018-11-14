@@ -761,10 +761,9 @@ d_log_interface(gstring * g)
 if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
     && sending_ip_address)
   {
-  g = string_append(g, 2, US" I=[", sending_ip_address);
-  g = LOGGING(outgoing_port)
-    ? string_append(g, 2, US"]:", string_sprintf("%d", sending_port))
-    : string_catn(g, US"]", 1);
+  g = string_fmt_append(g, " I=[%s]", sending_ip_address);
+  if (LOGGING(outgoing_port))
+    g = string_fmt_append(g, "%d", sending_port);
   }
 return g;
 }
@@ -784,14 +783,14 @@ if (LOGGING(dnssec) && h->dnssec == DS_YES)
 g = string_append(g, 3, US" [", h->address, US"]");
 
 if (LOGGING(outgoing_port))
-  g = string_append(g, 2, US":", string_sprintf("%d", h->port));
+  g = string_fmt_append(g, ":%d", h->port);
 
 #ifdef SUPPORT_SOCKS
 if (LOGGING(proxy) && proxy_local_address)
   {
   g = string_append(g, 3, US" PRX=[", proxy_local_address, US"]");
   if (LOGGING(outgoing_port))
-    g = string_append(g, 2, US":", string_sprintf("%d", proxy_local_port));
+    g = string_fmt_append(g, ":%d", proxy_local_port);
   }
 #endif
 
@@ -1196,8 +1195,7 @@ if (addr->router)
 g = string_append(g, 2, US" T=", addr->transport->name);
 
 if (LOGGING(delivery_size))
-  g = string_append(g, 2, US" S=",
-    string_sprintf("%d", transport_count));
+  g = string_fmt_append(g, " S=%d", transport_count);
 
 /* Local delivery */
 
@@ -1345,13 +1343,12 @@ if (driver_name)
   {
   if (driver_kind[1] == 't' && addr->router)
     g = string_append(g, 2, US" R=", addr->router->name);
-  g = string_cat(g, string_sprintf(" %c=%s", toupper(driver_kind[1]), driver_name));
+  g = string_fmt_append(g, " %c=%s", toupper(driver_kind[1]), driver_name);
   }
 else if (driver_kind)
   g = string_append(g, 2, US" ", driver_kind);
 
-/*XXX need an s+s+p sprintf */
-g = string_cat(g, string_sprintf(" defer (%d)", addr->basic_errno));
+g = string_fmt_append(g, " defer (%d)", addr->basic_errno);
 
 if (addr->basic_errno > 0)
   g = string_append(g, 2, US": ",
@@ -1365,8 +1362,7 @@ if (addr->host_used)
   if (LOGGING(outgoing_port))
     {
     int port = addr->host_used->port;
-    g = string_append(g, 2,
-	  US":", port == PORT_NONE ? US"25" : string_sprintf("%d", port));
+    g = string_fmt_append(g, ":%d", port == PORT_NONE ? 25 : port);
     }
   }
 
@@ -1792,13 +1788,12 @@ addr->basic_errno = code;
 if (format)
   {
   va_list ap;
-  uschar buffer[512];
+  gstring * g;
+
   va_start(ap, format);
-  if (!string_vformat(buffer, sizeof(buffer), CS format, ap))
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-      "common_error expansion was longer than " SIZE_T_FMT, sizeof(buffer));
+  g = string_vformat(NULL, TRUE, CS format, ap);
   va_end(ap);
-  addr->message = string_copy(buffer);
+  addr->message = string_from_gstring(g);
   }
 
 for (addr2 = addr->next; addr2; addr2 = addr2->next)
