@@ -2165,8 +2165,6 @@ Arguments:
   log_msgptr  for error messages
   format      format string
   ...         supplementary arguments
-  ss          ratelimit option name
-  where       ACL_WHERE_xxxx indicating which ACL this is
 
 Returns:      ERROR
 */
@@ -3565,7 +3563,6 @@ for (; cb; cb = cb->next)
         s++;
         }
       while (isspace(*s)) s++;
-
 
       if (logbits == 0) logbits = LOG_MAIN;
       log_write(0, logbits, "%s", string_printing(s));

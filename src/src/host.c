@@ -1796,7 +1796,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
 /* If we have failed to find a name, return FAIL and log when required.
 NB host_lookup_msg must be in permanent store.  */
 
-if (sender_host_name == NULL)
+if (!sender_host_name)
   {
   if (host_checking || !f.log_testing_mode)
     log_write(L_host_lookup_failed, LOG_MAIN, "no host name found for IP "
@@ -1832,15 +1832,9 @@ for (hname = sender_host_name; hname; hname = *aliases++)
   {
   int rc;
   BOOL ok = FALSE;
-  host_item h;
-  dnssec_domains d;
-
-  h.next = NULL;
-  h.name = hname;
-  h.mx = MX_NONE;
-  h.address = NULL;
-  d.request = sender_host_dnssec ? US"*" : NULL;;
-  d.require = NULL;
+  host_item h = { .next = NULL, .name = hname, .mx = MX_NONE, .address = NULL };
+  dnssec_domains d =
+    { .request = sender_host_dnssec ? US"*" : NULL, .require = NULL };
 
   if (  (rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A | HOST_FIND_BY_AAAA,
 	  NULL, NULL, NULL, &d, NULL, NULL)) == HOST_FOUND
@@ -2598,7 +2592,7 @@ f.host_find_failed_syntax = FALSE;
 assume TCP protocol. DNS domain names are constrained to a maximum of 256
 characters, so the code below should be safe. */
 
-if ((whichrrs & HOST_FIND_BY_SRV) != 0)
+if (whichrrs & HOST_FIND_BY_SRV)
   {
   uschar buffer[300];
   uschar *temp_fully_qualified_name = buffer;

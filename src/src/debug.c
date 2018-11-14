@@ -244,7 +244,7 @@ if (!string_vformat(debug_ptr,
   Ustrcpy(p, s);
   }
 
-while(*debug_ptr != 0) debug_ptr++;
+while(*debug_ptr) debug_ptr++;
 
 /* Output the line if it is complete. If we added any prefix data and there
 are internal newlines, make sure the prefix is on the continuation lines,

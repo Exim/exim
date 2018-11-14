@@ -560,13 +560,13 @@ log_config_info(uschar *ptr, int flags)
 Ustrcpy(ptr, "Exim configuration error");
 ptr += 24;
 
-if ((flags & (LOG_CONFIG_FOR & ~LOG_CONFIG)) != 0)
+if (flags & (LOG_CONFIG_FOR & ~LOG_CONFIG))
   {
   Ustrcpy(ptr, " for ");
   return ptr + 5;
   }
 
-if ((flags & (LOG_CONFIG_IN & ~LOG_CONFIG)) != 0)
+if (flags & (LOG_CONFIG_IN & ~LOG_CONFIG))
   ptr += sprintf(CS ptr, " in line %d of %s", config_lineno, config_filename);
 
 Ustrcpy(ptr, ":\n  ");

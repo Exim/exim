@@ -99,7 +99,7 @@ header_line **hptr;
 uschar *p, *q;
 uschar buffer[HEADER_ADD_BUFFER_SIZE];
 
-if (header_last == NULL) return;
+if (!header_last) return;
 
 if (!string_vformat(buffer, sizeof(buffer), format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "string too long in header_add: "
@@ -107,7 +107,7 @@ if (!string_vformat(buffer, sizeof(buffer), format, ap))
 
 /* Find where to insert this header */
 
-if (name == NULL)
+if (!name)
   {
   if (after)
     {
@@ -122,7 +122,7 @@ if (name == NULL)
     received header is allocated and when it is actually filled in. We want
     that header to be first, so skip it for now. */
 
-    if (header_list->text == NULL)
+    if (!header_list->text)
       hptr = &header_list->next;
     h = *hptr;
     }
@@ -134,15 +134,14 @@ else
 
   /* Find the first non-deleted header with the correct name. */
 
-  for (hptr = &header_list; (h = *hptr) != NULL; hptr = &(h->next))
-    {
-    if (header_testname(h, name, len, TRUE)) break;
-    }
+  for (hptr = &header_list; (h = *hptr); hptr = &h->next)
+    if (header_testname(h, name, len, TRUE))
+      break;
 
   /* Handle the case where no header is found. To insert at the bottom, nothing
   needs to be done. */
 
-  if (h == NULL)
+  if (!h)
     {
     if (topnot)
       {
@@ -155,14 +154,12 @@ else
   true. In this case, we want to include deleted headers in the block. */
 
   else if (after)
-    {
     for (;;)
       {
-      if (h->next == NULL || !header_testname(h, name, len, FALSE)) break;
+      if (!h->next || !header_testname(h, name, len, FALSE)) break;
       hptr = &(h->next);
       h = h->next;
       }
-    }
   }
 
 /* Loop for multiple header lines, taking care about continuations. At this
@@ -174,7 +171,7 @@ for (p = q = buffer; *p != 0; )
   for (;;)
     {
     q = Ustrchr(q, '\n');
-    if (q == NULL) q = p + Ustrlen(p);
+    if (!q) q = p + Ustrlen(p);
     if (*(++q) != ' ' && *q != '\t') break;
     }
 
@@ -187,7 +184,7 @@ for (p = q = buffer; *p != 0; )
   *hptr = new;
   hptr = &(new->next);
 
-  if (h == NULL) header_last = new;
+  if (!h) header_last = new;
   p = q;
   }
 }

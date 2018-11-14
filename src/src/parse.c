@@ -876,7 +876,7 @@ int hlen;
 BOOL coded = FALSE;
 BOOL first_byte = FALSE;
 
-if (charset == NULL) charset = US"iso-8859-1";
+if (!charset) charset = US"iso-8859-1";
 
 /* We don't expect this to fail! */
 
@@ -925,7 +925,7 @@ for (; len > 0; len--)
 *t++ = '=';
 *t = 0;
 
-return coded? buffer : string;
+return coded ? buffer : string;
 }
 
 

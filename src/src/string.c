@@ -701,7 +701,7 @@ return yield;
 *          Format a string and save it           *
 *************************************************/
 
-/* The formatting is done by string_format, which checks the length of
+/* The formatting is done by string_vformat, which checks the length of
 everything.
 
 Arguments:

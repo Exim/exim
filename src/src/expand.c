@@ -7272,9 +7272,9 @@ while (*s != 0)
       case EOP_RFC2047:
         {
         uschar buffer[2048];
-	const uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
-          buffer, sizeof(buffer), FALSE);
-        yield = string_cat(yield, string);
+        yield = string_cat(yield,
+			    parse_quote_2047(sub, Ustrlen(sub), headers_charset,
+			      buffer, sizeof(buffer), FALSE));
         continue;
         }
 
