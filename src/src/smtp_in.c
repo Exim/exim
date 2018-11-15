@@ -3485,7 +3485,7 @@ int rc;
 uschar *user_msg = NULL;
 uschar *log_msg = NULL;
 
-/* Check for recursive acll */
+/* Check for recursive call */
 
 if (fl.smtp_exit_function_called)
   {
@@ -3510,9 +3510,7 @@ if (acl_smtp_notquit && reason)
 tls_in.active.sock = -1;
 
 /* Write an SMTP response if we are expected to give one. As the default
-responses are all internal, they should always fit in the buffer, but code a
-warning, just in case. Note that string_vformat() still leaves a complete
-string, even if it is incomplete. */
+responses are all internal, they should be reasonable size. */
 
 if (code && defaultrespond)
   {

@@ -651,18 +651,16 @@ uschar *t, *yield;
 /* First find the end of the string */
 
 if (*s != '\"')
-  {
   while (*s != 0 && !isspace(*s)) s++;
-  }
 else
   {
   s++;
-  while (*s != 0 && *s != '\"')
+  while (*s && *s != '\"')
     {
     if (*s == '\\') (void)string_interpret_escape(&s);
     s++;
     }
-  if (*s != 0) s++;
+  if (*s) s++;
   }
 
 /* Get enough store to copy into */

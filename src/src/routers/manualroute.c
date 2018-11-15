@@ -159,15 +159,15 @@ parse_route_item(const uschar *s, const uschar **domain, const uschar **hostlist
 {
 while (*s != 0 && isspace(*s)) s++;
 
-if (domain != NULL)
+if (domain)
   {
-  if (*s == 0) return FALSE;            /* missing data */
+  if (!*s) return FALSE;            /* missing data */
   *domain = string_dequote(&s);
-  while (*s != 0 && isspace(*s)) s++;
+  while (*s && isspace(*s)) s++;
   }
 
 *hostlist = string_dequote(&s);
-while (*s != 0 && isspace(*s)) s++;
+while (*s && isspace(*s)) s++;
 *options = s;
 return TRUE;
 }
@@ -261,7 +261,7 @@ DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
 /* The initialization check ensures that either route_list or route_data is
 set. */
 
-if (ob->route_list != NULL)
+if (ob->route_list)
   {
   int sep = -(';');             /* Default is semicolon */
   listptr = ob->route_list;
@@ -289,7 +289,7 @@ if (ob->route_list != NULL)
       }
     }
 
-  if (route_item == NULL) return DECLINE;  /* No pattern in the list matched */
+  if (!route_item) return DECLINE;  /* No pattern in the list matched */
   }
 
 /* Handle a single routing item in route_data. If it expands to an empty
@@ -297,8 +297,8 @@ string, decline. */
 
 else
   {
-  route_item = rf_expand_data(addr, ob->route_data, &rc);
-  if (route_item == NULL) return rc;
+  if (!(route_item = rf_expand_data(addr, ob->route_data, &rc)))
+    return rc;
   (void) parse_route_item(route_item, NULL, &hostlist, &options);
   if (hostlist[0] == 0) return DECLINE;
   }

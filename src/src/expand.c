@@ -1957,7 +1957,7 @@ switch (vp->type)
   case vtype_pspace:
     {
     int inodes;
-    sprintf(CS var_buffer, "%d",
+    sprintf(CS var_buffer, PR_EXIM_ARITH,
       receive_statvfs(val == (void *)TRUE, &inodes));
     }
   return var_buffer;

@@ -736,7 +736,6 @@ Returns:    nothing
 void
 log_write(unsigned int selector, int flags, const char *format, ...)
 {
-uschar * ptr;
 int paniclogfd;
 ssize_t written_len;
 gstring gs = { .size = LOG_BUFFER_SIZE-1, .ptr = 0, .s = log_buffer };

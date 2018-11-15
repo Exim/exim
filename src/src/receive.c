@@ -273,8 +273,8 @@ if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
   if ((space >= 0 && space < check_spool_space) ||
       (inodes >= 0 && inodes < check_spool_inodes))
     {
-    log_write(0, LOG_MAIN, "spool directory space check failed: space=%d "
-      "inodes=%d", space, inodes);
+    log_write(0, LOG_MAIN, "spool directory space check failed: space="
+      PR_EXIM_ARITH " inodes=%d", space, inodes);
     return FALSE;
     }
   }

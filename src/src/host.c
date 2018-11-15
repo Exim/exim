@@ -2788,8 +2788,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
      rr;
      rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
-  int precedence;
-  int weight = 0;        /* For SRV records */
+  int precedence, weight;
   int port = PORT_NONE;
   const uschar * s = rr->data;	/* MUST be unsigned for GETSHORT */
   uschar data[256];
@@ -2801,13 +2800,11 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
 
   if (ind_type == T_MX)
     weight = random_number(500);
-
-  /* SRV records are specified with a port and a weight. The weight is used
-  in a special algorithm. However, to start with, we just use it to order the
-  records of equal priority (precedence). */
-
   else
     {
+    /* SRV records are specified with a port and a weight. The weight is used
+    in a special algorithm. However, to start with, we just use it to order the
+    records of equal priority (precedence). */
     GETSHORT(weight, s);
     GETSHORT(port, s);
     }
@@ -2822,17 +2819,16 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   never know what junk might get into the DNS (and this case has been seen on
   more than one occasion). */
 
-  if (last != NULL)       /* This is not the first record */
+  if (last)       /* This is not the first record */
     {
     host_item *prev = NULL;
 
     for (h = host; h != last->next; prev = h, h = h->next)
-      {
       if (strcmpic(h->name, data) == 0)
         {
         DEBUG(D_host_lookup)
           debug_printf("discarded duplicate host %s (MX=%d)\n", data,
-            (precedence > h->mx)? precedence : h->mx);
+            precedence > h->mx ? precedence : h->mx);
         if (precedence >= h->mx) goto NEXT_MX_RR; /* Skip greater precedence */
         if (h == host)                            /* Override first item */
           {
@@ -2848,7 +2844,6 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
         if (h == last) last = prev;
         break;
         }
-      }
     }
 
   /* If this is the first MX or SRV record, put the data into the existing host
@@ -2867,10 +2862,9 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     host->dnssec = dnssec;
     last = host;
     }
+  else
 
   /* Make a new host item and seek the correct insertion place */
-
-  else
     {
     int sort_key = precedence * 1000 + weight;
     host_item *next = store_get(sizeof(host_item));
@@ -2895,21 +2889,18 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
       host->next = next;
       if (last == host) last = next;
       }
+    else
 
     /* Else scan down the items we have inserted as part of this exercise;
     don't go further. */
-
-    else
       {
       for (h = host; h != last; h = h->next)
-        {
         if (sort_key < h->next->sort_key)
           {
           next->next = h->next;
           h->next = next;
           break;
           }
-        }
 
       /* Join on after the last host item that's part of this
       processing if we haven't stopped sooner. */
@@ -2986,10 +2977,9 @@ if (ind_type == T_SRV)
 
       for (ppptr = pptr, hhh = h;
            hhh != hh;
-           ppptr = &(hhh->next), hhh = hhh->next)
-        {
-        if (hhh->sort_key >= randomizer) break;
-        }
+           ppptr = &hhh->next, hhh = hhh->next)
+        if (hhh->sort_key >= randomizer)
+	  break;
 
       /* hhh now points to the host that should go first; ppptr points to the
       place that points to it. Unfortunately, if the start of the minilist is
@@ -3014,7 +3004,6 @@ if (ind_type == T_SRV)
           hhh->next = temp.next;
           h->next = hhh;
           }
-
         else
           {
           hhh->next = h;               /* The rest of the chain follows it */
