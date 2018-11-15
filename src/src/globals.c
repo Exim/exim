@@ -1220,7 +1220,7 @@ pid_t   queue_run_pid          = (pid_t)0;
 int     queue_run_pipe         = -1;
 uschar *queue_smtp_domains     = NULL;
 
-unsigned int random_seed       = 0;
+uint32_t random_seed	       = 0;
 tree_node *ratelimiters_cmd    = NULL;
 tree_node *ratelimiters_conn   = NULL;
 tree_node *ratelimiters_mail   = NULL;

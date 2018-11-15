@@ -53,7 +53,8 @@ typedef struct __res_state *res_state;
 #endif
 #define TIME_T_FMT "%lld"
 
-/* seems arpa/nameser.h does not define this */
-#define NS_MAXMSG 16380
+/* seems arpa/nameser.h does not define this.
+Space-constrained devices could use much smaller; a few k. */
+#define NS_MAXMSG 65535
 
 /* End */
