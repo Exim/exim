@@ -1358,7 +1358,11 @@ while (*fp)
     {
     /* Avoid string_copyn() due to COMPILE_UTILITY */
     if (g->ptr >= lim - 1)
-      if (extend) gstring_grow(g, g->ptr, 1); else return NULL;
+      {
+      if (!extend) return NULL;
+      gstring_grow(g, g->ptr, 1);
+      lim = g->size - 1;
+      }
     g->s[g->ptr++] = (uschar) *fp++;
     continue;
     }
@@ -1426,7 +1430,12 @@ while (*fp)
     case 'X':
       width = length > L_LONG ? 24 : 12;
       if (g->ptr >= lim - width)
-	if (extend) gstring_grow(g, g->ptr, width); else return NULL;
+	{
+	if (!extend) return NULL;
+	gstring_grow(g, g->ptr, width);
+	lim = g->size - 1;
+	gp = CS g->s + g->ptr;
+	}
       strncpy(newformat, item_start, fp - item_start);
       newformat[fp - item_start] = 0;
 
@@ -1451,7 +1460,12 @@ while (*fp)
       {
       void * ptr;
       if (g->ptr >= lim - 24)
-	if (extend) gstring_grow(g, g->ptr, 24); else return NULL;
+	{
+	if (!extend) return NULL;
+	gstring_grow(g, g->ptr, 24);
+	lim = g->size - 1;
+	gp = CS g->s + g->ptr;
+	}
       /* sprintf() saying "(nil)" for a null pointer seems unreliable.
       Handle it explicitly. */
       if ((ptr = va_arg(ap, void *)))
@@ -1479,7 +1493,12 @@ while (*fp)
     case 'G':
       if (precision < 0) precision = 6;
       if (g->ptr >= lim - precision - 8)
-	if (extend) gstring_grow(g, g->ptr, precision+8); else return NULL;
+	{
+	if (!extend) return NULL;
+	gstring_grow(g, g->ptr, precision+8);
+	lim = g->size - 1;
+	gp = CS g->s + g->ptr;
+	}
       strncpy(newformat, item_start, fp - item_start);
       newformat[fp-item_start] = 0;
       if (length == L_LONGDOUBLE)
@@ -1492,13 +1511,21 @@ while (*fp)
 
     case '%':
       if (g->ptr >= lim - 1)
-	if (extend) gstring_grow(g, g->ptr, 1); else return NULL;
+	{
+	if (!extend) return NULL;
+	gstring_grow(g, g->ptr, 1);
+	lim = g->size - 1;
+	}
       g->s[g->ptr++] = (uschar) '%';
       break;
 
     case 'c':
       if (g->ptr >= lim - 1)
-	if (extend) gstring_grow(g, g->ptr, 1); else return NULL;
+	{
+	if (!extend) return NULL;
+	gstring_grow(g, g->ptr, 1);
+	lim = g->size - 1;
+	}
       g->s[g->ptr++] = (uschar) va_arg(ap, int);
       break;
 
@@ -1563,7 +1590,11 @@ while (*fp)
 	  }
 	}
       else if (g->ptr >= lim - width)
-	gstring_grow(g, g->ptr, width);
+	{
+	gstring_grow(g, g->ptr, width - (lim - g->ptr));
+	lim = g->size - 1;
+	gp = CS g->s + g->ptr;
+	}
 
       g->ptr += sprintf(gp, "%*.*s", width, precision, s);
       if (fp[-1] == 'S')
