@@ -106,10 +106,10 @@ Returns:         nothing
 static void
 never_error(uschar *log_msg, uschar *smtp_msg, int was_errno)
 {
-uschar *emsg = (was_errno <= 0)? US"" :
-  string_sprintf(": %s", strerror(was_errno));
+uschar *emsg = was_errno <= 0
+  ? US"" : string_sprintf(": %s", strerror(was_errno));
 log_write(0, LOG_MAIN|LOG_PANIC, "%s%s", log_msg, emsg);
-if (smtp_out != NULL) smtp_printf("421 %s\r\n", FALSE, smtp_msg);
+if (smtp_out) smtp_printf("421 %s\r\n", FALSE, smtp_msg);
 }
 
 
@@ -202,11 +202,11 @@ memory is reclaimed. */
 whofrom = string_append(NULL, 3, "[", sender_host_address, "]");
 
 if (LOGGING(incoming_port))
-  whofrom = string_append(whofrom, 2, ":", string_sprintf("%d", sender_host_port));
+  whofrom = string_fmt_append(whofrom, ":%d", sender_host_port);
 
 if (LOGGING(incoming_interface))
-  whofrom = string_append(whofrom, 4, " I=[",
-    interface_address, "]:", string_sprintf("%d", interface_port));
+  whofrom = string_fmt_append(whofrom, " I=[%s]:%d",
+    interface_address, interface_port);
 
 (void) string_from_gstring(whofrom);    /* Terminate the newly-built string */
 

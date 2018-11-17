@@ -1306,11 +1306,8 @@ if (sender_fullhost)
   if (LOGGING(dnssec) && sender_host_dnssec)	/*XXX sender_helo_dnssec? */
     g = string_catn(g, US" DS", 3);
   g = string_append(g, 2, US" H=", sender_fullhost);
-  if (LOGGING(incoming_interface) && interface_address != NULL)
-    {
-    g = string_cat(g,
-      string_sprintf(" I=[%s]:%d", interface_address, interface_port));
-    }
+  if (LOGGING(incoming_interface) && interface_address)
+    g = string_fmt_append(g, " I=[%s]:%d", interface_address, interface_port);
   }
 if (f.tcp_in_fastopen && !f.tcp_in_fastopen_logged)
   {

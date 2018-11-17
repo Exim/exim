@@ -192,19 +192,18 @@ if (!(s = sig->domain)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, "d=", s);
 if (!(s = sig->selector)) s = US"<UNSET>";
 logmsg = string_append(logmsg, 2, " s=", s);
-logmsg = string_append(logmsg, 7,
-  " c=", sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-  "/",   sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
-  " a=", dkim_sig_to_a_tag(sig),
-string_sprintf(" b=" SIZE_T_FMT,
-		(int)sig->sighash.len > -1 ? sig->sighash.len * 8 : 0));
+logmsg = string_fmt_append(logmsg, " c=%s/%s a=%s b=" SIZE_T_FMT,
+	  sig->canon_headers == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+	  sig->canon_body    == PDKIM_CANON_SIMPLE ? "simple" : "relaxed",
+	  dkim_sig_to_a_tag(sig),
+	  (int)sig->sighash.len > -1 ? sig->sighash.len * 8 : (size_t)0);
 if ((s= sig->identity)) logmsg = string_append(logmsg, 2, " i=", s);
-if (sig->created > 0) logmsg = string_cat(logmsg,
-			      string_sprintf(" t=%lu", sig->created));
-if (sig->expires > 0) logmsg = string_cat(logmsg,
-			      string_sprintf(" x=%lu", sig->expires));
-if (sig->bodylength > -1) logmsg = string_cat(logmsg,
-			      string_sprintf(" l=%lu", sig->bodylength));
+if (sig->created > 0) logmsg = string_fmt_append(logmsg, " t=%lu",
+				    sig->created);
+if (sig->expires > 0) logmsg = string_fmt_append(logmsg, " x=%lu",
+				    sig->expires);
+if (sig->bodylength > -1) logmsg = string_fmt_append(logmsg, " l=%lu",
+				    sig->bodylength);
 
 if (sig->verify_status & PDKIM_VERIFY_POLICY)
   logmsg = string_append(logmsg, 5,

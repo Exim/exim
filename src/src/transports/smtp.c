@@ -668,22 +668,22 @@ Returns:   nothing
 static void
 write_logs(const host_item *host, const uschar *suffix, int basic_errno)
 {
-uschar *message = LOGGING(outgoing_port)
-  ? string_sprintf("H=%s [%s]:%d", host->name, host->address,
+gstring * message = LOGGING(outgoing_port)
+  ? string_fmt_append(NULL, "H=%s [%s]:%d", host->name, host->address,
 		    host->port == PORT_NONE ? 25 : host->port)
-  : string_sprintf("H=%s [%s]", host->name, host->address);
+  : string_fmt_append(NULL, "H=%s [%s]", host->name, host->address);
 
 if (suffix)
   {
-  message = string_sprintf("%s: %s", message, suffix);
+  message = string_fmt_append(message, ": %s", suffix);
   if (basic_errno > 0)
-    message = string_sprintf("%s: %s", message, strerror(basic_errno));
+    message = string_fmt_append(message, ": %s", strerror(basic_errno));
   }
 else
-  message = string_sprintf("%s %s", message, exim_errstr(basic_errno));
+  message = string_fmt_append(message, " %s", exim_errstr(basic_errno));
 
-log_write(0, LOG_MAIN, "%s", message);
-deliver_msglog("%s %s\n", tod_stamp(tod_log), message);
+log_write(0, LOG_MAIN, "%s", string_from_gstring(message));
+deliver_msglog("%s %s\n", tod_stamp(tod_log), message->s);
 }
 
 static void

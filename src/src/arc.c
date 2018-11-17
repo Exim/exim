@@ -1194,7 +1194,7 @@ arc_line * al = (arc_line *)(as+1);
 header_line * h = (header_line *)(al+1);
 
 g = string_catn(g, ARC_HDR_AAR, ARC_HDRLEN_AAR);
-g = string_cat(g, string_sprintf(" i=%d; %s;\r\n\t", instance, identity));
+g = string_fmt_append(g, " i=%d; %s;\r\n\t", instance, identity);
 g = string_catn(g, US ar->data, ar->len);
 
 h->slen = g->ptr - aar_off;
@@ -1307,20 +1307,14 @@ header_line * h = (header_line *)(al+1);
 /* Construct the to-be-signed AMS pseudo-header: everything but the sig. */
 
 ams_off = g->ptr;
-g = string_append(g, 7,
-      ARC_HDR_AMS,
-      US" i=", string_sprintf("%d", instance),
-      US"; a=rsa-sha256; c=relaxed; d=", identity,		/*XXX hardwired */
-      US"; s=", selector);
+g = string_fmt_append(g, "%s i=%d; a=rsa-sha256; c=relaxed; d=%s; s=%s",
+      ARC_HDR_AMS, instance, identity, selector);	/*XXX hardwired a= */
 if (options & ARC_SIGN_OPT_TSTAMP)
-  g = string_append(g, 2,
-      US"; t=", string_sprintf("%lu", (u_long)now));
+  g = string_fmt_append(g, "; t=%lu", (u_long)now);
 if (options & ARC_SIGN_OPT_EXPIRE)
-  g = string_append(g, 2,
-      US"; x=", string_sprintf("%lu", (u_long)expire));
-g = string_append(g, 3,
-      US";\r\n\tbh=", pdkim_encode_base64(bodyhash),
-      US";\r\n\th=");
+  g = string_fmt_append(g, "; x=%lu", (u_long)expire);
+g = string_fmt_append(g, ";\r\n\tbh=%s;\r\n\th=",
+      pdkim_encode_base64(bodyhash));
 
 for(col = 3; rheaders; rheaders = rheaders->prev)
   {
@@ -1828,16 +1822,14 @@ if (arc_state)
   g = string_append(g, 2, US";\n\tarc=", arc_state);
   if (arc_received_instance > 0)
     {
-    g = string_append(g, 3, US" (i=",
-      string_sprintf("%d", arc_received_instance), US")");
+    g = string_fmt_append(g, " (i=%d)", arc_received_instance);
     if (arc_state_reason)
       g = string_append(g, 3, US"(", arc_state_reason, US")");
     g = string_catn(g, US" header.s=", 10);
     highest_ams = arc_received->hdr_ams;
     g = string_catn(g, highest_ams->s.data, highest_ams->s.len);
 
-    g = string_append(g, 2,
-      US" arc.oldest-pass=", string_sprintf("%d", arc_oldest_pass));
+    g = string_fmt_append(g, " arc.oldest-pass=%d", arc_oldest_pass);
 
     if (sender_host_address)
       g = string_append(g, 2, US" smtp.remote-ip=", sender_host_address);

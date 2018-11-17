@@ -1777,7 +1777,7 @@ if (f.sender_host_unknown || f.sender_host_notsocket)
 if (f.is_inetd)
   return string_sprintf("SMTP connection from %s (via inetd)", hostname);
 
-if (LOGGING(incoming_interface) && interface_address != NULL)
+if (LOGGING(incoming_interface) && interface_address)
   return string_sprintf("SMTP connection from %s I=[%s]:%d", hostname,
     interface_address, interface_port);
 
@@ -4262,20 +4262,15 @@ while (done <= 0)
       smtp_code = US"250 ";        /* Default response code plus space*/
       if (!user_msg)
 	{
-	s = string_sprintf("%.3s %s Hello %s%s%s",
+	g = string_fmt_append(NULL, "%.3s %s Hello %s%s%s",
 	  smtp_code,
 	  smtp_active_hostname,
 	  sender_ident ? sender_ident : US"",
 	  sender_ident ? US" at " : US"",
 	  sender_host_name ? sender_host_name : sender_helo_name);
-	g = string_cat(NULL, s);
 
 	if (sender_host_address)
-	  {
-	  g = string_catn(g, US" [", 2);
-	  g = string_cat (g, sender_host_address);
-	  g = string_catn(g, US"]", 1);
-	  }
+	  g = string_fmt_append(g, " [%s]", sender_host_address);
 	}
 
       /* A user-supplied EHLO greeting may not contain more than one line. Note
@@ -4313,11 +4308,8 @@ while (done <= 0)
 	till then, VRFY and EXPN can be used after EHLO when space is short. */
 
 	if (thismessage_size_limit > 0)
-	  {
-	  sprintf(CS big_buffer, "%.3s-SIZE %d\r\n", smtp_code,
+	  g = string_fmt_append(g, "%.3s-SIZE %d\r\n", smtp_code,
 	    thismessage_size_limit);
-	  g = string_cat(g, big_buffer);
-	  }
 	else
 	  {
 	  g = string_catn(g, smtp_code, 3);

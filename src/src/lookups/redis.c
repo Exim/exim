@@ -291,7 +291,7 @@ switch (redis_reply->type)
       switch (entry->type)
 	{
 	case REDIS_REPLY_INTEGER:
-	  result = string_cat(result, string_sprintf("%d", entry->integer));
+	  result = string_fmt_append(result, "%d", entry->integer);
 	  break;
 	case REDIS_REPLY_STRING:
 	  result = string_catn(result, US entry->str, entry->len);
@@ -307,7 +307,7 @@ switch (redis_reply->type)
 	    switch (tentry->type)
 	      {
 	      case REDIS_REPLY_INTEGER:
-		result = string_cat(result, string_sprintf("%d", tentry->integer));
+		result = string_fmt_append(result, "%d", tentry->integer);
 		break;
 	      case REDIS_REPLY_STRING:
 		result = string_catn(result, US tentry->str, tentry->len);

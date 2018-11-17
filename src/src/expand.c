@@ -6674,7 +6674,6 @@ while (*s != 0)
 
       case EOP_BASE62D:
         {
-        uschar buf[16];
         uschar *tt = sub;
         unsigned long int n = 0;
         while (*tt != 0)
@@ -6689,8 +6688,7 @@ while (*s != 0)
             }
           n = n * BASE_62 + (t - base62_chars);
           }
-        (void)sprintf(CS buf, "%ld", n);
-        yield = string_cat(yield, buf);
+        yield = string_fmt_append(yield, "%ld", n);
         continue;
         }
 
@@ -6739,11 +6737,10 @@ while (*s != 0)
 	  md5 base;
 	  uschar digest[16];
 	  int j;
-	  char st[33];
 	  md5_start(&base);
 	  md5_end(&base, sub, Ustrlen(sub), digest);
-	  for(j = 0; j < 16; j++) sprintf(st+2*j, "%02x", digest[j]);
-	  yield = string_cat(yield, US st);
+	  for (j = 0; j < 16; j++)
+	    yield = string_fmt_append(yield, "%02x", digest[j]);
 	  }
         continue;
 
@@ -6760,11 +6757,10 @@ while (*s != 0)
 	  hctx h;
 	  uschar digest[20];
 	  int j;
-	  char st[41];
 	  sha1_start(&h);
 	  sha1_end(&h, sub, Ustrlen(sub), digest);
-	  for(j = 0; j < 20; j++) sprintf(st+2*j, "%02X", digest[j]);
-	  yield = string_catn(yield, US st, 40);
+	  for (j = 0; j < 20; j++)
+	    yield = string_fmt_append(yield, "%02X", digest[j]);
 	  }
         continue;
 
@@ -6779,7 +6775,6 @@ while (*s != 0)
 	  {
 	  hctx h;
 	  blob b;
-	  char st[3];
 
 	  if (!exim_sha_init(&h, HASH_SHA2_256))
 	    {
@@ -6789,10 +6784,7 @@ while (*s != 0)
 	  exim_sha_update(&h, sub, Ustrlen(sub));
 	  exim_sha_finish(&h, &b);
 	  while (b.len-- > 0)
-	    {
-	    sprintf(st, "%02X", *b.data++);
-	    yield = string_catn(yield, US st, 2);
-	    }
+	    yield = string_fmt_append(yield, "%02X", *b.data++);
 	  }
 #else
 	  expand_string_message = US"sha256 only supported with TLS";
@@ -6804,7 +6796,6 @@ while (*s != 0)
 	{
 	hctx h;
 	blob b;
-	char st[3];
 	hashmethod m = !arg ? HASH_SHA3_256
 	  : Ustrcmp(arg, "224") == 0 ? HASH_SHA3_224
 	  : Ustrcmp(arg, "256") == 0 ? HASH_SHA3_256
@@ -6821,10 +6812,7 @@ while (*s != 0)
 	exim_sha_update(&h, sub, Ustrlen(sub));
 	exim_sha_finish(&h, &b);
 	while (b.len-- > 0)
-	  {
-	  sprintf(st, "%02X", *b.data++);
-	  yield = string_catn(yield, US st, 2);
-	  }
+	  yield = string_fmt_append(yield, "%02X", *b.data++);
 	}
         continue;
 #else
@@ -6888,7 +6876,7 @@ while (*s != 0)
         while (*(++t) != 0)
           {
           if (*t < 0x21 || 0x7E < *t)
-            yield = string_catn(yield, string_sprintf("\\x%02x", *t), 4);
+            yield = string_fmt_append(yield, "\\x%02x", *t);
 	  else
 	    yield = string_catn(yield, t, 1);
           }
@@ -6901,12 +6889,10 @@ while (*s != 0)
         {
 	int cnt = 0;
 	int sep = 0;
-	uschar * cp;
 	uschar buffer[256];
 
 	while (string_nextinlist(CUSS &sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
-	cp = string_sprintf("%d", cnt);
-        yield = string_cat(yield, cp);
+	yield = string_fmt_append(yield, "%d", cnt);
         continue;
         }
 
@@ -7481,7 +7467,7 @@ while (*s != 0)
 	for (s = sub; (c = *s); s++)
 	  yield = c < 127 && c != '\\'
 	    ? string_catn(yield, s, 1)
-	    : string_catn(yield, string_sprintf("\\%03o", c), 4);
+	    : string_fmt_append(yield, "\\%03o", c);
 	continue;
 	}
 
@@ -7493,15 +7479,14 @@ while (*s != 0)
         uschar *save_sub = sub;
         uschar *error = NULL;
         int_eximarith_t n = eval_expr(&sub, (c == EOP_EVAL10), &error, FALSE);
-        if (error != NULL)
+        if (error)
           {
           expand_string_message = string_sprintf("error in expression "
             "evaluation: %s (after processing \"%.*s\")", error,
 	    (int)(sub-save_sub), save_sub);
           goto EXPAND_FAILED;
           }
-        sprintf(CS var_buffer, PR_EXIM_ARITH, n);
-        yield = string_cat(yield, var_buffer);
+        yield = string_fmt_append(yield, PR_EXIM_ARITH, n);
         continue;
         }
 
@@ -7516,8 +7501,7 @@ while (*s != 0)
             "Exim time interval in \"%s\" operator", sub, name);
           goto EXPAND_FAILED;
           }
-        sprintf(CS var_buffer, "%d", n);
-        yield = string_cat(yield, var_buffer);
+        yield = string_fmt_append(yield, "%d", n);
         continue;
         }
 
@@ -7569,12 +7553,8 @@ while (*s != 0)
       /* strlen returns the length of the string */
 
       case EOP_STRLEN:
-        {
-        uschar buff[24];
-        (void)sprintf(CS buff, "%d", Ustrlen(sub));
-        yield = string_cat(yield, buff);
+        yield = string_fmt_append(yield, "%d", Ustrlen(sub));
         continue;
-        }
 
       /* length_n or l_n takes just the first n characters or the whole string,
       whichever is the shorter;
@@ -7607,7 +7587,7 @@ while (*s != 0)
         int len;
         uschar *ret;
 
-        if (arg == NULL)
+        if (!arg)
           {
           expand_string_message = string_sprintf("missing values after %s",
             name);
@@ -7671,14 +7651,13 @@ while (*s != 0)
 
       case EOP_STAT:
         {
-        uschar *s;
         uschar smode[12];
         uschar **modetable[3];
         int i;
         mode_t mode;
         struct stat st;
 
-        if ((expand_forbid & RDO_EXISTS) != 0)
+        if (expand_forbid & RDO_EXISTS)
           {
           expand_string_message = US"Use of the stat() expansion is not permitted";
           goto EXPAND_FAILED;
@@ -7712,13 +7691,13 @@ while (*s != 0)
           }
 
         smode[10] = 0;
-        s = string_sprintf("mode=%04lo smode=%s inode=%ld device=%ld links=%ld "
+        yield = string_fmt_append(yield,
+	  "mode=%04lo smode=%s inode=%ld device=%ld links=%ld "
           "uid=%ld gid=%ld size=" OFF_T_FMT " atime=%ld mtime=%ld ctime=%ld",
           (long)(st.st_mode & 077777), smode, (long)st.st_ino,
           (long)st.st_dev, (long)st.st_nlink, (long)st.st_uid,
           (long)st.st_gid, st.st_size, (long)st.st_atime,
           (long)st.st_mtime, (long)st.st_ctime);
-        yield = string_cat(yield, s);
         continue;
         }
 
@@ -7726,14 +7705,11 @@ while (*s != 0)
 
       case EOP_RANDINT:
         {
-        int_eximarith_t max;
-        uschar *s;
+        int_eximarith_t max = expanded_string_integer(sub, TRUE);
 
-        max = expanded_string_integer(sub, TRUE);
-        if (expand_string_message != NULL)
+        if (expand_string_message)
           goto EXPAND_FAILED;
-        s = string_sprintf("%d", vaguely_random_number((int)max));
-        yield = string_cat(yield, s);
+        yield = string_fmt_append(yield, "%d", vaguely_random_number((int)max));
         continue;
         }
 
@@ -7759,9 +7735,9 @@ while (*s != 0)
       /* Unknown operator */
 
       default:
-      expand_string_message =
-        string_sprintf("unknown expansion operator \"%s\"", name);
-      goto EXPAND_FAILED;
+	expand_string_message =
+	  string_sprintf("unknown expansion operator \"%s\"", name);
+	goto EXPAND_FAILED;
       }
     }
 
