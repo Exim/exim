@@ -24112,6 +24112,8 @@ DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
 
 
 .option delay_after_cutoff smtp boolean true
+.cindex "final cutoff" "retries, controlling"
+.cindex retry "final cutoff"
 This option controls what happens when all remote IP addresses for a given
 domain have been inaccessible for so long that they have passed their retry
 cutoff times.
@@ -25867,10 +25869,13 @@ For local deliveries, one delivery attempt is always made for any subsequent
 messages. If this delivery fails, the address fails immediately. The
 post-cutoff retry time is not used.
 
+.cindex "final cutoff" "retries, controlling"
+.cindex retry "final cutoff"
 If the delivery is remote, there are two possibilities, controlled by the
 .oindex "&%delay_after_cutoff%&"
 &%delay_after_cutoff%& option of the &(smtp)& transport. The option is true by
-default. Until the post-cutoff retry time for one of the IP addresses is
+default. Until the post-cutoff retry time for one of the IP addresses,
+as set by the &%retry_data_expire%& option, is
 reached, the failing email address is bounced immediately, without a delivery
 attempt taking place. After that time, one new delivery attempt is made to
 those IP addresses that are past their retry times, and if that still fails,
