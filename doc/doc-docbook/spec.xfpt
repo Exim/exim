@@ -19610,7 +19610,9 @@ be enclosed in quotes if it contains white space.
 A list of hosts, whether obtained via &%route_data%& or &%route_list%&, is
 always separately expanded before use. If the expansion fails, the router
 declines. The result of the expansion must be a colon-separated list of names
-and/or IP addresses, optionally also including ports. The format of each item
+and/or IP addresses, optionally also including ports.
+If the list is written with spaces, it must be protected with qoutes.
+The format of each item
 in the list is described in the next section. The list separator can be changed
 as described in section &<<SECTlistconstruct>>&.
 
