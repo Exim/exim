@@ -11734,7 +11734,7 @@ When a message is submitted locally (that is, not over a TCP connection)
 the value of &$authenticated_id$& is normally the login name of the calling
 process. However, a trusted user can override this by means of the &%-oMai%&
 command line option.
-This second case also sets up inforamtion used by the
+This second case also sets up information used by the
 &$authresults$& expansion item.
 
 .vitem &$authenticated_fail_id$&
@@ -26152,12 +26152,15 @@ output, and Exim carries on processing.
 
 .option server_set_id authenticators string&!! unset
 .vindex "&$authenticated_id$&"
+.vindex "&$authenticated_fail_id$&"
 When an Exim server successfully authenticates a client, this string is
 expanded using data from the authentication, and preserved for any incoming
 messages in the variable &$authenticated_id$&. It is also included in the log
 lines for incoming messages. For example, a user/password authenticator
 configuration might preserve the user name that was used to authenticate, and
 refer to it subsequently during delivery of the message.
+On a failing authentication the expansion result is instead saved in
+the &$authenticated_fail_id$& variable.
 If expansion fails, the option is ignored.
 
 
