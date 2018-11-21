@@ -151,6 +151,10 @@ JH/32 For main options check_spool_space and check_inode_space, where the
       (i.e. more than 2 TB).  Accept E, P and T multipliers in addition to
       the previous G, M, k.
 
+JH/33 Bug 2338: Fix the cyrus-sasl authenticator to fill in the
+      $authenticated_fail_id variable on authentication failure.  Previously
+      it was unset.
+
 
 Exim version 4.91
 -----------------

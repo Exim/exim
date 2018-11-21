@@ -7,6 +7,8 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-8BITMIME
+??? 250-
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-AUTH ANONYMOUS PLAIN
@@ -18,7 +20,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 >>> AUTH ANONYMOUS
 ??? 334
 <<< 334 
->>> CALLER
+>>> ph10
 ??? 235
 <<< 235 Authentication succeeded
 >>> quit
