@@ -4096,11 +4096,10 @@ while (done <= 0)
       /* Force a reverse lookup if HELO quoted something in helo_lookup_domains
       because otherwise the log can be confusing. */
 
-      if (  !sender_host_name
-         && (deliver_domain = sender_helo_name,  /* set $domain */
-             match_isinlist(sender_helo_name, CUSS &helo_lookup_domains, 0,
-              &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL)) == OK)
-        (void)host_name_lookup();
+	if (  !sender_host_name
+	   && match_isinlist(sender_helo_name, CUSS &helo_lookup_domains, 0,
+		&domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK)
+	  (void)host_name_lookup();
 
       /* Rebuild the fullhost info to include the HELO name (and the real name
       if it was looked up.) */
