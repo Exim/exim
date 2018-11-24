@@ -36,7 +36,7 @@ extern auth_gsasl_options_block auth_gsasl_option_defaults;
 extern void auth_gsasl_init(auth_instance *);
 extern int auth_gsasl_server(auth_instance *, uschar *);
 extern int auth_gsasl_client(auth_instance *, smtp_inblock *,
-                                smtp_outblock *, int, uschar *, int);
+				int, uschar *, int);
 extern void auth_gsasl_version_report(FILE *f);
 
 /* End of gsasl_exim.h */
