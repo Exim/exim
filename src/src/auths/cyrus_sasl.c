@@ -397,108 +397,105 @@ while(rc==SASL_CONTINUE)
     sasl_done();
     return UNEXPECTED;
     }
-  else if( rc==SASL_FAIL     || rc==SASL_BUFOVER
-       || rc==SASL_BADMAC   || rc==SASL_BADAUTH
-       || rc==SASL_NOAUTHZ  || rc==SASL_ENCRYPT
-       || rc==SASL_EXPIRED  || rc==SASL_DISABLED
-       || rc==SASL_NOUSER   )
+  if (rc == SASL_CONTINUE)
+    continue;
+
+  /* Get the username and copy it into $auth1 and $1. The former is now the
+  preferred variable; the latter is the original variable. */
+
+  if ((sasl_getprop(conn, SASL_USERNAME, (const void **)(&out2))) != SASL_OK)
     {
-    /* these are considered permanent failure codes */
     HDEBUG(D_auth)
-      debug_printf("Cyrus SASL permanent failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
+      debug_printf("Cyrus SASL library will not tell us the username: %s\n",
+	  sasl_errstring(rc, NULL, NULL));
     log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
-       "Cyrus SASL permanent failure: %s", ablock->name, ob->server_mech,
+       "Cyrus SASL username fetch problem: %s", ablock->name, ob->server_mech,
        sasl_errstring(rc, NULL, NULL));
     sasl_dispose(&conn);
     sasl_done();
     return FAIL;
     }
-  else if(rc==SASL_NOMECH)
+  auth_vars[0] = expand_nstring[1] = string_copy(out2);
+  expand_nlength[1] = Ustrlen(out2);
+  expand_nmax = 1;
+
+  switch (rc)
     {
-    /* this is a temporary failure, because the mechanism is not
-     * available for this user. If it wasn't available at all, we
-     * shouldn't have got here in the first place...
-     */
-    HDEBUG(D_auth)
-      debug_printf("Cyrus SASL temporary failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
-    auth_defer_msg =
-        string_sprintf("Cyrus SASL: mechanism %s not available", ob->server_mech);
-    sasl_dispose(&conn);
-    sasl_done();
-    return DEFER;
-    }
-  else if(!(rc==SASL_OK || rc==SASL_CONTINUE))
-    {
-    /* Anything else is a temporary failure, and we'll let SASL print out
-     * the error string for us
-     */
-    HDEBUG(D_auth)
-      debug_printf("Cyrus SASL temporary failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
-    auth_defer_msg =
-        string_sprintf("Cyrus SASL: %s", sasl_errstring(rc, NULL, NULL));
-    sasl_dispose(&conn);
-    sasl_done();
-    return DEFER;
-    }
-  else if(rc==SASL_OK)
-    {
-    /* Get the username and copy it into $auth1 and $1. The former is now the
-    preferred variable; the latter is the original variable. */
-    rc = sasl_getprop(conn, SASL_USERNAME, (const void **)(&out2));
-    if (rc != SASL_OK)
-      {
+    case SASL_FAIL: case SASL_BUFOVER: case SASL_BADMAC: case SASL_BADAUTH:
+    case SASL_NOAUTHZ: case SASL_ENCRYPT: case SASL_EXPIRED:
+    case SASL_DISABLED: case SASL_NOUSER:
+      /* these are considered permanent failure codes */
       HDEBUG(D_auth)
-        debug_printf("Cyrus SASL library will not tell us the username: %s\n",
-            sasl_errstring(rc, NULL, NULL));
+	debug_printf("Cyrus SASL permanent failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
       log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
-         "Cyrus SASL username fetch problem: %s", ablock->name, ob->server_mech,
-         sasl_errstring(rc, NULL, NULL));
+	 "Cyrus SASL permanent failure: %s", ablock->name, ob->server_mech,
+	 sasl_errstring(rc, NULL, NULL));
       sasl_dispose(&conn);
       sasl_done();
       return FAIL;
-      }
 
-    auth_vars[0] = expand_nstring[1] = string_copy(out2);
-    expand_nlength[1] = Ustrlen(expand_nstring[1]);
-    expand_nmax = 1;
-
-    HDEBUG(D_auth)
-      debug_printf("Cyrus SASL %s authentication succeeded for %s\n",
-          ob->server_mech, auth_vars[0]);
-
-    rc = sasl_getprop(conn, SASL_SSF, (const void **)(&negotiated_ssf_ptr));
-    if (rc != SASL_OK)
-      {
+    case SASL_NOMECH:
+      /* this is a temporary failure, because the mechanism is not
+       * available for this user. If it wasn't available at all, we
+       * shouldn't have got here in the first place...
+       */
       HDEBUG(D_auth)
-        debug_printf("Cyrus SASL library will not tell us the SSF: %s\n",
-            sasl_errstring(rc, NULL, NULL));
-      log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
-          "Cyrus SASL SSF value not available: %s", ablock->name, ob->server_mech,
-          sasl_errstring(rc, NULL, NULL));
+	debug_printf("Cyrus SASL temporary failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
+      auth_defer_msg =
+	  string_sprintf("Cyrus SASL: mechanism %s not available", ob->server_mech);
       sasl_dispose(&conn);
       sasl_done();
-      return FAIL;
-      }
-    negotiated_ssf = *negotiated_ssf_ptr;
-    HDEBUG(D_auth)
-      debug_printf("Cyrus SASL %s negotiated SSF: %d\n", ob->server_mech, negotiated_ssf);
-    if (negotiated_ssf > 0)
-      {
+      return DEFER;
+
+    case SASL_OK:
       HDEBUG(D_auth)
-        debug_printf("Exim does not implement SASL wrapping (needed for SSF %d).\n", negotiated_ssf);
-      log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
-          "Cyrus SASL SSF %d not supported by Exim", ablock->name, ob->server_mech, negotiated_ssf);
+	debug_printf("Cyrus SASL %s authentication succeeded for %s\n",
+	    ob->server_mech, auth_vars[0]);
+
+      if ((rc = sasl_getprop(conn, SASL_SSF, (const void **)(&negotiated_ssf_ptr)))!= SASL_OK)
+	{
+	HDEBUG(D_auth)
+	  debug_printf("Cyrus SASL library will not tell us the SSF: %s\n",
+	      sasl_errstring(rc, NULL, NULL));
+	log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+	    "Cyrus SASL SSF value not available: %s", ablock->name, ob->server_mech,
+	    sasl_errstring(rc, NULL, NULL));
+	sasl_dispose(&conn);
+	sasl_done();
+	return FAIL;
+	}
+      negotiated_ssf = *negotiated_ssf_ptr;
+      HDEBUG(D_auth)
+	debug_printf("Cyrus SASL %s negotiated SSF: %d\n", ob->server_mech, negotiated_ssf);
+      if (negotiated_ssf > 0)
+	{
+	HDEBUG(D_auth)
+	  debug_printf("Exim does not implement SASL wrapping (needed for SSF %d).\n", negotiated_ssf);
+	log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+	    "Cyrus SASL SSF %d not supported by Exim", ablock->name, ob->server_mech, negotiated_ssf);
+	sasl_dispose(&conn);
+	sasl_done();
+	return FAIL;
+	}
+
+      /* close down the connection, freeing up library's memory */
       sasl_dispose(&conn);
       sasl_done();
-      return FAIL;
-      }
 
-    /* close down the connection, freeing up library's memory */
-    sasl_dispose(&conn);
-    sasl_done();
+      /* Expand server_condition as an authorization check */
+      return auth_check_serv_cond(ablock);
 
-    /* Expand server_condition as an authorization check */
-    return auth_check_serv_cond(ablock);
+    default:
+      /* Anything else is a temporary failure, and we'll let SASL print out
+       * the error string for us
+       */
+      HDEBUG(D_auth)
+	debug_printf("Cyrus SASL temporary failure %d (%s)\n", rc, sasl_errstring(rc, NULL, NULL));
+      auth_defer_msg =
+	  string_sprintf("Cyrus SASL: %s", sasl_errstring(rc, NULL, NULL));
+      sasl_dispose(&conn);
+      sasl_done();
+      return DEFER;
     }
   }
 /* NOTREACHED */

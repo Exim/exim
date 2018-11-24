@@ -67,6 +67,10 @@ JH/31 Fix a bad use of a copy function, which could be used to pointlessly
       copy a string over itself.  The library routine is documented as not
       supporting overlapping copies, and on MacOS it actually raised a SIGABRT.
 
+JH/33 Bug 2338: Fix the cyrus-sasl authenticator to fill in the
+      $authenticated_fail_id variable on authentication failure.  Previously
+      it was unset.
+
 
 Exim version 4.91
 -----------------
