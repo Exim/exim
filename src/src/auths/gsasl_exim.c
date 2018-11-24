@@ -84,8 +84,8 @@ auth_gsasl_options_block auth_gsasl_option_defaults = {
 /* Dummy values */
 void auth_gsasl_init(auth_instance *ablock) {}
 int auth_gsasl_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_gsasl_client(auth_instance *ablock, smtp_inblock *inblock,
-  smtp_outblock *outblock, int timeout, uschar *buffer, int buffsize) {return 0;}
+int auth_gsasl_client(auth_instance *ablock, smtp_inblock * sx,
+  int timeout, uschar *buffer, int buffsize) {return 0;}
 void auth_gsasl_version_report(FILE *f) {}
 
 #else   /*!MACRO_PREDEF*/
@@ -587,12 +587,11 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
 
 int
 auth_gsasl_client(
-  auth_instance *ablock,                 /* authenticator block */
-  smtp_inblock *inblock,                 /* connection inblock */
-  smtp_outblock *outblock,               /* connection outblock */
-  int timeout,                           /* command timeout */
-  uschar *buffer,                        /* buffer for reading response */
-  int buffsize)                          /* size of buffer */
+  auth_instance *ablock,		/* authenticator block */
+  smtp_inblock * sx,			/* connection */
+  int timeout,				/* command timeout */
+  uschar *buffer,			/* buffer for reading response */
+  int buffsize)				/* size of buffer */
 {
   HDEBUG(D_auth)
     debug_printf("Client side NOT IMPLEMENTED: you should not see this!\n");
