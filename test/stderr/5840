@@ -38,9 +38,6 @@
 >>>   SMTP>> STARTTLS
 >>> cmd buf flush 10 bytes
 >>>   SMTP<< 220 TLS go ahead
->>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
->>> ip4.ip4.ip4.ip4 in hosts_require_ocsp? no (option unset)
->>> ip4.ip4.ip4.ip4 in hosts_request_ocsp? no (end of list)
 >>>   SMTP>> EHLO myhost.test.ex
 >>> cmd buf flush 21 bytes
 >>>   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
