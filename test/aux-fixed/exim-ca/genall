@@ -26,7 +26,7 @@ do
     rm -fr "$idir"
 
     # create CA cert + templates
-    clica $V -D "$idir" -p password -B 1024 -I -N $iname -F -C http://crl.$iname/latest.crl -O http://oscp.$iname/
+    clica $V -D "$idir" -p password -B 2048 -I -N $iname -F -C http://crl.$iname/latest.crl -O http://oscp.$iname/
 
     # create server certs
     # -m <months>
@@ -160,7 +160,7 @@ do
     rm -fr "$idir"
 
     # create CA cert + templates
-    clica $V -D "$idir" -p password -B 1024 -I -N $iname -F \
+    clica $V -D "$idir" -p password -B 2048 -I -N $iname -F \
 	-k ec -q nistp521 \
 	-C http://crl.example.$tld/latest.crl -O http://oscp.example.$tld/
 

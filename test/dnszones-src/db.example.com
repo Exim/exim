@@ -32,7 +32,7 @@ server1     A       HOSTIPV4
 ;
 ;
 DNSSEC danebroken7  A       127.0.0.1
-DNSSEC _1225._tcp.danebroken7 TLSA 2 0 1 13646cc92c038932f57f752559271b893045eda39f765fc8369b05b2b9c3ac88
+DNSSEC _1225._tcp.danebroken7 TLSA 2 0 1 3110db5e73708d6fc3ffed8dcd1eef2bcd3c35d8da86ed048a332cb9d9538a0f
 
 ; the same, EE-mode
 ;
@@ -40,6 +40,6 @@ DNSSEC _1225._tcp.danebroken7 TLSA 2 0 1 13646cc92c038932f57f752559271b893045eda
 ; | openssl pkey -pubin -outform DER | openssl dgst -sha256 | awk '{print $2}'
 ;
 DNSSEC danebroken8  A       127.0.0.1
-DNSSEC _1225._tcp.danebroken8 TLSA 3 1 1 3cc2a6efabd847663b92f827681fd8612fd4d001ea85057d79ea541fb2de02ac
+DNSSEC _1225._tcp.danebroken8 TLSA 3 1 1 5384398f502c423736dcc42295808f7a84769eb96d009816fa077e00bebc768e
 
 ; End

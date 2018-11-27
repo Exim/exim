@@ -431,7 +431,7 @@ AA a-aa        A V4NET.0.0.100
 ;
 DNSSEC mxdane512ee          MX  1  dane512ee
 DNSSEC dane512ee            A      HOSTIPV4
-DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 69e8a5ddf24df2c51dc503959d26e621be4ce3853f71890512de3ae3390c5749ef3368dd4d274669b0653da8c3663f12ca092cd98e5e242e4de57ee6aa01cde1
+DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 c0c2fc12e9fe1abf0ae7b1f2ad2798a4689668db8cf7f7b771a43bf8a4f1d9741ef103bad470b1201157150fbd6182054b0170e90ce66b944a82a0a9c81281af
 
 ; A-only, sha256
 ;
@@ -441,7 +441,7 @@ DNSSEC _1225._tcp.dane512ee TLSA  3 1 2 69e8a5ddf24df2c51dc503959d26e621be4ce385
 ; | awk '{print $2}'
 ;
 DNSSEC dane256ee            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 7230d90731ea2c94f7f5e892489cc43f842ad261974e89e4306b081401032b7a
 
 ; full MX, sha256, TA-mode
 ;
@@ -450,7 +450,7 @@ DNSSEC _1225._tcp.dane256ee TLSA  3 1 1 827664533176a58b3578e0e91d77d79d036d3a97
 ;
 DNSSEC mxdane256ta          MX  1  dane256ta
 DNSSEC dane256ta            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 cb0fa6a633e52c787657f5ca0da1030800223cac459577b9b6a55ac9733348e5
+DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 52a90c3571549f83cff5b6166ae3210fe6e43dd3f95694cc85c989221bdfc4c7
 
 
 ; full MX, sha256, TA-mode, cert-key-only
@@ -458,7 +458,7 @@ DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 cb0fa6a633e52c787657f5ca0da1030800223cac4
 ; linkage, as this excites a bug in OpenSSL 1.0.2 which the DANE code has to
 ; work around, while synthesizing a selfsigned parent for it.
 ; As it happens it is also an intermediate cert in the CA-rooted chain, as this
-; was initially thought ot be a factor.
+; was initially thought to be a factor.
 ;
 ; openssl x509 -in aux-fixed/exim-ca/example.com/CA/Signer.pem -noout -pubkey \
 ; | openssl pkey -pubin -outform DER \
@@ -467,25 +467,7 @@ DNSSEC _1225._tcp.dane256ta TLSA 2 0 1 cb0fa6a633e52c787657f5ca0da1030800223cac4
 ;
 DNSSEC mxdane256tak          MX  1  dane256tak
 DNSSEC dane256tak            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256tak TLSA 2 1 1 73e279c0f5f5a9ee9851bbbc39023603d7b266acfd0764419c3b07cc380b79f9
-
-
-; full MX, both TA & EE modes, cert is selfsigned
-; for testing an issue in the gnutls impl
-;
-; tas:
-; openssl x509 -in aux-fixed/cert1 -fingerprint -sha256 -noout \
-; | awk -F= '{print $2}' | tr -d : | tr '[A-F]' '[a-f]'
-;
-DNSSEC mxdane256tas           MX  1  dane256tas
-DNSSEC dane256tas             A      HOSTIPV4
-DNSSEC _1225._tcp.dane256tas  TLSA 2 0 1 34d3624101b954d667c1a5ac18078b196cd17fbd61e23df73249c1afab747124
-DNSSEC mxdane256task          MX  1  dane256task
-DNSSEC dane256task            A      HOSTIPV4
-DNSSEC _1225._tcp.dane256task TLSA 2 1 1 c1241d8cc61401079437240467a47e21db921d3398883cd9bb038cc461d7beab
-DNSSEC mxdane256ees           MX  1  dane256ees
-DNSSEC dane256ees             A      HOSTIPV4
-DNSSEC _1225._tcp.dane256ees  TLSA 3 1 1 c1241d8cc61401079437240467a47e21db921d3398883cd9bb038cc461d7beab
+DNSSEC _1225._tcp.dane256tak TLSA 2 1 1 535b534691f5755ae7deef6593ef73f7a34db16833d6653300c942a29877e18f
 
 
 
@@ -517,17 +499,17 @@ DNSSEC _1225._tcp.danebroken2 TLSA 2 0 1 cb0fa6000000000000000000000000000000000
 ; (record copied from dane256ee above)
 ; 3 for dane-requested, 4 for dane-required
 DNSSEC danebroken3          A       127.0.0.1
-_1225._tcp.danebroken3 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+_1225._tcp.danebroken3 TLSA 2 0 1 7230d90731ea2c94f7f5e892489cc43f842ad261974e89e4306b081401032b7a
 DNSSEC danebroken4          A       HOSTIPV4
-_1225._tcp.danebroken4 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+_1225._tcp.danebroken4 TLSA 2 0 1 7230d90731ea2c94f7f5e892489cc43f842ad261974e89e4306b081401032b7a
 
 ; a broken dane config (or under attack) where the address record is correct but not DNSSEC-assured
 ; (TLSA record copied from dane256ee above)
 ; 5 for dane-requested, 6 for dane-required
 danebroken5          A       127.0.0.1
-DNSSEC _1225._tcp.danebroken5 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+DNSSEC _1225._tcp.danebroken5 TLSA 2 0 1 7230d90731ea2c94f7f5e892489cc43f842ad261974e89e4306b081401032b7a
 danebroken6          A       HOSTIPV4
-DNSSEC _1225._tcp.danebroken6 TLSA 2 0 1 827664533176a58b3578e0e91d77d79d036d3a97f023d82baeefa8b8e13b44f8
+DNSSEC _1225._tcp.danebroken6 TLSA 2 0 1 7230d90731ea2c94f7f5e892489cc43f842ad261974e89e4306b081401032b7a
 
 ; a good dns config saying there is no dane support, by securely returning NOXDOMAIN for TLSA lookups
 ; 3 for dane-required, 4 for merely requested
@@ -540,7 +522,7 @@ DNSSEC NXDOMAIN _1225._tcp.dane.no.4 TLSA 2 0 1 eec923139018c540a344c5191660ecba
 
 ; a mixed-usage set of TLSA records, EE one failing.  TA one coped from dane256ta.
 DNSSEC danemixed            A      127.0.0.1
-DNSSEC _1225._tcp.danemixed TLSA  2 0 1 cb0fa6a633e52c787657f5ca0da1030800223cac459577b9b6a55ac9733348e5
+DNSSEC _1225._tcp.danemixed TLSA  2 0 1 52a90c3571549f83cff5b6166ae3210fe6e43dd3f95694cc85c989221bdfc4c7
 DNSSEC                      TLSA  3 1 1 8276000000000000000000000000000000000000000000000000000000000000
 
 ; ------- Testing delays ------------
