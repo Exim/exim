@@ -370,7 +370,9 @@ if (!msg)
   msg = US ssl_errstring;
   }
 
-if (errstr) *errstr = string_sprintf("(%s): %s", prefix, msg);
+msg = string_sprintf("(%s): %s", prefix, msg);
+DEBUG(D_tls) debug_printf("TLS error '%s'\n", msg);
+if (errstr) *errstr = msg;
 return host ? FAIL : DEFER;
 }
 
@@ -1302,8 +1304,8 @@ else
       if ((err = tls_add_certfile(sctx, cbinfo, expanded, errstr)))
 	return err;
 
-  if (cbinfo->privatekey != NULL &&
-      !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded, errstr))
+  if (  cbinfo->privatekey
+     && !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded, errstr))
     return DEFER;
 
   /* If expansion was forced to fail, key_expanded will be NULL. If the result
@@ -1406,7 +1408,7 @@ if (!(server_sni = SSL_CTX_new(SSLv23_server_method())))
   {
   ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
   DEBUG(D_tls) debug_printf("SSL_CTX_new() failed: %s\n", ssl_errstring);
-  return SSL_TLSEXT_ERR_NOACK;
+  goto bad;
   }
 
 /* Not sure how many of these are actually needed, since SSL object
@@ -1422,11 +1424,11 @@ SSL_CTX_set_tlsext_servername_arg(server_sni, cbinfo);
 if (  !init_dh(server_sni, cbinfo->dhparam, NULL, &dummy_errstr)
    || !init_ecdh(server_sni, NULL, &dummy_errstr)
    )
-  return SSL_TLSEXT_ERR_NOACK;
+  goto bad;
 
 if (  cbinfo->server_cipher_list
    && !SSL_CTX_set_cipher_list(server_sni, CS cbinfo->server_cipher_list))
-  return SSL_TLSEXT_ERR_NOACK;
+  goto bad;
 
 #ifndef DISABLE_OCSP
 if (cbinfo->u_ocsp.server.file)
@@ -1438,17 +1440,18 @@ if (cbinfo->u_ocsp.server.file)
 
 if ((rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE,
 		      verify_callback_server, &dummy_errstr)) != OK)
-  return SSL_TLSEXT_ERR_NOACK;
+  goto bad;
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
 if ((rc = tls_expand_session_files(server_sni, cbinfo, &dummy_errstr)) != OK)
-  return SSL_TLSEXT_ERR_NOACK;
+  goto bad;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
 SSL_set_SSL_CTX(s, server_sni);
-
 return SSL_TLSEXT_ERR_OK;
+
+bad: return SSL_TLSEXT_ERR_ALERT_FATAL;
 }
 #endif /* EXIM_HAVE_OPENSSL_TLSEXT */
 
@@ -2124,7 +2127,7 @@ if (expcerts && *expcerts)
   /* If verification is optional, don't fail if no certificate */
 
   SSL_CTX_set_verify(sctx,
-    SSL_VERIFY_PEER | (optional? 0 : SSL_VERIFY_FAIL_IF_NO_PEER_CERT),
+    SSL_VERIFY_PEER | (optional ? 0 : SSL_VERIFY_FAIL_IF_NO_PEER_CERT),
     cert_vfy_cb);
   }
 
