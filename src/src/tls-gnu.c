@@ -787,9 +787,9 @@ if ((rc = gnutls_x509_crt_init(&cert))) goto err;
 where = US"generating pkey";
 if ((rc = gnutls_x509_privkey_generate(pkey, GNUTLS_PK_RSA,
 #ifdef SUPPORT_PARAM_TO_PK_BITS
-	    gnutls_sec_param_to_pk_bits(GNUTLS_PK_RSA, GNUTLS_SEC_PARAM_LOW),
+	    gnutls_sec_param_to_pk_bits(GNUTLS_PK_RSA, GNUTLS_SEC_PARAM_MEDIUM),
 #else
-	    1024,
+	    2048,
 #endif
 	    0)))
   goto err;

@@ -155,6 +155,11 @@ JH/33 Bug 2338: Fix the cyrus-sasl authenticator to fill in the
       $authenticated_fail_id variable on authentication failure.  Previously
       it was unset.
 
+JH/34 Increase RSA keysize of autogen selfsign cert from 1024 to 2048.  RHEL 8.0
+      OpenSSL didn't want to use such a weak key.  Do for GnuTLS also, and for
+      more-modern GnuTLS move from GNUTLS_SEC_PARAM_LOW to
+      GNUTLS_SEC_PARAM_MEDIUM.
+
 
 Exim version 4.91
 -----------------

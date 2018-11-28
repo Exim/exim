@@ -1174,7 +1174,7 @@ if (!(x509 = X509_new()))
   goto err;
 
 where = US"generating pkey";
-if (!(rsa = rsa_callback(NULL, 0, 1024)))
+if (!(rsa = rsa_callback(NULL, 0, 2048)))
   goto err;
 
 where = US"assigning pkey";
