@@ -4,7 +4,9 @@
 # when more than one cert is loaded, which the conf for this testcase does.
 # As a result the expansion done and logged is misleading.
 # While the golden log output is set to the misleading result, the testcase
-# will unfortunately fail on the fixed OpenSSL versions.
+# would unfortunately fail on the fixed OpenSSL versions.  This has been bodged
+# by the addition of log/2102.openssl_1_1_1 and some detection coding in
+# runtest to force a "flavour".  This is fragile and bound to break in the future.
 #
 # Make RSA authentication the only acceptable
 exim -DSERVER=server -DORDER=RSA -bd -oX PORT_D
