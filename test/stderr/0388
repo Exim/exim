@@ -80,7 +80,7 @@ checking status of 127.0.0.1
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
-set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (x@y)
+set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1]:PORT_S (x@y)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
@@ -100,7 +100,7 @@ added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
+set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for x@y: result OK
 address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
 *@127.0.0.1 in "*"? yes (matched "*")
@@ -113,11 +113,11 @@ checking status of V4NET.0.0.0
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 V4NET.0.0.0 in serialize_hosts? no (option unset)
-set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
+set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0]:PORT_S (x@y)
 Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network Error
 LOG: MAIN
   H=V4NET.0.0.0 [V4NET.0.0.0] Network Error
-set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER
+set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0]:PORT_S for x@y: result DEFER
 added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224: errno=dd more_errno=dd,A flags=2
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run smtp for x@y in subprocess)
 search_tidyup called

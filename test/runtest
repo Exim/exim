@@ -479,6 +479,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   # port numbers in dumpdb output
   s/T:([a-z.]+(:[0-9.]+)?):$parm_port_n /T:$1:PORT_N /;
 
+  # port numbers in stderr
+  s/^set_process_info: .*\]:\K$parm_port_d /PORT_D /;
+  s/^set_process_info: .*\]:\K$parm_port_s /PORT_S /;
+
 
   # ======== Dates and times ========
 

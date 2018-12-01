@@ -1197,8 +1197,13 @@ while (count-- > 0)
 	If not, log this last one in the == line. */
 
 	if (sx->conn_args.host->next)
-	  log_write(0, LOG_MAIN, "H=%s [%s]: %s",
-	    sx->conn_args.host->name, sx->conn_args.host->address, addr->message);
+	  if (LOGGING(outgoing_port))
+	    log_write(0, LOG_MAIN, "H=%s [%s]:%d %s", sx->conn_args.host->name,
+	      sx->conn_args.host->address,
+	      sx->port == PORT_NONE ? 25 : sx->port, addr->message);
+	  else
+	    log_write(0, LOG_MAIN, "H=%s [%s]: %s", sx->conn_args.host->name,
+	      sx->conn_args.host->address, addr->message);
 
 #ifndef DISABLE_EVENT
 	else
@@ -5008,8 +5013,8 @@ retry_non_continued:
       message_id, host->name, host->address, addrlist->address,
       addrlist->next ? ", ..." : "");
 
-    set_process_info("delivering %s to %s [%s] (%s%s)",
-      message_id, host->name, host->address, addrlist->address,
+    set_process_info("delivering %s to %s [%s]%s (%s%s)",
+      message_id, host->name, host->address, pistring, addrlist->address,
       addrlist->next ? ", ..." : "");
 
     /* This is not for real; don't do the delivery. If there are
@@ -5149,8 +5154,8 @@ retry_non_continued:
        : rc == ERROR ? US"ERROR"
        : US"?";
 
-    set_process_info("delivering %s: just tried %s [%s] for %s%s: result %s",
-      message_id, host->name, host->address, addrlist->address,
+    set_process_info("delivering %s: just tried %s [%s]%s for %s%s: result %s",
+      message_id, host->name, host->address, pistring, addrlist->address,
       addrlist->next ? " (& others)" : "", rs);
 
     /* Release serialization if set up */
