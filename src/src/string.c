@@ -894,7 +894,7 @@ if (sep <= 0)
   if (*s == '<' && (ispunct(s[1]) || iscntrl(s[1])))
     {
     sep = s[1];
-    s += 2;
+    if (*++s) ++s;
     while (isspace(*s) && *s != sep) s++;
     }
   else
