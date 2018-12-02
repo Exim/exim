@@ -300,14 +300,14 @@ else
   if (!(route_item = rf_expand_data(addr, ob->route_data, &rc)))
     return rc;
   (void) parse_route_item(route_item, NULL, &hostlist, &options);
-  if (hostlist[0] == 0) return DECLINE;
+  if (!hostlist[0]) return DECLINE;
   }
 
 /* Expand the hostlist item. It may then pointing to an empty string, or to a
 single host or a list of hosts; options is pointing to the rest of the
 routelist item, which is either empty or contains various option words. */
 
-DEBUG(D_route) debug_printf("original list of hosts = \"%s\" options = %s\n",
+DEBUG(D_route) debug_printf("original list of hosts = '%s' options = '%s'\n",
   hostlist, options);
 
 newhostlist = expand_string_copy(hostlist);
@@ -317,7 +317,7 @@ expand_nmax = -1;
 /* If the expansion was forced to fail, just decline. Otherwise there is a
 configuration problem. */
 
-if (newhostlist == NULL)
+if (!newhostlist)
   {
   if (f.expand_string_forcedfail) return DECLINE;
   addr->message = string_sprintf("%s router: failed to expand \"%s\": %s",
@@ -326,14 +326,14 @@ if (newhostlist == NULL)
   }
 else hostlist = newhostlist;
 
-DEBUG(D_route) debug_printf("expanded list of hosts = \"%s\" options = %s\n",
+DEBUG(D_route) debug_printf("expanded list of hosts = '%s' options = '%s'\n",
   hostlist, options);
 
 /* Set default lookup type and scan the options */
 
 lookup_type = LK_DEFAULT;
 
-while (*options != 0)
+while (*options)
   {
   unsigned n;
   const uschar *s = options;
@@ -403,7 +403,7 @@ single text string that ends up in $host. */
 
 if (transport && transport->info->local)
   {
-  if (hostlist[0] != 0)
+  if (hostlist[0])
     {
     host_item *h;
     addr->host_list = h = store_get(sizeof(host_item));
@@ -430,7 +430,7 @@ if (transport && transport->info->local)
 list is mandatory in either case, except when verifying, in which case the
 address is just accepted. */
 
-if (hostlist[0] == 0)
+if (!hostlist[0])
   {
   if (verify != v_none) goto ROUTED;
   addr->message = string_sprintf("error in %s router: no host(s) specified "
@@ -442,7 +442,7 @@ if (hostlist[0] == 0)
 /* Otherwise we finish the routing here by building a chain of host items
 for the list of configured hosts, and then finding their addresses. */
 
-host_build_hostlist(&(addr->host_list), hostlist, randomize);
+host_build_hostlist(&addr->host_list, hostlist, randomize);
 rc = rf_lookup_hostlist(rblock, addr, rblock->ignore_target_hosts, lookup_type,
   ob->hff_code, addr_new);
 if (rc != OK) return rc;

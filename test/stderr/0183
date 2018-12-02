@@ -114,8 +114,8 @@ useryz router called for usery@test.again.dns
   domain = test.again.dns
 route_item = * $domain bydns
 test.again.dns in "*"? yes (matched "*")
-original list of hosts = "$domain" options = bydns
-expanded list of hosts = "test.again.dns" options = bydns
+original list of hosts = '$domain' options = 'bydns'
+expanded list of hosts = 'test.again.dns' options = 'bydns'
 set transport smtp
 finding IP address for test.again.dns
 doing DNS lookup
@@ -145,8 +145,8 @@ useryz router called for userz@test.again.dns
   domain = test.again.dns
 route_item = * $domain bydns
 test.again.dns in "*"? yes (matched "*")
-original list of hosts = "$domain" options = bydns
-expanded list of hosts = "test.again.dns" options = bydns
+original list of hosts = '$domain' options = 'bydns'
+expanded list of hosts = 'test.again.dns' options = 'bydns'
 finding IP address for test.again.dns
 doing DNS lookup
 DNS lookup of test.again.dns-A: using cached value DNS_AGAIN
@@ -303,8 +303,8 @@ useryz router called for usery@test.fail.dns
   domain = test.fail.dns
 route_item = * $domain bydns
 test.fail.dns in "*"? yes (matched "*")
-original list of hosts = "$domain" options = bydns
-expanded list of hosts = "test.fail.dns" options = bydns
+original list of hosts = '$domain' options = 'bydns'
+expanded list of hosts = 'test.fail.dns' options = 'bydns'
 set transport smtp
 finding IP address for test.fail.dns
 doing DNS lookup
@@ -333,8 +333,8 @@ useryz router called for userz@test.fail.dns
   domain = test.fail.dns
 route_item = * $domain bydns
 test.fail.dns in "*"? yes (matched "*")
-original list of hosts = "$domain" options = bydns
-expanded list of hosts = "test.fail.dns" options = bydns
+original list of hosts = '$domain' options = 'bydns'
+expanded list of hosts = 'test.fail.dns' options = 'bydns'
 finding IP address for test.fail.dns
 doing DNS lookup
 DNS lookup of test.fail.dns-A: using cached value DNS_FAIL
@@ -493,8 +493,8 @@ useryz router called for usery@nonexist.test.ex
   domain = nonexist.test.ex
 route_item = * $domain bydns
 nonexist.test.ex in "*"? yes (matched "*")
-original list of hosts = "$domain" options = bydns
-expanded list of hosts = "nonexist.test.ex" options = bydns
+original list of hosts = '$domain' options = 'bydns'
+expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
 set transport smtp
 finding IP address for nonexist.test.ex
 doing DNS lookup
@@ -523,8 +523,8 @@ useryz router called for userz@nonexist.test.ex
   domain = nonexist.test.ex
 route_item = * $domain bydns
 nonexist.test.ex in "*"? yes (matched "*")
-original list of hosts = "$domain" options = bydns
-expanded list of hosts = "nonexist.test.ex" options = bydns
+original list of hosts = '$domain' options = 'bydns'
+expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
 finding IP address for nonexist.test.ex
 doing DNS lookup
 DNS lookup of nonexist.test.ex-A: using cached value DNS_NOMATCH

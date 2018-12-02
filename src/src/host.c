@@ -318,12 +318,12 @@ int sep = 0;
 int fake_mx = MX_NONE;          /* This value is actually -1 */
 uschar *name;
 
-if (list == NULL) return;
+if (!list) return;
 if (randomize) fake_mx--;       /* Start at -2 for randomizing */
 
 *anchor = NULL;
 
-while ((name = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
+while ((name = string_nextinlist(&list, &sep, NULL, 0)))
   {
   host_item *h;
 
@@ -343,7 +343,7 @@ while ((name = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
   h->why = hwhy_unknown;
   h->last_try = 0;
 
-  if (*anchor == NULL)
+  if (!*anchor)
     {
     h->next = NULL;
     *anchor = h;
@@ -358,7 +358,7 @@ while ((name = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
       }
     else
       {
-      while (hh->next != NULL && h->sort_key >= (hh->next)->sort_key)
+      while (hh->next && h->sort_key >= hh->next->sort_key)
         hh = hh->next;
       h->next = hh->next;
       hh->next = h;
@@ -686,23 +686,21 @@ Returns:    pointer to a string in big_buffer
 uschar *
 host_and_ident(BOOL useflag)
 {
-if (sender_fullhost == NULL)
-  {
-  (void)string_format(big_buffer, big_buffer_size, "%s%s", useflag? "U=" : "",
-     (sender_ident == NULL)? US"unknown" : sender_ident);
-  }
+if (!sender_fullhost)
+  (void)string_format(big_buffer, big_buffer_size, "%s%s", useflag ? "U=" : "",
+     sender_ident ? sender_ident : US"unknown");
 else
   {
-  uschar *flag = useflag? US"H=" : US"";
-  uschar *iface = US"";
-  if (LOGGING(incoming_interface) && interface_address != NULL)
+  uschar * flag = useflag ? US"H=" : US"";
+  uschar * iface = US"";
+  if (LOGGING(incoming_interface) && interface_address)
     iface = string_sprintf(" I=[%s]:%d", interface_address, interface_port);
-  if (sender_ident == NULL)
-    (void)string_format(big_buffer, big_buffer_size, "%s%s%s",
-      flag, sender_fullhost, iface);
-  else
+  if (sender_ident)
     (void)string_format(big_buffer, big_buffer_size, "%s%s%s U=%s",
       flag, sender_fullhost, iface, sender_ident);
+  else
+    (void)string_format(big_buffer, big_buffer_size, "%s%s%s",
+      flag, sender_fullhost, iface);
   }
 return big_buffer;
 }

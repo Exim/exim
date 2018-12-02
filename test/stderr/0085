@@ -81,8 +81,8 @@ smart1 router called for x@smart.domain
   domain = smart.domain
 route_item = *
 smart.domain in "*"? yes (matched "*")
-original list of hosts = "" options = 
-expanded list of hosts = "" options = 
+original list of hosts = '' options = ''
+expanded list of hosts = '' options = ''
 queued for <unset> transport: local_part = x
 domain = smart.domain
   errors_to=NULL

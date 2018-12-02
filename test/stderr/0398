@@ -47,8 +47,8 @@ r2 router called for qq@remote
   domain = remote
 route_item = * 127.0.0.1
 remote in "*"? yes (matched "*")
-original list of hosts = "127.0.0.1" options = 
-expanded list of hosts = "127.0.0.1" options = 
+original list of hosts = '127.0.0.1' options = ''
+expanded list of hosts = '127.0.0.1' options = ''
 set transport t2
 finding IP address for 127.0.0.1
 calling host_find_byname
@@ -96,8 +96,8 @@ r2 router called for qq@remote
   domain = remote
 route_item = * 127.0.0.1
 remote in "*"? yes (matched "*")
-original list of hosts = "127.0.0.1" options = 
-expanded list of hosts = "127.0.0.1" options = 
+original list of hosts = '127.0.0.1' options = ''
+expanded list of hosts = '127.0.0.1' options = ''
 finding IP address for 127.0.0.1
 calling host_find_byname
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
@@ -210,8 +210,8 @@ r2 router called for qq@remote
   domain = remote
 route_item = * 127.0.0.1
 remote in "*"? yes (matched "*")
-original list of hosts = "127.0.0.1" options = 
-expanded list of hosts = "127.0.0.1" options = 
+original list of hosts = '127.0.0.1' options = ''
+expanded list of hosts = '127.0.0.1' options = ''
 finding IP address for 127.0.0.1
 calling host_find_byname
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)

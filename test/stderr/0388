@@ -32,8 +32,8 @@ r1 router called for x@y
   domain = y
 route_item = * "127.0.0.1 : V4NET.0.0.0"
 y in "*"? yes (matched "*")
-original list of hosts = "127.0.0.1 : V4NET.0.0.0" options = 
-expanded list of hosts = "127.0.0.1 : V4NET.0.0.0" options = 
+original list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
+expanded list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
 set transport smtp
 finding IP address for 127.0.0.1
 calling host_find_byname

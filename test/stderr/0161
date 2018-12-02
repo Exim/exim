@@ -55,8 +55,8 @@ calling self router
 self router called for myhost.test.ex@mxt1.test.ex
   domain = mxt1.test.ex
 route_item = * $local_part byname
-original list of hosts = "$local_part" options = byname
-expanded list of hosts = "myhost.test.ex" options = byname
+original list of hosts = '$local_part' options = 'byname'
+expanded list of hosts = 'myhost.test.ex' options = 'byname'
 set transport remote_smtp
 finding IP address for myhost.test.ex
 calling host_find_byname
@@ -100,8 +100,8 @@ calling self router
 self router called for xx@mxt1.test.ex
   domain = mxt1.test.ex
 route_item = * $local_part byname
-original list of hosts = "$local_part" options = byname
-expanded list of hosts = "xx" options = byname
+original list of hosts = '$local_part' options = 'byname'
+expanded list of hosts = 'xx' options = 'byname'
 set transport remote_smtp
 finding IP address for xx
 calling host_find_byname
@@ -114,8 +114,8 @@ calling self2 router
 self2 router called for xx@mxt1.test.ex
   domain = mxt1.test.ex
 route_item = * myhost.test.ex byname
-original list of hosts = "myhost.test.ex" options = byname
-expanded list of hosts = "myhost.test.ex" options = byname
+original list of hosts = 'myhost.test.ex' options = 'byname'
+expanded list of hosts = 'myhost.test.ex' options = 'byname'
 set transport remote_smtp
 finding IP address for myhost.test.ex
 calling host_find_byname
@@ -190,8 +190,8 @@ calling fail router
 fail router called for fff@mxt1.test.ex
   domain = mxt1.test.ex
 route_item = * $local_part byname
-original list of hosts = "$local_part" options = byname
-expanded list of hosts = "fff" options = byname
+original list of hosts = '$local_part' options = 'byname'
+expanded list of hosts = 'fff' options = 'byname'
 set transport remote_smtp
 finding IP address for fff
 calling host_find_byname

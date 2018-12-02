@@ -4927,10 +4927,10 @@ retry_non_continued:
         incl_ip, &retry_host_key, &retry_message_key);
 
       DEBUG(D_transport) debug_printf("%s [%s]%s retry-status = %s\n", host->name,
-        (host->address == NULL)? US"" : host->address, pistring,
-        (host->status == hstatus_usable)? "usable" :
-        (host->status == hstatus_unusable)? "unusable" :
-        (host->status == hstatus_unusable_expired)? "unusable (expired)" : "?");
+        host->address ? host->address : US"", pistring,
+        host->status == hstatus_usable ? "usable"
+        : host->status == hstatus_unusable ? "unusable"
+        : host->status == hstatus_unusable_expired ? "unusable (expired)" : "?");
 
       /* Skip this address if not usable at this time, noting if it wasn't
       actually expired, both locally and in the address. */

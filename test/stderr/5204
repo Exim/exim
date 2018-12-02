@@ -129,8 +129,8 @@ calling s router
 s router called for PASS@some.host
   domain = some.host
 route_item = * 127.0.0.1 byname
-original list of hosts = "127.0.0.1" options = byname
-expanded list of hosts = "127.0.0.1" options = byname
+original list of hosts = '127.0.0.1' options = 'byname'
+expanded list of hosts = '127.0.0.1' options = 'byname'
 set transport smtp
 finding IP address for 127.0.0.1
 calling host_find_byname

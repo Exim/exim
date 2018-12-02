@@ -10,8 +10,8 @@ calling domainlist1 router
 domainlist1 router called for x@ten
   domain = ten
 route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
-original list of hosts = "<+V4NET.0.0.0+V4NET.0.0.1" options = byname
-expanded list of hosts = "<+V4NET.0.0.0+V4NET.0.0.1" options = byname
+original list of hosts = '<+V4NET.0.0.0+V4NET.0.0.1' options = 'byname'
+expanded list of hosts = '<+V4NET.0.0.0+V4NET.0.0.1' options = 'byname'
 finding IP address for V4NET.0.0.0
 calling host_find_byname
 finding IP address for V4NET.0.0.1
@@ -35,8 +35,8 @@ domainlist1 router called for y@two
   domain = two
 route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
 route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
-original list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
-expanded list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
+original list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
+expanded list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
 finding IP address for V4NET.0.0.2
 calling host_find_byname
 finding IP address for V4NET.0.0.4
@@ -136,8 +136,8 @@ domainlist2 router called for x@one
   domain = one
 route_item = six <+V4NET.0.0.6+V4NET.0.0.7 byname
 route_item = one   V4NET.0.0.2:V4NET.0.0.4 byname
-original list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
-expanded list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
+original list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
+expanded list of hosts = 'V4NET.0.0.2:V4NET.0.0.4' options = 'byname'
 finding IP address for V4NET.0.0.2
 calling host_find_byname
 finding IP address for V4NET.0.0.4
@@ -169,8 +169,8 @@ calling domainlist2 router
 domainlist2 router called for x@six
   domain = six
 route_item = six <+V4NET.0.0.6+V4NET.0.0.7 byname
-original list of hosts = "<+V4NET.0.0.6+V4NET.0.0.7" options = byname
-expanded list of hosts = "<+V4NET.0.0.6+V4NET.0.0.7" options = byname
+original list of hosts = '<+V4NET.0.0.6+V4NET.0.0.7' options = 'byname'
+expanded list of hosts = '<+V4NET.0.0.6+V4NET.0.0.7' options = 'byname'
 finding IP address for V4NET.0.0.6
 calling host_find_byname
 finding IP address for V4NET.0.0.7

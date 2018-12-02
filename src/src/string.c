@@ -905,7 +905,7 @@ int sep = *separator;
 const uschar *s = *listptr;
 BOOL sep_is_special;
 
-if (s == NULL) return NULL;
+if (!s) return NULL;
 
 /* This allows for a fixed specified separator to be an iscntrl() character,
 but at the time of implementation, this is never the case. However, it's best
@@ -925,15 +925,13 @@ if (sep <= 0)
     while (isspace(*s) && *s != sep) s++;
     }
   else
-    {
-    sep = (sep == 0)? ':' : -sep;
-    }
+    sep = sep ? -sep : ':';
   *separator = sep;
   }
 
 /* An empty string has no list elements */
 
-if (*s == 0) return NULL;
+if (!*s) return NULL;
 
 /* Note whether whether or not the separator is an iscntrl() character. */
 
@@ -944,13 +942,13 @@ sep_is_special = iscntrl(sep);
 if (buffer)
   {
   int p = 0;
-  for (; *s != 0; s++)
+  for (; *s; s++)
     {
     if (*s == sep && (*(++s) != sep || sep_is_special)) break;
     if (p < buflen - 1) buffer[p++] = *s;
     }
   while (p > 0 && isspace(buffer[p-1])) p--;
-  buffer[p] = 0;
+  buffer[p] = '\0';
   }
 
 /* Handle the case when a buffer is not provided. */
@@ -980,10 +978,10 @@ else
 
   for (;;)
     {
-    for (ss = s + 1; *ss != 0 && *ss != sep; ss++) ;
+    for (ss = s + 1; *ss && *ss != sep; ss++) ;
     g = string_catn(g, s, ss-s);
     s = ss;
-    if (*s == 0 || *(++s) != sep || sep_is_special) break;
+    if (!*s || *++s != sep || sep_is_special) break;
     }
   while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--;
   buffer = string_from_gstring(g);
