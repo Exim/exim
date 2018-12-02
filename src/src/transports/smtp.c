@@ -5298,6 +5298,17 @@ retry_non_continued:
           "hosts_max_try (message older than host's retry time)\n");
         }
       }
+
+    DEBUG(D_transport)
+      {
+      if (unexpired_hosts_tried >= ob->hosts_max_try)
+	debug_printf("reached transport hosts_max_try limit %d\n",
+	  ob->hosts_max_try);
+      if (total_hosts_tried >= ob->hosts_max_try_hardlimit)
+	debug_printf("reached transport hosts_max_try_hardlimit limit %d\n",
+	  ob->hosts_max_try_hardlimit);
+      }
+
     if (f.running_in_test_harness) millisleep(500); /* let server debug out */
     }   /* End of loop for trying multiple hosts. */
 
