@@ -524,7 +524,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     my($next) = $3 - $2;
     $_ = "  first failed=dddd last try=dddd next try=+$next $4\n";
     }
-  s/^(\s*)now=\d+ first_failed=\d+ next_try=\d+ expired=(\d)/$1now=tttt first_failed=tttt next_try=tttt expired=$2/;
+  s/^(\s*)now=\d+ first_failed=\d+ next_try=\d+ expired=(\w)/$1now=tttt first_failed=tttt next_try=tttt expired=$2/;
   s/^(\s*)received_time=\d+ diff=\d+ timeout=(\d+)/$1received_time=tttt diff=tttt timeout=$2/;
 
   # Time to retry may vary

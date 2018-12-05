@@ -375,8 +375,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@myhost.test.ex
 unique = CALLER@myhost.test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 CALLER@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing CALLER@myhost.test.ex

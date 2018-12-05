@@ -563,6 +563,8 @@ table exim_errstrings[] in log.c */
 
 #define ERRNO_RETRY_BASE     (-51)   /* Base to test against */
 #define ERRNO_RRETRY         (-51)   /* Not time for routing */
+
+#define ERRNO_WARN_BASE      (-52)   /* Base to test against */
 #define ERRNO_LRETRY         (-52)   /* Not time for local delivery */
 #define ERRNO_HRETRY         (-53)   /* Not time for any remote host */
 #define ERRNO_LOCAL_ONLY     (-54)   /* Local-only delivery */

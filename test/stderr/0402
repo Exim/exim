@@ -205,32 +205,32 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: CALLER@test.ex
 unique = CALLER@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 CALLER@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: usery@test.ex
 unique = usery@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 usery@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userz@test.ex
 unique = userz@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 userz@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: rd+CALLER@test.ex
 unique = rd+CALLER@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 rd+CALLER@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: rd+usery@test.ex
 unique = rd+usery@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 rd+usery@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing rd+usery@test.ex

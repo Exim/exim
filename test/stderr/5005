@@ -78,8 +78,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: nofile@test.ex
 unique = nofile@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 nofile@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing nofile@test.ex
@@ -264,8 +264,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
@@ -452,8 +452,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex
@@ -651,8 +651,8 @@ unique = userx@test.ex
  dbfn_read: key=R:test.ex
  dbfn_read: key=R:userx@test.ex
  dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 userx@test.ex: queued for routing
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile

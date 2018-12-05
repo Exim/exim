@@ -5378,7 +5378,7 @@ static void
 print_address_error(address_item *addr, FILE *f, uschar *t)
 {
 int count = Ustrlen(t);
-uschar *s = testflag(addr, af_pass_message)? addr->message : NULL;
+uschar *s = testflag(addr, af_pass_message) ? addr->message : NULL;
 
 if (!s && !(s = addr->user_message))
   return;
@@ -5885,9 +5885,7 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
     ugid.uid_set = ugid.gid_set = TRUE;
     }
   else
-    {
     ugid.uid_set = ugid.gid_set = FALSE;
-    }
 
   return_path = sender_address;
   f.enable_dollar_recipients = TRUE;   /* Permit $recipients in system filter */
@@ -6610,13 +6608,21 @@ while (addr_new)           /* Loop until all addresses dealt with */
       if (  domain_retry_record
          && now - domain_retry_record->time_stamp > retry_data_expire
 	 )
+	{
+	DEBUG(D_deliver|D_retry)
+	  debug_printf("domain retry record present but expired\n");
         domain_retry_record = NULL;    /* Ignore if too old */
+	}
 
       address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
       if (  address_retry_record
          && now - address_retry_record->time_stamp > retry_data_expire
 	 )
+	{
+	DEBUG(D_deliver|D_retry)
+	  debug_printf("address retry record present but expired\n");
         address_retry_record = NULL;   /* Ignore if too old */
+	}
 
       if (!address_retry_record)
         {
@@ -6625,7 +6631,11 @@ while (addr_new)           /* Loop until all addresses dealt with */
         address_retry_record = dbfn_read(dbm_file, altkey);
         if (  address_retry_record
 	   && now - address_retry_record->time_stamp > retry_data_expire)
+	  {
+	  DEBUG(D_deliver|D_retry)
+	    debug_printf("address<sender> retry record present but expired\n");
           address_retry_record = NULL;   /* Ignore if too old */
+	  }
         }
       }
     else
@@ -6634,9 +6644,18 @@ while (addr_new)           /* Loop until all addresses dealt with */
     DEBUG(D_deliver|D_retry)
       {
       if (!domain_retry_record)
-        debug_printf("no domain retry record\n");
+	debug_printf("no   domain  retry record\n");
+      else
+	debug_printf("have domain  retry record; next_try = now%+d\n",
+		      f.running_in_test_harness ? 0 :
+		      (int)(domain_retry_record->next_try - now));
+
       if (!address_retry_record)
-        debug_printf("no address retry record\n");
+	debug_printf("no   address retry record\n");
+      else
+	debug_printf("have address retry record; next_try = now%+d\n",
+		      f.running_in_test_harness ? 0 :
+		      (int)(address_retry_record->next_try - now));
       }
 
     /* If we are sending a message down an existing SMTP connection, we must
@@ -6658,6 +6677,9 @@ while (addr_new)           /* Loop until all addresses dealt with */
       addr->message = US"reusing SMTP connection skips previous routing defer";
       addr->basic_errno = ERRNO_RRETRY;
       (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
+
+      addr->message = domain_retry_record->text;
+      setflag(addr, af_pass_message);
       }
 
     /* If we are in a queue run, defer routing unless there is no retry data or
@@ -6711,6 +6733,16 @@ while (addr_new)           /* Loop until all addresses dealt with */
       addr->message = US"retry time not reached";
       addr->basic_errno = ERRNO_RRETRY;
       (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
+
+      /* For remote-retry errors (here and just above) that we've not yet
+      hit the rery time, use the error recorded in the retry database
+      as info in the warning message.  This lets us send a message even
+      when we're not failing on a fresh attempt.  We assume that this
+      info is not sensitive. */
+
+      addr->message = domain_retry_record
+	? domain_retry_record->text : address_retry_record->text;
+      setflag(addr, af_pass_message);
       }
 
     /* The domain is OK for routing. Remember if retry data exists so it
@@ -7041,7 +7073,7 @@ if (  f.header_rewritten
   }
 
 
-/* If there are any deliveries to be and we do not already have the journal
+/* If there are any deliveries to do and we do not already have the journal
 file, create it. This is used to record successful deliveries as soon as
 possible after each delivery is known to be complete. A file opened with
 O_APPEND is used so that several processes can run simultaneously.
@@ -8012,6 +8044,8 @@ the parent's domain.
 If all the deferred addresses have an error number that indicates "retry time
 not reached", skip sending the warning message, because it won't contain the
 reason for the delay. It will get sent at the next real delivery attempt.
+  Exception: for retries caused by a remote peer we use the error message
+  store in the retry DB as the reason.
 However, if at least one address has tried, we'd better include all of them in
 the message.
 
@@ -8031,7 +8065,7 @@ else if (addr_defer != (address_item *)(+1))
   {
   address_item *addr;
   uschar *recipients = US"";
-  BOOL delivery_attempted = FALSE;
+  BOOL want_warning_msg = FALSE;
 
   deliver_domain = testflag(addr_defer, af_pfr)
     ? addr_defer->parent->domain : addr_defer->domain;
@@ -8040,7 +8074,7 @@ else if (addr_defer != (address_item *)(+1))
     {
     address_item *otaddr;
 
-    if (addr->basic_errno > ERRNO_RETRY_BASE) delivery_attempted = TRUE;
+    if (addr->basic_errno > ERRNO_WARN_BASE) want_warning_msg = TRUE;
 
     if (deliver_domain)
       {
@@ -8112,7 +8146,7 @@ else if (addr_defer != (address_item *)(+1))
   it also defers). */
 
   if (  !f.queue_2stage
-     && delivery_attempted
+     && want_warning_msg
      && (  !(addr_defer->dsn_flags & rf_dsnflags)
         || addr_defer->dsn_flags & rf_notify_delay
 	)
@@ -8163,7 +8197,7 @@ else if (addr_defer != (address_item *)(+1))
 
     DEBUG(D_deliver)
       {
-      debug_printf("time on queue = %s\n", readconf_printtime(queue_time));
+      debug_printf("time on queue = %s  id %s  addr %s\n", readconf_printtime(queue_time), message_id, addr_defer->address);
       debug_printf("warning counts: required %d done %d\n", count,
         warning_count);
       }

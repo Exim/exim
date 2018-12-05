@@ -5,8 +5,8 @@ locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -41,7 +41,8 @@ admin user
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
-no domain retry record
+no   domain  retry record
+have address retry record; next_try = now+0
 added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:x@y: errno=-1 more_errno=dd flags=1
 added retry item for R:y: errno=-1 more_errno=dd flags=1

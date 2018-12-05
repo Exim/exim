@@ -1,0 +1,3 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] F=<CALLER@test.ex> temporarily rejected RCPT <rrrr@remote.defer>: Over-quota

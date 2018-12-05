@@ -182,8 +182,8 @@ test.ex in percent_hack_domains? yes (matched "+not_queue_domains")
 cached no match for +hold_domains
 test.ex in hold_domains? no (end of list)
 unique = userx@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 userx@test.ex: queued for routing
 cached yes match for +not_queue_domains
 test.ex in queue_domains? no (matched "!+not_queue_domains" - cached)

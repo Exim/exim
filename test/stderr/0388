@@ -15,8 +15,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@y
 unique = x@y
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 x@y: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing x@y
@@ -241,8 +241,8 @@ unique = CALLER@myhost.test.ex
  dbfn_read: key=R:myhost.test.ex
  dbfn_read: key=R:CALLER@myhost.test.ex
  dbfn_read: key=R:CALLER@myhost.test.ex:<>
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 CALLER@myhost.test.ex: queued for routing
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile

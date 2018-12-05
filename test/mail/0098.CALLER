@@ -421,3 +421,66 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM--
 
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmbN-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: CALLER@test.ex
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Warning: message 10HmbM-0005vi-00 delayed 0 minutes
+Message-Id: <E10HmbN-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+A message that you sent has not yet been delivered to one or more of its
+recipients after more than 0 minutes on the queue on the.local.host.name.
+
+The message identifier is:     10HmbM-0005vi-00
+The subject of the message is: testing a remote defer
+The date of the message is:    Tue, 2 Mar 1999 09:44:33 +0000
+
+The address to which the message has not yet been delivered is:
+
+  rrrr@remote.defer
+    Delay reason: H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rrrr@remote.defer>:
+    451 Over-quota
+
+No action is required on your part. Delivery attempts will continue for
+some time, and this warning may be repeated at intervals if the message
+remains undelivered. Eventually the mail delivery software will give up,
+and when that happens, the message will be returned to you.
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; the.local.host.name
+
+Action: delayed
+Final-Recipient: rfc822;rrrr@remote.defer
+Status: 4.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/rfc822-headers
+
+Return-path: <CALLER@test.ex>
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbM-0005vi-00
+	for rrrr@remote.defer; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: testing a remote defer
+Message-Id: <E10HmbM-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+

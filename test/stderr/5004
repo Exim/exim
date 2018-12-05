@@ -82,8 +82,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 unique = userx@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 userx@test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing userx@test.ex

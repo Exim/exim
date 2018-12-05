@@ -163,9 +163,15 @@ JH/34 Increase RSA keysize of autogen selfsign cert from 1024 to 2048.  RHEL 8.0
 JH/35 OpenSSL: fail the handshake when SNI processing hits a problem, server
       side.  Previously we would continue as if no SNI had been received.
 
-JH/36 Harder the handling of string-lists.  When a list consisted of a sole
+JH/36 Harden the handling of string-lists.  When a list consisted of a sole
       "<" character, which should be a list-separator specification, we walked
       off past the nul-terimation.
+
+JH/37 Bug 2341: Send "message delayed" warning MDNs (restricted to external
+      causes) even when the retry time is not yet met.  Previously they were
+      not, meaning that when (say) an account was over-quota and temp-rejecting,
+      and multiple senders' messages were queued, only one sender would get
+      notified on each configured delay_warning cycle.
 
 
 Exim version 4.91

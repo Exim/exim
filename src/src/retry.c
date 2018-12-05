@@ -33,28 +33,27 @@ retry_ultimate_address_timeout(uschar *retry_key, const uschar *domain,
   dbdata_retry *retry_record, time_t now)
 {
 BOOL address_timeout;
+retry_config * retry;
 
 DEBUG(D_retry)
   {
   debug_printf("retry time not reached: checking ultimate address timeout\n");
-  debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
-    (int)now, (int)retry_record->first_failed,
-    (int)retry_record->next_try, retry_record->expired);
+  debug_printf("  now=" TIME_T_FMT " first_failed=" TIME_T_FMT
+		" next_try=" TIME_T_FMT " expired=%c\n",
+		now, retry_record->first_failed,
+		retry_record->next_try, retry_record->expired ? 'T' : 'F');
   }
 
-retry_config *retry =
-  retry_find_config(retry_key+2, domain,
+retry = retry_find_config(retry_key+2, domain,
     retry_record->basic_errno, retry_record->more_errno);
 
-if (retry != NULL && retry->rules != NULL)
+if (retry && retry->rules)
   {
   retry_rule *last_rule;
-  for (last_rule = retry->rules;
-       last_rule->next != NULL;
-       last_rule = last_rule->next);
+  for (last_rule = retry->rules; last_rule->next; last_rule = last_rule->next) ;
   DEBUG(D_retry)
-    debug_printf("  received_time=%d diff=%d timeout=%d\n",
-      (int)received_time.tv_sec, (int)(now - received_time.tv_sec), last_rule->timeout);
+    debug_printf("  received_time=" TIME_T_FMT " diff=%d timeout=%d\n",
+      received_time.tv_sec, (int)(now - received_time.tv_sec), last_rule->timeout);
   address_timeout = (now - received_time.tv_sec > last_rule->timeout);
   }
 else

@@ -83,8 +83,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex
 unique = kilos@recurse.test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 kilos@recurse.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@recurse.test.ex
@@ -120,8 +120,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
 unique = kilos@recurse.test.ex.test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 kilos@recurse.test.ex.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@recurse.test.ex.test.ex
@@ -160,8 +160,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: kilos@recurse.test.ex.test.ex
 unique = \0\kilos@recurse.test.ex.test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 kilos@recurse.test.ex.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing kilos@recurse.test.ex.test.ex

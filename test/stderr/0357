@@ -12,8 +12,8 @@ locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:
@@ -51,7 +51,8 @@ LOG: queue_run MAIN
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no domain retry record
+no   domain  retry record
+have address retry record; next_try = now+0
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
 added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
@@ -105,7 +106,8 @@ LOG: queue_run MAIN
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no domain retry record
+no   domain  retry record
+have address retry record; next_try = now+0
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
 added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
@@ -159,9 +161,10 @@ LOG: queue_run MAIN
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
-no domain retry record
+no   domain  retry record
+have address retry record; next_try = now+0
 retry time not reached: checking ultimate address timeout
-  now=tttt first_failed=tttt next_try=tttt expired=0
+  now=tttt first_failed=tttt next_try=tttt expired=F
   received_time=tttt diff=tttt timeout=3600
 LOG: retry_defer MAIN
   == userx@test.ex routing defer (-51): retry time not reached

@@ -12,8 +12,8 @@ locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -54,8 +54,8 @@ LOG: queue_run MAIN
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: x@test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: TESTSUITE/test-mail/rmbox
@@ -70,7 +70,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
 retry time not reached: checking ultimate address timeout
-  now=tttt first_failed=tttt next_try=tttt expired=0
+  now=tttt first_failed=tttt next_try=tttt expired=F
   received_time=tttt diff=tttt timeout=259200
 LOG: retry_defer MAIN
   == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-52): Retry time not yet reached

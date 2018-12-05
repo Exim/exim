@@ -68,4 +68,23 @@ Test message
 ****
 exim -DDEFAULTDWC -Tqt 20s/ -odi -qf
 ****
+exim -Mrm $msg1
+****
+#
+#
+#
+# Check we do get a warn messsage, containing the remote SMTP response, for a remote defer
+exim -bd -DSERVER=server -oX PORT_D
+****
+exim -odi rrrr@remote.defer
+Subject: testing a remote defer
+
+body test
+****
+killdaemon
+exim -Tqt 11s/ -odi -q
+****
+exim -Mrm $msg1
+****
+#
 no_msglog_check

@@ -255,8 +255,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: 2@b
 unique = 2@b
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 2@b: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing 2@b
@@ -435,8 +435,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: 2@b
 unique = 2@b
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 2@b: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing 2@b

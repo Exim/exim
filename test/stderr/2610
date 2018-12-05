@@ -357,8 +357,8 @@ no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: ph10@myhost.test.ex
 unique = ph10@myhost.test.ex
-no domain retry record
-no address retry record
+no   domain  retry record
+no   address retry record
 ph10@myhost.test.ex: queued for routing
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing ph10@myhost.test.ex

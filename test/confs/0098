@@ -10,6 +10,7 @@ WMF=
 qualify_domain = test.ex
 
 domainlist local_domains = test.ex : another.test.ex
+acl_smtp_rcpt = server_acl
 
 delay_warning = 10s:40s:10m
 
@@ -24,6 +25,14 @@ queue_run_in_order
 WMF
 
 
+# ----- ACL -----
+
+# Only used in server mode
+begin acl
+server_acl:
+  defer	message = Over-quota
+
+
 # ----- Routers -----
 
 begin routers
@@ -34,6 +43,12 @@ refused:
   route_list = connection.refused 127.0.0.1 byname
   self = send
   transport = smtp_connect_refused
+
+remote_quota:
+  driver =	manualroute
+  route_list =	remote.defer 127.0.0.1
+  self =	send
+  transport =	smtp
 
 # The IP address is deliberately V4NET.0.0.1 so as to be unreachable
 all:
@@ -76,6 +91,7 @@ local_delivery:
 smtp:
   driver = smtp
   connect_timeout = 1s
+  port = PORT_D
 
 smtp_connect_refused:
   driver = smtp
