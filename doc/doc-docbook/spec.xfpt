@@ -6733,6 +6733,12 @@ be followed by optional colons.
 &*Warning*&: Unlike most other single-key lookup types, a file of data for
 &((n)wildlsearch)& can &'not'& be turned into a DBM or cdb file, because those
 lookup types support only literal keys.
+
+.next
+.cindex "lookup" "spf"
+If Exim is built with SPF support, manual lookups can be done
+(as opposed to the standard ACL condition method.
+For details see section &<<SECSPF>>&.
 .endlist ilist
 
 
