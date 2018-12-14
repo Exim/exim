@@ -1,6 +1,6 @@
 # overflow in integer options
 1
-exim -DARG1=4000E -bP check_spool_space
+exim -DARG1=4000Z -bP check_spool_space
 ****
 exim -DARG1=4000G -bP check_spool_space
 ****

@@ -2130,7 +2130,7 @@ switch (type)
   inttype = US"octal ";
 
   /*  Integer: a simple(ish) case; allow octal and hex formats, and
-  suffixes K, M and G. The different types affect output, not input. */
+  suffixes K, M, G, and T.  The different types affect output, not input. */
 
   case opt_mkint:
   case opt_int:
@@ -2147,7 +2147,7 @@ switch (type)
 
     if (errno != ERANGE && *endptr)
       {
-      uschar * mp = US"GgMmKk\0";	/* YyZzEePpTtGgMmKk */
+      uschar * mp = US"TtGgMmKk\0";	/* YyZzEePpTtGgMmKk */
 
       if ((mp = Ustrchr(mp, *endptr)))
 	{
@@ -2182,8 +2182,7 @@ switch (type)
     *(int *)ol->value = value;
   break;
 
-  /*  Integer held in K: again, allow octal and hex formats, and suffixes K, M,
-  G and T. */
+  /*  Integer held in K: again, allow formats and suffixes as above. */
 
   case opt_Kint:
     {
@@ -2197,12 +2196,12 @@ switch (type)
 
     if (errno != ERANGE && *endptr)
       {
-      uschar * mp = US"EePpTtGgMmKk\0";	/* YyZzEePpTtGgMmKk */
+      uschar * mp = US"ZzEePpTtGgMmKk\0";	/* YyZzEePpTtGgMmKk */
 
       if ((mp = Ustrchr(mp, *endptr)))
 	{
 	endptr++;
-	do
+	while (*(mp += 2))
 	  {
 	  if (lvalue > EXIM_ARITH_MAX/1024 || lvalue < EXIM_ARITH_MIN/1024)
 	    {
@@ -2211,7 +2210,6 @@ switch (type)
 	    }
 	  lvalue *= 1024;
 	  }
-	while (*(mp += 2));
 	}
       else
 	lvalue = (lvalue + 512)/1024;
@@ -2489,6 +2487,7 @@ switch(ol->type & opt_mask)
     int_eximarith_t x = *((int_eximarith_t *)value);
     if (!no_labels) printf("%s = ", name);
     if (x == 0) printf("0\n");
+    else if ((x & ((1<<30)-1)) == 0) printf(PR_EXIM_ARITH "T\n", x >> 30);
     else if ((x & ((1<<20)-1)) == 0) printf(PR_EXIM_ARITH "G\n", x >> 20);
     else if ((x & ((1<<10)-1)) == 0) printf(PR_EXIM_ARITH "M\n", x >> 10);
     else printf(PR_EXIM_ARITH "K\n", x);

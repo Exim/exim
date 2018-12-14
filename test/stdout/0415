@@ -1,4 +1,4 @@
-check_spool_space = 4096000G
+check_spool_space = 4000G
 queue_only_load = 2000000.123
 finduser_retries = 0
 finduser_retries = 999999999
