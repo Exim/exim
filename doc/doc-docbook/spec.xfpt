@@ -26977,6 +26977,9 @@ scale to handle future authentication mechanisms, so no guarantee can be
 made that any particular new authentication mechanism will be supported
 without code changes in Exim.
 
+Exim's &(gsasl)& authenticator does not have client-side support at this
+time; only the server-side support is implemented.  Patches welcome.
+
 
 .option server_channelbinding gsasl boolean false
 Do not set this true without consulting a cryptographic engineer.
