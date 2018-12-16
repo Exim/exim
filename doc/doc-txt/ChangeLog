@@ -5,6 +5,12 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim version 4.93
+-----------------
+
+JH/01 Bug 2351: Log failures to extract envelope addresses from message headers.
+
+
 Exim version 4.92
 -----------------
 

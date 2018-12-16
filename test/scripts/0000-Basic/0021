@@ -72,3 +72,11 @@ Some message
 .
 quit
 ****
+#
+# Test returncode and logginf for no extractable recipients
+1
+exim -odi -t
+From: userx@test1
+To:
+Subject: this should get a bounce, too
+****

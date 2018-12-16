@@ -3244,15 +3244,15 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
     if (recipients_count == 0) debug_printf("*** No recipients\n");
     if (bad_addresses)
       {
-      error_block *eblock = bad_addresses;
+      error_block * eblock;
       debug_printf("*** Bad address(es)\n");
-      while (eblock != NULL)
-        {
+      for (eblock = bad_addresses; eblock; eblock = eblock->next)
         debug_printf("  %s: %s\n", eblock->text1, eblock->text2);
-        eblock = eblock->next;
-        }
       }
     }
+
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s %s found in headers",
+    message_id, bad_addresses ? "bad addresses" : "no recipients");
 
   fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
 
@@ -3265,11 +3265,12 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
   if (error_handling == ERRORS_SENDER)
     {
     if (!moan_to_sender(
-          (bad_addresses == NULL)?
-            (extracted_ignored? ERRMESS_IGADDRESS : ERRMESS_NOADDRESS) :
-          (recipients_list == NULL)? ERRMESS_BADNOADDRESS : ERRMESS_BADADDRESS,
-          bad_addresses, header_list, spool_data_file, FALSE))
-      error_rc = (bad_addresses == NULL)? EXIT_NORECIPIENTS : EXIT_FAILURE;
+          bad_addresses
+	  ? recipients_list ? ERRMESS_BADADDRESS : ERRMESS_BADNOADDRESS
+	  : extracted_ignored ? ERRMESS_IGADDRESS : ERRMESS_NOADDRESS,
+          bad_addresses, header_list, spool_data_file, FALSE
+       )	       )
+      error_rc = bad_addresses ? EXIT_FAILURE : EXIT_NORECIPIENTS;
     }
   else
     {
