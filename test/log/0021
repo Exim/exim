@@ -1,21 +1,21 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@test1> R=accept T=appendfile
-1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= ok@test1 U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@test.ex> R=accept T=appendfile
+1999-03-02 09:44:33 10HmaY-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@test1> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaY-0005vi-00 F=<ok@test2> rejected by non-SMTP ACL: cannot test hosts condition in non-SMTP ACL
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbE-0005vi-00 => ok <ok@test2> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= ok@test1 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@test.ex> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= ok@test3 U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@test.ex> R=accept T=appendfile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 F=<ok@test2> rejected by non-SMTP ACL: cannot test hosts condition in non-SMTP ACL
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => ok <ok@test2> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 F=<ok@test4> rejected by non-SMTP ACL: no verified certificate
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbG-0005vi-00 => ok <ok@test4> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= ok@test3 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => userx <userx@test.ex> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 F=<ok@test4> rejected by non-SMTP ACL: no verified certificate
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => ok <ok@test4> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 1999-03-02 09:44:33 H=[10.9.8.7] U=CALLER rejected connection in "connect" ACL
 1999-03-02 09:44:33 10.9.8.8 accepted by connect ACL
 1999-03-02 09:44:33 H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
@@ -28,22 +28,26 @@
 1999-03-02 09:44:33 H=(x.y.z) [10.9.8.10] U=CALLER rejected EHLO or HELO x.y.z
 1999-03-02 09:44:33 10.9.8.8 accepted by connect ACL
 1999-03-02 09:44:33 mail accepted "mail from:<ok@test3>" "<ok@test3>"
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
-1999-03-02 09:44:33 10HmbH-0005vi-00 => x <x@y> R=accept T=appendfile
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbA-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 => userx <userx@test1> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 => x <x@y> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbJ-0005vi-00 => userx <userx@test1> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 => userx <userx@test1> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
 1999-03-02 09:44:33 10.9.8.8 accepted by connect ACL
 1999-03-02 09:44:33 H=(test.ex) [10.9.8.8] U=CALLER Warning: This warning is from a HELO ACL (command ehlo test.ex)
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 1999-03-02 09:44:33 H=(test.ex) [10.9.8.8] U=CALLER rejected EHLO or HELO test.ex
 1999-03-02 09:44:33 mail accepted "mail from: <ok@test3> SIZE=ssss" "<ok@test3> SIZE=1234"
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
-1999-03-02 09:44:33 10HmbK-0005vi-00 => x <x@y> R=accept T=appendfile
-1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 => x <x@y> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 10HmaX-0005vi-00 no recipients found in headers
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 => CALLER <CALLER@test.ex> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
