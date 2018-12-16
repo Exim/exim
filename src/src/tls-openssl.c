@@ -54,18 +54,17 @@ functions from the OpenSSL library. */
 # define EXIM_HAVE_SHA256
 #endif
 
-/*
- * X509_check_host provides sane certificate hostname checking, but was added
- * to OpenSSL late, after other projects forked off the code-base.  So in
- * addition to guarding against the base version number, beware that LibreSSL
- * does not (at this time) support this function.
- *
- * If LibreSSL gains a different API, perhaps via libtls, then we'll probably
- * opt to disentangle and ask a LibreSSL user to provide glue for a third
- * crypto provider for libtls instead of continuing to tie the OpenSSL glue
- * into even twistier knots.  If LibreSSL gains the same API, we can just
- * change this guard and punt the issue for a while longer.
- */
+/* X509_check_host provides sane certificate hostname checking, but was added
+to OpenSSL late, after other projects forked off the code-base.  So in
+addition to guarding against the base version number, beware that LibreSSL
+does not (at this time) support this function.
+
+If LibreSSL gains a different API, perhaps via libtls, then we'll probably
+opt to disentangle and ask a LibreSSL user to provide glue for a third
+crypto provider for libtls instead of continuing to tie the OpenSSL glue
+into even twistier knots.  If LibreSSL gains the same API, we can just
+change this guard and punt the issue for a while longer. */
+
 #ifndef LIBRESSL_VERSION_NUMBER
 # if OPENSSL_VERSION_NUMBER >= 0x010100000L
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
@@ -220,10 +219,9 @@ static int exim_openssl_options_size = nelem(exim_openssl_options);
 void
 options_tls(void)
 {
-struct exim_openssl_option * o;
 uschar buf[64];
 
-for (o = exim_openssl_options;
+for (struct exim_openssl_option * o = exim_openssl_options;
      o < exim_openssl_options + nelem(exim_openssl_options); o++)
   {
   /* Trailing X is workaround for problem with _OPT_OPENSSL_NO_TLSV1
@@ -428,10 +426,9 @@ void
 x509_store_dump_cert_s_names(X509_STORE * store)
 {
 STACK_OF(X509_OBJECT) * roots= store->objs;
-int i;
 static uschar name[256];
 
-for(i= 0; i<sk_X509_OBJECT_num(roots); i++)
+for (int i= 0; i < sk_X509_OBJECT_num(roots); i++)
   {
   X509_OBJECT * tmp_obj= sk_X509_OBJECT_value(roots, i);
   if(tmp_obj->type == X509_LU_X509)
@@ -1141,8 +1138,7 @@ bad:
   if (f.running_in_test_harness)
     {
     extern char ** environ;
-    uschar ** p;
-    if (environ) for (p = USS environ; *p; p++)
+    if (environ) for (uschar ** p = USS environ; *p; p++)
       if (Ustrncmp(*p, "EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK", 42) == 0)
 	{
 	DEBUG(D_tls) debug_printf("Supplying known bad OCSP response\n");
@@ -2052,14 +2048,13 @@ if (expcerts && *expcerts)
       /* Load the list of CAs for which we will accept certs, for sending
       to the client.  This is only for the one-file tls_verify_certificates
       variant.
-      If a list isn't loaded into the server, but
-      some verify locations are set, the server end appears to make
-      a wildcard request for client certs.
+      If a list isn't loaded into the server, but some verify locations are set,
+      the server end appears to make a wildcard request for client certs.
       Meanwhile, the client library as default behaviour *ignores* the list
       we send over the wire - see man SSL_CTX_set_client_cert_cb.
       Because of this, and that the dir variant is likely only used for
-      the public-CA bundle (not for a private CA), not worth fixing.
-      */
+      the public-CA bundle (not for a private CA), not worth fixing.  */
+
       if (file)
 	{
 	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
@@ -2375,7 +2370,6 @@ return OK;
 static int
 dane_tlsa_load(SSL * ssl, host_item * host, dns_answer * dnsa, uschar ** errstr)
 {
-dns_record * rr;
 dns_scan dnss;
 const char * hostnames[2] = { CS host->name, NULL };
 int found = 0;
@@ -2383,8 +2377,7 @@ int found = 0;
 if (DANESSL_init(ssl, NULL, hostnames) != 1)
   return tls_error(US"hostnames load", host, NULL, errstr);
 
-for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
-     rr;
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA && rr->size > 3)
   {
@@ -2907,7 +2900,7 @@ Used by both server-side and client-side TLS.
 int
 tls_write(void * ct_ctx, const uschar *buff, size_t len, BOOL more)
 {
-int outbytes, error, left;
+int outbytes, error;
 SSL * ssl = ct_ctx ? ((exim_openssl_client_tls_ctx *)ct_ctx)->ssl : server_ssl;
 static gstring * corked = NULL;
 
@@ -2941,7 +2934,7 @@ if (!ct_ctx && (more || corked))
   corked = NULL;
   }
 
-for (left = len; left > 0;)
+for (int left = len; left > 0;)
   {
   DEBUG(D_tls) debug_printf("SSL_write(%p, %p, %d)\n", ssl, buff, left);
   outbytes = SSL_write(ssl, CS buff, left);
@@ -3176,7 +3169,6 @@ unsigned int r;
 int i, needed_len;
 static pid_t pidlast = 0;
 pid_t pidnow;
-uschar *p;
 uschar smallbuf[sizeof(r)];
 
 if (max <= 1)
@@ -3234,11 +3226,8 @@ if (i < 0)
   }
 
 r = 0;
-for (p = smallbuf; needed_len; --needed_len, ++p)
-  {
-  r *= 256;
-  r += *p;
-  }
+for (uschar * p = smallbuf; needed_len; --needed_len, ++p)
+  r = 256 * r + *p;
 
 /* We don't particularly care about weighted results; if someone wants
 smooth distribution and cares enough then they should submit a patch then. */
@@ -3305,7 +3294,7 @@ BOOL
 tls_openssl_options_parse(uschar *option_spec, long *results)
 {
 long result, item;
-uschar *s, *end;
+uschar *end;
 uschar keep_c;
 BOOL adding, item_parsed;
 
@@ -3325,7 +3314,7 @@ if (!option_spec)
   return TRUE;
   }
 
-for (s=option_spec; *s != '\0'; /**/)
+for (uschar * s = option_spec; *s != '\0'; /**/)
   {
   while (isspace(*s)) ++s;
   if (*s == '\0')

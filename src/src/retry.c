@@ -523,7 +523,6 @@ retry_update(address_item **addr_defer, address_item **addr_failed,
 open_db dbblock;
 open_db *dbm_file = NULL;
 time_t now = time(NULL);
-int i;
 
 DEBUG(D_retry) debug_printf("Processing retry items\n");
 
@@ -531,7 +530,7 @@ DEBUG(D_retry) debug_printf("Processing retry items\n");
 Deferred addresses must be handled after failed ones, because some may be moved
 to the failed chain if they have timed out. */
 
-for (i = 0; i < 3; i++)
+for (int i = 0; i < 3; i++)
   {
   address_item *endaddr, *addr;
   address_item *last_first = NULL;
@@ -555,7 +554,6 @@ for (i = 0; i < 3; i++)
   while ((endaddr = *paddr))
     {
     BOOL timed_out = FALSE;
-    retry_item *rti;
 
     for (addr = endaddr; addr; addr = addr->parent)
       {
@@ -567,7 +565,7 @@ for (i = 0; i < 3; i++)
 
       /* Loop for each retry item. */
 
-      for (rti = addr->retries; rti; rti = rti->next)
+      for (retry_item * rti = addr->retries; rti; rti = rti->next)
         {
         uschar *message;
         int message_length, message_space, failing_interval, next_try;

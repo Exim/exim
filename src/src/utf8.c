@@ -208,15 +208,13 @@ Return NULL on error, with (optional) errstring pointer filled in
 uschar *
 string_address_utf8_to_alabel(const uschar * utf8, uschar ** err)
 {
-const uschar * s;
-uschar * l;
-uschar * d;
+uschar * l, * d;
 
 if (!*utf8) return string_copy(utf8);
 
 DEBUG(D_expand) debug_printf("addr from utf8 <%s>", utf8);
 
-for (s = utf8; *s; s++)
+for (const uschar * s = utf8; *s; s++)
   if (*s == '@')
     {
     l = string_copyn(utf8, s - utf8);

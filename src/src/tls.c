@@ -244,8 +244,7 @@ inplace.
 static void
 dn_to_list(uschar * dn)
 {
-uschar * cp;
-for (cp = dn; *cp; cp++)
+for (uschar * cp = dn; *cp; cp++)
   if (cp[0] == '\\' && cp[1] == ',')
     *cp++ = ',';
 }

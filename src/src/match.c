@@ -175,10 +175,9 @@ if (cb->at_is_special && pattern[0] == '@')
 
   if (Ustrcmp(pattern, "@[]") == 0)
     {
-    ip_address_item *ip;
     int slen = Ustrlen(s);
     if (s[0] != '[' && s[slen-1] != ']') return FAIL;
-    for (ip = host_find_interfaces(); ip != NULL; ip = ip->next)
+    for (ip_address_item * ip = host_find_interfaces(); ip; ip = ip->next)
       if (Ustrncmp(ip->address, s+1, slen - 2) == 0
             && ip->address[slen - 2] == 0)
         return OK;
@@ -696,8 +695,8 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
         if (valueptr)
           {
           const uschar *key = get_check_key(arg, type);
-          namedlist_cacheblock *p;
-          for (p = nb->cache_data; p; p = p->next)
+
+          for (namedlist_cacheblock * p = nb->cache_data; p; p = p->next)
             if (Ustrcmp(key, p->key) == 0)
               {
               *valueptr = p->data;
@@ -1065,7 +1064,6 @@ looked up to obtain a list of local parts. If the subject's local part is just
 if (pattern[0] == '@' && pattern[1] == '@')
   {
   int watchdog = 50;
-  const uschar *key;
   uschar *list, *ss;
   uschar buffer[1024];
 
@@ -1074,7 +1072,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
   /* Loop for handling chains. The last item in any list may be of the form
   ">name" in order to chain on to another list. */
 
-  for (key = sdomain + 1; key != NULL && watchdog-- > 0; )
+  for (const uschar * key = sdomain + 1; key && watchdog-- > 0; )
     {
     int sep = 0;
 
@@ -1277,7 +1275,6 @@ match_address_list(const uschar *address, BOOL caseless, BOOL expand,
   const uschar **listptr, unsigned int *cache_bits, int expand_setup, int sep,
   const uschar **valueptr)
 {
-uschar *p;
 check_address_block ab;
 unsigned int *local_cache_bits = cache_bits;
 
@@ -1289,7 +1286,7 @@ the list can be used to restore a caseful copy of the local part from the
 original address. */
 
 sprintf(CS big_buffer, "%.*s", big_buffer_size - 1, address);
-for (p = big_buffer + Ustrlen(big_buffer) - 1; p >= big_buffer; p--)
+for (uschar * p = big_buffer + Ustrlen(big_buffer) - 1; p >= big_buffer; p--)
   {
   if (!caseless && *p == '@') break;
   *p = tolower(*p);

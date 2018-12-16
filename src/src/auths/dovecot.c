@@ -131,52 +131,55 @@ actual fields (so last valid offset into ptrs is one less).
 static int
 strcut(uschar *str, uschar **ptrs, int nptrs)
 {
-       uschar *last_sub_start = str;
-       int n;
+uschar *last_sub_start = str;
+int n;
 
-       for (n = 0; n < nptrs; n++)
-               ptrs[n] = NULL;
-       n = 1;
+for (n = 0; n < nptrs; n++)
+  ptrs[n] = NULL;
+n = 1;
 
-       while (*str) {
-               if (*str == '\t') {
-                       if (n <= nptrs) {
-                               *ptrs++ = last_sub_start;
-                               last_sub_start = str + 1;
-                               *str = '\0';
-                       }
-                       n++;
-               }
-               str++;
-       }
+while (*str)
+  {
+  if (*str == '\t')
+    {
+    if (n <= nptrs)
+      {
+      *ptrs++ = last_sub_start;
+      last_sub_start = str + 1;
+      *str = '\0';
+      }
+      n++;
+    }
+    str++;
+  }
 
-       /* It's acceptable for the string to end with a tab character.  We see
-       this in AUTH PLAIN without an initial response from the client, which
-       causing us to send "334 " and get the data from the client. */
-       if (n <= nptrs) {
-               *ptrs = last_sub_start;
-       } else {
-               HDEBUG(D_auth) debug_printf("dovecot: warning: too many results from tab-splitting; saw %d fields, room for %d\n", n, nptrs);
-               n = nptrs;
-       }
+/* It's acceptable for the string to end with a tab character.  We see
+this in AUTH PLAIN without an initial response from the client, which
+causing us to send "334 " and get the data from the client. */
+if (n <= nptrs)
+ *ptrs = last_sub_start;
+else
+ {
+ HDEBUG(D_auth) debug_printf("dovecot: warning: too many results from tab-splitting; saw %d fields, room for %d\n", n, nptrs);
+ n = nptrs;
+ }
 
-       return n <= nptrs ? n : nptrs;
+return n <= nptrs ? n : nptrs;
 }
 
 static void debug_strcut(uschar **ptrs, int nlen, int alen) ARG_UNUSED;
 static void
 debug_strcut(uschar **ptrs, int nlen, int alen)
 {
-        int i;
-        debug_printf("%d read but unreturned bytes; strcut() gave %d results: ",
-                        socket_buffer_left, nlen);
-        for (i = 0; i < nlen; i++) {
-                debug_printf(" {%s}", ptrs[i]);
-        }
-        if (nlen < alen)
-                debug_printf(" last is %s\n", ptrs[i] ? ptrs[i] : US"<null>");
-        else
-                debug_printf(" (max for capacity)\n");
+int i;
+debug_printf("%d read but unreturned bytes; strcut() gave %d results: ",
+		socket_buffer_left, nlen);
+for (i = 0; i < nlen; i++)
+  debug_printf(" {%s}", ptrs[i]);
+if (nlen < alen)
+  debug_printf(" last is %s\n", ptrs[i] ? ptrs[i] : US"<null>");
+else
+  debug_printf(" (max for capacity)\n");
 }
 
 #define CHECK_COMMAND(str, arg_min, arg_max) do { \

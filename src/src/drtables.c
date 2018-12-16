@@ -177,9 +177,8 @@ auth_info auths_available[] = {
 void
 auth_show_supported(FILE * f)
 {
-auth_info * ai;
 fprintf(f, "Authenticators:");
-for (ai = auths_available; ai->driver_name[0]; ai++)
+for (auth_info * ai = auths_available; ai->driver_name[0]; ai++)
        	fprintf(f, " %s", ai->driver_name);
 fprintf(f, "\n");
 }
@@ -346,9 +345,8 @@ router_info routers_available[] = {
 void
 route_show_supported(FILE * f)
 {
-router_info * rr;
 fprintf(f, "Routers:");
-for (rr = routers_available; rr->driver_name[0]; rr++)
+for (router_info * rr = routers_available; rr->driver_name[0]; rr++)
        	fprintf(f, " %s", rr->driver_name);
 fprintf(f, "\n");
 }
@@ -766,10 +764,9 @@ init_lookup_list(void)
   /* now add all lookups to the real list */
   p = lookupmodules;
   while (p) {
-    int j;
     struct lookupmodulestr *pnext;
 
-    for (j = 0; j < p->info->lookupcount; j++)
+    for (int j = 0; j < p->info->lookupcount; j++)
       add_lookup_to_list(p->info->lookups[j]);
 
     pnext = p->next;

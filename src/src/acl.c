@@ -643,8 +643,7 @@ Returns:    index of a control entry, or -1 if not found
 static int
 find_control(const uschar * name, control_def * ol, int last)
 {
-int first = 0;
-while (last > first)
+for (int first = 0; last > first; )
   {
   int middle = (first + last)/2;
   uschar * s =  ol[middle].name;
@@ -675,8 +674,7 @@ Returns:      offset in list, or -1 if not found
 static int
 acl_checkcondition(uschar * name, condition_def * list, int end)
 {
-int start = 0;
-while (start < end)
+for (int start = 0; start < end; )
   {
   int mid = (start + end)/2;
   int c = Ustrcmp(name, list[mid].name);
@@ -705,9 +703,7 @@ Returns:      offset in list, or -1 if not found
 static int
 acl_checkname(uschar *name, uschar **list, int end)
 {
-int start = 0;
-
-while (start < end)
+for (int start = 0; start < end; )
   {
   int mid = (start + end)/2;
   int c = Ustrcmp(name, list[mid]);
@@ -745,7 +741,7 @@ acl_block **lastp = &yield;
 acl_block *this = NULL;
 acl_condition_block *cond;
 acl_condition_block **condp = NULL;
-uschar *s;
+uschar * s;
 
 *error = NULL;
 
@@ -1057,9 +1053,8 @@ uschar *
 fn_hdrs_added(void)
 {
 gstring * g = NULL;
-header_line * h;
 
-for (h = acl_added_headers; h; h = h->next)
+for (header_line * h = acl_added_headers; h; h = h->next)
   {
   int i = h->slen;
   if (h->text[i-1] == '\n') i--;
@@ -1134,10 +1129,10 @@ if (log_message != NULL && log_message != user_message)
   /* Search previously logged warnings. They are kept in malloc
   store so they can be freed at the start of a new message. */
 
-  for (logged = acl_warn_logged; logged != NULL; logged = logged->next)
+  for (logged = acl_warn_logged; logged; logged = logged->next)
     if (Ustrcmp(logged->text, text) == 0) break;
 
-  if (logged == NULL)
+  if (!logged)
     {
     int length = Ustrlen(text) + 1;
     log_write(0, LOG_MAIN, "%s", text);
@@ -1151,7 +1146,7 @@ if (log_message != NULL && log_message != user_message)
 
 /* If there's no user message, we are done. */
 
-if (user_message == NULL) return;
+if (!user_message) return;
 
 /* If this isn't a message ACL, we can't do anything with a user message.
 Log an error. */
@@ -1216,11 +1211,10 @@ HDEBUG(D_acl)
 
 if ((rc = host_name_lookup()) != OK)
   {
-  *log_msgptr = (rc == DEFER)?
-    US"host lookup deferred for reverse lookup check"
-    :
-    string_sprintf("host lookup failed for reverse lookup check%s",
-      host_lookup_msg);
+  *log_msgptr = rc == DEFER
+    ? US"host lookup deferred for reverse lookup check"
+    : string_sprintf("host lookup failed for reverse lookup check%s",
+	host_lookup_msg);
   return rc;    /* DEFER or FAIL */
   }
 
@@ -1258,13 +1252,10 @@ static int
 acl_verify_csa_address(dns_answer *dnsa, dns_scan *dnss, int reset,
                        uschar *target)
 {
-dns_record *rr;
-dns_address *da;
+int rc = CSA_FAIL_NOADDR;
 
-BOOL target_found = FALSE;
-
-for (rr = dns_next_rr(dnsa, dnss, reset);
-     rr != NULL;
+for (dns_record * rr = dns_next_rr(dnsa, dnss, reset);
+     rr;
      rr = dns_next_rr(dnsa, dnss, RESET_NEXT))
   {
   /* Check this is an address RR for the target hostname. */
@@ -1277,12 +1268,12 @@ for (rr = dns_next_rr(dnsa, dnss, reset);
 
   if (strcmpic(target, rr->name) != 0) continue;
 
-  target_found = TRUE;
+  rc = CSA_FAIL_MISMATCH;
 
   /* Turn the target address RR into a list of textual IP addresses and scan
   the list. There may be more than one if it is an A6 RR. */
 
-  for (da = dns_address_from_rr(dnsa, rr); da != NULL; da = da->next)
+  for (dns_address * da = dns_address_from_rr(dnsa, rr); da; da = da->next)
     {
     /* If the client IP address matches the target IP address, it's good! */
 
@@ -1296,8 +1287,7 @@ for (rr = dns_next_rr(dnsa, dnss, reset);
 using an unauthorized IP address, otherwise the target has no authorized IP
 addresses. */
 
-if (target_found) return CSA_FAIL_MISMATCH;
-else return CSA_FAIL_NOADDR;
+return rc;
 }
 
 
@@ -1456,7 +1446,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
 
 /* If we didn't break the loop then no appropriate records were found. */
 
-if (rr == NULL) return t->data.val = CSA_UNKNOWN;
+if (!rr) return t->data.val = CSA_UNKNOWN;
 
 /* Do not check addresses if the target is ".", in accordance with RFC 2782.
 A target of "." indicates there are no valid addresses, so the client cannot
@@ -1629,7 +1619,7 @@ if (!ss) goto BAD_VERIFY;
 
 /* Handle name/address consistency verification in a separate function. */
 
-for (vp= verify_type_list;
+for (vp = verify_type_list;
      CS vp < CS verify_type_list + sizeof(verify_type_list);
      vp++
     )
@@ -1775,8 +1765,7 @@ switch(vp->value)
 /* Remaining items are optional; they apply to sender and recipient
 verification, including "header sender" verification. */
 
-while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
-      != NULL)
+while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   {
   if (strcmpic(ss, US"defer_ok") == 0) defer_ok = TRUE;
   else if (strcmpic(ss, US"no_details") == 0) no_details = TRUE;
@@ -1809,10 +1798,10 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
         {
 	const uschar * sublist = ss;
         int optsep = ',';
-        uschar *opt;
         uschar buffer[256];
-        while (isspace(*sublist)) sublist++;
+	uschar * opt;
 
+        while (isspace(*sublist)) sublist++;
         while ((opt = string_nextinlist(&sublist, &optsep, buffer, sizeof(buffer))))
           {
 	  callout_opt_t * op;
@@ -3144,7 +3133,7 @@ for (; cb; cb = cb->next)
 	if (*p == '/')
 	  {
 	  const uschar *pp = p + 1;
-	  while (*pp != 0) pp++;
+	  while (*pp) pp++;
 	  fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
 	  p = pp;
 	  }
@@ -3196,7 +3185,7 @@ for (; cb; cb = cb->next)
 	  else if (Ustrncmp(p, "/domain=", 8) == 0)
 	    {
 	    const uschar *pp = p + 8;
-	    while (*pp != 0 && *pp != '/') pp++;
+	    while (*pp && *pp != '/') pp++;
 	    submission_domain = string_copyn(p+8, pp-p-8);
 	    p = pp;
 	    }
@@ -3205,7 +3194,7 @@ for (; cb; cb = cb->next)
 	  else if (Ustrncmp(p, "/name=", 6) == 0)
 	    {
 	    const uschar *pp = p + 6;
-	    while (*pp != 0) pp++;
+	    while (*pp) pp++;
 	    submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
 	      big_buffer, big_buffer_size));
 	    p = pp;
@@ -3521,7 +3510,7 @@ for (; cb; cb = cb->next)
       int logbits = 0;
       int sep = 0;
       const uschar *s = arg;
-      uschar *ss;
+      uschar * ss;
       while ((ss = string_nextinlist(&s, &sep, big_buffer, big_buffer_size)))
         {
         if (Ustrcmp(ss, "main") == 0) logbits |= LOG_MAIN;
@@ -3575,8 +3564,8 @@ for (; cb; cb = cb->next)
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
-      uschar *opt;
+      uschar * ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
+      uschar * opt;
       BOOL defer_ok = FALSE;
       int timeout = 0;
 
@@ -3851,7 +3840,7 @@ for(;;)
   if (*acl_text == 0) return NULL;         /* No more data */
   yield = acl_text;                        /* Potential data line */
 
-  while (*acl_text != 0 && *acl_text != '\n') acl_text++;
+  while (*acl_text && *acl_text != '\n') acl_text++;
 
   /* If we hit the end before a newline, we have the whole logical line. If
   it's a comment, there's no more data to be given. Otherwise, yield it. */
@@ -4046,13 +4035,13 @@ if (Ustrchr(ss, ' ') == NULL)
 in the ACL tree, having read it into the POOL_PERM store pool so that it
 persists between multiple messages. */
 
-if (acl == NULL)
+if (!acl)
   {
   int old_pool = store_pool;
   if (fd >= 0) store_pool = POOL_PERM;
   acl = acl_read(acl_getline, log_msgptr);
   store_pool = old_pool;
-  if (acl == NULL && *log_msgptr != NULL) return ERROR;
+  if (!acl && *log_msgptr) return ERROR;
   if (fd >= 0)
     {
     tree_node *t = store_get_perm(sizeof(tree_node) + Ustrlen(ss));
@@ -4064,7 +4053,7 @@ if (acl == NULL)
 
 /* Now we have an ACL to use. It's possible it may be NULL. */
 
-while (acl != NULL)
+while (acl)
   {
   int cond;
   int basic_errno = 0;

@@ -74,14 +74,13 @@ copy_spool_file(int dst, int src)
 {
 int i, j;
 uschar buffer[16384];
-uschar * s;
 
 if (lseek(src, 0, SEEK_SET) != 0)
   return FALSE;
 
 do
   if ((j = read(src, buffer, sizeof(buffer))) > 0)
-    for (s = buffer; (i = write(dst, s, j)) != j; s += i, j -= i)
+    for (uschar * s = buffer; (i = write(dst, s, j)) != j; s += i, j -= i)
       if (i < 0)
 	return FALSE;
   else if (j < 0)

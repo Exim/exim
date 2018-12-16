@@ -527,16 +527,16 @@ va_start(ap, format);
 vfprintf(f, format, ap);
 va_end(ap);
 
-if (addr != NULL)
+if (addr)
   {
   fprintf(f, "\nThe following address(es) have yet to be delivered:\n");
-  for (; addr != NULL; addr = addr->next)
+  for (; addr; addr = addr->next)
     {
-    uschar *parent = (addr->parent == NULL)? NULL : addr->parent->address;
+    uschar * parent = addr->parent ? addr->parent->address : NULL;
     fprintf(f, "  %s", addr->address);
-    if (parent != NULL) fprintf(f, " <%s>", parent);
+    if (parent) fprintf(f, " <%s>", parent);
     if (addr->basic_errno > 0) fprintf(f, ": %s", strerror(addr->basic_errno));
-    if (addr->message != NULL) fprintf(f, ": %s", addr->message);
+    if (addr->message) fprintf(f, ": %s", addr->message);
     fprintf(f, "\n");
     }
   }
@@ -724,22 +724,18 @@ moan_skipped_syntax_errors(uschar *rname, error_block *eblock,
 int pid, fd;
 uschar *s, *t;
 FILE *f;
-error_block *e;
 
-for (e = eblock; e != NULL; e = e->next)
-  {
+for (error_block * e = eblock; e; e = e->next)
   if (e->text2 != NULL)
     log_write(0, LOG_MAIN, "%s router: skipped error: %s in \"%s\"",
       rname, e->text1, e->text2);
   else
     log_write(0, LOG_MAIN, "%s router: skipped error: %s", rname,
       e->text1);
-  }
 
-if (syntax_errors_to == NULL) return TRUE;
+if (!syntax_errors_to) return TRUE;
 
-s = expand_string(syntax_errors_to);
-if (s == NULL)
+if (!(s = expand_string(syntax_errors_to)))
   {
   log_write(0, LOG_MAIN, "%s router failed to expand %s: %s", rname,
     syntax_errors_to, expand_string_message);
@@ -764,10 +760,9 @@ moan_write_from(f);
 fprintf(f, "To: %s\n", s);
 fprintf(f, "Subject: error(s) in forwarding or filtering\n\n");
 
-if (custom != NULL)
+if (custom)
   {
-  t = expand_string(custom);
-  if (t == NULL)
+  if (!(t = expand_string(custom)))
     {
     log_write(0, LOG_MAIN, "%s router failed to expand %s: %s", rname,
       custom, expand_string_message);
@@ -779,7 +774,7 @@ if (custom != NULL)
 fprintf(f, "The %s router encountered the following error(s):\n\n",
   rname);
 
-for (e = eblock; e != NULL; e = e->next)
+for (error_block * e = eblock; e; e = e->next)
   {
   fprintf(f, "  %s", e->text1);
   if (e->text2 != NULL)

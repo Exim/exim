@@ -119,9 +119,8 @@ switch(method)
     len = i + j + 3;
     HDEBUG(D_transport|D_acl|D_v)
       {
-      int i;
       debug_printf_indent("  SOCKS>>");
-      for (i = 0; i<len; i++) debug_printf(" %02x", s[i]);
+      for (int i = 0; i<len; i++) debug_printf(" %02x", s[i]);
       debug_printf("\n");
       }
     if (send(fd, s, len, 0) < 0)
@@ -359,9 +358,8 @@ if (  buf[0] != 5
 state = US"connect";
 HDEBUG(D_transport|D_acl|D_v)
   {
-  int i;
   debug_printf_indent("  SOCKS>>");
-  for (i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
+  for (int i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
   debug_printf("\n");
   }
 if (send(fd, buf, size, 0) < 0)
@@ -376,9 +374,8 @@ if (  !fd_ready(fd, tmo-time(NULL))
   goto rcv_err;
 HDEBUG(D_transport|D_acl|D_v)
   {
-  int i;
   debug_printf_indent("  SOCKS>>");
-  for (i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
+  for (int i = 0; i<size; i++) debug_printf(" %02x", buf[i]);
   debug_printf("\n");
   }
 if (  buf[0] != 5

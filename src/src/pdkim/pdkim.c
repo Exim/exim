@@ -124,9 +124,8 @@ return string_sprintf("%s-%s",
 int
 pdkim_hashname_to_hashtype(const uschar * s, unsigned len)
 {
-int i;
 if (!len) len = Ustrlen(s);
-for (i = 0; i < nelem(pdkim_hashes); i++)
+for (int i = 0; i < nelem(pdkim_hashes); i++)
   if (Ustrncmp(s, pdkim_hashes[i].dkim_hashname, len) == 0)
     return i;
 return -1;
@@ -136,9 +135,8 @@ void
 pdkim_cstring_to_canons(const uschar * s, unsigned len,
   int * canon_head, int * canon_body)
 {
-int i;
 if (!len) len = Ustrlen(s);
-for (i = 0; pdkim_combined_canons[i].str; i++)
+for (int i = 0; pdkim_combined_canons[i].str; i++)
   if (  Ustrncmp(s, pdkim_combined_canons[i].str, len) == 0
      && len == Ustrlen(pdkim_combined_canons[i].str))
     {
@@ -205,8 +203,7 @@ switch(status)
 void
 pdkim_quoteprint(const uschar *data, int len)
 {
-int i;
-for (i = 0; i < len; i++)
+for (int i = 0; i < len; i++)
   {
   const int c = data[i];
   switch (c)
@@ -231,8 +228,7 @@ debug_printf("\n");
 void
 pdkim_hexprint(const uschar *data, int len)
 {
-int i;
-if (data) for (i = 0 ; i < len; i++) debug_printf("%02x", data[i]);
+if (data) for (int i = 0 ; i < len; i++) debug_printf("%02x", data[i]);
 else debug_printf("<NULL>");
 debug_printf("\n");
 }
@@ -332,11 +328,10 @@ pdkim_relax_header_n(const uschar * header, int len, BOOL append_crlf)
 {
 BOOL past_field_name = FALSE;
 BOOL seen_wsp = FALSE;
-const uschar * p;
 uschar * relaxed = store_get(len+3);
 uschar * q = relaxed;
 
-for (p = header; p - header < len; p++)
+for (const uschar * p = header; p - header < len; p++)
   {
   uschar c = *p;
 
@@ -463,13 +458,12 @@ static pdkim_signature *
 pdkim_parse_sig_header(pdkim_ctx * ctx, uschar * raw_hdr)
 {
 pdkim_signature * sig;
-uschar *p, *q;
+uschar *q;
 gstring * cur_tag = NULL;
 gstring * cur_val = NULL;
 BOOL past_hname = FALSE;
 BOOL in_b_val = FALSE;
 int where = PDKIM_HDR_LIMBO;
-int i;
 
 sig = store_get(sizeof(pdkim_signature));
 memset(sig, 0, sizeof(pdkim_signature));
@@ -482,7 +476,7 @@ sig->hashtype = -1;
 
 q = sig->rawsig_no_b_val = store_get(Ustrlen(raw_hdr)+1);
 
-for (p = raw_hdr; ; p++)
+for (uschar * p = raw_hdr; ; p++)
   {
   char c = *p;
 
@@ -567,11 +561,11 @@ for (p = raw_hdr; ; p++)
 	    uschar * elem;
 
 	    if ((elem = string_nextinlist(&list, &sep, NULL, 0)))
-	      for(i = 0; i < nelem(pdkim_keytypes); i++)
+	      for (int i = 0; i < nelem(pdkim_keytypes); i++)
 		if (Ustrcmp(elem, pdkim_keytypes[i]) == 0)
 		  { sig->keytype = i; break; }
 	    if ((elem = string_nextinlist(&list, &sep, NULL, 0)))
-	      for (i = 0; i < nelem(pdkim_hashes); i++)
+	      for (int i = 0; i < nelem(pdkim_hashes); i++)
 		if (Ustrcmp(elem, pdkim_hashes[i].dkim_hashname) == 0)
 		  { sig->hashtype = i; break; }
 	    }
@@ -581,7 +575,7 @@ for (p = raw_hdr; ; p++)
 				    &sig->canon_headers, &sig->canon_body);
 	    break;
 	  case 'q':				/* Query method (for pubkey)*/
-	    for (i = 0; pdkim_querymethods[i]; i++)
+	    for (int i = 0; pdkim_querymethods[i]; i++)
 	      if (Ustrcmp(cur_val->s, pdkim_querymethods[i]) == 0)
 	        {
 		sig->querymethod = i;	/* we never actually use this */
@@ -730,7 +724,6 @@ if (b->canon_method == PDKIM_CANON_RELAXED)
   if (!relaxed_data)
     {
     BOOL seen_wsp = FALSE;
-    const uschar * p, * r;
     int q = 0;
 
     /* We want to be able to free this else we allocate
@@ -741,7 +734,7 @@ if (b->canon_method == PDKIM_CANON_RELAXED)
     relaxed_data = store_malloc(sizeof(blob) + orig_data->len+1);
     relaxed_data->data = US (relaxed_data+1);
 
-    for (p = orig_data->data, r = p + orig_data->len; p < r; p++)
+    for (const uschar * p = orig_data->data, * r = p + orig_data->len; p < r; p++)
       {
       char c = *p;
       if (c == '\r')
@@ -788,10 +781,7 @@ return relaxed_data;
 static void
 pdkim_finish_bodyhash(pdkim_ctx * ctx)
 {
-pdkim_bodyhash * b;
-pdkim_signature * sig;
-
-for (b = ctx->bodyhash; b; b = b->next)		/* Finish hashes */
+for (pdkim_bodyhash * b = ctx->bodyhash; b; b = b->next)     /* Finish hashes */
   {
   DEBUG(D_acl) debug_printf("PDKIM: finish bodyhash %d/%d/%ld len %ld\n",
 	    b->hashtype, b->canon_method, b->bodylength, b->signed_body_bytes);
@@ -799,9 +789,9 @@ for (b = ctx->bodyhash; b; b = b->next)		/* Finish hashes */
   }
 
 /* Traverse all signatures */
-for (sig = ctx->sig; sig; sig = sig->next)
+for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
   {
-  b = sig->calc_body_hash;
+  pdkim_bodyhash * b = sig->calc_body_hash;
 
   DEBUG(D_acl)
     {
@@ -849,15 +839,13 @@ for (sig = ctx->sig; sig; sig = sig->next)
 static void
 pdkim_body_complete(pdkim_ctx * ctx)
 {
-pdkim_bodyhash * b;
-
 /* In simple body mode, if any empty lines were buffered,
 replace with one. rfc 4871 3.4.3 */
 /*XXX checking the signed-body-bytes is a gross hack; I think
 it indicates that all linebreaks should be buffered, including
 the one terminating a text line */
 
-for (b = ctx->bodyhash; b; b = b->next)
+for (pdkim_bodyhash * b = ctx->bodyhash; b; b = b->next)
   if (  b->canon_method == PDKIM_CANON_SIMPLE
      && b->signed_body_bytes == 0
      && b->num_buffered_blanklines > 0
@@ -878,7 +866,6 @@ static void
 pdkim_bodyline_complete(pdkim_ctx * ctx)
 {
 blob line = {.data = ctx->linebuf, .len = ctx->linebuf_offset};
-pdkim_bodyhash * b;
 blob * rnl = NULL;
 blob * rline = NULL;
 
@@ -902,12 +889,13 @@ if (ctx->flags & PDKIM_DOT_TERM)
 /* Empty lines need to be buffered until we find a non-empty line */
 if (memcmp(line.data, "\r\n", 2) == 0)
   {
-  for (b = ctx->bodyhash; b; b = b->next) b->num_buffered_blanklines++;
+  for (pdkim_bodyhash * b = ctx->bodyhash; b; b = b->next)
+    b->num_buffered_blanklines++;
   goto all_skip;
   }
 
 /* Process line for each bodyhash separately */
-for (b = ctx->bodyhash; b; b = b->next)
+for (pdkim_bodyhash * b = ctx->bodyhash; b; b = b->next)
   {
   if (b->canon_method == PDKIM_CANON_RELAXED)
     {
@@ -956,9 +944,6 @@ return;
 static int
 pdkim_header_complete(pdkim_ctx * ctx)
 {
-pdkim_signature * sig, * last_sig;
-
-/* Special case: The last header can have an extra \r appended */
 if ( (ctx->cur_header->ptr > 1) &&
      (ctx->cur_header->s[ctx->cur_header->ptr-1] == '\r') )
   --ctx->cur_header->ptr;
@@ -973,7 +958,7 @@ if (++ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
 
 /* SIGNING -------------------------------------------------------------- */
 if (ctx->flags & PDKIM_MODE_SIGN)
-  for (sig = ctx->sig; sig; sig = sig->next)			/* Traverse all signatures */
+  for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)  /* Traverse all signatures */
 
     /* Add header to the signed headers list (in reverse order) */
     sig->headers = pdkim_prepend_stringlist(sig->headers, ctx->cur_header->s);
@@ -993,6 +978,7 @@ else
 		  DKIM_SIGNATURE_HEADERNAME,
 		  Ustrlen(DKIM_SIGNATURE_HEADERNAME)) == 0)
     {
+    pdkim_signature * sig, * last_sig;
     /* Create and chain new signature block.  We could error-check for all
     required tags here, but prefer to create the internal sig and expicitly
     fail verification of it later. */
@@ -1035,15 +1021,14 @@ return PDKIM_OK;
 DLLEXPORT int
 pdkim_feed(pdkim_ctx * ctx, uschar * data, int len)
 {
-int p, rc;
-
 /* Alternate EOD signal, used in non-dotstuffing mode */
 if (!data)
   pdkim_body_complete(ctx);
 
-else for (p = 0; p < len; p++)
+else for (int p = 0; p < len; p++)
   {
   uschar c = data[p];
+  int rc;
 
   if (ctx->flags & PDKIM_PAST_HDRS)
     {
@@ -1427,8 +1412,7 @@ instead.  Assume writing on the sig is ok in that case. */
 
 if (sig->keytype < 0)
   {
-  int i;
-  for(i = 0; i < nelem(pdkim_keytypes); i++)
+  for(int i = 0; i < nelem(pdkim_keytypes); i++)
     if (Ustrcmp(p->keytype, pdkim_keytypes[i]) == 0)
       { sig->keytype = i; goto k_ok; }
   DEBUG(D_acl) debug_printf("verify_init: unhandled keytype %s\n", p->keytype);
@@ -1462,8 +1446,6 @@ DLLEXPORT int
 pdkim_feed_finish(pdkim_ctx * ctx, pdkim_signature ** return_signatures,
   const uschar ** err)
 {
-pdkim_bodyhash * b;
-pdkim_signature * sig;
 BOOL verify_pass = FALSE;
 
 /* Check if we must still flush a (partial) header. If that is the
@@ -1477,7 +1459,7 @@ if (ctx->cur_header && ctx->cur_header->ptr > 0)
   if ((rc = pdkim_header_complete(ctx)) != PDKIM_OK)
     return rc;
 
-  for (b = ctx->bodyhash; b; b = b->next)
+  for (pdkim_bodyhash * b = ctx->bodyhash; b; b = b->next)
     rnl = pdkim_update_ctx_bodyhash(b, &lineending, rnl);
   if (rnl) store_free(rnl);
   }
@@ -1497,7 +1479,7 @@ if (!ctx->sig)
   return PDKIM_OK;
   }
 
-for (sig = ctx->sig; sig; sig = sig->next)
+for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
   {
   hctx hhash_ctx;
   uschar * sig_hdr = US"";
@@ -1561,7 +1543,6 @@ for (sig = ctx->sig; sig; sig = sig->next)
   if (ctx->flags & PDKIM_MODE_SIGN)
     {
     gstring * g = NULL;
-    pdkim_stringlist *p;
     const uschar * l;
     uschar * s;
     int sep = 0;
@@ -1577,8 +1558,8 @@ for (sig = ctx->sig; sig; sig = sig->next)
       }
     sig->keytype = sctx.keytype;
 
-    for (sig->headernames = NULL,		/* Collected signed header names */
-	  p = sig->headers; p; p = p->next)
+    sig->headernames = NULL;			/* Collected signed header names */
+    for (pdkim_stringlist * p = sig->headers; p; p = p->next)
       {
       uschar * rh = p->value;
 
@@ -1625,12 +1606,11 @@ for (sig = ctx->sig; sig; sig = sig->next)
     {
     uschar * p = sig->headernames;
     uschar * q;
-    pdkim_stringlist * hdrs;
 
     if (p)
       {
       /* clear tags */
-      for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
+      for (pdkim_stringlist * hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
 	hdrs->tag = 0;
 
       p = string_copy(p);
@@ -1640,7 +1620,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
 	  *q = '\0';
 
   /*XXX walk the list of headers in same order as received. */
-	for (hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
+	for (pdkim_stringlist * hdrs = ctx->headers; hdrs; hdrs = hdrs->next)
 	  if (  hdrs->tag == 0
 	     && strncasecmp(CCS hdrs->value, CCS p, Ustrlen(p)) == 0
 	     && (hdrs->value)[Ustrlen(p)] == ':'

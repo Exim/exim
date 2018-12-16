@@ -280,7 +280,6 @@ appendfile_transport_options_block *ob =
   (appendfile_transport_options_block *)(tblock->options_block);
 uschar *q = ob->quota;
 double default_value = 0.0;
-int i;
 
 addrlist = addrlist;    /* Keep picky compilers happy */
 dummy = dummy;
@@ -294,7 +293,7 @@ if (ob->expand_maildir_use_size_file)
 /* Loop for quota, quota_filecount, quota_warn_threshold, mailbox_size,
 mailbox_filecount */
 
-for (i = 0; i < 5; i++)
+for (int i = 0; i < 5; i++)
   {
   double d;
   int no_check = 0;
@@ -614,7 +613,6 @@ notify_comsat(uschar *user, off_t offset)
 {
 struct servent *sp;
 host_item host;
-host_item *h;
 uschar buffer[256];
 
 DEBUG(D_transport) debug_printf("notify_comsat called\n");
@@ -648,7 +646,7 @@ if (host_find_byname(&host, NULL, 0, NULL, FALSE) == HOST_FIND_FAILED)
 host.address = US"127.0.0.1";
 
 
-for (h = &host; h; h = h->next)
+for (host_item * h = &host; h; h = h->next)
   {
   int sock, rc;
   int host_af = Ustrchr(h->address, ':') != NULL ? AF_INET6 : AF_INET;
@@ -715,8 +713,7 @@ while ((s = string_nextinlist(&format,&sep,big_buffer,big_buffer_size)))
 
   if (match && tp)
     {
-    transport_instance *tt;
-    for (tt = transports; tt; tt = tt->next)
+    for (transport_instance * tt = transports; tt; tt = tt->next)
       if (Ustrcmp(tp, tt->name) == 0)
         {
         DEBUG(D_transport)
@@ -951,12 +948,11 @@ transport_ctx tctx = { .u={.fd = to_fd}, .options = topt_not_socket };
 
 if (saved_size == 0)
   {
-  int i;
   uschar *s;
   memset (deliver_out_buffer, '\0', MBX_HDRSIZE);
   sprintf(CS(s = deliver_out_buffer), "*mbx*\015\012%08lx00000000\015\012",
     (long int)time(NULL));
-  for (i = 0; i < MBX_NUSERFLAGS; i++)
+  for (int i = 0; i < MBX_NUSERFLAGS; i++)
     sprintf (CS(s += Ustrlen(s)), "\015\012");
   if (!transport_write_block (&tctx, deliver_out_buffer, MBX_HDRSIZE, FALSE))
     return DEFER;
@@ -1047,10 +1043,10 @@ if (deliver_home != NULL && create_file != create_anywhere)
   #ifndef NO_REALPATH
   if (yield && create_file == create_belowhome)
     {
-    uschar *slash, *next;
+    uschar *next;
     uschar *rp = NULL;
-    for (slash = Ustrrchr(file, '/');       /* There is known to be one */
-         rp == NULL && slash > file;        /* Stop if reached beginning */
+    for (uschar * slash = Ustrrchr(file, '/');  /* There is known to be one */
+         rp == NULL && slash > file;        	/* Stop if reached beginning */
          slash = next)
       {
       *slash = 0;
@@ -1378,11 +1374,8 @@ if (path[0] != '/')
 to the true local part. */
 
 if (testflag(addr, af_file))
-  {
-  address_item *addr2;
-  for (addr2 = addr; addr2 != NULL; addr2 = addr2->next)
+  for (address_item * addr2 = addr; addr2 != NULL; addr2 = addr2->next)
     addr2->local_part = string_copy(path);
-  }
 
 /* The available mailbox formats depend on whether it is a directory or a file
 delivery. */
@@ -2568,7 +2561,7 @@ else
     checked at the end, to make sure we don't release this process until the
     clock has ticked. */
 
-    for (i = 1;; i++)
+    for (int i = 1;; i++)
       {
       uschar *basename;
 
@@ -2634,7 +2627,6 @@ else
   else
     {
     FILE *env_file;
-    address_item *taddr;
     mailstore_basename = string_sprintf("%s/%s-%s", path, message_id,
       string_base62((long int)getpid()));
 
@@ -2709,7 +2701,7 @@ else
 
     fprintf(env_file, "%s\n", sender_address);
 
-    for (taddr = addr; taddr!= NULL; taddr = taddr->next)
+    for (address_item * taddr = addr; taddr; taddr = taddr->next)
       fprintf(env_file, "%s@%s\n", taddr->local_part, taddr->domain);
 
     if (ob->mailstore_suffix != NULL)
@@ -2896,9 +2888,8 @@ if (yield == OK && ob->use_bsmtp)
     yield = DEFER;
   else
     {
-    address_item *a;
     transport_newlines++;
-    for (a = addr; a != NULL; a = a->next)
+    for (address_item * a = addr; a != NULL; a = a->next)
       {
       address_item *b = testflag(a, af_pfr) ? a->parent: a;
       if (!transport_write_string(fd, "RCPT TO:<%s>%s\n",
@@ -3239,11 +3230,10 @@ else
 
       if (newname == NULL)
         {
-        int i;
         uschar *renameleaf;
         uschar *old_renameleaf = US"";
 
-        for (i = 0; ; sleep(1), i++)
+        for (int i = 0; ; sleep(1), i++)
           {
           deliver_inode = statbuf.st_ino;
           renameleaf = expand_string(ob->dirfilename);

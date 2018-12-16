@@ -91,30 +91,25 @@ manualroute_router_init(router_instance *rblock)
 {
 manualroute_router_options_block *ob =
   (manualroute_router_options_block *)(rblock->options_block);
-int i;
 
 /* Host_find_failed must be a recognized word */
 
-for (i = 0; i < hff_count; i++)
-  {
+for (int i = 0; i < hff_count; i++)
   if (Ustrcmp(ob->host_find_failed, hff_names[i]) == 0)
     {
     ob->hff_code = hff_codes[i];
     break;
     }
-  }
 if (ob->hff_code < 0)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "unrecognized setting for host_find_failed option", rblock->name);
 
-for (i = 1; i < hff_count; i++)   /* NB starts at 1 to skip "ignore" */
-  {
+for (int i = 1; i < hff_count; i++)   /* NB starts at 1 to skip "ignore" */
   if (Ustrcmp(ob->host_all_ignored, hff_names[i]) == 0)
     {
     ob->hai_code = hff_codes[i];
     break;
     }
-  }
 if (ob->hai_code < 0)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "unrecognized setting for host_all_ignored option", rblock->name);

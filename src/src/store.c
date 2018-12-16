@@ -442,11 +442,9 @@ Returns:      nothing
 static void
 store_release_3(void * block, const char * filename, int linenumber)
 {
-storeblock * b;
-
 /* It will never be the first block, so no need to check that. */
 
-for (b = chainbase[store_pool]; b; b = b->next)
+for (storeblock * b = chainbase[store_pool]; b; b = b->next)
   {
   storeblock * bb = b->next;
   if (bb && CS block == CS bb + ALIGNED_SIZEOF_STOREBLOCK)

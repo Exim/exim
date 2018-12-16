@@ -186,7 +186,7 @@ sent in response to subsequent prompts. Each is expanded before being sent. */
 
 while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)))
   {
-  int i, len, clear_len;
+  int len, clear_len;
   uschar *ss = expand_string(s);
   uschar *clear;
 
@@ -218,7 +218,7 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)))
   /* The character ^ is used as an escape for a binary zero character, which is
   needed for the PLAIN mechanism. It must be doubled if really needed. */
 
-  for (i = 0; i < len; i++)
+  for (int i = 0; i < len; i++)
     if (ss[i] == '^')
       if (ss[i+1] != '^')
 	ss[i] = 0;

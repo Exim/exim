@@ -142,7 +142,7 @@ Returns:         nothing
 static void
 write_syslog(int priority, const uschar *s)
 {
-int len, pass;
+int len;
 int linecount = 0;
 
 if (!syslog_pid && LOGGING(pid))
@@ -171,12 +171,10 @@ if (!syslog_open && !f.running_in_test_harness)
 /* First do a scan through the message in order to determine how many lines
 it is going to end up as. Then rescan to output it. */
 
-for (pass = 0; pass < 2; pass++)
+for (int pass = 0; pass < 2; pass++)
   {
-  int i;
-  int tlen;
   const uschar * ss = s;
-  for (i = 1, tlen = len; tlen > 0; i++)
+  for (int i = 1, tlen = len; tlen > 0; i++)
     {
     int plen = tlen;
     uschar *nlptr = Ustrchr(ss, '\n');
@@ -1045,8 +1043,6 @@ headers. */
 
 if (flags & LOG_REJECT)
   {
-  header_line *h;
-
   if (header_list && LOGGING(rejected_header))
     {
     uschar * p = g->s + g->ptr;
@@ -1087,7 +1083,7 @@ if (flags & LOG_REJECT)
 
     /* A header with a NULL text is an unfilled in Received: header */
 
-    for (h = header_list; h; h = h->next) if (h->text)
+    for (header_line * h = header_list; h; h = h->next) if (h->text)
       {
       BOOL fitted = string_format(p, LOG_BUFFER_SIZE - g->ptr,
         "%c %s", h->type, h->text);

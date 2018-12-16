@@ -240,8 +240,7 @@ uschar *pp = buffer;
 if (Ustrchr(string, ':') == NULL)
 #endif
   {
-  int i;
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     {
     const uschar *ppp = p;
     while (ppp > string && ppp[-1] != '.') ppp--;
@@ -259,7 +258,6 @@ abbreviation in the textual form. */
 #if HAVE_IPV6
 else
   {
-  int i;
   int v6[4];
   (void)host_aton(string, v6);
 
@@ -267,12 +265,9 @@ else
   nibble, and look in the ip6.int domain. The domain was subsequently
   changed to ip6.arpa. */
 
-  for (i = 3; i >= 0; i--)
-    {
-    int j;
-    for (j = 0; j < 32; j += 4)
+  for (int i = 3; i >= 0; i--)
+    for (int j = 0; j < 32; j += 4)
       pp += sprintf(CS pp, "%x.", (v6[i] >> j) & 15);
-    }
   Ustrcpy(pp, "ip6.arpa.");
 
   /* Another way of doing IPv6 reverse lookups was proposed in conjunction
@@ -287,7 +282,7 @@ else
   Ustrcpy(pp, "\\[x");
   pp += 3;
 
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     {
     sprintf(pp, "%08X", v6[i]);
     pp += 8;
@@ -467,11 +462,10 @@ static const uschar *
 dns_extract_auth_name(const dns_answer * dnsa)	/* FIXME: const dns_answer */
 {
 dns_scan dnss;
-dns_record * rr;
 const HEADER * h = (const HEADER *) dnsa->answer;
 
 if (h->nscount && h->aa)
-  for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
        rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (rr->type == (h->ancount ? T_NS : T_SOA))
       return string_copy(rr->name);
@@ -873,7 +867,6 @@ int
 dns_lookup(dns_answer *dnsa, const uschar *name, int type,
   const uschar **fully_qualified_name)
 {
-int i;
 const uschar *orig_name = name;
 BOOL secure_so_far = TRUE;
 
@@ -884,10 +877,10 @@ resolvers hiding behind a config variable. Loop to follow CNAME chains so far,
 but no further...  The testsuite tests the latter case, mostly assuming that the
 former will work. */
 
-for (i = 0; i <= dns_cname_loops; i++)
+for (int i = 0; i <= dns_cname_loops; i++)
   {
   uschar * data;
-  dns_record *rr, cname_rr, type_rr;
+  dns_record cname_rr, type_rr;
   dns_scan dnss;
   int rc;
 
@@ -903,7 +896,7 @@ for (i = 0; i <= dns_cname_loops; i++)
   area in the dnsa block. */
 
   cname_rr.data = type_rr.data = NULL;
-  for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
        rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (rr->type == type)
       {
@@ -1217,8 +1210,7 @@ else
   if (rr->data + 16 <= dnsa_lim)
     {
     struct in6_addr in6;
-    int i;
-    for (i = 0; i < 16; i++) in6.s6_addr[i] = rr->data[i];
+    for (int i = 0; i < 16; i++) in6.s6_addr[i] = rr->data[i];
     yield = store_get(sizeof(dns_address) + 50);
     inet_ntop(AF_INET6, &in6, CS yield->address, 50);
     yield->next = NULL;

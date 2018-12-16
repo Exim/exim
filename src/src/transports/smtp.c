@@ -497,14 +497,13 @@ set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
 #endif
   )
 {
-address_item *addr;
 int orvalue = 0;
 if (errno_value == ERRNO_CONNECTTIMEOUT)
   {
   errno_value = ETIMEDOUT;
   orvalue = RTEF_CTOUT;
   }
-for (addr = addrlist; addr; addr = addr->next)
+for (address_item * addr = addrlist; addr; addr = addr->next)
   if (addr->transport_return >= PENDING)
     {
     addr->basic_errno = errno_value;
@@ -1455,7 +1454,7 @@ if (  sx->esmtp
     If one is found, attempt to authenticate by calling its client function.
     */
 
-    for (au = auths; !f.smtp_authenticated && au; au = au->next)
+    for (auth_instance * au = auths; !f.smtp_authenticated && au; au = au->next)
       {
       uschar *p = names;
 
@@ -1608,8 +1607,7 @@ switch (rc)
       DEBUG(D_transport)
 	{
 	dns_scan dnss;
-	dns_record * rr;
-	for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+	for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
 	  if (rr->type == T_TLSA && rr->size > 3)
 	    {
@@ -2511,7 +2509,7 @@ if (  smtp_peer_options & OPTION_TLS
     /* TLS session is set up */
 
     smtp_peer_options_wrap = smtp_peer_options;
-    for (addr = sx->addrlist; addr; addr = addr->next)
+    for (address_item * addr = sx->addrlist; addr; addr = addr->next)
       if (addr->transport_return == PENDING_DEFER)
         {
         addr->cipher = tls_out.cipher;
@@ -2941,8 +2939,8 @@ if (sx->send_quit)
   {
   shutdown(sx->cctx.sock, SHUT_WR);
   if (fcntl(sx->cctx.sock, F_SETFL, O_NONBLOCK) == 0)
-    for (rc = 16; read(sx->cctx.sock, sx->inbuffer, sizeof(sx->inbuffer)) > 0 && rc > 0;)
-      rc--;				/* drain socket */
+    for (int i = 16; read(sx->cctx.sock, sx->inbuffer, sizeof(sx->inbuffer)) > 0 && i > 0;)
+      i--;				/* drain socket */
   sx->send_quit = FALSE;
   }
 (void)close(sx->cctx.sock);
@@ -2995,7 +2993,7 @@ request that */
 
 sx->prdr_active = FALSE;
 if (sx->peer_offered & OPTION_PRDR)
-  for (addr = addrlist; addr; addr = addr->next)
+  for (address_item * addr = addrlist; addr; addr = addr->next)
     if (addr->transport_return == PENDING_DEFER)
       {
       for (addr = addr->next; addr; addr = addr->next)
@@ -3080,12 +3078,11 @@ if (sx->peer_offered & OPTION_DSN && !(addr->dsn_flags & rf_dsnlasthop))
   {
   if (addr->dsn_flags & rf_dsnflags)
     {
-    int i;
     BOOL first = TRUE;
 
     Ustrcpy(p, " NOTIFY=");
     while (*p) p++;
-    for (i = 0; i < nelem(rf_list); i++) if (addr->dsn_flags & rf_list[i])
+    for (int i = 0; i < nelem(rf_list); i++) if (addr->dsn_flags & rf_list[i])
       {
       if (!first) *p++ = ',';
       first = FALSE;
@@ -3297,7 +3294,7 @@ smtp_proxy_tls(void * ct_ctx, uschar * buf, size_t bsize, int * pfd,
 {
 fd_set rfds, efds;
 int max_fd = MAX(pfd[0], tls_out.active.sock) + 1;
-int rc, i, fd_bits, nbytes;
+int rc, i;
 
 close(pfd[1]);
 if ((rc = fork()))
@@ -3312,7 +3309,7 @@ FD_ZERO(&rfds);
 FD_SET(tls_out.active.sock, &rfds);
 FD_SET(pfd[0], &rfds);
 
-for (fd_bits = 3; fd_bits; )
+for (int fd_bits = 3; fd_bits; )
   {
   time_t time_left = timeout;
   time_t time_start = time(NULL);
@@ -3355,7 +3352,7 @@ for (fd_bits = 3; fd_bits; )
       }
     else
       {
-      for (nbytes = 0; rc - nbytes > 0; nbytes += i)
+      for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = write(pfd[0], buf + nbytes, rc - nbytes)) < 0) goto done;
       }
   else if (fd_bits & 1)
@@ -3371,7 +3368,7 @@ for (fd_bits = 3; fd_bits; )
       }
     else
       {
-      for (nbytes = 0; rc - nbytes > 0; nbytes += i)
+      for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = tls_write(ct_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
 	  goto done;
       }
@@ -3523,14 +3520,12 @@ always has a sequence number greater than one. */
 
 if (continue_hostname && continue_sequence == 1)
   {
-  address_item * addr;
-
   sx.peer_offered = smtp_peer_options;
   sx.pending_MAIL = FALSE;
   sx.ok = TRUE;
   sx.next_addr = NULL;
 
-  for (addr = addrlist; addr; addr = addr->next)
+  for (address_item * addr = addrlist; addr; addr = addr->next)
     addr->transport_return = PENDING_OK;
   }
 else
@@ -3822,7 +3817,7 @@ else
     /* Process all transported addresses - for LMTP or PRDR, read a status for
     each one. */
 
-    for (addr = addrlist; addr != sx.first_addr; addr = addr->next)
+    for (address_item * addr = addrlist; addr != sx.first_addr; addr = addr->next)
       {
       if (addr->transport_return != PENDING_OK) continue;
 
@@ -3937,7 +3932,7 @@ else
             errno = ERRNO_DATA4XX;
             addrlist->more_errno |= ((sx.buffer[1] - '0')*10 + sx.buffer[2] - '0') << 8;
             }
-	  for (addr = addrlist; addr != sx.first_addr; addr = addr->next)
+	  for (address_item * addr = addrlist; addr != sx.first_addr; addr = addr->next)
             if (sx.buffer[0] == '5' || addr->transport_return == OK)
               addr->transport_return = PENDING_OK; /* allow set_errno action */
 	  goto RESPONSE_FAILED;
@@ -3947,11 +3942,11 @@ else
 	and update the journal, or setup retry. */
 
 	overall_message = string_printing(sx.buffer);
-        for (addr = addrlist; addr != sx.first_addr; addr = addr->next)
+        for (address_item * addr = addrlist; addr != sx.first_addr; addr = addr->next)
 	  if (addr->transport_return == OK)
 	    addr->message = string_sprintf("%s\\n%s", addr->message, overall_message);
 
-        for (addr = addrlist; addr != sx.first_addr; addr = addr->next)
+        for (address_item * addr = addrlist; addr != sx.first_addr; addr = addr->next)
 	  if (addr->transport_return == OK)
 	    {
 	    if (testflag(addr, af_homonym))
@@ -4360,8 +4355,8 @@ if (sx.send_quit)
   shutdown(sx.cctx.sock, SHUT_WR);
   millisleep(f.running_in_test_harness ? 200 : 20);
   if (fcntl(sx.cctx.sock, F_SETFL, O_NONBLOCK) == 0)
-    for (rc = 16; read(sx.cctx.sock, sx.inbuffer, sizeof(sx.inbuffer)) > 0 && rc > 0;)
-      rc--;				/* drain socket */
+    for (int i = 16; read(sx.cctx.sock, sx.inbuffer, sizeof(sx.inbuffer)) > 0 && i > 0;)
+      i--;				/* drain socket */
   }
 (void)close(sx.cctx.sock);
 
@@ -4450,8 +4445,7 @@ static address_item *
 prepare_addresses(address_item *addrlist, host_item *host)
 {
 address_item *first_addr = NULL;
-address_item *addr;
-for (addr = addrlist; addr; addr = addr->next)
+for (address_item * addr = addrlist; addr; addr = addr->next)
   if (addr->transport_return == DEFER)
     {
     if (!first_addr) first_addr = addr;
@@ -4491,7 +4485,6 @@ smtp_transport_entry(
   transport_instance *tblock,      /* data for this instantiation */
   address_item *addrlist)          /* addresses we are working on */
 {
-int cutoff_retry;
 int defport;
 int hosts_defer = 0;
 int hosts_fail  = 0;
@@ -4512,12 +4505,12 @@ host_item *host;
 DEBUG(D_transport)
   {
   debug_printf("%s transport entered\n", tblock->name);
-  for (addr = addrlist; addr; addr = addr->next)
+  for (address_item * addr = addrlist; addr; addr = addr->next)
     debug_printf("  %s\n", addr->address);
   if (hostlist)
     {
     debug_printf("hostlist:\n");
-    for (host = hostlist; host; host = host->next)
+    for (host_item * host = hostlist; host; host = host->next)
       debug_printf("  '%s' IP %s port %d\n", host->name, host->address, host->port);
     }
   if (continue_hostname)
@@ -4699,7 +4692,7 @@ the current message. To cope with this, we have to go round the loop a second
 time. After that, set the status and error data for any addresses that haven't
 had it set already. */
 
-for (cutoff_retry = 0;
+for (int cutoff_retry = 0;
      expired && cutoff_retry < (ob->delay_after_cutoff ? 1 : 2);
      cutoff_retry++)
   {
@@ -4749,7 +4742,6 @@ retry_non_continued:
     if (!host->address)
       {
       int new_port, flags;
-      host_item *hh;
 
       if (host->status >= hstatus_unusable)
         {
@@ -4786,7 +4778,7 @@ retry_non_continued:
       /* Update the host (and any additional blocks, resulting from
       multihoming) with a host-specific port, if any. */
 
-      for (hh = host; hh != nexthost; hh = hh->next) hh->port = new_port;
+      for (host_item * hh = host; hh != nexthost; hh = hh->next) hh->port = new_port;
 
       /* Failure to find the host at this time (usually DNS temporary failure)
       is really a kind of routing failure rather than a transport failure.
@@ -4805,7 +4797,7 @@ retry_non_continued:
           "HOST_FIND_AGAIN" : "HOST_FIND_FAILED", host->name);
         host->status = hstatus_unusable;
 
-        for (addr = addrlist; addr; addr = addr->next)
+        for (address_item * addr = addrlist; addr; addr = addr->next)
           {
           if (addr->transport_return != DEFER) continue;
           addr->basic_errno = ERRNO_UNKNOWNHOST;
@@ -4824,7 +4816,7 @@ retry_non_continued:
 
       if (rc == HOST_FOUND_LOCAL && !ob->allow_localhost)
         {
-        for (addr = addrlist; addr; addr = addr->next)
+        for (address_item * addr = addrlist; addr; addr = addr->next)
           {
           addr->basic_errno = 0;
           addr->message = string_sprintf("%s transport found host %s to be "
@@ -4869,7 +4861,7 @@ retry_non_continued:
           &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK))
       {
       expired = FALSE;
-      for (addr = addrlist; addr; addr = addr->next)
+      for (address_item * addr = addrlist; addr; addr = addr->next)
         if (addr->transport_return == DEFER)
 	  addr->message = US"domain matches queue_smtp_domains, or -odqs set";
       continue;      /* With next host */
@@ -5029,9 +5021,8 @@ retry_non_continued:
 
     if (f.dont_deliver)
       {
-      host_item *host2;
       set_errno_nohost(addrlist, 0, NULL, OK, FALSE);
-      for (addr = addrlist; addr; addr = addr->next)
+      for (address_item * addr = addrlist; addr; addr = addr->next)
         {
         addr->host_used = host;
         addr->special_action = '*';
@@ -5041,7 +5032,7 @@ retry_non_continued:
         {
         debug_printf("*** delivery by %s transport bypassed by -N option\n"
                      "*** host and remaining hosts:\n", tblock->name);
-        for (host2 = host; host2; host2 = host2->next)
+        for (host_item * host2 = host; host2; host2 = host2->next)
           debug_printf("    %s [%s]\n", host2->name,
             host2->address ? host2->address : US"unset");
         }
@@ -5079,10 +5070,9 @@ retry_non_continued:
 
       if (!host_is_expired && ++unexpired_hosts_tried >= ob->hosts_max_try)
         {
-        host_item *h;
         DEBUG(D_transport)
           debug_printf("hosts_max_try limit reached with this host\n");
-        for (h = host; h; h = h->next) if (h->mx != host->mx)
+        for (host_item * h = host; h; h = h->next) if (h->mx != host->mx)
 	  {
 	  nexthost = h;
 	  unexpired_hosts_tried--;
@@ -5251,7 +5241,7 @@ retry_non_continued:
     case, see if any of them are deferred. */
 
     if (rc == OK)
-      for (addr = addrlist; addr; addr = addr->next)
+      for (address_item * addr = addrlist; addr; addr = addr->next)
         if (addr->transport_return == DEFER)
           {
           some_deferred = TRUE;
@@ -5370,7 +5360,7 @@ specific failures. Force the delivery status for all addresses to FAIL. */
 
 if (mua_wrapper)
   {
-  for (addr = addrlist; addr; addr = addr->next)
+  for (address_item * addr = addrlist; addr; addr = addr->next)
     addr->transport_return = FAIL;
   goto END_TRANSPORT;
   }
@@ -5387,7 +5377,7 @@ If queue_smtp is set, or this transport was called to send a subsequent message
 down an existing TCP/IP connection, and something caused the host not to be
 found, we end up here, but can detect these cases and handle them specially. */
 
-for (addr = addrlist; addr; addr = addr->next)
+for (address_item * addr = addrlist; addr; addr = addr->next)
   {
   /* If host is not NULL, it means that we stopped processing the host list
   because of hosts_max_try or hosts_max_try_hardlimit. In the former case, this

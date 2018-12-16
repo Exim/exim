@@ -293,7 +293,6 @@ hash_offset_entry,
 hash_offset,
 hash_offlen,
 hash_slotnm;
-int loop;
 
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -335,7 +334,7 @@ if (cdbp->cdb_map != NULL)
   uschar * cur_pos = cur_offset + cdbp->cdb_map;
   uschar * end_pos = end_offset + cdbp->cdb_map;
 
-  for (loop = 0; (loop < hash_offlen); ++loop)
+  for (int loop = 0; (loop < hash_offlen); ++loop)
     {
     item_hash = cdb_unpack(cur_pos);
     cur_pos += 4;
@@ -386,7 +385,7 @@ if (cdbp->cdb_map != NULL)
 
 #endif /* HAVE_MMAP */
 
-for (loop = 0; (loop < hash_offlen); ++loop)
+for (int loop = 0; (loop < hash_offlen); ++loop)
   {
   uschar packbuf[8];
 
@@ -462,14 +461,15 @@ cdb_close(void *handle)
 struct cdb_state * cdbp = handle;
 
 #ifdef HAVE_MMAP
- if (cdbp->cdb_map) {
-   munmap(CS cdbp->cdb_map, cdbp->filelen);
-   if (cdbp->cdb_map == cdbp->cdb_offsets)
+if (cdbp->cdb_map)
+  {
+  munmap(CS cdbp->cdb_map, cdbp->filelen);
+  if (cdbp->cdb_map == cdbp->cdb_offsets)
      cdbp->cdb_offsets = NULL;
- }
+  }
 #endif /* HAVE_MMAP */
 
- (void)close(cdbp->fileno);
+(void)close(cdbp->fileno);
 }
 
 

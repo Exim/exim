@@ -109,7 +109,6 @@ static void
 compute_cram_md5(uschar *secret, uschar *challenge, uschar *digestptr)
 {
 md5 base;
-int i;
 int len = Ustrlen(secret);
 uschar isecret[64];
 uschar osecret[64];
@@ -133,7 +132,7 @@ memcpy(isecret, secret, len);
 memset(isecret+len, 0, 64-len);
 memcpy(osecret, isecret, 64);
 
-for (i = 0; i < 64; i++)
+for (int i = 0; i < 64; i++)
   {
   isecret[i] ^= 0x36;
   osecret[i] ^= 0x5c;

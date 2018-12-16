@@ -45,9 +45,8 @@ character. */
 
 if (value[0] == 0 || Ustrpbrk(value, " \t\n\r") != NULL || value[0] == '\"')
   {
-  int j;
   result = string_catn(result, US"\"", 1);
-  for (j = 0; j < vlength; j++)
+  for (int j = 0; j < vlength; j++)
     {
     if (value[j] == '\"' || value[j] == '\\')
       result = string_catn(result, US"\\", 1);

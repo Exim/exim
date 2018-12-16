@@ -128,10 +128,8 @@ int
 spool_write_header(uschar *id, int where, uschar **errmsg)
 {
 int fd;
-int i;
 int size_correction;
 FILE * fp;
-header_line *h;
 struct stat statbuf;
 uschar * tname;
 uschar * fname;
@@ -280,7 +278,7 @@ a space and its parent address number (pno). */
 
 tree_write(tree_nonrecipients, fp);
 fprintf(fp, "%d\n", recipients_count);
-for (i = 0; i < recipients_count; i++)
+for (int i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
 
@@ -324,7 +322,7 @@ various other headers, or an asterisk for old headers that have been rewritten.
 These are saved as a record for debugging. Don't included them in the message's
 size. */
 
-for (h = header_list; h; h = h->next)
+for (header_line * h = header_list; h; h = h->next)
   {
   fprintf(fp, "%03d%c %s", h->slen, h->type, h->text);
   size_correction += 5;

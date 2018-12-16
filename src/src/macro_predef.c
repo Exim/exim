@@ -70,7 +70,6 @@ void
 options_from_list(optionlist * opts, unsigned nopt,
   const uschar * section, uschar * group)
 {
-int i;
 const uschar * s;
 uschar buf[64];
 
@@ -81,7 +80,7 @@ of the macros list is in reverse-alpha (we prepend them) - so longer
 macros that have substrings are always discovered first during
 expansion. */
 
-for (i = 0; i < nopt; i++)  if (*(s = US opts[i].name) && *s != '*')
+for (int i = 0; i < nopt; i++)  if (*(s = US opts[i].name) && *s != '*')
   {
   if (group)
     spf(buf, sizeof(buf), CUS"_OPT_%T_%T_%T", section, group, s);

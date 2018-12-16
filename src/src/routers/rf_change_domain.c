@@ -66,14 +66,13 @@ addr->next = *addr_new;
 
 if (rewrite)
   {
-  header_line *h;
   DEBUG(D_route|D_rewrite) debug_printf("rewriting header lines\n");
-  for (h = header_list; h != NULL; h = h->next)
+  for (header_line * h = header_list; h != NULL; h = h->next)
     {
     header_line *newh =
       rewrite_header(h, parent->domain, domain,
         global_rewrite_rules, rewrite_existflags, TRUE);
-    if (newh != NULL)
+    if (newh)
       {
       h = newh;
       f.header_rewritten = TRUE;

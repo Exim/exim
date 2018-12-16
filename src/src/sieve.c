@@ -228,10 +228,9 @@ Returns
   dst
 */
 
-static struct String *quoted_printable_encode(const struct String *src, struct String *dst)
+static struct String *
+quoted_printable_encode(const struct String *src, struct String *dst)
 {
-int pass;
-const uschar *start,*end;
 uschar *new = NULL;
 uschar ch;
 size_t line;
@@ -239,7 +238,7 @@ size_t line;
 /* Two passes: one to count output allocation size, second
 to do the encoding */
 
-for (pass=0; pass<=1; ++pass)
+for (int pass = 0; pass <= 1; pass++)
   {
   line=0;
   if (pass==0)
@@ -249,7 +248,8 @@ for (pass=0; pass<=1; ++pass)
     dst->character=store_get(dst->length+1); /* plus one for \0 */
     new=dst->character;
     }
-  for (start=src->character,end=start+src->length; start<end; ++start)
+  for (const uschar * start = src->character, * end = start + src->length;
+       start < end; ++start)
     {
     ch=*start;
     if (line>=73)	/* line length limit */
@@ -359,13 +359,13 @@ Returns
 */
 
 #ifdef ENOTIFY
-static int uri_decode(struct String *str)
+static int
+uri_decode(struct String *str)
 {
 uschar *s,*t,*e;
 
 if (str->length==0) return 0;
 for (s=str->character,t=s,e=s+str->length; s<e; )
-  {
   if (*s=='%')
     {
     if (s+2<e && isxdigit(*(s+1)) && isxdigit(*(s+2)))
@@ -378,7 +378,7 @@ for (s=str->character,t=s,e=s+str->length; s<e; )
     }
   else
     *t++=*s++;
-  }
+
 *t='\0';
 str->length=t-str->character;
 return 0;
@@ -854,21 +854,15 @@ if ((filter_test != FTEST_NONE && debug_selector != 0) ||
 switch (mt)
   {
   case MATCH_IS:
-    {
     switch (co)
       {
       case COMP_OCTET:
-        {
         if (eq_octet(needle,haystack,0)) r=1;
         break;
-        }
       case COMP_EN_ASCII_CASEMAP:
-        {
         if (eq_asciicase(needle,haystack,0)) r=1;
         break;
-        }
       case COMP_ASCII_NUMERIC:
-        {
         if (!filter->require_iascii_numeric)
           {
           filter->errmsg=CUS "missing previous require \"comparator-i;ascii-numeric\";";
@@ -876,10 +870,9 @@ switch (mt)
           }
         if (eq_asciinumeric(needle,haystack,EQ)) r=1;
         break;
-        }
       }
     break;
-    }
+
   case MATCH_CONTAINS:
     {
     struct String h;
@@ -887,53 +880,42 @@ switch (mt)
     switch (co)
       {
       case COMP_OCTET:
-        {
-        for (h=*haystack; h.length; ++h.character,--h.length) if (eq_octet(needle,&h,1)) { r=1; break; }
+        for (h = *haystack; h.length; ++h.character,--h.length)
+	 if (eq_octet(needle,&h,1)) { r=1; break; }
         break;
-        }
       case COMP_EN_ASCII_CASEMAP:
-        {
-        for (h=*haystack; h.length; ++h.character,--h.length) if (eq_asciicase(needle,&h,1)) { r=1; break; }
+        for (h = *haystack; h.length; ++h.character, --h.length)
+	  if (eq_asciicase(needle,&h,1)) { r=1; break; }
         break;
-        }
       default:
-        {
         filter->errmsg=CUS "comparator does not offer specified matchtype";
         return -1;
-        }
       }
     break;
     }
+
   case MATCH_MATCHES:
-    {
     switch (co)
       {
       case COMP_OCTET:
-        {
         if ((r=eq_glob(needle,haystack,0,1))==-1)
           {
           filter->errmsg=CUS "syntactically invalid pattern";
           return -1;
           }
         break;
-        }
       case COMP_EN_ASCII_CASEMAP:
-        {
         if ((r=eq_glob(needle,haystack,1,1))==-1)
           {
           filter->errmsg=CUS "syntactically invalid pattern";
           return -1;
           }
         break;
-        }
       default:
-        {
         filter->errmsg=CUS "comparator does not offer specified matchtype";
         return -1;
-        }
       }
     break;
-    }
   }
 if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   (debug_selector & D_filter) != 0)
@@ -1050,7 +1032,7 @@ add_addr(address_item **generated, uschar *addr, int file, int maxage, int maxme
 {
 address_item *new_addr;
 
-for (new_addr=*generated; new_addr; new_addr=new_addr->next)
+for (new_addr = *generated; new_addr; new_addr = new_addr->next)
   if (  Ustrcmp(new_addr->address,addr) == 0
      && (  !file
 	|| testflag(new_addr, af_pfr)
@@ -1270,7 +1252,9 @@ do
   {
   int x,d,n;
 
-  for (x=0,d=0; d<2 && src<end && isxdigit(n=tolower(*src)); x=(x<<4)|(n>='0' && n<='9' ? n-'0' : 10+(n-'a')),++d,++src);
+  for (x = 0, d = 0;
+      d<2 && src<end && isxdigit(n=tolower(*src));
+      x=(x<<4)|(n>='0' && n<='9' ? n-'0' : 10+(n-'a')) ,++d, ++src) ;
   if (d==0) return -1;
   if (dst) *dst++=x;
   ++decoded;
@@ -1312,7 +1296,8 @@ Returns:      >=0              number of decoded octets
               -2               semantic error (character range violation)
 */
 
-static int unicode_decode(uschar *src, uschar *end, uschar *dst)
+static int
+unicode_decode(uschar *src, uschar *end, uschar *dst)
 {
 int decoded=0;
 
@@ -1323,9 +1308,11 @@ do
   int c,d,n;
 
   unicode_hex:
-  for (hex_seq=src; src<end && *src=='0'; ++src);
-  for (c=0,d=0; d<7 && src<end && isxdigit(n=tolower(*src)); c=(c<<4)|(n>='0' && n<='9' ? n-'0' : 10+(n-'a')),++d,++src);
-  if (src==hex_seq) return -1;
+  for (hex_seq = src; src < end && *src=='0'; ) src++;
+  for (c = 0, d = 0;
+       d < 7 && src < end && isxdigit(n=tolower(*src));
+       c=(c<<4)|(n>='0' && n<='9' ? n-'0' : 10+(n-'a')), ++d, ++src) ;
+  if (src == hex_seq) return -1;
   if (d==7 || (!((c>=0 && c<=0xd7ff) || (c>=0xe000 && c<=0x10ffff)))) return -2;
   if (c<128)
     {
@@ -2043,7 +2030,8 @@ Returns:      1                success
               -1               syntax or execution error
 */
 
-static int parse_test(struct Sieve *filter, int *cond, int exec)
+static int
+parse_test(struct Sieve *filter, int *cond, int exec)
 {
 if (parse_white(filter)==-1) return -1;
 if (parse_identifier(filter,CUS "address"))
@@ -2058,7 +2046,7 @@ if (parse_identifier(filter,CUS "address"))
   enum AddressPart addressPart=ADDRPART_ALL;
   enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum MatchType matchType=MATCH_IS;
-  struct String *hdr,*h,*key,*k;
+  struct String *hdr,*key;
   int m;
   int ap=0,co=0,mt=0;
 
@@ -2110,7 +2098,7 @@ if (parse_identifier(filter,CUS "address"))
     return -1;
     }
   *cond=0;
-  for (h=hdr; h->length!=-1 && !*cond; ++h)
+  for (struct String * h = hdr; h->length!=-1 && !*cond; ++h)
     {
     uschar *header_value=(uschar*)0,*extracted_addr,*end_addr;
 
@@ -2166,12 +2154,10 @@ if (parse_identifier(filter,CUS "address"))
         *end_addr = saveend;
         if (part)
           {
-          for (k=key; k->length!=-1; ++k)
+          for (struct String * k = key; k->length !=- 1; ++k)
             {
-            struct String partStr;
+            struct String partStr = {.character = part, .length = Ustrlen(part)};
 
-            partStr.character=part;
-            partStr.length=Ustrlen(part);
             if (extracted_addr)
               {
               *cond=compare(filter,k,&partStr,comparator,matchType);
@@ -2225,7 +2211,7 @@ else if (parse_identifier(filter,CUS "exists"))
   exists-test = "exists" <header-names: string-list>
   */
 
-  struct String *hdr,*h;
+  struct String *hdr;
   int m;
 
   if (parse_white(filter)==-1) return -1;
@@ -2237,7 +2223,7 @@ else if (parse_identifier(filter,CUS "exists"))
   if (exec)
     {
     *cond=1;
-    for (h=hdr; h->length!=-1 && *cond; ++h)
+    for (struct String * h = hdr; h->length != -1 && *cond; ++h)
       {
       uschar *header_def;
 
@@ -2270,7 +2256,7 @@ else if (parse_identifier(filter,CUS "header"))
 
   enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum MatchType matchType=MATCH_IS;
-  struct String *hdr,*h,*key,*k;
+  struct String *hdr,*key;
   int m;
   int co=0,mt=0;
 
@@ -2312,7 +2298,7 @@ else if (parse_identifier(filter,CUS "header"))
     return -1;
     }
   *cond=0;
-  for (h=hdr; h->length!=-1 && !*cond; ++h)
+  for (struct String * h = hdr; h->length != -1 && !*cond; ++h)
     {
     if (!is_header(h))
       {
@@ -2331,15 +2317,13 @@ else if (parse_identifier(filter,CUS "header"))
         filter->errmsg=CUS "header string expansion failed";
         return -1;
         }
-      for (k=key; k->length!=-1; ++k)
-        {
+      for (struct String * k = key; k->length != -1; ++k)
         if (Ustrcmp(header_def,"true")==0)
           {
           *cond=compare(filter,k,&header_value,comparator,matchType);
           if (*cond==-1) return -1;
           if (*cond) break;
           }
-        }
       }
     }
   return 1;
@@ -2397,7 +2381,7 @@ else if (parse_identifier(filter,CUS "envelope"))
   enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum AddressPart addressPart=ADDRPART_ALL;
   enum MatchType matchType=MATCH_IS;
-  struct String *env,*e,*key,*k;
+  struct String *env,*key;
   int m;
   int co=0,ap=0,mt=0;
 
@@ -2454,7 +2438,7 @@ else if (parse_identifier(filter,CUS "envelope"))
     return -1;
     }
   *cond=0;
-  for (e=env; e->length!=-1 && !*cond; ++e)
+  for (struct String * e = env; e->length != -1 && !*cond; ++e)
     {
     const uschar *envelopeExpr=CUS 0;
     uschar *envelope=US 0;
@@ -2516,12 +2500,10 @@ else if (parse_identifier(filter,CUS "envelope"))
         filter->errmsg=CUS "header string expansion failed";
         return -1;
         }
-      for (k=key; k->length!=-1; ++k)
+      for (struct String * k = key; k->length != -1; ++k)
         {
-        struct String envelopeStr;
+        struct String envelopeStr = {.character = envelope, .length = Ustrlen(envelope)};
 
-        envelopeStr.character=envelope;
-        envelopeStr.length=Ustrlen(envelope);
         *cond=compare(filter,k,&envelopeStr,comparator,matchType);
         if (*cond==-1) return -1;
         if (*cond) break;
@@ -2538,7 +2520,7 @@ else if (parse_identifier(filter,CUS "valid_notify_method"))
                         <notification-uris: string-list>
   */
 
-  struct String *uris,*u;
+  struct String *uris;
   int m;
 
   if (!filter->require_enotify)
@@ -2555,7 +2537,7 @@ else if (parse_identifier(filter,CUS "valid_notify_method"))
   if (exec)
     {
     *cond=1;
-    for (u=uris; u->length!=-1 && *cond; ++u)
+    for (struct String * u = uris; u->length != -1 && *cond; ++u)
       {
         string_item *recipient;
         struct String header,subject,body;
@@ -2587,7 +2569,7 @@ else if (parse_identifier(filter,CUS "notify_method_capability"))
 
   enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum MatchType matchType=MATCH_IS;
-  struct String uri,capa,*keys,*k;
+  struct String uri,capa,*keys;
 
   if (!filter->require_enotify)
     {
@@ -2650,15 +2632,13 @@ else if (parse_identifier(filter,CUS "notify_method_capability"))
       body.length=-1;
       body.character=(uschar*)0;
       if (parse_mailto_uri(filter,uri.character,&recipient,&header,&subject,&body)==1)
-        {
         if (eq_asciicase(&capa,&str_online,0)==1)
-          for (k=keys; k->length!=-1; ++k)
+          for (struct String * k = keys; k->length != -1; ++k)
             {
             *cond=compare(filter,k,&str_maybe,comparator,matchType);
             if (*cond==-1) return -1;
             if (*cond) break;
             }
-        }
       }
     return 1;
   }
@@ -3086,7 +3066,7 @@ while (*filter->pc)
               && (message.length==-1 || Ustrcmp(already->message.character,message.character)==0))
             break;
           }
-        if (already==(struct Notification*)0)
+        if (!already)
           /* New notification, process it */
           {
           struct Notification *sent;
@@ -3099,8 +3079,7 @@ while (*filter->pc)
   #ifndef COMPILE_SYNTAX_CHECKER
           if (filter_test == FTEST_NONE)
             {
-            string_item *p;
-            int pid,fd;
+            int pid, fd;
 
             if ((pid = child_open_exim2(&fd,envelope_from,envelope_from))>=1)
               {
@@ -3110,7 +3089,8 @@ while (*filter->pc)
 
               f = fdopen(fd, "wb");
               fprintf(f,"From: %s\n",from.length==-1 ? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
-              for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
+              for (string_item * p = recipient; p; p=p->next)
+	       	fprintf(f,"To: %s\n",p->text);
               fprintf(f,"Auto-Submitted: auto-notified; %s\n",filter->enotify_mailto_owner);
               if (header.length>0) fprintf(f,"%s",header.character);
               if (message.length==-1)
@@ -3232,19 +3212,16 @@ while (*filter->pc)
         }
       else if (parse_identifier(filter,CUS ":addresses")==1)
         {
-        struct String *a;
-
         if (parse_white(filter)==-1) return -1;
         if ((m=parse_stringlist(filter,&addresses))!=1)
           {
           if (m==0) filter->errmsg=CUS "addresses string list expected";
           return -1;
           }
-        for (a=addresses; a->length!=-1; ++a)
+        for (struct String * a = addresses; a->length != -1; ++a)
           {
-          string_item *new;
+          string_item * new = store_get(sizeof(string_item));
 
-          new=store_get(sizeof(string_item));
           new->text=store_get(a->length+1);
           if (a->length) memcpy(new->text,a->character,a->length);
           new->text[a->length]='\0';
@@ -3275,7 +3252,8 @@ while (*filter->pc)
       {
       uschar *s,*end;
 
-      for (s=reason.character,end=reason.character+reason.length; s<end && (*s&0x80)==0; ++s);
+      for (s = reason.character, end = reason.character + reason.length;
+	  s<end && (*s&0x80)==0; ) s++;
       if (s<end)
         {
         filter->errmsg=CUS "MIME reason string contains 8bit text";
@@ -3292,7 +3270,6 @@ while (*filter->pc)
       md5 base;
       uschar digest[16];
       uschar hexdigest[33];
-      int i;
       gstring * once;
 
       if (filter_personal(aliases,TRUE))
@@ -3319,7 +3296,7 @@ while (*filter->pc)
         else
 	  md5_end(&base, handle.character, handle.length, digest);
 
-        for (i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
+        for (int i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
 
         if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
           debug_printf("Sieve: mail was personal, vacation file basename: %s\n", hexdigest);
@@ -3386,8 +3363,7 @@ while (*filter->pc)
               (
               mime_body = reason.character, reason_end = reason.character + reason.length;
               mime_body < (reason_end-(sizeof(nlnl)-1)) && memcmp(mime_body, nlnl, (sizeof(nlnl)-1));
-              ++mime_body
-              );
+	      ) mime_body++;
 
             addr->reply->headers = string_copyn(reason.character, mime_body-reason.character);
 
@@ -3502,7 +3478,7 @@ while (parse_identifier(filter,CUS "require"))
   require-command = "require" <capabilities: string-list>
   */
 
-  struct String *cap,*check;
+  struct String *cap;
   int m;
 
   if (parse_white(filter)==-1) return -1;
@@ -3511,7 +3487,7 @@ while (parse_identifier(filter,CUS "require"))
     if (m==0) filter->errmsg=CUS "capability string list expected";
     return -1;
     }
-  for (check=cap; check->character; ++check)
+  for (struct String * check = cap; check->character; ++check)
     {
     if (eq_octet(check,&str_envelope,0)) filter->require_envelope=1;
     else if (eq_octet(check,&str_fileinto,0)) filter->require_fileinto=1;

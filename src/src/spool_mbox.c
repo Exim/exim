@@ -36,9 +36,8 @@ uschar buffer[16384];
 uschar *temp_string;
 uschar *mbox_path;
 FILE *mbox_file = NULL, *l_data_file = NULL, *yield = NULL;
-header_line *my_headerlist;
 struct stat statbuf;
-int i, j;
+int j;
 void *reset_point;
 
 mbox_path = string_sprintf("%s/scan/%s/%s.eml",
@@ -88,7 +87,7 @@ if (!spool_mbox_ok)
 
   /* write all non-deleted header lines to mbox file */
 
-  for (my_headerlist = header_list; my_headerlist;
+  for (header_line * my_headerlist = header_list; my_headerlist;
       my_headerlist = my_headerlist->next)
     if (my_headerlist->type != '*')
       if (fwrite(my_headerlist->text, my_headerlist->slen, 1, mbox_file) != 1)
@@ -116,7 +115,7 @@ if (!spool_mbox_ok)
   else
     {
     message_subdir[1] = '\0';
-    for (i = 0; i < 2; i++)
+    for (int i = 0; i < 2; i++)
       {
       message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
       temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");

@@ -39,9 +39,8 @@ Returns:     nothing
 static void
 tree_printsub(tree_node *p, int pos, int barswitch)
 {
-int i;
 if (p->right) tree_printsub(p->right, pos+2, 1);
-for (i = 0; i <= pos-1; i++) debug_printf("%c", tree_printline[i]);
+for (int i = 0; i <= pos-1; i++) debug_printf("%c", tree_printline[i]);
 debug_printf("-->%s [%d]\n", p->name, p->balance);
 tree_printline[pos] = barswitch? '|' : ' ';
 if (p->left)
@@ -56,8 +55,7 @@ if (p->left)
 void
 debug_print_tree(tree_node *p)
 {
-int i;
-for (i = 0; i < tree_printlinesize; i++) tree_printline[i] = ' ';
+for (int i = 0; i < tree_printlinesize; i++) tree_printline[i] = ' ';
 if (!p) debug_printf("Empty Tree\n"); else tree_printsub(p, 0, 0);
 debug_printf("---- End of tree ----\n");
 }
@@ -210,8 +208,7 @@ if (debug_ptr == debug_buffer)
 
 if (indent > 0)
   {
-  int i;
-  for (i = indent >> 2; i > 0; i--)
+  for (int i = indent >> 2; i > 0; i--)
     DEBUG(D_noutf8)
       {
       Ustrcpy(debug_ptr, "   !");

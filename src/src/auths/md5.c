@@ -65,14 +65,13 @@ register unsigned int a = base->abcd[0];
 register unsigned int b = base->abcd[1];
 register unsigned int c = base->abcd[2];
 register unsigned int d = base->abcd[3];
-int i;
 unsigned int X[16];
 base->length += 64;
 
 /* Load the 64 bytes into a set of working integers, treating them as 32-bit
 numbers in little-endian order. */
 
-for (i = 0; i < 16; i++)
+for (int i = 0; i < 16; i++)
   {
   X[i] = (unsigned int)(text[0]) |
          ((unsigned int)(text[1]) << 8) |
@@ -231,7 +230,6 @@ Returns:    nothing
 void
 md5_end(md5 *base, const uschar *text, int length, uschar *digest)
 {
-int i;
 uschar work[64];
 
 /* Process in chunks of 64 until we have less than 64 bytes left. */
@@ -284,7 +282,7 @@ md5_mid(base, work);
 
 /* Pass back the result, low-order byte first in each word. */
 
-for (i = 0; i < 4; i++)
+for (int i = 0; i < 4; i++)
   {
   register int x = base->abcd[i];
   *digest++ =  x        & 0xff;
@@ -341,12 +339,11 @@ printf("Checking md5: %s-endian\n", (ctest[0] == 0x04)? "little" : "big");
 
 for (i = 0; i < sizeof(tests)/sizeof(uschar *); i += 2)
   {
-  int j;
   uschar s[33];
   printf("%s\nShould be: %s\n", tests[i], tests[i+1]);
   md5_start(&base);
   md5_end(&base, tests[i], strlen(tests[i]), digest);
-  for (j = 0; j < 16; j++) sprintf(s+2*j, "%02x", digest[j]);
+  for (int j = 0; j < 16; j++) sprintf(s+2*j, "%02x", digest[j]);
   printf("Computed:  %s\n", s);
   if (strcmp(s, tests[i+1]) != 0) printf("*** No match ***\n");
   printf("\n");

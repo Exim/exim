@@ -65,22 +65,19 @@ return re_list_head;
 static int
 matcher(pcre_list * re_list_head, uschar * linebuffer, int len)
 {
-pcre_list * ri;
-
-for(ri = re_list_head; ri; ri = ri->next)
+for(pcre_list * ri = re_list_head; ri; ri = ri->next)
   {
   int ovec[3*(REGEX_VARS+1)];
-  int n, nn;
+  int n;
 
   /* try matcher on the line */
-  n = pcre_exec(ri->re, NULL, CS linebuffer, len, 0, 0, ovec, nelem(ovec));
-  if (n > 0)
+  if ((n = pcre_exec(ri->re, NULL, CS linebuffer, len, 0, 0, ovec, nelem(ovec))) > 0)
     {
     Ustrncpy(regex_match_string_buffer, ri->pcre_text,
 	      sizeof(regex_match_string_buffer)-1);
     regex_match_string = regex_match_string_buffer;
 
-    for (nn = 1; nn < n; nn++)
+    for (int nn = 1; nn < n; nn++)
       regex_vars[nn-1] =
 	string_copyn(linebuffer + ovec[nn*2], ovec[nn*2+1] - ovec[nn*2]);
 

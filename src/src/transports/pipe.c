@@ -488,7 +488,6 @@ if (expand_arguments)
          (p > cmd && p[-1] == '$') ||
          (p > cmd + 1 && p[-2] == '$' && p[-1] == '{' && p[14] == '}')))
     {
-    address_item *ad;
     uschar *q = p + 14;
 
     if (p[-1] == '{') { q++; p--; }
@@ -496,7 +495,7 @@ if (expand_arguments)
     g = string_get(Ustrlen(cmd) + 64);
     g = string_catn(g, cmd, p - cmd - 1);
 
-    for (ad = addr; ad; ad = ad->next)
+    for (address_item * ad = addr; ad; ad = ad->next)
       {
       /*XXX string_append_listele() ? */
       if (ad != addr) g = string_catn(g, US" ", 1);
@@ -854,12 +853,10 @@ than one address available here, all must be included. Force SMTP dot-handling.
 
 if (ob->use_bsmtp)
   {
-  address_item *a;
-
   if (!transport_write_string(fd_in, "MAIL FROM:<%s>%s", return_path, eol))
     goto END_WRITE;
 
-  for (a = addr; a; a = a->next)
+  for (address_item * a = addr; a; a = a->next)
     if (!transport_write_string(fd_in,
         "RCPT TO:<%s>%s",
         transport_rcpt_address(a, tblock->rcpt_include_affixes),
@@ -1075,7 +1072,6 @@ if ((rc = child_close(pid, timeout)) != 0)
       {
       uschar *ss;
       gstring * g;
-      int i;
 
       /* If temp_errors is "*" all codes are temporary. Initialization checks
       that it's either "*" or a list of numbers. If not "*", scan the list of
@@ -1120,7 +1116,7 @@ if ((rc = child_close(pid, timeout)) != 0)
 
       g = string_catn(g, US" from command:", 14);
 
-      for (i = 0; i < sizeof(argv)/sizeof(int *) && argv[i] != NULL; i++)
+      for (int i = 0; i < sizeof(argv)/sizeof(int *) && argv[i] != NULL; i++)
         {
         BOOL quote = FALSE;
         g = string_catn(g, US" ", 1);
