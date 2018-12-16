@@ -157,7 +157,6 @@ return OK;
 static void
 dmarc_send_forensic_report(u_char **ruf)
 {
-int   c;
 uschar *recipient, *save_sender;
 BOOL  send_status = FALSE;
 error_block *eblock = NULL;
@@ -183,7 +182,7 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
 		     da == DMARC_POLICY_DKIM_ALIGNMENT_PASS ? US"yes" : US"no");
     eblock = add_to_eblock(eblock, US"DMARC Results", dmarc_status_text);
 
-    for (c = 0; ruf[c]; c++)
+    for (int c = 0; ruf[c]; c++)
       {
       recipient = string_copylc(ruf[c]);
       if (Ustrncmp(recipient, "mailto:",7))

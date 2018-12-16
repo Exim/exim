@@ -14,7 +14,7 @@ static uschar encode_base64[64] =
 size_t slen;
 uschar *sptr;
 gstring * yield = NULL;
-int i = 0, j;	/* compiler quietening */
+int i = 0;	/* compiler quietening */
 uschar c = 0;	/* compiler quietening */
 BOOL base64mode = FALSE;
 BOOL lastsep = FALSE;
@@ -106,7 +106,7 @@ while (slen > 0)
         i = 0;
         }
 
-      for (j = 0; j < 2; j++, s++) switch (i++)
+      for (int j = 0; j < 2; j++, s++) switch (i++)
 	{
 	case 0:
 	  /* Top 6 bits of the first octet */

@@ -410,14 +410,13 @@ tls_cert_ocsp_uri(void * cert, uschar * mod)
 STACK_OF(ACCESS_DESCRIPTION) * ads = (STACK_OF(ACCESS_DESCRIPTION) *)
   X509_get_ext_d2i((X509 *)cert, NID_info_access, NULL, NULL);
 int adsnum = sk_ACCESS_DESCRIPTION_num(ads);
-int i;
 uschar sep = '\n';
 gstring * list = NULL;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
 
-for (i = 0; i < adsnum; i++)
+for (int i = 0; i < adsnum; i++)
   {
   ACCESS_DESCRIPTION * ad = sk_ACCESS_DESCRIPTION_value(ads, i);
 
@@ -437,23 +436,19 @@ STACK_OF(DIST_POINT) * dps = (STACK_OF(DIST_POINT) *)
   X509_get_ext_d2i((X509 *)cert,  NID_crl_distribution_points,
     NULL, NULL);
 DIST_POINT * dp;
-int dpsnum = sk_DIST_POINT_num(dps);
-int i;
 uschar sep = '\n';
 gstring * list = NULL;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
 
-if (dps) for (i = 0; i < dpsnum; i++)
+if (dps) for (int i = 0, dpsnum = sk_DIST_POINT_num(dps); i < dpsnum; i++)
   if ((dp = sk_DIST_POINT_value(dps, i)))
     {
     STACK_OF(GENERAL_NAME) * names = dp->distpoint->name.fullname;
     GENERAL_NAME * np;
-    int nnum = sk_GENERAL_NAME_num(names);
-    int j;
 
-    for (j = 0; j < nnum; j++)
+    for (int j = 0, nnum = sk_GENERAL_NAME_num(names); j < nnum; j++)
       if (  (np = sk_GENERAL_NAME_value(names, j))
 	 && np->type == GEN_URI
 	 )
@@ -493,7 +488,6 @@ return cp;
 static uschar *
 fingerprint(X509 * cert, const EVP_MD * fdig)
 {
-int j;
 unsigned int n;
 uschar md[EVP_MAX_MD_SIZE];
 uschar * cp;
@@ -504,7 +498,7 @@ if (!X509_digest(cert,fdig,md,&n))
   return NULL;
   }
 cp = store_get(n*2+1);
-for (j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
+for (int j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
 return(cp);
 }
 

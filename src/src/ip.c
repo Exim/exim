@@ -394,9 +394,8 @@ int
 ip_connectedsocket(int type, const uschar * hostname, int portlo, int porthi,
       int timeout, host_item * connhost, uschar ** errstr, const blob * fastopen_blob)
 {
-int namelen, port;
+int namelen;
 host_item shost;
-host_item *h;
 int af = 0, fd, fd4 = -1, fd6 = -1;
 
 shost.next = NULL;
@@ -440,7 +439,7 @@ else
 
 /* Try to connect to the server - test each IP till one works */
 
-for (h = &shost; h; h = h->next)
+for (host_item * h = &shost; h; h = h->next)
   {
   fd = Ustrchr(h->address, ':') != 0
     ? fd6 < 0 ? (fd6 = ip_socket(type, af = AF_INET6)) : fd6
@@ -452,7 +451,7 @@ for (h = &shost; h; h = h->next)
     goto bad;
     }
 
-  for(port = portlo; port <= porthi; port++)
+  for (int port = portlo; port <= porthi; port++)
     if (ip_connect(fd, af, h->address, port, timeout, fastopen_blob) == 0)
       {
       if (fd != fd6) close(fd6);
@@ -835,8 +834,7 @@ return FALSE;
 void
 dscp_list_to_stream(FILE *stream)
 {
-int i;
-for (i=0; i < dscp_table_size; ++i)
+for (int i = 0; i < dscp_table_size; ++i)
   fprintf(stream, "%s\n", dscp_table[i].name);
 }
 

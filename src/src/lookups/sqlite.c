@@ -45,7 +45,6 @@ static int
 sqlite_callback(void *arg, int argc, char **argv, char **azColName)
 {
 gstring * res = *(gstring **)arg;
-int i;
 
 /* For second and subsequent results, insert \n */
 
@@ -55,7 +54,7 @@ if (res)
 if (argc > 1)
   {
   /* For multiple fields, include the field name too */
-  for (i = 0; i < argc; i++)
+  for (int i = 0; i < argc; i++)
     {
     uschar *value = US((argv[i] != NULL)? argv[i]:"<NULL>");
     res = lf_quote(US azColName[i], value, Ustrlen(value), res);

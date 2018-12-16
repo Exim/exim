@@ -218,7 +218,7 @@ uschar *debug = NULL;   /* Stops compiler complaining */
 sasl_callback_t cbs[] = {{SASL_CB_LIST_END, NULL, NULL}};
 sasl_conn_t *conn;
 char * realm_expanded = NULL;
-int rc, i, firsttime = 1, clen, *negotiated_ssf_ptr = NULL, negotiated_ssf;
+int rc, firsttime = 1, clen, *negotiated_ssf_ptr = NULL, negotiated_ssf;
 unsigned int inlen, outlen;
 
 input = data;
@@ -288,7 +288,7 @@ inet_ntop which we wrap in our host_ntoa() function.
 So the docs are too strict and we shouldn't worry about :: contractions. */
 
 /* Set properties for remote and local host-ip;port */
-for (i = 0; i < 2; ++i)
+for (int i = 0; i < 2; ++i)
   {
   struct sockaddr_storage ss;
   int (*query)(int, struct sockaddr *, socklen_t *);
@@ -513,7 +513,7 @@ auth_cyrus_sasl_client(
   auth_instance *ablock,                 /* authenticator block */
   void * sx,			 	 /* connexction */
   int timeout,                           /* command timeout */
-  uschar *buffer,                          /* for reading response */
+  uschar *buffer,                        /* for reading response */
   int buffsize)                          /* size of buffer */
 {
 /* We don't support clients (yet) in this implementation of cyrus_sasl */

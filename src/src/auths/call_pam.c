@@ -66,7 +66,6 @@ static int
 pam_converse (int num_msg, PAM_CONVERSE_ARG2_TYPE **msg,
   struct pam_response **resp, void *appdata_ptr)
 {
-int i;
 int sep = 0;
 struct pam_response *reply;
 
@@ -76,7 +75,7 @@ reply = malloc(sizeof(struct pam_response) * num_msg);
 
 if (reply == NULL) return PAM_CONV_ERR;
 
-for (i = 0; i < num_msg; i++)
+for (int i = 0; i < num_msg; i++)
   {
   uschar *arg;
   switch (msg[i]->msg_style)

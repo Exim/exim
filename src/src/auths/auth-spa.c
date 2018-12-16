@@ -245,10 +245,10 @@ extern int DEBUGLEVEL;
 /* macros for reading / writing arrays */
 
 # define SMBMACRO(macro,buf,pos,val,len,size) \
-{ int l; for (l = 0; l < (len); l++) (val)[l] = macro((buf), (pos) + (size)*l); }
+{ for (int l = 0; l < (len); l++) (val)[l] = macro((buf), (pos) + (size)*l); }
 
 # define SSMBMACRO(macro,buf,pos,val,len,size) \
-{ int l; for (l = 0; l < (len); l++) macro((buf), (pos) + (size)*l, (val)[l]); }
+{ for (int l = 0; l < (len); l++) macro((buf), (pos) + (size)*l, (val)[l]); }
 
 /* reads multiple data from an SMB buffer */
 # define PCVAL(buf,pos,val,len) SMBMACRO(CVAL,buf,pos,val,len,1)
@@ -297,7 +297,7 @@ extern int DEBUGLEVEL;
        DEBUG_X(5,("%s%04x %s: ", \
              tab_depth(depth), base,string)); \
     if (charmode) print_asc(5, US (outbuf), (len)); else \
-       { int idx; for (idx = 0; idx < len; idx++) { DEBUG_X(5,("%02x ", (outbuf)[idx])); } } \
+       for (int idx = 0; idx < len; idx++) { DEBUG_X(5,("%02x ", (outbuf)[idx])); } \
        DEBUG_X(5,("\n")); }
 
 # define DBG_RW_PSVAL(charmode,string,depth,base,read,big_endian,inbuf,outbuf,len) \
@@ -305,7 +305,7 @@ extern int DEBUGLEVEL;
        DEBUG_X(5,("%s%04x %s: ", \
              tab_depth(depth), base,string)); \
     if (charmode) print_asc(5, US (outbuf), 2*(len)); else \
-       { int idx; for (idx = 0; idx < len; idx++) { DEBUG_X(5,("%04x ", (outbuf)[idx])); } } \
+       for (int idx = 0; idx < len; idx++) { DEBUG_X(5,("%04x ", (outbuf)[idx])); } \
        DEBUG_X(5,("\n")); }
 
 # define DBG_RW_PIVAL(charmode,string,depth,base,read,big_endian,inbuf,outbuf,len) \
@@ -313,7 +313,7 @@ extern int DEBUGLEVEL;
        DEBUG_X(5,("%s%04x %s: ", \
              tab_depth(depth), base,string)); \
     if (charmode) print_asc(5, US (outbuf), 4*(len)); else \
-       { int idx; for (idx = 0; idx < len; idx++) { DEBUG_X(5,("%08x ", (outbuf)[idx])); } } \
+       for (int idx = 0; idx < len; idx++) { DEBUG_X(5,("%08x ", (outbuf)[idx])); } \
        DEBUG_X(5,("\n")); }
 
 # define DBG_RW_CVAL(string,depth,base,read,inbuf,outbuf) \
@@ -562,196 +562,187 @@ static uschar sbox[8][4][16] = {
 static void
 permute (char *out, char *in, uschar * p, int n)
 {
-  int i;
-  for (i = 0; i < n; i++)
-    out[i] = in[p[i] - 1];
+for (int i = 0; i < n; i++)
+  out[i] = in[p[i] - 1];
 }
 
 static void
 lshift (char *d, int count, int n)
 {
-  char out[64];
-  int i;
-  for (i = 0; i < n; i++)
-    out[i] = d[(i + count) % n];
-  for (i = 0; i < n; i++)
-    d[i] = out[i];
+char out[64];
+for (int i = 0; i < n; i++)
+  out[i] = d[(i + count) % n];
+for (int i = 0; i < n; i++)
+  d[i] = out[i];
 }
 
 static void
 concat (char *out, char *in1, char *in2, int l1, int l2)
 {
-  while (l1--)
-    *out++ = *in1++;
-  while (l2--)
-    *out++ = *in2++;
+while (l1--)
+  *out++ = *in1++;
+while (l2--)
+  *out++ = *in2++;
 }
 
 static void
 xor (char *out, char *in1, char *in2, int n)
 {
-  int i;
-  for (i = 0; i < n; i++)
-    out[i] = in1[i] ^ in2[i];
+for (int i = 0; i < n; i++)
+  out[i] = in1[i] ^ in2[i];
 }
 
 static void
 dohash (char *out, char *in, char *key, int forw)
 {
-  int i, j, k;
-  char pk1[56];
-  char c[28];
-  char d[28];
-  char cd[56];
-  char ki[16][48];
-  char pd1[64];
-  char l[32], r[32];
-  char rl[64];
+int i, j, k;
+char pk1[56];
+char c[28];
+char d[28];
+char cd[56];
+char ki[16][48];
+char pd1[64];
+char l[32], r[32];
+char rl[64];
 
-  permute (pk1, key, perm1, 56);
+permute (pk1, key, perm1, 56);
 
-  for (i = 0; i < 28; i++)
-    c[i] = pk1[i];
-  for (i = 0; i < 28; i++)
-    d[i] = pk1[i + 28];
+for (i = 0; i < 28; i++)
+  c[i] = pk1[i];
+for (i = 0; i < 28; i++)
+  d[i] = pk1[i + 28];
 
-  for (i = 0; i < 16; i++)
-    {
-      lshift (c, sc[i], 28);
-      lshift (d, sc[i], 28);
+for (i = 0; i < 16; i++)
+  {
+  lshift (c, sc[i], 28);
+  lshift (d, sc[i], 28);
 
-      concat (cd, c, d, 28, 28);
-      permute (ki[i], cd, perm2, 48);
-    }
+  concat (cd, c, d, 28, 28);
+  permute (ki[i], cd, perm2, 48);
+  }
 
-  permute (pd1, in, perm3, 64);
+permute (pd1, in, perm3, 64);
+
+for (j = 0; j < 32; j++)
+  {
+  l[j] = pd1[j];
+  r[j] = pd1[j + 32];
+  }
+
+for (i = 0; i < 16; i++)
+  {
+  char er[48];
+  char erk[48];
+  char b[8][6];
+  char cb[32];
+  char pcb[32];
+  char r2[32];
+
+  permute (er, r, perm4, 48);
+
+  xor (erk, er, ki[forw ? i : 15 - i], 48);
+
+  for (j = 0; j < 8; j++)
+   for (k = 0; k < 6; k++)
+     b[j][k] = erk[j * 6 + k];
+
+  for (j = 0; j < 8; j++)
+   {
+   int m, n;
+   m = (b[j][0] << 1) | b[j][5];
+
+   n = (b[j][1] << 3) | (b[j][2] << 2) | (b[j][3] << 1) | b[j][4];
+
+   for (k = 0; k < 4; k++)
+     b[j][k] = (sbox[j][m][n] & (1 << (3 - k))) ? 1 : 0;
+   }
+
+  for (j = 0; j < 8; j++)
+   for (k = 0; k < 4; k++)
+     cb[j * 4 + k] = b[j][k];
+  permute (pcb, cb, perm5, 32);
+
+  xor (r2, l, pcb, 32);
 
   for (j = 0; j < 32; j++)
-    {
-      l[j] = pd1[j];
-      r[j] = pd1[j + 32];
-    }
+   l[j] = r[j];
 
-  for (i = 0; i < 16; i++)
-    {
-      char er[48];
-      char erk[48];
-      char b[8][6];
-      char cb[32];
-      char pcb[32];
-      char r2[32];
+  for (j = 0; j < 32; j++)
+   r[j] = r2[j];
+  }
 
-      permute (er, r, perm4, 48);
+concat (rl, r, l, 32, 32);
 
-      xor (erk, er, ki[forw ? i : 15 - i], 48);
-
-      for (j = 0; j < 8; j++)
-       for (k = 0; k < 6; k++)
-         b[j][k] = erk[j * 6 + k];
-
-      for (j = 0; j < 8; j++)
-       {
-         int m, n;
-         m = (b[j][0] << 1) | b[j][5];
-
-         n = (b[j][1] << 3) | (b[j][2] << 2) | (b[j][3] << 1) | b[j][4];
-
-         for (k = 0; k < 4; k++)
-           b[j][k] = (sbox[j][m][n] & (1 << (3 - k))) ? 1 : 0;
-       }
-
-      for (j = 0; j < 8; j++)
-       for (k = 0; k < 4; k++)
-         cb[j * 4 + k] = b[j][k];
-      permute (pcb, cb, perm5, 32);
-
-      xor (r2, l, pcb, 32);
-
-      for (j = 0; j < 32; j++)
-       l[j] = r[j];
-
-      for (j = 0; j < 32; j++)
-       r[j] = r2[j];
-    }
-
-  concat (rl, r, l, 32, 32);
-
-  permute (out, rl, perm6, 64);
+permute (out, rl, perm6, 64);
 }
 
 static void
 str_to_key (uschar *str, uschar *key)
 {
-  int i;
+int i;
 
-  key[0] = str[0] >> 1;
-  key[1] = ((str[0] & 0x01) << 6) | (str[1] >> 2);
-  key[2] = ((str[1] & 0x03) << 5) | (str[2] >> 3);
-  key[3] = ((str[2] & 0x07) << 4) | (str[3] >> 4);
-  key[4] = ((str[3] & 0x0F) << 3) | (str[4] >> 5);
-  key[5] = ((str[4] & 0x1F) << 2) | (str[5] >> 6);
-  key[6] = ((str[5] & 0x3F) << 1) | (str[6] >> 7);
-  key[7] = str[6] & 0x7F;
-  for (i = 0; i < 8; i++)
-    {
-      key[i] = (key[i] << 1);
-    }
+key[0] = str[0] >> 1;
+key[1] = ((str[0] & 0x01) << 6) | (str[1] >> 2);
+key[2] = ((str[1] & 0x03) << 5) | (str[2] >> 3);
+key[3] = ((str[2] & 0x07) << 4) | (str[3] >> 4);
+key[4] = ((str[3] & 0x0F) << 3) | (str[4] >> 5);
+key[5] = ((str[4] & 0x1F) << 2) | (str[5] >> 6);
+key[6] = ((str[5] & 0x3F) << 1) | (str[6] >> 7);
+key[7] = str[6] & 0x7F;
+for (i = 0; i < 8; i++)
+    key[i] = (key[i] << 1);
 }
 
 
 static void
 smbhash (uschar *out, uschar *in, uschar *key, int forw)
 {
-  int i;
-  char outb[64];
-  char inb[64];
-  char keyb[64];
-  uschar key2[8];
+int i;
+char outb[64];
+char inb[64];
+char keyb[64];
+uschar key2[8];
 
-  str_to_key (key, key2);
+str_to_key (key, key2);
 
-  for (i = 0; i < 64; i++)
-    {
-      inb[i] = (in[i / 8] & (1 << (7 - (i % 8)))) ? 1 : 0;
-      keyb[i] = (key2[i / 8] & (1 << (7 - (i % 8)))) ? 1 : 0;
-      outb[i] = 0;
-    }
+for (i = 0; i < 64; i++)
+  {
+  inb[i] = (in[i / 8] & (1 << (7 - (i % 8)))) ? 1 : 0;
+  keyb[i] = (key2[i / 8] & (1 << (7 - (i % 8)))) ? 1 : 0;
+  outb[i] = 0;
+  }
 
-  dohash (outb, inb, keyb, forw);
+dohash (outb, inb, keyb, forw);
 
-  for (i = 0; i < 8; i++)
-    {
-      out[i] = 0;
-    }
+for (i = 0; i < 8; i++)
+  out[i] = 0;
 
-  for (i = 0; i < 64; i++)
-    {
-      if (outb[i])
-       out[i / 8] |= (1 << (7 - (i % 8)));
-    }
+for (i = 0; i < 64; i++)
+  if (outb[i])
+   out[i / 8] |= (1 << (7 - (i % 8)));
 }
 
 void
 E_P16 (uschar *p14, uschar *p16)
 {
-  uschar sp8[8] = { 0x4b, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25 };
-  smbhash (p16, sp8, p14, 1);
-  smbhash (p16 + 8, sp8, p14 + 7, 1);
+uschar sp8[8] = { 0x4b, 0x47, 0x53, 0x21, 0x40, 0x23, 0x24, 0x25 };
+smbhash (p16, sp8, p14, 1);
+smbhash (p16 + 8, sp8, p14 + 7, 1);
 }
 
 void
 E_P24 (uschar *p21, uschar *c8, uschar *p24)
 {
-  smbhash (p24, c8, p21, 1);
-  smbhash (p24 + 8, c8, p21 + 7, 1);
-  smbhash (p24 + 16, c8, p21 + 14, 1);
+smbhash (p24, c8, p21, 1);
+smbhash (p24 + 8, c8, p21 + 7, 1);
+smbhash (p24 + 16, c8, p21 + 14, 1);
 }
 
 void
 D_P16 (uschar *p14, uschar *in, uschar *out)
 {
-  smbhash (out, in, p14, 0);
-  smbhash (out + 8, in + 8, p14 + 7, 0);
+smbhash (out, in, p14, 0);
+smbhash (out + 8, in + 8, p14 + 7, 0);
 }
 
 /****************************************************************************
@@ -762,27 +753,27 @@ D_P16 (uschar *p14, uschar *in, uschar *out)
 char *
 StrnCpy (char *dest, const char *src, size_t n)
 {
-  char *d = dest;
-  if (!dest)
-    return (NULL);
-  if (!src)
-    {
-      *dest = 0;
-      return (dest);
-    }
-  while (n-- && (*d++ = *src++));
-  *d = 0;
+char *d = dest;
+if (!dest)
+  return (NULL);
+if (!src)
+  {
+  *dest = 0;
   return (dest);
+  }
+while (n-- && (*d++ = *src++));
+*d = 0;
+return (dest);
 }
 
 size_t
 skip_multibyte_char (char c)
 {
-  /* bogus if to get rid of unused compiler warning */
-  if (c)
-    return 0;
-  else
-    return 0;
+/* bogus if to get rid of unused compiler warning */
+if (c)
+  return 0;
+else
+  return 0;
 }
 
 
@@ -794,52 +785,50 @@ include the terminating zero.
 char *
 safe_strcpy (char *dest, const char *src, size_t maxlength)
 {
-  size_t len;
+size_t len;
 
-  if (!dest)
-    {
-      DEBUG_X (0, ("ERROR: NULL dest in safe_strcpy\n"));
-      return NULL;
-    }
+if (!dest)
+  {
+  DEBUG_X (0, ("ERROR: NULL dest in safe_strcpy\n"));
+  return NULL;
+  }
 
-  if (!src)
-    {
-      *dest = 0;
-      return dest;
-    }
-
-  len = strlen (src);
-
-  if (len > maxlength)
-    {
-      DEBUG_X (0, ("ERROR: string overflow by %d in safe_strcpy [%.50s]\n",
-                (int) (len - maxlength), src));
-      len = maxlength;
-    }
-
-  memcpy (dest, src, len);
-  dest[len] = 0;
+if (!src)
+  {
+  *dest = 0;
   return dest;
+  }
+
+len = strlen (src);
+
+if (len > maxlength)
+  {
+  DEBUG_X (0, ("ERROR: string overflow by %d in safe_strcpy [%.50s]\n",
+	    (int) (len - maxlength), src));
+  len = maxlength;
+  }
+
+memcpy (dest, src, len);
+dest[len] = 0;
+return dest;
 }
 
 
 void
 strupper (char *s)
 {
-  while (*s)
-    {
-      {
-       size_t skip = skip_multibyte_char (*s);
-       if (skip != 0)
-         s += skip;
-       else
-         {
-           if (islower ((uschar)(*s)))
-             *s = toupper (*s);
-           s++;
-         }
-      }
-    }
+while (*s)
+  {
+   size_t skip = skip_multibyte_char (*s);
+   if (skip != 0)
+     s += skip;
+   else
+     {
+       if (islower ((uschar)(*s)))
+	 *s = toupper (*s);
+       s++;
+     }
+  }
 }
 
 
@@ -852,22 +841,22 @@ strupper (char *s)
 void
 spa_smb_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 {
-  uschar p14[15], p21[21];
+uschar p14[15], p21[21];
 
-  memset (p21, '\0', 21);
-  memset (p14, '\0', 14);
-  StrnCpy (CS  p14, CS  passwd, 14);
+memset (p21, '\0', 21);
+memset (p14, '\0', 14);
+StrnCpy (CS  p14, CS  passwd, 14);
 
-  strupper (CS  p14);
-  E_P16 (p14, p21);
+strupper (CS  p14);
+E_P16 (p14, p21);
 
-  SMBOWFencrypt (p21, c8, p24);
+SMBOWFencrypt (p21, c8, p24);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG_X (100, ("spa_smb_encrypt: lm#, challenge, response\n"));
-  dump_data (100, CS  p21, 16);
-  dump_data (100, CS  c8, 8);
-  dump_data (100, CS  p24, 24);
+DEBUG_X (100, ("spa_smb_encrypt: lm#, challenge, response\n"));
+dump_data (100, CS  p21, 16);
+dump_data (100, CS  c8, 8);
+dump_data (100, CS  p24, 24);
 #endif
 }
 
@@ -875,10 +864,10 @@ spa_smb_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 static int
 _my_wcslen (int16x * str)
 {
-  int len = 0;
-  while (*str++ != 0)
-    len++;
-  return len;
+int len = 0;
+while (*str++ != 0)
+  len++;
+return len;
 }
 
 /*
@@ -891,19 +880,19 @@ _my_wcslen (int16x * str)
 static int
 _my_mbstowcs (int16x * dst, uschar * src, int len)
 {
-  int i;
-  int16x val;
+int i;
+int16x val;
 
-  for (i = 0; i < len; i++)
-    {
-      val = *src;
-      SSVAL (dst, 0, val);
-      dst++;
-      src++;
-      if (val == 0)
-       break;
-    }
-  return i;
+for (i = 0; i < len; i++)
+  {
+  val = *src;
+  SSVAL (dst, 0, val);
+  dst++;
+  src++;
+  if (val == 0)
+   break;
+  }
+return i;
 }
 
 /*
@@ -913,87 +902,87 @@ _my_mbstowcs (int16x * dst, uschar * src, int len)
 void
 E_md4hash (uschar * passwd, uschar * p16)
 {
-  int len;
-  int16x wpwd[129];
+int len;
+int16x wpwd[129];
 
-  /* Password cannot be longer than 128 characters */
-  len = strlen (CS  passwd);
-  if (len > 128)
-    len = 128;
-  /* Password must be converted to NT unicode */
-  _my_mbstowcs (wpwd, passwd, len);
-  wpwd[len] = 0;               /* Ensure string is null terminated */
-  /* Calculate length in bytes */
-  len = _my_wcslen (wpwd) * sizeof (int16x);
+/* Password cannot be longer than 128 characters */
+len = strlen (CS  passwd);
+if (len > 128)
+  len = 128;
+/* Password must be converted to NT unicode */
+_my_mbstowcs (wpwd, passwd, len);
+wpwd[len] = 0;               /* Ensure string is null terminated */
+/* Calculate length in bytes */
+len = _my_wcslen (wpwd) * sizeof (int16x);
 
-  mdfour (p16, US wpwd, len);
+mdfour (p16, US wpwd, len);
 }
 
 /* Does both the NT and LM owfs of a user's password */
 void
 nt_lm_owf_gen (char *pwd, uschar nt_p16[16], uschar p16[16])
 {
-  char passwd[130];
+char passwd[130];
 
-  memset (passwd, '\0', 130);
-  safe_strcpy (passwd, pwd, sizeof (passwd) - 1);
+memset (passwd, '\0', 130);
+safe_strcpy (passwd, pwd, sizeof (passwd) - 1);
 
-  /* Calculate the MD4 hash (NT compatible) of the password */
-  memset (nt_p16, '\0', 16);
-  E_md4hash (US passwd, nt_p16);
-
-#ifdef DEBUG_PASSWORD
-  DEBUG_X (100, ("nt_lm_owf_gen: pwd, nt#\n"));
-  dump_data (120, passwd, strlen (passwd));
-  dump_data (100, CS  nt_p16, 16);
-#endif
-
-  /* Mangle the passwords into Lanman format */
-  passwd[14] = '\0';
-  strupper (passwd);
-
-  /* Calculate the SMB (lanman) hash functions of the password */
-
-  memset (p16, '\0', 16);
-  E_P16 (US passwd, US p16);
+/* Calculate the MD4 hash (NT compatible) of the password */
+memset (nt_p16, '\0', 16);
+E_md4hash (US passwd, nt_p16);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG_X (100, ("nt_lm_owf_gen: pwd, lm#\n"));
-  dump_data (120, passwd, strlen (passwd));
-  dump_data (100, CS  p16, 16);
+DEBUG_X (100, ("nt_lm_owf_gen: pwd, nt#\n"));
+dump_data (120, passwd, strlen (passwd));
+dump_data (100, CS  nt_p16, 16);
 #endif
-  /* clear out local copy of user's password (just being paranoid). */
-  memset (passwd, '\0', sizeof (passwd));
+
+/* Mangle the passwords into Lanman format */
+passwd[14] = '\0';
+strupper (passwd);
+
+/* Calculate the SMB (lanman) hash functions of the password */
+
+memset (p16, '\0', 16);
+E_P16 (US passwd, US p16);
+
+#ifdef DEBUG_PASSWORD
+DEBUG_X (100, ("nt_lm_owf_gen: pwd, lm#\n"));
+dump_data (120, passwd, strlen (passwd));
+dump_data (100, CS  p16, 16);
+#endif
+/* clear out local copy of user's password (just being paranoid). */
+memset (passwd, '\0', sizeof (passwd));
 }
 
 /* Does the des encryption from the NT or LM MD4 hash. */
 void
 SMBOWFencrypt (uschar passwd[16], uschar * c8, uschar p24[24])
 {
-  uschar p21[21];
+uschar p21[21];
 
-  memset (p21, '\0', 21);
+memset (p21, '\0', 21);
 
-  memcpy (p21, passwd, 16);
-  E_P24 (p21, c8, p24);
+memcpy (p21, passwd, 16);
+E_P24 (p21, c8, p24);
 }
 
 /* Does the des encryption from the FIRST 8 BYTES of the NT or LM MD4 hash. */
 void
 NTLMSSPOWFencrypt (uschar passwd[8], uschar * ntlmchalresp, uschar p24[24])
 {
-  uschar p21[21];
+uschar p21[21];
 
-  memset (p21, '\0', 21);
-  memcpy (p21, passwd, 8);
-  memset (p21 + 8, 0xbd, 8);
+memset (p21, '\0', 21);
+memcpy (p21, passwd, 8);
+memset (p21 + 8, 0xbd, 8);
 
-  E_P24 (p21, ntlmchalresp, p24);
+E_P24 (p21, ntlmchalresp, p24);
 #ifdef DEBUG_PASSWORD
-  DEBUG_X (100, ("NTLMSSPOWFencrypt: p21, c8, p24\n"));
-  dump_data (100, CS  p21, 21);
-  dump_data (100, CS  ntlmchalresp, 8);
-  dump_data (100, CS  p24, 24);
+DEBUG_X (100, ("NTLMSSPOWFencrypt: p21, c8, p24\n"));
+dump_data (100, CS  p21, 21);
+dump_data (100, CS  ntlmchalresp, 8);
+dump_data (100, CS  p24, 24);
 #endif
 }
 
@@ -1003,18 +992,18 @@ NTLMSSPOWFencrypt (uschar passwd[8], uschar * ntlmchalresp, uschar p24[24])
 void
 spa_smb_nt_encrypt (uschar * passwd, uschar * c8, uschar * p24)
 {
-  uschar p21[21];
+uschar p21[21];
 
-  memset (p21, '\0', 21);
+memset (p21, '\0', 21);
 
-  E_md4hash (passwd, p21);
-  SMBOWFencrypt (p21, c8, p24);
+E_md4hash (passwd, p21);
+SMBOWFencrypt (p21, c8, p24);
 
 #ifdef DEBUG_PASSWORD
-  DEBUG_X (100, ("spa_smb_nt_encrypt: nt#, challenge, response\n"));
-  dump_data (100, CS  p21, 16);
-  dump_data (100, CS  c8, 8);
-  dump_data (100, CS  p24, 24);
+DEBUG_X (100, ("spa_smb_nt_encrypt: nt#, challenge, response\n"));
+dump_data (100, CS  p21, 16);
+dump_data (100, CS  c8, 8);
+dump_data (100, CS  p24, 24);
 #endif
 }
 
@@ -1023,26 +1012,26 @@ static uint32x A, B, C, D;
 static uint32x
 F (uint32x X, uint32x Y, uint32x Z)
 {
-  return (X & Y) | ((~X) & Z);
+return (X & Y) | ((~X) & Z);
 }
 
 static uint32x
 G (uint32x X, uint32x Y, uint32x Z)
 {
-  return (X & Y) | (X & Z) | (Y & Z);
+return (X & Y) | (X & Z) | (Y & Z);
 }
 
 static uint32x
 H (uint32x X, uint32x Y, uint32x Z)
 {
-  return X ^ Y ^ Z;
+return X ^ Y ^ Z;
 }
 
 static uint32x
 lshift_a (uint32x x, int s)
 {
-  x &= 0xFFFFFFFF;
-  return ((x << s) & 0xFFFFFFFF) | (x >> (32 - s));
+x &= 0xFFFFFFFF;
+return ((x << s) & 0xFFFFFFFF) | (x >> (32 - s));
 }
 
 #define ROUND1(a,b,c,d,k,s) a = lshift_a(a + F(b,c,d) + X[k], s)
@@ -1053,154 +1042,154 @@ lshift_a (uint32x x, int s)
 static void
 spa_mdfour64 (uint32x * M)
 {
-  int j;
-  uint32x AA, BB, CC, DD;
-  uint32x X[16];
+int j;
+uint32x AA, BB, CC, DD;
+uint32x X[16];
 
-  for (j = 0; j < 16; j++)
-    X[j] = M[j];
+for (j = 0; j < 16; j++)
+  X[j] = M[j];
 
-  AA = A;
-  BB = B;
-  CC = C;
-  DD = D;
+AA = A;
+BB = B;
+CC = C;
+DD = D;
 
-  ROUND1 (A, B, C, D, 0, 3);
-  ROUND1 (D, A, B, C, 1, 7);
-  ROUND1 (C, D, A, B, 2, 11);
-  ROUND1 (B, C, D, A, 3, 19);
-  ROUND1 (A, B, C, D, 4, 3);
-  ROUND1 (D, A, B, C, 5, 7);
-  ROUND1 (C, D, A, B, 6, 11);
-  ROUND1 (B, C, D, A, 7, 19);
-  ROUND1 (A, B, C, D, 8, 3);
-  ROUND1 (D, A, B, C, 9, 7);
-  ROUND1 (C, D, A, B, 10, 11);
-  ROUND1 (B, C, D, A, 11, 19);
-  ROUND1 (A, B, C, D, 12, 3);
-  ROUND1 (D, A, B, C, 13, 7);
-  ROUND1 (C, D, A, B, 14, 11);
-  ROUND1 (B, C, D, A, 15, 19);
+ROUND1 (A, B, C, D, 0, 3);
+ROUND1 (D, A, B, C, 1, 7);
+ROUND1 (C, D, A, B, 2, 11);
+ROUND1 (B, C, D, A, 3, 19);
+ROUND1 (A, B, C, D, 4, 3);
+ROUND1 (D, A, B, C, 5, 7);
+ROUND1 (C, D, A, B, 6, 11);
+ROUND1 (B, C, D, A, 7, 19);
+ROUND1 (A, B, C, D, 8, 3);
+ROUND1 (D, A, B, C, 9, 7);
+ROUND1 (C, D, A, B, 10, 11);
+ROUND1 (B, C, D, A, 11, 19);
+ROUND1 (A, B, C, D, 12, 3);
+ROUND1 (D, A, B, C, 13, 7);
+ROUND1 (C, D, A, B, 14, 11);
+ROUND1 (B, C, D, A, 15, 19);
 
-  ROUND2 (A, B, C, D, 0, 3);
-  ROUND2 (D, A, B, C, 4, 5);
-  ROUND2 (C, D, A, B, 8, 9);
-  ROUND2 (B, C, D, A, 12, 13);
-  ROUND2 (A, B, C, D, 1, 3);
-  ROUND2 (D, A, B, C, 5, 5);
-  ROUND2 (C, D, A, B, 9, 9);
-  ROUND2 (B, C, D, A, 13, 13);
-  ROUND2 (A, B, C, D, 2, 3);
-  ROUND2 (D, A, B, C, 6, 5);
-  ROUND2 (C, D, A, B, 10, 9);
-  ROUND2 (B, C, D, A, 14, 13);
-  ROUND2 (A, B, C, D, 3, 3);
-  ROUND2 (D, A, B, C, 7, 5);
-  ROUND2 (C, D, A, B, 11, 9);
-  ROUND2 (B, C, D, A, 15, 13);
+ROUND2 (A, B, C, D, 0, 3);
+ROUND2 (D, A, B, C, 4, 5);
+ROUND2 (C, D, A, B, 8, 9);
+ROUND2 (B, C, D, A, 12, 13);
+ROUND2 (A, B, C, D, 1, 3);
+ROUND2 (D, A, B, C, 5, 5);
+ROUND2 (C, D, A, B, 9, 9);
+ROUND2 (B, C, D, A, 13, 13);
+ROUND2 (A, B, C, D, 2, 3);
+ROUND2 (D, A, B, C, 6, 5);
+ROUND2 (C, D, A, B, 10, 9);
+ROUND2 (B, C, D, A, 14, 13);
+ROUND2 (A, B, C, D, 3, 3);
+ROUND2 (D, A, B, C, 7, 5);
+ROUND2 (C, D, A, B, 11, 9);
+ROUND2 (B, C, D, A, 15, 13);
 
-  ROUND3 (A, B, C, D, 0, 3);
-  ROUND3 (D, A, B, C, 8, 9);
-  ROUND3 (C, D, A, B, 4, 11);
-  ROUND3 (B, C, D, A, 12, 15);
-  ROUND3 (A, B, C, D, 2, 3);
-  ROUND3 (D, A, B, C, 10, 9);
-  ROUND3 (C, D, A, B, 6, 11);
-  ROUND3 (B, C, D, A, 14, 15);
-  ROUND3 (A, B, C, D, 1, 3);
-  ROUND3 (D, A, B, C, 9, 9);
-  ROUND3 (C, D, A, B, 5, 11);
-  ROUND3 (B, C, D, A, 13, 15);
-  ROUND3 (A, B, C, D, 3, 3);
-  ROUND3 (D, A, B, C, 11, 9);
-  ROUND3 (C, D, A, B, 7, 11);
-  ROUND3 (B, C, D, A, 15, 15);
+ROUND3 (A, B, C, D, 0, 3);
+ROUND3 (D, A, B, C, 8, 9);
+ROUND3 (C, D, A, B, 4, 11);
+ROUND3 (B, C, D, A, 12, 15);
+ROUND3 (A, B, C, D, 2, 3);
+ROUND3 (D, A, B, C, 10, 9);
+ROUND3 (C, D, A, B, 6, 11);
+ROUND3 (B, C, D, A, 14, 15);
+ROUND3 (A, B, C, D, 1, 3);
+ROUND3 (D, A, B, C, 9, 9);
+ROUND3 (C, D, A, B, 5, 11);
+ROUND3 (B, C, D, A, 13, 15);
+ROUND3 (A, B, C, D, 3, 3);
+ROUND3 (D, A, B, C, 11, 9);
+ROUND3 (C, D, A, B, 7, 11);
+ROUND3 (B, C, D, A, 15, 15);
 
-  A += AA;
-  B += BB;
-  C += CC;
-  D += DD;
+A += AA;
+B += BB;
+C += CC;
+D += DD;
 
-  A &= 0xFFFFFFFF;
-  B &= 0xFFFFFFFF;
-  C &= 0xFFFFFFFF;
-  D &= 0xFFFFFFFF;
+A &= 0xFFFFFFFF;
+B &= 0xFFFFFFFF;
+C &= 0xFFFFFFFF;
+D &= 0xFFFFFFFF;
 
-  for (j = 0; j < 16; j++)
-    X[j] = 0;
+for (j = 0; j < 16; j++)
+  X[j] = 0;
 }
 
 static void
 copy64 (uint32x * M, uschar *in)
 {
-  int i;
+int i;
 
-  for (i = 0; i < 16; i++)
-    M[i] = (in[i * 4 + 3] << 24) | (in[i * 4 + 2] << 16) |
-      (in[i * 4 + 1] << 8) | (in[i * 4 + 0] << 0);
+for (i = 0; i < 16; i++)
+  M[i] = (in[i * 4 + 3] << 24) | (in[i * 4 + 2] << 16) |
+    (in[i * 4 + 1] << 8) | (in[i * 4 + 0] << 0);
 }
 
 static void
 copy4 (uschar *out, uint32x x)
 {
-  out[0] = x & 0xFF;
-  out[1] = (x >> 8) & 0xFF;
-  out[2] = (x >> 16) & 0xFF;
-  out[3] = (x >> 24) & 0xFF;
+out[0] = x & 0xFF;
+out[1] = (x >> 8) & 0xFF;
+out[2] = (x >> 16) & 0xFF;
+out[3] = (x >> 24) & 0xFF;
 }
 
 /* produce a md4 message digest from data of length n bytes */
 void
 mdfour (uschar *out, uschar *in, int n)
 {
-  uschar buf[128];
-  uint32x M[16];
-  uint32x b = n * 8;
-  int i;
+uschar buf[128];
+uint32x M[16];
+uint32x b = n * 8;
+int i;
 
-  A = 0x67452301;
-  B = 0xefcdab89;
-  C = 0x98badcfe;
-  D = 0x10325476;
+A = 0x67452301;
+B = 0xefcdab89;
+C = 0x98badcfe;
+D = 0x10325476;
 
-  while (n > 64)
-    {
-      copy64 (M, in);
-      spa_mdfour64 (M);
-      in += 64;
-      n -= 64;
-    }
+while (n > 64)
+  {
+  copy64 (M, in);
+  spa_mdfour64 (M);
+  in += 64;
+  n -= 64;
+  }
 
-  for (i = 0; i < 128; i++)
-    buf[i] = 0;
-  memcpy (buf, in, n);
-  buf[n] = 0x80;
+for (i = 0; i < 128; i++)
+  buf[i] = 0;
+memcpy (buf, in, n);
+buf[n] = 0x80;
 
-  if (n <= 55)
-    {
-      copy4 (buf + 56, b);
-      copy64 (M, buf);
-      spa_mdfour64 (M);
-    }
-  else
-    {
-      copy4 (buf + 120, b);
-      copy64 (M, buf);
-      spa_mdfour64 (M);
-      copy64 (M, buf + 64);
-      spa_mdfour64 (M);
-    }
-
-  for (i = 0; i < 128; i++)
-    buf[i] = 0;
+if (n <= 55)
+  {
+  copy4 (buf + 56, b);
   copy64 (M, buf);
+  spa_mdfour64 (M);
+  }
+else
+  {
+  copy4 (buf + 120, b);
+  copy64 (M, buf);
+  spa_mdfour64 (M);
+  copy64 (M, buf + 64);
+  spa_mdfour64 (M);
+  }
 
-  copy4 (out, A);
-  copy4 (out + 4, B);
-  copy4 (out + 8, C);
-  copy4 (out + 12, D);
+for (i = 0; i < 128; i++)
+  buf[i] = 0;
+copy64 (M, buf);
 
-  A = B = C = D = 0;
+copy4 (out, A);
+copy4 (out + 4, B);
+copy4 (out + 8, C);
+copy4 (out + 12, D);
+
+A = B = C = D = 0;
 }
 
 char versionString[] = "libntlm version 0.21";
@@ -1272,12 +1261,12 @@ dumpRaw(fp,(US structPtr)+IVAL(&structPtr->header.offset,0),SVAL(&structPtr->hea
 static void
 dumpRaw (FILE * fp, uschar *buf, size_t len)
 {
-  int i;
+int i;
 
-  for (i = 0; i < len; ++i)
-    fprintf (fp, "%02x ", buf[i]);
+for (i = 0; i < len; ++i)
+  fprintf (fp, "%02x ", buf[i]);
 
-  fprintf (fp, "\n");
+fprintf (fp, "\n");
 }
 
 #endif
@@ -1285,49 +1274,49 @@ dumpRaw (FILE * fp, uschar *buf, size_t len)
 char *
 unicodeToString (char *p, size_t len)
 {
-  int i;
-  static char buf[1024];
+int i;
+static char buf[1024];
 
-  assert (len + 1 < sizeof buf);
+assert (len + 1 < sizeof buf);
 
-  for (i = 0; i < len; ++i)
-    {
-      buf[i] = *p & 0x7f;
-      p += 2;
-    }
+for (i = 0; i < len; ++i)
+  {
+  buf[i] = *p & 0x7f;
+  p += 2;
+  }
 
-  buf[i] = '\0';
-  return buf;
+buf[i] = '\0';
+return buf;
 }
 
 static uschar *
 strToUnicode (char *p)
 {
-  static uschar buf[1024];
-  size_t l = strlen (p);
-  int i = 0;
+static uschar buf[1024];
+size_t l = strlen (p);
+int i = 0;
 
-  assert (l * 2 < sizeof buf);
+assert (l * 2 < sizeof buf);
 
-  while (l--)
-    {
-      buf[i++] = *p++;
-      buf[i++] = 0;
-    }
+while (l--)
+  {
+  buf[i++] = *p++;
+  buf[i++] = 0;
+  }
 
-  return buf;
+return buf;
 }
 
 static uschar *
 toString (char *p, size_t len)
 {
-  static uschar buf[1024];
+static uschar buf[1024];
 
-  assert (len + 1 < sizeof buf);
+assert (len + 1 < sizeof buf);
 
-  memcpy (buf, p, len);
-  buf[len] = 0;
-  return buf;
+memcpy (buf, p, len);
+buf[len] = 0;
+return buf;
 }
 
 #ifdef notdef
@@ -1335,65 +1324,65 @@ toString (char *p, size_t len)
 void
 dumpSmbNtlmAuthRequest (FILE * fp, SPAAuthRequest * request)
 {
-  fprintf (fp, "NTLM Request:\n");
-  fprintf (fp, "      Ident = %s\n", request->ident);
-  fprintf (fp, "      mType = %d\n", IVAL (&request->msgType, 0));
-  fprintf (fp, "      Flags = %08x\n", IVAL (&request->flags, 0));
-  fprintf (fp, "       User = %s\n", GetString (request, user));
-  fprintf (fp, "     Domain = %s\n", GetString (request, domain));
+fprintf (fp, "NTLM Request:\n");
+fprintf (fp, "      Ident = %s\n", request->ident);
+fprintf (fp, "      mType = %d\n", IVAL (&request->msgType, 0));
+fprintf (fp, "      Flags = %08x\n", IVAL (&request->flags, 0));
+fprintf (fp, "       User = %s\n", GetString (request, user));
+fprintf (fp, "     Domain = %s\n", GetString (request, domain));
 }
 
 void
 dumpSmbNtlmAuthChallenge (FILE * fp, SPAAuthChallenge * challenge)
 {
-  fprintf (fp, "NTLM Challenge:\n");
-  fprintf (fp, "      Ident = %s\n", challenge->ident);
-  fprintf (fp, "      mType = %d\n", IVAL (&challenge->msgType, 0));
-  fprintf (fp, "     Domain = %s\n", GetUnicodeString (challenge, uDomain));
-  fprintf (fp, "      Flags = %08x\n", IVAL (&challenge->flags, 0));
-  fprintf (fp, "  Challenge = ");
-  dumpRaw (fp, challenge->challengeData, 8);
+fprintf (fp, "NTLM Challenge:\n");
+fprintf (fp, "      Ident = %s\n", challenge->ident);
+fprintf (fp, "      mType = %d\n", IVAL (&challenge->msgType, 0));
+fprintf (fp, "     Domain = %s\n", GetUnicodeString (challenge, uDomain));
+fprintf (fp, "      Flags = %08x\n", IVAL (&challenge->flags, 0));
+fprintf (fp, "  Challenge = ");
+dumpRaw (fp, challenge->challengeData, 8);
 }
 
 void
 dumpSmbNtlmAuthResponse (FILE * fp, SPAAuthResponse * response)
 {
-  fprintf (fp, "NTLM Response:\n");
-  fprintf (fp, "      Ident = %s\n", response->ident);
-  fprintf (fp, "      mType = %d\n", IVAL (&response->msgType, 0));
-  fprintf (fp, "     LmResp = ");
-  DumpBuffer (fp, response, lmResponse);
-  fprintf (fp, "     NTResp = ");
-  DumpBuffer (fp, response, ntResponse);
-  fprintf (fp, "     Domain = %s\n", GetUnicodeString (response, uDomain));
-  fprintf (fp, "       User = %s\n", GetUnicodeString (response, uUser));
-  fprintf (fp, "        Wks = %s\n", GetUnicodeString (response, uWks));
-  fprintf (fp, "       sKey = ");
-  DumpBuffer (fp, response, sessionKey);
-  fprintf (fp, "      Flags = %08x\n", IVAL (&response->flags, 0));
+fprintf (fp, "NTLM Response:\n");
+fprintf (fp, "      Ident = %s\n", response->ident);
+fprintf (fp, "      mType = %d\n", IVAL (&response->msgType, 0));
+fprintf (fp, "     LmResp = ");
+DumpBuffer (fp, response, lmResponse);
+fprintf (fp, "     NTResp = ");
+DumpBuffer (fp, response, ntResponse);
+fprintf (fp, "     Domain = %s\n", GetUnicodeString (response, uDomain));
+fprintf (fp, "       User = %s\n", GetUnicodeString (response, uUser));
+fprintf (fp, "        Wks = %s\n", GetUnicodeString (response, uWks));
+fprintf (fp, "       sKey = ");
+DumpBuffer (fp, response, sessionKey);
+fprintf (fp, "      Flags = %08x\n", IVAL (&response->flags, 0));
 }
 #endif
 
 void
 spa_build_auth_request (SPAAuthRequest * request, char *user, char *domain)
 {
-  char *u = strdup (user);
-  char *p = strchr (u, '@');
+char *u = strdup (user);
+char *p = strchr (u, '@');
 
-  if (p)
-    {
-      if (!domain)
-       domain = p + 1;
-      *p = '\0';
-    }
+if (p)
+  {
+  if (!domain)
+   domain = p + 1;
+  *p = '\0';
+  }
 
-  request->bufIndex = 0;
-  memcpy (request->ident, "NTLMSSP\0\0\0", 8);
-  SIVAL (&request->msgType, 0, 1);
-  SIVAL (&request->flags, 0, 0x0000b207);      /* have to figure out what these mean */
-  spa_string_add (request, user, u);
-  spa_string_add (request, domain, domain);
-  free (u);
+request->bufIndex = 0;
+memcpy (request->ident, "NTLMSSP\0\0\0", 8);
+SIVAL (&request->msgType, 0, 1);
+SIVAL (&request->flags, 0, 0x0000b207);      /* have to figure out what these mean */
+spa_string_add (request, user, u);
+spa_string_add (request, domain, domain);
+free (u);
 }
 
 
@@ -1401,34 +1390,35 @@ spa_build_auth_request (SPAAuthRequest * request, char *user, char *domain)
 void
 spa_build_auth_challenge (SPAAuthRequest * request, SPAAuthChallenge * challenge)
 {
-  char chalstr[8];
-  int i;
-  int p = (int)getpid();
-  int random_seed = (int)time(NULL) ^ ((p << 16) | p);
+char chalstr[8];
+int i;
+int p = (int)getpid();
+int random_seed = (int)time(NULL) ^ ((p << 16) | p);
 
-  request = request;  /* Added by PH to stop compilers whinging */
+request = request;  /* Added by PH to stop compilers whinging */
 
-  /* Ensure challenge data is cleared, in case it isn't all used. This
-  patch added by PH on suggestion of Russell King */
+/* Ensure challenge data is cleared, in case it isn't all used. This
+patch added by PH on suggestion of Russell King */
 
-  memset(challenge, 0, sizeof(SPAAuthChallenge));
+memset(challenge, 0, sizeof(SPAAuthChallenge));
 
-  challenge->bufIndex = 0;
-  memcpy (challenge->ident, "NTLMSSP\0", 8);
-  SIVAL (&challenge->msgType, 0, 2);
-  SIVAL (&challenge->flags, 0, 0x00008201);
-  SIVAL (&challenge->uDomain.len, 0, 0x0000);
-  SIVAL (&challenge->uDomain.maxlen, 0, 0x0000);
-  SIVAL (&challenge->uDomain.offset, 0, 0x00002800);
+challenge->bufIndex = 0;
+memcpy (challenge->ident, "NTLMSSP\0", 8);
+SIVAL (&challenge->msgType, 0, 2);
+SIVAL (&challenge->flags, 0, 0x00008201);
+SIVAL (&challenge->uDomain.len, 0, 0x0000);
+SIVAL (&challenge->uDomain.maxlen, 0, 0x0000);
+SIVAL (&challenge->uDomain.offset, 0, 0x00002800);
 
-  /* generate eight pseudo random bytes (method ripped from host.c) */
+/* generate eight pseudo random bytes (method ripped from host.c) */
 
-  for(i=0;i<8;i++) {
-    chalstr[i] = (uschar)(random_seed >> 16) % 256;
-    random_seed = (1103515245 - (chalstr[i])) * random_seed + 12345;
-  };
+for(i=0;i<8;i++)
+  {
+  chalstr[i] = (uschar)(random_seed >> 16) % 256;
+  random_seed = (1103515245 - (chalstr[i])) * random_seed + 12345;
+  }
 
-  memcpy(challenge->challengeData,chalstr,8);
+memcpy(challenge->challengeData,chalstr,8);
 }
 
 
@@ -1446,37 +1436,37 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
                         SPAAuthResponse * response, char *user,
                         char *password)
 {
-  uint8x lmRespData[24];
-  uint8x ntRespData[24];
-  char *d = strdup (GetUnicodeString (challenge, uDomain));
-  char *domain = d;
-  char *u = strdup (user);
-  char *p = strchr (u, '@');
+uint8x lmRespData[24];
+uint8x ntRespData[24];
+char *d = strdup (GetUnicodeString (challenge, uDomain));
+char *domain = d;
+char *u = strdup (user);
+char *p = strchr (u, '@');
 
-  if (p)
-    {
-      domain = p + 1;
-      *p = '\0';
-    }
+if (p)
+  {
+  domain = p + 1;
+  *p = '\0';
+  }
 
-  spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
-  spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
+spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
+spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
 
-  response->bufIndex = 0;
-  memcpy (response->ident, "NTLMSSP\0\0\0", 8);
-  SIVAL (&response->msgType, 0, 3);
+response->bufIndex = 0;
+memcpy (response->ident, "NTLMSSP\0\0\0", 8);
+SIVAL (&response->msgType, 0, 3);
 
-  spa_bytes_add (response, lmResponse, lmRespData, 24);
-  spa_bytes_add (response, ntResponse, ntRespData, 24);
-  spa_unicode_add_string (response, uDomain, domain);
-  spa_unicode_add_string (response, uUser, u);
-  spa_unicode_add_string (response, uWks, u);
-  spa_string_add (response, sessionKey, NULL);
+spa_bytes_add (response, lmResponse, lmRespData, 24);
+spa_bytes_add (response, ntResponse, ntRespData, 24);
+spa_unicode_add_string (response, uDomain, domain);
+spa_unicode_add_string (response, uUser, u);
+spa_unicode_add_string (response, uWks, u);
+spa_string_add (response, sessionKey, NULL);
 
-  response->flags = challenge->flags;
+response->flags = challenge->flags;
 
-  free (d);
-  free (u);
+free (d);
+free (u);
 }
 #endif
 
@@ -1488,47 +1478,47 @@ spa_build_auth_response (SPAAuthChallenge * challenge,
                         SPAAuthResponse * response, char *user,
                         char *password)
 {
-  uint8x lmRespData[24];
-  uint8x ntRespData[24];
-  uint32x cf = IVAL(&challenge->flags, 0);
-  char *u = strdup (user);
-  char *p = strchr (u, '@');
-  char *d = NULL;
-  char *domain;
+uint8x lmRespData[24];
+uint8x ntRespData[24];
+uint32x cf = IVAL(&challenge->flags, 0);
+char *u = strdup (user);
+char *p = strchr (u, '@');
+char *d = NULL;
+char *domain;
 
-  if (p)
-    {
-    domain = p + 1;
-    *p = '\0';
-    }
-
-  else domain = d = strdup((cf & 0x1)?
-    CCS GetUnicodeString(challenge, uDomain) :
-    CCS GetString(challenge, uDomain));
-
-  spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
-  spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
-
-  response->bufIndex = 0;
-  memcpy (response->ident, "NTLMSSP\0\0\0", 8);
-  SIVAL (&response->msgType, 0, 3);
-
-  spa_bytes_add (response, lmResponse, lmRespData, (cf & 0x200) ? 24 : 0);
-  spa_bytes_add (response, ntResponse, ntRespData, (cf & 0x8000) ? 24 : 0);
-
-  if (cf & 0x1) {      /* Unicode Text */
-       spa_unicode_add_string (response, uDomain, domain);
-       spa_unicode_add_string (response, uUser, u);
-       spa_unicode_add_string (response, uWks, u);
-  } else {             /* OEM Text */
-       spa_string_add (response, uDomain, domain);
-       spa_string_add (response, uUser, u);
-       spa_string_add (response, uWks, u);
+if (p)
+  {
+  domain = p + 1;
+  *p = '\0';
   }
 
-  spa_string_add (response, sessionKey, NULL);
-  response->flags = challenge->flags;
+else domain = d = strdup((cf & 0x1)?
+  CCS GetUnicodeString(challenge, uDomain) :
+  CCS GetString(challenge, uDomain));
 
-  if (d != NULL) free (d);
-  free (u);
+spa_smb_encrypt (US password, challenge->challengeData, lmRespData);
+spa_smb_nt_encrypt (US password, challenge->challengeData, ntRespData);
+
+response->bufIndex = 0;
+memcpy (response->ident, "NTLMSSP\0\0\0", 8);
+SIVAL (&response->msgType, 0, 3);
+
+spa_bytes_add (response, lmResponse, lmRespData, (cf & 0x200) ? 24 : 0);
+spa_bytes_add (response, ntResponse, ntRespData, (cf & 0x8000) ? 24 : 0);
+
+if (cf & 0x1) {      /* Unicode Text */
+     spa_unicode_add_string (response, uDomain, domain);
+     spa_unicode_add_string (response, uUser, u);
+     spa_unicode_add_string (response, uWks, u);
+} else {             /* OEM Text */
+     spa_string_add (response, uDomain, domain);
+     spa_string_add (response, uUser, u);
+     spa_string_add (response, uWks, u);
+}
+
+spa_string_add (response, sessionKey, NULL);
+response->flags = challenge->flags;
+
+if (d != NULL) free (d);
+free (u);
 }

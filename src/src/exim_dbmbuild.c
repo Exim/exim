@@ -304,22 +304,21 @@ while (Ufgets(line, max_insize, f) != NULL)
       switch(rc = EXIM_DBPUTB(d, key, content))
         {
         case EXIM_DBPUTB_OK:
-        count++;
-        break;
+	  count++;
+	  break;
 
         case EXIM_DBPUTB_DUP:
-        if (warn) fprintf(stderr, "** Duplicate key \"%s\"\n",
-          keybuffer);
-        dupcount++;
-        if(duperr) yield = 1;
-        if (lastdup) EXIM_DBPUT(d, key, content);
-        break;
+	  if (warn) fprintf(stderr, "** Duplicate key \"%s\"\n", keybuffer);
+	  dupcount++;
+	  if(duperr) yield = 1;
+	  if (lastdup) EXIM_DBPUT(d, key, content);
+	  break;
 
         default:
-        fprintf(stderr, "Error %d while writing key %s: errno=%d\n", rc,
-          keybuffer, errno);
-        yield = 2;
-        goto TIDYUP;
+	  fprintf(stderr, "Error %d while writing key %s: errno=%d\n", rc,
+	    keybuffer, errno);
+	  yield = 2;
+	  goto TIDYUP;
         }
 
       bptr = buffer;
@@ -337,8 +336,9 @@ while (Ufgets(line, max_insize, f) != NULL)
       keystart = t;
       while (*s != 0 && *s != '\"')
         {
-        if (*s == '\\') *t++ = string_interpret_escape((const uschar **)&s);
-          else *t++ = *s;
+	*t++ = *s == '\\'
+	? string_interpret_escape((const uschar **)&s)
+	: *s;
         s++;
         }
       if (*s != 0) s++;               /* Past terminating " */
@@ -360,15 +360,11 @@ while (Ufgets(line, max_insize, f) != NULL)
       }
 
     if (lowercase)
-      {
       for (i = 0; i < EXIM_DATUM_SIZE(key) - add_zero; i++)
         keybuffer[i] = tolower(keystart[i]);
-      }
     else
-      {
       for (i = 0; i < EXIM_DATUM_SIZE(key) - add_zero; i++)
         keybuffer[i] = keystart[i];
-      }
 
     keybuffer[i] = 0;
     started = 1;

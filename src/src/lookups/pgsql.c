@@ -124,7 +124,6 @@ perform_pgsql_search(const uschar *query, uschar *server, uschar **resultptr,
 PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
 
-int i;
 gstring * result = NULL;
 int yield = DEFER;
 unsigned int num_fields, num_tuples;
@@ -137,7 +136,7 @@ path, database, user, password. We can write to the string, since it is in a
 nextinlist temporary buffer. The copy of the string that is used for caching
 has the password removed. This copy is also used for debugging output. */
 
-for (i = 2; i >= 0; i--)
+for (int i = 2; i >= 0; i--)
   {
   uschar *pp = Ustrrchr(server, '/');
   if (!pp)
@@ -320,7 +319,7 @@ num_tuples = PQntuples(pg_result);
 /* Get the fields and construct the result string. If there is more than one
 row, we insert '\n' between them. */
 
-for (i = 0; i < num_tuples; i++)
+for (int i = 0; i < num_tuples; i++)
   {
   if (result)
     result = string_catn(result, US"\n", 1);
@@ -329,14 +328,11 @@ for (i = 0; i < num_tuples; i++)
     result = string_catn(result,
 	US PQgetvalue(pg_result, i, 0), PQgetlength(pg_result, i, 0));
   else
-    {
-    int j;
-    for (j = 0; j < num_fields; j++)
+    for (int j = 0; j < num_fields; j++)
       {
       uschar *tmp = US PQgetvalue(pg_result, i, j);
       result = lf_quote(US PQfname(pg_result, j), tmp, Ustrlen(tmp), result);
       }
-    }
   }
 
 /* If result is NULL then no data has been found and so we return FAIL. */

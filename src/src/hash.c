@@ -268,19 +268,18 @@ Returns:     nothing
 static void
 native_sha1_mid(sha1 *base, const uschar *text)
 {
-int i;
 uint A, B, C, D, E;
 uint W[80];
 
 base->length += 64;
 
-for (i = 0; i < 16; i++)
+for (int i = 0; i < 16; i++)
   {
   W[i] = ((uint)text[0] << 24) | (text[1] << 16) | (text[2] << 8) | text[3];
   text += 4;
   }
 
-for (i = 16; i < 80; i++)
+for (int i = 16; i < 80; i++)
   {
   register unsigned int x = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
   W[i] = (x << 1) | (x >> 31);
@@ -292,7 +291,7 @@ C = base->H[2];
 D = base->H[3];
 E = base->H[4];
 
-for (i = 0; i < 20; i++)
+for (int i = 0; i < 20; i++)
   {
   unsigned int T;
   T = ((A << 5) | (A >> 27)) + ((B & C) | ((~B) & D)) + E + W[i] + 0x5a827999;
@@ -303,7 +302,7 @@ for (i = 0; i < 20; i++)
   A = T;
   }
 
-for (i = 20; i < 40; i++)
+for (int i = 20; i < 40; i++)
   {
   unsigned int T;
   T = ((A << 5) | (A >> 27)) + (B ^ C ^ D) + E + W[i] + 0x6ed9eba1;
@@ -314,7 +313,7 @@ for (i = 20; i < 40; i++)
   A = T;
   }
 
-for (i = 40; i < 60; i++)
+for (int i = 40; i < 60; i++)
   {
   unsigned int T;
   T = ((A << 5) | (A >> 27)) + ((B & C) | (B & D) | (C & D)) + E + W[i] +
@@ -326,7 +325,7 @@ for (i = 40; i < 60; i++)
   A = T;
   }
 
-for (i = 60; i < 80; i++)
+for (int i = 60; i < 80; i++)
   {
   unsigned int T;
   T = ((A << 5) | (A >> 27)) + (B ^ C ^ D) + E + W[i] + 0xca62c1d6;
@@ -367,7 +366,6 @@ Returns:    nothing
 static void
 native_sha1_end(sha1 *base, const uschar *text, int length, uschar *digest)
 {
-int i;
 uschar work[64];
 
 /* Process in chunks of 64 until we have less than 64 bytes left. */
@@ -420,7 +418,7 @@ native_sha1_mid(base, work);
 
 /* Pass back the result, high-order byte first in each word. */
 
-for (i = 0; i < 5; i++)
+for (int i = 0; i < 5; i++)
   {
   register int x = base->H[i];
   *digest++ = (x >> 24) & 0xff;

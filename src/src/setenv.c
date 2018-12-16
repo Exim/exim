@@ -26,7 +26,6 @@ unsetenv(const char *name)
 {
 size_t len;
 const char * end;
-char ** e;
 extern char ** environ;
 
 if (!name)
@@ -44,7 +43,7 @@ len = end - name;
 /* Find name in environment and move remaining variables down.
 Do not early-out in case there are duplicate names. */
 
-for (e = environ; *e; e++)
+for (char ** e = environ; *e; e++)
   if (strncmp(*e, name, len) == 0 && (*e)[len] == '=')
     {
     char ** sp = e;

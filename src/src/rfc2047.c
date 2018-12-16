@@ -300,11 +300,8 @@ while (mimeword)
     /* Deal with zero values; convert them if requested. */
 
     if (zeroval != 0)
-      {
-      int i;
-      for (i = 0; i < tlen; i++)
+      for (int i = 0; i < tlen; i++)
         if (tptr[i] == 0) tptr[i] = zeroval;
-      }
 
     /* Add the new string onto the result */
 

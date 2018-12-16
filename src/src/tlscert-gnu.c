@@ -173,16 +173,15 @@ uschar *
 tls_cert_serial_number(void * cert, uschar * mod)
 {
 uschar bin[50], txt[150];
+uschar * sp = bin;
 size_t sz = sizeof(bin);
-uschar * sp;
-uschar * dp;
 int ret;
 
 if ((ret = gnutls_x509_crt_get_serial((gnutls_x509_crt_t)cert,
     bin, &sz)))
   return g_err("gs0", __FUNCTION__, ret);
 
-for(dp = txt, sp = bin; sz; sz--)
+for(uschar * dp = txt; sz; sz--)
   dp += sprintf(CS dp, "%.2x", *sp++);
 for(sp = txt; sp[0]=='0' && sp[1]; ) sp++;	/* leading zeroes */
 return string_copy(sp);
@@ -280,7 +279,6 @@ uschar *
 tls_cert_subject_altname(void * cert, uschar * mod)
 {
 gstring * list = NULL;
-int index;
 size_t siz;
 int ret;
 uschar sep = '\n';
@@ -300,7 +298,7 @@ while (mod)
     break;
   }
 
-for(index = 0;; index++)
+for (int index = 0;; index++)
   {
   siz = 0;
   switch(ret = gnutls_x509_crt_get_subject_alt_name(
@@ -345,13 +343,12 @@ tls_cert_ocsp_uri(void * cert, uschar * mod)
 gnutls_datum_t uri;
 int ret;
 uschar sep = '\n';
-int index;
 gstring * list = NULL;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
 
-for(index = 0;; index++)
+for (int index = 0;; index++)
   {
   ret = gnutls_x509_crt_get_authority_info_access((gnutls_x509_crt_t)cert,
 	  index, GNUTLS_IA_OCSP_URI, &uri, NULL);
@@ -379,18 +376,16 @@ uschar *
 tls_cert_crl_uri(void * cert, uschar * mod)
 {
 int ret;
-size_t siz;
 uschar sep = '\n';
-int index;
 gstring * list = NULL;
 uschar * ele;
 
 if (mod)
   if (*mod == '>' && *++mod) sep = *mod++;
 
-for(index = 0;; index++)
+for (int index = 0;; index++)
   {
-  siz = 0;
+  size_t siz = 0;
   switch(ret = gnutls_x509_crt_get_crl_dist_points(
     (gnutls_x509_crt_t)cert, index, NULL, &siz, NULL, NULL))
     {
@@ -445,7 +440,6 @@ int ret;
 size_t siz = 0;
 uschar * cp;
 uschar * cp2;
-uschar * cp3;
 
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, NULL, &siz))
     != GNUTLS_E_SHORT_MEMORY_BUFFER)
@@ -455,7 +449,7 @@ cp = store_get(siz*3+1);
 if ((ret = gnutls_x509_crt_get_fingerprint(cert, algo, cp, &siz)) < 0)
   return g_err("gf1", __FUNCTION__, ret);
 
-for (cp3 = cp2 = cp+siz; cp < cp2; cp++)
+for (uschar * cp3 = cp2 = cp+siz; cp < cp2; cp++)
   cp3 += sprintf(CS cp3, "%02X", *cp);
 return cp2;
 }

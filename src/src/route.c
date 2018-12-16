@@ -150,12 +150,11 @@ int optionlist_routers_size = nelem(optionlist_routers);
 void
 options_routers(void)
 {
-struct router_info * ri;
 uschar buf[64];
 
 options_from_list(optionlist_routers, nelem(optionlist_routers), US"ROUTERS", NULL);
 
-for (ri = routers_available; ri->driver_name[0]; ri++)
+for (router_info * ri = routers_available; ri->driver_name[0]; ri++)
   {
   spf(buf, sizeof(buf), US"_DRIVER_ROUTER_%T", ri->driver_name);
   builtin_macro_create(buf);
@@ -222,8 +221,6 @@ function. */
 void
 route_init(void)
 {
-router_instance *r;
-
 readconf_driver_init(US"router",
   (driver_instance **)(&routers),     /* chain anchor */
   (driver_info *)routers_available,   /* available drivers */
@@ -233,7 +230,7 @@ readconf_driver_init(US"router",
   optionlist_routers,                 /* generic options */
   optionlist_routers_size);
 
-for (r = routers; r; r = r->next)
+for (router_instance * r = routers; r; r = r->next)
   {
   uschar *s = r->self;
 
@@ -317,8 +314,7 @@ is finished, via this function. */
 void
 route_tidyup(void)
 {
-router_instance *r;
-for (r = routers; r; r = r->next)
+for (router_instance * r = routers; r; r = r->next)
   if (r->info->tidyup) (r->info->tidyup)(r);
 }
 
@@ -352,9 +348,8 @@ while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf))))
   int plen = Ustrlen(prefix);
   if (prefix[0] == '*')
     {
-    const uschar *p;
     prefix++;
-    for (p = local_part + Ustrlen(local_part) - (--plen);
+    for (const uschar * p = local_part + Ustrlen(local_part) - (--plen);
          p >= local_part; p--)
       if (strncmpic(prefix, p, plen) == 0) return plen + p - local_part;
     }
@@ -396,9 +391,8 @@ while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf))))
   int slen = Ustrlen(suffix);
   if (suffix[slen-1] == '*')
     {
-    const uschar *p, *pend;
-    pend = local_part + alen - (--slen) + 1;
-    for (p = local_part; p < pend; p++)
+    const uschar *pend = local_part + alen - (--slen) + 1;
+    for (const uschar * p = local_part; p < pend; p++)
       if (strncmpic(suffix, p, slen) == 0) return alen - (p - local_part);
     }
   else
@@ -1460,7 +1454,6 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   uschar *error;
   struct passwd *pw = NULL;
   struct passwd pwcopy;
-  address_item *parent;
   BOOL loop_detected = FALSE;
   BOOL more;
   int loopcount = 0;
@@ -1494,7 +1487,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   continually adding to an address, for example), put a long stop counter on
   the number of parents. */
 
-  for (parent = addr->parent; parent; parent = parent->parent)
+  for (address_item * parent = addr->parent; parent; parent = parent->parent)
     {
     if (parent->router == r)
       {
@@ -1820,8 +1813,7 @@ if (r->translate_ip_address)
   {
   int rc;
   int old_pool = store_pool;
-  host_item *h;
-  for (h = addr->host_list; h; h = h->next)
+  for (host_item * h = addr->host_list; h; h = h->next)
     {
     uschar *newaddress;
     uschar *oldaddress, *oldname;
@@ -1886,16 +1878,14 @@ HDEBUG(D_route) debug_printf("routed by %s router%s\n", r->name,
 
 DEBUG(D_route)
   {
-  host_item *h;
-
   debug_printf("  envelope to: %s\n", addr->address);
-  debug_printf("  transport: %s\n", (addr->transport == NULL)?
-    US"<none>" : addr->transport->name);
+  debug_printf("  transport: %s\n", addr->transport
+    ? addr->transport->name : US"<none>");
 
   if (addr->prop.errors_address)
     debug_printf("  errors to %s\n", addr->prop.errors_address);
 
-  for (h = addr->host_list; h; h = h->next)
+  for (host_item * h = addr->host_list; h; h = h->next)
     {
     debug_printf("  host %s", h->name);
     if (h->address) debug_printf(" [%s]", h->address);

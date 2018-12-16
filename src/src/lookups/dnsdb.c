@@ -150,7 +150,6 @@ store as possible later, so we preallocate the result here */
 
 gstring * yield = string_get(256);
 
-dns_record * rr;
 dns_answer dnsa;
 dns_scan dnss;
 
@@ -378,7 +377,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
     /* Search the returned records */
 
-    for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
+    for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
          rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == searchtype)
       {
       if (*do_cache > rr->ttl)
@@ -386,8 +385,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
       if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
-        dns_address *da;
-        for (da = dns_address_from_rr(&dnsa, rr); da; da = da->next)
+        for (dns_address * da = dns_address_from_rr(&dnsa, rr); da; da = da->next)
           {
           if (yield->ptr) yield = string_catn(yield, outsep, 1);
           yield = string_cat(yield, da->address);

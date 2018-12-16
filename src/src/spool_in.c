@@ -36,7 +36,6 @@ Side effect: message_subdir is set for the (possibly split) spool directory
 int
 spool_open_datafile(uschar *id)
 {
-int i;
 struct stat statbuf;
 flock_t lock_data;
 int fd;
@@ -48,7 +47,7 @@ spool_directory is not set, first look in the main input directory. If it is
 not found there, try the split sub-directory, in case it is left over from a
 splitting state. */
 
-for (i = 0; i < 2; i++)
+for (int i = 0; i < 2; i++)
   {
   uschar * fname;
   int save_errno;
@@ -357,7 +356,7 @@ spool_clear_header_globals();
 set, just look in the given directory. Otherwise, look in both the split
 and unsplit directories, as for the data file above. */
 
-for (n = 0; n < 2; n++)
+for (int n = 0; n < 2; n++)
   {
   if (!subdir_set)
     message_subdir[0] = split_spool_directory == (n == 0) ? name[5] : 0;

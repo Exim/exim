@@ -284,13 +284,12 @@ to the same pipe or file. */
 
 else
   {
-  address_item *addr2;
   if (testflag(addr, af_pfr))
     {
     if (testflag(addr, af_file))	 address_file = addr->local_part;
     else if (addr->local_part[0] == '|') address_pipe = addr->local_part;
     }
-  for (addr2 = addr->next; addr2; addr2 = addr2->next)
+  for (address_item * addr2 = addr->next; addr2; addr2 = addr2->next)
     {
     if (deliver_domain && Ustrcmp(deliver_domain, addr2->domain) != 0)
       deliver_domain = NULL;
@@ -329,11 +328,9 @@ Returns:    a file descriptor, or -1 (with errno set)
 static int
 open_msglog_file(uschar *filename, int mode, uschar **error)
 {
-int fd, i;
-
-for (i = 2; i > 0; i--)
+for (int i = 2; i > 0; i--)
   {
-  fd = Uopen(filename,
+  int fd = Uopen(filename,
 #ifdef O_CLOEXEC
     O_CLOEXEC |
 #endif
@@ -422,8 +419,7 @@ Returns:     nothing
 static void
 replicate_status(address_item *addr)
 {
-address_item *addr2;
-for (addr2 = addr->next; addr2; addr2 = addr2->next)
+for (address_item * addr2 = addr->next; addr2; addr2 = addr2->next)
   {
   addr2->transport =	    addr->transport;
   addr2->transport_return = addr->transport_return;
@@ -657,8 +653,6 @@ Returns:      nothing
 static void
 address_done(address_item *addr, uschar *now)
 {
-address_item *dup;
-
 update_spool = TRUE;        /* Ensure spool gets updated */
 
 /* Top-level address */
@@ -685,7 +679,7 @@ else tree_add_nonrecipient(addr->unique);
 /* Check the list of duplicate addresses and ensure they are now marked
 done as well. */
 
-for (dup = addr_duplicate; dup; dup = dup->next)
+for (address_item * dup = addr_duplicate; dup; dup = dup->next)
   if (Ustrcmp(addr->unique, dup->unique) == 0)
     {
     tree_add_nonrecipient(dup->unique);
@@ -716,9 +710,10 @@ Returns:    nothing
 static void
 child_done(address_item *addr, uschar *now)
 {
-address_item *aa;
 while (addr->parent)
   {
+  address_item *aa;
+
   addr = addr->parent;
   if (--addr->child_count > 0) return;   /* Incomplete parent */
   address_done(addr, now);
@@ -1061,8 +1056,7 @@ if (  (all_parents || testflag(addr, af_pfr))
    && addr->parent != topaddr)
   {
   uschar *s = US" (";
-  address_item *addr2;
-  for (addr2 = addr->parent; addr2 != topaddr; addr2 = addr2->parent)
+  for (address_item * addr2 = addr->parent; addr2 != topaddr; addr2 = addr2->parent)
     {
     g = string_catn(g, s, 2);
     g = string_cat (g, addr2->address);
@@ -1271,12 +1265,11 @@ if (  LOGGING(smtp_confirmation)
    && (addr->host_used || Ustrcmp(addr->transport->driver_name, "lmtp") == 0)
    )
   {
-  unsigned i;
   unsigned lim = big_buffer_size < 1024 ? big_buffer_size : 1024;
   uschar *p = big_buffer;
   uschar *ss = addr->message;
   *p++ = '\"';
-  for (i = 0; i < lim && ss[i] != 0; i++)	/* limit logged amount */
+  for (int i = 0; i < lim && ss[i] != 0; i++)	/* limit logged amount */
     {
     if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\'; /* quote \ and " */
     *p++ = ss[i];
@@ -1782,7 +1775,6 @@ Returns:       nothing
 static void
 common_error(BOOL logit, address_item *addr, int code, uschar *format, ...)
 {
-address_item *addr2;
 addr->basic_errno = code;
 
 if (format)
@@ -1796,7 +1788,7 @@ if (format)
   addr->message = string_from_gstring(g);
   }
 
-for (addr2 = addr->next; addr2; addr2 = addr2->next)
+for (address_item * addr2 = addr->next; addr2; addr2 = addr2->next)
   {
   addr2->basic_errno = code;
   addr2->message = addr->message;
@@ -1826,9 +1818,8 @@ Returns:      TRUE if the uid is on the list
 static BOOL
 check_never_users(uid_t uid, uid_t *nusers)
 {
-int i;
 if (!nusers) return FALSE;
-for (i = 1; i <= (int)(nusers[0]); i++) if (nusers[i] == uid) return TRUE;
+for (int i = 1; i <= (int)(nusers[0]); i++) if (nusers[i] == uid) return TRUE;
 return FALSE;
 }
 
@@ -2373,9 +2364,8 @@ if ((pid = fork()) == 0)
 
   DEBUG(D_deliver)
     {
-    address_item *batched;
     debug_printf("  home=%s current=%s\n", deliver_home, working_directory);
-    for (batched = addr->next; batched; batched = batched->next)
+    for (address_item * batched = addr->next; batched; batched = batched->next)
       debug_printf("additional batched address: %s\n", batched->address);
     }
 
@@ -3285,9 +3275,8 @@ while (  *aptr
 
 DEBUG(D_deliver)
   {
-  address_item *addr;
   debug_printf("remote addresses after sorting:\n");
-  for (addr = addr_remote; addr; addr = addr->next)
+  for (address_item * addr = addr_remote; addr; addr = addr->next)
     debug_printf("  %s\n", addr->address);
   }
 }
@@ -3792,12 +3781,10 @@ static void
 remote_post_process(address_item *addr, int logflags, uschar *msg,
   BOOL fallback)
 {
-host_item *h;
-
 /* If any host addresses were found to be unusable, add them to the unusable
 tree so that subsequent deliveries don't try them. */
 
-for (h = addr->host_list; h; h = h->next)
+for (host_item * h = addr->host_list; h; h = h->next)
   if (h->address)
     if (h->status >= hstatus_unusable) tree_add_unusable(h);
 
@@ -4231,7 +4218,6 @@ static BOOL
 do_remote_deliveries(BOOL fallback)
 {
 int parmax;
-int delivery_count;
 int poffset;
 
 parcount = 0;    /* Number of executing subprocesses */
@@ -4255,7 +4241,7 @@ if (!parlist)
 
 /* Now loop for each remote delivery */
 
-for (delivery_count = 0; addr_remote; delivery_count++)
+for (int delivery_count = 0; addr_remote; delivery_count++)
   {
   pid_t pid;
   uid_t uid;
@@ -4554,9 +4540,8 @@ for (delivery_count = 0; addr_remote; delivery_count++)
 	 && addr->host_list
 	 )
 	{
-	host_item * h;
 	ok = FALSE;
-	for (h = addr->host_list; h; h = h->next)
+	for (host_item * h = addr->host_list; h; h = h->next)
 	  if (Ustrcmp(h->name, continue_hostname) == 0)
   /*XXX should also check port here */
 	    { ok = TRUE; break; }
@@ -4608,12 +4593,9 @@ for (delivery_count = 0; addr_remote; delivery_count++)
     interface to the transport. */
 
     for (next = addr_remote; next && !f.continue_more; next = next->next)
-      {
-      host_item *h;
-      for (h = next->host_list; h; h = h->next)
+      for (host_item * h = next->host_list; h; h = h->next)
         if (Ustrcmp(h->name, continue_hostname) == 0)
           { f.continue_more = TRUE; break; }
-      }
     }
 
   /* The transports set up the process info themselves as they may connect
@@ -5262,15 +5244,12 @@ static int
 continue_closedown(void)
 {
 if (continue_transport)
-  {
-  transport_instance *t;
-  for (t = transports; t; t = t->next)
+  for (transport_instance * t = transports; t; t = t->next)
     if (Ustrcmp(t->name, continue_transport) == 0)
       {
       if (t->info->closedown) (t->info->closedown)(t);
       break;
       }
-  }
 return DELIVER_NOT_ATTEMPTED;
 }
 
@@ -6292,9 +6271,8 @@ if (process_recipients != RECIP_IGNORE)
 
 DEBUG(D_deliver)
   {
-  address_item *p;
   debug_printf("Delivery address list:\n");
-  for (p = addr_new; p; p = p->next)
+  for (address_item * p = addr_new; p; p = p->next)
     debug_printf("  %s %s\n", p->address,
       p->onetime_parent ? p->onetime_parent : US"");
   }
@@ -6938,22 +6916,21 @@ while (addr_new)           /* Loop until all addresses dealt with */
 
 DEBUG(D_deliver|D_retry|D_route)
   {
-  address_item *p;
   debug_printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
   debug_printf("After routing:\n  Local deliveries:\n");
-  for (p = addr_local; p; p = p->next)
+  for (address_item * p = addr_local; p; p = p->next)
     debug_printf("    %s\n", p->address);
 
   debug_printf("  Remote deliveries:\n");
-  for (p = addr_remote; p; p = p->next)
+  for (address_item * p = addr_remote; p; p = p->next)
     debug_printf("    %s\n", p->address);
 
   debug_printf("  Failed addresses:\n");
-  for (p = addr_failed; p; p = p->next)
+  for (address_item * p = addr_failed; p; p = p->next)
     debug_printf("    %s\n", p->address);
 
   debug_printf("  Deferred addresses:\n");
-  for (p = addr_defer; p; p = p->next)
+  for (address_item * p = addr_defer; p; p = p->next)
     debug_printf("    %s\n", p->address);
   }
 
@@ -7235,8 +7212,8 @@ if (mua_wrapper)
   {
   if (addr_defer)
     {
-    address_item *addr, *nextaddr;
-    for (addr = addr_defer; addr; addr = nextaddr)
+    address_item * nextaddr;
+    for (address_item * addr = addr_defer; addr; addr = nextaddr)
       {
       log_write(0, LOG_MAIN, "** %s mua_wrapper forced failure for deferred "
         "delivery", addr->address);
@@ -8063,14 +8040,13 @@ was set just to keep the message on the spool, so there is nothing to do here.
 
 else if (addr_defer != (address_item *)(+1))
   {
-  address_item *addr;
   uschar *recipients = US"";
   BOOL want_warning_msg = FALSE;
 
   deliver_domain = testflag(addr_defer, af_pfr)
     ? addr_defer->parent->domain : addr_defer->domain;
 
-  for (addr = addr_defer; addr; addr = addr->next)
+  for (address_item * addr = addr_defer; addr; addr = addr->next)
     {
     address_item *otaddr;
 

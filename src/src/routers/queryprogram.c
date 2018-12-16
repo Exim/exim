@@ -489,9 +489,9 @@ lookup_value = NULL;
 if (*s != 0)
   {
   transport_instance *transport;
-  for (transport = transports; transport != NULL; transport = transport->next)
+  for (transport = transports; transport; transport = transport->next)
     if (Ustrcmp(transport->name, s) == 0) break;
-  if (transport == NULL)
+  if (!transport)
     {
     addr->message = string_sprintf("unknown transport name %s yielded by "
       "command", s);

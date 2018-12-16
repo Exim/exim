@@ -254,7 +254,6 @@ Ora_Describe *desc = NULL;
 Ora_Define *def = NULL;
 void *hda = NULL;
 
-int i;
 int yield = DEFER;
 unsigned int num_fields = 0;
 gstring * result = NULL;
@@ -267,7 +266,7 @@ database, user, password. We can write to the string, since it is in a
 nextinlist temporary buffer. The copy of the string that is used for caching
 has the password removed. This copy is also used for debugging output. */
 
-for (i = 3; i > 0; i--)
+for (int i = 3; i > 0; i--)
   {
   uschar *pp = Ustrrchr(server, '/');
   if (pp == NULL)
@@ -404,7 +403,7 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
 
   /* Multiple fields - precede by file name, removing {lead,trail}ing WS */
 
-  else for (i = 0; i < num_fields; i++)
+  else for (int i = 0; i < num_fields; i++)
     {
     int slen;
     uschar *s = US desc[i].buf;
@@ -421,9 +420,8 @@ while (cda->rc != NO_DATA_FOUND)  /* Loop for each row */
     if (desc[i].dbtype != INT_TYPE && desc[i].dbtype != FLOAT_TYPE &&
        (def[i].buf[0] == 0 || strchr(def[i].buf, ' ') != NULL))
       {
-      int j;
       result = string_catn(result, "\"", 1);
-      for (j = 0; j < def[i].col_retlen; j++)
+      for (int j = 0; j < def[i].col_retlen; j++)
         {
         if (def[i].buf[j] == '\"' || def[i].buf[j] == '\\')
           result = string_catn(result, "\\", 1);

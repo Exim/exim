@@ -37,7 +37,6 @@ Returns:    0 if the string is not a textual representation of an IP address
 int
 string_is_ip_address(const uschar *s, int *maskptr)
 {
-int i;
 int yield = 4;
 
 /* If an optional mask is permitted, check for it. If found, pass back the
@@ -60,7 +59,6 @@ if (Ustrchr(s, ':') != NULL)
   {
   BOOL had_double_colon = FALSE;
   BOOL v4end = FALSE;
-  int count = 0;
 
   yield = 6;
 
@@ -73,7 +71,7 @@ if (Ustrchr(s, ':') != NULL)
   may be one and only one appearance of double colon, which implies any number
   of binary zero bits. The number of preceding components is held in count. */
 
-  for (count = 0; count < 8; count++)
+  for (int count = 0; count < 8; count++)
     {
     /* If the end of the string is reached before reading 8 components, the
     address is valid provided a double colon has been read. This also applies
@@ -134,7 +132,7 @@ if (Ustrchr(s, ':') != NULL)
 
 /* Test for IPv4 address, which may be the tail-end of an IPv6 address. */
 
-for (i = 0; i < 4; i++)
+for (int i = 0; i < 4; i++)
   {
   long n;
   uschar * end;
@@ -955,7 +953,6 @@ if (buffer)
 
 else
   {
-  const uschar *ss;
   gstring * g = NULL;
 
   /* We know that *s != 0 at this point. However, it might be pointing to a
@@ -978,7 +975,8 @@ else
 
   for (;;)
     {
-    for (ss = s + 1; *ss && *ss != sep; ss++) ;
+    const uschar * ss;
+    for (ss = s + 1; *ss && *ss != sep; ) ss++;
     g = string_catn(g, s, ss-s);
     s = ss;
     if (!*s || *++s != sep || sep_is_special) break;

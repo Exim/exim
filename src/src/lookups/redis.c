@@ -92,7 +92,7 @@ We can write to the string, since it is in a nextinlist temporary buffer.
 This copy is also used for debugging output.  */
 
 memset(sdata, 0, sizeof(sdata)) /* Set all to NULL */;
-for (i = 2; i > 0; i--)
+for (int i = 2; i > 0; i--)
   {
   uschar *pp = Ustrrchr(server, '/');
 
@@ -205,9 +205,8 @@ if(sdata[1])
 /* split string on whitespace into argv */
   {
   uschar * argv[32];
-  int i;
   const uschar * s = command;
-  int siz, ptr;
+  int siz, ptr, i;
   uschar c;
 
   while (isspace(*s)) s++;
@@ -281,7 +280,7 @@ switch (redis_reply->type)
     /* NOTE: For now support 1 nested array result. If needed a limitless
     result can be parsed */
 
-    for (i = 0; i < redis_reply->elements; i++)
+    for (int i = 0; i < redis_reply->elements; i++)
       {
       entry = redis_reply->element[i];
 
@@ -297,7 +296,7 @@ switch (redis_reply->type)
 	  result = string_catn(result, US entry->str, entry->len);
 	  break;
 	case REDIS_REPLY_ARRAY:
-	  for (j = 0; j < entry->elements; j++)
+	  for (int j = 0; j < entry->elements; j++)
 	    {
 	    tentry = entry->element[j];
 

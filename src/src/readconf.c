@@ -403,12 +403,11 @@ options_from_list(optionlist_config, nelem(optionlist_config), US"MAIN", NULL);
 void
 options_auths(void)
 {
-struct auth_info * ai;
 uschar buf[64];
 
 options_from_list(optionlist_auths, optionlist_auths_size, US"AUTHENTICATORS", NULL);
 
-for (ai = auths_available; ai->driver_name[0]; ai++)
+for (struct auth_info * ai = auths_available; ai->driver_name[0]; ai++)
   {
   spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
   builtin_macro_create(buf);
@@ -419,10 +418,9 @@ for (ai = auths_available; ai->driver_name[0]; ai++)
 void
 options_logging(void)
 {
-bit_table * bp;
 uschar buf[64];
 
-for (bp = log_options; bp < log_options + log_options_count; bp++)
+for (bit_table * bp = log_options; bp < log_options + log_options_count; bp++)
   {
   spf(buf, sizeof(buf), US"_LOG_%T", bp->name);
   builtin_macro_create(buf);
@@ -578,17 +576,13 @@ Returns:     the option name, or an empty string
 uschar *
 readconf_find_option(void *p)
 {
-int i;
-router_instance *r;
-transport_instance *t;
-
-for (i = 0; i < nelem(optionlist_config); i++)
+for (int i = 0; i < nelem(optionlist_config); i++)
   if (p == optionlist_config[i].value) return US optionlist_config[i].name;
 
-for (r = routers; r; r = r->next)
+for (router_instance * r = routers; r; r = r->next)
   {
   router_info *ri = r->info;
-  for (i = 0; i < *ri->options_count; i++)
+  for (int i = 0; i < *ri->options_count; i++)
     {
     if ((ri->options[i].type & opt_mask) != opt_stringptr) continue;
     if (p == CS (r->options_block) + (long int)(ri->options[i].value))
@@ -596,10 +590,10 @@ for (r = routers; r; r = r->next)
     }
   }
 
-for (t = transports; t; t = t->next)
+for (transport_instance * t = transports; t; t = t->next)
   {
   transport_info *ti = t->info;
-  for (i = 0; i < *ti->options_count; i++)
+  for (int i = 0; i < *ti->options_count; i++)
     {
     optionlist * op = &ti->options[i];
     if ((op->type & opt_mask) != opt_stringptr) continue;
@@ -784,7 +778,6 @@ macros_expand(int len, int * newlen, BOOL * macro_found)
 {
 uschar * ss = big_buffer + len;
 uschar * s;
-macro_item * m;
 
 /* Find the true start of the physical line - leading spaces are always
 ignored. */
@@ -814,7 +807,7 @@ while (*s && !isupper(*s) && !(*s == '_' && isupper(s[1]))) s++;
 replacing all occurrences of the macro. */
 
 *macro_found = FALSE;
-if (*s) for (m = *s == '_' ? macros : macros_user; m; m = m->next)
+if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
   {
   uschar * p, *pp;
   uschar * t;
@@ -1591,7 +1584,7 @@ readconf_handle_option(uschar *buffer, optionlist *oltop, int last,
 {
 int ptr = 0;
 int offset = 0;
-int n, count, type, value;
+int count, type, value;
 int issecure = 0;
 uid_t uid;
 gid_t gid;
@@ -1619,7 +1612,7 @@ if (!isalpha(*s))
 it turns out that what we read was "hide", set the flag indicating that
 this is a secure option, and loop to read the next word. */
 
-for (n = 0; n < 2; n++)
+for (int n = 0; n < 2; n++)
   {
   while (isalnum(*s) || *s == '_')
     {
@@ -2591,9 +2584,8 @@ switch(ol->type & opt_mask)
     if (!no_labels) printf("%s =", name);
     if (uidlist)
       {
-      int i;
       uschar sep = no_labels ? '\0' : ' ';
-      for (i = 1; i <= (int)(uidlist[0]); i++)
+      for (int i = 1; i <= (int)(uidlist[0]); i++)
 	{
 	uschar *name = NULL;
 	if ((pw = getpwuid(uidlist[i]))) name = US pw->pw_name;
@@ -2611,9 +2603,8 @@ switch(ol->type & opt_mask)
     if (!no_labels) printf("%s =", name);
     if (gidlist)
       {
-      int i;
       uschar sep = no_labels ? '\0' : ' ';
-      for (i = 1; i <= (int)(gidlist[0]); i++)
+      for (int i = 1; i <= (int)(gidlist[0]); i++)
 	{
 	uschar *name = NULL;
 	if ((gr = getgrgid(gidlist[i]))) name = US gr->gr_name;
@@ -2633,10 +2624,9 @@ switch(ol->type & opt_mask)
 
   case opt_timelist:
     {
-    int i;
     int *list = (int *)value;
     if (!no_labels) printf("%s = ", name);
-    for (i = 0; i < list[1]; i++)
+    for (int i = 0; i < list[1]; i++)
       printf("%s%s", i == 0 ? "" : ":", readconf_printtime(list[i+2]));
     printf("\n");
     }
@@ -2718,17 +2708,14 @@ BOOL
 readconf_print(uschar *name, uschar *type, BOOL no_labels)
 {
 BOOL names_only = FALSE;
-optionlist *ol;
 optionlist *ol2 = NULL;
 driver_instance *d = NULL;
-macro_item *m;
 int size = 0;
 
 if (!type)
   {
   if (*name == '+')
     {
-    int i;
     tree_node *t;
     BOOL found = FALSE;
     static uschar *types[] = { US"address", US"domain", US"host",
@@ -2736,7 +2723,7 @@ if (!type)
     static tree_node **anchors[] = { &addresslist_anchor, &domainlist_anchor,
       &hostlist_anchor, &localpartlist_anchor };
 
-    for (i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
       if ((t = tree_search(*(anchors[i]), name+1)))
         {
         found = TRUE;
@@ -2763,7 +2750,7 @@ if (!type)
 
   if (Ustrcmp(name, "all") == 0)
     {
-    for (ol = optionlist_config;
+    for (optionlist * ol = optionlist_config;
          ol < optionlist_config + nelem(optionlist_config); ol++)
       if (!(ol->type & opt_hidden))
         (void) print_ol(ol, US ol->name, NULL,
@@ -2778,7 +2765,7 @@ if (!type)
     printf("local_scan() options are not supported\n");
     return FALSE;
 #else
-    for (ol = local_scan_options;
+    for (optionlist * ol = local_scan_options;
          ol < local_scan_options + local_scan_options_count; ol++)
       (void) print_ol(ol, US ol->name, NULL, local_scan_options,
 		  local_scan_options_count, no_labels);
@@ -2894,7 +2881,7 @@ else if (Ustrcmp(type, "macro") == 0)
     fprintf(stderr, "exim: permission denied\n");
     return FALSE;
     }
-  for (m = macros; m; m = m->next)
+  for (macro_item * m = macros; m; m = m->next)
     if (!name || Ustrcmp(name, m->name) == 0)
       {
       if (names_only)
@@ -2927,11 +2914,11 @@ for (; d; d = d->next)
     printf("\n%s %s:\n", d->name, type);
   else if (Ustrcmp(d->name, name) != 0) continue;
 
-  for (ol = ol2; ol < ol2 + size; ol++)
+  for (optionlist * ol = ol2; ol < ol2 + size; ol++)
     if (!(ol->type & opt_hidden))
       rc |= print_ol(ol, US ol->name, d, ol2, size, no_labels);
 
-  for (ol = d->info->options;
+  for (optionlist * ol = d->info->options;
        ol < d->info->options + *(d->info->options_count); ol++)
     if (!(ol->type & opt_hidden))
       rc |= print_ol(ol, US ol->name, d, d->info->options,
@@ -3684,23 +3671,18 @@ static driver_info *
 init_driver(driver_instance *d, driver_info *drivers_available,
   int size_of_info, uschar *class)
 {
-driver_info *dd;
-
-for (dd = drivers_available; dd->driver_name[0] != 0;
+for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
      dd = (driver_info *)((US dd) + size_of_info))
-  {
   if (Ustrcmp(d->driver_name, dd->driver_name) == 0)
     {
-    int i;
     int len = dd->options_len;
     d->info = dd;
     d->options_block = store_get(len);
     memcpy(d->options_block, dd->options_block, len);
-    for (i = 0; i < *(dd->options_count); i++)
+    for (int i = 0; i < *(dd->options_count); i++)
       dd->options[i].type &= ~opt_set;
     return dd;
     }
-  }
 
 log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
   "%s %s: cannot find %s driver \"%s\"", class, d->name, class, d->driver_name);
@@ -3787,8 +3769,6 @@ while ((buffer = get_config_line()) != NULL)
 
   if (*s++ == ':')
     {
-    int i;
-
     /* Finish off initializing the previous driver. */
 
     if (d)
@@ -3817,7 +3797,7 @@ while ((buffer = get_config_line()) != NULL)
 
     /* Clear out the "set" bits in the generic options */
 
-    for (i = 0; i < driver_optionlist_count; i++)
+    for (int i = 0; i < driver_optionlist_count; i++)
       driver_optionlist[i].type &= ~opt_set;
 
     /* Check nothing more on this line, then do the next loop iteration. */
@@ -3890,10 +3870,9 @@ BOOL
 readconf_depends(driver_instance *d, uschar *s)
 {
 int count = *(d->info->options_count);
-optionlist *ol;
 uschar *ss;
 
-for (ol = d->info->options; ol < d->info->options + count; ol++)
+for (optionlist * ol = d->info->options; ol < d->info->options + count; ol++)
   {
   void *options_block;
   uschar *value;
@@ -4211,7 +4190,6 @@ Returns:     nothing
 static void
 auths_init(void)
 {
-auth_instance *au, *bu;
 #ifdef EXPERIMENTAL_PIPE_CONNECT
 int nauths = 0;
 #endif
@@ -4225,13 +4203,13 @@ readconf_driver_init(US"authenticator",
   optionlist_auths,                  /* generic options */
   optionlist_auths_size);
 
-for (au = auths; au; au = au->next)
+for (auth_instance * au = auths; au; au = au->next)
   {
   if (!au->public_name)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "no public name specified for "
       "the %s authenticator", au->name);
 
-  for (bu = au->next; bu; bu = bu->next)
+  for (auth_instance * bu = au->next; bu; bu = bu->next)
     if (strcmpic(au->public_name, bu->public_name) == 0)
       if ((au->client && bu->client) || (au->server && bu->server))
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG, "two %s authenticators "
@@ -4466,11 +4444,10 @@ hide the <hide> values unless we're the admin user */
 void
 print_config(BOOL admin, BOOL terse)
 {
-config_line_item *i;
 const int TS = terse ? 0 : 2;
 int indent = 0;
 
-for (i = config_lines; i; i = i->next)
+for (config_line_item * i = config_lines; i; i = i->next)
   {
   uschar *current;
   uschar *p;

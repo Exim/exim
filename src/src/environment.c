@@ -37,9 +37,7 @@ if (!keep_environment || *keep_environment == '\0')
 
   }
 else if (Ustrcmp(keep_environment, "*") != 0)
-  {
-  uschar **p;
-  if (environ) for (p = USS environ; *p; /* see below */)
+  if (environ) for (uschar ** p = USS environ; *p; /* see below */)
     {
     /* It's considered broken if we do not find the '=', according to
     Florian Weimer. For now we ignore such strings. unsetenv() would complain,
@@ -58,7 +56,6 @@ else if (Ustrcmp(keep_environment, "*") != 0)
       store_reset(name);
       }
     }
-  }
 if (add_environment)
   {
     uschar * p;

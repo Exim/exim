@@ -143,8 +143,6 @@ LDAP_CONNECTION *lcp;
 struct timeval timeout;
 struct timeval *timeoutptr = NULL;
 
-uschar *attr;
-uschar **attrp;
 gstring * data = NULL;
 uschar *dn = NULL;
 uschar *host;
@@ -245,7 +243,7 @@ if (host)
 
 /* Count the attributes; we need this later to tell us how to format results */
 
-for (attrp = USS ludp->lud_attrs; attrp && *attrp; attrp++)
+for (uschar ** attrp = USS ludp->lud_attrs; attrp && *attrp; attrp++)
   attrs_requested++;
 
 /* See if we can find a cached connection to this host. The port is not
@@ -730,7 +728,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
     sequence of name=value pairs, separated by (space), with the value always in quotes.
     If there are multiple values, they are given within the quotes, comma separated. */
 
-    else for (attr = US ldap_first_attribute(lcp->ld, e, &ber);
+    else for (uschar * attr = US ldap_first_attribute(lcp->ld, e, &ber);
               attr; attr = US ldap_next_attribute(lcp->ld, e, ber))
       {
       DEBUG(D_lookup) debug_printf("LDAP attr loop\n");
@@ -776,9 +774,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             internal quotes, backslashes, newlines, and must double commas. */
 
             if (attrs_requested != 1)
-              {
-              int j;
-              for (j = 0; j < len; j++)
+              for (int j = 0; j < len; j++)
                 {
                 if (value[j] == '\n')
                   data = string_catn(data, US"\\n", 2);
@@ -791,19 +787,15 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
                   data = string_catn(data, value+j, 1);
                   }
                 }
-              }
 
             /* For single attributes, just double commas */
 
 	    else
-	      {
-	      int j;
-	      for (j = 0; j < len; j++)
+	      for (int j = 0; j < len; j++)
 	        if (value[j] == ',')
 	          data = string_catn(data, US",,", 2);
 	        else
 	          data = string_catn(data, value+j, 1);
-	      }
 
 
             /* Move on to the next value */
@@ -1205,9 +1197,8 @@ far too complicated. */
 
 if (user != NULL)
   {
-  uschar *s;
   uschar *t = user;
-  for (s = user; *s != 0; s++)
+  for (uschar * s = user; *s != 0; s++)
     {
     int c, d;
     if (*s == '%' && isxdigit(c=s[1]) && isxdigit(d=s[2]))

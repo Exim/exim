@@ -264,17 +264,14 @@ Returns:        nothing
 void
 header_remove(int occ, const uschar *name)
 {
-header_line *h;
 int hcount = 0;
 int len = Ustrlen(name);
-for (h = header_list; h != NULL; h = h->next)
-  {
+for (header_line * h = header_list; h; h = h->next)
   if (header_testname(h, name, len, TRUE) && (occ <= 0 || ++hcount == occ))
     {
     h->type = htype_old;
     if (occ > 0) return;
     }
-  }
 }
 
 
@@ -358,7 +355,6 @@ static BOOL
 one_pattern_match(uschar *name, int slen, BOOL has_addresses, uschar *pattern)
 {
 BOOL yield = FALSE;
-header_line *h;
 const pcre *re = NULL;
 
 /* If the pattern is a regex, compile it. Bomb out if compiling fails; these
@@ -368,7 +364,7 @@ if (*pattern == '^') re = regex_must_compile(pattern, TRUE, FALSE);
 
 /* Scan for the required header(s) and scan each one */
 
-for (h = header_list; !yield && h != NULL; h = h->next)
+for (header_line * h = header_list; !yield && h; h = h->next)
   {
   if (h->type == htype_old || slen > h->slen ||
       strncmpic(name, h->text, slen) != 0)
@@ -381,7 +377,7 @@ for (h = header_list; !yield && h != NULL; h = h->next)
     {
     uschar *s = h->text + slen;
 
-    while (!yield && *s != 0)
+    while (!yield && *s)
       {
       uschar *error, *next;
       uschar *e = parse_find_address_end(s, FALSE);
@@ -438,17 +434,14 @@ header_match(uschar *name, BOOL has_addresses, BOOL cond, string_item *strings,
   int count, ...)
 {
 va_list ap;
-string_item *s;
-int i;
 int slen = Ustrlen(name);
 
-for (s = strings; s != NULL; s = s->next)
-  {
-  if (one_pattern_match(name, slen, has_addresses, s->text)) return cond;
-  }
+for (string_item * s = strings; s; s = s->next)
+  if (one_pattern_match(name, slen, has_addresses, s->text))
+    return cond;
 
 va_start(ap, count);
-for (i = 0; i < count; i++)
+for (int i = 0; i < count; i++)
   if (one_pattern_match(name, slen, has_addresses, va_arg(ap, uschar *)))
     {
     va_end(ap);

@@ -395,10 +395,7 @@ if ((num_copied > 0) && (header[num_copied-1] != ';'))
 header[num_copied] = '\0';
 
 /* return 0 for EOF or empty line */
-if ((c == EOF) || (num_copied == 1))
-  return 0;
-else
-  return 1;
+return c == EOF || num_copied == 1 ? 0 : 1;
 }
 
 
@@ -557,11 +554,9 @@ while(1)
 
   /* parse headers, set up expansion variables */
   while (mime_get_header(f, header))
-    {
-    struct mime_header * mh;
 
     /* look for interesting headers */
-    for (mh = mime_header_list;
+    for (struct mime_header * mh = mime_header_list;
 	 mh < mime_header_list + mime_header_list_size;
 	 mh++) if (strncmpic(mh->name, header, mh->namelen) == 0)
       {
@@ -589,8 +584,6 @@ while(1)
 
 	while (*p)
 	  {
-	  mime_parameter * mp;
-
 	  DEBUG(D_acl) debug_printf_indent("MIME:   considering paramlist '%s'\n", p);
 
 	  if (  !mime_filename
@@ -661,7 +654,7 @@ while(1)
 
 	  else
 	    /* look for interesting parameters */
-	    for (mp = mime_parameter_list;
+	    for (mime_parameter * mp = mime_parameter_list;
 		 mp < mime_parameter_list + nelem(mime_parameter_list);
 		 mp++
 		) if (strncmpic(mp->name, p, mp->namelen) == 0)
@@ -701,7 +694,6 @@ while(1)
 	  }
 	}
       }
-    }
 
   /* set additional flag variables (easier access) */
   if (  mime_content_type

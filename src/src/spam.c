@@ -137,7 +137,7 @@ spamd_get_server(spamd_address_container ** spamds, int num_servers)
 {
 unsigned int i;
 spamd_address_container * sd;
-long rnd, weights;
+long weights;
 unsigned pri;
 static BOOL srandomed = FALSE;
 
@@ -170,7 +170,7 @@ for (weights = 0, i = 0; i < num_servers; i++)
 if (weights == 0)	/* all servers failed */
   return -1;
 
-for (rnd = random() % weights, i = 0; i < num_servers; i++)
+for (long rnd = random() % weights, i = 0; i < num_servers; i++)
   {
   sd = spamds[i];
   if (!sd->is_failed && sd->priority == pri)
@@ -380,7 +380,7 @@ if (sd->is_rspamd)
     "\r\nFrom: <", sender_address,
     ">\r\nRecipient-Number: ", string_sprintf("%d\r\n", recipients_count));
 
-  for (i = 0; i < recipients_count; i ++)
+  for (int i = 0; i < recipients_count; i++)
     req_str = string_append(req_str, 3,
       "Rcpt: <", recipients_list[i].address, ">\r\n");
   if ((s = expand_string(US"$sender_helo_name")) && *s)

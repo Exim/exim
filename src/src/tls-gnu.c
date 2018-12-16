@@ -1483,7 +1483,7 @@ gnutls_kx_algorithm_t kx;
 gnutls_mac_algorithm_t mac;
 gnutls_certificate_type_t ct;
 gnutls_x509_crt_t crt;
-uschar *p, *dn_buf;
+uschar *dn_buf;
 size_t sz;
 
 if (state->have_set_peerdn)
@@ -1507,7 +1507,7 @@ string_format(cipherbuf, sizeof(cipherbuf),
 /* I don't see a way that spaces could occur, in the current GnuTLS
 code base, but it was a concern in the old code and perhaps older GnuTLS
 releases did return "TLS 1.0"; play it safe, just in case. */
-for (p = cipherbuf; *p != '\0'; ++p)
+for (uschar * p = cipherbuf; *p != '\0'; ++p)
   if (isspace(*p))
     *p = '-';
 old_pool = store_pool;
@@ -2129,7 +2129,7 @@ if (rc != GNUTLS_E_SUCCESS)
     gnutls_certificate_free_credentials(state->x509_cred);
     millisleep(500);
     shutdown(state->fd_out, SHUT_WR);
-    for (rc = 1024; fgetc(smtp_in) != EOF && rc > 0; ) rc--;	/* drain skt */
+    for (int i = 1024; fgetc(smtp_in) != EOF && i > 0; ) i--;	/* drain skt */
     (void)fclose(smtp_out);
     (void)fclose(smtp_in);
     smtp_out = smtp_in = NULL;
@@ -2213,22 +2213,21 @@ after verification is done.*/
 static BOOL
 dane_tlsa_load(exim_gnutls_state_st * state, dns_answer * dnsa)
 {
-dns_record * rr;
 dns_scan dnss;
 int i;
 const char **	dane_data;
 int *		dane_data_len;
 
-for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 1;
-     rr;
+i = 1;
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA) i++;
 
 dane_data = store_get(i * sizeof(uschar *));
 dane_data_len = store_get(i * sizeof(int));
 
-for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS), i = 0;
-     rr;
+i = 0;
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA && rr->size > 3)
   {
@@ -2854,7 +2853,6 @@ vaguely_random_number(int max)
 {
 unsigned int r;
 int i, needed_len;
-uschar *p;
 uschar smallbuf[sizeof(r)];
 
 if (max <= 1)
@@ -2862,7 +2860,8 @@ if (max <= 1)
 
 needed_len = sizeof(r);
 /* Don't take 8 times more entropy than needed if int is 8 octets and we were
- * asked for a number less than 10. */
+asked for a number less than 10. */
+
 for (r = max, i = 0; r; ++i)
   r >>= 1;
 i = (i + 7) / 8;
@@ -2876,11 +2875,8 @@ if (i < 0)
   return vaguely_random_number_fallback(max);
   }
 r = 0;
-for (p = smallbuf; needed_len; --needed_len, ++p)
-  {
-  r *= 256;
-  r += *p;
-  }
+for (uschar * p = smallbuf; needed_len; --needed_len, ++p)
+  r = r * 256 + *p;
 
 /* We don't particularly care about weighted results; if someone wants
  * smooth distribution and cares enough then they should submit a patch then. */

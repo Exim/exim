@@ -44,7 +44,6 @@ rf_get_transport(uschar *tpname, transport_instance **tpptr, address_item *addr,
 {
 uschar *ss;
 BOOL expandable;
-transport_instance *tp;
 
 if (tpname == NULL)
   {
@@ -71,15 +70,13 @@ if (expandable)
   }
 else ss = tpname;
 
-for (tp = transports; tp != NULL; tp = tp->next)
-  {
+for (transport_instance * tp = transports; tp; tp = tp->next)
   if (Ustrcmp(tp->name, ss) == 0)
     {
     DEBUG(D_route) debug_printf("set transport %s\n", ss);
     *tpptr = tp;
     return TRUE;
     }
-  }
 
 addr->basic_errno = ERRNO_BADTRANSPORT;
 addr->message = string_sprintf("transport \"%s\" not found in %s router", ss,

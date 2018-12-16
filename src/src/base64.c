@@ -38,7 +38,7 @@ ssize_t
 mime_decode_base64(FILE * in, FILE * out, uschar * boundary)
 {
 uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
-uschar *ipos, *opos;
+uschar *opos;
 ssize_t len, size = 0;
 int bytestate = 0;
 
@@ -52,7 +52,7 @@ while (Ufgets(ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
      )
     break;
 
-  for (ipos = ibuf ; *ipos != '\r' && *ipos != '\n' && *ipos != 0; ++ipos)
+  for (uschar * ipos = ibuf ; *ipos != '\r' && *ipos != '\n' && *ipos; ++ipos)
     if (*ipos == '=')			/* skip padding */
       ++bytestate;
 

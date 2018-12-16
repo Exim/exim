@@ -53,7 +53,6 @@ rf_lookup_hostlist(router_instance *rblock, address_item *addr,
   address_item **addr_new)
 {
 BOOL self_send = FALSE;
-host_item *h, *next_h, *prev;
 
 /* Look up each host address. A lookup may add additional items into the chain
 if there are multiple addresses. Hence the use of next_h to start each cycle of
@@ -62,7 +61,7 @@ host, omit it and any subsequent hosts - i.e. treat the list like an ordered
 list of MX hosts. If the first host is the local host, act according to the
 "self" option in the configuration. */
 
-for (prev = NULL, h = addr->host_list; h; h = next_h)
+for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
   {
   const uschar *canonical_name;
   int rc, len, port, mx, sort_key;
@@ -210,20 +209,15 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
   port, mx and sort_key. */
 
   if (port != PORT_NONE)
-    {
-    host_item *hh;
-    for (hh = h; hh != next_h; hh = hh->next) hh->port = port;
-    }
+    for (host_item * hh = h; hh != next_h; hh = hh->next)
+      hh->port = port;
 
   if (mx != MX_NONE)
-    {
-    host_item *hh;
-    for (hh = h; hh != next_h; hh = hh->next)
+    for (host_item * hh = h; hh != next_h; hh = hh->next)
       {
       hh->mx = mx;
       hh->sort_key = sort_key;
       }
-    }
 
   /* A local host gets chopped, with its successors, if there are previous
   hosts. Otherwise the self option is used. If it is set to "send", any
@@ -236,7 +230,7 @@ for (prev = NULL, h = addr->host_list; h; h = next_h)
       DEBUG(D_route)
         {
         debug_printf("Removed from host list:\n");
-        for (; h != NULL; h = h->next) debug_printf("  %s\n", h->name);
+        for (host_item * hh = next_h; h; h = h->next) debug_printf("  %s\n", h->name);
         }
       prev->next = NULL;
       setflag(addr, af_local_host_removed);

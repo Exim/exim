@@ -145,9 +145,8 @@ BOOL yield = n >= 0;
 if (n == 0) n = EXPAND_MAXN + 1;
 if (yield)
   {
-  int nn;
   expand_nmax = setup < 0 ? 0 : setup + 1;
-  for (nn = setup < 0 ? 0 : 2; nn < n*2; nn += 2)
+  for (int nn = setup < 0 ? 0 : 2; nn < n*2; nn += 2)
     {
     expand_nstring[expand_nmax] = s + ovector[nn];
     expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
@@ -497,10 +496,9 @@ Returns:    Nothing
 void
 exim_nullstd(void)
 {
-int i;
 int devnull = -1;
 struct stat statbuf;
-for (i = 0; i <= 2; i++)
+for (int i = 0; i <= 2; i++)
   {
   if (fstat(i, &statbuf) < 0 && errno == EBADF)
     {
@@ -642,10 +640,7 @@ DEBUG(D_uid)
   save_errno = errno;
   debug_printf("  auxiliary group list:");
   if (group_count > 0)
-    {
-    int i;
-    for (i = 0; i < group_count; i++) debug_printf(" %d", (int)group_list[i]);
-    }
+    for (int i = 0; i < group_count; i++) debug_printf(" %d", (int)group_list[i]);
   else if (group_count < 0)
     debug_printf(" <error: %s>", strerror(save_errno));
   else debug_printf(" <none>");
@@ -807,8 +802,6 @@ Returns:    nothing
 static void
 show_whats_supported(FILE * fp)
 {
-auth_info * authi;
-
 DEBUG(D_any) {} else show_db_version(fp);
 
 fprintf(fp, "Support for:");
@@ -1000,8 +993,6 @@ fprintf(fp, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 Perhaps the tls_version_report should move into this too. */
 DEBUG(D_any) do {
 
-  int i;
-
 /* clang defines __GNUC__ (at least, for me) so test for it first */
 #if defined(__clang__)
   fprintf(fp, "Compiler: CLang [%s]\n", __clang_version__);
@@ -1034,7 +1025,7 @@ show_db_version(fp);
   utf8_version_report(fp);
 #endif
 
-  for (authi = auths_available; *authi->driver_name != '\0'; ++authi)
+  for (auth_info * authi = auths_available; *authi->driver_name != '\0'; ++authi)
     if (authi->version_report)
       (*authi->version_report)(fp);
 
@@ -1055,7 +1046,7 @@ show_db_version(fp);
 #undef EXPAND_AND_QUOTE
 
   init_lookup_list();
-  for (i = 0; i < lookup_list_count; i++)
+  for (int i = 0; i < lookup_list_count; i++)
     if (lookup_list[i]->version_report)
       lookup_list[i]->version_report(fp);
 
@@ -1081,8 +1072,6 @@ show_db_version(fp);
 static void
 show_exim_information(enum commandline_info request, FILE *stream)
 {
-const uschar **pp;
-
 switch(request)
   {
   case CMDINFO_NONE:
@@ -1099,7 +1088,7 @@ switch(request)
 );
     return;
   case CMDINFO_SIEVE:
-    for (pp = exim_sieve_extension_list; *pp; ++pp)
+    for (const uschar ** pp = exim_sieve_extension_list; *pp; ++pp)
       fprintf(stream, "%s\n", *pp);
     return;
   case CMDINFO_DSCP:
@@ -1126,9 +1115,8 @@ local_part_quote(uschar *lpart)
 {
 BOOL needs_quote = FALSE;
 gstring * g;
-uschar *t;
 
-for (t = lpart; !needs_quote && *t != 0; t++)
+for (uschar * t = lpart; !needs_quote && *t != 0; t++)
   {
   needs_quote = !isalnum(*t) && strchr("!#$%&'*+-/=?^_`{|}~", *t) == NULL &&
     (*t != '.' || t == lpart || t[1] == 0);
@@ -1225,12 +1213,11 @@ Returns:        pointer to dynamic memory, or NULL at end of file
 static uschar *
 get_stdinput(char *(*fn_readline)(const char *), void(*fn_addhist)(const char *))
 {
-int i;
 gstring * g = NULL;
 
 if (!fn_readline) { printf("> "); fflush(stdout); }
 
-for (i = 0;; i++)
+for (int i = 0;; i++)
   {
   uschar buffer[1024];
   uschar *p, *ss;
@@ -1330,8 +1317,7 @@ static BOOL
 macros_trusted(BOOL opt_D_used)
 {
 #ifdef WHITELIST_D_MACROS
-macro_item *m;
-uschar *whitelisted, *end, *p, **whites, **w;
+uschar *whitelisted, *end, *p, **whites;
 int white_count, i, n;
 size_t len;
 BOOL prev_char_item, found;
@@ -1396,10 +1382,10 @@ whites[i] = NULL;
 
 /* The list of commandline macros should be very short.
 Accept the N*M complexity. */
-for (m = macros_user; m; m = m->next) if (m->command_line)
+for (macro_item * m = macros_user; m; m = m->next) if (m->command_line)
   {
   found = FALSE;
-  for (w = whites; *w; ++w)
+  for (uschar ** w = whites; *w; ++w)
     if (Ustrcmp(*w, m->name) == 0)
       {
       found = TRUE;
@@ -2822,8 +2808,7 @@ for (i = 1; i < argc; i++)
 
     if (!one_msg_action)
       {
-      int j;
-      for (j = msg_action_arg; j < argc; j++) if (!mac_ismsgid(argv[j]))
+      for (int j = msg_action_arg; j < argc; j++) if (!mac_ismsgid(argv[j]))
         exim_fail("exim: malformed message id %s after %s option\n",
           argv[j], arg);
       goto END_ARG;   /* Remaining args are ids */
@@ -3219,9 +3204,7 @@ for (i = 1; i < argc; i++)
     argument. */
 
     if (*argrest != 0)
-      {
-      int i;
-      for (i = 0; i < nelem(rsopts); i++)
+      for (int i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
           if (i != 2) f.queue_run_force = TRUE;
@@ -3229,7 +3212,6 @@ for (i = 1; i < argc; i++)
           if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
           argrest += Ustrlen(rsopts[i]);
           }
-      }
 
     /* -R: Set string to match in addresses for forced queue run to
     pick out particular messages. */
@@ -3261,9 +3243,7 @@ for (i = 1; i < argc; i++)
     argument. */
 
     if (*argrest)
-      {
-      int i;
-      for (i = 0; i < nelem(rsopts); i++)
+      for (int i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
           if (i != 2) f.queue_run_force = TRUE;
@@ -3271,7 +3251,6 @@ for (i = 1; i < argc; i++)
           if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
           argrest += Ustrlen(rsopts[i]);
           }
-      }
 
     /* -S: Set string to match in addresses for forced queue run to
     pick out particular messages. */
@@ -3700,16 +3679,13 @@ for later interrogation. */
 if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
   f.admin_user = TRUE;
 else
-  {
-  int i, j;
-  for (i = 0; i < group_count && !f.admin_user; i++)
+  for (int i = 0; i < group_count && !f.admin_user; i++)
     if (group_list[i] == exim_gid)
       f.admin_user = TRUE;
     else if (admin_groups)
-      for (j = 1; j <= (int)admin_groups[0] && !f.admin_user; j++)
+      for (int j = 1; j <= (int)admin_groups[0] && !f.admin_user; j++)
         if (admin_groups[j] == group_list[i])
           f.admin_user = TRUE;
-  }
 
 /* Another group of privileged users are the trusted users. These are root,
 exim, and any caller matching trusted_users or trusted_groups. Trusted callers
@@ -3720,18 +3696,16 @@ if (real_uid == root_uid || real_uid == exim_uid)
   f.trusted_caller = TRUE;
 else
   {
-  int i, j;
-
   if (trusted_users)
-    for (i = 1; i <= (int)trusted_users[0] && !f.trusted_caller; i++)
+    for (int i = 1; i <= (int)trusted_users[0] && !f.trusted_caller; i++)
       if (trusted_users[i] == real_uid)
         f.trusted_caller = TRUE;
 
   if (trusted_groups)
-    for (i = 1; i <= (int)trusted_groups[0] && !f.trusted_caller; i++)
+    for (int i = 1; i <= (int)trusted_groups[0] && !f.trusted_caller; i++)
       if (trusted_groups[i] == real_gid)
         f.trusted_caller = TRUE;
-      else for (j = 0; j < group_count && !f.trusted_caller; j++)
+      else for (int j = 0; j < group_count && !f.trusted_caller; j++)
         if (trusted_groups[i] == group_list[j])
           f.trusted_caller = TRUE;
   }
@@ -3749,10 +3723,9 @@ decode_bits(log_selector, log_selector_size, log_notall,
 
 DEBUG(D_any)
   {
-  int i;
   debug_printf("configuration file is %s\n", config_main_filename);
   debug_printf("log selectors =");
-  for (i = 0; i < log_selector_size; i++)
+  for (int i = 0; i < log_selector_size; i++)
     debug_printf(" %08x", log_selector[i]);
   debug_printf("\n");
   }
@@ -3829,9 +3802,7 @@ EXIM_TMPDIR by the build scripts.
 */
 
 #ifdef EXIM_TMPDIR
-  {
-  uschar **p;
-  if (environ) for (p = USS environ; *p; p++)
+  if (environ) for (uschar ** p = USS environ; *p; p++)
     if (Ustrncmp(*p, "TMPDIR=", 7) == 0 && Ustrcmp(*p+7, EXIM_TMPDIR) != 0)
       {
       uschar * newp = store_malloc(Ustrlen(EXIM_TMPDIR) + 8);
@@ -3839,7 +3810,6 @@ EXIM_TMPDIR by the build scripts.
       *p = newp;
       DEBUG(D_any) debug_printf("reset TMPDIR=%s in environment\n", EXIM_TMPDIR);
       }
-  }
 #endif
 
 /* Timezone handling. If timezone_string is "utc", set a flag to cause all
@@ -3941,7 +3911,6 @@ verifying/testing addresses or expansions. */
 if (  (debug_selector & D_any  ||  LOGGING(arguments))
    && f.really_exim && !list_options && !checking)
   {
-  int i;
   uschar *p = big_buffer;
   Ustrcpy(p, "cwd= (failed)");
 
@@ -3958,7 +3927,7 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
 
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
   while (*p) p++;
-  for (i = 0; i < argc; i++)
+  for (int i = 0; i < argc; i++)
     {
     int len = Ustrlen(argv[i]);
     const uschar *printing;
@@ -4376,7 +4345,6 @@ if (test_retry_arg >= 0)
     printf("No retry information found\n");
   else
     {
-    retry_rule *r;
     more_errno = yield->more_errno;
     printf("Retry rule: %s  ", yield->pattern);
 
@@ -4406,7 +4374,7 @@ if (test_retry_arg >= 0)
       printf("auth_failed  ");
     else printf("*  ");
 
-    for (r = yield->rules; r; r = r->next)
+    for (retry_rule * r = yield->rules; r; r = r->next)
       {
       printf("%c,%s", r->rule, readconf_printtime(r->timeout)); /* Do not */
       printf(",%s", readconf_printtime(r->p1));                 /* amalgamate */
@@ -5282,7 +5250,6 @@ while (more)
 
   else
     {
-    int i;
     int rcount = 0;
     int count = argc - recipients_arg;
     uschar **list = argv + recipients_arg;
@@ -5298,7 +5265,7 @@ while (more)
 
     /* Loop for each argument */
 
-    for (i = 0; i < count; i++)
+    for (int i = 0; i < count; i++)
       {
       int start, end, domain;
       uschar *errmess;
@@ -5380,12 +5347,11 @@ while (more)
 
     DEBUG(D_receive)
       {
-      int i;
       if (sender_address != NULL) debug_printf("Sender: %s\n", sender_address);
       if (recipients_list != NULL)
         {
         debug_printf("Recipients:\n");
-        for (i = 0; i < recipients_count; i++)
+        for (int i = 0; i < recipients_count; i++)
           debug_printf("  %s\n", recipients_list[i].address);
         }
       }
@@ -5644,7 +5610,7 @@ moreloop:
   callout_address = NULL;
   sending_ip_address = NULL;
   acl_var_m = NULL;
-  { int i; for(i=0; i<REGEX_VARS; i++) regex_vars[i] = NULL; }
+  for(int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
 
   store_reset(reset_point);
   }

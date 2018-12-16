@@ -42,14 +42,14 @@ static BOOL
 match_tag(const uschar *s, const uschar *tag)
 {
 for (; *tag != 0; s++, tag++)
-  {
   if (*tag == ' ')
     {
     while (*s == ' ' || *s == '\t') s++;
     s--;
     }
-  else if (tolower(*s) != tolower(*tag)) break;
-  }
+  else
+   if (tolower(*s) != tolower(*tag)) break;
+
 return (*tag == 0);
 }
 
@@ -250,11 +250,8 @@ if (!uid_ok)
   if (rdata->pw != NULL && statbuf.st_uid == rdata->pw->pw_uid)
     uid_ok = TRUE;
   else if (rdata->owners != NULL)
-    {
-    int i;
-    for (i = 1; i <= (int)(rdata->owners[0]); i++)
+    for (int i = 1; i <= (int)(rdata->owners[0]); i++)
       if (rdata->owners[i] == statbuf.st_uid) { uid_ok = TRUE; break; }
-    }
   }
 
 if (!gid_ok)
@@ -262,11 +259,8 @@ if (!gid_ok)
   if (rdata->pw != NULL && statbuf.st_gid == rdata->pw->pw_gid)
     gid_ok = TRUE;
   else if (rdata->owngroups != NULL)
-    {
-    int i;
-    for (i = 1; i <= (int)(rdata->owngroups[0]); i++)
+    for (int i = 1; i <= (int)(rdata->owngroups[0]); i++)
       if (rdata->owngroups[i] == statbuf.st_gid) { gid_ok = TRUE; break; }
-    }
   }
 
 if (!uid_ok || !gid_ok)
@@ -656,10 +650,9 @@ if ((pid = fork()) == 0)
 
   /* Pass back the contents of any syntax error blocks if we have a pointer */
 
-  if (eblockp != NULL)
+  if (eblockp)
     {
-    error_block *ep;
-    for (ep = *eblockp; ep != NULL; ep = ep->next)
+    for (error_block * ep = *eblockp; ep; ep = ep->next)
       if (  rda_write_string(fd, ep->text1) != 0
          || rda_write_string(fd, ep->text2) != 0
 	 )
@@ -675,8 +668,7 @@ if ((pid = fork()) == 0)
   if (f.system_filtering)
     {
     int i = 0;
-    header_line *h;
-    for (h = header_list; h != waslast->next; i++, h = h->next)
+    for (header_line * h = header_list; h != waslast->next; i++, h = h->next)
       if (  h->type == htype_old
          && write(fd, &i, sizeof(i)) != sizeof(i)
 	 )
@@ -714,8 +706,7 @@ if ((pid = fork()) == 0)
   if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
       yield == FF_FAIL || yield == FF_FREEZE)
     {
-    address_item *addr;
-    for (addr = *generated; addr; addr = addr->next)
+    for (address_item * addr = *generated; addr; addr = addr->next)
       {
       int reply_options = 0;
       int ig_err = addr->prop.ignore_error ? 1 : 0;
@@ -729,12 +720,9 @@ if ((pid = fork()) == 0)
 	goto bad;
 
       if (addr->pipe_expandn)
-        {
-        uschar **pp;
-        for (pp = addr->pipe_expandn; *pp; pp++)
+        for (uschar ** pp = addr->pipe_expandn; *pp; pp++)
           if (rda_write_string(fd, *pp) != 0)
 	    goto bad;
-        }
       if (rda_write_string(fd, NULL) != 0)
         goto bad;
 
@@ -809,8 +797,7 @@ if (read(fd, filtertype, sizeof(int)) != sizeof(int) ||
 if (eblockp)
   {
   error_block *e;
-  error_block **p;
-  for (p = eblockp; ; p = &e->next)
+  for (error_block ** p = eblockp; ; p = &e->next)
     {
     uschar *s;
     if (!rda_read_string(fd, &s)) goto DISASTER;

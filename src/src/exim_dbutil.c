@@ -190,7 +190,6 @@ return (value == ccache_accept)? US"accept" :
 static time_t
 read_time(uschar *s)
 {
-uschar *t = s;
 int field = 0;
 int value;
 time_t now = time(NULL);
@@ -199,7 +198,7 @@ struct tm *tm = localtime(&now);
 tm->tm_sec = 0;
 tm->tm_isdst = -1;
 
-for (t = s + Ustrlen(s) - 1; t >= s; t--)
+for (uschar * t = s + Ustrlen(s) - 1; t >= s; t--)
   {
   if (*t == ':') continue;
   if (!isdigit((uschar)*t)) return -1;
@@ -520,7 +519,6 @@ open_db dbblock;
 open_db *dbm;
 EXIM_CURSOR *cursor;
 uschar **argv = USS cargv;
-uschar *key;
 uschar keybuffer[1024];
 
 /* Check the arguments, and open the database */
@@ -534,7 +532,7 @@ if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE)))
 that data is returned in a malloc'ed block, in order that it be
 correctly aligned. */
 
-for (key = dbfn_scan(dbm, TRUE, &cursor);
+for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
      key;
      key = dbfn_scan(dbm, FALSE, &cursor))
   {
@@ -544,7 +542,7 @@ for (key = dbfn_scan(dbm, TRUE, &cursor);
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
   int count_bad = 0;
-  int i, length;
+  int length;
   uschar *t;
   uschar name[MESSAGE_ID_LENGTH + 1];
   void *value;
@@ -571,111 +569,110 @@ for (key = dbfn_scan(dbm, TRUE, &cursor);
     switch(dbdata_type)
       {
       case type_retry:
-      retry = (dbdata_retry *)value;
-      printf("  %s %d %d %s\n%s  ", keybuffer, retry->basic_errno,
-        retry->more_errno, retry->text,
-        print_time(retry->first_failed));
-      printf("%s  ", print_time(retry->last_try));
-      printf("%s %s\n", print_time(retry->next_try),
-        (retry->expired)? "*" : "");
-      break;
+	retry = (dbdata_retry *)value;
+	printf("  %s %d %d %s\n%s  ", keybuffer, retry->basic_errno,
+	  retry->more_errno, retry->text,
+	  print_time(retry->first_failed));
+	printf("%s  ", print_time(retry->last_try));
+	printf("%s %s\n", print_time(retry->next_try),
+	  (retry->expired)? "*" : "");
+	break;
 
       case type_wait:
-      wait = (dbdata_wait *)value;
-      printf("%s ", keybuffer);
-      t = wait->text;
-      name[MESSAGE_ID_LENGTH] = 0;
+	wait = (dbdata_wait *)value;
+	printf("%s ", keybuffer);
+	t = wait->text;
+	name[MESSAGE_ID_LENGTH] = 0;
 
-      if (wait->count > WAIT_NAME_MAX)
-        {
-        fprintf(stderr,
-          "**** Data for %s corrupted\n  count=%d=0x%x max=%d\n",
-          CS keybuffer, wait->count, wait->count, WAIT_NAME_MAX);
-        wait->count = WAIT_NAME_MAX;
-        yield = count_bad = 1;
-        }
-      for (i = 1; i <= wait->count; i++)
-        {
-        Ustrncpy(name, t, MESSAGE_ID_LENGTH);
-        if (count_bad && name[0] == 0) break;
-        if (Ustrlen(name) != MESSAGE_ID_LENGTH ||
-            Ustrspn(name, "0123456789"
-                          "abcdefghijklmnopqrstuvwxyz"
-                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ-") != MESSAGE_ID_LENGTH)
-          {
-          int j;
-          fprintf(stderr,
-            "**** Data for %s corrupted: bad character in message id\n",
-            CS keybuffer);
-          for (j = 0; j < MESSAGE_ID_LENGTH; j++)
-            fprintf(stderr, "%02x ", name[j]);
-          fprintf(stderr, "\n");
-          yield = 1;
-          break;
-          }
-        printf("%s ", name);
-        t += MESSAGE_ID_LENGTH;
-        }
-      printf("\n");
-      break;
+	if (wait->count > WAIT_NAME_MAX)
+	  {
+	  fprintf(stderr,
+	    "**** Data for %s corrupted\n  count=%d=0x%x max=%d\n",
+	    CS keybuffer, wait->count, wait->count, WAIT_NAME_MAX);
+	  wait->count = WAIT_NAME_MAX;
+	  yield = count_bad = 1;
+	  }
+	for (int i = 1; i <= wait->count; i++)
+	  {
+	  Ustrncpy(name, t, MESSAGE_ID_LENGTH);
+	  if (count_bad && name[0] == 0) break;
+	  if (Ustrlen(name) != MESSAGE_ID_LENGTH ||
+	      Ustrspn(name, "0123456789"
+			    "abcdefghijklmnopqrstuvwxyz"
+			    "ABCDEFGHIJKLMNOPQRSTUVWXYZ-") != MESSAGE_ID_LENGTH)
+	    {
+	    fprintf(stderr,
+	      "**** Data for %s corrupted: bad character in message id\n",
+	      CS keybuffer);
+	    for (int j = 0; j < MESSAGE_ID_LENGTH; j++)
+	      fprintf(stderr, "%02x ", name[j]);
+	    fprintf(stderr, "\n");
+	    yield = 1;
+	    break;
+	    }
+	  printf("%s ", name);
+	  t += MESSAGE_ID_LENGTH;
+	  }
+	printf("\n");
+	break;
 
       case type_misc:
-      printf("%s %s\n", print_time(((dbdata_generic *)value)->time_stamp),
-        keybuffer);
-      break;
+	printf("%s %s\n", print_time(((dbdata_generic *)value)->time_stamp),
+	  keybuffer);
+	break;
 
       case type_callout:
-      callout = (dbdata_callout_cache *)value;
+	callout = (dbdata_callout_cache *)value;
 
-      /* New-style address record */
+	/* New-style address record */
 
-      if (length == sizeof(dbdata_callout_cache_address))
-        {
-        printf("%s %s callout=%s\n",
-          print_time(((dbdata_generic *)value)->time_stamp),
-          keybuffer,
-          print_cache(callout->result));
-        }
+	if (length == sizeof(dbdata_callout_cache_address))
+	  {
+	  printf("%s %s callout=%s\n",
+	    print_time(((dbdata_generic *)value)->time_stamp),
+	    keybuffer,
+	    print_cache(callout->result));
+	  }
 
-      /* New-style domain record */
+	/* New-style domain record */
 
-      else if (length == sizeof(dbdata_callout_cache))
-        {
-        printf("%s %s callout=%s postmaster=%s",
-          print_time(((dbdata_generic *)value)->time_stamp),
-          keybuffer,
-          print_cache(callout->result),
-          print_cache(callout->postmaster_result));
-        if (callout->postmaster_result != ccache_unknown)
-          printf(" (%s)", print_time(callout->postmaster_stamp));
-        printf(" random=%s", print_cache(callout->random_result));
-        if (callout->random_result != ccache_unknown)
-          printf(" (%s)", print_time(callout->random_stamp));
-        printf("\n");
-        }
+	else if (length == sizeof(dbdata_callout_cache))
+	  {
+	  printf("%s %s callout=%s postmaster=%s",
+	    print_time(((dbdata_generic *)value)->time_stamp),
+	    keybuffer,
+	    print_cache(callout->result),
+	    print_cache(callout->postmaster_result));
+	  if (callout->postmaster_result != ccache_unknown)
+	    printf(" (%s)", print_time(callout->postmaster_stamp));
+	  printf(" random=%s", print_cache(callout->random_result));
+	  if (callout->random_result != ccache_unknown)
+	    printf(" (%s)", print_time(callout->random_stamp));
+	  printf("\n");
+	  }
 
-      break;
+	break;
 
       case type_ratelimit:
-      if (Ustrstr(key, "/unique/") != NULL && length >= sizeof(*rate_unique))
-        {
-        ratelimit = (dbdata_ratelimit *)value;
-        rate_unique = (dbdata_ratelimit_unique *)value;
-        printf("%s.%06d rate: %10.3f epoch: %s size: %u key: %s\n",
-          print_time(ratelimit->time_stamp),
-          ratelimit->time_usec, ratelimit->rate,
-          print_time(rate_unique->bloom_epoch), rate_unique->bloom_size,
-          keybuffer);
-        }
-      else
-        {
-        ratelimit = (dbdata_ratelimit *)value;
-        printf("%s.%06d rate: %10.3f key: %s\n",
-          print_time(ratelimit->time_stamp),
-          ratelimit->time_usec, ratelimit->rate,
-          keybuffer);
-        }
-      break;
+	if (Ustrstr(key, "/unique/") != NULL && length >= sizeof(*rate_unique))
+	  {
+	  ratelimit = (dbdata_ratelimit *)value;
+	  rate_unique = (dbdata_ratelimit_unique *)value;
+	  printf("%s.%06d rate: %10.3f epoch: %s size: %u key: %s\n",
+	    print_time(ratelimit->time_stamp),
+	    ratelimit->time_usec, ratelimit->rate,
+	    print_time(rate_unique->bloom_epoch), rate_unique->bloom_size,
+	    keybuffer);
+	  }
+	else
+	  {
+	  ratelimit = (dbdata_ratelimit *)value;
+	  printf("%s.%06d rate: %10.3f key: %s\n",
+	    print_time(ratelimit->time_stamp),
+	    ratelimit->time_usec, ratelimit->rate,
+	    keybuffer);
+	  }
+	break;
       }
     store_reset(value);
     }
@@ -748,7 +745,7 @@ for(;;)
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
-  int i, oldlength;
+  int oldlength;
   uschar *t;
   uschar field[256], value[256];
 
@@ -818,147 +815,116 @@ for(;;)
           switch(dbdata_type)
             {
             case type_retry:
-            retry = (dbdata_retry *)record;
-            /* length = sizeof(dbdata_retry) + Ustrlen(retry->text); */
+	      retry = (dbdata_retry *)record;
+	      /* length = sizeof(dbdata_retry) + Ustrlen(retry->text); */
 
-            switch(fieldno)
-              {
-              case 0:
-              retry->basic_errno = Uatoi(value);
-              break;
-
-              case 1:
-              retry->more_errno = Uatoi(value);
-              break;
-
-              case 2:
-              if ((tt = read_time(value)) > 0) retry->first_failed = tt;
-                else printf("bad time value\n");
-              break;
-
-              case 3:
-              if ((tt = read_time(value)) > 0) retry->last_try = tt;
-                else printf("bad time value\n");
-              break;
-
-              case 4:
-              if ((tt = read_time(value)) > 0) retry->next_try = tt;
-                else printf("bad time value\n");
-              break;
-
-              case 5:
-              if (Ustrcmp(value, "yes") == 0) retry->expired = TRUE;
-              else if (Ustrcmp(value, "no") == 0) retry->expired = FALSE;
-              else printf("\"yes\" or \"no\" expected=n");
-              break;
-
-              default:
-              printf("unknown field number\n");
-              verify = 0;
-              break;
-              }
-            break;
+	      switch(fieldno)
+		{
+		case 0: retry->basic_errno = Uatoi(value);
+			break;
+		case 1: retry->more_errno = Uatoi(value);
+			break;
+		case 2: if ((tt = read_time(value)) > 0) retry->first_failed = tt;
+			else printf("bad time value\n");
+			break;
+		case 3: if ((tt = read_time(value)) > 0) retry->last_try = tt;
+			else printf("bad time value\n");
+			break;
+		case 4: if ((tt = read_time(value)) > 0) retry->next_try = tt;
+			else printf("bad time value\n");
+			break;
+		case 5: if (Ustrcmp(value, "yes") == 0) retry->expired = TRUE;
+			else if (Ustrcmp(value, "no") == 0) retry->expired = FALSE;
+			else printf("\"yes\" or \"no\" expected=n");
+			break;
+		default: printf("unknown field number\n");
+			 verify = 0;
+			 break;
+		}
+	      break;
 
             case type_wait:
-            printf("Can't change contents of wait database record\n");
-            break;
+	      printf("Can't change contents of wait database record\n");
+	      break;
 
             case type_misc:
-            printf("Can't change contents of misc database record\n");
-            break;
+	      printf("Can't change contents of misc database record\n");
+	      break;
 
             case type_callout:
-            callout = (dbdata_callout_cache *)record;
-            /* length = sizeof(dbdata_callout_cache); */
-            switch(fieldno)
-              {
-              case 0:
-              callout->result = Uatoi(value);
-              break;
-
-              case 1:
-              callout->postmaster_result = Uatoi(value);
-              break;
-
-              case 2:
-              callout->random_result = Uatoi(value);
-              break;
-
-              default:
-              printf("unknown field number\n");
-              verify = 0;
-              break;
-              }
-            break;
+	      callout = (dbdata_callout_cache *)record;
+	      /* length = sizeof(dbdata_callout_cache); */
+	      switch(fieldno)
+		{
+		case 0: callout->result = Uatoi(value);
+			break;
+		case 1: callout->postmaster_result = Uatoi(value);
+			break;
+		case 2: callout->random_result = Uatoi(value);
+			break;
+		default: printf("unknown field number\n");
+			 verify = 0;
+			 break;
+		}
+		break;
 
             case type_ratelimit:
-            ratelimit = (dbdata_ratelimit *)record;
-            switch(fieldno)
-              {
-              case 0:
-              if ((tt = read_time(value)) > 0) ratelimit->time_stamp = tt;
-                else printf("bad time value\n");
-              break;
-
-              case 1:
-              ratelimit->time_usec = Uatoi(value);
-              break;
-
-              case 2:
-              ratelimit->rate = Ustrtod(value, NULL);
-              break;
-
-              case 3:
-              if (Ustrstr(name, "/unique/") != NULL
-                && oldlength >= sizeof(dbdata_ratelimit_unique))
-                {
-                rate_unique = (dbdata_ratelimit_unique *)record;
-                if ((tt = read_time(value)) > 0) rate_unique->bloom_epoch = tt;
-                  else printf("bad time value\n");
-                break;
-                }
-              /* else fall through */
-
-              case 4:
-              case 5:
-              if (Ustrstr(name, "/unique/") != NULL
-                && oldlength >= sizeof(dbdata_ratelimit_unique))
-                {
-                /* see acl.c */
-                BOOL seen;
-                unsigned n, hash, hinc;
-                uschar md5sum[16];
-                md5 md5info;
-                md5_start(&md5info);
-                md5_end(&md5info, value, Ustrlen(value), md5sum);
-                hash = md5sum[0] <<  0 | md5sum[1] <<  8
-                     | md5sum[2] << 16 | md5sum[3] << 24;
-                hinc = md5sum[4] <<  0 | md5sum[5] <<  8
-                     | md5sum[6] << 16 | md5sum[7] << 24;
-                rate_unique = (dbdata_ratelimit_unique *)record;
-                seen = TRUE;
-                for (n = 0; n < 8; n++, hash += hinc)
-                  {
-                  int bit = 1 << (hash % 8);
-                  int byte = (hash / 8) % rate_unique->bloom_size;
-                  if ((rate_unique->bloom[byte] & bit) == 0)
-                    {
-                    seen = FALSE;
-                    if (fieldno == 5) rate_unique->bloom[byte] |= bit;
-                    }
-                  }
-                printf("%s %s\n",
-                  seen ? "seen" : fieldno == 5 ? "added" : "unseen", value);
-                break;
-                }
-              /* else fall through */
-
-              default:
-              printf("unknown field number\n");
-              verify = 0;
-              break;
-              }
-            break;
+	      ratelimit = (dbdata_ratelimit *)record;
+	      switch(fieldno)
+		{
+		case 0: if ((tt = read_time(value)) > 0) ratelimit->time_stamp = tt;
+			else printf("bad time value\n");
+			break;
+		case 1: ratelimit->time_usec = Uatoi(value);
+			break;
+		case 2: ratelimit->rate = Ustrtod(value, NULL);
+			break;
+		case 3: if (Ustrstr(name, "/unique/") != NULL
+			    && oldlength >= sizeof(dbdata_ratelimit_unique))
+			  {
+			  rate_unique = (dbdata_ratelimit_unique *)record;
+			  if ((tt = read_time(value)) > 0) rate_unique->bloom_epoch = tt;
+			    else printf("bad time value\n");
+			  break;
+			  }
+			/* else fall through */
+		case 4:
+		case 5: if (Ustrstr(name, "/unique/") != NULL
+			    && oldlength >= sizeof(dbdata_ratelimit_unique))
+			  {
+			  /* see acl.c */
+			  BOOL seen;
+			  unsigned hash, hinc;
+			  uschar md5sum[16];
+			  md5 md5info;
+			  md5_start(&md5info);
+			  md5_end(&md5info, value, Ustrlen(value), md5sum);
+			  hash = md5sum[0] <<  0 | md5sum[1] <<  8
+			       | md5sum[2] << 16 | md5sum[3] << 24;
+			  hinc = md5sum[4] <<  0 | md5sum[5] <<  8
+			       | md5sum[6] << 16 | md5sum[7] << 24;
+			  rate_unique = (dbdata_ratelimit_unique *)record;
+			  seen = TRUE;
+			  for (unsigned n = 0; n < 8; n++, hash += hinc)
+			    {
+			    int bit = 1 << (hash % 8);
+			    int byte = (hash / 8) % rate_unique->bloom_size;
+			    if ((rate_unique->bloom[byte] & bit) == 0)
+			      {
+			      seen = FALSE;
+			      if (fieldno == 5) rate_unique->bloom[byte] |= bit;
+			      }
+			    }
+			  printf("%s %s\n",
+			    seen ? "seen" : fieldno == 5 ? "added" : "unseen", value);
+			  break;
+			  }
+			/* else fall through */
+		default: printf("unknown field number\n");
+			 verify = 0;
+			 break;
+		}
+	      break;
             }
 
           dbfn_write(dbm, name, record, oldlength);
@@ -998,79 +964,78 @@ for(;;)
     switch(dbdata_type)
       {
       case type_retry:
-      retry = (dbdata_retry *)record;
-      printf("0 error number: %d %s\n", retry->basic_errno, retry->text);
-      printf("1 extra data:   %d\n", retry->more_errno);
-      printf("2 first failed: %s\n", print_time(retry->first_failed));
-      printf("3 last try:     %s\n", print_time(retry->last_try));
-      printf("4 next try:     %s\n", print_time(retry->next_try));
-      printf("5 expired:      %s\n", (retry->expired)? "yes" : "no");
-      break;
+	retry = (dbdata_retry *)record;
+	printf("0 error number: %d %s\n", retry->basic_errno, retry->text);
+	printf("1 extra data:   %d\n", retry->more_errno);
+	printf("2 first failed: %s\n", print_time(retry->first_failed));
+	printf("3 last try:     %s\n", print_time(retry->last_try));
+	printf("4 next try:     %s\n", print_time(retry->next_try));
+	printf("5 expired:      %s\n", (retry->expired)? "yes" : "no");
+	break;
 
       case type_wait:
-      wait = (dbdata_wait *)record;
-      t = wait->text;
-      printf("Sequence: %d\n", wait->sequence);
-      if (wait->count > WAIT_NAME_MAX)
-        {
-        printf("**** Data corrupted: count=%d=0x%x max=%d ****\n", wait->count,
-          wait->count, WAIT_NAME_MAX);
-        wait->count = WAIT_NAME_MAX;
-        count_bad = 1;
-        }
-      for (i = 1; i <= wait->count; i++)
-        {
-        Ustrncpy(value, t, MESSAGE_ID_LENGTH);
-        value[MESSAGE_ID_LENGTH] = 0;
-        if (count_bad && value[0] == 0) break;
-        if (Ustrlen(value) != MESSAGE_ID_LENGTH ||
-            Ustrspn(value, "0123456789"
-                          "abcdefghijklmnopqrstuvwxyz"
-                          "ABCDEFGHIJKLMNOPQRSTUVWXYZ-") != MESSAGE_ID_LENGTH)
-          {
-          int j;
-          printf("\n**** Data corrupted: bad character in message id ****\n");
-          for (j = 0; j < MESSAGE_ID_LENGTH; j++)
-            printf("%02x ", value[j]);
-          printf("\n");
-          break;
-          }
-        printf("%s ", value);
-        t += MESSAGE_ID_LENGTH;
-        }
-      printf("\n");
-      break;
+	wait = (dbdata_wait *)record;
+	t = wait->text;
+	printf("Sequence: %d\n", wait->sequence);
+	if (wait->count > WAIT_NAME_MAX)
+	  {
+	  printf("**** Data corrupted: count=%d=0x%x max=%d ****\n", wait->count,
+	    wait->count, WAIT_NAME_MAX);
+	  wait->count = WAIT_NAME_MAX;
+	  count_bad = 1;
+	  }
+	for (int i = 1; i <= wait->count; i++)
+	  {
+	  Ustrncpy(value, t, MESSAGE_ID_LENGTH);
+	  value[MESSAGE_ID_LENGTH] = 0;
+	  if (count_bad && value[0] == 0) break;
+	  if (Ustrlen(value) != MESSAGE_ID_LENGTH ||
+	      Ustrspn(value, "0123456789"
+			    "abcdefghijklmnopqrstuvwxyz"
+			    "ABCDEFGHIJKLMNOPQRSTUVWXYZ-") != MESSAGE_ID_LENGTH)
+	    {
+	    printf("\n**** Data corrupted: bad character in message id ****\n");
+	    for (int j = 0; j < MESSAGE_ID_LENGTH; j++)
+	      printf("%02x ", value[j]);
+	    printf("\n");
+	    break;
+	    }
+	  printf("%s ", value);
+	  t += MESSAGE_ID_LENGTH;
+	  }
+	printf("\n");
+	break;
 
       case type_misc:
-      break;
+	break;
 
       case type_callout:
-      callout = (dbdata_callout_cache *)record;
-      printf("0 callout:    %s (%d)\n", print_cache(callout->result),
-          callout->result);
-      if (oldlength > sizeof(dbdata_callout_cache_address))
-        {
-        printf("1 postmaster: %s (%d)\n", print_cache(callout->postmaster_result),
-            callout->postmaster_result);
-        printf("2 random:     %s (%d)\n", print_cache(callout->random_result),
-            callout->random_result);
-        }
-      break;
+	callout = (dbdata_callout_cache *)record;
+	printf("0 callout:    %s (%d)\n", print_cache(callout->result),
+	    callout->result);
+	if (oldlength > sizeof(dbdata_callout_cache_address))
+	  {
+	  printf("1 postmaster: %s (%d)\n", print_cache(callout->postmaster_result),
+	      callout->postmaster_result);
+	  printf("2 random:     %s (%d)\n", print_cache(callout->random_result),
+	      callout->random_result);
+	  }
+	break;
 
       case type_ratelimit:
-      ratelimit = (dbdata_ratelimit *)record;
-      printf("0 time stamp:  %s\n", print_time(ratelimit->time_stamp));
-      printf("1 fract. time: .%06d\n", ratelimit->time_usec);
-      printf("2 sender rate: % .3f\n", ratelimit->rate);
-      if (Ustrstr(name, "/unique/") != NULL
-       && oldlength >= sizeof(dbdata_ratelimit_unique))
-       {
-       rate_unique = (dbdata_ratelimit_unique *)record;
-       printf("3 filter epoch: %s\n", print_time(rate_unique->bloom_epoch));
-       printf("4 test filter membership\n");
-       printf("5 add element to filter\n");
-       }
-      break;
+	ratelimit = (dbdata_ratelimit *)record;
+	printf("0 time stamp:  %s\n", print_time(ratelimit->time_stamp));
+	printf("1 fract. time: .%06d\n", ratelimit->time_usec);
+	printf("2 sender rate: % .3f\n", ratelimit->rate);
+	if (Ustrstr(name, "/unique/") != NULL
+	 && oldlength >= sizeof(dbdata_ratelimit_unique))
+	 {
+	 rate_unique = (dbdata_ratelimit_unique *)record;
+	 printf("3 filter epoch: %s\n", print_time(rate_unique->bloom_epoch));
+	 printf("4 test filter membership\n");
+	 printf("5 add element to filter\n");
+	 }
+	break;
       }
     }
 
@@ -1245,10 +1210,9 @@ while (keychain)
 
     for (;;)
       {
-      int offset;
       int length = wait->count * MESSAGE_ID_LENGTH;
 
-      for (offset = length - MESSAGE_ID_LENGTH;
+      for (int offset = length - MESSAGE_ID_LENGTH;
            offset >= 0; offset -= MESSAGE_ID_LENGTH)
         {
         Ustrncpy(buffer+path_len, wait->text + offset, MESSAGE_ID_LENGTH);
@@ -1335,12 +1299,10 @@ while (keychain)
     if (*id++ != ':') continue;
 
     for (i = 0; i < MESSAGE_ID_LENGTH; i++)
-      {
       if (i == 6 || i == 13)
         { if (id[i] != '-') break; }
       else
         { if (!isalnum(id[i])) break; }
-      }
     if (i < MESSAGE_ID_LENGTH) continue;
 
     Ustrncpy(buffer + path_len, id, MESSAGE_ID_LENGTH);

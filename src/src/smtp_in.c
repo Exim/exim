@@ -435,17 +435,16 @@ Returns:    nothing
 static void
 incomplete_transaction_log(uschar *what)
 {
-if (sender_address == NULL ||                 /* No transaction in progress */
-    !LOGGING(smtp_incomplete_transaction))
+if (!sender_address				/* No transaction in progress */
+   || !LOGGING(smtp_incomplete_transaction))
   return;
 
 /* Build list of recipients for logging */
 
 if (recipients_count > 0)
   {
-  int i;
   raw_recipients = store_get(recipients_count * sizeof(uschar *));
-  for (i = 0; i < recipients_count; i++)
+  for (int i = 0; i < recipients_count; i++)
     raw_recipients[i] = recipients_list[i].address;
   raw_recipients_count = recipients_count;
   }
@@ -1581,7 +1580,6 @@ smtp_read_command(BOOL check_sync, unsigned buffer_lim)
 {
 int c;
 int ptr = 0;
-smtp_cmd_list *p;
 BOOL hadnull = FALSE;
 
 had_command_timeout = 0;
@@ -1626,7 +1624,7 @@ if (hadnull) return BADCHAR_CMD;
 to the start of the actual data characters. Check for SMTP synchronization
 if required. */
 
-for (p = cmd_list; p < cmd_list_end; p++)
+for (smtp_cmd_list * p = cmd_list; p < cmd_list_end; p++)
   {
 #ifdef SUPPORT_PROXY
   /* Only allow QUIT command if Proxy Protocol parsing failed */
@@ -1824,7 +1822,6 @@ Returns:     nothing
 void
 smtp_log_no_mail(void)
 {
-int i;
 uschar * sep, * s;
 gstring * g = NULL;
 
@@ -1843,14 +1840,14 @@ g = s_tlslog(g);
 
 sep = smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE ?  US" C=..." : US" C=";
 
-for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+for (int i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
   if (smtp_connection_had[i] != SCH_NONE)
     {
     g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
     sep = US",";
     }
 
-for (i = 0; i < smtp_ch_index; i++)
+for (int i = 0; i < smtp_ch_index; i++)
   {
   g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
   sep = US",";
@@ -1869,15 +1866,14 @@ log_write(0, LOG_MAIN, "no MAIL in %sSMTP connection from %s D=%s%s",
 uschar *
 smtp_cmd_hist(void)
 {
-int  i;
 gstring * list = NULL;
 uschar * s;
 
-for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+for (int i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
   if (smtp_connection_had[i] != SCH_NONE)
     list = string_append_listele(list, ',', smtp_names[smtp_connection_had[i]]);
 
-for (i = 0; i < smtp_ch_index; i++)
+for (int i = 0; i < smtp_ch_index; i++)
   list = string_append_listele(list, ',', smtp_names[smtp_connection_had[i]]);
 
 s = string_from_gstring(list);
@@ -2650,7 +2646,7 @@ if (!f.sender_host_unknown)
       {
       uschar *p = big_buffer;
       uschar *pend = big_buffer + big_buffer_size;
-      uschar *opt, *adptr;
+      uschar *adptr;
       int optcount;
       struct in_addr addr;
 
@@ -2667,9 +2663,7 @@ if (!f.sender_host_unknown)
       Ustrcpy(p, "IP options on incoming call:");
       p += Ustrlen(p);
 
-      for (opt = optstart; opt != NULL &&
-           opt < US (ipopt) + optlen;)
-        {
+      for (uschar * opt = optstart; opt && opt < US (ipopt) + optlen; )
         switch (*opt)
           {
           case IPOPT_EOL:
@@ -2717,18 +2711,16 @@ if (!f.sender_host_unknown)
 
           default:
             {
-            int i;
             if (pend - p < 4 + 3*opt[1]) { opt = NULL; break; }
             Ustrcat(p, "[ ");
             p += 2;
-            for (i = 0; i < opt[1]; i++)
+            for (int i = 0; i < opt[1]; i++)
               p += sprintf(CS p, "%2.2x ", opt[i]);
             *p++ = ']';
             }
           opt += opt[1];
           break;
           }
-        }
 
       *p = 0;
       log_write(0, LOG_MAIN, "%s", big_buffer);
@@ -3629,33 +3621,25 @@ else
   if (!f.helo_verified)
     {
     int rc;
-    host_item h;
-    dnssec_domains d;
-    host_item *hh;
-
-    h.name = sender_helo_name;
-    h.address = NULL;
-    h.mx = MX_NONE;
-    h.next = NULL;
-    d.request = US"*";
-    d.require = US"";
+    host_item h =
+      {.name = sender_helo_name, .address = NULL, .mx = MX_NONE, .next = NULL};
+    dnssec_domains d =
+      {.request = US"*", .require = US""};
 
     HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
       sender_helo_name);
     rc = host_find_bydns(&h, NULL, HOST_FIND_BY_A | HOST_FIND_BY_AAAA,
 			  NULL, NULL, NULL, &d, NULL, NULL);
     if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
-      for (hh = &h; hh; hh = hh->next)
+      for (host_item * hh = &h; hh; hh = hh->next)
         if (Ustrcmp(hh->address, sender_host_address) == 0)
           {
           f.helo_verified = TRUE;
 	  if (h.dnssec == DS_YES) sender_helo_dnssec = TRUE;
           HDEBUG(D_receive)
-	    {
             debug_printf("IP address for %s matches calling address\n"
 	      "Forward DNS security status: %sverified\n",
               sender_helo_name, sender_helo_dnssec ? "" : "un");
-	    }
           break;
           }
     }
@@ -3698,7 +3682,7 @@ static int
 smtp_in_auth(auth_instance *au, uschar ** s, uschar ** ss)
 {
 const uschar *set_id = NULL;
-int rc, i;
+int rc;
 
 /* Run the checking code, passing the remainder of the command line as
 data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
@@ -3712,14 +3696,14 @@ userid. On success, require set_id to expand and exist, and put it in
 authenticated_id. Save this in permanent store, as the working store gets
 reset at HELO, RSET, etc. */
 
-for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
+for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
 expand_nmax = 0;
 expand_nlength[0] = 0;   /* $0 contains nothing */
 
 rc = (au->info->servercode)(au, smtp_cmd_data);
 if (au->set_id) set_id = expand_string(au->set_id);
 expand_nmax = -1;        /* Reset numeric variables */
-for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
+for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
 
 /* The value of authenticated_id is stored in the spool file and printed in
 log lines. It must not contain binary zeros or newline characters. In
@@ -3949,7 +3933,6 @@ while (done <= 0)
   int start, end, sender_domain, recipient_domain;
   int rc;
   int c;
-  auth_instance *au;
   uschar *orcpt = NULL;
   int dsn_flags;
   gstring * g;
@@ -3964,7 +3947,7 @@ while (done <= 0)
     {
     cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = FALSE;
 
-    for (au = auths; au; au = au->next)
+    for (auth_instance * au = auths; au; au = au->next)
       if (strcmpic(US"tls", au->driver_name) == 0)
 	{
 	if (  acl_smtp_auth
@@ -4076,23 +4059,26 @@ while (done <= 0)
       as a server and which has been advertised (unless, sigh, allow_auth_
       unadvertised is set). */
 
-      for (au = auths; au; au = au->next)
-	if (strcmpic(s, au->public_name) == 0 && au->server &&
-	    (au->advertised || f.allow_auth_unadvertised))
-	  break;
-
-      if (au)
 	{
-	c = smtp_in_auth(au, &s, &ss);
+	auth_instance * au;
+	for (au = auths; au; au = au->next)
+	  if (strcmpic(s, au->public_name) == 0 && au->server &&
+	      (au->advertised || f.allow_auth_unadvertised))
+	    break;
 
-	smtp_printf("%s\r\n", FALSE, s);
-	if (c != OK)
-	  log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
-	    au->name, host_and_ident(FALSE), ss);
+	if (au)
+	  {
+	  c = smtp_in_auth(au, &s, &ss);
+
+	  smtp_printf("%s\r\n", FALSE, s);
+	  if (c != OK)
+	    log_write(0, LOG_MAIN|LOG_REJECT, "%s authenticator failed for %s: %s",
+	      au->name, host_and_ident(FALSE), ss);
+	  }
+	else
+	  done = synprot_error(L_smtp_protocol_error, 504, NULL,
+	    string_sprintf("%s authentication mechanism not supported", s));
 	}
-      else
-	done = synprot_error(L_smtp_protocol_error, 504, NULL,
-	  string_sprintf("%s authentication mechanism not supported", s));
 
       break;  /* AUTH_CMD */
 
@@ -4392,9 +4378,8 @@ while (done <= 0)
 	   && verify_check_host(&auth_advertise_hosts) == OK
 	   )
 	  {
-	  auth_instance *au;
 	  BOOL first = TRUE;
-	  for (au = auths; au; au = au->next)
+	  for (auth_instance * au = auths; au; au = au->next)
 	    {
 	    au->advertised = FALSE;
 	    if (au->server)

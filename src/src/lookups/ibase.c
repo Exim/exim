@@ -112,12 +112,12 @@ perform_ibase_search(uschar * query, uschar * server, uschar ** resultptr,
 isc_stmt_handle stmth = NULL;
 XSQLDA *out_sqlda;
 XSQLVAR *var;
+int i;
 
 char buffer[256];
 ISC_STATUS status[20], *statusp = status;
 
 gstring * result;
-int i;
 int yield = DEFER;
 ibase_connection *cn;
 uschar *server_copy = NULL;
@@ -128,7 +128,7 @@ database, user, password. We can write to the string, since it is in a
 nextinlist temporary buffer. The copy of the string that is used for caching
 has the password removed. This copy is also used for debugging output. */
 
-for (i = 2; i > 0; i--)
+for (int i = 2; i > 0; i--)
   {
   uschar *pp = Ustrrchr(server, '|');
 
@@ -189,7 +189,7 @@ else
 
 if (cn->dbh == NULL || cn->transh == NULL)
   {
-  char *dpb, *p;
+  char *dpb;
   short dpb_length;
   static char trans_options[] =
       { isc_tpb_version3, isc_tpb_read, isc_tpb_read_committed,
@@ -201,11 +201,11 @@ if (cn->dbh == NULL || cn->transh == NULL)
   *dpb++ = isc_dpb_version1;
   *dpb++ = isc_dpb_user_name;
   *dpb++ = strlen(sdata[1]);
-  for (p = sdata[1]; *p;)
+  for (char * p = sdata[1]; *p;)
       *dpb++ = *p++;
   *dpb++ = isc_dpb_password;
   *dpb++ = strlen(sdata[2]);
-  for (p = sdata[2]; *p;)
+  for (char * p = sdata[2]; *p;)
       *dpb++ = *p++;
   dpb_length = dpb - buffer;
 
@@ -373,7 +373,7 @@ while (isc_dsql_fetch(status, &stmth, out_sqlda->version, out_sqlda) != 100L)
     }
 
   else
-    for (i = 0; i < out_sqlda->sqld; i++)
+    for (int i = 0; i < out_sqlda->sqld; i++)
       {
       int len = fetch_field(buffer, sizeof(buffer), &out_sqlda->sqlvar[i]);
 
@@ -388,10 +388,8 @@ while (isc_dsql_fetch(status, &stmth, out_sqlda->version, out_sqlda) != 100L)
 
       else if (buffer[0] == 0 || Ustrchr(buffer, ' ') != NULL)
 	{
-	int j;
-
 	result = string_catn(result, US "\"", 1);
-	for (j = 0; j < len; j++)
+	for (int j = 0; j < len; j++)
 	  {
 	  if (buffer[j] == '\"' || buffer[j] == '\\')
 	      result = string_cat(result, US "\\", 1);

@@ -493,8 +493,7 @@ if (getifaddrs(&ifalist) != 0)
   log_write(0, LOG_PANIC_DIE, "Unable to call getifaddrs: %d %s",
     errno, strerror(errno));
 
-struct ifaddrs *ifa;
-for (ifa = ifalist; ifa != NULL; ifa = ifa->ifa_next)
+for (struct ifaddrs * ifa = ifalist; ifa; ifa = ifa->ifa_next)
   {
   if (ifa->ifa_addr->sa_family != AF_INET
 #if HAVE_IPV6
@@ -617,7 +616,6 @@ int vs;
 ip_address_item *yield = NULL;
 ip_address_item *last = NULL;
 ip_address_item  *next;
-char *cp;
 char buf[MAX_INTERFACES*sizeof(struct V_ifreq)];
 struct sockaddr *addrp;
 size_t len = 0;
@@ -683,7 +681,7 @@ buffer is not guaranteed to be aligned. Thus, we must first copy the basic
 struct to some aligned memory before looking at the field in the fixed part to
 find its length, and then recopy the correct length. */
 
-for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
+for (char * cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   {
   memcpy(CS &ifreq, cp, sizeof(ifreq));
 

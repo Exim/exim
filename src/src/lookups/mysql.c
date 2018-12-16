@@ -152,7 +152,7 @@ database, user, password. We can write to the string, since it is in a
 nextinlist temporary buffer. The copy of the string that is used for caching
 has the password removed. This copy is also used for debugging output. */
 
-for (i = 3; i > 0; i--)
+for (int i = 3; i > 0; i--)
   {
   uschar *pp = Ustrrchr(server, '/');
   if (pp == NULL)
@@ -315,7 +315,7 @@ while ((mysql_row_data = mysql_fetch_row(mysql_result)))
     result = string_catn(result, US"\n", 1);
 
   if (num_fields != 1)
-    for (i = 0; i < num_fields; i++)
+    for (int i = 0; i < num_fields; i++)
       result = lf_quote(US fields[i].name, US mysql_row_data[i], lengths[i],
 			result);
 

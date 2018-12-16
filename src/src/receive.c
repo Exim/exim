@@ -554,11 +554,9 @@ Returns:      TRUE if it did remove something; FALSE otherwise
 BOOL
 receive_remove_recipient(uschar *recipient)
 {
-int count;
 DEBUG(D_receive) debug_printf("receive_remove_recipient(\"%s\") called\n",
   recipient);
-for (count = 0; count < recipients_count; count++)
-  {
+for (int count = 0; count < recipients_count; count++)
   if (Ustrcmp(recipients_list[count].address, recipient) == 0)
     {
     if ((--recipients_count - count) > 0)
@@ -566,7 +564,6 @@ for (count = 0; count < recipients_count; count++)
         (recipients_count - count)*sizeof(recipient_item));
     return TRUE;
     }
-  }
 return FALSE;
 }
 
@@ -1174,7 +1171,6 @@ Returns:     nothing
 static void
 add_acl_headers(int where, uschar *acl_name)
 {
-header_line *h, *next;
 header_line *last_received = NULL;
 
 switch(where)
@@ -1195,7 +1191,7 @@ if (acl_removed_headers)
   {
   DEBUG(D_receive|D_acl) debug_printf_indent(">>Headers removed by %s ACL:\n", acl_name);
 
-  for (h = header_list; h; h = h->next) if (h->type != htype_old)
+  for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
     {
     const uschar * list = acl_removed_headers;
     int sep = ':';         /* This is specified as a colon-separated list */
@@ -1216,7 +1212,7 @@ if (acl_removed_headers)
 if (!acl_added_headers) return;
 DEBUG(D_receive|D_acl) debug_printf_indent(">>Headers added by %s ACL:\n", acl_name);
 
-for (h = acl_added_headers; h; h = next)
+for (header_line * h = acl_added_headers, * next; h; h = next)
   {
   next = h->next;
 
@@ -1360,7 +1356,6 @@ run_mime_acl(uschar *acl, BOOL *smtp_yield_ptr, uschar **smtp_reply_ptr,
 FILE *mbox_file;
 uschar * rfc822_file_path = NULL;
 unsigned long mbox_size;
-header_line *my_headerlist;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
 uschar * mbox_filename;
@@ -1368,7 +1363,8 @@ int rc = OK;
 
 /* check if it is a MIME message */
 
-for (my_headerlist = header_list; my_headerlist; my_headerlist = my_headerlist->next)
+for (header_line * my_headerlist = header_list; my_headerlist;
+     my_headerlist = my_headerlist->next)
   if (  my_headerlist->type != '*'			/* skip deleted headers */
      && strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0
      )
@@ -1666,7 +1662,7 @@ uschar *user_msg, *log_msg;
 
 /* Working header pointers */
 
-header_line *h, *next;
+header_line *next;
 
 /* Flags for noting the existence of certain headers (only one left) */
 
@@ -2128,7 +2124,8 @@ for (;;)
     the line, stomp on them here. */
 
     if (had_zero > 0)
-      for (p = next->text; p < next->text + ptr; p++) if (*p == 0) *p = '?';
+      for (uschar * p = next->text; p < next->text + ptr; p++) if (*p == 0)
+       	*p = '?';
 
     /* It is perfectly legal to have an empty continuation line
     at the end of a header, but it is confusing to humans
@@ -2230,7 +2227,7 @@ normal case). */
 DEBUG(D_receive)
   {
   debug_printf(">>Headers received:\n");
-  for (h = header_list->next; h; h = h->next)
+  for (header_line * h = header_list->next; h; h = h->next)
     debug_printf("%s", h->text);
   debug_printf("\n");
   }
@@ -2257,7 +2254,7 @@ if (filter_test != FTEST_NONE && header_list->next == NULL)
 /* Scan the headers to identify them. Some are merely marked for later
 processing; some are dealt with here. */
 
-for (h = header_list->next; h; h = h->next)
+for (header_line * h = header_list->next; h; h = h->next)
   {
   BOOL is_resent = strncmpic(h->text, US"resent-", 7) == 0;
   if (is_resent) contains_resent_headers = TRUE;
@@ -2471,7 +2468,7 @@ if (extract_recip)
 
   /* Now scan the headers */
 
-  for (h = header_list->next; h; h = h->next)
+  for (header_line * h = header_list->next; h; h = h->next)
     {
     if ((h->type == htype_to || h->type == htype_cc || h->type == htype_bcc) &&
         (!contains_resent_headers || strncmpic(h->text, US"resent-", 7) == 0))
@@ -2484,7 +2481,7 @@ if (extract_recip)
       while (*s != 0)
         {
         uschar *ss = parse_find_address_end(s, FALSE);
-        uschar *recipient, *errmess, *p, *pp;
+        uschar *recipient, *errmess, *pp;
         int start, end, domain;
 
         /* Check on maximum */
@@ -2500,7 +2497,7 @@ if (extract_recip)
         of the header. */
 
         pp = recipient = store_get(ss - s + 1);
-        for (p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
+        for (uschar * p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
         *pp = 0;
 
 #ifdef SUPPORT_I18N
@@ -2670,7 +2667,6 @@ any illegal characters therein. */
 if (  !msgid_header
    && ((!sender_host_address && !f.suppress_local_fixups) || f.submission_mode))
   {
-  uschar *p;
   uschar *id_text = US"";
   uschar *id_domain = primary_hostname;
 
@@ -2689,7 +2685,7 @@ if (  !msgid_header
     else if (*new_id_domain)
       {
       id_domain = new_id_domain;
-      for (p = id_domain; *p; p++)
+      for (uschar * p = id_domain; *p; p++)
         if (!isalnum(*p) && *p != '.') *p = '-';  /* No need to test '-' ! */
       }
     }
@@ -2710,7 +2706,7 @@ if (  !msgid_header
     else if (*new_id_text)
       {
       id_text = new_id_text;
-      for (p = id_text; *p; p++) if (mac_iscntrl_or_special(*p)) *p = '-';
+      for (uschar * p = id_text; *p; p++) if (mac_iscntrl_or_special(*p)) *p = '-';
       }
     }
 
@@ -2730,7 +2726,7 @@ function may mess with the real recipients. */
 if (LOGGING(received_recipients))
   {
   raw_recipients = store_get(recipients_count * sizeof(uschar *));
-  for (i = 0; i < recipients_count; i++)
+  for (int i = 0; i < recipients_count; i++)
     raw_recipients[i] = string_copy(recipients_list[i].address);
   raw_recipients_count = recipients_count;
   }
@@ -2739,7 +2735,7 @@ if (LOGGING(received_recipients))
 recipients will get here only if the conditions were right (allow_unqualified_
 recipient is TRUE). */
 
-for (i = 0; i < recipients_count; i++)
+for (int i = 0; i < recipients_count; i++)
   recipients_list[i].address =
     rewrite_address(recipients_list[i].address, TRUE, TRUE,
       global_rewrite_rules, rewrite_existflags);
@@ -2938,7 +2934,7 @@ We start at the second header, skipping our own Received:. This rewriting is
 documented as happening *after* recipient addresses are taken from the headers
 by the -t command line option. An added Sender: gets rewritten here. */
 
-for (h = header_list->next; h; h = h->next)
+for (header_line * h = header_list->next; h; h = h->next)
   {
   header_line *newh = rewrite_header(h, NULL, NULL, global_rewrite_rules,
     rewrite_existflags, TRUE);
@@ -2977,7 +2973,7 @@ new Received:) has not yet been set. */
 DEBUG(D_receive)
   {
   debug_printf(">>Headers after rewriting and local additions:\n");
-  for (h = header_list->next; h; h = h->next)
+  for (header_line * h = header_list->next; h; h = h->next)
     debug_printf("%c %s", h->type, h->text);
   debug_printf("\n");
   }
@@ -3244,9 +3240,8 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
     if (recipients_count == 0) debug_printf("*** No recipients\n");
     if (bad_addresses)
       {
-      error_block * eblock;
       debug_printf("*** Bad address(es)\n");
-      for (eblock = bad_addresses; eblock; eblock = eblock->next)
+      for (error_block * eblock = bad_addresses; eblock; eblock = eblock->next)
         debug_printf("  %s: %s\n", eblock->text1, eblock->text2);
       }
     }
@@ -3465,13 +3460,12 @@ else
 #ifndef DISABLE_PRDR
     if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr)
       {
-      unsigned int c;
       int all_pass = OK;
       int all_fail = FAIL;
 
       smtp_printf("353 PRDR content analysis beginning\r\n", TRUE);
       /* Loop through recipients, responses must be in same order received */
-      for (c = 0; recipients_count > c; c++)
+      for (unsigned int c = 0; recipients_count > c; c++)
         {
 	uschar * addr= recipients_list[c].address;
 	uschar * msg= US"PRDR R=<%s> %s";
@@ -3737,18 +3731,15 @@ the spool file gets corrupted. Ensure that all recipients are qualified. */
 if (rc == LOCAL_SCAN_ACCEPT)
   {
   if (local_scan_data)
-    {
-    uschar *s;
-    for (s = local_scan_data; *s != 0; s++) if (*s == '\n') *s = ' ';
-    }
-  for (i = 0; i < recipients_count; i++)
+    for (uschar * s = local_scan_data; *s != 0; s++) if (*s == '\n') *s = ' ';
+  for (int i = 0; i < recipients_count; i++)
     {
     recipient_item *r = recipients_list + i;
     r->address = rewrite_address_qualify(r->address, TRUE);
-    if (r->errors_to != NULL)
+    if (r->errors_to)
       r->errors_to = rewrite_address_qualify(r->errors_to, TRUE);
     }
-  if (recipients_count == 0 && blackholed_by == NULL)
+  if (recipients_count == 0 && !blackholed_by)
     blackholed_by = US"local_scan";
   }
 
@@ -3867,10 +3858,9 @@ file fails, we have failed to accept this message. */
 
 if (host_checking || blackholed_by)
   {
-  header_line *h;
   Uunlink(spool_name);
   msg_size = 0;                                  /* Compute size for log line */
-  for (h = header_list; h; h = h->next)
+  for (header_line * h = header_list; h; h = h->next)
     if (h->type != '*') msg_size += h->slen;
   }
 
@@ -4033,7 +4023,6 @@ text. By expanding $h_subject: we make use of the MIME decoding. */
 
 if (LOGGING(subject) && subject_header)
   {
-  int i;
   uschar *p = big_buffer;
   uschar *ss = expand_string(US"$h_subject:");
 
@@ -4041,7 +4030,7 @@ if (LOGGING(subject) && subject_header)
   a C-like string, and turn any non-printers into escape sequences. */
 
   *p++ = '\"';
-  if (*ss != 0) for (i = 0; i < 100 && ss[i] != 0; i++)
+  if (*ss != 0) for (int i = 0; i < 100 && ss[i] != 0; i++)
     {
     if (ss[i] == '\"' || ss[i] == '\\') *p++ = '\\';
     *p++ = ss[i];

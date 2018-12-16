@@ -154,7 +154,6 @@ Returns:     expanded string if expansion succeeds;
 static uschar *
 checkexpand(uschar *s, address_item *addr, uschar *name, int type)
 {
-uschar *t;
 uschar *ss = expand_string(s);
 
 if (ss == NULL)
@@ -165,7 +164,7 @@ if (ss == NULL)
   return NULL;
   }
 
-if (type != cke_text) for (t = ss; *t != 0; t++)
+if (type != cke_text) for (uschar * t = ss; *t != 0; t++)
   {
   int c = *t;
   const uschar * sp;
@@ -427,7 +426,7 @@ if (oncelog && *oncelog != 0 && to)
 
   if (ob->once_file_size > 0)
     {
-    uschar * p, * nextp;
+    uschar * nextp;
     struct stat statbuf;
     cache_fd = Uopen(oncelog, O_CREAT|O_RDWR, ob->mode);
 
@@ -464,7 +463,7 @@ if (oncelog && *oncelog != 0 && to)
     zero. If we find a match, put the time into "then", and the place where it
     was found into "cache_time". Otherwise, "then" is left at zero. */
 
-    for (p = cache_buff; p < cache_buff + cache_size; p = nextp)
+    for (uschar * p = cache_buff; p < cache_buff + cache_size; p = nextp)
       {
       uschar *s = p + sizeof(time_t);
       nextp = s + Ustrlen(s) + 1;
@@ -624,7 +623,6 @@ if (h || message_id)
     uschar *s, *id, *error;
     uschar *referenced_ids[12];
     int reference_count = 0;
-    int i;
 
     s = Ustrchr(h->text, ':') + 1;
     f.parse_allow_group = FALSE;
@@ -638,7 +636,7 @@ if (h || message_id)
         }
       else referenced_ids[reference_count++] = id;
       }
-    for (i = 0; i < reference_count; ++i) fprintf(fp, " %s", referenced_ids[i]);
+    for (int i = 0; i < reference_count; ++i) fprintf(fp, " %s", referenced_ids[i]);
     }
 
   /* The message id will have a newline on the end of it. */

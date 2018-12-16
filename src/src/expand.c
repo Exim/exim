@@ -1301,7 +1301,6 @@ static uschar *
 expand_getcertele(uschar * field, uschar * certvar)
 {
 var_entry * vp;
-certfield * cp;
 
 if (!(vp = find_var_ent(certvar)))
   {
@@ -1323,9 +1322,9 @@ if (!*(void **)vp->value)
 if (*field >= '0' && *field <= '9')
   return tls_cert_ext_by_oid(*(void **)vp->value, field, 0);
 
-for(cp = certfields;
-    cp < certfields + nelem(certfields);
-    cp++)
+for (certfield * cp = certfields;
+     cp < certfields + nelem(certfields);
+     cp++)
   if (Ustrncmp(cp->name, field, cp->namelen) == 0)
     {
     uschar * modifier = *(field += cp->namelen) == ','
@@ -1561,10 +1560,9 @@ find_header(uschar *name, int *newsize, unsigned flags, uschar *charset)
 BOOL found = !name;
 int len = name ? Ustrlen(name) : 0;
 BOOL comma = FALSE;
-header_line * h;
 gstring * g = NULL;
 
-for (h = header_list; h; h = h->next)
+for (header_line * h = header_list; h; h = h->next)
   if (h->type != htype_old && h->text)  /* NULL => Received: placeholder */
     if (!name || (len <= h->slen && strncmpic(name, h->text, len) == 0))
       {
@@ -1705,11 +1703,10 @@ fn_recipients(void)
 {
 uschar * s;
 gstring * g = NULL;
-int i;
 
 if (!f.enable_dollar_recipients) return NULL;
 
-for (i = 0; i < recipients_count; i++)
+for (int i = 0; i < recipients_count; i++)
   {
   s = recipients_list[i].address;
   g = string_append2_listele_n(g, US", ", s, Ustrlen(s));
@@ -2028,11 +2025,10 @@ static int
 read_subs(uschar **sub, int n, int m, const uschar **sptr, BOOL skipping,
   BOOL check_end, uschar *name, BOOL *resetok)
 {
-int i;
 const uschar *s = *sptr;
 
 while (isspace(*s)) s++;
-for (i = 0; i < n; i++)
+for (int i = 0; i < n; i++)
   {
   if (*s != '{')
     {
@@ -2524,7 +2520,7 @@ switch(cond_type)
   case ECOND_STR_GE:
   case ECOND_STR_GEI:
 
-  for (i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++)
     {
     /* Sometimes, we don't expand substrings; too many insecure configurations
     created using match_address{}{} and friends, where the second param
@@ -2748,9 +2744,8 @@ switch(cond_type)
         }
       else if (sublen == 32)
         {
-        int i;
         uschar coded[36];
-        for (i = 0; i < 16; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
+        for (int i = 0; i < 16; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
         coded[32] = 0;
         DEBUG(D_auth) debug_printf("crypteq: using MD5+hex hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
@@ -2786,9 +2781,8 @@ switch(cond_type)
         }
       else if (sublen == 40)
         {
-        int i;
         uschar coded[44];
-        for (i = 0; i < 20; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
+        for (int i = 0; i < 20; i++) sprintf(CS (coded+2*i), "%02X", digest[i]);
         coded[40] = 0;
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+hex hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
@@ -3145,8 +3139,7 @@ Returns:                the value of expand max to save
 static int
 save_expand_strings(uschar **save_expand_nstring, int *save_expand_nlength)
 {
-int i;
-for (i = 0; i <= expand_nmax; i++)
+for (int i = 0; i <= expand_nmax; i++)
   {
   save_expand_nstring[i] = expand_nstring[i];
   save_expand_nlength[i] = expand_nlength[i];
@@ -3174,9 +3167,8 @@ static void
 restore_expand_strings(int save_expand_nmax, uschar **save_expand_nstring,
   int *save_expand_nlength)
 {
-int i;
 expand_nmax = save_expand_nmax;
-for (i = 0; i <= expand_nmax; i++)
+for (int i = 0; i <= expand_nmax; i++)
   {
   expand_nstring[i] = save_expand_nstring[i];
   expand_nlength[i] = save_expand_nlength[i];
@@ -3465,7 +3457,6 @@ prvs_hmac_sha1(uschar *address, uschar *key, uschar *key_num, uschar *daystamp)
 {
 gstring * hash_source;
 uschar * p;
-int i;
 hctx h;
 uschar innerhash[20];
 uschar finalhash[20];
@@ -3490,7 +3481,7 @@ DEBUG(D_expand)
 memset(innerkey, 0x36, 64);
 memset(outerkey, 0x5c, 64);
 
-for (i = 0; i < Ustrlen(key); i++)
+for (int i = 0; i < Ustrlen(key); i++)
   {
   innerkey[i] ^= key[i];
   outerkey[i] ^= key[i];
@@ -3505,7 +3496,7 @@ chash_mid(HMAC_SHA1, &h, outerkey);
 chash_end(HMAC_SHA1, &h, innerhash, 20, finalhash);
 
 p = finalhash_hex;
-for (i = 0; i < 3; i++)
+for (int i = 0; i < 3; i++)
   {
   *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
   *p++ = hex_digits[finalhash[i] & 0x0f];
@@ -3558,11 +3549,12 @@ static gstring *
 cat_file_tls(void * tls_ctx, gstring * yield, uschar * eol)
 {
 int rc;
-uschar * s;
 uschar buffer[1024];
 
+/*XXX could we read direct into a pre-grown string? */
+
 while ((rc = tls_read(tls_ctx, buffer, sizeof(buffer))) > 0)
-  for (s = buffer; rc--; s++)
+  for (uschar * s = buffer; rc--; s++)
     yield = eol && *s == '\n'
       ? string_cat(yield, eol) : string_catn(yield, s, 1);
 
@@ -5385,9 +5377,8 @@ while (*s != 0)
           }
         }
 
-      for (i = 0; i < 2; i++)
+      for (int i = 0; i < 2; i++) if (sub[i])
         {
-        if (sub[i] == NULL) continue;
         val[i] = (int)Ustrtol(sub[i], &ret, 10);
         if (*ret != 0 || (i != 0 && val[i] < 0))
           {
@@ -5425,7 +5416,7 @@ while (*s != 0)
       md5 md5_base;
       hctx sha1_ctx;
       void *use_base;
-      int type, i;
+      int type;
       int hashlen;      /* Number of octets for the hash algorithm's output */
       int hashblocklen; /* Number of octets the hash algorithm processes */
       uschar *keyptr, *p;
@@ -5487,7 +5478,7 @@ while (*s != 0)
 	memset(innerkey, 0x36, hashblocklen);
 	memset(outerkey, 0x5c, hashblocklen);
 
-	for (i = 0; i < keylen; i++)
+	for (int i = 0; i < keylen; i++)
 	  {
 	  innerkey[i] ^= keyptr[i];
 	  outerkey[i] ^= keyptr[i];
@@ -5506,7 +5497,7 @@ while (*s != 0)
 	/* Encode the final hash as a hex string */
 
 	p = finalhash_hex;
-	for (i = 0; i < hashlen; i++)
+	for (int i = 0; i < hashlen; i++)
 	  {
 	  *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
 	  *p++ = hex_digits[finalhash[i] & 0x0f];
@@ -5568,7 +5559,6 @@ while (*s != 0)
         int ovector[3*(EXPAND_MAXN+1)];
         int n = pcre_exec(re, NULL, CS subject, slen, moffset + moffsetextra,
           PCRE_EOPT | emptyopt, ovector, nelem(ovector));
-        int nn;
         uschar *insert;
 
         /* No match - if we previously set PCRE_NOTEMPTY after a null match, this
@@ -5594,7 +5584,7 @@ while (*s != 0)
 
         if (n == 0) n = EXPAND_MAXN + 1;
         expand_nmax = 0;
-        for (nn = 0; nn < n*2; nn += 2)
+        for (int nn = 0; nn < n*2; nn += 2)
           {
           expand_nstring[expand_nmax] = subject + ovector[nn];
           expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
@@ -5638,8 +5628,6 @@ while (*s != 0)
 
     case EITEM_EXTRACT:
       {
-      int i;
-      int j;
       int field_number = 1;
       BOOL field_number_set = FALSE;
       uschar *save_lookup_value = lookup_value;
@@ -5653,9 +5641,8 @@ while (*s != 0)
       /* Check for a format-variant specifier */
 
       if (*s != '{')					/*}*/
-	{
-	if (Ustrncmp(s, "json", 4) == 0) {fmt = extract_json; s += 4;}
-	}
+	if (Ustrncmp(s, "json", 4) == 0)
+	  {fmt = extract_json; s += 4;}
 
       /* While skipping we cannot rely on the data for expansions being
       available (eg. $item) hence cannot decide on numeric vs. keyed.
@@ -5663,7 +5650,7 @@ while (*s != 0)
 
       if (skipping)
 	{
-        for (j = 5; j > 0 && *s == '{'; j--)			/*'}'*/
+        for (int j = 5; j > 0 && *s == '{'; j--)		/*'}'*/
 	  {
           if (!expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok))
 	    goto EXPAND_FAILED;					/*'{'*/
@@ -5688,7 +5675,7 @@ while (*s != 0)
 	  }
 	}
 
-      else for (i = 0, j = 2; i < j; i++) /* Read the proper number of arguments */
+      else for (int i = 0, j = 2; i < j; i++) /* Read the proper number of arguments */
         {
 	while (isspace(*s)) s++;
         if (*s == '{') 						/*'}'*/
@@ -5858,7 +5845,6 @@ while (*s != 0)
 
     case EITEM_LISTEXTRACT:
       {
-      int i;
       int field_number = 1;
       uschar *save_lookup_value = lookup_value;
       uschar *sub[2];
@@ -5867,10 +5853,10 @@ while (*s != 0)
 
       /* Read the field & list arguments */
 
-      for (i = 0; i < 2; i++)
+      for (int i = 0; i < 2; i++)
         {
         while (isspace(*s)) s++;
-        if (*s != '{')					/*}*/
+        if (*s != '{')					/*'}'*/
 	  {
 	  expand_string_message = string_sprintf(
 	    "missing '{' for arg %d of listextract", i+1);
@@ -6444,8 +6430,7 @@ while (*s != 0)
       /* Look up the dynamically loaded object handle in the tree. If it isn't
       found, dlopen() the file and put the handle in the tree for next time. */
 
-      t = tree_search(dlobj_anchor, argv[0]);
-      if (t == NULL)
+      if (!(t = tree_search(dlobj_anchor, argv[0])))
         {
         void *handle = dlopen(CS argv[0], RTLD_LAZY);
         if (handle == NULL)
@@ -6736,10 +6721,9 @@ while (*s != 0)
 	  {
 	  md5 base;
 	  uschar digest[16];
-	  int j;
 	  md5_start(&base);
 	  md5_end(&base, sub, Ustrlen(sub), digest);
-	  for (j = 0; j < 16; j++)
+	  for (int j = 0; j < 16; j++)
 	    yield = string_fmt_append(yield, "%02x", digest[j]);
 	  }
         continue;
@@ -6756,10 +6740,9 @@ while (*s != 0)
 	  {
 	  hctx h;
 	  uschar digest[20];
-	  int j;
 	  sha1_start(&h);
 	  sha1_end(&h, sub, Ustrlen(sub), digest);
-	  for (j = 0; j < 20; j++)
+	  for (int j = 0; j < 20; j++)
 	    yield = string_fmt_append(yield, "%02X", digest[j]);
 	  }
         continue;
@@ -6830,7 +6813,7 @@ while (*s != 0)
         uschar *out = sub;
         uschar *enc;
 
-        for (enc = sub; *enc != 0; enc++)
+        for (enc = sub; *enc; enc++)
           {
           if (!isxdigit(*enc))
             {
@@ -6853,9 +6836,7 @@ while (*s != 0)
           if (isdigit(c)) c -= '0';
           else c = toupper(c) - 'A' + 10;
           if (b == -1)
-            {
             b = c << 4;
-            }
           else
             {
             *out++ = b | c;
@@ -7461,10 +7442,9 @@ while (*s != 0)
 
       case EOP_ESCAPE8BIT:
 	{
-	const uschar * s = sub;
 	uschar c;
 
-	for (s = sub; (c = *s); s++)
+	for (const uschar * s = sub; (c = *s); s++)
 	  yield = c < 127 && c != '\\'
 	    ? string_catn(yield, s, 1)
 	    : string_fmt_append(yield, "\\%03o", c);
@@ -7653,7 +7633,6 @@ while (*s != 0)
         {
         uschar smode[12];
         uschar **modetable[3];
-        int i;
         mode_t mode;
         struct stat st;
 
@@ -7684,7 +7663,7 @@ while (*s != 0)
         modetable[1] = ((mode & 02000) == 0)? mtable_normal : mtable_setid;
         modetable[2] = ((mode & 04000) == 0)? mtable_normal : mtable_setid;
 
-        for (i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
           {
           memcpy(CS(smode + 7 - i*3), CS(modetable[i][mode & 7]), 3);
           mode >>= 3;
@@ -8214,23 +8193,21 @@ assert_no_variables(void * ptr, int len, const char * filename, int linenumber)
 {
 err_ctx e = { .region_start = ptr, .region_end = US ptr + len,
 	      .var_name = NULL, .var_data = NULL };
-int i;
-var_entry * v;
 
 /* check acl_ variables */
 tree_walk(acl_var_c, assert_variable_notin, &e);
 tree_walk(acl_var_m, assert_variable_notin, &e);
 
 /* check auth<n> variables */
-for (i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
+for (int i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
   assert_variable_notin(US"auth<n>", auth_vars[i], &e);
 
 /* check regex<n> variables */
-for (i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
+for (int i = 0; i < REGEX_VARS; i++) if (regex_vars[i])
   assert_variable_notin(US"regex<n>", regex_vars[i], &e);
 
 /* check known-name variables */
-for (v = var_table; v < var_table + var_table_size; v++)
+for (var_entry * v = var_table; v < var_table + var_table_size; v++)
   if (v->type == vtype_stringptr)
     assert_variable_notin(US v->name, *(USS v->value), &e);
 
@@ -8267,9 +8244,8 @@ BOOL yield = n >= 0;
 if (n == 0) n = EXPAND_MAXN + 1;
 if (yield)
   {
-  int nn;
-  expand_nmax = (setup < 0)? 0 : setup + 1;
-  for (nn = (setup < 0)? 0 : 2; nn < n*2; nn += 2)
+  expand_nmax = setup < 0 ? 0 : setup + 1;
+  for (int nn = setup < 0 ? 0 : 2; nn < n*2; nn += 2)
     {
     expand_nstring[expand_nmax] = subject + ovector[nn];
     expand_nlength[expand_nmax++] = ovector[nn+1] - ovector[nn];
@@ -8282,7 +8258,6 @@ return yield;
 
 int main(int argc, uschar **argv)
 {
-int i;
 uschar buffer[1024];
 
 debug_selector = D_v;
@@ -8290,7 +8265,7 @@ debug_file = stderr;
 debug_fd = fileno(debug_file);
 big_buffer = malloc(big_buffer_size);
 
-for (i = 1; i < argc; i++)
+for (int i = 1; i < argc; i++)
   {
   if (argv[i][0] == '+')
     {

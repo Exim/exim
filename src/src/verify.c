@@ -370,10 +370,9 @@ cutthrough_multi(address_item * addr, host_item * host_list,
   transport_feedback * tf, int * yield)
 {
 BOOL done = FALSE;
-host_item * host;
 
 if (addr->transport == cutthrough.addr.transport)
-  for (host = host_list; host; host = host->next)
+  for (host_item * host = host_list; host; host = host->next)
     if (Ustrcmp(host->address, cutthrough.host.address) == 0)
       {
       int host_af;
@@ -575,7 +574,6 @@ else
   {
   smtp_transport_options_block *ob =
     (smtp_transport_options_block *)addr->transport->options_block;
-  host_item * host;
 
   /* The information wasn't available in the cache, so we have to do a real
   callout and save the result in the cache for next time, unless no_cache is set,
@@ -623,7 +621,7 @@ coding means skipping this whole loop and doing the append separately.  */
   /* If we did not use a cached connection, make connections to the hosts
   and do real callouts. The list of hosts is passed in as an argument. */
 
-  for (host = host_list; host && !done; host = host->next)
+  for (host_item * host = host_list; host && !done; host = host->next)
     {
     int host_af;
     int port = 25;
@@ -1068,8 +1066,6 @@ no_conn:
        && !sx.lmtp
        )
       {
-      address_item * parent, * caddr;
-
       HDEBUG(D_acl|D_v) debug_printf_indent("holding verify callout open for %s\n",
 	cutthrough.delivery
 	? "cutthrough delivery" : "potential further verifies and delivery");
@@ -1097,7 +1093,7 @@ no_conn:
       cutthrough.addr =		*addr;
       cutthrough.addr.next =	NULL;
       cutthrough.addr.host_used = &cutthrough.host;
-      for (caddr = &cutthrough.addr, parent = addr->parent;
+      for (address_item * caddr = &cutthrough.addr, * parent = addr->parent;
 	   parent;
 	   caddr = caddr->parent, parent = parent->parent)
         *(caddr->parent = store_get(sizeof(address_item))) = *parent;
@@ -1476,7 +1472,6 @@ uschar *
 cutthrough_finaldot(void)
 {
 uschar res;
-address_item * addr;
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> .\n");
 
 /* Assume data finshed with new-line */
@@ -1488,7 +1483,7 @@ if(  !cutthrough_puts(US".", 1)
 
 res = cutthrough_response(&cutthrough.cctx, '2', &cutthrough.addr.message,
 	CUTTHROUGH_DATA_TIMEOUT);
-for (addr = &cutthrough.addr; addr; addr = addr->next)
+for (address_item * addr = &cutthrough.addr; addr; addr = addr->next)
   {
   addr->message = cutthrough.addr.message;
   switch(res)
@@ -1710,8 +1705,8 @@ if (global_rewrite_rules)
     global_rewrite_rules, rewrite_existflags);
   if (address != old)
     {
-    for (i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->localpart_cache[i] = 0;
-    for (i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->domain_cache[i] = 0;
+    for (int i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->localpart_cache[i] = 0;
+    for (int i = 0; i < (MAX_NAMED_LIST * 2)/32; i++) vaddr->domain_cache[i] = 0;
     if (fp && !expn) fprintf(fp, "Address rewritten as: %s\n", address);
     }
   }
@@ -1889,7 +1884,6 @@ while (addr_new)
           else
             {
             int flags;
-            host_item *host, *nexthost;
             host_build_hostlist(&host_list, s, tf.hosts_randomize);
 
             /* Just ignore failures to find a host address. If we don't manage
@@ -1902,7 +1896,7 @@ while (addr_new)
             if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
             if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
-            for (host = host_list; host; host = nexthost)
+            for (host_item * host = host_list, * nexthost; host; host = nexthost)
               {
               nexthost = host->next;
               if (tf.gethostbyname ||
@@ -2136,7 +2130,6 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
   while (addr_list)
     {
     address_item *addr = addr_list;
-    address_item *p = addr->parent;
     transport_instance * tp = addr->transport;
 
     addr_list = addr->next;
@@ -2159,7 +2152,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
     /* Now show its parents */
 
-    for (p = addr->parent; p; p = p->parent)
+    for (address_item * p = addr->parent; p; p = p->parent)
       fprintf(fp, "\n    <-- %s", p->address);
     fprintf(fp, "\n  ");
 
@@ -2173,17 +2166,16 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
 
     if (addr->host_list && tp && !tp->overrides_hosts)
       {
-      host_item *h;
       int maxlen = 0;
       int maxaddlen = 0;
-      for (h = addr->host_list; h; h = h->next)
+      for (host_item * h = addr->host_list; h; h = h->next)
         {				/* get max lengths of host names, addrs */
         int len = Ustrlen(h->name);
         if (len > maxlen) maxlen = len;
         len = h->address ? Ustrlen(h->address) : 7;
         if (len > maxaddlen) maxaddlen = len;
         }
-      for (h = addr->host_list; h; h = h->next)
+      for (host_item * h = addr->host_list; h; h = h->next)
 	{
 	fprintf(fp, "  host %-*s ", maxlen, h->name);
 
@@ -2233,11 +2225,10 @@ Returns:     OK
 int
 verify_check_headers(uschar **msgptr)
 {
-header_line *h;
 uschar *colon, *s;
 int yield = OK;
 
-for (h = header_list; h && yield == OK; h = h->next)
+for (header_line * h = header_list; h && yield == OK; h = h->next)
   {
   if (h->type != htype_from &&
       h->type != htype_reply_to &&
@@ -2356,13 +2347,12 @@ Returns:     OK
 int
 verify_check_header_names_ascii(uschar **msgptr)
 {
-header_line *h;
-uschar *colon, *s;
+uschar *colon;
 
-for (h = header_list; h; h = h->next)
+for (header_line * h = header_list; h; h = h->next)
   {
   colon = Ustrchr(h->text, ':');
-  for(s = h->text; s < colon; s++)
+  for(uschar * s = h->text; s < colon; s++)
     if ((*s < 33) || (*s > 126))
       {
       *msgptr = string_sprintf("Invalid character in header \"%.*s\" found",
@@ -2394,14 +2384,12 @@ Returns:     OK    if there are no blind recipients
 int
 verify_check_notblind(void)
 {
-int i;
-for (i = 0; i < recipients_count; i++)
+for (int i = 0; i < recipients_count; i++)
   {
-  header_line *h;
   BOOL found = FALSE;
   uschar *address = recipients_list[i].address;
 
-  for (h = header_list; !found && h != NULL; h = h->next)
+  for (header_line * h = header_list; !found && h; h = h->next)
     {
     uschar *colon, *s;
 
@@ -2416,7 +2404,7 @@ for (i = 0; i < recipients_count; i++)
 
     f.parse_allow_group = TRUE;
 
-    while (*s != 0)
+    while (*s)
       {
       uschar *ss = parse_find_address_end(s, FALSE);
       uschar *recipient,*errmess;
@@ -2478,10 +2466,9 @@ Returns:     pointer to an address item, or NULL
 address_item *
 verify_checked_sender(uschar *sender)
 {
-address_item *addr;
-for (addr = sender_verified_list; addr != NULL; addr = addr->next)
-  if (Ustrcmp(sender, addr->address) == 0) break;
-return addr;
+for (address_item * addr = sender_verified_list; addr; addr = addr->next)
+  if (Ustrcmp(sender, addr->address) == 0) return addr;
+return NULL;
 }
 
 
@@ -2535,12 +2522,9 @@ verify_check_header_address(uschar **user_msgptr, uschar **log_msgptr,
 static int header_types[] = { htype_sender, htype_reply_to, htype_from };
 BOOL done = FALSE;
 int yield = FAIL;
-int i;
 
-for (i = 0; i < 3 && !done; i++)
-  {
-  header_line *h;
-  for (h = header_list; h != NULL && !done; h = h->next)
+for (int i = 0; i < 3 && !done; i++)
+  for (header_line * h = header_list; h != NULL && !done; h = h->next)
     {
     int terminator, new_ok;
     uschar *s, *ss, *endname;
@@ -2672,7 +2656,7 @@ for (i = 0; i < 3 && !done; i++)
     f.parse_allow_group = FALSE;
     f.parse_found_group = FALSE;
     }       /* Next header, unless done */
-  }         /* Next header type unless done */
+	    /* Next header type unless done */
 
 if (yield == FAIL && *log_msgptr == NULL)
   *log_msgptr = US"there is no valid sender in any header line";
@@ -2912,8 +2896,7 @@ if (*ss == '@')
     }
   else if (Ustrcmp(ss, "@[]") == 0)
     {
-    ip_address_item *ip;
-    for (ip = host_find_interfaces(); ip != NULL; ip = ip->next)
+    for (ip_address_item * ip = host_find_interfaces(); ip; ip = ip->next)
       if (Ustrcmp(ip->address, cb->host_address) == 0) return OK;
     return FAIL;
     }
@@ -2936,7 +2919,7 @@ only by digits and dots (a slash at the start indicates a file name and of
 course slashes may be present in lookups, but not preceded only by digits and
 dots). */
 
-for (t = ss; isdigit(*t) || *t == '.'; t++);
+for (t = ss; isdigit(*t) || *t == '.'; ) t++;
 if (*t == 0 || (*t == '/' && t != ss))
   {
   *error = US"malformed IPv4 address or address mask";
@@ -2970,7 +2953,8 @@ if (Ustrncmp(ss, "net", 3) == 0 && semicolon != NULL)
   if (mlen == 0 && t == ss+3) mlen = -1;  /* No mask supplied */
   iplookup = (*t++ == '-');
   }
-else t = ss;
+else
+  t = ss;
 
 /* Do the IP address lookup if that is indeed what we have */
 
@@ -3072,11 +3056,8 @@ if (*t == 0)
   rc = host_find_byname(&h, NULL, HOST_FIND_QUALIFY_SINGLE, NULL, FALSE);
   if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
     {
-    host_item *hh;
-    for (hh = &h; hh != NULL; hh = hh->next)
-      {
+    for (host_item * hh = &h; hh; hh = hh->next)
       if (host_is_in_net(hh->address, cb->host_address, 0)) return OK;
-      }
     return FAIL;
     }
   if (rc == HOST_FIND_AGAIN) return DEFER;
@@ -3305,9 +3286,8 @@ always 1. */
 
 if (host_aton(address, bin) == 1)
   {
-  int i;
   int x = bin[0];
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     {
     sprintf(CS bptr, "%d.", x & 255);
     while (*bptr) bptr++;
@@ -3321,19 +3301,16 @@ unknown. This is just a guess. */
 
 #if HAVE_IPV6
 else
-  {
-  int i, j;
-  for (j = 3; j >= 0; j--)
+  for (int j = 3; j >= 0; j--)
     {
     int x = bin[j];
-    for (i = 0; i < 8; i++)
+    for (int i = 0; i < 8; i++)
       {
       sprintf(CS bptr, "%x.", x & 15);
       while (*bptr) bptr++;
       x >>= 4;
       }
     }
-  }
 #endif
 
 /* Remove trailing period -- this is needed so that both arbitrary
@@ -3452,10 +3429,8 @@ else
 
   if (cb->rc == DNS_SUCCEED)
     {
-    dns_record *rr;
-    dns_address **addrp = &(cb->rhs);
-    for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-         rr;
+    dns_address ** addrp = &(cb->rhs);
+    for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
          rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
       if (rr->type == T_A)
         {
@@ -3608,21 +3583,17 @@ if (cb->rc == DNS_SUCCEED)
     {
     cb->text_set = TRUE;
     if (dns_basic_lookup(&dnsa, query, T_TXT) == DNS_SUCCEED)
-      {
-      dns_record *rr;
-      for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-           rr;
+      for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
            rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-        if (rr->type == T_TXT) break;
-      if (rr)
-        {
-        int len = (rr->data)[0];
-        if (len > 511) len = 127;
-        store_pool = POOL_PERM;
-        cb->text = string_sprintf("%.*s", len, CUS (rr->data+1));
-        store_pool = old_pool;
-        }
-      }
+        if (rr->type == T_TXT)
+	  {
+	  int len = (rr->data)[0];
+	  if (len > 511) len = 127;
+	  store_pool = POOL_PERM;
+	  cb->text = string_sprintf("%.*s", len, CUS (rr->data+1));
+	  store_pool = old_pool;
+	  break;
+	  }
     }
 
   dnslist_value = addlist;
@@ -3716,7 +3687,6 @@ int sep = 0;
 int defer_return = FAIL;
 const uschar *list = *listptr;
 uschar *domain;
-uschar *s;
 uschar buffer[1024];
 uschar revadd[128];        /* Long enough for IPv6 address */
 
@@ -3807,32 +3777,28 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
   actually causing an error here, because that would no doubt hold up incoming
   mail. Instead, I'll just log it. */
 
-  for (s = domain; *s != 0; s++)
-    {
+  for (uschar * s = domain; *s; s++)
     if (!isalnum(*s) && *s != '-' && *s != '.' && *s != '_')
       {
       log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
         "strange characters - is this right?", domain);
       break;
       }
-    }
 
   /* Check the alternate domain if present */
 
-  if (domain_txt != domain) for (s = domain_txt; *s != 0; s++)
-    {
+  if (domain_txt != domain) for (uschar * s = domain_txt; *s; s++)
     if (!isalnum(*s) && *s != '-' && *s != '.' && *s != '_')
       {
       log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
         "strange characters - is this right?", domain_txt);
       break;
       }
-    }
 
   /* If there is no key string, construct the query by adding the domain name
   onto the inverted host address, and perform a single DNS lookup. */
 
-  if (key == NULL)
+  if (!key)
     {
     if (where == ACL_WHERE_NOTSMTP_START || where == ACL_WHERE_NOTSMTP)
       {

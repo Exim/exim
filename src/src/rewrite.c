@@ -100,7 +100,6 @@ uschar *
 rewrite_one(uschar *s, int flag, BOOL *whole, BOOL add_header, uschar *name,
   rewrite_rule *rewrite_rules)
 {
-rewrite_rule *rule;
 uschar *yield = s;
 uschar *subject = s;
 uschar *domain = NULL;
@@ -112,9 +111,7 @@ if (whole != NULL) *whole = FALSE;
 
 /* Scan the rewriting rules */
 
-for (rule = rewrite_rules;
-     rule != NULL && !done;
-     rule_number++, rule = rule->next)
+for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next)
   {
   int start, end, pdomain;
   int count = 0;
@@ -252,17 +249,14 @@ for (rule = rewrite_rules;
 
   if (LOGGING(address_rewrite) || (debug_selector & D_rewrite) != 0)
     {
-    int i;
     const uschar *where = CUS"?";
 
-    for (i = 0; i < where_list_size; i++)
-      {
+    for (int i = 0; i < where_list_size; i++)
       if (flag == where_list[i].bit)
         {
         where = where_list[i].string;
         break;
         }
-      }
     log_write(L_address_rewrite,
            LOG_MAIN, "\"%s\" from %s rewritten as \"%s\" by rule %d",
            yield, where, new, rule_number);
@@ -474,7 +468,7 @@ any that don't actually get rewritten. We also play silly games for those that
 _are_ rewritten so as to avoid runaway store usage for these kinds of header.
 We want to avoid keeping store for any intermediate versions. */
 
-while (*s != 0)
+while (*s)
   {
   uschar *sprev;
   uschar *ss = parse_find_address_end(s, FALSE);
@@ -498,7 +492,7 @@ while (*s != 0)
   /* There isn't much we can do for syntactic disasters at this stage.
   Pro tem (possibly for ever) ignore them. */
 
-  if (recipient == NULL)
+  if (!recipient)
     {
     store_reset(loop_reset_point);
     continue;
@@ -771,7 +765,7 @@ Returns:  nothing
 void rewrite_test(uschar *s)
 {
 uschar *recipient, *error;
-int i, start, end, domain;
+int start, end, domain;
 BOOL done_smtp = FALSE;
 
 if (rewrite_existflags == 0)
@@ -808,14 +802,14 @@ if (parse_find_at(s) == NULL)
 
 recipient = parse_extract_address(s, &error, &start, &end, &domain, FALSE);
 
-if (recipient == NULL)
+if (!recipient)
   {
   if (!done_smtp)
     printf("Syntax error in %s\n%c%s\n", s, toupper(error[0]), error+1);
   return;
   }
 
-for (i = 0; i < 8; i++)
+for (int i = 0; i < 8; i++)
   {
   BOOL whole = FALSE;
   int flag = 1 << i;

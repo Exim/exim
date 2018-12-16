@@ -95,12 +95,11 @@ int optionlist_transports_size = nelem(optionlist_transports);
 void
 options_transports(void)
 {
-struct transport_info * ti;
 uschar buf[64];
 
 options_from_list(optionlist_transports, nelem(optionlist_transports), US"TRANSPORTS", NULL);
 
-for (ti = transports_available; ti->driver_name[0]; ti++)
+for (transport_info * ti = transports_available; ti->driver_name[0]; ti++)
   {
   spf(buf, sizeof(buf), US"_DRIVER_TRANSPORT_%T", ti->driver_name);
   builtin_macro_create(buf);
@@ -142,8 +141,6 @@ the work. */
 void
 transport_init(void)
 {
-transport_instance *t;
-
 readconf_driver_init(US"transport",
   (driver_instance **)(&transports),     /* chain anchor */
   (driver_info *)transports_available,   /* available drivers */
@@ -156,7 +153,7 @@ readconf_driver_init(US"transport",
 /* Now scan the configured transports and check inconsistencies. A shadow
 transport is permitted only for local transports. */
 
-for (t = transports; t; t = t->next)
+for (transport_instance * t = transports; t; t = t->next)
   {
   if (!t->info->local && t->shadow)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
@@ -220,14 +217,14 @@ Returns:    TRUE on success, FALSE on failure (with errno preserved);
 static BOOL
 transport_write_block_fd(transport_ctx * tctx, uschar *block, int len, BOOL more)
 {
-int i, rc, save_errno;
+int rc, save_errno;
 int local_timeout = transport_write_timeout;
 int fd = tctx->u.fd;
 
 /* This loop is for handling incomplete writes and other retries. In most
 normal cases, it is only ever executed once. */
 
-for (i = 0; i < 100; i++)
+for (int i = 0; i < 100; i++)
   {
   DEBUG(D_transport)
     debug_printf("writing data block fd=%d size=%d timeout=%d%s\n",
@@ -427,7 +424,6 @@ write_chunk(transport_ctx * tctx, uschar *chunk, int len)
 {
 uschar *start = chunk;
 uschar *end = chunk + len;
-uschar *ptr;
 int mlen = DELIVER_OUT_BUFFER_SIZE - nl_escape_length - 2;
 
 /* The assumption is made that the check string will never stretch over move
@@ -464,7 +460,7 @@ if (nl_partial_match >= 0)
 for possible escaping. The code for the non-NL route should be as fast as
 possible. */
 
-for (ptr = start; ptr < end; ptr++)
+for (uschar * ptr = start; ptr < end; ptr++)
   {
   int ch, len;
 
@@ -696,7 +692,6 @@ BOOL
 transport_headers_send(transport_ctx * tctx,
   BOOL (*sendfn)(transport_ctx * tctx, uschar * s, int len))
 {
-header_line *h;
 const uschar *list;
 transport_instance * tblock = tctx ? tctx->tblock : NULL;
 address_item * addr = tctx ? tctx->addr : NULL;
@@ -708,13 +703,12 @@ match any entries therein.  It is a colon-sep list; expand the items
 separately and squash any empty ones.
 Then check addr->prop.remove_headers too, provided that addr is not NULL. */
 
-for (h = header_list; h; h = h->next) if (h->type != htype_old)
+for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
   {
-  int i;
   BOOL include_header = TRUE;
 
   list = tblock ? tblock->remove_headers : NULL;
-  for (i = 0; i < 2; i++)    /* For remove_headers && addr->prop.remove_headers */
+  for (int i = 0; i < 2; i++)    /* For remove_headers && addr->prop.remove_headers */
     {
     if (list)
       {
@@ -784,10 +778,9 @@ Headers added to an address by a router are guaranteed to end with a newline.
 
 if (addr)
   {
-  int i;
   header_line *hprev = addr->prop.extra_headers;
-  header_line *hnext;
-  for (i = 0; i < 2; i++)
+  header_line *hnext, * h;
+  for (int i = 0; i < 2; i++)
     for (h = hprev, hprev = NULL; h; h = hnext)
       {
       hnext = h->next;
@@ -954,7 +947,6 @@ if (!(tctx->options & topt_no_headers))
   if (tctx->options & topt_add_envelope_to)
     {
     BOOL first = TRUE;
-    address_item *p;
     struct aci *plist = NULL;
     struct aci *dlist = NULL;
     void *reset_point = store_get(0);
@@ -965,8 +957,9 @@ if (!(tctx->options & topt_no_headers))
     anchors for lists of addresses already handled; they have to be defined at
     this level because write_env_to() calls itself recursively. */
 
-    for (p = tctx->addr; p; p = p->next)
-      if (!write_env_to(p, &plist, &dlist, &first, tctx)) goto bad;
+    for (address_item * p = tctx->addr; p; p = p->next)
+      if (!write_env_to(p, &plist, &dlist, &first, tctx))
+	goto bad;
 
     /* Add a final newline and reset the store used for tracking duplicates */
 
@@ -1474,7 +1467,6 @@ void
 transport_update_waiting(host_item *hostlist, uschar *tpname)
 {
 const uschar *prevname = US"";
-host_item *host;
 open_db dbblock;
 open_db *dbm_file;
 
@@ -1489,12 +1481,11 @@ if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", tpname),
 /* Scan the list of hosts for which this message is waiting, and ensure
 that the message id is in each host record. */
 
-for (host = hostlist; host; host = host->next)
+for (host_item * host = hostlist; host; host = host->next)
   {
   BOOL already = FALSE;
   dbdata_wait *host_record;
-  uschar *s;
-  int i, host_length;
+  int host_length;
   uschar buffer[256];
 
   /* Skip if this is the same host as we just processed; otherwise remember
@@ -1517,7 +1508,7 @@ for (host = hostlist; host; host = host->next)
 
   /* Search the record to see if the current message is already in it. */
 
-  for (s = host_record->text; s < host_record->text + host_length;
+  for (uschar * s = host_record->text; s < host_record->text + host_length;
        s += MESSAGE_ID_LENGTH)
     if (Ustrncmp(s, message_id, MESSAGE_ID_LENGTH) == 0)
       { already = TRUE; break; }
@@ -1525,14 +1516,14 @@ for (host = hostlist; host; host = host->next)
   /* If we haven't found this message in the main record, search any
   continuation records that exist. */
 
-  for (i = host_record->sequence - 1; i >= 0 && !already; i--)
+  for (int i = host_record->sequence - 1; i >= 0 && !already; i--)
     {
     dbdata_wait *cont;
     sprintf(CS buffer, "%.200s:%d", host->name, i);
     if ((cont = dbfn_read(dbm_file, buffer)))
       {
       int clen = cont->count * MESSAGE_ID_LENGTH;
-      for (s = cont->text; s < cont->text + clen; s += MESSAGE_ID_LENGTH)
+      for (uschar * s = cont->text; s < cont->text + clen; s += MESSAGE_ID_LENGTH)
         if (Ustrncmp(s, message_id, MESSAGE_ID_LENGTH) == 0)
           { already = TRUE; break; }
       }
@@ -1778,13 +1769,12 @@ while (1)
 
   while (host_length <= 0)
     {
-    int i;
     dbdata_wait * newr = NULL;
     uschar buffer[256];
 
     /* Search for a continuation */
 
-    for (i = host_record->sequence - 1; i >= 0 && !newr; i--)
+    for (int i = host_record->sequence - 1; i >= 0 && !newr; i--)
       {
       sprintf(CS buffer, "%.200s:%d", hostname, i);
       newr = dbfn_read(dbm_file, buffer);
@@ -2015,19 +2005,18 @@ transport_set_up_command(const uschar ***argvptr, uschar *cmd,
   BOOL expand_arguments, int expand_failed, address_item *addr,
   uschar *etext, uschar **errptr)
 {
-address_item *ad;
 const uschar **argv;
 uschar *s, *ss;
 int address_count = 0;
 int argcount = 0;
-int i, max_args;
+int max_args;
 
 /* Get store in which to build an argument list. Count the number of addresses
 supplied, and allow for that many arguments, plus an additional 60, which
 should be enough for anybody. Multiple addresses happen only when the local
 delivery batch option is set. */
 
-for (ad = addr; ad != NULL; ad = ad->next) address_count++;
+for (address_item * ad = addr; ad; ad = ad->next) address_count++;
 max_args = address_count + 60;
 *argvptr = argv = store_get((max_args+1)*sizeof(uschar *));
 
@@ -2090,7 +2079,7 @@ $recipients. */
 DEBUG(D_transport)
   {
   debug_printf("direct command:\n");
-  for (i = 0; argv[i] != US 0; i++)
+  for (int i = 0; argv[i] != US 0; i++)
     debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
   }
 
@@ -2100,7 +2089,7 @@ if (expand_arguments)
     addr->parent != NULL &&
     Ustrcmp(addr->parent->address, "system-filter") == 0;
 
-  for (i = 0; argv[i] != US 0; i++)
+  for (int i = 0; argv[i] != US 0; i++)
     {
 
     /* Handle special fudge for passing an address list */
@@ -2124,10 +2113,11 @@ if (expand_arguments)
         memmove(argv + i + 1 + additional, argv + i + 1,
           (argcount - i)*sizeof(uschar *));
 
-      for (ad = addr; ad != NULL; ad = ad->next) {
-          argv[i++] = ad->address;
-          argcount++;
-      }
+      for (address_item * ad = addr; ad; ad = ad->next)
+        {
+	argv[i++] = ad->address;
+	argcount++;
+	}
 
       /* Subtract one since we replace $pipe_addresses */
       argcount--;
@@ -2140,7 +2130,6 @@ if (expand_arguments)
         (Ustrcmp(argv[i], "$address_pipe") == 0 ||
          Ustrcmp(argv[i], "${address_pipe}") == 0))
       {
-      int address_pipe_i;
       int address_pipe_argcount = 0;
       int address_pipe_max_args;
       uschar **address_pipe_argv;
@@ -2231,7 +2220,7 @@ if (expand_arguments)
       /* Now we fill in the slots we just moved argv out of
        * [argv 0][argv 1][argv 2=pipeargv[0]][argv 3=pipeargv[1]][old argv 3][0]
        */
-      for (address_pipe_i = 0;
+      for (int address_pipe_i = 0;
            address_pipe_argv[address_pipe_i] != US 0;
            address_pipe_i++)
         {
@@ -2273,7 +2262,7 @@ if (expand_arguments)
   DEBUG(D_transport)
     {
     debug_printf("direct command after expansion:\n");
-    for (i = 0; argv[i] != US 0; i++)
+    for (int i = 0; argv[i] != US 0; i++)
       debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
     }
   }

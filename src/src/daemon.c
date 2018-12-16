@@ -282,11 +282,10 @@ count of *other* connections, not including this one. */
 if ((max_for_this_host > 0) &&
     (smtp_accept_count >= max_for_this_host))
   {
-  int i;
   int host_accept_count = 0;
   int other_host_count = 0;    /* keep a count of non matches to optimise */
 
-  for (i = 0; i < smtp_accept_max; ++i)
+  for (int i = 0; i < smtp_accept_max; ++i)
     if (smtp_slots[i].host_address)
       {
       if (Ustrcmp(sender_host_address, smtp_slots[i].host_address) == 0)
@@ -518,13 +517,13 @@ if (pid == 0)
       {
       if (smtp_out)
 	{
-	int i, fd = fileno(smtp_in);
+	int fd = fileno(smtp_in);
 	uschar buf[128];
 
 	mac_smtp_fflush();
 	/* drain socket, for clean TCP FINs */
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) == 0)
-	  for(i = 16; read(fd, buf, sizeof(buf)) > 0 && i > 0; ) i--;
+	  for(int i = 16; read(fd, buf, sizeof(buf)) > 0 && i > 0; ) i--;
 	}
       cancel_cutthrough_connection(TRUE, US"message setup dropped");
       search_tidyup();
@@ -540,13 +539,12 @@ if (pid == 0)
 
     DEBUG(D_receive)
       {
-      int i;
       if (sender_address)
         debug_printf("Sender: %s\n", sender_address);
       if (recipients_list)
         {
         debug_printf("Recipients:\n");
-        for (i = 0; i < recipients_count; i++)
+        for (int i = 0; i < recipients_count; i++)
           debug_printf("  %s\n", recipients_list[i].address);
         }
       }
@@ -694,8 +692,7 @@ if (pid < 0)
   never_error(US"daemon: accept process fork failed", US"Fork failed", errno);
 else
   {
-  int i;
-  for (i = 0; i < smtp_accept_max; ++i)
+  for (int i = 0; i < smtp_accept_max; ++i)
     if (smtp_slots[i].pid <= 0)
       {
       smtp_slots[i].pid = pid;
@@ -1187,8 +1184,6 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
   for (ipa = addresses; ipa; ipa = ipa->next)
     {
-    int i;
-
     if (Ustrcmp(ipa->address, "0.0.0.0") == 0)
       ipa->address[0] = 0;
     else if (Ustrcmp(ipa->address, "::0") == 0)
@@ -1206,7 +1201,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
         ipa->address[1] == 0 ? US"\"all IPv6\"" : ipa->address);
 
     ipa->port = default_smtp_port[0];
-    for (i = 1; default_smtp_port[i] > 0; i++)
+    for (int i = 1; default_smtp_port[i] > 0; i++)
       {
       ip_address_item *new = store_get(sizeof(ip_address_item));
 
@@ -1289,9 +1284,8 @@ if (f.daemon_listen)
 
   if (smtp_accept_max > 0)
     {
-    int i;
     smtp_slots = store_get(smtp_accept_max * sizeof(smtp_slot));
-    for (i = 0; i < smtp_accept_max; i++) smtp_slots[i] = empty_smtp_slot;
+    for (int i = 0; i < smtp_accept_max; i++) smtp_slots[i] = empty_smtp_slot;
     }
   }
 
@@ -1586,9 +1580,8 @@ of them (and also if we are doing queue runs). */
 
 if (queue_interval > 0 && local_queue_run_max > 0)
   {
-  int i;
   queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t));
-  for (i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
+  for (int i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
   }
 
 /* Set up the handler for termination of child processes. */
@@ -1624,7 +1617,6 @@ if (f.inetd_wait_mode)
 
 else if (f.daemon_listen)
   {
-  int i, j;
   int smtp_ports = 0;
   int smtps_ports = 0;
   ip_address_item * ipa, * i2;
@@ -1640,8 +1632,9 @@ else if (f.daemon_listen)
   deprecated protocol that starts TLS without using STARTTLS), and others
   listening for standard SMTP. Keep their listings separate. */
 
-  for (j = 0; j < 2; j++)
+  for (int j = 0; j < 2; j++)
     {
+    int i;
     for (i = 0, ipa = addresses; i < 10 && ipa; i++, ipa = ipa->next)
       {
       /* First time round, look for SMTP ports; second time round, look for
@@ -1816,8 +1809,6 @@ for (;;)
         {
         if ((pid = fork()) == 0)
           {
-          int sk;
-
           DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
             (int)getpid());
 
@@ -1829,7 +1820,7 @@ for (;;)
 
           /* Close any open listening sockets in the child */
 
-          for (sk = 0; sk < listen_socket_count; sk++)
+          for (int sk = 0; sk < listen_socket_count; sk++)
             (void)close(listen_sockets[sk]);
 
           /* Reset SIGHUP and SIGCHLD in the child in both cases. */
@@ -1897,8 +1888,7 @@ for (;;)
           }
         else
           {
-          int i;
-          for (i = 0; i < local_queue_run_max; ++i)
+          for (int i = 0; i < local_queue_run_max; ++i)
             if (queue_pid_slots[i] <= 0)
               {
               queue_pid_slots[i] = pid;
@@ -1906,7 +1896,7 @@ for (;;)
               break;
               }
           DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
-            queue_run_count, (queue_run_count == 1)? "" : "es");
+            queue_run_count, queue_run_count == 1 ? "" : "es");
           }
         }
 
@@ -1930,13 +1920,13 @@ for (;;)
 
   if (f.daemon_listen)
     {
-    int sk, lcount, select_errno;
+    int lcount, select_errno;
     int max_socket = 0;
     BOOL select_failed = FALSE;
     fd_set select_listen;
 
     FD_ZERO(&select_listen);
-    for (sk = 0; sk < listen_socket_count; sk++)
+    for (int sk = 0; sk < listen_socket_count; sk++)
       {
       FD_SET(listen_sockets[sk], &select_listen);
       if (listen_sockets[sk] > max_socket) max_socket = listen_sockets[sk];
@@ -1986,7 +1976,7 @@ for (;;)
       int accept_socket = -1;
 
       if (!select_failed)
-        for (sk = 0; sk < listen_socket_count; sk++)
+        for (int sk = 0; sk < listen_socket_count; sk++)
           if (FD_ISSET(listen_sockets[sk], &select_listen))
             {
             len = sizeof(accepted);
@@ -2095,10 +2085,9 @@ for (;;)
 
   if (sighup_seen)
     {
-    int sk;
     log_write(0, LOG_MAIN, "pid %d: SIGHUP received: re-exec daemon",
       getpid());
-    for (sk = 0; sk < listen_socket_count; sk++)
+    for (int sk = 0; sk < listen_socket_count; sk++)
       (void)close(listen_sockets[sk]);
     ALARM_CLR(0);
     signal(SIGHUP, SIG_IGN);

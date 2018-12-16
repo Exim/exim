@@ -343,9 +343,8 @@ for (;;)
     {
     DEBUG(D_transport)
       {
-      int i;
       debug_printf("LMTP input line incomplete in one buffer:\n  ");
-      for (i = 0; i < count; i++)
+      for (int i = 0; i < count; i++)
         {
         int c = (ptr[i]);
         if (mac_isprint(c)) debug_printf("%c", c); else debug_printf("<%d>", c);
@@ -470,7 +469,6 @@ int fd_in = -1, fd_out = -1;
 int code, save_errno;
 BOOL send_data;
 BOOL yield = FALSE;
-address_item *addr;
 uschar *igquotstr = US"";
 uschar *sockname = NULL;
 const uschar **argv;
@@ -592,7 +590,7 @@ if (!lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
 temporarily rejected; others may be accepted, for now. */
 
 send_data = FALSE;
-for (addr = addrlist; addr != NULL; addr = addr->next)
+for (address_item * addr = addrlist; addr; addr = addr->next)
   {
   if (!lmtp_write_command(fd_in, "RCPT TO:<%s>%s\r\n",
        transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr))
@@ -665,7 +663,7 @@ if (send_data)
   any that are accepted have been handed over, even if later responses crash -
   at least, that's how I read RFC 2033. */
 
-  for (addr = addrlist; addr != NULL; addr = addr->next)
+  for (address_item * addr = addrlist; addr; addr = addr->next)
     {
     if (addr->transport_return != PENDING_OK) continue;
 
@@ -684,12 +682,11 @@ if (send_data)
 
     else if (errno != 0 || buffer[0] == 0)
       {
-      address_item *a;
       save_errno = errno;
       check_response(&save_errno, addr->more_errno, buffer, &code,
         &(addr->message));
       addr->transport_return = (code == '5')? FAIL : DEFER;
-      for (a = addr->next; a != NULL; a = a->next)
+      for (address_item * a = addr->next; a; a = a->next)
         {
         if (a->transport_return != PENDING_OK) continue;
         a->basic_errno = addr->basic_errno;

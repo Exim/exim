@@ -277,9 +277,8 @@ for (; i <= *subcount; i++)
 
       else
         {
-        int j;
         next->next = NULL;
-        for (j = 0; j < LOG2_MAXNODES; j++)
+        for (int j = 0; j < LOG2_MAXNODES; j++)
           if (root[j])
             {
             next = merge_queue_lists(next, root[j]);
@@ -379,7 +378,6 @@ const pcre *selectstring_regex = NULL;
 const pcre *selectstring_regex_sender = NULL;
 uschar *log_detail = NULL;
 int subcount = 0;
-int i;
 uschar subdirs[64];
 
 /* Cancel any specific queue domains. Turn off the flag that causes SMTP
@@ -455,11 +453,10 @@ subsequent iterations.
 When the first argument of queue_get_spool_list() is -1 (for queue_run_in_
 order), it scans all directories and makes a single message list. */
 
-for (i = queue_run_in_order ? -1 : 0;
+for (int i = queue_run_in_order ? -1 : 0;
      i <= (queue_run_in_order ? -1 : subcount);
      i++)
   {
-  queue_filename * fq;
   void *reset_point1 = store_get(0);
 
   DEBUG(D_queue_run)
@@ -472,9 +469,9 @@ for (i = queue_run_in_order ? -1 : 0;
       debug_printf("queue running subdirectory '%c'\n", subdirs[i]);
     }
 
-  for (fq = queue_get_spool_list(i, subdirs, &subcount, !queue_run_in_order);
-       fq;
-       fq = fq->next)
+  for (queue_filename * fq = queue_get_spool_list(i, subdirs, &subcount,
+					       !queue_run_in_order);
+       fq; fq = fq->next)
     {
     pid_t pid;
     int status;
@@ -704,9 +701,9 @@ for (i = queue_run_in_order ? -1 : 0;
   sub-directories have been found, randomize their order if necessary. */
 
   if (i == 0 && subcount > 1 && !queue_run_in_order)
-    {
-    int j, r;
-    for (j = 1; j <= subcount; j++)
+    for (int j = 1; j <= subcount; j++)
+      {
+      int r;
       if ((r = random_number(100)) >= 50)
         {
         int k = (r % subcount) + 1;
@@ -714,7 +711,7 @@ for (i = queue_run_in_order ? -1 : 0;
         subdirs[j] = subdirs[k];
         subdirs[k] = x;
         }
-    }
+      }
   }                                    /* End loop for multiple directories */
 
 /* If queue_2stage is true, we do it all again, with the 2stage flag
@@ -754,14 +751,14 @@ queue_count(void)
 {
 int subcount;
 int count = 0;
-queue_filename *f = NULL;
 uschar subdirs[64];
-f = queue_get_spool_list(
-        -1,             /* entire queue */
-        subdirs,        /* for holding sub list */
-        &subcount,      /* for subcount */
-        FALSE);         /* not random */
-for (; f != NULL; f = f->next) count++;
+
+for (queue_filename *f = queue_get_spool_list(
+				-1,             /* entire queue */
+				subdirs,        /* for holding sub list */
+				&subcount,      /* for subcount */
+				FALSE);         /* not random */
+    f; f = f->next) count++;
 fprintf(stdout, "%d\n", count);
 }
 
@@ -816,7 +813,6 @@ Returns:      nothing
 void
 queue_list(int option, uschar **list, int count)
 {
-int i;
 int subcount;
 int now = (int)time(NULL);
 void *reset_point;
@@ -828,7 +824,7 @@ uschar subdirs[64];
 if (count > 0)
   {
   queue_filename *last = NULL;
-  for (i = 0; i < count; i++)
+  for (int i = 0; i < count; i++)
     {
     queue_filename *next =
       store_get(sizeof(queue_filename) + Ustrlen(list[i]) + 2);
@@ -874,7 +870,7 @@ for (reset_point = store_get(0);
 
   if (env_read)
     {
-    int ptr;
+    int i, ptr;
     FILE *jread;
     struct stat statbuf;
     uschar * fname = spool_fname(US"input", message_subdir, qf->text, US"");
@@ -912,7 +908,7 @@ for (reset_point = store_get(0);
     }
 
   fprintf(stdout, "%s ", string_format_size(size, big_buffer));
-  for (i = 0; i < 16; i++) fputc(qf->text[i], stdout);
+  for (int i = 0; i < 16; i++) fputc(qf->text[i], stdout);
 
   if (env_read && sender_address)
     {
@@ -947,7 +943,7 @@ for (reset_point = store_get(0);
 
   if (recipients_list)
     {
-    for (i = 0; i < recipients_count; i++)
+    for (int i = 0; i < recipients_count; i++)
       {
       tree_node *delivered =
         tree_search(tree_nonrecipients, recipients_list[i].address);
@@ -986,7 +982,6 @@ Returns:          FALSE if there was any problem
 BOOL
 queue_action(uschar *id, int action, uschar **argv, int argc, int recipients_arg)
 {
-int i, j;
 BOOL yield = TRUE;
 BOOL removed = FALSE;
 struct passwd *pw;
@@ -1005,7 +1000,7 @@ done. Only admin users may read the spool files. */
 
 if (action >= MSG_SHOW_BODY)
   {
-  int fd, i, rc;
+  int fd, rc;
   uschar *subdirectory, *suffix;
 
   if (!f.admin_user)
@@ -1036,7 +1031,7 @@ if (action >= MSG_SHOW_BODY)
     suffix = US"";
     }
 
-  for (i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++)
     {
     message_subdir[0] = split_spool_directory == (i == 0) ? id[5] : 0;
     if ((fd = Uopen(spool_fname(subdirectory, message_subdir, id, suffix),
@@ -1203,7 +1198,7 @@ switch(action)
     suffix[2] = 0;
     message_subdir[0] = id[5];
 
-    for (j = 0; j < 2; message_subdir[0] = 0, j++)
+    for (int j = 0; j < 2; message_subdir[0] = 0, j++)
       {
       uschar * fname = spool_fname(US"msglog", message_subdir, id, US"");
 
@@ -1223,7 +1218,7 @@ switch(action)
 	DEBUG(D_any) debug_printf(" (ok)\n");
 	}
 
-      for (i = 0; i < 3; i++)
+      for (int i = 0; i < 3; i++)
 	{
 	uschar * fname;
 
@@ -1256,7 +1251,7 @@ switch(action)
     if (removed)
       {
 #ifndef DISABLE_EVENT
-      for (i = 0; i < recipients_count; i++)
+      for (int i = 0; i < recipients_count; i++)
 	{
 	tree_node *delivered =
 	  tree_search(tree_nonrecipients, recipients_list[i].address);
@@ -1295,13 +1290,13 @@ switch(action)
 
 
   case MSG_MARK_ALL_DELIVERED:
-  for (i = 0; i < recipients_count; i++)
+  for (int i = 0; i < recipients_count; i++)
     tree_add_nonrecipient(recipients_list[i].address);
 
   if (spool_write_header(id, SW_MODIFYING, &errmsg) >= 0)
     {
     printf("has been modified\n");
-    for (i = 0; i < recipients_count; i++)
+    for (int i = 0; i < recipients_count; i++)
       log_write(0, LOG_MAIN, "address <%s> marked delivered by %s",
         recipients_list[i].address, username);
     }
@@ -1372,6 +1367,7 @@ switch(action)
         }
       else if (action == MSG_MARK_DELIVERED)
         {
+	int i;
         for (i = 0; i < recipients_count; i++)
           if (Ustrcmp(recipients_list[i].address, recipient) == 0) break;
         if (i >= recipients_count)

@@ -249,7 +249,6 @@ Returns:  nothing
 void
 search_tidyup(void)
 {
-int i;
 int old_pool = store_pool;
 
 DEBUG(D_lookup) debug_printf("search_tidyup called\n");
@@ -257,7 +256,7 @@ DEBUG(D_lookup) debug_printf("search_tidyup called\n");
 /* Close individually each cached open file. */
 
 store_pool = POOL_SEARCH;
-if (search_tree != NULL)
+if (search_tree)
   {
   tidyup_subtree(search_tree);
   search_tree = NULL;
@@ -267,10 +266,10 @@ open_filecount = 0;
 
 /* Call the general tidyup entry for any drivers that have one. */
 
-for (i = 0; i < lookup_list_count; i++)
-  if (lookup_list[i]->tidy != NULL) (lookup_list[i]->tidy)();
+for (int i = 0; i < lookup_list_count; i++) if (lookup_list[i]->tidy)
+  (lookup_list[i]->tidy)();
 
-if (search_reset_point != NULL) store_reset(search_reset_point);
+if (search_reset_point) store_reset(search_reset_point);
 search_reset_point = NULL;
 store_pool = old_pool;
 }

@@ -64,14 +64,13 @@ uschar *cond;
 
 HDEBUG(D_auth)
   {
-  int i;
   debug_printf("%s authenticator %s:\n", ablock->name, label);
-  for (i = 0; i < AUTH_VARS; i++)
+  for (int i = 0; i < AUTH_VARS; i++)
     {
     if (auth_vars[i] != NULL)
       debug_printf("  $auth%d = %s\n", i + 1, auth_vars[i]);
     }
-  for (i = 1; i <= expand_nmax; i++)
+  for (int i = 1; i <= expand_nmax; i++)
     debug_printf("  $%d = %.*s\n", i, expand_nlength[i], expand_nstring[i]);
   debug_print_string(ablock->server_debug_string);    /* customized debug */
   }

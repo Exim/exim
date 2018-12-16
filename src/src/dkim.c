@@ -45,7 +45,6 @@ dkim_exim_query_dns_txt(uschar * name)
 {
 dns_answer dnsa;
 dns_scan dnss;
-dns_record *rr;
 gstring * g = NULL;
 
 lookup_dnssec_authenticated = NULL;
@@ -54,7 +53,7 @@ if (dns_lookup(&dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
 
 /* Search for TXT record */
 
-for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
      rr;
      rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
   if (rr->type == T_TXT)
@@ -280,15 +279,14 @@ return;
 void
 dkim_exim_verify_log_all(void)
 {
-pdkim_signature * sig;
-for (sig = dkim_signatures; sig; sig = sig->next) dkim_exim_verify_log_sig(sig);
+for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
+  dkim_exim_verify_log_sig(sig);
 }
 
 
 void
 dkim_exim_verify_finish(void)
 {
-pdkim_signature * sig;
 int rc;
 gstring * g = NULL;
 const uschar * errstr = NULL;
@@ -320,7 +318,7 @@ if (rc != PDKIM_OK && errstr)
 
 /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
 
-for (sig = dkim_signatures; sig; sig = sig->next)
+for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
   {
   if (sig->domain)   g = string_append_listele(g, ':', sig->domain);
   if (sig->identity) g = string_append_listele(g, ':', sig->identity);
@@ -372,7 +370,6 @@ int
 dkim_exim_acl_run(uschar * id, gstring ** res_ptr,
   uschar ** user_msgptr, uschar ** log_msgptr)
 {
-pdkim_signature * sig;
 uschar * cmp_val;
 int rc = -1;
 
@@ -385,7 +382,7 @@ if (f.dkim_disable_verify || !id || !dkim_verify_ctx)
 
 /* Find signatures to run ACL on */
 
-for (sig = dkim_signatures; sig; sig = sig->next)
+for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
   if (  (cmp_val = Ustrchr(id, '@') != NULL ? US sig->identity : US sig->domain)
      && strcmpic(cmp_val, id) == 0
      )
@@ -799,12 +796,11 @@ expand_bad:
 gstring *
 authres_dkim(gstring * g)
 {
-pdkim_signature * sig;
 int start = 0;		/* compiler quietening */
 
 DEBUG(D_acl) start = g->ptr;
 
-for (sig = dkim_signatures; sig; sig = sig->next)
+for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
   {
   g = string_catn(g, US";\n\tdkim=", 8);
 

@@ -45,7 +45,6 @@ static int
 nisplus_find(void *handle, uschar *filename, const uschar *query, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
-int i;
 int error_error = FAIL;
 const uschar * field_name = NULL;
 nis_result *nrt = NULL;
@@ -138,7 +137,7 @@ was given, look for that field; otherwise concatenate all the fields
 with their names. */
 
 eo = &(eno->zo_data.objdata_u.en_data);
-for (i = 0; i < eo->en_cols.en_cols_len; i++)
+for (int i = 0; i < eo->en_cols.en_cols_len; i++)
   {
   table_col *tc = ta->ta_cols.ta_cols_val + i;
   entry_col *ec = eo->en_cols.en_cols_val + i;
@@ -164,9 +163,8 @@ for (i = 0; i < eo->en_cols.en_cols_len; i++)
 
     if (value[0] == 0 || Ustrchr(value, ' ') != NULL)
       {
-      int j;
       yield = string_catn(yield, US"\"", 1);
-      for (j = 0; j < len; j++)
+      for (int j = 0; j < len; j++)
         {
         if (value[j] == '\"' || value[j] == '\\')
           yield = string_catn(yield, US"\\", 1);
