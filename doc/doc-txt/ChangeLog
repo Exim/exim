@@ -5,12 +5,6 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
-Exim version 4.93
------------------
-
-JH/01 Bug 2351: Log failures to extract envelope addresses from message headers.
-
-
 Exim version 4.92
 -----------------
 
@@ -178,6 +172,8 @@ JH/37 Bug 2341: Send "message delayed" warning MDNs (restricted to external
       not, meaning that when (say) an account was over-quota and temp-rejecting,
       and multiple senders' messages were queued, only one sender would get
       notified on each configured delay_warning cycle.
+
+JH/01 Bug 2351: Log failures to extract envelope addresses from message headers.
 
 
 Exim version 4.91
