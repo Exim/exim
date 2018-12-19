@@ -5522,10 +5522,27 @@ mentioned at all in the default configuration.
 
 
 
+.section "Macros" "SECTdefconfmacros"
+All macros should be defined before any options.
+
+One macro is specified, but commented out, in the default configuration:
+.code
+# ROUTER_SMARTHOST=MAIL.HOSTNAME.FOR.CENTRAL.SERVER.EXAMPLE
+.endd
+If all off-site mail is expected to be delivered to a "smarthost", then set the
+hostname here and uncomment the macro.  This will affect which router is used
+later on.  If this is left commented out, then Exim will perform direct-to-MX
+deliveries using a &(dnslookup)& router.
+
+In addition to macros defined here, Exim includes a number of built-in macros
+to enable configuration to be guarded by a binary built with support for a
+given feature.  See section &<<SECTbuiltinmacros>>& for more details.
+
+
 .section "Main configuration settings" "SECTdefconfmain"
-The main (global) configuration option settings must always come first in the
-file. The first thing you'll see in the file, after some initial comments, is
-the line
+The main (global) configuration option settings section must always come first
+in the file, after the macros.
+The first thing you'll see in the file, after some initial comments, is the line
 .code
 # primary_hostname =
 .endd
@@ -6028,16 +6045,35 @@ This router is commented out because the majority of sites do not want to
 support domain literal addresses (those of the form &'user@[10.9.8.7]'&). If
 you uncomment this router, you also need to uncomment the setting of
 &%allow_domain_literals%& in the main part of the configuration.
+
+Which router is used next depends upon whether or not the ROUTER_SMARTHOST
+macro has been defined, per
 .code
+.ifdef ROUTER_SMARTHOST
+smarthost:
+#...
+.else
 dnslookup:
-  driver = dnslookup
+#...
+.endif
+.endd
+
+If ROUTER_SMARTHOST has been defined, either at the top of the file or on the
+command-line, then we route all non-local mail to that smarthost; otherwise, we'll
+perform DNS lookups for direct-to-MX lookup.  Any mail which is to a local domain will
+skip these routers because of the &%domains%& option.
+
+.code
+smarthost:
+  driver = manualroute
   domains = ! +local_domains
-  transport = remote_smtp
-  ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+  transport = smarthost_smtp
+  route_data = ROUTER_SMARTHOST
+  ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
   no_more
 .endd
-The first uncommented router handles addresses that do not involve any local
-domains. This is specified by the line
+This router only handles mail which is not to any local domains; this is
+specified by the line
 .code
 domains = ! +local_domains
 .endd
@@ -6047,6 +6083,29 @@ that are not in the domain list called &'local_domains'& (which was defined at
 the start of the configuration). The plus sign before &'local_domains'&
 indicates that it is referring to a named list. Addresses in other domains are
 passed on to the following routers.
+
+The name of the router driver is &(manualroute)& because we are manually
+specifying how mail should be routed onwards, instead of using DNS MX.
+While the name of this router instance is arbitrary, the &%driver%& option must
+be one of the driver modules that is in the Exim binary.
+
+With no pre-conditions other than &%domains%&, all mail for non-local domains
+will be handled by this router, and the &%no_more%& setting will ensure that no
+other routers will be used for messages matching the pre-conditions.  See
+&<<SECTrouprecon>>& for more on how the pre-conditions apply.  For messages which
+are handled by this router, we provide a hostname to deliver to in &%route_data%&
+and the macro supplies the value; the address is then queued for the
+&(smarthost_smtp)& transport.
+
+.code
+dnslookup:
+  driver = dnslookup
+  domains = ! +local_domains
+  transport = remote_smtp
+  ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+  no_more
+.endd
+The &%domains%& option behaves as per smarthost, above.
 
 The name of the router driver is &(dnslookup)&,
 and is specified by the &%driver%& option. Do not be confused by the fact that
@@ -6189,18 +6248,76 @@ not matter. The transports section of the configuration starts with
 .code
 begin transports
 .endd
-One remote transport and four local transports are defined.
+Two remote transports and four local transports are defined.
 .code
 remote_smtp:
   driver = smtp
-  hosts_try_prdr = *
+  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+.ifdef _HAVE_DANE
+  dnssec_request_domains = *
+  hosts_try_dane = *
+.endif
 .endd
 This transport is used for delivering messages over SMTP connections.
 The list of remote hosts comes from the router.
-The &%hosts_try_prdr%& option enables an efficiency SMTP option.
-It is negotiated between client and server
-and not expected to cause problems but can be disabled if needed.
-All other options are defaulted.
+The &%message_size_limit%& usage is a hack to avoid sending on messages
+with over-long lines.  The built-in macro _HAVE_DANE guards configuration
+to try to use DNSSEC for all queries and to use DANE for delivery;
+see section &<<SECDANE>>& for more details.
+
+The other remote transport is used when delivering to a specific smarthost
+with whom there must be some kind of existing relationship, instead of the
+usual federated system.
+
+.code
+smarthost_smtp:
+  driver = smtp
+  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+  multi_domain
+  #
+.ifdef _HAVE_TLS
+  # Comment out any of these which you have to, then file a Support
+  # request with your smarthost provider to get things fixed:
+  hosts_require_tls = *
+  tls_verify_hosts = *
+  # As long as tls_verify_hosts is enabled, this won't matter, but if you
+  # have to comment it out then this will at least log whether you succeed
+  # or not:
+  tls_try_verify_hosts = *
+  #
+  # The SNI name should match the name which we'll expect to verify;
+  # many mail systems don't use SNI and this doesn't matter, but if it does,
+  # we need to send a name which the remote site will recognize.
+  # This _should_ be the name which you the smarthost operators specified as
+  # the hostname for sending your mail to.
+  tls_sni = ROUTER_SMARTHOST
+  #
+.ifdef _HAVE_OPENSSL
+  tls_require_ciphers = HIGH:!aNULL:@STRENGTH
+.endif
+.ifdef _HAVE_GNUTLS
+  tls_require_ciphers = SECURE192:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
+.endif
+.endif
+.endd
+After the same &%message_size_limit%& hack, we then specify that this Transport
+can handle messages to multiple domains in one run.  The assumption here is
+that you're routing all non-local mail to the same place and that place is
+happy to take all messages from you as quickly as possible.
+All other options depend upon built-in macros; if Exim was built without TLS support
+then no other options are defined.
+If TLS is available, then we configure "stronger than default" TLS ciphersuites
+and versions using the &%tls_require_ciphers%& option, where the value to be
+used depends upon the library providing TLS.
+Beyond that, the options adopt the stance that you should have TLS support available
+from your smarthost on today's Internet, so we turn on requiring TLS for the
+mail to be delivered, and requiring that the certificate be valid, and match
+the expected hostname.  The &%tls_sni%& option can be used by service providers
+to select an appropriate certificate to present to you and here we re-use the
+ROUTER_SMARTHOST macro, because that is unaffected by CNAMEs present in DNS.
+You want to specify the hostname which you'll expect to validate for, and that
+should not be subject to insecure tampering via DNS results.
+
 .code
 local_delivery:
   driver = appendfile

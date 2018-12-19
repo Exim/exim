@@ -38,6 +38,18 @@
 
 
 ######################################################################
+#                               MACROS                               #
+######################################################################
+#
+
+# If you want to use a smarthost instead of sending directly to recipient
+# domains, uncomment this macro definition and set a real hostname.
+# An appropriately privileged user can then redirect email on the command-line
+# in emergencies, via -D.
+#
+# ROUTER_SMARTHOST=MAIL.HOSTNAME.FOR.CENTRAL.SERVER.EXAMPLE
+
+######################################################################
 #                    MAIN CONFIGURATION SETTINGS                     #
 ######################################################################
 #
@@ -580,6 +592,25 @@ begin routers
 #   transport = remote_smtp
 
 
+# This router can be used when you want to send all mail to a
+# server which handles DNS lookups for you; an ISP will typically run such
+# a server for their customers.  The hostname in route_data comes from the
+# macro defined at the top of the file.  If not defined, then we'll use the
+# dnslookup router below instead.
+# Beware that the hostname is specified again in the Transport.
+
+.ifdef ROUTER_SMARTHOST
+
+smarthost:
+  driver = manualroute
+  domains = ! +local_domains
+  transport = smarthost_smtp
+  route_data = ROUTER_SMARTHOST
+  ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
+  no_more
+
+.else
+
 # This router routes addresses that are not in local domains by doing a DNS
 # lookup on the domain name. The exclamation mark that appears in "domains = !
 # +local_domains" is a negating operator, that is, it can be read as "not". The
@@ -603,20 +634,9 @@ dnslookup:
   dnssec_request_domains = *
   no_more
 
-
-# This alternative router can be used when you want to send all mail to a
-# server which handles DNS lookups for you; an ISP will typically run such
-# a server for their customers.  If you uncomment "smarthost" then you
-# should comment out "dnslookup" above.  Setting a real hostname in route_data
-# wouldn't hurt either.
-
-# smarthost:
-#   driver = manualroute
-#   domains = ! +local_domains
-#   transport = smarthost_smtp
-#   route_data = MAIL.HOSTNAME.FOR.CENTRAL.SERVER.EXAMPLE
-#   ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
-#   no_more
+# This closes the ROUTER_SMARTHOST ifdef around the choice of routing for
+# off-site mail.
+.endif
 
 
 # The remaining routers handle addresses in the local domain(s), that is those
@@ -755,12 +775,18 @@ smarthost_smtp:
   # Comment out any of these which you have to, then file a Support
   # request with your smarthost provider to get things fixed:
   hosts_require_tls = *
-  tls_sni = $host
   tls_verify_hosts = *
   # As long as tls_verify_hosts is enabled, this won't matter, but if you
   # have to comment it out then this will at least log whether you succeed
   # or not:
   tls_try_verify_hosts = *
+  #
+  # The SNI name should match the name which we'll expect to verify;
+  # many mail systems don't use SNI and this doesn't matter, but if it does,
+  # we need to send a name which the remote site will recognize.
+  # This _should_ be the name which you the smarthost operators specified as
+  # the hostname for sending your mail to.
+  tls_sni = ROUTER_SMARTHOST
   #
 .ifdef _HAVE_OPENSSL
   tls_require_ciphers = HIGH:!aNULL:@STRENGTH
