@@ -6288,7 +6288,7 @@ smarthost_smtp:
   # The SNI name should match the name which we'll expect to verify;
   # many mail systems don't use SNI and this doesn't matter, but if it does,
   # we need to send a name which the remote site will recognize.
-  # This _should_ be the name which you the smarthost operators specified as
+  # This _should_ be the name which the smarthost operators specified as
   # the hostname for sending your mail to.
   tls_sni = ROUTER_SMARTHOST
   #

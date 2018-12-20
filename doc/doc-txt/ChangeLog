@@ -173,7 +173,7 @@ JH/37 Bug 2341: Send "message delayed" warning MDNs (restricted to external
       and multiple senders' messages were queued, only one sender would get
       notified on each configured delay_warning cycle.
 
-JH/01 Bug 2351: Log failures to extract envelope addresses from message headers.
+JH/38 Bug 2351: Log failures to extract envelope addresses from message headers.
 
 
 Exim version 4.91
