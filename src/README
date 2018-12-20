@@ -1,7 +1,7 @@
 THE EXIM MAIL TRANSFER AGENT VERSION 4
 --------------------------------------
 
-Copyright (c) 1995 - 2012 University of Cambridge.
+Copyright (c) 1995 - 2018 University of Cambridge.
 See the file NOTICE for conditions of use and distribution.
 
 There is a book about Exim by Philip Hazel called "The Exim SMTP Mail Server",
@@ -14,7 +14,7 @@ from Exim 3, though the basic structure and philosophy remains the same. The
 older book may be helpful for the background, but a lot of the detail has
 changed, so it is likely to be confusing to newcomers.
 
-There is a web site at http://www.exim.org; this contains details of the
+There is a website at https://www.exim.org; this contains details of the
 mailing list exim-users@exim.org.
 
 A copy of the Exim FAQ should be available from the same source that you used
