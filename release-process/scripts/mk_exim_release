@@ -68,6 +68,10 @@ package Context {
         $context->{v}{security} = $+{security};
         $context->{v}{rc} = $+{rc};
 
+        die "$ME: This script doesn't work for versions prior 4.92-RCx. Please checkout an older version.\n"
+            if $context->{v}{major} < 4
+            or $context->{v}{major} == 4 && $context->{v}{minor} < 92;
+
         ### v: $context->{v}
 
         # find a valid vcs tag matching the version
