@@ -1,6 +1,6 @@
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
-. converted into DocBook XML for subsequent conversion into printing and online
+. converted into DocBook XML for subsequent conversion into printable and online
 . formats. The markup used herein is "standard" xfpt markup, with some extras.
 . The markup is summarized in a file called Markup.txt.
 .
@@ -35,7 +35,7 @@
 .literal off
 
 . /////////////////////////////////////////////////////////////////////////////
-. This generate the outermost <book> element that wraps then entire document.
+. This generates the outermost <book> element that wraps the entire document.
 . /////////////////////////////////////////////////////////////////////////////
 
 .book
@@ -60,12 +60,12 @@
 . provided in the xfpt library.
 . /////////////////////////////////////////////////////////////////////////////
 
-. --- Override the &$ flag to automatically insert a $ with the variable name
+. --- Override the &$ flag to automatically insert a $ with the variable name.
 
 .flag &$  $&   "<varname>$"  "</varname>"
 
 . --- Short flags for daggers in option headings. They will always be inside
-. --- an italic string, but we want the daggers to be roman.
+. --- an italic string, but we want the daggers to be in Roman.
 
 .flag &!!      "</emphasis>&dagger;<emphasis>"
 .flag &!?      "</emphasis>&Dagger;<emphasis>"
@@ -89,7 +89,7 @@
 
 . --- A macro for the common 2-column tables. The width of the first column
 . --- is suitable for the many tables at the start of the main options chapter;
-. --- the small number of other 2-column tables override it.
+. --- a small number of other 2-column tables override it.
 
 .macro table2 196pt 254pt
 .itable none 0 0 2 $1 left $2 left
@@ -165,7 +165,7 @@
 
 
 . ////////////////////////////////////////////////////////////////////////////
-. The <bookinfo> element is removed from the XML before processing for Ascii
+. The <bookinfo> element is removed from the XML before processing for ASCII
 . output formats.
 . ////////////////////////////////////////////////////////////////////////////
 
@@ -337,7 +337,7 @@ Configuration files currently exist for the following operating systems: AIX,
 BSD/OS (aka BSDI), Darwin (Mac OS X), DGUX, Dragonfly, FreeBSD, GNU/Hurd,
 GNU/Linux, HI-OSF (Hitachi), HI-UX, HP-UX, IRIX, MIPS RISCOS, NetBSD, OpenBSD,
 OpenUNIX, QNX, SCO, SCO SVR4.2 (aka UNIX-SV), Solaris (aka SunOS5), SunOS4,
-Tru64-Unix (formerly Digital UNIX, formerly DEC-OSF1), Ultrix, and Unixware.
+Tru64-Unix (formerly Digital UNIX, formerly DEC-OSF1), Ultrix, and UnixWare.
 Some of these operating systems are no longer current and cannot easily be
 tested, so the configuration files may no longer work in practice.
 
@@ -349,8 +349,8 @@ The terms and conditions for the use and distribution of Exim are contained in
 the file &_NOTICE_&. Exim is distributed under the terms of the GNU General
 Public Licence, a copy of which may be found in the file &_LICENCE_&.
 
-The use, supply or promotion of Exim for the purpose of sending bulk,
-unsolicited electronic mail is incompatible with the basic aims of the program,
+The use, supply, or promotion of Exim for the purpose of sending bulk,
+unsolicited electronic mail is incompatible with the basic aims of Exim,
 which revolve around the free provision of a service that enhances the quality
 of personal communications. The author of Exim regards indiscriminate
 mass-mailing as an antisocial, irresponsible abuse of the Internet.
@@ -375,7 +375,7 @@ contributors.
 .cindex "documentation"
 This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
-renditions of the document; this paragraph is so marked if the rendition is
+renditions of this document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
 .wen
 
@@ -384,7 +384,7 @@ is expected to have some familiarity with the SMTP mail transfer protocol and
 with general Unix system administration. Although there are some discussions
 and examples in places, the information is mostly organized in a way that makes
 it easy to look up, rather than in a natural order for sequential reading.
-Furthermore, the manual aims to cover every aspect of Exim in detail, including
+Furthermore, this manual aims to cover every aspect of Exim in detail, including
 a number of rarely-used, special-purpose features that are unlikely to be of
 very wide interest.
 
@@ -394,7 +394,7 @@ introductory, and tutorial material can be found in a book entitled &'The Exim
 SMTP Mail Server'& (second edition, 2007), published by UIT Cambridge
 (&url(https://www.uit.co.uk/exim-book/)).
 
-This book also contains a chapter that gives a general introduction to SMTP and
+The book also contains a chapter that gives a general introduction to SMTP and
 Internet mail. Inevitably, however, the book is unlikely to be fully up-to-date
 with the latest release of Exim. (Note that the earlier book about Exim,
 published by O'Reilly, covers Exim 3, and many things have changed in Exim 4.)
@@ -409,7 +409,7 @@ information.
 .cindex "&_doc/NewStuff_&"
 .cindex "&_doc/ChangeLog_&"
 .cindex "change log"
-As the program develops, there may be features in newer versions that have not
+As Exim develops, there may be features in newer versions that have not
 yet made it into this document, which is updated only when the most significant
 digit of the fractional part of the version number changes. Specifications of
 new features that are not yet in this manual are placed in the file
@@ -420,7 +420,7 @@ incompatibly while they are developing, or even be withdrawn. For this reason,
 they are not documented in this manual. Information about experimental features
 can be found in the file &_doc/experimental.txt_&.
 
-All changes to the program (whether new features, bug fixes, or other kinds of
+All changes to Exim (whether new features, bug fixes, or other kinds of
 change) are noted briefly in the file called &_doc/ChangeLog_&.
 
 .cindex "&_doc/spec.txt_&"
@@ -445,8 +445,8 @@ available in other formats (HTML, PostScript, PDF, and Texinfo). Section
 
 
 
-.section "FTP and web sites" "SECID2"
-.cindex "web site"
+.section "FTP site and websites" "SECID2"
+.cindex "website"
 .cindex "FTP site"
 The primary site for Exim source distributions is the &%exim.org%& FTP site,
 available over HTTPS, HTTP and FTP.  These services, and the &%exim.org%&
@@ -454,7 +454,7 @@ website, are hosted at the University of Cambridge.
 
 .cindex "wiki"
 .cindex "FAQ"
-As well as Exim distribution tar files, the Exim web site contains a number of
+As well as Exim distribution tar files, the Exim website contains a number of
 differently formatted versions of the documentation. A recent addition to the
 online information is the Exim wiki (&url(https://wiki.exim.org)),
 which contains what used to be a separate FAQ, as well as various other
@@ -489,7 +489,7 @@ via this web page:
 .display
 &url(https://alioth-lists.debian.net/cgi-bin/mailman/listinfo/pkg-exim4-users)
 .endd
-Please ask Debian-specific questions on this list and not on the general Exim
+Please ask Debian-specific questions on that list and not on the general Exim
 lists.
 
 .section "Bug reports" "SECID5"
@@ -505,7 +505,7 @@ message to the &'exim-dev'& mailing list and have it discussed.
 .section "Where to find the Exim distribution" "SECTavail"
 .cindex "FTP site"
 .cindex "HTTPS download site"
-.cindex "distribution" "ftp site"
+.cindex "distribution" "FTP site"
 .cindex "distribution" "https site"
 The master distribution site for the Exim distribution is
 .display
@@ -547,12 +547,12 @@ The distributions will be PGP signed by an individual key of the Release
 Coordinator.  This key will have a uid containing an email address in the
 &'exim.org'& domain and will have signatures from other people, including
 other Exim maintainers.  We expect that the key will be in the "strong set" of
-PGP keys.  There should be a trust path to that key from Nigel Metheringham's
-PGP key, a version of which can be found in the release directory in the file
-&_nigel-pubkey.asc_&.  All keys used will be available in public keyserver pools,
+PGP keys.  There should be a trust path to that key from the Exim Maintainer's
+PGP keys, a version of which can be found in the release directory in the file
+&_Exim-Maintainers-Keyring.asc_&.  All keys used will be available in public keyserver pools,
 such as &'pool.sks-keyservers.net'&.
 
-At time of last update, releases were being made by Jeremy Harris and signed
+At the time of the last update, releases were being made by Jeremy Harris and signed
 with key &'0xBCE58C8CE41F32DF'&.  Other recent keys used for signing are those
 of Heiko Schlittermann, &'0x26101B62F69376CE'&,
 and of Phil Pennock, &'0x4D1E900E14C1CC04'&.
@@ -563,7 +563,7 @@ The signatures for the tar bundles are in:
 &_exim-n.nn.tar.gz.asc_&
 &_exim-n.nn.tar.bz2.asc_&
 .endd
-For each released version, the log of changes is made separately available in a
+For each released version, the log of changes is made available in a
 separate file in the directory &_ChangeLogs_& so that it is possible to
 find out what has changed without having to download the entire distribution.
 
@@ -621,8 +621,8 @@ a number of common scanners are provided.
 .endlist
 
 
-.section "Run time configuration" "SECID7"
-Exim's run time configuration is held in a single text file that is divided
+.section "Runtime configuration" "SECID7"
+Exim's runtime configuration is held in a single text file that is divided
 into a number of sections. The entries in this file consist of keywords and
 values, in the style of Smail 3 configuration files. A default configuration
 file which is suitable for simple online installations is provided in the
@@ -636,13 +636,13 @@ can be a straight replacement for &_/usr/lib/sendmail_& or
 &_/usr/sbin/sendmail_& when sending mail, but you do not need to know anything
 about Sendmail in order to run Exim. For actions other than sending messages,
 Sendmail-compatible options also exist, but those that produce output (for
-example, &%-bp%&, which lists the messages on the queue) do so in Exim's own
+example, &%-bp%&, which lists the messages in the queue) do so in Exim's own
 format. There are also some additional options that are compatible with Smail
 3, and some further options that are new to Exim. Chapter &<<CHAPcommandline>>&
 documents all Exim's command line options. This information is automatically
 made into the man page that forms part of the Exim distribution.
 
-Control of messages on the queue can be done via certain privileged command
+Control of messages in the queue can be done via certain privileged command
 line options. There is also an optional monitor program called &'eximon'&,
 which displays current information in an X window, and which contains a menu
 interface to Exim's command line administration options.
@@ -653,7 +653,7 @@ interface to Exim's command line administration options.
 .cindex "terminology definitions"
 .cindex "body of message" "definition of"
 The &'body'& of a message is the actual data that the sender wants to transmit.
-It is the last part of a message, and is separated from the &'header'& (see
+It is the last part of a message and is separated from the &'header'& (see
 below) by a blank line.
 
 .cindex "bounce message" "definition of"
@@ -698,7 +698,7 @@ line.
 
 .cindex "local part" "definition of"
 .cindex "domain" "definition of"
-The term &'local part'&, which is taken from RFC 2822, is used to refer to that
+The term &'local part'&, which is taken from RFC 2822, is used to refer to the
 part of an email address that precedes the @ sign. The part that follows the
 @ sign is called the &'domain'& or &'mail domain'&.
 
@@ -714,20 +714,20 @@ host it is running on are &'remote'&.
 message's envelope.
 
 .cindex "queue" "definition of"
-The term &'queue'& is used to refer to the set of messages awaiting delivery,
+The term &'queue'& is used to refer to the set of messages awaiting delivery
 because this term is in widespread use in the context of MTAs. However, in
-Exim's case the reality is more like a pool than a queue, because there is
+Exim's case, the reality is more like a pool than a queue, because there is
 normally no ordering of waiting messages.
 
 .cindex "queue runner" "definition of"
 The term &'queue runner'& is used to describe a process that scans the queue
 and attempts to deliver those messages whose retry times have come. This term
-is used by other MTAs, and also relates to the command &%runq%&, but in Exim
+is used by other MTAs and also relates to the command &%runq%&, but in Exim
 the waiting messages are normally processed in an unpredictable order.
 
 .cindex "spool directory" "definition of"
 The term &'spool directory'& is used for a directory in which Exim keeps the
-messages on its queue &-- that is, those that it is in the process of
+messages in its queue &-- that is, those that it is in the process of
 delivering. This should not be confused with the directory in which local
 mailboxes are stored, which is called a &"spool directory"& by some people. In
 the Exim documentation, &"spool"& is always used in the first sense.
@@ -879,7 +879,7 @@ source code.
 
 .next
 Many people have contributed code fragments, some large, some small, that were
-not covered by any specific licence requirements. It is assumed that the
+not covered by any specific license requirements. It is assumed that the
 contributors are happy to see their code incorporated into Exim under the GPL.
 .endlist
 
@@ -907,9 +907,9 @@ has been down, and it also maintains per-host retry information.
 .section "Policy control" "SECID11"
 .cindex "policy control" "overview"
 Policy controls are now an important feature of MTAs that are connected to the
-Internet. Perhaps their most important job is to stop MTAs being abused as
+Internet. Perhaps their most important job is to stop MTAs from being abused as
 &"open relays"& by misguided individuals who send out vast amounts of
-unsolicited junk, and want to disguise its source. Exim provides flexible
+unsolicited junk and want to disguise its source. Exim provides flexible
 facilities for specifying policy controls on incoming mail:
 
 .ilist
@@ -985,7 +985,7 @@ example &`16VDhn-0001bo-D3`&. Each part is a sequence of letters and digits,
 normally encoding numbers in base 62. However, in the Darwin operating
 system (Mac OS X) and when Exim is compiled to run under Cygwin, base 36
 (avoiding the use of lower case letters) is used instead, because the message
-id is used to construct file names, and the names of files in those systems are
+id is used to construct filenames, and the names of files in those systems are
 not always case-sensitive.
 
 .cindex "pid (process id)" "re-use of"
@@ -1042,7 +1042,7 @@ command line, or from the body of the message if &%-t%& is also used.
 If the process runs Exim with the &%-bS%& option, the message is also read
 non-interactively, but in this case the recipients are listed at the start of
 the message in a series of SMTP RCPT commands, terminated by a DATA
-command. This is so-called &"batch SMTP"& format,
+command. This is called &"batch SMTP"& format,
 but it isn't really SMTP. The SMTP commands are just another way of passing
 envelope addresses in a non-interactive submission.
 .next
@@ -1066,7 +1066,7 @@ constructed from the login name of the user that called Exim and a default
 qualification domain (which can be set by the &%qualify_domain%& configuration
 option). For local or batch SMTP, a sender address that is passed using the
 SMTP MAIL command is ignored. However, the system administrator may allow
-certain users (&"trusted users"&) to specify a different sender address
+certain users (&"trusted users"&) to specify a different sender addresses
 unconditionally, or all users to specify certain forms of different sender
 address. The &%-f%& option or the SMTP MAIL command is used to specify these
 different addresses. See section &<<SECTtrustedadmin>>& for details of trusted
@@ -1074,10 +1074,10 @@ users, and the &%untrusted_set_sender%& option for a way of allowing untrusted
 users to change sender addresses.
 
 Messages received by either of the non-interactive mechanisms are subject to
-checking by the non-SMTP ACL, if one is defined. Messages received using SMTP
-(either over TCP/IP, or interacting with a local process) can be checked by a
+checking by the non-SMTP ACL if one is defined. Messages received using SMTP
+(either over TCP/IP or interacting with a local process) can be checked by a
 number of ACLs that operate at different times during the SMTP session. Either
-individual recipients, or the entire message, can be rejected if local policy
+individual recipients or the entire message can be rejected if local policy
 requirements are not met. The &[local_scan()]& function (see chapter
 &<<CHAPlocalscan>>&) is run for all incoming messages.
 
@@ -1102,7 +1102,7 @@ the two spool files consist of the message id, followed by &`-H`& for the
 file containing the envelope and header, and &`-D`& for the data file.
 
 .cindex "spool directory" "&_input_& sub-directory"
-By default all these message files are held in a single directory called
+By default, all these message files are held in a single directory called
 &_input_& inside the general Exim spool directory. Some operating systems do
 not perform very well if the number of files in a directory gets large; to
 improve performance in such cases, the &%split_spool_directory%& option can be
@@ -1139,7 +1139,7 @@ delivered (see chapters &<<CHAProutergeneric>>& and
 A message remains in the spool directory until it is completely delivered to
 its recipients or to an error address, or until it is deleted by an
 administrator or by the user who originally created it. In cases when delivery
-cannot proceed &-- for example, when a message can neither be delivered to its
+cannot proceed &-- for example when a message can neither be delivered to its
 recipients nor returned to its sender, the message is marked &"frozen"& on the
 spool, and no more deliveries are attempted.
 
@@ -1154,7 +1154,7 @@ to be sent.
 .oindex "&%ignore_bounce_errors_after%&"
 There are options called &%ignore_bounce_errors_after%& and
 &%timeout_frozen_after%&, which discard frozen messages after a certain time.
-The first applies only to frozen bounces, the second to any frozen messages.
+The first applies only to frozen bounces, the second to all frozen messages.
 
 .cindex "message" "log file for"
 .cindex "log" "file for each message"
@@ -1162,7 +1162,7 @@ While Exim is working on a message, it writes information about each delivery
 attempt to its main log file. This includes successful, unsuccessful, and
 delayed deliveries for each recipient (see chapter &<<CHAPlog>>&). The log
 lines are also written to a separate &'message log'& file for each message.
-These logs are solely for the benefit of the administrator, and are normally
+These logs are solely for the benefit of the administrator and are normally
 deleted along with the spool files when processing of a message is complete.
 The use of individual message logs can be disabled by setting
 &%no_message_logs%&; this might give an improvement in performance on very busy
@@ -1179,7 +1179,7 @@ is updated to indicate which these are, and the journal file is then deleted.
 Updating the spool file is done by writing a new file and renaming it, to
 minimize the possibility of data loss.
 
-Should the system or the program crash after a successful delivery but before
+Should the system or Exim crash after a successful delivery but before
 the spool file has been updated, the journal is left lying around. The next
 time Exim attempts to deliver the message, it reads the journal file and
 updates the spool file before proceeding. This minimizes the chances of double
@@ -1194,11 +1194,11 @@ deliveries caused by crashes.
 The main delivery processing elements of Exim are called &'routers'& and
 &'transports'&, and collectively these are known as &'drivers'&. Code for a
 number of them is provided in the source distribution, and compile-time options
-specify which ones are included in the binary. Run time options specify which
+specify which ones are included in the binary. Runtime options specify which
 ones are actually used for delivering messages.
 
 .cindex "drivers" "instance definition"
-Each driver that is specified in the run time configuration is an &'instance'&
+Each driver that is specified in the runtime configuration is an &'instance'&
 of that particular driver type. Multiple instances are allowed; for example,
 you can set up several different &(smtp)& transports, each with different
 option values that might specify different ports or different timeouts. Each
@@ -1233,8 +1233,8 @@ routers in many different ways, and there may be any number of routers in a
 configuration.
 
 The first router that is specified in a configuration is often one that handles
-addresses in domains that are not recognized specially by the local host. These
-are typically addresses for arbitrary domains on the Internet. A precondition
+addresses in domains that are not recognized specifically by the local host.
+Typically these are addresses for arbitrary domains on the Internet. A precondition
 is set up which looks for the special domains known to the host (for example,
 its own domain name), and the router is run for addresses that do &'not'&
 match. Typically, this is a router that looks up domains in the DNS in order to
@@ -1271,7 +1271,7 @@ When an address is being verified, the routers are run in &"verify mode"&. This
 does not affect the way the routers work, but it is a state that can be
 detected. By this means, a router can be skipped or made to behave differently
 when verifying. A common example is a configuration in which the first router
-sends all messages to a message-scanning program, unless they have been
+sends all messages to a message-scanning program unless they have been
 previously scanned. Thus, the first router accepts all addresses without any
 checking, making it useless for verifying. Normally, the &%no_verify%& option
 would be set for such a router, causing it to be skipped in verify mode.
@@ -1291,8 +1291,8 @@ the following:
 
 .ilist
 &'accept'&: The router accepts the address, and either assigns it to a
-transport, or generates one or more &"child"& addresses. Processing the
-original address ceases,
+transport or generates one or more &"child"& addresses. Processing the
+original address ceases
 .oindex "&%unseen%&"
 unless the &%unseen%& option is set on the router. This option
 can be used to set up multiple deliveries with different routing (for example,
@@ -1307,7 +1307,7 @@ child addresses. Unlike &%pass_router%& (see below) the router specified by
 &%redirect_router%& may be anywhere in the router configuration.
 .next
 &'pass'&: The router recognizes the address, but cannot handle it itself. It
-requests that the address be passed to another router. By default the address
+requests that the address be passed to another router. By default, the address
 is passed to the next router, but this can be changed by setting the
 &%pass_router%& option. However, (unlike &%redirect_router%&) the named router
 must be below the current router (to avoid loops).
@@ -1349,8 +1349,8 @@ facility for this purpose.
 .cindex "address duplicate, discarding"
 .cindex "duplicate addresses"
 Once routing is complete, Exim scans the addresses that are assigned to local
-and remote transports, and discards any duplicates that it finds. During this
-check, local parts are treated as case-sensitive. This happens only when
+and remote transports and discards any duplicates that it finds. During this
+check, local parts are treated case-sensitively. This happens only when
 actually delivering a message; when testing routers with &%-bt%&, all the
 routed addresses are shown.
 
@@ -1470,7 +1470,7 @@ be immediately delivered, the system filter is run each time. The filter
 condition &%first_delivery%& can be used to detect the first run of the system
 filter.
 .next
-Each recipient address is offered to each configured router in turn, subject to
+Each recipient address is offered to each configured router, in turn, subject to
 its preconditions, until one is able to handle it. If no router can handle the
 address, that is, if they all decline, the address is failed. Because routers
 can be targeted at particular domains, several locally handled domains can be
@@ -1547,9 +1547,9 @@ deleted, though the message log can optionally be preserved if required.
 Exim's mechanism for retrying messages that fail to get delivered at the first
 attempt is the queue runner process. You must either run an Exim daemon that
 uses the &%-q%& option with a time interval to start queue runners at regular
-intervals, or use some other means (such as &'cron'&) to start them. If you do
+intervals or use some other means (such as &'cron'&) to start them. If you do
 not arrange for queue runners to be run, messages that fail temporarily at the
-first attempt will remain on your queue for ever. A queue runner process works
+first attempt will remain in your queue forever. A queue runner process works
 its way through the queue, one message at a time, trying each delivery that has
 passed its retry time.
 You can run several queue runners at once.
@@ -1618,7 +1618,7 @@ of the list.
 .section "Failures to deliver bounce messages" "SECID22"
 .cindex "bounce message" "failure to deliver"
 If a bounce message (either locally generated or received from a remote host)
-itself suffers a permanent delivery failure, the message is left on the queue,
+itself suffers a permanent delivery failure, the message is left in the queue,
 but it is frozen, awaiting the attention of an administrator. There are options
 that can be used to make Exim discard such failed messages, or to keep them
 for only a short time (see &%timeout_frozen_after%& and
@@ -1663,7 +1663,7 @@ following subdirectories are created:
 .irow &_util_&            "independent utilities"
 .endtable
 
-The main utility programs are contained in the &_src_& directory, and are built
+The main utility programs are contained in the &_src_& directory and are built
 with the Exim binary. The &_util_& directory contains a few optional scripts
 that may be useful to some sites.
 
@@ -1688,8 +1688,8 @@ A C99-capable compiler will be required for the build.
 .section "PCRE library" "SECTpcre"
 .cindex "PCRE library"
 Exim no longer has an embedded PCRE library as the vast majority of
-modern systems include PCRE as a system library, although you may need
-to install the PCRE or PCRE development package for your operating
+modern systems include PCRE as a system library, although you may need to
+install the PCRE package or the PCRE development package for your operating
 system. If your system has a normal PCRE installation the Exim build
 process will need no further configuration. If the library or the
 headers are in an unusual location you will need to either set the PCRE_LIBS
@@ -1738,7 +1738,7 @@ Solaris, operates on two files called &_dbmfile.dir_& and &_dbmfile.pag_&.
 The GNU library, &'gdbm'&, operates on a single file. If used via its &'ndbm'&
 compatibility interface it makes two different hard links to it with names
 &_dbmfile.dir_& and &_dbmfile.pag_&, but if used via its native interface, the
-file name is used unmodified.
+filename is used unmodified.
 .next
 .cindex "Berkeley DB library"
 The Berkeley DB package, if called via its &'ndbm'& compatibility interface,
@@ -1820,17 +1820,17 @@ building Exim for the first time, the simplest thing to do is to copy
 &_src/EDITME_& to &_Local/Makefile_&, then read it and edit it appropriately.
 
 There are three settings that you must supply, because Exim will not build
-without them. They are the location of the run time configuration file
+without them. They are the location of the runtime configuration file
 (CONFIGURE_FILE), the directory in which Exim binaries will be installed
 (BIN_DIRECTORY), and the identity of the Exim user (EXIM_USER and
 maybe EXIM_GROUP as well). The value of CONFIGURE_FILE can in fact be
-a colon-separated list of file names; Exim uses the first of them that exists.
+a colon-separated list of filenames; Exim uses the first of them that exists.
 
 There are a few other parameters that can be specified either at build time or
-at run time, to enable the same binary to be used on a number of different
+at runtime, to enable the same binary to be used on a number of different
 machines. However, if the locations of Exim's spool directory and log file
 directory (if not within the spool directory) are fixed, it is recommended that
-you specify them in &_Local/Makefile_& instead of at run time, so that errors
+you specify them in &_Local/Makefile_& instead of at runtime, so that errors
 detected early in Exim's execution (such as a malformed configuration file) can
 be logged.
 
@@ -1856,7 +1856,7 @@ happy with the default settings described in &_exim_monitor/EDITME_&,
 This is all the configuration that is needed in straightforward cases for known
 operating systems. However, the building process is set up so that it is easy
 to override options that are set by default or by operating-system-specific
-configuration files, for example to change the name of the C compiler, which
+configuration files, for example, to change the C compiler, which
 defaults to &%gcc%&. See section &<<SECToverride>>& below for details of how to
 do this.
 
@@ -2163,7 +2163,7 @@ libraries need to be installed before compiling Exim.
 However, there are some optional lookup types (such as cdb) for which
 the code is entirely contained within Exim, and no external include
 files or libraries are required. When a lookup type is not included in the
-binary, attempts to configure Exim to use it cause run time configuration
+binary, attempts to configure Exim to use it cause runtime configuration
 errors.
 
 .cindex "pkg-config" "lookups"
@@ -2266,7 +2266,7 @@ As with Exim itself, the final three files need not exist, and in this case the
 &_OS/eximon.conf-Default_& can be overridden dynamically by setting environment
 variables of the same name, preceded by EXIMON_. For example, setting
 EXIMON_LOG_DEPTH in the environment overrides the value of
-LOG_DEPTH at run time.
+LOG_DEPTH at runtime.
 .ecindex IIDbuex
 
 
@@ -2286,10 +2286,10 @@ it may be possible to run Exim without making the binary setuid root (see
 chapter &<<CHAPsecurity>>& for details).
 
 .cindex "CONFIGURE_FILE"
-Exim's run time configuration file is named by the CONFIGURE_FILE setting
+Exim's runtime configuration file is named by the CONFIGURE_FILE setting
 in &_Local/Makefile_&. If this names a single file, and the file does not
 exist, the default configuration file &_src/configure.default_& is copied there
-by the installation script. If a run time configuration file already exists, it
+by the installation script. If a runtime configuration file already exists, it
 is left alone. If CONFIGURE_FILE is a colon-separated list, naming several
 alternative files, no default is installed.
 
@@ -2337,7 +2337,7 @@ INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
 For the utility programs, old versions are renamed by adding the suffix &_.O_&
 to their names. The Exim binary itself, however, is handled differently. It is
 installed under a name that includes the version number and the compile number,
-for example &_exim-&version()-1_&. The script then arranges for a symbolic link
+for example, &_exim-&version()-1_&. The script then arranges for a symbolic link
 called &_exim_& to point to the binary. If you are updating a previous version
 of Exim, the script takes care to ensure that the name &_exim_& is never absent
 from the directory (as seen by other processes).
@@ -2385,7 +2385,7 @@ make INSTALL_ARG='-no_symlink exim' install
 .cindex "installing Exim" "&'info'& documentation"
 Not all systems use the GNU &'info'& system for documentation, and for this
 reason, the Texinfo source of Exim's documentation is not included in the main
-distribution. Instead it is available separately from the ftp site (see section
+distribution. Instead it is available separately from the FTP site (see section
 &<<SECTavail>>&).
 
 If you have defined INFO_DIRECTORY in &_Local/Makefile_& and the Texinfo
@@ -2406,7 +2406,7 @@ necessary.
 
 .section "Testing" "SECID34"
 .cindex "testing" "installation"
-Having installed Exim, you can check that the run time configuration file is
+Having installed Exim, you can check that the runtime configuration file is
 syntactically valid by running the following command, which assumes that the
 Exim binary directory is within your PATH environment variable:
 .code
@@ -2480,7 +2480,7 @@ incoming SMTP mail.
 
 Testing a new version on a system that is already running Exim can most easily
 be done by building a binary with a different CONFIGURE_FILE setting. From
-within the run time configuration, all other file and directory names
+within the runtime configuration, all other file and directory names
 that Exim uses can be altered, in order to keep it entirely clear of the
 production version.
 
@@ -2796,7 +2796,7 @@ function, which provides extensive line-editing facilities, for reading the
 test data. A line history is supported.
 
 Long expansion expressions can be split over several lines by using backslash
-continuations. As in Exim's run time configuration, white space at the start of
+continuations. As in Exim's runtime configuration, white space at the start of
 continuation lines is ignored. Each argument or data line is passed through the
 string expansion mechanism, and the result is output. Variable values from the
 configuration file (for example, &$qualify_domain$&) are available, but no
@@ -3130,7 +3130,7 @@ mysql_servers = <value not displayable>
 If &%config%& is given as an argument, the config is
 output, as it was parsed, any include file resolved, any comment removed.
 
-If &%config_file%& is given as an argument, the name of the run time
+If &%config_file%& is given as an argument, the name of the runtime
 configuration file is output. (&%configure_file%& works too, for
 backward compatibility.)
 If a list of configuration files was supplied, the value that is output here
@@ -3186,15 +3186,15 @@ the exit status will be nonzero.
 
 .vitem &%-bp%&
 .oindex "&%-bp%&"
-.cindex "queue" "listing messages on"
-.cindex "listing" "messages on the queue"
+.cindex "queue" "listing messages in"
+.cindex "listing" "messages in the queue"
 This option requests a listing of the contents of the mail queue on the
 standard output. If the &%-bp%& option is followed by a list of message ids,
 just those messages are listed. By default, this option can be used only by an
 admin user. However, the &%queue_list_requires_admin%& option can be set false
 to allow any user to see the queue.
 
-Each message on the queue is displayed as in the following example:
+Each message in the queue is displayed as in the following example:
 .code
 25m  2.9K 0t5C6f-0000c8-00 <alice@wonderland.fict.example>
           red.king@looking-glass.fict.example
@@ -3202,7 +3202,7 @@ Each message on the queue is displayed as in the following example:
 .endd
 .cindex "message" "size in queue listing"
 .cindex "size" "of message"
-The first line contains the length of time the message has been on the queue
+The first line contains the length of time the message has been in the queue
 (in this case 25 minutes), the size of the message (2.9K), the unique local
 identifier for the message, and the message sender, as contained in the
 envelope. For bounce messages, the sender address is empty, and appears as
@@ -3233,7 +3233,7 @@ of just &"D"&.
 .vitem &%-bpc%&
 .oindex "&%-bpc%&"
 .cindex "queue" "count of messages on"
-This option counts the number of messages on the queue, and writes the total
+This option counts the number of messages in the queue, and writes the total
 to the standard output. It is restricted to admin users, unless
 &%queue_list_requires_admin%& is set false.
 
@@ -3242,7 +3242,7 @@ to the standard output. It is restricted to admin users, unless
 .oindex "&%-bpr%&"
 This option operates like &%-bp%&, but the output is not sorted into
 chronological order of message arrival. This can speed it up when there are
-lots of messages on the queue, and is particularly useful if the output is
+lots of messages in the queue, and is particularly useful if the output is
 going to be post-processed in a way that doesn't need the sorting.
 
 .vitem &%-bpra%&
@@ -3413,7 +3413,7 @@ This option causes Exim to write the current version number, compilation
 number, and compilation date of the &'exim'& binary to the standard output.
 It also lists the DBM library that is being used, the optional modules (such as
 specific lookup types), the drivers that are included in the binary, and the
-name of the run time configuration file that is in use.
+name of the runtime configuration file that is in use.
 
 As part of its operation, &%-bV%& causes Exim to read and syntax check its
 configuration file. However, this is a static check only. It cannot check
@@ -3502,10 +3502,10 @@ which the daemon will exit, which should cause inetd to listen once more.
 .cindex "configuration file" "alternate"
 .cindex "CONFIGURE_FILE"
 .cindex "alternate configuration file"
-This option causes Exim to find the run time configuration file from the given
+This option causes Exim to find the runtime configuration file from the given
 list instead of from the list specified by the CONFIGURE_FILE
-compile-time setting. Usually, the list will consist of just a single file
-name, but it can be a colon-separated list of names. In this case, the first
+compile-time setting. Usually, the list will consist of just a single filename,
+but it can be a colon-separated list of names. In this case, the first
 file that exists is used. Failure to open an existing file stops Exim from
 proceeding any further along the list, and an error is generated.
 
@@ -3525,15 +3525,15 @@ even if the caller is root. The reception works, but by that time, Exim is
 running as the Exim user, so when it re-executes to regain privilege for the
 delivery, the use of &%-C%& causes privilege to be lost. However, root can
 test reception and delivery using two separate commands (one to put a message
-on the queue, using &%-odq%&, and another to do the delivery, using &%-M%&).
+in the queue, using &%-odq%&, and another to do the delivery, using &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option
-must start. In addition, the file name must not contain the sequence &`/../`&.
+must start. In addition, the filename must not contain the sequence &`/../`&.
 However, if the value of the &%-C%& option is identical to the value of
 CONFIGURE_FILE in &_Local/Makefile_&, Exim ignores &%-C%& and proceeds as
 usual. There is no default setting for ALT_CONFIG_PREFIX; when it is
-unset, any file name can be used with &%-C%&.
+unset, any filename can be used with &%-C%&.
 
 ALT_CONFIG_PREFIX can be used to confine alternative configuration files
 to a directory to which only root has access. This prevents someone who has
@@ -3907,7 +3907,7 @@ The arguments give the local address and port being proxied, and the TLS cipher.
 .oindex "&%-Mc%&"
 .cindex "hints database" "not overridden by &%-Mc%&"
 .cindex "delivery" "manually started &-- not forced"
-This option requests Exim to run a delivery attempt on each message in turn,
+This option requests Exim to run a delivery attempt on each message, in turn,
 but unlike the &%-M%& option, it does check for retry hints, and respects any
 that are found. This option is not very useful to external callers. It is
 provided mainly for internal use by Exim when it needs to re-invoke itself in
@@ -3982,7 +3982,7 @@ This option requests Exim to remove the given messages from the queue. No
 bounce messages are sent; each message is simply forgotten. However, if any of
 the messages are active, their status is not altered. This option can be used
 only by an admin user or by the user who originally caused the message to be
-placed on the queue.
+placed in the queue.
 
 . .new
 . .vitem &%-MS%&
@@ -4087,7 +4087,7 @@ Exim.
 .oindex "&%-oA%&"
 .cindex "Sendmail compatibility" "&%-oA%& option"
 This option is used by Sendmail in conjunction with &%-bi%& to specify an
-alternative alias file name. Exim handles &%-bi%& differently; see the
+alternative alias filename. Exim handles &%-bi%& differently; see the
 description above.
 
 .vitem &%-oB%&&~<&'n'&>
@@ -4136,7 +4136,7 @@ However, like &%-odb%&, this option has no effect if &%queue_only_override%& is
 false and one of the queueing options in the configuration file is in effect.
 
 If there is a temporary delivery error during foreground delivery, the
-message is left on the queue for later delivery, and the original reception
+message is left in the queue for later delivery, and the original reception
 process exits. See chapter &<<CHAPnonqueueing>>& for a way of setting up a
 restricted configuration that never queues messages.
 
@@ -4154,7 +4154,7 @@ Sendmail.
 This option applies to all modes in which Exim accepts incoming messages,
 including the listening daemon. It specifies that the accepting process should
 not automatically start a delivery process for each message received. Messages
-are placed on the queue, and remain there until a subsequent queue runner
+are placed in the queue, and remain there until a subsequent queue runner
 process encounters them. There are several configuration options (such as
 &%queue_only%&) that can be used to queue incoming messages under certain
 conditions. This option overrides all of them and also &%-odqs%&. It always
@@ -4172,7 +4172,7 @@ When &%-odqs%& does operate, a delivery process is started for each incoming
 message, in the background by default, but in the foreground if &%-odi%& is
 also present. The recipient addresses are routed, and local deliveries are done
 in the normal way. However, if any SMTP deliveries are required, they are not
-done at this time, so the message remains on the queue until a subsequent queue
+done at this time, so the message remains in the queue until a subsequent queue
 runner process encounters it. Because routing was done, Exim knows which
 messages are waiting for which hosts, and so a number of messages for the same
 host can be sent in a single SMTP connection. The &%queue_smtp_domains%&
@@ -4391,7 +4391,7 @@ This option is relevant only when the &%-bd%& (start listening daemon) option
 is also given. It controls which ports and interfaces the daemon uses. Details
 of the syntax, and how it interacts with configuration file options, are given
 in chapter &<<CHAPinterfaces>>&. When &%-oX%& is used to start a daemon, no pid
-file is written unless &%-oP%& is also present to specify a pid file name.
+file is written unless &%-oP%& is also present to specify a pid filename.
 
 .vitem &%-pd%&
 .oindex "&%-pd%&"
@@ -4493,7 +4493,7 @@ intermittently.
 .cindex "queue" "initial delivery"
 If the &'i'& flag is present, the queue runner runs delivery processes only for
 those messages that haven't previously been tried. (&'i'& stands for &"initial
-delivery"&.) This can be helpful if you are putting messages on the queue using
+delivery"&.) This can be helpful if you are putting messages in the queue using
 &%-odq%& and want a queue runner just to process the new messages.
 
 .vitem &%-q[q][i]f...%&
@@ -4514,7 +4514,7 @@ frozen or not.
 .oindex "&%-ql%&"
 .cindex "queue" "local deliveries only"
 The &'l'& (the letter &"ell"&) flag specifies that only local deliveries are to
-be done. If a message requires any remote deliveries, it remains on the queue
+be done. If a message requires any remote deliveries, it remains in the queue
 for later delivery.
 
 .vitem &%-q[q][i][f[f]][l][G<name>[/<time>]]]%&
@@ -4766,16 +4766,16 @@ under most shells.
 . ////////////////////////////////////////////////////////////////////////////
 
 
-.chapter "The Exim run time configuration file" "CHAPconf" &&&
+.chapter "The Exim runtime configuration file" "CHAPconf" &&&
          "The runtime configuration file"
 
-.cindex "run time configuration"
+.cindex "runtime configuration"
 .cindex "configuration file" "general description"
 .cindex "CONFIGURE_FILE"
 .cindex "configuration file" "errors in"
 .cindex "error" "in configuration file"
 .cindex "return code" "for bad configuration"
-Exim uses a single run time configuration file that is read whenever an Exim
+Exim uses a single runtime configuration file that is read whenever an Exim
 binary is executed. Note that in normal operation, this happens frequently,
 because Exim is designed to operate in a distributed manner, without central
 control.
@@ -4790,7 +4790,7 @@ actually alter the string.
 The name of the configuration file is compiled into the binary for security
 reasons, and is specified by the CONFIGURE_FILE compilation option. In
 most configurations, this specifies a single file. However, it is permitted to
-give a colon-separated list of file names, in which case Exim uses the first
+give a colon-separated list of filenames, in which case Exim uses the first
 existing file in the list.
 
 .cindex "EXIM_USER"
@@ -4799,26 +4799,26 @@ existing file in the list.
 .cindex "CONFIGURE_GROUP"
 .cindex "configuration file" "ownership"
 .cindex "ownership" "configuration file"
-The run time configuration file must be owned by root or by the user that is
+The runtime configuration file must be owned by root or by the user that is
 specified at compile time by the CONFIGURE_OWNER option (if set). The
 configuration file must not be world-writeable, or group-writeable unless its
 group is the root group or the one specified at compile time by the
 CONFIGURE_GROUP option.
 
 &*Warning*&: In a conventional configuration, where the Exim binary is setuid
-to root, anybody who is able to edit the run time configuration file has an
+to root, anybody who is able to edit the runtime configuration file has an
 easy way to run commands as root. If you specify a user or group in the
 CONFIGURE_OWNER or CONFIGURE_GROUP options, then that user and/or any users
 who are members of that group will trivially be able to obtain root privileges.
 
-Up to Exim version 4.72, the run time configuration file was also permitted to
+Up to Exim version 4.72, the runtime configuration file was also permitted to
 be writeable by the Exim user and/or group. That has been changed in Exim 4.73
 since it offered a simple privilege escalation for any attacker who managed to
 compromise the Exim user account.
 
 A default configuration file, which will work correctly in simple situations,
 is provided in the file &_src/configure.default_&. If CONFIGURE_FILE
-defines just one file name, the installation process copies the default
+defines just one filename, the installation process copies the default
 configuration to a new file of that name if it did not previously exist. If
 CONFIGURE_FILE is a list, no default is automatically installed. Chapter
 &<<CHAPdefconfil>>& is a &"walk-through"& discussion of the default
@@ -4846,14 +4846,14 @@ delivery, even if the caller is root. The reception works, but by that time,
 Exim is running as the Exim user, so when it re-execs to regain privilege for
 the delivery, the use of &%-C%& causes privilege to be lost. However, root
 can test reception and delivery using two separate commands (one to put a
-message on the queue, using &%-odq%&, and another to do the delivery, using
+message in the queue, using &%-odq%&, and another to do the delivery, using
 &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option must
-start. In addition, the file name must not contain the sequence &"&`/../`&"&.
-There is no default setting for ALT_CONFIG_PREFIX; when it is unset, any file
-name can be used with &%-C%&.
+start. In addition, the filename must not contain the sequence &"&`/../`&"&.
+There is no default setting for ALT_CONFIG_PREFIX; when it is unset, any
+filename can be used with &%-C%&.
 
 One-off changes to a configuration can be specified by the &%-D%& command line
 option, which defines and overrides values for macros used inside the
@@ -4875,10 +4875,10 @@ values for the macros satisfy the regexp: &`^[A-Za-z0-9_/.-]*$`&
 Some sites may wish to use the same Exim binary on different machines that
 share a file system, but to use different configuration files on each machine.
 If CONFIGURE_FILE_USE_NODE is defined in &_Local/Makefile_&, Exim first
-looks for a file whose name is the configuration file name followed by a dot
+looks for a file whose name is the configuration filename followed by a dot
 and the machine's node name, as obtained from the &[uname()]& function. If this
 file does not exist, the standard name is tried. This processing occurs for
-each file name in the list given by CONFIGURE_FILE or &%-C%&.
+each filename in the list given by CONFIGURE_FILE or &%-C%&.
 
 In some esoteric situations different versions of Exim may be run under
 different effective uids and the CONFIGURE_FILE_USE_EUID is defined to
@@ -4964,18 +4964,18 @@ described.
 .cindex "configuration file" "including other files"
 .cindex "&`.include`& in configuration file"
 .cindex "&`.include_if_exists`& in configuration file"
-You can include other files inside Exim's run time configuration file by
+You can include other files inside Exim's runtime configuration file by
 using this syntax:
 .display
-&`.include`& <&'file name'&>
-&`.include_if_exists`& <&'file name'&>
+&`.include`& <&'filename'&>
+&`.include_if_exists`& <&'filename'&>
 .endd
-on a line by itself. Double quotes round the file name are optional. If you use
+on a line by itself. Double quotes round the filename are optional. If you use
 the first form, a configuration error occurs if the file does not exist; the
 second form does nothing for non-existent files.
 The first form allows a relative name. It is resolved relative to
-the directory of the including file. For the second form an absolute file
-name is required.
+the directory of the including file. For the second form an absolute filename
+is required.
 
 Includes may be nested to any depth, but remember that Exim reads its
 configuration file often, so it is a good idea to keep them to a minimum.
@@ -5017,7 +5017,7 @@ ACL, or in the &%local_scan%&, retry, or rewrite sections of the configuration.
 .section "Macro substitution" "SECID42"
 Once a macro is defined, all subsequent lines in the file (and any included
 files) are scanned for the macro name; if there are several macros, the line is
-scanned for each in turn, in the order in which the macros are defined. The
+scanned for each, in turn, in the order in which the macros are defined. The
 replacement text is not re-scanned for the current macro, though it is scanned
 for subsequently defined macros. For this reason, a macro name may not contain
 the name of a previously defined macro as a substring. You could, for example,
@@ -5624,7 +5624,7 @@ Three more commented-out option settings follow:
 These are example settings that can be used when Exim is compiled with
 support for TLS (aka SSL) as described in section &<<SECTinctlsssl>>&. The
 first one specifies the list of clients that are allowed to use TLS when
-connecting to this server; in this case the wildcard means all clients. The
+connecting to this server; in this case, the wildcard means all clients. The
 other options specify where Exim should find its TLS certificate and private
 key, which together prove the server's identity to any clients that connect.
 More details are given in chapter &<<CHAPTLS>>&.
@@ -5770,7 +5770,7 @@ ignore_bounce_errors_after = 2d
 timeout_frozen_after = 7d
 .endd
 The first of these options specifies that failing bounce messages are to be
-discarded after 2 days on the queue. The second specifies that any frozen
+discarded after 2 days in the queue. The second specifies that any frozen
 message (whether a bounce message or not) is to be timed out (and discarded)
 after a week. In this configuration, the first setting ensures that no failing
 bounce message ever lasts a week.
@@ -5894,7 +5894,7 @@ common convention of local parts constructed as
 &"&'first-initial.second-initial.family-name'&"& when applied to someone like
 the author of Exim, who has no second initial.) However, a local part starting
 with a dot or containing &"/../"& can cause trouble if it is used as part of a
-file name (for example, for a mailing list). This is also true for local parts
+filename (for example, for a mailing list). This is also true for local parts
 that contain slashes. A pipe symbol can also be troublesome if the local part
 is incorporated unthinkingly into a shell command line.
 
@@ -6030,7 +6030,7 @@ by the line
 begin routers
 .endd
 Routers are the modules in Exim that make decisions about where to send
-messages. An address is passed to each router in turn, until it is either
+messages. An address is passed to each router, in turn, until it is either
 accepted, or failed. This means that the order in which you define the routers
 matters. Each router is fully described in its own chapter later in this
 manual. Here we give only brief overviews.
@@ -6925,7 +6925,7 @@ passed to a Redis database. See section &<<SECTsql>>&.
 .next
 .cindex "sqlite lookup type"
 .cindex "lookup" "sqlite"
-&(sqlite)&: The format of the query is a file name followed by an SQL statement
+&(sqlite)&: The format of the query is a filename followed by an SQL statement
 that is passed to an SQLite database. See section &<<SECTsqlite>>&.
 
 .next
@@ -7967,7 +7967,7 @@ affected.
 .section "More about SQLite" "SECTsqlite"
 .cindex "lookup" "SQLite"
 .cindex "sqlite lookup type"
-SQLite is different to the other SQL lookups because a file name is required in
+SQLite is different to the other SQL lookups because a filename is required in
 addition to the SQL query. An SQLite database is a single file, and there is no
 daemon as in the other SQL databases. The interface to Exim requires the name
 of the file, as an absolute path, to be given at the start of the query. It is
@@ -8113,11 +8113,11 @@ item.
 
 
 .section "File names in lists" "SECTfilnamlis"
-.cindex "list" "file name in"
-If an item in a domain, host, address, or local part list is an absolute file
-name (beginning with a slash character), each line of the file is read and
+.cindex "list" "filename in"
+If an item in a domain, host, address, or local part list is an absolute
+filename (beginning with a slash character), each line of the file is read and
 processed as if it were an independent item in the list, except that further
-file names are not allowed,
+filenames are not allowed,
 and no expansion of the data from the file takes place.
 Empty lines in the file are ignored, and the file may also contain comment
 lines:
@@ -8134,12 +8134,12 @@ not#comment@x.y.z   # but this is a comment
 .endd
 .endlist
 
-Putting a file name in a list has the same effect as inserting each line of the
+Putting a filename in a list has the same effect as inserting each line of the
 file as an item in the list (blank lines and comments excepted). However, there
 is one important difference: the file is read each time the list is processed,
 so if its contents vary over time, Exim's behaviour changes.
 
-If a file name is preceded by an exclamation mark, the sense of any match
+If a filename is preceded by an exclamation mark, the sense of any match
 within the file is inverted. For example, if
 .code
 hold_domains = !/etc/nohold-domains
@@ -8164,7 +8164,7 @@ non-constant pattern. This is not the case. The keys in an &(lsearch)& file are
 always fixed strings, just as for any other single-key lookup type.
 
 If you want to use a file to contain wild-card patterns that form part of a
-list, just give the file name on its own, without a search type, as described
+list, just give the filename on its own, without a search type, as described
 in the previous section. You could also use the &(wildlsearch)& or
 &(nwildlsearch)&, but there is no advantage in doing this.
 
@@ -8411,7 +8411,7 @@ expression by expansion, of course).
 .cindex "domain list" "matching by lookup"
 If a pattern starts with the name of a single-key lookup type followed by a
 semicolon (for example, &"dbm;"& or &"lsearch;"&), the remainder of the pattern
-must be a file name in a suitable format for the lookup type. For example, for
+must be a filename in a suitable format for the lookup type. For example, for
 &"cdb;"& it must be an absolute path:
 .code
 domains = cdb;/etc/mail/local_domains.cdb
@@ -9108,7 +9108,7 @@ default.
 The domain portion of an address is always lowercased before matching it to an
 address list. The local part is lowercased by default, and any string
 comparisons that take place are done caselessly. This means that the data in
-the address list itself, in files included as plain file names, and in any file
+the address list itself, in files included as plain filenames, and in any file
 that is looked up using the &"@@"& mechanism, can be in any case. However, the
 keys in files that are looked up by a search type other than &(lsearch)& (which
 works caselessly) must be in lower case, because these lookups are not
@@ -9155,7 +9155,7 @@ types.
 
 .chapter "String expansions" "CHAPexpand"
 .scindex IIDstrexp "expansion" "of strings"
-Many strings in Exim's run time configuration are expanded before use. Some of
+Many strings in Exim's runtime configuration are expanded before use. Some of
 them are expanded every time they are used; others are expanded only once.
 
 When a string is being expanded it is copied verbatim from left to right except
@@ -9229,7 +9229,7 @@ using &%-be%& for reading files to which they do not have access.
 .oindex "&%-bem%&"
 If you want to test expansions that include variables whose values are taken
 from a message, there are two other options that can be used. The &%-bem%&
-option is like &%-be%& except that it is followed by a file name. The file is
+option is like &%-be%& except that it is followed by a filename. The file is
 read as a message before doing the test expansions. For example:
 .code
 exim -bem /tmp/test.message '$h_subject:'
@@ -9767,7 +9767,7 @@ Then given a message, you can check where it was scanned by looking at the
 &'X-Spam-Scanned:'& header line. If you know the secret, you can check that
 this header line is authentic by recomputing the authentication code from the
 host name, message ID and the &'Message-id:'& header line. This can be done
-using Exim's &%-be%& option, or by other means, for example by using the
+using Exim's &%-be%& option, or by other means, for example, by using the
 &'hmac_md5_hex()'& function in Perl.
 
 
@@ -10026,7 +10026,7 @@ For more discussion and an example, see section &<<SECTverifyPRVS>>&.
 .cindex "expansion" "inserting an entire file"
 .cindex "file" "inserting into expansion"
 .cindex "&%readfile%& expansion item"
-The file name and end-of-line string are first expanded separately. The file is
+The filename and end-of-line string are first expanded separately. The file is
 then read, and its contents replace the entire item. All newline characters in
 the file are replaced by the end-of-line string if it is present. Otherwise,
 newlines are left in the string.
@@ -10136,7 +10136,7 @@ This operation reduces a list to a single, scalar string. After expansion,
 <&'string1'&> is interpreted as a list, colon-separated by default, but the
 separator can be changed in the usual way. Then <&'string2'&> is expanded and
 assigned to the &$value$& variable. After this, each item in the <&'string1'&>
-list is assigned to &$item$& in turn, and <&'string3'&> is expanded for each of
+list is assigned to &$item$&, in turn, and <&'string3'&> is expanded for each of
 them. The result of that expansion is assigned to &$value$& before the next
 iteration. When the end of the list is reached, the final value of &$value$& is
 added to the expansion output. The &*reduce*& expansion item can be used in a
@@ -10460,9 +10460,9 @@ The number is converted to decimal and output as a string.
 The string must consist entirely of decimal digits. The number is converted to
 base 62 and output as a string of six characters, including leading zeros. In
 the few operating environments where Exim uses base 36 instead of base 62 for
-its message identifiers (because those systems do not have case-sensitive file
-names), base 36 is used by this operator, despite its name. &*Note*&: Just to
-be absolutely clear: this is &'not'& base64 encoding.
+its message identifiers (because those systems do not have case-sensitive
+filenames), base 36 is used by this operator, despite its name. &*Note*&: Just
+to be absolutely clear: this is &'not'& base64 encoding.
 
 .vitem &*${base62d:*&<&'base-62&~digits'&>&*}*&
 .cindex "&%base62d%& expansion item"
@@ -10637,7 +10637,7 @@ be useful for processing the output of the various hashing functions.
 .cindex "&%hexquote%& expansion item"
 This operator converts non-printable characters in a string into a hex
 escape form. Byte values between 33 (!) and 126 (~) inclusive are left
-as is, and other byte values are converted to &`\xNN`&, for example a
+as is, and other byte values are converted to &`\xNN`&, for example, a
 byte value 127 is converted to &`\x7f`&.
 
 
@@ -11962,7 +11962,7 @@ address that was connected to.
 .vindex "&$compile_number$&"
 The building process for Exim keeps a count of the number
 of times it has been compiled. This serves to distinguish different
-compilations of the same version of the program.
+compilations of the same version of Exim.
 
 .vitem &$config_dir$&
 .vindex "&$config_dir$&"
@@ -12277,7 +12277,7 @@ any prefix or suffix are in &$local_part_prefix$& and
 
 When a message is being delivered to a file, pipe, or autoreply transport as a
 result of aliasing or forwarding, &$local_part$& is set to the local part of
-the parent address, not to the file name or command (see &$address_file$& and
+the parent address, not to the filename or command (see &$address_file$& and
 &$address_pipe$&).
 
 When an ACL is running for a RCPT command, &$local_part$& contains the
@@ -12710,7 +12710,7 @@ the port value is -1 unless it has been set using the &%-oMi%& command line
 option.
 
 As well as being useful in ACLs (including the &"connect"& ACL), these variable
-could be used, for example, to make the file name for a TLS certificate depend
+could be used, for example, to make the filename for a TLS certificate depend
 on which interface and/or port is being used for the incoming connection. The
 values of &$received_ip_address$& and &$received_port$& are saved with any
 messages that are received, thus making these variables available at delivery
@@ -13913,7 +13913,7 @@ details.
 .chapter "Main configuration" "CHAPmainconfig"
 .scindex IIDconfima "configuration file" "main section"
 .scindex IIDmaiconf "main configuration"
-The first part of the run time configuration file contains three types of item:
+The first part of the runtime configuration file contains three types of item:
 
 .ilist
 Macro definitions: These lines start with an upper case letter. See section
@@ -14871,7 +14871,7 @@ When a message is delayed, Exim sends a warning message to the sender at
 intervals specified by this option. The data is a colon-separated list of times
 after which to send warning messages. If the value of the option is an empty
 string or a zero time, no warnings are sent. Up to 10 times may be given. If a
-message has been on the queue for longer than the last time, the last interval
+message has been in the queue for longer than the last time, the last interval
 between the times is used to compute subsequent warning times. For example,
 with
 .code
@@ -15477,7 +15477,7 @@ error.
 .option hold_domains main "domain list&!!" unset
 .cindex "domain" "delaying delivery"
 .cindex "delivery" "delaying certain domains"
-This option allows mail for particular domains to be held on the queue
+This option allows mail for particular domains to be held in the queue
 manually. The option is overridden if a message delivery is forced with the
 &%-M%&, &%-qf%&, &%-Rf%& or &%-Sf%& options, and also while testing or
 verifying addresses using &%-bt%& or &%-bv%&. Otherwise, if a domain matches an
@@ -15607,7 +15607,7 @@ suffer temporary delivery failures are of course retried in the usual way.)
 
 After a permanent delivery failure, bounce messages are frozen,
 because there is no sender to whom they can be returned. When a frozen bounce
-message has been on the queue for more than the given time, it is unfrozen at
+message has been in the queue for more than the given time, it is unfrozen at
 the next queue run, and a further delivery is attempted. If delivery fails
 again, the bounce message is discarded. This makes it possible to keep failed
 bounce messages around for a shorter time than the normal maximum retry time
@@ -15875,8 +15875,8 @@ section &<<SECTmessiden>>&.
 This option sets the path which is used to determine the names of Exim's log
 files, or indicates that logging is to be to syslog, or both. It is expanded
 when Exim is entered, so it can, for example, contain a reference to the host
-name. If no specific path is set for the log files at compile or run time,
-or if the option is unset at run time (i.e.  &`log_file_path = `&)
+name. If no specific path is set for the log files at compile or runtime,
+or if the option is unset at runtime (i.e.  &`log_file_path = `&)
 they are written in a sub-directory called &_log_& in Exim's spool directory.
 Chapter &<<CHAPlog>>& contains further details about Exim's logging, and
 section &<<SECTwhelogwri>>& describes how the contents of &%log_file_path%& are
@@ -16390,7 +16390,7 @@ See also &%prod_requires_admin%& and &%commandline_checks_require_admin%&.
 .cindex "queueing incoming messages"
 .cindex "message" "queueing unconditionally"
 If &%queue_only%& is set, a delivery process is not automatically started
-whenever a message is received. Instead, the message waits on the queue for the
+whenever a message is received. Instead, the message waits in the queue for the
 next queue run. Even if &%queue_only%& is false, incoming messages may not get
 delivered immediately when certain conditions (such as heavy load) occur.
 
@@ -16498,7 +16498,7 @@ When this option is set, a delivery process is started whenever a message is
 received, routing is performed, and local deliveries take place.
 However, if any SMTP deliveries are required for domains that match
 &%queue_smtp_domains%&, they are not immediately delivered, but instead the
-message waits on the queue for the next queue run. Since routing of the message
+message waits in the queue for the next queue run. Since routing of the message
 has taken place, Exim knows to which remote hosts it must be delivered, and so
 when the queue run happens, multiple messages for the same host are delivered
 over a single SMTP connection. The &%-odqs%& command line option causes all
@@ -16511,7 +16511,7 @@ SMTP deliveries to be queued in this way, and is equivalent to setting
 .cindex "timeout" "for non-SMTP input"
 This option sets the timeout for accepting a non-SMTP message, that is, the
 maximum time that Exim waits when reading a message on the standard input. If
-the value is zero, it will wait for ever. This setting is overridden by the
+the value is zero, it will wait forever. This setting is overridden by the
 &%-or%& command line option. The timeout for incoming SMTP messages is
 controlled by &%smtp_receive_timeout%&.
 
@@ -16842,7 +16842,7 @@ doing this processing, it cannot accept any other incoming connections.
 .cindex "message" "queueing by SMTP connection count"
 If the number of simultaneous incoming SMTP connections being handled via the
 listening daemon exceeds this value, messages received by SMTP are just placed
-on the queue; no delivery processes are started automatically. The count is
+in the queue; no delivery processes are started automatically. The count is
 fixed at the start of an SMTP connection. It cannot be updated in the
 subprocess that receives messages, and so the queueing or not queueing applies
 to all messages received in the same connection.
@@ -16863,7 +16863,7 @@ This option limits the number of delivery processes that Exim starts
 automatically when receiving messages via SMTP, whether via the daemon or by
 the use of &%-bs%& or &%-bS%&. If the value of the option is greater than zero,
 and the number of messages received in a single SMTP session exceeds this
-number, subsequent messages are placed on the queue, but no delivery processes
+number, subsequent messages are placed in the queue, but no delivery processes
 are started. This helps to limit the number of Exim processes when a server
 restarts after downtime and there is a lot of mail waiting for it on other
 systems. On large systems, the default should probably be increased, and on
@@ -17205,11 +17205,11 @@ automatically deleted.
 
 When &%split_spool_directory%& is set, the behaviour of queue runner processes
 changes. Instead of creating a list of all messages in the queue, and then
-trying to deliver each one in turn, it constructs a list of those in one
+trying to deliver each one, in turn, it constructs a list of those in one
 sub-directory and tries to deliver them, before moving on to the next
 sub-directory. The sub-directories are processed in a random order. This
 spreads out the scanning of the input directories, and uses less memory. It is
-particularly beneficial when there are lots of messages on the queue. However,
+particularly beneficial when there are lots of messages in the queue. However,
 if &%queue_run_in_order%& is set, none of this new processing happens. The
 entire queue has to be scanned and sorted before any deliveries can start.
 
@@ -17418,7 +17418,7 @@ TCP_NODELAY.
 .cindex "frozen messages" "timing out"
 .cindex "timeout" "frozen messages"
 If &%timeout_frozen_after%& is set to a time greater than zero, a frozen
-message of any kind that has been on the queue for longer than the given time
+message of any kind that has been in the queue for longer than the given time
 is automatically cancelled at the next queue run. If the frozen message is a
 bounce message, it is just discarded; otherwise, a bounce is sent to the
 sender, in a similar manner to cancellation by the &%-Mg%& command line option.
@@ -17426,7 +17426,7 @@ If you want to timeout frozen bounce messages earlier than other kinds of
 frozen message, see &%ignore_bounce_errors_after%&.
 
 &*Note:*& the default value of zero means no timeouts; with this setting,
-frozen messages remain on the queue forever (except for any frozen bounce
+frozen messages remain in the queue forever (except for any frozen bounce
 messages that are released by &%ignore_bounce_errors_after%&).
 
 
@@ -17872,7 +17872,7 @@ See &%uucp_from_pattern%& above.
 .cindex "customizing" "warning message"
 This option defines a template file containing paragraphs of text to be used
 for constructing the warning message which is sent by Exim when a message has
-been on the queue for a specified amount of time, as specified by
+been in the queue for a specified amount of time, as specified by
 &%delay_warning%&. Details of the file's contents are given in chapter
 &<<CHAPemsgcust>>&. See also &%bounce_message_file%&.
 
@@ -18657,7 +18657,7 @@ full list of the order in which preconditions are evaluated.) However, as
 these options are all expanded, you can use the &%exists%& expansion condition
 to make such tests. The &%require_files%& option is intended for checking files
 that the router may be going to use internally, or which are needed by a
-transport (for example &_.procmailrc_&).
+transport (e.g., &_.procmailrc_&).
 
 During delivery, the &[stat()]& function is run as root, but there is a
 facility for some checking of the accessibility of a file by another user.
@@ -18697,8 +18697,8 @@ The default action for handling an unresolved EACCES is to consider it to
 be caused by a configuration error, and routing is deferred because the
 existence or non-existence of the file cannot be determined. However, in some
 circumstances it may be desirable to treat this condition as if the file did
-not exist. If the file name (or the exclamation mark that precedes the file
-name for non-existence) is preceded by a plus sign, the EACCES error is treated
+not exist. If the filename (or the exclamation mark that precedes the filename
+for non-existence) is preceded by a plus sign, the EACCES error is treated
 as if the file did not exist. For example:
 .code
 require_files = +/some/file
@@ -20304,7 +20304,7 @@ Otherwise, the data must be a comma-separated list of redirection items, as
 described in the next section.
 .endlist
 
-When a message is redirected to a file (a &"mail folder"&), the file name given
+When a message is redirected to a file (a &"mail folder"&), the filename given
 in a non-filter redirection list must always be an absolute path. A filter may
 generate a relative path &-- how this is handled depends on the transport's
 configuration. See section &<<SECTfildiropt>>& for a discussion of this issue
@@ -20316,7 +20316,7 @@ for the &(appendfile)& transport.
 .cindex "address redirection" "non-filter list items"
 When the redirection data is not an Exim or Sieve filter, for example, if it
 comes from a conventional alias or forward file, it consists of a list of
-addresses, file names, pipe commands, or certain special items (see section
+addresses, filenames, pipe commands, or certain special items (see section
 &<<SECTspecitredli>>& below). The special items can be individually enabled or
 disabled by means of options whose names begin with &%allow_%& or &%forbid_%&,
 depending on their default values. The items in the list are separated by
@@ -20450,14 +20450,14 @@ parse as a valid RFC 2822 address that includes a domain. For example,
 .code
 /home/world/minbari
 .endd
-is treated as a file name, but
+is treated as a filename, but
 .code
 /s=molari/o=babylon/@x400gate.way
 .endd
-is treated as an address. For a file name, a transport must be specified using
+is treated as an address. For a filename, a transport must be specified using
 the &%file_transport%& option. However, if the generated path name ends with a
 forward slash character, it is interpreted as a directory name rather than a
-file name, and &%directory_transport%& is used instead.
+filename, and &%directory_transport%& is used instead.
 
 Normally, either the router or the transport specifies a user and a group under
 which to run the delivery. The default is to use the Exim user and group.
@@ -20561,7 +20561,7 @@ lookup and in &':include:'& files.
 
 During routing for message delivery (as opposed to verification), a redirection
 containing &':fail:'& causes an immediate failure of the incoming address,
-whereas &':defer:'& causes the message to remain on the queue so that a
+whereas &':defer:'& causes the message to remain in the queue so that a
 subsequent delivery attempt can happen at a later time. If an address is
 deferred for too long, it will ultimately fail, because the normal retry
 rules still apply.
@@ -20766,7 +20766,7 @@ A &(redirect)& router sets up a direct delivery to a file when a path name not
 ending in a slash is specified as a new &"address"&. The transport used is
 specified by this option, which, after expansion, must be the name of a
 configured transport. This should normally be an &(appendfile)& transport. When
-it is running, the file name is in &$address_file$&.
+it is running, the filename is in &$address_file$&.
 
 
 .option filter_prepend_home redirect boolean true
@@ -22061,7 +22061,7 @@ require "fileinto";
 fileinto "folder23";
 .endd
 In this situation, the expansion of &%file%& or &%directory%& in the transport
-must transform the relative path into an appropriate absolute file name. In the
+must transform the relative path into an appropriate absolute filename. In the
 case of Sieve filters, the name &'inbox'& must be handled. It is the name that
 is used as a result of a &"keep"& action in the filter. This example shows one
 way of handling this requirement:
@@ -22188,9 +22188,9 @@ beneath.
 
 The option must be set to one of the words &"anywhere"&, &"inhome"&, or
 &"belowhome"&. In the second and third cases, a home directory must have been
-set for the transport. This option is not useful when an explicit file name is
-given for normal mailbox deliveries. It is intended for the case when file
-names are generated from users' &_.forward_& files. These are usually handled
+set for the transport. This option is not useful when an explicit filename is
+given for normal mailbox deliveries. It is intended for the case when filenames
+are generated from users' &_.forward_& files. These are usually handled
 by an &(appendfile)& transport called &%address_file%&. See also
 &%file_must_exist%&.
 
@@ -22612,14 +22612,14 @@ See &%quota%& above.
 This option applies when one of the delivery modes that writes a separate file
 for each message is being used. When Exim wants to find the size of one of
 these files in order to test the quota, it first checks &%quota_size_regex%&.
-If this is set to a regular expression that matches the file name, and it
+If this is set to a regular expression that matches the filename, and it
 captures one string, that string is interpreted as a representation of the
 file's size. The value of &%quota_size_regex%& is not expanded.
 
 This feature is useful only when users have no shell access to their mailboxes
 &-- otherwise they could defeat the quota simply by renaming the files. This
 facility can be used with maildir deliveries, by setting &%maildir_tag%& to add
-the file length to the file name. For example:
+the file length to the filename. For example:
 .code
 maildir_tag = ,S=$message_size
 quota_size_regex = ,S=(\d+)
@@ -22628,8 +22628,8 @@ An alternative to &$message_size$& is &$message_linecount$&, which contains the
 number of lines in the message.
 
 The regular expression should not assume that the length is at the end of the
-file name (even though &%maildir_tag%& puts it there) because maildir MUAs
-sometimes add other information onto the ends of message file names.
+filename (even though &%maildir_tag%& puts it there) because maildir MUAs
+sometimes add other information onto the ends of message filenames.
 
 Section &<<SECID136>>& contains further information.
 
@@ -22808,7 +22808,7 @@ Create a &"hitching post"& file whose name is that of the lock file with the
 current time, primary host name, and process id added, by opening for writing
 as a new file. If this fails with an access error, delivery is deferred.
 .next
-Close the hitching post file, and hard link it to the lock file name.
+Close the hitching post file, and hard link it to the lock filename.
 .next
 If the call to &[link()]& succeeds, creation of the lock file has succeeded.
 Unlink the hitching post name.
@@ -22975,11 +22975,11 @@ directory that is defined by the &%directory%& option (the &"delivery
 directory"&). If the delivery is successful, the file is renamed into the
 &_new_& subdirectory.
 
-In the file name, <&'stime'&> is the current time of day in seconds, and
+In the filename, <&'stime'&> is the current time of day in seconds, and
 <&'mtime'&> is the microsecond fraction of the time. After a maildir delivery,
 Exim checks that the time-of-day clock has moved on by at least one microsecond
 before terminating the delivery process. This guarantees uniqueness for the
-file name. However, as a precaution, Exim calls &[stat()]& for the file before
+filename. However, as a precaution, Exim calls &[stat()]& for the file before
 opening it. If any response other than ENOENT (does not exist) is given,
 Exim waits 2 seconds and tries again, up to &%maildir_retries%& times.
 
@@ -23280,7 +23280,7 @@ recipient is kept when the message is specified by the transport. &*Note*&:
 This does not apply to &'Cc:'& or &'Bcc:'& recipients.
 
 If &%once%& is unset, or is set to an empty string, the message is always sent.
-By default, if &%once%& is set to a non-empty file name, the message
+By default, if &%once%& is set to a non-empty filename, the message
 is not sent if a potential recipient is already listed in the database.
 However, if the &%once_repeat%& option specifies a time greater than zero, the
 message is sent if that much time has elapsed since a message was last sent to
@@ -25178,7 +25178,7 @@ transport time.
 .section "Testing the rewriting rules that apply on input" "SECID149"
 .cindex "rewriting" "testing"
 .cindex "testing" "rewriting"
-Exim's input rewriting configuration appears in a part of the run time
+Exim's input rewriting configuration appears in a part of the runtime
 configuration file headed by &"begin rewrite"&. It can be tested by the
 &%-brw%& command line option. This takes an address (which can be a full RFC
 2822 address) as its argument. The output is a list of how the address would be
@@ -26031,7 +26031,7 @@ intermittently available, or when a message has some attribute that prevents
 its delivery when others to the same address get through. In this situation,
 because some messages are successfully delivered, the &"retry clock"& for the
 host or address keeps getting reset by the successful deliveries, and so
-failing messages remain on the queue for ever because the cutoff time is never
+failing messages remain in the queue for ever because the cutoff time is never
 reached.
 
 Two exceptional actions are applied to prevent this happening. The first
@@ -26063,7 +26063,7 @@ considered immediately.
 .chapter "SMTP authentication" "CHAPSMTPAUTH"
 .scindex IIDauthconf1 "SMTP" "authentication configuration"
 .scindex IIDauthconf2 "authentication"
-The &"authenticators"& section of Exim's run time configuration is concerned
+The &"authenticators"& section of Exim's runtime configuration is concerned
 with SMTP authentication. This facility is an extension to the SMTP protocol,
 described in RFC 2554, which allows a client SMTP host to authenticate itself
 to a server. This is a common way for a server to recognize clients that are
@@ -26949,7 +26949,7 @@ the Cyrus interface, so if your Cyrus library can do, for example, CRAM-MD5,
 then so can the &(cyrus_sasl)& authenticator. By default it uses the public
 name of the driver to determine which mechanism to support.
 
-Where access to some kind of secret file is required, for example in GSSAPI
+Where access to some kind of secret file is required, for example, in GSSAPI
 or CRAM-MD5, it is worth noting that the authenticator runs as the Exim
 user, and that the Cyrus SASL library has no way of escalating privileges
 by default. You may also find you need to set environment variables,
@@ -28620,7 +28620,7 @@ incompatible specification changes prior to reaching RFC status).
 .cindex "control of incoming mail"
 .cindex "message" "controlling incoming"
 .cindex "policy control" "access control lists"
-Access Control Lists (ACLs) are defined in a separate section of the run time
+Access Control Lists (ACLs) are defined in a separate section of the runtime
 configuration file, headed by &"begin acl"&. Each ACL definition starts with a
 name, terminated by a colon. Here is a complete ACL section that contains just
 one very small ACL:
@@ -28854,7 +28854,7 @@ for this can be disabled when the variable &$prdr_requested$&
 is &"yes"&.
 Any required difference in behaviour of the main DATA-time
 ACL should however depend on the PRDR-time ACL having run, as Exim
-will avoid doing so in some situations (e.g.  single-recipient mails).
+will avoid doing so in some situations (e.g. single-recipient mails).
 
 See also the &%prdr_enable%& global option
 and the &%hosts_try_prdr%& smtp transport option.
@@ -28946,7 +28946,7 @@ configuration file; there are other possibilities. Having expanded the
 string, Exim searches for an ACL as follows:
 
 .ilist
-If the string begins with a slash, Exim uses it as a file name, and reads its
+If the string begins with a slash, Exim uses it as a filename, and reads its
 contents as an ACL. The lines are processed in the same way as lines in the
 Exim configuration file. In particular, continuation lines are supported, blank
 lines are ignored, as are lines whose first non-whitespace character is &"#"&.
@@ -30791,7 +30791,8 @@ MX hosts or nameservers of an email sender address. For an example, see section
 .section "DNS lists keyed on domain names" "SECID202"
 .cindex "DNS list" "keyed by domain name"
 There are some lists that are keyed on domain names rather than inverted IP
-addresses.  No reversing of components is used
+addresses (see, e.g., the &'domain based zones'& link at
+&url(http://www.rfc-ignorant.org/)). No reversing of components is used
 with these lists. You can change the name that is looked up in a DNS list by
 listing it after the domain name, introduced by a slash. For example,
 .code
@@ -31241,7 +31242,7 @@ rate at which a recipient receives messages, you can use the key
 ACL.
 
 Each &%ratelimit%& condition can have up to four options. A &%per_*%& option
-specifies what Exim measures the rate of, for example messages or recipients
+specifies what Exim measures the rate of, for example, messages or recipients
 or bytes. You can adjust the measurement using the &%unique=%& and/or
 &%count=%& options. You can also control when Exim updates the recorded rate
 using a &%strict%&, &%leaky%&, or &%readonly%& option. The options are
@@ -32650,7 +32651,7 @@ spamd_address = 127.0.0.1 11333 variant=rspamd
 
 As of version 2.60, &%SpamAssassin%& also supports communication over UNIX
 sockets. If you want to us these, supply &%spamd_address%& with an absolute
-file name instead of an address/port pair:
+filename instead of an address/port pair:
 .code
 spamd_address = /var/run/spamd_socket
 .endd
@@ -32777,7 +32778,7 @@ available for use at delivery time.
 
 .vlist
 .vitem &$spam_score$&
-The spam score of the message, for example &"3.4"& or &"30.5"&. This is useful
+The spam score of the message, for example, &"3.4"& or &"30.5"&. This is useful
 for inclusion in log or reject messages.
 
 .vitem &$spam_score_int$&
@@ -32887,13 +32888,13 @@ the value can be:
 .next
 The string &"default"&. In that case, the file is put in the temporary
 &"default"& directory <&'spool_directory'&>&_/scan/_&<&'message_id'&>&_/_& with
-a sequential file name consisting of the message id and a sequence number. The
+a sequential filename consisting of the message id and a sequence number. The
 full path and name is available in &$mime_decoded_filename$& after decoding.
 .next
 A full path name starting with a slash. If the full name is an existing
 directory, it is used as a replacement for the default directory. The filename
 is then sequentially assigned. If the path does not exist, it is used as
-the full path and file name.
+the full path and filename.
 .next
 If the string does not start with a slash, it is used as the
 filename, and the default path is then used.
@@ -32981,7 +32982,7 @@ empty string.
 
 .vitem &$mime_decoded_filename$&
 This variable is set only after the &%decode%& modifier (see above) has been
-successfully run. It contains the full path and file name of the file
+successfully run. It contains the full path and filename of the file
 containing the decoded data.
 .endlist
 
@@ -33032,7 +33033,7 @@ condition = ${if eq{$mime_content_type}{text/html}{1}{0}}
 .endd
 .vitem &$mime_is_multipart$&
 This variable has the value 1 (true) when the current part has the main type
-&"multipart"&, for example &"multipart/alternative"& or &"multipart/mixed"&.
+&"multipart"&, for example, &"multipart/alternative"& or &"multipart/mixed"&.
 Since multipart entities only serve as containers for other parts, you may not
 want to carry out specific actions on them.
 
@@ -33154,7 +33155,7 @@ function controls whether the message is actually accepted or not. There is a
 commented template function (that just accepts the message) in the file
 _src/local_scan.c_.
 
-If you want to make use of Exim's run time configuration file to set options
+If you want to make use of Exim's runtime configuration file to set options
 for your &[local_scan()]& function, you must also set
 .code
 LOCAL_SCAN_HAS_OPTIONS=yes
@@ -35481,7 +35482,7 @@ accepted.
 
 .chapter "Customizing bounce and warning messages" "CHAPemsgcust" &&&
          "Customizing messages"
-When a message fails to be delivered, or remains on the queue for more than a
+When a message fails to be delivered, or remains in the queue for more than a
 configured amount of time, Exim sends a message to the original sender, or
 to an alternative configured address. The text of these messages is built into
 the code of Exim, but it is possible to change it, either by adding a single
@@ -35594,7 +35595,7 @@ A message ${if eq{$sender_address}{$warn_message_recipients}
 <$sender_address>
 
 }}has not been delivered to all of its recipients after
-more than $warn_message_delay on the queue on $primary_hostname.
+more than $warn_message_delay in the queue on $primary_hostname.
 
 The message identifier is:     $message_exim_id
 The subject of the message is: $h_subject
@@ -35676,7 +35677,7 @@ such file, the router declines, but because &%no_more%& is set, no subsequent
 routers are tried, and so the whole delivery fails.
 
 The &%forbid_pipe%& and &%forbid_file%& options prevent a local part from being
-expanded into a file name or a pipe delivery, which is usually inappropriate in
+expanded into a filename or a pipe delivery, which is usually inappropriate in
 a mailing list.
 
 .oindex "&%errors_to%&"
@@ -35932,7 +35933,7 @@ part in the file to find a new address (or list of addresses). The &%no_more%&
 setting ensures that if the lookup fails (leading to &%data%& being an empty
 string), Exim gives up on the address without trying any subsequent routers.
 
-This one router can handle all the virtual domains because the alias file names
+This one router can handle all the virtual domains because the alias filenames
 follow a fixed pattern. Permissions can be arranged so that appropriate people
 can edit the different alias files. A successful aliasing operation results in
 a new envelope recipient address, which is then routed from scratch.
@@ -36082,7 +36083,7 @@ Nevertheless there are some features that can be used.
 
 .section "Exim on the upstream server host" "SECID247"
 It is tempting to arrange for incoming mail for the intermittently connected
-host to remain on Exim's queue until the client connects. However, this
+host to remain in Exim's queue until the client connects. However, this
 approach does not scale very well. Two different kinds of waiting message are
 being mixed up in the same queue &-- those that cannot be delivered because of
 some temporary problem, and those that are waiting for their destination host
@@ -36339,14 +36340,14 @@ need to tweak syslog to prevent it syncing the file with each write &-- on
 Linux this has been seen to make syslog take 90% plus of CPU time.
 
 The destination for Exim's logs is configured by setting LOG_FILE_PATH in
-&_Local/Makefile_& or by setting &%log_file_path%& in the run time
+&_Local/Makefile_& or by setting &%log_file_path%& in the runtime
 configuration. This latter string is expanded, so it can contain, for example,
 references to the host name:
 .code
 log_file_path = /var/log/$primary_hostname/exim_%slog
 .endd
 It is generally advisable, however, to set the string in &_Local/Makefile_&
-rather than at run time, because then the setting is available right from the
+rather than at runtime, because then the setting is available right from the
 start of Exim's execution. Otherwise, if there's something it wants to log
 before it has read the configuration file (for example, an error in the
 configuration file) it will not use the path you want, and may not be able to
@@ -36369,11 +36370,11 @@ equivalent to the setting:
 .code
 log_file_path = $spool_directory/log/%slog
 .endd
-If you do not specify anything at build time or run time,
-or if you unset the option at run time (i.e. &`log_file_path = `&),
+If you do not specify anything at build time or runtime,
+or if you unset the option at runtime (i.e. &`log_file_path = `&),
 that is where the logs are written.
 
-A log file path may also contain &`%D`& or &`%M`& if datestamped log file names
+A log file path may also contain &`%D`& or &`%M`& if datestamped log filenames
 are in use &-- see section &<<SECTdatlogfil>>& below.
 
 Here are some examples of possible settings:
@@ -37046,7 +37047,7 @@ client's ident port times out.
 &%incoming_interface%&: The interface on which a message was received is added
 to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
-added to other SMTP log lines, for example &"SMTP connection from"&, to
+added to other SMTP log lines, for example, &"SMTP connection from"&, to
 rejection lines, and (despite the name) to outgoing &"=>"& and &"->"& lines.
 The latter can be disabled by turning off the &%outgoing_interface%& option.
 .next
@@ -37504,7 +37505,7 @@ There is one more option, &%-h%&, which outputs a list of options.
 .cindex "&'exiqsumm'&"
 .cindex "queue" "summary"
 The &'exiqsumm'& utility is a Perl script which reads the output of &`exim
--bp`& and produces a summary of the messages on the queue. Thus, you use it by
+-bp`& and produces a summary of the messages in the queue. Thus, you use it by
 running a command such as
 .code
 exim -bp | exiqsumm
@@ -37551,11 +37552,11 @@ included in &'exigrep'&'s output without any additional lines. The usage is:
 .display
 &`exigrep [-t<`&&'n'&&`>] [-I] [-l] [-M] [-v] <`&&'pattern'&&`> [<`&&'log file'&&`>] ...`&
 .endd
-If no log file names are given on the command line, the standard input is read.
+If no log filenames are given on the command line, the standard input is read.
 
 The &%-t%& argument specifies a number of seconds. It adds an additional
 condition for message selection. Messages that are complete are shown only if
-they spent more than <&'n'&> seconds on the queue.
+they spent more than <&'n'&> seconds in the queue.
 
 By default, &'exigrep'& does case-insensitive matching. The &%-I%& option
 makes it case-sensitive. This may give a performance improvement when searching
@@ -37618,8 +37619,8 @@ overriding the script's default, which is to find the setting from Exim's
 configuration.
 .endlist
 
-Each time &'exicyclog'& is run the file names get &"shuffled down"& by one. If
-the main log file name is &_mainlog_& (the default) then when &'exicyclog'& is
+Each time &'exicyclog'& is run the filenames get &"shuffled down"& by one. If
+the main log filename is &_mainlog_& (the default) then when &'exicyclog'& is
 run &_mainlog_& becomes &_mainlog.01_&, the previous &_mainlog.01_& becomes
 &_mainlog.02_& and so on, up to the limit that is set in the script or by the
 &%-k%& option. Log files whose numbers exceed the limit are discarded. Reject
@@ -37689,7 +37690,7 @@ least one address that failed.
 The remainder of the output is in sections that can be independently disabled
 or modified by various options. It consists of a summary of deliveries by
 transport, histograms of messages received and delivered per time interval
-(default per hour), information about the time messages spent on the queue,
+(default per hour), information about the time messages spent in the queue,
 a list of relayed messages, lists of the top fifty sending hosts, local
 senders, destination hosts, and destination local users by count and by volume,
 and a list of delivery errors that occurred.
@@ -37772,9 +37773,9 @@ well.
 
 .cindex "USE_DB"
 If the native DB interface is in use (USE_DB is set in a compile-time
-configuration file &-- this is common in free versions of Unix) the two file
-names must be different, because in this mode the Berkeley DB functions create
-a single output file using exactly the name given. For example,
+configuration file &-- this is common in free versions of Unix) the two
+filenames must be different, because in this mode the Berkeley DB functions
+create a single output file using exactly the name given. For example,
 .code
 exim_dbmbuild /etc/aliases /etc/aliases.db
 .endd
@@ -37786,7 +37787,7 @@ Unix), two files are used, with the suffixes &_.dir_& and &_.pag_&. In this
 environment, the suffixes are added to the second argument of
 &'exim_dbmbuild'&, so it can be the same as the first. This is also the case
 when the Berkeley functions are used in compatibility mode (though this is not
-recommended), because in that case it adds a &_.db_& suffix to the file name.
+recommended), because in that case it adds a &_.db_& suffix to the filename.
 
 If a duplicate key is encountered, the program outputs a warning, and when it
 finishes, its return code is 1 rather than zero, unless the &%-noduperr%&
@@ -38042,7 +38043,7 @@ default is to create a lock file and also to use &[fcntl()]& locking on the
 mailbox, which is the same as Exim's default. The use of &%-flock%& or
 &%-fcntl%& requires that the file be writeable; the use of &%-lockfile%&
 requires that the directory containing the file be writeable. Locking by lock
-file does not last for ever; Exim assumes that a lock file is expired if it is
+file does not last forever; Exim assumes that a lock file is expired if it is
 more than 30 minutes old.
 
 The &%-mbx%& option can be used with either or both of &%-fcntl%& or
@@ -38133,7 +38134,7 @@ Eximon*highlight: gray
 End
 .endd
 .cindex "admin user"
-In order to see the contents of messages on the queue, and to operate on them,
+In order to see the contents of messages in the queue, and to operate on them,
 &'eximon'& must either be run as root or by an admin user.
 
 The command-line parameters of &'eximon'& are passed to &_eximon.bin_& and may
@@ -38153,7 +38154,7 @@ different parts of the display.
 
 .section "The stripcharts" "SECID265"
 .cindex "stripchart"
-The first stripchart is always a count of messages on the queue. Its name can
+The first stripchart is always a count of messages in the queue. Its name can
 be configured by setting QUEUE_STRIPCHART_NAME in the
 &_Local/eximon.conf_& file. The remaining stripcharts are defined in the
 configuration script by regular expression matches on log file entries, making
@@ -38269,7 +38270,7 @@ window.
 .section "The queue display" "SECID268"
 .cindex "queue" "display in monitor"
 The bottom section of the monitor window contains a list of all messages that
-are on the queue, which includes those currently being received or delivered,
+are in the queue, which includes those currently being received or delivered,
 as well as those awaiting delivery. The size of this subwindow is controlled by
 parameters in the configuration file &_Local/eximon.conf_&, and the frequency
 at which it is updated is controlled by another parameter in the same file &--
@@ -38278,7 +38279,7 @@ there is an &"Update"& action button just above the display which can be used
 to force an update of the queue display at any time.
 
 When a host is down for some time, a lot of pending mail can build up for it,
-and this can make it hard to deal with other messages on the queue. To help
+and this can make it hard to deal with other messages in the queue. To help
 with this situation there is a button next to &"Update"& called &"Hide"&. If
 pressed, a dialogue box called &"Hide addresses ending with"& is put up. If you
 type anything in here and press &"Return"&, the text is added to a chain of
@@ -38299,7 +38300,7 @@ queue display to use in the dialogue box, you have to do the cutting before
 pressing the &"Hide"& button.
 
 The queue display contains, for each unhidden queued message, the length of
-time it has been on the queue, the size of the message, the message id, the
+time it has been in the queue, the size of the message, the message id, the
 message sender, and the first undelivered recipient, all on one line. If it is
 a bounce message, the sender is shown as &"<>"&. If there is more than one
 recipient to which the message has not yet been delivered, subsequent ones are
@@ -38347,7 +38348,7 @@ information and headers is displayed in a new text window. See chapter
 &'body'&: The contents of the spool file containing the body of the message are
 displayed in a new text window. There is a default limit of 20,000 bytes to the
 amount of data displayed. This can be changed by setting the BODY_MAX
-option at compile time, or the EXIMON_BODY_MAX option at run time.
+option at compile time, or the EXIMON_BODY_MAX option at runtime.
 .next
 &'deliver message'&: A call to Exim is made using the &%-M%& option to request
 delivery of the message. This causes an automatic thaw if the message is
@@ -38453,9 +38454,9 @@ penetrated the Exim (but not the root) account. These options are as follows:
 
 .ilist
 ALT_CONFIG_PREFIX can be set to a string that is required to match the
-start of any file names used with the &%-C%& option. When it is set, these file
-names are also not allowed to contain the sequence &"/../"&. (However, if the
-value of the &%-C%& option is identical to the value of CONFIGURE_FILE in
+start of any filenames used with the &%-C%& option. When it is set, these
+filenames are also not allowed to contain the sequence &"/../"&. (However, if
+the value of the &%-C%& option is identical to the value of CONFIGURE_FILE in
 &_Local/Makefile_&, Exim ignores &%-C%& and proceeds as usual.) There is no
 default setting for &%ALT_CONFIG_PREFIX%&.
 
@@ -38522,7 +38523,7 @@ receiving messages and delivering them externally over SMTP, and it is
 obviously more secure if Exim does not run as root except when necessary.
 For this reason, a user and group for Exim to use must be defined in
 &_Local/Makefile_&. These are known as &"the Exim user"& and &"the Exim
-group"&. Their values can be changed by the run time configuration, though this
+group"&. Their values can be changed by the runtime configuration, though this
 is not recommended. Often a user called &'exim'& is used, but some sites use
 &'mail'& or another user name altogether.
 

@@ -67,8 +67,8 @@ Paul Kelly                MySQL interface
 Ian Kirk                  Radius support
 Stuart Levy               Replacement for broken inet_ntoa() on IRIX
 Stuart Lynne              First code for LDAP
-Nigel Metheringham        Setting up the web site and mailing list
-                            Managing the web site and mailing list
+Nigel Metheringham        Setting up the website and mailing list
+                            Managing the website and mailing list
                             Interface to Berkeley DB
                             Support for cdb
                             Support for maildir
