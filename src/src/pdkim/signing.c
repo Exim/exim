@@ -831,6 +831,7 @@ const uschar *
 exim_dkim_verify(ev_ctx * verify_ctx, hashmethod hash, blob * data, blob * sig)
 {
 const EVP_MD * md;
+const uschar * where;
 
 switch (hash)
   {
@@ -859,18 +860,25 @@ else
   {
   EVP_PKEY_CTX * ctx;
 
-  if (  (ctx = EVP_PKEY_CTX_new(verify_ctx->key, NULL))
-     && EVP_PKEY_verify_init(ctx) > 0
-     && EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0
-     && EVP_PKEY_CTX_set_signature_md(ctx, md) > 0
-     && EVP_PKEY_verify(ctx, sig->data, sig->len,
-	  data->data, data->len) == 1
-     )
-    { EVP_PKEY_CTX_free(ctx); return NULL; }
+  if ((where = US"EVP_PKEY_CTX_new",
+	   (ctx = EVP_PKEY_CTX_new(verify_ctx->key, NULL))))
+    {
+    if (  (where = US"EVP_PKEY_verify_init",
+		      EVP_PKEY_verify_init(ctx) > 0)
+       && (where = US"EVP_PKEY_CTX_set_rsa_padding",
+		      EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) > 0)
+       && (where = US"EVP_PKEY_CTX_set_signature_md",
+		      EVP_PKEY_CTX_set_signature_md(ctx, md) > 0)
+       && (where = US"EVP_PKEY_verify",
+		      EVP_PKEY_verify(ctx, sig->data, sig->len,
+				      data->data, data->len) == 1)
+       )
+      { EVP_PKEY_CTX_free(ctx); return NULL; }
 
-  if (ctx) EVP_PKEY_CTX_free(ctx);
+    EVP_PKEY_CTX_free(ctx);
+    }
   }
-return US ERR_error_string(ERR_get_error(), NULL);
+return string_sprintf("%s: %s", where, ERR_error_string(ERR_get_error(), NULL));
 }
 
 

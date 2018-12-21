@@ -175,6 +175,11 @@ JH/37 Bug 2341: Send "message delayed" warning MDNs (restricted to external
 
 JH/38 Bug 2351: Log failures to extract envelope addresses from message headers.
 
+JH/39 OpenSSL: clear the error stack after an SSL_accept().  With anon-auth
+      cipher-suites, an error can be left on the stack even for a succeeding
+      accept; this results in impossible error messages when a later operation
+      actually does fail.
+
 
 Exim version 4.91
 -----------------

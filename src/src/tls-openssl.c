@@ -2281,6 +2281,8 @@ if (rc <= 0)
   }
 
 DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
+ERR_clear_error();	/* Even success can leave errors in the stack. Seen with
+			anon-authentication ciphersuite negociated. */
 
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize things. */
