@@ -5,6 +5,13 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim version 4.93
+-----------------
+
+JH/01 GnuTLS: repeat lowlevel read and write operations while they return error
+      codes indicating retry.  Under TLS1.3 this becomes required.
+
+
 Exim version 4.92
 -----------------
 
