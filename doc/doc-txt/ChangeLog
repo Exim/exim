@@ -8,7 +8,8 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 Exim version 4.93
 -----------------
 
-JH/01 Bug 2351: Log failures to extract envelope addresses from message headers.
+JH/01 GnuTLS: repeat lowlevel read and write operations while they return error
+      codes indicating retry.  Under TLS1.3 this becomes required.
 
 
 Exim version 4.92

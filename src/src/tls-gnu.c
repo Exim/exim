@@ -2561,8 +2561,12 @@ DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
 
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
-inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
-  MIN(ssl_xfer_buffer_size, lim));
+
+do
+  inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
+    MIN(ssl_xfer_buffer_size, lim));
+while (inbytes == GNUTLS_E_AGAIN);
+
 if (smtp_receive_timeout > 0) ALARM_CLR(0);
 
 if (had_command_timeout)		/* set by signal handler */
@@ -2617,7 +2621,7 @@ else if (inbytes == 0)
 
 else if (inbytes < 0)
   {
-debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
+  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
   record_io_error(state, (int) inbytes, US"recv", NULL);
   state->xfer_error = TRUE;
   return FALSE;
@@ -2739,17 +2743,20 @@ DEBUG(D_tls)
   debug_printf("Calling gnutls_record_recv(%p, %p, " SIZE_T_FMT ")\n",
       state->session, buff, len);
 
-inbytes = gnutls_record_recv(state->session, buff, len);
+do
+  inbytes = gnutls_record_recv(state->session, buff, len);
+while (inbytes == GNUTLS_E_AGAIN);
+
 if (inbytes > 0) return inbytes;
 if (inbytes == 0)
   {
   DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
   }
 else
-{
-debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
-record_io_error(state, (int)inbytes, US"recv", NULL);
-}
+  {
+  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
+  record_io_error(state, (int)inbytes, US"recv", NULL);
+  }
 
 return -1;
 }
@@ -2791,7 +2798,10 @@ while (left > 0)
   {
   DEBUG(D_tls) debug_printf("gnutls_record_send(SSL, %p, " SIZE_T_FMT ")\n",
       buff, left);
-  outbytes = gnutls_record_send(state->session, buff, left);
+
+  do
+    outbytes = gnutls_record_send(state->session, buff, left);
+  while (outbytes == GNUTLS_E_AGAIN);
 
   DEBUG(D_tls) debug_printf("outbytes=" SSIZE_T_FMT "\n", outbytes);
   if (outbytes < 0)
