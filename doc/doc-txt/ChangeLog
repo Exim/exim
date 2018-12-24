@@ -75,6 +75,9 @@ JH/36 Harder the handling of string-lists.  When a list consisted of a sole
       "<" character, which should be a list-separator specification, we walked
       off past the nul-terimation.
 
+AM/01 GnuTLS: repeat lowlevel read and write operations while they return error
+      codes indicating retry.  Under TLS1.3 this becomes required.
+
 
 Exim version 4.91
 -----------------
