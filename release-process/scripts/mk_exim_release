@@ -11,6 +11,7 @@ use File::Temp;
 use Getopt::Long;
 use IO::File;
 use Pod::Usage;
+use Digest::SHA;
 use if $ENV{DEBUG} => 'Smart::Comments';
 
 my $ME = basename $0;
@@ -310,6 +311,18 @@ __
 
     }
 
+    sub sign {
+        my $context = shift;
+        foreach my $tar (glob "$context->{d}{pkg_tars}/*") {
+            system gpg =>
+            '--quiet', '--batch',
+            defined $context->{gpg}{key}
+                ? ('--local-user' => $context->{gpg}{key})
+                : (),
+            '--detach-sig', '--armor', $tar;
+        }
+    }
+
     sub move_to_outdir {
         my $context = shift;
         make_path $context->{OUTDIR}, { verbose => $verbose || $debug };
@@ -428,16 +441,37 @@ __
             [ "xz", "xz", "--xz" ],
         );
 
+        my (%size, %sha256);
         foreach my $dir ( glob( catdir( $pkg_trees, ( 'exim*-' . $context->{v}{release} ) ) ) ) {
             my $dirname = ( splitdir($dir) )[-1];
             foreach my $comp (@COMPRESSIONS) {
                 my ($compkey, $extension, $flags) = @{$comp};
                 next unless $context->{compressors}{$compkey};
-                print "Creating: ${pkg_tars}/${dirname}.tar.${extension}\n" if $verbose || $debug;
-                0 == system("$tar cf ${pkg_tars}/${dirname}.tar.${extension} ${flags} ${ownership} -C ${pkg_trees} ${dirname}")
+
+                my $basename = "$dirname.tar.$extension";
+                my $outfile = catfile $pkg_tars, $basename;
+
+                print "Creating: $outfile\n" if $verbose || $debug;
+                0 == system("$tar cf $outfile ${flags} ${ownership} -C ${pkg_trees} ${dirname}")
                     or exit $? >> 8;
+
+                # calculate size and md5sum
+                $size{$basename} = -s $outfile;
+                $sha256{$basename} = do {
+                    my $sha = Digest::SHA->new(256);
+                    $sha->addfile($outfile);
+                    $sha->hexdigest;
+                };
             }
         }
+
+        # write the sizes file
+        open my $sizes, '>', $_ = catfile $pkg_tars, 'sizes.txt'
+            or die "$ME: Can't open `$_': $!\n";
+        print $sizes "SIZE($_) = $size{$_}\n" foreach sort keys %size;
+        print $sizes "\n";
+        print $sizes "SHA256($_) = $sha256{$_}\n" foreach sort keys %sha256;
+        close($sizes) or die "$ME: Can't close $_: $!\n";
     }
 
     sub do_cleanup {
@@ -472,6 +506,10 @@ MAIN: {
         web          => 1,
         delete       => 0,
         cleanup      => 1,
+        gpg => {
+            sign         => 1,
+            key          => undef,
+        },
     );
 
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
@@ -487,6 +525,8 @@ MAIN: {
         $context,
         qw(workspace|tmp=s outdir=s website_base|webgen_base=s tar_cmd=s make_cmd=s docs|build-docs! web|build-web!
            delete! cleanup!),
+        'sign!'         => \$context->{gpg}{sign},
+        'key=s'         => \$context->{gpg}{key},
         'lzip!'         => \$context->{compressors}{lzip},
         'verbose!'      => \$verbose,
         'debug!'        => \$debug,
@@ -494,11 +534,20 @@ MAIN: {
         'man!'          => sub { pod2usage(-verbose => 2, -exit => 0, -noperldoc => system('perldoc -V >/dev/null 2>&1')) },
     ) and @ARGV == 2 or pod2usage;
 
+    -f '.exim-project-root'
+        or die "$ME: please call this script from the root of the Exim project sources\n";
 
     $context->{OUTDIR} = pop @ARGV;
 
-    -f '.exim-project-root'
-        or die "$ME: please call this script from the root of the Exim project sources\n";
+    if ($context->{gpg}{sign}) {
+        $context->{gpg}{key} //= do { chomp($_ = qx/git config user.signingkey/); $_ }
+            || $ENV{EXIM_KEY}
+            || do {
+                warn "$ME: No GPG key, using default\n";
+                undef;
+            }
+    }
+
 
     warn "$ME: changed umask to 022\n" if umask(022) != 022;
 
@@ -514,6 +563,7 @@ MAIN: {
     $context->build_doc_packages_directory if $context->{docs};
 
     $context->create_tar_files;
+    $context->sign if $context->{gpg}{sign};
     $context->move_to_outdir;
     $context->do_cleanup if $context->{cleanup};
 
@@ -592,6 +642,25 @@ Display man page and exit cleanly. (default: don't do that)
 
 Use to override the path to the C<tar> command.  Need GNU tar in case
 I<lzip> is selected. (default: C<gtar>, if not found, use C<tar>)
+
+=item B<--[no]sign>
+
+Sign the created archive files (and the sizes.txt). (default: sign)
+
+=item B<--key> I<GPG key>
+
+Use this GPG key for signing. If nothing is specified the first one of this list
+is used:
+
+=over 8
+
+=item - git config user.signingkey
+
+=item - environment C<EXIM_KEY>
+
+=item - default GPG key
+
+=back
 
 =item B<--[no]web>
 
