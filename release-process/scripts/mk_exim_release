@@ -69,7 +69,8 @@ package Context {
         $context->{v}{security} = $+{security};
         $context->{v}{rc} = $+{rc};
 
-        die "$ME: This script doesn't work for versions prior 4.92-RCx. Please checkout an older version.\n"
+        die "$ME: This script doesn't work for versions prior 4.92-RCx. "
+           ."Please checkout an older version.\n"
             if $context->{v}{major} < 4
             or $context->{v}{major} == 4 && $context->{v}{minor} < 92;
 
@@ -425,34 +426,37 @@ __
         # those are artifacts of use of tar for backups and have no place in
         # software release packaging; if someone extracts as root, then they should
         # get sane file ownerships.
-        my $ownership = "";
-        if (`tar --help 2>&1` =~ /^\s*--owner=/m) {
-            $ownership .= " --owner=$context->{tar_perms}{user} --group=$context->{tar_perms}{group}";
+        my @ownership = (
+            '--owner' => $context->{tar_perms}{user},
+            '--group' => $context->{tar_perms}{group},
             # on this GNU tar, --numeric-owner works during creation too
-            $ownership .= " --numeric-owner";
-        }
+            '--numeric-owner'
+        ) if qx/tar --help 2>&1/ =~ /^\s*--owner=/m;
 
         # See also environment variables set in main, tuning compression levels
-        my @COMPRESSIONS = (
-            # compressors-dict-key, file-extension, flags-as-string
-            [ "gzip", "gz", "--gzip" ],
-            [ "bzip2", "bz2", "--bzip2" ],
-            [ "lzip", "lz", "--lzip" ],
-            [ "xz", "xz", "--xz" ],
+        my %COMPRESSION = (
+            gzip  => { extension => 'gz',  flags => '--gzip' },
+            bzip2 => { extension => 'bz2', flags => '--bzip2' },
+            lzip  => { extension => 'lz',  flags => '--lzip' },
+            xz    => { extension => 'xz',  flags => '--xz' },
         );
 
+
         my (%size, %sha256);
+
         foreach my $dir ( glob( catdir( $pkg_trees, ( 'exim*-' . $context->{v}{release} ) ) ) ) {
             my $dirname = ( splitdir($dir) )[-1];
-            foreach my $comp (@COMPRESSIONS) {
-                my ($compkey, $extension, $flags) = @{$comp};
-                next unless $context->{compressors}{$compkey};
+            foreach my $comp (keys %COMPRESSION) {
+                next unless $context->{compressors}{$comp};
 
-                my $basename = "$dirname.tar.$extension";
+                my $basename = "$dirname.tar.$COMPRESSION{$comp}{extension}";
                 my $outfile = catfile $pkg_tars, $basename;
 
                 print "Creating: $outfile\n" if $verbose || $debug;
-                0 == system("$tar cf $outfile ${flags} ${ownership} -C ${pkg_trees} ${dirname}")
+                0 == system($tar,
+                    cf => $outfile,
+                        $COMPRESSION{$comp}{flags},
+                        @ownership, -C => $pkg_trees, $dirname)
                     or exit $? >> 8;
 
                 # calculate size and md5sum
@@ -468,9 +472,11 @@ __
         # write the sizes file
         open my $sizes, '>', $_ = catfile $pkg_tars, 'sizes.txt'
             or die "$ME: Can't open `$_': $!\n";
-        print $sizes "SIZE($_) = $size{$_}\n" foreach sort keys %size;
-        print $sizes "\n";
-        print $sizes "SHA256($_) = $sha256{$_}\n" foreach sort keys %sha256;
+
+        print $sizes join "\n",
+            (map { "SIZE($_) = $size{$_}" } sort keys %size),
+            (map { "SHA256($_) = $sha256{$_}" } sort keys %sha256);
+
         close($sizes) or die "$ME: Can't close $_: $!\n";
     }
 
