@@ -5,13 +5,6 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
-Exim version 4.93
------------------
-
-JH/01 GnuTLS: repeat lowlevel read and write operations while they return error
-      codes indicating retry.  Under TLS1.3 this becomes required.
-
-
 Exim version 4.92
 -----------------
 
@@ -186,6 +179,9 @@ JH/39 OpenSSL: clear the error stack after an SSL_accept().  With anon-auth
       cipher-suites, an error can be left on the stack even for a succeeding
       accept; this results in impossible error messages when a later operation
       actually does fail.
+
+AM/01 Bug 2359: GnuTLS: repeat lowlevel read and write operations while they return error
+      codes indicating retry.  Under TLS1.3 this becomes required.
 
 
 Exim version 4.91
