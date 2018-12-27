@@ -8,7 +8,7 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 Exim version 4.93
 -----------------
 
-JH/01 GnuTLS: repeat lowlevel read and write operations while they return error
+AM/01 Bug 2359: GnuTLS: repeat lowlevel read and write operations while they return error
       codes indicating retry.  Under TLS1.3 this becomes required.
 
 
