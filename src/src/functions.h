@@ -44,12 +44,9 @@ extern uschar * tls_cert_fprt_md5(void *);
 extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
 
-extern void *  tls_client_start(int, host_item *, address_item *,
-		 transport_instance *,
-# ifdef SUPPORT_DANE
-		dns_answer *,
-# endif
-		tls_support *, uschar **);
+extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
+		  void *, tls_support *, uschar **);
+
 extern void    tls_close(void *, int);
 extern BOOL    tls_could_read(void);
 extern int     tls_export_cert(uschar *, size_t, void *);

@@ -2490,33 +2490,30 @@ return DEFER;
 
 /* Called from the smtp transport after STARTTLS has been accepted.
 
-Argument:
-  fd               the fd of the connection
-  host             connected host (for messages and option-tests)
-  addr             the first address (for some randomness; can be NULL)
-  tb               transport (always smtp)
-  tlsa_dnsa        tlsa lookup, if DANE, else null
-  tlsp		   record details of channel configuration here; must be non-NULL
-  errstr	   error string pointer
+Arguments:
+  cctx		connection context
+  conn_args	connection details
+  cookie	datum for randomness; can be NULL
+  tlsp		record details of TLS channel configuration here; must be non-NULL
+  errstr	error string pointer
 
-Returns:           Pointer to TLS session context, or NULL on error
+Returns:	TRUE for success with TLS session context set in connection context,
+		FALSE on error
 */
 
-void *
-tls_client_start(int fd, host_item *host, address_item *addr,
-  transport_instance * tb,
-#ifdef SUPPORT_DANE
-  dns_answer * tlsa_dnsa,
-#endif
-  tls_support * tlsp, uschar ** errstr)
+BOOL
+tls_client_start(client_conn_ctx * cctx, smtp_connect_args * conn_args,
+  void * cookie, tls_support * tlsp, uschar ** errstr)
 {
+host_item * host = conn_args->host;		/* for msgs and option-tests */
+transport_instance * tb = conn_args->tblock;	/* always smtp or NULL */
 smtp_transport_options_block * ob = tb
   ? (smtp_transport_options_block *)tb->options_block
   : &smtp_transport_option_defaults;
 exim_openssl_client_tls_ctx * exim_client_ctx;
-static uschar peerdn[256];
 uschar * expciphers;
 int rc;
+static uschar peerdn[256];
 
 #ifndef DISABLE_OCSP
 BOOL request_ocsp = FALSE;
@@ -2535,7 +2532,7 @@ tlsp->tlsa_usage = 0;
 #ifndef DISABLE_OCSP
   {
 # ifdef SUPPORT_DANE
-  if (  tlsa_dnsa
+  if (  conn_args->dane
      && ob->hosts_request_ocsp[0] == '*'
      && ob->hosts_request_ocsp[1] == '\0'
      )
@@ -2565,22 +2562,22 @@ rc = tls_init(&exim_client_ctx->ctx, host, NULL,
 #ifndef DISABLE_OCSP
     (void *)(long)request_ocsp,
 #endif
-    addr, &client_static_cbinfo, errstr);
-if (rc != OK) return NULL;
+    cookie, &client_static_cbinfo, errstr);
+if (rc != OK) return FALSE;
 
 tlsp->certificate_verified = FALSE;
 client_verify_callback_called = FALSE;
 
 expciphers = NULL;
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa)
+if (conn_args->dane)
   {
   /* We fall back to tls_require_ciphers if unset, empty or forced failure, but
   other failures should be treated as problems. */
   if (ob->dane_require_tls_ciphers &&
       !expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
         &expciphers, errstr))
-    return NULL;
+    return FALSE;
   if (expciphers && *expciphers == '\0')
     expciphers = NULL;
   }
@@ -2588,7 +2585,7 @@ if (tlsa_dnsa)
 if (!expciphers &&
     !expand_check(ob->tls_require_ciphers, US"tls_require_ciphers",
       &expciphers, errstr))
-  return NULL;
+  return FALSE;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
 are separated by underscores. So that I can use either form in my tests, and
@@ -2602,12 +2599,12 @@ if (expciphers)
   if (!SSL_CTX_set_cipher_list(exim_client_ctx->ctx, CS expciphers))
     {
     tls_error(US"SSL_CTX_set_cipher_list", host, NULL, errstr);
-    return NULL;
+    return FALSE;
     }
   }
 
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa)
+if (conn_args->dane)
   {
   SSL_CTX_set_verify(exim_client_ctx->ctx,
     SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
@@ -2616,12 +2613,12 @@ if (tlsa_dnsa)
   if (!DANESSL_library_init())
     {
     tls_error(US"library init", host, NULL, errstr);
-    return NULL;
+    return FALSE;
     }
   if (DANESSL_CTX_init(exim_client_ctx->ctx) <= 0)
     {
     tls_error(US"context init", host, NULL, errstr);
-    return NULL;
+    return FALSE;
     }
   }
 else
@@ -2630,21 +2627,21 @@ else
 
   if (tls_client_basic_ctx_init(exim_client_ctx->ctx, host, ob,
 	client_static_cbinfo, errstr) != OK)
-    return NULL;
+    return FALSE;
 
 if (!(exim_client_ctx->ssl = SSL_new(exim_client_ctx->ctx)))
   {
   tls_error(US"SSL_new", host, NULL, errstr);
-  return NULL;
+  return FALSE;
   }
 SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
-SSL_set_fd(exim_client_ctx->ssl, fd);
+SSL_set_fd(exim_client_ctx->ssl, cctx->sock);
 SSL_set_connect_state(exim_client_ctx->ssl);
 
 if (ob->tls_sni)
   {
   if (!expand_check(ob->tls_sni, US"tls_sni", &tlsp->sni, errstr))
-    return NULL;
+    return FALSE;
   if (!tlsp->sni)
     {
     DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n");
@@ -2664,9 +2661,9 @@ if (ob->tls_sni)
   }
 
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa)
-  if (dane_tlsa_load(exim_client_ctx->ssl, host, tlsa_dnsa, errstr) != OK)
-    return NULL;
+if (conn_args->dane)
+  if (dane_tlsa_load(exim_client_ctx->ssl, host, &conn_args->tlsa_dnsa, errstr) != OK)
+    return FALSE;
 #endif
 
 #ifndef DISABLE_OCSP
@@ -2710,14 +2707,14 @@ rc = SSL_connect(exim_client_ctx->ssl);
 ALARM_CLR(0);
 
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa)
+if (conn_args->dane)
   DANESSL_cleanup(exim_client_ctx->ssl);
 #endif
 
 if (rc <= 0)
   {
   tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL, errstr);
-  return NULL;
+  return FALSE;
   }
 
 DEBUG(D_tls)
@@ -2747,9 +2744,10 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   tlsp->ourcert = crt ? X509_dup(crt) : NULL;
   }
 
-tlsp->active.sock = fd;
+tlsp->active.sock = cctx->sock;
 tlsp->active.tls_ctx = exim_client_ctx;
-return exim_client_ctx;
+cctx->tls_ctx = exim_client_ctx;
+return TRUE;
 }
 
 

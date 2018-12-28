@@ -2324,36 +2324,29 @@ return TRUE;
 /* Called from the smtp transport after STARTTLS has been accepted.
 
 Arguments:
-  fd                the fd of the connection
-  host              connected host (for messages and option-tests)
-  addr              the first address (not used)
-  tb                transport (always smtp)
-  tlsa_dnsa	    non-NULL, either request or require dane for this host, and
-		    a TLSA record found.  Therefore, dane verify required.
-		    Which implies cert must be requested and supplied, dane
-		    verify must pass, and cert verify irrelevant (incl.
-		    hostnames), and (caller handled) require_tls
-  tlsp		    record details of channel configuration
-  errstr	    error string pointer
+  cctx		connection context
+  conn_args	connection details
+  cookie	datum for randomness (not used)
+  tlsp          record details of channel configuration here; must be non-NULL
+  errstr        error string pointer
 
-Returns:            Pointer to TLS session context, or NULL on error
+Returns:        TRUE for success with TLS session context set in smtp context,
+		FALSE on error
 */
 
-void *
-tls_client_start(int fd, host_item *host,
-    address_item *addr ARG_UNUSED,
-    transport_instance * tb,
-#ifdef SUPPORT_DANE
-    dns_answer * tlsa_dnsa,
-#endif
-    tls_support * tlsp, uschar ** errstr)
+BOOL
+tls_client_start(client_conn_ctx * cctx, smtp_connect_args * conn_args,
+  void * cookie ARG_UNUSED,
+  tls_support * tlsp, uschar ** errstr)
 {
-smtp_transport_options_block *ob = tb
+host_item * host = conn_args->host;          /* for msgs and option-tests */
+transport_instance * tb = conn_args->tblock; /* always smtp or NULL */
+smtp_transport_options_block * ob = tb
   ? (smtp_transport_options_block *)tb->options_block
   : &smtp_transport_option_defaults;
 int rc;
 exim_gnutls_state_st * state = NULL;
-uschar *cipher_list = NULL;
+uschar * cipher_list = NULL;
 
 #ifndef DISABLE_OCSP
 BOOL require_ocsp =
@@ -2362,15 +2355,20 @@ BOOL request_ocsp = require_ocsp ? TRUE
   : verify_check_given_host(CUSS &ob->hosts_request_ocsp, host) == OK;
 #endif
 
-DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", fd);
+DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", cctx->sock);
 
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa && ob->dane_require_tls_ciphers)
+/* If dane is flagged, have either request or require dane for this host, and
+a TLSA record found.  Therefore, dane verify required.  Which implies cert must
+be requested and supplied, dane verify must pass, and cert verify irrelevant
+(incl.  hostnames), and (caller handled) require_tls */
+
+if (conn_args->dane && ob->dane_require_tls_ciphers)
   {
   /* not using expand_check_tlsvar because not yet in state */
   if (!expand_check(ob->dane_require_tls_ciphers, US"dane_require_tls_ciphers",
       &cipher_list, errstr))
-    return NULL;
+    return FALSE;
   cipher_list = cipher_list && *cipher_list
     ? ob->dane_require_tls_ciphers : ob->tls_require_ciphers;
   }
@@ -2382,7 +2380,7 @@ if (!cipher_list)
 if (tls_init(host, ob->tls_certificate, ob->tls_privatekey,
     ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
     cipher_list, &state, tlsp, errstr) != OK)
-  return NULL;
+  return FALSE;
 
   {
   int dh_min_bits = ob->tls_dh_min_bits;
@@ -2406,7 +2404,7 @@ set but both tls_verify_hosts and tls_try_verify_hosts are unset. Check only
 the specified host patterns if one of them is defined */
 
 #ifdef SUPPORT_DANE
-if (tlsa_dnsa && dane_tlsa_load(state, tlsa_dnsa))
+if (conn_args->dane && dane_tlsa_load(state, &conn_args->tlsa_dnsa))
   {
   DEBUG(D_tls)
     debug_printf("TLS: server certificate DANE required.\n");
@@ -2453,7 +2451,7 @@ if (request_ocsp)
 		    NULL, 0, NULL)) != OK)
     {
     tls_error(US"cert-status-req", US gnutls_strerror(rc), state->host, errstr);
-    return NULL;
+    return FALSE;
     }
   tlsp->ocsp = OCSP_NOT_RESP;
   }
@@ -2468,9 +2466,9 @@ if (tb && tb->event_action)
   }
 #endif
 
-gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr_t)(long) fd);
-state->fd_in = fd;
-state->fd_out = fd;
+gnutls_transport_set_ptr(state->session, (gnutls_transport_ptr_t)(long) cctx->sock);
+state->fd_in = cctx->sock;
+state->fd_out = cctx->sock;
 
 DEBUG(D_tls) debug_printf("about to gnutls_handshake\n");
 /* There doesn't seem to be a built-in timeout on connection. */
@@ -2491,7 +2489,7 @@ if (rc != GNUTLS_E_SUCCESS)
     }
   else
     tls_error(US"gnutls_handshake", US gnutls_strerror(rc), state->host, errstr);
-  return NULL;
+  return FALSE;
   }
 
 DEBUG(D_tls)
@@ -2518,7 +2516,7 @@ DEBUG(D_tls)
 if (!verify_certificate(state, errstr))
   {
   tls_error(US"certificate verification failed", *errstr, state->host, errstr);
-  return NULL;
+  return FALSE;
   }
 
 #ifndef DISABLE_OCSP
@@ -2546,7 +2544,7 @@ if (require_ocsp)
     {
     tlsp->ocsp = OCSP_FAILED;
     tls_error(US"certificate status check failed", NULL, state->host, errstr);
-    return NULL;
+    return FALSE;
     }
   DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
   tlsp->ocsp = OCSP_VFIED;
@@ -2556,13 +2554,14 @@ if (require_ocsp)
 /* Figure out peer DN, and if authenticated, etc. */
 
 if (peer_status(state, errstr) != OK)
-  return NULL;
+  return FALSE;
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
 extract_exim_vars_from_tls_state(state);
 
-return state;
+cctx->tls_ctx = state;
+return TRUE;
 }
 
 

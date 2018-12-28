@@ -133,7 +133,6 @@ typedef struct {
 #endif
   BOOL dsn_all_lasthop:1;
 #if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
-  BOOL dane:1;
   BOOL dane_required:1;
 #endif
 #ifdef EXPERIMENTAL_PIPE_CONNECT

@@ -4934,7 +4934,7 @@ while (*s != 0)
 
     case EITEM_READSOCK:
       {
-      int fd;
+      client_conn_ctx cctx;
       int timeout = 5;
       int save_ptr = yield->ptr;
       FILE * fp;
@@ -4944,7 +4944,6 @@ while (*s != 0)
       host_item host;
       BOOL do_shutdown = TRUE;
       BOOL do_tls = FALSE;	/* Only set under SUPPORT_TLS */
-      void * tls_ctx = NULL;	/* ditto		      */
       blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
@@ -5045,11 +5044,11 @@ while (*s != 0)
             }
 
 	  /*XXX we trust that the request is idempotent.  Hmm. */
-	  fd = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
+	  cctx.sock = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
 		  timeout, &host, &expand_string_message,
 		  do_tls ? NULL : &reqstr);
 	  callout_address = NULL;
-	  if (fd < 0)
+	  if (cctx.sock < 0)
 	    goto SOCK_FAIL;
 	  if (!do_tls)
 	    reqstr.len = 0;
@@ -5062,7 +5061,7 @@ while (*s != 0)
 	  struct sockaddr_un sockun;         /* don't call this "sun" ! */
           int rc;
 
-          if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
+          if ((cctx.sock = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
             {
             expand_string_message = string_sprintf("failed to create socket: %s",
               strerror(errno));
@@ -5076,7 +5075,7 @@ while (*s != 0)
 
           sigalrm_seen = FALSE;
           ALARM(timeout);
-          rc = connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun));
+          rc = connect(cctx.sock, (struct sockaddr *)(&sockun), sizeof(sockun));
           ALARM_CLR(0);
           if (sigalrm_seen)
             {
@@ -5098,14 +5097,11 @@ while (*s != 0)
 #ifdef SUPPORT_TLS
 	if (do_tls)
 	  {
+	  smtp_connect_args conn_args = {.host = &host };
 	  tls_support tls_dummy = {.sni=NULL};
 	  uschar * errstr;
 
-	  if (!(tls_ctx = tls_client_start(fd, &host, NULL, NULL,
-# ifdef SUPPORT_DANE
-				NULL,
-# endif
-	  			&tls_dummy, &errstr)))
+	  if (!tls_client_start(&cctx, &conn_args, NULL, &tls_dummy, &errstr))
 	    {
 	    expand_string_message = string_sprintf("TLS connect failed: %s", errstr);
 	    goto SOCK_FAIL;
@@ -5124,9 +5120,9 @@ while (*s != 0)
             reqstr.data);
           if ( (
 #ifdef SUPPORT_TLS
-	      tls_ctx ? tls_write(tls_ctx, reqstr.data, reqstr.len, FALSE) :
+	      cctx.tls_ctx ? tls_write(cctx.tls_ctx, reqstr.data, reqstr.len, FALSE) :
 #endif
-			write(fd, reqstr.data, reqstr.len)) != reqstr.len)
+			write(cctx.sock, reqstr.data, reqstr.len)) != reqstr.len)
             {
             expand_string_message = string_sprintf("request write to socket "
               "failed: %s", strerror(errno));
@@ -5139,7 +5135,7 @@ while (*s != 0)
         system doesn't have this function, make it conditional. */
 
 #ifdef SHUT_WR
-	if (!tls_ctx && do_shutdown) shutdown(fd, SHUT_WR);
+	if (!cctx.tls_ctx && do_shutdown) shutdown(cctx.sock, SHUT_WR);
 #endif
 
 	if (f.running_in_test_harness) millisleep(100);
@@ -5147,22 +5143,22 @@ while (*s != 0)
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */
 
-	if (!tls_ctx)
-	  fp = fdopen(fd, "rb");
+	if (!cctx.tls_ctx)
+	  fp = fdopen(cctx.sock, "rb");
         sigalrm_seen = FALSE;
         ALARM(timeout);
         yield =
 #ifdef SUPPORT_TLS
-	  tls_ctx ? cat_file_tls(tls_ctx, yield, sub_arg[3]) :
+	  cctx.tls_ctx ? cat_file_tls(cctx.tls_ctx, yield, sub_arg[3]) :
 #endif
 		    cat_file(fp, yield, sub_arg[3]);
         ALARM_CLR(0);
 
 #ifdef SUPPORT_TLS
-	if (tls_ctx)
+	if (cctx.tls_ctx)
 	  {
-	  tls_close(tls_ctx, TRUE);
-	  close(fd);
+	  tls_close(cctx.tls_ctx, TRUE);
+	  close(cctx.sock);
 	  }
 	else
 #endif

@@ -1949,9 +1949,6 @@ Returns:          OK    - the connection was made and the delivery attempted;
 int
 smtp_setup_conn(smtp_context * sx, BOOL suppress_tls)
 {
-#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
-dns_answer tlsa_dnsa;
-#endif
 smtp_transport_options_block * ob = sx->conn_args.tblock->options_block;
 BOOL pass_message = FALSE;
 uschar * message = NULL;
@@ -1976,7 +1973,7 @@ sx->utf8_needed = FALSE;
 #endif
 sx->dsn_all_lasthop = TRUE;
 #if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
-sx->dane = FALSE;
+sx->conn_args.dane = FALSE;
 sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
 #endif
@@ -2067,9 +2064,9 @@ if (!continue_hostname)
       if(  sx->dane_required
 	|| verify_check_given_host(CUSS &ob->hosts_try_dane, sx->conn_args.host) == OK
 	)
-	switch (rc = tlsa_lookup(sx->conn_args.host, &tlsa_dnsa, sx->dane_required))
+	switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
 	  {
-	  case OK:		sx->dane = TRUE;
+	  case OK:		sx->conn_args.dane = TRUE;
 				ob->tls_tempfail_tryclear = FALSE;
 				break;
 	  case FAIL_FORCED:	break;
@@ -2500,14 +2497,7 @@ if (  smtp_peer_options & OPTION_TLS
   else
   TLS_NEGOTIATE:
     {
-    sx->cctx.tls_ctx = tls_client_start(sx->cctx.sock, sx->conn_args.host,
-			    sx->addrlist, sx->conn_args.tblock,
-# ifdef SUPPORT_DANE
-			     sx->dane ? &tlsa_dnsa : NULL,
-# endif
-			     &tls_out, &tls_errstr);
-
-    if (!sx->cctx.tls_ctx)
+    if (!tls_client_start(&sx->cctx, &sx->conn_args, sx->addrlist, &tls_out, &tls_errstr))
       {
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
@@ -2516,7 +2506,7 @@ GNUTLS_CONN_FAILED:
       DEBUG(D_tls) debug_printf("TLS session fail: %s\n", tls_errstr);
 
 # ifdef SUPPORT_DANE
-      if (sx->dane)
+      if (sx->conn_args.dane)
         {
 	log_write(0, LOG_MAIN,
 	  "DANE attempt failed; TLS connection to %s [%s]: %s",
@@ -2652,7 +2642,7 @@ have one. */
 
 else if (  sx->smtps
 # ifdef SUPPORT_DANE
-	|| sx->dane
+	|| sx->conn_args.dane
 # endif
 # ifdef EXPERIMENTAL_REQUIRETLS
 	|| tls_requiretls & REQUIRETLS_MSG
@@ -2669,7 +2659,7 @@ else if (  sx->smtps
     smtp_peer_options & OPTION_TLS
     ? "an attempt to start TLS failed" : "the server did not offer TLS support");
 # if defined(SUPPORT_DANE) && !defined(DISABLE_EVENT)
-  if (sx->dane)
+  if (sx->conn_args.dane)
     (void) event_raise(sx->conn_args.tblock->event_action, US"dane:fail",
       smtp_peer_options & OPTION_TLS
       ? US"validation-failure"		/* could do with better detail */

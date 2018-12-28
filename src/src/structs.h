@@ -800,6 +800,11 @@ typedef struct {
   host_item *           host;
   int                   host_af;
   uschar *              interface;
+
+#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
+  BOOL dane:1;			/* connection must do dane */
+  dns_answer		tlsa_dnsa;
+#endif
 } smtp_connect_args;
 
 /* A client-initiated connection. If TLS, the second element is non-NULL */
