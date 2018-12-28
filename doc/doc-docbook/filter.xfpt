@@ -1189,7 +1189,9 @@ been obeyed, the &(logwrite)& command can be used to write to it:
 &`e.g. logwrite "$tod_log $message_id processed"`&
 .endd
 It is possible to have more than one &(logfile)& command, to specify writing to
-different log files in different circumstances. Writing takes place at the end
+different log files in different circumstances.
+A previously opened log is closed on a subsequent &(logfile)& command.
+Writing takes place at the end
 of the file, and a newline character is added to the end of each string if
 there isn't one already there. Newlines can be put in the middle of the string
 by using the &"\n"& escape sequence. Lines from simultaneous deliveries may get

@@ -940,7 +940,7 @@ EHLO,STARTTLS                     ->
 TLS1.2-client-hello               ->
                                    <- TLS-server-hello,cert,hello-done
 client-Kex,change-cipher,finished ->
-                                   <- change-cipher,finshed
+                                   <- change-cipher,finished
 EHLO,MAIL,RCPT,DATA               ->
                                    <- EHLO-resp,MAIL-ack,RCPT-ack,DATA-goahead
 
