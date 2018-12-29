@@ -4330,6 +4330,9 @@ This change is being made on 31-Jul-98. After over a year of trouble-free
 operation, the old commented-out code was removed on 17-Sep-99. */
 
 SEND_QUIT:
+#ifdef TCP_CORK
+(void) setsockopt(sx.cctx.sock, IPPROTO_TCP, TCP_CORK, US &on, sizeof(on));
+#endif
 if (sx.send_quit) (void)smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
 
 END_OFF:
