@@ -2900,6 +2900,7 @@ Used by both server-side and client-side TLS.
 int
 tls_write(void * ct_ctx, const uschar *buff, size_t len, BOOL more)
 {
+size_t olen = len;
 int outbytes, error;
 SSL * ssl = ct_ctx ? ((exim_openssl_client_tls_ctx *)ct_ctx)->ssl : server_ssl;
 static gstring * corked = NULL;
@@ -2911,10 +2912,11 @@ DEBUG(D_tls) debug_printf("%s(%p, %lu%s)\n", __FUNCTION__,
 "more" is notified.  This hack is only ok if small amounts are involved AND only
 one stream does it, in one context (i.e. no store reset).  Currently it is used
 for the responses to the received SMTP MAIL , RCPT, DATA sequence, only. */
-/*XXX + if PIPE_COMMAND, banner & ehlo-resp for smmtp-on-connect. Suspect there's
-a store reset there. */
+/* + if PIPE_COMMAND, banner & ehlo-resp for smmtp-on-connect. Suspect there's
+a store reset there, so use POOL_PERM. */
+/* + if CHUNKING, cmds EHLO,MAIL,RCPT(s),BDAT */
 
-if (!ct_ctx && (more || corked))
+if ((more || corked))
   {
 #ifdef EXPERIMENTAL_PIPE_CONNECT
   int save_pool = store_pool;
@@ -2967,7 +2969,7 @@ for (int left = len; left > 0;)
       return -1;
     }
   }
-return len;
+return olen;
 }
 
 
