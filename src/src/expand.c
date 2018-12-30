@@ -2170,7 +2170,7 @@ BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
 BOOL *subcondptr;
 BOOL sub2_honour_dollar = TRUE;
-int i, rc, cond_type, roffset;
+int rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
 uschar name[256];
@@ -5344,7 +5344,6 @@ while (*s != 0)
     case EITEM_NHASH:
     case EITEM_SUBSTR:
       {
-      int i;
       int len;
       uschar *ret;
       int val[2] = { 0, -1 };

@@ -230,7 +230,7 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
       DEBUG(D_route)
         {
         debug_printf("Removed from host list:\n");
-        for (host_item * hh = next_h; h; h = h->next) debug_printf("  %s\n", h->name);
+        for (; h; h = h->next) debug_printf("  %s\n", h->name);
         }
       prev->next = NULL;
       setflag(addr, af_local_host_removed);

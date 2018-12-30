@@ -1619,7 +1619,6 @@ not. */
 BOOL
 receive_msg(BOOL extract_recip)
 {
-int  i;
 int  rc = FAIL;
 int  msg_size = 0;
 int  process_info_len = Ustrlen(process_info);
