@@ -8,7 +8,8 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 Exim version 4.93
 -----------------
 
-     (none yet)
+JH/01 OpenSSL: With debug enabled output keying information sufficient, server
+      side, to decode a TLS 1.3 packet capture.
 
 
 Exim version 4.92

@@ -91,6 +91,12 @@ change this guard and punt the issue for a while longer. */
 # endif
 #endif
 
+#ifndef LIBRESSL_VERSION_NUMBER
+# if OPENSSL_VERSION_NUMBER >= 0x010101000L
+#  define OPENSSL_HAVE_KEYLOG_CB
+# endif
+#endif
+
 #if !defined(EXIM_HAVE_OPENSSL_TLSEXT) && !defined(DISABLE_OCSP)
 # warning "OpenSSL library version too old; define DISABLE_OCSP in Makefile"
 # define DISABLE_OCSP
@@ -772,6 +778,12 @@ DEBUG(D_tls)
   else if (where & SSL_CB_HANDSHAKE_DONE)
      debug_printf("%s: hshake done: %s\n", str, SSL_state_string_long(s));
   }
+}
+
+static void
+keylog_callback(const SSL *ssl, const char *line)
+{
+DEBUG(D_tls) debug_printf("%.200s\n", line);
 }
 
 
@@ -1768,6 +1780,9 @@ if (!RAND_status())
 level. */
 
 DEBUG(D_tls) SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
+#ifdef OPENSSL_HAVE_KEYLOG_CB
+DEBUG(D_tls) SSL_CTX_set_keylog_callback(ctx, (void (*)())keylog_callback);
+#endif
 
 /* Automatically re-try reads/writes after renegotiation. */
 (void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
