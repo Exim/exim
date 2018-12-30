@@ -94,6 +94,7 @@ change this guard and punt the issue for a while longer. */
 #ifndef LIBRESSL_VERSION_NUMBER
 # if OPENSSL_VERSION_NUMBER >= 0x010101000L
 #  define OPENSSL_HAVE_KEYLOG_CB
+#  define OPENSSL_HAVE_NUM_TICKETS
 # endif
 #endif
 
@@ -1808,6 +1809,10 @@ if (init_options)
   }
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
+
+#ifdef OPENSSL_HAVE_NUM_TICKETS
+SSL_CTX_set_num_tickets(ctx, 0);	/* send no TLS1.3 stateful-tickets */
+#endif
 
 /* We'd like to disable session cache unconditionally, but foolish Outlook
 Express clients then give up the first TLS connection and make a second one
