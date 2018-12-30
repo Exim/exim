@@ -191,6 +191,8 @@ switch (tcp_out_fastopen)
 	tcp_out_fastopen = TFO_NOT_USED;
 	}
     break;
+
+  default: break; /* compiler quietening */
   }
 # endif
 }

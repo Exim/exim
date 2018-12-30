@@ -2471,7 +2471,6 @@ if (  smtp_peer_options & OPTION_TLS
   else
   TLS_NEGOTIATE:
     {
-    address_item * addr;
     uschar * errstr;
     sx->cctx.tls_ctx = tls_client_start(sx->cctx.sock, sx->conn_args.host,
 			    sx->addrlist, sx->conn_args.tblock,
@@ -3433,7 +3432,6 @@ smtp_deliver(address_item *addrlist, host_item *host, int host_af, int defport,
   uschar *interface, transport_instance *tblock,
   BOOL *message_defer, BOOL suppress_tls)
 {
-address_item *addr;
 smtp_transport_options_block * ob = SOB tblock->options_block;
 int yield = OK;
 int save_errno;
@@ -4496,14 +4494,13 @@ int hosts_retry = 0;
 int hosts_serial = 0;
 int hosts_total = 0;
 int total_hosts_tried = 0;
-address_item *addr;
 BOOL expired = TRUE;
 uschar *expanded_hosts = NULL;
 uschar *pistring;
 uschar *tid = string_sprintf("%s transport", tblock->name);
 smtp_transport_options_block *ob = SOB tblock->options_block;
 host_item *hostlist = addrlist->host_list;
-host_item *host;
+host_item *host = NULL;
 
 DEBUG(D_transport)
   {

@@ -107,11 +107,13 @@ BOOL done = FALSE;
 int rule_number = 1;
 int yield_start = 0, yield_end = 0;
 
-if (whole != NULL) *whole = FALSE;
+if (whole) *whole = FALSE;
 
 /* Scan the rewriting rules */
 
-for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next)
+for (rewrite_rule * rule = rewrite_rules;
+     rule && !done;
+     rule_number++, rule = rule->next)
   {
   int start, end, pdomain;
   int count = 0;
@@ -121,7 +123,7 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
 
   /* Ensure that the flag matches the flags in the rule. */
 
-  if ((rule->flags & flag) == 0) continue;
+  if (!(rule->flags & flag)) continue;
 
   /* Come back here for a repeat after a successful rewrite. We do this
   only so many times. */
@@ -134,10 +136,10 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
   with the other kinds of rewrite, where expansion happens inside
   match_address_list(). */
 
-  if ((flag & rewrite_smtp) != 0)
+  if (flag & rewrite_smtp)
     {
     uschar *key = expand_string(rule->key);
-    if (key == NULL)
+    if (!key)
       {
       if (!f.expand_string_forcedfail)
         log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand \"%s\" while "
@@ -155,7 +157,7 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
 
   else
     {
-    if (domain == NULL) domain = Ustrrchr(subject, '@') + 1;
+    if (!domain) domain = Ustrrchr(subject, '@') + 1;
 
     /* Use the general function for matching an address against a list (here
     just one item, so use the "impossible value" separator UCHAR_MAX+1). */
@@ -198,10 +200,10 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
   give up altogether. For other expansion failures we have a configuration
   error. */
 
-  if (new == NULL)
+  if (!new)
     {
     if (f.expand_string_forcedfail)
-      { if ((rule->flags & rewrite_quit) != 0) break; else continue; }
+      { if (rule->flags & rewrite_quit) break; else continue; }
 
     expand_string_message = expand_hide_passwords(expand_string_message);
 
@@ -216,7 +218,7 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
   newparsed = parse_extract_address(new, &error, &start, &end, &pdomain,
     flag == rewrite_envfrom || flag == (rewrite_smtp|rewrite_smtp_sender));
 
-  if (newparsed == NULL)
+  if (!newparsed)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "Rewrite of %s yielded unparseable "
       "address: %s in address %s", subject, error, new);
@@ -230,7 +232,7 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
   if (pdomain == 0 && (*newparsed != 0 ||
       (flag != rewrite_envfrom && flag != (rewrite_smtp|rewrite_smtp_sender))))
     {
-    if ((rule->flags & rewrite_qualify) != 0)
+    if (rule->flags & rewrite_qualify)
       {
       newparsed = rewrite_address_qualify(newparsed, TRUE);
       new = string_sprintf("%.*s%s%.*s", start, new, newparsed,
@@ -278,12 +280,12 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
   flag set and so we must preserve the non-active portion of the current
   subject unless the current rule also has the w flag set. */
 
-  if (whole != NULL && (flag & rewrite_all_headers) != 0)
+  if (whole && (flag & rewrite_all_headers))
     {
     /* Current rule has the w flag set. We must ensure the phrase parts
     are syntactically valid if they are present. */
 
-    if ((rule->flags & rewrite_whole) != 0)
+    if (rule->flags & rewrite_whole)
       {
       if (start > 0 && new[start-1] == '<')
         {
@@ -349,12 +351,12 @@ for (rewrite_rule * rule = rewrite_rules; rule; rule_number++, rule = rule->next
   /* If no further rewrites are to be done, set the done flag. This allows
   repeats of the current rule if configured before breaking the loop. */
 
-  if ((rule->flags & rewrite_quit) != 0) done = TRUE;
+  if (rule->flags & rewrite_quit) done = TRUE;
 
   /* Allow the current rule to be applied up to 10 times if
   requested. */
 
-  if ((rule->flags & rewrite_repeat) != 0)
+  if (rule->flags & rewrite_repeat)
     {
     if (count++ < 10) goto REPEAT_RULE;
     log_write(0, LOG_MAIN|LOG_PANIC, "rewrite rule repeat ignored after 10 "
