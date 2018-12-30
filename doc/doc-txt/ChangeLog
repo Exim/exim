@@ -8,8 +8,8 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 Exim version 4.93
 -----------------
 
-AM/01 Bug 2359: GnuTLS: repeat lowlevel read and write operations while they return error
-      codes indicating retry.  Under TLS1.3 this becomes required.
+JH/01 OpenSSL: With debug enabled output keying information sufficient, server
+      side, to decode a TLS 1.3 packet capture.
 
 
 Exim version 4.92
@@ -179,6 +179,9 @@ JH/37 Bug 2341: Send "message delayed" warning MDNs (restricted to external
       not, meaning that when (say) an account was over-quota and temp-rejecting,
       and multiple senders' messages were queued, only one sender would get
       notified on each configured delay_warning cycle.
+
+AM/01 Bug 2359: GnuTLS: repeat lowlevel read and write operations while they return error
+      codes indicating retry.  Under TLS1.3 this becomes required.
 
 
 Exim version 4.91
