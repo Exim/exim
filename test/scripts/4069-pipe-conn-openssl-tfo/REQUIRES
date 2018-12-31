@@ -1,0 +1,3 @@
+support Experimental_PIPE_CONNECT
+support OpenSSL
+support TCP_Fast_Open

@@ -180,8 +180,12 @@ JH/39 OpenSSL: clear the error stack after an SSL_accept().  With anon-auth
       accept; this results in impossible error messages when a later operation
       actually does fail.
 
-AM/01 Bug 2359: GnuTLS: repeat lowlevel read and write operations while they return error
-      codes indicating retry.  Under TLS1.3 this becomes required.
+AM/01 Bug 2359: GnuTLS: repeat lowlevel read and write operations while they
+      return error codes indicating retry.  Under TLS1.3 this becomes required.
+
+JH/40 Fix the feature-cache refresh for EXPERIMENTAL_PIPE_CONNECT.  Previously
+      it only wrote the new authenticators, resulting in a lack of tracking of
+      peer changes of ESMTP extensions until the next cache flush.
 
 
 Exim version 4.91

@@ -3,6 +3,7 @@
 
 CONTROL=*
 OPT=
+CONNECTCOND=
 
 keep_environment = PATH
 exim_path = EXIM_PATH
@@ -22,13 +23,13 @@ chunking_advertise_hosts = OPT
 tls_advertise_hosts = *
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
-# Avoid ECDHE key-exchange so that we can wireshark-decode
+# Avoid ECDHE key-exchange so that we can wireshark-decode (not TLS1.3)
 .ifdef _HAVE_GNUTLS
 tls_require_ciphers = NORMAL:-KX-ALL:+RSA
 .endif
 
 pipelining_connect_advertise_hosts = *
-log_selector = +received_recipients +pipelining
+log_selector = +received_recipients +millisec +pipelining
 queue_only
 
 acl_smtp_rcpt = accept
@@ -52,6 +53,7 @@ begin transports
 
 smtp:
   driver =		smtp
+  hosts_try_fastopen =	CONNECTCOND
   hosts_pipe_connect =	CONTROL
   tls_verify_hosts =
   tls_try_verify_hosts =

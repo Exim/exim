@@ -1,0 +1,70 @@
+# early-pipe, starttls, tfo
+#
+# Network delay so we can see tfo efects
+# Clear any previously-obtained tfo cookie:
+sudo perl
+system ("tc qdisc add dev lo root netem delay 50ms");
+system ("ip tcp_metrics delete 127.0.0.1");
+****
+#
+#
+# Early-pipe not attempted without a cache entry
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+exim a@test.ex
+Subject test 1
+
+****
+exim -DCONNECTCOND=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+#
+# Go for it.  This one should do early-pipelinng.
+exim b@test.ex
+Subject test 2
+
+****
+exim -DCONNECTCOND=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+#
+killdaemon
+#
+#
+# And again with CHUNKING
+#
+exim -bd -DSERVER=server -DOPT=* -oX PORT_D
+****
+#
+# First try has wrong cached info for chunking.  Get it refreshed.
+exim wrongcache@test.ex
+Subject test 4
+
+****
+exim -DCONNECTCOND=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+# Go for it
+exim chunking@test.ex
+Subject test 5
+
+****
+exim -DCONNECTCOND=127.0.0.1 -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
+#
+killdaemon
+#
+sudo perl
+system ("tc qdisc delete dev lo root");
+****
+no_msglog_check

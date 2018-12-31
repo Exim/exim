@@ -826,6 +826,10 @@ if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE)))
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
   dbdata_ehlo_resp er = { .data = sx->ehlo_resp };
 
+  HDEBUG(D_transport) debug_printf("writing clr %04x/%04x cry %04x/%04x\n",
+    sx->ehlo_resp.cleartext_features, sx->ehlo_resp.cleartext_auths,
+    sx->ehlo_resp.crypted_features, sx->ehlo_resp.crypted_auths);
+
   dbfn_write(dbm_file, ehlo_resp_key, &er, (int)sizeof(er));
   dbfn_close(dbm_file);
   }
@@ -988,8 +992,11 @@ if (pending_EHLO)
      || (authbits = study_ehlo_auths(sx)) != *ap)
     {
     HDEBUG(D_transport)
-      debug_printf("EHLO extensions changed, 0x%04x/0x%04x -> 0x%04x/0x%04x\n",
+      debug_printf("EHLO %s extensions changed, 0x%04x/0x%04x -> 0x%04x/0x%04x\n",
+		    tls_out.active.sock < 0 ? "cleartext" : "crypted",
 		    sx->peer_offered, *ap, peer_offered, authbits);
+    *(tls_out.active.sock < 0
+      ? &sx->ehlo_resp.cleartext_features : &sx->ehlo_resp.crypted_features) = peer_offered;
     *ap = authbits;
     if (peer_offered & OPTION_EARLY_PIPE)
       write_ehlo_cache_entry(sx);
