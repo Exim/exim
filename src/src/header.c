@@ -86,10 +86,10 @@ Arguments:
   format    sprintf format
   ap        va_list value for format arguments
 
-Returns:    nothing
+Returns:    pointer to header struct (last one, if multiple added)
 */
 
-static void
+static header_line *
 header_add_backend(BOOL after, uschar *name, BOOL topnot, int type,
   const char *format, va_list ap)
 {
@@ -100,7 +100,7 @@ uschar *p, *q;
 uschar buffer[HEADER_ADD_BUFFER_SIZE];
 gstring gs = { .size = HEADER_ADD_BUFFER_SIZE, .ptr = 0, .s = buffer };
 
-if (!header_last) return;
+if (!header_last) return NULL;
 
 if (!string_vformat(&gs, FALSE, format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "string too long in header_add: "
@@ -189,6 +189,7 @@ for (p = q = buffer; *p != 0; )
   if (!h) header_last = new;
   p = q;
   }
+return new;
 }
 
 
@@ -206,20 +207,33 @@ Arguments:
   format    sprintf format
   ...       format arguments
 
-Returns:    nothing
+Returns:    pointer to header struct added
 */
 
+header_line *
+header_add_at_position_internal(BOOL after, uschar *name, BOOL topnot, int type,
+  const char *format, ...)
+{
+header_line * h;
+va_list ap;
+va_start(ap, format);
+h = header_add_backend(after, name, topnot, type, format, ap);
+va_end(ap);
+return h;
+}
+
+
+/* Documented external i/f for local_scan */
 void
 header_add_at_position(BOOL after, uschar *name, BOOL topnot, int type,
   const char *format, ...)
 {
+header_line * h;
 va_list ap;
 va_start(ap, format);
-header_add_backend(after, name, topnot, type, format, ap);
+(void) header_add_backend(after, name, topnot, type, format, ap);
 va_end(ap);
 }
-
-
 
 /*************************************************
 *            Add new header on end of chain      *
@@ -240,7 +254,7 @@ header_add(int type, const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);
-header_add_backend(TRUE, NULL, FALSE, type, format, ap);
+(void) header_add_backend(TRUE, NULL, FALSE, type, format, ap);
 va_end(ap);
 }
 

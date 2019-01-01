@@ -1033,6 +1033,7 @@ int     log_default[]          = { /* for initializing log_selector */
   Li_host_lookup_failed,
   Li_lost_incoming_connection,
   Li_outgoing_interface, /* see d_log_interface in deliver.c */
+  Li_msg_id,
   Li_queue_run,
   Li_rejected_header,
   Li_retry_defer,
@@ -1075,6 +1076,8 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, incoming_port),
   BIT_TABLE(L, lost_incoming_connection),
   BIT_TABLE(L, millisec),
+  BIT_TABLE(L, msg_id),
+  BIT_TABLE(L, msg_id_created),
   BIT_TABLE(L, outgoing_interface),
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),

@@ -1,0 +1,45 @@
+# log_selector msg_id and msg_id_created
+#
+# msg_id is on by default; check baseline
+exim -DLOG_SELECTOR=+received_recipients -t
+From: CALLER@test.ex
+To: a@test.ex
+Message-ID: original1235@example.com
+
+body
+****
+#
+# msg_id is on by default; check it can be disabled
+exim -DLOG_SELECTOR=+received_recipients-msg_id -t
+From: CALLER@test.ex
+To: b@test.ex
+Message-ID: original1235@example.com
+
+body
+****
+#
+# check msg_id_created shows invented ones
+exim -DLOG_SELECTOR=+received_recipients+msg_id_created -t
+From: CALLER@test.ex
+To: c@test.ex
+
+body
+****
+#
+# check msg_id_created ignores non-invented ones
+exim -DLOG_SELECTOR=+received_recipients+msg_id_created -t
+From: CALLER@test.ex
+To: d@test.ex
+Message-ID: original1235@example.com
+
+body
+****
+#
+# check that bounces don't log created, by default
+exim -DLOG_SELECTOR=+received_recipients -M $msg1
+****
+# and check they do with msg_id_created
+exim -DLOG_SELECTOR=+received_recipients+msg_id_created -M $msg1
+****
+#
+no_msglog_check

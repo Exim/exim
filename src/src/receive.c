@@ -1673,6 +1673,7 @@ header_line *from_header = NULL;
 header_line *subject_header = NULL;
 header_line *msgid_header = NULL;
 header_line *received_header;
+BOOL msgid_header_newly_created = FALSE;
 
 #ifdef EXPERIMENTAL_DMARC
 int dmarc_up = 0;
@@ -2673,6 +2674,7 @@ if (  !msgid_header
   {
   uschar *id_text = US"";
   uschar *id_domain = primary_hostname;
+  header_line * h;
 
   /* Permit only letters, digits, dots, and hyphens in the domain */
 
@@ -2714,13 +2716,21 @@ if (  !msgid_header
       }
     }
 
-  /* Add the header line
-   * Resent-* headers are prepended, per RFC 5322 3.6.6.  Non-Resent-* are
-   * appended, to preserve classical expectations of header ordering. */
+  /* Add the header line.
+  Resent-* headers are prepended, per RFC 5322 3.6.6.  Non-Resent-* are
+  appended, to preserve classical expectations of header ordering. */
 
-  header_add_at_position(!resents_exist, NULL, FALSE, htype_id,
+  h = header_add_at_position_internal(!resents_exist, NULL, FALSE, htype_id,
     "%sMessage-Id: <%s%s%s@%s>\n", resent_prefix, message_id_external,
-    (*id_text == 0)? "" : ".", id_text, id_domain);
+    *id_text == 0 ? "" : ".", id_text, id_domain);
+
+  /* Arrange for newly-created Message-Id to be logged */
+
+  if (!resents_exist)
+    {
+    msgid_header_newly_created = TRUE;
+    msgid_header = h;
+    }
   }
 
 /* If we are to log recipients, keep a copy of the raw ones before any possible
@@ -4010,16 +4020,20 @@ any characters except " \ and CR and so in particular it can contain NL!
 Therefore, make sure we use a printing-characters only version for the log.
 Also, allow for domain literals in the message id. */
 
-if (msgid_header)
+if (  LOGGING(msg_id) && msgid_header
+   && (LOGGING(msg_id_created) || !msgid_header_newly_created)
+   )
   {
-  uschar *old_id;
+  uschar * old_id;
   BOOL save_allow_domain_literals = allow_domain_literals;
   allow_domain_literals = TRUE;
   old_id = parse_extract_address(Ustrchr(msgid_header->text, ':') + 1,
     &errmsg, &start, &end, &domain, FALSE);
   allow_domain_literals = save_allow_domain_literals;
-  if (old_id != NULL)
-    g = string_append(g, 2, US" id=", string_printing(old_id));
+  if (old_id)
+    g = string_append(g, 2,
+      msgid_header_newly_created ? US" id*=" : US" id=",
+      string_printing(old_id));
   }
 
 /* If subject logging is turned on, create suitable printing-character

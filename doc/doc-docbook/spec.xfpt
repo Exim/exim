@@ -37001,7 +37001,7 @@ the following table:
 &`F   `&        sender address (on delivery lines)
 &`H   `&        host name and IP address
 &`I   `&        local interface used
-&`id  `&        message id for incoming message
+&`id  `&        message id (from header) for incoming message
 &`K   `&        CHUNKING extension used
 &`L   `&        on &`<=`& and &`=>`& lines: PIPELINING extension used
 &`M8S `&        8BITMIME status for incoming message
@@ -37108,6 +37108,8 @@ selection marked by asterisks:
 &` incoming_port              `&  remote port on <= lines
 &`*lost_incoming_connection   `&  as it says (includes timeouts)
 &` millisec                   `&  millisecond timestamps and RT,QT,DT,D times
+&`*msg_id                     `&  on <= lines, Message-ID: header value
+&` msg_id_created             `&  on <= lines, Message-ID: header value when one had to be added
 &` outgoing_interface         `&  local interface on => lines
 &` outgoing_port              `&  add remote port to => lines
 &`*queue_run                  `&  start and end queue runs
@@ -37290,6 +37292,16 @@ connection is unexpectedly dropped.
 .cindex timestamps "millisecond, in logs"
 &%millisec%&: Timestamps have a period and three decimal places of finer granularity
 appended to the seconds value.
+.next
+.new
+.cindex "log" "message id"
+&%msg_id%&: The value of the Message-ID: header.
+.next
+&%msg_id_created%&: The value of the Message-ID: header, when one had to be created.
+This will be either because the message is a bounce, or was submitted locally
+(submission mode) without one.
+The field identifier will have an asterix appended: &"id*="&.
+.wen
 .next
 .cindex "log" "outgoing interface"
 .cindex "log" "local interface"

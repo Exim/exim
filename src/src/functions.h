@@ -241,6 +241,7 @@ extern uschar * fn_hdrs_added(void);
 extern void    gstring_reset_unused(gstring *);
 
 extern void    header_add(int, const char *, ...);
+extern header_line *header_add_at_position_internal(BOOL, uschar *, BOOL, int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
 extern BOOL    header_match(uschar *, BOOL, BOOL, string_item *, int, ...);
 extern int     host_address_extract_port(uschar *);

@@ -472,6 +472,8 @@ enum {
   Li_incoming_interface,
   Li_incoming_port,
   Li_millisec,
+  Li_msg_id,
+  Li_msg_id_created,
   Li_outgoing_interface,
   Li_outgoing_port,
   Li_pid,

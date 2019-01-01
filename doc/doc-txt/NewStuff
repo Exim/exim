@@ -16,6 +16,9 @@ Version 4.93
  3. Variables $tls_in_cipher_std, $tls_out_cipher_std giving the RFC names
     for ciphersuites.
 
+ 4. Log_selectors "msg_id" (on by default) and "msg_id_created".
+
+
 Version 4.92
 --------------
 
