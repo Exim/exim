@@ -40376,6 +40376,9 @@ Edit &_Makefile_& in the appropriate sub-directory (&_src/routers_&,
 &_src/transports_&, &_src/auths_&, or &_src/lookups_&); add a line for the new
 driver or lookup type and add it to the definition of OBJ.
 .next
+Edit &_OS/Makefile-Base_& adding a &_.o_& file for the predefined-macros, to the
+definition of OBJ_MACRO.  Add a set of line to do the compile also.
+.next
 Create &_newdriver.h_& and &_newdriver.c_& in the appropriate sub-directory of
 &_src_&.
 .next
