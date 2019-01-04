@@ -498,6 +498,9 @@ server_keytab                        string*         unset         heimdal_gssap
 server_mail_auth_condition           string*         unset         authenticators    3.22
 server_mech                          string          public_name   cyrus_sasl,gsasl  4.43 (cyrus-only) 4.80 (others)
 server_password                      string          unset         gsasl             4.80
+server_param1			     string*	     unset	   tls (auth)	     4.86
+server_param2			     string*	     unset	   tls (auth)	     4.86
+server_param3			     string*	     unset	   tls (auth)	     4.86
 server_prompts                       string*         unset         plaintext         3.10
 server_realm                         string          unset         cyrus_sasl,gsasl  4.43 (cyrus-only) 4.80 (others)
 server_scram_iter                    string*         unset         gsasl             4.80
