@@ -1,0 +1,93 @@
+# Exim test configuration 3720
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+log_selector = +received_recipients +outgoing_port
+
+# ----- Main settings -----
+
+acl_smtp_auth = log_call
+acl_smtp_mail = check_authd
+acl_smtp_rcpt = check_authd
+acl_smtp_data = ar_header
+
+queue_only
+queue_run_in_order
+trusted_users = CALLER
+
+tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+
+tls_verify_hosts = *
+tls_verify_certificates = DIR/aux-fixed/cert2
+
+
+# ----- ACL -----
+
+begin acl
+
+log_call:
+  accept   logwrite = Auth ACL called, after smtp cmd "$smtp_command"
+
+check_authd:
+  deny     message = authentication required
+          !authenticated = *
+  accept
+
+ar_header:
+  accept  add_header = :at_start:${authresults {$primary_hostname}}
+
+# ----- Authentication -----
+
+begin authenticators
+
+ext_ccert_cn:
+  driver =		external
+  public_name =		EXTERNAL
+
+  server_advertise_condition = ${if eq{$tls_in_cipher}{}{no}{yes}}
+  server_param2 =	${certextract {subject,CN} {$tls_in_peercert}}
+  server_condition =	${if eq {$auth2}{$auth1}}
+  server_set_id =	$auth1
+  server_debug_print =	+++TLS \$auth1="$auth1"
+
+  client_send =		"Phil Pennock"
+
+
+# ----- Routers -----
+
+begin routers
+
+server_r:
+  driver =	accept
+  condition =	${if eq {server}{SERVER}}
+  transport =	file
+
+client_r1:
+  driver =	accept
+  transport =	t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_D
+  allow_localhost
+  tls_certificate =		DIR/aux-fixed/cert2
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+  hosts_try_auth =		*
+
+file:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

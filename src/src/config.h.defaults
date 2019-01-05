@@ -24,6 +24,7 @@ Do not put spaces between # and the 'define'.
 #define AUTH_CRAM_MD5
 #define AUTH_CYRUS_SASL
 #define AUTH_DOVECOT
+#define AUTH_EXTERNAL
 #define AUTH_GSASL
 #define AUTH_HEIMDAL_GSSAPI
 #define AUTH_PLAINTEXT

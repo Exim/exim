@@ -35,6 +35,10 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/dovecot.h"
 #endif
 
+#ifdef AUTH_EXTERNAL
+#include "auths/external.h"
+#endif
+
 #ifdef AUTH_GSASL
 #include "auths/gsasl_exim.h"
 #endif
@@ -97,6 +101,20 @@ auth_info auths_available[] = {
   .init =		auth_dovecot_init,
   .servercode =		auth_dovecot_server,
   .clientcode =		NULL,
+  .version_report =	NULL
+  },
+#endif
+
+#ifdef AUTH_EXTERNAL
+  {
+  .driver_name =	US"external",
+  .options =		auth_external_options,
+  .options_count =	&auth_external_options_count,
+  .options_block =	&auth_external_option_defaults,
+  .options_len =	sizeof(auth_external_options_block),
+  .init =		auth_external_init,
+  .servercode =		auth_external_server,
+  .clientcode =		auth_external_client,
   .version_report =	NULL
   },
 #endif

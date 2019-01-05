@@ -1,0 +1,38 @@
+# External authentication (server & client)
+munge tls_anycipher
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+#
+client-gnutls 127.0.0.1 PORT_D 127.0.0.1 DIR/aux-fixed/cert2 DIR/aux-fixed/cert2
+??? 220
+EHLO tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-STARTTLS
+??? 250 HELP
+STARTTLS
+??? 220
+EHLO tester
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-AUTH EXTERNAL
+??? 250 HELP
+AUTH EXTERNAL UGhpbCBQZW5ub2Nr
+??? 235
+quit
+??? 221
+****
+#
+exim -f ok@test.ex x@y
+****
+exim -q
+****
+#
+killdaemon
+no_msglog_check
