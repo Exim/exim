@@ -132,6 +132,7 @@ client_ignore_invalid_base64         boolean         false         plaintext    
 client_name                          string*         +             cram_md5          3.10
 client_secret                        string*         unset         cram_md5          3.10
 client_send                          string*         unset         plaintext         3.10
+client_send                          string*         unset         external (auth)   4.93
 command                              string*         unset         lmtp              3.20
                                                      unset         pipe
                                                      unset         queryprogram      4.00
@@ -501,6 +502,8 @@ server_password                      string          unset         gsasl        
 server_param1			     string*	     unset	   tls (auth)	     4.86
 server_param2			     string*	     unset	   tls (auth)	     4.86
 server_param3			     string*	     unset	   tls (auth)	     4.86
+server_param2			     string*	     unset	   tls (auth)	     4.86 (tls-only) 4.93 (external)
+server_param3			     string*	     unset	   tls (auth)	     4.86 (tls-only) 4.93 (external)
 server_prompts                       string*         unset         plaintext         3.10
 server_realm                         string          unset         cyrus_sasl,gsasl  4.43 (cyrus-only) 4.80 (others)
 server_scram_iter                    string*         unset         gsasl             4.80

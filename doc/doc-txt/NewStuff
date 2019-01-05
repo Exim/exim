@@ -9,7 +9,7 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.93
 ------------
 
-    (none yet)
+ 1. An "external" authenticator, per RFC 4422 Appendix A.
 
 
 Version 4.92

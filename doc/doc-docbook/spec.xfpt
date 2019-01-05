@@ -26128,6 +26128,7 @@ included by setting
 AUTH_CRAM_MD5=yes
 AUTH_CYRUS_SASL=yes
 AUTH_DOVECOT=yes
+AUTH_EXTERNAL=yes
 AUTH_GSASL=yes
 AUTH_HEIMDAL_GSSAPI=yes
 AUTH_PLAINTEXT=yes
@@ -26139,15 +26140,20 @@ authentication mechanism (RFC 2195), and the second provides an interface to
 the Cyrus SASL authentication library.
 The third is an interface to Dovecot's authentication system, delegating the
 work via a socket interface.
-The fourth provides an interface to the GNU SASL authentication library, which
+.new
+The fourth provides for negotiation of authentication done via non-SMTP means,
+as defined by RFC 4422 Appendix A.
+.wen
+The fifth provides an interface to the GNU SASL authentication library, which
 provides mechanisms but typically not data sources.
-The fifth provides direct access to Heimdal GSSAPI, geared for Kerberos, but
+The sixth provides direct access to Heimdal GSSAPI, geared for Kerberos, but
 supporting setting a server keytab.
-The sixth can be configured to support
+The seventh can be configured to support
 the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
-not formally documented, but used by several MUAs. The seventh authenticator
+not formally documented, but used by several MUAs.
+The eighth authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
-The eighth is an Exim authenticator but not an SMTP one;
+The last is an Exim authenticator but not an SMTP one;
 instead it can use information from a TLS negotiation.
 
 The authenticators are configured using the same syntax as other drivers (see
@@ -27377,6 +27383,143 @@ msn:
 .endd
 .ecindex IIDspaauth1
 .ecindex IIDspaauth2
+
+
+
+
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+
+.chapter "The external authenticator" "CHAPexternauth"
+.scindex IIDexternauth1 "&(external)& authenticator"
+.scindex IIDexternauth2 "authenticators" "&(external)&"
+.cindex "authentication" "Client Certificate"
+.cindex "authentication" "X509"
+.cindex "Certificate-based authentication"
+The &(external)& authenticator provides support for
+authentication based on non-SMTP information.
+The specification is in RFC 4422 Appendix A
+(&url(https://tools.ietf.org/html/rfc4422)).
+It is only a transport and negotiation mechanism;
+the process of authentication is entirely controlled
+by the server configuration.
+
+The client presents an identity in-clear.
+It is probably wise for a server to only advertise,
+and for clients to only attempt,
+this authentication method on a secure (eg. under TLS) connection.
+
+One possible use, compatible with the
+K-9 Mail Andoid client (&url(https://k9mail.github.io/)),
+is for using X509 client certificates.
+
+It thus overlaps in function with the TLS authenticator
+(see &<<CHAPtlsauth>>&)
+but is a full SMTP SASL authenticator
+rather than being implicit for TLS-connection carried
+client certificates only.
+
+The examples and discussion in this chapter assume that 
+client-certificate authentication is being done.
+
+The client must present a certificate,
+for which it must have been requested via the
+&%tls_verify_hosts%& or &%tls_try_verify_hosts%& main options
+(see &<<CHAPTLS>>&).
+For authentication to be effective the certificate should be
+verifiable against a trust-anchor certificate known to the server.
+
+.section "External options" "SECTexternsoptions"
+.cindex "options" "&(external)& authenticator (server)"
+The &(external)& authenticator has two server options:
+
+.option server_param2 external string&!! unset
+.option server_param3 external string&!! unset
+.cindex "variables (&$auth1$& &$auth2$& etc)" "in &(external)& authenticator"
+These options are expanded before the &%server_condition%& option
+and the result are placed in &$auth2$& and &$auth3$& resectively.
+If the expansion is forced to fail, authentication fails. Any other expansion
+failure causes a temporary error code to be returned.
+
+They can be used to clarify the coding of a complex &%server_condition%&.
+
+.section "Using external in a server" "SECTexternserver"
+.cindex "AUTH" "in &(external)& authenticator"
+.cindex "numerical variables (&$1$& &$2$& etc)" &&&
+        "in &(external)& authenticator"
+.vindex "&$auth1$&, &$auth2$&, etc"
+.cindex "base64 encoding" "in &(external)& authenticator"
+
+When running as a server, &(external)& performs the authentication test by
+expanding a string. The data sent by the client with the AUTH command, or in
+response to subsequent prompts, is base64 encoded, and so may contain any byte
+values when decoded. The decoded value is treated as
+an identity for authentication and
+placed in the expansion variable &$auth1$&.
+
+For compatibility with previous releases of Exim, the value is also placed in
+the expansion variable &$1$&. However, the use of this
+variable for this purpose is now deprecated, as it can lead to confusion in
+string expansions that also use them for other things.
+
+.vindex "&$authenticated_id$&"
+Once an identity has been received,
+&%server_condition%& is expanded. If the expansion is forced to fail,
+authentication fails. Any other expansion failure causes a temporary error code
+to be returned. If the result of a successful expansion is an empty string,
+&"0"&, &"no"&, or &"false"&, authentication fails. If the result of the
+expansion is &"1"&, &"yes"&, or &"true"&, authentication succeeds and the
+generic &%server_set_id%& option is expanded and saved in &$authenticated_id$&.
+For any other result, a temporary error code is returned, with the expanded
+string as the error text.
+
+Example:
+.code
+ext_ccert_san_mail:
+  driver =            external
+  public_name =       EXTERNAL
+
+  server_advertise_condition = $tls_in_certificate_verified
+  server_param2 =     ${certextract {subj_altname,mail,>:} \
+                                    {$tls_in_peercert}}
+  server_condition =  ${if forany {$auth2} \
+                            {eq {$item}{$auth1}}}
+  server_set_id =     $auth1
+.endd
+This accepts a client certificate that is verifiable against any
+of your configured trust-anchors
+(which usually means the full set of public CAs)
+and which has a mail-SAN matching the claimed identity sent by the client.
+
+Note that, up to TLS1.2, the client cert is on the wire in-clear, including the SAN,
+The account name is therefore guessable by an opponent.
+TLS 1.3 protects both server and client certificates, and is not vulnerable
+in this way.
+Likewise, a traditional plaintext SMTP AUTH done inside TLS is not.
+
+
+.section "Using external in a client" "SECTexternclient"
+.cindex "options" "&(external)& authenticator (client)"
+The &(external)& authenticator has one client option:
+
+.option client_send external string&!! unset
+This option is expanded and sent with the AUTH command as the
+identity being asserted.
+
+Example:
+.code
+ext_ccert:
+  driver =      external
+  public_name = EXTERNAL
+
+  client_condition = ${if !eq{$tls_out_cipher}{}}
+  client_send = myaccount@smarthost.example.net
+.endd
+
+
+.ecindex IIDexternauth1
+.ecindex IIDexternauth2
 
 
 
