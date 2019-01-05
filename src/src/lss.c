@@ -115,9 +115,9 @@ Returns:      a pointer to the zero-terminated base 64 string, which
 */
 
 uschar *
-lss_b64encode(uschar *clear, int len)
+lss_b64encode(uschar * clear, int len)
 {
-return b64encode(clear, len);
+return b64encode(CUS clear, len);
 }
 
 /*

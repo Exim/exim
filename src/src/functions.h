@@ -108,7 +108,7 @@ extern int     auth_check_serv_cond(auth_instance *);
 extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
 
 
-extern int     auth_get_data(uschar **, uschar *, int);
+extern int     auth_get_data(uschar **, const uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
 extern void    auth_show_supported(FILE *);
 extern uschar *auth_xtextencode(uschar *, int);
@@ -128,7 +128,7 @@ extern gstring *authres_smtpauth(gstring *);
 extern gstring *authres_spf(gstring *);
 #endif
 
-extern uschar *b64encode(uschar *, int);
+extern uschar *b64encode(const uschar *, int);
 extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);

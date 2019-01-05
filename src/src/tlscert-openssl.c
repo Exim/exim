@@ -477,7 +477,7 @@ if (!i2d_X509_bio(bp, (X509 *)cert))
 else
   {
   long len = BIO_get_mem_data(bp, &cp);
-  cp = b64encode(cp, (int)len);
+  cp = b64encode(CUS cp, (int)len);
   }
 
 BIO_free(bp);

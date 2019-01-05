@@ -2737,7 +2737,7 @@ switch(cond_type)
 
       if (sublen == 24)
         {
-        uschar *coded = b64encode(digest, 16);
+        uschar *coded = b64encode(CUS digest, 16);
         DEBUG(D_auth) debug_printf("crypteq: using MD5+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+5);
         tempcond = (Ustrcmp(coded, sub[1]+5) == 0);
@@ -2774,7 +2774,7 @@ switch(cond_type)
 
       if (sublen == 28)
         {
-        uschar *coded = b64encode(digest, 20);
+        uschar *coded = b64encode(CUS digest, 20);
         DEBUG(D_auth) debug_printf("crypteq: using SHA1+B64 hashing\n"
           "  subject=%s\n  crypted=%s\n", coded, sub[1]+6);
         tempcond = (Ustrcmp(coded, sub[1]+6) == 0);
@@ -6843,7 +6843,7 @@ while (*s != 0)
             }
           }
 
-        enc = b64encode(sub, out - sub);
+        enc = b64encode(CUS sub, out - sub);
         yield = string_cat(yield, enc);
         continue;
         }
@@ -7507,9 +7507,9 @@ while (*s != 0)
 #ifdef SUPPORT_TLS
 	uschar * s = vp && *(void **)vp->value
 	  ? tls_cert_der_b64(*(void **)vp->value)
-	  : b64encode(sub, Ustrlen(sub));
+	  : b64encode(CUS sub, Ustrlen(sub));
 #else
-	uschar * s = b64encode(sub, Ustrlen(sub));
+	uschar * s = b64encode(CUS sub, Ustrlen(sub));
 #endif
 	yield = string_cat(yield, s);
 	continue;

@@ -26,7 +26,7 @@ Returns:      OK on success
 */
 
 int
-auth_get_data(uschar **aptr, uschar *challenge, int challen)
+auth_get_data(uschar **aptr, const uschar * challenge, int challen)
 {
 int c;
 int p = 0;
