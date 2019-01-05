@@ -26607,7 +26607,7 @@ to be returned. If the result of a successful expansion is an empty string,
 expansion is &"1"&, &"yes"&, or &"true"&, authentication succeeds and the
 generic &%server_set_id%& option is expanded and saved in &$authenticated_id$&.
 For any other result, a temporary error code is returned, with the expanded
-string as the error text
+string as the error text.
 
 &*Warning*&: If you use a lookup in the expansion to find the user's
 password, be sure to make the authentication fail if the user is unknown.
@@ -27435,20 +27435,25 @@ tls:
   driver = tls
   server_param1 =     ${certextract {subj_altname,mail,>:} \
                                     {$tls_in_peercert}}
-  server_condition =  ${if forany {$auth1} \
+  server_condition =  ${if and { {eq{$tls_in_certificate_verified}{1}} \
+                                 {forany {$auth1} \
                             {!= {0} \
                                 {${lookup ldap{ldap:///\
                          mailname=${quote_ldap_dn:${lc:$item}},\
                          ou=users,LDAP_DC?mailid} {$value}{0} \
-                       }    }   } }
+                       }    }  } }}}
   server_set_id =     ${if = {1}{${listcount:$auth1}} {$auth1}{}}
 .endd
 This accepts a client certificate that is verifiable against any
 of your configured trust-anchors
 (which usually means the full set of public CAs)
 and which has a SAN with a good account name.
-Note that the client cert is on the wire in-clear, including the SAN,
-whereas a plaintext SMTP AUTH done inside TLS is not.
+
+Note that, up to TLS1.2, the client cert is on the wire in-clear, including the SAN,
+The account name is therefore guessable by an opponent.
+TLS 1.3 protects both server and client certificates, and is not vulnerable
+in this way.
+Likewise, a traditional plaintext SMTP AUTH done inside TLS is not.
 
 . An alternative might use
 . .code
