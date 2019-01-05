@@ -429,7 +429,7 @@ if (  (fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
     gnutls_strerror(fail));
   return NULL;
   }
-return b64encode(cp, (int)len);
+return b64encode(CUS cp, (int)len);
 }
 
 

@@ -475,16 +475,16 @@ tls_channelbinding_b64 = NULL;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 channel.data = NULL;
 channel.size = 0;
-rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_UNIQUE, &channel);
-if (rc) {
-  DEBUG(D_tls) debug_printf("Channel binding error: %s\n", gnutls_strerror(rc));
-} else {
+if ((rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_UNIQUE, &channel)))
+  { DEBUG(D_tls) debug_printf("Channel binding error: %s\n", gnutls_strerror(rc)); }
+else
+  {
   old_pool = store_pool;
   store_pool = POOL_PERM;
-  tls_channelbinding_b64 = b64encode(channel.data, (int)channel.size);
+  tls_channelbinding_b64 = b64encode(CUS channel.data, (int)channel.size);
   store_pool = old_pool;
   DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage.\n");
-}
+  }
 #endif
 
 /* peercert is set in peer_status() */

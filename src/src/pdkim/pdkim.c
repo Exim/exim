@@ -445,7 +445,7 @@ b->len = dlen;
 uschar *
 pdkim_encode_base64(blob * b)
 {
-return b64encode(b->data, b->len);
+return b64encode(CUS b->data, b->len);
 }
 
 

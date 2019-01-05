@@ -321,7 +321,7 @@ in big_buffer, but b64encode() returns its result in working store,
 so calling smtp_write_command(), which uses big_buffer, is OK. */
 
 buffer[0] = 0;
-if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(big_buffer,
+if (smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", b64encode(CUS big_buffer,
   p - big_buffer)) < 0) return FAIL_SEND;
 
 return smtp_read_response(sx, US buffer, buffsize, '2', timeout)
