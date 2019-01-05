@@ -21,7 +21,7 @@ The API for each of these functions is documented with the function's code.
 
 INTERFACE TO SMTP AUTHENTICATION MECHANISMS
 
-These are general SSL mechanisms, adapted for use with SMTP. Each
+These are general SASL mechanisms, adapted for use with SMTP. Each
 authentication mechanism has three functions, for initialization, server
 authentication, and client authentication.
 

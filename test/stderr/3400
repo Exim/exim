@@ -456,6 +456,7 @@ SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
 250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
 250 HELP
 SMTP<< auth mylogin dXNlcnggc2VjcmV0
+auth input decode: 'userx secret'
 mylogin authenticator server_condition:
   $auth1 = userx secret
   $1 = userx secret

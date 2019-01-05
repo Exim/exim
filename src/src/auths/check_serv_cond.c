@@ -65,11 +65,8 @@ uschar *cond;
 HDEBUG(D_auth)
   {
   debug_printf("%s authenticator %s:\n", ablock->name, label);
-  for (int i = 0; i < AUTH_VARS; i++)
-    {
-    if (auth_vars[i] != NULL)
-      debug_printf("  $auth%d = %s\n", i + 1, auth_vars[i]);
-    }
+  for (int i = 0; i < AUTH_VARS; i++) if (auth_vars[i])
+    debug_printf("  $auth%d = %s\n", i + 1, auth_vars[i]);
   for (int i = 1; i <= expand_nmax; i++)
     debug_printf("  $%d = %.*s\n", i, expand_nlength[i], expand_nstring[i]);
   debug_print_string(ablock->server_debug_string);    /* customized debug */
@@ -83,23 +80,21 @@ For plaintext/gsasl authenticators, it will have been pre-checked to prevent
 this.  We return the unset scenario value given to us, which for
 server_condition will be OK and otherwise will typically be FAIL. */
 
-if (condition == NULL) return unset;
+if (!condition) return unset;
 cond = expand_string(condition);
 
 HDEBUG(D_auth)
-  {
-  if (cond == NULL)
+  if (!cond)
     debug_printf("expansion failed: %s\n", expand_string_message);
   else
     debug_printf("expanded string: %s\n", cond);
-  }
 
 /* A forced expansion failure causes authentication to fail. Other expansion
 failures yield DEFER, which will cause a temporary error code to be returned to
 the AUTH command. The problem is at the server end, so the client should try
 again later. */
 
-if (cond == NULL)
+if (!cond)
   {
   if (f.expand_string_forcedfail) return FAIL;
   auth_defer_msg = expand_string_message;

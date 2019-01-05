@@ -27,4 +27,4 @@ extern auth_tls_options_block auth_tls_option_defaults;
 extern void auth_tls_init(auth_instance *);
 extern int auth_tls_server(auth_instance *, uschar *);
 
-/* End of sa.h */
+/* End of tls.h */

@@ -1072,4 +1072,12 @@ should not be one active. */
 #define EARLY_PIPE_FEATURE_LEN  14
 
 
+/* Flags for auth_client_item() */
+
+#define AUTH_ITEM_FIRST	BIT(0)
+#define AUTH_ITEM_LAST	BIT(1)
+#define AUTH_ITEM_IGN64	BIT(2)
+
+
+
 /* End of macros.h */
