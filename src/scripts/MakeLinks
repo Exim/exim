@@ -67,7 +67,7 @@ done
 
 cd ..
 
-# Likewise for the code for the authorization functions
+# Likewise for the code for the authentication drivers
 mkdir auths
 cd auths
 for f in README Makefile call_pam.c call_pwcheck.c \

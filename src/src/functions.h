@@ -106,10 +106,13 @@ extern int     auth_call_saslauthd(const uschar *, const uschar *,
 	         const uschar *, const uschar *, uschar **);
 extern int     auth_check_serv_cond(auth_instance *);
 extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
+extern int     auth_client_item(void *, auth_instance *, const uschar **,
+		 unsigned, int, uschar *, int);
 
 
 extern int     auth_get_data(uschar **, const uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
+extern int     auth_read_input(const uschar *);
 extern void    auth_show_supported(FILE *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
