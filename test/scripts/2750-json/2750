@@ -1,0 +1,22 @@
+# lookup json
+#
+exim -be
+policy-aliases:google:mode
+${lookup {policy-aliases:google:mode} json {DIR/aux-fixed/policy.json}}
+
+policies:hotmail.com
+${lookup {policies:hotmail.com} json {DIR/aux-fixed/policy.json}}
+
+policy-aliases:outlook
+${lookup {policy-aliases:outlook} json {DIR/aux-fixed/policy.json}}
+
+policy-aliases:outlook:mxs
+${lookup {policy-aliases:outlook:mxs} json {DIR/aux-fixed/policy.json}}
+
+policy-aliases:outlook:mxs:1
+${lookup {policy-aliases : outlook : mxs : 1} json {DIR/aux-fixed/policy.json}}
+
+aggregate output vs. json extract
+${extract json {mxs} \
+	{${lookup {policy-aliases:outlook} json {DIR/aux-fixed/policy.json}}}}
+****

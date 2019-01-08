@@ -11,6 +11,8 @@ Version 4.92
 
  1. An "external" authenticator, per RFC 4422 Appendix A.
 
+ 2. A JSON lookup type.
+
 Version 4.92
 --------------
 

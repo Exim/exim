@@ -930,6 +930,9 @@ fprintf(fp, "Lookups (built-in):");
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
   fprintf(fp, " ibase");
 #endif
+#if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
+  fprintf(fp, " json");
+#endif
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
   fprintf(fp, " ldap ldapdn ldapm");
 #endif

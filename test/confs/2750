@@ -1,0 +1,5 @@
+# Exim test configuration 2750
+
+exim_path = EXIM_PATH
+
+# End

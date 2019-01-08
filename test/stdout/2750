@@ -1,0 +1,18 @@
+> policy-aliases:google:mode
+> testing
+> 
+> policies:hotmail.com
+> {"policy-alias": "outlook"}
+> 
+> policy-aliases:outlook
+> {"mode": "testing", "mxs": [".outlook.com", "outlook.com"]}
+> 
+> policy-aliases:outlook:mxs
+> [".outlook.com", "outlook.com"]
+> 
+> policy-aliases:outlook:mxs:1
+> outlook.com
+> 
+> aggregate output vs. json extract
+> [".outlook.com", "outlook.com"]
+> 
