@@ -732,6 +732,7 @@ begin transports
 
 remote_smtp:
   driver = smtp
+  hosts_try_prdr = *
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
 .ifdef _HAVE_DANE
   dnssec_request_domains = *
@@ -748,6 +749,7 @@ remote_smtp:
 
 smarthost_smtp:
   driver = smtp
+  hosts_try_prdr = *
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
   multi_domain
   #
