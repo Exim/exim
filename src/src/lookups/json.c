@@ -69,8 +69,8 @@ do_cache = do_cache;	/* Keep picky compilers happy */
 rewind(f);
 if (!(j = json_loadf(f, 0, &jerr)))
   {
-  enum json_error_code je = json_error_code(&jerr);
-  *errmsg = string_sprintf("json err %d on open", je);
+  *errmsg = string_sprintf("json error on open: %.*s\n",
+       JSON_ERROR_TEXT_LENGTH, jerr.text);
   return FAIL;
   }
 j0 = j;

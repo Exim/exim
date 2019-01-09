@@ -223,6 +223,9 @@ due to conflicts with other common macros. */
   builtin_macro_create(US"_HAVE_LOOKUP_IBASE");
 #endif
 #ifdef LOOKUP_LDAP
+  builtin_macro_create(US"_HAVE_LOOKUP_JSON");
+#endif
+#ifdef LOOKUP_LDAP
   builtin_macro_create(US"_HAVE_LOOKUP_LDAP");
 #endif
 #ifdef EXPERIMENTAL_LMDB
