@@ -3894,6 +3894,7 @@ return NULL;
 a copy in an allocated string.  Update the list pointer.
 
 The element may itself be an abject or array.
+Return NULL when the list is empty.
 */
 
 uschar *
@@ -3915,6 +3916,7 @@ for (item = s;
     case '}': object_depth--; break;
     }
 *list = *s ? s+1 : s;
+if (item == s) return NULL;
 item = string_copyn(item, s - item);
 DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
 return US item;
