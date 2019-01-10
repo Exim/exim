@@ -187,6 +187,10 @@ JH/40 Fix the feature-cache refresh for EXPERIMENTAL_PIPE_CONNECT.  Previously
       it only wrote the new authenticators, resulting in a lack of tracking of
       peer changes of ESMTP extensions until the next cache flush.
 
+JH/41 Fix the loop reading a message header line to check for integer overflow,
+      and more-often against header_maxsize.  Previously a crafted message could
+      induce a crash of the recive process; now the message is cleanly rejected.
+
 
 Exim version 4.91
 -----------------
