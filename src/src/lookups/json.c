@@ -11,6 +11,26 @@
 
 
 
+/* All use of allocations will be done against the POOL_SEARCH memory,
+which is freed once by search_tidyup(). Make the free call a dummy.
+This burns some 300kB in handling a 37kB JSON file, for the benefit of
+a fast free.  The alternative of staying with malloc is nearly as bad,
+eyeballing the activity there are 20% the number of free vs. alloc
+calls (before the big bunch at the end). */
+
+static void *
+json_malloc(size_t nbytes)
+{
+void * p = store_get((int)nbytes);
+/* debug_printf("%s %d: %p\n", __FUNCTION__, (int)nbytes, p); */
+return p;
+}
+static void
+json_free(void * p)
+{
+/* debug_printf("%s: %p\n", __FUNCTION__, p); */
+}
+
 /*************************************************
 *              Open entry point                  *
 *************************************************/
@@ -20,8 +40,11 @@
 static void *
 json_open(uschar *filename, uschar **errmsg)
 {
-FILE *f = Ufopen(filename, "rb");
-if (f == NULL)
+FILE * f;
+
+json_set_alloc_funcs(json_malloc, json_free);
+
+if (!(f = Ufopen(filename, "rb")))
   {
   int save_errno = errno;
   *errmsg = string_open_failed(errno, "%s for json search", filename);
