@@ -1813,8 +1813,11 @@ for (;;)
   if (ptr >= header_size - 4)
     {
     int oldsize = header_size;
-    /* header_size += 256; */
+
+    if (header_size >= INT_MAX/2)
+      goto OVERSIZE;
     header_size *= 2;
+
     if (!store_extend(next->text, oldsize, header_size))
       next->text = store_newblock(next->text, header_size, ptr);
     }
@@ -1920,6 +1923,7 @@ for (;;)
 
   if (message_size >= header_maxsize)
     {
+OVERSIZE:
     next->text[ptr] = 0;
     next->slen = ptr;
     next->type = htype_other;
@@ -1991,7 +1995,8 @@ for (;;)
     if (nextch == ' ' || nextch == '\t')
       {
       next->text[ptr++] = nextch;
-      message_size++;
+      if (++message_size >= header_maxsize)
+	goto OVERSIZE;
       continue;                      /* Iterate the loop */
       }
     else if (nextch != EOF) (receive_ungetc)(nextch);   /* For next time */

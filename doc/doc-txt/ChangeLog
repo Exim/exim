@@ -71,12 +71,16 @@ JH/33 Bug 2338: Fix the cyrus-sasl authenticator to fill in the
       $authenticated_fail_id variable on authentication failure.  Previously
       it was unset.
 
-JH/36 Harder the handling of string-lists.  When a list consisted of a sole
+JH/36 Harden the handling of string-lists.  When a list consisted of a sole
       "<" character, which should be a list-separator specification, we walked
       off past the nul-terimation.
 
 AM/01 GnuTLS: repeat lowlevel read and write operations while they return error
       codes indicating retry.  Under TLS1.3 this becomes required.
+
+JH/41 Fix the loop reading a message header line to check for integer overflow,
+      and more-often against header_maxsize.  Previously a crafted message could
+      induce a crash of the recive process; now the message is cleanly rejected.
 
 
 Exim version 4.91
