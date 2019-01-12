@@ -6257,6 +6257,9 @@ remote_smtp:
   dnssec_request_domains = *
   hosts_try_dane = *
 .endif
+.ifdef _HAVE_PRDR
+  hosts_try_prdr = *
+.endif
 .endd
 This transport is used for delivering messages over SMTP connections.
 The list of remote hosts comes from the router.
@@ -6264,6 +6267,11 @@ The &%message_size_limit%& usage is a hack to avoid sending on messages
 with over-long lines.  The built-in macro _HAVE_DANE guards configuration
 to try to use DNSSEC for all queries and to use DANE for delivery;
 see section &<<SECDANE>>& for more details.
+
+The &%hosts_try_prdr%& option enables an efficiency SMTP option.  It is
+negotiated between client and server and not expected to cause problems
+but can be disabled if needed.  The built-in macro _HAVE_PRDR guards the
+use of the &%hosts_try_prdr%& configuration option.
 
 The other remote transport is used when delivering to a specific smarthost
 with whom there must be some kind of existing relationship, instead of the
@@ -6299,6 +6307,9 @@ smarthost_smtp:
   tls_require_ciphers = SECURE192:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
 .endif
 .endif
+.ifdef _HAVE_PRDR
+  hosts_try_prdr = *
+.endif
 .endd
 After the same &%message_size_limit%& hack, we then specify that this Transport
 can handle messages to multiple domains in one run.  The assumption here is
@@ -6318,6 +6329,9 @@ ROUTER_SMARTHOST macro, because that is unaffected by CNAMEs present in DNS.
 You want to specify the hostname which you'll expect to validate for, and that
 should not be subject to insecure tampering via DNS results.
 
+For the &%hosts_try_prdr%& option see the previous transport.
+
+All other options are defaulted.
 .code
 local_delivery:
   driver = appendfile

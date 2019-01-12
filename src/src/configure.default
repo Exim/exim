@@ -119,8 +119,11 @@ hostlist   relay_from_hosts = localhost
 # manual for details. The lists above are used in the access control lists for
 # checking incoming messages. The names of these ACLs are defined here:
 
-acl_smtp_rcpt = acl_check_rcpt
-acl_smtp_data = acl_check_data
+acl_smtp_rcpt =         acl_check_rcpt
+.ifdef _HAVE_PRDR
+acl_smtp_data_prdr =    acl_check_prdr
+.endif
+acl_smtp_data =         acl_check_data
 
 # You should not change those settings until you understand how ACLs work.
 
@@ -263,7 +266,9 @@ dns_dnssec_ok = 1
 # may request to use it.  For multi-recipient mails we then can
 # reject or accept per-user after the message is received.
 #
+.ifdef _HAVE_PRDR
 prdr_enable = true
+.endif
 
 
 # By default, Exim expects all envelope addresses to be fully qualified, that
@@ -516,11 +521,44 @@ acl_check_rcpt:
   # require verify = csa
   #############################################################################
 
+  #############################################################################
+  # If doing per-user content filtering then recipients with filters different
+  # to the first recipient must be deferred unless the sender talks PRDR.
+  #
+  # defer  !condition     = $prdr_requested
+  #        condition      = ${if > {0}{$receipients_count}}
+  #        condition      = ${if !eq {$acl_m_content_filter} \
+  #                                  {${lookup PER_RCPT_CONTENT_FILTER}}}
+  # warn   !condition     = $prdr_requested
+  #        condition      = ${if > {0}{$receipients_count}}
+  #        set acl_m_content_filter = ${lookup PER_RCPT_CONTENT_FILTER}
+  #############################################################################
+
   # At this point, the address has passed all the checks that have been
   # configured, so we accept it unconditionally.
 
   accept
 
+
+# This ACL is used once per recipient, for multi-recipient messages, if
+# we advertised PRDR.  It can be used to perform receipient-dependent
+# header- and body- based filtering and rejections.
+# We set a variable to record that PRDR was active used, so that checking
+# in the data ACL can be skipped.
+
+.ifdef _HAVE_PRDR
+acl_check_prdr:
+  warn  set acl_m_did_prdr = y
+.endif
+
+  #############################################################################
+  # do lookup on filtering, with $local_part@$domain, deny on filter match
+  #
+  # deny      set acl_m_content_filter = ${lookup PER_RCPT_CONTENT_FILTER}
+  #           condition    = ...
+  #############################################################################
+
+  accept
 
 # This ACL is used after the contents of a message have been received. This
 # is the ACL in which you can test a message's headers or body, and in
@@ -560,6 +598,19 @@ acl_check_data:
   #                      X-Spam_score_int: $spam_score_int\n\
   #                      X-Spam_bar: $spam_bar\n\
   #                      X-Spam_report: $spam_report
+
+  #############################################################################
+  # No more tests if PRDR was actively used.
+  # accept   condition  = ${if def:acl_m_did_prdr}
+  #
+  # To get here, all message recipients must have identical per-user
+  # content filtering (enforced by RCPT ACL).  Do lookup for filter
+  # and deny on match.
+  #
+  # deny      set acl_m_content_filter = ${lookup PER_RCPT_CONTENT_FILTER}
+  #           condition    = ...
+  #############################################################################
+
 
   # Accept the message.
 
@@ -757,6 +808,9 @@ remote_smtp:
   dnssec_request_domains = *
   hosts_try_dane = *
 .endif
+.ifdef _HAVE_PRDR
+  hosts_try_prdr = *
+.endif
 
 
 # This transport is used for delivering messages to a smarthost, if the
@@ -794,6 +848,9 @@ smarthost_smtp:
 .ifdef _HAVE_GNUTLS
   tls_require_ciphers = SECURE192:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
 .endif
+.endif
+.ifdef _HAVE_PRDR
+  hosts_try_prdr = *
 .endif
 
 
