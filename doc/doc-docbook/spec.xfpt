@@ -28202,6 +28202,15 @@ checks are made: that the host name (the one in the DNS A record)
 is valid for the certificate.
 The option defaults to always checking.
 
+.new
+Do not use a client certificate that contains an "OCSP Must-Staple" extension.
+TLS 1.2 and below does not support client-side OCSP stapling, and
+(as of writing) the TLS libraries do not provide for it even with
+TLS 1.3.
+Be careful when using the same certificate for server- and
+client-certificate for this reason.
+.wen
+
 The &(smtp)& transport has two OCSP-related options:
 &%hosts_require_ocsp%&; a host-list for which a Certificate Status
 is requested and required for the connection to proceed.  The default
