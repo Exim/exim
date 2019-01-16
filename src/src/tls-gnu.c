@@ -67,6 +67,12 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030109
 # define SUPPORT_CORK
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x03010a
+# define SUPPORT_GNUTLS_SESS_DESC
+#endif
+#if GNUTLS_VERSION_NUMBER >= 0x030500
+# define SUPPORT_GNUTLS_KEYLOG
+#endif
 #if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
 # define SUPPORT_SRV_OCSP_STACK
 #endif
@@ -2152,16 +2158,21 @@ if (rc != GNUTLS_E_SUCCESS)
 
 DEBUG(D_tls)
   {
+  debug_printf("gnutls_handshake was successful\n");
+#ifdef SUPPORT_GNUTLS_SESS_DESC
+  debug_printf("%s\n", gnutls_session_get_desc(state->session));
+#endif
+#ifdef SUPPORT_GNUTLS_KEYLOG
+  {
   gnutls_datum_t c, s;
   gstring * gc, * gs;
-  debug_printf("gnutls_handshake was successful\n");
-  debug_printf("%s\n", gnutls_session_get_desc(state->session));
-
   gnutls_session_get_random(state->session, &c, &s);
   gnutls_session_get_master_secret(state->session, &s);
   gc = ddump(&c);
   gs = ddump(&s);
   debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
+  }
+#endif
   }
 
 /* Verify after the fact */
@@ -2473,16 +2484,21 @@ if (rc != GNUTLS_E_SUCCESS)
 
 DEBUG(D_tls)
   {
+  debug_printf("gnutls_handshake was successful\n");
+#ifdef SUPPORT_GNUTLS_SESS_DESC
+  debug_printf("%s\n", gnutls_session_get_desc(state->session));
+#endif
+#ifdef SUPPORT_GNUTLS_KEYLOG
+  {
   gnutls_datum_t c, s;
   gstring * gc, * gs;
-  debug_printf("gnutls_handshake was successful\n");
-  debug_printf("%s\n", gnutls_session_get_desc(state->session));
-
   gnutls_session_get_random(state->session, &c, &s);
   gnutls_session_get_master_secret(state->session, &s);
   gc = ddump(&c);
   gs = ddump(&s);
   debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
+  }
+#endif
   }
 
 /* Verify late */
