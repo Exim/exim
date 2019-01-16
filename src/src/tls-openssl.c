@@ -70,6 +70,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_CHECKHOST
 #  define EXIM_HAVE_OPENSSL_DH_BITS
 #  define EXIM_HAVE_OPENSSL_TLS_METHOD
+#  define EXIM_HAVE_OPENSSL_KEYLOG
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -2304,15 +2305,27 @@ and initialize things. */
 
 peer_cert(server_ssl, &tls_in, peerdn, sizeof(peerdn));
 
-construct_cipher_name(server_ssl, cipherbuf, sizeof(cipherbuf), &tls_in.bits);
-tls_in.cipher = cipherbuf;
-
 DEBUG(D_tls)
   {
   uschar buf[2048];
   if (SSL_get_shared_ciphers(server_ssl, CS buf, sizeof(buf)) != NULL)
     debug_printf("Shared ciphers: %s\n", buf);
+
+#ifdef EXIM_HAVE_OPENSSL_KEYLOG
+  {
+  BIO * bp = BIO_new(BIO_s_mem());
+  uschar * s;
+  int len;
+  SSL_SESSION_print_keylog(bp, SSL_get_session(server_ssl));
+  len = (int) BIO_get_mem_data(bp, CSS &s);
+  debug_printf("%.*s", len, s);
+  BIO_free(bp);
   }
+#endif
+  }
+
+construct_cipher_name(server_ssl, cipherbuf, sizeof(cipherbuf), &tls_in.bits);
+tls_in.cipher = cipherbuf;
 
 /* Record the certificate we presented */
   {
@@ -2680,7 +2693,21 @@ if (rc <= 0)
   return NULL;
   }
 
-DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
+DEBUG(D_tls)
+  {
+  debug_printf("SSL_connect succeeded\n");
+#ifdef EXIM_HAVE_OPENSSL_KEYLOG
+  {
+  BIO * bp = BIO_new(BIO_s_mem());
+  uschar * s;
+  int len;
+  SSL_SESSION_print_keylog(bp, SSL_get_session(server_ssl));
+  len = (int) BIO_get_mem_data(bp, CSS &s);
+  debug_printf("%.*s", len, s);
+  BIO_free(bp);
+  }
+#endif
+  }
 
 peer_cert(exim_client_ctx->ssl, tlsp, peerdn, sizeof(peerdn));
 
