@@ -1991,6 +1991,18 @@ return 0;
 #endif
 
 
+static gstring *
+ddump(gnutls_datum_t * d)
+{
+gstring * g = string_get((d->size+1) * 2);
+uschar * s = d->data;
+for (unsigned i = d->size; i > 0; i--, s++)
+  {
+  g = string_catn(g, US "0123456789abcdef" + (*s >> 4), 1);
+  g = string_catn(g, US "0123456789abcdef" + (*s & 0xf), 1);
+  }
+return g;
+}
 
 /* ------------------------------------------------------------------------ */
 /* Exported functions */
@@ -2138,7 +2150,19 @@ if (rc != GNUTLS_E_SUCCESS)
   return FAIL;
   }
 
-DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
+DEBUG(D_tls)
+  {
+  gnutls_datum_t c, s;
+  gstring * gc, * gs;
+  debug_printf("gnutls_handshake was successful\n");
+  debug_printf("%s\n", gnutls_session_get_desc(state->session));
+
+  gnutls_session_get_random(state->session, &c, &s);
+  gnutls_session_get_master_secret(state->session, &s);
+  gc = ddump(&c);
+  gs = ddump(&s);
+  debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
+  }
 
 /* Verify after the fact */
 
@@ -2447,7 +2471,19 @@ if (rc != GNUTLS_E_SUCCESS)
   return NULL;
   }
 
-DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
+DEBUG(D_tls)
+  {
+  gnutls_datum_t c, s;
+  gstring * gc, * gs;
+  debug_printf("gnutls_handshake was successful\n");
+  debug_printf("%s\n", gnutls_session_get_desc(state->session));
+
+  gnutls_session_get_random(state->session, &c, &s);
+  gnutls_session_get_master_secret(state->session, &s);
+  gc = ddump(&c);
+  gs = ddump(&s);
+  debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
+  }
 
 /* Verify late */
 
