@@ -570,6 +570,7 @@ table exim_errstrings[] in log.c */
 #define ERRNO_LOCAL_ONLY     (-54)   /* Local-only delivery */
 #define ERRNO_QUEUE_DOMAIN   (-55)   /* Domain in queue_domains */
 #define ERRNO_TRETRY         (-56)   /* Transport concurrency limit */
+#define ERRNO_EVENT	     (-57)   /* Event processing request alternate response */
 
 
 

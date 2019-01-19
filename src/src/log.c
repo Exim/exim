@@ -112,6 +112,7 @@ static const uschar * exim_errstrings[] = {
   US"Local-only delivery",
   US"Domain in queue_domains",
   US"Transport concurrency limit",
+  US"Event requests alternate response",
 };
 
 

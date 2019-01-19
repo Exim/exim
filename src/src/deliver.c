@@ -856,6 +856,7 @@ if (action)
     {
     DEBUG(D_deliver)
       debug_printf("Event(%s): event_action returned \"%s\"\n", event, s);
+    errno = ERRNO_EVENT;
     return s;
     }
   }
