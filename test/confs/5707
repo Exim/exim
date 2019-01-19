@@ -1,0 +1,56 @@
+# Exim test configuration 5707
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = accept
+
+event_action = ${acl {logger}}
+
+
+# ----- ACL -----
+
+begin acl
+
+.include DIR/aux-fixed/event-logger-acl
+
+conn_deny:
+  accept	!condition =	${if eq {tcp:connect}{$event_name}}
+  deny		logwrite =	Denying tcp connection
+		message =	deny
+
+# ----- Routers -----
+
+begin routers
+
+dump_bounces:
+  driver = redirect
+  senders = :
+  data = :blackhole:
+
+others:
+  driver = manualroute
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  errors_to = ""
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver =	smtp
+  port =	PORT_S
+  event_action = ${acl {conn_deny}}
+
+# ----- Retry -----
+begin retry
+* * F,5d,10s
+
+# End

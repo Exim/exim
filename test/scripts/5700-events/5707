@@ -1,0 +1,6 @@
+# tcp:connect deny
+#
+exim -odf userx@domain1
+A deliverable message
+****
+no_msglog_check
