@@ -263,7 +263,6 @@ __
         }
 
         $context->copy_docbook_files;
-        $context->build_html_documentation if $context->{web};
     }
 
     sub copy_docbook_files {
@@ -564,6 +563,7 @@ MAIN: {
     $context->unpack_tree;
     $context->make_version_script;
     $context->build_documentation if $context->{docs};
+    $context->build_html_documentation if $context->{docs} && $context->{web};
 
     $context->build_src_package_directory;
     $context->build_doc_packages_directory if $context->{docs};
