@@ -5635,7 +5635,7 @@ while (*s != 0)
       uschar *sub[3];
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
-      enum {extract_basic, extract_json} fmt = extract_basic;
+      enum {extract_basic, extract_json, extract_jsons} fmt = extract_basic;
 
       while (isspace(*s)) s++;
 
@@ -5643,7 +5643,10 @@ while (*s != 0)
 
       if (*s != '{')					/*}*/
 	if (Ustrncmp(s, "json", 4) == 0)
-	  {fmt = extract_json; s += 4;}
+	  if (*(s += 4) == 's')
+	    {fmt = extract_jsons; s++;}
+	  else
+	    fmt = extract_json;
 
       /* While skipping we cannot rely on the data for expansions being
       available (eg. $item) hence cannot decide on numeric vs. keyed.
@@ -5724,7 +5727,7 @@ while (*s != 0)
 	    if (*p == 0)
 	      {
 	      field_number *= x;
-	      if (fmt != extract_json) j = 3;               /* Need 3 args */
+	      if (fmt == extract_basic) j = 3;               /* Need 3 args */
 	      field_number_set = TRUE;
 	      }
             }
@@ -5751,6 +5754,7 @@ while (*s != 0)
 	  break;
 
 	case extract_json:
+	case extract_jsons:
 	  {
 	  uschar * s, * item;
 	  const uschar * list;
@@ -5816,6 +5820,15 @@ while (*s != 0)
 	      }
 	    }
 	  }
+
+	  if (fmt == extract_jsons)
+	    if (!(lookup_value = dewrap(lookup_value, US"\"\"")))
+	      {
+	      expand_string_message =
+		string_sprintf("%s wrapping string result for extract jsons",
+		  expand_string_message);
+	      goto EXPAND_FAILED_CURLY;
+	      }
 	}
 
       /* If no string follows, $value gets substituted; otherwise there can

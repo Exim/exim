@@ -893,6 +893,9 @@ ${extract json {Width} \
 ${extract json {2} {[116, 943, 234, 38793]} }
 ${extract json {2} {${extract json{IDs} {\{"other":"foo", "IDs": [116, 943, 234]\} }}} }
 
+${extract json {2} {["red", "green", "blue", "black"]} }
+${extract jsons{2} {["red", "green", "blue", "black"]} }
+
 ${extract json {seconds} { \{"hours":0, "mins":0, "seconds":59\} }}
 ${extract json {seconds} {${extract json {2} { ["irrelevant", \{"hours":0, "mins":0, "seconds":59\}] }}}}
 
