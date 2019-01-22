@@ -908,6 +908,9 @@ expect: {"1":116, "2":943, "3":234}
 <${extract json{nonexistent}{ \{"id": \{"a":101, "b":102\}, "IDs": \{"1":116, "2":943, "3":234\}\} }}>
 expect: <>
 
+${if forany_json {[1, 2, 3]}{={$item}{1}}{yes}{no}}
+${if forany_jsons{["A", "B", "C"]}{eq{$item}{B}}{yes}{no}}
+
 ****
 # Test "escape" with print_topbitchars
 exim -be -DPTBC=print_topbitchars

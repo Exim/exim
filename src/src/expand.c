@@ -312,7 +312,11 @@ static uschar *cond_table[] = {
   US"exists",
   US"first_delivery",
   US"forall",
+  US"forall_json",
+  US"forall_jsons",
   US"forany",
+  US"forany_json",
+  US"forany_jsons",
   US"ge",
   US"gei",
   US"gt",
@@ -358,7 +362,11 @@ enum {
   ECOND_EXISTS,
   ECOND_FIRST_DELIVERY,
   ECOND_FORALL,
+  ECOND_FORALL_JSON,
+  ECOND_FORALL_JSONS,
   ECOND_FORANY,
+  ECOND_FORANY_JSON,
+  ECOND_FORANY_JSONS,
   ECOND_STR_GE,
   ECOND_STR_GEI,
   ECOND_STR_GT,
@@ -2144,6 +2152,89 @@ return ret;
 
 
 
+/* Return pointer to dewrapped string, with enclosing specified chars removed.
+The given string is modified on return.  Leading whitespace is skipped while
+looking for the opening wrap character, then the rest is scanned for the trailing
+(non-escaped) wrap character.  A backslash in the string will act as an escape.
+
+A nul is written over the trailing wrap, and a pointer to the char after the
+leading wrap is returned.
+
+Arguments:
+  s	String for de-wrapping
+  wrap  Two-char string, the first being the opener, second the closer wrapping
+        character
+Return:
+  Pointer to de-wrapped string, or NULL on error (with expand_string_message set).
+*/
+
+static uschar *
+dewrap(uschar * s, const uschar * wrap)
+{
+uschar * p = s;
+unsigned depth = 0;
+BOOL quotesmode = wrap[0] == wrap[1];
+
+while (isspace(*p)) p++;
+
+if (*p == *wrap)
+  {
+  s = ++p;
+  wrap++;
+  while (*p)
+    {
+    if (*p == '\\') p++;
+    else if (!quotesmode && *p == wrap[-1]) depth++;
+    else if (*p == *wrap)
+      if (depth == 0)
+	{
+	*p = '\0';
+	return s;
+	}
+      else
+	depth--;
+    p++;
+    }
+  }
+expand_string_message = string_sprintf("missing '%c'", *wrap);
+return NULL;
+}
+
+
+/* Pull off the leading array or object element, returning
+a copy in an allocated string.  Update the list pointer.
+
+The element may itself be an abject or array.
+Return NULL when the list is empty.
+*/
+
+static uschar *
+json_nextinlist(const uschar ** list)
+{
+unsigned array_depth = 0, object_depth = 0;
+const uschar * s = *list, * item;
+
+while (isspace(*s)) s++;
+
+for (item = s;
+     *s && (*s != ',' || array_depth != 0 || object_depth != 0);
+     s++)
+  switch (*s)
+    {
+    case '[': array_depth++; break;
+    case ']': array_depth--; break;
+    case '{': object_depth++; break;
+    case '}': object_depth--; break;
+    }
+*list = *s ? s+1 : s;
+if (item == s) return NULL;
+item = string_copyn(item, s - item);
+DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
+return US item;
+}
+
+
+
 /*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
@@ -2170,6 +2261,7 @@ BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
 BOOL *subcondptr;
 BOOL sub2_honour_dollar = TRUE;
+BOOL is_forany, is_json, is_jsons;
 int rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
@@ -2945,8 +3037,14 @@ switch(cond_type)
 
   /* forall/forany: iterates a condition with different values */
 
-  case ECOND_FORALL:
-  case ECOND_FORANY:
+  case ECOND_FORALL:	  is_forany = FALSE;  is_json = FALSE; is_jsons = FALSE; goto FORMANY;
+  case ECOND_FORANY:	  is_forany = TRUE;   is_json = FALSE; is_jsons = FALSE; goto FORMANY;
+  case ECOND_FORALL_JSON: is_forany = FALSE;  is_json = TRUE;  is_jsons = FALSE; goto FORMANY;
+  case ECOND_FORANY_JSON: is_forany = TRUE;   is_json = TRUE;  is_jsons = FALSE; goto FORMANY;
+  case ECOND_FORALL_JSONS: is_forany = FALSE; is_json = TRUE;  is_jsons = TRUE;  goto FORMANY;
+  case ECOND_FORANY_JSONS: is_forany = TRUE;  is_json = TRUE;  is_jsons = TRUE;  goto FORMANY;
+
+  FORMANY:
     {
     const uschar * list;
     int sep = 0;
@@ -2987,10 +3085,22 @@ switch(cond_type)
       return NULL;
       }
 
-    if (yield != NULL) *yield = !testfor;
+    if (yield) *yield = !testfor;
     list = sub[0];
-    while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
+    if (is_json) list = dewrap(string_copy(list), US"[]");
+    while ((iterate_item = is_json
+      ? json_nextinlist(&list) : string_nextinlist(&list, &sep, NULL, 0)))
       {
+      if (is_jsons)
+	if (!(iterate_item = dewrap(iterate_item, US"\"\"")))
+	  {
+	  expand_string_message =
+	    string_sprintf("%s wrapping string result for extract jsons",
+	      expand_string_message);
+	  iterate_item = save_iterate_item;
+	  return NULL;
+	  }
+
       DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, iterate_item);
       if (!eval_condition(sub[1], resetok, &tempcond))
         {
@@ -3002,8 +3112,8 @@ switch(cond_type)
       DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", name,
         tempcond? "true":"false");
 
-      if (yield != NULL) *yield = (tempcond == testfor);
-      if (tempcond == (cond_type == ECOND_FORANY)) break;
+      if (yield) *yield = (tempcond == testfor);
+      if (tempcond == is_forany) break;
       }
 
     iterate_item = save_iterate_item;
@@ -3837,89 +3947,6 @@ if (*error == NULL)
   }
 *sptr = s;
 return x;
-}
-
-
-
-/* Return pointer to dewrapped string, with enclosing specified chars removed.
-The given string is modified on return.  Leading whitespace is skipped while
-looking for the opening wrap character, then the rest is scanned for the trailing
-(non-escaped) wrap character.  A backslash in the string will act as an escape.
-
-A nul is written over the trailing wrap, and a pointer to the char after the
-leading wrap is returned.
-
-Arguments:
-  s	String for de-wrapping
-  wrap  Two-char string, the first being the opener, second the closer wrapping
-        character
-Return:
-  Pointer to de-wrapped string, or NULL on error (with expand_string_message set).
-*/
-
-static uschar *
-dewrap(uschar * s, const uschar * wrap)
-{
-uschar * p = s;
-unsigned depth = 0;
-BOOL quotesmode = wrap[0] == wrap[1];
-
-while (isspace(*p)) p++;
-
-if (*p == *wrap)
-  {
-  s = ++p;
-  wrap++;
-  while (*p)
-    {
-    if (*p == '\\') p++;
-    else if (!quotesmode && *p == wrap[-1]) depth++;
-    else if (*p == *wrap)
-      if (depth == 0)
-	{
-	*p = '\0';
-	return s;
-	}
-      else
-	depth--;
-    p++;
-    }
-  }
-expand_string_message = string_sprintf("missing '%c'", *wrap);
-return NULL;
-}
-
-
-/* Pull off the leading array or object element, returning
-a copy in an allocated string.  Update the list pointer.
-
-The element may itself be an abject or array.
-Return NULL when the list is empty.
-*/
-
-uschar *
-json_nextinlist(const uschar ** list)
-{
-unsigned array_depth = 0, object_depth = 0;
-const uschar * s = *list, * item;
-
-while (isspace(*s)) s++;
-
-for (item = s;
-     *s && (*s != ',' || array_depth != 0 || object_depth != 0);
-     s++)
-  switch (*s)
-    {
-    case '[': array_depth++; break;
-    case ']': array_depth--; break;
-    case '{': object_depth++; break;
-    case '}': object_depth--; break;
-    }
-*list = *s ? s+1 : s;
-if (item == s) return NULL;
-item = string_copyn(item, s - item);
-DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
-return US item;
 }
 
 
