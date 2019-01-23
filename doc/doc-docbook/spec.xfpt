@@ -9410,9 +9410,9 @@ This forces an expansion failure (see section &<<SECTforexpfai>>&);
 {<&'string2'&>} must be present for &"fail"& to be recognized.
 
 .new
-.vitem "&*${extract json{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
-       {*&<&'string3'&>&*}}*&"
-.vitem "&*${extract jsons{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
+.vitem "&*${extract json {*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
+       {*&<&'string3'&>&*}}*&" &&&
+       "&*${extract jsons{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
        {*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting from JSON object"
 .cindex JSON expansions
@@ -9431,7 +9431,7 @@ For the &"json"& variant,
 if a returned value is a JSON string, it retains its leading and
 trailing quotes.
 For the &"jsons"& variant, which is intended for use with JSON strings, the
-leading and trailing quotes are removed.
+leading and trailing quotes are removed from the returned value.
 . XXX should be a UTF-8 compare
 
 The results of matching are handled as above.
@@ -9470,9 +9470,9 @@ empty (for example, the fifth field above).
 
 
 .new
-.vitem "&*${extract json{*&<&'number'&>&*}}&&&
-        {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
-.vitem "&*${extract jsons{*&<&'number'&>&*}}&&&
+.vitem "&*${extract json {*&<&'number'&>&*}}&&&
+        {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&" &&&
+       "&*${extract jsons{*&<&'number'&>&*}}&&&
         {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting from JSON array"
 .cindex JSON expansions
@@ -9485,7 +9485,7 @@ For the &"json"& variant,
 if a returned value is a JSON string, it retains its leading and
 trailing quotes.
 For the &"jsons"& variant, which is intended for use with JSON strings, the
-leading and trailing quotes are removed.
+leading and trailing quotes are removed from the returned value.
 .wen
 
 
