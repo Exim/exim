@@ -33172,6 +33172,7 @@ in &_Local/Makefile_& (see section &<<SECTconoptloc>>& below).
 
 .section "API for local_scan()" "SECTapiforloc"
 .cindex "&[local_scan()]& function" "API description"
+.cindex &%dlfunc%& "API description"
 You must include this line near the start of your code:
 .code
 #include "local_scan.h"
