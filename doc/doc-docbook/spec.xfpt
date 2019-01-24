@@ -9578,7 +9578,8 @@ there is no choice of field separator.
 .cindex "expansion" "selecting from list by condition"
 .vindex "&$item$&"
 After expansion, <&'string'&> is interpreted as a list, colon-separated by
-default, but the separator can be changed in the usual way. For each item
+default, but the separator can be changed in the usual way (&<<SECTlistsepchange>>&).
+For each item
 in this list, its value is place in &$item$&, and then the condition is
 evaluated. If the condition is true, &$item$& is added to the output as an
 item in a new list; if the condition is false, the item is discarded. The
@@ -9835,7 +9836,7 @@ apart from an optional leading minus,
 and leading and trailing white space (which is ignored).
 
 After expansion, <&'string1'&> is interpreted as a list, colon-separated by
-default, but the separator can be changed in the usual way.
+default, but the separator can be changed in the usual way (&<<SECTlistsepchange>>&).
 
 The first field of the list is numbered one.
 If the number is negative, the fields are
@@ -9929,7 +9930,8 @@ ${lookup nisplus {[name=$local_part],passwd.org_dir:gcos} \
 .cindex "expansion" "list creation"
 .vindex "&$item$&"
 After expansion, <&'string1'&> is interpreted as a list, colon-separated by
-default, but the separator can be changed in the usual way. For each item
+default, but the separator can be changed in the usual way (&<<SECTlistsepchange>>&).
+For each item
 in this list, its value is place in &$item$&, and then <&'string2'&> is
 expanded and added to the output as an item in a new list. The separator used
 for the output list is the same as the one used for the input, but a separator
@@ -10134,7 +10136,8 @@ locks out the use of this expansion item in filter files.
 .vindex "&$item$&"
 This operation reduces a list to a single, scalar string. After expansion,
 <&'string1'&> is interpreted as a list, colon-separated by default, but the
-separator can be changed in the usual way. Then <&'string2'&> is expanded and
+separator can be changed in the usual way (&<<SECTlistsepchange>>&).
+Then <&'string2'&> is expanded and
 assigned to the &$value$& variable. After this, each item in the <&'string1'&>
 list is assigned to &$item$&, in turn, and <&'string3'&> is expanded for each of
 them. The result of that expansion is assigned to &$value$& before the next
@@ -10263,7 +10266,7 @@ rather than any Unicode-aware character handling.
 .cindex list sorting
 .cindex expansion "list sorting"
 After expansion, <&'string'&> is interpreted as a list, colon-separated by
-default, but the separator can be changed in the usual way.
+default, but the separator can be changed in the usual way (&<<SECTlistsepchange>>&).
 The <&'comparator'&> argument is interpreted as the operator
 of a two-argument expansion condition.
 The numeric operators plus ge, gt, le, lt (and ~i variants) are supported.
@@ -11274,7 +11277,8 @@ attempt. It is false during any subsequent delivery attempts.
 .vindex "&$item$&"
 These conditions iterate over a list. The first argument is expanded to form
 the list. By default, the list separator is a colon, but it can be changed by
-the normal method. The second argument is interpreted as a condition that is to
+the normal method (&<<SECTlistsepchange>>&).
+The second argument is interpreted as a condition that is to
 be applied to each item in the list in turn. During the interpretation of the
 condition, the current list item is placed in a variable called &$item$&.
 .ilist
@@ -13654,7 +13658,7 @@ listen. Each item may optionally also specify a port.
 .endlist
 
 The default list separator in both cases is a colon, but this can be changed as
-described in section &<<SECTlistconstruct>>&. When IPv6 addresses are involved,
+described in section &<<SECTlistsepchange>>&. When IPv6 addresses are involved,
 it is usually best to change the separator to avoid having to double all the
 colons. For example:
 .code
@@ -13721,7 +13725,8 @@ the runtime configuration by &%-D%& is allowed only when the caller is root or
 exim.
 
 The value of &%-oX%& is a list of items. The default colon separator can be
-changed in the usual way if required. If there are any items that do not
+changed in the usual way (&<<SECTlistsepchange>>&) if required.
+If there are any items that do not
 contain dots or colons (that is, are not IP addresses), the value of
 &%daemon_smtp_ports%& is replaced by the list of those items. If there are any
 items that do contain dots or colons, the value of &%local_interfaces%& is
@@ -17477,7 +17482,7 @@ use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
 &*Note*&: If you use filenames based on IP addresses, change the list
-separator in the usual way to avoid confusion under IPv6.
+separator in the usual way (&<<SECTlistsepchange>>&) >to avoid confusion under IPv6.
 
 &*Note*&: Under versions of OpenSSL preceding 1.1.1,
 when a list of more than one
@@ -18282,7 +18287,7 @@ verifying a sender, verification fails.
 .cindex "fallback" "hosts specified on router"
 String expansion is not applied to this option. The argument must be a
 colon-separated list of host names or IP addresses. The list separator can be
-changed (see section &<<SECTlistconstruct>>&), and a port can be specified with
+changed (see section &<<SECTlistsepchange>>&), and a port can be specified with
 each name or address. In fact, the format of each item is exactly the same as
 defined for the list of hosts in a &(manualroute)& router (see section
 &<<SECTformatonehostitem>>&).
@@ -18314,7 +18319,7 @@ and the discussion in chapter &<<CHAPenvironment>>&.
 .cindex "header lines" "adding"
 .cindex "router" "adding header lines"
 This option specifies a list of text headers,
-newline-separated (by default, changeable in the usual way),
+newline-separated (by default, changeable in the usual way &<<SECTlistsepchange>>&),
 that is associated with any addresses that are accepted by the router.
 Each item is separately expanded, at routing time.  However, this
 option has no effect when an address is just being verified. The way in which
@@ -18352,7 +18357,7 @@ avoided. The &%repeat_use%& option of the &%redirect%& router may be of help.
 .cindex "header lines" "removing"
 .cindex "router" "removing header lines"
 This option specifies a list of text headers,
-colon-separated (by default, changeable in the usual way),
+colon-separated (by default, changeable in the usual way &<<SECTlistsepchange>>&),
 that is associated with any addresses that are accepted by the router.
 Each item is separately expanded, at routing time.  However, this
 option has no effect when an address is just being verified. The way in which
@@ -18635,7 +18640,8 @@ Before running a router, as one of its precondition tests, Exim works its way
 through the &%require_files%& list, expanding each item separately.
 
 Because the list is split before expansion, any colons in expansion items must
-be doubled, or the facility for using a different list separator must be used.
+be doubled, or the facility for using a different list separator must be used
+(&<<SECTlistsepchange>>&).
 If any expansion is forced to fail, the item is ignored. Other expansion
 failures cause routing of the address to be deferred.
 
@@ -19737,7 +19743,7 @@ and/or IP addresses, optionally also including ports.
 If the list is written with spaces, it must be protected with quotes.
 The format of each item
 in the list is described in the next section. The list separator can be changed
-as described in section &<<SECTlistconstruct>>&.
+as described in section &<<SECTlistsepchange>>&.
 
 If the list of hosts was obtained from a &%route_list%& item, the following
 variables are set during its expansion:
@@ -21462,7 +21468,7 @@ value that the router supplies, and also overriding any value associated with
 .cindex "header lines" "adding in transport"
 .cindex "transport" "header lines; adding"
 This option specifies a list of text headers,
-newline-separated (by default, changeable in the usual way),
+newline-separated (by default, changeable in the usual way &<<SECTlistsepchange>>&),
 which are (separately) expanded and added to the header
 portion of a message as it is transported, as described in section
 &<<SECTheadersaddrem>>&. Additional header lines can also be specified by
@@ -21488,7 +21494,7 @@ checked, since this option does not automatically suppress them.
 .cindex "header lines" "removing"
 .cindex "transport" "header lines; removing"
 This option specifies a list of header names,
-colon-separated (by default, changeable in the usual way);
+colon-separated (by default, changeable in the usual way &<<SECTlistsepchange>>&);
 these headers are omitted from the message as it is transported, as described
 in section &<<SECTheadersaddrem>>&. Header removal can also be specified by
 routers.
@@ -24636,7 +24642,8 @@ During the expansion of the &%interface%& option the variables &$host$& and
 during the expansion of the string. Forced expansion failure, or an empty
 string result causes the option to be ignored. Otherwise, after expansion, the
 string must be a list of IP addresses, colon-separated by default, but the
-separator can be changed in the usual way. For example:
+separator can be changed in the usual way (&<<SECTlistsepchange>>&).
+For example:
 .code
 interface = <; 192.168.123.123 ; 3ffe:ffff:836f::fe86:a061
 .endd
@@ -32552,7 +32559,7 @@ A regular expression, in which case the message is scanned for viruses. The
 condition succeeds if a virus is found and its name matches the regular
 expression. This allows you to take special actions on certain types of virus.
 Note that &"/"& characters in the RE must be doubled due to the list-processing,
-unless the separator is changed (in the usual way).
+unless the separator is changed (in the usual way &<<SECTlistsepchange>>&).
 .endlist
 
 You can append a &`defer_ok`& element to the &%malware%& argument list to accept
@@ -32663,7 +32670,7 @@ spamd_address = /var/run/spamd_socket
 You can have multiple &%spamd%& servers to improve scalability. These can
 reside on other hardware reachable over the network. To specify multiple
 &%spamd%& servers, put multiple address/port pairs in the &%spamd_address%&
-option, separated with colons (the separator can be changed in the usual way):
+option, separated with colons (the separator can be changed in the usual way &<<SECTlistsepchange>>&):
 .code
 spamd_address = 192.168.2.10 783 : \
                 192.168.2.11 783 : \
@@ -32676,7 +32683,8 @@ condition defers.
 
 Unix and TCP socket specifications may be mixed in any order.
 Each element of the list is a list itself, space-separated by default
-and changeable in the usual way; take care to not double the separator.
+and changeable in the usual way (&<<SECTlistsepchange>>&);
+take care to not double the separator.
 
 For TCP socket specifications a host name or IP (v4 or v6, but
 subject to list-separator quoting rules) address can be used,
