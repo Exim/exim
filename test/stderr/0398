@@ -21,7 +21,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@local>
 using ACL "rcpt"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 19)
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
@@ -70,7 +70,7 @@ routed by r2 router
 ----------- end verify ------------
 sender qq@remote verified ok
 deny: condition test failed in ACL "rcpt"
-processing "warn"
+processing "warn" (TESTSUITE/test-config 21)
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
@@ -165,7 +165,7 @@ l_message: $acl_verify_message
 warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
   U=CALLER Warning: Sender verify failed: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<qq@remote>: 550 Unknown
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
@@ -176,7 +176,7 @@ SMTP>> 250 Accepted
 DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<xyz@local>
 using ACL "rcpt"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 19)
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
@@ -184,7 +184,7 @@ qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
 using cached sender verify result
 deny: condition test failed in ACL "rcpt"
-processing "warn"
+processing "warn" (TESTSUITE/test-config 21)
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
@@ -247,7 +247,7 @@ l_message: $acl_verify_message
 warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
   U=CALLER Warning: Sender verify failed
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check senders = qq@remote
 address match test: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")

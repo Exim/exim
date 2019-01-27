@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "two"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check hosts = 5.6.7.8
 >>> host in "5.6.7.8"? yes (matched "5.6.7.8")
 >>> accept: condition test succeeded in ACL "two"

@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
@@ -29,7 +29,7 @@ LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify fail
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
@@ -37,7 +37,7 @@ LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify fail
 >>> routed by domainlist router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 19)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex

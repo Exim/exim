@@ -581,7 +581,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = 10.250.104.0/21
 >>> host in "10.250.104.0/21"? yes (matched "10.250.104.0/21")
 >>> accept: condition test succeeded in ACL "check_connect"

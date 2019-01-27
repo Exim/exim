@@ -7,14 +7,14 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "a1"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 16)
 >>> check hosts = 1.2.3.4 : <; 1.2.3.4::5.6.7.8
 LOG: unknown lookup type "<" in host list item "<; 1.2.3.4:5.6.7.8"
 >>> host in "1.2.3.4 : <; 1.2.3.4::5.6.7.8"? list match deferred for <; 1.2.3.4:5.6.7.8
 >>> deny: condition test deferred in ACL "a1"
 LOG: H=[V4NET.0.0.0] F=<> temporarily rejected RCPT <a1@b>: unknown lookup type "<"
 >>> using ACL "a2"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 19)
 >>> check hosts = 1.2.3/24
 >>> host in "1.2.3/24"? no (malformed IPv4 address or address mask)
 >>> deny: condition test failed in ACL "a2"

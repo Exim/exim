@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 17)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.again.dns
@@ -30,7 +30,7 @@ LOG: H=[1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.again.d
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 17)
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing r1-userx@test.again.dns

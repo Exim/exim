@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing unknown@test.ex
@@ -22,7 +22,7 @@
 LOG: H=[127.0.0.1] sender verify fail for <unknown@test.ex>: Unrouteable address
 LOG: H=[127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@unknown.dom.ain
@@ -37,7 +37,7 @@ LOG: H=[127.0.0.1] sender verify fail for <userx@unknown.dom.ain>: unrouteable m
 LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing "unknown with spaces"@test.ex
@@ -52,7 +52,7 @@ LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Send
 LOG: H=[127.0.0.1] sender verify fail for <"unknown with spaces"@test.ex>: Unrouteable address
 LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -64,7 +64,7 @@ LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.e
 >>> routed by userx router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -72,7 +72,7 @@ LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.e
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 27)
 >>> check verify = header_sender
 >>> verifying From: header address unknown@test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -86,7 +86,7 @@ LOG: H=[127.0.0.1] F=<"unknown with spaces"@test.ex> rejected RCPT <userx@test.e
 >>> end of ACL "check_message": not OK
 LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -98,7 +98,7 @@ LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there
 >>> routed by userx router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -106,14 +106,14 @@ LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 27)
 >>> check verify = header_sender
 >>> verifying From: header address <>
 >>> require: condition test failed in ACL "check_message"
 >>> end of ACL "check_message": not OK
 LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: syntax error in 'From:' header when scanning for sender: missing or malformed local part in "<>"
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing defer@test.ex
@@ -128,7 +128,7 @@ LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: synta
 LOG: H=[127.0.0.1] sender verify defer for <defer@test.ex>: forced defer
 LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: Could not complete sender verify
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing userx@test.ex
@@ -140,7 +140,7 @@ LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: 
 >>> routed by userx router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -148,7 +148,7 @@ LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: 
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 27)
 >>> check verify = header_sender
 >>> verifying from: header address <defer@test.ex>
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

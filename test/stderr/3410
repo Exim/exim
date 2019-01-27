@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_5_6_9"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>>   message: You must authenticate
 >>> check authenticated = *
 >>> accept: condition test failed in ACL "acl_5_6_9"
@@ -27,7 +27,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>>   $3 = secret
 >>> expanded string: yes
 >>> using ACL "acl_5_6_9"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>>   message: You must authenticate
 >>> check authenticated = *
 >>> auth1 in "*"? yes (matched "*")
@@ -42,7 +42,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_5_6_10"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check authenticated = auth1
 >>> accept: condition test failed in ACL "acl_5_6_10"
 >>> end of ACL "acl_5_6_10": implicit DENY
@@ -61,7 +61,7 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>>   $3 = secret
 >>> expanded string: yes
 >>> using ACL "acl_5_6_10"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check authenticated = auth1
 >>> auth1 in "auth1"? yes (matched "auth1")
 >>> accept: condition test succeeded in ACL "acl_5_6_10"
@@ -86,7 +86,7 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>>   $2 = secret
 >>> expanded string: yes
 >>> using ACL "acl_5_6_10"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check authenticated = auth1
 >>> auth2 in "auth1"? no (end of list)
 >>> accept: condition test failed in ACL "acl_5_6_10"

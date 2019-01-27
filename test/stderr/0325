@@ -15,7 +15,7 @@ r4: $local_part_data = LOCAL PART DATA
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "a1"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +test_domains
 >>> a.b.c in "lsearch; TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch; TESTSUITE/aux-fixed/0325.data")
 >>> a.b.c in "+test_domains"? yes (matched "+test_domains")
@@ -25,7 +25,7 @@ r4: $local_part_data = LOCAL PART DATA
 >>> check condition = ${if eq{$domain_data/$local_part_data}{DOMAIN DATA/LOCAL PART DATA}{no}{yes}}
 >>>                 = no
 >>> accept: condition test failed in ACL "a1"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 24)
 >>> check domains = +test_domains
 >>> a.b.c in "+test_domains"? yes (matched "+test_domains" - cached)
 >>> check local_parts = +test_local_parts

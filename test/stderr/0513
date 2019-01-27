@@ -11,7 +11,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "defer"
+>>> processing "defer" (TESTSUITE/test-config 19)
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt2.test.ex

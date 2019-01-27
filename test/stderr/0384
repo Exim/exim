@@ -15,6 +15,6 @@
 >>> [1.2.3.4] in helo_lookup_domains? no (end of list)
 >>> verifying EHLO/HELO argument "[1.2.3.4]"
 LOG: rejected "EHLO [1.2.3.4]" from ([1.2.3.4]) [V4NET.9.8.7]
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 13)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT

@@ -11,7 +11,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test succeeded in ACL "check_mail"
@@ -22,7 +22,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test failed in ACL "check_mail"
@@ -41,7 +41,7 @@ LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization 
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test failed in ACL "check_mail"
@@ -53,7 +53,7 @@ LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization 
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>>   message: CSA status is $csa_status
 >>> check verify = csa
 >>> accept: condition test failed in ACL "check_mail"

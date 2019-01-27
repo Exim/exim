@@ -30,7 +30,7 @@ LOG: smtp_connection MAIN
  ├──expanding: ${if eq {SERVER}{server}{queue}{cutthrough}}
  └─────result: cutthrough
 using ACL "cutthrough"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in "test.ex : *.test.ex"? no (end of list)
@@ -126,7 +126,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept"
+processing "accept" (TESTSUITE/test-config 55)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -277,7 +277,7 @@ LOG: smtp_connection MAIN
  ├──expanding: ${if eq {SERVER}{server}{queue}{cutthrough}}
  └─────result: cutthrough
 using ACL "cutthrough"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in "test.ex : *.test.ex"? no (end of list)
@@ -342,7 +342,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept"
+processing "accept" (TESTSUITE/test-config 55)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -493,7 +493,7 @@ LOG: smtp_connection MAIN
  ├──expanding: ${if eq {SERVER}{server}{queue}{cutthrough}}
  └─────result: cutthrough
 using ACL "cutthrough"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in "test.ex : *.test.ex"? no (end of list)
@@ -558,7 +558,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept"
+processing "accept" (TESTSUITE/test-config 55)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA

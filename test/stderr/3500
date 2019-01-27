@@ -38,26 +38,26 @@
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> expanded string: true
 >>> using ACL "check_recipient"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> warn: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 34)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 35)
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>>   message: authentication required
 >>> check !authenticated = *
 >>> cram_md5 in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 38)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -91,12 +91,12 @@ LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=c
 >>> expanded string: 
 LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect authentication data (set_id=tim)
 >>> using ACL "check_recipient"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 31)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? yes (matched "10.0.0.5")
 >>>   message: authentication-failed: $authentication_failed
 >>> warn: condition test succeeded in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 33)
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? yes (matched "10.0.0.5")
 >>> accept: condition test succeeded in ACL "check_recipient"

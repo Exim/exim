@@ -11,7 +11,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/strict
 >>> ratelimit condition count=1 0.0/1h/per_mail/V4NET.9.8.7
 >>> ratelimit creating new rate data block
@@ -21,19 +21,19 @@
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 46)
 >>> check ratelimit = 0/1h/per_byte/strict
 >>> ratelimit condition count=19 0.0/1h/per_mail/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 1.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
@@ -50,7 +50,7 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/strict
 >>> ratelimit condition count=1 0.0/1h/per_mail/V4NET.9.8.7
 >>> ratelimit found key in database
@@ -59,19 +59,19 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 46)
 >>> check ratelimit = 0/1h/per_byte/strict
 >>> ratelimit condition count=19 0.0/1h/per_mail/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 2.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
@@ -88,7 +88,7 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit creating new rate data block
@@ -98,19 +98,19 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 46)
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 1.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
@@ -127,7 +127,7 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit found key in database
@@ -136,19 +136,19 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 46)
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 2.0
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=2.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
@@ -165,7 +165,7 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_rcpt
 >>> ratelimit condition count=1 0.0/1h/per_rcpt/V4NET.9.8.7
 >>> ratelimit creating new rate data block
@@ -175,11 +175,11 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_rcpt
 >>> ratelimit condition count=1 0.0/1h/per_rcpt/V4NET.9.8.7
 >>> ratelimit creating new rate data block
@@ -188,11 +188,11 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit computed rate 1.0
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> using ACL "check_rcpt"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check ratelimit = 0/1h/per_rcpt
 >>> ratelimit condition count=1 0.0/1h/per_rcpt/V4NET.9.8.7
 >>> ratelimit creating new rate data block
@@ -201,12 +201,12 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit computed rate 1.0
 >>> l_message: RCPT: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_rcpt"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> accept: condition test succeeded in ACL "check_rcpt"
 >>> end of ACL "check_rcpt": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 46)
 >>> check ratelimit = 0/1h/per_conn
 >>> ratelimit condition count=1 0.0/1h/per_conn/V4NET.9.8.7
 >>> ratelimit found key in database
@@ -215,7 +215,7 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=3.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
@@ -232,7 +232,7 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_rcpt2"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 31)
 >>> check ratelimit = 1/1m/per_rcpt/noupdate
 >>> ratelimit condition count=0 1.0/1m/per_rcpt/V4NET.9.8.6
 >>> ratelimit creating new rate data block
@@ -240,16 +240,16 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit db not updated: readonly mode
 >>> ratelimit computed rate 0.0
 >>> warn: condition test failed in ACL "check_rcpt2"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check ratelimit = 1/1m/per_rcpt
 >>> ratelimit condition count=1 1.0/1m/per_rcpt/V4NET.9.8.6
 >>> ratelimit found pre-computed rate 0.0
 >>> warn: condition test failed in ACL "check_rcpt2"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 43)
 >>> accept: condition test succeeded in ACL "check_rcpt2"
 >>> end of ACL "check_rcpt2": ACCEPT
 >>> using ACL "check_rcpt2"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 31)
 >>> check ratelimit = 1/1m/per_rcpt/noupdate
 >>> ratelimit condition count=0 1.0/1m/per_rcpt/V4NET.9.8.6
 >>> ratelimit creating new rate data block
@@ -257,17 +257,17 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit db not updated: readonly mode
 >>> ratelimit computed rate 0.0
 >>> warn: condition test failed in ACL "check_rcpt2"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check ratelimit = 1/1m/per_rcpt
 >>> ratelimit condition count=1 1.0/1m/per_rcpt/V4NET.9.8.6
 >>> ratelimit found pre-computed rate 0.0
 >>> warn: condition test failed in ACL "check_rcpt2"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 43)
 >>> accept: condition test succeeded in ACL "check_rcpt2"
 >>> end of ACL "check_rcpt2": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 46)
 >>> check ratelimit = 0/1h/per_byte/strict
 >>> ratelimit condition count=19 0.0/1h/per_mail/V4NET.9.8.6
 >>> ratelimit creating new rate data block
@@ -277,7 +277,7 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> l_message: DATA: sender_rate=$sender_rate sender_rate_limit=$sender_rate_limit sender_rate_period=$sender_rate_period
 >>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 51)
 >>> deny: condition test succeeded in ACL "check_data"
 >>> end of ACL "check_data": DENY
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] F=<> rejected after DATA

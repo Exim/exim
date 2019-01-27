@@ -7,14 +7,14 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl1"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check domains = +ok_domains
 >>> ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
 >>> ten-1.test.ex in "+ok_domains"? yes (matched "+ok_domains")
 >>> accept: condition test succeeded in ACL "acl1"
 >>> end of ACL "acl1": ACCEPT
 >>> using ACL "acl1"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check domains = +ok_domains
 >>> junk.junk in ""? no (end of list)
 >>> junk.junk in "+ok_domains"? no (end of list)

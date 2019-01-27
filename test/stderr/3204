@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 17)
 >>> check senders = testdb;defer
 >>> userx@somehost.example.com in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred in ACL "check_recipient"

@@ -7,11 +7,11 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? no (matched "! V4NET.0.0.1")
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -19,7 +19,7 @@
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 24)
 >>> check verify = header_sender
 >>> verifying From: header address <junk@jink.jonk.test.ex>
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -38,7 +38,7 @@ LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.1] F=<junk@jink.jonk.test.ex> rejected after 
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? yes (end of list)
 >>> check !verify = sender
@@ -60,7 +60,7 @@ LOG: H=[V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Se
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? yes (end of list)
 >>> check !verify = sender
@@ -71,7 +71,7 @@ LOG: H=[V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Se
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -79,7 +79,7 @@ LOG: H=[V4NET.0.0.2] F=<junk@jink.jonk.test.ex> rejected RCPT <root@test.ex>: Se
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 24)
 >>> check verify = header_sender
 >>> verifying From: header address <junk@jink.jonk.test.ex>
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -98,7 +98,7 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: the
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = ! V4NET.0.0.1
 >>> host in "! V4NET.0.0.1"? yes (end of list)
 >>> check !verify = sender
@@ -109,7 +109,7 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: the
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -117,7 +117,7 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: the
 >>> end of ACL "check_recipient": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 24)
 >>> check verify = header_sender
 >>> verifying From: header address <userx@test.ex>
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -126,7 +126,7 @@ LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.2] F=<userx@test.ex> rejected after DATA: the
 >>> calling localuser router
 >>> routed by localuser router
 >>> require: condition test succeeded in ACL "check_message"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> accept: condition test succeeded in ACL "check_message"
 >>> end of ACL "check_message": ACCEPT
 LOG: 10HmaX-0005vi-00 <= userx@test.ex H=[V4NET.0.0.2] P=smtp S=sss

@@ -16,16 +16,16 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 25)
 >>>   message: unrouteable address
 >>> check recipients = verify@test.ex
 >>> userx@test.ex in "verify@test.ex"? no (end of list)
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 28)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -83,17 +83,17 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:userx@test.ex
 using ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check hosts = :
 host in ":"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 25)
   message: unrouteable address
 check recipients = verify@test.ex
 address match test: subject=userx@test.ex pattern=verify@test.ex
 userx@test.ex in "verify@test.ex"? no (end of list)
 deny: condition test failed in ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 28)
 check domains = +local_domains
 test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -120,11 +120,11 @@ exim: timed out while reading - message abandoned
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 25)
 >>>   message: unrouteable address
 >>> check recipients = verify@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")

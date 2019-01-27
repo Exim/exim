@@ -30,12 +30,12 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@a.b.c>
 using ACL "check_rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 22)
 check domains = +local_domains
 a.b.c in "*.test.ex"? no (end of list)
 a.b.c in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check domains = +relay_domains
 a.b.c in "a.b.c"? yes (matched "a.b.c")
 a.b.c in "+relay_domains"? yes (matched "+relay_domains")

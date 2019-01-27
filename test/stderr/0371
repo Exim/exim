@@ -21,7 +21,7 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check set acl_c0 = $acl_c0; connect
                  = ; connect
 check set acl_c9 = $acl_c9; connect
@@ -48,7 +48,7 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 27)
 check set acl_c0 = $acl_c0; mail
                  = ; connect; mail
 check set acl_c9 = $acl_c9; mail
@@ -60,7 +60,7 @@ end of ACL "mail": ACCEPT
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
 using ACL "rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 32)
 check set acl_m0 = $acl_m0; rcpt
                  = ; mail; rcpt
 check set acl_m9 = $acl_m9; rcpt
@@ -88,7 +88,7 @@ P Received: from [V4NET.0.0.0] (helo=something)
 	id 10HmaX-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
 using ACL "data"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 37)
 check set acl_m0 = $acl_m0; data
                  = ; mail; rcpt; data
 check set acl_m9 = $acl_m9; data
@@ -102,7 +102,7 @@ smtp_setup_msg entered
 SMTP<< vrfy x@y
 host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 using ACL "vrfy"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 41)
 check set acl_c0 = $acl_c0; vrfy
                  = ; connect; mail; rcpt; vrfy
 check set acl_c9 = $acl_c9; vrfy
@@ -125,7 +125,7 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 27)
 check set acl_c0 = $acl_c0; mail
                  = ; connect; mail; rcpt; vrfy; mail
 check set acl_c9 = $acl_c9; mail

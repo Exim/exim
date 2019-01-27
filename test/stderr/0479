@@ -34,7 +34,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "rcpt"
-processing "require"
+processing "require" (TESTSUITE/test-config 16)
 check logwrite = sender address is <$sender_address>
                = sender address is <a@b>
 LOG: MAIN
@@ -67,14 +67,14 @@ routed by r1 router
 ----------- end verify ------------
 sender a@b verified ok as rewritten-a@rewritten-b
 require: condition test succeeded in ACL "rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 18)
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
 DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<e@f>
 using ACL "rcpt"
-processing "require"
+processing "require" (TESTSUITE/test-config 16)
 check logwrite = sender address is <$sender_address>
                = sender address is <rewritten-a@rewritten-b>
 LOG: MAIN
@@ -82,7 +82,7 @@ LOG: MAIN
 check verify = sender
 using cached sender verify result
 require: condition test succeeded in ACL "rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 18)
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted

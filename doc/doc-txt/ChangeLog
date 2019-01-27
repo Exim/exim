@@ -15,6 +15,9 @@ JH/02 OpenSSL: suppress the sending of (stateful) TLS1.3 session tickets.
       Previously the default library behaviour applied, sending two, each in
       its own TCP segment.
 
+JH/03 Debug output for ACL now gives the config file name and line number for
+      each verb.
+
 
 Exim version 4.92
 -----------------

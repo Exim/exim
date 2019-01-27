@@ -14,32 +14,32 @@ LOG: rejected HELO from [V4NET.0.0.0]: syntactically invalid argument(s): @#$%^&
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> abc_xyz in helo_lookup_domains? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
 >>> test.ex in "Test.ex : myhost.test.EX"? yes (matched "Test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
 >>> else.where in "Test.ex : myhost.test.EX"? no (end of list)
 >>> else.where in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
 >>> else.where in "Test.ex : Relay.one.ex"? no (end of list)
 >>> else.where in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 27)
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
@@ -58,37 +58,37 @@ LOG: H=(abc_xyz) [V4NET.0.0.0] F=<userx@cus.cam.ac.uk> rejected RCPT <userx@else
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? yes (matched "*N-99.test.ex")
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
 >>> relay.one.ex in "Test.ex : myhost.test.EX"? no (end of list)
 >>> relay.one.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
 >>> relay.one.ex in "Test.ex : Relay.one.ex"? yes (matched "Relay.one.ex")
 >>> relay.one.ex in "+relay_domains"? yes (matched "+relay_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> check domains = +local_domains
 >>> relay.two.ex in "Test.ex : myhost.test.EX"? no (end of list)
 >>> relay.two.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +relay_domains
 >>> relay.two.ex in "Test.ex : Relay.one.ex"? no (end of list)
 >>> relay.two.ex in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 27)
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY

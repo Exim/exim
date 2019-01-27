@@ -7,10 +7,10 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept"
+>>>  processing "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -52,10 +52,10 @@ LOG: sender_ident=
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept"
+>>>  processing "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -90,10 +90,10 @@ LOG: sender_ident=ident
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 27)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept"
+>>>  processing "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -124,7 +124,7 @@ LOG: sender_ident=ident
 >>>  end of ACL "log": ACCEPT
 >>> check acl = auth
 >>>  using ACL "auth"
->>>  processing "accept"
+>>>  processing "accept" (TESTSUITE/test-config 42)
 >>>  check authenticated = *
 >>> authname in "*"? yes (matched "*")
 >>>  check logwrite = +++ host is authenticated +++
@@ -134,10 +134,10 @@ LOG: +++ host is authenticated +++
 >>> accept: condition test succeeded in ACL "mail"
 >>> end of ACL "mail": ACCEPT
 >>> using ACL "mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 27)
 >>> check acl = log
 >>>  using ACL "log"
->>>  processing "accept"
+>>>  processing "accept" (TESTSUITE/test-config 31)
 >>>  check logwrite = ===========================================================
 LOG: ===========================================================
 >>>  check logwrite = sender_ip_address=[$sender_host_address]
@@ -168,7 +168,7 @@ LOG: sender_ident=ident
 >>>  end of ACL "log": ACCEPT
 >>> check acl = auth
 >>>  using ACL "auth"
->>>  processing "accept"
+>>>  processing "accept" (TESTSUITE/test-config 42)
 >>>  check authenticated = *
 >>> authname in "*"? yes (matched "*")
 >>>  check logwrite = +++ host is authenticated +++

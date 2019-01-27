@@ -878,19 +878,21 @@ typedef struct namedlist_block {
 /* Structures for Access Control Lists */
 
 typedef struct acl_condition_block {
-  struct acl_condition_block *next;
-  uschar *arg;
-  int type;
+  struct acl_condition_block *	next;
+  uschar *			arg;
+  int				type;
   union {
-    BOOL negated;
-    uschar *varname;
+    BOOL	negated;
+    uschar *	varname;
   } u;
 } acl_condition_block;
 
 typedef struct acl_block {
-  struct acl_block *next;
-  acl_condition_block *condition;
-  int verb;
+  struct acl_block *	next;
+  acl_condition_block *	condition;
+  int			verb;
+  int			srcline;
+  const uschar *	srcfile;
 } acl_block;
 
 /* smtp transport calc outbound_ip */

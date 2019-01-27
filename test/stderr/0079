@@ -11,11 +11,11 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 25)
 >>>   message: X-Warning: $sender_host_address is blacklisted at $dnslist_domain
 >>> l_message: $sender_host_address is in $dnslist_domain
 >>> check dnslists = rbl.test.ex
@@ -25,7 +25,7 @@
 >>> => that means V4NET.11.12.14 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
 LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: V4NET.11.12.14 is in rbl.test.ex
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 28)
 >>>   message: X-Warning: $sender_host_address is blacklisted at $dnslist_domain
 >>> l_message: accepting postmaster from host in $dnslist_domain
 >>> check recipients = postmaster@exim.test.ex
@@ -38,18 +38,18 @@ LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: V4NET.11.12.14 is in rbl.test.ex
 >>> => that means V4NET.11.12.14 is listed at rbl2.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
 LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: accepting postmaster from host in rbl2.test.ex
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 32)
 >>> check recipients = postmaster@exim.test.ex
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 25)
 >>>   message: X-Warning: $sender_host_address is blacklisted at $dnslist_domain
 >>> l_message: $sender_host_address is in $dnslist_domain
 >>> check dnslists = rbl.test.ex
@@ -58,17 +58,17 @@ LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: accepting postmaster from host i
 >>> DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 28)
 >>>   message: X-Warning: $sender_host_address is blacklisted at $dnslist_domain
 >>> l_message: accepting postmaster from host in $dnslist_domain
 >>> check recipients = postmaster@exim.test.ex
 >>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> warn: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 32)
 >>> check recipients = postmaster@exim.test.ex
 >>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 33)
 >>>   message: host is listed in $dnslist_domain
 >>> check dnslists = rbl2.test.ex
 >>> DNS list check: rbl2.test.ex

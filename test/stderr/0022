@@ -30,9 +30,9 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<warn_empty@test.ex>
 using ACL "warn_empty"
-processing "warn"
+processing "warn" (TESTSUITE/test-config 29)
 warn: condition test succeeded in ACL "warn_empty"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 30)
 accept: condition test succeeded in ACL "warn_empty"
 end of ACL "warn_empty": ACCEPT
 SMTP>> 250 Accepted
@@ -95,12 +95,12 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<warn_log@test.ex>
 using ACL "warn_log"
-processing "warn"
+processing "warn" (TESTSUITE/test-config 33)
 l_message: warn log message
 warn: condition test succeeded in ACL "warn_log"
 LOG: MAIN
   H=[V4NET.9.8.7] Warning: warn log message
-processing "accept"
+processing "accept" (TESTSUITE/test-config 34)
 accept: condition test succeeded in ACL "warn_log"
 end of ACL "warn_log": ACCEPT
 SMTP>> 250 Accepted
@@ -163,10 +163,10 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<warn_user@test.ex>
 using ACL "warn_user"
-processing "warn"
+processing "warn" (TESTSUITE/test-config 37)
   message: warn user message
 warn: condition test succeeded in ACL "warn_user"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 38)
 accept: condition test succeeded in ACL "warn_user"
 end of ACL "warn_user": ACCEPT
 SMTP>> 250 Accepted
@@ -210,17 +210,17 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "defer"
->>> processing "defer"
+>>> processing "defer" (TESTSUITE/test-config 51)
 >>>   message: forcibly deferred
 >>> defer: condition test succeeded in ACL "defer"
 >>> end of ACL "defer": DEFER
 LOG: H=[V4NET.9.8.7] F=<x@y> temporarily rejected RCPT <defer@y>: forcibly deferred
 >>> using ACL "accept"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> accept: condition test succeeded in ACL "accept"
 >>> end of ACL "accept": ACCEPT
 >>> using ACL "drop"
->>> processing "drop"
+>>> processing "drop" (TESTSUITE/test-config 41)
 >>>   message: forcibly dropped
 >>> drop: condition test succeeded in ACL "drop"
 >>> end of ACL "drop": DROP
@@ -236,7 +236,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "defer_senders"
->>> processing "defer"
+>>> processing "defer" (TESTSUITE/test-config 54)
 >>> check senders = :
 >>>  in ":"? yes (matched "")
 >>> defer: condition test succeeded in ACL "defer_senders"
@@ -253,19 +253,19 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "delay_accept"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 57)
 >>> check delay = 1s
 >>> delay modifier requests 1-second delay
 >>> delay skipped in -bh checking mode
 >>> accept: condition test succeeded in ACL "delay_accept"
 >>> end of ACL "delay_accept": ACCEPT
 >>> using ACL "delay_warn"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 60)
 >>> check delay = 1s
 >>> delay modifier requests 1-second delay
 >>> delay skipped in -bh checking mode
 >>> warn: condition test succeeded in ACL "delay_warn"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 61)
 >>> accept: condition test succeeded in ACL "delay_warn"
 >>> end of ACL "delay_warn": ACCEPT
 LOG: SMTP connection from [V4NET.9.8.7] closed by QUIT
@@ -279,7 +279,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "host_check"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 71)
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
 >>>   message: host data >$host_data<
@@ -287,7 +287,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> end of ACL "host_check": DENY
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-specific message<
 >>> using ACL "host_check"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 71)
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
 >>>   message: host data >$host_data<
@@ -295,7 +295,7 @@ LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-spe
 >>> end of ACL "host_check": DENY
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-specific message<
 >>> using ACL "host_check2"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 75)
 >>>   message: host data >$host_data<
 >>> check hosts = +some_hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
@@ -304,7 +304,7 @@ LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-spe
 >>> end of ACL "host_check2": DENY
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
 >>> using ACL "host_check2"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 75)
 >>>   message: host data >$host_data<
 >>> check hosts = +some_hosts
 >>> host in "+some_hosts"? yes (matched "+some_hosts" - cached)
@@ -350,10 +350,10 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "nested_drop"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> check acl = drop
 >>>  using ACL "drop"
->>>  processing "drop"
+>>>  processing "drop" (TESTSUITE/test-config 41)
 >>>    message: forcibly dropped
 >>>  drop: condition test succeeded in ACL "drop"
 >>>  end of ACL "drop": DROP
@@ -371,10 +371,10 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "nested_drop_require"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 48)
 >>> check acl = drop
 >>>  using ACL "drop"
->>>  processing "drop"
+>>>  processing "drop" (TESTSUITE/test-config 41)
 >>>    message: forcibly dropped
 >>>  drop: condition test succeeded in ACL "drop"
 >>>  end of ACL "drop": DROP

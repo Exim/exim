@@ -19,7 +19,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@domain1>
 using ACL "rcpt"
-processing "require"
+processing "require" (TESTSUITE/test-config 20)
 check domains = +special_domains
 search_open: lsearch "TESTSUITE/aux-fixed/0464.domains"
 search_find: file="TESTSUITE/aux-fixed/0464.domains"
@@ -97,7 +97,7 @@ routed by r2 router
   transport: smtp
 ----------- end verify ------------
 require: condition test succeeded in ACL "rcpt"
-processing "require"
+processing "require" (TESTSUITE/test-config 23)
 check domains = +special_domains
 cached yes match for +special_domains
 cached lookup data = data for domain1
@@ -163,7 +163,7 @@ routed by r2 router
   transport: smtp
 ----------- end verify ------------
 require: condition test succeeded in ACL "rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 25)
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted

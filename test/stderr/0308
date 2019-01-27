@@ -7,14 +7,14 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_V4NET_0_0"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = *.test.ex
 >>> sender host name required, to match against *.test.ex
 >>> looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
 >>> host in "*.test.ex"? no (failed to find host name for V4NET.0.0.97)
 >>> accept: condition test failed in ACL "acl_V4NET_0_0"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check hosts = V4NET.0.0.97
 >>> host in "V4NET.0.0.97"? yes (matched "V4NET.0.0.97")
 >>> accept: condition test succeeded in ACL "acl_V4NET_0_0"
@@ -28,7 +28,7 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_V4NET_0_0"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = *.test.ex
 >>> sender host name required, to match against *.test.ex
 >>> looking up host name for V4NET.0.0.1

@@ -8,22 +8,22 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> userx in "hardfail"? no (end of list)
 >>> deny: condition test failed in ACL "check_vrfy"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check local_parts = acceptable
 >>> userx in "acceptable"? no (end of list)
 >>> accept: condition test failed in ACL "check_vrfy"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> check local_parts = ok_with_dom
 >>> userx in "ok_with_dom"? no (end of list)
 >>> accept: condition test failed in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": implicit DENY
 LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
 >>> using ACL "check_vrfy"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> hardfail in "hardfail"? yes (matched "hardfail")
 >>>   message: 599 custom reject
@@ -31,15 +31,15 @@ LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
 >>> end of ACL "check_vrfy": DENY
 LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> using ACL "check_vrfy"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> ok_with_dom in "hardfail"? no (end of list)
 >>> deny: condition test failed in ACL "check_vrfy"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check local_parts = acceptable
 >>> ok_with_dom in "acceptable"? no (end of list)
 >>> accept: condition test failed in ACL "check_vrfy"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 25)
 >>> check local_parts = ok_with_dom
 >>> ok_with_dom in "ok_with_dom"? yes (matched "ok_with_dom")
 >>> check domains = test.ex
@@ -54,7 +54,7 @@ LOG: H=[1.1.1.1] rejected VRFY hardfail@test.ex: 599 custom reject
 >>> calling localuser router
 >>> routed by localuser router
 >>> using ACL "check_expn"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 29)
 >>> check hosts = 2.2.2.2
 >>> host in "2.2.2.2"? no (end of list)
 >>> accept: condition test failed in ACL "check_expn"
@@ -70,11 +70,11 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>> check local_parts = hardfail
 >>> acceptable in "hardfail"? no (end of list)
 >>> deny: condition test failed in ACL "check_vrfy"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check local_parts = acceptable
 >>> acceptable in "acceptable"? yes (matched "acceptable")
 >>> accept: condition test succeeded in ACL "check_vrfy"
@@ -96,7 +96,7 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_expn"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 29)
 >>> check hosts = 2.2.2.2
 >>> host in "2.2.2.2"? yes (matched "2.2.2.2")
 >>> accept: condition test succeeded in ACL "check_expn"

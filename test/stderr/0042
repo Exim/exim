@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 46)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -18,7 +18,7 @@
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 46)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -29,7 +29,7 @@
 >>> junkjunk in "userx"? no (end of list)
 >>> no more routers
 LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 46)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
