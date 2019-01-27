@@ -7,24 +7,24 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "test.ex"? no (end of list)
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> sender host name required, to match against ^[^\d]+2
 >>> looking up host name for V4NET.0.0.1
@@ -34,7 +34,7 @@
 >>> host in "^[^\d]+2"? no (end of list)
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 25)
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
@@ -49,24 +49,24 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 23)
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "test.ex"? no (end of list)
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = +relay_hosts
 >>> sender host name required, to match against ^[^\d]+2
 >>> looking up host name for V4NET.0.0.2

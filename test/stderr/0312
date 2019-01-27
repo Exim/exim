@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_rcpt"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 16)
 >>> check dnslists = +defer_unknown : test.again.dns
 >>> DNS list check: +defer_unknown
 >>> DNS list check: test.again.dns

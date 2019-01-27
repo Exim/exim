@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 19)
 >>>   message: dnslist_value is $dnslist_value
 >>> check dnslists = rbl.test.ex=127.0.0.2
 >>> DNS list check: rbl.test.ex=127.0.0.2
@@ -15,7 +15,7 @@
 >>> DNS lookup for 1.13.13.V4NET.rbl.test.ex failed
 >>> => that means V4NET.13.13.1 is not listed at rbl.test.ex
 >>> deny: condition test failed in ACL "connect"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 21)
 >>> accept: condition test succeeded in ACL "connect"
 >>> end of ACL "connect": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -27,7 +27,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 19)
 >>>   message: dnslist_value is $dnslist_value
 >>> check dnslists = rbl.test.ex=127.0.0.2
 >>> DNS list check: rbl.test.ex=127.0.0.2

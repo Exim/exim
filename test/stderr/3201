@@ -21,7 +21,7 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect1"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 18)
 check hosts = testdb;fail
 search_open: testdb "NULL"
 search_find: file="NULL"
@@ -63,7 +63,7 @@ host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect2"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 21)
 check hosts = net-testdb;fail
 search_open: testdb "NULL"
 search_find: file="NULL"

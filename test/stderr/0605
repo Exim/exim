@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> test in helo_lookup_domains? no (end of list)
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 14)
 >>> check hosts = test.again.dns
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from (test) [ip4.ip4.ip4.ip4])

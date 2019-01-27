@@ -28,7 +28,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<a@b>
 using ACL "rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domain : ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
 search_open: dnsdb "NULL"
 search_find: file="NULL"

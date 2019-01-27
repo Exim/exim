@@ -28,7 +28,7 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<B@a.b.c>
 using ACL "acl_rcpt"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 18)
 check verify = sender
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying U@W.x.y

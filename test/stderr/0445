@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "rcpt"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 20)
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing lp1@x.y
@@ -20,7 +20,7 @@
 LOG: H=[1.2.3.4] sender verify fail for <lp1@x.y>: 
 LOG: H=[1.2.3.4] F=<lp1@x.y> rejected RCPT <zz@x.y>: Sender verify failed
 >>> using ACL "rcpt"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 20)
 >>> check !verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing lp2@x.y

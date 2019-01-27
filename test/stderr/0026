@@ -6,22 +6,22 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 60)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "acl_data"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 21)
 >>> l_message: body contains trigger
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = no
 >>> deny: condition test failed in ACL "acl_data"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 23)
 >>> check logwrite = \$h_from: '$h_from:'
 >>>                = $h_from: '@'
 LOG: 10HmbI-0005vi-00 $h_from: '@'
 >>> warn: condition test succeeded in ACL "acl_data"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 24)
 >>> check verify = header_syntax
 >>> require: condition test failed in ACL "acl_data"
 >>> end of ACL "acl_data": not OK
@@ -34,12 +34,12 @@ LOG: 10HmbI-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing o
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 60)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "acl_data"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 21)
 >>> l_message: body contains trigger
 >>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
 >>>                 = yes

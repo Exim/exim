@@ -136,12 +136,12 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -156,7 +156,7 @@ lookup failed
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 25)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
@@ -165,12 +165,12 @@ LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
   cached open
@@ -186,7 +186,7 @@ lookup failed
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny"
+processing "deny" (TESTSUITE/test-config 25)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
@@ -231,12 +231,12 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -255,12 +255,12 @@ SMTP>> 250 Accepted
 DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 23)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 24)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
   cached open

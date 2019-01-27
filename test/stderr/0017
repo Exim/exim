@@ -9,15 +9,15 @@
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 LOG: ETRN some.random.domain received from [1.1.1.1]
 >>> using ACL "check_etrn"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 15)
 >>> check hosts = 10.9.8.7
 >>> host in "10.9.8.7"? no (end of list)
 >>> deny: condition test failed in ACL "check_etrn"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = 10.9.8.8
 >>> host in "10.9.8.8"? no (end of list)
 >>> deny: condition test failed in ACL "check_etrn"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 21)
 >>> check hosts = localhost
 MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
@@ -37,7 +37,7 @@ LOG: H=[1.1.1.1] rejected ETRN some.random.domain
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 LOG: ETRN some.domain received from [10.9.8.7]
 >>> using ACL "check_etrn"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 15)
 >>> check hosts = 10.9.8.7
 >>> host in "10.9.8.7"? yes (matched "10.9.8.7")
 >>> check sender_domains = some.domain
@@ -54,11 +54,11 @@ LOG: H=[10.9.8.7] temporarily rejected ETRN some.domain: cannot test sender_doma
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 LOG: ETRN some.domain received from [10.9.8.8]
 >>> using ACL "check_etrn"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 15)
 >>> check hosts = 10.9.8.7
 >>> host in "10.9.8.7"? no (end of list)
 >>> deny: condition test failed in ACL "check_etrn"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 18)
 >>> check hosts = 10.9.8.8
 >>> host in "10.9.8.8"? yes (matched "10.9.8.8")
 >>> check senders = x@y

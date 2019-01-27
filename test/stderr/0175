@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain
@@ -35,7 +35,7 @@ LOG: H=[V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: Sender v
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@bad.domain2
@@ -66,7 +66,7 @@ LOG: H=[V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender 
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 18)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing user@ten-1.test.ex
@@ -84,7 +84,7 @@ LOG: H=[V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender 
 >>> routed by lookuphost router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")

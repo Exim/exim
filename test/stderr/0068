@@ -6,19 +6,19 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 12)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 12)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 12)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 12)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 12)
 >>> accept: condition test succeeded in inline ACL
 >>> end of inline ACL: ACCEPT
 LOG: too many recipients: message rejected: sender=<x@y> H=[V4NET.10.10.10]

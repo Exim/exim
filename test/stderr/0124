@@ -7,16 +7,16 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 21)
 >>> check domains = +local_domains
 >>> external.test.ex in "test.ex"? no (end of list)
 >>> external.test.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check hosts = +relay_hosts
 >>> sender host name required, to match against *.friendly.test.ex
 >>> looking up host name for V4NET.0.0.97
@@ -24,26 +24,26 @@ LOG: no host name found for IP address V4NET.0.0.97
 >>> host in "*.friendly.test.ex"? no (failed to find host name for V4NET.0.0.97)
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 23)
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
 LOG: H=[V4NET.0.0.97] F=<userx@test.ex> rejected RCPT <userx@external.test.ex>: relay not permitted
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 21)
 >>> check domains = +local_domains
 >>> external.test.ex in "test.ex"? no (end of list)
 >>> external.test.ex in "+local_domains"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 23)
 >>>   message: relay not permitted
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY

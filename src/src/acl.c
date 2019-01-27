@@ -773,7 +773,7 @@ while ((s = (*func)()) != NULL)
 
   if ((v = acl_checkname(name, verbs, nelem(verbs))) < 0)
     {
-    if (this == NULL)
+    if (!this)
       {
       *error = string_sprintf("unknown ACL verb \"%s\" in \"%s\"", name,
         saveline);
@@ -794,8 +794,10 @@ while ((s = (*func)()) != NULL)
     *lastp = this;
     lastp = &(this->next);
     this->next = NULL;
-    this->verb = v;
     this->condition = NULL;
+    this->verb = v;
+    this->srcline = config_lineno;	/* for debug output */
+    this->srcfile = config_filename;	/**/
     condp = &(this->condition);
     if (*s == 0) continue;               /* No condition on this line */
     if (*s == '!')
@@ -3983,11 +3985,10 @@ read an ACL from a file, and save it so it can be re-used. */
 
 if (Ustrchr(ss, ' ') == NULL)
   {
-  tree_node *t = tree_search(acl_anchor, ss);
-  if (t != NULL)
+  tree_node * t = tree_search(acl_anchor, ss);
+  if (t)
     {
-    acl = (acl_block *)(t->data.ptr);
-    if (acl == NULL)
+    if (!(acl = (acl_block *)(t->data.ptr)))
       {
       HDEBUG(D_acl) debug_printf_indent("ACL \"%s\" is empty: implicit DENY\n", ss);
       return FAIL;
@@ -3999,8 +4000,7 @@ if (Ustrchr(ss, ' ') == NULL)
   else if (*ss == '/')
     {
     struct stat statbuf;
-    fd = Uopen(ss, O_RDONLY, 0);
-    if (fd < 0)
+    if ((fd = Uopen(ss, O_RDONLY, 0)) < 0)
       {
       *log_msgptr = string_sprintf("failed to open ACL file \"%s\": %s", ss,
         strerror(errno));
@@ -4064,7 +4064,8 @@ while (acl)
   *log_msgptr = *user_msgptr = NULL;
   f.acl_temp_details = FALSE;
 
-  HDEBUG(D_acl) debug_printf_indent("processing \"%s\"\n", verbs[acl->verb]);
+  HDEBUG(D_acl) debug_printf_indent("processing \"%s\" (%s %d)\n",
+    verbs[acl->verb], acl->srcfile, acl->srcline);
 
   /* Clear out any search error message from a previous check before testing
   this condition. */
@@ -4079,44 +4080,47 @@ while (acl)
   switch (cond)
     {
     case DEFER:
-    HDEBUG(D_acl) debug_printf_indent("%s: condition test deferred in %s\n", verbs[acl->verb], acl_name);
-    if (basic_errno != ERRNO_CALLOUTDEFER)
-      {
-      if (search_error_message != NULL && *search_error_message != 0)
-        *log_msgptr = search_error_message;
-      if (smtp_return_error_details) f.acl_temp_details = TRUE;
-      }
-    else
-      f.acl_temp_details = TRUE;
-    if (acl->verb != ACL_WARN) return DEFER;
-    break;
+      HDEBUG(D_acl) debug_printf_indent("%s: condition test deferred in %s\n",
+	verbs[acl->verb], acl_name);
+      if (basic_errno != ERRNO_CALLOUTDEFER)
+	{
+	if (search_error_message != NULL && *search_error_message != 0)
+	  *log_msgptr = search_error_message;
+	if (smtp_return_error_details) f.acl_temp_details = TRUE;
+	}
+      else
+	f.acl_temp_details = TRUE;
+      if (acl->verb != ACL_WARN) return DEFER;
+      break;
 
     default:      /* Paranoia */
     case ERROR:
-    HDEBUG(D_acl) debug_printf_indent("%s: condition test error in %s\n", verbs[acl->verb], acl_name);
-    return ERROR;
+      HDEBUG(D_acl) debug_printf_indent("%s: condition test error in %s\n",
+	verbs[acl->verb], acl_name);
+      return ERROR;
 
     case OK:
-    HDEBUG(D_acl) debug_printf_indent("%s: condition test succeeded in %s\n",
-      verbs[acl->verb], acl_name);
-    break;
+      HDEBUG(D_acl) debug_printf_indent("%s: condition test succeeded in %s\n",
+	verbs[acl->verb], acl_name);
+      break;
 
     case FAIL:
-    HDEBUG(D_acl) debug_printf_indent("%s: condition test failed in %s\n", verbs[acl->verb], acl_name);
-    break;
+      HDEBUG(D_acl) debug_printf_indent("%s: condition test failed in %s\n",
+	verbs[acl->verb], acl_name);
+      break;
 
     /* DISCARD and DROP can happen only from a nested ACL condition, and
     DISCARD can happen only for an "accept" or "discard" verb. */
 
     case DISCARD:
-    HDEBUG(D_acl) debug_printf_indent("%s: condition test yielded \"discard\" in %s\n",
-      verbs[acl->verb], acl_name);
-    break;
+      HDEBUG(D_acl) debug_printf_indent("%s: condition test yielded \"discard\" in %s\n",
+	verbs[acl->verb], acl_name);
+      break;
 
     case FAIL_DROP:
-    HDEBUG(D_acl) debug_printf_indent("%s: condition test yielded \"drop\" in %s\n",
-      verbs[acl->verb], acl_name);
-    break;
+      HDEBUG(D_acl) debug_printf_indent("%s: condition test yielded \"drop\" in %s\n",
+	verbs[acl->verb], acl_name);
+      break;
     }
 
   /* At this point, cond for most verbs is either OK or FAIL or (as a result of
@@ -4126,84 +4130,85 @@ while (acl)
   switch(acl->verb)
     {
     case ACL_ACCEPT:
-    if (cond == OK || cond == DISCARD)
-      {
-      HDEBUG(D_acl) debug_printf_indent("end of %s: ACCEPT\n", acl_name);
-      return cond;
-      }
-    if (endpass_seen)
-      {
-      HDEBUG(D_acl) debug_printf_indent("accept: endpass encountered - denying access\n");
-      return cond;
-      }
-    break;
+      if (cond == OK || cond == DISCARD)
+	{
+	HDEBUG(D_acl) debug_printf_indent("end of %s: ACCEPT\n", acl_name);
+	return cond;
+	}
+      if (endpass_seen)
+	{
+	HDEBUG(D_acl) debug_printf_indent("accept: endpass encountered - denying access\n");
+	return cond;
+	}
+      break;
 
     case ACL_DEFER:
-    if (cond == OK)
-      {
-      HDEBUG(D_acl) debug_printf_indent("end of %s: DEFER\n", acl_name);
-      if (acl_quit_check) goto badquit;
-      f.acl_temp_details = TRUE;
-      return DEFER;
-      }
-    break;
+      if (cond == OK)
+	{
+	HDEBUG(D_acl) debug_printf_indent("end of %s: DEFER\n", acl_name);
+	if (acl_quit_check) goto badquit;
+	f.acl_temp_details = TRUE;
+	return DEFER;
+	}
+      break;
 
     case ACL_DENY:
-    if (cond == OK)
-      {
-      HDEBUG(D_acl) debug_printf_indent("end of %s: DENY\n", acl_name);
-      if (acl_quit_check) goto badquit;
-      return FAIL;
-      }
-    break;
+      if (cond == OK)
+	{
+	HDEBUG(D_acl) debug_printf_indent("end of %s: DENY\n", acl_name);
+	if (acl_quit_check) goto badquit;
+	return FAIL;
+	}
+      break;
 
     case ACL_DISCARD:
-    if (cond == OK || cond == DISCARD)
-      {
-      HDEBUG(D_acl) debug_printf_indent("end of %s: DISCARD\n", acl_name);
-      if (acl_quit_check) goto badquit;
-      return DISCARD;
-      }
-    if (endpass_seen)
-      {
-      HDEBUG(D_acl) debug_printf_indent("discard: endpass encountered - denying access\n");
-      return cond;
-      }
-    break;
+      if (cond == OK || cond == DISCARD)
+	{
+	HDEBUG(D_acl) debug_printf_indent("end of %s: DISCARD\n", acl_name);
+	if (acl_quit_check) goto badquit;
+	return DISCARD;
+	}
+      if (endpass_seen)
+	{
+	HDEBUG(D_acl)
+	  debug_printf_indent("discard: endpass encountered - denying access\n");
+	return cond;
+	}
+      break;
 
     case ACL_DROP:
-    if (cond == OK)
-      {
-      HDEBUG(D_acl) debug_printf_indent("end of %s: DROP\n", acl_name);
-      if (acl_quit_check) goto badquit;
-      return FAIL_DROP;
-      }
-    break;
+      if (cond == OK)
+	{
+	HDEBUG(D_acl) debug_printf_indent("end of %s: DROP\n", acl_name);
+	if (acl_quit_check) goto badquit;
+	return FAIL_DROP;
+	}
+      break;
 
     case ACL_REQUIRE:
-    if (cond != OK)
-      {
-      HDEBUG(D_acl) debug_printf_indent("end of %s: not OK\n", acl_name);
-      if (acl_quit_check) goto badquit;
-      return cond;
-      }
-    break;
+      if (cond != OK)
+	{
+	HDEBUG(D_acl) debug_printf_indent("end of %s: not OK\n", acl_name);
+	if (acl_quit_check) goto badquit;
+	return cond;
+	}
+      break;
 
     case ACL_WARN:
-    if (cond == OK)
-      acl_warn(where, *user_msgptr, *log_msgptr);
-    else if (cond == DEFER && LOGGING(acl_warn_skipped))
-      log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
-        "condition test deferred%s%s", host_and_ident(TRUE),
-        (*log_msgptr == NULL)? US"" : US": ",
-        (*log_msgptr == NULL)? US"" : *log_msgptr);
-    *log_msgptr = *user_msgptr = NULL;  /* In case implicit DENY follows */
-    break;
+      if (cond == OK)
+	acl_warn(where, *user_msgptr, *log_msgptr);
+      else if (cond == DEFER && LOGGING(acl_warn_skipped))
+	log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
+	  "condition test deferred%s%s", host_and_ident(TRUE),
+	  (*log_msgptr == NULL)? US"" : US": ",
+	  (*log_msgptr == NULL)? US"" : *log_msgptr);
+      *log_msgptr = *user_msgptr = NULL;  /* In case implicit DENY follows */
+      break;
 
     default:
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal ACL error: unknown verb %d",
-      acl->verb);
-    break;
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal ACL error: unknown verb %d",
+	acl->verb);
+      break;
     }
 
   /* Pass to the next ACL item */

@@ -12,26 +12,26 @@
 >>> host in auth_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>> check recipients = postmaster@exim.test.ex
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>> check recipients = postmaster@exim.test.ex
 >>> userx@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 20)
 >>>   message: host is listed in $dnslist_domain
 >>> check !authenticated = *
 >>> check dnslists = rbl.test.ex
@@ -66,31 +66,31 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>>   $3 = secret
 >>> expanded string: yes
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>> check recipients = postmaster@exim.test.ex
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 18)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 19)
 >>> check recipients = postmaster@exim.test.ex
 >>> userx@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 20)
 >>>   message: host is listed in $dnslist_domain
 >>> check !authenticated = *
 >>> plain in "*"? yes (matched "*")
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 23)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing postmaster@exim.test.ex
@@ -104,7 +104,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 24)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -116,7 +116,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> routed by list router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 26)
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")

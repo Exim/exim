@@ -18,7 +18,7 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<x@y>
-processing "accept"
+processing "accept" (TESTSUITE/test-config 12)
 check domains = +fail
 expansion of "${if eq {x}{y}{}fail}" forced failure: assume not in this list
 y in "+fail"? no (end of list)

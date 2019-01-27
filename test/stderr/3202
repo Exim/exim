@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_1_1_1"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 17)
 >>> check hosts = net-testdb;defer
 >>> host in "net-testdb;defer"? list match deferred for net-testdb;defer
 >>> accept: condition test deferred in ACL "acl_1_1_1"
@@ -21,7 +21,7 @@ LOG: H=[1.1.1.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced D
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_1_1_2"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 20)
 >>> check domains = testdb;defer
 >>> y in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred in ACL "acl_1_1_2"
@@ -35,7 +35,7 @@ LOG: H=[1.1.2.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced D
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "acl_1_1_3"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 23)
 >>> check local_parts = testdb;defer
 >>> x in "testdb;defer"? list match deferred for testdb;defer
 >>> require: condition test deferred in ACL "acl_1_1_3"

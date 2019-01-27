@@ -118,22 +118,22 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
-processing "deny"
+processing "deny" (TESTSUITE/test-config 35)
 check local_parts = reject
 one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
-processing "accept"
+processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
 DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? no (end of list)
-processing "deny"
+processing "deny" (TESTSUITE/test-config 35)
 check local_parts = reject
 one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
-processing "accept"
+processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
@@ -166,11 +166,11 @@ spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
-processing "deny"
+processing "deny" (TESTSUITE/test-config 35)
 check local_parts = reject
 one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
-processing "accept"
+processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
@@ -178,11 +178,11 @@ DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? yes (matched "V4NET.9.8.7")
 rate limit RCPT: delay 0.25 sec
-processing "deny"
+processing "deny" (TESTSUITE/test-config 35)
 check local_parts = reject
 one in "reject"? no (end of list)
 deny: condition test failed in inline ACL
-processing "accept"
+processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted

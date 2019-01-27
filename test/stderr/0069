@@ -12,11 +12,11 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipientx"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipientx"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 25)
 >>> check hosts = +include_unknown : ^ten-1\\.test\\.ex
 >>> host in "+include_unknown : ^ten-1\.test\.ex"? yes (matched "^ten-1\.test\.ex")
 >>> deny: condition test succeeded in ACL "check_recipientx"
@@ -35,11 +35,11 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipientx"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipientx"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 25)
 >>> check hosts = +include_unknown : ^ten-1\\.test\\.ex
 >>> sender host name required, to match against ^ten-1\.test\.ex
 >>> host in "+include_unknown : ^ten-1\.test\.ex"? yes (failed to find host name for V4NET.0.0.13)
@@ -60,13 +60,13 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipienty"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 30)
 >>> check hosts = non.existent.invalid : V4NET.0.0.13
 >>> no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
 LOG: no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
 >>> host in "non.existent.invalid : V4NET.0.0.13"? no (failed to find IP address for non.existent.invalid)
 >>> accept: condition test failed in ACL "check_recipienty"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 31)
 >>>   message: "Denied"
 >>> deny: condition test succeeded in ACL "check_recipienty"
 >>> end of ACL "check_recipienty": DENY
@@ -84,7 +84,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipientz"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 34)
 >>> check hosts = +ignore_unknown : non.existent.invalid : V4NET.0.0.13
 >>> no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
 LOG: no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
@@ -105,14 +105,14 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipienty"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 30)
 >>> check hosts = non.existent.invalid : V4NET.0.0.13
 >>> no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
 LOG: no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
 >>> host in "non.existent.invalid : V4NET.0.0.13"? no (failed to find IP address for non.existent.invalid)
 LOG: list matching forced to fail: failed to find IP address for non.existent.invalid
 >>> accept: condition test failed in ACL "check_recipienty"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 31)
 >>>   message: "Denied"
 >>> deny: condition test succeeded in ACL "check_recipienty"
 >>> end of ACL "check_recipienty": DENY
@@ -130,11 +130,11 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipienta"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 38)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipienta"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 39)
 >>> check hosts = +include_defer : test.again.dns
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from [V4NET.0.0.13])
@@ -156,7 +156,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipientb"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> check hosts = test.again.dns : V4NET.0.0.13
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from [V4NET.0.0.13])
@@ -177,7 +177,7 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_recipientc"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 48)
 >>> check hosts = +ignore_defer : test.again.dns : V4NET.0.0.13
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> no IP address found for host test.again.dns (during SMTP connection from [V4NET.0.0.13])

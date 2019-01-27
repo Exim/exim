@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
@@ -51,7 +51,7 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 20)
 check verify = sender/callout=1s,maxwait=1s
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
@@ -161,7 +161,7 @@ SMTP<< mail from:<x@y>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
 log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 using ACL "mail"
-processing "accept"
+processing "accept" (TESTSUITE/test-config 20)
 check verify = sender/callout=1s,maxwait=1s
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Verifying x@y
@@ -220,7 +220,7 @@ search_tidyup called
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@y
@@ -246,7 +246,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
@@ -292,7 +292,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "mail"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check verify = sender/callout=1s,maxwait=1s
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing p1@q

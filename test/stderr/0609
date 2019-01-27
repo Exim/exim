@@ -19,7 +19,7 @@ ppppp Listening...
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
 ppppp using ACL "delay4_accept"
-ppppp processing "accept"
+ppppp processing "accept" (TESTSUITE/test-config 24)
 ppppp check delay = 4s
 ppppp delay modifier requests 4-second delay
 ppppp accept: condition test succeeded in ACL "delay4_accept"
@@ -38,7 +38,7 @@ ppppp Listening...
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
 ppppp using ACL "delay4_accept"
-ppppp processing "accept"
+ppppp processing "accept" (TESTSUITE/test-config 24)
 ppppp check delay = 4s
 ppppp delay modifier requests 4-second delay
 ppppp delay cancelled by peer close

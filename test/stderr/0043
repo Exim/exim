@@ -11,11 +11,11 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in chunking_advertise_hosts? no (end of list)
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing junkjunk@exim.test.ex
@@ -32,11 +32,11 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] sender verify fail for <junkjunk@exim.test.
 LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<junkjunk@exim.test.ex> rejected RCPT <postmaster@exim.test.ex>: Sender verify failed
 LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjunk@exim.test.ex>
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing postmaster@exim.test.ex
@@ -55,7 +55,7 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -75,22 +75,22 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> using cached sender verify result
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -106,15 +106,15 @@ LOG: H=(exim.test.ex) [V4NET.0.0.97] incomplete transaction (RSET) from <junkjun
 >>> end of ACL "check_recipient": DENY
 LOG: H=(exim.test.ex) [V4NET.0.0.97] F=<postmaster@exim.test.ex> rejected RCPT junkjunk@exim.test.ex: Unrouteable address
 >>> using ACL "check_recipient"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 20)
 >>> check hosts = :
 >>> host in ":"? no (end of list)
 >>> accept: condition test failed in ACL "check_recipient"
->>> processing "require"
+>>> processing "require" (TESTSUITE/test-config 21)
 >>> check verify = sender
 >>> using cached sender verify result
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "deny"
+>>> processing "deny" (TESTSUITE/test-config 22)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
