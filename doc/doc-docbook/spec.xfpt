@@ -32656,7 +32656,7 @@ intend to use an instance running on the local host you do not need to set
 you must set the &%spamd_address%& option in the global part of the Exim
 configuration as follows (example):
 .code
-spamd_address = 192.168.99.45 387
+spamd_address = 192.168.99.45 783
 .endd
 The SpamAssassin protocol relies on a TCP half-close from the client.
 If your SpamAssassin client side is running a Linux system with an
