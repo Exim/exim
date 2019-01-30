@@ -2084,7 +2084,6 @@ f.dkim_disable_verify = FALSE;
 dkim_collect_input = 0;
 dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;
 dkim_key_length = 0;
-dkim_verify_signers = US"$dkim_signers";
 #endif
 #ifdef EXPERIMENTAL_DMARC
 f.dmarc_has_been_checked = f.dmarc_disable_verify = f.dmarc_enable_forensic = FALSE;
