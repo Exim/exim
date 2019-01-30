@@ -82,6 +82,9 @@ JH/41 Fix the loop reading a message header line to check for integer overflow,
       and more-often against header_maxsize.  Previously a crafted message could
       induce a crash of the recive process; now the message is cleanly rejected.
 
+JH/42 Bug 2366: Fix the behaviour of the dkim_verify_signers option.  It had
+      been totally disabled for all of 4.91.  Discovery and fix by "Mad Alex".
+
 
 Exim version 4.91
 -----------------

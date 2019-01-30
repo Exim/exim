@@ -1,0 +1,33 @@
+# Exim test configuration 4508
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_dkim = check_dkim
+acl_smtp_data = check_data
+
+log_selector = +dkim_verbose
+dkim_verify_signers = DYNAMIC_OPTION
+
+queue_only
+queue_run_in_order
+
+# ----- ACL ---------
+
+begin acl
+
+check_dkim:
+  accept
+	logwrite = DKIM: acl called - signer: $dkim_cur_signer bits: $dkim_key_length
+
+check_data:
+  accept logwrite = overall \$dkim_verify_status: $dkim_verify_status
+	 logwrite = ${authresults {$primary_hostname}}
+
+# End
