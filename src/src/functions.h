@@ -357,6 +357,7 @@ extern void    queue_count(void);
 extern void    queue_run(uschar *, uschar *, BOOL);
 
 extern int     random_number(int);
+extern const uschar *rc_to_string(int);
 extern int     rda_interpret(redirect_block *, int, uschar *, uschar *,
                  uschar *, uschar *, uschar *, ugid_block *, address_item **,
                  uschar **, error_block **, int *, uschar *);

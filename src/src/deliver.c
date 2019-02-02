@@ -3104,12 +3104,7 @@ while (addr_local)
 
         DEBUG(D_deliver|D_transport)
           debug_printf("%s shadow transport returned %s for %s\n",
-            stp->name,
-            sresult == OK ?    "OK" :
-            sresult == DEFER ? "DEFER" :
-            sresult == FAIL ?  "FAIL" :
-            sresult == PANIC ? "PANIC" : "?",
-            shadow_addr->address);
+            stp->name, rc_to_string(sresult), shadow_addr->address);
         }
 
       DEBUG(D_deliver|D_transport)
@@ -3138,12 +3133,7 @@ while (addr_local)
 
     DEBUG(D_deliver|D_transport)
       debug_printf("%s transport returned %s for %s\n",
-        tp->name,
-        result == OK ?    "OK" :
-        result == DEFER ? "DEFER" :
-        result == FAIL ?  "FAIL" :
-        result == PANIC ? "PANIC" : "?",
-        addr2->address);
+        tp->name, rc_to_string(result), addr2->address);
 
     /* If there is a retry_record, or if delivery is deferred, build a retry
     item for setting a new retry time or deleting the old retry record from
