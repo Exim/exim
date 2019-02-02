@@ -7,13 +7,13 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "2001:ab8:37f:20:0:0:0:1")
 >>> warn: condition test succeeded in ACL "check_connect"
 LOG: H=[2001:0ab8:037f:0020:0000:0000:0000:0001] Warning: matched hostlist
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = true
 >>> accept: condition test succeeded in ACL "check_connect"
@@ -31,7 +31,7 @@ LOG: H=[2001:0ab8:037f:0020:0000:0000:0000:0001] Warning: matched hostlist
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 MUNGED: ::1 will be omitted in what follows
@@ -39,7 +39,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? no (end of list)
 >>> warn: condition test failed in ACL "check_connect"
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = 
 >>> accept: condition test failed in ACL "check_connect"
@@ -54,7 +54,7 @@ LOG: H=test3.ipv6.test.ex [V6NET:1234:0005:0006:0007:0008:0abc:000d] rejected co
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_connect"
->>> processing "warn"
+>>> processing "warn" (TESTSUITE/test-config 21)
 >>> l_message: matched hostlist
 >>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
 MUNGED: ::1 will be omitted in what follows
@@ -63,7 +63,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "v6.test.ex")
 >>> warn: condition test succeeded in ACL "check_connect"
 LOG: H=[V6NET:ffff:836f:0a00:000a:0800:200a:c032] Warning: matched hostlist
->>> processing "accept"
+>>> processing "accept" (TESTSUITE/test-config 24)
 >>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
 >>>                 = 
 >>> accept: condition test failed in ACL "check_connect"
