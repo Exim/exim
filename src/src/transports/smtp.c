@@ -2046,7 +2046,7 @@ if (!continue_hostname)
 	  case FAIL_FORCED:	break;
 	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
 				  string_sprintf("DANE error: tlsa lookup %s",
-				    rc == DEFER ? "DEFER" : "FAIL"),
+				    rc_to_string(rc)),
 				  rc, FALSE);
 # ifndef DISABLE_EVENT
 				(void) event_raise(sx->conn_args.tblock->event_action,
@@ -4709,7 +4709,6 @@ retry_non_continued:
     {
     int rc;
     int host_af;
-    uschar *rs;
     BOOL host_is_expired = FALSE;
     BOOL message_defer = FALSE;
     BOOL some_deferred = FALSE;
@@ -4897,11 +4896,14 @@ retry_non_continued:
     treated separately. */
 
     host_af = Ustrchr(host->address, ':') == NULL ? AF_INET : AF_INET6;
-    if ((rs = ob->interface) && *rs)
       {
-      if (!smtp_get_interface(rs, host_af, addrlist, &interface, tid))
-	return FALSE;
-      pistring = string_sprintf("%s/%s", pistring, interface);
+      uschar * s = ob->interface;
+      if (s && *s)
+	{
+	if (!smtp_get_interface(s, host_af, addrlist, &interface, tid))
+	  return FALSE;
+	pistring = string_sprintf("%s/%s", pistring, interface);
+	}
       }
 
     /* The first time round the outer loop, check the status of the host by
@@ -5146,14 +5148,9 @@ retry_non_continued:
 
     /* Delivery attempt finished */
 
-    rs = rc == OK ? US"OK"
-       : rc == DEFER ? US"DEFER"
-       : rc == ERROR ? US"ERROR"
-       : US"?";
-
     set_process_info("delivering %s: just tried %s [%s]%s for %s%s: result %s",
       message_id, host->name, host->address, pistring, addrlist->address,
-      addrlist->next ? " (& others)" : "", rs);
+      addrlist->next ? " (& others)" : "", rc_to_string(rc));
 
     /* Release serialization if set up */
 

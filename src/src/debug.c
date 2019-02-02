@@ -14,6 +14,26 @@ static int     debug_prefix_length = 0;
 
 
 
+const uschar * rc_names[] = {		/* Mostly for debug output */
+  [OK] =		US"OK",
+  [DEFER] =		US"DEFER",
+  [FAIL] =		US"FAIL",
+  [ERROR] =		US"ERROR",
+  [FAIL_FORCED] =	US"FAIL_FORCED",
+  [DECLINE] =		US"DECLINE",
+  [PASS] =		US"PASS",
+  [DISCARD] =		US"DISCARD",
+  [SKIP] =		US"SKIP",
+  [REROUTED] =		US"REROUTED",
+  [PANIC] =		US"PANIC",
+  [BAD64] =		US"BAD64",
+  [UNEXPECTED] =	US"UNEXPECTED",
+  [CANCELLED] =		US"CANCELLED",
+  [FAIL_SEND] =		US"FAIL_SEND",
+  [FAIL_DROP] =		US"FAIL_DROP"
+};
+
+
 /*************************************************
 *               Print tree                       *
 *************************************************/
@@ -126,6 +146,17 @@ debug_printf("%s uid=%ld gid=%ld euid=%ld egid=%ld\n", s,
   (long int)getuid(), (long int)getgid(), (long int)geteuid(),
   (long int)getegid());
 }
+
+/************************************************/
+
+/* Give a string for a return-code */
+
+const uschar *
+rc_to_string(int rc)
+{
+return rc < 0 || rc >= nelem(rc_names) ? US"?" : rc_names[rc];
+}
+
 
 
 

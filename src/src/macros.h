@@ -278,7 +278,9 @@ and some additional values are used only by non-driver functions.
 
 OK, FAIL, DEFER, ERROR, and FAIL_FORCED are also declared in local_scan.h for
 use in the local_scan() function and in ${dlfunc loaded functions. Do not
-change them unilaterally. */
+change them unilaterally.
+
+Use rc_names[] for debug strings. */
 
 #define  OK            0    /* Successful match */
 #define  DEFER         1    /* Defer - some problem */
