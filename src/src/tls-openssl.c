@@ -782,11 +782,13 @@ DEBUG(D_tls)
   }
 }
 
+#ifdef OPENSSL_HAVE_KEYLOG_CB
 static void
 keylog_callback(const SSL *ssl, const char *line)
 {
 DEBUG(D_tls) debug_printf("%.200s\n", line);
 }
+#endif
 
 
 

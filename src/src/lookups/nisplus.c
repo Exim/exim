@@ -148,7 +148,8 @@ for (int i = 0; i < eo->en_cols.en_cols_len; i++)
   empty string for consistency. Remove trailing whitespace and zero
   bytes. */
 
-  if (value == NULL) value = US""; else
+  if (!value) value = US"";
+  else
     while (len > 0 && (value[len-1] == 0 || isspace(value[len-1])))
       len--;
 
@@ -156,7 +157,7 @@ for (int i = 0; i < eo->en_cols.en_cols_len; i++)
 
   if (!field_name)
     {
-    yield = string_cat (yield, tc->tc_name);
+    yield = string_cat (yield, US tc->tc_name);
     yield = string_catn(yield, US"=", 1);
 
     /* Quote the value if it contains spaces or is empty */
