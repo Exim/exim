@@ -1,17 +1,17 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@test.ex R=client T=send_to_server1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER@test.ex R=client T=send_to_server1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for abcd@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 SNI <fred>
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no SNI="fred" S=sss id=E10HmaX-0005vi-00@myhost.test.ex for CALLER@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI="fred" S=sss id=E10HmaX-0005vi-00@myhost.test.ex for CALLER@test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 SNI <bill>
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no SNI="bill" S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for abcd@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI="bill" S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for abcd@test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <abcd@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

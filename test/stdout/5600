@@ -21,7 +21,7 @@ Key file = aux-fixed/cert2
 <<< 220 TLS go ahead
 Attempting to start TLS
 Response verify OK
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
@@ -56,7 +56,7 @@ Key file = aux-fixed/cert2
 <<< 220 TLS go ahead
 Attempting to start TLS
 no response received
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
@@ -82,7 +82,7 @@ Key file = aux-fixed/cert2
 <<< 220 TLS go ahead
 Attempting to start TLS
 no response received
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 End of script
 Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
@@ -107,7 +107,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> ehlo rhu.barb.tls
 ??? 250-

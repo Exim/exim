@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= this-user@testhost.test.ex U=this-user P=local S=sss for other-user@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => other-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => other-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1224
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no K S=sss id=E10HmaX-0005vi-00@testhost.test.ex for other-user@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-0005vi-00@testhost.test.ex for other-user@test.ex

@@ -11,11 +11,11 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 Our cert SN: <CN=server2.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server2.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 Our cert SN: <CN=server2.example.com>
 1999-03-02 09:44:33 SN  <CN=server1.example.com>
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" S=sss

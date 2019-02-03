@@ -233,7 +233,7 @@ end of inline ACL: ACCEPT
   SMTP>> .
   SMTP<< 250 OK id=10HmaY-0005vi-00
 LOG: MAIN
-  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
+  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
   SMTP>> QUIT
   SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>

@@ -11,10 +11,10 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userr@test.ex R=client_r T=send_to_server_req_failname H=the.local.host.name [ip4.ip4.ip4.ip4] C="250 OK id=10HmbC-0005vi-00"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => user_s@test.ex R=client_s T=send_to_server_req_passname H=server1.example.com [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => user_s@test.ex R=client_s T=send_to_server_req_passname H=server1.example.com [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbD-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbA-0005vi-00 [ip4.ip4.ip4.ip4] SSL verify error: certificate name mismatch: DN="/CN=server1.example.com" H="the.local.host.name"
-1999-03-02 09:44:33 10HmbA-0005vi-00 => usert@test.ex R=client_t T=send_to_server_req_failcarryon H=the.local.host.name [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbA-0005vi-00 => usert@test.ex R=client_t T=send_to_server_req_failcarryon H=the.local.host.name [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.com" C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
@@ -24,5 +24,5 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaZ-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbA-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmaZ-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" S=sss id=E10HmbA-0005vi-00@myhost.test.ex

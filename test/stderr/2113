@@ -32,7 +32,7 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbA-0005vi-00
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
+  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
   Completed
 Exim version x.yz ....
@@ -49,7 +49,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK id=10HmbB-0005vi-00
   SMTP(close)>>
 LOG: MAIN
-  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmbB-0005vi-00"
+  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbB-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -70,7 +70,7 @@ cmd buf flush ddd bytes
   SMTP(close)>>
 >>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
+  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -111,7 +111,7 @@ cmd buf flush ddd bytes
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbG-0005vi-00
 LOG: MAIN
-  => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
+  => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
 LOG: MAIN
   Completed
 Exim version x.yz ....
@@ -128,7 +128,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK id=10HmbH-0005vi-00
   SMTP(close)>>
 LOG: MAIN
-  => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmbH-0005vi-00"
+  => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -149,7 +149,7 @@ cmd buf flush ddd bytes
   SMTP(close)>>
 >>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
-  => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
+  => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
