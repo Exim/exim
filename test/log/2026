@@ -2,5 +2,5 @@
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <usery@myhost.test.ex>
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp K S=sss id=E10HmaY-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 no immediate delivery: queued by ACL
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no K S=sss id=E10HmaY-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaY-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmaZ-0005vi-00 no immediate delivery: queued by ACL

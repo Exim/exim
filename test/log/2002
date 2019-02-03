@@ -15,10 +15,10 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer cert:
 1999-03-02 09:44:33 ver 3
@@ -39,11 +39,11 @@
 1999-03-02 09:44:33 sha1   fingerprint E75D537E478758010505D4F339B00DFD73728088
 1999-03-02 09:44:33 sha256 fingerprint E251FA7D0372CB784294CF92B243DCE53FDDABD9F58A1B89226586C07C82CAC6
 1999-03-02 09:44:33 der_b64 MIIDuDCCAqCgAwIBAgICAMkwDQYJKoZIhvcNAQELBQAwNzEUMBIGA1UEChMLZXhhbXBsZS5jb20xHzAdBgNVBAMTFmNsaWNhIFNpZ25pbmcgQ2VydCByc2EwHhcNMTIxMTAxMTI0MDA0WhcNMzcxMjAxMTI0MDA0WjAeMRwwGgYDVQQDExNzZXJ2ZXIyLmV4YW1wbGUuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA52Rfiv2Igy0NiaKN5gc0VPLbEoHngkdJWv3wEORp+iFl6skQRbsCylT8djJ2pvHstFpnzSodF3Wwjj2/EDuj3iKBzN9HeXJOvJz8j9Si1xkgCxJeUjPGgYcvKdxybaZAOpi9l3xwPCCEXN4JBq/WaQQ9+eP1PczeMNfvFtXma+VcHXG743ttPOv7eSMr0JxQl3zjQvYGOhFP/KAw6jh/N6YPqii9kV0cC/ubeVzpqJ5/+hndx5YrmAu39N5qzwWujhDPkFNSgCJUhfkEiMaQiPxFxDTbUzWnQ5jpAQ5El4WJVkGWkqxose1bOjSSNzFPJt59YtxxJC3IWN3UtGODTwIDAQABo4HmMIHjMA4GA1UdDwEB/wQEAwIE8DAgBgNVHSUBAf8EFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwTgYDVR0jBEcwRYANQUFidHdDeGNYZ2IwUaExpC8wLTEUMBIGA1UEChMLZXhhbXBsZS5jb20xFTATBgNVBAMTDGNsaWNhIENBIHJzYYIBQjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vc2NwLmV4YW1wbGUuY29tLzApBgNVHREEIjAgghNzZXJ2ZXIyLmV4YW1wbGUuY29tggkqLnRlc3QuZXgwDQYJKoZIhvcNAQELBQADggEBALHOkZkvHLpNm0QSof09vmmdNFE6/+0TCIoPExeqqSOsy4NsF+Ha46WttjJRSVtbhRxF8jxEU7btPiFgQUaOcJZTwQPDhmQSOPNO8GS46oJ57aQ7U7O+X3M1sVS5Pa2IzE6vrJSh349/CNbTA8WPQdWLlxVJhJXAcZNtaEu6lCsZuDSMTpAsW5I4+snyrm3yvP5t0eD28K5LgCKePX962drkAOP6XGQ51VnbMQ7b1TSdQedtYKIpR3VKUvG5Ky/+0c+Rmwfi2aQ8oXXwekzJyS5jvovdVVsdhO68It+Rz/zursN5Pn+Gj1YuQNUs2nDrGHN+VIIFpgWUjLZO4bcJctY=
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="CN=server2.example.com" S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server2.example.com" S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke_ECDSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.

@@ -1,22 +1,22 @@
 From userx@test.ex Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1] (helo=rhu.barb)
-	by myhost.test.ex with esmtps (TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256)
+	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-TLS: cipher=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 peerdn=
+TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=
 
 This is a test encrypted message.
 
 From userx@test.ex Tue Mar 02 09:44:33 1999
 Received: from [ip4.ip4.ip4.ip4]
-	by myhost.test.ex with smtp (TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256)
+	by myhost.test.ex with smtp (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-TLS: cipher=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 peerdn=C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock
+TLS: cipher=TLS1.x:ke-RSA-AES256-SHAnnn:xxx peerdn=C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock
 
 This is a test encrypted message from a verified host.
 

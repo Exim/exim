@@ -1,22 +1,22 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaX-0005vi-00 => nocache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no A=plain L C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => nocache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=plain L C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for hascache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => hascache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no A=plain L* C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => hascache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=plain L* C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTPS on port 1225
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpsa L. X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no A=plain:userx S=sss id=E10HmaX-0005vi-00@the.local.host.name for nocache@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpsa L. X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=plain:userx S=sss id=E10HmaX-0005vi-00@the.local.host.name for nocache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <nocache@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpsa L* X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no A=plain:userx S=sss id=E10HmaZ-0005vi-00@the.local.host.name for hascache@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtpsa L* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=plain:userx S=sss id=E10HmaZ-0005vi-00@the.local.host.name for hascache@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <hascache@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

@@ -4,4 +4,4 @@
 1999-03-02 09:44:33 U=CALLER F=<userB.જેઠીમધ@test.ex> rejected RCPT <user.ქართული@test.ex>: Sender verify failed
 
 ******** SERVER ********
-1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted
+1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted

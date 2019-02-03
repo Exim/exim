@@ -1,17 +1,17 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= 세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com U=CALLER P=utf8local-esmtp S=sss for userQ@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userq@test.ex <userQ@test.ex> F=<세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userq@test.ex <userQ@test.ex> F=<세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= 세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com U=CALLER P=utf8local-esmtp S=sss for userR@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userr@test.ex <userR@test.ex> F=<세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userr@test.ex <userR@test.ex> F=<세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com> R=rmt T=rmt_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 U=CALLER F=<CALLER@spanish.PorquénopuedensimplementehablarenEspañol.local> rejected RCPT <userS@test.ex>: 127.0.0.1 [127.0.0.1] : response to "EHLO" did not include SMTPUTF8
 1999-03-02 09:44:33 U=CALLER F=<CALLER@vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.local> rejected RCPT <userT@test.ex>: 127.0.0.1 [127.0.0.1] : response to "EHLO" did not include SMTPUTF8
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= 세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss id=E10HmaX-0005vi-00@the.local.host.name for userQ@test.ex
-1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= 세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss id=E10HmaZ-0005vi-00@the.local.host.name for userR@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= 세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@the.local.host.name for userQ@test.ex
+1999-03-02 09:44:33 H=localhost (the.local.host.name) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<> rejected RCPT <the.local.host.name-dddddddd-testing@test.ex>: relay not permitted
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= 세계의모든사람들이한국어를이해한다면얼마나좋을까@russian.почемужеонинеговорятпорусски.com H=localhost (the.local.host.name) [127.0.0.1] P=utf8esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@the.local.host.name for userR@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqff
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <userQ@test.ex> R=localuser
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
