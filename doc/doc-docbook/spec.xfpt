@@ -13347,6 +13347,12 @@ The deprecated &$tls_cipher$& variable is the same as &$tls_in_cipher$& during m
 but in the context of an outward SMTP delivery taking place via the &(smtp)& transport
 becomes the same as &$tls_out_cipher$&.
 
+.new
+.vitem &$tls_in_cipher_std$&
+.vindex "&$tls_in_cipher_std$&"
+As above, but returning the RFC standard name for the cipher suite.
+.wen
+
 .vitem &$tls_out_cipher$&
 .vindex "&$tls_out_cipher$&"
 This variable is
@@ -13354,6 +13360,12 @@ cleared before any outgoing SMTP connection is made,
 and then set to the outgoing cipher suite if one is negotiated. See chapter
 &<<CHAPTLS>>& for details of TLS support and chapter &<<CHAPsmtptrans>>& for
 details of the &(smtp)& transport.
+
+,new
+.vitem &$tls_out_cipher_std$&
+.vindex "&$tls_out_cipher_std$&"
+As above, but returning the RFC standard name for the cipher suite.
+.wen
 
 .vitem &$tls_out_dane$&
 .vindex &$tls_out_dane$&
@@ -16585,23 +16597,26 @@ on at the end (preceded by a semicolon). The string is expanded each time it is
 used. If the expansion yields an empty string, no &'Received:'& header line is
 added to the message. Otherwise, the string should start with the text
 &"Received:"& and conform to the RFC 2822 specification for &'Received:'&
-header lines. The default setting is:
+header lines.
+.new
+The default setting is:
 
 .code
 received_header_text = Received: \
   ${if def:sender_rcvhost {from $sender_rcvhost\n\t}\
-  {${if def:sender_ident \
-  {from ${quote_local_part:$sender_ident} }}\
-  ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
+    {${if def:sender_ident \
+      {from ${quote_local_part:$sender_ident} }}\
+        ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
   by $primary_hostname \
-  ${if def:received_protocol {with $received_protocol}} \
-  ${if def:tls_in_cipher {($tls_in_cipher)\n\t}}\
+  ${if def:received_protocol {with $received_protocol }}\
+  ${if def:tls_in_cipher_std { tls $tls_in_cipher_std\n\t}}\
   (Exim $version_number)\n\t\
   ${if def:sender_address \
   {(envelope-from <$sender_address>)\n\t}}\
   id $message_exim_id\
   ${if def:received_for {\n\tfor $received_for}}
 .endd
+.wen
 
 The reference to the TLS cipher is omitted when Exim is built without TLS
 support. The use of conditional expansions ensures that this works for both
@@ -27476,7 +27491,7 @@ but is a full SMTP SASL authenticator
 rather than being implicit for TLS-connection carried
 client certificates only.
 
-The examples and discussion in this chapter assume that 
+The examples and discussion in this chapter assume that
 client-certificate authentication is being done.
 
 The client must present a certificate,

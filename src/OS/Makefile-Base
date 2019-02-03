@@ -816,7 +816,8 @@ store.o:         $(HDRS) store.c
 string.o:        $(HDRS) string.c
 tls.o:           $(HDRS) tls.c \
 		 tls-gnu.c tlscert-gnu.c \
-		 tls-openssl.c tlscert-openssl.c
+		 tls-openssl.c tlscert-openssl.c \
+		 tls-cipher-stdname.c
 tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c

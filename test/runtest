@@ -544,6 +544,15 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/(could not connect to .*: Connection) reset by peer$/$1 refused/;
 
   # ======== TLS certificate algorithms ========
+  #
+  # In Received: headers, convert RFC 8314 style ciphersuite to
+  # the older (comment) style, keeping only the Auth element
+  # (discarding kex, cipher, mac).  For TLS 1.3 there is no kex
+  # element (and no _WITH); insert a spurious "RSA".
+
+  s/^\s+by .+ with .+ \K tls TLS_.*?([^_]+)_WITH.+$/(TLS1.x:ke-\1-AES256-SHAnnn:xxx)/;
+  s/^\s+by .+ with .+ \K tls TLS_.+$/(TLS1.x:ke-RSA-AES256-SHAnnn:xxx)/;
+
   # Test machines might have various different TLS library versions supporting
   # different protocols; can't rely upon TLS 1.2's AES256-GCM-SHA384, so we
   # treat the standard algorithms the same.
@@ -1630,7 +1639,9 @@ $munges =
 		      s! DN="[^,"]*\K,!/!;
 		     ',
       'rejectlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /',
-      'mail'      => 's/ \(TLS[^)]*\)/ (TLS_proto_and_cipher)/',
+      'mail'      => 's/^\s+by .+ with .+ \K tls TLS_.+$/(TLS_proto_and_cipher)/;
+		      s/ \(TLS[^)]*\)/ (TLS_proto_and_cipher)/;
+		     ',
     },
 
     'debug_pid' =>

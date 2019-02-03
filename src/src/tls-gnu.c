@@ -96,6 +96,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # include <gnutls/dane.h>
 #endif
 
+#include "tls-cipher-stdname.c"
+
+
 /* GnuTLS 2 vs 3
 
 GnuTLS 3 only:
@@ -1451,6 +1454,25 @@ return OK;
 *            Extract peer information            *
 *************************************************/
 
+static const uschar *
+cipher_stdname_kcm(gnutls_kx_algorithm_t kx, gnutls_cipher_algorithm_t cipher,
+  gnutls_mac_algorithm_t mac)
+{
+uschar cs_id[2];
+gnutls_kx_algorithm_t kx_i;
+gnutls_cipher_algorithm_t cipher_i;
+gnutls_mac_algorithm_t mac_i;
+
+for (size_t i = 0;
+     gnutls_cipher_suite_info(i, cs_id, &kx_i, &cipher_i, &mac_i, NULL);
+     i++)
+  if (kx_i == kx && cipher_i == cipher && mac_i == mac)
+    return cipher_stdname(cs_id[0], cs_id[1]);
+return NULL;
+}
+
+
+
 /* Called from both server and client code.
 Only this is allowed to set state->peerdn and state->have_set_peerdn
 and we use that to detect double-calls.
@@ -1479,7 +1501,6 @@ Returns:          OK/DEFER/FAIL
 static int
 peer_status(exim_gnutls_state_st *state, uschar ** errstr)
 {
-uschar cipherbuf[256];
 const gnutls_datum_t *cert_list;
 int old_pool, rc;
 unsigned int cert_list_size = 0;
@@ -1504,28 +1525,29 @@ protocol = gnutls_protocol_get_version(state->session);
 mac = gnutls_mac_get(state->session);
 kx = gnutls_kx_get(state->session);
 
-string_format(cipherbuf, sizeof(cipherbuf),
-    "%s:%s:%d",
-    gnutls_protocol_get_name(protocol),
-    gnutls_cipher_suite_get_name(kx, cipher, mac),
-    (int) gnutls_cipher_get_key_size(cipher) * 8);
-
-/* I don't see a way that spaces could occur, in the current GnuTLS
-code base, but it was a concern in the old code and perhaps older GnuTLS
-releases did return "TLS 1.0"; play it safe, just in case. */
-for (uschar * p = cipherbuf; *p != '\0'; ++p)
-  if (isspace(*p))
-    *p = '-';
 old_pool = store_pool;
-store_pool = POOL_PERM;
-state->ciphersuite = string_copy(cipherbuf);
+  {
+  store_pool = POOL_PERM;
+  state->ciphersuite = string_sprintf("%s:%s:%d",
+      gnutls_protocol_get_name(protocol),
+      gnutls_cipher_suite_get_name(kx, cipher, mac),
+      (int) gnutls_cipher_get_key_size(cipher) * 8);
+
+  /* I don't see a way that spaces could occur, in the current GnuTLS
+  code base, but it was a concern in the old code and perhaps older GnuTLS
+  releases did return "TLS 1.0"; play it safe, just in case. */
+
+  for (uschar * p = state->ciphersuite; *p; p++) if (isspace(*p)) *p = '-';
+  state->tlsp->cipher = state->ciphersuite;
+
+  state->tlsp->cipher_stdname = cipher_stdname_kcm(kx, cipher, mac);
+  }
 store_pool = old_pool;
-state->tlsp->cipher = state->ciphersuite;
 
 /* tls_peerdn */
 cert_list = gnutls_certificate_get_peers(state->session, &cert_list_size);
 
-if (cert_list == NULL || cert_list_size == 0)
+if (!cert_list || cert_list_size == 0)
   {
   DEBUG(D_tls) debug_printf("TLS: no certificate from peer (%p & %d)\n",
       cert_list, cert_list_size);

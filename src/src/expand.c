@@ -749,6 +749,7 @@ static var_entry var_table[] = {
   { "tls_in_bits",         vtype_int,         &tls_in.bits },
   { "tls_in_certificate_verified", vtype_int, &tls_in.certificate_verified },
   { "tls_in_cipher",       vtype_stringptr,   &tls_in.cipher },
+  { "tls_in_cipher_std",   vtype_stringptr,   &tls_in.cipher_stdname },
   { "tls_in_ocsp",         vtype_int,         &tls_in.ocsp },
   { "tls_in_ourcert",      vtype_cert,        &tls_in.ourcert },
   { "tls_in_peercert",     vtype_cert,        &tls_in.peercert },
@@ -759,6 +760,7 @@ static var_entry var_table[] = {
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
   { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
   { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
+  { "tls_out_cipher_std",  vtype_stringptr,   &tls_out.cipher_stdname },
 #ifdef SUPPORT_DANE
   { "tls_out_dane",        vtype_bool,        &tls_out.dane_verified },
 #endif
