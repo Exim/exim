@@ -88,6 +88,8 @@ typedef struct {
   int     tlsa_usage;         /* TLSA record(s) usage */
 #endif
   uschar *cipher;             /* Cipher used */
+  const uschar *cipher_stdname; /* Cipher used, RFC version */
+  
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
   uschar *on_connect_ports;   /* Ports always tls-on-connect */
   void   *ourcert;            /* Certificate we presented, binary */

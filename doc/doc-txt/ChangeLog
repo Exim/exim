@@ -18,6 +18,8 @@ JH/02 OpenSSL: suppress the sending of (stateful) TLS1.3 session tickets.
 JH/03 Debug output for ACL now gives the config file name and line number for
       each verb.
 
+JH/04 The default received_header_text now uses the RFC 8314 tls cipher clause.
+
 
 Exim version 4.92
 -----------------

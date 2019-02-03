@@ -13,6 +13,9 @@ Version 4.92
 
  2. A JSON lookup type, and JSON variants of the forall/any expansion conditions.
 
+ 3. Variables $tls_in_cipher_std, $tls_out_cipher_std giving the RFC names
+    for ciphersuites.
+
 Version 4.92
 --------------
 

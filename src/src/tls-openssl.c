@@ -71,6 +71,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_DH_BITS
 #  define EXIM_HAVE_OPENSSL_TLS_METHOD
 #  define EXIM_HAVE_OPENSSL_KEYLOG
+#  define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -96,6 +97,7 @@ change this guard and punt the issue for a while longer. */
 # if OPENSSL_VERSION_NUMBER >= 0x010101000L
 #  define OPENSSL_HAVE_KEYLOG_CB
 #  define OPENSSL_HAVE_NUM_TICKETS
+#  define EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
 # endif
 #endif
 
@@ -106,6 +108,13 @@ change this guard and punt the issue for a while longer. */
 
 #ifdef EXIM_HAVE_OPENSSL_CHECKHOST
 # include <openssl/x509v3.h>
+#endif
+
+#ifndef EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
+# ifndef EXIM_HAVE_OPENSSL_CIPHER_GET_ID
+#  define SSL_CIPHER_get_id(c) (c->id)
+# endif
+# include "tls-cipher-stdname.c"
 #endif
 
 /*************************************************
@@ -1911,28 +1920,46 @@ return OK;
 
 /*
 Argument:   pointer to an SSL structure for the connection
-            buffer to use for answer
-            size of buffer
 	    pointer to number of bits for cipher
-Returns:    nothing
+Returns:    pointer to allocated string in perm-pool
 */
 
-static void
-construct_cipher_name(SSL *ssl, uschar *cipherbuf, int bsize, int *bits)
+static uschar *
+construct_cipher_name(SSL * ssl, int * bits)
 {
+int pool = store_pool;
 /* With OpenSSL 1.0.0a, 'c' needs to be const but the documentation doesn't
 yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
 the accessor functions use const in the prototype. */
 
 const uschar * ver = CUS SSL_get_version(ssl);
 const SSL_CIPHER * c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
+uschar * s;
 
 SSL_CIPHER_get_bits(c, bits);
 
-string_format(cipherbuf, bsize, "%s:%s:%u", ver,
-  SSL_CIPHER_get_name(c), *bits);
+store_pool = POOL_PERM;
+s = string_sprintf("%s:%s:%u", ver, SSL_CIPHER_get_name(c), *bits);
+store_pool = pool;
+DEBUG(D_tls) debug_printf("Cipher: %s\n", s);
+return s;
+}
 
-DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);
+
+/* Get IETF-standard name for ciphersuite.
+Argument:   pointer to an SSL structure for the connection
+Returns:    pointer to string
+*/
+
+static const uschar *
+cipher_stdname_ssl(SSL * ssl)
+{
+#ifdef EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
+return CUS SSL_CIPHER_standard_name(SSL_get_current_cipher(ssl));
+#else
+ushort id = 0xffff & SSL_CIPHER_get_id(SSL_get_current_cipher(ssl));
+return cipher_stdname(id >> 8, id & 0xff);
+#endif
 }
 
 
@@ -2179,7 +2206,6 @@ int rc;
 uschar * expciphers;
 tls_ext_ctx_cb * cbinfo;
 static uschar peerdn[256];
-static uschar cipherbuf[256];
 
 /* Check for previous activation */
 
@@ -2305,10 +2331,13 @@ and initialize things. */
 
 peer_cert(server_ssl, &tls_in, peerdn, sizeof(peerdn));
 
+tls_in.cipher = construct_cipher_name(server_ssl, &tls_in.bits);
+tls_in.cipher_stdname = cipher_stdname_ssl(server_ssl);
+
 DEBUG(D_tls)
   {
   uschar buf[2048];
-  if (SSL_get_shared_ciphers(server_ssl, CS buf, sizeof(buf)) != NULL)
+  if (SSL_get_shared_ciphers(server_ssl, CS buf, sizeof(buf)))
     debug_printf("Shared ciphers: %s\n", buf);
 
 #ifdef EXIM_HAVE_OPENSSL_KEYLOG
@@ -2323,9 +2352,6 @@ DEBUG(D_tls)
   }
 #endif
   }
-
-construct_cipher_name(server_ssl, cipherbuf, sizeof(cipherbuf), &tls_in.bits);
-tls_in.cipher = cipherbuf;
 
 /* Record the certificate we presented */
   {
@@ -2489,7 +2515,6 @@ exim_openssl_client_tls_ctx * exim_client_ctx;
 static uschar peerdn[256];
 uschar * expciphers;
 int rc;
-static uschar cipherbuf[256];
 
 #ifndef DISABLE_OCSP
 BOOL request_ocsp = FALSE;
@@ -2711,8 +2736,8 @@ DEBUG(D_tls)
 
 peer_cert(exim_client_ctx->ssl, tlsp, peerdn, sizeof(peerdn));
 
-construct_cipher_name(exim_client_ctx->ssl, cipherbuf, sizeof(cipherbuf), &tlsp->bits);
-tlsp->cipher = cipherbuf;
+tlsp->cipher = construct_cipher_name(exim_client_ctx->ssl, &tlsp->bits);
+tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
 
 /* Record the certificate we presented */
   {
