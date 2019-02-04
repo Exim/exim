@@ -92,7 +92,7 @@ double-check the mode because the group setting doesn't always get set
 automatically. */
 
 if (fd >= 0)
-  if (fchown(fd, exim_uid, exim_gid) || fchmod(fd, SPOOL_MODE))
+  if (exim_fchown(fd, exim_uid, exim_gid, temp_name) || fchmod(fd, SPOOL_MODE))
     {
     DEBUG(D_any) debug_printf("failed setting perms on %s\n", temp_name);
     (void) close(fd); fd = -1;

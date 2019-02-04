@@ -1798,7 +1798,7 @@ if (!isdirectory)
       /* We have successfully created and opened the file. Ensure that the group
       and the mode are correct. */
 
-      if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+      if(exim_chown(filename, uid, gid) || Uchmod(filename, mode))
         {
         addr->basic_errno = errno;
         addr->message = string_sprintf("while setting perms on mailbox %s",
@@ -2606,7 +2606,7 @@ else
     /* Why are these here? Put in because they are present in the non-maildir
     directory case above. */
 
-    if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+    if(exim_chown(filename, uid, gid) || Uchmod(filename, mode))
       {
       addr->basic_errno = errno;
       addr->message = string_sprintf("while setting perms on maildir %s",
@@ -2652,7 +2652,7 @@ else
     /* Why are these here? Put in because they are present in the non-maildir
     directory case above. */
 
-    if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+    if(exim_chown(filename, uid, gid) || Uchmod(filename, mode))
       {
       addr->basic_errno = errno;
       addr->message = string_sprintf("while setting perms on file %s",
@@ -2749,7 +2749,7 @@ else
       Uunlink(filename);
       return FALSE;
       }
-    if(Uchown(dataname, uid, gid) || Uchmod(dataname, mode))
+    if(exim_chown(dataname, uid, gid) || Uchmod(dataname, mode))
       {
       addr->basic_errno = errno;
       addr->message = string_sprintf("while setting perms on file %s",
@@ -2764,7 +2764,7 @@ else
   /* In all cases of writing to a new file, ensure that the file which is
   going to be renamed has the correct ownership and mode. */
 
-  if(Uchown(filename, uid, gid) || Uchmod(filename, mode))
+  if(exim_chown(filename, uid, gid) || Uchmod(filename, mode))
     {
     addr->basic_errno = errno;
     addr->message = string_sprintf("while setting perms on file %s",

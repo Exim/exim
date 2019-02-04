@@ -209,7 +209,7 @@ if (created && geteuid() == root_uid)
       if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
         DEBUG(D_hints_lookup) debug_printf_indent("ensuring %s is owned by exim\n", filename);
-        if (Uchown(filename, exim_uid, exim_gid))
+        if (exim_chown(filename, exim_uid, exim_gid))
           DEBUG(D_hints_lookup) debug_printf_indent("failed setting %s to owned by exim\n", filename);
         }
       }

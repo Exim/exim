@@ -79,7 +79,6 @@ functions that are called quite often; for other calls to external libraries
 #define Uatol(s)           atol(CCS(s))
 #define Uchdir(s)          chdir(CCS(s))
 #define Uchmod(s,n)        chmod(CCS(s),n)
-#define Uchown(s,n,m)      chown(CCS(s),n,m)
 #define Ufgets(b,n,f)      fgets(CS(b),n,f)
 #define Ufopen(s,t)        fopen(CCS(s),CCS(t))
 #define Ulink(s,t)         link(CCS(s),CCS(t))

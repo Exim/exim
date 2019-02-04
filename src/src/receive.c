@@ -3086,7 +3086,7 @@ if ((data_fd = Uopen(spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE)) < 0)
 /* Make sure the file's group is the Exim gid, and double-check the mode
 because the group setting doesn't always get set automatically. */
 
-if (fchown(data_fd, exim_uid, exim_gid))
+if (0 != exim_fchown(data_fd, exim_uid, exim_gid, spool_name))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "Failed setting ownership on spool file %s: %s",
     spool_name, strerror(errno));
@@ -4098,7 +4098,7 @@ if (message_logs && !blackholed_by)
   {
   int fd;
   uschar * m_name = spool_fname(US"msglog", message_subdir, message_id, US"");
-  
+
   if (  (fd = Uopen(m_name, O_WRONLY|O_APPEND|O_CREAT, SPOOL_MODE)) < 0
      && errno == ENOENT
      )
@@ -4257,7 +4257,7 @@ if(!smtp_reply)
   if (f.deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
   if (f.queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
     "no immediate delivery: queued%s%s by %s",
-    *queue_name ? " in " : "", *queue_name ? CS queue_name : "",       
+    *queue_name ? " in " : "", *queue_name ? CS queue_name : "",
     queued_by);
   }
 f.receive_call_bombout = FALSE;

@@ -473,8 +473,6 @@ return f;
 }
 
 
-
-
 /*************************************************
 *   Ensure stdin, stdout, and stderr exist       *
 *************************************************/
@@ -687,6 +685,36 @@ vfprintf(stderr, fmt, ap);
 exit(EXIT_FAILURE);
 }
 
+/* exim_chown_failure() called from exim_chown()/exim_fchown() on failure
+of chown()/fchown().  See src/functions.h for more explanation */
+int
+exim_chown_failure(int fd, const uschar *name, uid_t owner, gid_t group)
+{
+#if 1
+log_write(0, LOG_MAIN|LOG_PANIC,
+  __FILE__ ":%d: chown(%s, %d:%d) failed (%s)."
+  " Please contact the authors and refer to https://bugs.exim.org/show_bug.cgi?id=2391",
+  __LINE__, name?name:US"<unknown>", owner, group, strerror(errno));
+#else
+/* I leave this here, commented, in case the "bug"(?) comes up again.
+   It is not an Exim bug, but we can provide a workaround.
+   See Bug 2391
+   HS 2019-04-18 */
+
+int saved_errno = errno;  /* from the preceeding chown call */
+struct stat buf;
+
+if (0 == (fd < 0 ? stat(name, &buf) : fstat(fd, &buf)))
+{
+  if (buf.st_uid == owner && buf.st_gid == group) return 0;
+  log_write(0, LOG_MAIN|LOG_PANIC, "Wrong ownership on %s", name);
+}
+else log_write(0, LOG_MAIN|LOG_PANIC, "Stat failed on %s: %s", name, strerror(errno));
+
+errno = saved_errno;
+return -1;
+#endif
+}
 
 
 /*************************************************

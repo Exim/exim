@@ -69,7 +69,7 @@ while (c && *p)
 
     /* Set the ownership if necessary. */
 
-    if (use_chown && Uchown(path, exim_uid, exim_gid))
+    if (use_chown && exim_chown(path, exim_uid, exim_gid))
       { p = US"set owner on"; goto bad; }
 
     /* It appears that any mode bits greater than 0777 are ignored by

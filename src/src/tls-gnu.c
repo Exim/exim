@@ -705,7 +705,7 @@ if (rc < 0)
   temp_fn = string_copy(US"%s.XXXXXXX");
   if ((fd = mkstemp(CS temp_fn)) < 0)	/* modifies temp_fn */
     return tls_error_sys(US"Unable to open temp file", errno, NULL, errstr);
-  (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
+  (void)exim_chown(temp_fn, exim_uid, exim_gid);   /* Probably not necessary */
 
   /* GnuTLS overshoots!
    * If we ask for 2236, we might get 2237 or more.

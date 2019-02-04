@@ -347,7 +347,7 @@ for (int i = 2; i > 0; i--)
 #ifndef O_CLOEXEC
     (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
-    if (fchown(fd, exim_uid, exim_gid) < 0)
+    if (exim_fchown(fd, exim_uid, exim_gid, filename) < 0)
       {
       *error = US"chown";
       return -1;
@@ -367,7 +367,7 @@ for (int i = 2; i > 0; i--)
 			MSGLOG_DIRECTORY_MODE, TRUE);
   }
 
-*error = US"create";
+*error = US"create or open";
 return -1;
 }
 
@@ -7072,7 +7072,7 @@ if (addr_local || addr_remote)
     that the mode is correct - the group setting doesn't always seem to get
     set automatically. */
 
-    if(  fchown(journal_fd, exim_uid, exim_gid)
+    if(  exim_fchown(journal_fd, exim_uid, exim_gid, fname)
       || fchmod(journal_fd, SPOOL_MODE)
 #ifndef O_CLOEXEC
       || fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC)
