@@ -39534,7 +39534,7 @@ senders).
 .cindex "DKIM" "signing"
 
 For signing to be usable you must have published a DKIM record in DNS.
-Note that RFC 8301 says:
+Note that RFC 8301 (which does not cover EC keys) says:
 .code
 rsa-sha1 MUST NOT be used for signing or verifying.
 
@@ -39554,7 +39554,11 @@ These options take (expandable) strings as arguments.
 .option dkim_domain smtp string list&!! unset
 The domain(s) you want to sign with.
 After expansion, this can be a list.
-Each element in turn is put into the &%$dkim_domain%& expansion variable
+Each element in turn,
+.new
+lowercased,
+.wen
+is put into the &%$dkim_domain%& expansion variable
 while expanding the remaining signing options.
 If it is empty after expansion, DKIM signing is not done,
 and no error will result even if &%dkim_strict%& is set.
@@ -39754,6 +39758,14 @@ dkim_verify_signers = $sender_address_domain:$dkim_signers
 
 If a domain or identity is listed several times in the (expanded) value of
 &%dkim_verify_signers%&, the ACL is only called once for that domain or identity.
+
+.new
+Note that if the option is set using untrustworthy data
+(such as the From: header)
+care should be taken to force lowercase for domains
+and for the domain part if identities.
+The default setting can be regarded as trustworthy in this respect.
+.wen
 
 If multiple signatures match a domain (or identity), the ACL is called once
 for each matching signature.
