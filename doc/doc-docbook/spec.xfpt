@@ -40095,6 +40095,8 @@ of the proxy):
 .endd
 If &$proxy_session$& is set but &$proxy_external_address$& is empty
 there was a protocol error.
+The variables &$sender_host_address$& and &$sender_host_port$&
+will have values for the actual client system, not the proxy.
 
 Since the real connections are all coming from the proxy, and the
 per host connection tracking is done before Proxy Protocol is
