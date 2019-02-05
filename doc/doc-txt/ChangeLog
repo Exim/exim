@@ -20,6 +20,8 @@ JH/03 Debug output for ACL now gives the config file name and line number for
 
 JH/04 The default received_header_text now uses the RFC 8314 tls cipher clause.
 
+JH/05 DKIM: ensure that dkim_domain elements are lowercased before use.
+
 
 Exim version 4.92
 -----------------

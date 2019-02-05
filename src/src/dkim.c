@@ -620,6 +620,7 @@ if (dkim_domain)
   /* Only sign once for each domain, no matter how often it
   appears in the expanded list. */
 
+  dkim_signing_domain = string_copylc(dkim_signing_domain);
   if (match_isinlist(dkim_signing_domain, CUSS &seen_doms,
       0, NULL, NULL, MCL_STRING, TRUE, NULL) == OK)
     continue;
