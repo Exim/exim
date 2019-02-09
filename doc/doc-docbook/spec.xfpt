@@ -6742,6 +6742,24 @@ lookup types support only literal keys.
 the implicit key is the host's IP address rather than its name (see section
 &<<SECThoslispatsikey>>&).
 .next
+.new
+.cindex lookup json
+.cindex json "lookup type"
+.cindex JSON expansions
+&(json)&: The given file is a text file with a JSON structure.
+An element of the structure is extracted, defined by the search key.
+The key is a list of subelement selectors
+(colon-separated by default but changeable in the usual way)
+which are applied in turn to select smaller and smaller portions
+of the JSON structure.
+If a selector is numeric, it must apply to a JSON array; the (zero-based)
+nunbered array element is selected.
+Otherwise it must apply to a JSON object; the named element is selected.
+The final resulting object can be a simple JSOM type or a JSON object
+or array; for the latter two a string-representation os the JSON
+is returned.
+.wen
+.next
 .cindex "linear search"
 .cindex "lookup" "lsearch"
 .cindex "lsearch lookup type"

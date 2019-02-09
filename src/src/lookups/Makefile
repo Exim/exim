@@ -35,6 +35,7 @@ dsearch.o:       $(PHDRS) dsearch.c
 ibase.o:         $(PHDRS) ibase.c
 ldap.o:          $(PHDRS) ldap.c
 lmdb.o:          $(PHDRS) lmdb.c
+json.o:          $(PHDRS) json.c
 lsearch.o:       $(PHDRS) lsearch.c
 mysql.o:         $(PHDRS) mysql.c
 nis.o:           $(PHDRS) nis.c
@@ -53,6 +54,7 @@ dbmdb.so:         $(PHDRS) dbmdb.c
 dnsdb.so:         $(PHDRS) dnsdb.c
 dsearch.so:       $(PHDRS) dsearch.c
 ibase.so:         $(PHDRS) ibase.c
+json.so:          $(PHDRS) json.c
 ldap.so:          $(PHDRS) ldap.c
 lmdb.so:          $(PHDRS) lmdb.c
 lsearch.so:       $(PHDRS) lsearch.c

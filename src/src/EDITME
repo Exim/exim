@@ -309,6 +309,7 @@ LOOKUP_DNSDB=yes
 # LOOKUP_CDB=yes
 # LOOKUP_DSEARCH=yes
 # LOOKUP_IBASE=yes
+# LOOKUP_JSON=yes
 # LOOKUP_LDAP=yes
 # LOOKUP_MYSQL=yes
 # LOOKUP_MYSQL_PC=mariadb
@@ -376,7 +377,7 @@ PCRE_CONFIG=yes
 # don't need to set LOOKUP_INCLUDE if the relevant directories are already
 # specified in INCLUDE. The settings below are just examples; -lpq is for
 # PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite, -lhiredis
-# is for Redis.
+# is for Redis, -ljansson for JSON.
 #
 # You do not need to use this for any lookup information added via pkg-config.
 
