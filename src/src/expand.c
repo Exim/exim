@@ -5811,10 +5811,11 @@ while (*s != 0)
 	      }
 	    while (field_number > 0 && (item = json_nextinlist(&list)))
 	      field_number--;
-	    s = item;
-	    lookup_value = s;
-	    while (*s) s++;
-	    while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	    if ((lookup_value = s = item))
+	      {
+	      while (*s) s++;
+	      while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	      }
 	    }
 	  else
 	    {
@@ -5850,14 +5851,16 @@ while (*s != 0)
 	    }
 	  }
 
-	  if (fmt == extract_jsons)
-	    if (!(lookup_value = dewrap(lookup_value, US"\"\"")))
-	      {
-	      expand_string_message =
-		string_sprintf("%s wrapping string result for extract jsons",
-		  expand_string_message);
-	      goto EXPAND_FAILED_CURLY;
-	      }
+	  if (  fmt == extract_jsons
+	     && lookup_value
+	     && !(lookup_value = dewrap(lookup_value, US"\"\"")))
+	    {
+	    expand_string_message =
+	      string_sprintf("%s wrapping string result for extract jsons",
+		expand_string_message);
+	    goto EXPAND_FAILED_CURLY;
+	    }
+	  break;	/* json/s */
 	}
 
       /* If no string follows, $value gets substituted; otherwise there can
