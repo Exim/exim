@@ -3893,7 +3893,8 @@ return NULL;
 /* Pull off the leading array or object element, returning
 a copy in an allocated string.  Update the list pointer.
 
-The element may itself be an abject or array.
+The element may itself be an object or array.
+Return NULL when the list is empty.
 */
 
 uschar *
@@ -3915,6 +3916,7 @@ for (item = s;
     case '}': object_depth--; break;
     }
 *list = *s ? s+1 : s;
+if (item == s) return NULL;
 item = string_copyn(item, s - item);
 DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
 return US item;
@@ -5776,10 +5778,11 @@ while (*s != 0)
 	      }
 	    while (field_number > 0 && (item = json_nextinlist(&list)))
 	      field_number--;
-	    s = item;
-	    lookup_value = s;
-	    while (*s) s++;
-	    while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	    if ((lookup_value = s = item))
+	      {
+	      while (*s) s++;
+	      while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	      }
 	    }
 	  else
 	    {
