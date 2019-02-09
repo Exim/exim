@@ -9537,6 +9537,8 @@ The expanded <&'string1'&> must be of the form:
 The braces, commas and colons, and the quoting of the member name are required;
 the spaces are optional.
 Matching of the key against the member names is done case-sensitively.
+If a returned value is a JSON string, it retains its leading and
+trailing quotes.
 . XXX should be a UTF-8 compare
 
 The results of matching are handled as above.
@@ -9584,6 +9586,8 @@ apart from leading and trailing white space, which is ignored.
 
 Field selection and result handling is as above;
 there is no choice of field separator.
+If a returned value is a JSON string, it retains its leading and
+trailing quotes.
 .wen
 
 
