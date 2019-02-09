@@ -893,6 +893,11 @@ ${extract json {Width} \
 ${extract json {2} {[116, 943, 234, 38793]} }
 ${extract json {2} {${extract json{IDs} {\{"other":"foo", "IDs": [116, 943, 234]\} }}} }
 
+${extract json {2} {["red", "green", "blue", "black"]} }
+${extract jsons{2} {["red", "green", "blue", "black"]} }
+<${extract jsons{5} {["red", "green", "blue", "black"]} }>
+expect: <>
+
 ${extract json {seconds} { \{"hours":0, "mins":0, "seconds":59\} }}
 ${extract json {seconds} {${extract json {2} { ["irrelevant", \{"hours":0, "mins":0, "seconds":59\}] }}}}
 
@@ -903,6 +908,8 @@ ${extract json{IDs}{ \{"id": \{"a":101, "b":102\}, "IDs": \{"1":116, "2":943, "3
 expect: {"1":116, "2":943, "3":234}
 
 <${extract json{nonexistent}{ \{"id": \{"a":101, "b":102\}, "IDs": \{"1":116, "2":943, "3":234\}\} }}>
+expect: <>
+<${extract jsons{nonexistent}{ \{"id": \{"a":101, "b":102\}, "IDs": \{"1":116, "2":943, "3":234\}\} }}>
 expect: <>
 
 ****
