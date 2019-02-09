@@ -5861,10 +5861,11 @@ while (*s != 0)
 	      }
 	    while (field_number > 0 && (item = json_nextinlist(&list)))
 	      field_number--;
-	    s = item;
-	    lookup_value = s;
-	    while (*s) s++;
-	    while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	    if ((lookup_value = s = item))
+	      {
+	      while (*s) s++;
+	      while (--s >= lookup_value && isspace(*s)) *s = '\0';
+	      }
 	    }
 	  else
 	    {
