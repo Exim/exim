@@ -19,7 +19,8 @@
 > 3
 > X
 > 
-> Tue, 2 Mar 1999 09:44:33 +0000 // Changed locale // Tue, 2 Mar 1999 09:44:33 +0000
+> this change-locale fails in earlier systems.  Works on Fedora 29.
+> Tue, 2 Mar 1999 09:44:33 +0000 // Changed locale // dim., 10 févr 2019 20:05:49 +0000
 > 
 > Subroutine foo called with args: arg1
 > Failed: Perl subroutine "foo_undef" returned undef to force failure
