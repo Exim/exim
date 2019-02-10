@@ -362,7 +362,7 @@ Argument:
   state    the current GnuTLS exim state container
   rc       the GnuTLS error code, or 0 if it's a local error
   when     text identifying read or write
-  text     local error text when ec is 0
+  text     local error text when rc is 0
 
 Returns:   nothing
 */
@@ -374,7 +374,7 @@ const uschar * msg;
 uschar * errstr;
 
 if (rc == GNUTLS_E_FATAL_ALERT_RECEIVED)
-  msg = string_sprintf("%s: %s", US gnutls_strerror(rc),
+  msg = string_sprintf("A TLS fatal alert has been received: %s",
     US gnutls_alert_get_name(gnutls_alert_get(state->session)));
 else
   msg = US gnutls_strerror(rc);
@@ -1557,10 +1557,9 @@ if (!cert_list || cert_list_size == 0)
   return OK;
   }
 
-ct = gnutls_certificate_type_get(state->session);
-if (ct != GNUTLS_CRT_X509)
+if ((ct = gnutls_certificate_type_get(state->session)) != GNUTLS_CRT_X509)
   {
-  const uschar *ctn = US gnutls_certificate_type_get_name(ct);
+  const uschar * ctn = US gnutls_certificate_type_get_name(ct);
   DEBUG(D_tls)
     debug_printf("TLS: peer cert not X.509 but instead \"%s\"\n", ctn);
   if (state->verify_requirement >= VERIFY_REQUIRED)
@@ -1636,7 +1635,7 @@ if (state->verify_requirement == VERIFY_NONE)
 DEBUG(D_tls) debug_printf("TLS: checking peer certificate\n");
 *errstr = NULL;
 
-if ((rc = peer_status(state, errstr)) != OK)
+if ((rc = peer_status(state, errstr)) != OK || !state->peerdn)
   {
   verify = GNUTLS_CERT_INVALID;
   *errstr = US"certificate not supplied";
@@ -2695,7 +2694,7 @@ else if (inbytes == 0)
 
 else if (inbytes < 0)
   {
-  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
+  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv\n", __FUNCTION__);
   record_io_error(state, (int) inbytes, US"recv", NULL);
   state->xfer_error = TRUE;
   return FALSE;
@@ -2828,7 +2827,7 @@ if (inbytes == 0)
   }
 else
   {
-  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv(\n", __FUNCTION__);
+  DEBUG(D_tls) debug_printf("%s: err from gnutls_record_recv\n", __FUNCTION__);
   record_io_error(state, (int)inbytes, US"recv", NULL);
   }
 
