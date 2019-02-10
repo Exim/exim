@@ -9558,7 +9558,7 @@ if a returned value is a JSON string, it retains its leading and
 trailing quotes.
 .new
 For the &"jsons"& variant, which is intended for use with JSON strings, the
-leading and trailing quotes are removed.
+leading and trailing quotes are removed from the returned value.
 .wen
 . XXX should be a UTF-8 compare
 
@@ -9596,7 +9596,7 @@ yields &"99"&. Two successive separators mean that the field between them is
 empty (for example, the fifth field above).
 
 
-.vitem "&*${extract json{*&<&'number'&>&*}}&&&
+.vitem "&*${extract json {*&<&'number'&>&*}}&&&
         {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&" &&&
        "&*${extract jsons{*&<&'number'&>&*}}&&&
         {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
@@ -9612,7 +9612,7 @@ if a returned value is a JSON string, it retains its leading and
 trailing quotes.
 .new
 For the &"jsons"& variant, which is intended for use with JSON strings, the
-leading and trailing quotes are removed.
+leading and trailing quotes are removed from the returned value.
 .wen
 
 
@@ -11340,6 +11340,25 @@ The value of &$item$& is saved and restored while &*forany*& or &*forall*& is
 being processed, to enable these expansion items to be nested.
 
 To scan a named list, expand it with the &*listnamed*& operator.
+
+.new
+.vitem "&*forall_json{*&<&'a JSON array'&>&*}{*&<&'a condition'&>&*}*&" &&&
+       "&*forany_json{*&<&'a JSON array'&>&*}{*&<&'a condition'&>&*}*&" &&&
+       "&*forall_jsons{*&<&'a JSON array'&>&*}{*&<&'a condition'&>&*}*&" &&&
+       "&*forany_jsons{*&<&'a JSON array'&>&*}{*&<&'a condition'&>&*}*&"
+.cindex JSON "iterative conditions"
+.cindex JSON expansions
+.cindex expansion "&*forall_json*& condition"
+.cindex expansion "&*forany_json*& condition"
+.cindex expansion "&*forall_jsons*& condition"
+.cindex expansion "&*forany_jsons*& condition"
+As for the above, except that the first argument must, after expansion,
+be a JSON array.
+The array separator is not changeable.
+For the &"jsons"& variants the elements are expected to be JSON strings
+and have their quotes removed before the evaluation of the condition.
+.wen
+
 
 
 .vitem &*ge&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
