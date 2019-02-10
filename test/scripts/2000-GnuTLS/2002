@@ -1,9 +1,19 @@
 # TLS server: general ops and certificate extractions
 gnutls
+#
+# Very early (unsure when) GnuTLS prefers RSA auth by default.  Later, but before 3.6.x, prefers
+# ECDSA but the client can be given a priority order to override that.  We're running the server
+# with no priority string given (tls_require_ciphers) hence default, and with both types of
+# server cert loaded (RSA first, though we don't document that as relevant and in testing it
+# does not appear to matter).
+#
+# GnuTLS 3.6.5 appears to ignore the client priority ordering, always choosing ECDSA if both
+# are permitted, if TLS1.3 is permitted, so we limit to TLS1.2.
+#
 exim -DSERVER=server -bd -oX PORT_D
 ****
-# Have the client prefer RSA (but support ECDSA as well).  That should get us RSA on both older and newer GnuTLS.
-client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
+# Have the client do RSA (but support ECDSA as well).  That should get us RSA on both older and newer GnuTLS.
+client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -26,7 +36,7 @@ This is a test encrypted message.
 quit
 ??? 221
 ****
-client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
+client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -49,7 +59,8 @@ This is a test encrypted message.
 quit
 ??? 221
 ****
-client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D
+# Server asks for a client cert (?but client does not supply one?)
+client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -61,7 +72,8 @@ ehlo rhu.barb
 starttls
 ??? 220
 ****
-client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
+# Server asks for a client cert, and one is given which is verifiable by the server
+client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -91,7 +103,7 @@ quit
 # We have to specify the key-exchange as well as the authentication, otherwise,
 # the GnuTLS server side being foolish - it picks an ECDSA cipher-suite and then can't use it :(
 # Possibly fixed in 3.6.x ? 
-client-gnutls -p NONE:+SIGN-RSA-SHA256:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
+client-gnutls -p NONE:+SIGN-RSA-SHA256:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
@@ -118,7 +130,7 @@ quit
 #
 #
 # Make ECDSA authentication preferred (Older GnuTLS prefers RSA, it seems, Newer, ECDSA).
-client-gnutls -p NONE:+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+KX-ALL:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
+client-gnutls -p NONE:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+KX-ALL:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
