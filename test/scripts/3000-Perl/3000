@@ -19,6 +19,7 @@ ${perl{return_list}}
 ${perl{return_variable_vector}}
 ${sg{${perl{return_hash}}}{\\d+}{X}}
 
+this change-locale fails in earlier systems.  Works on Fedora 29.
 $tod_full // ${perl{change_locale}} // $tod_full
 ****
 exim -d-all+expand -be

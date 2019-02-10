@@ -494,6 +494,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Date/time in header lines and SMTP responses
   s/[A-Z][a-z]{2},\s\d\d?\s[A-Z][a-z]{2}\s\d\d\d\d\s\d\d\:\d\d:\d\d\s[-+]\d{4}
     /Tue, 2 Mar 1999 09:44:33 +0000/gx;
+  # and in a French locale
+  s/\S{4},\s\d\d?\s[^,]+\s\d\d\d\d\s\d\d\:\d\d:\d\d\s[-+]\d{4}
+    /dim., 10 f\xE9vr 2019 20:05:49 +0000/gx;
 
   # Date/time in logs and in one instance of a filter test
   s/^\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d(\s[+-]\d\d\d\d)?\s/1999-03-02 09:44:33 /gx;
