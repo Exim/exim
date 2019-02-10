@@ -212,7 +212,11 @@ Key file = aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.c
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-Succeeded in starting TLS
+A TLS fatal alert has been received.
+Failed to start TLS
+>>> mail from:<userx@test.ex>
+??? 554
+<<< 554 Security failure
 End of script
 ### Revoked certificate, certificate optional at TLS time, reject at ACL time
 Connecting to 127.0.0.1 port 1225 ... connected
