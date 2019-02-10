@@ -45,7 +45,7 @@
 . Update the Copyright year (only) when changing content.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.91"
+.set previousversion "4.92"
 .include ./local_params
 
 .set ACL "access control lists (ACLs)"
@@ -371,13 +371,11 @@ contributors.
 .section "Exim documentation" "SECID1"
 . Keep this example change bar when updating the documentation!
 
-.new
 .cindex "documentation"
 This edition of the Exim specification applies to version &version() of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of this document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
-.wen
 
 This document is very much a reference manual; it is not a tutorial. The reader
 is expected to have some familiarity with the SMTP mail transfer protocol and
@@ -3661,14 +3659,12 @@ The &`timestamp`& selector causes the current time to be inserted at the start
 of all debug output lines. This can be useful when trying to track down delays
 in processing.
 
-.new
 .cindex debugging "UTF-8 in"
 .cindex UTF-8 "in debug output"
 The &`noutf8`& selector disables the use of
 UTF-8 line-drawing characters to group related information.
 When disabled. ascii-art is used instead.
 Using the &`+all`& option does not set this modifier,
-.wen
 
 If the &%debug_print%& option is set in any driver, it produces output whenever
 any debugging is selected, or if &%-v%& is used.
@@ -9521,7 +9517,6 @@ ${extract{Z}{A=... B=...}{$value} fail }
 This forces an expansion failure (see section &<<SECTforexpfai>>&);
 {<&'string2'&>} must be present for &"fail"& to be recognized.
 
-.new
 .vitem "&*${extract json{*&<&'key'&>&*}{*&<&'string1'&>&*}{*&<&'string2'&>&*}&&&
        {*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting from JSON object"
@@ -9540,7 +9535,6 @@ Matching of the key against the member names is done case-sensitively.
 . XXX should be a UTF-8 compare
 
 The results of matching are handled as above.
-.wen
 
 
 .vitem "&*${extract{*&<&'number'&>&*}{*&<&'separators'&>&*}&&&
@@ -9574,7 +9568,6 @@ yields &"99"&. Two successive separators mean that the field between them is
 empty (for example, the fifth field above).
 
 
-.new
 .vitem "&*${extract json{*&<&'number'&>&*}}&&&
         {*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&"
 .cindex "expansion" "extracting from JSON array"
@@ -9584,7 +9577,6 @@ apart from leading and trailing white space, which is ignored.
 
 Field selection and result handling is as above;
 there is no choice of field separator.
-.wen
 
 
 .vitem &*${filter{*&<&'string'&>&*}{*&<&'condition'&>&*}}*&
@@ -10097,14 +10089,12 @@ Example, to not do so (preferred, eg. by some webservers):
 .code
 ${readsocket{/socket/name}{request string}{3s:shutdown=no}}
 .endd
-.new
 The second, tls, controls the use of TLS on the connection.  Example:
 .code
 ${readsocket{/socket/name}{request string}{3s:tls=yes}}
 .endd
 The default is to not use TLS.
 If it is enabled, a shutdown as descripbed above is never done.
-.wen
 
 A fourth argument allows you to change any newlines that are in the data
 that is read, in the same way as for &%readfile%& (see above). This example
@@ -11026,7 +11016,6 @@ Case is defined per the system C locale.
 .cindex "expansion" "utf-8 forcing"
 .cindex "&%utf8clean%& expansion item"
 This replaces any invalid utf-8 sequence in the string by the character &`?`&.
-.new
 In versions of Exim before 4.92, this did not correctly do so for a truncated
 final codepoint's encoding, and the character would be silently dropped.
 If you must handle detection of this scenario across both sets of Exim behavior,
@@ -11039,7 +11028,6 @@ condition = ${if inlist{${utf8clean:${length_1:$local_part}}}{:?}{yes}{no}}
 .endd
 (which will false-positive if the first character of the local part is a
 literal question mark).
-.wen
 
 .vitem "&*${utf8_domain_to_alabel:*&<&'string'&>&*}*&" &&&
        "&*${utf8_domain_from_alabel:*&<&'string'&>&*}*&" &&&
@@ -15040,7 +15028,6 @@ This option controls whether or not an IP address, given as a CSA domain, is
 reversed and looked up in the reverse DNS, as described in more detail in
 section &<<SECTverifyCSA>>&.
 
-.new
 .option dns_cname_loops main integer 1
 .cindex DNS "CNAME following"
 This option controls the following of CNAME chains, needed if the resolver does
@@ -15051,7 +15038,6 @@ If you have an ancient one, a value of 10 is likely needed.
 The default value of one CNAME-follow is needed
 thanks to the observed return for an MX request,
 given no MX presence but a CNAME to an A, of the CNAME.
-.wen
 
 
 .option dns_dnssec_ok main integer -1
@@ -24725,10 +24711,8 @@ and if &%protocol%& is set to &"smtps"& the default is &"smtps"&.
 If the expansion fails, or if a port number cannot be found, delivery
 is deferred.
 
-.new
 Note that at least one Linux distribution has been seen failing
 to put &"smtps"& in its &"/etc/services"& file, resulting is such deferrals.
-.wen
 
 
 
@@ -24746,11 +24730,9 @@ over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 If this option is set to &"smtps"&, the default value for the &%port%& option
 changes to &"smtps"&, and the transport initiates TLS immediately after
 connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
-.new
 The Internet standards bodies used to strongly discourage use of this mode,
 but as of RFC 8314 it is perferred over STARTTLS for message submission
 (as distinct from MTA-MTA communication).
-.wen
 
 
 .option retry_include_ip_address smtp boolean&!! true
@@ -24979,7 +24961,6 @@ The &%tls_verify_certificates%& option must also be set.
 If both this option and &%tls_try_verify_hosts%& are unset
 operation is as if this option selected all hosts.
 
-.new
 .option utf8_downconvert smtp integer!! unset
 .cindex utf8 "address downconversion"
 .cindex i18n "utf8 address downconversion"
@@ -24987,7 +24968,6 @@ If built with internationalization support,
 this option controls conversion of UTF-8 in message addresses
 to a-label form.
 For details see section &<<SECTi18nMTA>>&.
-.wen
 
 
 
@@ -27730,9 +27710,7 @@ the size of the generated prime, so it might still be too large.
 .oindex "&%tls_require_ciphers%&" "OpenSSL"
 There is a function in the OpenSSL library that can be passed a list of cipher
 suites before the cipher negotiation takes place. This specifies which ciphers
-.new
 are acceptable for TLS versions prior to 1.3.
-.wen
 The list is colon separated and may contain names like
 DES-CBC3-SHA. Exim passes the expanded value of &%tls_require_ciphers%&
 directly to this function call.
@@ -27798,7 +27776,6 @@ This example will prefer ECDSA-authenticated ciphers over RSA ones:
 tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
 .endd
 
-.new
 For TLS version 1.3 the control available is less fine-grained
 and Exim does not provide access to it at present.
 The value of the &%tls_require_ciphers%& option is ignored when
@@ -27808,7 +27785,6 @@ As of writing the library default cipher suite list for TLSv1.3 is
 .code
 TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
 .endd
-.wen
 
 
 .section "Requiring specific ciphers or other parameters in GnuTLS" &&&
@@ -28491,7 +28467,6 @@ DANE-TA is commonly used for several services and/or servers, each having a TLSA
 all of which point to a single TLSA record.
 DANE-TA and DANE-EE can both be used together.
 
-.new
 Our recommendation is to use DANE with a certificate from a public CA,
 because this enables a variety of strategies for remote clients to verify
 your certificate.
@@ -28516,7 +28491,6 @@ The list of requirements is subject to change as best practices evolve.
 If you're not already using a private CA, or it doesn't meet these
 requirements, then we encourage you to avoid all these issues and use a public
 CA such as &url(https://letsencrypt.org/,Let's Encrypt) instead.
-.wen
 
 The TLSA record should have a Selector field of SPKI(1) and a Matching Type field of SHA2-512(2).
 
@@ -28534,7 +28508,6 @@ are workable for 4th-field hashes.
 
 For use with the DANE-TA model, server certificates must have a correct name (SubjectName or SubjectAltName).
 
-.new
 The Certificate issued by the CA published in the DANE-TA model should be
 issued using a strong hash algorithm.
 Exim, and importantly various other MTAs sending to you, will not
@@ -28542,7 +28515,6 @@ re-enable hash algorithms which have been disabled by default in TLS
 libraries.
 This means no MD5 and no SHA-1.  SHA2-256 is the minimum for reliable
 interoperability (and probably the maximum too, in 2018).
-.wen
 
 The use of OCSP-stapling should be considered, allowing for fast revocation of certificates (which would otherwise
 be limited by the DNS TTL on the TLSA records).  However, this is likely to only be usable with DANE-TA.  NOTE: the
@@ -31383,14 +31355,12 @@ rest of the ACL.
 The &%leaky%& (default) option means that the client's recorded rate is not
 updated if it is above the limit. The effect of this is that Exim measures the
 client's average rate of successfully sent email,
-.new
 up to the given limit.
 This is appropriate if the countermeasure when the condition is true
 consists of refusing the message, and
 is generally the better choice if you have clients that retry automatically.
 If the action when true is anything more complex then this option is
 likely not what is wanted.
-.wen
 
 The &%strict%& option means that the client's recorded rate is always
 updated. The effect of this is that Exim measures the client's average rate
@@ -31561,14 +31531,12 @@ connection, HELO, or MAIL).
 The main use of these variables is expected to be to distinguish between
 rejections of MAIL and rejections of RCPT in callouts.
 
-.new
 The above variables may also be set after a &*successful*&
 address verification to:
 
 .ilist
 &%random%&: A random local-part callout succeeded
 .endlist
-.wen
 
 
 
@@ -33166,9 +33134,7 @@ code. The incident is logged on the main and reject logs.
 .cindex "&[local_scan()]& function" "building Exim to use"
 To make use of the local scan function feature, you must tell Exim where your
 function is before building Exim, by setting
-.new
 both HAVE_LOCAL_SCAN and
-.wen
 LOCAL_SCAN_SOURCE in your
 &_Local/Makefile_&. A recommended place to put it is in the &_Local_&
 directory, so you might set
@@ -37137,7 +37103,6 @@ local port is a random ephemeral port.
 &%pid%&: The current process id is added to every log line, in square brackets,
 immediately after the time and date.
 .next
-.new
 .cindex log pipelining
 .cindex pipelining "logging outgoing"
 &%pipelining%&: A field is added to delivery and accept
@@ -38966,11 +38931,9 @@ two files contains the final component of its own name as its first line. This
 is insurance against disk crashes where the directory is lost but the files
 themselves are recoverable.
 
-.new
 The file formats may be changed, or new formats added, at any release.
 Spool files are not intended as an interface to other programs
 and should not be used as such.
-.wen
 
 Some people are tempted into editing -D files in order to modify messages. You
 need to be extremely careful if you do this; it is not recommended and you are
@@ -39513,7 +39476,6 @@ If a '+' prefix if used, all headers that are present with this name
 will be signed, and one signature added for a missing header with the
 name will be appended.
 
-.new
 .option dkim_timestamps smtp integer&!! unset
 This option controls the inclusion of timestamp information in the signature.
 If not set, no such information will be included.
@@ -39523,22 +39485,19 @@ for the expiry tag
 both creation (t=) and expiry (x=) tags will be included.
 
 RFC 6376 lists these tags as RECOMMENDED.
-.wen
 
 
 .section "Verifying DKIM signatures in incoming mail" "SECDKIMVFY"
 .cindex "DKIM" "verification"
 
-.new
 Verification of DKIM signatures in SMTP incoming email is done for all
 messages for which an ACL control &%dkim_disable_verify%& has not been set.
 .cindex authentication "expansion item"
 Performing verification sets up information used by the
 &$authresults$& expansion item.
-.wen
 
-.new The results of that verification are then made available to the
-&%acl_smtp_dkim%& ACL, &new(which can examine and modify them).
+The results of that verification are then made available to the
+&%acl_smtp_dkim%& ACL, which can examine and modify them.
 By default, this ACL is called once for each
 syntactically(!) correct signature in the incoming message.
 A missing ACL definition defaults to accept.
@@ -39546,7 +39505,7 @@ If any ACL call does not accept, the message is not accepted.
 If a cutthrough delivery was in progress for the message, that is
 summarily dropped (having wasted the transmission effort).
 
-To evaluate the &new(verification result) in the ACL
+To evaluate the verification result in the ACL
 a large number of expansion variables
 containing the signature status and its details are set up during the
 runtime of the ACL.
@@ -39700,12 +39659,10 @@ strict enforcement should code the check explicitly.
 The number of signed body bytes. If zero ("0"), the body is unsigned. If no
 limit was set by the signer, "9999999999999" is returned. This makes sure
 that this variable always expands to an integer value.
-.new
 &*Note:*& The presence of the signature tag specifying a signing body length
 is one possible route to spoofing of valid DKIM signatures.
 A paranoid implementation might wish to regard signature where this variable
 shows less than the "no limit" return as being invalid.
-.wen
 
 .vitem &%$dkim_created%&
 UNIX timestamp reflecting the date and time when the signature was created.
@@ -40193,11 +40150,9 @@ If a value is appended it may be:
 If mua_wrapper is set, the utf8_downconvert control
 is initially set to -1.
 
-.new
 The smtp transport has an option &%utf8_downconvert%&.
 If set it must expand to one of the three values described above,
 and it overrides any previously set value.
-.wen
 
 
 There is no explicit support for VRFY and EXPN.
