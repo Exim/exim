@@ -1115,13 +1115,13 @@ DEBUG(D_transport)
 
 if (!(tctx->options & topt_no_body))
   {
-  int size = size_limit;
+  unsigned long size = size_limit > 0 ? size_limit : ULONG_MAX;
 
   nl_check_length = abs(nl_check_length);
   nl_partial_match = 0;
   if (lseek(deliver_datafile, SPOOL_DATA_START_OFFSET, SEEK_SET) < 0)
     return FALSE;
-  while (  (len = MAX(DELIVER_IN_BUFFER_SIZE, size)) > 0
+  while (  (len = MIN(DELIVER_IN_BUFFER_SIZE, size)) > 0
 	&& (len = read(deliver_datafile, deliver_in_buffer, len)) > 0)
     {
     if (!write_chunk(tctx, deliver_in_buffer, len))
