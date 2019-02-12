@@ -16,6 +16,13 @@ Exim version 4.92.1
 JH/31 Avoid re-expansion in ${sort } expansion. (CVE-2019-13917, OVE-20190718-0006)
 
 
+Since version 4.92
+------------------
+
+JH/06 Fix buggy handling of autoreply bounce_return_size_limit, and a possible
+      buffer overrun for (non-chunking) other transports.
+
+
 Exim version 4.92
 -----------------
 
