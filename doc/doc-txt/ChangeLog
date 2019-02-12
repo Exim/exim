@@ -22,6 +22,9 @@ JH/04 The default received_header_text now uses the RFC 8314 tls cipher clause.
 
 JH/05 DKIM: ensure that dkim_domain elements are lowercased before use.
 
+JH/06 Fix buggy handling of autoreply bounce_return_size_limit, and a possible
+      buffer overrun for (non-chunking) other transports.
+
 
 Exim version 4.92
 -----------------
