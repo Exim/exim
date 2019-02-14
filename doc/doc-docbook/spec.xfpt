@@ -39624,8 +39624,9 @@ Signers MUST use RSA keys of at least 1024 bits for all keys.
 Signers SHOULD use RSA keys of at least 2048 bits.
 .endd
 
-Support for EC keys is being developed under
-&url(https://datatracker.ietf.org/doc/draft-ietf-dcrup-dkim-crypto/).
+.new
+EC keys for DKIM are defined by RFC 8463.
+.wen
 They are considerably smaller than RSA keys for equivalent protection.
 As they are a recent development, users should consider dual-signing
 (by setting a list of selectors, and an expansion for this option)
@@ -39645,10 +39646,12 @@ openssl pkey -outform DER -pubout -in dkim_ed25519.private | tail -c +13 | base6
 certtool --load_privkey=dkim_ed25519.private --pubkey_info --outder | tail -c +13 | base64
 .endd
 
-Note that the format
-of Ed25519 keys in DNS has not yet been decided; this release supports
-both of the leading candidates at this time, a future release will
-probably drop support for whichever proposal loses.
+.new
+Exim also supports an alternate format
+of Ed25519 keys in DNS which was a candidate during development
+of the standard, but not adopted.
+A future release will probably drop that support.
+.wen
 
 .option dkim_hash smtp string&!! sha256
 Can be set to any one of the supported hash methods, which are:
