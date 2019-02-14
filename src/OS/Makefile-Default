@@ -232,6 +232,11 @@ RANLIB=ranlib
 EXIM_CHMOD=@true
 
 
+# If you want to use local_scan() at all, the support code must be included
+# by uncommenting this line.
+
+# HAVE_LOCAL_SCAN=yes
+
 # LOCAL_SCAN_SOURCE defines the file in which the function local_scan() is
 # defined. This provides the administrator with a hook for including C code
 # for scanning incoming mails. The path that is defined must be relative to
@@ -239,8 +244,9 @@ EXIM_CHMOD=@true
 
 # LOCAL_SCAN_SOURCE=Local/local_scan.c
 
-# The default setting points to a template function that doesn't actually do
-# any scanning, but just accepts the message.
+# A very simple example points to a template function that doesn't actually do
+# any scanning, but just accepts the message.  A compilable file must be
+# included in the build even if HAVE_LOCAL_SCAN is not defined.
 
 LOCAL_SCAN_SOURCE=src/local_scan.c
 
