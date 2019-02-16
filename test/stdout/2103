@@ -18,14 +18,14 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
 ??? 550
-<<< 550 unacceptable cipher TLSv1:ke-RSA-AES256-SHA:xxx
+<<< 550 unacceptable cipher TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -50,7 +50,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> helo rhu.barb
 ??? 250

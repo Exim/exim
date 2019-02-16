@@ -134,6 +134,8 @@ ehlo rhu7.barb
 ??? 250
 starttls
 ??? 220
+mail from:<userx@test.ex>
+??? 554
 ****
 ### Revoked certificate, certificate optional at TLS time, reject at ACL time
 client-gnutls 127.0.0.1 PORT_D aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.chain.pem aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.com.unlocked.key
