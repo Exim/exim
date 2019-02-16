@@ -2,5 +2,5 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated.
-1999-03-02 09:44:33 no MAIL in SMTP connection from [127.0.0.1] D=qqs X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no C=EHLO,STARTTLS,AUTH
-1999-03-02 09:44:33 no MAIL in SMTP connection from (foobar) [127.0.0.1] D=qqs A=plain:userx X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no C=EHLO,STARTTLS,EHLO,AUTH,QUIT
+1999-03-02 09:44:33 no MAIL in SMTP connection from [127.0.0.1] D=qqs X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C=EHLO,STARTTLS,AUTH
+1999-03-02 09:44:33 no MAIL in SMTP connection from (foobar) [127.0.0.1] D=qqs A=plain:userx X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C=EHLO,STARTTLS,EHLO,AUTH,QUIT

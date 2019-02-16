@@ -606,7 +606,21 @@ nextinput:
 	    }
 #endif
 #ifdef HAVE_GNUTLS
+      retry1:
+	DEBUG { printf("call gnutls_record_recv\n"); fflush(stdout); }
         rc = gnutls_record_recv(tls_session, CS inbufferp, bsiz - (inbufferp - inbuffer) - 1);
+	if (rc < 0)
+	  {
+	  DEBUG { printf("gnutls_record_recv: %s\n", gnutls_strerror(rc)); fflush(stdout); }
+	  if (rc == GNUTLS_E_INTERRUPTED || rc == GNUTLS_E_AGAIN)
+	    goto retry1;
+	  printf("%s\n", gnutls_strerror(rc));
+	  srv->tls_active = FALSE;
+	  *inptr = 0;
+	  DEBUG { printf("go round\n"); fflush(stdout); }
+	  goto nextinput;
+	  }
+	DEBUG { printf("gnutls_record_recv: %d\n", rc); fflush(stdout); }
 #endif
         }
       else
@@ -631,7 +645,7 @@ nextinput:
 	{
 	if (errno == EINTR && sigalrm_seen && resp_optional)
 	  continue;	/* next scriptline */
-        printf("Read error %s\n", strerror(errno));
+        printf("Read error: %s\n", strerror(errno));
         exit(81);
 	}
       else if (rc == 0)
@@ -711,6 +725,9 @@ nextinput:
         #ifdef HAVE_GNUTLS
 	  {
 	  int rc;
+	  fd_set rfd;
+	  struct timeval tv = { 0, 2000 };
+
 	  sigalrm_seen = FALSE;
 	  alarm(timeout);
 	  do {
@@ -720,6 +737,25 @@ nextinput:
 	  alarm(0);
 
 	  if (!srv->tls_active) printf("%s\n", gnutls_strerror(rc));
+
+	  /* look for an error on the TLS conn */
+	  FD_ZERO(&rfd);
+	  FD_SET(srv->sock, &rfd);
+	  if (select(srv->sock+1, &rfd, NULL, NULL, &tv) > 0)
+	    {
+	  retry2:
+	    DEBUG { printf("call gnutls_record_recv\n"); fflush(stdout); }
+	    rc = gnutls_record_recv(tls_session, CS inbuffer, bsiz - 1);
+	    if (rc < 0)
+	      {
+	      DEBUG { printf("gnutls_record_recv: %s\n", gnutls_strerror(rc)); fflush(stdout); }
+	      if (rc == GNUTLS_E_INTERRUPTED || rc == GNUTLS_E_AGAIN)
+		goto retry2;
+	      printf("%s\n", gnutls_strerror(rc));
+	      srv->tls_active = FALSE;
+	      }
+	    DEBUG { printf("gnutls_record_recv: %d\n", rc); fflush(stdout); }
+	    }
 	  }
         #endif
 
