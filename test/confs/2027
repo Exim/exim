@@ -47,9 +47,11 @@ local_delivery:
   user = CALLER
 
 send_to_server:
-  driver = smtp
+  driver =	smtp
   allow_localhost
-  hosts = ${if eq{$local_part}{userx}{127.0.0.1}{HOSTIPV4}}
-  port = PORT_D
+  hosts =	${if eq{$local_part}{userx}{127.0.0.1}{HOSTIPV4}}
+  port =	PORT_D
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
 
 # End

@@ -229,7 +229,7 @@ static gnutls_dh_params_t dh_server_params = NULL;
 
 static const int ssl_session_timeout = 200;
 
-static const char * const exim_default_gnutls_priority = "NORMAL";
+static const uschar * const exim_default_gnutls_priority = US"NORMAL";
 
 /* Guard library core initialisation */
 
@@ -1278,7 +1278,6 @@ int rc;
 size_t sz;
 const char *errpos;
 uschar *p;
-BOOL want_default_priorities;
 
 if (!exim_gnutls_base_init_done)
   {
@@ -1387,32 +1386,24 @@ and replaces gnutls_require_kx, gnutls_require_mac & gnutls_require_protocols.
 This was backwards incompatible, but means Exim no longer needs to track
 all algorithms and provide string forms for them. */
 
-want_default_priorities = TRUE;
-
+p = NULL;
 if (state->tls_require_ciphers && *state->tls_require_ciphers)
   {
   if (!expand_check_tlsvar(tls_require_ciphers, errstr))
     return DEFER;
   if (state->exp_tls_require_ciphers && *state->exp_tls_require_ciphers)
     {
-    DEBUG(D_tls) debug_printf("GnuTLS session cipher/priority \"%s\"\n",
-        state->exp_tls_require_ciphers);
-
-    rc = gnutls_priority_init(&state->priority_cache,
-        CS state->exp_tls_require_ciphers, &errpos);
-    want_default_priorities = FALSE;
     p = state->exp_tls_require_ciphers;
+    DEBUG(D_tls) debug_printf("GnuTLS session cipher/priority \"%s\"\n", p);
     }
   }
-if (want_default_priorities)
+if (!p)
   {
+  p = exim_default_gnutls_priority;
   DEBUG(D_tls)
-    debug_printf("GnuTLS using default session cipher/priority \"%s\"\n",
-        exim_default_gnutls_priority);
-  rc = gnutls_priority_init(&state->priority_cache,
-      exim_default_gnutls_priority, &errpos);
-  p = US exim_default_gnutls_priority;
+    debug_printf("GnuTLS using default session cipher/priority \"%s\"\n", p);
   }
+rc = gnutls_priority_init(&state->priority_cache, CCS p, &errpos);
 
 exim_gnutls_err_check(rc, string_sprintf(
       "gnutls_priority_init(%s) failed at offset %ld, \"%.6s..\"",
