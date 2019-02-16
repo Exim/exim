@@ -29,7 +29,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
   SMTP>> QUIT
   SMTP(close)>>
 LOG: MAIN
-  => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
+  => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmaZ-0005vi-00"
 LOG: MAIN
   Completed
 delivering 10HmaY-0005vi-00 (queue run pid ppppp)
@@ -63,9 +63,9 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
   SMTP>> QUIT
   SMTP(close)>>
 LOG: MAIN
-  => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
+  => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
-  -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
+  -> xyz@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1225 ... connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
@@ -94,7 +94,7 @@ Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1225 ... connected
   SMTP>> QUIT
   SMTP(close)>>
 LOG: MAIN
-  => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbB-0005vi-00"
+  => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbB-0005vi-00"
 LOG: MAIN
   Completed
 LOG: queue_run MAIN

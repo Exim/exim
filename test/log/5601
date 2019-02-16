@@ -1,11 +1,11 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for norequire@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => norequire@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => norequire@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for nostaple@test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => nostaple@test.ex R=client T=send_to_server1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => nostaple@test.ex R=client T=send_to_server1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for CALLER@test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER@test.ex R=client T=send_to_server3 H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER@test.ex R=client T=send_to_server3 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server1.example.com" C="250 OK id=10HmbC-0005vi-00"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss for CALLER@test.ex
 1999-03-02 09:44:33 10HmbD-0005vi-00 Received TLS status callback, null content
@@ -20,16 +20,16 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmaY-0005vi-00 client claims: ocsp status 1 (notresp)
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaX-0005vi-00@server1.example.com for norequire@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@server1.example.com for norequire@test.ex
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <norequire@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmbA-0005vi-00 client claims: ocsp status 0 (notreq)
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaZ-0005vi-00@server1.example.com for nostaple@test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@server1.example.com for nostaple@test.ex
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <nostaple@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 client claims: ocsp status 4 (verified)
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@server1.example.com H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbB-0005vi-00@server1.example.com for CALLER@test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@server1.example.com H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-0005vi-00@server1.example.com for CALLER@test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@test.ex> R=server
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
