@@ -11,7 +11,7 @@ Exim version 4.93
 JH/01 OpenSSL: With debug enabled output keying information sufficient, server
       side, to decode a TLS 1.3 packet capture.
 
-JH/02 OpenSSL: suppress the sending of (stateful) TLS1.3 session tickets.
+JH/02 OpenSSL: Suppress the sending of (stateful) TLS1.3 session tickets.
       Previously the default library behaviour applied, sending two, each in
       its own TCP segment.
 
@@ -24,6 +24,13 @@ JH/05 DKIM: ensure that dkim_domain elements are lowercased before use.
 
 JH/06 Fix buggy handling of autoreply bounce_return_size_limit, and a possible
       buffer overrun for (non-chunking) other transports.
+
+JH/07 GnuTLS: Our use of late (post-handshake) certificate verification, under
+      TLS1.3, means that a server rejecting a client certificate is not visible
+      to the client until the first read of encrypted data (typically the
+      response to EHLO).  Add detection for that case and treat it as a failed
+      TLS connection attempt, so that the normal retry-in-clear can work (if
+      suitably configured).
 
 
 Exim version 4.92

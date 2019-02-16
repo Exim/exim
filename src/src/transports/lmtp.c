@@ -122,7 +122,8 @@ Arguments:
 Returns:       TRUE if a "QUIT" command should be sent, else FALSE
 */
 
-static BOOL check_response(int *errno_value, int more_errno, uschar *buffer,
+static BOOL
+check_response(int *errno_value, int more_errno, uschar *buffer,
   int *yield, uschar **message)
 {
 *yield = '4';    /* Default setting is to give a temporary error */

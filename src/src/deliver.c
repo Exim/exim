@@ -7401,7 +7401,7 @@ if (addr_senddsn)
 
     tctx.u.fd = fd;
     tctx.options = topt_add_return_path | topt_no_body;
-    /*XXX hmm, retval ignored.
+    /*XXX hmm, FALSE(fail) retval ignored.
     Could error for any number of reasons, and they are not handled. */
     transport_write_message(&tctx, 0);
     fflush(f);
