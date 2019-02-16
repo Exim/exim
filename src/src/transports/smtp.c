@@ -594,6 +594,11 @@ switch(*errno_value)
 	  pl, smtp_command, s);
     return FALSE;
 
+  case ERRNO_TLSFAILURE:	/* Handle bad first read; can happen with
+				GnuTLS and TLS1.3 */
+    *message = US"bad first read from TLS conn";
+    return TRUE;
+
   case ERRNO_FILTER_FAIL:	/* Handle a failed filter process error;
 			  can't send QUIT as we mustn't end the DATA. */
     *message = string_sprintf("transport filter process failed (%d)%s",
@@ -942,6 +947,7 @@ Arguments:
 
 Return:
  OK	all well
+ DEFER	error on first read of TLS'd conn
  FAIL	SMTP error in response
 */
 int
@@ -949,6 +955,7 @@ smtp_reap_early_pipe(smtp_context * sx, int * countp)
 {
 BOOL pending_BANNER = sx->pending_BANNER;
 BOOL pending_EHLO = sx->pending_EHLO;
+int rc = FAIL;
 
 sx->pending_BANNER = FALSE;	/* clear early to avoid recursion */
 sx->pending_EHLO = FALSE;
@@ -960,6 +967,7 @@ if (pending_BANNER)
   if (!smtp_reap_banner(sx))
     {
     DEBUG(D_transport) debug_printf("bad banner\n");
+    if (tls_out.active.sock >= 0) rc = DEFER;
     goto fail;
     }
   }
@@ -974,6 +982,7 @@ if (pending_EHLO)
   if (!smtp_reap_ehlo(sx))
     {
     DEBUG(D_transport) debug_printf("bad response for EHLO\n");
+    if (tls_out.active.sock >= 0) rc = DEFER;
     goto fail;
     }
 
@@ -1011,7 +1020,7 @@ return OK;
 fail:
   invalidate_ehlo_cache_entry(sx);
   (void) smtp_discard_responses(sx, sx->conn_args.ob, *countp);
-  return FAIL;
+  return rc;
 }
 #endif
 
@@ -1056,6 +1065,7 @@ Returns:      3 if at least one address had 2xx and one had 5xx
              -2 I/O or other non-response error for RCPT
              -3 DATA or MAIL failed - errno and buffer set
 	     -4 banner or EHLO failed (early-pipelining)
+	     -5 banner or EHLO failed (early-pipelining, TLS)
 */
 
 static int
@@ -1064,10 +1074,11 @@ sync_responses(smtp_context * sx, int count, int pending_DATA)
 address_item * addr = sx->sync_addr;
 smtp_transport_options_block * ob = sx->conn_args.ob;
 int yield = 0;
+int rc;
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
-if (smtp_reap_early_pipe(sx, &count) != OK)
-  return -4;
+if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
+  return rc == FAIL ? -4 : -5;
 #endif
 
 /* Handle the response for a MAIL command. On error, reinstate the original
@@ -1083,6 +1094,8 @@ if (sx->pending_MAIL)
     {
     DEBUG(D_transport) debug_printf("bad response for MAIL\n");
     Ustrcpy(big_buffer, mail_command);  /* Fits, because it came from there! */
+    if (errno == ERRNO_TLSFAILURE)
+      return -5;
     if (errno == 0 && sx->buffer[0] != 0)
       {
       int save_errno = 0;
@@ -1140,6 +1153,11 @@ while (count-- > 0)
       retry_add_item(addr, addr->address_retry_key, rf_delete);
       }
     }
+
+  /* Error on first TLS read */
+
+  else if (errno == ERRNO_TLSFAILURE)
+    return -5;
 
   /* Timeout while reading the response */
 
@@ -1253,6 +1271,10 @@ if (pending_DATA != 0)
     int code;
     uschar *msg;
     BOOL pass_message;
+
+    if (errno == ERRNO_TLSFAILURE)	/* Error on first TLS read */
+      return -5;
+
     if (pending_DATA > 0 || (yield & 1) != 0)
       {
       if (errno == 0 && sx->buffer[0] == '4')
@@ -1802,7 +1824,9 @@ Args:
    tc_chunk_last	add LAST option to SMTP BDAT command
    tc_reap_prev		reap response to previous SMTP commands
 
-Returns:	OK or ERROR
+Returns:
+  OK or ERROR
+  DEFER			TLS error on first read (EHLO-resp); errno set
 */
 
 static int
@@ -1859,10 +1883,12 @@ if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
     case 2: sx->completed_addr = TRUE;	/* 5xx (only) => progress made */
     case 0: break;			/* No 2xx or 5xx, but no probs */
 
-    case -1:				/* Timeout on RCPT */
+    case -5: errno = ERRNO_TLSFAILURE;
+	     return DEFER;
 #ifdef EXPERIMENTAL_PIPE_CONNECT
     case -4:				/* non-2xx for pipelined banner or EHLO */
 #endif
+    case -1:				/* Timeout on RCPT */
     default: return ERROR;		/* I/O error, or any MAIL/DATA error */
     }
   cmd_count = 1;
@@ -1933,6 +1959,9 @@ BOOL pass_message = FALSE;
 uschar * message = NULL;
 int yield = OK;
 int rc;
+#ifdef SUPPORT_TLS
+uschar * tls_errstr;
+#endif
 
 sx->conn_args.ob = ob;
 
@@ -2474,27 +2503,27 @@ if (  smtp_peer_options & OPTION_TLS
   TLS_NEGOTIATE:
     {
     address_item * addr;
-    uschar * errstr;
     sx->cctx.tls_ctx = tls_client_start(sx->cctx.sock, sx->conn_args.host,
 			    sx->addrlist, sx->conn_args.tblock,
 # ifdef SUPPORT_DANE
 			     sx->dane ? &tlsa_dnsa : NULL,
 # endif
-			     &tls_out, &errstr);
+			     &tls_out, &tls_errstr);
 
     if (!sx->cctx.tls_ctx)
       {
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
       it for this host. */
-      DEBUG(D_tls) debug_printf("TLS session fail: %s\n", errstr);
+GNUTLS_CONN_FAILED:
+      DEBUG(D_tls) debug_printf("TLS session fail: %s\n", tls_errstr);
 
 # ifdef SUPPORT_DANE
       if (sx->dane)
         {
 	log_write(0, LOG_MAIN,
 	  "DANE attempt failed; TLS connection to %s [%s]: %s",
-	  sx->conn_args.host->name, sx->conn_args.host->address, errstr);
+	  sx->conn_args.host->name, sx->conn_args.host->address, tls_errstr);
 #  ifndef DISABLE_EVENT
 	(void) event_raise(sx->conn_args.tblock->event_action,
 	  US"dane:fail", US"validation-failure");	/* could do with better detail */
@@ -2503,7 +2532,7 @@ if (  smtp_peer_options & OPTION_TLS
 # endif
 
       errno = ERRNO_TLSFAILURE;
-      message = string_sprintf("TLS session: %s", errstr);
+      message = string_sprintf("TLS session: %s", tls_errstr);
       sx->send_quit = FALSE;
       goto TLS_FAILED;
       }
@@ -2601,7 +2630,22 @@ if (tls_out.active.sock >= 0)
 #endif
     {
     if (!smtp_reap_ehlo(sx))
+#ifdef USE_GNUTLS
+      {
+      /* The GnuTLS layer in Exim only spots a server-rejection of a client
+      cert late, under TLS1.3 - which means here; the first time we try to
+      receive crypted data.  Treat it as if it was a connect-time failure.
+      See also the early-pipe equivalent... which will be hard; every call
+      to sync_responses will need to check the result.
+      It would be nicer to have GnuTLS check the cert during the handshake.
+      Can it do that, with all the flexibility we need? */
+
+      tls_errstr = US"error on first read";
+      goto GNUTLS_CONN_FAILED;
+      }
+#else
       goto RESPONSE_FAILED;
+#endif
     smtp_peer_options = 0;
     }
   }
@@ -3261,6 +3305,7 @@ for (addr = sx->first_addr, address_count = 0;
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
       case -4: return -1;			/* non-2xx for pipelined banner or EHLO */
+      case -5: return -1;			/* TLS first-read error */
 #endif
       }
     sx->pending_MAIL = FALSE;            /* Dealt with MAIL */
@@ -3589,11 +3634,12 @@ if (  !(sx.peer_offered & OPTION_CHUNKING)
 
     case 1: sx.ok = TRUE;            /* 2xx (only) => OK, but if LMTP, */
     if (!sx.lmtp) sx.completed_addr = TRUE; /* can't tell about progress yet */
-    case 0: break;                       /* No 2xx or 5xx, but no probs */
+    case 0: break;			/* No 2xx or 5xx, but no probs */
 
-    case -1: goto END_OFF;               /* Timeout on RCPT */
+    case -1: goto END_OFF;		/* Timeout on RCPT */
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
+    case -5:				/* TLS first-read error */
     case -4:  HDEBUG(D_transport)
 		debug_printf("failed reaping pipelined cmd responses\n");
 #endif
@@ -3730,19 +3776,20 @@ else
       {
       case 3: sx.ok = TRUE;            /* 2xx & 5xx => OK & progress made */
       case 2: sx.completed_addr = TRUE;    /* 5xx (only) => progress made */
-      break;
+	      break;
 
-      case 1: sx.ok = TRUE;            /* 2xx (only) => OK, but if LMTP, */
+      case 1: sx.ok = TRUE;		/* 2xx (only) => OK, but if LMTP, */
       if (!sx.lmtp) sx.completed_addr = TRUE; /* can't tell about progress yet */
-      case 0: break;                       /* No 2xx or 5xx, but no probs */
+      case 0: break;			/* No 2xx or 5xx, but no probs */
 
-      case -1: goto END_OFF;               /* Timeout on RCPT */
+      case -1: goto END_OFF;		/* Timeout on RCPT */
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
+      case -5:				/* TLS first-read error */
       case -4:  HDEBUG(D_transport)
 		  debug_printf("failed reaping pipelined cmd responses\n");
 #endif
-      default: goto RESPONSE_FAILED;       /* I/O error, or any MAIL/DATA error */
+      default: goto RESPONSE_FAILED;	/* I/O error, or any MAIL/DATA error */
       }
     }
 

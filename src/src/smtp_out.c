@@ -688,20 +688,22 @@ Returns:    TRUE if a valid, non-error response was received; else FALSE
 /*XXX could move to smtp transport; no other users */
 
 BOOL
-smtp_read_response(void * sx0, uschar *buffer, int size, int okdigit,
+smtp_read_response(void * sx0, uschar * buffer, int size, int okdigit,
    int timeout)
 {
 smtp_context * sx = sx0;
-uschar *ptr = buffer;
-int count = 0;
+uschar * ptr = buffer;
+int count = 0, rc;
 
 errno = 0;  /* Ensure errno starts out zero */
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
 if (sx->pending_BANNER || sx->pending_EHLO)
-  if (smtp_reap_early_pipe(sx, &count) != OK)
+  if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
     {
     DEBUG(D_transport) debug_printf("failed reaping pipelined cmd responsess\n");
+    buffer[0] = '\0';
+    if (rc == DEFER) errno = ERRNO_TLSFAILURE;
     return FALSE;
     }
 #endif

@@ -29,6 +29,7 @@ tls_ocsp_file =   DRSA/server1.example.com/server1.example.com.ocsp.good.resp \
 	      : DECDSA/server1.example_ec.com/server1.example_ec.com.ocsp.good.resp
 
 
+tls_require_ciphers = NORMAL:!VERS-TLS1.3
 
 # ------ ACL ------
 

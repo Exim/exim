@@ -23,7 +23,7 @@ tls_certificate = ${if eq {SERVER}{server} {CDIR2/fullchain.pem}fail}
 tls_privatekey =  ${if eq {SERVER}{server} {CDIR2/server1.example.com.unlocked.key}fail}
 
 # Permit two specific ciphers
-tls_require_ciphers = NORMAL:-KX-ALL:+RSA:-CIPHER-ALL:+AES-128-CBC:+CAMELLIA-256-GCM
+tls_require_ciphers = NORMAL:-VERS-TLS1.3:-KX-ALL:+RSA:-CIPHER-ALL:+AES-128-CBC:+CAMELLIA-256-GCM
 
 # ----- Routers -----
 begin routers
