@@ -71,7 +71,7 @@ cmd buf flush ddd bytes
 >>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 Leaving t1 transport
 LOG: MAIN
-  => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
+  => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

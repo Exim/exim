@@ -1,5 +1,5 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss for userb@test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <userb@test.ex> R=target
@@ -8,4 +8,4 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= usera@ok.example H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for userb@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= usera@ok.example H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for userb@test.ex

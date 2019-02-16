@@ -20,7 +20,7 @@ Key file = aux-fixed/cert2
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHA
+SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> noop
 ????554 Security failure

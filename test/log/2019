@@ -7,5 +7,5 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTPS on port 1225
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=no S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=[ip4.ip4.ip4.ip4] P=smtp X=TLS1.x:ke_RSA_AES_256_CBC_SHAnnn:256 CV=yes DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=(rhu.barb) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=[ip4.ip4.ip4.ip4] P=smtp X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" S=sss

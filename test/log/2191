@@ -1,9 +1,9 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= this-user@testhost.test.ex U=this-user P=local S=sss for other-user@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: depth=0 error=self signed certificate cert=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
 1999-03-02 09:44:33 10HmaX-0005vi-00 [127.0.0.1] SSL verify error: certificate name mismatch: DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" H="127.0.0.1"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => other-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => other-user@test.ex R=to_server T=remote_smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1224
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no K S=sss id=E10HmaX-0005vi-00@testhost.test.ex for other-user@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (testhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmaX-0005vi-00@testhost.test.ex for other-user@test.ex

@@ -1,5 +1,5 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
-1999-03-02 09:44:33 H=[127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=server1.example.net" F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=/CN=server1.example.net
-1999-03-02 09:44:33 H=[127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no DN="/CN=revoked1.example.com" F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=/CN=revoked1.example.com
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
+1999-03-02 09:44:33 H=[127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=server1.example.net" F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=/CN=server1.example.net
+1999-03-02 09:44:33 H=[127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/CN=revoked1.example.com" F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=/CN=revoked1.example.com

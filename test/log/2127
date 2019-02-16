@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 TLS session: (SSL_connect): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmaY-0005vi-00 => usery@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbA-0005vi-00"
@@ -10,7 +10,7 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (SSL_accept): error: <<detail omitted>>
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf

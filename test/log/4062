@@ -1,53 +1,53 @@
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for a@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmaX-0005vi-00 => a@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no L C="250 OK id=10HmaY-0005vi-00"
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 => a@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no L C="250 OK id=10HmaY-0005vi-00"
 2017-07-30 18:51:05.712 10HmaX-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for b@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmaZ-0005vi-00 => b@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no L* C="250 OK id=10HmbA-0005vi-00"
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 => b@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no L* C="250 OK id=10HmbA-0005vi-00"
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbB-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for c@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmbB-0005vi-00 => c@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no L C="250 OK id=10HmbC-0005vi-00"
+2017-07-30 18:51:05.712 10HmbB-0005vi-00 => c@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no L C="250 OK id=10HmbC-0005vi-00"
 2017-07-30 18:51:05.712 10HmbB-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbD-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for nocache@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmbD-0005vi-00 => nocache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no L K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbE-0005vi-00"
+2017-07-30 18:51:05.712 10HmbD-0005vi-00 => nocache@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no L K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbE-0005vi-00"
 2017-07-30 18:51:05.712 10HmbD-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbF-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for chunking@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmbF-0005vi-00 => chunking@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no L* K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbG-0005vi-00"
+2017-07-30 18:51:05.712 10HmbF-0005vi-00 => chunking@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no L* K C="250- 3nn byte chunk, total 3nn\\n250 OK id=10HmbG-0005vi-00"
 2017-07-30 18:51:05.712 10HmbF-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaX-0005vi-00@the.local.host.name for a@test.ex
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@the.local.host.name for a@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 => :blackhole: <a@test.ex> R=server
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L* X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmaZ-0005vi-00@the.local.host.name for b@test.ex
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@the.local.host.name for b@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbA-0005vi-00 => :blackhole: <b@test.ex> R=server
 2017-07-30 18:51:05.712 10HmbA-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmbC-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no S=sss id=E10HmbB-0005vi-00@the.local.host.name for c@test.ex
+2017-07-30 18:51:05.712 10HmbC-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-0005vi-00@the.local.host.name for c@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbC-0005vi-00 => :blackhole: <c@test.ex> R=server
 2017-07-30 18:51:05.712 10HmbC-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-2017-07-30 18:51:05.712 10HmbE-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no K S=sss id=E10HmbD-0005vi-00@the.local.host.name for nocache@test.ex
+2017-07-30 18:51:05.712 10HmbE-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbD-0005vi-00@the.local.host.name for nocache@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbE-0005vi-00 => :blackhole: <nocache@test.ex> R=server
 2017-07-30 18:51:05.712 10HmbE-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
-2017-07-30 18:51:05.712 10HmbG-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L* X=TLSv1:ke-RSA-AES256-SHA:xxx CV=no K S=sss id=E10HmbF-0005vi-00@the.local.host.name for chunking@test.ex
+2017-07-30 18:51:05.712 10HmbG-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbF-0005vi-00@the.local.host.name for chunking@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbG-0005vi-00 => :blackhole: <chunking@test.ex> R=server
 2017-07-30 18:51:05.712 10HmbG-0005vi-00 Completed
