@@ -123,8 +123,14 @@ acl: ${reduce {1:2:3:4} {} {$value ${acl {a_ret}{$item}}}}
 
 addrss: ${address:local-part@dom.ain}
 addrss: ${address:Exim Person <local-part@dom.ain> (that's me)}
+addrss: ${address:Exim Person <local-part(comment)@dom.ain> (that's me)}
+addrss: ${address:Exim Person <local-part@dom.ain(comment)> (that's me)}
+addrss: ${address:Exim Person <local-part(comment)@dom.ain(comment2)> (that's me)}
+addrss: ${address:Exim Person <local-part.(comment)dot-atom@dom.ain(comment2)> (that's me)}
+addrss: ${address:Exim Person <(comment)local-part@dom.ain(comment2)> (that's me)}
 domain: ${domain:local-part@dom.ain}
 domain: ${domain:Exim Person <local-part@dom.ain> (that's me)}
+domain: ${domain:Exim Person <local-part(foo)@(bar)dom.ain> (that's me)}
 
 addresses: ${addresses:>' 'abc@xyz, 'pqr@xyz}
 addresses: ${addresses:Exim Person <local-part@dom.ain> (that's me)}
@@ -244,6 +250,7 @@ lc/uc:  ${lc:The Quick} ${uc: Brown Fox}
 length: ${length_10:The quick brown fox} ${l_10:abc}
 lclpt:  ${local_part:local-part@dom.ain}
 lclpt:  ${local_part:Exim Person <local-part@dom.ain> (that's me)}
+lclpt:  ${local_part:Exim Person <local(comment).part@dom.(comment2)ain> (that's me)}
 quote:  ${quote:aZ09_.-Q} ${quote:ab*cd} ${quote:ab\cd"ef}
 quote:  ${quote:nl(\n)}
 quote:  ${quote:cr(\r)}
