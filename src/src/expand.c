@@ -7151,16 +7151,11 @@ while (*s != 0)
         uschar * t = parse_extract_address(sub, &error, &start, &end, &domain,
           FALSE);
         if (t)
-          if (c != EOP_DOMAIN)
-            {
-            if (c == EOP_LOCAL_PART && domain != 0) end = start + domain - 1;
-            yield = string_catn(yield, sub+start, end-start);
-            }
-          else if (domain != 0)
-            {
-            domain += start;
-            yield = string_catn(yield, sub+domain, end-domain);
-            }
+	  yield = c == EOP_DOMAIN
+	    ? string_cat(yield, t + domain)
+	    : c == EOP_LOCAL_PART && domain > 0
+	    ? string_catn(yield, t, domain - 1 )
+	    : string_cat(yield, t);
         continue;
         }
 
@@ -7184,7 +7179,7 @@ while (*s != 0)
 
         for (;;)
           {
-          uschar *p = parse_find_address_end(sub, FALSE);
+          uschar * p = parse_find_address_end(sub, FALSE);
           uschar saveend = *p;
           *p = '\0';
           address = parse_extract_address(sub, &error, &start, &end, &domain,
@@ -7197,7 +7192,7 @@ while (*s != 0)
           list, add in a space if the new address begins with the separator
           character, or is an empty string. */
 
-          if (address != NULL)
+          if (address)
             {
             if (yield->ptr != save_ptr && address[0] == *outsep)
               yield = string_catn(yield, US" ", 1);
