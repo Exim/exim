@@ -115,6 +115,12 @@
 > 
 > addrss: local-part@dom.ain
 > addrss: local-part@dom.ain
+> addrss: local-part@dom.ain
+> addrss: local-part@dom.ain
+> addrss: local-part@dom.ain
+> addrss: local-part.dot-atom@dom.ain
+> addrss: local-part@dom.ain
+> domain: dom.ain
 > domain: dom.ain
 > domain: dom.ain
 > 
@@ -226,6 +232,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > length: The quick  abc
 > lclpt:  local-part
 > lclpt:  local-part
+> lclpt:  local.part
 > quote:  aZ09_.-Q "ab*cd" "abcd\"ef"
 > quote:  "nl(\n)"
 > quote:  "cr(\r)"
