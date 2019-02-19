@@ -29,7 +29,7 @@ JH/07 GnuTLS: Our use of late (post-handshake) certificate verification, under
       TLS connection attempt, so that the normal retry-in-clear can work (if
       suitably configured).
 
-JB/01 BZg 2375: fix expansions of 822 addresses having comments in local-part
+JB/01 Bug 2375: fix expansions of 822 addresses having comments in local-part
       and/or domain.  Found and fixed by Jason Betts.
 
 
