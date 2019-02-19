@@ -4,21 +4,7 @@
 
 set -e
 trap 'test -n "$TMP_DIR" && rm -r "$TMP_DIR"' EXIT
-
-OLD_DIR=$(pwd)
-GIT_DIR=$(git rev-parse --show-toplevel)
-TMP_DIR=$(mktemp -d -t exim-quickrelease.XXXXXX)
-
-cd $TMP_DIR
-git clone $GIT_DIR
-
-cd exim/src/src
-../scripts/reversion
-. ./version.sh
-EXIM=exim-${EXIM_RELEASE_VERSION}${EXIM_VARIANT_VERSION}
-
-cd ../..
-mv -v src $EXIM
-tar czf $EXIM.tar.gz $EXIM
-mv $EXIM.tar.gz $OLD_DIR
-echo $EXIM.tar.gz
+commit="${1:-HEAD}"
+version=`git describe "$commit"`
+`dirname $0`/mk_exim_release --no-sizes --no-doc --comp gzip --no-sig --quick "$commit" .
+echo $version*

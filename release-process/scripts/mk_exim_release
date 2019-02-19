@@ -17,18 +17,32 @@ use if $ENV{DEBUG} => 'Smart::Comments';
 my $ME = basename $0;
 
 
-my $debug   = 0;
+my $debug   = undef;
 my $verbose = 0;
 
 # MAJOR.MINOR[.SECURITY[.FIXES]][-RCX]
 # 4    .90    .0        .22      -RC1
 my $version_pattern = qr/
     (?<release>
+    (?<target_release>
            (?<major>\d)         # 4
          \.(?<minor>\d\d)       #  .90
       (?:\.(?<security>\d+)     #     .0
       (?:\.(?<fixes>)\d+)?)?    #       .22
+    )                           # target-release ->|
        (?:-(?<rc>RC\d+)?)?      #          -RC1
+    )
+/x;
+
+my $quick_version_pattern = qr/
+   (?<release>
+   (?<last_tag>
+           (?<major>\d)         # 4
+         \.(?<minor>\d\d)       #  .90
+      (?:\.(?<security>\d+)     #     .0
+      (?:\.(?<fixes>)\d+)?)?    #       .22
+   )                            # last-tag ->|
+       (?:-(?<quick>\d+-g[[:xdigit:]]+))?     #  -3-gdeadbef
     )
 /x;
 
@@ -49,7 +63,7 @@ package Context {
         sub FETCH { cwd }
     }
 
-    tie my $cwd => 'PWD' or die;
+    tie my $cwd => 'PWD' or die;    # this returns the current dir now, dynamically
 
     sub new {
         my $class = shift;
@@ -58,16 +72,49 @@ package Context {
 
     sub check_version {
         my $context = shift;
-        my $version = shift;
+        my $version = shift // 'HEAD';
 
-        croak "The given version number does not look right - $version"
-            if not $version =~ /$version_pattern/;
+        #
+        # v => {
+        #   release =>                   4.92-RC4 |    4.92-27-gabcdef
+        #   target_release|last_tag =>   4.92     |    4.92
+        #
+        #   major    =>  4
+        #   minor    =>  92
+        #   security =>
+        #   fixes    =>
+        #
+        #   rc|quick =>   RC4 | 27-gabcdef
+        #   }
 
-        $context->{v}{release}  = $+{release};
-        $context->{v}{major} = $+{major};
-        $context->{v}{minor} = $+{minor};
-        $context->{v}{security} = $+{security};
-        $context->{v}{rc} = $+{rc};
+        if ($context->{quick}) {
+            # Try to find suitable version description
+            chomp(my $describe = do {   # we wrap it into a open() to avoid hassle with
+                open(my $fh, '-|',      # strange version descriptions
+                    'git', describe => $version) or die;
+                <$fh>
+                } // exit 1);
+            $describe =~ /$quick_version_pattern/;
+
+            %{$context->{v}} = %+;
+            ($context->{commit}) = $version // ($context->{v}{quick} =~ /g([[:xdigit:]]+)/);
+        }
+        else {
+            croak "The given version number does not look right - $version"
+                if not $version =~ /$version_pattern/;
+            %{$context->{v}} = %+;
+
+            # find a valid vcs tag matching the version
+            my $pattern = "$context->{pkgname}-$context->{v}{release}" =~ s/[-_.]/[-_.]/gr;
+            chomp(my @tags = qx{git tag --list '$pattern'});
+
+            croak "The given version is ambigous, tags: @tags\n" if @tags > 1;
+            croak "The given version does not exist (no such tag: exim-$version)\n" if @tags == 0;
+
+            $context->{commit} = $tags[0];
+            # target_release: the release we aim to reach with release candidates
+            # FIXME: re-construct from the parsed version number
+        }
 
         die "$ME: This script doesn't work for versions prior 4.92-RCx. "
            ."Please checkout an older version.\n"
@@ -76,18 +123,6 @@ package Context {
 
         ### v: $context->{v}
 
-        # find a valid vcs tag matching the version
-        my $pattern = "$context->{pkgname}-$context->{v}{release}" =~ s/[-_.]/[-_.]/gr;
-        chomp(my @tags = qx{git tag --list '$pattern'});
-
-        croak "The given version is ambigous, tags: @tags\n" if @tags > 1;
-        croak "The given version does not exist (no such tag: exim-$version)\n" if @tags == 0;
-
-        $context->{git_tag} = $tags[0];
-
-        # target_release: the release we aim to reach with release candidates
-        # FIXME: re-construct from the parsed version number
-        ($context->{v}{target_release} = $context->{v}{release}) =~ s/-RC\d+//;
     }
 
 
@@ -145,7 +180,7 @@ package Context {
         # build git command
         my $archive_file = $context->{tmp_archive_file} = sprintf'%s/%s-%s.tar', $context->{d}{tmp}, $context->{pkgname}, $context->{v}{release};
         ### $archive_file
-        my @cmd = ( 'git', 'archive', '--format=tar', "--output=$archive_file", $context->{git_tag} );
+        my @cmd = ( 'git', 'archive', '--format=tar', "--output=$archive_file", $context->{commit} );
         ### @cmd
         # run git command
         print "[$cwd] Running: @cmd\n" if $verbose;
@@ -186,7 +221,6 @@ package Context {
 
             chdir $source_tree or die "chdir $source_tree: $!\n";
 
-
             croak "WARNING: version.sh already exists - leaving it in place\n"
                 if -f 'version.sh';
 
@@ -208,13 +242,19 @@ package Context {
 
             #my $stamp = $context->{minor} ? '_'.$context->{minor} : '';
             #$stamp .= $context->{rc} if $context->{rc};
-            my $variant = $context->{v}{rc} // '';
+            my $release = $context->{v}{rc} ? $context->{v}{target_release}
+                                            : $context->{v}{last_tag};
+
+            my $variant =
+                  $context->{v}{rc} ? $context->{v}{rc}
+                : $context->{v}{quick} ? $context->{v}{quick}
+                : '';
 
             print "[$cwd] create version.sh\n" if $verbose;
             open(my $v, '>', 'version.sh') or die "Can't open version.sh for writing: $!\n";
             print {$v} <<__;
 # initial version automatically generated by $0
-EXIM_RELEASE_VERSION=$context->{v}{target_release}
+EXIM_RELEASE_VERSION=$release
 EXIM_VARIANT_VERSION=$variant
 EXIM_COMPILE_NUMBER=0
 # echo "[[[ \$EXIM_RELEASE_VERSION | \$EXIM_VARIANT_VERSION | \$EXIM_COMPILE_NUMBER ]]]"
@@ -225,7 +265,7 @@ __
 
             # Later, if we get the reversion script fixed, we can call it again.
             # For now (25. Feb. 2016) we'll leave it unused.
-            #my @cmd = ('../scripts/reversion', 'release', $context->{git_tag});
+            #my @cmd = ('../scripts/reversion', 'release', $context->{commit});
 
             my @cmd = ('../scripts/reversion', 'release');
             print "[$cwd] Running: @cmd\n" if $verbose;
@@ -253,7 +293,9 @@ __
             system('./OS-Fixups') == 0 or exit $?;
             exec $context->{make_cmd},
                 "EXIM_VER=$context->{v}{target_release}" .
-                    ($context->{v}{rc} ? "-$context->{v}{rc}" : ''),
+                    ($context->{v}{rc} ? "-$context->{v}{rc}"
+                        : $context->{v}{quick} ? "-$context->{v}{quick}"
+                        : ''),
                     'everything';
             die "$ME: [$cwd] Cannot exec $context->{make_cmd}: $!\n";
         }
@@ -285,7 +327,7 @@ __
         # files there
         {
             my $webdir = catdir $context->{website_base}, 'docbook', $context->{v}{target_release};
-            make_path $webdir, { verbose => $verbose + $debug };
+            make_path $webdir, { verbose => $verbose || $debug };
             copy catfile($context->{d}{vcs_export}, 'doc', 'doc-docbook', $_)
                 => $webdir or die $@
                 for 'spec.xml', 'filter.xml';
@@ -469,21 +511,23 @@ __
         }
 
         # write the sizes file
-        open my $sizes, '>', $_ = catfile $pkg_tars, 'sizes.txt'
-            or die "$ME: Can't open `$_': $!\n";
+        if ($context->{sizes}) {
+            open my $sizes, '>', $_ = catfile $pkg_tars, 'sizes.txt'
+                or die "$ME: Can't open `$_': $!\n";
 
-        print $sizes join "\n",
-            (map { "SIZE($_) = $size{$_}" } sort keys %size),
-            (map { "SHA256($_) = $sha256{$_}" } sort keys %sha256);
+            print $sizes join "\n",
+                (map { "SIZE($_) = $size{$_}" } sort keys %size),
+                (map { "SHA256($_) = $sha256{$_}" } sort keys %sha256);
 
-        close($sizes) or die "$ME: Can't close $_: $!\n";
+            close($sizes) or die "$ME: Can't close $_: $!\n";
+        }
     }
 
     sub do_cleanup {
         my $context = shift;
 
         print "Cleaning up\n" if $verbose;
-        remove_tree $context->{d}{tmp}, { verbose => $debug + $verbose };
+        remove_tree $context->{d}{tmp}, { verbose => $verbose || $debug };
     }
 
 }
@@ -500,7 +544,7 @@ MAIN: {
                 user    => '0',
                 group   => '0',
         },
-        make_cmd    => 'make',
+        make_cmd    => 'make',  # for 'make'ing the docs
         compressors => {
                 gzip    => 1,
                 bzip2   => 1,
@@ -515,6 +559,7 @@ MAIN: {
             sign         => 1,
             key          => undef,
         },
+        quick => 0,
     );
 
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
@@ -528,16 +573,19 @@ MAIN: {
 
     GetOptions(
         $context,
-        qw(workspace|tmp=s outdir=s website_base|webgen_base=s tar_cmd=s make_cmd=s docs|build-docs! web|build-web!
-           delete! cleanup!),
+        qw(workspace|tmp=s website_base|webgen_base=s tar_cmd|tar-cmd=s make_cmd|make-cmd=s
+           docs|build-docs! web|build-web!
+           delete! cleanup! quick|quick-release! minimal),
         'sign!'         => \$context->{gpg}{sign},
         'key=s'         => \$context->{gpg}{key},
         'lzip!'         => \$context->{compressors}{lzip},
         'verbose!'      => \$verbose,
-        'debug!'        => \$debug,
+        'debug:s'       => \$debug,
+        'quick'         => sub { $context->{web}--; $context->{quick} = 1 },
         'help|?'        => sub { pod2usage(-verbose => 1, -exit => 0) },
         'man!'          => sub { pod2usage(-verbose => 2, -exit => 0, -noperldoc => system('perldoc -V >/dev/null 2>&1')) },
-    ) and @ARGV == 2 or pod2usage;
+    ) and (@ARGV == 2 or ($context->{quick} and @ARGV >= 1))
+        or pod2usage;
 
     -f '.exim-project-root'
         or die "$ME: please call this script from the root of the Exim project sources\n";
@@ -556,12 +604,21 @@ MAIN: {
 
     warn "$ME: changed umask to 022\n" if umask(022) != 022;
 
-    $context->check_version(shift);
+    $context->check_version(shift); # may be undef for a quick release
+
+    if ($debug//'' eq 'version') {
+        for (sort keys %{$context->{v}}) {
+            print "version $_: $context->{v}{$_}\n";
+        }
+        print "git commit: $context->{commit}\n";
+        exit 0;
+    }
     $context->override_tar_cmd;
     $context->prepare_working_directory;
     $context->export_git_tree;
     $context->unpack_tree;
     $context->make_version_script;
+
     $context->build_documentation if $context->{docs};
     $context->build_html_documentation if $context->{docs} && $context->{web};
 
@@ -587,6 +644,7 @@ mk_exim_release - Build an exim release
 =head1 SYNOPSIS
 
  mk_exim_release [options] version PKG-DIRECTORY
+ mk_exim_release [options] --quick [version] PKG-DIRECTORY
 
 =head1 DESCRIPTION
 
@@ -615,43 +673,29 @@ Call B<mk_exim_release> about like this:
 
 Do (or do not) cleanup the tmp directory at exit (default: do cleanup)
 
-=item B<--[no]debug>
+=item B<--debug[=I<item>]>
 
-Forces debug mode. (default: no debug info)
+Forces debug mode. If (default: no debug info)
+
+=over 4
+
+=item item: B<version>
+
+Output the parsed/found version number and exit.
+
+=back
 
 =item B<--[no]delete>
 
 Delete a pre-existing tmp- and package-directory at start. (default: don't delete)
 
-=item B<--tmpdir> I<dir>
+=item B<--[no]doc>
 
-Change the name of the tmp directory (default: temporary directory)
+Do (not) build the documentation. This needs C<gnu-make> (default: build the docs)
 
 =item B<--[no]help>
 
 Display short help and exit cleanly. (default: don't do that)
-
-=item B<--[no]lzip>
-
-Control the creation of B<lzip> tarballs. (default: do not use lzip)
-
-=item B<--make> I<cmd>
-
-Force the use of a specific C<make> command. This may be necessary if C<make> is not
-C<gmake> (default: C<make>)
-
-=item B<--[no]man>
-
-Display man page and exit cleanly. (default: don't do that)
-
-=item B<--tar> I<cmd>
-
-Use to override the path to the C<tar> command.  Need GNU tar in case
-I<lzip> is selected. (default: C<gtar>, if not found, use C<tar>)
-
-=item B<--[no]sign>
-
-Sign the created archive files (and the sizes.txt). (default: sign)
 
 =item B<--key> I<GPG key>
 
@@ -668,18 +712,56 @@ is used:
 
 =back
 
+=item B<--[no]lzip>
+
+Control the creation of B<lzip> tarballs. (default: do not use lzip)
+
+=item B<--make-cmd> I<cmd>
+
+Force the use of a specific C<make> command. This may be necessary if C<make> is not
+C<gmake>. This is necessary to build the docs. (default: C<make>)
+
+=item B<--[no]man>
+
+Display man page and exit cleanly. (default: don't do that)
+
+=item B<--quick>
+
+Create a quick release. The I<version> mandatory argument needs to be a git commit-ish.
+(try I<master> or I<HEAD> or similar). This mode switches off the
+website creation (which can be enabled by B<--web> again).
+
+=item B<--[no]sign>
+
+Sign the created archive files (and the sizes.txt). (default: sign)
+
+=item B<--tar-cmd> I<cmd>
+
+Use to override the path to the C<tar> command.  Need GNU tar in case
+I<lzip> is selected. (default: C<gtar>, if not found, use C<tar>)
+
+=item B<--tmpdir> I<dir>
+
+Change the name of the tmp directory (default: temporary directory)
+
+=item B<--verbose>
+
+Force verbose mode. (default: no verbosity)
+
 =item B<--[no]web>
 
 Control the creation of the website. For creation of the website, the F<../exim-website>
-(but see the B<website-base> option) directory must exist. (default: create the website)
+(but see the B<website-base> option) directory must exist. (default: create the website, except when
+in B<quick> mode)
 
 =item B<--website-base> I<dir>
 
 Base directory for the web site generation (default: F<../exim-website>)
 
-=item B<--verbose>
+=item B<-workspace>|B<--tmp> I<directory>
 
-Force verbose mode. (default: no verbosity)
+During release gerneration temporary storage is necessary. (default: F<exim-packaging-XXXX>
+under your system's default temporary directory (typically this is F</tmp>)).
 
 =back
 
