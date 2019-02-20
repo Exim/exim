@@ -545,6 +545,7 @@ MAIN: {
                 group   => '0',
         },
         make_cmd    => 'make',  # for 'make'ing the docs
+        sizes       => 1,
         compressors => {
                 gzip    => 1,
                 bzip2   => 1,
@@ -574,7 +575,7 @@ MAIN: {
     GetOptions(
         $context,
         qw(workspace|tmp=s website_base|webgen_base=s tar_cmd|tar-cmd=s make_cmd|make-cmd=s
-           docs|build-docs! web|build-web!
+           docs|build-docs! web|build-web! sizes!
            delete! cleanup! quick|quick-release! minimal),
         'sign!'         => \$context->{gpg}{sign},
         'key=s'         => \$context->{gpg}{key},
@@ -734,6 +735,10 @@ website creation (which can be enabled by B<--web> again).
 =item B<--[no]sign>
 
 Sign the created archive files (and the sizes.txt). (default: sign)
+
+=item B<--[no]sizes>
+
+Write the sizes information to F<sizes.txt>. (default: write sizes)
 
 =item B<--tar-cmd> I<cmd>
 
