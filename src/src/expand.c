@@ -5120,7 +5120,7 @@ while (*s != 0)
             reqstr.data);
           if ( (
 #ifdef SUPPORT_TLS
-	      cctx.tls_ctx ? tls_write(cctx.tls_ctx, reqstr.data, reqstr.len, FALSE) :
+	      do_tls ? tls_write(cctx.tls_ctx, reqstr.data, reqstr.len, FALSE) :
 #endif
 			write(cctx.sock, reqstr.data, reqstr.len)) != reqstr.len)
             {
@@ -5135,7 +5135,7 @@ while (*s != 0)
         system doesn't have this function, make it conditional. */
 
 #ifdef SHUT_WR
-	if (!cctx.tls_ctx && do_shutdown) shutdown(cctx.sock, SHUT_WR);
+	if (!do_tls && do_shutdown) shutdown(cctx.sock, SHUT_WR);
 #endif
 
 	if (f.running_in_test_harness) millisleep(100);
@@ -5143,19 +5143,19 @@ while (*s != 0)
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */
 
-	if (!cctx.tls_ctx)
+	if (!do_tls)
 	  fp = fdopen(cctx.sock, "rb");
         sigalrm_seen = FALSE;
         ALARM(timeout);
         yield =
 #ifdef SUPPORT_TLS
-	  cctx.tls_ctx ? cat_file_tls(cctx.tls_ctx, yield, sub_arg[3]) :
+	  do_tls ? cat_file_tls(cctx.tls_ctx, yield, sub_arg[3]) :
 #endif
 		    cat_file(fp, yield, sub_arg[3]);
         ALARM_CLR(0);
 
 #ifdef SUPPORT_TLS
-	if (cctx.tls_ctx)
+	if (do_tls)
 	  {
 	  tls_close(cctx.tls_ctx, TRUE);
 	  close(cctx.sock);
