@@ -484,28 +484,22 @@ __
         ) if qx/tar --help 2>&1/ =~ /^\s*--owner=/m;
 
         # See also environment variables set in main, tuning compression levels
-        my %COMPRESSION = (
-            gzip  => { extension => 'gz',  flags => '--gzip' },
-            bzip2 => { extension => 'bz2', flags => '--bzip2' },
-            lzip  => { extension => 'lz',  flags => '--lzip' },
-            xz    => { extension => 'xz',  flags => '--xz' },
-        );
-
 
         my (%size, %sha256);
 
         foreach my $dir ( glob( catdir( $pkg_trees, ( 'exim*-' . $context->{v}{release} ) ) ) ) {
             my $dirname = ( splitdir($dir) )[-1];
-            foreach my $comp (keys %COMPRESSION) {
-                next unless $context->{compressors}{$comp};
+            foreach my $comp (keys %{$context->{compressors}}) {
+                my %compressor = %{$context->{compressors}{$comp}};
+                next unless $compressor{use};
 
-                my $basename = "$dirname.tar.$COMPRESSION{$comp}{extension}";
+                my $basename = "$dirname.tar.$compressor{extension}";
                 my $outfile = catfile $pkg_tars, $basename;
 
                 print "Creating: $outfile\n" if $verbose || $debug;
                 0 == system($tar,
                     cf => $outfile,
-                        $COMPRESSION{$comp}{flags},
+                        $compressor{flags},
                         @ownership, -C => $pkg_trees, $dirname)
                     or exit $? >> 8;
 
@@ -556,10 +550,10 @@ MAIN: {
         make_cmd    => 'make',  # for 'make'ing the docs
         sizes       => 1,
         compressors => {
-                gzip    => 1,
-                bzip2   => 1,
-                xz      => 1,
-                lzip    => 0,
+            gzip  => { use => 1, extension => 'gz',  flags => '--gzip' },
+            bzip2 => { use => 1, extension => 'bz2', flags => '--bzip2' },
+            xz    => { use => 1, extension => 'xz',  flags => '--xz' },
+            lzip  => { use => 0, extension => 'lz',  flags => '--lzip' },
         },
         docs         => 1,
         web          => 1,
@@ -588,8 +582,21 @@ MAIN: {
            delete! cleanup! quick|quick-release! minimal),
         'sign!'         => \$context->{gpg}{sign},
         'key=s'         => \$context->{gpg}{key},
-        'lzip!'         => \$context->{compressors}{lzip},
         'verbose!'      => \$verbose,
+        'compressors=s@' => sub {
+            die "$0: can't parse compressors string `$_[1]'\n" unless $_[1] =~ /^[+=-]?\w+(?:[+=-]\w+)*$/;
+            while ($_[1] =~ /(?<act>[+=-])?(?<name>\w+)\b/g) {
+                die "$0: Unknown compressor $+{name}"
+                    unless $context->{compressors}{$+{name}};
+                if (not defined $+{act} or $+{act} eq '=') {
+                    $_->{use} = 0
+                        for values %{$context->{compressors}};
+                    $context->{compressors}{$+{name}}{use}++;
+                }
+                elsif ($+{act} eq '+') { $context->{compressors}{$+{name}}{use}++; }
+                elsif ($+{act} eq '-') { $context->{compressors}{$+{name}}{use}--; }
+            }
+        },
         'debug:s'       => \$debug,
         'quick'         => sub { $context->{web}--; $context->{quick} = 1 },
         'help|?'        => sub { pod2usage(-verbose => 1, -exit => 0) },
@@ -683,6 +690,13 @@ Call B<mk_exim_release> about like this:
 
 Do (or do not) cleanup the tmp directory at exit (default: do cleanup)
 
+=item B<--compressors> [I<action>]I<compressor[I<action>$<compressor>]...
+
+A list of compressors to use. Currently the default list is
+B<gzip>, B<xz>, and B<bzip2>, with B<lzip> optionally to be enabled.
+
+I<action> can be "+" (add), "-" (remove), and "=" (set).
+
 =item B<--debug[=I<item>]>
 
 Forces debug mode. If (default: no debug info)
@@ -721,10 +735,6 @@ is used:
 =item - default GPG key
 
 =back
-
-=item B<--[no]lzip>
-
-Control the creation of B<lzip> tarballs. (default: do not use lzip)
 
 =item B<--make-cmd> I<cmd>
 
