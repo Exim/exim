@@ -124,5 +124,4 @@ then
 ) >version.h
 fi
 
-echo ">>> version $EXIM_RELEASE_VERSION $EXIM_VARIANT_VERSION #$EXIM_COMPILE_NUMBER"
-echo
+#test -t 1 && echo ">>> version $EXIM_RELEASE_VERSION $EXIM_VARIANT_VERSION #$EXIM_COMPILE_NUMBER"
