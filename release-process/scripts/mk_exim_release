@@ -87,6 +87,19 @@ package Context {
         #   rc|quick =>   RC4 | 27-gabcdef
         #   }
 
+        #
+        # v => {
+        #   release =>                   4.92-RC4 |    4.92-27-gabcdef-dirty
+        #   target_release|last_tag =>   4.92     |    4.92
+        #
+        #   major    =>  4
+        #   minor    =>  92
+        #   security =>
+        #   fixes    =>
+        #
+        #   rc|quick =>   RC4 | 27-gabcdef-dirty
+        #   }
+
         if ($context->{quick}) {
             # Try to find suitable version description
             chomp(my $describe = do {   # we wrap it into a open() to avoid hassle with
@@ -292,12 +305,8 @@ __
             chdir $docdir or die "$ME: Can't chdir to $docdir: $!\n";
             system('./OS-Fixups') == 0 or exit $?;
             exec $context->{make_cmd},
-                "EXIM_VER=$context->{v}{target_release}" .
-                    ($context->{v}{rc} ? "-$context->{v}{rc}"
-                        : $context->{v}{quick} ? "-$context->{v}{quick}"
-                        : ''),
-                    'everything';
-            die "$ME: [$cwd] Cannot exec $context->{make_cmd}: $!\n";
+                "EXIM_VER=$context->{v}{release}", 'everything'
+                or die "$ME: [$cwd] Cannot exec $context->{make_cmd}: $!\n";
         }
         else {
             waitpid($pid, 0);
