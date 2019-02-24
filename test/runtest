@@ -2818,7 +2818,6 @@ foreach (@eximinfo)
     my $git = `git describe --dirty=-XX --match 'exim-4*'`;
     if (defined $git and $? == 0) {
       chomp $git;
-      $version =~ s/^\d+\K\./_/;
       $git =~ s/^exim-//i;
       $git =~ s/.*-\Kg([[:xdigit:]]+(?:-XX)?)/$1/;
       print <<___
