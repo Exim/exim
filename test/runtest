@@ -2895,7 +2895,7 @@ die "CONFIGURE_GROUP ($parm_configure_group) does not match the group invoking $
 	if 0020 & (stat "$parm_cwd/test-config")[2]
 	and $parm_configure_group != $);
 
-die "aux-fixed file is world-writeable; best to strip them all, recursively\n"
+die "aux-fixed file is group-writeable; best to strip them all, recursively\n"
 	if 0020 & (stat "aux-fixed/0037.f-1")[2];
 
 
