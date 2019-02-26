@@ -6741,6 +6741,11 @@ lookup types support only literal keys.
 &*Warning 2*&: In a host list, you must always use &(net-iplsearch)& so that
 the implicit key is the host's IP address rather than its name (see section
 &<<SECThoslispatsikey>>&).
+
+.new
+&*Warning 3*&: Do not use an IPv4-mapped IPv6 address for a key; use the
+IPv4.  Such addresses being searched for are converted to IPv4.
+.wen
 .next
 .new
 .cindex lookup json
