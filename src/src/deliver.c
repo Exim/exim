@@ -758,7 +758,7 @@ if (LOGGING(incoming_interface) && LOGGING(outgoing_interface)
   {
   g = string_fmt_append(g, " I=[%s]", sending_ip_address);
   if (LOGGING(outgoing_port))
-    g = string_fmt_append(g, "%d", sending_port);
+    g = string_fmt_append(g, ":%d", sending_port);
   }
 return g;
 }
