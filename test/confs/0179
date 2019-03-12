@@ -7,7 +7,8 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 queue_run_in_order
-log_selector = +outgoing_port
+# incoming_interface is used here to get the _outgoing_ local port
+log_selector = +outgoing_port +incoming_interface
 
 
 # ----- Routers -----

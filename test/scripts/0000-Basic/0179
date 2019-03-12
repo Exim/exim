@@ -1,4 +1,4 @@
-# -qqf 
+# -qqf (+outgoing_port +incoming_interface)
 need_ipv4
 #
 exim -odq userx@domain.com
