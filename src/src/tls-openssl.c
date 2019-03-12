@@ -2723,12 +2723,17 @@ DEBUG(D_tls)
 #ifdef EXIM_HAVE_OPENSSL_KEYLOG
   {
   BIO * bp = BIO_new(BIO_s_mem());
-  uschar * s;
-  int len;
-  SSL_SESSION_print_keylog(bp, SSL_get_session(server_ssl));
-  len = (int) BIO_get_mem_data(bp, CSS &s);
-  debug_printf("%.*s", len, s);
-  BIO_free(bp);
+  if (bp)
+    {
+    uschar * s;
+    int len;
+    SSL_SESSION_print_keylog(bp, SSL_get_session(exim_client_ctx->ssl));
+    len = (int) BIO_get_mem_data(bp, CSS &s);
+    debug_printf("%.*s", len, s);
+    BIO_free(bp);
+    }
+  else
+    debug_printf("(alloc failure for keylog)\n");
   }
 #endif
   }
