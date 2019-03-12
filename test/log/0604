@@ -245,7 +245,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qq
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 10HmeA-0005vi-00 <= ralph@dustyshoes.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name
 1999-03-02 09:44:33 10HmeB-0005vi-00 <= ralph@dustyshoes.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmdZ-0005vi-00@the.local.host.name
 1999-03-02 09:44:33 10HmeC-0005vi-00 <= ralph@dustyshoes.tld H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmdY-0005vi-00@the.local.host.name

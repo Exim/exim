@@ -16,7 +16,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D (IPv6 and IPv4)
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtp S=sss id=E10HmaY-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] P=esmtp S=sss id=E10HmaZ-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 no host name found for IP address ::1

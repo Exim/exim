@@ -3,10 +3,10 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:connect
 1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1]:1111
 1999-03-02 09:44:33 10HmaY-0005vi-00 event smtp:connect
-1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaY-0005vi-00 . banner <220 ESMTP>
 1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:close
-1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:delivery
 1999-03-02 09:44:33 10HmaY-0005vi-00 . delivery ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> confirmation <250 OK> router <others> transport <smtp>
@@ -19,10 +19,10 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:connect
 1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1]:1111
 1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
-1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaX-0005vi-00 . banner <220 ESMTP>
 1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:close
-1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@expansionfail R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand event_action msg:delivery in smtp: error from acl "logger"
@@ -35,10 +35,10 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 event tcp:connect
 1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1]:1111
 1999-03-02 09:44:33 10HmaZ-0005vi-00 event smtp:connect
-1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaZ-0005vi-00 . banner <220 ESMTP>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 event tcp:close
-1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaZ-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP timeout after EHLO the.local.host.name: Connection timed out
 1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:host:defer
 1999-03-02 09:44:33 10HmaZ-0005vi-00 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> errno <EEE> errstr <SMTP timeout after EHLO the.local.host.name: Connection timed out> router <others> transport <smtp>
@@ -55,13 +55,13 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 event tcp:connect
 1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1]:1111
 1999-03-02 09:44:33 10HmbA-0005vi-00 event smtp:connect
-1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbA-0005vi-00 . banner <220 ESMTP>
 1999-03-02 09:44:33 10HmbA-0005vi-00 event msg:rcpt:host:defer
 1999-03-02 09:44:33 10HmbA-0005vi-00 event msg:rcpt:defer
 1999-03-02 09:44:33 10HmbA-0005vi-00 . rcpt deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> err <12865>:<A:450> errstr <SMTP error from remote mail server after RCPT TO:<userx@domain1>: 450 NOT RIGHT NOW> router <others> transport <smtp>
 1999-03-02 09:44:33 10HmbA-0005vi-00 event tcp:close
-1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 R=others T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@domain1>: 450 NOT RIGHT NOW
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** userx@domain1: retry timeout exceeded
 1999-03-02 09:44:33 10HmbA-0005vi-00 event msg:fail:delivery
@@ -76,10 +76,10 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 event tcp:connect
 1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1]:1111
 1999-03-02 09:44:33 10HmbB-0005vi-00 event smtp:connect
-1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbB-0005vi-00 . banner <220 ESMTP>
 1999-03-02 09:44:33 10HmbB-0005vi-00 event tcp:close
-1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:1224
+1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbB-0005vi-00 ** userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY
 1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:fail:delivery
 1999-03-02 09:44:33 10HmbB-0005vi-00 . refused by fdqn <127.0.0.1> local_part <userx> domain <domain1> errstr <SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY>

@@ -70,7 +70,7 @@
 1999-03-02 09:44:33 10HmbZ-0005vi-00 Completed
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for CALLER@dane256ee.test.ex
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <CALLER@dane256ee.test.ex> R=server
@@ -80,22 +80,22 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <CALLER@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 "rcpt ACL"
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbB-0005vi-00@myhost.test.ex for CALLER@mxdane256ta.test.ex
 1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@mxdane256ta.test.ex> R=server
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex for CALLER@thishost.test.ex
 1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <CALLER@thishost.test.ex> R=server
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbJ-0005vi-00@myhost.test.ex for CALLER@dane.no.2.test.ex
 1999-03-02 09:44:33 10HmbN-0005vi-00 => :blackhole: <CALLER@dane.no.2.test.ex> R=server
@@ -117,7 +117,7 @@
 1999-03-02 09:44:33 10HmbX-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbW-0005vi-00@myhost.test.ex for CALLER@danemixed.test.ex
 1999-03-02 09:44:33 10HmbX-0005vi-00 => :blackhole: <CALLER@danemixed.test.ex> R=server
 1999-03-02 09:44:33 10HmbX-0005vi-00 Completed
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from localhost [127.0.0.1] (recv): A TLS fatal alert has been received: Certificate is bad
 1999-03-02 09:44:33 "rcpt ACL"
 1999-03-02 09:44:33 10HmcA-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbZ-0005vi-00@myhost.test.ex for CALLER@danebroken8.example.com

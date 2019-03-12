@@ -6,5 +6,5 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> rejected RCPT <userx@test.ex>: encryption required

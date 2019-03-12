@@ -25,7 +25,7 @@
 2017-07-30 18:51:05.712 End queue run: pid=pppp
 
 ******** SERVER ********
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@the.local.host.name for a@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmaY-0005vi-00 => :blackhole: <a@test.ex> R=server
@@ -41,7 +41,7 @@
 2017-07-30 18:51:05.712 10HmbC-0005vi-00 => :blackhole: <c@test.ex> R=server
 2017-07-30 18:51:05.712 10HmbC-0005vi-00 Completed
 2017-07-30 18:51:05.712 End queue run: pid=pppp
-2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 2017-07-30 18:51:05.712 10HmbE-0005vi-00 <= CALLER@the.local.host.name H=localhost (the.local.host.name) [127.0.0.1] P=esmtps L. X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no K S=sss id=E10HmbD-0005vi-00@the.local.host.name for nocache@test.ex
 2017-07-30 18:51:05.712 Start queue run: pid=pppp
 2017-07-30 18:51:05.712 10HmbE-0005vi-00 => :blackhole: <nocache@test.ex> R=server

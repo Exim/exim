@@ -14,7 +14,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 requiretls: yes
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@test.ex H=(test.ex) [127.0.0.1] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss for dump@test.ex
 1999-03-02 09:44:33 requiretls: yes

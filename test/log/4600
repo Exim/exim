@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1224
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D port PORT_S
 1999-03-02 09:44:33 spf_result         pass (guess <no>)
 1999-03-02 09:44:33 spf_header_comment myhost.test.ex: localhost is always allowed.
 1999-03-02 09:44:33 spf_smtp_comment   

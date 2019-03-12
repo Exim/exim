@@ -55,18 +55,18 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 requiretls: yes
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss id=E10HmaY-0005vi-00@myhost.test.ex for CALLER@myhost.test.ex
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1224
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_S
 1999-03-02 09:44:33 requiretls: yes
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= b@test.ex H=(test.ex) [127.0.0.1] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss for d@test.ex
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] X=TLS_proto_and_cipher CV=no rejected MAIL <a@serverrefusethis.ex>
 1999-03-02 09:44:33 requiretls: yes
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss id=E10HmbD-0005vi-00@myhost.test.ex for b@test.ex
 1999-03-02 09:44:33 requiretls: yes
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtpS X=TLS_proto_and_cipher CV=no S=sss id=E10HmbF-0005vi-00@myhost.test.ex for a@serverrefusethis.ex
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D

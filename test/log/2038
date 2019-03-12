@@ -14,7 +14,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1111 (TCP/IP connection count = 1)
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1111 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for userx0@test.ex
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1112 (TCP/IP connection count = 2)
