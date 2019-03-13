@@ -6744,7 +6744,8 @@ the implicit key is the host's IP address rather than its name (see section
 
 .new
 &*Warning 3*&: Do not use an IPv4-mapped IPv6 address for a key; use the
-IPv4.  Such addresses being searched for are converted to IPv4.
+IPv4, in dotted-quad form. (Exim converts IPv4-mapped IPv6 addresses to this
+notation before executing the lookup.)
 .wen
 .next
 .new
