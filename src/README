@@ -150,6 +150,7 @@ system and architecture types respectively, the files used are:
   Local/Makefile-<ostype>
   Local/Makefile-<archtype>
   Local/Makefile-<ostype>-<archtype>
+  Local/Makefile-<buildname>
   OS/Makefile-Base
 
 Of the Local/* files, only Local/Makefile is required to exist; the rest are

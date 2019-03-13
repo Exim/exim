@@ -13,34 +13,32 @@
 SHELL=/bin/sh
 RM_COMMAND=/bin/rm
 
-# If a build name has not been specified by running this make file via a
-# command of the form "make build=xxxx", then determine the name of the
-# operating system and the machine architecture and use that. This does not
-# provide an override for the OS type and architecture type; they still have
-# to be used for the OS-specific files. To override them, you can set the
+# The buildname defaults to "<os-type>-<arch-type>". It can be
+# overridden by the "build" parameter when invoking make (e.g. make
+# build=xxx) This does not provide an override for the OS type and
+# architecture type used during the build process; they still have to be
+# used for the OS-specific files. To override them, you can set the
 # shell variables OSTYPE and ARCHTYPE when running make.
 #
-# EXIM_BUILD_SUFFIX should be used to enable parallel builds on a file
-# system shared among different Linux distros (same os-type, same
-# arch-type). The ../test/runtest script is expected to honour the
-# EXIM_BUILD_SUFFIX when searching the Exim binary.
-# NOTE: EXIM_BUILD_SUFFIX is considered *experimental*.
+# EXIM_BUILD_SUFFIX gets appended to the buildname.  (This enables
+# parallel builds on a file system shared among different Linux distros
+# (same os-type, same arch-type). The ../test/runtest script honours the
+# EXIM_BUILD_SUFFIX when searching the Exim binary.)
 
 buildname=$${build:-`$(SHELL) scripts/os-type`-`$(SHELL) scripts/arch-type`}$${EXIM_BUILD_SUFFIX:+.$$EXIM_BUILD_SUFFIX}
 
 # The default target checks for the existence of Local/Makefile, that the main
 # makefile is built and up-to-date, and then it runs it.
+# If Local/Makefile-<buildname> exists, it is read too.
 
 all: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS)
-
 
 # This pair for the convenience of of the Debian maintainers
 exim: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) exim
 utils: Local/Makefile configure
 	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS) utils
-
 
 Local/Makefile:
 	@echo ""
