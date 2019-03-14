@@ -716,7 +716,11 @@ lookup, which constructs the names itself, so they should be OK. Besides,
 bitstring labels don't conform to normal name syntax. (But the aren't used any
 more.)
 
-For SRV records, we omit the initial _smtp._tcp. components at the start. */
+For SRV records, we omit the initial _smtp._tcp. components at the start.
+The check has been seen to bite on the destination of a SRV lookup that
+initiall hit a CNAME, for which the next name had only two components.
+RFC2782 makes no mention of the possibiility of CNAMES, but the Wikipedia
+article on SRV says they are not a valid configuration. */
 
 #ifndef STAND_ALONE   /* Omit this for stand-alone tests */
 
@@ -732,8 +736,8 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
 
   if (type == T_SRV || type == T_TLSA)
     {
-    while (*checkname++ != '.');
-    while (*checkname++ != '.');
+    while (*checkname && *checkname++ != '.') ;
+    while (*checkname && *checkname++ != '.') ;
     }
 
   if (pcre_exec(regex_check_dns_names, NULL, CCS checkname, Ustrlen(checkname),
