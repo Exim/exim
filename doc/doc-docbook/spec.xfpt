@@ -2766,6 +2766,8 @@ used to specify a path on the command line if a pid file is required.
 The SIGHUP signal
 .cindex "SIGHUP"
 .cindex "daemon" "restarting"
+.cindex signal "to reload configuration"
+.cindex daemon "reload configuration"
 can be used to cause the daemon to re-execute itself. This should be done
 whenever Exim's configuration file, or any file that is incorporated into it by
 means of the &%.include%& facility, is changed, and also whenever a new version
