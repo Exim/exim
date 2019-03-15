@@ -250,10 +250,6 @@ if (tls_in.ourcert)
   fprintf(fp, "-tls_ourcert %s\n", CS big_buffer);
   }
 if (tls_in.ocsp)	 fprintf(fp, "-tls_ocsp %d\n",   tls_in.ocsp);
-
-# ifdef EXPERIMENTAL_REQUIRETLS
-if (tls_requiretls)	 fprintf(fp, "-tls_requiretls 0x%x\n", tls_requiretls);
-# endif
 #endif
 
 #ifdef SUPPORT_I18N

@@ -986,13 +986,6 @@ no_conn:
 	}
 	break;
 #endif
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-      case ERRNO_REQUIRETLS:
-        addr->user_message = US"530 5.7.4 REQUIRETLS support required";
-	yield = FAIL;
-	done = TRUE;
-	break;
-#endif
       case ECONNREFUSED:
 	sx.send_quit = FALSE;
 	break;

@@ -286,9 +286,6 @@ tls_free_cert(&tls_in.peercert);
 tls_in.peerdn = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
-# if defined(EXPERIMENTAL_REQUIRETLS) && !defined(COMPILE_UTILITY)
-tls_requiretls = 0;
-# endif
 #endif
 
 #ifdef WITH_CONTENT_SCAN
@@ -670,10 +667,6 @@ for (;;)
 	tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
       else if (Ustrncmp(q, "ocsp", 4) == 0)
 	tls_in.ocsp = big_buffer[10] - '0';
-# if defined(EXPERIMENTAL_REQUIRETLS) && !defined(COMPILE_UTILITY)
-      else if (Ustrncmp(q, "requiretls", 10) == 0)
-	tls_requiretls = strtol(CS big_buffer+16, NULL, 0);
-# endif
       }
     break;
 #endif

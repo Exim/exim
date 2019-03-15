@@ -135,9 +135,6 @@ static struct {
   BOOL auth_advertised			:1;
 #ifdef SUPPORT_TLS
   BOOL tls_advertised			:1;
-# ifdef EXPERIMENTAL_REQUIRETLS
-  BOOL requiretls_advertised		:1;
-# endif
 #endif
   BOOL dsn_advertised			:1;
   BOOL esmtp				:1;
@@ -268,9 +265,6 @@ enum {
 #ifdef SUPPORT_I18N
   ENV_MAIL_OPT_UTF8,
 #endif
-#ifdef EXPERIMENTAL_REQUIRETLS
-  ENV_MAIL_OPT_REQTLS,
-#endif
   };
 typedef struct {
   uschar *   name;  /* option requested during MAIL cmd */
@@ -289,10 +283,6 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"ENVID",  ENV_MAIL_OPT_ENVID,  TRUE },
 #ifdef SUPPORT_I18N
     { US"SMTPUTF8",ENV_MAIL_OPT_UTF8,  FALSE },		/* rfc6531 */
-#endif
-#ifdef EXPERIMENTAL_REQUIRETLS
-    /* https://tools.ietf.org/html/draft-ietf-uta-smtp-require-tls-03 */
-    { US"REQUIRETLS",ENV_MAIL_OPT_REQTLS,  FALSE },
 #endif
     /* keep this the last entry */
     { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE },
@@ -2476,9 +2466,6 @@ tls_in.ourcert = tls_in.peercert = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;
 fl.tls_advertised = FALSE;
-# ifdef EXPERIMENTAL_REQUIRETLS
-fl.requiretls_advertised = FALSE;
-# endif
 #endif
 fl.dsn_advertised = FALSE;
 #ifdef SUPPORT_I18N
@@ -4237,9 +4224,6 @@ while (done <= 0)
       f.smtp_in_pipelining_advertised = FALSE;
 #ifdef SUPPORT_TLS
       fl.tls_advertised = FALSE;
-# ifdef EXPERIMENTAL_REQUIRETLS
-      fl.requiretls_advertised = FALSE;
-# endif
 #endif
       fl.dsn_advertised = FALSE;
 #ifdef SUPPORT_I18N
@@ -4439,17 +4423,6 @@ while (done <= 0)
 	  g = string_catn(g, US"-STARTTLS\r\n", 11);
 	  fl.tls_advertised = TRUE;
 	  }
-
-# ifdef EXPERIMENTAL_REQUIRETLS
-	/* Advertise REQUIRETLS only once we are in a secure connection */
-	if (  tls_in.active.sock >= 0
-	   && verify_check_host(&tls_advertise_requiretls) != FAIL)
-	  {
-	  g = string_catn(g, smtp_code, 3);
-	  g = string_catn(g, US"-REQUIRETLS\r\n", 13);
-	  fl.requiretls_advertised = TRUE;
-	  }
-# endif
 #endif
 
 #ifndef DISABLE_PRDR
@@ -4774,28 +4747,6 @@ while (done <= 0)
 	    break;
 #endif
 
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-	  case ENV_MAIL_OPT_REQTLS:
-	    {
-	    uschar * r, * t;
-
-	    if (!fl.requiretls_advertised)
-	      {
-	      done = synprot_error(L_smtp_syntax_error, 555, NULL,
-		US"unadvertised MAIL option: REQUIRETLS");
-	      goto COMMAND_LOOP;
-	      }
-
-	    DEBUG(D_receive) debug_printf("requiretls requested\n");
-	    tls_requiretls = REQUIRETLS_MSG;
-
-	    r = string_copy_malloc(received_protocol);
-	    if ((t = Ustrrchr(r, 's'))) *t = 'S';
-	    received_protocol = r;
-	    }
-	    break;
-#endif
-
 	  /* No valid option. Stick back the terminator characters and break
 	  the loop.  Do the name-terminator second as extract_option sets
 	  value==name when it found no equal-sign.
@@ -4812,17 +4763,6 @@ while (done <= 0)
 	   when start of the email address is reached */
 	if (arg_error) break;
 	}
-
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-      if (tls_requiretls & REQUIRETLS_MSG)
-	{
-	/* Ensure headers-only bounces whether a RET option was given or not. */
-
-	DEBUG(D_receive) if (dsn_ret == dsn_ret_full)
-	  debug_printf("requiretls override: dsn_ret_full -> dsn_ret_hdrs\n");
-	dsn_ret = dsn_ret_hdrs;
-	}
-#endif
 
       /* If we have passed the threshold for rate limiting, apply the current
       delay, and update it for next time, provided this is a limited host. */

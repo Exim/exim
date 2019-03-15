@@ -197,9 +197,6 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_HAVE_DSN_INFO");
 #endif
-#ifdef EXPERIMENTAL_REQUIRETLS
-  builtin_macro_create(US"_HAVE_REQTLS");
-#endif
 #ifdef EXPERIMENTAL_PIPE_CONNECT
   builtin_macro_create(US"_HAVE_PIPE_CONNECT");
 #endif

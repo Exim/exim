@@ -19,7 +19,7 @@ no message retry record
 127.0.0.1 [127.0.0.1]:1111 retry-status = usable
 delivering 10HmbG-0005vi-00 to 127.0.0.1 [127.0.0.1] (extchange@test.ex)
 Transport port=25 replaced by host-specific port=1225
-EHLO response bits from cache: cleartext 0x0220 crypted 0x0000
+EHLO response bits from cache: cleartext 0x0120 crypted 0x0000
 Using cached cleartext PIPE_CONNECT
   SMTP>> EHLO the.local.host.name
 using PIPELINING
@@ -38,8 +38,8 @@ smtp_reap_early_pipe expect ehlo
          250-X_PIPE_CONNECT
          250-STARTTLS
          250 ok
-EHLO cleartext extensions changed, 0x0220/0x0000 -> 0x0221/0x0000
-writing clr 0221/0000 cry 0000/0000
+EHLO cleartext extensions changed, 0x0120/0x0000 -> 0x0121/0x0000
+writing clr 0121/0000 cry 0000/0000
 sync_responses expect mail
   SMTP<< 250 mail-from accepted
 sync_responses expect rcpt

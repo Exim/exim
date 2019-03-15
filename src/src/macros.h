@@ -559,9 +559,7 @@ table exim_errstrings[] in log.c */
 #ifdef SUPPORT_I18N
 # define ERRNO_UTF8_FWD      (-49)   /* target not supporting SMTPUTF8 */
 #endif
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-# define ERRNO_REQUIRETLS    (-50)   /* REQUIRETLS session not started */
-#endif
+				/* -50 free for re-use */
 
 /* These must be last, so all retry deferments can easily be identified */
 
@@ -1029,12 +1027,7 @@ enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 #define OPTION_PIPE		BIT(5)
 #define OPTION_SIZE		BIT(6)
 #define OPTION_CHUNKING		BIT(7)
-#define OPTION_REQUIRETLS	BIT(8)
-#define OPTION_EARLY_PIPE	BIT(9)
-
-/* Codes for tls_requiretls requests (usually by sender) */
-
-#define REQUIRETLS_MSG		BIT(0)	/* REQUIRETLS onward use */
+#define OPTION_EARLY_PIPE	BIT(8)
 
 /* Argument for *_getc */
 

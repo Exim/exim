@@ -992,7 +992,7 @@ if (pending_EHLO)
       ? &sx->ehlo_resp.cleartext_auths : &sx->ehlo_resp.crypted_auths;
 
   peer_offered = ehlo_response(sx->buffer,
-	  (tls_out.active.sock < 0 ?  OPTION_TLS : OPTION_REQUIRETLS)
+	  (tls_out.active.sock < 0 ?  OPTION_TLS : 0)
 	| OPTION_CHUNKING | OPTION_PRDR | OPTION_DSN | OPTION_PIPE | OPTION_SIZE
 	| OPTION_UTF8 | OPTION_EARLY_PIPE
 	);
@@ -1749,12 +1749,6 @@ size_t bsize = Ustrlen(buf);
 /* debug_printf("%s: check for 0x%04x\n", __FUNCTION__, checks); */
 
 #ifdef SUPPORT_TLS
-# ifdef EXPERIMENTAL_REQUIRETLS
-if (  checks & OPTION_REQUIRETLS
-   && pcre_exec(regex_REQUIRETLS, NULL, CS buf,bsize, 0, PCRE_EOPT, NULL,0) < 0)
-# endif
-  checks &= ~OPTION_REQUIRETLS;
-
 if (  checks & OPTION_TLS
    && pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
 #endif
@@ -2644,17 +2638,10 @@ else if (  sx->smtps
 # ifdef SUPPORT_DANE
 	|| sx->conn_args.dane
 # endif
-# ifdef EXPERIMENTAL_REQUIRETLS
-	|| tls_requiretls & REQUIRETLS_MSG
-# endif
 	|| verify_check_given_host(CUSS &ob->hosts_require_tls, sx->conn_args.host) == OK
 	)
   {
-  errno =
-# ifdef EXPERIMENTAL_REQUIRETLS
-      tls_requiretls & REQUIRETLS_MSG ? ERRNO_REQUIRETLS :
-# endif
-      ERRNO_TLSREQUIRED;
+  errno = ERRNO_TLSREQUIRED;
   message = string_sprintf("a TLS session is required, but %s",
     smtp_peer_options & OPTION_TLS
     ? "an attempt to start TLS failed" : "the server did not offer TLS support");
@@ -2691,7 +2678,7 @@ if (continue_hostname == NULL
 #ifdef EXPERIMENTAL_PIPE_CONNECT
 	| (sx->lmtp && ob->lmtp_ignore_quota ? OPTION_IGNQ : 0)
 	| OPTION_DSN | OPTION_PIPE | OPTION_SIZE
-	| OPTION_CHUNKING | OPTION_PRDR | OPTION_UTF8 | OPTION_REQUIRETLS
+	| OPTION_CHUNKING | OPTION_PRDR | OPTION_UTF8
 	| (tls_out.active.sock >= 0 ? OPTION_EARLY_PIPE : 0) /* not for lmtp */
 
 #else
@@ -2707,9 +2694,6 @@ if (continue_hostname == NULL
 	| OPTION_DSN
 	| OPTION_PIPE
 	| (ob->size_addition >= 0 ? OPTION_SIZE : 0)
-# if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-	| (tls_requiretls & REQUIRETLS_MSG ? OPTION_REQUIRETLS : 0)
-# endif
 #endif
       );
 #ifdef EXPERIMENTAL_PIPE_CONNECT
@@ -2759,16 +2743,6 @@ if (continue_hostname == NULL
     smtp_peer_options |= sx->peer_offered & OPTION_DSN;
     DEBUG(D_transport) debug_printf("%susing DSN\n",
 			sx->peer_offered & OPTION_DSN ? "" : "not ");
-
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-    if (sx->peer_offered & OPTION_REQUIRETLS)
-      {
-      smtp_peer_options |= OPTION_REQUIRETLS;
-      DEBUG(D_transport) debug_printf(
-	tls_requiretls & REQUIRETLS_MSG
-	? "using REQUIRETLS\n" : "REQUIRETLS offered\n");
-      }
-#endif
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
     if (  sx->early_pipe_ok
@@ -2855,22 +2829,6 @@ if (sx->utf8_needed && !(sx->peer_offered & OPTION_UTF8))
   }
 #endif	/*SUPPORT_I18N*/
 
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-  /*XXX should tls_requiretls actually be per-addr? */
-
-if (  tls_requiretls & REQUIRETLS_MSG
-   && !(sx->peer_offered & OPTION_REQUIRETLS)
-   )
-  {
-  sx->setting_up = TRUE;
-  errno = ERRNO_REQUIRETLS;
-  message = US"REQUIRETLS support is required from the server"
-    " but it was not offered";
-  DEBUG(D_transport) debug_printf("%s\n", message);
-  goto TLS_FAILED;
-  }
-#endif
-
 return OK;
 
 
@@ -2907,13 +2865,7 @@ return OK;
 
 #ifdef SUPPORT_TLS
   TLS_FAILED:
-# ifdef EXPERIMENTAL_REQUIRETLS
-    if (errno == ERRNO_REQUIRETLS)
-      code = '5', yield = FAIL;
-      /*XXX DSN will be labelled 500; prefer 530 5.7.4 */
-    else
-# endif
-      code = '4', yield = DEFER;
+    code = '4', yield = DEFER;
     goto FAILED;
 #endif
 
@@ -3049,11 +3001,6 @@ if (  sx->peer_offered & OPTION_UTF8
    && !addrlist->prop.utf8_downcvt
    )
   Ustrcpy(p, " SMTPUTF8"), p += 9;
-#endif
-
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-if (tls_requiretls & REQUIRETLS_MSG)
-  Ustrcpy(p, " REQUIRETLS") , p += 11;
 #endif
 
 /* check if all addresses have DSN-lasthop flag; do not send RET and ENVID if so */
@@ -4567,12 +4514,6 @@ update_waiting =  TRUE;
 same one in order to be passed to a single transport - or if the transport has
 a host list with hosts_override set, use the host list supplied with the
 transport. It is an error for this not to exist. */
-
-#if defined(SUPPORT_TLS) && defined(EXPERIMENTAL_REQUIRETLS)
-if (tls_requiretls & REQUIRETLS_MSG)
-  ob->tls_tempfail_tryclear = FALSE;	/*XXX surely we should have a local for this
-  					rather than modifying the transport? */
-#endif
 
 if (!hostlist || (ob->hosts_override && ob->hosts))
   {
