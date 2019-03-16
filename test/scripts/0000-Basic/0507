@@ -11,7 +11,7 @@ exim -odq -bs
 mail from:<>
 rcpt to:<userx@dom.com>
 data
-To: a@b.c, himself <usery@dom.com>
+To: a@b.c, himself <usery@dom.com>, HIMSELF <USERX@dom.com>
 .
 quit
 ****

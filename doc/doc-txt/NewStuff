@@ -18,6 +18,8 @@ Version 4.93
 
  4. Log_selectors "msg_id" (on by default) and "msg_id_created".
 
+ 5. A case_insensitive option for verify=not_blind.
+
 
 Version 4.92
 --------------

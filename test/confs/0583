@@ -1,0 +1,24 @@
+# Exim test configuration 0583
+
+ERROR_DETAILS=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+
+ERROR_DETAILS
+
+# ----- ACL ------
+
+begin acl
+
+check_data:
+  accept  verify = not_blind/case_insensitive
+
+
+# End

@@ -30844,7 +30844,7 @@ For SMTP input that does not come over TCP/IP (the &%-bs%& command line
 option), this condition is always true.
 
 
-.vitem &*verify&~=&~not_blind*&
+.vitem &*verify&~=&~not_blind/*&<&'options'&>
 .cindex "verifying" "not blind"
 .cindex "bcc recipients, verifying none"
 This condition checks that there are no blind (bcc) recipients in the message.
@@ -30853,6 +30853,11 @@ Every envelope recipient must appear either in a &'To:'& header line or in a
 case-sensitively; domains are checked case-insensitively. If &'Resent-To:'& or
 &'Resent-Cc:'& header lines exist, they are also checked. This condition can be
 used only in a DATA or non-SMTP ACL.
+
+.new
+There is one possible option, &`case_insensitive`&.  If this is present then
+local parts are checked case-insensitively.
+.wen
 
 There are, of course, many legitimate messages that make use of blind (bcc)
 recipients. This check should not be used on its own for blocking messages.

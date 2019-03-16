@@ -2369,13 +2369,13 @@ The original proposed patch did the former, but I have chosen to do the latter,
 because (a) it requires no memory and (b) will use fewer resources when there
 are many addresses in To: and/or Cc: and only one or two envelope recipients.
 
-Arguments:   none
+Arguments:   case_sensitive   true if case sensitive matching should be used
 Returns:     OK    if there are no blind recipients
              FAIL  if there is at least one blind recipient
 */
 
 int
-verify_check_notblind(void)
+verify_check_notblind(BOOL case_sensitive)
 {
 for (int i = 0; i < recipients_count; i++)
   {
@@ -2399,8 +2399,8 @@ for (int i = 0; i < recipients_count; i++)
 
     while (*s)
       {
-      uschar *ss = parse_find_address_end(s, FALSE);
-      uschar *recipient,*errmess;
+      uschar * ss = parse_find_address_end(s, FALSE);
+      uschar * recipient, * errmess;
       int terminator = *ss;
       int start, end, domain;
 
@@ -2412,21 +2412,22 @@ for (int i = 0; i < recipients_count; i++)
       *ss = terminator;
 
       /* If we found a valid recipient that has a domain, compare it with the
-      envelope recipient. Local parts are compared case-sensitively, domains
-      case-insensitively. By comparing from the start with length "domain", we
-      include the "@" at the end, which ensures that we are comparing the whole
-      local part of each address. */
+      envelope recipient. Local parts are compared with case-sensitivity
+      according to the routine arg, domains case-insensitively.
+      By comparing from the start with length "domain", we include the "@" at
+      the end, which ensures that we are comparing the whole local part of each
+      address. */
 
-      if (recipient != NULL && domain != 0)
-        {
-        found = Ustrncmp(recipient, address, domain) == 0 &&
-                strcmpic(recipient + domain, address + domain) == 0;
-        if (found) break;
-        }
+      if (recipient && domain != 0)
+        if ((found = (case_sensitive
+		? Ustrncmp(recipient, address, domain) == 0
+		: strncmpic(recipient, address, domain) == 0)
+	      && strcmpic(recipient + domain, address + domain) == 0))
+	  break;
 
       /* Advance to the next address */
 
-      s = ss + (terminator? 1:0);
+      s = ss + (terminator ? 1:0);
       while (isspace(*s)) s++;
       }   /* Next address */
 

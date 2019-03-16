@@ -1,0 +1,65 @@
+# verify = not_blind/case_insensitive
+#
+# Accept: the env rcpt matches a header To:
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+data
+To: a@b.c, himself <UserX@dom.com>
+.
+quit
+****
+### Reject: no match
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+data
+To: b@b.c, himself <usery@dom.com>
+.
+quit
+****
+### Reject, with specific SMTP message
+exim -DERROR_DETAILS=smtp_return_error_details -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+data
+To: c@b.c, himself <usery@dom.com>
+.
+quit
+****
+### Accept, matches in header CC:
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+rcpt to:<usery@dom.com>
+data
+To: d@b.c, himself <UserY@dom.com>
+Cc: unqualified, UserX@dom.com, x@y.z
+.
+quit
+****
+### Reject: To: & CC: combo, an env rcpt missing
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+rcpt to:<usery@dom.com>
+rcpt to:<userz@dom.com>
+data
+To: e@b.c, himself <UserY@dom.com>
+Cc: unqualified, UserX@dom.com, x@y.z
+.
+quit
+****
+### Accept: Resent-To: & Resent-CC: combo
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+rcpt to:<usery@dom.com>
+data
+Resent-To: f@b.c, himself <UserY@dom.com>
+Resent-Cc: unqualified, UserX@dom.com, x@y.z
+To: an@other
+.
+quit
+****
+no_msglog_check

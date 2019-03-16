@@ -1,0 +1,12 @@
+### Reject: no match
+### Reject, with specific SMTP message
+### Accept, matches in header CC:
+### Reject: To: & CC: combo, an env rcpt missing
+### Accept: Resent-To: & Resent-CC: combo
+
+******** SERVER ********
+### Reject: no match
+### Reject, with specific SMTP message
+### Accept, matches in header CC:
+### Reject: To: & CC: combo, an env rcpt missing
+### Accept: Resent-To: & Resent-CC: combo

@@ -1512,7 +1512,7 @@ static verify_type_t verify_type_list[] = {
     { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE,  0 },
     { US"csa",	  		VERIFY_CSA,	 	~0,	FALSE, 0 },
     { US"header_syntax",	VERIFY_HDR_SYNTAX,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
-    { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
+    { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"sender",	  	VERIFY_SNDR,		ACL_BIT_MAIL | ACL_BIT_RCPT
 			|ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
@@ -1711,14 +1711,27 @@ switch(vp->value)
   case VERIFY_NOT_BLIND:
     /* Check that no recipient of this message is "blind", that is, every envelope
     recipient must be mentioned in either To: or Cc:. */
+    {
+    BOOL case_sensitive = TRUE;
 
-    if ((rc = verify_check_notblind()) != OK)
+    while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
+      if (strcmpic(ss, US"case_insensitive") == 0)
+        case_sensitive = FALSE;
+      else
+        {
+        *log_msgptr = string_sprintf("unknown option \"%s\" in ACL "
+           "condition \"verify %s\"", ss, arg);
+        return ERROR;
+        }
+
+    if ((rc = verify_check_notblind(case_sensitive)) != OK)
       {
       *log_msgptr = string_sprintf("bcc recipient detected");
       if (smtp_return_error_details)
         *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
       }
     return rc;
+    }
 
   /* The remaining verification tests check recipient and sender addresses,
   either from the envelope or from the header. There are a number of
