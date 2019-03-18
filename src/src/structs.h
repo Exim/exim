@@ -444,6 +444,7 @@ typedef struct ip_address_item {
   int    port;
   BOOL   v6_include_v4;            /* Used in the daemon */
   uschar address[46];
+  uschar * log;			   /* portion of "listening on" log line */
 } ip_address_item;
 
 /* Structure for chaining together arbitrary strings. */
