@@ -6,6 +6,6 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [127.0.0.1]:{1225,1226} [ip4.ip4.ip4.ip4]:1227
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [127.0.0.1]:{1225,1226,1228} [ip4.ip4.ip4.ip4]:1227
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=(rhu.barb) [127.0.0.1]:1111 I=[127.0.0.1]:1225 P=esmtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=(rhu.barb) [127.0.0.1]:1112 I=[127.0.0.1]:1226 P=esmtp S=sss
