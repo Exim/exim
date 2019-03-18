@@ -31,6 +31,10 @@ JH/08 Add hardening against SRV & TLSA lookups the hit CNAMEs (a nonvalid
       configuration).  If a CNAME target was not a wellformed name pattern, a
       crash could result.
 
+JH/09 Logging: Fix initial listening-on line for multiple ports for an IP when
+      the OS reports them interleaved with other addresses.
+
+
 
 Exim version 4.92
 -----------------
