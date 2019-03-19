@@ -1,0 +1,76 @@
+# Exim test configuration 2152
+
+SERVER=
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = chk_r
+
+#log_selector =  +tls_peerdn
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey =  DIR/aux-fixed/cert1
+
+
+# ----- ACL -----
+
+begin acl
+
+chk_r:
+  accept	condition =	${if = {$received_port}{PORT_D2}}
+  accept	verify =	recipient/callout
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if !eq {SERVER}{server}}
+  transport = send_to_server
+
+srvr_v:
+  driver = accept
+  verify_only
+  transport = send_to_server_v
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver =	smtp
+  allow_localhost
+  hosts =	127.0.0.1
+  port =	PORT_D
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+
+send_to_server_v:
+  driver =	smtp
+  allow_localhost
+  hosts =	127.0.0.1
+  port =	PORT_D2
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End
