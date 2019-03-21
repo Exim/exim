@@ -863,7 +863,7 @@ uschar *dmarc_forensic_sender   = NULL;
 uschar *dmarc_history_file      = NULL;
 uschar *dmarc_status            = NULL;
 uschar *dmarc_status_text       = NULL;
-uschar *dmarc_tld_file          = NULL;
+uschar *dmarc_tld_file          = US DMARC_TLD_FILE;
 uschar *dmarc_used_domain       = NULL;
 #endif
 

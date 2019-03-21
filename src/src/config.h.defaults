@@ -198,7 +198,7 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_DMARC
-    #define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
+#define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
 #define EXPERIMENTAL_LMDB
 #define EXPERIMENTAL_PIPE_CONNECT
 #define EXPERIMENTAL_QUEUEFILE
