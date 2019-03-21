@@ -174,11 +174,7 @@ for (int i = 0; i < len; i++)
     if (ss[i+1] != '^')
       ss[i] = 0;
     else
-      {
-      i++;
-      len--;
-      memmove(ss + i, ss + i + 1, len - i);
-      }
+      if (--len > ++i) memmove(ss + i, ss + i + 1, len - i);
 
 /* The first string is attached to the AUTH command; others are sent
 unembellished. */
