@@ -19,7 +19,7 @@ implementation of the conditional .ifdef etc. */
 
 
 static uschar * syslog_facility_str;
-static void fn_smtp_receive_timeout(const uschar *, const uschar *);
+static void fn_smtp_receive_timeout(const uschar *, const uschar *, unsigned);
 
 /*************************************************
 *           Main configuration options           *
@@ -392,7 +392,8 @@ static int optionlist_config_size = nelem(optionlist_config);
 
 #ifdef MACRO_PREDEF
 
-static void fn_smtp_receive_timeout(const uschar * name, const uschar * str) {/*Dummy*/}
+static void
+fn_smtp_receive_timeout(const uschar * name, const uschar * str, unsigned flags) {/*Dummy*/}
 
 void
 options_main(void)
@@ -559,6 +560,8 @@ static syslog_fac_item syslog_list[] = {
 static int syslog_list_size = sizeof(syslog_list)/sizeof(syslog_fac_item);
 
 
+#define opt_fn_print		BIT(0)
+#define opt_fn_print_label	BIT(1)
 
 
 /*************************************************
@@ -1532,9 +1535,16 @@ return yield;
 *            Custom-handler options              *
 *************************************************/
 static void
-fn_smtp_receive_timeout(const uschar * name, const uschar * str)
+fn_smtp_receive_timeout(const uschar * name, const uschar * str, unsigned flags)
 {
-if (*str == '$')
+if (flags & opt_fn_print)
+  {
+  if (flags & opt_fn_print_label) printf("%s = ", name);
+  printf("%s\n", smtp_receive_timeout_s
+    ? string_printing2(smtp_receive_timeout_s, FALSE)
+    : readconf_printtime(smtp_receive_timeout));
+  }
+else if (*str == '$')
   smtp_receive_timeout_s = string_copy(str);
 else
   {
@@ -2328,7 +2338,7 @@ switch (type)
   case opt_func:
     {
     void (*fn)() = ol->value;
-    fn(name, s);
+    fn(name, s, 0);
     break;
     }
   }
@@ -2670,6 +2680,13 @@ switch(ol->type & opt_mask)
   case opt_bool_set:
     printf("%s%s\n", (*((BOOL *)value))? "" : "no_", name);
     break;
+
+  case opt_func:
+    {
+    void (*fn)() = ol->value;
+    fn(name, NULL, no_labels ? opt_fn_print : opt_fn_print|opt_fn_print_label);
+    break;
+    }
   }
 return TRUE;
 }

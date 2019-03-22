@@ -44,6 +44,9 @@ JH/11 Harden plaintext authenticator against a badly misconfigured client-send
       string.  Previously it was possible to cause undefined behaviour in a
       library routine (usually a crash).  Found by "zerons".
 
+JH/12 Bug 2384: fix "-bP smtp_receive_timeout".  Previously it returned no
+      output.
+
 
 
 Exim version 4.92
