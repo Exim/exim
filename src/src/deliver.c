@@ -841,7 +841,7 @@ deliver_host =   addr->host_used ? addr->host_used->name : NULL;
 	  addr->host_used
           || Ustrcmp(addr->transport->driver_name, "smtp") == 0
 	  || Ustrcmp(addr->transport->driver_name, "lmtp") == 0
-	 ? addr->message : NULL); 
+	 ? addr->message : NULL);
 
 deliver_host_port =    save_port;
 deliver_host_address = save_address;
@@ -2185,7 +2185,7 @@ if (  !shadowing
   addr->return_filename =
     spool_fname(US"msglog", message_subdir, message_id,
       string_sprintf("-%d-%d", getpid(), return_count++));
-  
+
   if ((addr->return_file = open_msglog_file(addr->return_filename, 0400, &error)) < 0)
     {
     common_error(TRUE, addr, errno, US"Unable to %s file for %s transport "
@@ -5290,6 +5290,9 @@ Returns:       nothing
 static void
 print_dsn_diagnostic_code(const address_item *addr, FILE *f)
 {
+
+if (addr == NULL) return;
+
 uschar *s;
 DEBUG(D_deliver)
   debug_printf("DSN Diagnostic-Code: pass_message=%s, message=%s, user_message=%s\n", testflag(addr, af_pass_message), addr->message, addr->user_message);
@@ -6929,7 +6932,7 @@ if (addr_local || addr_remote)
   if (journal_fd < 0)
     {
     uschar * fname = spool_fname(US"input", message_subdir, id, US"-J");
-    
+
     if ((journal_fd = Uopen(fname,
 #ifdef O_CLOEXEC
 			O_CLOEXEC |
