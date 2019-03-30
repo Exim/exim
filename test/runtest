@@ -974,6 +974,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^waiting for server to shut down\.+ done$/waiting for server to shut down.... done/;
     s/^\/.*postgres /POSTGRES /;
 
+    # DMARC is not always supported by the build
+    next if /^dmarc_tld_file =/;
+
     # ARC is not always supported by the build
     next if /^arc_sign =/;
     }

@@ -9,6 +9,10 @@ gecos_pattern = ""
 gecos_name = CALLER_NAME
 tls_advertise_hosts =
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 # ----- Main settings -----
 
 qualify_domain = test.ex

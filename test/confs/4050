@@ -22,6 +22,10 @@ dns_cname_loops = 9
 chunking_advertise_hosts =
 tls_advertise_hosts =
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 pipelining_connect_advertise_hosts = CONNECTCOND
 retry_data_expire = RETRY
 log_selector = +received_recipients +pipelining

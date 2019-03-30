@@ -428,7 +428,7 @@ need to uncomment them if an rpm (or you) installed them in the
 package controlled locations (/usr/include and /usr/lib).
 
 
-2. Use the following global settings to configure DMARC:
+2. Use the following global options to configure DMARC:
 
 Required:
 dmarc_tld_file      Defines the location of a text file of valid
@@ -437,6 +437,8 @@ dmarc_tld_file      Defines the location of a text file of valid
                     the most current version can be downloaded
                     from a link at http://publicsuffix.org/list/.
                     See also util/renew-opendmarc-tlds.sh script.
+		    The default for the option is currently
+		    /etc/exim/opendmarc.tlds
 
 Optional:
 dmarc_history_file  Defines the location of a file to log results

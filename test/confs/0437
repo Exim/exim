@@ -11,6 +11,10 @@ gecos_pattern = ""
 gecos_name = CALLER_NAME
 tls_advertise_hosts =
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 # ----- Main settings -----
 
 queue_run_in_order

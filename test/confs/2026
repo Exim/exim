@@ -13,6 +13,10 @@ log_file_path = DIR/spool/log/%D-%slog
 gecos_pattern = ""
 gecos_name = CALLER_NAME
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 # ----- Main settings -----
 
 acl_smtp_rcpt = check_rcpt

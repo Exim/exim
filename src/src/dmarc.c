@@ -109,15 +109,15 @@ if (libdm_status != DMARC_PARSE_OKAY)
 		       opendmarc_policy_status_to_str(libdm_status));
   dmarc_abort = TRUE;
   }
-if (!dmarc_tld_file)
+if (!dmarc_tld_file || !*dmarc_tld_file)
   {
   DEBUG(D_receive) debug_printf("DMARC: no dmarc_tld_file\n");
   dmarc_abort = TRUE;
   }
 else if (opendmarc_tld_read_file(CS dmarc_tld_file, NULL, NULL, NULL))
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list %s: %d",
-		       dmarc_tld_file, errno);
+  log_write(0, LOG_MAIN|LOG_PANIC, "DMARC failure to load tld list '%s': %s",
+		       dmarc_tld_file, strerror(errno));
   dmarc_abort = TRUE;
   }
 if (!sender_host_address)

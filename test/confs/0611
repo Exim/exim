@@ -13,6 +13,10 @@ gecos_name = CALLER_NAME
 tls_advertise_hosts =
 chunking_advertise_hosts =
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 # ----- Main settings -----
 
 log_file_path = DIR/spool/log/${if eq {SERVER}{server} {server_}{}}%slog

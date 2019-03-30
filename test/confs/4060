@@ -23,6 +23,10 @@ chunking_advertise_hosts = OPT
 tls_advertise_hosts = *
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 # Avoid ECDHE key-exchange so that we can wireshark-decode (not TLS1.3)
 .ifdef _HAVE_GNUTLS
 tls_require_ciphers = NORMAL:-KX-ALL:+RSA

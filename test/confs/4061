@@ -27,6 +27,10 @@ tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_require_ciphers = NORMAL:-KX-ALL:+RSA
 .endif
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 pipelining_connect_advertise_hosts = *
 log_selector = +received_recipients +pipelining
 queue_only

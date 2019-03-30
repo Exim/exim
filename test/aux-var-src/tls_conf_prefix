@@ -20,3 +20,6 @@ tls_advertise_requiretls =
 .ifdef _HAVE_PIPE_CONNECT
 pipelining_connect_advertise_hosts = :
 .endif
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif

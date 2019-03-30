@@ -13,6 +13,10 @@ gecos_name = CALLER_NAME
 chunking_advertise_hosts =
 tls_advertise_hosts =
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 primary_hostname = myhost.test.ex
 queue_only
 

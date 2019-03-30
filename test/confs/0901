@@ -14,6 +14,10 @@ gecos_name = CALLER_NAME
 chunking_advertise_hosts = *
 tls_advertise_hosts = ${if eq {SRV}{tls} {*}}
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 pipelining_advertise_hosts = :
 
 # ----- Main settings -----

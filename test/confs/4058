@@ -21,6 +21,10 @@ dns_cname_loops = 9
 chunking_advertise_hosts = OPT
 tls_advertise_hosts =
 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
 pipelining_connect_advertise_hosts = *
 queue_only
 
