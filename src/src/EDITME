@@ -484,9 +484,11 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries. You must have SPF and DKIM support enabled also.
 # EXPERIMENTAL_DMARC=yes
-# DMARC_TLD_FILE= /etc/exim/opendmarc.tlds
 # CFLAGS += -I/usr/local/include
 # LDFLAGS += -lopendmarc
+# Uncomment the following if you need to change the default. You can
+# override it at runtime (main config option dmarc_tld_file)
+# DMARC_TLD_FILE=/etc/exim/opendmarc.tlds
 
 # Uncomment the following line to add ARC (Authenticated Received Chain)
 # support.  You must have SPF and DKIM support enabled also.
