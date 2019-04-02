@@ -26,34 +26,36 @@
 # define X509_up_ref(x) CRYPTO_add(&((x)->references), 1, CRYPTO_LOCK_X509)
 #endif
 
-#ifdef LIBRESSL_VERSION_NUMBER	/* LibreSSL */
+/* LibreSSL 2.9.0 and later - 2.9.0 has removed a number of macros ... */
+#ifdef LIBRESSL_VERSION_NUMBER
 # if LIBRESSL_VERSION_NUMBER >= 0x2090000fL
 #  define EXIM_HAVE_ASN1_MACROS
 # endif
-#else				/* OpenSSL */
-# if OPENSSL_VERSION_NUMBER >= 0x10100000L
-#  define EXIM_HAVE_ASN1_MACROS
-#  define EXIM_OPAQUE_X509
-# else
-#  define X509_STORE_CTX_get_verify(ctx)		(ctx)->verify
-#  define X509_STORE_CTX_get_verify_cb(ctx)	(ctx)->verify_cb
-#  define X509_STORE_CTX_get0_cert(ctx)		(ctx)->cert
-#  define X509_STORE_CTX_get0_chain(ctx)		(ctx)->chain
-#  define X509_STORE_CTX_get0_untrusted(ctx)	(ctx)->untrusted
+#endif
+/* OpenSSL */
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L && !defined(LIBRESSL_VERSION_NUMBER)
+# define EXIM_HAVE_ASN1_MACROS
+# define EXIM_OPAQUE_X509
+/* Older OpenSSL and all LibreSSL */
+#else
+# define X509_STORE_CTX_get_verify(ctx)		(ctx)->verify
+# define X509_STORE_CTX_get_verify_cb(ctx)	(ctx)->verify_cb
+# define X509_STORE_CTX_get0_cert(ctx)		(ctx)->cert
+# define X509_STORE_CTX_get0_chain(ctx)		(ctx)->chain
+# define X509_STORE_CTX_get0_untrusted(ctx)	(ctx)->untrusted
 
-#  define X509_STORE_CTX_set_verify(ctx, verify_chain)	(ctx)->verify = (verify_chain)
-#  define X509_STORE_CTX_set0_verified_chain(ctx, sk)	(ctx)->chain = (sk)
-#  define X509_STORE_CTX_set_error_depth(ctx, val)	(ctx)->error_depth = (val)
-#  define X509_STORE_CTX_set_current_cert(ctx, cert)	(ctx)->current_cert = (cert)
+# define X509_STORE_CTX_set_verify(ctx, verify_chain)	(ctx)->verify = (verify_chain)
+# define X509_STORE_CTX_set0_verified_chain(ctx, sk)	(ctx)->chain = (sk)
+# define X509_STORE_CTX_set_error_depth(ctx, val)	(ctx)->error_depth = (val)
+# define X509_STORE_CTX_set_current_cert(ctx, cert)	(ctx)->current_cert = (cert)
 
-#  define ASN1_STRING_get0_data	ASN1_STRING_data
-#  define X509_getm_notBefore	X509_get_notBefore
-#  define X509_getm_notAfter	X509_get_notAfter
+# define ASN1_STRING_get0_data	ASN1_STRING_data
+# define X509_getm_notBefore	X509_get_notBefore
+# define X509_getm_notAfter	X509_get_notAfter
 
-#  define CRYPTO_ONCE_STATIC_INIT 0
-#  define CRYPTO_THREAD_run_once	 run_once
+# define CRYPTO_ONCE_STATIC_INIT 0
+# define CRYPTO_THREAD_run_once	 run_once
 typedef int CRYPTO_ONCE;
-# endif
 #endif
 
 
