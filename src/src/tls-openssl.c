@@ -2345,12 +2345,8 @@ DEBUG(D_tls)
 
 #ifdef EXIM_HAVE_OPENSSL_KEYLOG
   {
-  BIO * bp = BIO_new(BIO_s_mem());
-  uschar * s;
-  int len;
+  BIO * bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
   SSL_SESSION_print_keylog(bp, SSL_get_session(server_ssl));
-  len = (int) BIO_get_mem_data(bp, CSS &s);
-  debug_printf("%.*s", len, s);
   BIO_free(bp);
   }
 #endif
@@ -2724,18 +2720,9 @@ DEBUG(D_tls)
   debug_printf("SSL_connect succeeded\n");
 #ifdef EXIM_HAVE_OPENSSL_KEYLOG
   {
-  BIO * bp = BIO_new(BIO_s_mem());
-  if (bp)
-    {
-    uschar * s;
-    int len;
-    SSL_SESSION_print_keylog(bp, SSL_get_session(exim_client_ctx->ssl));
-    len = (int) BIO_get_mem_data(bp, CSS &s);
-    debug_printf("%.*s", len, s);
-    BIO_free(bp);
-    }
-  else
-    debug_printf("(alloc failure for keylog)\n");
+  BIO * bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
+  SSL_SESSION_print_keylog(bp, SSL_get_session(exim_client_ctx->ssl));
+  BIO_free(bp);
   }
 #endif
   }
