@@ -3413,8 +3413,8 @@ for (uschar * s = option_spec; *s != '\0'; /**/)
     DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);
     return FALSE;
     }
-  DEBUG(D_tls) debug_printf("openssl option, %s from %lx: %lx (%s)\n",
-      adding ? "adding" : "removing", result, item, s);
+  DEBUG(D_tls) debug_printf("openssl option, %s %8lx: %lx (%s)\n",
+      adding ? "adding to    " : "removing from", result, item, s);
   if (adding)
     result |= item;
   else
