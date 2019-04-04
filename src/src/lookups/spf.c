@@ -25,8 +25,8 @@ static void dummy(int x) { dummy2(x-1); }
 #else
 
 #include "lf_functions.h"
-#ifndef HAVE_NS_TYPE
-#define HAVE_NS_TYPE
+#if !defined(HAVE_NS_TYPE) && defined(NS_INADDRSZ)
+# define HAVE_NS_TYPE
 #endif
 #include <spf2/spf.h>
 #include <spf2/spf_dns_resolv.h>
