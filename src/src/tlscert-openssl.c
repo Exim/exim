@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 2014 - 2018 */
+/* Copyright (c) Jeremy Harris 2014 - 2019 */
 
 /* This module provides TLS (aka SSL) support for Exim using the OpenSSL
 library. It is #included into the tls.c file when that library is used.
@@ -17,8 +17,14 @@ library. It is #included into the tls.c file when that library is used.
 #include <openssl/rand.h>
 #include <openssl/x509v3.h>
 
-#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-# define EXIM_HAVE_ASN1_MACROS
+#ifdef LIBRESSL_VERSION_NUMBER	/* LibreSSL */
+# if LIBRESSL_VERSION_NUMBER >= 0x2090000fL
+#  define EXIM_HAVE_ASN1_MACROS
+# endif
+#else				/* OpenSSL */
+# if OPENSSL_VERSION_NUMBER >= 0x10100000L
+#  define EXIM_HAVE_ASN1_MACROS
+# endif
 #endif
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
