@@ -1282,11 +1282,11 @@ tls_init(
     tls_support * tlsp,
     uschar ** errstr)
 {
-exim_gnutls_state_st *state;
+exim_gnutls_state_st * state;
 int rc;
 size_t sz;
-const char *errpos;
-uschar *p;
+const char * errpos;
+const uschar * p;
 
 if (!exim_gnutls_base_init_done)
   {
