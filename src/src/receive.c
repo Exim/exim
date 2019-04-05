@@ -571,6 +571,30 @@ return FALSE;
 
 
 
+/* Pause for a while waiting for input.  If none received in that time,
+close the logfile, if we had one open; then if we wait for a long-running
+datasource (months, in one use-case) log rotation will not leave us holding
+the file copy. */
+
+static void
+log_close_chk(void)
+{
+if (!receive_timeout)
+  {
+  struct timeval t;
+  timesince(&t, &received_time);
+  if (t.tv_sec > 30*60)
+    mainlog_close();
+  else
+    {
+    fd_set r;
+    FD_ZERO(&r); FD_SET(0, &r);
+    t.tv_sec = 30*60 - t.tv_sec; t.tv_usec = 0;
+    if (select(1, &r, NULL, NULL, &t) == 0) mainlog_close();
+    }
+  }
+}
+
 /*************************************************
 *     Read data portion of a non-SMTP message    *
 *************************************************/
@@ -619,9 +643,11 @@ register int linelength = 0;
 
 if (!f.dot_ends)
   {
-  register int last_ch = '\n';
+  int last_ch = '\n';
 
-  for (; (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF; last_ch = ch)
+  for ( ;
+       log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF;
+       last_ch = ch)
     {
     if (ch == 0) body_zerocount++;
     if (last_ch == '\r' && ch != '\n')
@@ -663,7 +689,7 @@ if (!f.dot_ends)
 
 ch_state = 1;
 
-while ((ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
+while (log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)

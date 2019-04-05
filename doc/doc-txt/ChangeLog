@@ -58,6 +58,12 @@ JH/12 Bug 2384: fix "-bP smtp_receive_timeout".  Previously it returned no
 JH/13 Bug 2386: Fix builds with Dane under LibreSSL 2.9.0 onward.  Some old
       API was removed, so update to use the newer ones.
 
+JH/14 Bug 1891: Close the log file if receiving a non-smtp message, without
+      any timeout set, is taking a long time.  Previous we would hang on to a
+      rotated logfile "forever" if the input was arriving with long gaps
+      (a previous attempt to fix addressed lack, for a long time, of initial
+      input).
+
 
 Exim version 4.92
 -----------------
