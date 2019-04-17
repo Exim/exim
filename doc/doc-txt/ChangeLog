@@ -70,6 +70,13 @@ HS/01 Bug 2390: Use message_id for tempfile creation to avoid races in a
       systems which restrict the file name length to lower values.
       (It was "hdr.$pid".)
 
+HS/01 Bug 2390: Use message_id for tempfile creation to avoid races in a
+      shared (NFS) environment.
+
+HS/02 Bug 2392: exigrep does case sensitive *option* processing (as it
+      did for all versions <4.90). Notably -M, -m, --invert, -I may be
+      affected.
+
 
 Exim version 4.92
 -----------------

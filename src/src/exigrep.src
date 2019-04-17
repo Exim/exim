@@ -5,7 +5,7 @@ use strict;
 BEGIN { pop @INC if $INC[-1] eq '.' };
 
 use Pod::Usage;
-use Getopt::Long;
+use Getopt::Long qw(:config no_ignore_case);
 use File::Basename;
 
 # Copyright (c) 2007-2017 University of Cambridge.
@@ -354,7 +354,7 @@ Do not use a pager, even if STDOUT is connected to a terminal.
 =item B<-h>|B<--help>
 
 Print a short reference help. For more detailed help try L<exigrep(8)>,
-or C<exigrep -m>.
+or C<exigrep --man>.
 
 =item B<-m>|B<--man>
 
