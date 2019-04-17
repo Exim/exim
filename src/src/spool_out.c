@@ -134,8 +134,7 @@ struct stat statbuf;
 uschar * tname;
 uschar * fname;
 
-tname = spool_fname(US"input", message_subdir,
-		    string_sprintf("hdr.%d", (int)getpid()), US"");
+tname = spool_fname(US"input", message_subdir, US"hdr.", message_id);
 
 if ((fd = spool_open_temp(tname)) < 0)
   return spool_write_error(where, errmsg, US"open", NULL, NULL);
