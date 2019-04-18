@@ -64,6 +64,12 @@ JH/14 Bug 1891: Close the log file if receiving a non-smtp message, without
       (a previous attempt to fix addressed lack, for a long time, of initial
       input).
 
+HS/01 Bug 2390: Use message_id for tempfile creation to avoid races in a
+      shared (NFS) environment. The length of the tempfile name is now
+      4 + 16 ("hdr.$message_exim_id") which might break on file
+      systems which restrict the file name length to lower values.
+      (It was "hdr.$pid".)
+
 
 Exim version 4.92
 -----------------
