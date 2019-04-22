@@ -690,6 +690,7 @@ of chown()/fchown().  See src/functions.h for more explanation */
 int
 exim_chown_failure(int fd, const uschar *name, uid_t owner, gid_t group)
 {
+int saved_errno = errno;  /* from the preceeding chown call */
 #if 1
 log_write(0, LOG_MAIN|LOG_PANIC,
   __FILE__ ":%d: chown(%s, %d:%d) failed (%s)."
@@ -701,7 +702,6 @@ log_write(0, LOG_MAIN|LOG_PANIC,
    See Bug 2391
    HS 2019-04-18 */
 
-int saved_errno = errno;  /* from the preceeding chown call */
 struct stat buf;
 
 if (0 == (fd < 0 ? stat(name, &buf) : fstat(fd, &buf)))
@@ -711,9 +711,9 @@ if (0 == (fd < 0 ? stat(name, &buf) : fstat(fd, &buf)))
 }
 else log_write(0, LOG_MAIN|LOG_PANIC, "Stat failed on %s: %s", name, strerror(errno));
 
+#endif
 errno = saved_errno;
 return -1;
-#endif
 }
 
 
