@@ -213,8 +213,6 @@ extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
 
 extern int     exim_chown_failure(int, const uschar*, uid_t, gid_t);
-inline int     exim_chown(const uschar*, uid_t, gid_t);
-inline int     exim_fchown(int, uid_t, gid_t, const uschar*);
 extern const uschar * exim_errstr(int);
 extern void    exim_exit(int, const uschar *);
 extern void    exim_nullstd(void);
@@ -591,36 +589,37 @@ extern void    version_init(void);
 extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
+
 /* exim_chown - in some NFSv4 setups *seemes* to be an issue with
-   chown(<exim-uid>, <exim-gid>).
+chown(<exim-uid>, <exim-gid>).
 
-   Probably because the idmapping is broken, misconfigured or set up in
-   an unusal way. (see Bug 2931). As I'm not sure, if this was a single
-   case of misconfiguration, or if there are more such broken systems
-   out, I try to impose as least impact as possible and for now just write
-   a panic log entry pointing to the bug report. You're encouraged to
-   contact the developers, if you experience this issue.
+Probably because the idmapping is broken, misconfigured or set up in
+an unusal way. (see Bug 2931). As I'm not sure, if this was a single
+case of misconfiguration, or if there are more such broken systems
+out, I try to impose as least impact as possible and for now just write
+a panic log entry pointing to the bug report. You're encouraged to
+contact the developers, if you experience this issue.
 
-   fd     the file descriptor (or -1 if not valid)
-   name   the file name for error messages or for file operations,
-          if fd is < 0
-   owner  the owner
-   group  the group
+fd     the file descriptor (or -1 if not valid)
+name   the file name for error messages or for file operations,
+  if fd is < 0
+owner  the owner
+group  the group
 
-   returns 0 on success, -1 on failure */
+returns 0 on success, -1 on failure */
 
-inline int
+static inline int
 exim_fchown(int fd, uid_t owner, gid_t group, const uschar *name)
 {
-return (0 == fchown(fd, owner, group))
-  ? 0 : exim_chown_failure(fd, name, owner, group);
+return fchown(fd, owner, group)
+  ? exim_chown_failure(fd, name, owner, group) : 0;
 }
 
-inline int
+static inline int
 exim_chown(const uschar *name, uid_t owner, gid_t group)
 {
-return (0 == chown(name, owner, group))
-  ? 0 : exim_chown_failure(-1, name, owner, group);
+return chown(CCS name, owner, group)
+  ? exim_chown_failure(-1, name, owner, group) : 0;
 }
 
 #endif  /* _FUNCTIONS_H_ */
