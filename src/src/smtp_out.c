@@ -695,12 +695,14 @@ smtp_read_response(void * sx0, uschar * buffer, int size, int okdigit,
 {
 smtp_context * sx = sx0;
 uschar * ptr = buffer;
-int count = 0, rc;
+int count = 0;
 
 errno = 0;  /* Ensure errno starts out zero */
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
 if (sx->pending_BANNER || sx->pending_EHLO)
+  {
+  int rc;
   if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
     {
     DEBUG(D_transport) debug_printf("failed reaping pipelined cmd responsess\n");
@@ -708,6 +710,7 @@ if (sx->pending_BANNER || sx->pending_EHLO)
     if (rc == DEFER) errno = ERRNO_TLSFAILURE;
     return FALSE;
     }
+  }
 #endif
 
 /* This is a loop to read and concatenate the lines that make up a multi-line

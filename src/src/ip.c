@@ -331,7 +331,10 @@ if (fastopen_blob && f.tcp_fastopen_ok)
 else
 #endif	/*TCP_FASTOPEN*/
   {
+#if defined(TCP_FASTOPEN) && defined(MSG_FASTOPEN)
 legacy_connect:
+#endif
+
   DEBUG(D_transport|D_v) if (fastopen_blob)
     debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
       address, (unsigned long)fastopen_blob->len);

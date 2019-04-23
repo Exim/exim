@@ -74,14 +74,14 @@ if (ob->client_send != NULL) ablock->client = TRUE;
 /* For interface, see auths/README */
 
 int
-auth_plaintext_server(auth_instance *ablock, uschar *data)
+auth_plaintext_server(auth_instance * ablock, uschar * data)
 {
-auth_plaintext_options_block *ob =
+auth_plaintext_options_block * ob =
   (auth_plaintext_options_block *)(ablock->options_block);
-const uschar *prompts = ob->server_prompts;
-uschar *clear, *end, *s;
+const uschar * prompts = ob->server_prompts;
+uschar * s;
 int number = 1;
-int len, rc;
+int rc;
 int sep = 0;
 
 /* Expand a non-empty list of prompt strings */
@@ -143,7 +143,6 @@ auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);
 const uschar * text = ob->client_send;
 const uschar * s;
-BOOL first = TRUE;
 int sep = 0;
 int auth_var_idx = 0, rc;
 int flags = AUTH_ITEM_FIRST;

@@ -1073,9 +1073,9 @@ sync_responses(smtp_context * sx, int count, int pending_DATA)
 address_item * addr = sx->sync_addr;
 smtp_transport_options_block * ob = sx->conn_args.ob;
 int yield = 0;
-int rc;
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
+int rc;
 if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
   return rc == FAIL ? -4 : -5;
 #endif
@@ -1427,8 +1427,6 @@ if (  sx->esmtp
   if (  require_auth == OK
      || verify_check_given_host(CUSS &ob->hosts_try_auth, host) == OK)
     {
-    auth_instance * au;
-
     DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
     fail_reason = US"no common mechanisms were found";
 
@@ -1441,6 +1439,7 @@ if (  sx->esmtp
       client function.  We are limited to supporting up to 16 authenticator
       public-names by the number of bits in a short. */
 
+      auth_instance * au;
       uschar bitnum;
       int rc;
 
@@ -2496,7 +2495,9 @@ if (  smtp_peer_options & OPTION_TLS
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
       it for this host. */
-GNUTLS_CONN_FAILED:
+#ifdef USE_GNUTLS
+  GNUTLS_CONN_FAILED:
+#endif
       DEBUG(D_tls) debug_printf("TLS session fail: %s\n", tls_errstr);
 
 # ifdef SUPPORT_DANE

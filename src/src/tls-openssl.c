@@ -114,7 +114,9 @@ change this guard and punt the issue for a while longer. */
 # ifndef EXIM_HAVE_OPENSSL_CIPHER_GET_ID
 #  define SSL_CIPHER_get_id(c) (c->id)
 # endif
-# include "tls-cipher-stdname.c"
+# ifndef MACRO_PREDEF
+#  include "tls-cipher-stdname.c"
+# endif
 #endif
 
 /*************************************************

@@ -976,47 +976,46 @@ vaguely_random_number(int max)
 #ifdef SUPPORT_TLS
 # undef vaguely_random_number
 #endif
-  static pid_t pid = 0;
-  pid_t p2;
-#if defined(HAVE_SRANDOM) && !defined(HAVE_SRANDOMDEV)
-  struct timeval tv;
-#endif
+static pid_t pid = 0;
+pid_t p2;
 
-  p2 = getpid();
-  if (p2 != pid)
+if ((p2 = getpid()) != pid)
+  {
+  if (pid != 0)
     {
-    if (pid != 0)
-      {
 
 #ifdef HAVE_ARC4RANDOM
-      /* cryptographically strong randomness, common on *BSD platforms, not
-      so much elsewhere.  Alas. */
-#ifndef NOT_HAVE_ARC4RANDOM_STIR
-      arc4random_stir();
-#endif
+    /* cryptographically strong randomness, common on *BSD platforms, not
+    so much elsewhere.  Alas. */
+# ifndef NOT_HAVE_ARC4RANDOM_STIR
+    arc4random_stir();
+# endif
 #elif defined(HAVE_SRANDOM) || defined(HAVE_SRANDOMDEV)
-#ifdef HAVE_SRANDOMDEV
-      /* uses random(4) for seeding */
-      srandomdev();
-#else
-      gettimeofday(&tv, NULL);
-      srandom(tv.tv_sec | tv.tv_usec | getpid());
-#endif
-#else
-      /* Poor randomness and no seeding here */
-#endif
-
-      }
-    pid = p2;
+# ifdef HAVE_SRANDOMDEV
+    /* uses random(4) for seeding */
+    srandomdev();
+# else
+    {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    srandom(tv.tv_sec | tv.tv_usec | getpid());
     }
+# endif
+#else
+    /* Poor randomness and no seeding here */
+#endif
+
+    }
+  pid = p2;
+  }
 
 #ifdef HAVE_ARC4RANDOM
-  return arc4random() % max;
+return arc4random() % max;
 #elif defined(HAVE_SRANDOM) || defined(HAVE_SRANDOMDEV)
-  return random() % max;
+return random() % max;
 #else
-  /* This one returns a 16-bit number, definitely not crypto-strong */
-  return random_number(max);
+/* This one returns a 16-bit number, definitely not crypto-strong */
+return random_number(max);
 #endif
 }
 
@@ -4934,7 +4933,7 @@ while (*s != 0)
       client_conn_ctx cctx;
       int timeout = 5;
       int save_ptr = yield->ptr;
-      FILE * fp;
+      FILE * fp = NULL;
       uschar * arg;
       uschar * sub_arg[4];
       uschar * server_name = NULL;

@@ -93,7 +93,7 @@ static header_line *
 header_add_backend(BOOL after, uschar *name, BOOL topnot, int type,
   const char *format, va_list ap)
 {
-header_line *h, *new;
+header_line *h, *new = NULL;
 header_line **hptr;
 
 uschar *p, *q;
@@ -110,10 +110,9 @@ string_from_gstring(&gs);
 /* Find where to insert this header */
 
 if (!name)
-  {
   if (after)
     {
-    hptr = &(header_last->next);
+    hptr = &header_last->next;
     h = NULL;
     }
   else
@@ -128,7 +127,6 @@ if (!name)
       hptr = &header_list->next;
     h = *hptr;
     }
-  }
 
 else
   {
@@ -159,7 +157,7 @@ else
     for (;;)
       {
       if (!h->next || !header_testname(h, name, len, FALSE)) break;
-      hptr = &(h->next);
+      hptr = &h->next;
       h = h->next;
       }
   }
@@ -168,7 +166,7 @@ else
 point, we have hptr pointing to the link field that will point to the new
 header, and h containing the following header, or NULL. */
 
-for (p = q = buffer; *p != 0; )
+for (p = q = buffer; *p; p = q)
   {
   for (;;)
     {
@@ -184,10 +182,9 @@ for (p = q = buffer; *p != 0; )
   new->next = h;
 
   *hptr = new;
-  hptr = &(new->next);
+  hptr = &new->next;
 
   if (!h) header_last = new;
-  p = q;
   }
 return new;
 }
@@ -228,7 +225,6 @@ void
 header_add_at_position(BOOL after, uschar *name, BOOL topnot, int type,
   const char *format, ...)
 {
-header_line * h;
 va_list ap;
 va_start(ap, format);
 (void) header_add_backend(after, name, topnot, type, format, ap);
