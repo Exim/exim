@@ -3,6 +3,7 @@ LOG: MAIN
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "DECLINE cannot route this one (DECLINE)"@some.host
 --------> b router <--------
@@ -23,6 +24,7 @@ no more routers
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "FAIL cannot route this one (FAIL)"@some.host
 --------> b router <--------
@@ -41,6 +43,7 @@ q router forced address failure
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "ERROR cannot route this one (ERROR)"@some.host
 --------> b router <--------
@@ -62,6 +65,7 @@ q router: defer for "ERROR cannot route this one (ERROR)"@some.host
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "DEFER cannot route this one (DEFER)"@some.host
 --------> b router <--------
@@ -81,6 +85,7 @@ q router: defer for "DEFER cannot route this one (DEFER)"@some.host
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
 --------> b router <--------
@@ -108,6 +113,7 @@ routed by q router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing PASS@some.host
 --------> b router <--------
@@ -147,6 +153,7 @@ routed by s router
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "FREEZE cannot route this one (FREEZE)"@some.host
 --------> b router <--------
@@ -166,6 +173,7 @@ q router: defer for "FREEZE cannot route this one (FREEZE)"@some.host
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 routing "REDIRECT postmaster@test.ex"@some.host
 --------> b router <--------

@@ -44,6 +44,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userb@test.ex <--------
 t1 transport entered

@@ -190,6 +190,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 x in "!bad"? yes (end of list)
 LOG: MAIN
   => x <x@y> R=accept T=appendfile

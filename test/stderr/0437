@@ -12,6 +12,7 @@ file lookup required for spool
 lookup yielded: spool
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
 search_tidyup called

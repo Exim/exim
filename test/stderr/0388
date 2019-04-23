@@ -3,6 +3,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
  locking TESTSUITE/spool/db/retry.lockfile
@@ -228,6 +229,7 @@ changed uid/gid: forcing real = effective
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaY-0005vi-00
  locking TESTSUITE/spool/db/retry.lockfile

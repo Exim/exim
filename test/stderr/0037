@@ -8,6 +8,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 rda_interpret (file): TESTSUITE/aux-var/0037.F
 expanded: TESTSUITE/aux-var/0037.F
 ssss bytes read from TESTSUITE/aux-var/0037.F

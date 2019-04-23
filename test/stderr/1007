@@ -5,6 +5,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
@@ -21,6 +22,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
@@ -39,6 +41,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
@@ -58,6 +61,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
@@ -77,6 +81,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1226
@@ -93,6 +98,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
   <: 1227
@@ -112,6 +118,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
   <; 1227; 1225
@@ -132,6 +139,7 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 local_interfaces overridden by -oX:
   <; ::0.1225; 0.0.0.0.1225; 0.0.0.0.1226

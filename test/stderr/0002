@@ -1,6 +1,7 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
  ┌considering: primary_hostname: $primary_hostname
  ├──expanding: primary_hostname: $primary_hostname
  └─────result: primary_hostname: myhost.test.ex
@@ -84,6 +85,7 @@ LOG: MAIN PANIC
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
  /considering: primary_hostname: $primary_hostname
  |--expanding: primary_hostname: $primary_hostname
  \_____result: primary_hostname: myhost.test.ex
@@ -167,6 +169,7 @@ LOG: MAIN PANIC
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
  ┌considering: -oMa  sender_host_address = $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  └─────result: -oMa  sender_host_address = V4NET.0.0.1
@@ -199,6 +202,7 @@ admin user
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
  ┌considering: -oMa  sender_host_address = $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  └─────result: -oMa  sender_host_address = V4NET.0.0.1
@@ -503,6 +507,7 @@ changed uid/gid: -C, -D, -be or -bf forces real uid
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)

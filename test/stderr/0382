@@ -8,6 +8,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 running system filter
 Filtering did not set up a significant delivery.
 Normal delivery will occur.
@@ -24,6 +25,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 running system filter
 Filtering did not set up a significant delivery.
 Normal delivery will occur.
@@ -41,6 +43,7 @@ LOG: MAIN
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 LOG: MAIN

@@ -1,6 +1,7 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
@@ -39,6 +40,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userz@test.ex>
   SMTP>> DATA
@@ -57,6 +59,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<usery@test.ex>
   SMTP>> DATA
@@ -80,6 +83,7 @@ LOG: queue_run MAIN
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
@@ -118,6 +122,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userc@test.ex>
   SMTP>> DATA
@@ -136,6 +141,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userb@test.ex>
   SMTP>> DATA

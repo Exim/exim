@@ -22,6 +22,7 @@ getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
@@ -57,6 +58,7 @@ getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
@@ -98,6 +100,7 @@ getpwnam() succeeded uid=uuuu gid=gggg
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available

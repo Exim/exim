@@ -1,6 +1,7 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 set_process_info: pppp running the queue (single queue run)
 LOG: queue_run MAIN
   Start queue run: pid=pppp
@@ -68,6 +69,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaZ-0005vi-00
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>

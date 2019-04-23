@@ -4192,6 +4192,7 @@ if (!unprivileged &&                      /* originally had root AND */
 else
   {
   int rv;
+  DEBUG(D_any) debug_printf("dropping to exim gid; retaining priv uid\n");
   rv = setgid(exim_gid);
   /* Impact of failure is that some stuff might end up with an incorrect group.
   We track this for failures from root, since any attempt to change privilege

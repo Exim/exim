@@ -1,6 +1,7 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 discarded duplicate host ten-1.test.ex (MX=8)
 fully qualified name = mxt9.test.ex
 host_find_bydns yield = HOST_FOUND (3); returned hosts:

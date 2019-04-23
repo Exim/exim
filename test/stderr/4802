@@ -1,6 +1,7 @@
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 DNS lookup of mx-sec-a-aa.test.ex (MX) using fakens
 DNS lookup of mx-sec-a-aa.test.ex (MX) succeeded
 DNS lookup of a-aa.test.ex (A) using fakens
@@ -10,6 +11,7 @@ DNS lookup of a-aa.test.ex (A/AAAA) requested AD, but got AA
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
+dropping to exim gid; retaining priv uid
 DNS lookup of mx-aa-a-sec.test.ex (MX) using fakens
 DNS lookup of mx-aa-a-sec.test.ex (MX) succeeded
 DNS lookup of mx-aa-a-sec.test.ex (MX) requested AD, but got AA

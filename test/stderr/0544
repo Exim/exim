@@ -124,6 +124,7 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+dropping to exim gid; retaining priv uid
  ┌considering: $domain
  ├──expanding: $domain
  └─────result: domain1.ex
