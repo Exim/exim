@@ -256,8 +256,10 @@ static BOOL gnutls_buggy_ocsp = FALSE;
 
 /* Set this to control gnutls_global_set_log_level(); values 0 to 9 will setup
 the library logging; a value less than 0 disables the calls to set up logging
-callbacks.  Possibly GNuTLS also looks for an environment variable
-"GNUTLS_DEBUG_LEVEL". */
+callbacks.  GNuTLS also looks for an environment variable - except not for
+setuid binaries, making it useless - "GNUTLS_DEBUG_LEVEL".
+Allegedly the testscript line "GNUTLS_DEBUG_LEVEL=9 sudo exim ..." would work,
+but the env var must be added to /etc/sudoers too. */
 #ifndef EXIM_GNUTLS_LIBRARY_LOG_LEVEL
 # define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
 #endif
@@ -2022,6 +2024,34 @@ for (unsigned i = d->size; i > 0; i--, s++)
 return g;
 }
 
+static void
+post_handshake_debug(exim_gnutls_state_st * state)
+{
+debug_printf("gnutls_handshake was successful\n");
+#ifdef SUPPORT_GNUTLS_SESS_DESC
+debug_printf("%s\n", gnutls_session_get_desc(state->session));
+#endif
+#ifdef SUPPORT_GNUTLS_KEYLOG
+if (gnutls_protocol_get_version(state->session) < GNUTLS_TLS1_3)
+  {
+  gnutls_datum_t c, s;
+  gstring * gc, * gs;
+  /* we only want the client random and the master secret */
+  gnutls_session_get_random(state->session, &c, &s);
+  gnutls_session_get_master_secret(state->session, &s);
+  gc = ddump(&c);
+  gs = ddump(&s);
+  debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
+  }
+else
+  debug_printf("To get keying info for TLS1.3 is hard:\n"
+    " set environment variable SSLKEYLOGFILE to a filename writable by uid exim\n"
+    " add SSLKEYLOGFILE to keep_environment in the exim config\n"
+    " run exim as root\n"
+    " if using sudo, add SSLKEYLOGFILE to env_keep in /etc/sudoers\n");
+#endif
+}
+
 /* ------------------------------------------------------------------------ */
 /* Exported functions */
 
@@ -2168,24 +2198,7 @@ if (rc != GNUTLS_E_SUCCESS)
   return FAIL;
   }
 
-DEBUG(D_tls)
-  {
-  debug_printf("gnutls_handshake was successful\n");
-#ifdef SUPPORT_GNUTLS_SESS_DESC
-  debug_printf("%s\n", gnutls_session_get_desc(state->session));
-#endif
-#ifdef SUPPORT_GNUTLS_KEYLOG
-  {
-  gnutls_datum_t c, s;
-  gstring * gc, * gs;
-  gnutls_session_get_random(state->session, &c, &s);
-  gnutls_session_get_master_secret(state->session, &s);
-  gc = ddump(&c);
-  gs = ddump(&s);
-  debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
-  }
-#endif
-  }
+DEBUG(D_tls) post_handshake_debug(state);
 
 /* Verify after the fact */
 
@@ -2492,24 +2505,7 @@ if (rc != GNUTLS_E_SUCCESS)
   return FALSE;
   }
 
-DEBUG(D_tls)
-  {
-  debug_printf("gnutls_handshake was successful\n");
-#ifdef SUPPORT_GNUTLS_SESS_DESC
-  debug_printf("%s\n", gnutls_session_get_desc(state->session));
-#endif
-#ifdef SUPPORT_GNUTLS_KEYLOG
-  {
-  gnutls_datum_t c, s;
-  gstring * gc, * gs;
-  gnutls_session_get_random(state->session, &c, &s);
-  gnutls_session_get_master_secret(state->session, &s);
-  gc = ddump(&c);
-  gs = ddump(&s);
-  debug_printf("CLIENT_RANDOM %.*s %.*s\n", (int)gc->ptr, gc->s, (int)gs->ptr, gs->s);
-  }
-#endif
-  }
+DEBUG(D_tls) post_handshake_debug(state);
 
 /* Verify late */
 
