@@ -590,7 +590,7 @@ extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
 
-#ifndef MACRO_PREDEF
+#if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 /* exim_chown - in some NFSv4 setups *seemes* to be an issue with
 chown(<exim-uid>, <exim-gid>).
 
