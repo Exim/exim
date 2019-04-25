@@ -45,6 +45,15 @@ JH/13 Bug 2386: Fix builds with Dane under LibreSSL 2.9.0 onward.  Some old
       API was removed, so update to use the newer ones.
 
 
+JH/16 GnuTLS: rework ciphersuite strings under recent library versions.  Thanks
+      to changes apparently associated with TLS1.3 handling some of the APIs
+      previously used were either nonfunctional or inappropriate.  Strings
+      like TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM__AEAD:256
+      and TLS1.2:ECDHE_SECP256R1__RSA_SHA256__AES_128_CBC__SHA256:128 replace
+      the previous TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256 .
+      This affects log line X= elements, the $tls_{in,out}_cipher variables,
+      and the use of specific cipher names in the encrypted= ACL condition.
+
 
 Exim version 4.92
 -----------------
