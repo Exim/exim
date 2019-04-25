@@ -1516,7 +1516,11 @@ state->peerdn = NULL;
 cipher = gnutls_cipher_get(state->session);
 protocol = gnutls_protocol_get_version(state->session);
 mac = gnutls_mac_get(state->session);
-kx = protocol < GNUTLS_TLS1_3 ? gnutls_kx_get(state->session) : 0;
+kx =
+#ifdef GNUTLS_TLS1_3
+    protocol >= GNUTLS_TLS1_3 ? 0 :
+#endif
+  gnutls_kx_get(state->session);
 
 old_pool = store_pool;
   {
