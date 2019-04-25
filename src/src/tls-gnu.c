@@ -1516,11 +1516,40 @@ state->peerdn = NULL;
 cipher = gnutls_cipher_get(state->session);
 protocol = gnutls_protocol_get_version(state->session);
 mac = gnutls_mac_get(state->session);
-kx = gnutls_kx_get(state->session);
+kx = protocol < GNUTLS_TLS1_3 ? gnutls_kx_get(state->session) : 0;
 
 old_pool = store_pool;
   {
   store_pool = POOL_PERM;
+
+#ifdef SUPPORT_GNUTLS_SESS_DESC
+    {
+    gstring * g = NULL;
+    uschar * s = US gnutls_session_get_desc(state->session), c;
+
+    /* Nikos M suggests we use this by preference.  It returns like:
+    (TLS1.3)-(ECDHE-SECP256R1)-(RSA-PSS-RSAE-SHA256)-(AES-256-GCM)
+
+    For partial back-compat, put a colon after the TLS version, replace the
+    )-( grouping with __, replace in-group - with _ and append the :keysize. */
+
+    /* debug_printf("peer_status: gnutls_session_get_desc %s\n", s); */
+
+    for (s++; (c = *s) && c != ')'; s++) g = string_catn(g, s, 1);
+    g = string_catn(g, US":", 1);
+    if (*s) s++;		/* now on _ between groups */
+    while ((c = *s))
+      {
+      for (*++s && ++s; (c = *s) && c != ')'; s++) g = string_catn(g, c == '-' ? US"_" : s, 1);
+      /* now on ) closing group */
+      if ((c = *s) && *++s == '-') g = string_catn(g, US"__", 2);
+      /* now on _ between groups */
+      }
+    g = string_catn(g, US":", 1);
+    g = string_cat(g, string_sprintf("%d", (int) gnutls_cipher_get_key_size(cipher) * 8));
+    state->ciphersuite = string_from_gstring(g);
+    }
+#else
   state->ciphersuite = string_sprintf("%s:%s:%d",
       gnutls_protocol_get_name(protocol),
       gnutls_cipher_suite_get_name(kx, cipher, mac),
@@ -1531,7 +1560,12 @@ old_pool = store_pool;
   releases did return "TLS 1.0"; play it safe, just in case. */
 
   for (uschar * p = state->ciphersuite; *p; p++) if (isspace(*p)) *p = '-';
+#endif
+
+/* debug_printf("peer_status: ciphersuite %s\n", state->ciphersuite); */
+
   state->tlsp->cipher = state->ciphersuite;
+  state->tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
 
   state->tlsp->cipher_stdname = cipher_stdname_kcm(kx, cipher, mac);
   }
