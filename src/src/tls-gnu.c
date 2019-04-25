@@ -2070,7 +2070,11 @@ debug_printf("gnutls_handshake was successful\n");
 debug_printf("%s\n", gnutls_session_get_desc(state->session));
 #endif
 #ifdef SUPPORT_GNUTLS_KEYLOG
+# ifdef GNUTLS_TLS1_3
 if (gnutls_protocol_get_version(state->session) < GNUTLS_TLS1_3)
+#else
+if (TRUE)
+#endif
   {
   gnutls_datum_t c, s;
   gstring * gc, * gs;
