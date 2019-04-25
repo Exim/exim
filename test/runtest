@@ -627,7 +627,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     /"TLS1.x:ke-"
 	. (defined($+{psk}) ? $+{psk} : "")
 	. (defined($+{auth}) ? $+{auth} : "")
-	. "-AES256-SHAnnn:xxx"/genx;
+	. "-AES256-SHAnnn:xxx"/gex;
   s/TLS1.2:RSA__CAMELLIA_256_GCM(_SHA384)?:256/TLS1.2:RSA_CAMELLIA_256_GCM-SHAnnn:256/g;
   s/\b(ECDHE-(RSA|ECDSA)-AES256-SHA|DHE-RSA-AES256-SHA256)\b/ke-$2-AES256-SHAnnn/g;
 
