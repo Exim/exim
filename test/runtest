@@ -641,7 +641,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\b(ECDHE-(RSA|ECDSA)-AES256-SHA|DHE-RSA-AES256-SHA256)\b/ke-$2-AES256-SHAnnn/g;
 
   # GnuTLS library error message changes
-  s/No certificate was found/The peer did not send any certificate/g;
+  s/(No certificate was found|Certificate is required)/The peer did not send any certificate/g;
 #(dodgy test?)  s/\(certificate verification failed\): invalid/\(gnutls_handshake\): The peer did not send any certificate./g;
   s/\(gnutls_priority_set\): No or insufficient priorities were set/\(gnutls_handshake\): Could not negotiate a supported cipher suite/g;
   s/\(gnutls_handshake\): \KNo supported cipher suites have been found.$/Could not negotiate a supported cipher suite./;
@@ -1281,7 +1281,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/ARC: AMS signing: privkey PEM-block import: error:\K[0-9A-F]{8}:(PEM routines):get_name:(no start line)/0906D06C:$1:PEM_read_bio:$2/;
 
     # gnutls version variances
-    if (/TLS error on connection \(recv\): .* Decode error/)
+    if (/TLS error on connection \(recv\): .* (Decode error|peer did not send any certificate)/)
       {
       my $prev = $_;
       $_ = <IN>;
