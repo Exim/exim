@@ -590,6 +590,7 @@ extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
 
+#ifndef MACRO_PREDEF
 /* exim_chown - in some NFSv4 setups *seemes* to be an issue with
 chown(<exim-uid>, <exim-gid>).
 
@@ -621,6 +622,7 @@ exim_chown(const uschar *name, uid_t owner, gid_t group)
 return chown(CCS name, owner, group)
   ? exim_chown_failure(-1, name, owner, group) : 0;
 }
+#endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */
 
