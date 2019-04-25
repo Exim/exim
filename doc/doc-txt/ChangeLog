@@ -77,6 +77,9 @@ HS/02 Bug 2392: exigrep does case sensitive *option* processing (as it
       did for all versions <4.90). Notably -M, -m, --invert, -I may be
       affected.
 
+JH/15 Use unsigned when creating bitmasks in macros, to avoid build errors
+      on some platforms for bit 31.
+
 
 Exim version 4.92
 -----------------

@@ -339,11 +339,11 @@ platforms, but this ensures bit vectors always work the same way. */
 
 /* This macro is for single-word bit vectors: the debug selector,
 and the first word of the log selector. */
-#define BIT(n) (1 << (n))
+#define BIT(n) (1U << (n))
 
 /* And these are for multi-word vectors. */
-#define BITWORD(n) (     (n) / BITWORDSIZE)
-#define BITMASK(n) (1 << (n) % BITWORDSIZE)
+#define BITWORD(n) (      (n) / BITWORDSIZE)
+#define BITMASK(n) (1U << (n) % BITWORDSIZE)
 
 #define BIT_CLEAR(s,z,n) ((s)[BITWORD(n)] &= ~BITMASK(n))
 #define BIT_SET(s,z,n)   ((s)[BITWORD(n)] |=  BITMASK(n))
@@ -378,12 +378,12 @@ enum {
   Di_local_scan = 1,
 
   Di_iota = IOTA_INIT(2),
-  DEBUG_BIT(acl),
+  DEBUG_BIT(acl),		/* 2 */
   DEBUG_BIT(auth),
   DEBUG_BIT(deliver),
   DEBUG_BIT(dns),
   DEBUG_BIT(dnsbl),
-  DEBUG_BIT(exec),
+  DEBUG_BIT(exec),		/* 7 */
   DEBUG_BIT(expand),
   DEBUG_BIT(filter),
   DEBUG_BIT(hints_lookup),
@@ -391,7 +391,7 @@ enum {
   DEBUG_BIT(ident),
   DEBUG_BIT(interface),
   DEBUG_BIT(lists),
-  DEBUG_BIT(load),
+  DEBUG_BIT(load),		/* 15 */
   DEBUG_BIT(lookup),
   DEBUG_BIT(memory),
   DEBUG_BIT(noutf8),
@@ -399,7 +399,7 @@ enum {
   DEBUG_BIT(process_info),
   DEBUG_BIT(queue_run),
   DEBUG_BIT(receive),
-  DEBUG_BIT(resolver),
+  DEBUG_BIT(resolver),		/* 23 */
   DEBUG_BIT(retry),
   DEBUG_BIT(rewrite),
   DEBUG_BIT(route),
@@ -407,7 +407,7 @@ enum {
   DEBUG_BIT(tls),
   DEBUG_BIT(transport),
   DEBUG_BIT(uid),
-  DEBUG_BIT(verify),
+  DEBUG_BIT(verify),		/* 31 */
 };
 
 /* Multi-bit debug masks */
