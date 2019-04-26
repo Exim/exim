@@ -6,7 +6,7 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 #ifndef STAND_ALONE
-#include "../exim.h"
+#include "exim.h"
 
 /* For stand-alone testing, we need to have the structure defined, and
 to be able to do I/O */

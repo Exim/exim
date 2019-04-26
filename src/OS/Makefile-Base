@@ -502,7 +502,7 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
         filtertest.o globals.o dkim.o dkim_transport.o hash.o \
-        header.o host.o ip.o log.o lss.o match.o moan.o \
+        header.o host.o ip.o log.o lss.o match.o md5.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
@@ -548,12 +548,12 @@ exim_dumpdb: $(OBJ_DUMPDB)
 
 # The utility for interrogating/fixing the contents of an exim database
 
-OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o
+OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o util-md5.o
 
-exim_fixdb:  $(OBJ_FIXDB) buildauths
+exim_fixdb:  $(OBJ_FIXDB)
 	@echo "$(LNCC) -o exim_fixdb"
 	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $(OBJ_FIXDB) \
-	  auths/auths.a $(LIBS) $(EXTRALIBS) $(DBMLIB)
+	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_fixdb; \
 	  $(STRIP_COMMAND) exim_fixdb; \
@@ -745,6 +745,10 @@ util-string.o:   $(HDRS) string.c
 	@echo "$(CC) -DCOMPILE_UTILITY string.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-string.o string.c
 
+util-md5.o:   $(HDRS) md5.c
+	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-md5.o md5.c
+
 util-queue.o:   $(HDRS) queue.c
 	@echo "$(CC) -DCOMPILE_UTILITY queue.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-queue.o queue.c
@@ -794,6 +798,7 @@ ip.o:            $(HDRS) ip.c
 log.o:           $(HDRS) log.c
 lss.o:           $(HDRS) lss.c
 match.o:         $(HDRS) match.c
+md5.o:           $(HDRS) md5.c
 moan.o:          $(HDRS) moan.c
 os.o:            $(HDRS) $(OS_C_INCLUDES) os.c
 parse.o:         $(HDRS) parse.c
