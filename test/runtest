@@ -617,23 +617,29 @@ RESET_AFTER_EXTRA_LINE_READ:
   #   TLS1.2:ECDHE_SECP256R1__ECDSA_SHA512__AES_256_GCM:256
   #   TLS1.2:ECDHE_RSA_SECP256R1__AES_256_GCM:256 (! 3.5.18 !)
   #   TLS1.2:RSA__CAMELLIA_256_GCM:256	(leave the cipher name)
+  #   TLS1.2-PKIX:RSA__AES_128_GCM__AEAD:128 (the -PKIX seems to be a 3.1.20 thing)
+  #   TLS1.2-PKIX:ECDHE_RSA_SECP521R1__AES_256_GCM__AEAD:256
   #
   #   X=TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256
   #   X=TLS1.2:RSA_AES_256_CBC_SHA1:256
   #   X=TLS1.1:RSA_AES_256_CBC_SHA1:256
+  #   X=TLS1.0:RSA_AES_256_CBC_SHA1:256
   #   X=TLS1.0:DHE_RSA_AES_256_CBC_SHA1:256
+  #   X=TLS1.0-PKIX:RSA__AES_256_CBC__SHA1:256
   # and as stand-alone cipher:
   #   ECDHE-RSA-AES256-SHA
   #   DHE-RSA-AES256-SHA256
   #   DHE-RSA-AES256-SHA
   # picking latter as canonical simply because regex easier that way.
   s/\bDHE_RSA_AES_128_CBC_SHA1:128/RSA-AES256-SHA1:256/g;
-  s/TLS1.[0123]:								# TLS version
-    ((EC)?DHE(_((?<psk>PSK)_)?((?<auth>RSA|ECDSA)_)?(SECP256R1|X25519))?__?)?	# key-exchange
-    ((?<auth>RSA|ECDSA)((_PSS_RSAE)?_SHA(512|256))?__?)?			# authentication
-    AES_(256|128)_(CBC|GCM)							# cipher
-    (__?SHA(1|256|384))?:							# PRF
-    (256|128)									# cipher strength
+  s/TLS1.[0123](-PKIX)?:						# TLS version
+    ((EC)?DHE(_((?<psk>PSK)_)?((?<auth>RSA|ECDSA)_)?
+				(SECP(256|521)R1|X25519))?__?)?		# key-exchange
+    ((?<auth>RSA|ECDSA)((_PSS_RSAE)?_SHA(512|256))?__?)?		# authentication
+    AES_(256|128)_(CBC|GCM)						# cipher
+    (__?AEAD)?								# pseudo-MAC
+    (__?SHA(1|256|384))?						# PRF
+    :(256|128)								# cipher strength
     /"TLS1.x:ke-"
 	. (defined($+{psk}) ? $+{psk} : "")
 	. (defined($+{auth}) ? $+{auth} : "")
