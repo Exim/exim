@@ -220,18 +220,8 @@ int     string_datestamp_type  = -1;
 
 BOOL    timestamps_utc         = FALSE;
 tls_support tls_in = {
- {-1},	/* tls_active */
- 0,	/* bits */
- FALSE,	/* tls_certificate_verified */
-#ifdef SUPPORT_DANE
- FALSE, /* dane_verified */
- 0,     /* tlsa_usage */
-#endif
- NULL,	/* tls_cipher */
- FALSE,	/* tls_on_connect */
- NULL,	/* tls_on_connect_ports */
- NULL,	/* tls_peerdn */
- NULL	/* tls_sni */
+ .active = { .sock = -1 }
+ /* remainder zero/null/false */
 };
 
 tree_node *tree_duplicates     = NULL;

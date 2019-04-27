@@ -953,21 +953,18 @@ else if (isgroup)
 defined. */
 
 if (have_auth)
-  {
   if (!support_crypteq) fprintf(new, "/* Force SUPPORT_CRYPTEQ for AUTH */\n"
     "#define SUPPORT_CRYPTEQ\n");
-  }
 
 /* Check poll() for timer functionality.
 Some OS' have released with it broken. */
 
   {
   struct timeval before, after;
-  int rc;
   size_t us;
 
   gettimeofday(&before, NULL);
-  rc = poll(NULL, 0, 500);
+  (void) poll(NULL, 0, 500);
   gettimeofday(&after, NULL);
 
   us = (after.tv_sec - before.tv_sec) * 1000000 +
