@@ -260,6 +260,7 @@ while ((c = *s))
 	  while ((c = *++s) && c != ';')
 	    if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
 	      g = string_catn(g, s, 1);
+	  if (!g) return US"no b= value";
 	  al->b.data = string_from_gstring(g);
 	  al->b.len = g->ptr;
 	  gstring_reset_unused(g);
@@ -276,6 +277,7 @@ while ((c = *s))
 	  while ((c = *++s) && c != ';')
 	    if (c != ' ' && c != '\t' && c != '\n' && c != '\r')
 	      g = string_catn(g, s, 1);
+	  if (!g) return US"no bh= value";
 	  al->bh.data = string_from_gstring(g);
 	  al->bh.len = g->ptr;
 	  gstring_reset_unused(g);
