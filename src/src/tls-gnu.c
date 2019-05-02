@@ -237,7 +237,7 @@ setuid binaries, making it useless - "GNUTLS_DEBUG_LEVEL".
 Allegedly the testscript line "GNUTLS_DEBUG_LEVEL=9 sudo exim ..." would work,
 but the env var must be added to /etc/sudoers too. */
 #ifndef EXIM_GNUTLS_LIBRARY_LOG_LEVEL
-# define EXIM_GNUTLS_LIBRARY_LOG_LEVEL 9
+# define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
 #endif
 
 #ifndef EXIM_CLIENT_DH_MIN_BITS
