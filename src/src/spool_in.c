@@ -667,6 +667,11 @@ for (;;)
 	tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
       else if (Ustrncmp(q, "ocsp", 4) == 0)
 	tls_in.ocsp = big_buffer[10] - '0';
+# ifdef EXPERIMENTAL_TLS_RESUME
+      else if (Ustrncmp(q, "resumption", 10) == 0)
+	tls_in.resumption = big_buffer[16] - 'A';
+# endif
+
       }
     break;
 #endif

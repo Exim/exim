@@ -10,7 +10,7 @@
 
 void     dbfn_close(open_db *);
 int      dbfn_delete(open_db *, const uschar *);
-open_db *dbfn_open(uschar *, int, open_db *, BOOL);
+open_db *dbfn_open(uschar *, int, open_db *, BOOL, BOOL);
 void    *dbfn_read_with_length(open_db *, const uschar *, int *);
 uschar  *dbfn_scan(open_db *, BOOL, EXIM_CURSOR **);
 int      dbfn_write(open_db *, const uschar *, void *, int);

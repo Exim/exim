@@ -3980,7 +3980,13 @@ g = add_host_info_for_log(g);
 
 #ifdef SUPPORT_TLS
 if (LOGGING(tls_cipher) && tls_in.cipher)
+  {
   g = string_append(g, 2, US" X=", tls_in.cipher);
+# ifdef EXPERIMENTAL_TLS_RESUME
+  if (LOGGING(tls_resumption) && tls_in.resumption & RESUME_USED)
+    g = string_catn(g, US"*", 1);
+# endif
+  }
 if (LOGGING(tls_certificate_verified) && tls_in.cipher)
   g = string_append(g, 2, US" CV=", tls_in.certificate_verified ? "yes":"no");
 if (LOGGING(tls_peerdn) && tls_in.peerdn)

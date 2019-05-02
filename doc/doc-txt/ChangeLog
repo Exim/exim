@@ -89,6 +89,8 @@ JH/16 GnuTLS: rework ciphersuite strings under recent library versions.  Thanks
       This affects log line X= elements, the $tls_{in,out}_cipher variables,
       and the use of specific cipher names in the encrypted= ACL condition.
 
+JH/17 OpenSSL: the default openssl_options now disables ssl_v3.
+
 
 Exim version 4.92
 -----------------

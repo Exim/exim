@@ -367,6 +367,9 @@ static optionlist optionlist_config[] = {
   { "tls_privatekey",           opt_stringptr,   &tls_privatekey },
   { "tls_remember_esmtp",       opt_bool,        &tls_remember_esmtp },
   { "tls_require_ciphers",      opt_stringptr,   &tls_require_ciphers },
+# ifdef EXPERIMENTAL_TLS_RESUME
+  { "tls_resumption_hosts",     opt_stringptr,   &tls_resumption_hosts },
+# endif
   { "tls_try_verify_hosts",     opt_stringptr,   &tls_try_verify_hosts },
   { "tls_verify_certificates",  opt_stringptr,   &tls_verify_certificates },
   { "tls_verify_hosts",         opt_stringptr,   &tls_verify_hosts },

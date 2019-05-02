@@ -140,7 +140,7 @@ if (options & vopt_callout_no_cache)
   {
   HDEBUG(D_verify) debug_printf("callout cache: disabled by no_cache\n");
   }
-else if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE)))
+else if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
   {
   HDEBUG(D_verify) debug_printf("callout cache: not available\n");
   }
@@ -313,7 +313,7 @@ implying some kind of I/O error. We don't want to write the cache in that case.
 Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
 
 if (dom_rec->result != ccache_unknown)
-  if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE)))
+  if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
     {
     HDEBUG(D_verify) debug_printf("callout cache: not available\n");
     }
@@ -335,7 +335,7 @@ is disabled. */
 if (done  &&  addr_rec->result != ccache_unknown)
   {
   if (!dbm_file)
-    dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE);
+    dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE);
   if (!dbm_file)
     {
     HDEBUG(D_verify) debug_printf("no callout cache available\n");
@@ -3245,7 +3245,7 @@ int
 verify_check_host(uschar **listptr)
 {
 return verify_check_this_host(CUSS listptr, sender_host_cache, NULL,
-  (sender_host_address == NULL)? US"" : sender_host_address, NULL);
+  sender_host_address ? sender_host_address : US"", NULL);
 }
 
 

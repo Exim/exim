@@ -20,6 +20,9 @@ Version 4.93
 
  5. A case_insensitive option for verify=not_blind.
 
+ 6. EXPERIMENTAL_TLS_RESUME optional build feature.  See the experimental.spec
+    file.
+
 
 Version 4.92
 --------------

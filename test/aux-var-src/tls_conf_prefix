@@ -1,4 +1,4 @@
-keep_environment = PATH
+keep_environment = PATH:SSLKEYLOGFILE
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 spool_directory = DIR/spool

@@ -751,6 +751,9 @@ static var_entry var_table[] = {
   { "tls_in_ourcert",      vtype_cert,        &tls_in.ourcert },
   { "tls_in_peercert",     vtype_cert,        &tls_in.peercert },
   { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
+#ifdef EXPERIMENTAL_TLS_RESUME
+  { "tls_in_resumption",   vtype_int,         &tls_in.resumption },
+#endif
 #if defined(SUPPORT_TLS)
   { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
 #endif
@@ -765,6 +768,9 @@ static var_entry var_table[] = {
   { "tls_out_ourcert",     vtype_cert,        &tls_out.ourcert },
   { "tls_out_peercert",    vtype_cert,        &tls_out.peercert },
   { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
+#ifdef EXPERIMENTAL_TLS_RESUME
+  { "tls_out_resumption",  vtype_int,         &tls_out.resumption },
+#endif
 #if defined(SUPPORT_TLS)
   { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
 #endif
@@ -5039,7 +5045,7 @@ while (*s != 0)
             port = ntohs(service_info->s_port);
             }
 
-	  /*XXX we trust that the request is idempotent.  Hmm. */
+	  /*XXX we trust that the request is idempotent for TFO.  Hmm. */
 	  cctx.sock = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
 		  timeout, &host, &expand_string_message,
 		  do_tls ? NULL : &reqstr);

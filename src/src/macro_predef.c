@@ -200,6 +200,9 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_PIPE_CONNECT
   builtin_macro_create(US"_HAVE_PIPE_CONNECT");
 #endif
+#ifdef EXPERIMENTAL_TLS_RESUME
+  builtin_macro_create(US"_HAVE_TLS_RESUME");
+#endif
 
 #ifdef LOOKUP_LSEARCH
   builtin_macro_create(US"_HAVE_LOOKUP_LSEARCH");
@@ -287,7 +290,7 @@ options_routers();
 options_transports();
 options_auths();
 options_logging();
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#if defined(SUPPORT_TLS)
 options_tls();
 #endif
 }

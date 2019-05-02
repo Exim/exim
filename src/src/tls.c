@@ -20,8 +20,10 @@ functions from the OpenSSL or GNU TLS libraries. */
 #include "transports/smtp.h"
 
 #if defined(MACRO_PREDEF) && defined(SUPPORT_TLS)
-# ifndef USE_GNUTLS
-#  include "macro_predef.h"
+# include "macro_predef.h"
+# ifdef USE_GNUTLS
+#  include "tls-gnu.c"
+# else
 #  include "tls-openssl.c"
 # endif
 #endif

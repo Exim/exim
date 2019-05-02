@@ -47,7 +47,7 @@ deliberate; the dbfn_open() function - which is an Exim function - always tries
 to create if it can't open a read/write file. It expects only O_RDWR or
 O_RDONLY as its argument. */
 
-if (!(dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE)))
+if (!(dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   return FALSE;
 
 /* See if there is a record for this host or queue run; if there is, we cannot
@@ -101,7 +101,7 @@ dbdata_serialize *serial_record;
 
 DEBUG(D_transport) debug_printf("end serialized: %s\n", key);
 
-if (  !(dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE))
+if (  !(dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE))
    || !(serial_record = dbfn_read(dbm_file, key))
    )
   return;

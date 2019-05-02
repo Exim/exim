@@ -102,38 +102,12 @@ them. Also, the tls_ variables are now always visible.  Note that these are
 only used for smtp connections, not for service-daemon access. */
 
 tls_support tls_in = {
- .active =		{.sock = -1},
- .bits =		0,
- .certificate_verified = FALSE,
-#ifdef SUPPORT_DANE
- .dane_verified =	FALSE,
- .tlsa_usage =		0,
-#endif
- .cipher =		NULL,
- .on_connect =		FALSE,
- .on_connect_ports =	NULL,
- .ourcert =		NULL,
- .peercert =		NULL,
- .peerdn =		NULL,
- .sni =			NULL,
- .ocsp =		OCSP_NOT_REQ
+ .active =		{.sock = -1}
+ /* all other elements zero */
 };
 tls_support tls_out = {
  .active =		{.sock = -1},
- .bits =		0,
- .certificate_verified = FALSE,
-#ifdef SUPPORT_DANE
- .dane_verified =	FALSE,
- .tlsa_usage =		0,
-#endif
- .cipher =		NULL,
- .on_connect =		FALSE,
- .on_connect_ports =	NULL,
- .ourcert =		NULL,
- .peercert =		NULL,
- .peerdn =		NULL,
- .sni =			NULL,
- .ocsp =		OCSP_NOT_REQ
+ /* all other elements zero */
 };
 
 uschar *dsn_envid              = NULL;
@@ -161,6 +135,9 @@ uschar *tls_ocsp_file          = NULL;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
+# ifdef EXPERIMENTAL_TLS_RESUME
+uschar *tls_resumption_hosts   = NULL;
+# endif
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;
@@ -1047,7 +1024,8 @@ uschar *log_file_path          = US LOG_FILE_PATH
 int     log_notall[]           = {
   -1
 };
-bit_table log_options[]        = { /* must be in alphabetical order */
+bit_table log_options[]        = { /* must be in alphabetical order,
+				with definitions from enum logbit. */
   BIT_TABLE(L, 8bitmime),
   BIT_TABLE(L, acl_warn_skipped),
   BIT_TABLE(L, address_rewrite),
@@ -1105,6 +1083,7 @@ bit_table log_options[]        = { /* must be in alphabetical order */
   BIT_TABLE(L, tls_certificate_verified),
   BIT_TABLE(L, tls_cipher),
   BIT_TABLE(L, tls_peerdn),
+  BIT_TABLE(L, tls_resumption),
   BIT_TABLE(L, tls_sni),
   BIT_TABLE(L, unknown_in_list),
 };

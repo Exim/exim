@@ -249,6 +249,9 @@ if (tls_in.ourcert)
   fprintf(fp, "-tls_ourcert %s\n", CS big_buffer);
   }
 if (tls_in.ocsp)	 fprintf(fp, "-tls_ocsp %d\n",   tls_in.ocsp);
+# ifdef EXPERIMENTAL_TLS_RESUME
+fprintf(fp, "-tls_resumption %c\n", 'A' + tls_in.resumption);
+# endif
 #endif
 
 #ifdef SUPPORT_I18N

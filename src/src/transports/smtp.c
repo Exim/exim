@@ -183,6 +183,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_privatekey) },
   { "tls_require_ciphers",  opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_require_ciphers) },
+# ifdef EXPERIMENTAL_TLS_RESUME
+  { "tls_resumption_hosts", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, tls_resumption_hosts) },
+# endif
   { "tls_sni",              opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_sni) },
   { "tls_tempfail_tryclear", opt_bool,
@@ -293,6 +297,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_verify_certificates =	US"system",
   .tls_dh_min_bits =		EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
   .tls_tempfail_tryclear =	TRUE,
+# ifdef EXPERIMENTAL_TLS_RESUME
+  .tls_resumption_hosts =	NULL,
+# endif
   .tls_verify_hosts =		NULL,
   .tls_try_verify_hosts =	US"*",
   .tls_verify_cert_hostnames =	US"*",
@@ -825,7 +832,7 @@ write_ehlo_cache_entry(const smtp_context * sx)
 {
 open_db dbblock, * dbm_file;
 
-if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE)))
+if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   {
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
   dbdata_ehlo_resp er = { .data = sx->ehlo_resp };
@@ -845,7 +852,7 @@ invalidate_ehlo_cache_entry(smtp_context * sx)
 open_db dbblock, * dbm_file;
 
 if (  sx->early_pipe_active
-   && (dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE)))
+   && (dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
   {
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
   dbfn_delete(dbm_file, ehlo_resp_key);
@@ -859,7 +866,7 @@ read_ehlo_cache_entry(smtp_context * sx)
 open_db dbblock;
 open_db * dbm_file;
 
-if (!(dbm_file = dbfn_open(US"misc", O_RDONLY, &dbblock, FALSE)))
+if (!(dbm_file = dbfn_open(US"misc", O_RDONLY, &dbblock, FALSE, TRUE)))
   { DEBUG(D_transport) debug_printf("ehlo-cache: no misc DB\n"); }
 else
   {
@@ -872,7 +879,7 @@ else
     {
     DEBUG(D_transport) debug_printf("ehlo-resp record too old\n");
     dbfn_close(dbm_file);
-    if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE)))
+    if ((dbm_file = dbfn_open(US"misc", O_RDWR, &dbblock, TRUE, TRUE)))
       dbfn_delete(dbm_file, ehlo_resp_key);
     }
   else
@@ -2016,6 +2023,9 @@ tls_out.peerdn = NULL;
 tls_out.sni = NULL;
 #endif
 tls_out.ocsp = OCSP_NOT_REQ;
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_out.resumption = 0;
+#endif
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of the transport.  Don't bother resetting

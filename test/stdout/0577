@@ -4,7 +4,7 @@
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
-keep_environment = PATH
+keep_environment = PATH:SSLKEYLOGFILE
 exim_path = TESTSUITE/eximdir/exim
 host_lookup_order = bydns
 spool_directory = TESTSUITE/spool

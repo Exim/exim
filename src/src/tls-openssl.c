@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) University of Cambridge 1995 - 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Portions Copyright (c) The OpenSSL Project 1999 */
@@ -72,6 +72,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_TLS_METHOD
 #  define EXIM_HAVE_OPENSSL_KEYLOG
 #  define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
+#  define EXIM_HAVE_SESSION_TICKET
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -249,6 +250,10 @@ for (struct exim_openssl_option * o = exim_openssl_options;
   spf(buf, sizeof(buf), US"_OPT_OPENSSL_%T_X", o->name);
   builtin_macro_create(buf);
   }
+
+# ifdef EXPERIMENTAL_TLS_RESUME
+builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
+# endif
 }
 #else
 
@@ -303,7 +308,7 @@ static SSL_CTX *server_sni = NULL;
 
 static char ssl_errstring[256];
 
-static int  ssl_session_timeout = 200;
+static int  ssl_session_timeout = 3600;
 static BOOL client_verify_optional = FALSE;
 static BOOL server_verify_optional = FALSE;
 
@@ -311,6 +316,7 @@ static BOOL reexpand_tls_files_for_sni = FALSE;
 
 
 typedef struct tls_ext_ctx_cb {
+  tls_support * tlsp;
   uschar *certificate;
   uschar *privatekey;
   BOOL is_server;
@@ -342,7 +348,7 @@ typedef struct tls_ext_ctx_cb {
 /* should figure out a cleanup of API to handle state preserved per
 implementation, for various reasons, which can be void * in the APIs.
 For now, we hack around it. */
-tls_ext_ctx_cb *client_static_cbinfo = NULL;
+tls_ext_ctx_cb *client_static_cbinfo = NULL;	/*XXX should not use static; multiple concurrent clients! */
 tls_ext_ctx_cb *server_static_cbinfo = NULL;
 
 static int
@@ -356,6 +362,23 @@ static int tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
 #ifndef DISABLE_OCSP
 static int tls_server_stapling_cb(SSL *s, void *arg);
 #endif
+
+
+
+/* Daemon-called key create/rotate */
+#ifdef EXPERIMENTAL_TLS_RESUME
+static void tk_init(void);
+static int tls_exdata_idx = -1;
+#endif
+
+void
+tls_daemon_init(void)
+{
+#ifdef EXPERIMENTAL_TLS_RESUME
+tk_init();
+#endif
+return;
+}
 
 
 /*************************************************
@@ -799,6 +822,121 @@ static void
 keylog_callback(const SSL *ssl, const char *line)
 {
 DEBUG(D_tls) debug_printf("%.200s\n", line);
+}
+#endif
+
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+/* Manage the keysets used for encrypting the session tickets, on the server. */
+
+typedef struct {			/* Session ticket encryption key */
+  uschar 	name[16];
+
+  const EVP_CIPHER *	aes_cipher;
+  uschar		aes_key[16];	/* size needed depends on cipher. aes_128 implies 128/8 = 16? */
+  const EVP_MD *	hmac_hash;
+  uschar		hmac_key[16];
+  time_t		renew;
+  time_t		expire;
+} exim_stek;
+
+/*XXX for now just always create/find the one key.
+Worry about rotation and overlap later. */
+
+static exim_stek exim_tk;
+static exim_stek exim_tk_old;
+
+static void
+tk_init(void)
+{
+if (exim_tk.name[0])
+  {
+  if (exim_tk.renew >= time(NULL)) return;
+  exim_tk_old = exim_tk;
+  }
+
+if (f.running_in_test_harness) ssl_session_timeout = 6;
+
+DEBUG(D_tls) debug_printf("OpenSSL: %s STEK\n", exim_tk.name[0] ? "rotating" : "creating");
+if (RAND_bytes(exim_tk.aes_key, sizeof(exim_tk.aes_key)) <= 0) return;
+if (RAND_bytes(exim_tk.hmac_key, sizeof(exim_tk.hmac_key)) <= 0) return;
+if (RAND_bytes(exim_tk.name+1, sizeof(exim_tk.name)-1) <= 0) return;
+
+exim_tk.name[0] = 'E';
+exim_tk.aes_cipher = EVP_aes_128_cbc();
+exim_tk.hmac_hash = EVP_sha256();
+exim_tk.expire = time(NULL) + ssl_session_timeout;
+exim_tk.renew = exim_tk.expire - ssl_session_timeout/2;
+}
+
+static exim_stek *
+tk_current(void)
+{
+if (!exim_tk.name[0]) return NULL;
+return &exim_tk;
+}
+
+static exim_stek *
+tk_find(const uschar * name)
+{
+return memcmp(name, exim_tk.name, sizeof(exim_tk.name)) == 0 ? &exim_tk
+  : memcmp(name, exim_tk_old.name, sizeof(exim_tk_old.name)) == 0 ? &exim_tk_old
+  : NULL;
+}
+
+/* Callback for session tickets, on server */
+static int
+ticket_key_callback(SSL * ssl, uschar key_name[16],
+  uschar * iv, EVP_CIPHER_CTX * ctx, HMAC_CTX * hctx, int enc)
+{
+tls_support * tlsp = server_static_cbinfo->tlsp;
+exim_stek * key;
+
+if (enc)
+  {
+  DEBUG(D_tls) debug_printf("ticket_key_callback: create new session\n");
+  tlsp->resumption |= RESUME_CLIENT_REQUESTED;
+
+  if (RAND_bytes(iv, EVP_MAX_IV_LENGTH) <= 0)
+    return -1; /* insufficient random */
+
+  if (!(key = tk_current()))	/* current key doesn't exist or isn't valid */
+     return 0;			/* key couldn't be created */
+  memcpy(key_name, key->name, 16);
+  DEBUG(D_tls) debug_printf("STEK expire %ld\n", key->expire - time(NULL));
+
+  /*XXX will want these dependent on the ssl session strength */
+  HMAC_Init_ex(hctx, key->hmac_key, sizeof(key->hmac_key),
+		key->hmac_hash, NULL);
+  EVP_EncryptInit_ex(ctx, key->aes_cipher, NULL, key->aes_key, iv);
+
+  DEBUG(D_tls) debug_printf("ticket created\n");
+  return 1;
+  }
+else
+  {
+  time_t now = time(NULL);
+
+  DEBUG(D_tls) debug_printf("ticket_key_callback: retrieve session\n");
+  tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
+
+  if (!(key = tk_find(key_name)) || key->expire < now)
+    {
+    DEBUG(D_tls)
+      {
+      debug_printf("ticket not usable (%s)\n", key ? "expired" : "not found");
+      if (key) debug_printf("STEK expire %ld\n", key->expire - now);
+      }
+    return 0;
+    }
+
+  HMAC_Init_ex(hctx, key->hmac_key, sizeof(key->hmac_key),
+		key->hmac_hash, NULL);
+  EVP_DecryptInit_ex(ctx, key->aes_cipher, NULL, key->aes_key, iv);
+
+  DEBUG(D_tls) debug_printf("ticket usable, STEK expire %ld\n", key->expire - now);
+  return key->renew < now ? 2 : 1;
+  }
 }
 #endif
 
@@ -1394,6 +1532,9 @@ Arguments:
   arg             Callback of "our" registered data
 
 Returns:          SSL_TLSEXT_ERR_{OK,ALERT_WARNING,ALERT_FATAL,NOACK}
+
+XXX might need to change to using ClientHello callback,
+per https://www.openssl.org/docs/manmaster/man3/SSL_client_hello_cb_fn.html
 */
 
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
@@ -1714,7 +1855,9 @@ tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
 #ifndef DISABLE_OCSP
   uschar *ocsp_file,	/*XXX stack, in server*/
 #endif
-  address_item *addr, tls_ext_ctx_cb ** cbp, uschar ** errstr)
+  address_item *addr, tls_ext_ctx_cb ** cbp,
+  tls_support * tlsp,
+  uschar ** errstr)
 {
 SSL_CTX * ctx;
 long init_options;
@@ -1722,6 +1865,7 @@ int rc;
 tls_ext_ctx_cb * cbinfo;
 
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
+cbinfo->tlsp = tlsp;
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
 cbinfo->is_server = host==NULL;
@@ -1795,10 +1939,16 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-DEBUG(D_tls) SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
-#ifdef OPENSSL_HAVE_KEYLOG_CB
-DEBUG(D_tls) SSL_CTX_set_keylog_callback(ctx, (void (*)())keylog_callback);
+DEBUG(D_tls)
+  {
+  SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
+#ifndef OPENSSL_NO_SSL_TRACE	/* this needs a debug build of OpenSSL */
+  SSL_CTX_set_msg_callback(ctx, (void (*)())SSL_trace);
 #endif
+#ifdef OPENSSL_HAVE_KEYLOG_CB
+  SSL_CTX_set_keylog_callback(ctx, (void (*)())keylog_callback);
+#endif
+  }
 
 /* Automatically re-try reads/writes after renegotiation. */
 (void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
@@ -1815,8 +1965,22 @@ availability of the option value macros from OpenSSL.  */
 if (!tls_openssl_options_parse(openssl_options, &init_options))
   return tls_error(US"openssl_options parsing failed", host, NULL, errstr);
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+tlsp->resumption = RESUME_SUPPORTED;
+#endif
 if (init_options)
   {
+#ifdef EXPERIMENTAL_TLS_RESUME
+  /* Should the server offer session resumption? */
+  if (!host && verify_check_host(&tls_resumption_hosts) == OK)
+    {
+    DEBUG(D_tls) debug_printf("tls_resumption_hosts overrides openssl_options\n");
+    init_options &= ~SSL_OP_NO_TICKET;
+    tlsp->resumption |= RESUME_SERVER_TICKET; /* server will give ticket on request */
+    tlsp->host_resumable = TRUE;
+    }
+#endif
+
   DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
   if (!(SSL_CTX_set_options(ctx, init_options)))
     return tls_error(string_sprintf(
@@ -1824,10 +1988,6 @@ if (init_options)
   }
 else
   DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
-
-#ifdef OPENSSL_HAVE_NUM_TICKETS
-SSL_CTX_set_num_tickets(ctx, 0);	/* send no TLS1.3 stateful-tickets */
-#endif
 
 /* We'd like to disable session cache unconditionally, but foolish Outlook
 Express clients then give up the first TLS connection and make a second one
@@ -1903,7 +2063,8 @@ cbinfo->verify_cert_hostnames = NULL;
 SSL_CTX_set_tmp_rsa_callback(ctx, rsa_callback);
 #endif
 
-/* Finally, set the timeout, and we are done */
+/* Finally, set the session cache timeout, and we are done.
+The period appears to be also used for (server-generated) session tickets */
 
 SSL_CTX_set_timeout(ctx, ssl_session_timeout);
 DEBUG(D_tls) debug_printf("Initialized TLS\n");
@@ -2226,7 +2387,7 @@ rc = tls_init(&server_ctx, NULL, tls_dhparam, tls_certificate, tls_privatekey,
 #ifndef DISABLE_OCSP
     tls_ocsp_file,	/*XXX stack*/
 #endif
-    NULL, &server_static_cbinfo, errstr);
+    NULL, &server_static_cbinfo, &tls_in, errstr);
 if (rc != OK) return rc;
 cbinfo = server_static_cbinfo;
 
@@ -2244,8 +2405,7 @@ TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256
 
 if (expciphers)
   {
-  uschar * s = expciphers;
-  while (*s != 0) { if (*s == '_') *s = '-'; s++; }
+  for (uschar * s = expciphers; *s; s++ ) if (*s == '_') *s = '-';
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(server_ctx, CS expciphers))
     return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL, errstr);
@@ -2275,6 +2435,19 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
   if (rc != OK) return rc;
   server_verify_optional = TRUE;
   }
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+SSL_CTX_set_tlsext_ticket_key_cb(server_ctx, ticket_key_callback);
+/* despite working, appears to always return failure, so ignoring */
+#endif
+#ifdef OPENSSL_HAVE_NUM_TICKETS
+# ifdef EXPERIMENTAL_TLS_RESUME
+SSL_CTX_set_num_tickets(server_ctx, tls_in.host_resumable ? 1 : 0);
+# else
+SSL_CTX_set_num_tickets(server_ctx, 0);	/* send no TLS1.3 stateful-tickets */
+# endif
+#endif
+
 
 /* Prepare for new connection */
 
@@ -2329,7 +2502,15 @@ if (rc <= 0)
 
 DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
 ERR_clear_error();	/* Even success can leave errors in the stack. Seen with
-			anon-authentication ciphersuite negociated. */
+			anon-authentication ciphersuite negotiated. */
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+if (SSL_session_reused(server_ssl))
+  {
+  tls_in.resumption |= RESUME_USED;
+  DEBUG(D_tls) debug_printf("Session reused\n");
+  }
+#endif
 
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize things. */
@@ -2350,6 +2531,15 @@ DEBUG(D_tls)
   BIO * bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
   SSL_SESSION_print_keylog(bp, SSL_get_session(server_ssl));
   BIO_free(bp);
+  }
+#endif
+
+#ifdef EXIM_HAVE_SESSION_TICKET
+  {
+  SSL_SESSION * ss = SSL_get_session(server_ssl);
+  if (SSL_SESSION_has_ticket(ss))
+    debug_printf("The session has a ticket, life %lu seconds\n",
+      SSL_SESSION_get_ticket_lifetime_hint(ss));
   }
 #endif
   }
@@ -2483,6 +2673,160 @@ return DEFER;
 
 
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+/* On the client, get any stashed session for the given IP from hints db
+and apply it to the ssl-connection for attempted resumption. */
+
+static void
+tls_retrieve_session(tls_support * tlsp, SSL * ssl, const uschar * key)
+{
+tlsp->resumption |= RESUME_SUPPORTED;
+if (tlsp->host_resumable)
+  {
+  dbdata_tls_session * dt;
+  int len;
+  open_db dbblock, * dbm_file;
+
+  tlsp->resumption |= RESUME_CLIENT_REQUESTED;
+  DEBUG(D_tls) debug_printf("checking for resumable session for %s\n", key);
+  if ((dbm_file = dbfn_open(US"tls", O_RDONLY, &dbblock, FALSE, FALSE)))
+    {
+    /* key for the db is the IP */
+    if ((dt = dbfn_read_with_length(dbm_file, key, &len)))
+      {
+      SSL_SESSION * ss = NULL;
+      const uschar * sess_asn1 = dt->session;
+
+      len -= sizeof(dbdata_tls_session);
+      if (!(d2i_SSL_SESSION(&ss, &sess_asn1, (long)len)))
+	{
+	DEBUG(D_tls)
+	  {
+	  ERR_error_string_n(ERR_get_error(),
+	    ssl_errstring, sizeof(ssl_errstring));
+	  debug_printf("decoding session: %s\n", ssl_errstring);
+	  }
+	}
+      else if (!SSL_set_session(ssl, ss))
+	{
+	DEBUG(D_tls)
+	  {
+	  ERR_error_string_n(ERR_get_error(),
+	    ssl_errstring, sizeof(ssl_errstring));
+	  debug_printf("applying session to ssl: %s\n", ssl_errstring);
+	  }
+	}
+      else
+	{
+	DEBUG(D_tls) debug_printf("good session\n");
+	tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
+	}
+      }
+    else
+      DEBUG(D_tls) debug_printf("no session record\n");
+    dbfn_close(dbm_file);
+    }
+  }
+}
+
+
+/* On the client, save the session for later resumption */
+
+static int
+tls_save_session_cb(SSL * ssl, SSL_SESSION * ss)
+{
+tls_ext_ctx_cb * cbinfo = SSL_get_ex_data(ssl, tls_exdata_idx);
+tls_support * tlsp;
+
+DEBUG(D_tls) debug_printf("tls_save_session_cb\n");
+
+if (!cbinfo || !(tlsp = cbinfo->tlsp)->host_resumable) return 0;
+
+# ifdef EXIM_HAVE_SESSION_TICKET
+
+if (SSL_SESSION_is_resumable(ss)) 
+  {
+  int len = i2d_SSL_SESSION(ss, NULL);
+  int dlen = sizeof(dbdata_tls_session) + len;
+  dbdata_tls_session * dt = store_get(dlen);
+  uschar * s = dt->session;
+  open_db dbblock, * dbm_file;
+
+  DEBUG(D_tls) debug_printf("session is resumable\n");
+  tlsp->resumption |= RESUME_SERVER_TICKET;	/* server gave us a ticket */
+
+  len = i2d_SSL_SESSION(ss, &s);	/* s gets bumped to end */
+
+  if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
+    {
+    const uschar * key = cbinfo->host->address;
+    dbfn_delete(dbm_file, key);
+    dbfn_write(dbm_file, key, dt, dlen);
+    dbfn_close(dbm_file);
+    DEBUG(D_tls) debug_printf("wrote session (len %u) to db\n",
+		  (unsigned)dlen);
+    }
+  }
+# endif
+return 1;
+}
+
+
+static void
+tls_client_ctx_resume_prehandshake(
+  exim_openssl_client_tls_ctx * exim_client_ctx, tls_support * tlsp,
+  smtp_transport_options_block * ob, host_item * host)
+{
+/* Should the client request a session resumption ticket? */
+if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
+  {
+  tlsp->host_resumable = TRUE;
+
+  SSL_CTX_set_session_cache_mode(exim_client_ctx->ctx,
+	SSL_SESS_CACHE_CLIENT
+	| SSL_SESS_CACHE_NO_INTERNAL | SSL_SESS_CACHE_NO_AUTO_CLEAR);
+  SSL_CTX_sess_set_new_cb(exim_client_ctx->ctx, tls_save_session_cb);
+  }
+}
+
+static BOOL
+tls_client_ssl_resume_prehandshake(SSL * ssl, tls_support * tlsp,
+  host_item * host, uschar ** errstr)
+{
+if (tlsp->host_resumable)
+  {
+  DEBUG(D_tls)
+    debug_printf("tls_resumption_hosts overrides openssl_options, enabling tickets\n");
+  SSL_clear_options(ssl, SSL_OP_NO_TICKET);
+
+  tls_exdata_idx = SSL_get_ex_new_index(0, 0, 0, 0, 0);
+  if (!SSL_set_ex_data(ssl, tls_exdata_idx, client_static_cbinfo))
+    {
+    tls_error(US"set ex_data", host, NULL, errstr);
+    return FALSE;
+    }
+  debug_printf("tls_exdata_idx %d cbinfo %p\n", tls_exdata_idx, client_static_cbinfo);
+  }
+
+tlsp->resumption = RESUME_SUPPORTED;
+/* Pick up a previous session, saved on an old ticket */
+tls_retrieve_session(tlsp, ssl, host->address);
+return TRUE;
+}
+
+static void
+tls_client_resume_posthandshake(exim_openssl_client_tls_ctx * exim_client_ctx,
+  tls_support * tlsp)
+{
+if (SSL_session_reused(exim_client_ctx->ssl))
+  {
+  DEBUG(D_tls) debug_printf("The session was reused\n");
+  tlsp->resumption |= RESUME_USED;
+  }
+}
+#endif	/* EXPERIMENTAL_TLS_RESUME */
+
+
 /*************************************************
 *    Start a TLS session in a client             *
 *************************************************/
@@ -2562,7 +2906,7 @@ rc = tls_init(&exim_client_ctx->ctx, host, NULL,
 #ifndef DISABLE_OCSP
     (void *)(long)request_ocsp,
 #endif
-    cookie, &client_static_cbinfo, errstr);
+    cookie, &client_static_cbinfo, tlsp, errstr);
 if (rc != OK) return FALSE;
 
 tlsp->certificate_verified = FALSE;
@@ -2629,12 +2973,24 @@ else
 	client_static_cbinfo, errstr) != OK)
     return FALSE;
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_client_ctx_resume_prehandshake(exim_client_ctx, tlsp, ob, host);
+#endif
+
+
 if (!(exim_client_ctx->ssl = SSL_new(exim_client_ctx->ctx)))
   {
   tls_error(US"SSL_new", host, NULL, errstr);
   return FALSE;
   }
 SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+if (!tls_client_ssl_resume_prehandshake(exim_client_ctx->ssl, tlsp, host,
+      errstr))
+  return FALSE;
+#endif
+
 SSL_set_fd(exim_client_ctx->ssl, cctx->sock);
 SSL_set_connect_state(exim_client_ctx->ssl);
 
@@ -2728,6 +3084,10 @@ DEBUG(D_tls)
   }
 #endif
   }
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_client_resume_posthandshake(exim_client_ctx, tlsp);
+#endif
 
 peer_cert(exim_client_ctx->ssl, tlsp, peerdn, sizeof(peerdn));
 
@@ -3377,11 +3737,16 @@ uschar *end;
 uschar keep_c;
 BOOL adding, item_parsed;
 
+/* Server: send no (<= TLS1.2) session tickets */
 result = SSL_OP_NO_TICKET;
+
 /* Prior to 4.80 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
  * from default because it increases BEAST susceptibility. */
 #ifdef SSL_OP_NO_SSLv2
 result |= SSL_OP_NO_SSLv2;
+#endif
+#ifdef SSL_OP_NO_SSLv3
+result |= SSL_OP_NO_SSLv3;
 #endif
 #ifdef SSL_OP_SINGLE_DH_USE
 result |= SSL_OP_SINGLE_DH_USE;
@@ -3393,7 +3758,7 @@ if (!option_spec)
   return TRUE;
   }
 
-for (uschar * s = option_spec; *s != '\0'; /**/)
+for (uschar * s = option_spec; *s; /**/)
   {
   while (isspace(*s)) ++s;
   if (*s == '\0')

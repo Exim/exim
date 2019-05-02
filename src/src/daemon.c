@@ -1985,6 +1985,11 @@ for (;;)
     handle_ending_processes();
     errno = select_errno;
 
+#ifdef SUPPORT_TLS
+    /* Create or rotate any required keys */
+    tls_daemon_init();
+#endif
+
     /* Loop for all the sockets that are currently ready to go. If select
     actually failed, we have set the count to 1 and select_failed=TRUE, so as
     to use the common error code for select/accept below. */

@@ -72,6 +72,7 @@ Arguments:
   dbblock  Points to an open_db block to be filled in.
   lof      If TRUE, write to the log for actual open failures (locking failures
            are always logged).
+  panic	   If TRUE, panic on failure to create the db directory
 
 Returns:   NULL if the open failed, or the locking failed. After locking
            failures, errno is zero.
@@ -85,7 +86,7 @@ moment I haven't changed them.
 */
 
 open_db *
-dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof)
+dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof, BOOL panic)
 {
 int rc, save_errno;
 BOOL read_only = flags == O_RDONLY;
@@ -114,7 +115,7 @@ snprintf(CS filename, sizeof(filename), "%s/%s.lockfile", dirname, name);
 if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
   {
   created = TRUE;
-  (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, TRUE);
+  (void)directory_make(spool_directory, US"db", EXIMDB_DIRECTORY_MODE, panic);
   dbblock->lockfd = Uopen(filename, O_RDWR|O_CREAT, EXIMDB_LOCKFILE_MODE);
   }
 
@@ -536,7 +537,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
       }
 
     start = clock();
-    odb = dbfn_open(s, O_RDWR, dbblock + i, TRUE);
+    odb = dbfn_open(s, O_RDWR, dbblock + i, TRUE, TRUE);
     stop = clock();
 
     if (odb)

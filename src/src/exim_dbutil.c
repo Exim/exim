@@ -20,6 +20,7 @@ argument is the name of the database file. The available names are:
   misc:       miscellaneous hints data
   wait-<t>:   message waiting information; <t> is a transport name
   callout:    callout verification cache
+  tls:	      TLS session resumption cache
 
 There are a number of common subroutines, followed by three main programs,
 whose inclusion is controlled by -D on the compilation command. */
@@ -35,6 +36,7 @@ whose inclusion is controlled by -D on the compilation command. */
 #define type_misc      3
 #define type_callout   4
 #define type_ratelimit 5
+#define type_tls       6
 
 
 /* This is used by our cut-down dbfn_open(). */
@@ -91,7 +93,7 @@ static void
 usage(uschar *name, uschar *options)
 {
 printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, options);
-printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit\n");
+printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit | tls\n");
 exit(1);
 }
 
@@ -114,6 +116,7 @@ if (argc == 3)
   if (Ustrncmp(argv[2], "wait-", 5) == 0) return type_wait;
   if (Ustrcmp(argv[2], "callout") == 0) return type_callout;
   if (Ustrcmp(argv[2], "ratelimit") == 0) return type_ratelimit;
+  if (Ustrcmp(argv[2], "tls") == 0) return type_tls;
   }
 usage(name, options);
 return -1;              /* Never obeyed */
@@ -240,6 +243,7 @@ Arguments:
   flags    O_RDONLY or O_RDWR
   dbblock  Points to an open_db block to be filled in.
   lof      Unused.
+  panic	   Unused
 
 Returns:   NULL if the open failed, or the locking failed.
            On success, dbblock is returned. This contains the dbm pointer and
@@ -247,7 +251,7 @@ Returns:   NULL if the open failed, or the locking failed.
 */
 
 open_db *
-dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof)
+dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof, BOOL panic)
 {
 int rc;
 struct flock lock_data;
@@ -525,7 +529,7 @@ uschar keybuffer[1024];
 
 dbdata_type = check_args(argc, argv, US"dumpdb", US"");
 spool_directory = argv[1];
-if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE)))
+if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE, TRUE)))
   exit(1);
 
 /* Scan the file, formatting the information for each entry. Note
@@ -541,6 +545,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
+  dbdata_tls_session *session;
   int count_bad = 0;
   int length;
   uschar *t;
@@ -673,6 +678,11 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	    keybuffer);
 	  }
 	break;
+
+      case type_tls:
+	session = (dbdata_tls_session *)value;
+	printf("  %s %.*s\n", keybuffer, length, session->session);
+	break;
       }
     store_reset(value);
     }
@@ -745,6 +755,7 @@ for(;;)
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
   dbdata_ratelimit_unique *rate_unique;
+  dbdata_tls_session *session;
   int oldlength;
   uschar *t;
   uschar field[256], value[256];
@@ -783,7 +794,7 @@ for(;;)
     int verify = 1;
     spool_directory = argv[1];
 
-    if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE)))
+    if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE, TRUE)))
       continue;
 
     if (Ustrcmp(field, "d") == 0)
@@ -925,6 +936,10 @@ for(;;)
 			 break;
 		}
 	      break;
+
+            case type_tls:
+	      printf("Can't change contents of tls database record\n");
+	      break;
             }
 
           dbfn_write(dbm, name, record, oldlength);
@@ -949,7 +964,7 @@ for(;;)
   /* Handle a read request, or verify after an update. */
 
   spool_directory = argv[1];
-  if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE)))
+  if (!(dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE, TRUE)))
     continue;
 
   if (!(record = dbfn_read_with_length(dbm, name, &oldlength)))
@@ -1035,6 +1050,12 @@ for(;;)
 	 printf("4 test filter membership\n");
 	 printf("5 add element to filter\n");
 	 }
+	break;
+
+      case type_tls:
+	session = (dbdata_tls_session *)value;
+	printf("0 time stamp:  %s\n", print_time(session->time_stamp));
+	printf("1 session: .%s\n", session->session);
 	break;
       }
     }
@@ -1134,7 +1155,7 @@ oldest = time(NULL) - maxkeep;
 printf("Tidying Exim hints database %s/db/%s\n", argv[1], argv[2]);
 
 spool_directory = argv[1];
-if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE)))
+if (!(dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE, TRUE)))
   exit(1);
 
 /* Prepare for building file names */

@@ -934,6 +934,9 @@ fprintf(fp, "Support for:");
 #ifdef EXPERIMENTAL_PIPE_CONNECT
   fprintf(fp, " Experimental_PIPE_CONNECT");
 #endif
+#ifdef EXPERIMENTAL_TLS_RESUME
+  fprintf(fp, " Experimental_TLS_resume");
+#endif
 fprintf(fp, "\n");
 
 fprintf(fp, "Lookups (built-in):");

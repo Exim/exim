@@ -803,12 +803,18 @@ return g;
 
 #ifdef SUPPORT_TLS
 static gstring *
-d_tlslog(gstring * s, address_item * addr)
+d_tlslog(gstring * g, address_item * addr)
 {
 if (LOGGING(tls_cipher) && addr->cipher)
-  s = string_append(s, 2, US" X=", addr->cipher);
+  {
+  g = string_append(g, 2, US" X=", addr->cipher);
+#ifdef EXPERIMENTAL_TLS_RESUME
+  if (LOGGING(tls_resumption) && testflag(addr, af_tls_resume))
+    g = string_catn(g, US"*", 1);
+#endif
+  }
 if (LOGGING(tls_certificate_verified) && addr->cipher)
-  s = string_append(s, 2, US" CV=",
+  g = string_append(g, 2, US" CV=",
     testflag(addr, af_cert_verified)
     ?
 #ifdef SUPPORT_DANE
@@ -819,8 +825,8 @@ if (LOGGING(tls_certificate_verified) && addr->cipher)
       "yes"
     : "no");
 if (LOGGING(tls_peerdn) && addr->peerdn)
-  s = string_append(s, 3, US" DN=\"", string_printing(addr->peerdn), US"\"");
-return s;
+  g = string_append(g, 3, US" DN=\"", string_printing(addr->peerdn), US"\"");
+return g;
 }
 #endif
 
@@ -2900,7 +2906,7 @@ while (addr_local)
   of these checks, rather than for all local deliveries, because some local
   deliveries (e.g. to pipes) can take a substantial time. */
 
-  if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE)))
+  if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
     {
     DEBUG(D_deliver|D_retry|D_hints_lookup)
       debug_printf("no retry data available\n");
@@ -4794,6 +4800,9 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #ifdef SUPPORT_DANE
       if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
 #endif
+# ifdef EXPERIMENTAL_TLS_RESUME
+      if (tls_out.resumption & RESUME_USED) setflag(addr, af_tls_resume);
+# endif
 
       /* Use an X item only if there's something to send */
 #ifdef SUPPORT_TLS
@@ -6321,7 +6330,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
   /* Failure to open the retry database is treated the same as if it does
   not exist. In both cases, dbm_file is NULL. */
 
-  if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE)))
+  if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
     DEBUG(D_deliver|D_retry|D_route|D_hints_lookup)
       debug_printf("no retry data available\n");
 

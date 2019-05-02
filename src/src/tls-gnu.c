@@ -99,6 +99,17 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #include "tls-cipher-stdname.c"
 
 
+#ifdef MACRO_PREDEF
+void
+options_tls(void)
+{
+# ifdef EXPERIMENTAL_TLS_RESUME
+builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
+# endif
+}
+#else
+
+
 /* GnuTLS 2 vs 3
 
 GnuTLS 3 only:
@@ -174,45 +185,9 @@ typedef struct exim_gnutls_state {
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
-  .session =		NULL,
-  .x509_cred =		NULL,
-  .priority_cache =	NULL,
-  .verify_requirement =	VERIFY_NONE,
+  /* all elements not explicitly intialised here get 0/NULL/FALSE */
   .fd_in =		-1,
   .fd_out =		-1,
-  .peer_cert_verified =	FALSE,
-  .peer_dane_verified =	FALSE,
-  .trigger_sni_changes =FALSE,
-  .have_set_peerdn =	FALSE,
-  .host =		NULL,
-  .peercert =		NULL,
-  .peerdn =		NULL,
-  .ciphersuite =	NULL,
-  .received_sni =	NULL,
-
-  .tls_certificate =	NULL,
-  .tls_privatekey =	NULL,
-  .tls_sni =		NULL,
-  .tls_verify_certificates = NULL,
-  .tls_crl =		NULL,
-  .tls_require_ciphers =NULL,
-
-  .exp_tls_certificate = NULL,
-  .exp_tls_privatekey =	NULL,
-  .exp_tls_verify_certificates = NULL,
-  .exp_tls_crl =	NULL,
-  .exp_tls_require_ciphers = NULL,
-  .exp_tls_verify_cert_hostnames = NULL,
-#ifndef DISABLE_EVENT
-  .event_action =	NULL,
-#endif
-  .tlsp =		NULL,
-
-  .xfer_buffer =	NULL,
-  .xfer_buffer_lwm =	0,
-  .xfer_buffer_hwm =	0,
-  .xfer_eof =		FALSE,
-  .xfer_error =		FALSE,
 };
 
 /* Not only do we have our own APIs which don't pass around state, assuming
@@ -234,9 +209,7 @@ don't want to repeat this. */
 
 static gnutls_dh_params_t dh_server_params = NULL;
 
-/* No idea how this value was chosen; preserving it.  Default is 3600. */
-
-static const int ssl_session_timeout = 200;
+static int ssl_session_timeout = 3600;	/* One hour */
 
 static const uschar * const exim_default_gnutls_priority = US"NORMAL";
 
@@ -248,6 +221,9 @@ static BOOL exim_gnutls_base_init_done = FALSE;
 static BOOL gnutls_buggy_ocsp = FALSE;
 #endif
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+static gnutls_datum_t server_sessticket_key;
+#endif
 
 /* ------------------------------------------------------------------------ */
 /* macros */
@@ -261,7 +237,7 @@ setuid binaries, making it useless - "GNUTLS_DEBUG_LEVEL".
 Allegedly the testscript line "GNUTLS_DEBUG_LEVEL=9 sudo exim ..." would work,
 but the env var must be added to /etc/sudoers too. */
 #ifndef EXIM_GNUTLS_LIBRARY_LOG_LEVEL
-# define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
+# define EXIM_GNUTLS_LIBRARY_LOG_LEVEL 9
 #endif
 
 #ifndef EXIM_CLIENT_DH_MIN_BITS
@@ -311,6 +287,24 @@ static int server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
 #endif
 
 
+
+/* Daemon one-time initialisation */
+void
+tls_daemon_init(void)
+{
+#ifdef EXPERIMENTAL_TLS_RESUME
+/* We are dependent on the GnuTLS implementation of the Session Ticket
+encryption; both the strength and the key rotation period.  We hope that
+the strength at least matches that of the ciphersuite (but GnuTLS does not
+document this). */
+
+static BOOL once = FALSE;
+if (once) return;
+once = TRUE;
+gnutls_session_ticket_key_generate(&server_sessticket_key);	/* >= 2.10.0 */
+if (f.running_in_test_harness) ssl_session_timeout = 6;
+#endif
+}
 
 /* ------------------------------------------------------------------------ */
 /* Static functions */
@@ -463,7 +457,6 @@ Argument:
 static void
 extract_exim_vars_from_tls_state(exim_gnutls_state_st * state)
 {
-gnutls_cipher_algorithm_t cipher;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 int old_pool;
 int rc;
@@ -473,12 +466,6 @@ tls_support * tlsp = state->tlsp;
 
 tlsp->active.sock = state->fd_out;
 tlsp->active.tls_ctx = state;
-
-cipher = gnutls_cipher_get(state->session);
-/* returns size in "bytes" */
-tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
-
-tlsp->cipher = state->ciphersuite;
 
 DEBUG(D_tls) debug_printf("cipher: %s\n", state->ciphersuite);
 
@@ -1423,6 +1410,9 @@ if ((rc = gnutls_priority_init(&state->priority_cache, CCS p, &errpos)))
 if ((rc = gnutls_priority_set(state->session, state->priority_cache)))
   return tls_error_gnu(US"gnutls_priority_set", rc, host, errstr);
 
+/* This also sets the server ticket expiration time to the same, and
+the STEK rotation time to 3x. */
+
 gnutls_db_set_cache_expiration(state->session, ssl_session_timeout);
 
 /* Reduce security in favour of increased compatibility, if the admin
@@ -1492,9 +1482,10 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-peer_status(exim_gnutls_state_st *state, uschar ** errstr)
+peer_status(exim_gnutls_state_st * state, uschar ** errstr)
 {
-const gnutls_datum_t *cert_list;
+gnutls_session_t session = state->session;
+const gnutls_datum_t * cert_list;
 int old_pool, rc;
 unsigned int cert_list_size = 0;
 gnutls_protocol_t protocol;
@@ -1503,7 +1494,7 @@ gnutls_kx_algorithm_t kx;
 gnutls_mac_algorithm_t mac;
 gnutls_certificate_type_t ct;
 gnutls_x509_crt_t crt;
-uschar *dn_buf;
+uschar * dn_buf;
 size_t sz;
 
 if (state->have_set_peerdn)
@@ -1513,23 +1504,24 @@ state->have_set_peerdn = TRUE;
 state->peerdn = NULL;
 
 /* tls_cipher */
-cipher = gnutls_cipher_get(state->session);
-protocol = gnutls_protocol_get_version(state->session);
-mac = gnutls_mac_get(state->session);
+cipher = gnutls_cipher_get(session);
+protocol = gnutls_protocol_get_version(session);
+mac = gnutls_mac_get(session);
 kx =
 #ifdef GNUTLS_TLS1_3
     protocol >= GNUTLS_TLS1_3 ? 0 :
 #endif
-  gnutls_kx_get(state->session);
+  gnutls_kx_get(session);
 
 old_pool = store_pool;
   {
+  tls_support * tlsp = state->tlsp;
   store_pool = POOL_PERM;
 
 #ifdef SUPPORT_GNUTLS_SESS_DESC
     {
     gstring * g = NULL;
-    uschar * s = US gnutls_session_get_desc(state->session), c;
+    uschar * s = US gnutls_session_get_desc(session), c;
 
     /* Nikos M suggests we use this by preference.  It returns like:
     (TLS1.3)-(ECDHE-SECP256R1)-(RSA-PSS-RSAE-SHA256)-(AES-256-GCM)
@@ -1568,15 +1560,15 @@ old_pool = store_pool;
 
 /* debug_printf("peer_status: ciphersuite %s\n", state->ciphersuite); */
 
-  state->tlsp->cipher = state->ciphersuite;
-  state->tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
+  tlsp->cipher = state->ciphersuite;
+  tlsp->bits = gnutls_cipher_get_key_size(cipher) * 8;
 
-  state->tlsp->cipher_stdname = cipher_stdname_kcm(kx, cipher, mac);
+  tlsp->cipher_stdname = cipher_stdname_kcm(kx, cipher, mac);
   }
 store_pool = old_pool;
 
 /* tls_peerdn */
-cert_list = gnutls_certificate_get_peers(state->session, &cert_list_size);
+cert_list = gnutls_certificate_get_peers(session, &cert_list_size);
 
 if (!cert_list || cert_list_size == 0)
   {
@@ -1588,7 +1580,7 @@ if (!cert_list || cert_list_size == 0)
   return OK;
   }
 
-if ((ct = gnutls_certificate_type_get(state->session)) != GNUTLS_CRT_X509)
+if ((ct = gnutls_certificate_type_get(session)) != GNUTLS_CRT_X509)
   {
   const uschar * ctn = US gnutls_certificate_type_get_name(ct);
   DEBUG(D_tls)
@@ -1660,13 +1652,14 @@ verify_certificate(exim_gnutls_state_st * state, uschar ** errstr)
 int rc;
 uint verify;
 
+DEBUG(D_tls) debug_printf("TLS: checking peer certificate\n");
+*errstr = NULL;
+rc = peer_status(state, errstr);
+
 if (state->verify_requirement == VERIFY_NONE)
   return TRUE;
 
-DEBUG(D_tls) debug_printf("TLS: checking peer certificate\n");
-*errstr = NULL;
-
-if ((rc = peer_status(state, errstr)) != OK || !state->peerdn)
+if (rc != OK || !state->peerdn)
   {
   verify = GNUTLS_CERT_INVALID;
   *errstr = US"certificate not supplied";
@@ -2065,7 +2058,6 @@ return g;
 static void
 post_handshake_debug(exim_gnutls_state_st * state)
 {
-debug_printf("gnutls_handshake was successful\n");
 #ifdef SUPPORT_GNUTLS_SESS_DESC
 debug_printf("%s\n", gnutls_session_get_desc(state->session));
 #endif
@@ -2094,6 +2086,63 @@ else
 #endif
 }
 
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+static int
+tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
+  unsigned incoming, const gnutls_datum_t * msg)
+{
+DEBUG(D_tls) debug_printf("newticket cb\n");
+tls_in.resumption |= RESUME_CLIENT_REQUESTED;
+return 0;
+}
+
+static void
+tls_server_resume_prehandshake(exim_gnutls_state_st * state)
+{
+/* Should the server offer session resumption? */
+tls_in.resumption = RESUME_SUPPORTED;
+if (verify_check_host(&tls_resumption_hosts) == OK)
+  {
+  int rc;
+  /* GnuTLS appears to not do ticket overlap, but does emit a fresh ticket when
+  an offered resumption is unacceptable.  We lose one resumption per ticket
+  lifetime, and sessions cannot be indefinitely re-used.  There seems to be no
+  way (3.6.7) of changing the default number of 2 TLS1.3 tickets issued, but at
+  least they go out in a single packet. */
+
+  if (!(rc = gnutls_session_ticket_enable_server(state->session,
+	      &server_sessticket_key)))
+    tls_in.resumption |= RESUME_SERVER_TICKET;
+  else
+    DEBUG(D_tls)
+      debug_printf("enabling session tickets: %s\n", US gnutls_strerror(rc));
+
+  /* Try to tell if we see a ticket request */
+  gnutls_handshake_set_hook_function(state->session,
+    GNUTLS_HANDSHAKE_NEW_SESSION_TICKET, GNUTLS_HOOK_POST, tls_server_ticket_cb);
+  }
+}
+
+static void
+tls_server_resume_posthandshake(exim_gnutls_state_st * state)
+{
+if (gnutls_session_resumption_requested(state->session))
+  {
+  /* This tells us the client sent a full ticket.  We use a
+  callback on session-ticket request, elsewhere, to tell
+  if a client asked for a ticket. */
+
+  tls_in.resumption |= RESUME_CLIENT_SUGGESTED;
+  DEBUG(D_tls) debug_printf("client requested resumption\n");
+  }
+if (gnutls_session_is_resumed(state->session))
+  {
+  tls_in.resumption |= RESUME_USED;
+  DEBUG(D_tls) debug_printf("Session resumed\n");
+  }
+}
+#endif
 /* ------------------------------------------------------------------------ */
 /* Exported functions */
 
@@ -2140,6 +2189,10 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
 if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
     NULL, tls_verify_certificates, tls_crl,
     require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_server_resume_prehandshake(state);
+#endif
 
 /* If this is a host for which certificate verification is mandatory or
 optional, set up appropriately. */
@@ -2240,6 +2293,10 @@ if (rc != GNUTLS_E_SUCCESS)
   return FAIL;
   }
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_server_resume_posthandshake(state);
+#endif
+
 DEBUG(D_tls) post_handshake_debug(state);
 
 /* Verify after the fact */
@@ -2255,10 +2312,6 @@ if (!verify_certificate(state, errstr))
     debug_printf("TLS: continuing on only because verification was optional, after: %s\n",
 	*errstr);
   }
-
-/* Figure out peer DN, and if authenticated, etc. */
-
-if ((rc = peer_status(state, NULL)) != OK) return rc;
 
 /* Sets various Exim expansion variables; always safe within server */
 
@@ -2370,6 +2423,140 @@ return TRUE;
 }
 #endif
 
+
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+/* On the client, get any stashed session for the given IP from hints db
+and apply it to the ssl-connection for attempted resumption.  Although
+there is a gnutls_session_ticket_enable_client() interface it is
+documented as unnecessary (as of 3.6.7) as "session tickets are emabled
+by deafult".  There seems to be no way to disable them, so even hosts not
+enabled by the transport option will be sent a ticket request.  We will
+however avoid storing and retrieving session information. */
+
+static void
+tls_retrieve_session(tls_support * tlsp, gnutls_session_t session,
+  host_item * host, smtp_transport_options_block * ob)
+{
+tlsp->resumption = RESUME_SUPPORTED;
+if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
+  {
+  dbdata_tls_session * dt;
+  int len, rc;
+  open_db dbblock, * dbm_file;
+
+  DEBUG(D_tls)
+    debug_printf("check for resumable session for %s\n", host->address);
+  tlsp->host_resumable = TRUE;
+  tlsp->resumption |= RESUME_CLIENT_REQUESTED;
+  if ((dbm_file = dbfn_open(US"tls", O_RDONLY, &dbblock, FALSE, FALSE)))
+    {
+    /* key for the db is the IP */
+    if ((dt = dbfn_read_with_length(dbm_file, host->address, &len)))
+      if (!(rc = gnutls_session_set_data(session,
+		    CUS dt->session, (size_t)len - sizeof(dbdata_tls_session))))
+	{
+	DEBUG(D_tls) debug_printf("good session\n");
+	tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
+	}
+      else DEBUG(D_tls) debug_printf("setting session resumption data: %s\n",
+	    US gnutls_strerror(rc));
+    dbfn_close(dbm_file);
+    }
+  }
+}
+
+
+static void
+tls_save_session(tls_support * tlsp, gnutls_session_t session, const host_item * host)
+{
+/* TLS 1.2 - we get both the callback and the direct posthandshake call,
+but this flag is not set until the second.  TLS 1.3 it's the other way about.
+Keep both calls as the session data cannot be extracted before handshake
+completes. */
+
+if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
+  {
+  gnutls_datum_t tkt;
+  int rc;
+
+  DEBUG(D_tls) debug_printf("server offered session ticket\n");
+  tlsp->ticket_received = TRUE;
+  tlsp->resumption |= RESUME_SERVER_TICKET;
+
+  if (tlsp->host_resumable)
+    if (!(rc = gnutls_session_get_data2(session, &tkt)))
+      {
+      open_db dbblock, * dbm_file;
+      int dlen = sizeof(dbdata_tls_session) + tkt.size;
+      dbdata_tls_session * dt = store_get(dlen);
+
+      DEBUG(D_tls) debug_printf("session data size %u\n", (unsigned)tkt.size);
+      memcpy(dt->session, tkt.data, tkt.size);
+      gnutls_free(tkt.data);
+
+      if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
+	{
+	/* key for the db is the IP */
+	dbfn_delete(dbm_file, host->address);
+	dbfn_write(dbm_file, host->address, dt, dlen);
+	dbfn_close(dbm_file);
+
+	DEBUG(D_tls)
+	  debug_printf("wrote session db (len %u)\n", (unsigned)dlen);
+	}
+      }
+    else DEBUG(D_tls)
+      debug_printf("extract session data: %s\n", US gnutls_strerror(rc));
+  }
+}
+
+
+/* With a TLS1.3 session, the ticket(s) are not seen until
+the first data read is attempted.  And there's often two of them.
+Pick them up with this callback.  We are also called for 1.2
+but we do nothing.
+*/
+static int
+tls_client_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
+  unsigned incoming, const gnutls_datum_t * msg)
+{
+exim_gnutls_state_st * state = gnutls_session_get_ptr(sess);
+tls_support * tlsp = state->tlsp;
+
+DEBUG(D_tls) debug_printf("newticket cb\n");
+
+if (!tlsp->ticket_received)
+  tls_save_session(tlsp, sess, state->host);
+return 0;
+}
+
+
+static void
+tls_client_resume_prehandshake(exim_gnutls_state_st * state,
+  tls_support * tlsp, host_item * host,
+  smtp_transport_options_block * ob)
+{
+gnutls_session_set_ptr(state->session, state);
+gnutls_handshake_set_hook_function(state->session,
+  GNUTLS_HANDSHAKE_NEW_SESSION_TICKET, GNUTLS_HOOK_POST, tls_client_ticket_cb);
+
+tls_retrieve_session(tlsp, state->session, host, ob);
+}
+
+static void
+tls_client_resume_posthandshake(exim_gnutls_state_st * state,
+  tls_support * tlsp, host_item * host)
+{
+if (gnutls_session_is_resumed(state->session))
+  {
+  DEBUG(D_tls) debug_printf("Session resumed\n");
+  tlsp->resumption |= RESUME_USED;
+  }
+
+tls_save_session(tlsp, state->session, host);
+}
+#endif	/* EXPERIMENTAL_TLS_RESUME */
 
 
 /*************************************************
@@ -2512,6 +2699,10 @@ if (request_ocsp)
   }
 #endif
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_client_resume_prehandshake(state, tlsp, host, ob);
+#endif
+
 #ifndef DISABLE_EVENT
 if (tb && tb->event_action)
   {
@@ -2589,10 +2780,9 @@ if (require_ocsp)
   }
 #endif
 
-/* Figure out peer DN, and if authenticated, etc. */
-
-if (peer_status(state, errstr) != OK)
-  return FALSE;
+#ifdef EXPERIMENTAL_TLS_RESUME
+tls_client_resume_posthandshake(state, tlsp, host);
+#endif
 
 /* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
@@ -3090,6 +3280,7 @@ fprintf(f, "Library version: GnuTLS: Compile: %s\n"
            gnutls_check_version(NULL));
 }
 
+#endif	/*!MACRO_PREDEF*/
 /* vi: aw ai sw=2
 */
 /* End of tls-gnu.c */

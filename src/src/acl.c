@@ -2406,7 +2406,7 @@ if ((t = tree_search(*anchor, key)))
 /* We aren't using a pre-computed rate, so get a previously recorded rate
 from the database, which will be updated and written back if required. */
 
-if (!(dbm = dbfn_open(US"ratelimit", O_RDWR, &dbblock, TRUE)))
+if (!(dbm = dbfn_open(US"ratelimit", O_RDWR, &dbblock, TRUE, TRUE)))
   {
   store_pool = old_pool;
   sender_rate = NULL;

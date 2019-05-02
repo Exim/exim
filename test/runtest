@@ -615,9 +615,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   #   TLS1.2:ECDHE_SECP256R1__RSA_SHA256__AES_256_GCM:256
   #   TLS1.2:ECDHE_SECP256R1__RSA_SHA256__AES_128_CBC__SHA256:128
   #   TLS1.2:ECDHE_SECP256R1__ECDSA_SHA512__AES_256_GCM:256
-  #   TLS1.2:ECDHE_RSA_SECP256R1__AES_256_GCM:256 (! 3.5.18 !)
-  #   TLS1.2:RSA__CAMELLIA_256_GCM:256	(leave the cipher name)
-  #   TLS1.2-PKIX:RSA__AES_128_GCM__AEAD:128 (the -PKIX seems to be a 3.1.20 thing)
+  #   TLS1.2:ECDHE_SECP256R1__AES_256_GCM:256		(3.6.7 resumption)
+  #   TLS1.2:ECDHE_RSA_SECP256R1__AES_256_GCM:256	(! 3.5.18 !)
+  #   TLS1.2:RSA__CAMELLIA_256_GCM:256			(leave the cipher name)
+  #   TLS1.2-PKIX:RSA__AES_128_GCM__AEAD:128		(the -PKIX seems to be a 3.1.20 thing)
   #   TLS1.2-PKIX:ECDHE_RSA_SECP521R1__AES_256_GCM__AEAD:256
   #
   #   X=TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256
@@ -1000,6 +1001,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # ARC is not always supported by the build
     next if /^arc_sign =/;
+
+    # TLS resumption is not always supported by the build
+    next if /^tls_resumption_hosts =/;
+    next if /^-tls_resumption/;
     }
 
   # ======== stderr ========
@@ -1224,6 +1229,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Not all builds include DMARC
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
+
+    # TLS resumption is not always supported by the build
+    next if /in tls_resumption_hosts\?/;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order

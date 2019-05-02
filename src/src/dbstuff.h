@@ -804,5 +804,11 @@ typedef struct {
 } dbdata_ehlo_resp;
 #endif
 
+typedef struct {
+  time_t time_stamp;
+  /*************/
+  uschar session[1];
+} dbdata_tls_session;
+
 
 /* End of dbstuff.h */

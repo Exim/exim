@@ -83,6 +83,9 @@ typedef struct {
   uschar *tls_crl;
   uschar *tls_privatekey;
   uschar *tls_require_ciphers;
+# ifdef EXPERIMENTAL_TLS_RESUME
+  uschar *tls_resumption_hosts;
+# endif
   uschar *tls_sni;
   uschar *tls_verify_certificates;
   int     tls_dh_min_bits;

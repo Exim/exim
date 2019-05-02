@@ -170,7 +170,7 @@ if ((node = tree_search(tree_unusable, host_key)))
 /* Open the retry database, giving up if there isn't one. Otherwise, search for
 the retry records, and then close the database again. */
 
-if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE)))
+if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
   {
   DEBUG(D_deliver|D_retry|D_hints_lookup)
     debug_printf("no retry data available\n");
@@ -580,7 +580,7 @@ for (int i = 0; i < 3; i++)
         reached their retry next try time. */
 
         if (!dbm_file)
-          dbm_file = dbfn_open(US"retry", O_RDWR, &dbblock, TRUE);
+          dbm_file = dbfn_open(US"retry", O_RDWR, &dbblock, TRUE, TRUE);
 
         if (!dbm_file)
           {

@@ -1475,7 +1475,7 @@ DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
 /* Open the database for this transport */
 
 if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", tpname),
-		      O_RDWR, &dbblock, TRUE)))
+		      O_RDWR, &dbblock, TRUE, TRUE)))
   return;
 
 /* Scan the list of hosts for which this message is waiting, and ensure
@@ -1648,7 +1648,7 @@ if (local_message_max > 0 && continue_sequence >= local_message_max)
 /* Open the waiting information database. */
 
 if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", transport_name),
-			  O_RDWR, &dbblock, TRUE)))
+			  O_RDWR, &dbblock, TRUE, TRUE)))
   return FALSE;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
