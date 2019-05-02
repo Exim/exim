@@ -108,6 +108,12 @@ change this guard and punt the issue for a while longer. */
 # define DISABLE_OCSP
 #endif
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+# if OPENSSL_VERSION_NUMBER < 0x0101010L
+#  error OpenSSL version too old for session-resumption
+# endif
+#endif
+
 #ifdef EXIM_HAVE_OPENSSL_CHECKHOST
 # include <openssl/x509v3.h>
 #endif

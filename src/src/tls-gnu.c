@@ -89,6 +89,12 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # endif
 #endif
 
+#ifdef EXPERIMENTAL_TLS_RESUME
+# if GNUTLS_VERSION_NUMBER < 0x030603
+#  error GNUTLS version too early for session-resumption
+# endif
+#endif
+
 #ifndef DISABLE_OCSP
 # include <gnutls/ocsp.h>
 #endif
@@ -2475,7 +2481,6 @@ but this flag is not set until the second.  TLS 1.3 it's the other way about.
 Keep both calls as the session data cannot be extracted before handshake
 completes. */
 
-#ifdef GNUTLS_SFLAGS_SESSION_TICKET
 if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
   {
   gnutls_datum_t tkt;
@@ -2510,7 +2515,6 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
     else DEBUG(D_tls)
       debug_printf("extract session data: %s\n", US gnutls_strerror(rc));
   }
-#endif
 }
 
 

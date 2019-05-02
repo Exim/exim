@@ -953,9 +953,10 @@ Transport configurations should be checked for this.  An example avoidance:
 
 TLS Session Resumption
 ----------------------
-TLS Session Resumption for TLS 1.2 and TLS1.3 connections can be used (defined
+TLS Session Resumption for TLS 1.2 and TLS 1.3 connections can be used (defined
 in RFC 5077 for 1.2).  The support for this can be included by building with
-EXPERIMENTAL_TLS_RESUME defined.
+EXPERIMENTAL_TLS_RESUME defined.  This requires GnuTLS 3.6.3 or OpenSSL 1.1.1
+(or later).
 
 Session resumption (this is the "stateless" variant) involves the server sending
 a "session ticket" to the client on one connection, which can be stored by the
