@@ -73,6 +73,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_KEYLOG
 #  define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
 #  define EXIM_HAVE_SESSION_TICKET
+#  define EXIM_HAVE_OPESSL_TRACE
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -1942,7 +1943,8 @@ level. */
 DEBUG(D_tls)
   {
   SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
-#ifndef OPENSSL_NO_SSL_TRACE	/* this needs a debug build of OpenSSL */
+#if defined(EXIM_HAVE_OPESSL_TRACE) && !defined(OPENSSL_NO_SSL_TRACE)
+  /* this needs a debug build of OpenSSL */
   SSL_CTX_set_msg_callback(ctx, (void (*)())SSL_trace);
 #endif
 #ifdef OPENSSL_HAVE_KEYLOG_CB
