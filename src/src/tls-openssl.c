@@ -372,7 +372,7 @@ static int tls_server_stapling_cb(SSL *s, void *arg);
 
 
 
-/* Daemon-called key create/rotate */
+/* Daemon-called, before every connection, key create/rotate */
 #ifdef EXPERIMENTAL_TLS_RESUME
 static void tk_init(void);
 static int tls_exdata_idx = -1;
@@ -840,25 +840,24 @@ typedef struct {			/* Session ticket encryption key */
   uschar 	name[16];
 
   const EVP_CIPHER *	aes_cipher;
-  uschar		aes_key[16];	/* size needed depends on cipher. aes_128 implies 128/8 = 16? */
+  uschar		aes_key[32];	/* size needed depends on cipher. aes_128 implies 128/8 = 16? */
   const EVP_MD *	hmac_hash;
   uschar		hmac_key[16];
   time_t		renew;
   time_t		expire;
 } exim_stek;
 
-/*XXX for now just always create/find the one key.
-Worry about rotation and overlap later. */
-
-static exim_stek exim_tk;
-static exim_stek exim_tk_old;
+static exim_stek exim_tk;	/* current key */
+static exim_stek exim_tk_old;	/* previous key */
 
 static void
 tk_init(void)
 {
+time_t t = time(NULL);
+
 if (exim_tk.name[0])
   {
-  if (exim_tk.renew >= time(NULL)) return;
+  if (exim_tk.renew >= t) return;
   exim_tk_old = exim_tk;
   }
 
@@ -870,10 +869,10 @@ if (RAND_bytes(exim_tk.hmac_key, sizeof(exim_tk.hmac_key)) <= 0) return;
 if (RAND_bytes(exim_tk.name+1, sizeof(exim_tk.name)-1) <= 0) return;
 
 exim_tk.name[0] = 'E';
-exim_tk.aes_cipher = EVP_aes_128_cbc();
+exim_tk.aes_cipher = EVP_aes_256_cbc();
 exim_tk.hmac_hash = EVP_sha256();
-exim_tk.expire = time(NULL) + ssl_session_timeout;
-exim_tk.renew = exim_tk.expire - ssl_session_timeout/2;
+exim_tk.expire = t + ssl_session_timeout;
+exim_tk.renew = t + ssl_session_timeout/2;
 }
 
 static exim_stek *
