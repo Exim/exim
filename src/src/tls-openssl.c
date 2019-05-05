@@ -2544,7 +2544,7 @@ DEBUG(D_tls)
 #ifdef EXIM_HAVE_SESSION_TICKET
   {
   SSL_SESSION * ss = SSL_get_session(server_ssl);
-  if (SSL_SESSION_has_ticket(ss))
+  if (SSL_SESSION_has_ticket(ss))	/* 1.1.0 */
     debug_printf("The session has a ticket, life %lu seconds\n",
       SSL_SESSION_get_ticket_lifetime_hint(ss));
   }
@@ -2749,9 +2749,9 @@ DEBUG(D_tls) debug_printf("tls_save_session_cb\n");
 
 if (!cbinfo || !(tlsp = cbinfo->tlsp)->host_resumable) return 0;
 
-# ifdef EXIM_HAVE_SESSION_TICKET
-
-if (SSL_SESSION_is_resumable(ss)) 
+# ifdef OPENSSL_HAVE_NUM_TICKETS
+if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
+# endif
   {
   int len = i2d_SSL_SESSION(ss, NULL);
   int dlen = sizeof(dbdata_tls_session) + len;
@@ -2774,7 +2774,6 @@ if (SSL_SESSION_is_resumable(ss))
 		  (unsigned)dlen);
     }
   }
-# endif
 return 1;
 }
 
