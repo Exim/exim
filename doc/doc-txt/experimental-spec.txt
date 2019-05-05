@@ -1000,12 +1000,10 @@ Observability:
 
 Issues:
  In a resumed session:
-  $tls_{in,out}_{certificate_verified,{peer,our}cert} will be unset
-  verify = certificate will be false
-  $tls_{in,out}_cipher will have values different to the original
-  $tls_{in,out}_bits (is unspecified)
-  $tls_{in,out}_ocsp will be "not requested"
-  $tls_{in,out}_peerdn will be unset
+  $tls_{in,out}_certificate_verified will be unset (undler OpenSSL)
+  verify = certificate will be false (undler OpenSSL)
+  $tls_{in,out}_cipher will have values different to the original (under GnuTLS)
+  $tls_{in,out}_ocsp will be "not requested" or "no response"
 
 
 --------------------------------------------------------------

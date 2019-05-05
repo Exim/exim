@@ -13,7 +13,7 @@ domainlist local_domains = test.ex : *.test.ex
 
 acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
-log_selector = +received_recipients +tls_resumption
+log_selector = +received_recipients +tls_resumption +tls_peerdn
 
 openssl_options = +no_sslv2 +no_sslv3 +single_dh_use OPTION
 tls_advertise_hosts = *
@@ -31,7 +31,14 @@ begin acl
 
 check_helo:
   accept  condition =	${if def:tls_in_cipher}
-	  logwrite =	tls_in_resumption ${listextract {$tls_in_resumption} {_RESUME_DECODE}}
+	  logwrite =	tls_in_resumption\t${listextract {$tls_in_resumption} {_RESUME_DECODE}}
+	  logwrite =	our cert subject\t${certextract {subject}{$tls_in_ourcert}}
+	  logwrite =	peer cert subject\t${certextract {subject}{$tls_in_peercert}}
+	  logwrite =	peer cert verified\t${tls_in_certificate_verified}
+	  logwrite =	peer dn\t${tls_in_peerdn}
+	  logwrite =	ocsp\t${tls_in_ocsp}
+	  logwrite =	cipher\t${tls_in_cipher}
+	  logwrite =	bits\t${tls_in_bits}
   accept
 
 check_recipient:
@@ -42,6 +49,13 @@ log_resumption:
   accept condition =	${if def:tls_out_cipher}
 	 condition =	${if eq {$event_name}{tcp:close}}
 	 logwrite =	tls_out_resumption ${listextract {$tls_out_resumption} {_RESUME_DECODE}}
+	  logwrite =	our cert subject\t${certextract {subject}{$tls_out_ourcert}}
+	  logwrite =	peer cert subject\t${certextract {subject}{$tls_out_peercert}}
+	  logwrite =	peer cert verified\t${tls_out_certificate_verified}
+	  logwrite =	peer dn\t${tls_out_peerdn}
+	  logwrite =	ocsp\t${tls_out_ocsp}
+	  logwrite =	cipher\t${tls_out_cipher}
+	  logwrite =	bits\t${tls_out_bits}
 
 
 # ----- Routers -----
@@ -73,6 +87,8 @@ send_to_server1:
 .else
   tls_resumption_hosts = :
 .endif
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
   event_action =	${acl {log_resumption}}
 
 send_to_server2:
@@ -80,6 +96,8 @@ send_to_server2:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
   event_action =	${acl {log_resumption}}
 
 
