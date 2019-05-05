@@ -966,34 +966,46 @@ calculation and one full packet roundtrip time.
 
 Operational cost/benefit:
  The extra data being transmitted costs a minor amount, and the client has
-extra costs in storing and retrieving the data.
+ extra costs in storing and retrieving the data.
 
-In the Exim/Gnutls implementation the extra cost on an initial connection
-which is TLS1.2 over a loopback path is about 6ms on 2017-laptop class hardware.
-The saved cost on a subsequent connection is about 4ms; three or more
-connections become a net win.  On longer network paths, two or more
-connections will have an average lower startup time thanks to the one
-saved packet roundtrip.  TLS1.3 will save the crypto cpu costs but not any
-packet roundtrips.
+ In the Exim/Gnutls implementation the extra cost on an initial connection
+ which is TLS1.2 over a loopback path is about 6ms on 2017-laptop class hardware.
+ The saved cost on a subsequent connection is about 4ms; three or more
+ connections become a net win.  On longer network paths, two or more
+ connections will have an average lower startup time thanks to the one
+ saved packet roundtrip.  TLS1.3 will save the crypto cpu costs but not any
+ packet roundtrips.
+
+ Since a new hints DB is used, the hints DB maintenance should be updated
+ to additionally handle "tls".
 
 Security aspects:
  The session ticket is encrypted, but is obviously an additional security
-vulnarability surface.  An attacker able to decrypt it would have access
-all connections using the resumed session.
-The session ticket encryption key is not committed to storage by the server
-and is rotated regularly.  Tickets have limited lifetime.
+ vulnarability surface.  An attacker able to decrypt it would have access
+ all connections using the resumed session.
+ The session ticket encryption key is not committed to storage by the server
+ and is rotated regularly.  Tickets have limited lifetime.
 
-There is a question-mark over the security of the Diffie-Helman parameters
-used for session negotiation. TBD.  q-value; cf bug 1895
+ There is a question-mark over the security of the Diffie-Helman parameters
+ used for session negotiation. TBD.  q-value; cf bug 1895
 
 Observability:
  New log_selector "tls_resumption", appends an asterisk to the tls_cipher "X="
-element.
+ element.
 
-Variables $tls_{in,out}_resumption have bit 0-4 indicating respectively
-support built, client requested ticket, client offered session,
-server issued ticket, resume used.  A suitable decode list is provided
-in the builtin macro _RESUME_DECODE for ${listextract {}{}}.
+ Variables $tls_{in,out}_resumption have bit 0-4 indicating respectively
+ support built, client requested ticket, client offered session,
+ server issued ticket, resume used.  A suitable decode list is provided
+ in the builtin macro _RESUME_DECODE for ${listextract {}{}}.
+
+Issues:
+ In a resumed session:
+  $tls_{in,out}_{certificate_verified,{peer,our}cert} will be unset
+  verify = certificate will be false
+  $tls_{in,out}_cipher will have values different to the original
+  $tls_{in,out}_bits (is unspecified)
+  $tls_{in,out}_ocsp will be "not requested"
+  $tls_{in,out}_peerdn will be unset
 
 
 --------------------------------------------------------------
