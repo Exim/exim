@@ -108,6 +108,7 @@ typedef struct {
   BOOL	  host_resumable:1;
   BOOL	  ticket_received:1;
 #endif
+  BOOL	  verify_override:1;	/* certificate_verified only due to tls_try_verify_hosts */
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;

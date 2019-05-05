@@ -526,6 +526,7 @@ if (ev)
       }
     DEBUG(D_tls) debug_printf("Event-action verify failure overridden "
       "(host in tls_try_verify_hosts)\n");
+    tlsp->verify_override = TRUE;
     }
   X509_free(tlsp->peercert);
   tlsp->peercert = old_cert;
@@ -603,6 +604,7 @@ if (preverify_ok == 0)
     }
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
+  tlsp->verify_override = TRUE;
   }
 
 else if (depth != 0)
@@ -679,8 +681,9 @@ else
 	  tlsp->peercert = X509_dup(cert);	/* record failing cert */
 	return 0;				/* reject */
 	}
-      DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
+      DEBUG(D_tls) debug_printf("SSL verify name failure overridden (host in "
 	"tls_try_verify_hosts)\n");
+      tlsp->verify_override = TRUE;
       }
     }
 
@@ -691,7 +694,6 @@ else
 
   DEBUG(D_tls) debug_printf("SSL%s verify ok: depth=0 SN=%s\n",
     *calledp ? "" : " authenticated", dn);
-  if (!*calledp) tlsp->certificate_verified = TRUE;
   *calledp = TRUE;
   }
 
@@ -748,7 +750,7 @@ DEBUG(D_tls) debug_printf("verify_callback_client_dane: %s depth %d %s\n",
 
 if (preverify_ok == 1)
   {
-  tls_out.dane_verified = tls_out.certificate_verified = TRUE;
+  tls_out.dane_verified = TRUE;
 #ifndef DISABLE_OCSP
   if (client_static_cbinfo->u_ocsp.client.verify_store)
     {	/* client, wanting stapling  */
@@ -2153,8 +2155,23 @@ if (tlsp->peercert)
     { DEBUG(D_tls) debug_printf("X509_NAME_oneline() error\n"); }
   else
     {
-    peerdn[siz-1] = '\0';
-    tlsp->peerdn = peerdn;		/*XXX a static buffer... */
+    int oldpool = store_pool;
+
+    peerdn[siz-1] = '\0';		/* paranoia */
+    store_pool = POOL_PERM;
+    tlsp->peerdn = string_copy(peerdn);
+    store_pool = oldpool;
+
+    /* We used to set CV in the cert-verify callbacks (either plain or dane)
+    but they don't get called on session-resumption.  So use the official
+    interface, which uses the resumed value.  Unfortunately this claims verified
+    when it actually failed but we're in try-verify mode, due to us wanting the
+    knowlege that it failed so needing to have the callback and forcing a
+    permissive return.  If we don't force it, the TLS startup is failed.
+    Hence the verify_override bodge - though still a problem for resumption. */
+
+    if (!tlsp->verify_override)
+      tlsp->certificate_verified = SSL_get_verify_result(ssl) == X509_V_OK;
     }
 }
 
