@@ -586,6 +586,7 @@ if (!X509_NAME_oneline(X509_get_subject_name(cert), CS dn, sizeof(dn)))
   }
 dn[sizeof(dn)-1] = '\0';
 
+tlsp->verify_override = FALSE;
 if (preverify_ok == 0)
   {
   uschar * extra = verify_mode ? string_sprintf(" (during %c-verify for [%s])",
@@ -2174,7 +2175,8 @@ if (tlsp->peercert)
     when it actually failed but we're in try-verify mode, due to us wanting the
     knowlege that it failed so needing to have the callback and forcing a
     permissive return.  If we don't force it, the TLS startup is failed.
-    Hence the verify_override bodge - though still a problem for resumption. */
+    The extra bit of information is set in verify_override in the cb, stashed
+    for resumption next to the TLS session, and used here. */
 
     if (!tlsp->verify_override)
       tlsp->certificate_verified = SSL_get_verify_result(ssl) == X509_V_OK;
@@ -2756,6 +2758,7 @@ if (tlsp->host_resumable)
 	{
 	DEBUG(D_tls) debug_printf("good session\n");
 	tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
+	tlsp->verify_override = dt->verify_override;
 	}
       }
     else
@@ -2791,7 +2794,8 @@ if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
   DEBUG(D_tls) debug_printf("session is resumable\n");
   tlsp->resumption |= RESUME_SERVER_TICKET;	/* server gave us a ticket */
 
-  len = i2d_SSL_SESSION(ss, &s);	/* s gets bumped to end */
+  dt->verify_override = tlsp->verify_override;
+  (void) i2d_SSL_SESSION(ss, &s);		/* s gets bumped to end */
 
   if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
     {

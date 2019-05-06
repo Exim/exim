@@ -24,6 +24,13 @@ Test message.
 exim -odf notreq@test.ex
 Test message, not requesting resumption.
 ****
+sudo rm -f DIR/spool/db/tls
+exim -odf -DVALUE=resume noverify_getticket@test.ex
+Dest on this means the server cert will not verify (but try_verify will permit it)
+****
+exim -odf -DVALUE=resume noverify_resume@test.ex
+Dest on this means the server cert will not verify (but try_verify will permit it)
+****
 killdaemon
 sleep 1
 sudo rm -f DIR/spool/db/tls

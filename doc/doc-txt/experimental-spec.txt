@@ -1003,12 +1003,9 @@ Observability:
 
 Issues:
  In a resumed session:
-  $tls_{in,out}_certificate_verified will be set, and verify = certificate
-    will be true, when verify failed but tls_try_verify_hosts allowed the
-    connection (under OpenSSL)
   $tls_{in,out}_cipher will have values different to the original (under GnuTLS)
   $tls_{in,out}_ocsp will be "not requested" or "no response", and
-  hosts_require_ocsp will fail
+   hosts_require_ocsp will fail
 
 
 --------------------------------------------------------------
