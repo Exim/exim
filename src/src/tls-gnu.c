@@ -215,7 +215,7 @@ don't want to repeat this. */
 
 static gnutls_dh_params_t dh_server_params = NULL;
 
-static int ssl_session_timeout = 3600;	/* One hour */
+static int ssl_session_timeout = 7200;	/* Two hours */
 
 static const uschar * const exim_default_gnutls_priority = US"NORMAL";
 
@@ -2457,7 +2457,9 @@ if (verify_check_given_host(CUSS &ob->tls_resumption_hosts, host) == OK)
   tlsp->resumption |= RESUME_CLIENT_REQUESTED;
   if ((dbm_file = dbfn_open(US"tls", O_RDONLY, &dbblock, FALSE, FALSE)))
     {
-    /* key for the db is the IP */
+    /* Key for the db is the IP.  We'd like to filter the retrieved session
+    for ticket advisory expiry, but 3.6.1 seems to give no access to that */
+
     if ((dt = dbfn_read_with_length(dbm_file, host->address, &len)))
       if (!(rc = gnutls_session_set_data(session,
 		    CUS dt->session, (size_t)len - sizeof(dbdata_tls_session))))

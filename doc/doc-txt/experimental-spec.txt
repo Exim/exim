@@ -984,7 +984,10 @@ Security aspects:
  vulnarability surface.  An attacker able to decrypt it would have access
  all connections using the resumed session.
  The session ticket encryption key is not committed to storage by the server
- and is rotated regularly.  Tickets have limited lifetime.
+ and is rotated regularly (OpenSSL: 1hr, and one previous key is used for
+ overlap; GnuTLS 6hr but does not specify any overlap).
+ Tickets have limited lifetime (2hr, and new ones issued after 1hr under
+ OpenSSL.  GnuTLS 2hr, appears to not do overlap).
 
  There is a question-mark over the security of the Diffie-Helman parameters
  used for session negotiation. TBD.  q-value; cf bug 1895

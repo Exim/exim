@@ -315,7 +315,7 @@ static SSL_CTX *server_sni = NULL;
 
 static char ssl_errstring[256];
 
-static int  ssl_session_timeout = 3600;
+static int  ssl_session_timeout = 7200;		/* Two hours */
 static BOOL client_verify_optional = FALSE;
 static BOOL server_verify_optional = FALSE;
 
@@ -943,6 +943,12 @@ else
   EVP_DecryptInit_ex(ctx, key->aes_cipher, NULL, key->aes_key, iv);
 
   DEBUG(D_tls) debug_printf("ticket usable, STEK expire %ld\n", key->expire - now);
+
+  /* The ticket lifetime and renewal are the same as the STEK lifetime and
+  renewal, which is overenthusiastic.  A factor of, say, 3x longer STEK would
+  be better.  To do that we'd have to encode ticket lifetime in the name as
+  we don't yet see the restored session.  Could check posthandshake for TLS1.3
+  and trigger a new ticket then, but cannot do that for TLS1.2 */
   return key->renew < now ? 2 : 1;
   }
 }
