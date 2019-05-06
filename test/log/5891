@@ -53,7 +53,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 => postrenewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=yes DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbF-0005vi-00"
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for timeout@test.ex
-1999-03-02 09:44:33 10HmbG-0005vi-00 tls_out_resumption client offered session, server only provided new ticket
+1999-03-02 09:44:33 10HmbG-0005vi-00 tls_out_resumption client requested new ticket, server provided
 1999-03-02 09:44:33 10HmbG-0005vi-00 our cert subject	
 1999-03-02 09:44:33 10HmbG-0005vi-00 peer cert subject	CN=Phil Pennock,OU=Test Suite,O=The Exim Maintainers,C=UK
 1999-03-02 09:44:33 10HmbG-0005vi-00 peer cert verified	1
@@ -209,7 +209,7 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbE-0005vi-00@myhost.test.ex for postrenewal@test.ex
 1999-03-02 09:44:33 10HmbF-0005vi-00 => :blackhole: <postrenewal@test.ex> R=server
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 tls_in_resumption	client offered session, server only provided new ticket
+1999-03-02 09:44:33 tls_in_resumption	client requested new ticket, server provided
 1999-03-02 09:44:33 our cert subject	CN=Phil Pennock,OU=Test Suite,O=The Exim Maintainers,C=UK
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0

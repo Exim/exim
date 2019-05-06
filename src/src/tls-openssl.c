@@ -2731,6 +2731,12 @@ if (tlsp->host_resumable)
 	  debug_printf("decoding session: %s\n", ssl_errstring);
 	  }
 	}
+      else if ( SSL_SESSION_get_ticket_lifetime_hint(ss) + dt->time_stamp
+	       < time(NULL))
+	{
+	DEBUG(D_tls) debug_printf("session expired\n");
+	dbfn_delete(dbm_file, key);
+	}
       else if (!SSL_set_session(ssl, ss))
 	{
 	DEBUG(D_tls)

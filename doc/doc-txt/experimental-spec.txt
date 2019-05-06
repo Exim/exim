@@ -1004,7 +1004,8 @@ Issues:
     will be true, when verify failed but tls_try_verify_hosts allowed the
     connection (under OpenSSL)
   $tls_{in,out}_cipher will have values different to the original (under GnuTLS)
-  $tls_{in,out}_ocsp will be "not requested" or "no response"
+  $tls_{in,out}_ocsp will be "not requested" or "no response", and
+  hosts_require_ocsp will fail
 
 
 --------------------------------------------------------------
