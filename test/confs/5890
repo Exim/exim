@@ -19,7 +19,11 @@ tls_advertise_hosts = *
 
 # Set certificate only if server
 
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+CDIR=DIR/aux-fixed/exim-ca/example.com
+
+tls_certificate = CDIR/server1.example.com/server1.example.com.chain.pem
+tls_privatekey =  CDIR/server1.example.com/server1.example.com.unlocked.key
+tls_ocsp_file =   CDIR/server1.example.com/server1.example.com.ocsp.good.resp
 
 tls_require_ciphers = OPTION
 tls_resumption_hosts = 127.0.0.1
@@ -86,7 +90,7 @@ send_to_server1:
 .else
   tls_resumption_hosts =	:
 .endif
-  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_certificates =	CDIR/CA/CA.pem
   tls_verify_cert_hostnames =	${if match {$local_part}{^noverify} {*}{:}}
   tls_try_verify_hosts =	*
   event_action =		${acl {log_resumption}}
@@ -96,9 +100,9 @@ send_to_server2:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
-  tls_verify_certificates = DIR/aux-fixed/cert1
-  tls_verify_cert_hostnames = :
-  event_action =	${acl {log_resumption}}
+  tls_verify_certificates =	CDIR/CA/CA.pem
+  tls_verify_cert_hostnames =	:
+  event_action =		${acl {log_resumption}}
 
 
 # ----- Retry -----

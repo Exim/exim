@@ -807,7 +807,8 @@ typedef struct {
 typedef struct {
   time_t time_stamp;
   /*************/
-  uschar verify_override;
+  uschar verify_override:1;
+  uschar ocsp:3;
   uschar session[1];
 } dbdata_tls_session;
 

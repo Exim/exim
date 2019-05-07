@@ -1715,17 +1715,17 @@ if(!p)
   return cbinfo->u_ocsp.client.verify_required ? 0 : 1;
  }
 
-if(!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
- {
-  tls_out.ocsp = OCSP_FAILED;
+if (!(rsp = d2i_OCSP_RESPONSE(NULL, &p, len)))
+  {
+  tls_out.ocsp = OCSP_FAILED;	/*XXX should use tlsp-> to permit concurrent outbound */
   if (LOGGING(tls_cipher))
     log_write(0, LOG_MAIN, "Received TLS cert status response, parse error");
   else
     DEBUG(D_tls) debug_printf(" parse error\n");
   return 0;
- }
+  }
 
-if(!(bs = OCSP_response_get1_basic(rsp)))
+if (!(bs = OCSP_response_get1_basic(rsp)))
   {
   tls_out.ocsp = OCSP_FAILED;
   if (LOGGING(tls_cipher))
@@ -2759,6 +2759,7 @@ if (tlsp->host_resumable)
 	DEBUG(D_tls) debug_printf("good session\n");
 	tlsp->resumption |= RESUME_CLIENT_SUGGESTED;
 	tlsp->verify_override = dt->verify_override;
+	tlsp->ocsp = dt->ocsp;
 	}
       }
     else
@@ -2795,6 +2796,7 @@ if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
   tlsp->resumption |= RESUME_SERVER_TICKET;	/* server gave us a ticket */
 
   dt->verify_override = tlsp->verify_override;
+  dt->ocsp = tlsp->ocsp;
   (void) i2d_SSL_SESSION(ss, &s);		/* s gets bumped to end */
 
   if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
@@ -3024,12 +3026,6 @@ if (!(exim_client_ctx->ssl = SSL_new(exim_client_ctx->ctx)))
   }
 SSL_set_session_id_context(exim_client_ctx->ssl, sid_ctx, Ustrlen(sid_ctx));
 
-#ifdef EXPERIMENTAL_TLS_RESUME
-if (!tls_client_ssl_resume_prehandshake(exim_client_ctx->ssl, tlsp, host,
-      errstr))
-  return FALSE;
-#endif
-
 SSL_set_fd(exim_client_ctx->ssl, cctx->sock);
 SSL_set_connect_state(exim_client_ctx->ssl);
 
@@ -3087,6 +3083,12 @@ if (request_ocsp)
   client_static_cbinfo->u_ocsp.client.verify_required = require_ocsp;
   tlsp->ocsp = OCSP_NOT_RESP;
   }
+#endif
+
+#ifdef EXPERIMENTAL_TLS_RESUME
+if (!tls_client_ssl_resume_prehandshake(exim_client_ctx->ssl, tlsp, host,
+      errstr))
+  return FALSE;
 #endif
 
 #ifndef DISABLE_EVENT
