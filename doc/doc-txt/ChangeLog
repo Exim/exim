@@ -65,6 +65,9 @@ JH/16 GnuTLS: rework ciphersuite strings under recent library versions.  Thanks
       This affects log line X= elements, the $tls_{in,out}_cipher variables,
       and the use of specific cipher names in the encrypted= ACL condition.
 
+JH/18 GnuTLS: fix $tls_out_ocsp under hosts_request_ocsp. Previously the
+      verification result was not updated unless hosts_require_ocsp applied.
+
 
 Exim version 4.92
 -----------------
