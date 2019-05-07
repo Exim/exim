@@ -16,7 +16,7 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 client claims: OCSP status 1 (notresp)
+1999-03-02 09:44:33 10HmaY-0005vi-00 client claims: OCSP status 3 (failed)
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@server1.example.com H=the.local.host.name (server1.example.com) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@server1.example.com
 1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <norequire@test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

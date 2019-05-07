@@ -4,7 +4,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmaX-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmaX-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmaX-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmaX-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmaX-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmaX-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmaX-0005vi-00 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server1.example.com" C="250 OK id=10HmaY-0005vi-00"
@@ -15,7 +15,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmaZ-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmaZ-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmaZ-0005vi-00 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmaZ-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmaZ-0005vi-00 tls_out_resumption not requested or offered
@@ -23,7 +23,7 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmaZ-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmaZ-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmaZ-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmaZ-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmaZ-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbA-0005vi-00"
@@ -36,7 +36,7 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbC-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbC-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbC-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbC-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbC-0005vi-00 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbC-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbC-0005vi-00 => renewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbD-0005vi-00"
@@ -47,7 +47,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbE-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbE-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbE-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbE-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbE-0005vi-00 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbE-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbE-0005vi-00 => postrenewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbF-0005vi-00"
@@ -58,7 +58,7 @@
 1999-03-02 09:44:33 10HmbG-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbG-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbG-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbG-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbG-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbG-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbG-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbG-0005vi-00 => timeout@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbH-0005vi-00"
@@ -69,7 +69,7 @@
 1999-03-02 09:44:33 10HmbI-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbI-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbI-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbI-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbI-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbI-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbI-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbI-0005vi-00 => notreq@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbJ-0005vi-00"
@@ -80,7 +80,7 @@
 1999-03-02 09:44:33 10HmbK-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbK-0005vi-00 peer cert verified	0
 1999-03-02 09:44:33 10HmbK-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbK-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbK-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbK-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbK-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbK-0005vi-00 => noverify_getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="CN=server1.example.com" C="250 OK id=10HmbL-0005vi-00"
@@ -91,7 +91,7 @@
 1999-03-02 09:44:33 10HmbM-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbM-0005vi-00 peer cert verified	0
 1999-03-02 09:44:33 10HmbM-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbM-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbM-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbM-0005vi-00 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbM-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbM-0005vi-00 => noverify_resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no DN="CN=server1.example.com" C="250 OK id=10HmbN-0005vi-00"
@@ -102,7 +102,7 @@
 1999-03-02 09:44:33 10HmbO-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbO-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbO-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbO-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbO-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbO-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbO-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbO-0005vi-00 => getticket@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbP-0005vi-00"
@@ -113,7 +113,7 @@
 1999-03-02 09:44:33 10HmbQ-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbQ-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbQ-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbQ-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbQ-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbQ-0005vi-00 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbQ-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbQ-0005vi-00 tls_out_resumption not requested or offered
@@ -121,7 +121,7 @@
 1999-03-02 09:44:33 10HmbQ-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbQ-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbQ-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbQ-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbQ-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbQ-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbQ-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbQ-0005vi-00 => resume@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbR-0005vi-00"
@@ -134,7 +134,7 @@
 1999-03-02 09:44:33 10HmbT-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbT-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbT-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbT-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbT-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbT-0005vi-00 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbT-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbT-0005vi-00 => renewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbU-0005vi-00"
@@ -145,7 +145,7 @@
 1999-03-02 09:44:33 10HmbV-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbV-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbV-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbV-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbV-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbV-0005vi-00 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbV-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbV-0005vi-00 => postrenewal@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbW-0005vi-00"
@@ -156,7 +156,7 @@
 1999-03-02 09:44:33 10HmbX-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbX-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbX-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbX-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbX-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbX-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbX-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbX-0005vi-00 => timeout@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server1.example.com" C="250 OK id=10HmbY-0005vi-00"
@@ -167,7 +167,7 @@
 1999-03-02 09:44:33 10HmbZ-0005vi-00 peer cert subject	CN=server1.example.com
 1999-03-02 09:44:33 10HmbZ-0005vi-00 peer cert verified	1
 1999-03-02 09:44:33 10HmbZ-0005vi-00 peer dn	CN=server1.example.com
-1999-03-02 09:44:33 10HmbZ-0005vi-00 ocsp	1
+1999-03-02 09:44:33 10HmbZ-0005vi-00 ocsp	4
 1999-03-02 09:44:33 10HmbZ-0005vi-00 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 10HmbZ-0005vi-00 bits	256
 1999-03-02 09:44:33 10HmbZ-0005vi-00 => notreq@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="CN=server1.example.com" C="250 OK id=10HmcA-0005vi-00"

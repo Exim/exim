@@ -2757,7 +2757,7 @@ if (!verify_certificate(state, errstr))
   }
 
 #ifndef DISABLE_OCSP
-if (require_ocsp)
+if (request_ocsp)
   {
   DEBUG(D_tls)
     {
@@ -2781,10 +2781,14 @@ if (require_ocsp)
     {
     tlsp->ocsp = OCSP_FAILED;
     tls_error(US"certificate status check failed", NULL, state->host, errstr);
-    return FALSE;
+    if (require_ocsp)
+      return FALSE;
     }
-  DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
-  tlsp->ocsp = OCSP_VFIED;
+  else
+    {
+    DEBUG(D_tls) debug_printf("Passed OCSP checking\n");
+    tlsp->ocsp = OCSP_VFIED;
+    }
   }
 #endif
 

@@ -91,6 +91,9 @@ JH/16 GnuTLS: rework ciphersuite strings under recent library versions.  Thanks
 
 JH/17 OpenSSL: the default openssl_options now disables ssl_v3.
 
+JH/18 GnuTLS: fix $tls_out_ocsp under hosts_request_ocsp. Previously the
+      verification result was not updated unless hosts_require_ocsp applied.
+
 
 Exim version 4.92
 -----------------
