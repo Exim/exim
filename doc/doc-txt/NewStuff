@@ -23,6 +23,9 @@ Version 4.93
  6. EXPERIMENTAL_TLS_RESUME optional build feature.  See the experimental.spec
     file.
 
+ 7. A main option exim_version to override the version Exim
+    reports in verious places ($exim_version, $version_number).
+
 
 Version 4.92
 --------------

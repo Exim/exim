@@ -213,6 +213,7 @@ escape_string                        string          ">From "      appendfile   
 exim_group                           string          ++            main
 exim_path                            string          ++            main
 exim_user                            string          ++            main
+exim_version                         string          ++            main              4.93
 expn                                 boolean         true          routers
 extra_local_interfaces               string          unset         main              4.21
 extract_addresses_remove_arguments   boolean         true          main              1.92

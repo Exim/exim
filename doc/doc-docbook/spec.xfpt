@@ -12182,6 +12182,7 @@ This variable contains the version string of the Exim build.
 The first character is a major version number, currently 4.
 Then after a dot, the next group of digits is a minor version number.
 There may be other characters following the minor version.
+This value may be overridden by the &%exim_version%& main config option.
 
 .vitem &$header_$&<&'name'&>
 This is not strictly an expansion variable. It is expansion syntax for
@@ -13513,7 +13514,8 @@ Otherwise, empty.
 
 .vitem &$version_number$&
 .vindex "&$version_number$&"
-The version number of Exim.
+The version number of Exim. Same as &$exim_version$&, may be overridden
+by the &%exim_version%& main config option.
 
 .vitem &$warn_message_delay$&
 .vindex "&$warn_message_delay$&"
@@ -15342,6 +15344,14 @@ Unless it consists entirely of digits, the string is looked up using
 &[getpwnam()]&, and failure causes a configuration error. If &%exim_group%& is
 not also supplied, the gid is taken from the result of &[getpwnam()]& if it is
 used. See chapter &<<CHAPsecurity>>& for a discussion of security issues.
+
+
+.option exim_version main string "current version"
+.cindex "Exim version"
+.cindex customizing "version number"
+.cindex "version number of Exim" override
+This option allows to override the &$version_number$&/&$exim_version$& Exim reports in
+various places.  Use with care, this may fool stupid security scanners.
 
 
 .option extra_local_interfaces main "string list" unset

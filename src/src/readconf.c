@@ -149,6 +149,7 @@ static optionlist optionlist_config[] = {
   { "exim_group",               opt_gid,         &exim_gid },
   { "exim_path",                opt_stringptr,   &exim_path },
   { "exim_user",                opt_uid,         &exim_uid },
+  { "exim_version",             opt_stringptr,   &version_string },
   { "extra_local_interfaces",   opt_stringptr,   &extra_local_interfaces },
   { "extract_addresses_remove_arguments", opt_bool, &extract_addresses_remove_arguments },
   { "finduser_retries",         opt_int,         &finduser_retries },
