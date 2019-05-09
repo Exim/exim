@@ -1103,12 +1103,9 @@ no_conn:
       if (options & vopt_callout_recipsender)
         cancel_cutthrough_connection(TRUE, US"not usable for cutthrough");
       if (sx.send_quit)
-	{
-	(void) smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
-
-	/* Wait a short time for response, and discard it */
-	smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', 1);
-	}
+	if (smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n") != -1)
+	  /* Wait a short time for response, and discard it */
+	  smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', 1);
 
       if (sx.cctx.sock >= 0)
 	{
