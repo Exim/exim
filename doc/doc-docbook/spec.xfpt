@@ -9200,6 +9200,7 @@ Many strings in Exim's runtime configuration are expanded before use. Some of
 them are expanded every time they are used; others are expanded only once.
 
 When a string is being expanded it is copied verbatim from left to right except
+.cindex expansion "string concatenation"
 when a dollar or backslash character is encountered. A dollar specifies the
 start of a portion of the string that is interpreted and replaced as described
 below in section &<<SECTexpansionitems>>& onwards. Backslash is used as an
@@ -17575,7 +17576,7 @@ use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
 &*Note*&: If you use filenames based on IP addresses, change the list
-separator in the usual way (&<<SECTlistsepchange>>&) >to avoid confusion under IPv6.
+separator in the usual way (&<<SECTlistsepchange>>&) to avoid confusion under IPv6.
 
 &*Note*&: Under versions of OpenSSL preceding 1.1.1,
 when a list of more than one
