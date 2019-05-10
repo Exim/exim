@@ -3187,22 +3187,23 @@ for (i = 1; i < argc; i++)
     /* -q[f][f][l][G<name>]: Run the queue, optionally forced, optionally local
     only, optionally named, optionally starting from a given message id. */
 
-    if (*argrest == 0 &&
-        (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))
-      {
-      queue_interval = 0;
-      if (i+1 < argc && mac_ismsgid(argv[i+1]))
-        start_queue_run_id = argv[++i];
-      if (i+1 < argc && mac_ismsgid(argv[i+1]))
-        stop_queue_run_id = argv[++i];
-      }
+    if (!(list_queue || count_queue))
+      if (*argrest == 0
+	 && (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))
+	{
+	queue_interval = 0;
+	if (i+1 < argc && mac_ismsgid(argv[i+1]))
+	  start_queue_run_id = argv[++i];
+	if (i+1 < argc && mac_ismsgid(argv[i+1]))
+	  stop_queue_run_id = argv[++i];
+	}
 
     /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
     forced, optionally local only, optionally named. */
 
-    else if ((queue_interval = readconf_readtime(*argrest ? argrest : argv[++i],
-						0, FALSE)) <= 0)
-      exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+      else if ((queue_interval = readconf_readtime(*argrest ? argrest : argv[++i],
+						  0, FALSE)) <= 0)
+	exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
     break;
 
 
