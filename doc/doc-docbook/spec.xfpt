@@ -37720,6 +37720,11 @@ Match only frozen messages.
 
 .vitem &*-x*&
 Match only non-frozen messages.
+
+.new
+.vitem &*-G*&&~<&'queuename'&>
+Match only messages in the given queue.  Without this, the default queue is searched.
+.wen
 .endlist
 
 The following options control the format of the output:

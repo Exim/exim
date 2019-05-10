@@ -53,11 +53,12 @@ if ($ARGV[0] eq '--version') {
         exit 0;
 }
 
-getopts('hf:r:y:o:s:C:zxlibRca',\%opt);
+getopts('hf:r:y:o:s:C:zxlibRcaG:',\%opt);
 if ($ARGV[0]) { &help; exit;}
 if ($opt{h}) { &help; exit;}
 if ($opt{a}) { $eargs = '-bp'; }
 if ($opt{C} && -e $opt{C} && -f $opt{C} && -R $opt{C}) { $eargs .= ' -C '.$opt{C}; }
+if ($opt{G}) { $eargs .= ' -qG'.$opt{G}; }
 
 # Read message queue output into hash
 &collect();
@@ -83,6 +84,7 @@ Selection criteria:
 	-o <seconds>	Message older than
 	-z		Frozen messages only (exclude non-frozen)
 	-x		Non-frozen messages only (exclude frozen)
+	-G <queuename>	Match in given queue only
 
 [ NB: for regexps, provided string sits in /<string>/ ]
 
