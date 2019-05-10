@@ -68,6 +68,10 @@ JH/16 GnuTLS: rework ciphersuite strings under recent library versions.  Thanks
 JH/18 GnuTLS: fix $tls_out_ocsp under hosts_request_ocsp. Previously the
       verification result was not updated unless hosts_require_ocsp applied.
 
+JH/19 Bug 2398: fix listing of a named-queue.  Previously, even with the option
+      queue_list_requires_admin set to false, non-admin users were denied the
+      facility.
+
 
 Exim version 4.92
 -----------------
