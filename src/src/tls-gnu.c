@@ -1136,6 +1136,14 @@ else
 #endif
     gnutls_certificate_set_x509_trust_file(state->x509_cred,
       CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM);
+
+#ifdef SUPPORT_CA_DIR
+  /* Mimic the behaviour with OpenSSL of not advertising a usable-cert list
+  when using the directory-of-certs config model. */
+
+  if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
+    gnutls_certificate_send_x509_rdn_sequence(state->session, 1);
+#endif
   }
 
 if (cert_count < 0)
