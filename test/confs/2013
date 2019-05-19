@@ -1,6 +1,7 @@
 # Exim test configuration 2013
 
 SERVER =
+PEX = :
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -65,7 +66,7 @@ send_to_server:
   allow_localhost
   hosts_override
   hosts = 127.0.0.1
-  hosts_noproxy_tls = :
+  hosts_noproxy_tls = PEX
   port = PORT_D
   tls_try_verify_hosts = :
 

@@ -9,6 +9,11 @@ Test message 2
 ****
 exim -qqf
 ****
+#
+#
+# without contined-tls (test default is with)
+exim '-DPEX=*' -qqf
+****
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf
 ****

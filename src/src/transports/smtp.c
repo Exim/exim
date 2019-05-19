@@ -262,7 +262,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_avoid_esmtp =		NULL,
 #ifdef SUPPORT_TLS
   .hosts_nopass_tls =		NULL,
-  .hosts_noproxy_tls =		US"*",
+  .hosts_noproxy_tls =		NULL,
 #endif
   .command_timeout =		5*60,
   .connect_timeout =		5*60,

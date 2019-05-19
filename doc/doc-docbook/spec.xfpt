@@ -24579,13 +24579,15 @@ been started will not be passed to a new delivery process for sending another
 message on the same connection. See section &<<SECTmulmessam>>& for an
 explanation of when this might be needed.
 
-.option hosts_noproxy_tls smtp "host list&!!" *
+.new
+.option hosts_noproxy_tls smtp "host list&!!" unset
 .cindex "TLS" "passing connection"
 .cindex "multiple SMTP deliveries"
 .cindex "TLS" "multiple message deliveries"
 For any host that matches this list, a TLS session which has
 been started will not be passed to a new delivery process for sending another
 message on the same session.
+.wen
 
 The traditional implementation closes down TLS and re-starts it in the new
 process, on the same open TCP connection, for each successive message

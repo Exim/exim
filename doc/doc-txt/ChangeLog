@@ -102,6 +102,12 @@ JH/20 Bug 2389: fix server advertising of usable certificates, under GnuTLS in
       directory-of-certs mode.  Previously they were advertised despite the
       documentation.
 
+JH/21 The smtp transport option "hosts_noproxy_tls" is now unset by default.
+      A single TCP connection by a client will now hold a TLS connection open
+      for multiple message deliveries, by default.  Previoud the default was to
+      not do so.
+
+
 
 Exim version 4.92
 -----------------
