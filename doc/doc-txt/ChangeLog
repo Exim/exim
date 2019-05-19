@@ -72,6 +72,10 @@ JH/19 Bug 2398: fix listing of a named-queue.  Previously, even with the option
       queue_list_requires_admin set to false, non-admin users were denied the
       facility.
 
+JH/20 Bug 2389: fix server advertising of usable certificates, under GnuTLS in
+      directory-of-certs mode.  Previously they were advertised despite the
+      documentation.
+
 
 Exim version 4.92
 -----------------
