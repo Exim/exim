@@ -10957,8 +10957,8 @@ If the string is a single variable of type certificate,
 returns the SHA-1 hash fingerprint of the certificate.
 
 
-.vitem &*${sha256:*&<&'string'&>&*}*&
-.vitem &*${sha2:*&<&'string'&>&*}*& &&&
+.vitem &*${sha256:*&<&'string'&>&*}*& &&&
+       &*${sha2:*&<&'string'&>&*}*& &&&
        &*${sha2_<n>:*&<&'string'&>&*}*&
 .cindex "SHA-256 hash"
 .cindex "SHA-2 hash"
