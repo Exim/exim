@@ -24696,7 +24696,7 @@ This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
 BDAT will not be used in conjunction with a transport filter.
 
-.option hosts_try_dane smtp "host list&!!" unset
+.option hosts_try_dane smtp "host list&!!" *
 .cindex DANE "transport options"
 .cindex DANE "attempting for certain servers"
 If built with DANE support, Exim  will lookup a

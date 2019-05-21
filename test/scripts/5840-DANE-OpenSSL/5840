@@ -2,11 +2,11 @@
 #
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
-### TLSA (3 1 1)
+### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
 exim -odq CALLER@dane256ee.test.ex
 Testing
 ****
-### TLSA (3 1 2)
+### TLSA (3 1 2) (            SHA2-512)
 exim -odq CALLER@mxdane512ee.test.ex
 Testing
 ****
@@ -24,7 +24,7 @@ killdaemon
 #
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
-### TLSA (2 0 1)
+### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 exim -odf CALLER@mxdane256ta.test.ex
 Testing
 ****
@@ -111,8 +111,9 @@ Testing
 ****
 #
 killdaemon
-
-
+#
+#
+#
 ### A server with a name not matching the cert.  TA-mode; should fail
 exim -DSERVER=server -DDETAILS=cert.net -bd -oX PORT_D
 ****
@@ -124,6 +125,15 @@ Testing
 exim -odf CALLER@danebroken8.example.com
 Testing
 ****
-#
 killdaemon
+#
+#
+sudo rm DIR/spool/db/retry
+exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
+****
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
+exim -odf -DCONTROL=: CALLER@danebroken2.test.ex
+****
+killdaemon
+#
 no_msglog_check

@@ -103,7 +103,7 @@ Testing
 ****
 #
 ### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
-# that way round to excersize more code in the implementation
+# that way round to exercise more code in the implementation
 exim -odf CALLER@danemixed.test.ex
 Testing
 ****
@@ -123,6 +123,15 @@ Testing
 exim -odf CALLER@danebroken8.example.com
 Testing
 ****
-#
 killdaemon
+#
+#
+sudo rm DIR/spool/db/retry
+exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
+****
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
+exim -odf -DCONTROL=: CALLER@danebroken2.test.ex
+****
+killdaemon
+#
 no_msglog_check

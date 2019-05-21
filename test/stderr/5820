@@ -9,7 +9,7 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
->>> processing "accept" (TESTSUITE/test-config 85)
+>>> processing "accept" (TESTSUITE/test-config 86)
 >>> check verify = recipient/callout
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing rcptuser@dane256ee.test.ex
@@ -80,6 +80,7 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
 
 ******** SERVER ********
 ### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
@@ -102,3 +103,4 @@ LOG: unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)

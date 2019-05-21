@@ -107,6 +107,10 @@ JH/21 The smtp transport option "hosts_noproxy_tls" is now unset by default.
       for multiple message deliveries, by default.  Previoud the default was to
       not do so.
 
+JH/22 The smtp transport option "hosts_try_dane" now enables all hosts by
+      default.  If built with the facility, DANE will be used.  The facility is
+      now enabled in the prototype build Makefile "EDITME".
+
 
 
 Exim version 4.92

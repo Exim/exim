@@ -240,7 +240,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_require_auth =		NULL,
   .hosts_try_chunking =		US"*",
 #ifdef SUPPORT_DANE
-  .hosts_try_dane =		NULL,
+  .hosts_try_dane =		US"*",
   .hosts_require_dane =		NULL,
   .dane_require_tls_ciphers =	NULL,
 #endif

@@ -27,6 +27,7 @@
 ### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
 
 ******** SERVER ********
 ### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
@@ -49,3 +50,4 @@
 ### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)

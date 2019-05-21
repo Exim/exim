@@ -2,6 +2,7 @@
 # DANE/GnuTLS
 
 SERVER=
+CONTROL= *
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -66,7 +67,7 @@ send_to_server:
   allow_localhost
   port = PORT_D
 
-  hosts_try_dane =     *
+  hosts_try_dane =     CONTROL
   hosts_require_dane = HOSTIPV4
   tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
   tls_try_verify_hosts = thishost.test.ex

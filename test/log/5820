@@ -68,6 +68,9 @@
 1999-03-02 09:44:33 10HmbZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken8.example.com
 1999-03-02 09:44:33 10HmbZ-0005vi-00 => CALLER@danebroken8.example.com R=client T=send_to_server H=danebroken8.example.com [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane DN="CN=server1.example.net" C="250 OK id=10HmcA-0005vi-00"
 1999-03-02 09:44:33 10HmbZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for CALLER@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcB-0005vi-00 => CALLER@danebroken2.test.ex R=client T=send_to_server H=danebroken2.test.ex [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="CN=server1.example.com" C="250 OK id=10HmcC-0005vi-00"
+1999-03-02 09:44:33 10HmcB-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
@@ -123,3 +126,8 @@
 1999-03-02 09:44:33 10HmcA-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbZ-0005vi-00@myhost.test.ex for CALLER@danebroken8.example.com
 1999-03-02 09:44:33 10HmcA-0005vi-00 => :blackhole: <CALLER@danebroken8.example.com> R=server
 1999-03-02 09:44:33 10HmcA-0005vi-00 Completed
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 "rcpt ACL"
+1999-03-02 09:44:33 10HmcC-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcB-0005vi-00@myhost.test.ex for CALLER@danebroken2.test.ex
+1999-03-02 09:44:33 10HmcC-0005vi-00 => :blackhole: <CALLER@danebroken2.test.ex> R=server
+1999-03-02 09:44:33 10HmcC-0005vi-00 Completed

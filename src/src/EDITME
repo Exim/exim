@@ -367,10 +367,10 @@ PCRE_CONFIG=yes
 
 
 #------------------------------------------------------------------------------
-# Uncomment the following line to add DANE support
+# Comment out the following line to remove DANE support
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # For DANE under GnuTLS we need an additional library.  See TLS_LIBS below.
-# SUPPORT_DANE=yes
+SUPPORT_DANE=yes
 
 #------------------------------------------------------------------------------
 # Additional libraries and include directories may be required for some

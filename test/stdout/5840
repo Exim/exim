@@ -1,5 +1,5 @@
-### TLSA (3 1 1)
-### TLSA (3 1 2)
+### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
+### TLSA (3 1 2) (            SHA2-512)
 ### Recipient callout
 
 **** SMTP testing session as if from host 127.0.0.1
@@ -10,7 +10,7 @@
 250 OK
 250 Accepted
 421 myhost.test.ex lost input connection
-### TLSA (2 0 1)
+### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 ### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
@@ -27,12 +27,13 @@
 ### A server insecurely serving a good A record, dane required (delivery should fail)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
 
 ******** SERVER ********
-### TLSA (3 1 1)
-### TLSA (3 1 2)
+### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
+### TLSA (3 1 2) (            SHA2-512)
 ### Recipient callout
-### TLSA (2 0 1)
+### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
 ### TLSA (2 1 1)
 ### A server with a nonverifying cert and no TLSA
 ### A server with a verifying cert and no TLSA
@@ -49,3 +50,4 @@
 ### A server insecurely serving a good A record, dane required (delivery should fail)
 ### A server with a name not matching the cert.  TA-mode; should fail
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
+### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
