@@ -235,6 +235,7 @@ static uschar *op_table_main[] = {
   US"rxquote",
   US"s",
   US"sha1",
+  US"sha2",
   US"sha256",
   US"sha3",
   US"stat",
@@ -281,6 +282,7 @@ enum {
   EOP_RXQUOTE,
   EOP_S,
   EOP_SHA1,
+  EOP_SHA2,
   EOP_SHA256,
   EOP_SHA3,
   EOP_STAT,
@@ -6797,23 +6799,35 @@ while (*s != 0)
 	  }
         continue;
 
+      case EOP_SHA2:
       case EOP_SHA256:
 #ifdef EXIM_HAVE_SHA2
 	if (vp && *(void **)vp->value)
 	  {
-	  uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
-	  yield = string_cat(yield, cp);
+	  if (c == EOP_SHA256)
+	    {
+	    uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
+	    yield = string_cat(yield, cp);
+	    }
+	  else
+	    expand_string_message = US"sha2_N not supported with certificates";
 	  }
 	else
 	  {
 	  hctx h;
 	  blob b;
+	  hashmethod m = !arg ? HASH_SHA2_256
+	    : Ustrcmp(arg, "256") == 0 ? HASH_SHA2_256
+	    : Ustrcmp(arg, "384") == 0 ? HASH_SHA2_384
+	    : Ustrcmp(arg, "512") == 0 ? HASH_SHA2_512
+	    : HASH_BADTYPE;
 
-	  if (!exim_sha_init(&h, HASH_SHA2_256))
+	  if (m == HASH_BADTYPE || !exim_sha_init(&h, m))
 	    {
-	    expand_string_message = US"unrecognised sha256 variant";
+	    expand_string_message = US"unrecognised sha2 variant";
 	    goto EXPAND_FAILED;
 	    }
+
 	  exim_sha_update(&h, sub, Ustrlen(sub));
 	  exim_sha_finish(&h, &b);
 	  while (b.len-- > 0)

@@ -10958,16 +10958,29 @@ returns the SHA-1 hash fingerprint of the certificate.
 
 
 .vitem &*${sha256:*&<&'string'&>&*}*&
+.vitem &*${sha2:*&<&'string'&>&*}*& &&&
+       &*${sha2_<n>:*&<&'string'&>&*}*&
 .cindex "SHA-256 hash"
+.cindex "SHA-2 hash"
 .cindex certificate fingerprint
 .cindex "expansion" "SHA-256 hashing"
 .cindex "&%sha256%& expansion item"
+.cindex "&%sha2%& expansion item"
 The &%sha256%& operator computes the SHA-256 hash value of the string
 and returns
 it as a 64-digit hexadecimal number, in which any letters are in upper case.
 
 If the string is a single variable of type certificate,
 returns the SHA-256 hash fingerprint of the certificate.
+
+.new
+The operator can also be spelled &%sha2%& and does the same as &%sha256%&
+(except for certificates, which are not supported).
+Finally, if an underbar
+and a number is appended it specifies the output length, selecting a
+member of the SHA-2 family of hash functions.
+Values of 256, 384 and 512 are accepted, with 256 being the default.
+.wen
 
 
 .vitem &*${sha3:*&<&'string'&>&*}*& &&&

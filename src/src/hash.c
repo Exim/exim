@@ -33,7 +33,6 @@ sha1;
 BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
-/*XXX extend for sha512 */
 switch (h->method = m)
   {
   case HASH_SHA1:     h->hashlen = 20; SHA1_Init  (&h->u.sha1);     break;
@@ -110,7 +109,6 @@ switch (h->method)
 BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
-/*XXX extend for sha512 */
 switch (h->method = m)
   {
   case HASH_SHA1:     h->hashlen = 20; gnutls_hash_init(&h->sha, GNUTLS_DIG_SHA1);   break;
@@ -151,7 +149,6 @@ gnutls_hash_output(h->sha, b->data);
 BOOL
 exim_sha_init(hctx * h, hashmethod m)
 {
-/*XXX extend for sha512 */
 switch (h->method = m)
   {
   case HASH_SHA1:     h->hashlen = 20; gcry_md_open(&h->sha, GCRY_MD_SHA1, 0);   break;

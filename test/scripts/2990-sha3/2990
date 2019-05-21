@@ -1,13 +1,25 @@
 # sha3 expansions
 #
 exim -be
-sha256:   ${sha256:}
-sha256:   ${sha256:abc}
+sha256:      ${sha256:}
+sha256:abc   ${sha256:abc}
+sha2:        ${sha2:}
+sha2:abc     ${sha2:abc}
+sha2_256:    ${sha2_256:}
+sha2_256:abc ${sha2_256:abc}
+sha2_384:    ${sha2_384:}
+sha2_384:abc ${sha2_384:abc}
+sha2_512:    ${sha2_512:}
+sha2_512:abc ${sha3_512:abc}
 
-sha3:     ${sha3:}
-sha3:     ${sha3:abc}
-sha3_256: ${sha3_256:}
-sha3_256: ${sha3_256:abc}
-sha3_512: ${sha3_512:}
-sha3_512: ${sha3_512:abc}
+sha3:        ${sha3:}
+sha3:abc     ${sha3:abc}
+sha3_224:    ${sha3_224:}
+sha3_224:abc ${sha3_224:abc}
+sha3_256:    ${sha3_256:}
+sha3_256:abc ${sha3_256:abc}
+sha3_384:    ${sha3_384:}
+sha3_384:abc ${sha3_384:abc}
+sha3_512:    ${sha3_512:}
+sha3_512:abc ${sha3_512:abc}
 ****

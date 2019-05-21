@@ -26,6 +26,8 @@ Version 4.93
  7. A main option exim_version to override the version Exim
     reports in verious places ($exim_version, $version_number).
 
+ 8. Expansion operator ${sha2_N:} for N=256, 384, 512.
+
 
 Version 4.92
 --------------
@@ -178,7 +180,7 @@ Version 4.89
 
  2. A main-section config option "debug_store" to control the checks on
     variable locations during store-reset.  Normally false but can be enabled
-    when a memory corrution issue is suspected on a production system.
+    when a memory corruption issue is suspected on a production system.
 
 
 Version 4.88
