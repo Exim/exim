@@ -117,6 +117,8 @@ JH/23 The build default is now for TLS to be included; the SUPPORT_TLS define
       the the include-dir and library-file requirements that go with that
       choice.  Non-TLS builds are still supported.
 
+JH/24 Fix duplicated logging of peer name/address, on a transport connection-
+      reject under TFO.
 
 
 Exim version 4.92

@@ -590,6 +590,10 @@ switch(*errno_value)
 	transport_count);
     return FALSE;
 
+  case ECONNREFUSED:		/* First-read error on a TFO conn */
+    if (verify_mode) *message = US strerror(*errno_value);
+    return FALSE;		/* nonverify, do not set message */
+
   case ERRNO_SMTPFORMAT:	/* Handle malformed SMTP response */
     s = string_printing(buffer);
     while (isspace(*s)) s++;
