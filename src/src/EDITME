@@ -772,9 +772,11 @@ HEADERS_CHARSET="ISO-8859-1"
 
 # Uncomment the first and either the second or the third of these if you
 # are using GnuTLS.  If you have pkg-config, then the second, else the third.
+# If you disabled SUPPORT_DANE support above, you do not need the gnutls-dane
+# libraries here.
 # USE_GNUTLS=yes
-# USE_GNUTLS_PC=gnutls
-# TLS_LIBS=-lgnutls -ltasn1 -lgcrypt
+# USE_GNUTLS_PC=gnutls gnutls-dane
+# TLS_LIBS=-lgnutls -ltasn1 -lgcrypt -lgnutls-dane
 
 # If using GnuTLS older than 2.10 and using pkg-config then note that Exim's
 # build process will require libgcrypt-config to exist in your $PATH.  A
