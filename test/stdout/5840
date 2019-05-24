@@ -20,6 +20,8 @@
 ### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
 ### A server securely saying "no TLSA records here", dane required (delivery should fail)
 ### A server securely saying "no TLSA records here", dane requested only (should deliver)
+Message 10HmbJ-0005vi-00 has been removed
+Message 10HmbM-0005vi-00 has been removed
 ### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
 ### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
 ### A server insecurely serving a good TLSA record, dane required (delivery should fail)

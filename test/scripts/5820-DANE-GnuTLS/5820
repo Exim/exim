@@ -3,11 +3,11 @@
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
 ### TLSA (3 1 1) (DANE-EE SPKI SHA2-256)
-exim -odq CALLER@dane256ee.test.ex
+exim -odq t1@dane256ee.test.ex
 Testing
 ****
 ### TLSA (3 1 2) (            SHA2-512)
-exim -odq CALLER@mxdane512ee.test.ex
+exim -odq t2@mxdane512ee.test.ex
 Testing
 ****
 exim -qf
@@ -16,7 +16,7 @@ exim -qf
 #
 ### Recipient callout
 exim -DOPT=callout -bhc 127.0.0.1
-MAIL FROM: <CALLER@myhost.test.ex>
+MAIL FROM: <t3@myhost.test.ex>
 RCPT TO: <rcptuser@dane256ee.test.ex>
 ****
 killdaemon
@@ -25,7 +25,7 @@ killdaemon
 exim -DSERVER=server -DDETAILS=ta -bd -oX PORT_D
 ****
 ### TLSA (2 0 1) (DANE-TA CERT SHA2-256)
-exim -odf CALLER@mxdane256ta.test.ex
+exim -odf t4@mxdane256ta.test.ex
 Testing
 ****
 killdaemon
@@ -35,7 +35,7 @@ killdaemon
 # Check we get a non-CV but TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=no -bd -oX PORT_D
 ****
-exim -odf CALLER@thishost.test.ex
+exim -odf t6@thishost.test.ex
 Testing
 ****
 killdaemon
@@ -44,7 +44,7 @@ killdaemon
 # Check we get a CV and TLS connection, with try_dane but no require_dane
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
-exim -odf -DDETAILS=ca CALLER@thishost.test.ex
+exim -odf -DDETAILS=ca t7@thishost.test.ex
 Testing
 ****
 exim -DOPT=no_certname -qf
@@ -55,56 +55,59 @@ killdaemon
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
 ### A server with two MXs for which both TLSA lookups return defer (delivery should defer)
-exim -odq CALLER@mxdanelazy.test.ex
+exim -odq t8@mxdanelazy.test.ex
 Testing
 ****
 ### A server lacking a TLSA, dane required (should fail)
-exim -odq CALLER@dane.no.1.test.ex
+exim -odq t9@dane.no.1.test.ex
 Testing
 ****
 ### A server lacking a TLSA, dane requested only (should deliver, non-DANE, as the NXDOMAIN is not DNSSEC)
-exim -odq CALLER@dane.no.2.test.ex
+exim -odq t10@dane.no.2.test.ex
 Testing
 ****
 ### A server where the A is dnssec and the TLSA lookup _fails_ (delivery should defer)
-exim -odq CALLER@danebroken1.test.ex
+exim -odq t11@danebroken1.test.ex
 Testing
 ****
 ### A server securely saying "no TLSA records here", dane required (delivery should fail)
-exim -odq CALLER@dane.no.3.test.ex
+exim -odq t12@dane.no.3.test.ex
 Testing
 ****
 ### A server securely saying "no TLSA records here", dane requested only (should deliver)
-exim -odq CALLER@dane.no.4.test.ex
+exim -odq t13@dane.no.4.test.ex
 Testing
 ****
 exim -qf
 ****
+exim -Mrm $msg1 $msg2
+****
 #
 ### A server securely serving a wrong TLSA record, dane requested only (delivery should fail)
-exim -odf CALLER@danebroken2.test.ex
+#XXX it defers.
+exim -odf t14@danebroken2.test.ex
 Testing
 ****
 ### A server insecurely serving a good TLSA record, dane requested only (should deliver, non-DANE)
-exim -odf CALLER@danebroken3.test.ex
+exim -odf t15@danebroken3.test.ex
 Testing
 ****
 ### A server insecurely serving a good TLSA record, dane required (delivery should fail)
-exim -odf CALLER@danebroken4.test.ex
+exim -odf t16@danebroken4.test.ex
 Testing
 ****
 ### A server insecurely serving a good A record, dane requested only (should deliver, non-DANE)
-exim -odf CALLER@danebroken5.test.ex
+exim -odf t17@danebroken5.test.ex
 Testing
 ****
 ### A server insecurely serving a good A record, dane required (delivery should fail)
-exim -odf CALLER@danebroken6.test.ex
+exim -odf t18@danebroken6.test.ex
 Testing
 ****
 #
 ### A server with a mixed-usage set of TLSAs - the EE-mode one failing verify (should deliver, DANE-mode)
 # that way round to exercise more code in the implementation
-exim -odf CALLER@danemixed.test.ex
+exim -odf t18a@danemixed.test.ex
 Testing
 ****
 #
@@ -115,12 +118,12 @@ killdaemon
 ### A server with a name not matching the cert.  TA-mode; should fail
 exim -DSERVER=server -DDETAILS=cert.net -bd -oX PORT_D
 ****
-exim -odf CALLER@danebroken7.example.com
+exim -odf t19@danebroken7.example.com
 Testing
 ****
 #
 ### A server with a name not matching the cert.  EE-mode; should deliver and claim DANE mode
-exim -odf CALLER@danebroken8.example.com
+exim -odf t20@danebroken8.example.com
 Testing
 ****
 killdaemon
@@ -130,8 +133,11 @@ sudo rm DIR/spool/db/retry
 exim -DSERVER=server -DDETAILS=ca -bd -oX PORT_D
 ****
 ### A server securely serving a wrong TLSA record, dane not requested (delivery should work non-dane)
-exim -odf -DCONTROL=: CALLER@danebroken2.test.ex
+exim -odf -DCONTROL=: t21@danebroken2.test.ex
 ****
+# sleep needed to see the t14 brokenness
+sleep 1
 killdaemon
+sleep 1
 #
 no_msglog_check
