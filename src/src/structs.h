@@ -805,7 +805,7 @@ typedef struct {
   int                   host_af;
   uschar *              interface;
 
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
   BOOL dane:1;			/* connection must do dane */
   dns_answer		tlsa_dnsa;
 #endif

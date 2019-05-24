@@ -134,7 +134,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
   { "hosts_try_chunking",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_chunking) },
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
 #endif
@@ -1972,7 +1972,7 @@ sx->esmtp_sent = FALSE;
 sx->utf8_needed = FALSE;
 #endif
 sx->dsn_all_lasthop = TRUE;
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
 sx->conn_args.dane = FALSE;
 sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
@@ -2056,7 +2056,7 @@ if (!continue_hostname)
 
   smtp_port_for_connect(sx->conn_args.host, sx->port);
 
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
     /* Do TLSA lookup for DANE */
     {
     tls_out.dane_verified = FALSE;
