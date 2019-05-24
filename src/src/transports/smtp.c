@@ -2019,7 +2019,7 @@ tls_out.cipher = NULL;	/* the one we may use for this transport */
 tls_out.ourcert = NULL;
 tls_out.peercert = NULL;
 tls_out.peerdn = NULL;
-#if !defined(DISABLE_TLS) && !defined(USE_GNUTLS)
+#ifdef USE_OPENSSL
 tls_out.sni = NULL;
 #endif
 tls_out.ocsp = OCSP_NOT_REQ;

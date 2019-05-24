@@ -31,8 +31,9 @@
 #  else
 #   define SHA_GCRYPT
 #  endif
+# endif
 
-# else
+# ifdef USE_OPENSSL
 #  define SHA_OPENSSL
 #  include <openssl/ssl.h>
 #  if (OPENSSL_VERSION_NUMBER >= 0x10101000L) && !defined(LIBRESSL_VERSION_NUMBER)

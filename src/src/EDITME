@@ -202,12 +202,16 @@ SPOOL_DIRECTORY=/var/spool/exim
 # pkg-config, then you have to specify the libraries, and you mmight
 # need to specify the locations too.
 
-# no cryptographic code of its own. Uncomment the following lines if you want
+# Uncomment the following lines if you want
 # to build Exim without any TLS support (either OpenSSL or GnuTLS):
 # DISABLE_TLS=yes
+# Unless you do this, you must define one of USE_OPENSSL or USE_GNUTLS
+# below.
 
 # If you are buliding with TLS, the library configuration must be done:
 
+# Uncomment this if you are using OpenSSL
+# USE_OPENSSL=yes
 # Uncomment one of these settings if you are using OpenSSL; pkg-config vs not
 # and an optional location.
 # USE_OPENSSL_PC=openssl
@@ -222,12 +226,6 @@ SPOOL_DIRECTORY=/var/spool/exim
 # USE_GNUTLS_PC=gnutls gnutls-dane
 # TLS_LIBS=-lgnutls -ltasn1 -lgcrypt -lgnutls-dane
 # TLS_LIBS=-L/usr/local/gnu/lib -lgnutls -ltasn1 -lgcrypt -lgnutls-dane
-
-# Uncomment the first and either the second or the third of these if you
-# are using GnuTLS.  If you have pkg-config, then the second, else the third.
-# USE_GNUTLS=yes
-# USE_GNUTLS_PC=gnutls
-# TLS_LIBS=-lgnutls -ltasn1 -lgcrypt
 
 # If using GnuTLS older than 2.10 and using pkg-config then note that Exim's
 # build process will require libgcrypt-config to exist in your $PATH.  A

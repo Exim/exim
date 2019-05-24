@@ -112,10 +112,10 @@ JH/22 The smtp transport option "hosts_try_dane" now enables all hosts by
       SUPPORT_DANE is now enabled in the prototype build Makefile "EDITME".
 
 JH/23 The build default is now for TLS to be included; the SUPPORT_TLS define
-      is replaced with DISABLE_TLS.  You must still, unless you define
-      DISABLE_TLS, manage the choice of TLS library and the include-dir and
-      library-file requirements that go with that choice.  Non-TLS builds
-      are still supported.
+      is replaced with DISABLE_TLS.  Either USE_GNUTLS or (the new) USE_OPENSSL
+      must be defined and you must still, unless you define DISABLE_TLS, manage
+      the the include-dir and library-file requirements that go with that
+      choice.  Non-TLS builds are still supported.
 
 
 

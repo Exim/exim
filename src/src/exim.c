@@ -857,12 +857,11 @@ fprintf(fp, "Support for:");
 #ifdef USE_TCP_WRAPPERS
   fprintf(fp, " TCPwrappers");
 #endif
-#ifndef DISABLE_TLS
-# ifdef USE_GNUTLS
+#ifdef USE_GNUTLS
   fprintf(fp, " GnuTLS");
-# else
+#endif
+#ifdef USE_OPENSSL
   fprintf(fp, " OpenSSL");
-# endif
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   fprintf(fp, " translate_ip_address");

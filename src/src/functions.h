@@ -67,7 +67,7 @@ extern int     tls_ungetc(int);
 extern int     tls_write(void *, const uschar *, size_t, BOOL);
 extern uschar *tls_validate_require_cipher(void);
 extern void    tls_version_report(FILE *);
-# ifndef USE_GNUTLS
+# ifdef USE_OPENSSL
 extern BOOL    tls_openssl_options_parse(uschar *, long *);
 # endif
 extern uschar * tls_field_from_dn(uschar *, const uschar *);

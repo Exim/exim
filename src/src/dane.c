@@ -38,7 +38,7 @@ static void dummy(int x) { dummy(x-1); }
 #  error DANE support requires that the DNS resolver library supports DNSSEC
 # endif
 
-# ifndef USE_GNUTLS
+# ifdef USE_OPENSSL
 #  include "dane-openssl.c"
 # endif
 

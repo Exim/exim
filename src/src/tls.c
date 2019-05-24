@@ -19,6 +19,11 @@ functions from the OpenSSL or GNU TLS libraries. */
 #include "exim.h"
 #include "transports/smtp.h"
 
+#if !defined(DISABLE_TLS) && !defined(USE_OPENSSL) && !defined(USE_GNUTLS)
+# error One of USE_OPENSSL or USE_GNUTLS must be defined for a TLS build
+#endif
+
+
 #if defined(MACRO_PREDEF) && !defined(DISABLE_TLS)
 # include "macro_predef.h"
 # ifdef USE_GNUTLS
@@ -48,7 +53,7 @@ We're moving away from this; GnuTLS is already using a state, which
 can switch, so we can do TLS callouts during ACLs. */
 
 static const int ssl_xfer_buffer_size = 4096;
-#ifndef USE_GNUTLS
+#ifdef USE_OPENSSL
 static uschar *ssl_xfer_buffer = NULL;
 static int ssl_xfer_buffer_lwm = 0;
 static int ssl_xfer_buffer_hwm = 0;
@@ -122,14 +127,14 @@ tzset();
 #ifdef USE_GNUTLS
 # include "tls-gnu.c"
 # include "tlscert-gnu.c"
-
 # define ssl_xfer_buffer (state_server.xfer_buffer)
 # define ssl_xfer_buffer_lwm (state_server.xfer_buffer_lwm)
 # define ssl_xfer_buffer_hwm (state_server.xfer_buffer_hwm)
 # define ssl_xfer_eof (state_server.xfer_eof)
 # define ssl_xfer_error (state_server.xfer_error)
+#endif
 
-#else
+#ifdef USE_OPENSSL
 # include "tls-openssl.c"
 # include "tlscert-openssl.c"
 #endif
@@ -226,7 +231,7 @@ modify_variable(US"tls_bits",                 &dest_tsp->bits);
 modify_variable(US"tls_certificate_verified", &dest_tsp->certificate_verified);
 modify_variable(US"tls_cipher",               &dest_tsp->cipher);
 modify_variable(US"tls_peerdn",               &dest_tsp->peerdn);
-#if !defined(DISABLE_TLS) && !defined(USE_GNUTLS)
+#ifdef USE_OPENSSL
 modify_variable(US"tls_sni",                  &dest_tsp->sni);
 #endif
 }
