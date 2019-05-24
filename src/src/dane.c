@@ -29,7 +29,7 @@ static void dummy(int x) { dummy(x-1); }
 #else
 
 /* Enabling DANE without enabling TLS cannot work. Abort the compilation. */
-# ifndef SUPPORT_TLS
+# ifdef DISABLE_TLS
 #  error DANE support requires that TLS support must be enabled. Abort build.
 # endif
 

@@ -753,15 +753,15 @@ else if (isgroup)
     continue;
     }
 
-  /* DISABLE_DKIM is special; must be forced if no SUPPORT_TLS */
+  /* DISABLE_DKIM is special; must be forced if DISABLE_TLS */
   if (strcmp(name, "DISABLE_DKIM") == 0)
     {
     char *d_dkim = getenv("DISABLE_DKIM");
-    char *tls = getenv("SUPPORT_TLS");
+    char *notls = getenv("DISABLE_TLS");
 
     if (d_dkim)
       fprintf(new, "#define DISABLE_DKIM          yes\n");
-    else if (!tls)
+    else if (notls)
       fprintf(new, "#define DISABLE_DKIM          yes /* forced by lack of TLS */\n");
     else
       fprintf(new, "/* DISABLE_DKIM not set */\n");

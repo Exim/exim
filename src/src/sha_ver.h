@@ -16,7 +16,7 @@
  * and not massaging CFLAGS in Local/Makefile is fully supported.
  */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 
 # define EXIM_HAVE_SHA2
 

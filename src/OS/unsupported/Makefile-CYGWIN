@@ -43,7 +43,7 @@ AUTH_CRAM_MD5=yes
 AUTH_PLAINTEXT=yes
 AUTH_SPA=yes
 
-SUPPORT_TLS=yes
+#DISABLE_TLS=yes
 TLS_LIBS=-lssl -lcrypto
 
 ROUTER_ACCEPT=yes

@@ -653,7 +653,7 @@ if (!fd_ready(cctx->sock, timeout))
 /* The socket is ready, read from it (via TLS if it's active). On EOF (i.e.
 close down of the connection), set errno to zero; otherwise leave it alone. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (cctx->tls_ctx)					/* client TLS */
   rc = tls_read(cctx->tls_ctx, buffer, buffsize);
 else if (tls_in.active.sock == cctx->sock)		/* server TLS */

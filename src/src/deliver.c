@@ -801,7 +801,7 @@ return g;
 
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 static gstring *
 d_tlslog(gstring * g, address_item * addr)
 {
@@ -1231,7 +1231,7 @@ else
 #endif
     }
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   g = d_tlslog(g, addr);
 #endif
 
@@ -1435,7 +1435,7 @@ if (addr->transport)
 if (addr->host_used)
   g = d_hostlog(g, addr);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 g = d_tlslog(g, addr);
 #endif
 
@@ -1635,7 +1635,7 @@ if (result == OK)
     }
 
   /* Certificates for logging (via events) */
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   tls_out.ourcert = addr->ourcert;
   addr->ourcert = NULL;
   tls_out.peercert = addr->peercert;
@@ -1651,7 +1651,7 @@ if (result == OK)
 
   delivery_log(LOG_MAIN, addr, logchar, NULL);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   tls_free_cert(&tls_out.ourcert);
   tls_free_cert(&tls_out.peercert);
   tls_out.cipher = NULL;
@@ -3505,7 +3505,7 @@ while (!done)
     it in with the other info, in order to keep each message short enough to
     guarantee it won't be split in the pipe. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     case 'X':
       if (!addr) goto ADDR_MISMATCH;          /* Below, in 'A' handler */
       switch (*subid)
@@ -3543,7 +3543,7 @@ while (!done)
 	}
       while (*ptr++);
       break;
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
     case 'C':	/* client authenticator information */
       switch (*subid)
@@ -4805,7 +4805,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 # endif
 
       /* Use an X item only if there's something to send */
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       if (addr->cipher)
         {
         ptr = big_buffer + sprintf(CS big_buffer, "%.128s", addr->cipher) + 1;
@@ -4848,7 +4848,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
         rmt_dlv_checked_write(fd, 'X', '4', big_buffer, ptr - big_buffer);
 	}
 # endif
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
       if (client_authenticator)
         {
@@ -5012,7 +5012,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
     {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     if (cutthrough.is_tls)
       tls_close(cutthrough.cctx.tls_ctx, TLS_NO_SHUTDOWN);
 #endif
@@ -8513,7 +8513,7 @@ if (!regex_SIZE) regex_SIZE =
 if (!regex_AUTH) regex_AUTH =
   regex_must_compile(AUTHS_REGEX, FALSE, TRUE);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (!regex_STARTTLS) regex_STARTTLS =
   regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
 #endif
@@ -8603,7 +8603,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
   smtp_peer_options = cutthrough.peer_options;
   continue_sequence = 0;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   if (cutthrough.is_tls)
     {
     int pfd[2], pid;
@@ -8646,7 +8646,7 @@ else
   }
 return;		/* compiler quietening; control does not reach here. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 fail:
   log_write(0,
     LOG_MAIN | (exec_type == CEE_EXEC_EXIT ? LOG_PANIC : LOG_PANIC_DIE),

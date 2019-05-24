@@ -233,7 +233,7 @@ if (f.sender_set_untrusted) fprintf(fp, "-sender_set_untrusted\n");
 if (bmi_verdicts) fprintf(fp, "-bmi_verdicts %s\n", bmi_verdicts);
 #endif
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (tls_in.certificate_verified) fprintf(fp, "-tls_certificate_verified\n");
 if (tls_in.cipher)       fprintf(fp, "-tls_cipher %s\n", tls_in.cipher);
 if (tls_in.peercert)

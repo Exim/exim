@@ -60,7 +60,7 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_predata",         opt_stringptr,   &acl_smtp_predata },
   { "acl_smtp_quit",            opt_stringptr,   &acl_smtp_quit },
   { "acl_smtp_rcpt",            opt_stringptr,   &acl_smtp_rcpt },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "acl_smtp_starttls",        opt_stringptr,   &acl_smtp_starttls },
 #endif
   { "acl_smtp_vrfy",            opt_stringptr,   &acl_smtp_vrfy },
@@ -156,7 +156,7 @@ static optionlist optionlist_config[] = {
   { "freeze_tell",              opt_stringptr,   &freeze_tell },
   { "gecos_name",               opt_stringptr,   &gecos_name },
   { "gecos_pattern",            opt_stringptr,   &gecos_pattern },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "gnutls_allow_auto_pkcs11", opt_bool,        &gnutls_allow_auto_pkcs11 },
   { "gnutls_compat_mode",       opt_bool,        &gnutls_compat_mode },
 #endif
@@ -224,7 +224,7 @@ static optionlist optionlist_config[] = {
   { "mysql_servers",            opt_stringptr,   &mysql_servers },
 #endif
   { "never_users",              opt_uidlist,     &never_users },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "openssl_options",          opt_stringptr,   &openssl_options },
 #endif
 #ifdef LOOKUP_ORACLE
@@ -355,7 +355,7 @@ static optionlist optionlist_config[] = {
   { "timeout_frozen_after",     opt_time,        &timeout_frozen_after },
   { "timezone",                 opt_stringptr,   &timezone_string },
   { "tls_advertise_hosts",      opt_stringptr,   &tls_advertise_hosts },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "tls_certificate",          opt_stringptr,   &tls_certificate },
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },
@@ -3082,7 +3082,7 @@ Assumes:  tls_require_ciphers has been set, if it will be
 Returns:  bool for "okay"; false will cause caller to immediately exit.
 */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 static BOOL
 tls_dropprivs_validate_require_cipher(BOOL nowarn)
 {
@@ -3135,7 +3135,7 @@ signal(SIGCHLD, oldsignal);
 
 return status == 0;
 }
-#endif /* SUPPORT_TLS */
+#endif /*DISABLE_TLS*/
 
 
 
@@ -3622,7 +3622,7 @@ if (host_number_string)
   host_number = n;
   }
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 /* If tls_verify_hosts is set, tls_verify_certificates must also be set */
 
 if ((tls_verify_hosts || tls_try_verify_hosts) && !tls_verify_certificates)
@@ -3655,7 +3655,7 @@ if (openssl_options)
       "openssl_options parse error: %s", openssl_options);
 # endif
   }
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
 if (!nowarn && !keep_environment && environ && *environ)
   log_write(0, LOG_MAIN,

@@ -567,7 +567,7 @@ typedef struct address_item {
   uschar *self_hostname;          /* after self=pass */
   uschar *shadow_message;         /* info about shadow transporting */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   uschar *cipher;                 /* Cipher used for transport */
   void   *ourcert;                /* Certificate offered to peer, binary */
   void   *peercert;               /* Certificate from peer, binary */
@@ -805,7 +805,7 @@ typedef struct {
   int                   host_af;
   uschar *              interface;
 
-#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
   BOOL dane:1;			/* connection must do dane */
   dns_answer		tlsa_dnsa;
 #endif

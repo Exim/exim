@@ -11,8 +11,8 @@
 #if !defined(HASH_H)	/* entire file */
 #define HASH_H
 
-#ifndef SUPPORT_TLS
-# error Need SUPPORT_TLS for DKIM
+#ifdef DISABLE_TLS
+# error Must not DISABLE_TLS, for DKIM
 #endif
 
 #include "crypt_ver.h"

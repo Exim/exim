@@ -90,7 +90,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_esmtp) },
   { "hosts_avoid_pipelining", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_pipelining) },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "hosts_avoid_tls",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_tls) },
 #endif
@@ -98,7 +98,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_max_try) },
   { "hosts_max_try_hardlimit", opt_int,
       (void *)offsetof(smtp_transport_options_block, hosts_max_try_hardlimit) },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "hosts_nopass_tls",     opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_nopass_tls) },
   { "hosts_noproxy_tls",    opt_stringptr,
@@ -112,13 +112,13 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_randomize",      opt_bool,
       (void *)offsetof(smtp_transport_options_block, hosts_randomize) },
-#if defined(SUPPORT_TLS) && !defined(DISABLE_OCSP)
+#if !defined(DISABLE_TLS) && !defined(DISABLE_OCSP)
   { "hosts_request_ocsp",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_request_ocsp) },
 #endif
   { "hosts_require_auth",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_auth) },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 # ifdef SUPPORT_DANE
   { "hosts_require_dane",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_dane) },
@@ -134,7 +134,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
   { "hosts_try_chunking",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_chunking) },
-#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
   { "hosts_try_dane",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_dane) },
 #endif
@@ -144,7 +144,7 @@ optionlist smtp_transport_options[] = {
   { "hosts_try_prdr",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_prdr) },
 #endif
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "hosts_verify_avoid_tls", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_verify_avoid_tls) },
 #endif
@@ -172,7 +172,7 @@ optionlist smtp_transport_options[] = {
   { "socks_proxy",          opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, socks_proxy) },
 #endif
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "tls_certificate",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_certificate) },
   { "tls_crl",              opt_stringptr,
@@ -260,7 +260,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_pipe_connect =		NULL,
 #endif
   .hosts_avoid_esmtp =		NULL,
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   .hosts_nopass_tls =		NULL,
   .hosts_noproxy_tls =		NULL,
 #endif
@@ -288,7 +288,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #ifdef SUPPORT_SOCKS
   .socks_proxy =		NULL,
 #endif
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   .tls_certificate =		NULL,
   .tls_crl =			NULL,
   .tls_privatekey =		NULL,
@@ -1687,7 +1687,7 @@ smtp_local_identity(uschar * sender, struct transport_instance * tblock)
 address_item * addr1;
 uschar * if1 = US"";
 uschar * helo1 = US"";
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 uschar * tlsc1 = US"";
 #endif
 uschar * save_sender_address = sender_address;
@@ -1705,7 +1705,7 @@ if (ob->interface)
 if (ob->helo_data)
   helo1 = expand_string(ob->helo_data);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (ob->tls_certificate)
   tlsc1 = expand_string(ob->tls_certificate);
 local_identity = string_sprintf ("%s^%s^%s", if1, helo1, tlsc1);
@@ -1754,7 +1754,7 @@ size_t bsize = Ustrlen(buf);
 
 /* debug_printf("%s: check for 0x%04x\n", __FUNCTION__, checks); */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (  checks & OPTION_TLS
    && pcre_exec(regex_STARTTLS, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
 #endif
@@ -1954,7 +1954,7 @@ BOOL pass_message = FALSE;
 uschar * message = NULL;
 int yield = OK;
 int rc;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 uschar * tls_errstr;
 #endif
 
@@ -1972,7 +1972,7 @@ sx->esmtp_sent = FALSE;
 sx->utf8_needed = FALSE;
 #endif
 sx->dsn_all_lasthop = TRUE;
-#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
 sx->conn_args.dane = FALSE;
 sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
@@ -2019,7 +2019,7 @@ tls_out.cipher = NULL;	/* the one we may use for this transport */
 tls_out.ourcert = NULL;
 tls_out.peercert = NULL;
 tls_out.peerdn = NULL;
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#if !defined(DISABLE_TLS) && !defined(USE_GNUTLS)
 tls_out.sni = NULL;
 #endif
 tls_out.ocsp = OCSP_NOT_REQ;
@@ -2034,7 +2034,7 @@ For verify, unflipped once the callout is dealt with */
 
 tls_modify_variables(&tls_out);
 
-#ifndef SUPPORT_TLS
+#ifdef DISABLE_TLS
 if (sx->smtps)
   {
   set_errno_nohost(sx->addrlist, ERRNO_TLSFAILURE, US"TLS support not available",
@@ -2056,7 +2056,7 @@ if (!continue_hostname)
 
   smtp_port_for_connect(sx->conn_args.host, sx->port);
 
-#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
     /* Do TLSA lookup for DANE */
     {
     tls_out.dane_verified = FALSE;
@@ -2262,7 +2262,7 @@ goto SEND_QUIT;
   /* Alas; be careful, since this goto is not an error-out, so conceivably
   we might set data between here and the target which we assume to exist
   and be usable.  I can see this coming back to bite us. */
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   if (sx->smtps)
     {
     smtp_peer_options |= OPTION_TLS;
@@ -2388,7 +2388,7 @@ goto SEND_QUIT;
 
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     smtp_peer_options |= sx->peer_offered & OPTION_TLS;
 #endif
     }
@@ -2450,7 +2450,7 @@ negative, the original EHLO data is available for subsequent analysis, should
 the client not be required to use TLS. If the response is bad, copy the buffer
 for error analysis. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (  smtp_peer_options & OPTION_TLS
    && !suppress_tls
    && verify_check_given_host(CUSS &ob->hosts_avoid_tls, sx->conn_args.host) != OK
@@ -2665,7 +2665,7 @@ else if (  sx->smtps
 # endif
   goto TLS_FAILED;
   }
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
 /* If TLS is active, we have just started it up and re-done the EHLO command,
 so its response needs to be analyzed. If TLS is not active and this is a
@@ -2673,7 +2673,7 @@ continued session down a previously-used socket, we haven't just done EHLO, so
 we skip this. */
 
 if (continue_hostname == NULL
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     || tls_out.active.sock >= 0
 #endif
     )
@@ -2874,7 +2874,7 @@ return OK;
   in message and errno, and setting_up will always be true. Treat as
   a temporary error. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   TLS_FAILED:
     code = '4', yield = DEFER;
     goto FAILED;
@@ -2917,7 +2917,7 @@ SEND_QUIT:
 if (sx->send_quit)
   (void)smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n");
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (sx->cctx.tls_ctx)
   {
   tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
@@ -3261,7 +3261,7 @@ return 0;
 }
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 /*****************************************************
 * Proxy TLS connection for another transport process *
 ******************************************************/
@@ -4148,7 +4148,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
   if (  sx.first_addr != NULL
      || f.continue_more
      || (
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
            || verify_check_given_host(CUSS &ob->hosts_nopass_tls, host) != OK
 	   )
@@ -4186,7 +4186,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 
     if (sx.ok)
       {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       int pfd[2];
 #endif
       int socket_fd = sx.cctx.sock;
@@ -4203,7 +4203,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
       transport_pass_socket).  If the caller has more ready, just return with
       the connection still open. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       if (tls_out.active.sock >= 0)
 	if (  f.continue_more
 	   || verify_check_given_host(CUSS &ob->hosts_noproxy_tls, host) == OK)
@@ -4262,7 +4262,7 @@ propagate it from the initial
 	just passed the baton to.  Fork a child to to do it, and return to
 	get logging done asap.  Which way to place the work makes assumptions
 	about post-fork prioritisation which may not hold on all platforms. */
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (tls_out.active.sock >= 0)
 	  {
 	  int pid = fork();
@@ -4330,7 +4330,7 @@ if (sx.send_quit) (void)smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n");
 
 END_OFF:
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
 sx.cctx.tls_ctx = NULL;
 #endif
@@ -4449,7 +4449,7 @@ for (address_item * addr = addrlist; addr; addr = addr->next)
     addr->basic_errno = 0;
     addr->more_errno = (host->mx >= 0)? 'M' : 'A';
     addr->message = NULL;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     addr->cipher = NULL;
     addr->ourcert = NULL;
     addr->peercert = NULL;
@@ -5112,7 +5112,7 @@ retry_non_continued:
       session, so the in-clear transmission after those errors, if permitted,
       happens inside smtp_deliver().] */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       if (  rc == DEFER
 	 && first_addr->basic_errno == ERRNO_TLSFAILURE
 	 && ob->tls_tempfail_tryclear
@@ -5132,7 +5132,7 @@ retry_non_continued:
           deferred_event_raise(first_addr, host);
 # endif
         }
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
       }
 
     /* Delivery attempt finished */
@@ -5305,7 +5305,7 @@ retry_non_continued:
     int fd = cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0;
 
     DEBUG(D_transport) debug_printf("no hosts match already-open connection\n");
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     /* A TLS conn could be open for a cutthrough, but not for a plain continued-
     transport */
 /*XXX doublecheck that! */

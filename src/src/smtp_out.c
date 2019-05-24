@@ -444,7 +444,7 @@ BOOL more = mode == SCMD_MORE;
 HDEBUG(D_transport|D_acl) debug_printf_indent("cmd buf flush %d bytes%s\n", n,
   more ? " (more expected)" : "");
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (outblock->cctx->tls_ctx)
   rc = tls_write(outblock->cctx->tls_ctx, outblock->buffer, n, more);
 else

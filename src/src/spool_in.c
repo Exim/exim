@@ -273,7 +273,7 @@ f.dkim_disable_verify = FALSE;
 dkim_collect_input = 0;
 #endif
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 tls_in.certificate_verified = FALSE;
 # ifdef SUPPORT_DANE
 tls_in.dane_verified = FALSE;
@@ -646,7 +646,7 @@ for (;;)
 #endif
     break;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     case 't':
     if (Ustrncmp(p, "ls_", 3) == 0)
       {

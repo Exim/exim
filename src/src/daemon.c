@@ -645,7 +645,7 @@ if (pid == 0)
         /* Don't ever molest the parent's SSL connection, but do clean up
         the data structures if necessary. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
         tls_close(NULL, TLS_NO_SHUTDOWN);
 #endif
 
@@ -1985,7 +1985,7 @@ for (;;)
     handle_ending_processes();
     errno = select_errno;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     /* Create or rotate any required keys */
     tls_daemon_init();
 #endif

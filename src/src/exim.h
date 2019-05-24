@@ -539,11 +539,11 @@ union sockaddr_46 {
   struct sockaddr v0;
 };
 
-/* If SUPPORT_TLS is not defined, ensure that USE_GNUTLS is also not defined
-so that if USE_GNUTLS *is* set, we can assume SUPPORT_TLS is also set.
+/* If DISABLE_TLS is defined, ensure that USE_GNUTLS is not defined
+so that if USE_GNUTLS *is* set, we can assume DISABLE_TLS is not set.
 Likewise, OSCP, AUTH_TLS and CERTNAMES cannot be supported. */
 
-#ifndef SUPPORT_TLS
+#ifdef DISABLE_TLS
 # undef USE_GNUTLS
 # ifndef DISABLE_OCSP
 #  define DISABLE_OCSP

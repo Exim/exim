@@ -113,7 +113,7 @@ typedef struct {
 extern tls_support tls_in;
 extern tls_support tls_out;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules */
 extern uschar *openssl_options;        /* OpenSSL compatibility options */

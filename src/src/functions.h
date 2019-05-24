@@ -22,7 +22,7 @@ extern uschar *init_perl(uschar *);
 #endif
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 extern const char *
                std_dh_prime_default(void);
 extern const char *
@@ -77,7 +77,7 @@ extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);
 # endif
 
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
 
 /* Everything else... */
@@ -350,7 +350,7 @@ extern uschar *parse_message_id(uschar *, uschar **, uschar **);
 extern const uschar *parse_quote_2047(const uschar *, int, uschar *, uschar *, int, BOOL);
 extern uschar *parse_date_time(uschar *str, time_t *t);
 extern int     vaguely_random_number(int);
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 extern int     vaguely_random_number_fallback(int);
 #endif
 

@@ -126,7 +126,7 @@ due to conflicts with other common macros. */
 #ifdef USE_TCP_WRAPPERS
   builtin_macro_create(US"_HAVE_TCPWRAPPERS");
 #endif
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   builtin_macro_create(US"_HAVE_TLS");
 # ifdef USE_GNUTLS
   builtin_macro_create(US"_HAVE_GNUTLS");
@@ -290,7 +290,7 @@ options_routers();
 options_transports();
 options_auths();
 options_logging();
-#if defined(SUPPORT_TLS)
+#ifndef DISABLE_TLS
 options_tls();
 #endif
 }

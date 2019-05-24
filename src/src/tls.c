@@ -19,7 +19,7 @@ functions from the OpenSSL or GNU TLS libraries. */
 #include "exim.h"
 #include "transports/smtp.h"
 
-#if defined(MACRO_PREDEF) && defined(SUPPORT_TLS)
+#if defined(MACRO_PREDEF) && !defined(DISABLE_TLS)
 # include "macro_predef.h"
 # ifdef USE_GNUTLS
 #  include "tls-gnu.c"
@@ -37,7 +37,7 @@ reference itself to stop picky compilers complaining that it is unused, and put
 in a dummy argument to stop even pickier compilers complaining about infinite
 loops. */
 
-#ifndef SUPPORT_TLS
+#ifdef DISABLE_TLS
 static void dummy(int x) { dummy(x-1); }
 #else
 
@@ -217,7 +217,7 @@ return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm;
 }
 
 
-#endif  /* SUPPORT_TLS */
+#endif  /*DISABLE_TLS*/
 
 void
 tls_modify_variables(tls_support * dest_tsp)
@@ -226,13 +226,13 @@ modify_variable(US"tls_bits",                 &dest_tsp->bits);
 modify_variable(US"tls_certificate_verified", &dest_tsp->certificate_verified);
 modify_variable(US"tls_cipher",               &dest_tsp->cipher);
 modify_variable(US"tls_peerdn",               &dest_tsp->peerdn);
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#if !defined(DISABLE_TLS) && !defined(USE_GNUTLS)
 modify_variable(US"tls_sni",                  &dest_tsp->sni);
 #endif
 }
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 /************************************************
 *	TLS certificate name operations         *
 ************************************************/
@@ -364,7 +364,7 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
   }
 return FALSE;
 }
-#endif	/*SUPPORT_TLS*/
+#endif	/*!DISABLE_TLS*/
 #endif	/*!MACRO_PREDEF*/
 
 /* vi: aw ai sw=2

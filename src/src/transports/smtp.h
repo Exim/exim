@@ -50,7 +50,7 @@ typedef struct {
   uschar *hosts_pipe_connect;
 #endif
   uschar *hosts_avoid_esmtp;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   uschar *hosts_nopass_tls;
   uschar *hosts_noproxy_tls;
 #endif
@@ -78,7 +78,7 @@ typedef struct {
 #ifdef SUPPORT_SOCKS
   uschar *socks_proxy;
 #endif
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   uschar *tls_certificate;
   uschar *tls_crl;
   uschar *tls_privatekey;
@@ -135,7 +135,7 @@ typedef struct {
   BOOL utf8_needed:1;
 #endif
   BOOL dsn_all_lasthop:1;
-#if defined(SUPPORT_TLS) && defined(SUPPORT_DANE)
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
   BOOL dane_required:1;
 #endif
 #ifdef EXPERIMENTAL_PIPE_CONNECT

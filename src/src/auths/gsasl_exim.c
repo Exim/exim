@@ -286,7 +286,7 @@ if (ob->server_realm)
   }
 /* We don't support protection layers. */
 gsasl_property_set(sctx, GSASL_QOPS, "qop-auth");
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (tls_channelbinding_b64)
   {
   /* Some auth mechanisms can ensure that both sides are talking withing the

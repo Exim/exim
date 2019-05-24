@@ -238,7 +238,7 @@ for (int i = 0; i < 100; i++)
   if (transport_write_timeout <= 0)   /* No timeout wanted */
     {
     rc =
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	tls_out.active.sock == fd ? tls_write(tls_out.active.tls_ctx, block, len, more) :
 #endif
 #ifdef MSG_MORE
@@ -256,7 +256,7 @@ for (int i = 0; i < 100; i++)
     ALARM(local_timeout);
 
     rc =
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	tls_out.active.sock == fd ? tls_write(tls_out.active.tls_ctx, block, len, more) :
 #endif
 #ifdef MSG_MORE
@@ -1867,7 +1867,7 @@ if (smtp_peer_options & OPTION_CHUNKING)	argv[i++] = US"-MCK";
 if (smtp_peer_options & OPTION_DSN)		argv[i++] = US"-MCD";
 if (smtp_peer_options & OPTION_PIPE)		argv[i++] = US"-MCP";
 if (smtp_peer_options & OPTION_SIZE)		argv[i++] = US"-MCS";
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (smtp_peer_options & OPTION_TLS)
   if (tls_out.active.sock >= 0 || continue_proxy_cipher)
     {

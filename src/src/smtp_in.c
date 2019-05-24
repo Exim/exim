@@ -133,7 +133,7 @@ to the circular buffer that holds a list of the last n received. */
 
 static struct {
   BOOL auth_advertised			:1;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   BOOL tls_advertised			:1;
 #endif
   BOOL dsn_advertised			:1;
@@ -194,7 +194,7 @@ static smtp_cmd_list cmd_list[] = {
   { "helo",       sizeof("helo")-1,       HELO_CMD, TRUE,  FALSE },
   { "ehlo",       sizeof("ehlo")-1,       EHLO_CMD, TRUE,  FALSE },
   { "auth",       sizeof("auth")-1,       AUTH_CMD, TRUE,  TRUE  },
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   { "starttls",   sizeof("starttls")-1,   STARTTLS_CMD, FALSE, FALSE },
   { "tls_auth",   0,                      TLS_AUTH_CMD, FALSE, FALSE },
 #endif
@@ -348,7 +348,7 @@ int fd, rc;
 fd_set fds;
 struct timeval tzero;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
  return !tls_could_read();
 #endif
@@ -945,7 +945,7 @@ if (fl.rcpt_in_progress)
 
 /* Now write the string */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
   {
   if (tls_write(NULL, gs.s, gs.ptr, more) < 0)
@@ -1774,7 +1774,7 @@ return string_sprintf("SMTP connection from %s", hostname);
 
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 /* Append TLS-related information to a log line
 
 Arguments:
@@ -1830,7 +1830,7 @@ if (sender_host_authenticated)
   if (authenticated_id) g = string_append(g, 2, US":", authenticated_id);
   }
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 g = s_tlslog(g);
 #endif
 
@@ -2375,7 +2375,7 @@ return done - 2;  /* Convert yield values */
 
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 static BOOL
 smtp_log_tls_fail(uschar * errstr)
 {
@@ -2466,7 +2466,7 @@ if (!host_checking && !f.sender_host_notsocket)
   sender_host_auth_pubname = sender_host_authenticated = NULL;
 authenticated_by = NULL;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 tls_in.cipher = tls_in.peerdn = NULL;
 tls_in.ourcert = tls_in.peercert = NULL;
 tls_in.sni = NULL;
@@ -2903,7 +2903,7 @@ if (check_proxy_protocol_host())
   /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
   smtps port for use with older style SSL MTAs. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   if (tls_in.on_connect)
     {
     if (tls_server_start(tls_require_ciphers, &user_msg) != OK)
@@ -3404,7 +3404,7 @@ is closing if required and return 2.  */
 
 if (log_reject_target != 0)
   {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   gstring * g = s_tlslog(NULL);
   uschar * tls = string_from_gstring(g);
   if (!tls) tls = US"";
@@ -3825,7 +3825,7 @@ if (*user_msgp)
 else
   smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 tls_close(NULL, TLS_SHUTDOWN_NOWAIT);
 #endif
 
@@ -3896,7 +3896,7 @@ chunking_state = f.chunking_offered ? CHUNKING_OFFERED : CHUNKING_NOT_OFFERED;
 cmd_list[CMD_LIST_RSET].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_HELO].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
 #endif
 
@@ -4228,7 +4228,7 @@ while (done <= 0)
 
       fl.auth_advertised = FALSE;
       f.smtp_in_pipelining_advertised = FALSE;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       fl.tls_advertised = FALSE;
 #endif
       fl.dsn_advertised = FALSE;
@@ -4421,7 +4421,7 @@ while (done <= 0)
 	tls_advertise_hosts. We must *not* advertise if we are already in a
 	secure connection. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (tls_in.active.sock < 0 &&
 	    verify_check_host(&tls_advertise_hosts) != FAIL)
 	  {
@@ -4459,7 +4459,7 @@ while (done <= 0)
       /* Terminate the string (for debug), write it, and note that HELO/EHLO
       has been seen. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       if (tls_in.active.sock >= 0)
 	(void)tls_write(NULL, g->s, g->ptr,
 # ifdef EXPERIMENTAL_PIPE_CONNECT
@@ -5395,7 +5395,7 @@ while (done <= 0)
       break;
 
 
-    #ifdef SUPPORT_TLS
+    #ifndef DISABLE_TLS
 
     case STARTTLS_CMD:
       HAD(SCH_STARTTLS);
@@ -5586,7 +5586,7 @@ while (done <= 0)
 	uschar buffer[256];
 	buffer[0] = 0;
 	Ustrcat(buffer, " AUTH");
-	#ifdef SUPPORT_TLS
+	#ifndef DISABLE_TLS
 	if (tls_in.active.sock < 0 &&
 	    verify_check_host(&tls_advertise_hosts) != FAIL)
 	  Ustrcat(buffer, " STARTTLS");

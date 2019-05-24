@@ -17,7 +17,7 @@
 
 #include "exim.h"
 
-#ifndef SUPPORT_TLS
+#ifdef DISABLE_TLS
 static void dummy(int x) { dummy(x-1); }
 #else
 
@@ -1018,5 +1018,5 @@ std_dh_prime_named(const uschar *name)
   return NULL;
 }
 
-#endif /* SUPPORT_TLS */
+#endif /*DISABLE_TLS*/
 /* EOF */

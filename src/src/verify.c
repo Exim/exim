@@ -687,7 +687,7 @@ tls_retry_connection:
     if permitted */
 
     yield = smtp_setup_conn(&sx, FALSE);
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     if (  yield == DEFER
        && addr->basic_errno == ERRNO_TLSFAILURE
        && ob->tls_tempfail_tryclear
@@ -819,7 +819,7 @@ tls_retry_connection:
 	    HDEBUG(D_acl|D_v)
 	      debug_printf_indent("problem after random/rset/mfrom; reopen conn\n");
 	    random_local_part = NULL;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	    tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
 #endif
 	    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
@@ -1109,7 +1109,7 @@ no_conn:
 
       if (sx.cctx.sock >= 0)
 	{
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (sx.cctx.tls_ctx)
 	  {
 	  tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
@@ -1215,7 +1215,7 @@ if(cutthrough.cctx.sock < 0)
   return TRUE;
 
 if(
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
    cutthrough.is_tls
    ? tls_write(cutthrough.cctx.tls_ctx, ctctx.outblock.buffer, n, FALSE)
    :
@@ -1416,7 +1416,7 @@ if(fd >= 0)
   /* Wait a short time for response, and discard it */
   cutthrough_response(&tmp_ctx, '2', NULL, 1);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   if (cutthrough.is_tls)
     {
     tls_close(cutthrough.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
@@ -1924,12 +1924,12 @@ while (addr_new)
           }
         else
           {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	  deliver_set_expansions(addr);
 #endif
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
             callout_connect, options, se_mailfrom, pm_mailfrom);
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	  deliver_set_expansions(NULL);
 #endif
           }

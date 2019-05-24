@@ -28,8 +28,6 @@ Version 4.93
 
  8. Expansion operator ${sha2_N:} for N=256, 384, 512.
 
- 9. Build options SUPPORT_DANE and SUPPORT_TLS default to yes
-
 
 Version 4.92
 --------------

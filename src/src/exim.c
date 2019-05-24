@@ -553,7 +553,7 @@ close_unwanted(void)
 {
 if (smtp_input)
   {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   tls_close(NULL, TLS_NO_SHUTDOWN);      /* Shut down the TLS library */
 #endif
   (void)close(fileno(smtp_in));
@@ -857,7 +857,7 @@ fprintf(fp, "Support for:");
 #ifdef USE_TCP_WRAPPERS
   fprintf(fp, " TCPwrappers");
 #endif
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 # ifdef USE_GNUTLS
   fprintf(fp, " GnuTLS");
 # else
@@ -1049,7 +1049,7 @@ DEBUG(D_any) do {
 
 show_db_version(fp);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   tls_version_report(fp);
 #endif
 #ifdef SUPPORT_I18N
@@ -2712,7 +2712,7 @@ for (i = 1; i < argc; i++)
 
 	case 'S': smtp_peer_options |= OPTION_SIZE; break;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     /* -MCt: similar to -MCT below but the connection is still open
     via a proxy process which handles the TLS context and coding.
     Require three arguments for the proxied local address and port,
@@ -3313,7 +3313,7 @@ for (i = 1; i < argc; i++)
 
     /* -tls-on-connect: don't wait for STARTTLS (for old clients) */
 
-    #ifdef SUPPORT_TLS
+    #ifndef DISABLE_TLS
     else if (Ustrcmp(argrest, "ls-on-connect") == 0) tls_in.on_connect = TRUE;
     #endif
 

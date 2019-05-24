@@ -3978,7 +3978,7 @@ if (message_reference)
 
 g = add_host_info_for_log(g);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 if (LOGGING(tls_cipher) && tls_in.cipher)
   {
   g = string_append(g, 2, US" X=", tls_in.cipher);

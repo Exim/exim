@@ -756,7 +756,7 @@ static var_entry var_table[] = {
 #ifdef EXPERIMENTAL_TLS_RESUME
   { "tls_in_resumption",   vtype_int,         &tls_in.resumption },
 #endif
-#if defined(SUPPORT_TLS)
+#ifndef DISABLE_TLS
   { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
 #endif
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
@@ -773,7 +773,7 @@ static var_entry var_table[] = {
 #ifdef EXPERIMENTAL_TLS_RESUME
   { "tls_out_resumption",  vtype_int,         &tls_out.resumption },
 #endif
-#if defined(SUPPORT_TLS)
+#ifndef DISABLE_TLS
   { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
 #endif
 #ifdef SUPPORT_DANE
@@ -781,7 +781,7 @@ static var_entry var_table[] = {
 #endif
 
   { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },	/* mind the alphabetical order! */
-#if defined(SUPPORT_TLS)
+#ifndef DISABLE_TLS
   { "tls_sni",             vtype_stringptr,   &tls_in.sni },	/* mind the alphabetical order! */
 #endif
 
@@ -967,7 +967,7 @@ weirdness they'll twist this into.  The result should ideally handle fork().
 However, if we're stuck unable to provide this, then we'll fall back to
 appallingly bad randomness.
 
-If SUPPORT_TLS is defined then this will not be used except as an emergency
+If DISABLE_TLS is not defined then this will not be used except as an emergency
 fallback.
 
 Arguments:
@@ -975,13 +975,13 @@ Arguments:
 Returns     a random number in range [0, max-1]
 */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 # define vaguely_random_number vaguely_random_number_fallback
 #endif
 int
 vaguely_random_number(int max)
 {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 # undef vaguely_random_number
 #endif
 static pid_t pid = 0;
@@ -1289,7 +1289,7 @@ return string_nextinlist(&list, &sep, NULL, 0);
 /* Certificate fields, by name.  Worry about by-OID later */
 /* Names are chosen to not have common prefixes */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 typedef struct
 {
 uschar * name;
@@ -1350,7 +1350,7 @@ expand_string_message =
   string_sprintf("bad field selector \"%s\" for certextract", field);
 return NULL;
 }
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
 /*************************************************
 *        Extract a substring from a string       *
@@ -3660,7 +3660,7 @@ return yield;
 }
 
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 static gstring *
 cat_file_tls(void * tls_ctx, gstring * yield, uschar * eol)
 {
@@ -4947,7 +4947,7 @@ while (*s != 0)
       uschar * server_name = NULL;
       host_item host;
       BOOL do_shutdown = TRUE;
-      BOOL do_tls = FALSE;	/* Only set under SUPPORT_TLS */
+      BOOL do_tls = FALSE;	/* Only set under ! DISABLE_TLS */
       blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
@@ -4991,7 +4991,7 @@ while (*s != 0)
 	while ((item = string_nextinlist(&list, &sep, NULL, 0)))
 	  if (Ustrncmp(item, US"shutdown=", 9) == 0)
 	    { if (Ustrcmp(item + 9, US"no") == 0) do_shutdown = FALSE; }
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	  else if (Ustrncmp(item, US"tls=", 4) == 0)
 	    { if (Ustrcmp(item + 9, US"no") != 0) do_tls = TRUE; }
 #endif
@@ -5098,7 +5098,7 @@ while (*s != 0)
 
         DEBUG(D_expand) debug_printf_indent("connected to socket %s\n", sub_arg[0]);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (do_tls)
 	  {
 	  smtp_connect_args conn_args = {.host = &host };
@@ -5123,7 +5123,7 @@ while (*s != 0)
           DEBUG(D_expand) debug_printf_indent("writing \"%s\" to socket\n",
             reqstr.data);
           if ( (
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	      do_tls ? tls_write(cctx.tls_ctx, reqstr.data, reqstr.len, FALSE) :
 #endif
 			write(cctx.sock, reqstr.data, reqstr.len)) != reqstr.len)
@@ -5152,13 +5152,13 @@ while (*s != 0)
         sigalrm_seen = FALSE;
         ALARM(timeout);
         yield =
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	  do_tls ? cat_file_tls(cctx.tls_ctx, yield, sub_arg[3]) :
 #endif
 		    cat_file(fp, yield, sub_arg[3]);
         ALARM_CLR(0);
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (do_tls)
 	  {
 	  tls_close(cctx.tls_ctx, TRUE);
@@ -5992,7 +5992,7 @@ while (*s != 0)
       continue;
       }
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     case EITEM_CERTEXTRACT:
       {
       uschar *save_lookup_value = lookup_value;
@@ -6072,7 +6072,7 @@ while (*s != 0)
         save_expand_nlength);
       continue;
       }
-#endif	/*SUPPORT_TLS*/
+#endif	/*DISABLE_TLS*/
 
     /* Handle list operations */
 
@@ -6584,7 +6584,7 @@ while (*s != 0)
     int c;
     uschar *arg = NULL;
     uschar *sub;
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
     var_entry *vp = NULL;
 #endif
 
@@ -6607,7 +6607,7 @@ while (*s != 0)
     as we do not want to do the usual expansion. For most, expand the string.*/
     switch(c)
       {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       case EOP_MD5:
       case EOP_SHA1:
       case EOP_SHA256:
@@ -6762,7 +6762,7 @@ while (*s != 0)
         }
 
       case EOP_MD5:
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_md5(*(void **)vp->value);
@@ -6781,7 +6781,7 @@ while (*s != 0)
         continue;
 
       case EOP_SHA1:
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	if (vp && *(void **)vp->value)
 	  {
 	  uschar * cp = tls_cert_fprt_sha1(*(void **)vp->value);
@@ -7564,7 +7564,7 @@ while (*s != 0)
       case EOP_STR2B64:
       case EOP_BASE64:
 	{
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 	uschar * s = vp && *(void **)vp->value
 	  ? tls_cert_der_b64(*(void **)vp->value)
 	  : b64encode(CUS sub, Ustrlen(sub));

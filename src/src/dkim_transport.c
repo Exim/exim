@@ -83,7 +83,7 @@ else
 
     while (sread)
       {
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
       wwritten = tls_out.active.sock == out_fd
 	? tls_write(tls_out.active.tls_ctx, p, sread, FALSE)
 	: write(out_fd, CS p, sread);

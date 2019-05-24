@@ -115,7 +115,7 @@ int     dsn_ret                = 0;
 const pcre  *regex_DSN         = NULL;
 uschar *dsn_advertise_hosts    = NULL;
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 BOOL    gnutls_compat_mode     = FALSE;
 BOOL    gnutls_allow_auto_pkcs11 = FALSE;
 uschar *openssl_options        = NULL;
@@ -141,7 +141,7 @@ uschar *tls_resumption_hosts   = NULL;
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;
-#else	/*!SUPPORT_TLS*/
+#else	/*DISABLE_TLS*/
 uschar *tls_advertise_hosts    = NULL;
 #endif
 
@@ -548,7 +548,7 @@ address_item address_defaults = {
   .return_filename =	NULL,
   .self_hostname =	NULL,
   .shadow_message =	NULL,
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
   .cipher =		NULL,
   .ourcert =		NULL,
   .peercert =		NULL,
@@ -1227,7 +1227,7 @@ uschar *received_header_text   = US
          "${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}"
      "by $primary_hostname "
      "${if def:received_protocol {with $received_protocol }}"
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
      "${if def:tls_in_cipher_std { tls $tls_in_cipher_std\n\t}}"
 #endif
      "(Exim $version_number)\n\t"

@@ -84,7 +84,7 @@ as unsigned. */
 /* When built with TLS support, the act of flushing SMTP output becomes
 a no-op once an SSL session is in progress. */
 
-#ifdef SUPPORT_TLS
+#ifndef DISABLE_TLS
 #define mac_smtp_fflush() if (tls_in.active.sock < 0) fflush(smtp_out);
 #else
 #define mac_smtp_fflush() fflush(smtp_out);
