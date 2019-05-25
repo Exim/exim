@@ -2133,8 +2133,7 @@ if (!continue_hostname)
 	}
       set_errno_nohost(sx->addrlist,
 	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
-	sx->verify ? string_sprintf("could not connect: %s", msg)
-	       : NULL,
+	sx->verify ? msg : NULL,
 	DEFER, FALSE);
       sx->send_quit = FALSE;
       return DEFER;
