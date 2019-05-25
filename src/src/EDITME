@@ -222,9 +222,10 @@ SPOOL_DIRECTORY=/var/spool/exim
 # USE_GNUTLS=yes
 # Uncomment one of these settings if you are using GnuTLS; pkg-config vs not
 # and an optional location. If you disable SUPPORT_DANE below, you
-# can remove the gnutls-dane references here.
+# can remove the gnutls-dane references here.  Earlier versions of GnuTLS
+# required libtasn1 and libgrypt also; add if needed.
 # USE_GNUTLS_PC=gnutls gnutls-dane
-# TLS_LIBS=-lgnutls -ltasn1 -lgcrypt -lgnutls-dane
+# TLS_LIBS=-lgnutls -lgnutls-dane
 # TLS_LIBS=-L/usr/local/gnu/lib -lgnutls -ltasn1 -lgcrypt -lgnutls-dane
 
 # If using GnuTLS older than 2.10 and using pkg-config then note that Exim's
