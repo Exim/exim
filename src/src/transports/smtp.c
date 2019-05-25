@@ -2901,7 +2901,8 @@ FAILED:
 			|| errno == ERRNO_UTF8_FWD
 #endif
 	    ? FAIL : DEFER,
-	    pass_message, sx->conn_args.host
+	    pass_message,
+	    errno == ECONNREFUSED ? NULL : sx->conn_args.host
 #ifdef EXPERIMENTAL_DSN_INFO
 	    , sx->smtp_greeting, sx->helo_response
 #endif
