@@ -2125,15 +2125,9 @@ if (!continue_hostname)
     {
     if ((sx->cctx.sock = smtp_connect(&sx->conn_args, NULL)) < 0)
       {
-      uschar * msg = NULL;
-      if (sx->verify)
-	{
-	msg = US strerror(errno);
-	HDEBUG(D_verify) debug_printf("connect: %s\n", msg);
-	}
       set_errno_nohost(sx->addrlist,
 	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
-	sx->verify ? msg : NULL,
+	sx->verify ? US strerror(errno) : NULL,
 	DEFER, FALSE);
       sx->send_quit = FALSE;
       return DEFER;
