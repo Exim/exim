@@ -57,6 +57,7 @@ begin transports
 
 smtp:
   driver =		smtp
+  hosts_try_fastopen =	:
   hosts_pipe_connect =	CONTROL
   max_rcpt =		1
 
