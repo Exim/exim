@@ -492,10 +492,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   # time used was fixed when I first started running automatic Exim tests.
 
   # Date/time in header lines and SMTP responses
-  s/[A-Z][a-z]{2},\s\d\d?\s[A-Z][a-z]{2}\s\d\d\d\d\s\d\d\:\d\d:\d\d\s[-+]\d{4}
+  s/[A-Z][a-z]{2},\s\d\d?\s[A-Z][a-z]{2}\s\d{4}\s\d\d\:\d\d:\d\d\s[-+]\d{4}
     /Tue, 2 Mar 1999 09:44:33 +0000/gx;
   # and in a French locale
-  s/\S{4},\s\d\d?\s[^,]+\s\d\d\d\d\s\d\d\:\d\d:\d\d\s[-+]\d{4}
+  s/\S{4},\s\d\d?\s[^,]+\s\d{4}\s\d\d\:\d\d:\d\d\s[-+]\d{4}
     /dim., 10 f\xE9vr 2019 20:05:49 +0000/gx;
 
   # Date/time in logs and in one instance of a filter test
@@ -1208,7 +1208,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^PDKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
-    if (s/\S+ in hosts_try_fastopen\? no \(option unset\)\n$//)
+    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|yes \(matched "\*"\))\n$//)
       {
       $_ .= <IN>;
       s/ \.\.\. >>> / ... /;
@@ -1217,6 +1217,28 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
     s/^(Connecting to .* \.\.\. sending) \d+ (nonTFO early-data)$/$1 dd $2/;
+
+    if (/^([0-9: ]*Connecting to [^ ]+ [^ ]+( from [^ ]+)?) \.\.\. .*TFO mode sendto, no data: EINPROGRESS$/)
+      {
+      $_ = $1 . " ... " . <IN>;
+      s/^(.* \.\.\.) [0-9: ]*connected$/$1 connected/;
+
+      if (/^Connecting to .* \.\.\. connected$/)
+	{
+	$_ .= <IN>;
+	if (/^(Connecting to .* \.\.\. )connected\n\s+SMTP(\(close\)>>|\(Connection refused\)<<)$/)
+	  {
+	  $_ = $1 . "failed: Connection refused\n" . <IN>;
+	  s/^(Connecting .*)\n\s+SMTP\(close\)>>$/$1/;
+	  }
+	elsif (/^(Connecting to .* \.\.\. connected\n)read response data: size=/)
+	  { $_ = $1; }
+
+	# Date/time in SMTP banner
+	s/[A-Z][a-z]{2},\s\d\d?\s[A-Z][a-z]{2}\s\d{4}\s\d\d\:\d\d:\d\d\s[-+]\d{4}
+	  /Tue, 2 Mar 1999 09:44:33 +0000/gx;
+	}
+      }
 
     # Specific pointer values reported for DB operations change from run to run
     s/^(\s*returned from EXIM_DBOPEN: )(0x)?[0-9a-f]+/${1}0xAAAAAAAA/;

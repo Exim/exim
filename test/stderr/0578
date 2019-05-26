@@ -685,6 +685,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> MAIL FROM:<>
   SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost51>
   SMTP<< 250 OK
+  SMTP(Connection timed out)<<
 SMTP timeout
   SMTP(close)>>
 wrote callout cache domain record for otherhost51:
@@ -796,6 +797,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP>> MAIL FROM:<>
   SMTP>> RCPT TO:<abcd@x.y.z>
   SMTP<< 250 OK
+  SMTP(Connection timed out)<<
 SMTP timeout
   SMTP(close)>>
 wrote callout cache domain record for x.y.z:

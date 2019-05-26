@@ -590,10 +590,6 @@ switch(*errno_value)
 	transport_count);
     return FALSE;
 
-  case ECONNREFUSED:		/* First-read error on a TFO conn */
-    if (verify_mode) *message = US strerror(*errno_value);
-    return FALSE;		/* nonverify, do not set message */
-
   case ERRNO_SMTPFORMAT:	/* Handle malformed SMTP response */
     s = string_printing(buffer);
     while (isspace(*s)) s++;
@@ -2844,6 +2840,29 @@ return OK;
   int code;
 
   RESPONSE_FAILED:
+    if (errno == ECONNREFUSED)	/* first-read error on a TFO conn */
+      {
+      /* There is a testing facility for simulating a connection timeout, as I
+      can't think of any other way of doing this. It converts a connection
+      refused into a timeout if the timeout is set to 999999.  This is done for
+      a 3whs connection in ip_connect(), but a TFO connection does not error
+      there - instead it gets ECONNREFUSED on the first data read.  Tracking
+      that a TFO really was done is too hard, or we would set a
+      sx->pending_conn_done bit and test that in smtp_reap_banner() and
+      smtp_reap_ehlo().  That would let us also add the conn-timeout to the
+      cmd-timeout. */
+
+      if (f.running_in_test_harness && ob->connect_timeout == 999999)
+	errno = ETIMEDOUT;
+      set_errno_nohost(sx->addrlist,
+	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
+	sx->verify ? US strerror(errno) : NULL,
+	DEFER, FALSE);
+      sx->send_quit = FALSE;
+      return DEFER;
+      }
+
+    /* really an error on an SMTP read */
     message = NULL;
     sx->send_quit = check_response(sx->conn_args.host, &errno, sx->addrlist->more_errno,
       sx->buffer, &code, &message, &pass_message);

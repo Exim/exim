@@ -641,7 +641,7 @@ for (;;)
 
   if((rc = ip_recv(cctx, inblock->buffer, inblock->buffersize, timeout)) <= 0)
     {
-    DEBUG(D_deliver|D_transport|D_acl)
+    DEBUG(D_deliver|D_transport|D_acl|D_v)
       debug_printf_indent(errno ? "  SMTP(%s)<<\n" : "  SMTP(closed)<<\n",
 	strerror(errno));
     break;
