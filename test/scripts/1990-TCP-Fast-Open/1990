@@ -26,6 +26,15 @@ sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
 ****
 #
+#
+# Disable the TFO blackhole detection, as we seem to be running foul of it.
+# If bitten, we see the expected EINPROGRESS for sendto, yet no TFO cookie
+# option on the SYN.
+#
+sudo perl
+system ("echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+****
+#
 # First time runs will see a TFO request option only; subsequent
 # ones should see the TFO cookie and fast-output SMTP banner
 # (currently on a separate packet after the server SYN,ACK but before
@@ -66,6 +75,7 @@ sleep 3
 #
 sudo perl
 system ("tc qdisc delete dev lo root");
+system ("echo 3600 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
 killdaemon

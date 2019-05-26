@@ -3,11 +3,14 @@
 munge loopback
 #
 #
-# TFO both clients and server, no cookie yet
+# Wipe any stored TFO cookie, to start from known state.
+# Disable TFO blackhole-detection as we seem to be running afoul of that
 sudo perl
 system ("ip tcp_metrics delete 127.0.0.1");
+system ("echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
+# TFO both clients and server, no cookie yet
 server -tfo PORT_D
 <<\x05\x01\x00
 >>\x05\x00
@@ -122,5 +125,9 @@ quit
 ****
 #
 millisleep 500
+#
+sudo perl
+system ("echo 3600 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+****
 #
 # Ends

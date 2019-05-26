@@ -2,13 +2,12 @@
 #
 #
 # Packet delays so we can see TFO operational in packet captures
+# Wipe any stored TFO cookie, to start from known state.
+# Disable TFO blackhole-detection as we seem to be running afoul of that
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
-****
-#
-# Wipe any stored TFO cookie, to start from known state.
-sudo perl
 system ("ip tcp_metrics delete 127.0.0.1");
+system ("echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
 #
@@ -73,6 +72,7 @@ killdaemon
 #
 sudo perl
 system ("tc qdisc delete dev lo root");
+system ("echo 3600 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
 no_msglog_check
