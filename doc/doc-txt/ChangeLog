@@ -120,6 +120,10 @@ JH/23 The build default is now for TLS to be included; the SUPPORT_TLS define
 JH/24 Fix duplicated logging of peer name/address, on a transport connection-
       reject under TFO.
 
+JH/25 The smtp transport option "hosts_try_fastopen" now enables all hosts by
+      default.  If the platfor supports and has the facility enabled, it will
+      be requested on all coneections.
+
 
 Exim version 4.92
 -----------------

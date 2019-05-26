@@ -24706,7 +24706,7 @@ a DANE-verified TLS connection is made to that host;
 there will be no fallback to in-clear communication.
 See section &<<SECDANE>>&.
 
-.option hosts_try_fastopen smtp "host list&!!" unset
+.option hosts_try_fastopen smtp "host list&!!" *
 .cindex "fast open, TCP" "enabling, in client"
 .cindex "TCP Fast Open" "enabling, in client"
 .cindex "RFC 7413" "TCP Fast Open"

@@ -244,7 +244,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_require_dane =		NULL,
   .dane_require_tls_ciphers =	NULL,
 #endif
-  .hosts_try_fastopen =		NULL,
+  .hosts_try_fastopen =		US"*",
 #ifndef DISABLE_PRDR
   .hosts_try_prdr =		US"*",
 #endif
