@@ -7,7 +7,7 @@ munge loopback
 # Disable TFO blackhole-detection as we seem to be running afoul of that
 sudo perl
 system ("ip tcp_metrics delete 127.0.0.1");
-system ("echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
 # TFO both clients and server, no cookie yet
@@ -127,7 +127,7 @@ quit
 millisleep 500
 #
 sudo perl
-system ("echo 3600 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 3600 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
 ****
 #
 # Ends
