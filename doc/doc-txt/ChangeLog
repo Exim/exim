@@ -85,6 +85,8 @@ JH/41 Fix the loop reading a message header line to check for integer overflow,
 JH/42 Bug 2366: Fix the behaviour of the dkim_verify_signers option.  It had
       been totally disabled for all of 4.91.  Discovery and fix by "Mad Alex".
 
+JH/43 Fix CVE-2019-10149
+
 
 Exim version 4.91
 -----------------
