@@ -1,0 +1,12 @@
+# client, PIPELINING vs. callout
+#
+exim -bd -DSERVER=server -oX PORT_D:PORT_D2
+****
+exim a@test.ex
+Subject: test
+.
+****
+exim -qf
+****
+killdaemon
+no_msglog_check
