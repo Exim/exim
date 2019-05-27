@@ -54,6 +54,16 @@ exim -DNOTDAEMON -DSERVER=server -q
 ****
 #
 #
-killdaemon
+# Check that client doesn't try when transport uses $sending_ip_address in
+# helo_data
+exim helo_data@test.ex
+Subject test 5
+****
+exim -DCONTROL=127.0.0.1 -DHELO_MSG='$sending_ip_address' -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
 #
+#
+killdaemon
 no_msglog_check

@@ -59,6 +59,9 @@ smtp:
   driver =		smtp
   hosts_try_fastopen =	:
   hosts_pipe_connect =	CONTROL
+.ifdef HELO_MSG
+  helo_data =		HELO_MSG
+.endif
   max_rcpt =		1
 
 #

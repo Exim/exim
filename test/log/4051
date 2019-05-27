@@ -18,6 +18,11 @@
 1999-03-02 09:44:33 10HmbD-0005vi-00 => clientno@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for helo_data@test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbF-0005vi-00 => helo_data@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmbG-0005vi-00"
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
@@ -41,4 +46,9 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <clientno@test.ex> R=server
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@the.local.host.name H=(127.0.0.1) [127.0.0.1] P=esmtp L. S=sss id=E10HmbF-0005vi-00@the.local.host.name for helo_data@test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <helo_data@test.ex> R=server
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp

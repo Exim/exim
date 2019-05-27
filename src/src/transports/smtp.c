@@ -2106,17 +2106,29 @@ if (!continue_hostname)
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
 
 #ifdef EXPERIMENTAL_PIPE_CONNECT
-  if (verify_check_given_host(CUSS &ob->hosts_pipe_connect, sx->conn_args.host) == OK)
-    {
-    sx->early_pipe_ok = TRUE;
-    if (  read_ehlo_cache_entry(sx)
-       && sx->ehlo_resp.cleartext_features & OPTION_EARLY_PIPE)
+  if (  verify_check_given_host(CUSS &ob->hosts_pipe_connect,
+					    sx->conn_args.host) == OK)
+
+    /* We don't find out the local ip address until the connect, so if
+    the helo string might use it avoid doing early-pipelining. */
+
+    if (  !sx->helo_data
+       || !Ustrstr(sx->helo_data, "$sending_ip_address")
+       || Ustrstr(sx->helo_data, "def:sending_ip_address")
+       )
       {
-      DEBUG(D_transport) debug_printf("Using cached cleartext PIPE_CONNECT\n");
-      sx->early_pipe_active = TRUE;
-      sx->peer_offered = sx->ehlo_resp.cleartext_features;
+      sx->early_pipe_ok = TRUE;
+      if (  read_ehlo_cache_entry(sx)
+	 && sx->ehlo_resp.cleartext_features & OPTION_EARLY_PIPE)
+	{
+	DEBUG(D_transport)
+	  debug_printf("Using cached cleartext PIPE_CONNECT\n");
+	sx->early_pipe_active = TRUE;
+	sx->peer_offered = sx->ehlo_resp.cleartext_features;
+	}
       }
-    }
+    else DEBUG(D_transport)
+      debug_printf("helo needs $sending_ip_address\n");
 
   if (sx->early_pipe_active)
     sx->outblock.conn_args = &sx->conn_args;

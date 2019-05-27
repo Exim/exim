@@ -941,6 +941,9 @@ change.
 
 NOTE: since the EHLO command must be constructed before the connection is
 made it cannot depend on the interface IP address that will be used.
+The string "$sending_ip_address" is checked for; if it appears in helo_data
+and "def:sending_ip_address" does not, the facility is disabled.
+
 Transport configurations should be checked for this.  An example avoidance:
 
  helo_data =	${if def:sending_ip_address \
