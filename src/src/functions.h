@@ -231,7 +231,7 @@ extern uschar *expand_string_copy(const uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 extern void    modify_variable(uschar *, void *);
 
-extern BOOL    fd_ready(int, int);
+extern BOOL    fd_ready(int, time_t);
 
 extern int     filter_interpret(uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);
@@ -278,7 +278,7 @@ extern int     ip_connectedsocket(int, const uschar *, int, int,
                  int, host_item *, uschar **, const blob *);
 extern int     ip_get_address_family(int);
 extern void    ip_keepalive(int, const uschar *, BOOL);
-extern int     ip_recv(client_conn_ctx *, uschar *, int, int);
+extern int     ip_recv(client_conn_ctx *, uschar *, int, time_t);
 extern int     ip_socket(int, int);
 
 extern int     ip_tcpsocket(const uschar *, uschar **, int);

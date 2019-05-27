@@ -589,14 +589,14 @@ Arguments:
   inblock   the SMTP input block (contains holding buffer, socket, etc.)
   buffer    where to put the line
   size      space available for the line
-  timeout   the timeout to use when reading a packet
+  timelimit deadline for reading the lime, seconds past epoch
 
 Returns:    length of a line that has been put in the buffer
             -1 otherwise, with errno set
 */
 
 static int
-read_response_line(smtp_inblock *inblock, uschar *buffer, int size, int timeout)
+read_response_line(smtp_inblock *inblock, uschar *buffer, int size, time_t timelimit)
 {
 uschar *p = buffer;
 uschar *ptr = inblock->ptr;
@@ -639,7 +639,7 @@ for (;;)
 
   /* Need to read a new input packet. */
 
-  if((rc = ip_recv(cctx, inblock->buffer, inblock->buffersize, timeout)) <= 0)
+  if((rc = ip_recv(cctx, inblock->buffer, inblock->buffersize, timelimit)) <= 0)
     {
     DEBUG(D_deliver|D_transport|D_acl|D_v)
       debug_printf_indent(errno ? "  SMTP(%s)<<\n" : "  SMTP(closed)<<\n",
@@ -696,6 +696,7 @@ smtp_read_response(void * sx0, uschar * buffer, int size, int okdigit,
 smtp_context * sx = sx0;
 uschar * ptr = buffer;
 int count = 0;
+time_t timelimit = time(NULL) + timeout;
 
 errno = 0;  /* Ensure errno starts out zero */
 
@@ -718,7 +719,7 @@ response. */
 
 for (;;)
   {
-  if ((count = read_response_line(&sx->inblock, ptr, size, timeout)) < 0)
+  if ((count = read_response_line(&sx->inblock, ptr, size, timelimit)) < 0)
     return FALSE;
 
   HDEBUG(D_transport|D_acl|D_v)

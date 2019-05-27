@@ -2745,7 +2745,7 @@ for (;;)
   int size = sizeof(buffer) - (p - buffer);
 
   if (size <= 0) goto END_OFF;   /* Buffer filled without seeing \n. */
-  count = ip_recv(&ident_conn_ctx, p, size, rfc1413_query_timeout);
+  count = ip_recv(&ident_conn_ctx, p, size, time(NULL) + rfc1413_query_timeout);
   if (count <= 0) goto END_OFF;  /* Read error or EOF */
 
   /* Scan what we just read, to see if we have reached the terminating \r\n. Be

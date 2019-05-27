@@ -279,7 +279,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     /* Read the response and close the socket. If the read fails, try the
     next IP address. */
 
-    count = ip_recv(&query_cctx, reply, sizeof(reply) - 1, ob->timeout);
+    count = ip_recv(&query_cctx, reply, sizeof(reply) - 1, time(NULL) + ob->timeout);
     (void)close(query_cctx.sock);
     if (count <= 0)
       {

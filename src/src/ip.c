@@ -568,16 +568,15 @@ if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE,
 /*
 Arguments:
   fd          the file descriptor
-  timeout     the timeout, seconds
+  timelimit   the timeout endpoint, seconds-since-epoch
 Returns:      TRUE => ready for i/o
               FALSE => timed out, or other error
 */
 BOOL
-fd_ready(int fd, int timeout)
+fd_ready(int fd, time_t timelimit)
 {
 fd_set select_inset;
-time_t start_recv = time(NULL);
-int time_left = timeout;
+int time_left = timelimit - time(NULL);
 int rc;
 
 if (time_left <= 0)
@@ -611,8 +610,7 @@ do
     DEBUG(D_transport) debug_printf("EINTR while waiting for socket data\n");
 
     /* Watch out, 'continue' jumps to the condition, not to the loops top */
-    time_left = timeout - (time(NULL) - start_recv);
-    if (time_left > 0) continue;
+    if ((time_left = timelimit - time(NULL)) > 0) continue;
     }
 
   if (rc <= 0)
@@ -636,18 +634,18 @@ Arguments:
   cctx        the connection context (socket fd, possibly TLS context)
   buffer      to read into
   bufsize     the buffer size
-  timeout     the timeout
+  timelimit   the timeout endpoint, seconds-since-epoch
 
 Returns:      > 0 => that much data read
               <= 0 on error or EOF; errno set - zero for EOF
 */
 
 int
-ip_recv(client_conn_ctx * cctx, uschar * buffer, int buffsize, int timeout)
+ip_recv(client_conn_ctx * cctx, uschar * buffer, int buffsize, time_t timelimit)
 {
 int rc;
 
-if (!fd_ready(cctx->sock, timeout))
+if (!fd_ready(cctx->sock, timelimit))
   return -1;
 
 /* The socket is ready, read from it (via TLS if it's active). On EOF (i.e.

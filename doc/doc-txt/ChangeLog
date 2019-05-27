@@ -128,9 +128,15 @@ JH/26 The PIPE_CONNECT facility is promoted from experimental status and is now
       controlled by the build-time option SUPPORT_PIPE_CONNECT.
 
 PP/01 Unbreak heimdal_gssapi, broken in 4.92.
+
 JH/27 Bug 2404: Use the main-section configuration option "dsn_from" for
       success-DSN messages.  Previously the From: header was always the default
       one for these; the option was ignored.
+
+JH/28 Fix the timeout on smtp response to apply to the whole response.
+      Previously it was reset for every read, so a teergrubing peer sending
+      single bytes within the time limit could extend the connection for a
+      long time.  Credit to Qualsys Security Advisory Team for the discovery.
 
 
 Exim version 4.92

@@ -128,7 +128,7 @@ switch(method)
 #ifdef TCP_QUICKACK
     (void) setsockopt(fd, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
 #endif
-    if (!fd_ready(fd, tmo-time(NULL)) || read(fd, s, 2) != 2)
+    if (!fd_ready(fd, tmo) || read(fd, s, 2) != 2)
       return FAIL;
     HDEBUG(D_transport|D_acl|D_v)
       debug_printf_indent("  SOCKS<< %02x %02x\n", s[0], s[1]);
@@ -319,7 +319,7 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SOCKS>> 05 01 %02x\n", sob-
 (void) setsockopt(fd, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
 #endif
 
-if (  !fd_ready(fd, tmo-time(NULL))
+if (  !fd_ready(fd, tmo)
    || read(fd, buf, 2) != 2
    )
   goto rcv_err;
@@ -368,7 +368,7 @@ if (send(fd, buf, size, 0) < 0)
 /* expect conn-reply (success, local(ipver, addr, port))
 of same length as conn-request, or non-success fail code */
 
-if (  !fd_ready(fd, tmo-time(NULL))
+if (  !fd_ready(fd, tmo)
    || (size = read(fd, buf, size)) < 2
    )
   goto rcv_err;

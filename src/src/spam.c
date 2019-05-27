@@ -503,7 +503,7 @@ offset = 0;
 while ((i = ip_recv(&spamd_cctx,
 		   spamd_buffer + offset,
 		   sizeof(spamd_buffer) - offset - 1,
-		   sd->timeout - time(NULL) + start)) > 0)
+		   sd->timeout + start)) > 0)
   offset += i;
 spamd_buffer[offset] = '\0';	/* guard byte */
 
