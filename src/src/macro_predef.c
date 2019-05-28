@@ -158,6 +158,9 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_OCSP
   builtin_macro_create(US"_HAVE_OCSP");
 #endif
+#ifdef SUPPORT_PIPE_CONNECT
+  builtin_macro_create(US"_HAVE_PIPE_CONNECT");
+#endif
 #ifndef DISABLE_PRDR
   builtin_macro_create(US"_HAVE_PRDR");
 #endif
@@ -196,9 +199,6 @@ due to conflicts with other common macros. */
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_HAVE_DSN_INFO");
-#endif
-#ifdef EXPERIMENTAL_PIPE_CONNECT
-  builtin_macro_create(US"_HAVE_PIPE_CONNECT");
 #endif
 #ifdef EXPERIMENTAL_TLS_RESUME
   builtin_macro_create(US"_HAVE_TLS_RESUME");

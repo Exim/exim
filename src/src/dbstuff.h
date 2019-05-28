@@ -786,7 +786,7 @@ typedef struct {
   uschar   bloom[40];     /* Bloom filter which may be larger than this */
 } dbdata_ratelimit_unique;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 /* This structure records the EHLO responses, cleartext and crypted,
 for an IP, as bitmasks (cf. OPTION_TLS) */
 

@@ -14368,6 +14368,7 @@ See also the &'Policy controls'& section above.
 .row &%ignore_fromline_hosts%&       "allow &""From ""& from these hosts"
 .row &%ignore_fromline_local%&       "allow &""From ""& from local SMTP"
 .row &%pipelining_advertise_hosts%&  "advertise pipelining to these hosts"
+.row &%pipelining_connect_advertise_hosts%& "advertise pipelining to these hosts"
 .row &%prdr_enable%&                 "advertise PRDR to all hosts"
 .row &%smtputf8_advertise_hosts%&    "advertise SMTPUTF8 to these hosts"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
@@ -16372,6 +16373,19 @@ control in section &<<SECTcontrols>>&. When PIPELINING is not advertised and
 for each SMTP command and response. When PIPELINING is advertised, Exim assumes
 that clients will use it; &"out of order"& commands that are &"expected"& do
 not count as protocol errors (see &%smtp_max_synprot_errors%&).
+
+.new
+.option pipelining_connect_advertise_hosts main "host list&!!" *
+.cindex "pipelining" "early connection"
+.cindex "pipelining" PIPE_CONNECT
+If Exim is built with the SUPPORT_PIPE_CONNECT build option
+this option controls which hosts the facility is advertised to
+and from which pipeline early-connection (before MAIL) SMTP
+commands are acceptable.
+When used, the pipelining saves on roundtrip times.
+
+Currently the option name &"X_PIPE_CONNECT"& is used.
+.wen
 
 
 .option prdr_enable main boolean false
@@ -24552,6 +24566,30 @@ facilities such as AUTH, PIPELINING, SIZE, and STARTTLS.
 .cindex "PIPELINING" "avoiding the use of"
 Exim will not use the SMTP PIPELINING extension when delivering to any host
 that matches this list, even if the server host advertises PIPELINING support.
+
+.new
+.option hosts_pipe_connect smtp "host list&!!" unset
+.cindex "pipelining" "early connection"
+.cindex "pipelining" PIPE_CONNECT
+If Exim is built with the SUPPORT_PIPE_CONNECT build option
+this option controls which to hosts the facility watched for
+and recorded, and used for subsequent connections.
+
+The retry hints database is used for the record,
+and records are subject to the &%retry_data_expire%& option.
+When used, the pipelining saves on roundtrip times.
+It also turns SMTP into a client-first protocol
+so combines well with TCP Fast Open.
+
+Note:
+When the facility is used, the transport &%helo_data%& option
+will be expanded before the &$sending_ip_address$& variable
+is filled in.
+A check is made for the use of that variable, without the
+presence of a &"def:"& test on it, but suitably complex coding
+can avoid the check and produce unexpected results.
+You have been warned.
+.wen
 
 
 .option hosts_avoid_tls smtp "host list&!!" unset
@@ -37380,6 +37418,15 @@ The field is a single "L".
 
 On accept lines, where PIPELINING was offered but not used by the client,
 the field has a minus appended.
+
+.new
+.cindex "pipelining" "early connection"
+If Exim is built with the SUPPORT_PIPE_CONNECT build option
+accept "L" fields have a period appended if the feature was
+offered but not used, or an asterisk appended if used.
+Delivery "L" fields have an asterisk appended if used.
+.wen
+
 .next
 .cindex "log" "queue run"
 .cindex "queue runner" "logging"

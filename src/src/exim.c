@@ -890,6 +890,9 @@ fprintf(fp, "Support for:");
 #ifndef DISABLE_OCSP
   fprintf(fp, " OCSP");
 #endif
+#ifdef SUPPORT_PIPE_CONNECT
+  fprintf(fp, " PIPE_CONNECT");
+#endif
 #ifndef DISABLE_PRDR
   fprintf(fp, " PRDR");
 #endif
@@ -929,9 +932,6 @@ fprintf(fp, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(fp, " Experimental_DSN_info");
-#endif
-#ifdef EXPERIMENTAL_PIPE_CONNECT
-  fprintf(fp, " Experimental_PIPE_CONNECT");
 #endif
 #ifdef EXPERIMENTAL_TLS_RESUME
   fprintf(fp, " Experimental_TLS_resume");

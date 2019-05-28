@@ -241,7 +241,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "pid_file_path",            opt_stringptr,   &pid_file_path },
   { "pipelining_advertise_hosts", opt_stringptr, &pipelining_advertise_hosts },
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   { "pipelining_connect_advertise_hosts", opt_stringptr,
 						 &pipe_connect_advertise_hosts },
 #endif
@@ -4207,7 +4207,7 @@ Returns:     nothing
 static void
 auths_init(void)
 {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 int nauths = 0;
 #endif
 
@@ -4233,11 +4233,11 @@ for (auth_instance * au = auths; au; au = au->next)
           "(%s and %s) have the same public name (%s)",
           au->client ? US"client" : US"server", au->name, bu->name,
           au->public_name);
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   nauths++;
 #endif
   }
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 f.smtp_in_early_pipe_no_auth = nauths > 16;
 #endif
 }

@@ -46,7 +46,7 @@ typedef struct {
   uschar *hosts_avoid_tls;
   uschar *hosts_verify_avoid_tls;
   uschar *hosts_avoid_pipelining;
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   uschar *hosts_pipe_connect;
 #endif
   uschar *hosts_avoid_esmtp;
@@ -121,7 +121,7 @@ typedef struct {
   BOOL smtps:1;
   BOOL ok:1;
   BOOL setting_up:1;
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   BOOL early_pipe_ok:1;
   BOOL early_pipe_active:1;
 #endif
@@ -138,7 +138,7 @@ typedef struct {
 #if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
   BOOL dane_required:1;
 #endif
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   BOOL pending_BANNER:1;
   BOOL pending_EHLO:1;
 #endif
@@ -160,7 +160,7 @@ typedef struct {
   uschar *	smtp_greeting;
   uschar *	helo_response;
 #endif
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   ehlo_resp_precis	ehlo_resp;
 #endif
 

@@ -1164,6 +1164,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # SUPPORT_PROXY
     next if /host in hosts_proxy\?/;
 
+    # PIPE_CONNECT
+    next if / in (pipelining_connect_advertise_hosts|hosts_pipe_connect)?\? no /;
+
     # Experimental_International
     next if / in smtputf8_advertise_hosts\? no \(option unset\)/;
 
@@ -1172,9 +1175,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TCP Fast Open
     next if /^(ppppp )?setsockopt FASTOPEN: Network Error/;
-
-    # Experimental_PIPE_CONNECT
-    next if / in (pipelining_connect_advertise_hosts|hosts_pipe_connect)?\? no /;
 
     # Environment cleaning
     next if /\w+ in keep_environment\? (yes|no)/;

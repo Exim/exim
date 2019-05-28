@@ -106,7 +106,7 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_override",       opt_bool,
       (void *)offsetof(smtp_transport_options_block, hosts_override) },
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   { "hosts_pipe_connect",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_pipe_connect) },
 #endif
@@ -256,7 +256,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_avoid_tls =		NULL,
   .hosts_verify_avoid_tls =	NULL,
   .hosts_avoid_pipelining =	NULL,
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   .hosts_pipe_connect =		NULL,
 #endif
   .hosts_avoid_esmtp =		NULL,
@@ -815,7 +815,7 @@ return TRUE;
 
 
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 static uschar *
 ehlo_cache_key(const smtp_context * sx)
 {
@@ -1081,7 +1081,7 @@ address_item * addr = sx->sync_addr;
 smtp_transport_options_block * ob = sx->conn_args.ob;
 int yield = 0;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 int rc;
 if ((rc = smtp_reap_early_pipe(sx, &count)) != OK)
   return rc == FAIL ? -4 : -5;
@@ -1397,7 +1397,7 @@ smtp_auth(smtp_context * sx)
 host_item * host = sx->conn_args.host;			/* host to deliver to */
 smtp_transport_options_block * ob = sx->conn_args.ob;	/* transport options */
 int require_auth = verify_check_given_host(CUSS &ob->hosts_require_auth, host);
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 unsigned short authbits = tls_out.active.sock >= 0
       ? sx->ehlo_resp.crypted_auths : sx->ehlo_resp.cleartext_auths;
 #endif
@@ -1413,7 +1413,7 @@ if (!regex_AUTH)
 
 if (  sx->esmtp
    &&
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       sx->early_pipe_active ? authbits
       :
 #endif
@@ -1423,7 +1423,7 @@ if (  sx->esmtp
   uschar * names = NULL;
   expand_nmax = -1;                          /* reset */
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   if (!sx->early_pipe_active)
 #endif
     names = string_copyn(expand_nstring[1], expand_nlength[1]);
@@ -1437,7 +1437,7 @@ if (  sx->esmtp
     DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
     fail_reason = US"no common mechanisms were found";
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (sx->early_pipe_active)
       {
       /* Scan our authenticators (which support use by a client and were offered
@@ -1794,7 +1794,7 @@ if (  checks & OPTION_SIZE
    && pcre_exec(regex_SIZE, NULL, CS buf, bsize, 0, PCRE_EOPT, NULL, 0) < 0)
   checks &= ~OPTION_SIZE;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 if (  checks & OPTION_EARLY_PIPE
    && pcre_exec(regex_EARLY_PIPE, NULL, CS buf, bsize, 0,
 		PCRE_EOPT, NULL, 0) < 0)
@@ -1841,7 +1841,7 @@ there may be more writes (like, the chunk data) done soon. */
 
 if (chunk_size > 0)
   {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   BOOL new_conn = !!(sx->outblock.conn_args);
 #endif
   if((cmd_count = smtp_write_command(sx,
@@ -1850,7 +1850,7 @@ if (chunk_size > 0)
      ) < 0) return ERROR;
   if (flags & tc_chunk_last)
     data_command = string_copy(big_buffer);  /* Save for later error message */
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   /* That command write could have been the one that made the connection.
   Copy the fd from the client conn ctx (smtp transport specific) to the
   generic transport ctx. */
@@ -1883,7 +1883,7 @@ if (flags & tc_reap_prev  &&  prev_cmd_count > 0)
 
     case -5: errno = ERRNO_TLSFAILURE;
 	     return DEFER;
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     case -4:				/* non-2xx for pipelined banner or EHLO */
 #endif
     case -1:				/* Timeout on RCPT */
@@ -1977,7 +1977,7 @@ sx->conn_args.dane = FALSE;
 sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
 #endif
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 sx->early_pipe_active = sx->early_pipe_ok = FALSE;
 sx->ehlo_resp.cleartext_features = sx->ehlo_resp.crypted_features = 0;
 sx->pending_BANNER = sx->pending_EHLO = FALSE;
@@ -2105,7 +2105,7 @@ if (!continue_hostname)
   sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   sx->avoid_option = sx->peer_offered = smtp_peer_options = 0;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   if (  verify_check_given_host(CUSS &ob->hosts_pipe_connect,
 					    sx->conn_args.host) == OK)
 
@@ -2180,7 +2180,7 @@ will be?  Somehow I doubt it. */
 
   if (!sx->smtps)
     {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (sx->early_pipe_active)
       {
       sx->pending_BANNER = TRUE;	/* sync_responses() must eventually handle */
@@ -2281,7 +2281,7 @@ goto SEND_QUIT;
   if (sx->esmtp)
     {
     if (smtp_write_command(sx,
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	  sx->early_pipe_active ? SCMD_BUFFER :
 #endif
 	    SCMD_FLUSH,
@@ -2289,7 +2289,7 @@ goto SEND_QUIT;
       goto SEND_FAILED;
     sx->esmtp_sent = TRUE;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (sx->early_pipe_active)
       {
       sx->pending_EHLO = TRUE;
@@ -2322,7 +2322,7 @@ goto SEND_QUIT;
     DEBUG(D_transport)
       debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   if (!sx->early_pipe_active)
 #endif
     if (!sx->esmtp)
@@ -2357,13 +2357,13 @@ goto SEND_QUIT;
 
   if (sx->esmtp || sx->lmtp)
     {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (!sx->early_pipe_active)
 #endif
       {
       sx->peer_offered = ehlo_response(sx->buffer,
 	OPTION_TLS	/* others checked later */
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	| (sx->early_pipe_ok
 	  ?   OPTION_IGNQ
 	    | OPTION_CHUNKING | OPTION_PRDR | OPTION_DSN | OPTION_PIPE | OPTION_SIZE
@@ -2375,7 +2375,7 @@ goto SEND_QUIT;
 	  )
 #endif
 	);
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       if (sx->early_pipe_ok)
 	{
 	sx->ehlo_resp.cleartext_features = sx->peer_offered;
@@ -2468,7 +2468,7 @@ if (  smtp_peer_options & OPTION_TLS
   if (smtp_write_command(sx, SCMD_FLUSH, "STARTTLS\r\n") < 0)
     goto SEND_FAILED;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   /* If doing early-pipelining reap the banner and EHLO-response but leave
   the response for the STARTTLS we just sent alone. */
 
@@ -2572,7 +2572,7 @@ if (tls_out.active.sock >= 0)
     goto SEND_QUIT;
     }
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   /* For SMTPS there is no cleartext early-pipe; use the crypted permission bit.
   We're unlikely to get the group sent and delivered before the server sends its
   banner, but it's still worth sending as a group.
@@ -2590,7 +2590,7 @@ if (tls_out.active.sock >= 0)
 
   /* For SMTPS we need to wait for the initial OK response. */
   if (sx->smtps)
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (sx->early_pipe_active)
       {
       sx->pending_BANNER = TRUE;
@@ -2613,14 +2613,14 @@ if (tls_out.active.sock >= 0)
     }
 
   if (smtp_write_command(sx,
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	sx->early_pipe_active ? SCMD_BUFFER :
 #endif
 	  SCMD_FLUSH,
 	"%s %s\r\n", greeting_cmd, sx->helo_data) < 0)
     goto SEND_FAILED;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   if (sx->early_pipe_active)
     sx->pending_EHLO = TRUE;
   else
@@ -2685,13 +2685,13 @@ if (continue_hostname == NULL
   {
   if (sx->esmtp || sx->lmtp)
     {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   if (!sx->early_pipe_active)
 #endif
     {
     sx->peer_offered = ehlo_response(sx->buffer,
 	0 /* no TLS */
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	| (sx->lmtp && ob->lmtp_ignore_quota ? OPTION_IGNQ : 0)
 	| OPTION_DSN | OPTION_PIPE | OPTION_SIZE
 	| OPTION_CHUNKING | OPTION_PRDR | OPTION_UTF8
@@ -2712,7 +2712,7 @@ if (continue_hostname == NULL
 	| (ob->size_addition >= 0 ? OPTION_SIZE : 0)
 #endif
       );
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (tls_out.active.sock >= 0)
       sx->ehlo_resp.crypted_features = sx->peer_offered;
 #endif
@@ -2760,7 +2760,7 @@ if (continue_hostname == NULL
     DEBUG(D_transport) debug_printf("%susing DSN\n",
 			sx->peer_offered & OPTION_DSN ? "" : "not ");
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (  sx->early_pipe_ok
        && !sx->early_pipe_active
        && tls_out.active.sock >= 0
@@ -3276,7 +3276,7 @@ for (addr = sx->first_addr, address_count = 0;
       case -2: return -2;			/* non-MAIL read i/o error */
       default: return -1;			/* any MAIL error */
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       case -4: return -1;			/* non-2xx for pipelined banner or EHLO */
       case -5: return -1;			/* TLS first-read error */
 #endif
@@ -3608,7 +3608,7 @@ if (  !(sx.peer_offered & OPTION_CHUNKING)
 
     case -1: goto END_OFF;		/* Timeout on RCPT */
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     case -5:				/* TLS first-read error */
     case -4:  HDEBUG(D_transport)
 		debug_printf("failed reaping pipelined cmd responses\n");
@@ -3754,7 +3754,7 @@ else
 
       case -1: goto END_OFF;		/* Timeout on RCPT */
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       case -5:				/* TLS first-read error */
       case -4:  HDEBUG(D_transport)
 		  debug_printf("failed reaping pipelined cmd responses\n");
@@ -3906,7 +3906,7 @@ else
 	if (tcp_out_fastopen >= TFO_USED_DATA) setflag(addr, af_tcp_fastopen_data);
 	}
       if (sx.pipelining_used) setflag(addr, af_pipelining);
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       if (sx.early_pipe_active) setflag(addr, af_early_pipe);
 #endif
 #ifndef DISABLE_PRDR
@@ -4108,7 +4108,7 @@ if (!sx.ok)
 
     else
       {
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       /* If we were early-pipelinng and the actual EHLO response did not match
       the cached value we assumed, we could have detected it and passed a
       custom errno through to here.  It would be nice to RSET and retry right

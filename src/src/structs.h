@@ -623,7 +623,7 @@ typedef struct address_item {
     BOOL af_tcp_fastopen:1;		/* delivery usefully used TCP Fast Open */
     BOOL af_tcp_fastopen_data:1;	/* delivery sent SMTP commands on TCP Fast Open */
     BOOL af_pipelining:1;		/* delivery used (traditional) pipelining */
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     BOOL af_early_pipe:1;		/* delivery used connect-time pipelining */
 #endif
 #ifndef DISABLE_PRDR

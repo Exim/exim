@@ -699,7 +699,7 @@ int count = 0;
 
 errno = 0;  /* Ensure errno starts out zero */
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 if (sx->pending_BANNER || sx->pending_EHLO)
   {
   int rc;

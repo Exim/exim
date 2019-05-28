@@ -1,2 +1,2 @@
-support Experimental_PIPE_CONNECT
+support PIPE_CONNECT
 support TCP_Fast_Open

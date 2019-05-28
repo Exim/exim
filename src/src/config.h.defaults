@@ -149,6 +149,7 @@ Do not put spaces between # and the 'define'.
 #define SUPPORT_MAILSTORE
 #define SUPPORT_MBX
 #define SUPPORT_MOVE_FROZEN_MESSAGES
+#define SUPPORT_PIPE_CONNECT
 #define SUPPORT_PAM
 #define SUPPORT_PROXY
 #define SUPPORT_SOCKS
@@ -201,7 +202,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_DMARC
 #define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
 #define EXPERIMENTAL_LMDB
-#define EXPERIMENTAL_PIPE_CONNECT
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_SRS
 #define EXPERIMENTAL_TLS_RESUME

@@ -562,6 +562,11 @@ DISABLE_MAL_MKS=yes
 # DISABLE_EVENT=yes
 
 
+# Uncomment this line to include support for early pipelining, per
+# https://datatracker.ietf.org/doc/draft-harris-early-pipe/
+# SUPPORT_PIPE_CONNECT
+
+
 #------------------------------------------------------------------------------
 # Compiling Exim with experimental features. These are documented in
 # experimental-spec.txt. "Experimental" means that the way these features are

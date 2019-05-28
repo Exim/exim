@@ -121,8 +121,11 @@ JH/24 Fix duplicated logging of peer name/address, on a transport connection-
       reject under TFO.
 
 JH/25 The smtp transport option "hosts_try_fastopen" now enables all hosts by
-      default.  If the platfor supports and has the facility enabled, it will
+      default.  If the platform supports and has the facility enabled, it will
       be requested on all coneections.
+
+JH/26 The PIPE_CONNECT facility is promoted from experimental status and is now
+      controlled by the build-time option SUPPORT_PIPE_CONNECT.
 
 
 Exim version 4.92

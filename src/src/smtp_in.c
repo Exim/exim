@@ -142,7 +142,7 @@ static struct {
   BOOL helo_verify			:1;
   BOOL helo_seen			:1;
   BOOL helo_accept_junk			:1;
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   BOOL pipe_connect_acceptable		:1;
 #endif
   BOOL rcpt_smtp_response_same		:1;
@@ -397,7 +397,7 @@ return TRUE;
 }
 
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 static BOOL
 pipeline_connect_sends(void)
 {
@@ -2995,7 +2995,7 @@ while (*p);
 /* Before we write the banner, check that there is no input pending, unless
 this synchronisation check is disabled. */
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 fl.pipe_connect_acceptable =
   sender_host_address && verify_check_host(&pipe_connect_advertise_hosts) == OK;
 
@@ -3022,7 +3022,7 @@ if (!check_sync())
 /*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
 
 smtp_printf("%s",
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
   fl.pipe_connect_acceptable && pipeline_connect_sends(),
 #else
   FALSE,
@@ -3973,7 +3973,7 @@ while (done <= 0)
 #endif
 
   switch(smtp_read_command(
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	  !fl.pipe_connect_acceptable,
 #else
 	  TRUE,
@@ -4213,7 +4213,7 @@ while (done <= 0)
 	  host_build_sender_fullhost();  /* Rebuild */
 	  break;
 	  }
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	else if (!fl.pipe_connect_acceptable && !check_sync())
 #else
 	else if (!check_sync())
@@ -4344,7 +4344,7 @@ while (done <= 0)
 	  sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
 	  f.smtp_in_pipelining_advertised = TRUE;
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	  if (fl.pipe_connect_acceptable)
 	    {
 	    f.smtp_in_early_pipe_advertised = TRUE;
@@ -4462,7 +4462,7 @@ while (done <= 0)
 #ifndef DISABLE_TLS
       if (tls_in.active.sock >= 0)
 	(void)tls_write(NULL, g->s, g->ptr,
-# ifdef EXPERIMENTAL_PIPE_CONNECT
+# ifdef SUPPORT_PIPE_CONNECT
 			fl.pipe_connect_acceptable && pipeline_connect_sends());
 # else
 			FALSE);
@@ -5240,7 +5240,7 @@ while (done <= 0)
       f.dot_ends = TRUE;
 
     DATA_BDAT:		/* Common code for DATA and BDAT */
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
       fl.pipe_connect_acceptable = FALSE;
 #endif
       if (!discarded && recipients_count <= 0)

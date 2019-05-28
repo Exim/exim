@@ -1250,7 +1250,7 @@ else
     {
     if (testflag(addr, af_pipelining))
       g = string_catn(g, US" L", 2);
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
     if (testflag(addr, af_early_pipe))
       g = string_catn(g, US"*", 1);
 #endif
@@ -3564,7 +3564,7 @@ while (!done)
     case 'L':
       switch (*subid)
 	{
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	case 2: setflag(addr, af_early_pipe);	/*FALLTHROUGH*/
 #endif
 	case 1: setflag(addr, af_pipelining); break;
@@ -4872,7 +4872,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #endif
 
       if (testflag(addr, af_pipelining))
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 	if (testflag(addr, af_early_pipe))
 	  rmt_dlv_checked_write(fd, 'L', '2', NULL, 0);
 	else
@@ -8537,7 +8537,7 @@ if (!regex_DSN) regex_DSN  =
 if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
   regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
 
-#ifdef EXPERIMENTAL_PIPE_CONNECT
+#ifdef SUPPORT_PIPE_CONNECT
 if (!regex_EARLY_PIPE) regex_EARLY_PIPE =
   regex_must_compile(US"\\n250[\\s\\-]" EARLY_PIPE_FEATURE_NAME "(\\s|\\n|$)", FALSE, TRUE);
 #endif
