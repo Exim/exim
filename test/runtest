@@ -1218,7 +1218,12 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^(ppppp )?setsockopt FASTOPEN: Protocol not available$/;
     s/^(Connecting to .* \.\.\. sending) \d+ (nonTFO early-data)$/$1 dd $2/;
 
-    if (/^([0-9: ]*Connecting to [^ ]+ [^ ]+( from [^ ]+)?) \.\.\. .*TFO mode sendto, no data: EINPROGRESS$/)
+    if (/^([0-9: ]*						# possible timestamp
+	Connecting\ to\ [^ ]+\ [^ ]+(\ from\ [^ ]+)?)\ \.\.\.
+	\ .*TFO\ mode\ 
+	(sendto,\ no\ data:\ EINPROGRESS			# Linux
+	|connection\ attempt\ to\ [^,]+,\ 0\ data)		# MacOS
+	$/x)
       {
       $_ = $1 . " ... " . <IN>;
       s/^(.* \.\.\.) [0-9: ]*connected$/$1 connected/;
