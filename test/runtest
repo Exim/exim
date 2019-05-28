@@ -1330,6 +1330,8 @@ RESET_AFTER_EXTRA_LINE_READ:
       else
 	{ $_ = $prev; }
       }
+    # translate gnutls error into the openssl one
+    s/ARC: AMS signing: privkey PEM-block import: \KThe requested data were not available.$/error:0906D06C:PEM routines:PEM_read_bio:no start line/;
 
     # DKIM timestamps
     if ( /(DKIM: d=.*) t=([0-9]*) x=([0-9]*) / )
