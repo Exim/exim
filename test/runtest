@@ -1154,6 +1154,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # remote port numbers vary
     s/(Connection request from 127.0.0.1 port) \d{1,5}/$1 sssss/;
 
+    # Platform-dependent error strings
+    s/Operation timed out/Connection timed out/;
+
     # Skip hosts_require_dane checks when the options
     # are unset, because dane ain't always there.
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
@@ -1222,7 +1225,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 	Connecting\ to\ [^ ]+\ [^ ]+(\ from\ [^ ]+)?)\ \.\.\.
 	\ .*TFO\ mode\ 
 	(sendto,\ no\ data:\ EINPROGRESS			# Linux
-	|connection\ attempt\ to\ [^,]+,\ 0\ data)		# MacOS
+	|connection\ attempt\ to\ [^,]+,\ 0\ data)		# MacOS & no-support
 	$/x)
       {
       $_ = $1 . " ... " . <IN>;
