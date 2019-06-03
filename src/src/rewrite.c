@@ -721,34 +721,19 @@ rewrite_header(header_line *h,
   const uschar *routed_old, const uschar *routed_new,
   rewrite_rule *rewrite_rules, int existflags, BOOL replace)
 {
+int flag;
 switch (h->type)
   {
-  case htype_sender:
-  return rewrite_one_header(h, rewrite_sender, routed_old, routed_new,
-    rewrite_rules, existflags, replace);
-
-  case htype_from:
-  return rewrite_one_header(h, rewrite_from, routed_old, routed_new,
-    rewrite_rules, existflags, replace);
-
-  case htype_to:
-  return rewrite_one_header(h, rewrite_to, routed_old, routed_new,
-    rewrite_rules, existflags, replace);
-
-  case htype_cc:
-  return rewrite_one_header(h, rewrite_cc, routed_old, routed_new,
-    rewrite_rules, existflags, replace);
-
-  case htype_bcc:
-  return rewrite_one_header(h, rewrite_bcc, routed_old, routed_new,
-    rewrite_rules, existflags, replace);
-
-  case htype_reply_to:
-  return rewrite_one_header(h, rewrite_replyto, routed_old, routed_new,
-    rewrite_rules, existflags, replace);
+  case htype_sender:	flag = rewrite_sender;	break;
+  case htype_from:	flag = rewrite_from;	break;
+  case htype_to:	flag = rewrite_to;	break;
+  case htype_cc:	flag = rewrite_cc;	break;
+  case htype_bcc:	flag = rewrite_bcc;	break;
+  case htype_reply_to:	flag = rewrite_replyto;	break;
+  default:		return NULL;
   }
-
-return NULL;
+return rewrite_one_header(h, flag, routed_old, routed_new,
+  rewrite_rules, existflags, replace);
 }
 
 

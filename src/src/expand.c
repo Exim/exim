@@ -3709,17 +3709,15 @@ eval_expr(uschar **sptr, BOOL decimal, uschar **error, BOOL endket)
 {
 uschar *s = *sptr;
 int_eximarith_t x = eval_op_or(&s, decimal, error);
-if (*error == NULL)
-  {
+
+if (!*error)
   if (endket)
-    {
     if (*s != ')')
       *error = US"expecting closing parenthesis";
     else
       while (isspace(*(++s)));
-    }
-  else if (*s != 0) *error = US"expecting operator";
-  }
+  else if (*s)
+    *error = US"expecting operator";
 *sptr = s;
 return x;
 }
@@ -3728,12 +3726,12 @@ return x;
 static int_eximarith_t
 eval_number(uschar **sptr, BOOL decimal, uschar **error)
 {
-register int c;
+int c;
 int_eximarith_t n;
 uschar *s = *sptr;
+
 while (isspace(*s)) s++;
-c = *s;
-if (isdigit(c))
+if (isdigit((c = *s)))
   {
   int count;
   (void)sscanf(CS s, (decimal? SC_EXIM_DEC "%n" : SC_EXIM_ARITH "%n"), &n, &count);
@@ -3776,9 +3774,8 @@ if (*s == '+' || *s == '-' || *s == '~')
     else if (op == '~') x = ~x;
   }
 else
-  {
   x = eval_number(&s, decimal, error);
-  }
+
 *sptr = s;
 return x;
 }
@@ -6803,15 +6800,10 @@ while (*s != 0)
       case EOP_SHA256:
 #ifdef EXIM_HAVE_SHA2
 	if (vp && *(void **)vp->value)
-	  {
 	  if (c == EOP_SHA256)
-	    {
-	    uschar * cp = tls_cert_fprt_sha256(*(void **)vp->value);
-	    yield = string_cat(yield, cp);
-	    }
+	    yield = string_cat(yield, tls_cert_fprt_sha256(*(void **)vp->value));
 	  else
 	    expand_string_message = US"sha2_N not supported with certificates";
-	  }
 	else
 	  {
 	  hctx h;

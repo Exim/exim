@@ -23696,7 +23696,7 @@ inserted in the argument list at that point &'as a separate argument'&. This
 avoids any problems with spaces or shell metacharacters, and is of use when a
 &(pipe)& transport is handling groups of addresses in a batch.
 
-If &%force_command%& is enabled on the transport, Special handling takes place
+If &%force_command%& is enabled on the transport, special handling takes place
 for an argument that consists of precisely the text &`$address_pipe`&.  It
 is handled similarly to &$pipe_addresses$& above.  It is expanded and each
 argument is inserted in the argument list at that point
@@ -30902,7 +30902,7 @@ client host, and its contents have been verified. If there has been no previous
 attempt to verify the HELO/EHLO contents, it is carried out when this
 condition is encountered. See the description of the &%helo_verify_hosts%& and
 &%helo_try_verify_hosts%& options for details of how to request verification
-independently of this condition.
+independently of this condition, and for detail of the verification.
 
 For SMTP input that does not come over TCP/IP (the &%-bs%& command line
 option), this condition is always true.

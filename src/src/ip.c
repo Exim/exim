@@ -316,7 +316,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
     }
   else if (errno == EINPROGRESS)
     {
-    DEBUG(D_transport|D_v) debug_printf("TFO mode sendto, %s data: EINPROGRESS\n",
+    DEBUG(D_transport|D_v) debug_printf("TFO mode connectx, %s data: EINPROGRESS\n",
       fastopen_blob->len > 0 ? "with"  : "no");
     if (!fastopen_blob->data)
       {
