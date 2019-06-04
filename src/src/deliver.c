@@ -7365,8 +7365,8 @@ if (addr_senddsn)
     if (errors_reply_to)
       fprintf(f, "Reply-To: %s\n", errors_reply_to);
 
+    moan_write_from(f);
     fprintf(f, "Auto-Submitted: auto-generated\n"
-	"From: Mail Delivery System <Mailer-Daemon@%s>\n"
 	"To: %s\n"
 	"Subject: Delivery Status Notification\n"
 	"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n"
@@ -7377,7 +7377,7 @@ if (addr_senddsn)
 
 	"This message was created automatically by mail delivery software.\n"
 	" ----- The following addresses had successful delivery notifications -----\n",
-      qualify_domain_sender, sender_address, bound, bound);
+      sender_address, bound, bound);
 
     for (addr_dsntmp = addr_senddsn; addr_dsntmp;
 	 addr_dsntmp = addr_dsntmp->next)
