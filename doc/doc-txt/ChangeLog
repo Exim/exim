@@ -76,6 +76,10 @@ JH/20 Bug 2389: fix server advertising of usable certificates, under GnuTLS in
       directory-of-certs mode.  Previously they were advertised despite the
       documentation.
 
+JH/27 Bug 2404: Use the main-section configuration option "dsn_from" for
+      success-DSN messages.  Previously the From: header was always the default
+      one for these; the option was ignored.
+
 
 Exim version 4.92
 -----------------
