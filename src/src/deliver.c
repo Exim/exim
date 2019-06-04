@@ -6244,7 +6244,7 @@ if (process_recipients != RECIP_IGNORE)
         }
 
 #ifndef DISABLE_EVENT
-      if (process_recipients != RECIP_ACCEPT)
+      if (process_recipients != RECIP_ACCEPT && event_action)
 	{
 	uschar * save_local =  deliver_localpart;
 	const uschar * save_domain = deliver_domain;

@@ -1252,7 +1252,7 @@ switch(action)
     if (removed)
       {
 #ifndef DISABLE_EVENT
-      for (int i = 0; i < recipients_count; i++)
+      if (event_action) for (int i = 0; i < recipients_count; i++)
 	{
 	tree_node *delivered =
 	  tree_search(tree_nonrecipients, recipients_list[i].address);
