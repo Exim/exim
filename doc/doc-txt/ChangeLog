@@ -127,6 +127,8 @@ JH/25 The smtp transport option "hosts_try_fastopen" now enables all hosts by
 JH/26 The PIPE_CONNECT facility is promoted from experimental status and is now
       controlled by the build-time option SUPPORT_PIPE_CONNECT.
 
+PP/01 Unbreak heimdal_gssapi, broken in 4.92.
+
 
 Exim version 4.92
 -----------------
