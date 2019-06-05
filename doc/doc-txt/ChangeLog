@@ -80,6 +80,8 @@ JH/27 Bug 2404: Use the main-section configuration option "dsn_from" for
       success-DSN messages.  Previously the From: header was always the default
       one for these; the option was ignored.
 
+PP/01 Unbreak heimdal_gssapi, broken in 4.92.
+
 
 Exim version 4.92
 -----------------
