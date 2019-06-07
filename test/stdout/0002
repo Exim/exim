@@ -34,6 +34,44 @@
 > +
 > +
 > 
+> eval:   0
+> eval:   1
+> eval:   -1
+> eval:   1
+> eval:   2
+> eval:   7
+> eval:   9
+> eval:   4
+> eval:   6
+> eval:   42
+> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "")
+> eval:   -2
+> eval:   1
+> eval:   1
+> Failed: error in expression evaluation: expecting closing parenthesis (after processing "-2 - (-3")
+> Failed: error in expression evaluation: expecting operator (after processing "-2 - -3")
+> eval:   1
+> eval:   -5
+> eval:   1
+> eval:   40962
+> eval:   63
+> Failed: error in expression evaluation: expecting operator (after processing "0")
+> eval10: 77
+> eval10: 8
+> Failed: error in expression evaluation: expecting operator (after processing "0")
+> eval:   4
+> eval:   4
+> eval:   4
+> eval:   13
+> eval:   9
+> eval:   6
+> eval:   3
+> eval:   0
+> eval:   24
+> eval:   4608
+> eval:   4608
+> eval:   -4608
+> 
 > # List operations
 > 
 > filter: "a:b:c"
@@ -134,40 +172,6 @@
 > escape:     B7\267F2\362
 > excape8bit: undisturbed text	tab
 newline	tab\134backslash ~tilde\177DEL\200\201.
-> 
-> eval:   2
-> eval:   7
-> eval:   9
-> eval:   4
-> eval:   6
-> eval:   42
-> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "")
-> eval:   -2
-> eval:   1
-> eval:   1
-> Failed: error in expression evaluation: expecting closing parenthesis (after processing "-2 - (-3")
-> Failed: error in expression evaluation: expecting operator (after processing "-2 - -3")
-> eval:   1
-> eval:   -5
-> eval:   1
-> eval:   40962
-> eval:   63
-> Failed: error in expression evaluation: expecting operator (after processing "0")
-> eval10: 77
-> eval10: 8
-> Failed: error in expression evaluation: expecting operator (after processing "0")
-> eval:   4
-> eval:   4
-> eval:   4
-> eval:   13
-> eval:   9
-> eval:   6
-> eval:   3
-> eval:   0
-> eval:   24
-> eval:   4608
-> eval:   4608
-> eval:   -4608
 > 
 > expand: $primary_hostname myhost.test.ex
 > hash:   jmg monty fbWx

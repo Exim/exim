@@ -45,6 +45,44 @@ x\
 +$11111111111111111111111111111111111
 +${11111111111111111111111111111111111}
 
+eval:   ${eval:0}
+eval:   ${eval:1}
+eval:   ${eval:-1}
+eval:   ${eval:+1}
+eval:   ${eval:1+1}
+eval:   ${eval:1+2*3}
+eval:   ${eval:(1+2)*3}
+eval:   ${eval:3/2*4}
+eval:   ${eval:3*4/2}
+eval:   ${eval:42}
+eval:   ${eval:}
+eval:   ${eval:-2}
+eval:   ${eval:-2 - -3}
+eval:   ${eval:-2 - (-3)}
+eval:   ${eval:-2 - (-3}
+eval:   ${eval:-2 - -3)}
+eval:   ${eval:-2 --3}
+eval:   ${eval:-2 -+3}
+eval:   ${eval:-2 -+-3}
+eval:   ${eval:(2*(1+1))/2 + 40K}
+eval:   ${eval:077}
+eval:   ${eval:08}
+eval10: ${eval10:077}
+eval10: ${eval10:08}
+eval10: ${eval10:0x1234}
+eval:   ${eval:2+42%5}
+eval:   ${eval:0xc&5}
+eval:   ${eval:0xc & 5 }
+eval:   ${eval:0x0c|5}
+eval:   ${eval:0xc^5}
+eval:   ${eval:0xc>>1}
+eval:   ${eval:0xc >> 2}
+eval:   ${eval:0xc >> 4 }
+eval:   ${eval:0xc<<1}
+eval:   ${eval:~255&0x1234}
+eval:   ${eval:~ 255&0x1234}
+eval:   ${eval: -(~255&0x1234)}
+
 # List operations
 
 filter: "${filter{a:b:c}{eq{1}{1}}}"
@@ -143,40 +181,6 @@ addresses: ${addresses:>}
 
 escape:     ${escape:B7·F2ò}
 excape8bit: ${escape8bit:undisturbed text\ttab\nnewline\ttab\\backslash \176tilde\177DEL\200\x81.}
-
-eval:   ${eval:1+1}
-eval:   ${eval:1+2*3}
-eval:   ${eval:(1+2)*3}
-eval:   ${eval:3/2*4}
-eval:   ${eval:3*4/2}
-eval:   ${eval:42}
-eval:   ${eval:}
-eval:   ${eval:-2}
-eval:   ${eval:-2 - -3}
-eval:   ${eval:-2 - (-3)}
-eval:   ${eval:-2 - (-3}
-eval:   ${eval:-2 - -3)}
-eval:   ${eval:-2 --3}
-eval:   ${eval:-2 -+3}
-eval:   ${eval:-2 -+-3}
-eval:   ${eval:(2*(1+1))/2 + 40K}
-eval:   ${eval:077}
-eval:   ${eval:08}
-eval10: ${eval10:077}
-eval10: ${eval10:08}
-eval10: ${eval10:0x1234}
-eval:   ${eval:2+42%5}
-eval:   ${eval:0xc&5}
-eval:   ${eval:0xc & 5 }
-eval:   ${eval:0x0c|5}
-eval:   ${eval:0xc^5}
-eval:   ${eval:0xc>>1}
-eval:   ${eval:0xc >> 2}
-eval:   ${eval:0xc >> 4 }
-eval:   ${eval:0xc<<1}
-eval:   ${eval:~255&0x1234}
-eval:   ${eval:~ 255&0x1234}
-eval:   ${eval: -(~255&0x1234)}
 
 expand: \$primary_hostname ${expand:\$primary_hostname}
 hash:   ${hash_3:monty} ${hash_5:monty} ${hash_4_62:monty python}
