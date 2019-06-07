@@ -111,6 +111,7 @@ unsigned long test_ulong_t = 0L;
 unsigned int test_uint_t = 0;
 #endif
 long test_long_t = 0;
+long long test_longlong_t = 0;
 int test_int_t = 0;
 FILE *base;
 FILE *new;
@@ -155,15 +156,16 @@ This assumption is known to be OK for the common operating systems. */
 
 fprintf(new, "#ifndef OFF_T_FMT\n");
 if (sizeof(test_off_t) > sizeof(test_long_t))
-  {
   fprintf(new, "# define OFF_T_FMT  \"%%lld\"\n");
-  fprintf(new, "# define LONGLONG_T long long int\n");
-  }
 else
-  {
   fprintf(new, "# define OFF_T_FMT  \"%%ld\"\n");
+fprintf(new, "#endif\n\n");
+
+fprintf(new, "#ifndef LONGLONG_T\n");
+if (sizeof(test_longlong_t) > sizeof(test_long_t))
+  fprintf(new, "# define LONGLONG_T long long int\n");
+else
   fprintf(new, "# define LONGLONG_T long int\n");
-  }
 fprintf(new, "#endif\n\n");
 
 /* Now do the same thing for time_t variables. If the length is greater than
