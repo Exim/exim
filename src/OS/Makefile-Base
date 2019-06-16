@@ -623,11 +623,11 @@ OBJ_MONBIN = util-spool_in.o \
 	     util-string.o \
 	     util-queue.o \
 	     util-tod.o \
-	     tree.o \
+	     util-tree.o \
 	     $(MONBIN)
 
-eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
-            ../exim_monitor/em_version.c
+eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) ../exim_monitor/em_version.c \
+		mytypes.h store.h macros.h
 	@echo "$(CC) exim_monitor/em_version.c"
 	$(FE)$(CC) -o em_version.o -c \
 	  $(CFLAGS) $(XINCLUDE) -I. ../exim_monitor/em_version.c
@@ -757,6 +757,10 @@ util-tod.o:   $(HDRS) tod.c
 	@echo "$(CC) -DCOMPILE_UTILITY tod.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-tod.o tod.c
 
+util-tree.o:   $(HDRS) tree.c
+	@echo "$(CC) -DCOMPILE_UTILITY tree.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-tree.o tree.c
+
 util-os.o:       $(HDRS) os.c
 	@echo "$(CC) -DCOMPILE_UTILITY os.c"
 	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) \
@@ -770,7 +774,7 @@ util-os.o:       $(HDRS) os.c
 
 local_scan.o:    config local_scan.h ../$(LOCAL_SCAN_SOURCE)
 	@echo "$(CC) local_scan.c"
-	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
+	$(FE)$(CC) -DLOCAL_SCAN -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
 
 # Dependencies for the "ordinary" exim modules
 

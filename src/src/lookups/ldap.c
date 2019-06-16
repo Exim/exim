@@ -838,7 +838,7 @@ an empty string. */
 
 if (!data) data = string_get(1);
 (void) string_from_gstring(data);
-gstring_reset_unused(data);
+gstring_release_unused(data);
 
 /* Copy the last dn into eldap_dn */
 

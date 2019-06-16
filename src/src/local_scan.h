@@ -188,8 +188,18 @@ extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
 extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, BOOL, ...) PRINTF_FUNCTION(1,3);
 extern void    smtp_vprintf(const char *, BOOL, va_list);
-extern uschar *string_copy(const uschar *);
-extern uschar *string_copyn(const uschar *, int);
 extern uschar *string_sprintf(const char *, ...) ALMOST_PRINTF(1,2);
+
+#ifdef LOCAL_SCAN
+/* When compiling a local_scan() file we want to rename a published API, so that
+we can use an inlined implementation in the compiles of the main Exim files,
+with the original name. */
+
+# define string_copy(s) string_copy_function(s)
+# define string_copyn(s, n) string_copyn_function(s, n)
+
+extern uschar * string_copy_function(const uschar *);
+extern uschar * string_copyn_function(const uschar *);
+#endif
 
 /* End of local_scan.h */

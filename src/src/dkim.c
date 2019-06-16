@@ -76,7 +76,7 @@ for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     /* check if this looks like a DKIM record */
     if (Ustrncmp(g->s, "v=", 2) != 0 || strncasecmp(CS g->s, "v=dkim", 6) == 0)
       {
-      gstring_reset_unused(g);
+      gstring_release_unused(g);
       return string_from_gstring(g);
       }
 

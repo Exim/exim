@@ -6,6 +6,7 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "mytypes.h"
+#include "store.h"
 #include "macros.h"
 #include <string.h>
 #include <stdlib.h>

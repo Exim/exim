@@ -2171,7 +2171,7 @@ va_start(ap, format);
 g = string_vformat(g, TRUE, format, ap);
 va_end(ap);
 
-gstring_reset_unused(g);
+gstring_release_unused(g);
 *log_msgptr = string_from_gstring(g);
 return ERROR;
 }

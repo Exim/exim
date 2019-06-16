@@ -95,18 +95,14 @@ this interface so that this kind of kludge isn't needed. */
 #endif
 typedef void hctx;
 
-#include "config.h"
-#include "mytypes.h"
-#include "macros.h"
-
 #include "local_scan.h"
+#include "macros.h"
 #include "structs.h"
 #include "blob.h"
 #include "globals.h"
 #include "dbstuff.h"
 #include "functions.h"
 #include "osfunctions.h"
-#include "store.h"
 
 /* The sys/resource.h header on SunOS 4 causes trouble with the gcc
 compiler. Just stuff the bit we want in here; pragmatic easy way out. */

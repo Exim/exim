@@ -240,8 +240,6 @@ extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
 
-extern void    gstring_reset_unused(gstring *);
-
 extern void    header_add(int, const char *, ...);
 extern header_line *header_add_at_position_internal(BOOL, uschar *, BOOL, int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
@@ -497,14 +495,10 @@ extern gstring *string_catn(gstring *, const uschar *, int) WARN_UNUSED_RESULT;
 extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
-extern uschar *string_copylc(const uschar *);
-extern uschar *string_copynlc(uschar *, int);
 extern uschar *string_dequote(const uschar **);
 extern gstring *string_fmt_append(gstring *, const char *, ...) ALMOST_PRINTF(2,3);
 extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
 extern uschar *string_format_size(int, uschar *);
-extern uschar *string_from_gstring(gstring *);
-extern gstring *string_get(unsigned);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
@@ -623,6 +617,132 @@ exim_chown(const uschar *name, uid_t owner, gid_t group)
 return chown(CCS name, owner, group)
   ? exim_chown_failure(-1, name, owner, group) : 0;
 }
+
+#endif	/* !MACRO_PREDEF && !COMPILE_UTILITY */
+/******************************************************************************/
+/* String functions */
+
+/*************************************************
+*            Copy and save string                *
+*************************************************/
+
+/* This function assumes that memcpy() is faster than strcpy().
+*/
+
+#if !defined(MACRO_PREDEF)
+static inline uschar *
+string_copy(const uschar *s)
+{
+int len = Ustrlen(s) + 1;
+uschar *ss = store_get(len);
+memcpy(ss, s, len);
+return ss;
+}
+
+
+/*************************************************
+*       Copy, lowercase and save string          *
+*************************************************/
+
+/*
+Argument: string to copy
+Returns:  copy of string in new store, with letters lowercased
+*/
+
+static inline uschar *
+string_copylc(const uschar *s)
+{
+uschar *ss = store_get(Ustrlen(s) + 1);
+uschar *p = ss;
+while (*s != 0) *p++ = tolower(*s++);
+*p = 0;
+return ss;
+}
+
+
+
+/*************************************************
+*       Copy and save string, given length       *
+*************************************************/
+
+/* It is assumed the data contains no zeros. A zero is added
+onto the end.
+
+Arguments:
+  s         string to copy
+  n         number of characters
+
+Returns:    copy of string in new store
+
+This is an API for local_scan hence not static.
+*/
+
+static inline uschar *
+string_copyn(const uschar *s, int n)
+{
+uschar *ss = store_get(n + 1);
+Ustrncpy(ss, s, n);
+ss[n] = 0;
+return ss;
+}
+
+/*************************************************
+* Copy, lowercase, and save string, given length *
+*************************************************/
+
+/* It is assumed the data contains no zeros. A zero is added
+onto the end.
+
+Arguments:
+  s         string to copy
+  n         number of characters
+
+Returns:    copy of string in new store, with letters lowercased
+*/
+
+static inline uschar *
+string_copynlc(uschar *s, int n)
+{
+uschar *ss = store_get(n + 1);
+uschar *p = ss;
+while (n-- > 0) *p++ = tolower(*s++);
+*p = 0;
+return ss;
+}
+
+
+/******************************************************************************/
+/* Growable-string functions */
+
+/* Create a growable-string with some preassigned space, in untainted memory */
+
+static inline gstring *
+string_get(unsigned size)
+{
+gstring * g = store_get(sizeof(gstring) + size);
+g->size = size;
+g->ptr = 0;
+g->s = US(g + 1);
+return g;
+}
+
+/* NUL-terminate the C string in the growable-string, and return it. */
+
+static inline uschar *
+string_from_gstring(gstring * g)
+{
+if (!g) return NULL;
+g->s[g->ptr] = '\0';
+return g->s;
+}
+
+static inline void
+gstring_release_unused(gstring * g)
+{
+if (g) store_reset(g->s + (g->size = g->ptr + 1));
+}
+
+/******************************************************************************/
 #endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */

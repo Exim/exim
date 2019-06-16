@@ -263,7 +263,7 @@ while ((c = *s))
 	  if (!g) return US"no b= value";
 	  al->b.data = string_from_gstring(g);
 	  al->b.len = g->ptr;
-	  gstring_reset_unused(g);
+	  gstring_release_unused(g);
 	  bend = s;
 	  break;
 	case 'h':			/* bh= AMS body hash */
@@ -280,7 +280,7 @@ while ((c = *s))
 	  if (!g) return US"no bh= value";
 	  al->bh.data = string_from_gstring(g);
 	  al->bh.len = g->ptr;
-	  gstring_reset_unused(g);
+	  gstring_release_unused(g);
 	  break;
 	default:
 	  return US"b? tag";
@@ -1282,7 +1282,7 @@ for (;;)
   g = string_catn(g, US"\r\n\t  ", 5);
   }
 g = string_catn(g, US";\r\n", 3);
-gstring_reset_unused(g);
+gstring_release_unused(g);
 string_from_gstring(g);
 return g;
 }
@@ -1700,7 +1700,7 @@ if (g)
 
 if (sigheaders) g = string_catn(g, sigheaders->s, sigheaders->ptr);
 (void) string_from_gstring(g);
-gstring_reset_unused(g);
+gstring_release_unused(g);
 return g;
 }
 

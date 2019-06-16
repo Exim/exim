@@ -407,6 +407,7 @@ return ss;
 
 
 
+#ifdef HAVE_LOCAL_SCAN
 /*************************************************
 *            Copy and save string                *
 *************************************************/
@@ -418,7 +419,7 @@ Returns:  copy of string in new store
 */
 
 uschar *
-string_copy(const uschar *s)
+string_copy_function(const uschar *s)
 {
 int len = Ustrlen(s) + 1;
 uschar *ss = store_get(len);
@@ -426,6 +427,30 @@ memcpy(ss, s, len);
 return ss;
 }
 
+
+/*************************************************
+*       Copy and save string, given length       *
+*************************************************/
+
+/* It is assumed the data contains no zeros. A zero is added
+onto the end.
+
+Arguments:
+  s         string to copy
+  n         number of characters
+
+Returns:    copy of string in new store
+*/
+
+uschar *
+string_copyn_function(const uschar *s, int n)
+{
+uschar *ss = store_get(n + 1);
+Ustrncpy(ss, s, n);
+ss[n] = 0;
+return ss;
+}
+#endif
 
 
 /*************************************************
@@ -444,77 +469,6 @@ string_copy_malloc(const uschar *s)
 int len = Ustrlen(s) + 1;
 uschar *ss = store_malloc(len);
 memcpy(ss, s, len);
-return ss;
-}
-
-
-
-/*************************************************
-*       Copy, lowercase and save string          *
-*************************************************/
-
-/*
-Argument: string to copy
-Returns:  copy of string in new store, with letters lowercased
-*/
-
-uschar *
-string_copylc(const uschar *s)
-{
-uschar *ss = store_get(Ustrlen(s) + 1);
-uschar *p = ss;
-while (*s != 0) *p++ = tolower(*s++);
-*p = 0;
-return ss;
-}
-
-
-
-/*************************************************
-*       Copy and save string, given length       *
-*************************************************/
-
-/* It is assumed the data contains no zeros. A zero is added
-onto the end.
-
-Arguments:
-  s         string to copy
-  n         number of characters
-
-Returns:    copy of string in new store
-*/
-
-uschar *
-string_copyn(const uschar *s, int n)
-{
-uschar *ss = store_get(n + 1);
-Ustrncpy(ss, s, n);
-ss[n] = 0;
-return ss;
-}
-
-
-/*************************************************
-* Copy, lowercase, and save string, given length *
-*************************************************/
-
-/* It is assumed the data contains no zeros. A zero is added
-onto the end.
-
-Arguments:
-  s         string to copy
-  n         number of characters
-
-Returns:    copy of string in new store, with letters lowercased
-*/
-
-uschar *
-string_copynlc(uschar *s, int n)
-{
-uschar *ss = store_get(n + 1);
-uschar *p = ss;
-while (n-- > 0) *p++ = tolower(*s++);
-*p = 0;
 return ss;
 }
 
@@ -736,7 +690,7 @@ if (!gp2)
 #ifdef COMPILE_UTILITY
 return string_copy(gp->s);
 #else
-gstring_reset_unused(gp);
+gstring_release_unused(gp);
 return gp->s;
 #endif
 }
@@ -983,7 +937,7 @@ else
     }
   while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--;
   buffer = string_from_gstring(g);
-  gstring_reset_unused(g);
+  gstring_release_unused(g);
   }
 
 /* Update the current pointer and return the new string */
@@ -1093,35 +1047,6 @@ return list;
 
 
 /************************************************/
-/* Create a growable-string with some preassigned space */
-
-gstring *
-string_get(unsigned size)
-{
-gstring * g = store_get(sizeof(gstring) + size);
-g->size = size;
-g->ptr = 0;
-g->s = US(g + 1);
-return g;
-}
-
-/* NUL-terminate the C string in the growable-string, and return it. */
-
-uschar *
-string_from_gstring(gstring * g)
-{
-if (!g) return NULL;
-g->s[g->ptr] = '\0';
-return g->s;
-}
-
-void
-gstring_reset_unused(gstring * g)
-{
-store_reset(g->s + (g->size = g->ptr + 1));
-}
-
-
 /* Add more space to a growable-string.
 
 Arguments:
@@ -1662,7 +1587,7 @@ doesn't seem much we can do about that. */
 va_start(ap, format);
 (void) string_vformat(g, FALSE, format, ap);
 string_from_gstring(g);
-gstring_reset_unused(g);
+gstring_release_unused(g);
 va_end(ap);
 
 return eno == EACCES

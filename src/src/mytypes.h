@@ -114,6 +114,7 @@ functions that are called quite often; for other calls to external libraries
 #define Ustrtol(s,t,b)     strtol(CCS(s),CSS(t),b)
 #define Ustrtoul(s,t,b)    strtoul(CCS(s),CSS(t),b)
 #define Uunlink(s)         unlink(CCS(s))
+
 #endif
 
 /* End of mytypes.h */
