@@ -129,3 +129,16 @@ This documents the patches applied on the upstream `exim-4_89` branch:
 ### 16. Read encrypted conf
 
  - Applied [here](https://github.com/SpamExperts/exim/commit/448c95c573b187211ea102e0e811520a64d8aaf1)
+
+
+### 17. Fix segfault in `print_dsn_diagnostic_code`
+ 
+ - Add extra condition to prevent exim segfaults in `print_dsn_diagnostic_code`
+ - [~~Exim bug~~](#) 
+ - Applied [here](https://github.com/SpamExperts/exim/commit/0e21c6a261ccccb671a4069c9c00058345acbf44)
+ - Internal ticket `#36071`
+
+
+### 18. Apply fix for CVE-2019-10149
+
+ - Applied [here](https://github.com/Spameperts/exim/commit/cafa8ac89cc852b714e4623e8a18fa584226f31e)
