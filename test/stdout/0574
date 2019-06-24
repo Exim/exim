@@ -33,9 +33,9 @@ Connecting to 127.0.0.1 port 1225 ... connected
 End of script
 accept: condition test succeeded in ACL "chk_data"
 end of ACL "chk_data": ACCEPT
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0

@@ -36,10 +36,10 @@ F From: CALLER_NAME <CALLER@test.ex>
 
 Data file name: TESTSUITE/spool//input//10HmaX-0005vi-00-D
 Data file written for message 10HmaX-0005vi-00
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
- ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
@@ -48,7 +48,7 @@ Data file written for message 10HmaX-0005vi-00
  	for $received_for}}
  ├──condition: def:sender_rcvhost
  ├─────result: false
-  ┌───scanning: from $sender_rcvhost
+  ╭───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
@@ -59,8 +59,8 @@ Data file written for message 10HmaX-0005vi-00
   	
   ├─────result: from 
   	
-  └───skipping: result is not used
-  ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+  ╰───skipping: result is not used
+  ╭considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -68,25 +68,25 @@ Data file written for message 10HmaX-0005vi-00
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
-   ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╭considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
-   ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╎╭considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
    ╎├──expanding: $sender_ident
-   ╎└─────result: CALLER
+   ╎╰─────result: CALLER
    ├──expanding: from ${quote_local_part:$sender_ident} 
-   └─────result: from CALLER 
+   ╰─────result: from CALLER 
   ├──condition: def:sender_helo_name
   ├─────result: false
-   ┌───scanning: (helo=$sender_helo_name)
+   ╭───scanning: (helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
@@ -96,22 +96,22 @@ Data file written for message 10HmaX-0005vi-00
    	
    ├─────result: (helo=)
    	
-   └───skipping: result is not used
+   ╰───skipping: result is not used
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
-  └─────result: from CALLER 
+  ╰─────result: from CALLER 
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
+  ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: with $received_protocol 
-  └─────result: with local 
+  ╰─────result: with local 
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
-  ┌───scanning:  tls $tls_in_cipher_std
+  ╭───scanning:  tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
@@ -120,25 +120,25 @@ Data file written for message 10HmaX-0005vi-00
   	
   ├─────result:  tls 
   	
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
-  ┌considering: (envelope-from <$sender_address>)
+  ╭considering: (envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: (envelope-from <$sender_address>)
   	
-  └─────result: (envelope-from <CALLER@test.ex>)
+  ╰─────result: (envelope-from <CALLER@test.ex>)
   	
  ├──condition: def:received_for
  ├─────result: false
-  ┌───scanning: 
+  ╭───scanning: 
   	for $received_for}}
   ├──expanding: 
   	for $received_for
   ├─────result: 
   	for 
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -146,16 +146,16 @@ Data file written for message 10HmaX-0005vi-00
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
- └─────result: Received: from CALLER by mail.test.ex with local (Exim x.yz)
+ ╰─────result: Received: from CALLER by mail.test.ex with local (Exim x.yz)
  	(envelope-from <CALLER@test.ex>)
  	id 10HmaX-0005vi-00
 >>Generated Received: header line
 P Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
 DSN: Write SPOOL :-dsn_envid NULL
 DSN: Write SPOOL :-dsn_ret 0
@@ -281,9 +281,9 @@ local_part=rd+usery domain=test.ex
 stripped prefix rd+
 checking local_parts
 usery in "usery"? yes (matched "usery")
- ┌considering: /non-exist/$domain
+ ╭considering: /non-exist/$domain
  ├──expanding: /non-exist/$domain
- └─────result: /non-exist/test.ex
+ ╰─────result: /non-exist/test.ex
 calling r5 router
 rda_interpret (string): TESTSUITE/test-mail/junk
 expanded: TESTSUITE/test-mail/junk
@@ -320,9 +320,9 @@ local_part=rd+CALLER domain=test.ex
 stripped prefix rd+
 checking local_parts
 CALLER in "CALLER"? yes (matched "CALLER")
- ┌considering: /non-exist/$local_part
+ ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
- └─────result: /non-exist/CALLER
+ ╰─────result: /non-exist/CALLER
 calling r4 router
 rda_interpret (string): TESTSUITE/test-mail/junk
 expanded: TESTSUITE/test-mail/junk
@@ -353,9 +353,9 @@ r2 router skipped: local_parts mismatch
 local_part=userz domain=test.ex
 checking local_parts
 userz in "userz"? yes (matched "userz")
- ┌considering: /non-exist/$domain
+ ╭considering: /non-exist/$domain
  ├──expanding: /non-exist/$domain
- └─────result: /non-exist/test.ex
+ ╰─────result: /non-exist/test.ex
 calling r3 router
 r3 router called for userz@test.ex
   domain = test.ex
@@ -378,9 +378,9 @@ r1 router skipped: local_parts mismatch
 local_part=usery domain=test.ex
 checking local_parts
 usery in "usery"? yes (matched "usery")
- ┌considering: /non-exist/$domain
+ ╭considering: /non-exist/$domain
  ├──expanding: /non-exist/$domain
- └─────result: /non-exist/test.ex
+ ╰─────result: /non-exist/test.ex
 calling r2 router
 r2 router called for usery@test.ex
   domain = test.ex
@@ -398,9 +398,9 @@ routing CALLER@test.ex
 local_part=CALLER domain=test.ex
 checking local_parts
 CALLER in "CALLER"? yes (matched "CALLER")
- ┌considering: /non-exist/$local_part
+ ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
- └─────result: /non-exist/CALLER
+ ╰─────result: /non-exist/CALLER
 calling r1 router
 r1 router called for CALLER@test.ex
   domain = test.ex
@@ -446,18 +446,18 @@ search_tidyup called
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
- ┌considering: /non-exist/$local_part
+ ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
- └─────result: /non-exist/usery
+ ╰─────result: /non-exist/usery
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=/non-exist/usery current=/
 set_process_info: pppp delivering 10HmaX-0005vi-00 to TESTSUITE/test-mail/junk using ft1
 appendfile transport entered
- ┌considering: $address_file
+ ╭considering: $address_file
  ├──expanding: $address_file
- └─────result: TESTSUITE/test-mail/junk
+ ╰─────result: TESTSUITE/test-mail/junk
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/junk format=unix
   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
@@ -469,22 +469,22 @@ hitch name: TESTSUITE/test-mail/junk.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/junk is locked
 writing to file TESTSUITE/test-mail/junk
- ┌considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+ ╭considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
  
  ├──condition: def:return_path
  ├─────result: true
-  ┌considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+  ╭considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: $return_path
-  └─────result: CALLER@test.ex
-  ┌───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
+  ╰─────result: CALLER@test.ex
+  ╭───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: MAILER-DAEMON
   ├─────result: MAILER-DAEMON
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──expanding: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
  
- └─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
+ ╰─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
  
 writing data block fd=dddd size=sss timeout=0
 cannot use sendfile for body: spoolfile not wireformat
@@ -512,9 +512,9 @@ changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail
   home=/non-exist/CALLER current=/
 set_process_info: pppp delivering 10HmaX-0005vi-00 to TESTSUITE/test-mail/junk using ft1
 appendfile transport entered
- ┌considering: $address_file
+ ╭considering: $address_file
  ├──expanding: $address_file
- └─────result: TESTSUITE/test-mail/junk
+ ╰─────result: TESTSUITE/test-mail/junk
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/junk format=unix
   message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
@@ -526,22 +526,22 @@ hitch name: TESTSUITE/test-mail/junk.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/junk is locked
 writing to file TESTSUITE/test-mail/junk
- ┌considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+ ╭considering: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
  
  ├──condition: def:return_path
  ├─────result: true
-  ┌considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
+  ╭considering: $return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: $return_path
-  └─────result: CALLER@test.ex
-  ┌───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
+  ╰─────result: CALLER@test.ex
+  ╭───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: MAILER-DAEMON
   ├─────result: MAILER-DAEMON
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──expanding: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}
  
- └─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
+ ╰─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
  
 writing data block fd=dddd size=sss timeout=0
 cannot use sendfile for body: spoolfile not wireformat
@@ -589,9 +589,9 @@ LOG: MAIN
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
- ┌considering: /non-exist/$local_part
+ ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
- └─────result: /non-exist/usery
+ ╰─────result: /non-exist/usery
 search_tidyup called
 changed uid/gid: local delivery to usery <usery@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
@@ -618,9 +618,9 @@ LOG: MAIN
  returned from EXIM_DBOPEN: (nil)
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
- ┌considering: /$local_part
+ ╭considering: /$local_part
  ├──expanding: /$local_part
- └─────result: /userz
+ ╰─────result: /userz
 search_tidyup called
 changed uid/gid: local delivery to userz <userz@test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp

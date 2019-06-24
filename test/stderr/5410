@@ -4,40 +4,40 @@ admin user
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
- ┌considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- └─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts? no (end of list)
  in tls_advertise_hosts? yes (matched "*")
- ┌considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
-  ┌considering: SERVER}{server}{queue}{cutthrough}}
+ ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
+  ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├──expanding: SERVER
-  └─────result: SERVER
-  ┌considering: server}{queue}{cutthrough}}
+  ╰─────result: SERVER
+  ╭considering: server}{queue}{cutthrough}}
   ├──expanding: server
-  └─────result: server
+  ╰─────result: server
  ├──condition: eq {SERVER}{server}
  ├─────result: false
-  ┌───scanning: queue}{cutthrough}}
+  ╭───scanning: queue}{cutthrough}}
   ├──expanding: queue
   ├─────result: queue
-  └───skipping: result is not used
-  ┌considering: cutthrough}}
+  ╰───skipping: result is not used
+  ╭considering: cutthrough}}
   ├──expanding: cutthrough
-  └─────result: cutthrough
+  ╰─────result: cutthrough
  ├──expanding: ${if eq {SERVER}{server}{queue}{cutthrough}}
- └─────result: cutthrough
+ ╰─────result: cutthrough
 using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
- ┌considering: $local_part
+ ╭considering: $local_part
  ├──expanding: $local_part
- └─────result: userx
+ ╰─────result: userx
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -45,14 +45,14 @@ end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
- ┌considering: $local_part
+ ╭considering: $local_part
  ├──expanding: $local_part
- └─────result: userx
+ ╰─────result: userx
 domain.com in "*"? yes (matched "*")
 Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... connected
- ┌considering: $primary_hostname
+ ╭considering: $primary_hostname
  ├──expanding: $primary_hostname
- └─────result: myhost.test.ex
+ ╰─────result: myhost.test.ex
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
@@ -63,43 +63,43 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
- ┌considering: ${if eq {$address_data}{usery}{*}{:}}
-  ┌considering: $address_data}{usery}{*}{:}}
+ ╭considering: ${if eq {$address_data}{usery}{*}{:}}
+  ╭considering: $address_data}{usery}{*}{:}}
   ├──expanding: $address_data
-  └─────result: userx
-  ┌considering: usery}{*}{:}}
+  ╰─────result: userx
+  ╭considering: usery}{*}{:}}
   ├──expanding: usery
-  └─────result: usery
+  ╰─────result: usery
  ├──condition: eq {$address_data}{usery}
  ├─────result: false
-  ┌───scanning: *}{:}}
+  ╭───scanning: *}{:}}
   ├──expanding: *
   ├─────result: *
-  └───skipping: result is not used
-  ┌considering: :}}
+  ╰───skipping: result is not used
+  ╭considering: :}}
   ├──expanding: :
-  └─────result: :
+  ╰─────result: :
  ├──expanding: ${if eq {$address_data}{usery}{*}{:}}
- └─────result: :
+ ╰─────result: :
 127.0.0.1 in hosts_avoid_tls? no (end of list)
- ┌considering: ${if eq {$address_data}{userz}{*}{:}}
-  ┌considering: $address_data}{userz}{*}{:}}
+ ╭considering: ${if eq {$address_data}{userz}{*}{:}}
+  ╭considering: $address_data}{userz}{*}{:}}
   ├──expanding: $address_data
-  └─────result: userx
-  ┌considering: userz}{*}{:}}
+  ╰─────result: userx
+  ╭considering: userz}{*}{:}}
   ├──expanding: userz
-  └─────result: userz
+  ╰─────result: userz
  ├──condition: eq {$address_data}{userz}
  ├─────result: false
-  ┌───scanning: *}{:}}
+  ╭───scanning: *}{:}}
   ├──expanding: *
   ├─────result: *
-  └───skipping: result is not used
-  ┌considering: :}}
+  ╰───skipping: result is not used
+  ╭considering: :}}
   ├──expanding: :
-  └─────result: :
+  ╰─────result: :
  ├──expanding: ${if eq {$address_data}{userz}{*}{:}}
- └─────result: :
+ ╰─────result: :
 127.0.0.1 in hosts_verify_avoid_tls? no (end of list)
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
@@ -131,10 +131,10 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
- ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
@@ -143,7 +143,7 @@ end of inline ACL: ACCEPT
  	for $received_for}}
  ├──condition: def:sender_rcvhost
  ├─────result: false
-  ┌───scanning: from $sender_rcvhost
+  ╭───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
@@ -154,8 +154,8 @@ end of inline ACL: ACCEPT
   	
   ├─────result: from 
   	
-  └───skipping: result is not used
-  ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+  ╰───skipping: result is not used
+  ╭considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -163,25 +163,25 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
-   ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╭considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
-   ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╎╭considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
    ╎├──expanding: $sender_ident
-   ╎└─────result: CALLER
+   ╎╰─────result: CALLER
    ├──expanding: from ${quote_local_part:$sender_ident} 
-   └─────result: from CALLER 
+   ╰─────result: from CALLER 
   ├──condition: def:sender_helo_name
   ├─────result: true
-   ┌considering: (helo=$sender_helo_name)
+   ╭considering: (helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
@@ -189,24 +189,24 @@ end of inline ACL: ACCEPT
    	for $received_for}}
    ├──expanding: (helo=$sender_helo_name)
    	
-   └─────result: (helo=myhost.test.ex)
+   ╰─────result: (helo=myhost.test.ex)
    	
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
-  └─────result: from CALLER (helo=myhost.test.ex)
+  ╰─────result: from CALLER (helo=myhost.test.ex)
   	
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
+  ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: with $received_protocol 
-  └─────result: with local-esmtp 
+  ╰─────result: with local-esmtp 
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
-  ┌───scanning:  tls $tls_in_cipher_std
+  ╭───scanning:  tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
@@ -215,23 +215,23 @@ end of inline ACL: ACCEPT
   	
   ├─────result:  tls 
   	
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
-  ┌considering: (envelope-from <$sender_address>)
+  ╭considering: (envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: (envelope-from <$sender_address>)
   	
-  └─────result: (envelope-from <CALLER@myhost.test.ex>)
+  ╰─────result: (envelope-from <CALLER@myhost.test.ex>)
   	
  ├──condition: def:received_for
  ├─────result: true
-  ┌considering: 
+  ╭considering: 
   	for $received_for}}
   ├──expanding: 
   	for $received_for
-  └─────result: 
+  ╰─────result: 
   	for userx@domain.com
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
@@ -240,16 +240,16 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
- └─────result: Received: from CALLER (helo=myhost.test.ex)
+ ╰─────result: Received: from CALLER (helo=myhost.test.ex)
  	by myhost.test.ex with local-esmtp (Exim x.yz)
  	(envelope-from <CALLER@myhost.test.ex>)
  	id 10HmaX-0005vi-00
  	for userx@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
   SMTP<< 250 OK id=10HmaY-0005vi-00
 LOG: MAIN
@@ -271,40 +271,40 @@ admin user
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
- ┌considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- └─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts? no (end of list)
  in tls_advertise_hosts? yes (matched "*")
- ┌considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
-  ┌considering: SERVER}{server}{queue}{cutthrough}}
+ ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
+  ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├──expanding: SERVER
-  └─────result: SERVER
-  ┌considering: server}{queue}{cutthrough}}
+  ╰─────result: SERVER
+  ╭considering: server}{queue}{cutthrough}}
   ├──expanding: server
-  └─────result: server
+  ╰─────result: server
  ├──condition: eq {SERVER}{server}
  ├─────result: false
-  ┌───scanning: queue}{cutthrough}}
+  ╭───scanning: queue}{cutthrough}}
   ├──expanding: queue
   ├─────result: queue
-  └───skipping: result is not used
-  ┌considering: cutthrough}}
+  ╰───skipping: result is not used
+  ╭considering: cutthrough}}
   ├──expanding: cutthrough
-  └─────result: cutthrough
+  ╰─────result: cutthrough
  ├──expanding: ${if eq {SERVER}{server}{queue}{cutthrough}}
- └─────result: cutthrough
+ ╰─────result: cutthrough
 using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
- ┌considering: $local_part
+ ╭considering: $local_part
  ├──expanding: $local_part
- └─────result: usery
+ ╰─────result: usery
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -312,14 +312,14 @@ end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
- ┌considering: $local_part
+ ╭considering: $local_part
  ├──expanding: $local_part
- └─────result: usery
+ ╰─────result: usery
 domain.com in "*"? yes (matched "*")
 Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... connected
- ┌considering: $primary_hostname
+ ╭considering: $primary_hostname
  ├──expanding: $primary_hostname
- └─────result: myhost.test.ex
+ ╰─────result: myhost.test.ex
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
@@ -330,24 +330,24 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
- ┌considering: ${if eq {$address_data}{usery}{*}{:}}
-  ┌considering: $address_data}{usery}{*}{:}}
+ ╭considering: ${if eq {$address_data}{usery}{*}{:}}
+  ╭considering: $address_data}{usery}{*}{:}}
   ├──expanding: $address_data
-  └─────result: usery
-  ┌considering: usery}{*}{:}}
+  ╰─────result: usery
+  ╭considering: usery}{*}{:}}
   ├──expanding: usery
-  └─────result: usery
+  ╰─────result: usery
  ├──condition: eq {$address_data}{usery}
  ├─────result: true
-  ┌considering: *}{:}}
+  ╭considering: *}{:}}
   ├──expanding: *
-  └─────result: *
-  ┌───scanning: :}}
+  ╰─────result: *
+  ╭───scanning: :}}
   ├──expanding: :
   ├─────result: :
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──expanding: ${if eq {$address_data}{usery}{*}{:}}
- └─────result: *
+ ╰─────result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
 127.0.0.1 in hosts_avoid_pipelining? no (option unset)
 using PIPELINING
@@ -367,10 +367,10 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
- ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
@@ -379,7 +379,7 @@ end of inline ACL: ACCEPT
  	for $received_for}}
  ├──condition: def:sender_rcvhost
  ├─────result: false
-  ┌───scanning: from $sender_rcvhost
+  ╭───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
@@ -390,8 +390,8 @@ end of inline ACL: ACCEPT
   	
   ├─────result: from 
   	
-  └───skipping: result is not used
-  ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+  ╰───skipping: result is not used
+  ╭considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -399,25 +399,25 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
-   ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╭considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
-   ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╎╭considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
    ╎├──expanding: $sender_ident
-   ╎└─────result: CALLER
+   ╎╰─────result: CALLER
    ├──expanding: from ${quote_local_part:$sender_ident} 
-   └─────result: from CALLER 
+   ╰─────result: from CALLER 
   ├──condition: def:sender_helo_name
   ├─────result: true
-   ┌considering: (helo=$sender_helo_name)
+   ╭considering: (helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
@@ -425,24 +425,24 @@ end of inline ACL: ACCEPT
    	for $received_for}}
    ├──expanding: (helo=$sender_helo_name)
    	
-   └─────result: (helo=myhost.test.ex)
+   ╰─────result: (helo=myhost.test.ex)
    	
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
-  └─────result: from CALLER (helo=myhost.test.ex)
+  ╰─────result: from CALLER (helo=myhost.test.ex)
   	
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
+  ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: with $received_protocol 
-  └─────result: with local-esmtp 
+  ╰─────result: with local-esmtp 
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
-  ┌───scanning:  tls $tls_in_cipher_std
+  ╭───scanning:  tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
@@ -451,23 +451,23 @@ end of inline ACL: ACCEPT
   	
   ├─────result:  tls 
   	
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
-  ┌considering: (envelope-from <$sender_address>)
+  ╭considering: (envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: (envelope-from <$sender_address>)
   	
-  └─────result: (envelope-from <CALLER@myhost.test.ex>)
+  ╰─────result: (envelope-from <CALLER@myhost.test.ex>)
   	
  ├──condition: def:received_for
  ├─────result: true
-  ┌considering: 
+  ╭considering: 
   	for $received_for}}
   ├──expanding: 
   	for $received_for
-  └─────result: 
+  ╰─────result: 
   	for usery@domain.com
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
@@ -476,16 +476,16 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
- └─────result: Received: from CALLER (helo=myhost.test.ex)
+ ╰─────result: Received: from CALLER (helo=myhost.test.ex)
  	by myhost.test.ex with local-esmtp (Exim x.yz)
  	(envelope-from <CALLER@myhost.test.ex>)
  	id 10HmaZ-0005vi-00
  	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
   SMTP<< 250 OK id=10HmbA-0005vi-00
 LOG: MAIN
@@ -507,40 +507,40 @@ admin user
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
- ┌considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
  ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
- └─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts? no (end of list)
  in tls_advertise_hosts? yes (matched "*")
- ┌considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
-  ┌considering: SERVER}{server}{queue}{cutthrough}}
+ ╭considering: ${if eq {SERVER}{server}{queue}{cutthrough}}
+  ╭considering: SERVER}{server}{queue}{cutthrough}}
   ├──expanding: SERVER
-  └─────result: SERVER
-  ┌considering: server}{queue}{cutthrough}}
+  ╰─────result: SERVER
+  ╭considering: server}{queue}{cutthrough}}
   ├──expanding: server
-  └─────result: server
+  ╰─────result: server
  ├──condition: eq {SERVER}{server}
  ├─────result: false
-  ┌───scanning: queue}{cutthrough}}
+  ╭───scanning: queue}{cutthrough}}
   ├──expanding: queue
   ├─────result: queue
-  └───skipping: result is not used
-  ┌considering: cutthrough}}
+  ╰───skipping: result is not used
+  ╭considering: cutthrough}}
   ├──expanding: cutthrough
-  └─────result: cutthrough
+  ╰─────result: cutthrough
  ├──expanding: ${if eq {SERVER}{server}{queue}{cutthrough}}
- └─────result: cutthrough
+ ╰─────result: cutthrough
 using ACL "cutthrough"
 processing "accept" (TESTSUITE/test-config 22)
 check control = cutthrough_delivery
 check verify = recipient
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
- ┌considering: $local_part
+ ╭considering: $local_part
  ├──expanding: $local_part
- └─────result: usery
+ ╰─────result: usery
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -548,14 +548,14 @@ end of ACL "cutthrough": ACCEPT
 ----------- start cutthrough setup ------------
 domain.com in "test.ex : *.test.ex"? no (end of list)
 domain.com in "! +local_domains"? yes (end of list)
- ┌considering: $local_part
+ ╭considering: $local_part
  ├──expanding: $local_part
- └─────result: usery
+ ╰─────result: usery
 domain.com in "*"? yes (matched "*")
 Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ... connected
- ┌considering: $primary_hostname
+ ╭considering: $primary_hostname
  ├──expanding: $primary_hostname
- └─────result: myhost.test.ex
+ ╰─────result: myhost.test.ex
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
@@ -566,24 +566,24 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
- ┌considering: ${if eq {$address_data}{usery}{*}{:}}
-  ┌considering: $address_data}{usery}{*}{:}}
+ ╭considering: ${if eq {$address_data}{usery}{*}{:}}
+  ╭considering: $address_data}{usery}{*}{:}}
   ├──expanding: $address_data
-  └─────result: usery
-  ┌considering: usery}{*}{:}}
+  ╰─────result: usery
+  ╭considering: usery}{*}{:}}
   ├──expanding: usery
-  └─────result: usery
+  ╰─────result: usery
  ├──condition: eq {$address_data}{usery}
  ├─────result: true
-  ┌considering: *}{:}}
+  ╭considering: *}{:}}
   ├──expanding: *
-  └─────result: *
-  ┌───scanning: :}}
+  ╰─────result: *
+  ╭───scanning: :}}
   ├──expanding: :
   ├─────result: :
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──expanding: ${if eq {$address_data}{usery}{*}{:}}
- └─────result: *
+ ╰─────result: *
 127.0.0.1 in hosts_avoid_tls? yes (matched "*")
 127.0.0.1 in hosts_avoid_pipelining? no (option unset)
 using PIPELINING
@@ -603,10 +603,10 @@ accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
   SMTP<< 354 Enter message, ending with "." on a line by itself
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
- ┌considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╭considering: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
  	}}(Exim $version_number)
@@ -615,7 +615,7 @@ end of inline ACL: ACCEPT
  	for $received_for}}
  ├──condition: def:sender_rcvhost
  ├─────result: false
-  ┌───scanning: from $sender_rcvhost
+  ╭───scanning: from $sender_rcvhost
   	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
@@ -626,8 +626,8 @@ end of inline ACL: ACCEPT
   	
   ├─────result: from 
   	
-  └───skipping: result is not used
-  ┌considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+  ╰───skipping: result is not used
+  ╭considering: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
@@ -635,25 +635,25 @@ end of inline ACL: ACCEPT
   	for $received_for}}
   ├──condition: def:sender_ident
   ├─────result: true
-   ┌considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╭considering: from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
    	}}id $message_exim_id${if def:received_for {
    	for $received_for}}
-   ╎┌considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+   ╎╭considering: $sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
    ╎	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    ╎	}}(Exim $version_number)
    ╎	${if def:sender_address {(envelope-from <$sender_address>)
    ╎	}}id $message_exim_id${if def:received_for {
    ╎	for $received_for}}
    ╎├──expanding: $sender_ident
-   ╎└─────result: CALLER
+   ╎╰─────result: CALLER
    ├──expanding: from ${quote_local_part:$sender_ident} 
-   └─────result: from CALLER 
+   ╰─────result: from CALLER 
   ├──condition: def:sender_helo_name
   ├─────result: true
-   ┌considering: (helo=$sender_helo_name)
+   ╭considering: (helo=$sender_helo_name)
    	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
    	}}(Exim $version_number)
    	${if def:sender_address {(envelope-from <$sender_address>)
@@ -661,24 +661,24 @@ end of inline ACL: ACCEPT
    	for $received_for}}
    ├──expanding: (helo=$sender_helo_name)
    	
-   └─────result: (helo=myhost.test.ex)
+   ╰─────result: (helo=myhost.test.ex)
    	
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
-  └─────result: from CALLER (helo=myhost.test.ex)
+  ╰─────result: from CALLER (helo=myhost.test.ex)
   	
  ├──condition: def:received_protocol
  ├─────result: true
-  ┌considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
+  ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: with $received_protocol 
-  └─────result: with local-esmtp 
+  ╰─────result: with local-esmtp 
  ├──condition: def:tls_in_cipher_std
  ├─────result: false
-  ┌───scanning:  tls $tls_in_cipher_std
+  ╭───scanning:  tls $tls_in_cipher_std
   	}}(Exim $version_number)
   	${if def:sender_address {(envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
@@ -687,23 +687,23 @@ end of inline ACL: ACCEPT
   	
   ├─────result:  tls 
   	
-  └───skipping: result is not used
+  ╰───skipping: result is not used
  ├──condition: def:sender_address
  ├─────result: true
-  ┌considering: (envelope-from <$sender_address>)
+  ╭considering: (envelope-from <$sender_address>)
   	}}id $message_exim_id${if def:received_for {
   	for $received_for}}
   ├──expanding: (envelope-from <$sender_address>)
   	
-  └─────result: (envelope-from <CALLER@myhost.test.ex>)
+  ╰─────result: (envelope-from <CALLER@myhost.test.ex>)
   	
  ├──condition: def:received_for
  ├─────result: true
-  ┌considering: 
+  ╭considering: 
   	for $received_for}}
   ├──expanding: 
   	for $received_for
-  └─────result: 
+  ╰─────result: 
   	for usery@domain.com
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
@@ -712,16 +712,16 @@ end of inline ACL: ACCEPT
  	${if def:sender_address {(envelope-from <$sender_address>)
  	}}id $message_exim_id${if def:received_for {
  	for $received_for}}
- └─────result: Received: from CALLER (helo=myhost.test.ex)
+ ╰─────result: Received: from CALLER (helo=myhost.test.ex)
  	by myhost.test.ex with local-esmtp (Exim x.yz)
  	(envelope-from <CALLER@myhost.test.ex>)
  	id 10HmbB-0005vi-00
  	for usery@domain.com
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
- ┌considering: ${tod_full}
+ ╭considering: ${tod_full}
  ├──expanding: ${tod_full}
- └─────result: Tue, 2 Mar 1999 09:44:33 +0000
+ ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> .
   SMTP<< 250 OK id=10HmbC-0005vi-00
 LOG: MAIN
