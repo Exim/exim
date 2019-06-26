@@ -66,7 +66,6 @@ static address_item *addr_new = NULL;
 static address_item *addr_remote = NULL;
 static address_item *addr_route = NULL;
 static address_item *addr_succeed = NULL;
-static address_item *addr_dsntmp = NULL;
 static address_item *addr_senddsn = NULL;
 
 static FILE *message_log = NULL;
@@ -5486,6 +5485,25 @@ while ((addr = *anchor))
 
 
 
+/************************************************/
+
+static void
+print_dsn_addr_action(FILE * f, address_item * addr,
+  uschar * action, uschar * status)
+{
+address_item * pa;
+
+if (addr->dsn_orcpt)
+  fprintf(f,"Original-Recipient: %s\n", addr->dsn_orcpt);
+
+for (pa = addr; pa->parent; ) pa = pa->parent;
+fprintf(f, "Action: %s\n"
+    "Final-Recipient: rfc822;%s\n"
+    "Status: %s\n",
+  action, pa->address, status);
+}
+
+
 /*************************************************
 *              Deliver one message               *
 *************************************************/
@@ -7269,7 +7287,7 @@ else if (!f.dont_deliver)
 /* Send DSN for successful messages if requested */
 addr_senddsn = NULL;
 
-for (addr_dsntmp = addr_succeed; addr_dsntmp; addr_dsntmp = addr_dsntmp->next)
+for (address_item * a = addr_succeed; a; a = a->next)
   {
   /* af_ignore_error not honored here. it's not an error */
   DEBUG(D_deliver) debug_printf("DSN: processing router : %s\n"
@@ -7279,28 +7297,28 @@ for (addr_dsntmp = addr_succeed; addr_dsntmp; addr_dsntmp = addr_dsntmp->next)
       "DSN: envid: %s  ret: %d\n"
       "DSN: Final recipient: %s\n"
       "DSN: Remote SMTP server supports DSN: %d\n",
-      addr_dsntmp->router ? addr_dsntmp->router->name : US"(unknown)",
-      addr_dsntmp->address,
+      a->router ? a->router->name : US"(unknown)",
+      a->address,
       sender_address,
-      addr_dsntmp->dsn_orcpt ? addr_dsntmp->dsn_orcpt : US"NULL",
-      addr_dsntmp->dsn_flags,
+      a->dsn_orcpt ? a->dsn_orcpt : US"NULL",
+      a->dsn_flags,
       dsn_envid ? dsn_envid : US"NULL", dsn_ret,
-      addr_dsntmp->address,
-      addr_dsntmp->dsn_aware
+      a->address,
+      a->dsn_aware
       );
 
   /* send report if next hop not DSN aware or a router flagged "last DSN hop"
      and a report was requested */
-  if (  (  addr_dsntmp->dsn_aware != dsn_support_yes
-	|| addr_dsntmp->dsn_flags & rf_dsnlasthop
+  if (  (  a->dsn_aware != dsn_support_yes
+	|| a->dsn_flags & rf_dsnlasthop
         )
-     && addr_dsntmp->dsn_flags & rf_notify_success
+     && a->dsn_flags & rf_notify_success
      )
     {
     /* copy and relink address_item and send report with all of them at once later */
     address_item * addr_next = addr_senddsn;
     addr_senddsn = store_get(sizeof(address_item));
-    *addr_senddsn = *addr_dsntmp;
+    *addr_senddsn = *a;
     addr_senddsn->next = addr_next;
     }
   else
@@ -7356,12 +7374,11 @@ if (addr_senddsn)
 	" ----- The following addresses had successful delivery notifications -----\n",
       sender_address, bound, bound);
 
-    for (addr_dsntmp = addr_senddsn; addr_dsntmp;
-	 addr_dsntmp = addr_dsntmp->next)
+    for (address_item * a = addr_senddsn; a; a = a->next)
       fprintf(f, "<%s> (relayed %s)\n\n",
-	addr_dsntmp->address,
-	addr_dsntmp->dsn_flags & rf_dsnlasthop ? "via non DSN router"
-	: addr_dsntmp->dsn_aware == dsn_support_no ? "to non-DSN-aware mailer"
+	a->address,
+	a->dsn_flags & rf_dsnlasthop ? "via non DSN router"
+	: a->dsn_aware == dsn_support_no ? "to non-DSN-aware mailer"
 	: "via non \"Remote SMTP\" router"
 	);
 
@@ -7380,24 +7397,18 @@ if (addr_senddsn)
       }
     fputc('\n', f);
 
-    for (addr_dsntmp = addr_senddsn;
-	 addr_dsntmp;
-	 addr_dsntmp = addr_dsntmp->next)
+    for (address_item * a = addr_senddsn; a; a = a->next)
       {
-      if (addr_dsntmp->dsn_orcpt)
-        fprintf(f,"Original-Recipient: %s\n", addr_dsntmp->dsn_orcpt);
+      host_item * hu;
 
-      fprintf(f, "Action: delivered\n"
-	  "Final-Recipient: rfc822;%s\n"
-	  "Status: 2.0.0\n",
-	addr_dsntmp->address);
+      print_dsn_addr_action(f, a, US"delivered", US"2.0.0");
 
-      if (addr_dsntmp->host_used && addr_dsntmp->host_used->name)
+      if ((hu = a->host_used) && hu->name)
         fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n\n",
-	  addr_dsntmp->host_used->name);
+	  hu->name);
       else
 	fprintf(f, "Diagnostic-Code: X-Exim; relayed via non %s router\n\n",
-	  addr_dsntmp->dsn_flags & rf_dsnlasthop ? "DSN" : "SMTP");
+	  a->dsn_flags & rf_dsnlasthop ? "DSN" : "SMTP");
       }
 
     fprintf(f, "--%s\nContent-type: text/rfc822-headers\n\n", bound);
@@ -7775,10 +7786,9 @@ wording. */
       for (addr = handled_addr; addr; addr = addr->next)
         {
 	host_item * hu;
-        fprintf(fp, "Action: failed\n"
-	    "Final-Recipient: rfc822;%s\n"
-	    "Status: 5.0.0\n",
-	    addr->address);
+
+	print_dsn_addr_action(fp, addr, US"failed", US"5.0.0");
+
         if ((hu = addr->host_used) && hu->name)
 	  {
 	  fprintf(fp, "Remote-MTA: dns; %s\n", hu->name);
@@ -8319,17 +8329,13 @@ else if (addr_defer != (address_item *)(+1))
 
         for ( ; addr_dsndefer; addr_dsndefer = addr_dsndefer->next)
           {
-          if (addr_dsndefer->dsn_orcpt)
-            fprintf(f, "Original-Recipient: %s\n", addr_dsndefer->dsn_orcpt);
+	  host_item * hu;
 
-          fprintf(f, "Action: delayed\n"
-	      "Final-Recipient: rfc822;%s\n"
-	      "Status: 4.0.0\n",
-	    addr_dsndefer->address);
-          if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
+	  print_dsn_addr_action(f, addr_dsndefer, US"delayed", US"4.0.0");
+
+          if ((hu = addr_dsndefer->host_used) && hu->name)
             {
-            fprintf(f, "Remote-MTA: dns; %s\n",
-		    addr_dsndefer->host_used->name);
+            fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
             print_dsn_diagnostic_code(addr_dsndefer, f);
             }
 	  fputc('\n', f);

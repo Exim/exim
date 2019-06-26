@@ -138,6 +138,11 @@ JH/28 Fix the timeout on smtp response to apply to the whole response.
       single bytes within the time limit could extend the connection for a
       long time.  Credit to Qualsys Security Advisory Team for the discovery.
 
+JH/29 Fix DSN Final-Recipient: field.  Previously it was the post-routing
+      delivery address, which leaked information of the results of local
+      forwarding.  Change to the original envelope recipient address, per
+      standards.
+
 
 Exim version 4.92
 -----------------
