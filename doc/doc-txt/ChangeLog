@@ -77,6 +77,11 @@ JH/27 Bug 2404: Use the main-section configuration option "dsn_from" for
 
 PP/01 Unbreak heimdal_gssapi, broken in 4.92.
 
+JH/29 Fix DSN Final-Recipient: field.  Previously it was the post-routing
+      delivery address, which leaked information of the results of local
+      forwarding.  Change to the original envelope recipient address, per
+      standards.
+
 
 Exim version 4.92
 -----------------

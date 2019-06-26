@@ -40,7 +40,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; myhost.test.ex
 
 Action: failed
-Final-Recipient: rfc822;|/bin/echo "Some pipe output"
+Final-Recipient: rfc822;userx@myhost.test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
