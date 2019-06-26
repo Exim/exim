@@ -73,7 +73,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv $recipients
+Final-Recipient: rfc822;system-filter
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -167,7 +167,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv $recipients
+Final-Recipient: rfc822;system-filter
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

@@ -30,11 +30,11 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;/a/b/c
+Final-Recipient: rfc822;/a/b/c@no.test.ex
 Status: 5.0.0
 
 Action: failed
-Final-Recipient: rfc822;|/p/q/r
+Final-Recipient: rfc822;|/p/q/r@no.test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -125,7 +125,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv
+Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv@yes.test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
