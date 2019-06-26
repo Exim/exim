@@ -5507,6 +5507,25 @@ while ((addr = *anchor))
 
 
 
+/************************************************/
+
+static void
+print_dsn_addr_action(FILE * f, address_item * addr,
+  uschar * action, uschar * status)
+{
+address_item * pa;
+
+if (addr->dsn_orcpt)
+  fprintf(f,"Original-Recipient: %s\n", addr->dsn_orcpt);
+
+for (pa = addr; pa->parent; ) pa = pa->parent;
+fprintf(f, "Action: %s\n"
+    "Final-Recipient: rfc822;%s\n"
+    "Status: %s\n",
+  action, pa->address, status);
+}
+
+
 /*************************************************
 *              Deliver one message               *
 *************************************************/
@@ -7410,10 +7429,7 @@ if (addr_senddsn)
       if (addr_dsntmp->dsn_orcpt)
         fprintf(f,"Original-Recipient: %s\n", addr_dsntmp->dsn_orcpt);
 
-      fprintf(f, "Action: delivered\n"
-	  "Final-Recipient: rfc822;%s\n"
-	  "Status: 2.0.0\n",
-	addr_dsntmp->address);
+      print_dsn_addr_action(f, addr_dsntmp, US"delivered", US"2.0.0");
 
       if (addr_dsntmp->host_used && addr_dsntmp->host_used->name)
         fprintf(f, "Remote-MTA: dns; %s\nDiagnostic-Code: smtp; 250 Ok\n\n",
@@ -7798,10 +7814,9 @@ wording. */
       for (addr = handled_addr; addr; addr = addr->next)
         {
 	host_item * hu;
-        fprintf(fp, "Action: failed\n"
-	    "Final-Recipient: rfc822;%s\n"
-	    "Status: 5.0.0\n",
-	    addr->address);
+
+	print_dsn_addr_action(fp, addr, US"failed", US"5.0.0");
+
         if ((hu = addr->host_used) && hu->name)
 	  {
 	  fprintf(fp, "Remote-MTA: dns; %s\n", hu->name);
@@ -8343,13 +8358,9 @@ else if (addr_defer != (address_item *)(+1))
 
         for ( ; addr_dsndefer; addr_dsndefer = addr_dsndefer->next)
           {
-          if (addr_dsndefer->dsn_orcpt)
-            fprintf(f, "Original-Recipient: %s\n", addr_dsndefer->dsn_orcpt);
 
-          fprintf(f, "Action: delayed\n"
-	      "Final-Recipient: rfc822;%s\n"
-	      "Status: 4.0.0\n",
-	    addr_dsndefer->address);
+	  print_dsn_addr_action(f, addr_dsndefer, US"delayed", US"4.0.0");
+
           if (addr_dsndefer->host_used && addr_dsndefer->host_used->name)
             {
             fprintf(f, "Remote-MTA: dns; %s\n",

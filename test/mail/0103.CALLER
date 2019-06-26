@@ -30,7 +30,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;WASabc@x.y.zWAS
+Final-Recipient: rfc822;"abc@x.y.z"@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

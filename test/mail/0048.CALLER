@@ -76,7 +76,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv
+Final-Recipient: rfc822;pipe@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -173,7 +173,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv
+Final-Recipient: rfc822;prefixed+pipe@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -270,7 +270,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv
+Final-Recipient: rfc822;pipe-suffixed@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -367,7 +367,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv
+Final-Recipient: rfc822;prefixed+pipe-suffixed@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -464,7 +464,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv
+Final-Recipient: rfc822;pipe@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

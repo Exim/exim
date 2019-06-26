@@ -75,7 +75,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; myhost.test.ex
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv $thisaddress $1
+Final-Recipient: rfc822;system-filter
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -170,7 +170,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; myhost.test.ex
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv $1
+Final-Recipient: rfc822;system-filter
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -266,7 +266,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; myhost.test.ex
 
 Action: failed
-Final-Recipient: rfc822;|TESTSUITE/aux-fixed/showenv $thisaddress $1
+Final-Recipient: rfc822;redking@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
