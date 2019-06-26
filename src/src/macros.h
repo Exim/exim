@@ -339,7 +339,7 @@ platforms, but this ensures bit vectors always work the same way. */
 
 /* This macro is for single-word bit vectors: the debug selector,
 and the first word of the log selector. */
-#define BIT(n) (1U << (n))
+#define BIT(n) (1UL << (n))
 
 /* And these are for multi-word vectors. */
 #define BITWORD(n) (      (n) / BITWORDSIZE)
@@ -370,7 +370,7 @@ Exim's code assumes in a number of places that the debug_selector is one
 word, and this is exposed in the local_scan ABI. The D_v and D_local_scan bit
 masks are part of the local_scan API so are #defined in local_scan.h */
 
-#define DEBUG_BIT(name) Di_##name = IOTA(Di_iota), D_##name = BIT(Di_##name)
+#define DEBUG_BIT(name) Di_##name = IOTA(Di_iota), D_##name = (int)BIT(Di_##name)
 
 enum {
   Di_all        = -1,
