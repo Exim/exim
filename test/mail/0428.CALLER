@@ -32,7 +32,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; mail.test.ex
 
 Action: failed
-Final-Recipient: rfc822;userx-extra
+Final-Recipient: rfc822;restrict-userx@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -86,7 +86,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; mail.test.ex
 
 Action: failed
-Final-Recipient: rfc822;inbox
+Final-Recipient: rfc822;restrict-userx@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

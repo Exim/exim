@@ -35,11 +35,11 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;hbounce@test.ex
+Final-Recipient: rfc822;useryx@test.ex
 Status: 5.0.0
 
 Action: failed
-Final-Recipient: rfc822;bounce@test.ex
+Final-Recipient: rfc822;userxx@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -105,15 +105,15 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: delayed
-Final-Recipient: rfc822;/no/such/file
+Final-Recipient: rfc822;file@test.ex
 Status: 4.0.0
 
 Action: delayed
-Final-Recipient: rfc822;defer@test.ex
+Final-Recipient: rfc822;userxy@test.ex
 Status: 4.0.0
 
 Action: delayed
-Final-Recipient: rfc822;hdefer@test.ex
+Final-Recipient: rfc822;useryy@test.ex
 Status: 4.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM

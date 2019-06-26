@@ -42,7 +42,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: delayed
-Final-Recipient: rfc822;|/non/existing/file
+Final-Recipient: rfc822;userx@test.ex
 Status: 4.0.0
 
 Action: delayed
@@ -172,7 +172,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: delayed
-Final-Recipient: rfc822;|/non/existing/file
+Final-Recipient: rfc822;userx@test.ex
 Status: 4.0.0
 
 Action: delayed
@@ -232,7 +232,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: delayed
-Final-Recipient: rfc822;|/non/existing/file
+Final-Recipient: rfc822;userx@test.ex
 Status: 4.0.0
 
 Action: delayed

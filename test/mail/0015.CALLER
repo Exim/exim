@@ -34,7 +34,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|callpager
+Final-Recipient: rfc822;page+userx@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -90,7 +90,7 @@ Content-type: message/delivery-status
 Reporting-MTA: dns; the.local.host.name
 
 Action: failed
-Final-Recipient: rfc822;|callpager
+Final-Recipient: rfc822;page+ux@test.ex
 Status: 5.0.0
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
