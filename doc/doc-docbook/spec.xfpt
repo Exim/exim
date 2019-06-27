@@ -15159,6 +15159,11 @@ domain matches this list.
 This is a fudge to help with name servers that give big delays or otherwise do
 not work for the AAAA record type. In due course, when the world's name
 servers have all been upgraded, there should be no need for this option.
+.new
+Note that all lookups, including those done for verification, are affected;
+this will result in verify failure for IPv6 connections or ones using names
+only valid for IPv6 addresses.
+.wen
 
 
 .option dns_retrans main time 0s
