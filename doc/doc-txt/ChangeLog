@@ -76,6 +76,10 @@ JH/29 Fix DSN Final-Recipient: field.  Previously it was the post-routing
       forwarding.  Change to the original envelope recipient address, per
       standards.
 
+JH/30 Bug 2411: Fix DSN generation when RFC 3461 failure notification is
+      requested.  Previously not bounce was generated and a log entry of
+      error ignored was made.
+
 
 Exim version 4.92
 -----------------
