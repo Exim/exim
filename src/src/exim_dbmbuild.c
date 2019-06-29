@@ -32,6 +32,15 @@ characters. */
 
 uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
 
+					/* dummies needed by Solaris build */
+void *
+store_get_3(int size, const char *filename, int linenumber)
+{ return NULL; }
+void
+store_reset_3(void *ptr, const char *filename, int linenumber)
+{ }
+
+
 #define max_insize   20000
 #define max_outsize 100000
 
