@@ -66,6 +66,33 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 event tcp:close
 1999-03-02 09:44:33 10HmbC-0005vi-00 == rmt_defer@test.ex R=r2 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbB-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbC-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 rej/failure+delay
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <c@dump.ex> R=r_dump
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbE-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmbE-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmbE-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** rmt_reject@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_reject@test.ex>: 550 Administrative prohibition
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss for e@dump.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 deliver DSN
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbF-0005vi-00 => :blackhole: <e@dump.ex> R=r_dump
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
@@ -80,3 +107,5 @@
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<d@dump.ex> temporarily rejected RCPT <rmt_defer@test.ex>
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<c@dump.ex> temporarily rejected RCPT <rmt_defer@test.ex>
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<d@dump.ex> temporarily rejected RCPT <rmt_defer@test.ex>
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= e@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_reject@test.ex
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<e@dump.ex> rejected RCPT <rmt_reject@test.ex>
