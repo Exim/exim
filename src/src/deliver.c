@@ -6189,7 +6189,7 @@ if (process_recipients != RECIP_IGNORE)
          to be passed on to other DSN enabled MTAs */
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
-      DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: %d\n",
+      DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: 0x%x\n",
 	new->dsn_orcpt ? new->dsn_orcpt : US"", new->dsn_flags);
 
       switch (process_recipients)
@@ -7293,7 +7293,7 @@ for (address_item * a = addr_succeed; a; a = a->next)
   DEBUG(D_deliver) debug_printf("DSN: processing router : %s\n"
       "DSN: processing successful delivery address: %s\n"
       "DSN: Sender_address: %s\n"
-      "DSN: orcpt: %s  flags: %d\n"
+      "DSN: orcpt: %s  flags: 0x%x\n"
       "DSN: envid: %s  ret: %d\n"
       "DSN: Final recipient: %s\n"
       "DSN: Remote SMTP server supports DSN: %d\n",
@@ -7491,7 +7491,8 @@ while (addr_failed)
   mark the recipient done. */
 
   if (  addr_failed->prop.ignore_error
-     || addr_failed->dsn_flags & (rf_dsnflags & ~rf_notify_failure)
+     ||    addr_failed->dsn_flags & rf_dsnflags
+	&& !(addr_failed->dsn_flags & rf_notify_failure)
      )
     {
     addr = addr_failed;
@@ -7501,11 +7502,13 @@ while (addr_failed)
 #ifndef DISABLE_EVENT
     msg_event_raise(US"msg:fail:delivery", addr);
 #endif
-    log_write(0, LOG_MAIN, "%s%s%s%s: error ignored",
+    log_write(0, LOG_MAIN, "%s%s%s%s: error ignored%s",
       addr->address,
       !addr->parent ? US"" : US" <",
       !addr->parent ? US"" : addr->parent->address,
-      !addr->parent ? US"" : US">");
+      !addr->parent ? US"" : US">",
+      addr->prop.ignore_error
+      ? US"" : US": RFC 3461 DSN, failure notify not requested");
 
     address_done(addr, logtod);
     child_done(addr, logtod);

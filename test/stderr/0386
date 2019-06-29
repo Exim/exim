@@ -207,10 +207,10 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: This is a test blacklisting message
 >>
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <2@b> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -243,7 +243,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   2@b 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -332,7 +332,7 @@ end of retry processing
 DSN: processing router : r1
 DSN: processing successful delivery address: 2@b
 DSN: Sender_address: x@y
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: 2@b
 DSN: Remote SMTP server supports DSN: 0
@@ -389,10 +389,10 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: This is a test blacklisting message
 >>
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |2@b| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <2@b> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -425,7 +425,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   2@b 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -513,7 +513,7 @@ end of retry processing
 DSN: processing router : r1
 DSN: processing successful delivery address: 2@b
 DSN: Sender_address: x@y
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: 2@b
 DSN: Remote SMTP server supports DSN: 0

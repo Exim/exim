@@ -157,18 +157,18 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |CALLER@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |usery@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |userz@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |rd+CALLER@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |rd+usery@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <CALLER@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <usery@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <userz@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <rd+CALLER@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <rd+usery@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -205,11 +205,11 @@ recipients_count=5
 **** SPOOL_IN - No additional fields
 **** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=6
-DSN: set orcpt:   flags: 0
-DSN: set orcpt:   flags: 0
-DSN: set orcpt:   flags: 0
-DSN: set orcpt:   flags: 0
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
+DSN: set orcpt:   flags: 0x0
+DSN: set orcpt:   flags: 0x0
+DSN: set orcpt:   flags: 0x0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   CALLER@test.ex 
   usery@test.ex 
@@ -661,7 +661,7 @@ end of retry processing
 DSN: processing router : r3
 DSN: processing successful delivery address: userz@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: userz@test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -669,7 +669,7 @@ DSN: not sending DSN success message
 DSN: processing router : r2
 DSN: processing successful delivery address: usery@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: usery@test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -677,7 +677,7 @@ DSN: not sending DSN success message
 DSN: processing router : r1
 DSN: processing successful delivery address: CALLER@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: CALLER@test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -685,7 +685,7 @@ DSN: not sending DSN success message
 DSN: processing router : r4
 DSN: processing successful delivery address: TESTSUITE/test-mail/junk
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: TESTSUITE/test-mail/junk
 DSN: Remote SMTP server supports DSN: 0
@@ -693,7 +693,7 @@ DSN: not sending DSN success message
 DSN: processing router : r5
 DSN: processing successful delivery address: TESTSUITE/test-mail/junk
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: TESTSUITE/test-mail/junk
 DSN: Remote SMTP server supports DSN: 0
@@ -701,7 +701,7 @@ DSN: not sending DSN success message
 DSN: processing router : r4
 DSN: processing successful delivery address: rd+CALLER@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: rd+CALLER@test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -709,7 +709,7 @@ DSN: not sending DSN success message
 DSN: processing router : r5
 DSN: processing successful delivery address: rd+usery@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: rd+usery@test.ex
 DSN: Remote SMTP server supports DSN: 0

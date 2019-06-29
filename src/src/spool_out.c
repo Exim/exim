@@ -264,9 +264,9 @@ if (message_smtputf8)
 #endif
 
 /* Write the dsn flags to the spool header file */
-DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_envid %s\n", dsn_envid);
+DEBUG(D_deliver) debug_printf("DSN: Write SPOOL: -dsn_envid %s\n", dsn_envid);
 if (dsn_envid) fprintf(fp, "-dsn_envid %s\n", dsn_envid);
-DEBUG(D_deliver) debug_printf("DSN: Write SPOOL :-dsn_ret %d\n", dsn_ret);
+DEBUG(D_deliver) debug_printf("DSN: Write SPOOL  :-dsn_ret %d\n", dsn_ret);
 if (dsn_ret) fprintf(fp, "-dsn_ret %d\n", dsn_ret);
 
 /* To complete the envelope, write out the tree of non-recipients, followed by
@@ -280,9 +280,9 @@ for (int i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
 
-  DEBUG(D_deliver) debug_printf("DSN: Flags :%d\n", r->dsn_flags);
+  DEBUG(D_deliver) debug_printf("DSN: Flags: 0x%x\n", r->dsn_flags);
 
-  if (r->pno < 0 && r->errors_to == NULL && r->dsn_flags == 0)
+  if (r->pno < 0 && !r->errors_to && r->dsn_flags == 0)
     fprintf(fp, "%s\n", r->address);
   else
     {
@@ -296,7 +296,7 @@ for (int i = 0; i < recipients_count; i++)
     }
 
     DEBUG(D_deliver) debug_printf("DSN: **** SPOOL_OUT - "
-      "address: |%s| errorsto: |%s| orcpt: |%s| dsn_flags: %d\n",
+      "address: <%s> errorsto: <%s> orcpt: <%s> dsn_flags: 0x%x\n",
       r->address, r->errors_to, r->orcpt, r->dsn_flags);
   }
 

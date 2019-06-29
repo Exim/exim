@@ -34,10 +34,10 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for nofile@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |nofile@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <nofile@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -66,7 +66,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   nofile@test.ex 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -174,7 +174,7 @@ end of retry processing
 DSN: processing router : r1
 DSN: processing successful delivery address: nofile@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: nofile@test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -223,10 +223,10 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -254,7 +254,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -363,7 +363,7 @@ end of retry processing
 DSN: processing router : r1
 DSN: processing successful delivery address: userx@test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: userx@test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -412,10 +412,10 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaZ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -443,7 +443,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -562,10 +562,10 @@ Writing retry data for T:userx@test.ex
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
 end delivery of 10HmaZ-0005vi-00
@@ -610,10 +610,10 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -641,7 +641,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=1 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   userx@test.ex 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -755,10 +755,10 @@ Writing retry data for T:userx@test.ex
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |userx@test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss
 end delivery of 10HmbA-0005vi-00

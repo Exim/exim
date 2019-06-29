@@ -819,7 +819,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     int flags;
 
 #if !defined (COMPILE_UTILITY)
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim 4 standard format spoolfile\n");
+    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim standard format spoolfile\n");
 #endif
 
     (void)sscanf(CS p+1, "%d", &flags);
@@ -857,16 +857,12 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   else
     { DEBUG(D_deliver) debug_printf("**** SPOOL_IN - No additional fields\n"); }
 
-  if ((orcpt != NULL) || (dsn_flags != 0))
-    {
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: |%s| orcpt: |%s| dsn_flags: %d\n",
+  if (orcpt || dsn_flags)
+    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: <%s> orcpt: <%s> dsn_flags: 0x%x\n",
       big_buffer, orcpt, dsn_flags);
-    }
-  if (errors_to != NULL)
-    {
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: |%s| errorsto: |%s|\n",
+  if (errors_to)
+    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: <%s> errorsto: <%s>\n",
       big_buffer, errors_to);
-    }
 #endif
 
   recipients_list[recipients_count].address = string_copy(big_buffer);

@@ -136,6 +136,44 @@ exim -z playout
 ****
 exim -q
 ****
+sleep 1
+exim -Mrm $msg1 $msg2
+****
+#
+#
+#
+#
+# Client requests bounce+delay notification; bounce happens
+exim -z rej/failure+delay
+****
+client HOSTIPV4 PORT_D
+??? 220
+EHLO testclient
+??? 250-
+??? 250-SIZE
+??? 250-DSN
+??? 250 HELP
+MAIL FROM:<e@dump.ex>
+??? 250
+RCPT TO:<rmt_reject@test.ex> NOTIFY=fAiLuRe,DELAY
+??? 250
+DATA
+??? 354
+Subject: test
+.
+??? 250
+QUIT
+??? 221
+****
+# MSA send msg to MDA
+exim -q
+****
+# deliver notification from MDA
+exim -z 'deliver DSN'
+****
+exim -q
+****
+sleep 1
 killdaemon
 #
 #

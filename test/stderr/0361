@@ -41,10 +41,10 @@ P Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for kilos@recurse.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
-DSN: Write SPOOL :-dsn_envid NULL
-DSN: Write SPOOL :-dsn_ret 0
-DSN: Flags :0
-DSN: **** SPOOL_OUT - address: |kilos@recurse.test.ex| errorsto: |NULL| orcpt: |NULL| dsn_flags: 0
+DSN: Write SPOOL: -dsn_envid NULL
+DSN: Write SPOOL  :-dsn_ret 0
+DSN: Flags: 0x0
+DSN: **** SPOOL_OUT - address: <kilos@recurse.test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
 LOG: MAIN
@@ -72,7 +72,7 @@ Empty Tree
 recipients_count=1
 **** SPOOL_IN - No additional fields
 body_linecount=0 message_linecount=7
-DSN: set orcpt:   flags: 0
+DSN: set orcpt:   flags: 0x0
 Delivery address list:
   kilos@recurse.test.ex 
  locking TESTSUITE/spool/db/retry.lockfile
@@ -236,7 +236,7 @@ set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
 DSN: processing router : r4
 DSN: processing successful delivery address: kilos@recurse.test.ex.test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: kilos@recurse.test.ex.test.ex
 DSN: Remote SMTP server supports DSN: 0
@@ -244,7 +244,7 @@ DSN: not sending DSN success message
 DSN: processing router : r3
 DSN: processing successful delivery address: kilos@recurse.test.ex.test.ex
 DSN: Sender_address: CALLER@test.ex
-DSN: orcpt: NULL  flags: 0
+DSN: orcpt: NULL  flags: 0x0
 DSN: envid: NULL  ret: 0
 DSN: Final recipient: kilos@recurse.test.ex.test.ex
 DSN: Remote SMTP server supports DSN: 0
