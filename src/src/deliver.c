@@ -7519,7 +7519,8 @@ while (addr_failed)
   mark the recipient done. */
 
   if (  addr_failed->prop.ignore_error
-     || addr_failed->dsn_flags & (rf_dsnflags & ~rf_notify_failure)
+     ||    addr_failed->dsn_flags & rf_dsnflags
+	&& !(addr_failed->dsn_flags & rf_notify_failure)
      )
     {
     addr = addr_failed;
