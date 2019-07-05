@@ -2148,6 +2148,139 @@ return ret;
 
 
 
+/* Return pointer to dewrapped string, with enclosing specified chars removed.
+The given string is modified on return.  Leading whitespace is skipped while
+looking for the opening wrap character, then the rest is scanned for the trailing
+(non-escaped) wrap character.  A backslash in the string will act as an escape.
+
+A nul is written over the trailing wrap, and a pointer to the char after the
+leading wrap is returned.
+
+Arguments:
+  s	String for de-wrapping
+  wrap  Two-char string, the first being the opener, second the closer wrapping
+        character
+Return:
+  Pointer to de-wrapped string, or NULL on error (with expand_string_message set).
+*/
+
+static uschar *
+dewrap(uschar * s, const uschar * wrap)
+{
+uschar * p = s;
+unsigned depth = 0;
+BOOL quotesmode = wrap[0] == wrap[1];
+
+while (isspace(*p)) p++;
+
+if (*p == *wrap)
+  {
+  s = ++p;
+  wrap++;
+  while (*p)
+    {
+    if (*p == '\\') p++;
+    else if (!quotesmode && *p == wrap[-1]) depth++;
+    else if (*p == *wrap)
+      if (depth == 0)
+	{
+	*p = '\0';
+	return s;
+	}
+      else
+	depth--;
+    p++;
+    }
+  }
+expand_string_message = string_sprintf("missing '%c'", *wrap);
+return NULL;
+}
+
+
+/* Pull off the leading array or object element, returning
+a copy in an allocated string.  Update the list pointer.
+
+The element may itself be an abject or array.
+Return NULL when the list is empty.
+*/
+
+static uschar *
+json_nextinlist(const uschar ** list)
+{
+unsigned array_depth = 0, object_depth = 0;
+const uschar * s = *list, * item;
+
+while (isspace(*s)) s++;
+
+for (item = s;
+     *s && (*s != ',' || array_depth != 0 || object_depth != 0);
+     s++)
+  switch (*s)
+    {
+    case '[': array_depth++; break;
+    case ']': array_depth--; break;
+    case '{': object_depth++; break;
+    case '}': object_depth--; break;
+    }
+*list = *s ? s+1 : s;
+if (item == s) return NULL;
+item = string_copyn(item, s - item);
+DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
+return US item;
+}
+
+
+
+/************************************************/
+/*  Return offset in ops table, or -1 if not found.
+Repoint to just after the operator in the string.
+
+Argument:
+ ss	string representation of operator
+ opname	split-out operator name
+*/
+
+static int
+identify_operator(const uschar ** ss, uschar ** opname)
+{
+const uschar * s = *ss;
+uschar name[256];
+
+/* Numeric comparisons are symbolic */
+
+if (*s == '=' || *s == '>' || *s == '<')
+  {
+  int p = 0;
+  name[p++] = *s++;
+  if (*s == '=')
+    {
+    name[p++] = '=';
+    s++;
+    }
+  name[p] = 0;
+  }
+
+/* All other conditions are named */
+
+else
+  s = read_name(name, sizeof(name), s, US"_");
+*ss = s;
+
+/* If we haven't read a name, it means some non-alpha character is first. */
+
+if (!name[0])
+  {
+  expand_string_message = string_sprintf("condition name expected, "
+    "but found \"%.16s\"", s);
+  return -1;
+  }
+if (opname)
+  *opname = string_copy(name);
+
+return chop_match(name, cond_table, nelem(cond_table));
+}
+
+
 /*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
@@ -2177,6 +2310,7 @@ BOOL sub2_honour_dollar = TRUE;
 int i, rc, cond_type, roffset;
 int_eximarith_t num[2];
 struct stat statbuf;
+uschar * opname;
 uschar name[256];
 const uschar *sub[10];
 
@@ -2189,37 +2323,7 @@ for (;;)
   if (*s == '!') { testfor = !testfor; s++; } else break;
   }
 
-/* Numeric comparisons are symbolic */
-
-if (*s == '=' || *s == '>' || *s == '<')
-  {
-  int p = 0;
-  name[p++] = *s++;
-  if (*s == '=')
-    {
-    name[p++] = '=';
-    s++;
-    }
-  name[p] = 0;
-  }
-
-/* All other conditions are named */
-
-else s = read_name(name, 256, s, US"_");
-
-/* If we haven't read a name, it means some non-alpha character is first. */
-
-if (name[0] == 0)
-  {
-  expand_string_message = string_sprintf("condition name expected, "
-    "but found \"%.16s\"", s);
-  return NULL;
-  }
-
-/* Find which condition we are dealing with, and switch on it */
-
-cond_type = chop_match(name, cond_table, nelem(cond_table));
-switch(cond_type)
+switch(cond_type = identify_operator(&s, &opname))
   {
   /* def: tests for a non-empty variable, or for the existence of a header. If
   yield == NULL we are in a skipping state, and don't care about the answer. */
@@ -2538,7 +2642,7 @@ switch(cond_type)
       {
       if (i == 0) goto COND_FAILED_CURLY_START;
       expand_string_message = string_sprintf("missing 2nd string in {} "
-        "after \"%s\"", name);
+        "after \"%s\"", opname);
       return NULL;
       }
     if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL,
@@ -2553,7 +2657,7 @@ switch(cond_type)
     conditions that compare numbers do not start with a letter. This just saves
     checking for them individually. */
 
-    if (!isalpha(name[0]) && yield != NULL)
+    if (!isalpha(opname[0]) && yield != NULL)
       if (sub[i][0] == 0)
         {
         num[i] = 0;
@@ -2867,7 +2971,7 @@ switch(cond_type)
       uschar *save_iterate_item = iterate_item;
       int (*compare)(const uschar *, const uschar *);
 
-      DEBUG(D_expand) debug_printf_indent("condition: %s  item: %s\n", name, sub[0]);
+      DEBUG(D_expand) debug_printf_indent("condition: %s  item: %s\n", opname, sub[0]);
 
       tempcond = FALSE;
       compare = cond_type == ECOND_INLISTI
@@ -2909,14 +3013,14 @@ switch(cond_type)
     if (*s != '{')					/* }-for-text-editors */
       {
       expand_string_message = string_sprintf("each subcondition "
-        "inside an \"%s{...}\" condition must be in its own {}", name);
+        "inside an \"%s{...}\" condition must be in its own {}", opname);
       return NULL;
       }
 
     if (!(s = eval_condition(s+1, resetok, subcondptr)))
       {
       expand_string_message = string_sprintf("%s inside \"%s{...}\" condition",
-        expand_string_message, name);
+        expand_string_message, opname);
       return NULL;
       }
     while (isspace(*s)) s++;
@@ -2926,7 +3030,7 @@ switch(cond_type)
       {
       /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
-        "inside \"%s\" group", name);
+        "inside \"%s\" group", opname);
       return NULL;
       }
 
@@ -2958,7 +3062,7 @@ switch(cond_type)
     int sep = 0;
     uschar *save_iterate_item = iterate_item;
 
-    DEBUG(D_expand) debug_printf_indent("condition: %s\n", name);
+    DEBUG(D_expand) debug_printf_indent("condition: %s\n", opname);
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
@@ -2979,7 +3083,7 @@ switch(cond_type)
     if (!(s = eval_condition(sub[1], resetok, NULL)))
       {
       expand_string_message = string_sprintf("%s inside \"%s\" condition",
-        expand_string_message, name);
+        expand_string_message, opname);
       return NULL;
       }
     while (isspace(*s)) s++;
@@ -2989,7 +3093,7 @@ switch(cond_type)
       {
       /* {-for-text-editors */
       expand_string_message = string_sprintf("missing } at end of condition "
-        "inside \"%s\"", name);
+        "inside \"%s\"", opname);
       return NULL;
       }
 
@@ -3001,11 +3105,11 @@ switch(cond_type)
       if (!eval_condition(sub[1], resetok, &tempcond))
         {
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
-          expand_string_message, name);
+          expand_string_message, opname);
         iterate_item = save_iterate_item;
         return NULL;
         }
-      DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", name,
+      DEBUG(D_expand) debug_printf_indent("%s: condition evaluated to %s\n", opname,
         tempcond? "true":"false");
 
       if (yield != NULL) *yield = (tempcond == testfor);
@@ -3098,19 +3202,20 @@ switch(cond_type)
   /* Unknown condition */
 
   default:
-  expand_string_message = string_sprintf("unknown condition \"%s\"", name);
-  return NULL;
+    if (!expand_string_message || !*expand_string_message)
+      expand_string_message = string_sprintf("unknown condition \"%s\"", opname);
+    return NULL;
   }   /* End switch on condition type */
 
 /* Missing braces at start and end of data */
 
 COND_FAILED_CURLY_START:
-expand_string_message = string_sprintf("missing { after \"%s\"", name);
+expand_string_message = string_sprintf("missing { after \"%s\"", opname);
 return NULL;
 
 COND_FAILED_CURLY_END:
 expand_string_message = string_sprintf("missing } at end of \"%s\" condition",
-  name);
+  opname);
 return NULL;
 
 /* A condition requires code that is not compiled */
@@ -3120,7 +3225,7 @@ return NULL;
     !defined(SUPPORT_CRYPTEQ) || !defined(CYRUS_SASLAUTHD_SOCKET)
 COND_FAILED_NOT_COMPILED:
 expand_string_message = string_sprintf("support for \"%s\" not compiled",
-  name);
+  opname);
 return NULL;
 #endif
 }
@@ -3849,87 +3954,54 @@ return x;
 
 
 
-/* Return pointer to dewrapped string, with enclosing specified chars removed.
-The given string is modified on return.  Leading whitespace is skipped while
-looking for the opening wrap character, then the rest is scanned for the trailing
-(non-escaped) wrap character.  A backslash in the string will act as an escape.
-
-A nul is written over the trailing wrap, and a pointer to the char after the
-leading wrap is returned.
+/************************************************/
+/* Comparison operation for sort expansion.  We need to avoid
+re-expanding the fields being compared, so need a custom routine.
 
 Arguments:
-  s	String for de-wrapping
-  wrap  Two-char string, the first being the opener, second the closer wrapping
-        character
-Return:
-  Pointer to de-wrapped string, or NULL on error (with expand_string_message set).
+ cond_type		Comparison operator code
+ leftarg, rightarg	Arguments for comparison
+
+Return true iff (leftarg compare rightarg)
 */
 
-static uschar *
-dewrap(uschar * s, const uschar * wrap)
+static BOOL
+sortsbefore(int cond_type, BOOL alpha_cond,
+  const uschar * leftarg, const uschar * rightarg)
 {
-uschar * p = s;
-unsigned depth = 0;
-BOOL quotesmode = wrap[0] == wrap[1];
+int_eximarith_t l_num, r_num;
 
-while (isspace(*p)) p++;
-
-if (*p == *wrap)
+if (!alpha_cond)
   {
-  s = ++p;
-  wrap++;
-  while (*p)
+  l_num = expanded_string_integer(leftarg, FALSE);
+  if (expand_string_message) return FALSE;
+  r_num = expanded_string_integer(rightarg, FALSE);
+  if (expand_string_message) return FALSE;
+
+  switch (cond_type)
     {
-    if (*p == '\\') p++;
-    else if (!quotesmode && *p == wrap[-1]) depth++;
-    else if (*p == *wrap)
-      if (depth == 0)
-	{
-	*p = '\0';
-	return s;
-	}
-      else
-	depth--;
-    p++;
+    case ECOND_NUM_G:	return l_num >  r_num;
+    case ECOND_NUM_GE:	return l_num >= r_num;
+    case ECOND_NUM_L:	return l_num <  r_num;
+    case ECOND_NUM_LE:	return l_num <= r_num;
+    default: break;
     }
   }
-expand_string_message = string_sprintf("missing '%c'", *wrap);
-return NULL;
-}
-
-
-/* Pull off the leading array or object element, returning
-a copy in an allocated string.  Update the list pointer.
-
-The element may itself be an object or array.
-Return NULL when the list is empty.
-*/
-
-uschar *
-json_nextinlist(const uschar ** list)
-{
-unsigned array_depth = 0, object_depth = 0;
-const uschar * s = *list, * item;
-
-while (isspace(*s)) s++;
-
-for (item = s;
-     *s && (*s != ',' || array_depth != 0 || object_depth != 0);
-     s++)
-  switch (*s)
+else
+  switch (cond_type)
     {
-    case '[': array_depth++; break;
-    case ']': array_depth--; break;
-    case '{': object_depth++; break;
-    case '}': object_depth--; break;
+    case ECOND_STR_LT:	return Ustrcmp (leftarg, rightarg) <  0;
+    case ECOND_STR_LTI:	return strcmpic(leftarg, rightarg) <  0;
+    case ECOND_STR_LE:	return Ustrcmp (leftarg, rightarg) <= 0;
+    case ECOND_STR_LEI:	return strcmpic(leftarg, rightarg) <= 0;
+    case ECOND_STR_GT:	return Ustrcmp (leftarg, rightarg) >  0;
+    case ECOND_STR_GTI:	return strcmpic(leftarg, rightarg) >  0;
+    case ECOND_STR_GE:	return Ustrcmp (leftarg, rightarg) >= 0;
+    case ECOND_STR_GEI:	return strcmpic(leftarg, rightarg) >= 0;
+    default: break;
     }
-*list = *s ? s+1 : s;
-if (item == s) return NULL;
-item = string_copyn(item, s - item);
-DEBUG(D_expand) debug_printf_indent("  json ele: '%s'\n", item);
-return US item;
+return FALSE;	/* should not happen */
 }
-
 
 
 /*************************************************
@@ -6243,9 +6315,10 @@ while (*s != 0)
 
     case EITEM_SORT:
       {
+      int cond_type;
       int sep = 0;
       const uschar *srclist, *cmp, *xtract;
-      uschar *srcitem;
+      uschar * opname, * srcitem;
       const uschar *dstlist = NULL, *dstkeylist = NULL;
       uschar * tmp;
       uschar *save_iterate_item = iterate_item;
@@ -6280,6 +6353,25 @@ while (*s != 0)
 	goto EXPAND_FAILED_CURLY;
 	}
 
+      if ((cond_type = identify_operator(&cmp, &opname)) == -1)
+	{
+	if (!expand_string_message)
+	  expand_string_message = string_sprintf("unknown condition \"%s\"", s);
+	goto EXPAND_FAILED;
+	}
+      switch(cond_type)
+	{
+	case ECOND_NUM_L: case ECOND_NUM_LE:
+	case ECOND_NUM_G: case ECOND_NUM_GE:
+	case ECOND_STR_GE: case ECOND_STR_GEI: case ECOND_STR_GT: case ECOND_STR_GTI:
+	case ECOND_STR_LE: case ECOND_STR_LEI: case ECOND_STR_LT: case ECOND_STR_LTI:
+	  break;
+
+	default:
+	  expand_string_message = US"comparator not handled for sort";
+	  goto EXPAND_FAILED;
+	}
+
       while (isspace(*s)) s++;
       if (*s++ != '{')
         {
@@ -6307,11 +6399,10 @@ while (*s != 0)
       if (skipping) continue;
 
       while ((srcitem = string_nextinlist(&srclist, &sep, NULL, 0)))
-        {
-	uschar * dstitem;
+	{
+	uschar * srcfield, * dstitem;
 	gstring * newlist = NULL;
 	gstring * newkeylist = NULL;
-	uschar * srcfield;
 
         DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, srcitem);
 
@@ -6332,25 +6423,15 @@ while (*s != 0)
 	while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
 	  {
 	  uschar * dstfield;
-	  uschar * expr;
-	  BOOL before;
 
 	  /* field for comparison */
 	  if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
 	    goto sort_mismatch;
 
-	  /* build and run condition string */
-	  expr = string_sprintf("%s{%s}{%s}", cmp, srcfield, dstfield);
+	  /* String-comparator names start with a letter; numeric names do not */
 
-	  DEBUG(D_expand) debug_printf_indent("%s: cond = \"%s\"\n", name, expr);
-	  if (!eval_condition(expr, &resetok, &before))
-	    {
-	    expand_string_message = string_sprintf("comparison in sort: %s",
-		expr);
-	    goto EXPAND_FAILED;
-	    }
-
-	  if (before)
+	  if (sortsbefore(cond_type, isalpha(opname[0]),
+	      srcfield, dstfield))
 	    {
 	    /* New-item sorts before this dst-item.  Append new-item,
 	    then dst-item, then remainder of dst list. */
