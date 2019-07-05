@@ -147,6 +147,8 @@ JH/30 Bug 2411: Fix DSN generation when RFC 3461 failure notification is
       requested.  Previously not bounce was generated and a log entry of
       error ignored was made.
 
+JH/31 Avoid re-expansion in ${sort } expansion. (CVE-2019-13917)
+
 
 Exim version 4.92
 -----------------
