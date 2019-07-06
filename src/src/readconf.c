@@ -3341,6 +3341,19 @@ if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
     }
   }
 
+/* Do a dummy store-allocation of a size related to the (toplevel) file size.
+This assumes we will need this much storage to handle all the allocations
+during startup; it won't help when .include is being used.  When it does, it
+will cut down on the number of store blocks (and malloc calls, and sbrk
+syscalls).  It also assume we're on the relevant pool. */
+
+if (statbuf.st_size > 8192)
+  {
+  rmark r = store_mark();
+  store_get((int)statbuf.st_size, FALSE);
+  store_reset(r);
+  }
+
 /* Process the main configuration settings. They all begin with a lower case
 letter. If we see something starting with an upper case letter, it is taken as
 a macro definition. */
