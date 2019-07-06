@@ -3307,6 +3307,8 @@ Arguments:
   bufsiz	size of buffer
   pfd		pipe filedescriptor array; [0] is comms to proxied process
   timeout	per-read timeout, seconds
+
+Does not return.
 */
 
 void

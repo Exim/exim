@@ -44,9 +44,9 @@ tracing information for debugging. */
 /* The value of the 2nd arg is __FILE__ in every call, so give its correct type */
 extern BOOL    store_extend_3(void *, int, int, const char *, int);
 extern void    store_free_3(void *, const char *, int);
-extern void   *store_get_3(int, const char *, int);
-extern void   *store_get_perm_3(int, const char *, int);
-extern void   *store_malloc_3(int, const char *, int);
+extern void   *store_get_3(int, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+extern void   *store_get_perm_3(int, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+extern void   *store_malloc_3(int, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
 extern void   *store_newblock_3(void *, int, int, const char *, int);
 extern void    store_reset_3(void *, const char *, int);
 

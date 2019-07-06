@@ -33,10 +33,16 @@ the arguments of printf-like functions. This is done by a macro. */
 # define PRINTF_FUNCTION(A,B)	__attribute__((format(printf,A,B)))
 # define ARG_UNUSED		__attribute__((__unused__))
 # define WARN_UNUSED_RESULT	__attribute__((__warn_unused_result__))
+# define ALLOC			__attribute__((malloc))
+# define ALLOC_SIZE(A)		__attribute__((alloc_size(A)))
+# define NORETURN		__attribute__((noreturn))
 #else
 # define PRINTF_FUNCTION(A,B)
-# define ARG_UNUSED  /**/
-# define WARN_UNUSED_RESULT /**/
+# define ARG_UNUSED		/**/
+# define WARN_UNUSED_RESULT	/**/
+# define ALLOC			/**/
+# define ALLOC_SIZE(A)		/**/
+# define NORETURN		/**/
 #endif
 
 #ifdef WANT_DEEPER_PRINTF_CHECKS
