@@ -8,7 +8,7 @@ OS vendors to make it easy for them to backport fixes for their distributed
 packages.  For some security issues, we will issue a patch-release which has
 just a simple fix.
 
-We also often have `exim_VERSION+fixes` branches with small things which we
+We also often have `exim-VERSION+fixes` branches with small things which we
 recommend that vendors use.
 
 For postmasters installing Exim manually, we recommend always using the latest
