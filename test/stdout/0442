@@ -38,6 +38,7 @@ no_retry_use_local_part
 router_home_directory = 
 self = freeze
 senders = 
+set = 
 transport = t1
 transport_current_directory = 
 transport_home_directory = 

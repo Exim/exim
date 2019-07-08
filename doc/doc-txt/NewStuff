@@ -28,6 +28,9 @@ Version 4.93
 
  8. Expansion operator ${sha2_N:} for N=256, 384, 512.
 
+ 9. Router variables, $r_... settable from router options and usable in routers
+    and transports.
+
 
 Version 4.92
 --------------

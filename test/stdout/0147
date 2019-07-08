@@ -53,6 +53,7 @@ no_retry_use_local_part
 router_home_directory = new macro2 + 1234
 self = freeze
 senders = 
+set = 
 transport = T1
 transport_current_directory = 
 transport_home_directory = 

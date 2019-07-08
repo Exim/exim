@@ -512,6 +512,7 @@ server_scram_salt                    string*         unset         gsasl        
 server_secret                        string*         unset         cram_md5          3.10
 server_service                       string          "smtp"  cyrus_sasl,gsasl,heimdal_gssapi  (cyrus-only) 4.80 (others)
 server_set_id                        string*         unset         authenticators    3.10
+set				     string*	     unset	   routers	     4.93
 shadow_condition                     string*         unset         transports
 shadow_transport                     string          unset         transports
 size_addition                        integer         1024          smtp              1.91

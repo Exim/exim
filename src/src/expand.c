@@ -1773,8 +1773,13 @@ set, in which case give an error. */
 if ((Ustrncmp(name, "acl_c", 5) == 0 || Ustrncmp(name, "acl_m", 5) == 0) &&
      !isalpha(name[5]))
   {
-  tree_node *node =
-    tree_search((name[4] == 'c')? acl_var_c : acl_var_m, name + 4);
+  tree_node * node =
+    tree_search(name[4] == 'c' ? acl_var_c : acl_var_m, name + 4);
+  return node ? node->data.ptr : strict_acl_vars ? NULL : US"";
+  }
+else if (Ustrncmp(name, "r_", 2) == 0)
+  {
+  tree_node * node = tree_search(router_var, name + 2);
   return node ? node->data.ptr : strict_acl_vars ? NULL : US"";
   }
 

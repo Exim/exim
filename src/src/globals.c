@@ -585,6 +585,7 @@ address_item address_defaults = {
     .errors_address =	NULL,
     .extra_headers =	NULL,
     .remove_headers =	NULL,
+    .set =		NULL,
 #ifdef EXPERIMENTAL_SRS
     .srs_sender =	NULL,
 #endif
@@ -1340,6 +1341,7 @@ router_instance  router_defaults = {
     .retry_use_local_part =	TRUE_UNSET,
     .same_domain_copy_routing =	FALSE,
     .self_rewrite =		FALSE,
+    .set =			NULL,
     .suffix_optional =		FALSE,
     .verify_only =		FALSE,
     .verify_recipient =		TRUE,
@@ -1361,6 +1363,7 @@ router_instance  router_defaults = {
 };
 
 uschar *router_name            = NULL;
+tree_node *router_var	       = NULL;
 
 ip_address_item *running_interfaces = NULL;
 

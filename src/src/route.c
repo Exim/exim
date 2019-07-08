@@ -116,6 +116,8 @@ optionlist optionlist_routers[] = {
                  (void *)(offsetof(router_instance, self)) },
   { "senders",            opt_stringptr|opt_public,
                  (void *)offsetof(router_instance, senders) },
+  { "set",                opt_stringptr|opt_public|opt_rep_str,
+                 (void *)offsetof(router_instance, set) },
   #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   { "translate_ip_address", opt_stringptr|opt_public,
                  (void *)offsetof(router_instance, translate_ip_address) },
@@ -1361,6 +1363,7 @@ new->prop.errors_address = parent->prop.errors_address;
 
 new->prop.ignore_error = addr->prop.ignore_error;
 new->prop.address_data = addr->prop.address_data;
+new->prop.set  = addr->prop.set;
 new->dsn_flags = addr->dsn_flags;
 new->dsn_orcpt = addr->dsn_orcpt;
 
@@ -1602,6 +1605,52 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   search_error_message = NULL;
 
+  /* Add any variable-settings that are on the router, to the list on the
+  addr. Expansion is done here and not later when the addr is used.  There may
+  be multiple settings, gathered during readconf; this code gathers them during
+  router traversal. */
+
+  if (r->set)
+    {
+    const uschar * list = r->set;
+    int sep = 0;
+    for (uschar * ele; (ele = string_nextinlist(&list, &sep, NULL, 0)); )
+      {
+      uschar * ee;
+      if (!(ee = expand_string(ele)))
+	if (f.expand_string_forcedfail)
+	  {
+	  DEBUG(D_route) debug_printf("forced failure in expansion of \"%s\" "
+	      "(router variable): decline action taken\n", ele);
+
+	  /* Expand "more" if necessary; DEFER => an expansion failed */
+
+	  yield = exp_bool(addr, US"router", r->name, D_route,
+			  US"more", r->more, r->expand_more, &more);
+	  if (yield != OK) goto ROUTE_EXIT;
+
+	  if (!more)
+	    {
+	    DEBUG(D_route)
+	      debug_printf("\"more\"=false: skipping remaining routers\n");
+	    router_name = NULL;
+	    r = NULL;
+	    break;
+	    }
+	  else continue;    /* With next router */
+	  }
+	else
+	  {
+	  addr->message = string_sprintf("expansion of \"%s\" failed "
+	    "in %s router: %s", ele, r->name, expand_string_message);
+	  yield = DEFER;
+	  goto ROUTE_EXIT;
+	  }
+
+      addr->prop.set = string_append_listele(addr->prop.set, ':', ee);
+      }
+    }
+
   /* Finally, expand the address_data field in the router. Forced failure
   behaves as if the router declined. Any other failure is more serious. On
   success, the string is attached to the address for all subsequent processing.
@@ -1610,8 +1659,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   if (r->address_data)
     {
     DEBUG(D_route) debug_printf("processing address_data\n");
-    deliver_address_data = expand_string(r->address_data);
-    if (!deliver_address_data)
+    if (!(deliver_address_data = expand_string(r->address_data)))
       {
       if (f.expand_string_forcedfail)
         {

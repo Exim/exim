@@ -1,0 +1,43 @@
+# Exim test configuration 0166
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+alias:
+  driver =	redirect
+  debug_print = DEBUG: $r_r1 $r_r2
+  data =	b
+  set =		r_r1 = $local_part
+
+user:
+  driver =	accept
+  debug_print = DEBUG: $r_r1 $r_r2
+  set =		r_r1 = $local_part
+  set =		r_r2 = $local_part
+  transport =	local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  debug_print = DEBUG: $r_r1 $r_r2
+  headers_add =	X-r1: $r_r1\nX-r2: $r_r2
+
+
+# End

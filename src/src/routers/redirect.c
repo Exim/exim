@@ -563,6 +563,7 @@ addr_prop.localpart_data = deliver_localpart_data;
 addr_prop.errors_address = NULL;
 addr_prop.extra_headers = NULL;
 addr_prop.remove_headers = NULL;
+addr_prop.set = addr->prop.set;
 
 #ifdef EXPERIMENTAL_SRS
 addr_prop.srs_sender = NULL;

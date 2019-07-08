@@ -333,6 +333,7 @@ typedef struct router_instance {
   BOOL    retry_use_local_part;   /* Just what it says */
   BOOL    same_domain_copy_routing; /* TRUE => copy routing for same domain */
   BOOL    self_rewrite;           /* TRUE to rewrite headers if making local */
+  uschar *set;			  /* Variable = value to set; list */
   BOOL    suffix_optional;        /* As it says */
   BOOL    verify_only;            /* Skip this router if not verifying */
   BOOL    verify_recipient;       /* Use this router when verifying a recipient*/
@@ -510,6 +511,7 @@ typedef struct address_item_propagated {
   uschar *errors_address;         /* where to send errors (NULL => sender) */
   header_line *extra_headers;     /* additional headers */
   uschar *remove_headers;         /* list of those to remove */
+  gstring *set;			  /* list of variables, with values */
 
   #ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */

@@ -1529,6 +1529,7 @@ if (addr != vaddr)
   vaddr->basic_errno = addr->basic_errno;
   vaddr->more_errno = addr->more_errno;
   vaddr->prop.address_data = addr->prop.address_data;
+  vaddr->prop.set = addr->prop.set;
   copyflag(vaddr, addr, af_pass_message);
   }
 return yield;
@@ -2089,6 +2090,7 @@ while (addr_new)
       of $address_data to be that of the child */
 
       vaddr->prop.address_data = addr->prop.address_data;
+      vaddr->prop.set = addr->prop.set;
 
       /* If stopped because more than one new address, cannot cutthrough */
 

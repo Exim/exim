@@ -155,6 +155,47 @@ return addr;
 
 
 
+/************************************************/
+/* Set router-assigned variables, forgetting any previous.
+Return FALSE on failure */
+
+static BOOL
+set_router_vars(gstring * g_varlist)
+{
+const uschar * varlist;
+int sep = 0;
+
+router_var = NULL;
+if (!g_varlist) return TRUE;
+varlist = CUS string_from_gstring(g_varlist);
+
+/* Walk the varlist, creating variables */
+
+for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
+  {
+  const uschar * assignment = ele;
+  int esep = '=';
+  uschar * name = string_nextinlist(&assignment, &esep, NULL, 0);
+  tree_node * node, ** root = &router_var;
+
+  /* Variable name must exist and start "r_". */
+
+  if (!name || name[0] != 'r' || name[1] != '_' || !name[2])
+    return FALSE;
+  name += 2;
+
+  if (!(node = tree_search(*root, name)))
+    {
+    node = store_get(sizeof(tree_node) + Ustrlen(name));
+    Ustrcpy(node->name, name);
+    (void)tree_insertnode(root, node);
+    }
+  node->data.ptr = US assignment;
+  }
+return TRUE;
+}
+
+
 /*************************************************
 *     Set expansion values for an address        *
 *************************************************/
@@ -198,6 +239,7 @@ deliver_recipients = addr;
 deliver_address_data = addr->prop.address_data;
 deliver_domain_data = addr->prop.domain_data;
 deliver_localpart_data = addr->prop.localpart_data;
+set_router_vars(addr->prop.set);	/*XXX failure cases? */
 
 /* These may be unset for multiple addresses */
 

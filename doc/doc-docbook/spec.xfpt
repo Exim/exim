@@ -12759,6 +12759,16 @@ or if not set, the value of &$qualify_domain$&.
 .cindex queues named
 The name of the spool queue in use; empty for the default queue.
 
+.new
+.vitem &$r_...$&
+.vindex &$r_...$&
+.cindex router variables
+Values can be placed in these variables by the &%set%& option of a router.
+They can be given any name that starts with &$r_$&.
+The values persist for the address being handled through subsequent routers
+and the eventual transport.
+.wen
+
 .vitem &$rcpt_count$&
 .vindex "&$rcpt_count$&"
 When a message is being received by SMTP, this variable contains the number of
@@ -18078,6 +18088,10 @@ file = ${extract{mailbox}{$address_data}}
 This makes the configuration file less messy, and also reduces the number of
 lookups (though Exim does cache lookups).
 
+.new
+See also the &%set%& option below.
+.wen
+
 .vindex "&$sender_address_data$&"
 .vindex "&$address_data$&"
 The &%address_data%& facility is also useful as a means of passing information
@@ -18990,6 +19004,27 @@ set an appropriate sender. For incoming mail, the sender is unset when
 verifying the sender, but is available when verifying any recipients. If the
 SMTP VRFY command is enabled, it must be used after MAIL if the sender address
 matters.
+
+
+.new
+.option set routers string unset
+.cindex router variables
+This option may be used multiple times on a router.
+Each string given must be of the form $"name = value"$
+and the names used must start with the string &"r_"&.
+Strings are accumulated for each router which is run.
+When a router runs, the strings are evaluated in order,
+to create variables.
+The variable is set with the expansion of the value.
+The variables can be used by the router options
+(not including any preconditions)
+and by the transport.
+Later definitions of a given named variable will override former ones.
+Varible use is via the usual &$r_...$& syntax.
+
+This is similar to the &%address_data%& option, except that
+many independent variables can be used, with choice of naming.
+.wen
 
 
 .option translate_ip_address routers string&!! unset
