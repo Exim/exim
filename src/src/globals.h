@@ -801,6 +801,7 @@ extern uschar *raw_active_hostname;    /* Pre-expansion */
 extern uschar *raw_sender;             /* Before rewriting */
 extern uschar **raw_recipients;        /* Before rewriting */
 extern int     raw_recipients_count;
+extern const uschar * rc_names[];      /* Mostly for debug output */
 extern int     rcpt_count;             /* Count of RCPT commands in a message */
 extern int     rcpt_fail_count;        /* Those that got 5xx */
 extern int     rcpt_defer_count;       /* Those that got 4xx */

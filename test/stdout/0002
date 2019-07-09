@@ -138,7 +138,7 @@
 > 
 > Failed: Not enough arguments for 'acl' (min is 1)
 > Failed: Not enough arguments for 'acl' (min is 1)
-> Failed: error from acl "a_nosuch"
+> Failed: ERROR from acl "a_nosuch"
 > acl: (0) [] []
 > acl: (1) [person@dom.ain] []
 > acl: (2) [firstarg] [secondarg]
@@ -147,7 +147,7 @@
 > acl: 
 > acl: (0) [] []
 > acl: (1) [person@dom.ain] []
-> Failed: error from acl "a_defer"
+> Failed: DEFER from acl "a_defer"
 > acl: (2) [new arg1] [top_arg_1]
 > acl:  (1) [1] [] (1) [2] [] (1) [3] [] (1) [4] []
 > 
@@ -469,7 +469,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > acl if: Y:(0) [] []
 > acl if: Y:(1) [argY] []
 > acl if: N:(2) [argN] [arg2]
-> Failed: error from acl "a_defer"
+> Failed: DEFER from acl "a_defer"
 > 
 > # Default values for both if strings
 > 

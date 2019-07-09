@@ -2517,8 +2517,9 @@ switch(cond_type)
 
     if (yield != NULL)
       {
+      int rc;
       *resetok = FALSE;	/* eval_acl() might allocate; do not reclaim */
-      switch(eval_acl(sub, nelem(sub), &user_msg))
+      switch(rc = eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
 	  cond = TRUE;
@@ -2533,7 +2534,8 @@ switch(cond_type)
           f.expand_string_forcedfail = TRUE;
 	  /*FALLTHROUGH*/
 	default:
-          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+          expand_string_message = string_sprintf("%s from acl \"%s\"",
+	    rc_names[rc], sub[0]);
 	  return NULL;
 	}
       }
@@ -4250,6 +4252,7 @@ while (*s != 0)
       {
       uschar *sub[10];	/* name + arg1-arg9 (which must match number of acl_arg[]) */
       uschar *user_msg;
+      int rc;
 
       switch(read_subs(sub, nelem(sub), 1, &s, skipping, TRUE, US"acl",
 		      &resetok))
@@ -4261,7 +4264,7 @@ while (*s != 0)
       if (skipping) continue;
 
       resetok = FALSE;
-      switch(eval_acl(sub, nelem(sub), &user_msg))
+      switch(rc = eval_acl(sub, nelem(sub), &user_msg))
 	{
 	case OK:
 	case FAIL:
@@ -4275,7 +4278,8 @@ while (*s != 0)
           f.expand_string_forcedfail = TRUE;
 	  /*FALLTHROUGH*/
 	default:
-          expand_string_message = string_sprintf("error from acl \"%s\"", sub[0]);
+          expand_string_message = string_sprintf("%s from acl \"%s\"",
+	    rc_names[rc], sub[0]);
 	  goto EXPAND_FAILED;
 	}
       }
