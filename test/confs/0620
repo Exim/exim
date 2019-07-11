@@ -8,6 +8,12 @@
 domainlist local_domains = test.ex
 qualify_domain = test.ex
 
+acl_not_smtp = not_smtp
+
+begin acl
+
+not_smtp:
+  accept log_message = rcpt <$recipients> l <$local_part>
 
 # ----- Routers -----
 
@@ -17,13 +23,13 @@ alias:
   driver =	redirect
   debug_print = DEBUG: $r_r1 $r_r2
   data =	b
-  set =		r_r1 = $local_part
+  set =	<;	r_r1 = $local_part aaa:bbb bar=baz
 
 user:
   driver =	accept
   debug_print = DEBUG: $r_r1 $r_r2
   set =		r_r1 = $local_part
-  set =		r_r2 = $local_part
+  set =	<;	r_r2 = $local_part 2a00:1940:100::ff:0:1 foo=bar
   transport =	local_delivery
 
 

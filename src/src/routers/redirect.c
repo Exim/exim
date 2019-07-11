@@ -563,7 +563,8 @@ addr_prop.localpart_data = deliver_localpart_data;
 addr_prop.errors_address = NULL;
 addr_prop.extra_headers = NULL;
 addr_prop.remove_headers = NULL;
-addr_prop.set = addr->prop.set;
+addr_prop.variables = NULL;
+tree_dup((tree_node **)&addr_prop.variables, addr->prop.variables);
 
 #ifdef EXPERIMENTAL_SRS
 addr_prop.srs_sender = NULL;

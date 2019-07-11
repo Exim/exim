@@ -551,6 +551,7 @@ extern BOOL    transport_write_message(transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);
 extern void    tree_add_unusable(host_item *);
+extern void    tree_dup(tree_node **, tree_node *);
 extern int     tree_insertnode(tree_node **, tree_node *);
 extern tree_node *tree_search(tree_node *, const uschar *);
 extern void    tree_write(tree_node *, FILE *);

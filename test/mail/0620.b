@@ -8,6 +8,6 @@ Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-r1:  b
-X-r2:  b
+X-r2:  b 2a00:1940:100::ff:0:1 foo=bar
 
 

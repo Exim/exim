@@ -1529,7 +1529,8 @@ if (addr != vaddr)
   vaddr->basic_errno = addr->basic_errno;
   vaddr->more_errno = addr->more_errno;
   vaddr->prop.address_data = addr->prop.address_data;
-  vaddr->prop.set = addr->prop.set;
+  vaddr->prop.variables = NULL;
+  tree_dup((tree_node **)&vaddr->prop.variables, addr->prop.variables);
   copyflag(vaddr, addr, af_pass_message);
   }
 return yield;
@@ -2090,7 +2091,8 @@ while (addr_new)
       of $address_data to be that of the child */
 
       vaddr->prop.address_data = addr->prop.address_data;
-      vaddr->prop.set = addr->prop.set;
+      vaddr->prop.variables = NULL;
+      tree_dup((tree_node **)&vaddr->prop.variables, addr->prop.variables);
 
       /* If stopped because more than one new address, cannot cutthrough */
 

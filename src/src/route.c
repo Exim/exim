@@ -1363,7 +1363,8 @@ new->prop.errors_address = parent->prop.errors_address;
 
 new->prop.ignore_error = addr->prop.ignore_error;
 new->prop.address_data = addr->prop.address_data;
-new->prop.set  = addr->prop.set;
+new->prop.variables = NULL;
+tree_dup((tree_node **)&new->prop.variables, addr->prop.variables);
 new->dsn_flags = addr->dsn_flags;
 new->dsn_orcpt = addr->dsn_orcpt;
 
@@ -1404,6 +1405,79 @@ if (addr->transport && tree_search(tree_nonrecipients, addr->unique))
   }
 }
 
+
+
+/************************************************/
+/* Add router-assigned variables
+Return OK/DEFER/FAIL/PASS */
+
+static int
+set_router_vars(address_item * addr, const router_instance * r)
+{
+const uschar * varlist = r->set;
+tree_node ** root = (tree_node **) &addr->prop.variables;
+int sep = 0;
+
+if (!varlist) return OK;
+
+/* Walk the varlist, creating variables */
+
+for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
+  {
+  const uschar * assignment = ele;
+  int esep = '=';
+  uschar * name = string_nextinlist(&assignment, &esep, NULL, 0);
+  uschar * val;
+  tree_node * node;
+
+  /* Variable name must exist and start "r_". */
+
+  if (!name || name[0] != 'r' || name[1] != '_' || !name[2])
+    return FAIL;
+  name += 2;
+
+  if (!(val = expand_string(US assignment)))
+    if (f.expand_string_forcedfail)
+      {
+      int yield;
+      BOOL more;
+      DEBUG(D_route) debug_printf("forced failure in expansion of \"%s\" "
+	  "(router variable): decline action taken\n", ele);
+
+      /* Expand "more" if necessary; DEFER => an expansion failed */
+
+      yield = exp_bool(addr, US"router", r->name, D_route,
+		      US"more", r->more, r->expand_more, &more);
+      if (yield != OK) return yield;
+
+      if (!more)
+	{
+	DEBUG(D_route)
+	  debug_printf("\"more\"=false: skipping remaining routers\n");
+	router_name = NULL;
+	r = NULL;
+	return FAIL;
+	}
+      return PASS;
+      }
+    else
+      {
+      addr->message = string_sprintf("expansion of \"%s\" failed "
+	"in %s router: %s", ele, r->name, expand_string_message);
+      return DEFER;
+      }
+
+  if (!(node = tree_search(*root, name)))
+    {
+    node = store_get(sizeof(tree_node) + Ustrlen(name));
+    Ustrcpy(node->name, name);
+    (void)tree_insertnode(root, node);
+    }
+  node->data.ptr = US val;
+  DEBUG(D_route) debug_printf("set r_%s = '%s'\n", name, val);
+  }
+return OK;
+}
 
 
 /*************************************************
@@ -1605,11 +1679,19 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   search_error_message = NULL;
 
-  /* Add any variable-settings that are on the router, to the list on the
+  /* Add any variable-settings that are on the router, to the set on the
   addr. Expansion is done here and not later when the addr is used.  There may
   be multiple settings, gathered during readconf; this code gathers them during
-  router traversal. */
+  router traversal.  On the addr string they are held as a variable tree, so
+  as to maintain the post-expansion taints separate. */
 
+  if ((yield = set_router_vars(addr, r)) != OK)
+    if (yield == PASS)
+      continue;		/* with next router */
+    else
+      goto ROUTE_EXIT;
+
+#ifdef notdef
   if (r->set)
     {
     const uschar * list = r->set;
@@ -1650,6 +1732,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
       addr->prop.set = string_append_listele(addr->prop.set, ':', ee);
       }
     }
+#endif
 
   /* Finally, expand the address_data field in the router. Forced failure
   behaves as if the router declined. Any other failure is more serious. On

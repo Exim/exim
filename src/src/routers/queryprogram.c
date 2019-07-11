@@ -232,7 +232,7 @@ errors address and extra header stuff. */
 
 bzero(&addr_prop, sizeof(addr_prop));
 addr_prop.address_data = deliver_address_data;
-addr_prop.set = addr->prop.set;
+tree_dup((tree_node **)&addr_prop.variables, addr->prop.variables);
 
 rc = rf_get_errors_address(addr, rblock, verify, &addr_prop.errors_address);
 if (rc != OK) return rc;

@@ -511,17 +511,17 @@ typedef struct address_item_propagated {
   uschar *errors_address;         /* where to send errors (NULL => sender) */
   header_line *extra_headers;     /* additional headers */
   uschar *remove_headers;         /* list of those to remove */
-  gstring *set;			  /* list of variables, with values */
+  void   *variables;		  /* router-vasriables */
 
-  #ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS
   uschar *srs_sender;             /* Change return path when delivering */
-  #endif
+#endif
   BOOL    ignore_error:1;	  /* ignore delivery error */
-  #ifdef SUPPORT_I18N
+#ifdef SUPPORT_I18N
   BOOL    utf8_msg:1;		  /* requires SMTPUTF8 processing */
   BOOL	  utf8_downcvt:1;	  /* mandatory downconvert on delivery */
   BOOL	  utf8_downcvt_maybe:1;	  /* optional downconvert on delivery */
-  #endif
+#endif
 } address_item_propagated;
 
 

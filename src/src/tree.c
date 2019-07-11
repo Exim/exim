@@ -362,4 +362,27 @@ tree_walk(p->right, f, ctx);
 }
 
 
+
+/* Add a node to a tree, ignoring possibility of duplicates */
+
+static void
+tree_add_var(uschar * name, uschar * val, void * ctx)
+{
+tree_node ** root = ctx;
+tree_node * node = store_get(sizeof(tree_node) + Ustrlen(name));
+Ustrcpy(node->name, name);
+node->data.ptr = val;
+(void) tree_insertnode(root, node);
+}
+
+/* Duplicate a tree */
+
+void
+tree_dup(tree_node ** dstp, tree_node * src)
+{
+tree_walk(src, tree_add_var, dstp);
+}
+
+
+
 /* End of tree.c */

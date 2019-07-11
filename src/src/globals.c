@@ -585,7 +585,7 @@ address_item address_defaults = {
     .errors_address =	NULL,
     .extra_headers =	NULL,
     .remove_headers =	NULL,
-    .set =		NULL,
+    .variables =	NULL,
 #ifdef EXPERIMENTAL_SRS
     .srs_sender =	NULL,
 #endif
