@@ -23,7 +23,9 @@ alias:
   driver =	redirect
   debug_print = DEBUG: $r_r1 $r_r2
   data =	b
-  set =	<;	r_r1 = $local_part aaa:bbb bar=baz
+  set =	<;	r_r1 = <$local_part> aaa:bbb bar=baz
+  set =		r_local = check
+  errors_to =	bad_$r_local
 
 user:
   driver =	accept
@@ -43,7 +45,7 @@ local_delivery:
   file = DIR/test-mail/$local_part
   user = CALLER
   debug_print = DEBUG: $r_r1 $r_r2
-  headers_add =	X-r1: $r_r1\nX-r2: $r_r2
+  headers_add =	X-r1: <$r_r1>\nX-r2: <$r_r2>
 
 
 # End

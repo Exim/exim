@@ -1436,6 +1436,8 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
     return FAIL;
   name += 2;
 
+  while (isspace(*assignment)) assignment++;
+
   if (!(val = expand_string(US assignment)))
     if (f.expand_string_forcedfail)
       {
@@ -1475,6 +1477,9 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
     }
   node->data.ptr = US val;
   DEBUG(D_route) debug_printf("set r_%s = '%s'\n", name, val);
+
+  /* All expansions after this point need visibility of that variable */
+  router_var = *root;
   }
 return OK;
 }
