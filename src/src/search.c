@@ -350,12 +350,12 @@ type plus '0' concatenated with the file name. There may be entries in the tree
 with closed files if a lot of files have been opened. */
 
 sprintf(CS keybuffer, "%c%.254s", search_type + '0',
-  (filename == NULL)? US"" : filename);
+  filename ? filename : US"");
 
-if ((t = tree_search(search_tree, keybuffer)) != NULL)
+if ((t = tree_search(search_tree, keybuffer)))
   {
   c = (search_cache *)(t->data.ptr);
-  if (c->handle != NULL)
+  if (c->handle)
     {
     DEBUG(D_lookup) debug_printf_indent("  cached open\n");
     store_pool = old_pool;
@@ -372,7 +372,7 @@ recently used one. */
 
 if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
   {
-  if (open_bot == NULL)
+  if (!open_bot)
     log_write(0, LOG_MAIN|LOG_PANIC, "too many lookups open, but can't find "
       "one to close");
   else
@@ -380,8 +380,7 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
     search_cache *c = (search_cache *)(open_bot->data.ptr);
     DEBUG(D_lookup) debug_printf_indent("Too many lookup files open\n  closing %s\n",
       open_bot->name);
-    open_bot = c->up;
-    if (open_bot != NULL)
+    if ((open_bot = c->up))
       ((search_cache *)(open_bot->data.ptr))->down = NULL;
     else
       open_top = NULL;
@@ -394,16 +393,15 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
 /* If opening is successful, call the file-checking function if there is one,
 and if all is still well, enter the open database into the tree. */
 
-handle = (lk->open)(filename, &search_error_message);
-if (handle == NULL)
+if (!(handle = (lk->open)(filename, &search_error_message)))
   {
   store_pool = old_pool;
   return NULL;
   }
 
-if (lk->check != NULL &&
-   !lk->check(handle, filename, modemask, owners, owngroups,
-     &search_error_message))
+if (  lk->check
+   && !lk->check(handle, filename, modemask, owners, owngroups,
+	 &search_error_message))
   {
   lk->close(handle);
   store_pool = old_pool;
@@ -418,7 +416,7 @@ if (lk->type == lookup_absfile) open_filecount++;
 insert a new entry. On re-use, leave any cached lookup data and the lookup
 count alone. */
 
-if (t == NULL)
+if (!t)
   {
   t = store_get(sizeof(tree_node) + Ustrlen(keybuffer));
   t->data.ptr = c = store_get(sizeof(search_cache));
@@ -623,8 +621,8 @@ DEBUG(D_lookup)
 /* Arrange to put this database at the top of the LRU chain if it is a type
 that opens real files. */
 
-if (open_top != (tree_node *)handle &&
-    lookup_list[t->name[0]-'0']->type == lookup_absfile)
+if (  open_top != (tree_node *)handle 
+   && lookup_list[t->name[0]-'0']->type == lookup_absfile)
   {
   search_cache *c = (search_cache *)(t->data.ptr);
   tree_node *up = c->up;
@@ -634,20 +632,21 @@ if (open_top != (tree_node *)handle &&
   Otherwise there will be a non-NULL up pointer, since we checked above that
   this block isn't already at the top of the list. */
 
-  if (up != NULL)
+  if (up)
     {
     ((search_cache *)(up->data.ptr))->down = down;
-    if (down != NULL)
+    if (down)
       ((search_cache *)(down->data.ptr))->up = up;
-    else open_bot = up;
+    else
+      open_bot = up;
     }
 
   /* Now put it at the head of the list. */
 
   c->up = NULL;
   c->down = open_top;
-  if (open_top == NULL) open_bot = t; else
-    ((search_cache *)(open_top->data.ptr))->up = t;
+  if (!open_top) open_bot = t;
+  else ((search_cache *)(open_top->data.ptr))->up = t;
   open_top = t;
   }
 
@@ -668,7 +667,8 @@ entry but could have been partial, flag to set up variables. */
 
 yield = internal_search_find(handle, filename, keystring);
 if (f.search_find_defer) return NULL;
-if (yield != NULL) { if (partial >= 0) set_null_wild = TRUE; }
+
+if (yield) { if (partial >= 0) set_null_wild = TRUE; }
 
 /* Not matched a complete entry; handle partial lookups, but only if the full
 search didn't defer. Don't use string_sprintf() to construct the initial key,
@@ -729,12 +729,12 @@ else if (partial >= 0)
       DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring3);
       yield = internal_search_find(handle, filename, keystring3);
       if (f.search_find_defer) return NULL;
-      if (yield != NULL)
+      if (yield)
         {
         /* First variable is the wild part; second is the fixed part. Take care
         to get it right when keystring3 is just "*". */
 
-        if (expand_setup != NULL && *expand_setup >= 0)
+        if (expand_setup && *expand_setup >= 0)
           {
           int fixedlength = Ustrlen(keystring3) - affixlen;
           int wildlength = Ustrlen(keystring) - fixedlength - 1;
@@ -758,7 +758,7 @@ else if (partial >= 0)
 replacing everything to the left of @ by *. After a match, the wild part
 is set to the string to the left of the @. */
 
-if (yield == NULL && (starflags & SEARCH_STARAT) != 0)
+if (!yield  &&  starflags & SEARCH_STARAT)
   {
   uschar *atat = Ustrrchr(keystring, '@');
   if (atat != NULL && atat > keystring)
@@ -772,7 +772,7 @@ if (yield == NULL && (starflags & SEARCH_STARAT) != 0)
     *atat = savechar;
     if (f.search_find_defer) return NULL;
 
-    if (yield != NULL && expand_setup != NULL && *expand_setup >= 0)
+    if (yield && expand_setup && *expand_setup >= 0)
       {
       *expand_setup += 1;
       expand_nstring[*expand_setup] = keystring;
@@ -788,11 +788,11 @@ if (yield == NULL && (starflags & SEARCH_STARAT) != 0)
 try that. If we do match, the first variable (the wild part) is the whole key,
 and the second is empty. */
 
-if (yield == NULL && (starflags & (SEARCH_STAR|SEARCH_STARAT)) != 0)
+if (!yield  &&  starflags & (SEARCH_STAR|SEARCH_STARAT))
   {
   DEBUG(D_lookup) debug_printf_indent("trying to match *\n");
   yield = internal_search_find(handle, filename, US"*");
-  if (yield != NULL && expand_setup != NULL && *expand_setup >= 0)
+  if (yield && expand_setup && *expand_setup >= 0)
     {
     *expand_setup += 1;
     expand_nstring[*expand_setup] = keystring;
@@ -810,7 +810,7 @@ chopping off any of the domain components, set up the expansion variables
 fixed part of the domain. The set_null_wild flag is set only when yield is not
 NULL. */
 
-if (set_null_wild && expand_setup != NULL && *expand_setup >= 0)
+if (set_null_wild && expand_setup && *expand_setup >= 0)
   {
   *expand_setup += 1;
   expand_nstring[*expand_setup] = keystring;
