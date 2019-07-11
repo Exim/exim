@@ -53,7 +53,7 @@ pgsql_connection *cn;
 while ((cn = pgsql_connections) != NULL)
   {
   pgsql_connections = cn->next;
-  DEBUG(D_lookup) debug_printf("close PGSQL connection: %s\n", cn->server);
+  DEBUG(D_lookup) debug_printf_indent("close PGSQL connection: %s\n", cn->server);
   PQfinish(cn->handle);
   }
 }
@@ -77,7 +77,7 @@ static void
 notice_processor(void *arg, const char *message)
 {
 arg = arg;   /* Keep compiler happy */
-DEBUG(D_lookup) debug_printf("PGSQL: %s\n", message);
+DEBUG(D_lookup) debug_printf_indent("PGSQL: %s\n", message);
 }
 
 
@@ -181,7 +181,7 @@ if (!cn)
     last_slash = Ustrrchr(server, '/');
     last_dot = Ustrrchr(server, '.');
 
-    DEBUG(D_lookup) debug_printf("PGSQL new connection: socket=%s "
+    DEBUG(D_lookup) debug_printf_indent("PGSQL new connection: socket=%s "
       "database=%s user=%s\n", server, sdata[0], sdata[1]);
 
     /* A valid socket name looks like this: /var/run/postgresql/.s.PGSQL.5432
@@ -221,7 +221,7 @@ if (!cn)
       return DEFER;
       }
 
-    DEBUG(D_lookup) debug_printf("PGSQL new connection: host=%s port=%s "
+    DEBUG(D_lookup) debug_printf_indent("PGSQL new connection: host=%s port=%s "
       "database=%s user=%s\n", server, port, sdata[0], sdata[1]);
     }
 
@@ -270,7 +270,7 @@ if (!cn)
 
 else
   {
-  DEBUG(D_lookup) debug_printf("PGSQL using cached connection for %s\n",
+  DEBUG(D_lookup) debug_printf_indent("PGSQL using cached connection for %s\n",
     server_copy);
   }
 
@@ -288,7 +288,7 @@ switch(PQresultStatus(pg_result))
 
     result = string_cat(result, US PQcmdTuples(pg_result));
     *do_cache = 0;
-    DEBUG(D_lookup) debug_printf("PGSQL: command does not return any data "
+    DEBUG(D_lookup) debug_printf_indent("PGSQL: command does not return any data "
       "but was successful. Rows affected: %s\n", string_from_gstring(result));
     break;
 
@@ -362,7 +362,7 @@ if (result)
   }
 else
   {
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return yield;      /* FAIL or DEFER */
   }
 }

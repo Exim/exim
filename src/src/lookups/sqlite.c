@@ -27,7 +27,7 @@ ret = sqlite3_open(CS filename, &db);
 if (ret != 0)
   {
   *errmsg = (void *)sqlite3_errmsg(db);
-  debug_printf("Error opening database: %s\n", *errmsg);
+  debug_printf_indent("Error opening database: %s\n", *errmsg);
   }
 
 sqlite3_busy_timeout(db, 1000 * sqlite_lock_timeout);
@@ -79,7 +79,7 @@ gstring * res = NULL;
 ret = sqlite3_exec(handle, CS query, sqlite_callback, &res, (char **)errmsg);
 if (ret != SQLITE_OK)
   {
-  debug_printf("sqlite3_exec failed: %s\n", *errmsg);
+  debug_printf_indent("sqlite3_exec failed: %s\n", *errmsg);
   return FAIL;
   }
 

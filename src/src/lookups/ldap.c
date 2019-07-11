@@ -163,8 +163,8 @@ int    rescount = 0;
 BOOL   attribute_found = FALSE;
 BOOL   ldapi = FALSE;
 
-DEBUG(D_lookup)
-  debug_printf("perform_ldap_search: ldap%s URL = \"%s\" server=%s port=%d "
+DEBUG(D_lookup) debug_printf_indent("perform_ldap_search:"
+    " ldap%s URL = \"%s\" server=%s port=%d "
     "sizelimit=%d timelimit=%d tcplimit=%d\n",
     search_type == SEARCH_LDAP_MULTIPLE ? "m" :
     search_type == SEARCH_LDAP_DN       ? "dn" :
@@ -207,7 +207,7 @@ else
   port = ludp->lud_port;
   }
 
-DEBUG(D_lookup) debug_printf("after ldap_url_parse: host=%s port=%d\n",
+DEBUG(D_lookup) debug_printf_indent("after ldap_url_parse: host=%s port=%d\n",
   host, port);
 
 if (port == 0) port = LDAP_PORT;      /* Default if none given */
@@ -334,7 +334,7 @@ if (!lcp)
 
   /* Call ldap_initialize() and check the result */
 
-  DEBUG(D_lookup) debug_printf("ldap_initialize with URL %s\n", init_url);
+  DEBUG(D_lookup) debug_printf_indent("ldap_initialize with URL %s\n", init_url);
   if ((rc = ldap_initialize(&ld, CS init_url)) != LDAP_SUCCESS)
     {
     *errmsg = string_sprintf("ldap_initialize: (error %d) URL \"%s\"\n",
@@ -409,7 +409,7 @@ if (!lcp)
   ldap_set_option(ld, LDAP_OPT_PROTOCOL_VERSION, (void *)&eldap_version);
 #endif
 
-  DEBUG(D_lookup) debug_printf("initialized for LDAP (v%d) server %s%s\n",
+  DEBUG(D_lookup) debug_printf_indent("initialized for LDAP (v%d) server %s%s\n",
     eldap_version, host, porttext);
 
   /* If not using ldapi and TLS is available, set appropriate TLS options: hard
@@ -429,9 +429,9 @@ if (!lcp)
 	: Ustrcmp(eldap_require_cert, "try")    == 0 ? LDAP_OPT_X_TLS_TRY
 	: LDAP_OPT_X_TLS_NEVER;
 
-      DEBUG(D_lookup)
-        debug_printf("Require certificate overrides LDAP_OPT_X_TLS option (%d)\n",
-                     tls_option);
+      DEBUG(D_lookup) debug_printf_indent(
+	"Require certificate overrides LDAP_OPT_X_TLS option (%d)\n",
+	tls_option);
       }
     else
 # endif  /* LDAP_OPT_X_TLS_REQUIRE_CERT */
@@ -439,13 +439,13 @@ if (!lcp)
       {
       tls_option = LDAP_OPT_X_TLS_HARD;
       DEBUG(D_lookup)
-        debug_printf("LDAP_OPT_X_TLS_HARD set due to ldaps:// URI\n");
+        debug_printf_indent("LDAP_OPT_X_TLS_HARD set due to ldaps:// URI\n");
       }
     else
       {
       tls_option = LDAP_OPT_X_TLS_TRY;
       DEBUG(D_lookup)
-        debug_printf("LDAP_OPT_X_TLS_TRY set due to ldap:// URI\n");
+        debug_printf_indent("LDAP_OPT_X_TLS_TRY set due to ldap:// URI\n");
       }
     ldap_set_option(ld, LDAP_OPT_X_TLS, (void *)&tls_option);
     }
@@ -488,14 +488,14 @@ if (!lcp)
     rc = ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_option);
     if (rc)
       DEBUG(D_lookup)
-        debug_printf("Unable to set TLS require cert_option(%d) globally: %s\n",
+        debug_printf_indent("Unable to set TLS require cert_option(%d) globally: %s\n",
           cert_option, ldap_err2string(rc));
     }
 #endif
 #ifdef LDAP_OPT_X_TLS_NEWCTX
   if ((rc = ldap_set_option(ldsetctx, LDAP_OPT_X_TLS_NEWCTX, &am_server)))
     DEBUG(D_lookup)
-      debug_printf("Unable to reload TLS context %d: %s\n",
+      debug_printf_indent("Unable to reload TLS context %d: %s\n",
                    rc, ldap_err2string(rc));
   #endif
 
@@ -517,7 +517,7 @@ if (!lcp)
 
 else
   DEBUG(D_lookup)
-    debug_printf("re-using cached connection to LDAP server %s%s\n",
+    debug_printf_indent("re-using cached connection to LDAP server %s%s\n",
       host, porttext);
 
 /* Bind with the user/password supplied, or an anonymous bind if these values
@@ -532,7 +532,7 @@ if (  !lcp->bound
    || lcp->password && password && Ustrcmp(lcp->password, password) != 0
    )
   {
-  DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
+  DEBUG(D_lookup) debug_printf_indent("%sbinding with user=%s password=%s\n",
     lcp->bound ? "re-" : "", user, password);
 
   if (eldap_start_tls && !lcp->is_start_tls_called && !ldapi)
@@ -551,7 +551,7 @@ if (  !lcp->bound
       }
     lcp->is_start_tls_called = TRUE;
 #else
-    DEBUG(D_lookup) debug_printf("TLS initiation not supported with this Exim"
+    DEBUG(D_lookup) debug_printf_indent("TLS initiation not supported with this Exim"
       " and your LDAP library.\n");
 #endif
     }
@@ -580,7 +580,7 @@ if (  !lcp->bound
   if (search_type == SEARCH_LDAP_AUTH && rc == LDAP_INVALID_CREDENTIALS)
     {
     DEBUG(D_lookup)
-      debug_printf("Invalid credentials: ldapauth returns FAIL\n");
+      debug_printf_indent("Invalid credentials: ldapauth returns FAIL\n");
     error_yield = FAIL;
     goto RETURN_ERROR_NOMSG;
     }
@@ -609,7 +609,7 @@ if (  !lcp->bound
 
 if (search_type == SEARCH_LDAP_AUTH)
   {
-  DEBUG(D_lookup) debug_printf("Bind succeeded: ldapauth returns OK\n");
+  DEBUG(D_lookup) debug_printf_indent("Bind succeeded: ldapauth returns OK\n");
   goto RETURN_OK;
   }
 
@@ -641,7 +641,7 @@ ldap_set_option(lcp->ld, LDAP_OPT_REFERRALS, referrals);
 
 /* Start the search on the server. */
 
-DEBUG(D_lookup) debug_printf("Start search\n");
+DEBUG(D_lookup) debug_printf_indent("Start search\n");
 
 msgid = ldap_search(lcp->ld, ludp->lud_dn, ludp->lud_scope, ludp->lud_filter,
   ludp->lud_attrs, 0);
@@ -673,7 +673,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
                     then we get two entries, one for A and one for B.
                     Here we just count the values per entry */
 
-  DEBUG(D_lookup) debug_printf("LDAP result loop\n");
+  DEBUG(D_lookup) debug_printf_indent("LDAP result loop\n");
 
   for(e = ldap_first_entry(lcp->ld, result), valuecount = 0;
       e;
@@ -682,7 +682,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
     uschar *new_dn;
     BOOL insert_space = FALSE;
 
-    DEBUG(D_lookup) debug_printf("LDAP entry loop\n");
+    DEBUG(D_lookup) debug_printf_indent("LDAP entry loop\n");
 
     rescount++;   /* Count results */
 
@@ -731,7 +731,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
     else for (uschar * attr = US ldap_first_attribute(lcp->ld, e, &ber);
               attr; attr = US ldap_next_attribute(lcp->ld, e, ber))
       {
-      DEBUG(D_lookup) debug_printf("LDAP attr loop\n");
+      DEBUG(D_lookup) debug_printf_indent("LDAP attr loop\n");
 
       /* In case of attrs_requested == 1 we just count the values, in all other cases
       (0, >1) we count the values per attribute */
@@ -759,7 +759,7 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             int len = Ustrlen(value);
             ++valuecount;
 
-            DEBUG(D_lookup) debug_printf("LDAP value loop %s:%s\n", attr, value);
+            DEBUG(D_lookup) debug_printf_indent("LDAP value loop %s:%s\n", attr, value);
 
             /* In case we requested one attribute only but got several times
             into that attr loop, we need to append the additional values.
@@ -852,7 +852,7 @@ if (dn)
 #endif
   }
 
-DEBUG(D_lookup) debug_printf("search ended by ldap_result yielding %d\n",rc);
+DEBUG(D_lookup) debug_printf_indent("search ended by ldap_result yielding %d\n",rc);
 
 if (rc == 0)
   {
@@ -874,7 +874,7 @@ methods of handling error codes and generating error messages. */
 if (rc == -1 || !result)
   {
   int err;
-  DEBUG(D_lookup) debug_printf("ldap_result failed\n");
+  DEBUG(D_lookup) debug_printf_indent("ldap_result failed\n");
 
 #if defined LDAP_LIB_SOLARIS || defined LDAP_LIB_OPENLDAP2
     ldap_get_option(lcp->ld, LDAP_OPT_ERROR_NUMBER, &err);
@@ -917,7 +917,7 @@ We need to parse the message to find out exactly what's happened. */
   ldap_rc = rc;
   ldap_parse_rc = ldap_parse_result(lcp->ld, result, &rc, CSS &matched,
     CSS &error2, NULL, NULL, 0);
-  DEBUG(D_lookup) debug_printf("ldap_parse_result: %d\n", ldap_parse_rc);
+  DEBUG(D_lookup) debug_printf_indent("ldap_parse_result: %d\n", ldap_parse_rc);
   if (ldap_parse_rc < 0 &&
       (ldap_parse_rc != LDAP_NO_RESULTS_RETURNED
       #ifdef LDAP_RES_SEARCH_REFERENCE
@@ -959,7 +959,7 @@ We need to parse the message to find out exactly what's happened. */
       the lookup, so return DEFER (which is the default in error_yield).
 */
 
-DEBUG(D_lookup) debug_printf("ldap_parse_result yielded %d: %s\n",
+DEBUG(D_lookup) debug_printf_indent("ldap_parse_result yielded %d: %s\n",
   rc, ldap_err2string(rc));
 
 if (rc != LDAP_SUCCESS && rc != LDAP_SIZELIMIT_EXCEEDED
@@ -985,7 +985,7 @@ if (rc != LDAP_SUCCESS && rc != LDAP_SIZELIMIT_EXCEEDED
 #endif
 
     {
-    DEBUG(D_lookup) debug_printf("lookup failure forced\n");
+    DEBUG(D_lookup) debug_printf_indent("lookup failure forced\n");
     error_yield = FAIL;
     }
   goto RETURN_ERROR;
@@ -1021,7 +1021,7 @@ if (!attribute_found)
 
 /* Otherwise, it's all worked */
 
-DEBUG(D_lookup) debug_printf("LDAP search: returning: %s\n", data->s);
+DEBUG(D_lookup) debug_printf_indent("LDAP search: returning: %s\n", data->s);
 *res = data->s;
 
 RETURN_OK:
@@ -1035,7 +1035,7 @@ RETURN_ERROR_BREAK:
 *defer_break = TRUE;
 
 RETURN_ERROR:
-DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
 
 RETURN_ERROR_NOMSG:
 if (result) ldap_msgfree(result);
@@ -1144,7 +1144,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
         {
         *errmsg = string_sprintf("LDAP_OP_DEREF not defined in this LDAP "
           "library - cannot use \"dereference\"");
-        DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+        DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
         return DEFER;
         }
       #endif
@@ -1156,9 +1156,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
         else if (strcmpic(value, US"nofollow") == 0) referrals = LDAP_OPT_OFF;
         else
           {
-          *errmsg = string_sprintf("LDAP option REFERRALS is not \"follow\" "
-            "or \"nofollow\"");
-          DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+          DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
           return DEFER;
           }
         }
@@ -1167,7 +1165,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
         {
         *errmsg = string_sprintf("LDAP_OP_REFERRALS not defined in this LDAP "
           "library - cannot use \"referrals\"");
-        DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+        DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
         return DEFER;
         }
       #endif
@@ -1177,7 +1175,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
         *errmsg =
           string_sprintf("unknown parameter \"%.*s\" precedes LDAP URL",
             namelen, name);
-        DEBUG(D_lookup) debug_printf("LDAP query error: %s\n", *errmsg);
+        DEBUG(D_lookup) debug_printf_indent("LDAP query error: %s\n", *errmsg);
         return DEFER;
         }
       while (isspace(*url)) url++;
@@ -1185,7 +1183,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
       }
     }
   *errmsg = US"malformed parameter setting precedes LDAP URL";
-  DEBUG(D_lookup) debug_printf("LDAP query error: %s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("LDAP query error: %s\n", *errmsg);
   return DEFER;
   }
 
@@ -1216,7 +1214,7 @@ if (user != NULL)
   }
 
 DEBUG(D_lookup)
-  debug_printf("LDAP parameters: user=%s pass=%s size=%d time=%d connect=%d "
+  debug_printf_indent("LDAP parameters: user=%s pass=%s size=%d time=%d connect=%d "
     "dereference=%d referrals=%s\n", user, password, sizelimit, timelimit,
     tcplimit, dereference, (referrals == LDAP_OPT_ON)? "on" : "off");
 
@@ -1233,7 +1231,7 @@ if (search_type == SEARCH_LDAP_AUTH)
     }
   if (password[0] == 0)
     {
-    DEBUG(D_lookup) debug_printf("Empty password: ldapauth returns FAIL\n");
+    DEBUG(D_lookup) debug_printf_indent("Empty password: ldapauth returns FAIL\n");
     return FAIL;
     }
   }
@@ -1246,7 +1244,7 @@ if (Ustrncmp(p, "://", 3) != 0)
   {
   *errmsg = string_sprintf("LDAP URL does not start with \"ldap://\", "
     "\"ldaps://\", or \"ldapi://\" (it starts with \"%.16s...\")", url);
-  DEBUG(D_lookup) debug_printf("LDAP query error: %s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("LDAP query error: %s\n", *errmsg);
   return DEFER;
   }
 
@@ -1358,7 +1356,7 @@ eldap_dn = NULL;
 
 while ((lcp = ldap_connections) != NULL)
   {
-  DEBUG(D_lookup) debug_printf("unbind LDAP connection to %s:%d\n", lcp->host,
+  DEBUG(D_lookup) debug_printf_indent("unbind LDAP connection to %s:%d\n", lcp->host,
     lcp->port);
   if(lcp->bound == TRUE)
     ldap_unbind(lcp->ld);

@@ -44,31 +44,31 @@ local_part=x domain=smart.domain
 checking domains
 smart.domain in "smart.domain"? yes (matched "smart.domain")
 checking local_parts
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="smart.domain" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="smart.domain"
-file lookup required for smart.domain
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="smart.domain" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="smart.domain"
+ file lookup required for smart.domain
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="smart.domain" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="smart.domain"
-cached data used for lookup of smart.domain
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="smart.domain" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="smart.domain"
+ cached data used for lookup of smart.domain
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 address match test: subject=abc@d.e.f pattern=x
 d.e.f in "x"? no (end of list)
 address match test: subject=abc@d.e.f pattern=y
@@ -112,32 +112,32 @@ local_part=x domain=test.ex
 checking domains
 test.ex in "test.ex"? yes (matched "test.ex")
 checking local_parts
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="test.ex" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="test.ex"
-file lookup required for test.ex
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="test.ex" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="test.ex"
+ file lookup required for test.ex
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="test.ex" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="test.ex"
-cached data used for lookup of test.ex
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="test.ex" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="test.ex"
+ cached data used for lookup of test.ex
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 address match test: subject=abc@d.e.f pattern=x
 d.e.f in "x"? no (end of list)
 address match test: subject=abc@d.e.f pattern=y
@@ -146,18 +146,18 @@ address match test: subject=abc@d.e.f pattern=abc@d.e.f
 d.e.f in "d.e.f"? yes (matched "d.e.f")
 abc@d.e.f in "x : y : abc@d.e.f"? yes (matched "abc@d.e.f")
 checking require_files
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="test.ex.files" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="test.ex.files"
-file lookup required for test.ex.files
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: /etc/passwd
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="test.ex.files" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="test.ex.files"
+ file lookup required for test.ex.files
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: /etc/passwd
 file check: ${lookup{$domain.files}lsearch{TESTSUITE/aux-fixed/0085.data}{$value}}
 expanded file: /etc/passwd
 stat() yielded 0
@@ -243,31 +243,31 @@ local_part=x domain=smart.domain
 checking domains
 smart.domain in "smart.domain"? yes (matched "smart.domain")
 checking local_parts
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="smart.domain" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="smart.domain"
-file lookup required for smart.domain
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="smart.domain" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="smart.domain"
+ file lookup required for smart.domain
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="smart.domain" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="smart.domain"
-cached data used for lookup of smart.domain
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="smart.domain" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="smart.domain"
+ cached data used for lookup of smart.domain
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 address match test: subject=CALLER@myhost.test.ex pattern=x
 myhost.test.ex in "x"? no (end of list)
 address match test: subject=CALLER@myhost.test.ex pattern=y
@@ -309,32 +309,32 @@ local_part=x domain=test.ex
 checking domains
 test.ex in "test.ex"? yes (matched "test.ex")
 checking local_parts
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="test.ex" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="test.ex"
-file lookup required for test.ex
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="test.ex" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="test.ex"
+ file lookup required for test.ex
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
-search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
-  cached open
-search_find: file="TESTSUITE/aux-fixed/0085.data"
-  key="test.ex" partial=-1 affix=NULL starflags=0
-LRU list:
-  0TESTSUITE/aux-fixed/0085.data
-  End
-internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-  type=lsearch key="test.ex"
-cached data used for lookup of test.ex
-  in TESTSUITE/aux-fixed/0085.data
-lookup yielded: x : y : abc@d.e.f
+ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0085.data"
+   key="test.ex" partial=-1 affix=NULL starflags=0
+ LRU list:
+   0TESTSUITE/aux-fixed/0085.data
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
+   type=lsearch key="test.ex"
+ cached data used for lookup of test.ex
+   in TESTSUITE/aux-fixed/0085.data
+ lookup yielded: x : y : abc@d.e.f
 address match test: subject=CALLER@myhost.test.ex pattern=x
 myhost.test.ex in "x"? no (end of list)
 address match test: subject=CALLER@myhost.test.ex pattern=y

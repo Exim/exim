@@ -51,7 +51,7 @@ static void ibase_tidy(void)
 
     while ((cn = ibase_connections) != NULL) {
         ibase_connections = cn->next;
-        DEBUG(D_lookup) debug_printf("close Interbase connection: %s\n",
+        DEBUG(D_lookup) debug_printf_indent("close Interbase connection: %s\n",
                                      cn->server);
         isc_commit_transaction(status, &cn->transh);
         isc_detach_database(status, &cn->dbh);
@@ -170,10 +170,8 @@ if (cn)
     isc_detach_database(status, &cn->dbh);
     }
   else
-    {
-    DEBUG(D_lookup) debug_printf("Interbase using cached connection for %s\n",
+    DEBUG(D_lookup) debug_printf_indent("Interbase using cached connection for %s\n",
 		     server_copy);
-    }
   }
 else
   {
@@ -210,7 +208,7 @@ if (cn->dbh == NULL || cn->transh == NULL)
   dpb_length = dpb - buffer;
 
   DEBUG(D_lookup)
-      debug_printf("new Interbase connection: database=%s user=%s\n",
+      debug_printf_indent("new Interbase connection: database=%s user=%s\n",
 		   sdata[0], sdata[1]);
 
   /* Connect to the database */
@@ -432,7 +430,7 @@ if (result)
   }
 else
   {
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return yield;           /* FAIL or DEFER */
   }
 }
@@ -460,7 +458,7 @@ ibase_find(void *handle, uschar * filename, uschar * query, int length,
     /* Keep picky compilers happy */
     do_cache = do_cache;
 
-    DEBUG(D_lookup) debug_printf("Interbase query: %s\n", query);
+    DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
 
     while ((server =
             string_nextinlist(&list, &sep, buffer,

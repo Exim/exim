@@ -45,7 +45,7 @@ const uschar *serverlist;
 uschar buffer[512];
 BOOL defer_break = FALSE;
 
-DEBUG(D_lookup) debug_printf("%s query: %s\n", name, query);
+DEBUG(D_lookup) debug_printf_indent("%s query: %s\n", name, query);
 
 /* Handle queries that do not have server information at the start. */
 

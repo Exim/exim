@@ -85,24 +85,24 @@ Lmdbstrct * lmdb_p = handle;
 dbkey.mv_data = CS keystring;
 dbkey.mv_size = length;
 
-DEBUG(D_lookup) debug_printf("LMDB: lookup key: %s\n", CS keystring);
+DEBUG(D_lookup) debug_printf_indent("LMDB: lookup key: %s\n", CS keystring);
 
 if ((ret = mdb_get(lmdb_p->txn, lmdb_p->db_dbi, &dbkey, &data)) == 0)
   {
   *result = string_copyn(US data.mv_data, data.mv_size);
-  DEBUG(D_lookup) debug_printf("LMDB: lookup result: %s\n", *result);
+  DEBUG(D_lookup) debug_printf_indent("LMDB: lookup result: %s\n", *result);
   return OK;
   }
 else if (ret == MDB_NOTFOUND)
   {
   *errmsg = US"LMDB: lookup, no data found";
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return FAIL;
   }
 else
   {
   *errmsg = string_sprintf("LMDB: lookup error: %s", mdb_strerror(ret));
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return DEFER;
   }
 }

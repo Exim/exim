@@ -30,19 +30,19 @@ SMTP<< rcpt to:<a@b>
 using ACL "rcpt"
 processing "accept" (TESTSUITE/test-config 23)
 check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domain : ${lookup dnsdb{>:defer_never,mxh=$sender_address_domain}}
-search_open: dnsdb "NULL"
-search_find: file="NULL"
-  key=">:defer_never,mxh=cioce.test.again.dns" partial=-1 affix=NULL starflags=0
-LRU list:
-internal_search_find: file="NULL"
-  type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns"
-database lookup required for >:defer_never,mxh=cioce.test.again.dns
-dnsdb key: cioce.test.again.dns
+ search_open: dnsdb "NULL"
+ search_find: file="NULL"
+   key=">:defer_never,mxh=cioce.test.again.dns" partial=-1 affix=NULL starflags=0
+ LRU list:
+ internal_search_find: file="NULL"
+   type=dnsdb key=">:defer_never,mxh=cioce.test.again.dns"
+ database lookup required for >:defer_never,mxh=cioce.test.again.dns
+ dnsdb key: cioce.test.again.dns
 DNS lookup of cioce.test.again.dns (MX) using fakens
 DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
-lookup failed
+ lookup failed
 sender host name required, to match against *.cioce.test.again.dns
 looking up host name for ip4.ip4.ip4.ip4
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens

@@ -199,7 +199,7 @@ if (key_p == key_buffer)
 empty element to put one in. Boundary: key length 1, is a NULL */
 key_item_len = key_p - key_buffer - 1;
 
-DEBUG(D_lookup) debug_printf("NUL-joined key length: %d\n", key_item_len);
+DEBUG(D_lookup) debug_printf_indent("NUL-joined key length: %d\n", key_item_len);
 
 /* beware that dbmdb_find() adds 1 to length to get back terminating NUL, so
 because we've calculated the real length, we need to subtract one more here */

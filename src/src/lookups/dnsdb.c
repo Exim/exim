@@ -332,7 +332,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
   do
     {
-    DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
+    DEBUG(D_lookup) debug_printf_indent("dnsdb key: %s\n", domain);
 
     /* Do the lookup and sort out the result. There are four special types that
     are handled specially: T_CSA, T_ZNS, T_ADDRESSES and T_MXH.

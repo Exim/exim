@@ -251,7 +251,7 @@ search_tidyup(void)
 {
 int old_pool = store_pool;
 
-DEBUG(D_lookup) debug_printf("search_tidyup called\n");
+DEBUG(D_lookup) debug_printf_indent("search_tidyup called\n");
 
 /* Close individually each cached open file. */
 
@@ -341,8 +341,8 @@ int old_pool = store_pool;
 store_pool = POOL_SEARCH;
 if (search_reset_point == NULL) search_reset_point = store_get(0);
 
-DEBUG(D_lookup) debug_printf("search_open: %s \"%s\"\n", lk->name,
-  (filename == NULL)? US"NULL" : filename);
+DEBUG(D_lookup) debug_printf_indent("search_open: %s \"%s\"\n", lk->name,
+  filename ? filename : US"NULL");
 
 /* See if we already have this open for this type of search, and if so,
 pass back the tree block as the handle. The key for the tree node is the search
@@ -357,11 +357,11 @@ if ((t = tree_search(search_tree, keybuffer)) != NULL)
   c = (search_cache *)(t->data.ptr);
   if (c->handle != NULL)
     {
-    DEBUG(D_lookup) debug_printf("  cached open\n");
+    DEBUG(D_lookup) debug_printf_indent("  cached open\n");
     store_pool = old_pool;
     return t;
     }
-  DEBUG(D_lookup) debug_printf("  cached closed\n");
+  DEBUG(D_lookup) debug_printf_indent("  cached closed\n");
   }
 
 /* Otherwise, we need to open the file or database - each search type has its
@@ -378,7 +378,7 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
   else
     {
     search_cache *c = (search_cache *)(open_bot->data.ptr);
-    DEBUG(D_lookup) debug_printf("Too many lookup files open\n  closing %s\n",
+    DEBUG(D_lookup) debug_printf_indent("Too many lookup files open\n  closing %s\n",
       open_bot->name);
     open_bot = c->up;
     if (open_bot != NULL)
@@ -476,7 +476,7 @@ the callers don't have to test for NULL, set an empty string. */
 search_error_message = US"";
 f.search_find_defer = FALSE;
 
-DEBUG(D_lookup) debug_printf("internal_search_find: file=\"%s\"\n  "
+DEBUG(D_lookup) debug_printf_indent("internal_search_find: file=\"%s\"\n  "
   "type=%s key=\"%s\"\n", filename,
   lookup_list[search_type]->name, keystring);
 
@@ -496,7 +496,7 @@ if (  (t = tree_search(c->item_cache, keystring))
    )
   { /* Data was in the cache already; set the pointer from the tree node */
   data = e->ptr;
-  DEBUG(D_lookup) debug_printf("cached data used for lookup of %s%s%s\n",
+  DEBUG(D_lookup) debug_printf_indent("cached data used for lookup of %s%s%s\n",
     keystring,
     filename ? US"\n  in " : US"", filename ? filename : US"");
   }
@@ -507,8 +507,8 @@ else
 
   DEBUG(D_lookup)
     {
-    if (t) debug_printf("cached data found but past valid time; ");
-    debug_printf("%s lookup required for %s%s%s\n",
+    if (t) debug_printf_indent("cached data found but past valid time; ");
+    debug_printf_indent("%s lookup required for %s%s%s\n",
       filename ? US"file" : US"database",
       keystring,
       filename ? US"\n  in " : US"", filename ? filename : US"");
@@ -554,7 +554,7 @@ else
 
   else
     {
-    DEBUG(D_lookup) debug_printf("lookup forced cache cleanup\n");
+    DEBUG(D_lookup) debug_printf_indent("lookup forced cache cleanup\n");
     c->item_cache = NULL;
     }
   }
@@ -562,10 +562,10 @@ else
 DEBUG(D_lookup)
   {
   if (data)
-    debug_printf("lookup yielded: %s\n", data);
+    debug_printf_indent("lookup yielded: %s\n", data);
   else if (f.search_find_defer)
-    debug_printf("lookup deferred: %s\n", search_error_message);
-  else debug_printf("lookup failed\n");
+    debug_printf_indent("lookup deferred: %s\n", search_error_message);
+  else debug_printf_indent("lookup failed\n");
   }
 
 /* Return it in new dynamic store in the regular pool */
@@ -614,7 +614,7 @@ uschar *yield;
 DEBUG(D_lookup)
   {
   if (partial < 0) affixlen = 99;   /* So that "NULL" prints */
-  debug_printf("search_find: file=\"%s\"\n  key=\"%s\" "
+  debug_printf_indent("search_find: file=\"%s\"\n  key=\"%s\" "
     "partial=%d affix=%.*s starflags=%x\n",
     (filename == NULL)? US"NULL" : filename,
     keystring, partial, affixlen, affix, starflags);
@@ -653,13 +653,12 @@ if (open_top != (tree_node *)handle &&
 
 DEBUG(D_lookup)
   {
-  tree_node *t = open_top;
-  debug_printf("LRU list:\n");
-  while (t != NULL)
+  debug_printf_indent("LRU list:\n");
+  for (tree_node *t = open_top; t; )
     {
     search_cache *c = (search_cache *)(t->data.ptr);
-    debug_printf("  %s\n", t->name);
-    if (t == open_bot) debug_printf("  End\n");
+    debug_printf_indent("  %s\n", t->name);
+    if (t == open_bot) debug_printf_indent("  End\n");
     t = c->down;
     }
   }
@@ -689,7 +688,7 @@ else if (partial >= 0)
     keystring2 = store_get(len + affixlen + 1);
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
-    DEBUG(D_lookup) debug_printf("trying partial match %s\n", keystring2);
+    DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);
     yield = internal_search_find(handle, filename, keystring2);
     if (f.search_find_defer) return NULL;
     }
@@ -727,7 +726,7 @@ else if (partial >= 0)
         if (affixlen > 0) Ustrncpy(keystring3, affix, affixlen);
         }
 
-      DEBUG(D_lookup) debug_printf("trying partial match %s\n", keystring3);
+      DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring3);
       yield = internal_search_find(handle, filename, keystring3);
       if (f.search_find_defer) return NULL;
       if (yield != NULL)
@@ -768,7 +767,7 @@ if (yield == NULL && (starflags & SEARCH_STARAT) != 0)
     savechar = *(--atat);
     *atat = '*';
 
-    DEBUG(D_lookup) debug_printf("trying default match %s\n", atat);
+    DEBUG(D_lookup) debug_printf_indent("trying default match %s\n", atat);
     yield = internal_search_find(handle, filename, atat);
     *atat = savechar;
     if (f.search_find_defer) return NULL;
@@ -791,7 +790,7 @@ and the second is empty. */
 
 if (yield == NULL && (starflags & (SEARCH_STAR|SEARCH_STARAT)) != 0)
   {
-  DEBUG(D_lookup) debug_printf("trying to match *\n");
+  DEBUG(D_lookup) debug_printf_indent("trying to match *\n");
   yield = internal_search_find(handle, filename, US"*");
   if (yield != NULL && expand_setup != NULL && *expand_setup >= 0)
     {

@@ -108,7 +108,7 @@ for (int k = 1;  (key = string_nextinlist(&keystring, &sep, NULL, 0)); k++)
 	: json_object_get(j, CCS key)
      ) )
     {
-    DEBUG(D_lookup) debug_printf("%s, for key %d: '%s'\n",
+    DEBUG(D_lookup) debug_printf_indent("%s, for key %d: '%s'\n",
       numeric
       ? US"bad index, or not json array"
       : US"no such key, or not json object",

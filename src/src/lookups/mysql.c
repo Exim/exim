@@ -101,7 +101,7 @@ mysql_connection *cn;
 while ((cn = mysql_connections) != NULL)
   {
   mysql_connections = cn->next;
-  DEBUG(D_lookup) debug_printf("close MYSQL connection: %s\n", cn->server);
+  DEBUG(D_lookup) debug_printf_indent("close MYSQL connection: %s\n", cn->server);
   mysql_close(cn->handle);
   }
 }
@@ -227,7 +227,7 @@ if (!cn)
   if (sdata[1][0] == 0) sdata[1] = NULL;
 
   DEBUG(D_lookup)
-    debug_printf("MYSQL new connection: host=%s port=%d socket=%s "
+    debug_printf_indent("MYSQL new connection: host=%s port=%d socket=%s "
       "database=%s user=%s\n", sdata[0], port, socket, sdata[1], sdata[2]);
 
   /* Get store for a new handle, initialize it, and connect to the server */
@@ -260,7 +260,7 @@ if (!cn)
 else
   {
   DEBUG(D_lookup)
-    debug_printf("MYSQL using cached connection for %s\n", server_copy);
+    debug_printf_indent("MYSQL using cached connection for %s\n", server_copy);
   }
 
 /* Run the query */
@@ -285,7 +285,7 @@ if (!(mysql_result = mysql_use_result(mysql_handle)))
   {
   if ( mysql_field_count(mysql_handle) == 0 )
     {
-    DEBUG(D_lookup) debug_printf("MYSQL: query was not one that returns data\n");
+    DEBUG(D_lookup) debug_printf_indent("MYSQL: query was not one that returns data\n");
     result = string_cat(result,
 	       string_sprintf("%d", mysql_affected_rows(mysql_handle)));
     *do_cache = 0;
@@ -331,7 +331,7 @@ while((i = mysql_next_result(mysql_handle)) >= 0)
   {
   if(i == 0)	/* Just ignore more results */
     {
-    DEBUG(D_lookup) debug_printf("MYSQL: got unexpected more results\n");
+    DEBUG(D_lookup) debug_printf_indent("MYSQL: got unexpected more results\n");
     continue;
     }
 
@@ -371,7 +371,7 @@ if (result)
   }
 else
   {
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return yield;      /* FAIL or DEFER */
   }
 }

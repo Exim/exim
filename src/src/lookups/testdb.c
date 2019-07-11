@@ -47,13 +47,13 @@ length = length;
 if (Ustrcmp(query, "fail") == 0)
   {
   *errmsg = US"testdb lookup forced FAIL";
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return FAIL;
   }
 if (Ustrcmp(query, "defer") == 0)
   {
   *errmsg = US"testdb lookup forced DEFER";
-  DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+  DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
   return DEFER;
   }
 
