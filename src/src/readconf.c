@@ -384,8 +384,7 @@ static optionlist optionlist_config[] = {
   { "uucp_from_pattern",        opt_stringptr,   &uucp_from_pattern },
   { "uucp_from_sender",         opt_stringptr,   &uucp_from_sender },
   { "warn_message_file",        opt_stringptr,   &warn_message_file },
-  { "write_rejectlog",          opt_bool,        &write_rejectlog },
-  { "xclient_allow_hosts",      opt_stringptr,   &xclient_allow_hosts },
+  { "write_rejectlog",          opt_bool,        &write_rejectlog }
 };
 
 #ifndef MACRO_PREDEF
