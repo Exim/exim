@@ -1907,10 +1907,10 @@ smtp_handle_xclient(uschar *s)
         case XCLIENT_CMD_PROTO:
           if (decoded_buf != NULL) {
             if (len == 4 && strncmpic(decoded_buf, US"SMTP", 4) == 0) {
-              esmtp = FALSE;
+              fl.esmtp = FALSE;
             }
             else if (len == 5 && strncmpic(decoded_buf, US"ESMTP", 5) == 0) {
-              esmtp = TRUE;
+              fl.esmtp = TRUE;
             }
             else {
               return FALSE;
@@ -4721,8 +4721,8 @@ while (done <= 0)
 
       if (verify_check_host(&xclient_allow_hosts) != FAIL)
         {
-        s = string_catn(s, &size, &ptr, smtp_code, 3);
-        s = string_catn(s, &size, &ptr, US"-XCLIENT\r\n", 10);
+        g = string_catn(g, smtp_code, 3);
+        g = string_catn(g, US"-XCLIENT\r\n", 10);
         }
 
 #ifndef DISABLE_PRDR
@@ -4794,9 +4794,9 @@ while (done <= 0)
     case XCLIENT_CMD:
     HAD(SCH_XCLIENT);
     smtp_mailcmd_count++;
-    if (helo_required && !helo_seen)
+    if (fl.helo_required && !fl.helo_seen)
       {
-      smtp_printf("503 HELO or EHLO required\r\n");
+      smtp_printf("503 HELO or EHLO required\r\n", FALSE);
       log_write(0, LOG_MAIN|LOG_REJECT, "rejected XCLIENT from %s: no "
         "HELO/EHLO given", host_and_ident(FALSE));
       break;
