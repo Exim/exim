@@ -13,25 +13,43 @@ acl_not_smtp = not_smtp
 begin acl
 
 not_smtp:
-  accept log_message = rcpt <$recipients> l <$local_part>
+  accept log_message = rcpts <$recipients> local_part <$local_part>
 
 # ----- Routers -----
 
 begin routers
 
+hide_verifies:
+  driver =	accept
+  verify_only
+
 alias:
   driver =	redirect
   debug_print = DEBUG: $r_r1 $r_r2
   data =	b
-  set =	<;	r_r1 = <$local_part> aaa:bbb bar=baz
+		# r_r1 checks that a variable with tainted data is ok
+		#	that the default list-sep ":" is not used for this list
+		#	that an '=' on the RHS is ok
+  set =		r_r1 = <$local_part> aaa:bbb bar=baz
+		# r_local checks that a variable is immediately usable
   set =		r_local = check
   errors_to =	bad_$r_local
 
 user:
   driver =	accept
   debug_print = DEBUG: $r_r1 $r_r2
+		# r_r1 vs. r_r2 checks we can have multiple "set" options
   set =		r_r1 = $local_part
-  set =	<;	r_r2 = $local_part 2a00:1940:100::ff:0:1 foo=bar
+  set =		r_r2 = $local_part \
+			2a00:1940:100::ff:0:1 \
+			foo=bar \
+			# check we can get a newline into content
+			newline=initial\n\tcont \
+			# check we can get a list-sep into content (by doubling)
+			semicolon=initial;;cont \
+		; \
+		# r_r3 checks we can have a list as arg for a "set" option
+		r_r3 = bletch
   transport =	local_delivery
 
 
@@ -44,8 +62,7 @@ local_delivery:
   envelope_to_add
   file = DIR/test-mail/$local_part
   user = CALLER
-  debug_print = DEBUG: $r_r1 $r_r2
-  headers_add =	X-r1: <$r_r1>\nX-r2: <$r_r2>
+  headers_add =	X-r1: <$r_r1>\nX-r2: <$r_r2>\nX-r3: <$r_r3>
 
 
 # End

@@ -19011,13 +19011,12 @@ matters.
 .cindex router variables
 This option may be used multiple times on a router;
 because of this the list aspect is mostly irrelevant.
-The list separator is a colon but can be changed in the
+The list separator is a semicolon but can be changed in the
 usual way.
 
 Each list-element given must be of the form $"name = value"$
 and the names used must start with the string &"r_"&.
-Values containing colons should either have them doubled, or
-the entire list should be prefixed with a list-separator change.
+Values containing a list-separator should have them doubled.
 When a router runs, the strings are evaluated in order,
 to create variables which are added to the set associated with
 the address.

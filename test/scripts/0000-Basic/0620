@@ -1,2 +1,6 @@
 # router variables
 exim -odi a
+Subject: foo
+
+body
+****

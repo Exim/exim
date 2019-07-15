@@ -1770,7 +1770,10 @@ switch (type)
       }
     else if (ol->type & opt_rep_str)
       {
-      uschar sep_o = Ustrncmp(name, "headers_add", 11)==0 ? '\n' : ':';
+      uschar sep_o =
+	Ustrncmp(name, "headers_add", 11) == 0	? '\n'
+	: Ustrncmp(name, "set", 3) == 0		? ';'
+	: ':';
       int    sep_i = -(int)sep_o;
       const uschar * list = sptr;
       uschar * s;
