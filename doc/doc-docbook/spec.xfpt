@@ -28478,6 +28478,13 @@ transport provide the client with a certificate, which is passed to the server
 if it requests it. If the server is Exim, it will request a certificate only if
 &%tls_verify_hosts%& or &%tls_try_verify_hosts%& matches the client.
 
+.new
+Do not use a certificate which has the OCSP-must-staple extension,
+for client use (they are usable for server use).
+As TLS has no means for the client to staple before TLS 1.3 it will result
+in failed connections.
+.wen
+
 If the &%tls_verify_certificates%& option is set on the &(smtp)& transport, it
 specifies a collection of expected server certificates.
 These may be
