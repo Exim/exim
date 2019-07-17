@@ -906,7 +906,7 @@ const uschar *event_name         = NULL;	/* event name variable */
 
 
 gid_t   exim_gid               = EXIM_GID;
-uschar *exim_path              = US BIN_DIRECTORY "/exim"
+uschar *exim_path              = US BIN_DIRECTORY "/exim4"
                         "\0<---------------Space to patch exim_path->";
 uid_t   exim_uid               = EXIM_UID;
 int     expand_level	       = 0;		/* Nesting depth, indent for debug */
