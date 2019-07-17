@@ -2528,6 +2528,8 @@ use of Exim's filtering capabilities, you should make the document entitled
 If you are already running Exim on your host, building and installing a new
 version automatically makes it available to MUAs, or any other programs that
 call the MTA directly. However, if you are running an Exim daemon, you do need
+.cindex restart "on HUP signal"
+.cindex signal "HUP, to restart"
 to send it a HUP signal, to make it re-execute itself, and thereby pick up the
 new binary. You do not need to stop processing mail in order to install a new
 version of Exim. The install script does not modify an existing runtime
@@ -2766,9 +2768,12 @@ used to specify a path on the command line if a pid file is required.
 
 The SIGHUP signal
 .cindex "SIGHUP"
+.cindex restart "on HUP signal"
+.cindex signal "HUP, to restart"
 .cindex "daemon" "restarting"
 .cindex signal "to reload configuration"
 .cindex daemon "reload configuration"
+.cindex reload configuration
 can be used to cause the daemon to re-execute itself. This should be done
 whenever Exim's configuration file, or any file that is incorporated into it by
 means of the &%.include%& facility, is changed, and also whenever a new version
