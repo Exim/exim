@@ -1692,12 +1692,12 @@ else if (result == DEFER || result == PANIC)
   /* If doing a 2-stage queue run, we skip writing to either the message
   log or the main log for SMTP defers. */
 
-  if (!queue_2stage || addr->basic_errno != 0)
+  if (!f.queue_2stage || addr->basic_errno != 0)
 #ifndef DISABLE_EVENT
     /* Skip this event for errors of the type "retry time not reached" */
     if (addr->basic_errno >= ERRNO_RETRY_BASE)
     {
-      if (deliver_freeze)
+      if (f.deliver_freeze)
         msg_event_raise(US"msg:defer:delivery:frozen", addr);
       else
         msg_event_raise(US"msg:defer:delivery", addr);
