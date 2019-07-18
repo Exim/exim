@@ -743,7 +743,7 @@ tls_retry_connection:
       }
 
     /* We cannot use SIZE in MAIL FROM in a callout. */
-    sx.peer_offered &= ~PEER_OFFERED_SIZE;
+    sx.peer_offered &= ~OPTION_SIZE;
 
     /* If we needed to authenticate, smtp_setup_conn() did that.  Copy
     the AUTH info for logging */
