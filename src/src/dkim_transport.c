@@ -21,8 +21,8 @@ if (dkim->dkim_strict)
   uschar * dkim_strict_result = expand_string(dkim->dkim_strict);
 
   if (dkim_strict_result)
-    if ( (strcmpic(dkim->dkim_strict, US"1") == 0) ||
-	 (strcmpic(dkim->dkim_strict, US"true") == 0) )
+    if (  strcmpic(dkim_strict_result, US"1") == 0
+       || strcmpic(dkim_strict_result, US"true") == 0)
       {
       /* Set errno to something halfway meaningful */
       *errp = EACCES;

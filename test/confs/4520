@@ -18,7 +18,7 @@ dkim_verify_signers = $dkim_signers
 
 DDIR=DIR/aux-fixed/dkim
 
-log_selector = -dkim +dkim_verbose
+log_selector = -dkim +dkim_verbose +received_recipients
 
 # ----- Routers
 

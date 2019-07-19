@@ -784,14 +784,15 @@ CLEANUP:
 
 pk_bad:
   log_write(0, LOG_MAIN|LOG_PANIC,
-	       	"DKIM: signing failed: %.100s", pdkim_errstr(pdkim_rc));
+		"DKIM: signing failed: %.100s", pdkim_errstr(pdkim_rc));
 bad:
   sigbuf = NULL;
   goto CLEANUP;
 
 expand_bad:
-  log_write(0, LOG_MAIN | LOG_PANIC, "failed to expand %s: %s",
-	      errwhen, expand_string_message);
+  *errstr = string_sprintf("failed to expand %s: %s",
+              errwhen, expand_string_message);
+  log_write(0, LOG_MAIN | LOG_PANIC, "%s", *errstr);
   goto bad;
 }
 

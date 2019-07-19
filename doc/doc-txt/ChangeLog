@@ -153,6 +153,10 @@ JH/32 Introduce a general tainting mechanism for values read from the input
       channel, and values derived from them.  Refuse to expand any tainted
       values, to catch one form of exploit.
 
+JH/33 Bug 2413: Fix dkim_strict option.  Previously the expansion result
+      was unused and the unexpanded text used for the test.  Found and
+      fixed by Ruben Jenster.
+
 
 Exim version 4.92
 -----------------

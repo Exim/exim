@@ -66,6 +66,13 @@ From: nobody@example.com
 content
 ****
 #
+# check dkim_strict results in a defer (even with an expansion)
+exim -DOPT=From '-DSTRICT=${if ={1}{1}{true}}' '-DTIMES=${bogus}' -odf '-f<>' e0@test.ex
+From: nobody@example.com
+
+content
+****
+#
 # check that an empty dkim_privatekey overrides dkim_strict
 exim -DOPT=From -DSTRICT=true -DSELECTOR=none -odf e@test.ex
 From: nobody@example.com
