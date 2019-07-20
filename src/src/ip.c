@@ -264,7 +264,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
 	/* seen for with-data, proper TFO opt, with-cookie case */
     {
     DEBUG(D_transport|D_v)
-      debug_printf("TFO mode connection attempt to %s, %lu data\n",
+      debug_printf(" TFO mode connection attempt to %s, %lu data\n",
 	address, (unsigned long)fastopen_blob->len);
     /*XXX also seen on successful TFO, sigh */
     tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_ATTEMPTED_DATA : TFO_ATTEMPTED_NODATA;
@@ -276,7 +276,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
 	/*   with netwk delay, post-conn tcp_info sees unacked 1 for R, 2 for C; code in smtp_out.c */
 	/* ? older Experimental TFO option behaviour ? */
     {					/* queue unsent data */
-    DEBUG(D_transport|D_v) debug_printf("TFO mode sendto, %s data: EINPROGRESS\n",
+    DEBUG(D_transport|D_v) debug_printf(" TFO mode sendto, %s data: EINPROGRESS\n",
       fastopen_blob->len > 0 ? "with"  : "no");
     if (!fastopen_blob->data)
       {
@@ -306,7 +306,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
 	     CONNECT_DATA_IDEMPOTENT, &iov, 1, &len, NULL)) == 0)
     {
     DEBUG(D_transport|D_v)
-      debug_printf("TFO mode connection attempt to %s, %lu data\n",
+      debug_printf(" TFO mode connection attempt to %s, %lu data\n",
 	address, (unsigned long)fastopen_blob->len);
     tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_ATTEMPTED_DATA : TFO_ATTEMPTED_NODATA;
 
@@ -316,7 +316,7 @@ if (fastopen_blob && f.tcp_fastopen_ok)
     }
   else if (errno == EINPROGRESS)
     {
-    DEBUG(D_transport|D_v) debug_printf("TFO mode connectx, %s data: EINPROGRESS\n",
+    DEBUG(D_transport|D_v) debug_printf(" TFO mode connectx, %s data: EINPROGRESS\n",
       fastopen_blob->len > 0 ? "with"  : "no");
     if (!fastopen_blob->data)
       {
@@ -336,7 +336,7 @@ legacy_connect:
 #endif
 
   DEBUG(D_transport|D_v) if (fastopen_blob)
-    debug_printf("non-TFO mode connection attempt to %s, %lu data\n",
+    debug_printf(" non-TFO mode connection attempt to %s, %lu data\n",
       address, (unsigned long)fastopen_blob->len);
   if ((rc = connect(sock, s_ptr, s_len)) >= 0)
     if (  fastopen_blob && fastopen_blob->data && fastopen_blob->len

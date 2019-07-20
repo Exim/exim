@@ -296,7 +296,7 @@ if (save_errno != 0)
   {
   HDEBUG(D_transport|D_acl|D_v)
     {
-    debug_printf_indent("failed: %s", CUstrerror(save_errno));
+    debug_printf_indent(" failed: %s", CUstrerror(save_errno));
     if (save_errno == ETIMEDOUT)
       debug_printf(" (timeout=%s)", readconf_printtime(timeout));
     debug_printf("\n");
@@ -313,7 +313,7 @@ else
   union sockaddr_46 interface_sock;
   EXIM_SOCKLEN_T size = sizeof(interface_sock);
 
-  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("connected\n");
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent(" connected\n");
   if (getsockname(sock, (struct sockaddr *)(&interface_sock), &size) == 0)
     sending_ip_address = host_ntoa(-1, &interface_sock, NULL, &sending_port);
   else
