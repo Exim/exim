@@ -59,19 +59,29 @@ This is a test encrypted message.
 quit
 ??? 221
 ****
-# Server asks for a client cert (?but client does not supply one?)
+#
+# Server asks for a client cert but client does not supply one
 client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D
 ??? 220
 ehlo rhu.barb
 ??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250-
-??? 250
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250-STARTTLS
+??? 250 HELP
 starttls
-??? 220
+??? 220 TLS go ahead
+nop
+???*
 ****
+# ensure sequence of log TLS error line
+killdaemon
+sleep 1
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+#
 # Server asks for a client cert, and one is given which is verifiable by the server
 client-gnutls -p NONE:+SIGN-RSA-SHA256:+SIGN-ECDSA-SHA512:+VERS-TLS1.2:+ECDHE-RSA:+DHE-RSA:+RSA:+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509 HOSTIPV4 PORT_D DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.pem DIR/aux-fixed/exim-ca/example.com/server2.example.com/server2.example.com.unlocked.key
 ??? 220
@@ -155,8 +165,13 @@ quit
 ??? 221
 ****
 killdaemon
+sleep 1
+# clear out the queue
 exim -qf
 ****
+sleep 1
+#
+# STARTTLS used when not advertised
 exim -bh 10.0.0.1
 starttls
 quit

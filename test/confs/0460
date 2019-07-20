@@ -8,6 +8,8 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 qualify_domain = test.ex
+queue_only
+queue_run_in_order
 
 acl_smtp_rcpt = accept
 

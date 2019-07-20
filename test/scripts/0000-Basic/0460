@@ -43,6 +43,6 @@ QUIT
 ??? 221
 ****
 killdaemon
-# Wait for delivery process
-sleep 1
-sortlog
+# drain the queue
+exim -qf
+****
