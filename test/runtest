@@ -1215,6 +1215,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       {
       $_ .= <IN>;
       s/ \.\.\. >>> / ... /;
+      if (s/ non-TFO mode connection attempt to 224.0.0.0, 0 data\b$//) { $_ .= <IN>; }
       s/Address family not supported by protocol family/Network Error/;
       s/Network is unreachable/Network Error/;
       }
