@@ -1230,17 +1230,17 @@ RESET_AFTER_EXTRA_LINE_READ:
 	$/x)
       {
       $_ = $1 . " ... " . <IN>;
-      s/^(.* \.\.\.) [0-9: ]*connected$/$1 connected/;
+      s/^(.* \.\.\.) [0-9: ]*connected$/$1  connected/;
 
-      if (/^Connecting to .* \.\.\. connected$/)
+      if (/^Connecting to .* \.\.\.  connected$/)
 	{
 	$_ .= <IN>;
-	if (/^(Connecting to .* \.\.\. )connected\n\s+SMTP(\(close\)>>|\(Connection refused\)<<)$/)
+	if (/^(Connecting to .* \.\.\.  )connected\n\s+SMTP(\(close\)>>|\(Connection refused\)<<)$/)
 	  {
 	  $_ = $1 . "failed: Connection refused\n" . <IN>;
 	  s/^(Connecting .*)\n\s+SMTP\(close\)>>$/$1/;
 	  }
-	elsif (/^(Connecting to .* \.\.\. connected\n)read response data: size=/)
+	elsif (/^(Connecting to .* \.\.\.  connected\n)read response data: size=/)
 	  { $_ = $1; }
 
 	# Date/time in SMTP banner

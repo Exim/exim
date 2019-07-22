@@ -82,7 +82,7 @@ checking status of 127.0.0.1
 no retry data available
 127.0.0.1 in serialize_hosts? no (option unset)
 set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1]:PORT_S (x@y)
-Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 220 Server ready
 127.0.0.1 in hosts_avoid_esmtp? no (option unset)
   SMTP>> EHLO myhost.test.ex
