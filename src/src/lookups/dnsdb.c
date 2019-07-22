@@ -547,10 +547,6 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
   }        /* Loop for list of domains */
 
-/* Reclaim unused memory */
-
-store_reset(yield->s + yield->ptr + 1);
-
 /* If yield NULL we have not found anything. Otherwise, insert the terminating
 zero and return the result. */
 
@@ -559,6 +555,10 @@ dns_retry = save_retry;
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 
 if (!yield || !yield->ptr) return failrc;
+
+/* Reclaim unused memory */
+
+store_reset(yield->s + yield->ptr + 1);
 
 *result = string_from_gstring(yield);
 return OK;
