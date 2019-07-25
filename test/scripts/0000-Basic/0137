@@ -1,29 +1,33 @@
 # mailbox locking
-exim -odi userx
+exim -odi -f t1@foo userx
 Subject: First
-Transport: local_delivery
+
+local_delivery
 First message.
 ****
 exim_lock -v test-mail/userx
-exim -odi userx
+exim -odi -f t1@foo userx
 Subject: Second
-Transport: local_delivery
+
+local_delivery
 Second message
 ****
 exim -qf
 ****
 exim_lock -v -fcntl test-mail/userx
-exim -odi userx
+exim -odi -f t2@foo userx
 Subject: Third
-Transport: local_delivery_fcntl
+
+local_delivery_fcntl
 Third message
 ****
 exim -qf
 ****
 exim_lock -v -fcntl test-mail/userx
-exim -odi userx
+exim -odi -f t3@foo userx
 Subject: Fourth
-Transport: local_delivery_fcntl_blocking
+
+local_delivery_fcntl_blocking
 Fourth message
 ****
 exim -qf

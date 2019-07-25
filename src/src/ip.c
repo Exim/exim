@@ -515,7 +515,7 @@ if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
 
 callout_address = string_copy(path);
 server.sun_family = AF_UNIX;
-Ustrncpy(server.sun_path, path, sizeof(server.sun_path)-1);
+Ustrncpy(US server.sun_path, path, sizeof(server.sun_path)-1);
 server.sun_path[sizeof(server.sun_path)-1] = '\0';
 if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
   {

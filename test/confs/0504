@@ -13,7 +13,7 @@ begin routers
 
 r1:
   driver = accept
-  transport = $h_transport:
+  transport = OPT
 
 
 # ----- Transports -----

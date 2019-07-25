@@ -91,10 +91,9 @@ routing userx@test.ex
 --------> r1 router <--------
 local_part=userx domain=test.ex
 calling r1 router
-rda_interpret (string): # Exim filter
-save TESTSUITE/test-mail
-expanded: # Exim filter
-save TESTSUITE/test-mail
+rda_interpret (string): '# Exim filter\nsave TESTSUITE/test-mail'
+expanded: '# Exim filter
+save TESTSUITE/test-mail'
 search_tidyup called
 changed uid/gid: r1 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp

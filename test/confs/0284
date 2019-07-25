@@ -16,7 +16,9 @@ begin routers
 all:
   driver = accept
   address_data = ${if match{$local_part}{^(.)}{$1}}
-  transport = ${if match{$local_part}{^.*-(.*)\$}{$1}fail}
+  transport = ${if eq {${substr_-1_1:$local_part}}{1} {t1} \
+		{${if eq {${substr_-1_1:$local_part}}{2} {t2} \
+		  {${if eq {${substr_-1_1:$local_part}}{3} {t3} {t4}}}}}}
 
 
 # ----- Transports -----

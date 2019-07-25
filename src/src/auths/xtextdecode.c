@@ -33,7 +33,7 @@ int
 auth_xtextdecode(uschar *code, uschar **ptr)
 {
 register int x;
-uschar *result = store_get(Ustrlen(code) + 1);
+uschar *result = store_get(Ustrlen(code) + 1, is_tainted(code));
 *ptr = result;
 
 while ((x = (*code++)) != 0)

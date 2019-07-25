@@ -227,7 +227,7 @@ if (LOG != NULL)
     {
     uschar *id;
     uschar *p = buffer;
-    void *reset_point;
+    rmark reset_point;
     int length = Ustrlen(buffer);
     int i;
 
@@ -240,7 +240,7 @@ if (LOG != NULL)
     it for various regular expression matches and take appropriate
     action. Get the current store point so we can reset to it. */
 
-    reset_point = store_get(0);
+    reset_point = store_mark();
 
     /* First, update any stripchart data values, noting that the zeroth
     stripchart is the queue length, which is handled elsewhere, and the
@@ -364,9 +364,10 @@ link count of zero on the currently open file. */
 if (log_datestamping)
   {
   uschar log_file_wanted[256];
-  /* Do *not* use "%s" here, we need the %D datestamp in the log_file to
-   *   be expanded! */
-  string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file);
+  /* Do *not* use "%s" here, we need the %D datestamp in the log_file string to
+  be expanded.  The trailing NULL arg is to quieten preprocessors that need at
+  least one arg for a variadic set in a macro. */
+  string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file, NULL);
   if (Ustrcmp(log_file_wanted, log_file_open) != 0)
     {
     if (LOG != NULL)

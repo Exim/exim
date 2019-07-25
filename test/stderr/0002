@@ -5,6 +5,10 @@ dropping to exim gid; retaining priv uid
  ╭considering: primary_hostname: $primary_hostname
  ├──expanding: primary_hostname: $primary_hostname
  ╰─────result: primary_hostname: myhost.test.ex
+ ╭considering: sender_address: $sender_address
+ ├──expanding: sender_address: $sender_address
+ ╰─────result: sender_address: sndr@dom
+            ╰──(tainted)
  ╭considering: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   ╭considering: abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
   ├──expanding: abcd
@@ -79,7 +83,7 @@ LOG: MAIN PANIC
   ╭considering: no}}
   ├──expanding: no
   ╰─────result: no
- ├──expanding: a.b.c
+ ├──expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  ╰─────result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -163,7 +167,7 @@ LOG: MAIN PANIC
   /considering: no}}
   |--expanding: no
   \_____result: no
- |--expanding: a.b.c
+ |--expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  \_____result: match_address:   no
 >>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
@@ -182,9 +186,11 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMai authenticated_id = $authenticated_id
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
+            ╰──(tainted)
  ╭considering: -oMas authenticated_sender = $authenticated_sender
  ├──expanding: -oMas authenticated_sender = $authenticated_sender
  ╰─────result: -oMas authenticated_sender = xx@yy.zz
+            ╰──(tainted)
  ╭considering: -oMi  interface_address = $interface_address
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
@@ -215,9 +221,11 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMai authenticated_id = $authenticated_id
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
+            ╰──(tainted)
  ╭considering: -oMas authenticated_sender = $authenticated_sender
  ├──expanding: -oMas authenticated_sender = $authenticated_sender
  ╰─────result: -oMas authenticated_sender = xx@yy.zz
+            ╰──(tainted)
  ╭considering: -oMi  interface_address = $interface_address
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
@@ -255,6 +263,7 @@ sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
 sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ├──expanding: -oMs  sender_host_name = $sender_host_name
  ╰─────result: -oMs  sender_host_name = ten-1.test.ex
+            ╰──(tainted)
  ╭considering: -oMt  sender_ident = $sender_ident
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me

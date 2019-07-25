@@ -499,8 +499,8 @@ int rc = OK;
 uschar * header = NULL;
 struct mime_boundary_context nested_context;
 
-/* reserve a line buffer to work in */
-header = store_get(MIME_MAX_HEADER_SIZE+1);
+/* reserve a line buffer to work in.  Assume tainted data. */
+header = store_get(MIME_MAX_HEADER_SIZE+1, TRUE);
 
 /* Not actually used at the moment, but will be vital to fixing
  * some RFC 2046 nonconformance later... */

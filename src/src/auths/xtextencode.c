@@ -40,7 +40,7 @@ in order to get the right amount of store. */
 while (c -- > 0)
   count += ((x = *p++) < 33 || x > 127 || x == '+' || x == '=')? 3 : 1;
 
-pp = code = store_get(count);
+pp = code = store_get(count, is_tainted(clear));
 
 p = US clear;
 c = len;

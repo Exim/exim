@@ -301,24 +301,18 @@ if (!lcp)
   than the host name + "ldaps:///" plus : and a port number, say 20 + the
   length of the host name. What we get should accommodate both, easily. */
 
-  uschar *shost = (host == NULL)? US"" : host;
-  uschar *init_url = store_get(20 + 3 * Ustrlen(shost));
-  uschar *init_ptr;
+  uschar * shost = host ? host : US"";
+  rmark reset_point = store_mark();
+  gstring * g;
 
   /* Handle connection via Unix socket ("ldapi"). We build a basic LDAP URI to
   contain the path name, with slashes escaped as %2F. */
 
   if (ldapi)
     {
-    int ch;
-    init_ptr = init_url + 8;
-    Ustrcpy(init_url, "ldapi://");
-    while ((ch = *shost++))
-      if (ch == '/')
-	{ Ustrncpy(init_ptr, "%2F", 3); init_ptr += 3; }
-      else
-	*init_ptr++ = ch;
-    *init_ptr = 0;
+    g = string_catn(NULL, US"ldapi://", 8);
+    for (uschar ch; (ch = *shost); shost++)
+      g = ch == '/' ? string_catn(g, US"%2F", 3) : string_catn(g, shost, 1);
     }
 
   /* This is not an ldapi call. Just build a URI with the protocol type, host
@@ -326,22 +320,22 @@ if (!lcp)
 
   else
     {
-    init_ptr = Ustrchr(ldap_url, '/');
-    Ustrncpy(init_url, ldap_url, init_ptr - ldap_url);
-    init_ptr = init_url + (init_ptr - ldap_url);
-    sprintf(CS init_ptr, "//%s:%d/", shost, port);
+    uschar * init_ptr = Ustrchr(ldap_url, '/');
+    g = string_catn(NULL, ldap_url, init_ptr - ldap_url);
+    g = string_fmt_append(g, "//%s:%d/", shost, port);
     }
+  string_from_gstring(g);
 
   /* Call ldap_initialize() and check the result */
 
-  DEBUG(D_lookup) debug_printf_indent("ldap_initialize with URL %s\n", init_url);
-  if ((rc = ldap_initialize(&ld, CS init_url)) != LDAP_SUCCESS)
+  DEBUG(D_lookup) debug_printf_indent("ldap_initialize with URL %s\n", g->s);
+  if ((rc = ldap_initialize(&ld, CS g->s)) != LDAP_SUCCESS)
     {
     *errmsg = string_sprintf("ldap_initialize: (error %d) URL \"%s\"\n",
-      rc, init_url);
+      rc, g->s);
     goto RETURN_ERROR;
     }
-  store_reset(init_url);   /* Might as well save memory when we can */
+  store_reset(reset_point);   /* Might as well save memory when we can */
 
 
   /* ------------------------- Not OpenLDAP ---------------------- */
@@ -501,8 +495,8 @@ if (!lcp)
 
   /* Now add this connection to the chain of cached connections */
 
-  lcp = store_get(sizeof(LDAP_CONNECTION));
-  lcp->host = (host == NULL)? NULL : string_copy(host);
+  lcp = store_get(sizeof(LDAP_CONNECTION), FALSE);
+  lcp->host = host ? string_copy(host) : NULL;
   lcp->bound = FALSE;
   lcp->user = NULL;
   lcp->password = NULL;
@@ -1004,7 +998,7 @@ if (search_type != SEARCH_LDAP_MULTIPLE && rescount > 1)
 
 if (rescount < 1)
   {
-  *errmsg = string_sprintf("LDAP search: no results");
+  *errmsg = US"LDAP search: no results";
   error_yield = FAIL;
   goto RETURN_ERROR_BREAK;
   }
@@ -1156,6 +1150,7 @@ while (strncmpic(url, US"ldap", 4) != 0)
         else if (strcmpic(value, US"nofollow") == 0) referrals = LDAP_OPT_OFF;
         else
           {
+          *errmsg = US"LDAP option REFERRALS is not \"follow\" or \"nofollow\"";
           DEBUG(D_lookup) debug_printf_indent("%s\n", *errmsg);
           return DEFER;
           }
@@ -1481,7 +1476,7 @@ if (count == 0) return s;
 
 /* Get sufficient store to hold the quoted string */
 
-t = quoted = store_get(len + count + 1);
+t = quoted = store_get(len + count + 1, is_tainted(s));
 
 /* Handle plain quote_ldap */
 
@@ -1536,7 +1531,7 @@ else
       {
       if (Ustrchr(LDAP_DN_QUOTE, c) != NULL)
         {
-        Ustrncpy(t, "%5C", 3);               /* insert \ where needed */
+        Ustrncpy(t, US"%5C", 3);               /* insert \ where needed */
         t += 3;                              /* fall through to check URL */
         }
       if (Ustrchr(URL_NONQUOTE, c) == NULL)  /* e.g. ] => %5D */
@@ -1553,7 +1548,7 @@ else
 
   while (*ss++ != 0)
     {
-    Ustrncpy(t, "%5C%20", 6);
+    Ustrncpy(t, US"%5C%20", 6);
     t += 6;
     }
   }

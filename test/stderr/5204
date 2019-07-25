@@ -187,8 +187,8 @@ calling q router
 q router called for "REDIRECT postmaster@test.ex"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: REDIRECT postmaster@test.ex
-rda_interpret (string): postmaster@test.ex
-expanded: postmaster@test.ex
+rda_interpret (string): 'postmaster@test.ex'
+expanded: 'postmaster@test.ex'
 file is not a filter file
 parse_forward_list: postmaster@test.ex
 extract item: postmaster@test.ex

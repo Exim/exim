@@ -104,6 +104,13 @@ return fd;
 
 
 
+static void
+spool_var_write(FILE * fp, const uschar * name, const uschar * val)
+{
+if (is_tainted(val)) putc('-', fp);
+fprintf(fp, "-%s %s\n", name, val);
+}
+
 /*************************************************
 *          Write the header spool file           *
 *************************************************/
@@ -158,36 +165,40 @@ fprintf(fp, "-received_time_usec .%06d\n", (int)received_time.tv_usec);
 /* If there is information about a sending host, remember it. The HELO
 data can be set for local SMTP as well as remote. */
 
-if (sender_helo_name)
-  fprintf(fp, "-helo_name %s\n", sender_helo_name);
+if (sender_helo_name) spool_var_write(fp, US"helo_name", sender_helo_name);
 
 if (sender_host_address)
   {
+  if (is_tainted(sender_host_address)) putc('-', fp);
   fprintf(fp, "-host_address %s.%d\n", sender_host_address, sender_host_port);
   if (sender_host_name)
-    fprintf(fp, "-host_name %s\n", sender_host_name);
+    spool_var_write(fp, US"host_name", sender_host_name);
   if (sender_host_authenticated)
-    fprintf(fp, "-host_auth %s\n", sender_host_authenticated);
+    spool_var_write(fp, US"host_auth", sender_host_authenticated);
   }
 
 /* Also about the interface a message came in on */
 
 if (interface_address)
+  {
+  if (is_tainted(interface_address)) putc('-', fp);
   fprintf(fp, "-interface_address %s.%d\n", interface_address, interface_port);
+  }
 
 if (smtp_active_hostname != primary_hostname)
-  fprintf(fp, "-active_hostname %s\n", smtp_active_hostname);
+  spool_var_write(fp, US"active_hostname", smtp_active_hostname);
 
 /* Likewise for any ident information; for local messages this is
 likely to be the same as originator_login, but will be different if
 the originator was root, forcing a different ident. */
 
-if (sender_ident) fprintf(fp, "-ident %s\n", sender_ident);
+if (sender_ident)
+  spool_var_write(fp, US"ident", sender_ident);
 
 /* Ditto for the received protocol */
 
 if (received_protocol)
-  fprintf(fp, "-received_protocol %s\n", received_protocol);
+  spool_var_write(fp, US"received_protocol", received_protocol);
 
 /* Preserve any ACL variables that are set. */
 
@@ -205,9 +216,9 @@ fprintf(fp, "-max_received_linelength %d\n", max_received_linelength);
 if (body_zerocount > 0) fprintf(fp, "-body_zerocount %d\n", body_zerocount);
 
 if (authenticated_id)
-  fprintf(fp, "-auth_id %s\n", authenticated_id);
+  spool_var_write(fp, US"auth_id", authenticated_id);
 if (authenticated_sender)
-  fprintf(fp, "-auth_sender %s\n", authenticated_sender);
+  spool_var_write(fp, US"auth_sender", authenticated_sender);
 
 if (f.allow_unqualified_recipient) fprintf(fp, "-allow_unqualified_recipient\n");
 if (f.allow_unqualified_sender) fprintf(fp, "-allow_unqualified_sender\n");
@@ -219,30 +230,30 @@ if (host_lookup_failed) fprintf(fp, "-host_lookup_failed\n");
 if (f.sender_local) fprintf(fp, "-local\n");
 if (f.local_error_message) fprintf(fp, "-localerror\n");
 #ifdef HAVE_LOCAL_SCAN
-if (local_scan_data) fprintf(fp, "-local_scan %s\n", local_scan_data);
+if (local_scan_data) spool_var_write(fp, US"local_scan", local_scan_data);
 #endif
 #ifdef WITH_CONTENT_SCAN
-if (spam_bar)       fprintf(fp,"-spam_bar %s\n",       spam_bar);
-if (spam_score)     fprintf(fp,"-spam_score %s\n",     spam_score);
-if (spam_score_int) fprintf(fp,"-spam_score_int %s\n", spam_score_int);
+if (spam_bar)       spool_var_write(fp, US"spam_bar",       spam_bar);
+if (spam_score)     spool_var_write(fp, US"spam_score",     spam_score);
+if (spam_score_int) spool_var_write(fp, US"spam_score_int", spam_score_int);
 #endif
 if (f.deliver_manual_thaw) fprintf(fp, "-manual_thaw\n");
 if (f.sender_set_untrusted) fprintf(fp, "-sender_set_untrusted\n");
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-if (bmi_verdicts) fprintf(fp, "-bmi_verdicts %s\n", bmi_verdicts);
+if (bmi_verdicts) spool_var_write(fp, US"bmi_verdicts", bmi_verdicts);
 #endif
 
 #ifndef DISABLE_TLS
 if (tls_in.certificate_verified) fprintf(fp, "-tls_certificate_verified\n");
-if (tls_in.cipher)       fprintf(fp, "-tls_cipher %s\n", tls_in.cipher);
+if (tls_in.cipher) spool_var_write(fp, US"tls_cipher", tls_in.cipher);
 if (tls_in.peercert)
   {
   (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.peercert);
-  fprintf(fp, "-tls_peercert %s\n", CS big_buffer);
+  fprintf(fp, "--tls_peercert %s\n", CS big_buffer);
   }
-if (tls_in.peerdn)       fprintf(fp, "-tls_peerdn %s\n", string_printing(tls_in.peerdn));
-if (tls_in.sni)		 fprintf(fp, "-tls_sni %s\n",    string_printing(tls_in.sni));
+if (tls_in.peerdn)       spool_var_write(fp, US"tls_peerdn", string_printing(tls_in.peerdn));
+if (tls_in.sni)		 spool_var_write(fp, US"tls_sni",    string_printing(tls_in.sni));
 if (tls_in.ourcert)
   {
   (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.ourcert);

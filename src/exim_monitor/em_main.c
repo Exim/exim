@@ -613,7 +613,7 @@ message_subdir[1] = 0;
 constructing file names and things. This call will initialize
 the store_get() function. */
 
-big_buffer = store_get(big_buffer_size);
+big_buffer = store_get(big_buffer_size, FALSE);
 
 /* Set up the version string and date and output them */
 
@@ -655,7 +655,7 @@ if (log_file[0] != 0)
   {
   /* Do *not* use "%s" here, we need the %D datestamp in the log_file to
   be expanded! */
-  (void)string_format(log_file_open, sizeof(log_file_open), CS log_file);
+  (void)string_format(log_file_open, sizeof(log_file_open), CS log_file, NULL);
   log_datestamping = string_datestamp_offset >= 0;
 
   LOG = fopen(CS log_file_open, "r");

@@ -620,7 +620,7 @@ switch(*errno_value)
     return FALSE;
 
   case ERRNO_WRITEINCOMPLETE:	/* failure to write a complete data block */
-    *message = string_sprintf("failed to write a data block");
+    *message = US"failed to write a data block";
     return FALSE;
 
 #ifdef SUPPORT_I18N
@@ -1184,8 +1184,14 @@ while (count-- > 0)
 
   else if (errno != 0 || sx->buffer[0] == 0)
     {
-    string_format(big_buffer, big_buffer_size, "RCPT TO:<%s>",
+    gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer }, * g = &gs;
+
+    /* Use taint-unchecked routines for writing into big_buffer, trusting
+    that we'll never expand it. */
+
+    g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "RCPT TO:<%s>",
       transport_rcpt_address(addr, sx->conn_args.tblock->rcpt_include_affixes));
+    string_from_gstring(g);
     return -2;
     }
 
@@ -1555,20 +1561,20 @@ Globals		f.smtp_authenticated
 Return	True on error, otherwise buffer has (possibly empty) terminated string
 */
 
-BOOL
+static BOOL
 smtp_mail_auth_str(uschar *buffer, unsigned bufsize, address_item *addrlist,
 		    smtp_transport_options_block *ob)
 {
-uschar *local_authenticated_sender = authenticated_sender;
+uschar * local_authenticated_sender = authenticated_sender;
 
 #ifdef notdef
   debug_printf("smtp_mail_auth_str: as<%s> os<%s> SA<%s>\n", authenticated_sender, ob->authenticated_sender, f.smtp_authenticated?"Y":"N");
 #endif
 
-if (ob->authenticated_sender != NULL)
+if (ob->authenticated_sender)
   {
   uschar *new = expand_string(ob->authenticated_sender);
-  if (new == NULL)
+  if (!new)
     {
     if (!f.expand_string_forcedfail)
       {
@@ -1578,17 +1584,17 @@ if (ob->authenticated_sender != NULL)
       return TRUE;
       }
     }
-  else if (new[0] != 0) local_authenticated_sender = new;
+  else if (*new) local_authenticated_sender = new;
   }
 
 /* Add the authenticated sender address if present */
 
-if ((f.smtp_authenticated || ob->authenticated_sender_force) &&
-    local_authenticated_sender != NULL)
+if (  (f.smtp_authenticated || ob->authenticated_sender_force)
+   && local_authenticated_sender)
   {
-  string_format(buffer, bufsize, " AUTH=%s",
+  string_format_nt(buffer, bufsize, " AUTH=%s",
     auth_xtextencode(local_authenticated_sender,
-    Ustrlen(local_authenticated_sender)));
+      Ustrlen(local_authenticated_sender)));
   client_authenticated_sender = string_copy(local_authenticated_sender);
   }
 else
@@ -3040,7 +3046,7 @@ if (  sx->peer_offered & OPTION_UTF8
    && addrlist->prop.utf8_msg
    && !addrlist->prop.utf8_downcvt
    )
-  Ustrcpy(p, " SMTPUTF8"), p += 9;
+  Ustrcpy(p, US" SMTPUTF8"), p += 9;
 #endif
 
 /* check if all addresses have DSN-lasthop flag; do not send RET and ENVID if so */
@@ -3061,9 +3067,9 @@ for (sx->dsn_all_lasthop = TRUE, addr = addrlist, address_count = 0;
 if (sx->peer_offered & OPTION_DSN && !sx->dsn_all_lasthop)
   {
   if (dsn_ret == dsn_ret_hdrs)
-    { Ustrcpy(p, " RET=HDRS"); p += 9; }
+    { Ustrcpy(p, US" RET=HDRS"); p += 9; }
   else if (dsn_ret == dsn_ret_full)
-    { Ustrcpy(p, " RET=FULL"); p += 9; }
+    { Ustrcpy(p, US" RET=FULL"); p += 9; }
 
   if (dsn_envid)
     {
@@ -3100,7 +3106,7 @@ if (sx->peer_offered & OPTION_DSN && !(addr->dsn_flags & rf_dsnlasthop))
     {
     BOOL first = TRUE;
 
-    Ustrcpy(p, " NOTIFY=");
+    Ustrcpy(p, US" NOTIFY=");
     while (*p) p++;
     for (int i = 0; i < nelem(rf_list); i++) if (addr->dsn_flags & rf_list[i])
       {
@@ -4598,6 +4604,17 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
     else
       if (ob->hosts_randomize) s = expanded_hosts = string_copy(s);
 
+    if (is_tainted(s))
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"attempt to use tainted host list '%s' from '%s' in transport %s",
+	s, ob->hosts, tblock->name);
+      /* Avoid leaking info to an attacker */
+      addrlist->message = US"internal configuration error";
+      addrlist->transport_return = PANIC;
+      return FALSE;
+      }
+
     host_build_hostlist(&hostlist, s, ob->hosts_randomize);
 
     /* Check that the expansion yielded something useful. */
@@ -5082,7 +5099,7 @@ retry_non_continued:
 
       if (expanded_hosts)
 	{
-	thost = store_get(sizeof(host_item));
+	thost = store_get(sizeof(host_item), FALSE);
 	*thost = *host;
 	thost->name = string_copy(host->name);
 	thost->address = string_copy(host->address);

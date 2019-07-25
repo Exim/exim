@@ -13,6 +13,8 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 #ifndef MYTYPES_H
 #define MYTYPES_H
 
+# include <string.h>
+
 #ifndef FALSE
 # define FALSE         0
 #endif
@@ -98,18 +100,20 @@ functions that are called quite often; for other calls to external libraries
 #define Uread(f,b,l)       read(f,CS(b),l)
 #define Urename(s,t)       rename(CCS(s),CCS(t))
 #define Ustat(s,t)         stat(CCS(s),t)
-#define Ustrcat(s,t)       strcat(CS(s),CCS(t))
+#define Ustrcat(s,t)       __Ustrcat(s,t, __FUNCTION__, __LINE__)
 #define Ustrchr(s,n)       US strchr(CCS(s),n)
 #define CUstrchr(s,n)      CUS strchr(CCS(s),n)
 #define CUstrerror(n)      CUS strerror(n)
 #define Ustrcmp(s,t)       strcmp(CCS(s),CCS(t))
-#define Ustrcpy(s,t)       strcpy(CS(s),CCS(t))
+#define Ustrcpy(s,t)       __Ustrcpy(s,t, __FUNCTION__, __LINE__)
+#define Ustrcpy_nt(s,t)    strcpy(CS s, CCS t)		/* no taint check */
 #define Ustrcspn(s,t)      strcspn(CCS(s),CCS(t))
 #define Ustrftime(s,m,f,t) strftime(CS(s),m,f,t)
 #define Ustrlen(s)         (int)strlen(CCS(s))
-#define Ustrncat(s,t,n)    strncat(CS(s),CCS(t),n)
+#define Ustrncat(s,t,n)    __Ustrncat(s,t,n, __FUNCTION__, __LINE__)
 #define Ustrncmp(s,t,n)    strncmp(CCS(s),CCS(t),n)
-#define Ustrncpy(s,t,n)    strncpy(CS(s),CCS(t),n)
+#define Ustrncpy(s,t,n)    __Ustrncpy(s,t,n, __FUNCTION__, __LINE__)
+#define Ustrncpy_nt(s,t,n) strncpy(CS s, CCS t, n)	/* no taint check */
 #define Ustrpbrk(s,t)      strpbrk(CCS(s),CCS(t))
 #define Ustrrchr(s,n)      US strrchr(CCS(s),n)
 #define CUstrrchr(s,n)     CUS strrchr(CCS(s),n)
@@ -121,6 +125,38 @@ functions that are called quite often; for other calls to external libraries
 #define Ustrtoul(s,t,b)    strtoul(CCS(s),CSS(t),b)
 #define Uunlink(s)         unlink(CCS(s))
 
-#endif
+extern BOOL is_tainted(const void *);
+extern void die_tainted(const uschar *, const uschar *, int);
 
+static inline uschar * __Ustrcat(uschar * dst, const uschar * src, const char * func, int line)
+{
+#ifndef COMPILE_UTILITY
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrcat", CUS func, line);
+#endif
+return US strcat(CS dst, CCS src);
+}
+static inline uschar * __Ustrcpy(uschar * dst, const uschar * src, const char * func, int line)
+{
+#ifndef COMPILE_UTILITY
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrcpy", CUS func, line);
+#endif
+return US strcpy(CS dst, CCS src);
+}
+static inline uschar * __Ustrncat(uschar * dst, const uschar * src, size_t n, const char * func, int line)
+{
+#ifndef COMPILE_UTILITY
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncat", CUS func, line);
+#endif
+return US strncat(CS dst, CCS src, n);
+}
+static inline uschar * __Ustrncpy(uschar * dst, const uschar * src, size_t n, const char * func, int line)
+{
+#ifndef COMPILE_UTILITY
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncpy", CUS func, line);
+#endif
+return US strncpy(CS dst, CCS src, n);
+}
+/*XXX will likely need unchecked copy also */
+
+#endif
 /* End of mytypes.h */

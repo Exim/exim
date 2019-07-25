@@ -99,8 +99,8 @@ fun.1 in "fun.1 : fun.2"? yes (matched "fun.1")
 fun.1 in "+funny_domains"? yes (matched "+funny_domains")
 user1@fun.1 in "user1@+funny_domains"? yes (matched "user1@+funny_domains")
 calling rr1 router
-rda_interpret (string): :fail: matched *@+funny_domains
-expanded: :fail: matched *@+funny_domains
+rda_interpret (string): ':fail: matched *@+funny_domains'
+expanded: ':fail: matched *@+funny_domains'
 file is not a filter file
 parse_forward_list: :fail: matched *@+funny_domains
 extract item: :fail: matched *@+funny_domains

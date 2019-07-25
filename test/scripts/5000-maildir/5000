@@ -1,58 +1,37 @@
 # exim quota + warn threshold with maildir
-exim -odi userx
-maildir:maildir_
+exim -DVALUE=maildir_appendfile -odi userx
 This is a test message
 ****
 write test-data 100x60
-maildir:maildir_
 ++++
 ****
-exim -odi userx <test-data
+exim -DVALUE=maildir_appendfile -odi userx <test-data
 ****
-exim -odi userx <test-data
+exim -DVALUE=maildir_appendfile -odi userx <test-data
 ****
-exim -odi userx
-maildir:maildir_tagged_
-tag:S370
+exim -DVALUE=maildir_tagged_appendfile -DOPT=S370 -odi userx
 This is a test message
 ****
 sleep 1
-exim -odi userx
-maildir:maildir_tagged_
-tag:,S=370
+exim -DVALUE=maildir_tagged_appendfile -DOPT=,S=370 -odi userx
 This is a test message
 ****
 sleep 1
-exim -odi userx
-maildir:maildir_tagged_
-tag:${if eq{0}{1}{rhubarb}fail}
+exim -DVALUE=maildir_tagged_appendfile -DOPT='${if eq{0}{1}{rhubarb}fail}' -odi userx
 This is a test message
 ****
 sleep 1
 # deliberate syntax fail
-exim -odi userx
-maildir:maildir_tagged_
-tag:${if eq{0}{1}{rhubarb}
+exim -DVALUE=maildir_tagged_appendfile -DOPT='${if eq{0}{1}{rhubarb}' -odi userx
 This is a test message
 ****
 sleep 1
 # overlongname
-exim -odi userx
-maildir:maildir_tagged_
-tag:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+exim -DVALUE=maildir_tagged_appendfile -DOPT=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -odi userx
 This is a test message
 ****
 sleep 1
-exim -odi userx
-maildir:maildir_taggedX_
-tag:,S=10694953:2,S
+exim -DVALUE=maildir_taggedX_appendfile -DOPT=,S=10694953:2,S -odi userx
 ****
-exim -d-all+transport -odi userx
-maildir:maildir_taggedX_
-tag:,S=412:2,S
+exim -d-all+transport -DVALUE=maildir_taggedX_appendfile -DOPT=,S=412:2,S -odi userx
 ****

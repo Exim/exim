@@ -230,7 +230,7 @@ if (debug_ptr == debug_buffer)
 
   if (host_checking && debug_selector == 0)
     {
-    Ustrcpy(debug_ptr, ">>> ");
+    Ustrcpy(debug_ptr, US">>> ");
     debug_ptr += 4;
     }
 
@@ -242,30 +242,33 @@ if (indent > 0)
   for (int i = indent >> 2; i > 0; i--)
     DEBUG(D_noutf8)
       {
-      Ustrcpy(debug_ptr, "   !");
+      Ustrcpy(debug_ptr, US"   !");
       debug_ptr += 4;	/* 3 spaces + shriek */
       debug_prefix_length += 4;
       }
     else
       {
-      Ustrcpy(debug_ptr, "   " UTF8_VERT_2DASH);
+      Ustrcpy(debug_ptr, US"   " UTF8_VERT_2DASH);
       debug_ptr += 6;	/* 3 spaces + 3 UTF-8 octets */
       debug_prefix_length += 6;
       }
 
-  Ustrncpy(debug_ptr, "   ", indent &= 3);
+  Ustrncpy(debug_ptr, US"   ", indent &= 3);
   debug_ptr += indent;
   debug_prefix_length += indent;
   }
 
-/* Use the checked formatting routine to ensure that the buffer
-does not overflow. Ensure there's space for a newline at the end. */
+/* Use the lengthchecked formatting routine to ensure that the buffer
+does not overflow. Ensure there's space for a newline at the end.
+However, use taint-unchecked routines for writing into the buffer
+so that we can write tainted info into the static debug_buffer -
+we trust that we will never expand the results. */
 
   {
   gstring gs = { .size = (int)sizeof(debug_buffer) - 1,
 		.ptr = debug_ptr - debug_buffer,
 		.s = debug_buffer };
-  if (!string_vformat(&gs, FALSE, format, ap))
+  if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, format, ap))
     {
     uschar * s = US"**** debug string too long - truncated ****\n";
     uschar * p = gs.s + gs.ptr;

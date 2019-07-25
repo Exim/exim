@@ -12,6 +12,7 @@ utilities and tests, and are cut out by the COMPILE_UTILITY macro. */
 #include "exim.h"
 #include <assert.h>
 
+static void gstring_rebuffer(gstring * g);
 
 #ifndef COMPILE_UTILITY
 /*************************************************
@@ -167,7 +168,7 @@ Returns:      pointer to the buffer
 uschar *
 string_format_size(int size, uschar *buffer)
 {
-if (size == 0) Ustrcpy(buffer, "     ");
+if (size == 0) Ustrcpy(buffer, US"     ");
 else if (size < 1024) sprintf(CS buffer, "%5d", size);
 else if (size < 10*1024)
   sprintf(CS buffer, "%4.1fK", (double)size / 1024.0);
@@ -306,7 +307,7 @@ if (nonprintcount == 0) return s;
 /* Get a new block of store guaranteed big enough to hold the
 expanded string. */
 
-ss = store_get(length + nonprintcount * 3 + 1);
+ss = store_get(length + nonprintcount * 3 + 1, is_tainted(s));
 
 /* Copy everything, escaping non printers. */
 
@@ -362,7 +363,7 @@ p = Ustrchr(s, '\\');
 if (!p) return s;
 
 len = Ustrlen(s) + 1;
-ss = store_get(len);
+ss = store_get(len, is_tainted(s));
 
 q = ss;
 off = p - s;
@@ -412,20 +413,30 @@ return ss;
 *            Copy and save string                *
 *************************************************/
 
-/* This function assumes that memcpy() is faster than strcpy().
-
+/*
 Argument: string to copy
-Returns:  copy of string in new store
+Returns:  copy of string in new store with the same taint status
 */
 
 uschar *
 string_copy_function(const uschar *s)
 {
+return string_copy_taint(s, is_tainted(s));
+}
+
+/* This function assumes that memcpy() is faster than strcpy().
+As above, but explicitly specifying the result taint status
+*/
+
+uschar *
+string_copy_taint(const uschar * s, BOOL tainted)
+{
 int len = Ustrlen(s) + 1;
-uschar *ss = store_get(len);
+uschar *ss = store_get(len, tainted);
 memcpy(ss, s, len);
 return ss;
 }
+
 
 
 /*************************************************
@@ -445,7 +456,7 @@ Returns:    copy of string in new store
 uschar *
 string_copyn_function(const uschar *s, int n)
 {
-uschar *ss = store_get(n + 1);
+uschar *ss = store_get(n + 1, is_tainted(s));
 Ustrncpy(ss, s, n);
 ss[n] = 0;
 return ss;
@@ -555,7 +566,7 @@ uschar *
 string_copy_dnsdomain(uschar *s)
 {
 uschar *yield;
-uschar *ss = yield = store_get(Ustrlen(s) + 1);
+uschar *ss = yield = store_get(Ustrlen(s) + 1, is_tainted(s));
 
 while (*s != 0)
   {
@@ -617,25 +628,22 @@ else
 
 /* Get enough store to copy into */
 
-t = yield = store_get(s - *sptr + 1);
+t = yield = store_get(s - *sptr + 1, is_tainted(*sptr));
 s = *sptr;
 
 /* Do the copy */
 
 if (*s != '\"')
-  {
   while (*s != 0 && !isspace(*s)) *t++ = *s++;
-  }
 else
   {
   s++;
   while (*s != 0 && *s != '\"')
     {
-    if (*s == '\\') *t++ = string_interpret_escape(&s);
-      else *t++ = *s;
+    *t++ = *s == '\\' ? string_interpret_escape(&s) : *s;
     s++;
     }
-  if (*s != 0) s++;
+  if (*s) s++;
   }
 
 /* Update the pointer and return the terminated copy */
@@ -664,35 +672,24 @@ Returns:    pointer to fresh piece of store containing sprintf'ed string
 */
 
 uschar *
-string_sprintf(const char *format, ...)
+string_sprintf_trc(const char *format, const uschar * func, unsigned line, ...)
 {
-#ifdef COMPILE_UTILITY
-uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
-gstring g = { .size = STRING_SPRINTF_BUFFER_SIZE, .ptr = 0, .s = buffer };
-gstring * gp = &g;
-#else
-gstring * gp = string_get(STRING_SPRINTF_BUFFER_SIZE);
-#endif
-gstring * gp2;
+gstring * g;
 va_list ap;
 
-va_start(ap, format);
-gp2 = string_vformat(gp, FALSE, format, ap);
-gp->s[gp->ptr] = '\0';
+va_start(ap, line);
+g = string_vformat_trc(NULL, func, line, STRING_SPRINTF_BUFFER_SIZE,
+	SVFMT_REBUFFER|SVFMT_EXTEND, format, ap);
 va_end(ap);
 
-if (!gp2)
+if (!g)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "string_sprintf expansion was longer than %d; format string was (%s)\n"
-    "expansion started '%.32s'",
-    gp->size, format, gp->s);
+    " called from %s %d\n",
+    STRING_SPRINTF_BUFFER_SIZE, format, func, line);
 
-#ifdef COMPILE_UTILITY
-return string_copy(gp->s);
-#else
-gstring_release_unused(gp);
-return gp->s;
-#endif
+gstring_release_unused(g);
+return string_from_gstring(g);
 }
 
 
@@ -801,7 +798,7 @@ return NULL;
 #ifdef COMPILE_UTILITY
 /* Dummy version for this function; it should never be called */
 static void
-gstring_grow(gstring * g, int p, int count)
+gstring_grow(gstring * g, int count)
 {
 assert(FALSE);
 }
@@ -1047,18 +1044,21 @@ return list;
 
 
 /************************************************/
-/* Add more space to a growable-string.
+/* Add more space to a growable-string.  The caller should check
+first if growth is required.  The gstring struct is modified on
+return; specifically, the string-base-pointer may have been changed.
 
 Arguments:
   g		the growable-string
-  p		current end of data
-  count		amount to grow by
+  count		amount needed for g->ptr to increase by
 */
 
 static void
-gstring_grow(gstring * g, int p, int count)
+gstring_grow(gstring * g, int count)
 {
+int p = g->ptr;
 int oldsize = g->size;
+BOOL tainted = is_tainted(g->s);
 
 /* Mostly, string_cat() is used to build small strings of a few hundred
 characters at most. There are times, however, when the strings are very much
@@ -1067,7 +1067,9 @@ To try to keep things reasonable, we use increments whose size depends on the
 existing length of the string. */
 
 unsigned inc = oldsize < 4096 ? 127 : 1023;
-g->size = ((p + count + inc) & ~inc) + 1;
+
+if (count <= 0) return;
+g->size = (p + count + inc + 1) & ~inc;		/* one for a NUL */
 
 /* Try to extend an existing allocation. If the result of calling
 store_extend() is false, either there isn't room in the current memory block,
@@ -1079,8 +1081,8 @@ is at its start.) However, we can do this only if we know that the old string
 was the last item on the dynamic memory stack. This is the case if it matches
 store_last_get. */
 
-if (!store_extend(g->s, oldsize, g->size))
-  g->s = store_newblock(g->s, g->size, p);
+if (!store_extend(g->s, tainted, oldsize, g->size))
+  g->s = store_newblock(g->s, tainted, g->size, p);
 }
 
 
@@ -1113,17 +1115,20 @@ gstring *
 string_catn(gstring * g, const uschar *s, int count)
 {
 int p;
+BOOL srctaint = is_tainted(s);
 
 if (!g)
   {
   unsigned inc = count < 4096 ? 127 : 1023;
   unsigned size = ((count + inc) &  ~inc) + 1;
-  g = string_get(size);
+  g = string_get_tainted(size, srctaint);
   }
+else if (srctaint && !is_tainted(g->s))
+  gstring_rebuffer(g);
 
 p = g->ptr;
 if (p + count >= g->size)
-  gstring_grow(g, p, count);
+  gstring_grow(g, count);
 
 /* Because we always specify the exact number of characters to copy, we can
 use memcpy(), which is likely to be more efficient than strncopy() because the
@@ -1207,12 +1212,14 @@ Returns:       TRUE if the result fitted in the buffer
 */
 
 BOOL
-string_format(uschar * buffer, int buflen, const char * format, ...)
+string_format_trc(uschar * buffer, int buflen,
+  const uschar * func, unsigned line, const char * format, ...)
 {
 gstring g = { .size = buflen, .ptr = 0, .s = buffer }, *gp;
 va_list ap;
 va_start(ap, format);
-gp = string_vformat(&g, FALSE, format, ap);
+gp = string_vformat_trc(&g, func, line, STRING_SPRINTF_BUFFER_SIZE,
+	0, format, ap);
 va_end(ap);
 g.s[g.ptr] = '\0';
 return !!gp;
@@ -1220,14 +1227,24 @@ return !!gp;
 
 
 
+/* Copy the content of a string to tainted memory */
+static void
+gstring_rebuffer(gstring * g)
+{
+uschar * s = store_get(g->size, TRUE);
+memcpy(s, g->s, g->ptr);
+g->s = s;
+}
 
 
-/* Bulid or append to a growing-string, sprintf-style.
 
-If the "extend" argument is true, the string passed in can be NULL,
-empty, or non-empty.
+/* Build or append to a growing-string, sprintf-style.
 
-If the "extend" argument is false, the string passed in may not be NULL,
+If the "extend" flag is true, the string passed in can be NULL,
+empty, or non-empty.  Growing is subject to an overall limit given
+by the size_limit argument.
+
+If the "extend" flag is false, the string passed in may not be NULL,
 will not be grown, and is usable in the original place after return.
 The return value can be NULL to signify overflow.
 
@@ -1236,24 +1253,35 @@ not nul-terminated.
 */
 
 gstring *
-string_vformat(gstring * g, BOOL extend, const char *format, va_list ap)
+string_vformat_trc(gstring * g, const uschar * func, unsigned line,
+  unsigned size_limit, unsigned flags, const char *format, va_list ap)
 {
 enum ltypes { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_SIZE=6 };
 
-int width, precision, off, lim;
+int width, precision, off, lim, need;
 const char * fp = format;	/* Deliberately not unsigned */
+BOOL dest_tainted = FALSE;
 
 string_datestamp_offset = -1;	/* Datestamp not inserted */
 string_datestamp_length = 0;	/* Datestamp not inserted */
 string_datestamp_type = 0;	/* Datestamp not inserted */
 
 #ifdef COMPILE_UTILITY
-assert(!extend);
+assert(!(flags & SVFMT_EXTEND));
 assert(g);
 #else
 
 /* Ensure we have a string, to save on checking later */
 if (!g) g = string_get(16);
+else if (!(flags & SVFMT_TAINT_NOCHK)) dest_tainted = is_tainted(g->s);
+
+if (!(flags & SVFMT_TAINT_NOCHK) && !dest_tainted && is_tainted(format))
+  {
+  if (!(flags & SVFMT_REBUFFER))
+    die_tainted(US"string_vformat", func, line);
+  gstring_rebuffer(g);
+  dest_tainted = TRUE;
+  }
 #endif	/*!COMPILE_UTILITY*/
 
 lim = g->size - 1;	/* leave one for a nul */
@@ -1276,10 +1304,10 @@ while (*fp)
   if (*fp != '%')
     {
     /* Avoid string_copyn() due to COMPILE_UTILITY */
-    if (g->ptr >= lim - 1)
+    if ((need = g->ptr + 1) > lim)
       {
-      if (!extend) return NULL;
-      gstring_grow(g, g->ptr, 1);
+      if (!(flags & SVFMT_EXTEND) || need > size_limit) return NULL;
+      gstring_grow(g, 1);
       lim = g->size - 1;
       }
     g->s[g->ptr++] = (uschar) *fp++;
@@ -1348,10 +1376,10 @@ while (*fp)
     case 'x':
     case 'X':
       width = length > L_LONG ? 24 : 12;
-      if (g->ptr >= lim - width)
+      if ((need = g->ptr + width) > lim)
 	{
-	if (!extend) return NULL;
-	gstring_grow(g, g->ptr, width);
+	if (!(flags & SVFMT_EXTEND) || need >= size_limit) return NULL;
+	gstring_grow(g, width);
 	lim = g->size - 1;
 	gp = CS g->s + g->ptr;
 	}
@@ -1378,10 +1406,10 @@ while (*fp)
     case 'p':
       {
       void * ptr;
-      if (g->ptr >= lim - 24)
+      if ((need = g->ptr + 24) > lim)
 	{
-	if (!extend) return NULL;
-	gstring_grow(g, g->ptr, 24);
+	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;
+	gstring_grow(g, 24);
 	lim = g->size - 1;
 	gp = CS g->s + g->ptr;
 	}
@@ -1411,10 +1439,10 @@ while (*fp)
     case 'g':
     case 'G':
       if (precision < 0) precision = 6;
-      if (g->ptr >= lim - precision - 8)
+      if ((need = g->ptr + precision + 8) > lim)
 	{
-	if (!extend) return NULL;
-	gstring_grow(g, g->ptr, precision+8);
+	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;
+	gstring_grow(g, precision+8);
 	lim = g->size - 1;
 	gp = CS g->s + g->ptr;
 	}
@@ -1429,20 +1457,20 @@ while (*fp)
     /* String types */
 
     case '%':
-      if (g->ptr >= lim - 1)
+      if ((need = g->ptr + 1) > lim)
 	{
-	if (!extend) return NULL;
-	gstring_grow(g, g->ptr, 1);
+	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;
+	gstring_grow(g, 1);
 	lim = g->size - 1;
 	}
       g->s[g->ptr++] = (uschar) '%';
       break;
 
     case 'c':
-      if (g->ptr >= lim - 1)
+      if ((need = g->ptr + 1) > lim)
 	{
-	if (!extend) return NULL;
-	gstring_grow(g, g->ptr, 1);
+	if (!(flags & SVFMT_EXTEND || need >= size_limit)) return NULL;
+	gstring_grow(g, 1);
 	lim = g->size - 1;
 	}
       g->s[g->ptr++] = (uschar) va_arg(ap, int);
@@ -1472,6 +1500,16 @@ while (*fp)
       if (!s) s = null;
       slen = Ustrlen(s);
 
+      if (!(flags & SVFMT_TAINT_NOCHK) && !dest_tainted && is_tainted(s))
+	if (flags & SVFMT_REBUFFER)
+	  {
+	  gstring_rebuffer(g);
+	  gp = CS g->s + g->ptr;
+	  dest_tainted = TRUE;
+	  }
+	else
+	  die_tainted(US"string_vformat", func, line);
+
     INSERT_STRING:              /* Come to from %D or %M above */
 
       {
@@ -1497,10 +1535,10 @@ while (*fp)
       else
 	width = precision = slen;
 
-      if (!extend)
+      if ((need = g->ptr + width) >= size_limit || !(flags & SVFMT_EXTEND))
 	{
 	if (g->ptr == lim) return NULL;
-	if (g->ptr >= lim - width)
+	if (need > lim)
 	  {
 	  truncated = TRUE;
 	  width = precision = lim - g->ptr - 1;
@@ -1508,9 +1546,9 @@ while (*fp)
 	  if (precision < 0) precision = 0;
 	  }
 	}
-      else if (g->ptr >= lim - width)
+      else if (need > lim)
 	{
-	gstring_grow(g, g->ptr, width - (lim - g->ptr));
+	gstring_grow(g, width);
 	lim = g->size - 1;
 	gp = CS g->s + g->ptr;
 	}
@@ -1536,25 +1574,15 @@ while (*fp)
     }
   }
 
+if (g->ptr > g->size)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "string_format internal error: caller %s %d", func, line);
 return g;
 }
 
 
 
 #ifndef COMPILE_UTILITY
-
-gstring *
-string_fmt_append(gstring * g, const char *format, ...)
-{
-va_list ap;
-va_start(ap, format);
-g = string_vformat(g, TRUE, format, ap);
-va_end(ap);
-return g;
-}
-
-
-
 /*************************************************
 *       Generate an "open failed" message        *
 *************************************************/
@@ -1572,7 +1600,8 @@ Returns:        a message, in dynamic store
 */
 
 uschar *
-string_open_failed(int eno, const char *format, ...)
+string_open_failed_trc(int eno, const uschar * func, unsigned line,
+  const char *format, ...)
 {
 va_list ap;
 gstring * g = string_get(1024);
@@ -1585,7 +1614,8 @@ specified messages. If it does, the message just gets truncated, and there
 doesn't seem much we can do about that. */
 
 va_start(ap, format);
-(void) string_vformat(g, FALSE, format, ap);
+(void) string_vformat_trc(g, func, line, STRING_SPRINTF_BUFFER_SIZE,
+	0, format, ap);
 string_from_gstring(g);
 gstring_release_unused(g);
 va_end(ap);

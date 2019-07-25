@@ -376,7 +376,7 @@ dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
 void *yield;
 EXIM_DATUM key_datum, result_datum;
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen);
+uschar * key_copy = store_get(klen, is_tainted(key));
 
 memcpy(key_copy, key, klen);
 
@@ -387,7 +387,10 @@ EXIM_DATUM_SIZE(key_datum) = klen;
 
 if (!EXIM_DBGET(dbblock->dbptr, key_datum, result_datum)) return NULL;
 
-yield = store_get(EXIM_DATUM_SIZE(result_datum));
+/* Assume for now that anything stored could have been tainted. Properly
+we should store the taint status along with the data. */
+
+yield = store_get(EXIM_DATUM_SIZE(result_datum), TRUE);
 memcpy(yield, EXIM_DATUM_DATA(result_datum), EXIM_DATUM_SIZE(result_datum));
 if (length != NULL) *length = EXIM_DATUM_SIZE(result_datum);
 
@@ -420,7 +423,7 @@ dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen);
+uschar * key_copy = store_get(klen, is_tainted(key));
 
 memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
@@ -452,7 +455,7 @@ int
 dbfn_delete(open_db *dbblock, const uschar *key)
 {
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen);
+uschar * key_copy = store_get(klen, is_tainted(key));
 
 memcpy(key_copy, key, klen);
 EXIM_DATUM key_datum;
@@ -551,6 +554,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
   uschar *t;
   uschar name[MESSAGE_ID_LENGTH + 1];
   void *value;
+  rmark reset_point = store_mark();
 
   /* Keep a copy of the key separate, as in some DBM's the pointer is into data
   which might change. */
@@ -684,8 +688,8 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	printf("  %s %.*s\n", keybuffer, length, session->session);
 	break;
       }
-    store_reset(value);
     }
+  store_reset(reset_point);
   }
 
 dbfn_close(dbm);
@@ -735,7 +739,7 @@ int dbdata_type;
 uschar **argv = USS cargv;
 uschar buffer[256];
 uschar name[256];
-void *reset_point = store_get(0);
+rmark reset_point;
 
 name[0] = 0;  /* No name set */
 
@@ -745,7 +749,7 @@ user requests */
 dbdata_type = check_args(argc, argv, US"fixdb", US"");
 printf("Modifying Exim hints database %s/db/%s\n", argv[1], argv[2]);
 
-for(;;)
+for(; (reset_point = store_mark()); store_reset(reset_point))
   {
   open_db dbblock;
   open_db *dbm;
@@ -759,8 +763,6 @@ for(;;)
   int oldlength;
   uschar *t;
   uschar field[256], value[256];
-
-  store_reset(reset_point);
 
   printf("> ");
   if (Ufgets(buffer, 256, stdin) == NULL) break;
@@ -1100,7 +1102,7 @@ struct stat statbuf;
 int maxkeep = 30 * 24 * 60 * 60;
 int dbdata_type, i, oldest, path_len;
 key_item *keychain = NULL;
-void *reset_point;
+rmark reset_point;
 open_db dbblock;
 open_db *dbm;
 EXIM_CURSOR *cursor;
@@ -1173,7 +1175,7 @@ for (key = dbfn_scan(dbm, TRUE, &cursor);
      key;
      key = dbfn_scan(dbm, FALSE, &cursor))
   {
-  key_item *k = store_get(sizeof(key_item) + Ustrlen(key));
+  key_item *k = store_get(sizeof(key_item) + Ustrlen(key), is_tainted(key));
   k->next = keychain;
   keychain = k;
   Ustrcpy(k->key, key);
@@ -1182,13 +1184,10 @@ for (key = dbfn_scan(dbm, TRUE, &cursor);
 /* Now scan the collected keys and operate on the records, resetting
 the store each time round. */
 
-reset_point = store_get(0);
-
-while (keychain)
+for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
   {
   dbdata_generic *value;
 
-  store_reset(reset_point);
   key = keychain->key;
   keychain = keychain->next;
   value = dbfn_read_with_length(dbm, key, NULL);

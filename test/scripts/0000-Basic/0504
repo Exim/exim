@@ -1,12 +1,10 @@
 # transport filter command fails to execute
 need_ipv4
 #
-exim -odi userx
-transport: t1
+exim -DOPT=t1 -odi userx
 Test 1
 ****
-exim -odi userx
-transport: t2
+exim -DOPT=t2 -odi userx
 Test 2
 ****
 server PORT_S
@@ -21,8 +19,7 @@ RCPT TO
 DATA
 354 Send it
 ****
-exim -odi userx
-transport: t3
+exim -DOPT=t3 -odi userx
 Test 3
 ****
 no_msglog_check

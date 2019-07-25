@@ -541,7 +541,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
     if (Ustrcmp(ss, "+caseful") == 0)
       {
       check_string_block *cb = (check_string_block *)arg;
-      Ustrcpy(cb->subject, cb->origsubject);
+      Ustrcpy(US cb->subject, cb->origsubject);
       cb->caseless = FALSE;
       continue;
       }
@@ -666,7 +666,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
             so we use the permanent store pool */
 
             store_pool = POOL_PERM;
-            p = store_get(sizeof(namedlist_cacheblock));
+            p = store_get(sizeof(namedlist_cacheblock), FALSE);
             p->key = string_copy(get_check_key(arg, type));
 
 
@@ -1277,6 +1277,7 @@ match_address_list(const uschar *address, BOOL caseless, BOOL expand,
 {
 check_address_block ab;
 unsigned int *local_cache_bits = cache_bits;
+int len;
 
 /* RFC 2505 recommends that for spam checking, local parts should be caselessly
 compared. Therefore, Exim now forces the entire address into lower case here,
@@ -1285,8 +1286,10 @@ patterns.) Otherwise just the domain is lower cases. A magic item "+caseful" in
 the list can be used to restore a caseful copy of the local part from the
 original address. */
 
-sprintf(CS big_buffer, "%.*s", big_buffer_size - 1, address);
-for (uschar * p = big_buffer + Ustrlen(big_buffer) - 1; p >= big_buffer; p--)
+if ((len = Ustrlen(address)) > 255) len = 255;
+ab.address = string_copyn(address, len);
+
+for (uschar * p = ab.address + len - 1; p >= ab.address; p--)
   {
   if (!caseless && *p == '@') break;
   *p = tolower(*p);
@@ -1307,7 +1310,7 @@ if (expand_setup == 0)
 /* Set up the data to be passed ultimately to check_address. */
 
 ab.origaddress = address;
-ab.address = big_buffer;
+/* ab.address is above */
 ab.expand_setup = expand_setup;
 ab.caseless = caseless;
 

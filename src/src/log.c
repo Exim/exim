@@ -865,9 +865,13 @@ DEBUG(D_any|D_v)
 
   if (flags & LOG_CONFIG) g = log_config_info(g, flags);
 
+  /* We want to be able to log tainted info, but log_buffer is directly
+  malloc'd.  So use deliberately taint-nonchecking routines to build into
+  it, trusting that we will never expand the results. */
+
   va_start(ap, format);
   i = g->ptr;
-  if (!string_vformat(g, FALSE, format, ap))
+  if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
     {
     g->ptr = i;
     g = string_cat(g, US"**** log string overflowed log buffer ****");
@@ -921,7 +925,12 @@ if (flags & LOG_CONFIG)
 va_start(ap, format);
   {
   int i = g->ptr;
-  if (!string_vformat(g, FALSE, format, ap))
+
+  /* We want to be able to log tainted info, but log_buffer is directly
+  malloc'd.  So use deliberately taint-nonchecking routines to build into
+  it, trusting that we will never expand the results. */
+
+  if (!string_vformat(g, SVFMT_TAINT_NOCHK, format, ap))
     {
     g->ptr = i;
     g = string_cat(g, US"**** log string overflowed log buffer ****\n");
@@ -934,7 +943,7 @@ this way because it kind of fits with LOG_RECIPIENTS. */
 
 if (   flags & LOG_SENDER
    && g->ptr < LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
-  g = string_fmt_append(g, " from <%s>", raw_sender);
+  g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " from <%s>", raw_sender);
 
 /* Add list of recipients to the message if required; the raw list,
 before rewriting, was saved in raw_recipients. There may be none, if an ACL
@@ -945,12 +954,12 @@ if (  flags & LOG_RECIPIENTS
    && raw_recipients_count > 0)
   {
   int i;
-  g = string_fmt_append(g, " for");
+  g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " for", NULL);
   for (i = 0; i < raw_recipients_count; i++)
     {
     uschar * s = raw_recipients[i];
     if (LOG_BUFFER_SIZE - g->ptr < Ustrlen(s) + 3) break;
-    g = string_fmt_append(g, " %s", s);
+    g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, " %s", s);
     }
   }
 
@@ -1046,39 +1055,34 @@ if (flags & LOG_REJECT)
   {
   if (header_list && LOGGING(rejected_header))
     {
-    uschar * p = g->s + g->ptr;
+    gstring * g2;
     int i;
 
     if (recipients_count > 0)
       {
       /* List the sender */
 
-      string_format(p, LOG_BUFFER_SIZE - g->ptr,
-        "Envelope-from: <%s>\n", sender_address);
-      while (*p) p++;
-      g->ptr = p - g->s;
+      g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+			"Envelope-from: <%s>\n", sender_address);
+      if (g2) g = g2;
 
       /* List up to 5 recipients */
 
-      string_format(p, LOG_BUFFER_SIZE - g->ptr,
-        "Envelope-to: <%s>\n", recipients_list[0].address);
-      while (*p) p++;
-      g->ptr = p - g->s;
+      g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+			"Envelope-to: <%s>\n", recipients_list[0].address);
+      if (g2) g = g2;
 
       for (i = 1; i < recipients_count && i < 5; i++)
         {
-        string_format(p, LOG_BUFFER_SIZE - g->ptr, "    <%s>\n",
-          recipients_list[i].address);
-	while (*p) p++;
-	g->ptr = p - g->s;
+        g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+			"    <%s>\n", recipients_list[i].address);
+	if (g2) g = g2;
         }
 
       if (i < recipients_count)
         {
-        string_format(p, LOG_BUFFER_SIZE - g->ptr,
-          "    ...\n");
-	while (*p) p++;
-	g->ptr = p - g->s;
+        g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "    ...\n", NULL);
+	if (g2) g = g2;
         }
       }
 
@@ -1086,11 +1090,11 @@ if (flags & LOG_REJECT)
 
     for (header_line * h = header_list; h; h = h->next) if (h->text)
       {
-      BOOL fitted = string_format(p, LOG_BUFFER_SIZE - g->ptr,
-        "%c %s", h->type, h->text);
-      while (*p) p++;
-      g->ptr = p - g->s;
-      if (!fitted)         /* Buffer is full; truncate */
+      g2 = string_fmt_append_f(g, SVFMT_TAINT_NOCHK,
+			"%c %s", h->type, h->text);
+      if (g2)
+	g = g2;
+      else		/* Buffer is full; truncate */
         {
         g->ptr -= 100;        /* For message and separator */
         if (g->s[g->ptr-1] == '\n') g->ptr--;

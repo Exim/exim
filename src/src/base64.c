@@ -158,7 +158,7 @@ uschar *result;
 
 {
   int l = Ustrlen(code);
-  *ptr = result = store_get(1 + l/4 * 3 + l%4);
+  *ptr = result = store_get(1 + l/4 * 3 + l%4, is_tainted(code));
 }
 
 /* Each cycle of the loop handles a quantum of 4 input bytes. For the last
@@ -244,7 +244,7 @@ static uschar *enc64table =
 uschar *
 b64encode(const uschar * clear, int len)
 {
-uschar *code = store_get(4*((len+2)/3) + 1);
+uschar *code = store_get(4*((len+2)/3) + 1, is_tainted(clear));
 uschar *p = code;
 
 while (len-- >0)

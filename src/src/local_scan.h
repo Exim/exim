@@ -188,7 +188,10 @@ extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
 extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, BOOL, ...) PRINTF_FUNCTION(1,3);
 extern void    smtp_vprintf(const char *, BOOL, va_list);
-extern uschar *string_sprintf(const char *, ...) ALMOST_PRINTF(1,2);
+
+#define string_sprintf(fmt, ...) \
+	string_sprintf_trc(fmt, US __FUNCTION__, __LINE__, __VA_ARGS__)
+extern uschar *string_sprintf_trc(const char *, const uschar *, unsigned, ...) ALMOST_PRINTF(1,4);
 
 #ifdef LOCAL_SCAN
 /* When compiling a local_scan() file we want to rename a published API, so that

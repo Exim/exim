@@ -499,7 +499,7 @@ switch (hash)
   }
 
 #define SIGSPACE 128
-sig->data = store_get(SIGSPACE);
+sig->data = store_get(SIGSPACE, FALSE);
 
 if (gcry_mpi_cmp (sign_ctx->p, sign_ctx->q) > 0)
   {
@@ -755,7 +755,7 @@ switch (hash)
 if (  (ctx = EVP_MD_CTX_new())
    && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
    && EVP_DigestSign(ctx, NULL, &siglen, NULL, 0) > 0
-   && (sig->data = store_get(siglen))
+   && (sig->data = store_get(siglen, FALSE))
 
    /* Obtain the signature (slen could change here!) */
    && EVP_DigestSign(ctx, sig->data, &siglen, data->data, data->len) > 0
@@ -771,7 +771,7 @@ if (  (ctx = EVP_MD_CTX_create())
    && EVP_DigestSignInit(ctx, NULL, md, NULL, sign_ctx->key) > 0
    && EVP_DigestSignUpdate(ctx, data->data, data->len) > 0
    && EVP_DigestSignFinal(ctx, NULL, &siglen) > 0
-   && (sig->data = store_get(siglen))
+   && (sig->data = store_get(siglen, FALSE))
  
    /* Obtain the signature (slen could change here!) */
    && EVP_DigestSignFinal(ctx, sig->data, &siglen) > 0

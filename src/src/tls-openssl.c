@@ -2790,7 +2790,7 @@ if (SSL_SESSION_is_resumable(ss)) 	/* 1.1.1 */
   {
   int len = i2d_SSL_SESSION(ss, NULL);
   int dlen = sizeof(dbdata_tls_session) + len;
-  dbdata_tls_session * dt = store_get(dlen);
+  dbdata_tls_session * dt = store_get(dlen, TRUE);
   uschar * s = dt->session;
   open_db dbblock, * dbm_file;
 
@@ -2908,7 +2908,7 @@ BOOL require_ocsp = FALSE;
 
 rc = store_pool;
 store_pool = POOL_PERM;
-exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx));
+exim_client_ctx = store_get(sizeof(exim_openssl_client_tls_ctx), FALSE);
 exim_client_ctx->corked = NULL;
 store_pool = rc;
 

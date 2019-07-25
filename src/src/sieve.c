@@ -245,7 +245,7 @@ for (int pass = 0; pass <= 1; pass++)
     dst->length=0;
   else
     {
-    dst->character=store_get(dst->length+1); /* plus one for \0 */
+    dst->character = store_get(dst->length+1, is_tainted(src->character)); /* plus one for \0 */
     new=dst->character;
     }
   for (const uschar * start = src->character, * end = start + src->length;
@@ -444,9 +444,9 @@ if (*uri && *uri!='?')
         filter->errmsg=US"Invalid URI encoding";
         return -1;
         }
-      new=store_get(sizeof(string_item));
-      new->text=store_get(to.length+1);
-      if (to.length) memcpy(new->text,to.character,to.length);
+      new=store_get(sizeof(string_item), FALSE);
+      new->text = store_get(to.length+1, is_tainted(to.character));
+      if (to.length) memcpy(new->text, to.character, to.length);
       new->text[to.length]='\0';
       new->next=*recipient;
       *recipient=new;
@@ -502,9 +502,9 @@ if (*uri=='?')
       }
     if (hname.length==2 && strcmpic(hname.character, US"to")==0)
       {
-      new=store_get(sizeof(string_item));
-      new->text=store_get(hvalue.length+1);
-      if (hvalue.length) memcpy(new->text,hvalue.character,hvalue.length);
+      new=store_get(sizeof(string_item), FALSE);
+      new->text = store_get(hvalue.length+1, is_tainted(hvalue.character));
+      if (hvalue.length) memcpy(new->text, hvalue.character, hvalue.length);
       new->text[hvalue.length]='\0';
       new->next=*recipient;
       *recipient=new;
@@ -1087,7 +1087,8 @@ uschar *errmsg;
 value->length=0;
 value->character=(uschar*)0;
 
-t=r=s=expand_string(string_sprintf("$rheader_%s",quote(header)));
+t = r = s = expand_string(string_sprintf("$rheader_%s",quote(header)));
+if (!t) return;
 while (*r==' ' || *r=='\t') ++r;
 while (*r)
   {
@@ -1728,7 +1729,7 @@ if (*filter->pc=='[') /* string list */
       struct String *new;
 
       dataCapacity = dataCapacity ? dataCapacity * 2 : 4;
-      new = store_get(sizeof(struct String) * dataCapacity);
+      new = store_get(sizeof(struct String) * dataCapacity, FALSE);
 
       if (d) memcpy(new,d,sizeof(struct String)*dataLength);
       d = new;
@@ -1766,15 +1767,13 @@ if (*filter->pc=='[') /* string list */
   }
 else /* single string */
   {
-  if ((d=store_get(sizeof(struct String)*2))==(struct String*)0)
-    {
+  if (!(d=store_get(sizeof(struct String)*2, FALSE)))
     return -1;
-    }
+
   m=parse_string(filter,&d[0]);
   if (m==-1)
-    {
     return -1;
-    }
+
   else if (m==0)
     {
     filter->pc=orig;
@@ -2119,8 +2118,7 @@ if (parse_identifier(filter,CUS "address"))
     if (exec)
       {
       /* We are only interested in addresses below, so no MIME decoding */
-      header_value=expand_string(string_sprintf("$rheader_%s",quote(h)));
-      if (header_value == NULL)
+      if (!(header_value = expand_string(string_sprintf("$rheader_%s",quote(h)))))
         {
         filter->errmsg=CUS "header string expansion failed";
         return -1;
@@ -2227,8 +2225,8 @@ else if (parse_identifier(filter,CUS "exists"))
       {
       uschar *header_def;
 
-      header_def=expand_string(string_sprintf("${if def:header_%s {true}{false}}",quote(h)));
-      if (header_def == NULL)
+      header_def = expand_string(string_sprintf("${if def:header_%s {true}{false}}",quote(h)));
+      if (!header_def)
         {
         filter->errmsg=CUS "header string expansion failed";
         return -1;
@@ -2311,8 +2309,8 @@ else if (parse_identifier(filter,CUS "header"))
       uschar *header_def;
 
       expand_header(&header_value,h);
-      header_def=expand_string(string_sprintf("${if def:header_%s {true}{false}}",quote(h)));
-      if (header_value.character == NULL || header_def == NULL)
+      header_def = expand_string(string_sprintf("${if def:header_%s {true}{false}}",quote(h)));
+      if (!header_value.character || !header_def)
         {
         filter->errmsg=CUS "header string expansion failed";
         return -1;
@@ -2495,7 +2493,7 @@ else if (parse_identifier(filter,CUS "envelope"))
       }
     if (exec && envelopeExpr)
       {
-      if ((envelope=expand_string(US envelopeExpr)) == NULL)
+      if (!(envelope=expand_string(US envelopeExpr)))
         {
         filter->errmsg=CUS "header string expansion failed";
         return -1;
@@ -2992,7 +2990,13 @@ while (*filter->pc)
     subject.character=(uschar*)0;
     body.length=-1;
     body.character=(uschar*)0;
-    envelope_from=(sender_address && sender_address[0]) ? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : US "";
+    envelope_from = sender_address && sender_address[0]
+     ? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : US "";
+    if (!envelope_from)
+      {
+      filter->errmsg=CUS "expansion failure for envelope from";
+      return -1;
+      }
     for (;;)
       {
       if (parse_white(filter)==-1) return -1;
@@ -3048,8 +3052,8 @@ while (*filter->pc)
       if (message.length==-1) message=subject;
       if (message.length==-1) expand_header(&message,&str_subject);
       expand_header(&auto_submitted_value,&str_auto_submitted);
-      auto_submitted_def=expand_string(string_sprintf("${if def:header_auto-submitted {true}{false}}"));
-      if (auto_submitted_value.character == NULL || auto_submitted_def == NULL)
+      auto_submitted_def=expand_string(US"${if def:header_auto-submitted {true}{false}}");
+      if (!auto_submitted_value.character || !auto_submitted_def)
         {
         filter->errmsg=CUS "header string expansion failed";
         return -1;
@@ -3069,8 +3073,7 @@ while (*filter->pc)
         if (!already)
           /* New notification, process it */
           {
-          struct Notification *sent;
-          sent=store_get(sizeof(struct Notification));
+          struct Notification * sent = store_get(sizeof(struct Notification), FALSE);
           sent->method=method;
           sent->importance=importance;
           sent->message=message;
@@ -3088,7 +3091,8 @@ while (*filter->pc)
               int buffer_capacity;
 
               f = fdopen(fd, "wb");
-              fprintf(f,"From: %s\n",from.length==-1 ? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
+              fprintf(f,"From: %s\n", from.length == -1
+		? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
               for (string_item * p = recipient; p; p=p->next)
 	       	fprintf(f,"To: %s\n",p->text);
               fprintf(f,"Auto-Submitted: auto-notified; %s\n",filter->enotify_mailto_owner);
@@ -3100,7 +3104,7 @@ while (*filter->pc)
                 }
               /* Allocation is larger than necessary, but enough even for split MIME words */
               buffer_capacity=32+4*message.length;
-              buffer=store_get(buffer_capacity);
+              buffer=store_get(buffer_capacity, TRUE);
               if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
               fprintf(f,"\n");
               if (body.length>0) fprintf(f,"%s\n",body.character);
@@ -3220,9 +3224,9 @@ while (*filter->pc)
           }
         for (struct String * a = addresses; a->length != -1; ++a)
           {
-          string_item * new = store_get(sizeof(string_item));
+          string_item * new = store_get(sizeof(string_item), FALSE);
 
-          new->text=store_get(a->length+1);
+          new->text = store_get(a->length+1, is_tainted(a->character));
           if (a->length) memcpy(new->text,a->character,a->length);
           new->text[a->length]='\0';
           new->next=aliases;
@@ -3313,8 +3317,8 @@ while (*filter->pc)
             {
             uschar *subject_def;
 
-            subject_def=expand_string(US"${if def:header_subject {true}{false}}");
-            if (Ustrcmp(subject_def,"true")==0)
+            subject_def = expand_string(US"${if def:header_subject {true}{false}}");
+            if (subject_def && Ustrcmp(subject_def,"true")==0)
               {
 	      gstring * g = string_catn(NULL, US"Auto: ", 6);
 
@@ -3337,7 +3341,7 @@ while (*filter->pc)
           addr->prop.ignore_error = TRUE;
           addr->next = *generated;
           *generated = addr;
-          addr->reply = store_get(sizeof(reply_item));
+          addr->reply = store_get(sizeof(reply_item), FALSE);
           memset(addr->reply,0,sizeof(reply_item)); /* XXX */
           addr->reply->to = string_copy(sender_address);
           if (from.length==-1)
@@ -3346,7 +3350,7 @@ while (*filter->pc)
             addr->reply->from = from.character;
           /* Allocation is larger than necessary, but enough even for split MIME words */
           buffer_capacity=32+4*subject.length;
-          buffer=store_get(buffer_capacity);
+          buffer = store_get(buffer_capacity, is_tainted(subject.character));
 	  /* deconst cast safe as we pass in a non-const item */
           addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
           addr->reply->oncelog = string_from_gstring(once);
@@ -3582,14 +3586,13 @@ options = options; /* Keep picky compilers happy */
 error = error;
 
 DEBUG(D_route) debug_printf("Sieve: start of processing\n");
-sieve.filter=filter;
+sieve.filter = filter;
 
-if (vacation_directory == NULL)
+if (!vacation_directory)
   sieve.vacation_directory = NULL;
 else
   {
-  sieve.vacation_directory=expand_string(vacation_directory);
-  if (sieve.vacation_directory == NULL)
+  if (!(sieve.vacation_directory = expand_string(vacation_directory)))
     {
     *error = string_sprintf("failed to expand \"%s\" "
       "(sieve_vacation_directory): %s", vacation_directory,
@@ -3598,12 +3601,11 @@ else
     }
   }
 
-if (enotify_mailto_owner == NULL)
+if (!enotify_mailto_owner)
   sieve.enotify_mailto_owner = NULL;
 else
   {
-  sieve.enotify_mailto_owner=expand_string(enotify_mailto_owner);
-  if (sieve.enotify_mailto_owner == NULL)
+  if (!(sieve.enotify_mailto_owner = expand_string(enotify_mailto_owner)))
     {
     *error = string_sprintf("failed to expand \"%s\" "
       "(sieve_enotify_mailto_owner): %s", enotify_mailto_owner,
@@ -3612,7 +3614,8 @@ else
     }
   }
 
-sieve.useraddress = useraddress == NULL ? CUS "$local_part_prefix$local_part$local_part_suffix" : useraddress;
+sieve.useraddress = useraddress
+  ? useraddress : CUS "$local_part_prefix$local_part$local_part_suffix";
 sieve.subaddress = subaddress;
 
 #ifdef COMPILE_SYNTAX_CHECKER
@@ -3624,12 +3627,12 @@ if (parse_start(&sieve,1,generated)==1)
   if (sieve.keep)
     {
     add_addr(generated,US"inbox",1,0,0,0);
-    msg = string_sprintf("Implicit keep");
+    msg = US"Implicit keep";
     r = FF_DELIVERED;
     }
   else
     {
-    msg = string_sprintf("No implicit keep");
+    msg = US"No implicit keep";
     r = FF_DELIVERED;
     }
   }

@@ -128,6 +128,7 @@ gstring * result = NULL;
 int yield = DEFER;
 unsigned int num_fields, num_tuples;
 pgsql_connection *cn;
+rmark reset_point = store_mark();
 uschar *server_copy = NULL;
 uschar *sdata[3];
 
@@ -238,7 +239,7 @@ if (!cn)
 
   if(PQstatus(pg_conn) == CONNECTION_BAD)
     {
-    store_reset(server_copy);
+    reset_point = store_reset(reset_point);
     *errmsg = string_sprintf("PGSQL connection failed: %s",
       PQerrorMessage(pg_conn));
     PQfinish(pg_conn);
@@ -259,7 +260,7 @@ if (!cn)
 
   /* Add the connection to the cache */
 
-  cn = store_get(sizeof(pgsql_connection));
+  cn = store_get(sizeof(pgsql_connection), FALSE);
   cn->server = server_copy;
   cn->handle = pg_conn;
   cn->next = pgsql_connections;
@@ -356,7 +357,7 @@ if (pg_result) PQclear(pg_result);
 
 if (result)
   {
-  store_reset(result->s + result->ptr + 1);
+  gstring_release_unused(result);
   *resultptr = string_from_gstring(result);
   return OK;
   }
@@ -427,7 +428,7 @@ while ((c = *t++) != 0)
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1);
+t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
 
 while ((c = *s++) != 0)
   {

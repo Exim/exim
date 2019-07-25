@@ -24,7 +24,7 @@ nis_open(uschar *filename, uschar **errmsg)
 char *nis_domain;
 if (yp_get_default_domain(&nis_domain) != 0)
   {
-  *errmsg = string_sprintf("failed to get default NIS domain");
+  *errmsg = US"failed to get default NIS domain";
   return NULL;
   }
 return nis_domain;

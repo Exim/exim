@@ -110,13 +110,6 @@ don't make the file descriptors two-way. */
 #define DEBUG(x)      if (debug_selector & (x))
 #define HDEBUG(x)     if (host_checking || (debug_selector & (x)))
 
-#define PTR_CHK(ptr) \
-do { \
-if ((void *)ptr > (void *)store_get(0)) \
-  debug_printf("BUG: ptr '%s' beyond arena at %s:%d\n", \
-       	mac_expanded_string(ptr), __FUNCTION__, __LINE__); \
-} while(0)
-
 /* The default From: text for DSNs */
 
 #define DEFAULT_DSN_FROM "Mail Delivery System <Mailer-Daemon@$qualify_domain>"
@@ -1096,5 +1089,11 @@ should not be one active. */
     ": 0x14 : 0x15 : 0x16 :session resumed" \
     ": 0x18 :session resumed unasked: 0x1A :session resumed unasked" \
     ": 0x1C :session resumed: 0x1E :session resumed, also new ticket"
+
+/* Flags for string_vformat */
+#define SVFMT_EXTEND		BIT(0)
+#define SVFMT_REBUFFER		BIT(1)
+#define SVFMT_TAINT_NOCHK	BIT(2)
+
 
 /* End of macros.h */

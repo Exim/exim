@@ -239,7 +239,7 @@ for (; i <= *subcount; i++)
         Ustrcmp(name + SPOOL_NAME_LENGTH - 2, "-H") == 0)
       {
       queue_filename *next =
-        store_get(sizeof(queue_filename) + Ustrlen(name));
+        store_get(sizeof(queue_filename) + Ustrlen(name), is_tainted(name));
       Ustrcpy(next->text, name);
       next->dir_uschar = subdirchar;
 
@@ -457,7 +457,7 @@ for (int i = queue_run_in_order ? -1 : 0;
      i <= (queue_run_in_order ? -1 : subcount);
      i++)
   {
-  void *reset_point1 = store_get(0);
+  rmark reset_point1 = store_mark();
 
   DEBUG(D_queue_run)
     {
@@ -521,7 +521,7 @@ for (int i = queue_run_in_order ? -1 : 0;
       {
       BOOL wanted = TRUE;
       BOOL orig_dont_deliver = f.dont_deliver;
-      void *reset_point2 = store_get(0);
+      rmark reset_point2 = store_mark();
 
       /* Restore the original setting of dont_deliver after reading the header,
       so that a setting for a particular message doesn't force it for any that
@@ -647,7 +647,7 @@ for (int i = queue_run_in_order ? -1 : 0;
       if (f.running_in_test_harness) millisleep(100);
       (void)close(pfd[pipe_read]);
       rc = deliver_message(fq->text, force_delivery, FALSE);
-      _exit(rc == DELIVER_NOT_ATTEMPTED);
+      exim_underbar_exit(rc == DELIVER_NOT_ATTEMPTED);
       }
     if (pid < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork of delivery process from "
@@ -816,7 +816,7 @@ queue_list(int option, uschar **list, int count)
 {
 int subcount;
 int now = (int)time(NULL);
-void *reset_point;
+rmark reset_point;
 queue_filename * qf = NULL;
 uschar subdirs[64];
 
@@ -828,7 +828,7 @@ if (count > 0)
   for (int i = 0; i < count; i++)
     {
     queue_filename *next =
-      store_get(sizeof(queue_filename) + Ustrlen(list[i]) + 2);
+      store_get(sizeof(queue_filename) + Ustrlen(list[i]) + 2, is_tainted(list[i]));
     sprintf(CS next->text, "%s-H", list[i]);
     next->dir_uschar = '*';
     next->next = NULL;
@@ -851,8 +851,8 @@ if (option >= 8) option -= 8;
 /* Now scan the chain and print information, resetting store used
 each time. */
 
-for (reset_point = store_get(0);
-    qf;
+for (;
+    qf && (reset_point = store_mark());
     spool_clear_header_globals(), store_reset(reset_point), qf = qf->next
     )
   {

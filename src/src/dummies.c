@@ -20,7 +20,7 @@ alternates. */
 /* We don't have the full Exim headers dragged in, but this function
 is used for debugging output. */
 
-extern gstring * string_vformat(gstring *, BOOL, const char *, va_list);
+extern gstring * string_vformat(gstring *, unsigned, const char *, va_list);
 
 
 /*************************************************
@@ -56,7 +56,9 @@ flags = flags;
 *      Handle calls to print debug output        *
 *************************************************/
 
-/* The message just gets written to stderr
+/* The message just gets written to stderr.
+We use tainted memory to format into just so that we can handle
+tainted arguments.
 
 Arguments:
   format    a printf() format
@@ -69,12 +71,12 @@ void
 debug_printf(char *format, ...)
 {
 va_list ap;
-gstring * g = string_get(1024);
-void * reset_point = g;
+rmark reset_point = store_mark();
+gstring * g = string_get_tainted(1024, TRUE);
 
 va_start(ap, format);
 
-if (!string_vformat(g, FALSE, format, ap))
+if (!string_vformat(g, 0, format, ap))
   {
   char * s = "**** debug string overflowed buffer ****\n";
   char * p = CS g->s + g->ptr;

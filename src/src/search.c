@@ -41,7 +41,7 @@ static int open_filecount = 0;
 
 /* Allow us to reset store used for lookups and lookup caching */
 
-static void *search_reset_point = NULL;
+static rmark search_reset_point = NULL;
 
 
 
@@ -269,8 +269,7 @@ open_filecount = 0;
 for (int i = 0; i < lookup_list_count; i++) if (lookup_list[i]->tidy)
   (lookup_list[i]->tidy)();
 
-if (search_reset_point) store_reset(search_reset_point);
-search_reset_point = NULL;
+if (search_reset_point) search_reset_point = store_reset(search_reset_point);
 store_pool = old_pool;
 }
 
@@ -339,7 +338,7 @@ int old_pool = store_pool;
 /* Change to the search store pool and remember our reset point */
 
 store_pool = POOL_SEARCH;
-if (search_reset_point == NULL) search_reset_point = store_get(0);
+if (!search_reset_point) search_reset_point = store_mark();
 
 DEBUG(D_lookup) debug_printf_indent("search_open: %s \"%s\"\n", lk->name,
   filename ? filename : US"NULL");
@@ -418,8 +417,8 @@ count alone. */
 
 if (!t)
   {
-  t = store_get(sizeof(tree_node) + Ustrlen(keybuffer));
-  t->data.ptr = c = store_get(sizeof(search_cache));
+  t = store_get(sizeof(tree_node) + Ustrlen(keybuffer), FALSE);
+  t->data.ptr = c = store_get(sizeof(search_cache), FALSE);
   c->item_cache = NULL;
   Ustrcpy(t->name, keybuffer);
   tree_insertnode(&search_tree, t);
@@ -537,7 +536,7 @@ else
       }
     else
       {
-      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len);
+      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, is_tainted(keystring));
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
       e->ptr = data;
       t = (tree_node *)(e+1);
@@ -685,7 +684,8 @@ else if (partial >= 0)
 
   if (affixlen == 0) keystring2 = keystring; else
     {
-    keystring2 = store_get(len + affixlen + 1);
+    keystring2 = store_get(len + affixlen + 1,
+			is_tainted(keystring) || is_tainted(affix));
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);

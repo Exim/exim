@@ -2,7 +2,6 @@
 need_ipv4
 #
 exim -odi userx
-transport: t1
 Test 1
 ****
 no_msglog_check

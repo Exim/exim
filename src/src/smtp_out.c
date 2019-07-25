@@ -52,6 +52,17 @@ if (!(expint = expand_string(istring)))
   return FALSE;
   }
 
+if (is_tainted(expint))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "attempt to use tainted value '%s' from '%s' for interface",
+    expint, istring);
+  addr->transport_return = PANIC;
+  addr->message = string_sprintf("failed to expand \"interface\" "
+      "option for %s: configuration error", msg);
+  return FALSE;
+  }
+
 while (isspace(*expint)) expint++;
 if (*expint == 0) return TRUE;
 
@@ -521,8 +532,14 @@ if (format)
   gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
   va_list ap;
 
+  /* Use taint-unchecked routines for writing into big_buffer, trusting that
+  we'll never expand the results.  Actually, the error-message use - leaving
+  the results in big_buffer for potential later use - is uncomfortably distant.
+  XXX Would be better to assume all smtp commands are short, use normal pool
+  alloc rather than big_buffer, and another global for the data-for-error. */
+
   va_start(ap, format);
-  if (!string_vformat(&gs, FALSE, CS format, ap))
+  if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, CS format, ap))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong write_command in outgoing "
       "SMTP");
   va_end(ap);
@@ -538,7 +555,7 @@ if (format)
     if (!flush_buffer(outblock, SCMD_FLUSH)) return -1;
     }
 
-  Ustrncpy(CS outblock->ptr, gs.s, gs.ptr);
+  Ustrncpy(outblock->ptr, gs.s, gs.ptr);
   outblock->ptr += gs.ptr;
   outblock->cmd_count++;
   gs.ptr -= 2; string_from_gstring(&gs); /* remove \r\n for error message */

@@ -197,9 +197,9 @@ if ((ipa = string_is_ip_address(lname, NULL)) != 0)
       (ipa == 6 && af == AF_INET6))
     {
     int x[4];
-    yield = store_get(sizeof(struct hostent));
-    alist = store_get(2 * sizeof(char *));
-    adds  = store_get(alen);
+    yield = store_get(sizeof(struct hostent), FALSE);
+    alist = store_get(2 * sizeof(char *), FALSE);
+    adds  = store_get(alen, FALSE);
     yield->h_name = CS name;
     yield->h_aliases = NULL;
     yield->h_addrtype = af;
@@ -251,9 +251,9 @@ else
        rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
     count++;
 
-  yield = store_get(sizeof(struct hostent));
-  alist = store_get((count + 1) * sizeof(char *));
-  adds  = store_get(count *alen);
+  yield = store_get(sizeof(struct hostent), FALSE);
+  alist = store_get((count + 1) * sizeof(char *), FALSE);
+  adds  = store_get(count *alen, FALSE);
 
   yield->h_name = CS name;
   yield->h_aliases = NULL;
@@ -325,7 +325,7 @@ while ((name = string_nextinlist(&list, &sep, NULL, 0)))
     continue;
     }
 
-  h = store_get(sizeof(host_item));
+  h = store_get(sizeof(host_item), FALSE);
   h->name = name;
   h->address = NULL;
   h->port = PORT_NONE;
@@ -524,12 +524,13 @@ void
 host_build_sender_fullhost(void)
 {
 BOOL show_helo = TRUE;
-uschar * address, * fullhost, * rcvhost, * reset_point;
+uschar * address, * fullhost, * rcvhost;
+rmark reset_point;
 int len;
 
 if (!sender_host_address) return;
 
-reset_point = store_get(0);
+reset_point = store_mark();
 
 /* Set up address, with or without the port. After discussion, it seems that
 the only format that doesn't cause trouble is [aaaa]:pppp. However, we can't
@@ -643,10 +644,8 @@ else
     }
   }
 
-if (sender_fullhost) store_free(sender_fullhost);
-sender_fullhost = string_copy_malloc(fullhost);
-if (sender_rcvhost) store_free(sender_rcvhost);
-sender_rcvhost = string_copy_malloc(rcvhost);
+sender_fullhost = string_copy_perm(fullhost, TRUE);
+sender_rcvhost = string_copy_perm(rcvhost, TRUE);
 
 store_reset(reset_point);
 
@@ -668,6 +667,8 @@ return depends on whether sender_fullhost and sender_ident are set or not:
   ident set, no host  => U=ident
   ident set, host set => H=sender_fullhost U=ident
 
+Use taint-unchecked routines on the assumption we'll never expand the results.
+
 Arguments:
   useflag   TRUE if first item to be flagged (H= or U=); if there are two
               items, the second is always flagged
@@ -679,7 +680,7 @@ uschar *
 host_and_ident(BOOL useflag)
 {
 if (!sender_fullhost)
-  (void)string_format(big_buffer, big_buffer_size, "%s%s", useflag ? "U=" : "",
+  string_format_nt(big_buffer, big_buffer_size, "%s%s", useflag ? "U=" : "",
      sender_ident ? sender_ident : US"unknown");
 else
   {
@@ -688,10 +689,10 @@ else
   if (LOGGING(incoming_interface) && interface_address)
     iface = string_sprintf(" I=[%s]:%d", interface_address, interface_port);
   if (sender_ident)
-    (void)string_format(big_buffer, big_buffer_size, "%s%s%s U=%s",
+    string_format_nt(big_buffer, big_buffer_size, "%s%s%s U=%s",
       flag, sender_fullhost, iface, sender_ident);
   else
-    (void)string_format(big_buffer, big_buffer_size, "%s%s%s",
+    string_format_nt(big_buffer, big_buffer_size, "%s%s%s",
       flag, sender_fullhost, iface);
   }
 return big_buffer;
@@ -746,7 +747,7 @@ while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   address above. The field in the ip_address_item is large enough to hold an
   IPv6 address. */
 
-  next = store_get(sizeof(ip_address_item));
+  next = store_get(sizeof(ip_address_item), FALSE);
   next->next = NULL;
   Ustrcpy(next->address, s);
   next->port = port;
@@ -800,7 +801,7 @@ add_unique_interface(ip_address_item *list, ip_address_item *ipa)
 ip_address_item *ipa2;
 for (ipa2 = list; ipa2; ipa2 = ipa2->next)
   if (Ustrcmp(ipa2->address, ipa->address) == 0) return list;
-ipa2 = store_get_perm(sizeof(ip_address_item));
+ipa2 = store_get_perm(sizeof(ip_address_item), FALSE);
 *ipa2 = *ipa;
 ipa2->next = list;
 return ipa2;
@@ -816,7 +817,7 @@ ip_address_item *running_interfaces = NULL;
 
 if (local_interface_data == NULL)
   {
-  void *reset_item = store_get(0);
+  void *reset_item = store_mark();
   ip_address_item *dlist = host_build_ifacelist(CUS local_interfaces,
     US"local_interfaces");
   ip_address_item *xlist = host_build_ifacelist(CUS extra_local_interfaces,
@@ -1549,7 +1550,7 @@ if (  slow_lookup_log
 
 /* Failed to look up the host. */
 
-if (hosts == NULL)
+if (!hosts)
   {
   HDEBUG(D_host_lookup) debug_printf("IP address lookup failed: h_errno=%d\n",
     h_errno);
@@ -1560,7 +1561,7 @@ if (hosts == NULL)
 treat this as non-existent. In some operating systems, this is returned as an
 empty string; in others as a single dot. */
 
-if (hosts->h_name == NULL || hosts->h_name[0] == 0 || hosts->h_name[0] == '.')
+if (!hosts->h_name || !hosts->h_name[0] || hosts->h_name[0] == '.')
   {
   HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an empty name: "
     "treated as non-existent host name\n");
@@ -1570,29 +1571,29 @@ if (hosts->h_name == NULL || hosts->h_name[0] == 0 || hosts->h_name[0] == '.')
 /* Copy and lowercase the name, which is in static storage in many systems.
 Put it in permanent memory. */
 
-s = US hosts->h_name;
-len = Ustrlen(s) + 1;
-t = sender_host_name = store_get_perm(len);
-while (*s != 0) *t++ = tolower(*s++);
-*t = 0;
-
-/* If the host has aliases, build a copy of the alias list */
-
-if (hosts->h_aliases)
   {
-  int count = 1;
-  uschar **ptr;
-  for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++) count++;
-  ptr = sender_host_aliases = store_get_perm(count * sizeof(uschar *));
-  for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++)
+  int old_pool = store_pool;
+  store_pool = POOL_TAINT_PERM;		/* names are tainted */
+
+  sender_host_name = string_copylc(US hosts->h_name);
+
+  /* If the host has aliases, build a copy of the alias list */
+
+  if (hosts->h_aliases)
     {
-    uschar *s = *aliases;
-    int len = Ustrlen(s) + 1;
-    uschar *t = *ptr++ = store_get_perm(len);
-    while (*s != 0) *t++ = tolower(*s++);
-    *t = 0;
+    int count = 1;
+    uschar **ptr;
+
+    for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++) count++;
+    store_pool = POOL_PERM;
+    ptr = sender_host_aliases = store_get(count * sizeof(uschar *), FALSE);
+    store_pool = POOL_TAINT_PERM;
+
+    for (uschar ** aliases = USS hosts->h_aliases; *aliases; aliases++)
+      *ptr++ = string_copylc(*aliases);
+    *ptr = NULL;
     }
-  *ptr = NULL;
+  store_pool = old_pool;
   }
 
 return OK;
@@ -1707,7 +1708,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
       /* Get store for the list of aliases. For compatibility with
       gethostbyaddr, we make an empty list if there are none. */
 
-      aptr = sender_host_aliases = store_get(count * sizeof(uschar *));
+      aptr = sender_host_aliases = store_get(count * sizeof(uschar *), FALSE);
 
       /* Re-scan and extract the names */
 
@@ -1715,7 +1716,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
            rr;
            rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
         {
-        uschar * s = store_get(ssize);
+        uschar * s = store_get(ssize, TRUE);	/* names are tainted */
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
@@ -1728,8 +1729,8 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
           break;
           }
 
-        store_reset(s + Ustrlen(s) + 1);
-        if (s[0] == 0)
+        store_release_above(s + Ustrlen(s) + 1);
+        if (!s[0])
           {
           HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
             "empty name: treated as non-existent host name\n");
@@ -1737,15 +1738,15 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
           }
         if (!sender_host_name) sender_host_name = s;
 	else *aptr++ = s;
-        while (*s != 0) { *s = tolower(*s); s++; }
+        while (*s) { *s = tolower(*s); s++; }
         }
 
       *aptr = NULL;            /* End of alias list */
       store_pool = old_pool;   /* Reset store pool */
 
-      /* If we've found a names, break out of the "order" loop */
+      /* If we've found a name, break out of the "order" loop */
 
-      if (sender_host_name != NULL) break;
+      if (sender_host_name) break;
       }
 
     /* If the DNS lookup deferred, we must also defer. */
@@ -2113,7 +2114,7 @@ for (int i = 1; i <= times;
 
     else
       {
-      host_item *next = store_get(sizeof(host_item));
+      host_item *next = store_get(sizeof(host_item), FALSE);
       next->name = host->name;
       next->mx = host->mx;
       next->address = text_address;
@@ -2435,7 +2436,7 @@ for (; i >= 0; i--)
 	/* Not a duplicate */
 
 	new_sort_key = host->mx * 1000 + random_number(500) + randoffset;
-	next = store_get(sizeof(host_item));
+	next = store_get(sizeof(host_item), FALSE);
 
 	/* New address goes first: insert the new block after the first one
 	(so as not to disturb the original pointer) but put the new address
@@ -2838,7 +2839,7 @@ for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   /* Make a new host item and seek the correct insertion place */
     {
     int sort_key = precedence * 1000 + weight;
-    host_item *next = store_get(sizeof(host_item));
+    host_item *next = store_get(sizeof(host_item), FALSE);
     next->name = string_copy_dnsdomain(data);
     next->address = NULL;
     next->port = port;

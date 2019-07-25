@@ -38,13 +38,13 @@ uschar *mbox_path;
 FILE *mbox_file = NULL, *l_data_file = NULL, *yield = NULL;
 struct stat statbuf;
 int j;
-void *reset_point;
+rmark reset_point;
 
 mbox_path = string_sprintf("%s/scan/%s/%s.eml",
   spool_directory, message_id, message_id);
 if (mbox_fname) *mbox_fname = mbox_path;
 
-reset_point = store_get(0);
+reset_point = store_mark();
 
 /* Skip creation if already spooled out as mbox file */
 if (!spool_mbox_ok)
@@ -210,12 +210,11 @@ malware_ok = 0;
 
 if (spool_mbox_ok && !f.no_mbox_unspool)
   {
-  uschar *mbox_path;
   uschar *file_path;
   struct dirent *entry;
   DIR *tempdir;
-
-  mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
+  rmark reset_point = store_mark();
+  uschar * mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
 
   if (!(tempdir = opendir(CS mbox_path)))
     {
@@ -240,7 +239,7 @@ if (spool_mbox_ok && !f.no_mbox_unspool)
 
   /* remove directory */
   rmdir(CS mbox_path);
-  store_reset(mbox_path);
+  store_reset(reset_point);
   }
 spool_mbox_ok = 0;
 }

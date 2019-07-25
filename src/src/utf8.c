@@ -143,7 +143,7 @@ if (!string_is_utf8(utf8)) return string_copy(utf8);
 
 p = (punycode_uint *) stringprep_utf8_to_ucs4(CCS utf8, -1, &ucs4_len);
 p_len = ucs4_len*4;	/* this multiplier is pure guesswork */
-res = store_get(p_len+5);
+res = store_get(p_len+5, is_tainted(utf8));
 
 res[0] = 'x'; res[1] = 'n'; res[2] = res[3] = '-';
 
@@ -172,7 +172,7 @@ uschar * s, * res;
 DEBUG(D_expand) debug_printf("l_a2u: '%s'\n", alabel);
 alabel += 4;
 p_len = Ustrlen(alabel);
-p = (punycode_uint *) store_get((p_len+1) * sizeof(*p));
+p = store_get((p_len+1) * sizeof(*p), is_tainted(alabel));
 
 if ((rc = punycode_decode(p_len, CCS alabel, &p_len, p, NULL)) != PUNYCODE_SUCCESS)
   {

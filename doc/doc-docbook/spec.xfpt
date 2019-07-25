@@ -9219,7 +9219,13 @@ dependent upon the option for which a value is sought; in this documentation,
 options for which string expansion is performed are marked with &dagger; after
 the data type.  ACL rules always expand strings.  A couple of expansion
 conditions do not expand some of the brace-delimited branches, for security
-reasons.
+reasons,
+.new
+.cindex "tainted data" expansion
+.cindex expansion "tainted data"
+and expansion of data deriving from the sender (&"tainted data"&)
+is not permitted.
+.wen
 
 
 
@@ -39542,6 +39548,11 @@ When the message was received over an encrypted connection, and a certificate
 was received from the client, this records the Distinguished Name from that
 certificate.
 .endlist
+
+.new
+Any of the above may have an extra hyphen prepended, to indicate the the
+corresponding data is untrusted.
+.wen
 
 Following the options there is a list of those addresses to which the message
 is not to be delivered. This set of addresses is initialized from the command

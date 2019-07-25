@@ -21,7 +21,7 @@ changed uid/gid: local delivery to |TESTSUITE/bin/iefbr14 <|TESTSUITE/bin/iefbr1
   uid=EXIM_UID gid=CALLER_GID pid=pppp
 t1 transport entered
 direct command:
-  argv[0] = TESTSUITE/bin/iefbr14
+  argv[0] = 'TESTSUITE/bin/iefbr14'
 Writing message to pipe
 writing data block fd=dddd size=sss timeout=3600
 writing error 32: Broken pipe

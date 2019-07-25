@@ -28,9 +28,15 @@ conn_chk:
 
 begin routers
 
-client:
+r1:
   driver = accept
-  transport = $sender_address_local_part
+  condition = ${if eq {t1}{$sender_address_local_part}}
+  transport = t1
+
+r2:
+  driver = accept
+  condition = ${if eq {t2}{$sender_address_local_part}}
+  transport = t2
 
 # ----- Transports -----
 

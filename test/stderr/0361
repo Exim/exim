@@ -141,8 +141,8 @@ local_part=kilos domain=recurse.test.ex.test.ex
 checking local_parts
 kilos in "kilos"? yes (matched "kilos")
 calling r3 router
-rda_interpret (string): $local_part@$domain
-expanded: kilos@recurse.test.ex.test.ex
+rda_interpret (string): '$local_part@$domain'
+expanded: 'kilos@recurse.test.ex.test.ex'
 file is not a filter file
 parse_forward_list: kilos@recurse.test.ex.test.ex
 extract item: kilos@recurse.test.ex.test.ex

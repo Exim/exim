@@ -648,7 +648,7 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
     }
 
   m.size = statbuf.st_size;
-  if (!(m.data = malloc(m.size)))
+  if (!(m.data = store_malloc(m.size)))
     {
     fclose(fp);
     return tls_error_sys(US"malloc failed", errno, NULL, errstr);
@@ -657,13 +657,13 @@ if ((fd = Uopen(filename, O_RDONLY, 0)) >= 0)
     {
     saved_errno = errno;
     fclose(fp);
-    free(m.data);
+    store_free(m.data);
     return tls_error_sys(US"fread failed", saved_errno, NULL, errstr);
     }
   fclose(fp);
 
   rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
-  free(m.data);
+  store_free(m.data);
   if (rc)
     return tls_error_gnu(US"gnutls_dh_params_import_pkcs3", rc, host, errstr);
   DEBUG(D_tls) debug_printf("read D-H parameters from file \"%s\"\n", filename);
@@ -736,25 +736,25 @@ if (rc < 0)
     return tls_error_gnu(US"gnutls_dh_params_export_pkcs3(NULL) sizing",
 	      rc, host, errstr);
   m.size = sz;
-  if (!(m.data = malloc(m.size)))
+  if (!(m.data = store_malloc(m.size)))
     return tls_error_sys(US"memory allocation failed", errno, NULL, errstr);
 
   /* this will return a size 1 less than the allocation size above */
   if ((rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
       m.data, &sz)))
     {
-    free(m.data);
+    store_free(m.data);
     return tls_error_gnu(US"gnutls_dh_params_export_pkcs3() real", rc, host, errstr);
     }
   m.size = sz; /* shrink by 1, probably */
 
   if ((sz = write_to_fd_buf(fd, m.data, (size_t) m.size)) != m.size)
     {
-    free(m.data);
+    store_free(m.data);
     return tls_error_sys(US"TLS cache write D-H params failed",
         errno, NULL, errstr);
     }
-  free(m.data);
+  store_free(m.data);
   if ((sz = write_to_fd_buf(fd, US"\n", 1)) != 1)
     return tls_error_sys(US"TLS cache write D-H params final newline failed",
         errno, NULL, errstr);
@@ -1332,7 +1332,7 @@ if (host)
   several in parallel. */
   int old_pool = store_pool;
   store_pool = POOL_PERM;
-  state = store_get(sizeof(exim_gnutls_state_st));
+  state = store_get(sizeof(exim_gnutls_state_st), FALSE);
   store_pool = old_pool;
 
   memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
@@ -1629,7 +1629,7 @@ if (rc != GNUTLS_E_SHORT_MEMORY_BUFFER)
   exim_gnutls_peer_err(US"getting size for cert DN failed");
   return FAIL; /* should not happen */
   }
-dn_buf = store_get_perm(sz);
+dn_buf = store_get_perm(sz, TRUE);	/* tainted */
 rc = gnutls_x509_crt_get_dn(crt, CS dn_buf, &sz);
 exim_gnutls_peer_err(US"failed to extract certificate DN [gnutls_x509_crt_get_dn(cert 0)]");
 
@@ -1709,8 +1709,8 @@ else
       for(nrec = 0; state->dane_data_len[nrec]; ) nrec++;
       nrec++;
 
-      dd = store_get(nrec * sizeof(uschar *));
-      ddl = store_get(nrec * sizeof(int));
+      dd = store_get(nrec * sizeof(uschar *), FALSE);
+      ddl = store_get(nrec * sizeof(int), FALSE);
       nrec--;
 
       if ((rc = dane_state_init(&s, 0)))
@@ -2392,8 +2392,8 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
     ) if (rr->type == T_TLSA) i++;
 
-dane_data = store_get(i * sizeof(uschar *));
-dane_data_len = store_get(i * sizeof(int));
+dane_data = store_get(i * sizeof(uschar *), FALSE);
+dane_data_len = store_get(i * sizeof(int), FALSE);
 
 i = 0;
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
@@ -2401,6 +2401,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     ) if (rr->type == T_TLSA && rr->size > 3)
   {
   const uschar * p = rr->data;
+/*XXX need somehow to mark rr and its data as tainted.  Doues this mean copying it? */
   uint8_t usage = p[0], sel = p[1], type = p[2];
 
   DEBUG(D_tls)
@@ -2505,7 +2506,7 @@ if (gnutls_session_get_flags(session) & GNUTLS_SFLAGS_SESSION_TICKET)
       {
       open_db dbblock, * dbm_file;
       int dlen = sizeof(dbdata_tls_session) + tkt.size;
-      dbdata_tls_session * dt = store_get(dlen);
+      dbdata_tls_session * dt = store_get(dlen, TRUE);
 
       DEBUG(D_tls) debug_printf("session data size %u\n", (unsigned)tkt.size);
       memcpy(dt->session, tkt.data, tkt.size);

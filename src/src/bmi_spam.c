@@ -190,8 +190,10 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     return NULL;
   };
 
-  /* get store for the verdict string */
-  verdicts = store_get(1);
+  /* Get store for the verdict string.  Since we are processing message data, assume that
+  the verdict is tainted.  XXX this should use a growable-string  */
+
+  verdicts = store_get(1, TRUE);
   *verdicts = '\0';
 
   for ( err = bmiAccessFirstVerdict(message, &verdict);
@@ -200,7 +202,8 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     char *verdict_str;
 
     err = bmiCreateStrFromVerdict(verdict,&verdict_str);
-    if (!store_extend(verdicts, Ustrlen(verdicts)+1, Ustrlen(verdicts)+1+strlen(verdict_str)+1)) {
+    if (!store_extend(verdicts, TRUE,
+	  Ustrlen(verdicts)+1, Ustrlen(verdicts)+1+strlen(verdict_str)+1)) {
       /* can't allocate more store */
       return NULL;
     };
@@ -299,7 +302,7 @@ uschar *bmi_get_alt_location(uschar *base64_verdict) {
   }
   else {
     /* deliver to alternate location */
-    rc = store_get(strlen(bmiVerdictAccessDestination(verdict))+1);
+    rc = store_get(strlen(bmiVerdictAccessDestination(verdict))+1, TRUE);
     Ustrcpy(rc, bmiVerdictAccessDestination(verdict));
     rc[strlen(bmiVerdictAccessDestination(verdict))] = '\0';
   };
@@ -324,7 +327,7 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
     return NULL;
 
   /* allocate room for the b64 verdict string */
-  verdict_buffer = store_get(Ustrlen(bmi_verdicts)+1);
+  verdict_buffer = store_get(Ustrlen(bmi_verdicts)+1, TRUE);
 
   /* loop through verdicts */
   verdict_ptr = bmi_verdicts;

@@ -36,16 +36,112 @@ r1:
   user = CALLER
   file_transport = t1
 
-r2:
+r2_8:
   driver = redirect
-  local_part_suffix = -*
-  local_part_suffix_optional
+  local_parts = userx8
   allow_filter
-  data = "#Sieve filter\n$h_filter:"
+  data = #Sieve filter\n \
+	require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "99" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_9:
+  driver = redirect
+  local_parts = userx9
+  allow_filter
+  data = #Sieve filter\n \
+	require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "98" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_10:
+  driver = redirect
+  local_parts = userx10
+  allow_filter
+  data = #Sieve filter\n \
+	 require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "99" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_11:
+  driver = redirect
+  local_parts = userx11
+  allow_filter
+  data = #Sieve filter\n \
+	 require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "-99" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_12:
+  driver = redirect
+  local_parts = userx12
+  allow_filter
+  data = #Sieve filter\n \
+	 require["fileinto","comparator-i;ascii-numeric"]; \
+        if header :comparator "i;ascii-numeric" "X-Sieve" "-98" { \
+          fileinto "inbox.JUNK"; \
+          stop; \
+        }
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2_13:
+  driver = redirect
+  local_parts = userx13 : someone13
+  allow_filter
+  data = #Sieve filter\n \
+	 require ["vacation"];  \
+        vacation "I am gone.  Not here.";
   user = CALLER
   file_transport = t1
   reply_transport = t3
   sieve_vacation_directory = DIR/test-vacation-directory
+
+r2_14:
+  driver = redirect
+  local_parts = userx14
+  local_part_suffix = -*
+  local_part_suffix_optional
+  allow_filter
+  data = #Sieve filter\n \
+	 require ["envelope","fileinto"];  \
+        if envelope :matches :localpart "to" "*-suffix" { \
+          fileinto "userx-sawsuffix"; \
+          stop;  \
+        }   
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
+
+r2:
+  driver = redirect
+  allow_filter
+  skip_syntax_errors
+  data = "#Sieve filter\n$h_filter:"
+  user = CALLER
+  file_transport = t1
+  reply_transport = t3
 
 
 # ----- Transports -----

@@ -138,7 +138,7 @@ acl_var_create(uschar *name)
 {
 tree_node *node, **root;
 root = (name[0] == 'c')? &acl_var_c : &acl_var_m;
-node = store_get(sizeof(tree_node) + Ustrlen(name));
+node = store_get(sizeof(tree_node) + Ustrlen(name), FALSE);
 Ustrcpy(node->name, name);
 node->data.ptr = NULL;
 (void)tree_insertnode(root, node);
@@ -156,7 +156,7 @@ set_up(uschar *name, int dir_char)
 {
 int i, rc, save_errno;
 struct stat statdata;
-void *reset_point;
+rmark reset_point;
 uschar *p;
 queue_item *q = (queue_item *)store_malloc(sizeof(queue_item));
 uschar buffer[256];
@@ -182,7 +182,7 @@ Before reading the header remember the position in the dynamic store so that
 we can recover the store into which the header is read. All data read by
 spool_read_header that is to be preserved is copied into malloc store. */
 
-reset_point = store_get(0);
+reset_point = store_mark();
 message_size = 0;
 message_subdir[0] = dir_char;
 sprintf(CS buffer, "%s-H", name);
@@ -224,9 +224,9 @@ if (rc != spool_read_OK)
     if (Ustat(big_buffer, &statbuf) == 0)
       msg = string_sprintf("*** Format error in spool file: size = %d ***",
         statbuf.st_size);
-    else msg = string_sprintf("*** Format error in spool file ***");
+    else msg = US"*** Format error in spool file ***";
     }
-  else msg = string_sprintf("*** Cannot read spool file ***");
+  else msg = US"*** Cannot read spool file ***";
 
   if (rc == spool_read_hdrerror)
     {
@@ -614,7 +614,7 @@ static void update_recipients(queue_item *p)
 {
 int i;
 FILE *jread;
-void *reset_point;
+rmark reset_point;
 struct stat statdata;
 uschar buffer[1024];
 
@@ -634,7 +634,7 @@ if (!(jread = fopen(CS buffer, "r")))
 /* Get the contents of the header file; if any problem, just give up.
 Arrange to recover the dynamic store afterwards. */
 
-reset_point = store_get(0);
+reset_point = store_mark();
 sprintf(CS buffer, "%s-H", p->name);
 if (spool_read_header(buffer, FALSE, TRUE) != spool_read_OK)
   {

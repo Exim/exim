@@ -699,10 +699,10 @@ address. Otherwise, if a local qualify_domain is provided, set that up. */
 
 if (ob->qualify_preserve_domain)
   qualify_domain_recipient = addr->domain;
-else if (ob->qualify_domain != NULL)
+else if (ob->qualify_domain)
   {
   uschar *new_qdr = rf_expand_data(addr, ob->qualify_domain, &xrc);
-  if (new_qdr == NULL) return xrc;
+  if (!new_qdr) return xrc;
   qualify_domain_recipient = new_qdr;
   }
 
@@ -713,16 +713,8 @@ redirect.check_owner = ob->check_owner;
 redirect.check_group = ob->check_group;
 redirect.pw = pw;
 
-if (ob->file != NULL)
-  {
-  redirect.string = ob->file;
-  redirect.isfile = TRUE;
-  }
-else
-  {
-  redirect.string = ob->data;
-  redirect.isfile = FALSE;
-  }
+redirect.string = (redirect.isfile = (ob->file != NULL))
+  ? ob->file : ob->data;
 
 frc = rda_interpret(&redirect, options, ob->include_directory,
   ob->sieve_vacation_directory, ob->sieve_enotify_mailto_owner,
@@ -738,104 +730,104 @@ For FAIL and FREEZE we honour any previously set up deliveries by a filter. */
 switch (frc)
   {
   case FF_NONEXIST:
-  addr->message = addr->user_message = NULL;
-  return DECLINE;
+    addr->message = addr->user_message = NULL;
+    return DECLINE;
 
   case FF_BLACKHOLE:
-  DEBUG(D_route) debug_printf("address :blackhole:d\n");
-  generated = NULL;
-  discarded = US":blackhole:";
-  frc = FF_DELIVERED;
-  break;
+    DEBUG(D_route) debug_printf("address :blackhole:d\n");
+    generated = NULL;
+    discarded = US":blackhole:";
+    frc = FF_DELIVERED;
+    break;
 
-  /* FF_DEFER and FF_FAIL can arise only as a result of explicit commands
-  (:defer: or :fail: in an alias file or "fail" in a filter). If a configured
-  message was supplied, allow it to be included in an SMTP response after
-  verifying. Remove any SMTP code if it is not allowed. */
+    /* FF_DEFER and FF_FAIL can arise only as a result of explicit commands
+    (:defer: or :fail: in an alias file or "fail" in a filter). If a configured
+    message was supplied, allow it to be included in an SMTP response after
+    verifying. Remove any SMTP code if it is not allowed. */
 
   case FF_DEFER:
-  yield = DEFER;
-  goto SORT_MESSAGE;
+    yield = DEFER;
+    goto SORT_MESSAGE;
 
   case FF_FAIL:
-  if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop)) != OK)
-    return xrc;
-  add_generated(rblock, addr_new, addr, generated, &addr_prop, &ugid, pw);
-  yield = FAIL;
+    if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop)) != OK)
+      return xrc;
+    add_generated(rblock, addr_new, addr, generated, &addr_prop, &ugid, pw);
+    yield = FAIL;
 
-  SORT_MESSAGE:
-  if (addr->message == NULL)
-    addr->message = (yield == FAIL)? US"forced rejection" : US"forced defer";
-  else
-    {
-    int ovector[3];
-    if (ob->forbid_smtp_code &&
-        pcre_exec(regex_smtp_code, NULL, CS addr->message,
-          Ustrlen(addr->message), 0, PCRE_EOPT,
-          ovector, sizeof(ovector)/sizeof(int)) >= 0)
+    SORT_MESSAGE:
+    if (!addr->message)
+      addr->message = yield == FAIL ? US"forced rejection" : US"forced defer";
+    else
       {
-      DEBUG(D_route) debug_printf("SMTP code at start of error message "
-        "is ignored because forbid_smtp_code is set\n");
-      addr->message += ovector[1];
+      int ovector[3];
+      if (ob->forbid_smtp_code &&
+	  pcre_exec(regex_smtp_code, NULL, CS addr->message,
+	    Ustrlen(addr->message), 0, PCRE_EOPT,
+	    ovector, sizeof(ovector)/sizeof(int)) >= 0)
+	{
+	DEBUG(D_route) debug_printf("SMTP code at start of error message "
+	  "is ignored because forbid_smtp_code is set\n");
+	addr->message += ovector[1];
+	}
+      addr->user_message = addr->message;
+      setflag(addr, af_pass_message);
       }
-    addr->user_message = addr->message;
-    setflag(addr, af_pass_message);
-    }
-  return yield;
+    return yield;
 
-  /* As in the case of a system filter, a freeze does not happen after a manual
-  thaw. In case deliveries were set up by the filter, we set the child count
-  high so that their completion does not mark the original address done. */
+    /* As in the case of a system filter, a freeze does not happen after a manual
+    thaw. In case deliveries were set up by the filter, we set the child count
+    high so that their completion does not mark the original address done. */
 
   case FF_FREEZE:
-  if (!f.deliver_manual_thaw)
-    {
-    if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop))
-      != OK) return xrc;
-    add_generated(rblock, addr_new, addr, generated, &addr_prop, &ugid, pw);
-    if (addr->message == NULL) addr->message = US"frozen by filter";
-    addr->special_action = SPECIAL_FREEZE;
-    addr->child_count = 9999;
-    return DEFER;
-    }
-  frc = FF_NOTDELIVERED;
-  break;
+    if (!f.deliver_manual_thaw)
+      {
+      if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop))
+	!= OK) return xrc;
+      add_generated(rblock, addr_new, addr, generated, &addr_prop, &ugid, pw);
+      if (addr->message == NULL) addr->message = US"frozen by filter";
+      addr->special_action = SPECIAL_FREEZE;
+      addr->child_count = 9999;
+      return DEFER;
+      }
+    frc = FF_NOTDELIVERED;
+    break;
 
-  /* Handle syntax errors and :include: failures and lookup defers */
+    /* Handle syntax errors and :include: failures and lookup defers */
 
   case FF_ERROR:
   case FF_INCLUDEFAIL:
 
-  /* If filtertype is still FILTER_UNSET, it means that the redirection data
-  was never inspected, so the error was an expansion failure or failure to open
-  the file, or whatever. In these cases, the existing error message is probably
-  sufficient. */
+    /* If filtertype is still FILTER_UNSET, it means that the redirection data
+    was never inspected, so the error was an expansion failure or failure to open
+    the file, or whatever. In these cases, the existing error message is probably
+    sufficient. */
 
-  if (filtertype == FILTER_UNSET) return DEFER;
+    if (filtertype == FILTER_UNSET) return DEFER;
 
-  /* If it was a filter and skip_syntax_errors is set, we want to set up
-  the error message so that it can be logged and mailed to somebody. */
+    /* If it was a filter and skip_syntax_errors is set, we want to set up
+    the error message so that it can be logged and mailed to somebody. */
 
-  if (filtertype != FILTER_FORWARD && ob->skip_syntax_errors)
-    {
-    eblock = store_get(sizeof(error_block));
-    eblock->next = NULL;
-    eblock->text1 = addr->message;
-    eblock->text2 = NULL;
-    addr->message = addr->user_message = NULL;
-    }
+    if (filtertype != FILTER_FORWARD && ob->skip_syntax_errors)
+      {
+      eblock = store_get(sizeof(error_block), FALSE);
+      eblock->next = NULL;
+      eblock->text1 = addr->message;
+      eblock->text2 = NULL;
+      addr->message = addr->user_message = NULL;
+      }
 
-  /* Otherwise set up the error for the address and defer. */
+    /* Otherwise set up the error for the address and defer. */
 
-  else
-    {
-    addr->basic_errno = ERRNO_BADREDIRECT;
-    addr->message = string_sprintf("error in %s %s: %s",
-      (filtertype != FILTER_FORWARD)? "filter" : "redirect",
-      (ob->data == NULL)? "file" : "data",
-      addr->message);
-    return DEFER;
-    }
+    else
+      {
+      addr->basic_errno = ERRNO_BADREDIRECT;
+      addr->message = string_sprintf("error in %s %s: %s",
+	filtertype == FILTER_FORWARD ? "redirect" : "filter",
+	ob->data ? "data" : "file",
+	addr->message);
+      return DEFER;
+      }
   }
 
 

@@ -463,7 +463,7 @@ set_up_shell_command(const uschar ***argvptr, uschar *cmd,
 {
 const uschar **argv;
 
-*argvptr = argv = store_get((4)*sizeof(uschar *));
+*argvptr = argv = store_get((4)*sizeof(uschar *), FALSE);
 
 argv[0] = US"/bin/sh";
 argv[1] = US"-c";
@@ -938,7 +938,7 @@ if (!written_ok)
       addr->more_errno,
       (addr->more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
     else if (errno == ERRNO_WRITEINCOMPLETE)
-      addr->message = string_sprintf("Failed repeatedly to write data");
+      addr->message = US"Failed repeatedly to write data";
     else
       addr->message = string_sprintf("Error %d", errno);
     return FALSE;

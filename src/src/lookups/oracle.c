@@ -305,8 +305,8 @@ if (!cn)
 
   /* Get store for a new connection, initialize it, and connect to the server */
 
-   oracle_handle = store_get(sizeof(struct cda_def));
-   hda = store_get(HDA_SIZE);
+   oracle_handle = store_get(sizeof(struct cda_def), FALSE);
+   hda = store_get(HDA_SIZE, FALSE);
    memset(hda,'\0',HDA_SIZE);
 
   /*
@@ -329,7 +329,7 @@ if (!cn)
 
   /* Add the connection to the cache */
 
-  cn = store_get(sizeof(oracle_connection));
+  cn = store_get(sizeof(oracle_connection), FALSE);
   cn->server = server_copy;
   cn->handle = oracle_handle;
   cn->next = oracle_connections;
@@ -348,7 +348,7 @@ else
 
 /* We have a connection. Open a cursor and run the query */
 
-cda = store_get(sizeof(Cda_Def));
+cda = store_get(sizeof(Cda_Def), FALSE);
 
 if (oopen(cda, oracle_handle, (text *)0, -1, -1, (text *)0, -1) != 0)
   {
@@ -369,8 +369,8 @@ if (oparse(cda, (text *)query, (sb4) -1,
 /* Find the number of fields returned and sort out their types. If the number
 is one, we don't add field names to the data. Otherwise we do. */
 
-def = store_get(sizeof(Ora_Define)*MAX_SELECT_LIST_SIZE);
-desc = store_get(sizeof(Ora_Describe)*MAX_SELECT_LIST_SIZE);
+def = store_get(sizeof(Ora_Define)*MAX_SELECT_LIST_SIZE, FALSE);
+desc = store_get(sizeof(Ora_Describe)*MAX_SELECT_LIST_SIZE, FALSE);
 
 if ((num_fields = describe_define(cda,def,desc)) == -1)
   {
@@ -465,7 +465,7 @@ if (!result)
   *errmsg = "ORACLE: no data found";
   }
 else
-  store_reset(result->s + result->ptr + 1);
+  gstring_release_unused(result);
 
 /* Get here by goto from various error checks. */
 
@@ -561,7 +561,7 @@ while ((c = *t++) != 0)
   if (strchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
-t = quoted = store_get((int)strlen(s) + count + 1);
+t = quoted = store_get((int)strlen(s) + count + 1, is_tainted(s));
 
 while ((c = *s++) != 0)
   {

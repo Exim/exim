@@ -630,7 +630,7 @@ Args:
 macro_item *
 macro_create(const uschar * name, const uschar * val, BOOL command_line)
 {
-macro_item * m = store_get(sizeof(macro_item));
+macro_item * m = store_get(sizeof(macro_item), FALSE);
 
 READCONF_DEBUG fprintf(stderr, "%s: '%s' '%s'\n", __FUNCTION__, name, val);
 m->next = NULL;
@@ -1061,7 +1061,7 @@ for (;;)
 
     if (config_lines)
       save_config_position(config_filename, config_lineno);
-    save = store_get(sizeof(config_file_item));
+    save = store_get(sizeof(config_file_item), FALSE);
     save->next = config_file_stack;
     config_file_stack = save;
     save->file = config_file;
@@ -1401,7 +1401,7 @@ Returns:      the control block for the parsed rule.
 static rewrite_rule *
 readconf_one_rewrite(const uschar *p, int *existflags, BOOL isglobal)
 {
-rewrite_rule *next = store_get(sizeof(rewrite_rule));
+rewrite_rule *next = store_get(sizeof(rewrite_rule), FALSE);
 
 next->next = NULL;
 next->key = string_dequote(&p);
@@ -1603,7 +1603,7 @@ BOOL boolvalue = TRUE;
 BOOL freesptr = TRUE;
 optionlist *ol, *ol2;
 struct passwd *pw;
-void *reset_point;
+rmark reset_point;
 int intbase = 0;
 uschar *inttype = US"";
 uschar *sptr;
@@ -1727,7 +1727,8 @@ switch (type)
   case opt_gidlist:
   case opt_rewrite:
 
-  reset_point = sptr = read_string(s, name);
+  reset_point = store_mark();
+  sptr = read_string(s, name);
 
   /* Having read a string, we now have several different ways of using it,
   depending on the data type, so do another switch. If keeping the actual
@@ -1750,10 +1751,11 @@ switch (type)
       /* We already have a condition, we're conducting a crude hack to let
       multiple condition rules be chained together, despite storing them in
       text form. */
-      *str_target = string_copy_malloc( (saved_condition = *str_target)
+      *str_target = string_copy_perm( (saved_condition = *str_target)
 	? string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
 	    saved_condition, sptr)
-	: sptr);
+	: sptr,
+	FALSE);
       /* TODO(pdp): there is a memory leak here and just below
       when we set 3 or more conditions; I still don't
       understand the store mechanism enough to know
@@ -1789,7 +1791,7 @@ switch (type)
 	list_o = string_append_listele(list_o, sep_o, s);
 
       if (list_o)
-	*str_target = string_copy_malloc(string_from_gstring(list_o));
+	*str_target = string_copy_perm(string_from_gstring(list_o), FALSE);
       }
     else
       {
@@ -1891,7 +1893,7 @@ switch (type)
     ignore. Also ignore if the value is already set. */
 
     if (pw == NULL) break;
-    Ustrcpy(name+Ustrlen(name)-4, "group");
+    Ustrcpy(name+Ustrlen(name)-4, US"group");
     ol2 = find_option(name, oltop, last);
     if (ol2 != NULL && ((ol2->type & opt_mask) == opt_gid ||
         (ol2->type & opt_mask) == opt_expand_gid))
@@ -2031,7 +2033,7 @@ switch (type)
 
   /* Release store if the value of the string doesn't need to be kept. */
 
-  if (freesptr) store_reset(reset_point);
+  if (freesptr) reset_point = store_reset(reset_point);
   break;
 
   /* Expanded boolean: if no characters follow, or if there are no dollar
@@ -2042,10 +2044,10 @@ switch (type)
   if (*s != 0 && Ustrchr(s, '$') != 0)
     {
     sprintf(CS name2, "*expand_%.50s", name);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL)
+    if ((ol2 = find_option(name2, oltop, last)))
       {
-      reset_point = sptr = read_string(s, name);
+      reset_point = store_mark();
+      sptr = read_string(s, name);
       if (data_block == NULL)
         *((uschar **)(ol2->value)) = sptr;
       else
@@ -2983,7 +2985,7 @@ read_named_list(tree_node **anchorp, int *numberp, int max, uschar *s,
 BOOL forcecache = FALSE;
 uschar *ss;
 tree_node *t;
-namedlist_block *nb = store_get(sizeof(namedlist_block));
+namedlist_block *nb = store_get(sizeof(namedlist_block), FALSE);
 
 if (Ustrncmp(s, "_cache", 6) == 0)
   {
@@ -3001,7 +3003,7 @@ if (*numberp >= max)
 while (isspace(*s)) s++;
 ss = s;
 while (isalnum(*s) || *s == '_') s++;
-t = store_get(sizeof(tree_node) + s-ss);
+t = store_get(sizeof(tree_node) + s-ss, is_tainted(ss));
 Ustrncpy(t->name, ss, s-ss);
 t->name[s-ss] = 0;
 while (isspace(*s)) s++;
@@ -3123,7 +3125,7 @@ if (pid == 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
         "tls_require_ciphers invalid: %s", errmsg);
   fflush(NULL);
-  _exit(0);
+  exim_underbar_exit(0);
   }
 
 do {
@@ -3324,6 +3326,19 @@ if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
 
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Exim configuration file %s has the "
       "wrong owner, group, or mode", big_buffer);
+  }
+
+/* Do a dummy store-allocation of a size related to the (toplevel) file size.
+This assumes we will need this much storage to handle all the allocations
+during startup; it won't help when .include is being used.  When it does, it
+will cut down on the number of store blocks (and malloc calls, and sbrk
+syscalls).  It also assume we're on the relevant pool. */
+
+if (statbuf.st_size > 8192)
+  {
+  rmark r = store_mark();
+  store_get((int)statbuf.st_size, FALSE);
+  store_reset(r);
   }
 
 /* Process the main configuration settings. They all begin with a lower case
@@ -3697,7 +3712,7 @@ for (driver_info * dd = drivers_available; dd->driver_name[0] != 0;
     {
     int len = dd->options_len;
     d->info = dd;
-    d->options_block = store_get(len);
+    d->options_block = store_get(len, FALSE);
     memcpy(d->options_block, dd->options_block, len);
     for (int i = 0; i < *(dd->options_count); i++)
       dd->options[i].type &= ~opt_set;
@@ -3809,7 +3824,7 @@ while ((buffer = get_config_line()) != NULL)
     /* Set up a new driver instance data block on the chain, with
     its default values installed. */
 
-    d = store_get(instance_size);
+    d = store_get(instance_size, FALSE);
     memcpy(d, instance_default, instance_size);
     *p = d;
     p = &d->next;
@@ -4108,7 +4123,7 @@ while ((p = get_config_line()))
   const uschar *pp;
   uschar *error;
 
-  next = store_get(sizeof(retry_config));
+  next = store_get(sizeof(retry_config), FALSE);
   next->next = NULL;
   *chain = next;
   chain = &(next->next);
@@ -4152,7 +4167,7 @@ while ((p = get_config_line()))
 
   while (*p != 0)
     {
-    retry_rule *rule = store_get(sizeof(retry_rule));
+    retry_rule *rule = store_get(sizeof(retry_rule), FALSE);
     *rchain = rule;
     rchain = &(rule->next);
     rule->next = NULL;
@@ -4302,7 +4317,7 @@ while(acl_line)
   if (*p != ':' || name[0] == 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "missing or malformed ACL name");
 
-  node = store_get(sizeof(tree_node) + Ustrlen(name));
+  node = store_get(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
   Ustrcpy(node->name, name);
   if (!tree_insertnode(&acl_anchor, node))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
@@ -4390,7 +4405,7 @@ while(next_section[0] != 0)
   int mid = last/2;
   int n = Ustrlen(next_section);
 
-  if (tolower(next_section[n-1]) != 's') Ustrcpy(next_section+n, "s");
+  if (tolower(next_section[n-1]) != 's') Ustrcpy(next_section+n, US"s");
 
   for (;;)
     {
@@ -4449,7 +4464,7 @@ save_config_line(const uschar* line)
 static config_line_item *current;
 config_line_item *next;
 
-next = (config_line_item*) store_get(sizeof(config_line_item));
+next = (config_line_item*) store_get(sizeof(config_line_item), FALSE);
 next->line = string_copy(line);
 next->next = NULL;
 

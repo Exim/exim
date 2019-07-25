@@ -144,7 +144,7 @@ Returns:      a pointer to an initialized address_item
 address_item *
 deliver_make_addr(uschar *address, BOOL copy)
 {
-address_item *addr = store_get(sizeof(address_item));
+address_item *addr = store_get(sizeof(address_item), FALSE);
 *addr = address_defaults;
 if (copy) address = string_copy(address);
 addr->address = address;
@@ -1023,7 +1023,8 @@ splitting is done; in those cases use the original field. */
 
 else
   {
-  uschar * cmp = g->s + g->ptr;
+  uschar * cmp;
+  int off = g->ptr;	/* start of the "full address" */
 
   if (addr->local_part)
     {
@@ -1045,6 +1046,7 @@ else
   of all, do a caseless comparison; if this succeeds, do a caseful comparison
   on the local parts. */
 
+  cmp = g->s + off;		/* only now, as rebuffer likely done */
   string_from_gstring(g);	/* ensure nul-terminated */
   if (  strcmpic(cmp, topaddr->address) == 0
      && Ustrncmp(cmp, topaddr->address, Ustrchr(cmp, '@') - cmp) == 0
@@ -1137,7 +1139,7 @@ void
 delivery_log(int flags, address_item * addr, int logchar, uschar * msg)
 {
 gstring * g; /* Used for a temporary, expanding buffer, for building log lines  */
-void * reset_point;     /* released afterwards.  */
+rmark reset_point;
 
 /* Log the delivery on the main log. We use an extensible string to build up
 the log line, and reset the store afterwards. Remote deliveries should always
@@ -1149,7 +1151,8 @@ pointer to a single host item in their host list, for use by the transport. */
   lookup_dnssec_authenticated = NULL;
 #endif
 
-g = reset_point = string_get(256);
+reset_point = store_mark();
+g = string_get_tainted(256, TRUE);	/* addrs will be tainted, so avoid copy */
 
 if (msg)
   g = string_append(g, 2, host_and_ident(TRUE), US" ");
@@ -1317,13 +1320,11 @@ static void
 deferral_log(address_item * addr, uschar * now,
   int logflags, uschar * driver_name, uschar * driver_kind)
 {
-gstring * g;
-void * reset_point;
+rmark reset_point = store_mark();
+gstring * g = string_get(256);
 
 /* Build up the line that is used for both the message log and the main
 log. */
-
-g = reset_point = string_get(256);
 
 /* Create the address string for logging. Must not do this earlier, because
 an OK result may be changed to FAIL when a pipe returns text. */
@@ -1396,8 +1397,8 @@ return;
 static void
 failure_log(address_item * addr, uschar * driver_kind, uschar * now)
 {
-void * reset_point;
-gstring * g = reset_point = string_get(256);
+rmark reset_point = store_mark();
+gstring * g = string_get(256);
 
 #ifndef DISABLE_EVENT
 /* Message failures for which we will send a DSN get their event raised
@@ -1790,7 +1791,7 @@ if (format)
   gstring * g;
 
   va_start(ap, format);
-  g = string_vformat(NULL, TRUE, CS format, ap);
+  g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, CS format, ap);
   va_end(ap);
   addr->message = string_from_gstring(g);
   }
@@ -2052,10 +2053,10 @@ Returns:    TRUE if previously delivered by the transport
 static BOOL
 previously_transported(address_item *addr, BOOL testing)
 {
-(void)string_format(big_buffer, big_buffer_size, "%s/%s",
+uschar * s = string_sprintf("%s/%s",
   addr->unique + (testflag(addr, af_homonym)? 3:0), addr->transport->name);
 
-if (tree_search(tree_nonrecipients, big_buffer) != 0)
+if (tree_search(tree_nonrecipients, s) != 0)
   {
   DEBUG(D_deliver|D_route|D_transport)
     debug_printf("%s was previously delivered (%s transport): discarded\n",
@@ -2755,7 +2756,7 @@ while (addr_local)
     f.disable_logging = FALSE;  /* Jic */
     addr->message = addr->router
       ? string_sprintf("No transport set by %s router", addr->router->name)
-      : string_sprintf("No transport set by system filter");
+      : US"No transport set by system filter";
     post_process_one(addr, DEFER, logflags, EXIM_DTYPE_TRANSPORT, 0);
     continue;
     }
@@ -3066,7 +3067,7 @@ while (addr_local)
     else for (addr2 = addr; addr2; addr2 = addr2->next)
       if (addr2->transport_return == OK)
 	{
-	addr3 = store_get(sizeof(address_item));
+	addr3 = store_get(sizeof(address_item), FALSE);
 	*addr3 = *addr2;
 	addr3->next = NULL;
 	addr3->shadow_message = US &addr2->shadow_message;
@@ -3464,7 +3465,7 @@ while (!done)
 
       if (!r || !(*ptr & rf_delete))
 	{
-	r = store_get(sizeof(retry_item));
+	r = store_get(sizeof(retry_item), FALSE);
 	r->next = addr->retries;
 	addr->retries = r;
 	r->flags = *ptr++;
@@ -3647,7 +3648,7 @@ while (!done)
 
 	  if (*ptr)
 	    {
-	    h = store_get(sizeof(host_item));
+	    h = store_get(sizeof(host_item), FALSE);
 	    h->name = string_copy(ptr);
 	    while (*ptr++);
 	    h->address = string_copy(ptr);
@@ -4231,7 +4232,7 @@ set up, do so. */
 
 if (!parlist)
   {
-  parlist = store_get(remote_max_parallel * sizeof(pardata));
+  parlist = store_get(remote_max_parallel * sizeof(pardata), FALSE);
   for (poffset = 0; poffset < remote_max_parallel; poffset++)
     parlist[poffset].pid = 0;
   }
@@ -5117,7 +5118,7 @@ where they are locally interpreted. [The new draft "821" is more explicit on
 this, Jan 1999.] We know the syntax is valid, so this can be done by simply
 removing quoting backslashes and any unquoted doublequotes. */
 
-t = addr->cc_local_part = store_get(len+1);
+t = addr->cc_local_part = store_get(len+1, is_tainted(address));
 while(len-- > 0)
   {
   int c = *address++;
@@ -5160,7 +5161,7 @@ if (percent_hack_domains)
 
   if (new_address)
     {
-    address_item *new_parent = store_get(sizeof(address_item));
+    address_item *new_parent = store_get(sizeof(address_item), FALSE);
     *new_parent = *addr;
     addr->parent = new_parent;
     new_parent->child_count = 1;
@@ -6028,8 +6029,8 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
 
   if (addr_new)
     {
-    int uid = (system_filter_uid_set)? system_filter_uid : geteuid();
-    int gid = (system_filter_gid_set)? system_filter_gid : getegid();
+    int uid = system_filter_uid_set ? system_filter_uid : geteuid();
+    int gid = system_filter_gid_set ? system_filter_gid : getegid();
 
     /* The text "system-filter" is tested in transport_set_up_command() and in
     set_up_shell_command() in the pipe transport, to enable them to permit
@@ -6103,6 +6104,9 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           if (!tmp)
             p->message = string_sprintf("failed to expand \"%s\" as a "
               "system filter transport name", tpname);
+	  if (is_tainted(tmp))
+            p->message = string_sprintf("attempt to used tainted value '%s' for"
+	      "transport '%s' as a system filter", tmp, tpname);
           tpname = tmp;
           }
         else
@@ -6411,10 +6415,8 @@ while (addr_new)           /* Loop until all addresses dealt with */
       keep piling '>' characters on the front. */
 
       if (addr->address[0] == '>')
-        {
         while (tree_search(tree_duplicates, addr->unique))
           addr->unique = string_sprintf(">%s", addr->unique);
-        }
 
       else if ((tnode = tree_search(tree_duplicates, addr->unique)))
         {
@@ -6822,8 +6824,8 @@ while (addr_new)           /* Loop until all addresses dealt with */
          &addr_succeed, v_none)) == DEFER)
       retry_add_item(addr,
         addr->router->retry_use_local_part
-        ? string_sprintf("R:%s@%s", addr->local_part, addr->domain)
-	: string_sprintf("R:%s", addr->domain),
+	  ? string_sprintf("R:%s@%s", addr->local_part, addr->domain)
+	  : string_sprintf("R:%s", addr->domain),
 	0);
 
     /* Otherwise, if there is an existing retry record in the database, add
@@ -7318,7 +7320,7 @@ for (address_item * a = addr_succeed; a; a = a->next)
     {
     /* copy and relink address_item and send report with all of them at once later */
     address_item * addr_next = addr_senddsn;
-    addr_senddsn = store_get(sizeof(address_item));
+    addr_senddsn = store_get(sizeof(address_item), FALSE);
     *addr_senddsn = *a;
     addr_senddsn->next = addr_next;
     }

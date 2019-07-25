@@ -129,7 +129,7 @@ static ERR_STRING_DATA dane_str_reasons[] = {
 };
 #endif
 
-#define DANEerr(f, r) ERR_PUT_error(err_lib_dane, (f), (r), __FILE__, __LINE__)
+#define DANEerr(f, r) ERR_PUT_error(err_lib_dane, (f), (r), __FUNCTION__, __LINE__)
 
 static int err_lib_dane = -1;
 static int dane_idx = -1;

@@ -149,6 +149,10 @@ JH/30 Bug 2411: Fix DSN generation when RFC 3461 failure notification is
 
 JH/31 Avoid re-expansion in ${sort } expansion. (CVE-2019-13917)
 
+JH/32 Introduce a general tainting mechanism for values read from the input
+      channel, and values derived from them.  Refuse to expand any tainted
+      values, to catch one form of exploit.
+
 
 Exim version 4.92
 -----------------

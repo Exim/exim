@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) The Exim maintainers 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Exim gets and frees all its store through these functions. In the original
@@ -35,6 +36,13 @@ The following different types of store are recognized:
 . There is a separate pool (POOL_SEARCH) that is used only for lookup storage.
   This means it can be freed when search_tidyup() is called to close down all
   the lookup caching.
+
+. Orthogonal to the three pool types, there are two classes of memory: untainted
+  and tainted.  The latter is used for values derived from untrusted input, and
+  the string-expansion mechanism refuses to operate on such values (obviously,
+  it can expand an untainted value to return a tainted result).  The classes
+  are implemented by duplicating the three pool types. Pool resets are requested
+  against the nontainted sibling and apply to both siblings.
 */
 
 
@@ -42,6 +50,7 @@ The following different types of store are recognized:
 /* keep config.h before memcheck.h, for NVALGRIND */
 #include "config.h"
 
+#include <sys/mman.h>
 #include "memcheck.h"
 
 
@@ -53,13 +62,7 @@ is a constant, the compiler should optimize it to a simple constant wherever it
 appears (I checked that gcc does do this). */
 
 #define alignment \
-  ((sizeof(void *) > sizeof(double))? sizeof(void *) : sizeof(double))
-
-/* Size of block to get from malloc to carve up into smaller ones. This
-must be a multiple of the alignment. We assume that 8192 is going to be
-suitably aligned. */
-
-#define STORE_BLOCK_SIZE 8192
+  (sizeof(void *) > sizeof(double) ? sizeof(void *) : sizeof(double))
 
 /* store_reset() will not free the following block if the last used block has
 less than this much left in it. */
@@ -80,32 +83,103 @@ length. */
 #define ALIGNED_SIZEOF_STOREBLOCK \
   (((sizeof(storeblock) + alignment - 1) / alignment) * alignment)
 
+/* Size of block to get from malloc to carve up into smaller ones. This
+must be a multiple of the alignment. We assume that 8192 is going to be
+suitably aligned. */
+
+#define STORE_BLOCK_SIZE (8192 - ALIGNED_SIZEOF_STOREBLOCK)
+
 /* Variables holding data for the local pools of store. The current pool number
 is held in store_pool, which is global so that it can be changed from outside.
 Setting the initial length values to -1 forces a malloc for the first call,
 even if the length is zero (which is used for getting a point to reset to). */
 
-int store_pool = POOL_PERM;
+int store_pool = POOL_MAIN;
 
-static storeblock *chainbase[3] = { NULL, NULL, NULL };
-static storeblock *current_block[3] = { NULL, NULL, NULL };
-static void *next_yield[3] = { NULL, NULL, NULL };
-static int yield_length[3] = { -1, -1, -1 };
+#define NPOOLS 6
+static storeblock *chainbase[NPOOLS];
+static storeblock *current_block[NPOOLS];
+static void *next_yield[NPOOLS];
+static int yield_length[NPOOLS] = { -1, -1, -1,  -1, -1, -1 };
+
+/* The limits of the tainted pools.  Tracking these on new allocations enables
+a fast is_tainted implementation. We assume the kernel only allocates mmaps using
+one side or the other of data+heap, not both. */
+
+static void * tainted_base = (void *)-1;
+static void * tainted_top = (void *)0;
 
 /* pool_malloc holds the amount of memory used by the store pools; this goes up
 and down as store is reset or released. nonpool_malloc is the total got by
 malloc from other calls; this doesn't go down because it is just freed by
 pointer. */
 
-static int pool_malloc = 0;
-static int nonpool_malloc = 0;
+static int pool_malloc;
+static int nonpool_malloc;
 
 /* This variable is set by store_get() to its yield, and by store_reset() to
 NULL. This enables string_cat() to optimize its store handling for very long
 strings. That's why the variable is global. */
 
-void *store_last_get[3] = { NULL, NULL, NULL };
+void *store_last_get[NPOOLS];
 
+/* These are purely for stats-gathering */
+
+static int nbytes[NPOOLS];	/* current bytes allocated */
+static int maxbytes[NPOOLS];	/* max number reached */
+static int nblocks[NPOOLS];	/* current number of blocks allocated */
+static int maxblocks[NPOOLS];
+static int n_nonpool_blocks;	/* current number of direct store_malloc() blocks */
+static int max_nonpool_blocks;
+static int max_pool_malloc;	/* max value for pool_malloc */
+static int max_nonpool_malloc;	/* max value for nonpool_malloc */
+
+
+static const uschar * pooluse[NPOOLS] = {
+[POOL_MAIN] =		US"main",
+[POOL_PERM] =		US"perm",
+[POOL_SEARCH] =		US"search",
+[POOL_TAINT_MAIN] =	US"main",
+[POOL_TAINT_PERM] =	US"perm",
+[POOL_TAINT_SEARCH] =	US"search",
+};
+static const uschar * poolclass[NPOOLS] = {
+[POOL_MAIN] =		US"untainted",
+[POOL_PERM] =		US"untainted",
+[POOL_SEARCH] =		US"untainted",
+[POOL_TAINT_MAIN] =	US"tainted",
+[POOL_TAINT_PERM] =	US"tainted",
+[POOL_TAINT_SEARCH] =	US"tainted",
+};
+
+
+static void * store_mmap(int, const char *, int);
+static void * internal_store_malloc(int, const char *, int);
+static void   internal_store_free(void *, const char *, int linenumber);
+
+/******************************************************************************/
+
+/* Predicate: if an address is in a tainted pool.
+By extension, a variable pointing to this address is tainted.
+*/
+
+BOOL
+is_tainted(const void * p)
+{
+BOOL rc = p >= tainted_base && p < tainted_top;
+
+#ifndef COMPILE_UTILITY
+DEBUG(D_memory) if (rc) debug_printf_indent("is_tainted: YES\n");
+#endif
+return rc;
+}
+
+void
+die_tainted(const uschar * msg, const uschar * func, int line)
+{
+log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
+	msg, func, line);
+}
 
 
 /*************************************************
@@ -119,15 +193,17 @@ store_last_was_get.
 
 Arguments:
   size        amount wanted
-  filename    source file from which called
-  linenumber  line number in source file.
+  func        function from which called
+  linenumber  line number in source file
 
 Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_3(int size, const char *filename, int linenumber)
+store_get_3(int size, BOOL tainted, const char *func, int linenumber)
 {
+int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
+
 /* Round up the size to a multiple of the alignment. Although this looks a
 messy statement, because "alignment" is a constant expression, the compiler can
 do a reasonable job of optimizing, especially if the value of "alignment" is a
@@ -140,21 +216,31 @@ if (size % alignment != 0) size += alignment - (size % alignment);
 size is STORE_BLOCK_SIZE, and we would expect this to be the norm, since
 these functions are mostly called for small amounts of store. */
 
-if (size > yield_length[store_pool])
+if (size > yield_length[pool])
   {
-  int length = (size <= STORE_BLOCK_SIZE)? STORE_BLOCK_SIZE : size;
+  int length = size <= STORE_BLOCK_SIZE ? STORE_BLOCK_SIZE : size;
   int mlength = length + ALIGNED_SIZEOF_STOREBLOCK;
-  storeblock * newblock = NULL;
+  storeblock * newblock;
 
   /* Sometimes store_reset() may leave a block for us; check if we can use it */
 
-  if (  (newblock = current_block[store_pool])
+  if (  (newblock = current_block[pool])
      && (newblock = newblock->next)
      && newblock->length < length
      )
     {
     /* Give up on this block, because it's too small */
-    store_free(newblock);
+    nblocks[pool]--;
+    if (pool < POOL_TAINT_BASE)
+      internal_store_free(newblock, func, linenumber);
+    else
+      {
+#ifndef COMPILE_UTILITY
+      DEBUG(D_memory)
+	debug_printf("---Unmap %6p %-20s %4d\n", newblock, func, linenumber);
+#endif
+      munmap(newblock, newblock->length + ALIGNED_SIZEOF_STOREBLOCK);
+      }
     newblock = NULL;
     }
 
@@ -162,53 +248,56 @@ if (size > yield_length[store_pool])
 
   if (!newblock)
     {
-    pool_malloc += mlength;           /* Used in pools */
-    nonpool_malloc -= mlength;        /* Exclude from overall total */
-    newblock = store_malloc(mlength);
+    if ((nbytes[pool] += mlength) > maxbytes[pool])
+      maxbytes[pool] = nbytes[pool];
+    if ((pool_malloc += mlength) > max_pool_malloc)	/* Used in pools */
+      max_pool_malloc = pool_malloc;
+    nonpool_malloc -= mlength;			/* Exclude from overall total */
+    if (++nblocks[pool] > maxblocks[pool])
+      maxblocks[pool] = nblocks[pool];
+
+    newblock = tainted
+      ? store_mmap(mlength, func, linenumber)
+      : internal_store_malloc(mlength, func, linenumber);
     newblock->next = NULL;
     newblock->length = length;
-    if (!chainbase[store_pool])
-      chainbase[store_pool] = newblock;
+
+    if (!chainbase[pool])
+      chainbase[pool] = newblock;
     else
-      current_block[store_pool]->next = newblock;
+      current_block[pool]->next = newblock;
     }
 
-  current_block[store_pool] = newblock;
-  yield_length[store_pool] = newblock->length;
-  next_yield[store_pool] =
-    (void *)(CS current_block[store_pool] + ALIGNED_SIZEOF_STOREBLOCK);
-  (void) VALGRIND_MAKE_MEM_NOACCESS(next_yield[store_pool], yield_length[store_pool]);
+  current_block[pool] = newblock;
+  yield_length[pool] = newblock->length;
+  next_yield[pool] =
+    (void *)(CS current_block[pool] + ALIGNED_SIZEOF_STOREBLOCK);
+  (void) VALGRIND_MAKE_MEM_NOACCESS(next_yield[pool], yield_length[pool]);
   }
 
 /* There's (now) enough room in the current block; the yield is the next
 pointer. */
 
-store_last_get[store_pool] = next_yield[store_pool];
+store_last_get[pool] = next_yield[pool];
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
 #ifdef COMPILE_UTILITY
-filename = filename;
+func = func;
 linenumber = linenumber;
 #else
 DEBUG(D_memory)
-  {
-  if (f.running_in_test_harness)
-    debug_printf("---%d Get %5d\n", store_pool, size);
-  else
-    debug_printf("---%d Get %6p %5d %-14s %4d\n", store_pool,
-      store_last_get[store_pool], size, filename, linenumber);
-  }
+  debug_printf("---%d Get %6p %5d %-14s %4d\n", pool,
+    store_last_get[pool], size, func, linenumber);
 #endif  /* COMPILE_UTILITY */
 
-(void) VALGRIND_MAKE_MEM_UNDEFINED(store_last_get[store_pool], size);
+(void) VALGRIND_MAKE_MEM_UNDEFINED(store_last_get[pool], size);
 /* Update next pointer and number of bytes left in the current block. */
 
-next_yield[store_pool] = (void *)(CS next_yield[store_pool] + size);
-yield_length[store_pool] -= size;
-
-return store_last_get[store_pool];
+next_yield[pool] = (void *)(CS next_yield[pool] + size);
+yield_length[pool] -= size;
+return store_last_get[pool];
 }
 
 
@@ -222,19 +311,19 @@ be obtained.
 
 Arguments:
   size        amount wanted
-  filename    source file from which called
-  linenumber  line number in source file.
+  func        function from which called
+  linenumber  line number in source file
 
 Returns:      pointer to store (panic on malloc failure)
 */
 
 void *
-store_get_perm_3(int size, const char *filename, int linenumber)
+store_get_perm_3(int size, BOOL tainted, const char *func, int linenumber)
 {
 void *yield;
 int old_pool = store_pool;
 store_pool = POOL_PERM;
-yield = store_get_3(size, filename, linenumber);
+yield = store_get_3(size, tainted, func, linenumber);
 store_pool = old_pool;
 return yield;
 }
@@ -247,15 +336,16 @@ return yield;
 
 /* While reading strings of unknown length, it is often the case that the
 string is being read into the block at the top of the stack. If it needs to be
-extended, it is more efficient just to extend the top block rather than
+extended, it is more efficient just to extend within the top block rather than
 allocate a new block and then have to copy the data. This function is provided
 for the use of string_cat(), but of course can be used elsewhere too.
+The block itself is not expanded; only the top allocation from it.
 
 Arguments:
   ptr        pointer to store block
   oldsize    current size of the block, as requested by user
   newsize    new size required
-  filename   source file from which called
+  func       function from which called
   linenumber line number in source file
 
 Returns:     TRUE if the block is at the top of the stack and has been
@@ -264,39 +354,41 @@ Returns:     TRUE if the block is at the top of the stack and has been
 */
 
 BOOL
-store_extend_3(void *ptr, int oldsize, int newsize, const char *filename,
-  int linenumber)
+store_extend_3(void *ptr, BOOL tainted, int oldsize, int newsize,
+   const char *func, int linenumber)
 {
+int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 int inc = newsize - oldsize;
 int rounded_oldsize = oldsize;
+
+/* Check that the block being extended was already of the required taint status;
+refuse to extend if not. */
+
+if (is_tainted(ptr) != tainted)
+  return FALSE;
 
 if (rounded_oldsize % alignment != 0)
   rounded_oldsize += alignment - (rounded_oldsize % alignment);
 
-if (CS ptr + rounded_oldsize != CS (next_yield[store_pool]) ||
-    inc > yield_length[store_pool] + rounded_oldsize - oldsize)
+if (CS ptr + rounded_oldsize != CS (next_yield[pool]) ||
+    inc > yield_length[pool] + rounded_oldsize - oldsize)
   return FALSE;
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
 #ifdef COMPILE_UTILITY
-filename = filename;
+func = func;
 linenumber = linenumber;
 #else
 DEBUG(D_memory)
-  {
-  if (f.running_in_test_harness)
-    debug_printf("---%d Ext %5d\n", store_pool, newsize);
-  else
-    debug_printf("---%d Ext %6p %5d %-14s %4d\n", store_pool, ptr, newsize,
-      filename, linenumber);
-  }
+  debug_printf("---%d Ext %6p %5d %-14s %4d\n", pool, ptr, newsize,
+    func, linenumber);
 #endif  /* COMPILE_UTILITY */
 
 if (newsize % alignment != 0) newsize += alignment - (newsize % alignment);
-next_yield[store_pool] = CS ptr + newsize;
-yield_length[store_pool] -= newsize - rounded_oldsize;
+next_yield[pool] = CS ptr + newsize;
+yield_length[pool] -= newsize - rounded_oldsize;
 (void) VALGRIND_MAKE_MEM_UNDEFINED(ptr + oldsize, inc);
 return TRUE;
 }
@@ -309,44 +401,46 @@ return TRUE;
 *************************************************/
 
 /* This function resets the next pointer, freeing any subsequent whole blocks
-that are now unused. Normally it is given a pointer that was the yield of a
-call to store_get, and is therefore aligned, but it may be given an offset
-after such a pointer in order to release the end of a block and anything that
-follows.
+that are now unused. Call with a cookie obtained from store_mark() only; do
+not call with a pointer returned by store_get().  Both the untainted and tainted
+pools corresposding to store_pool are reset.
 
 Arguments:
-  ptr         place to back up to
-  filename    source file from which called
+  r           place to back up to
+  func        function from which called
   linenumber  line number in source file
 
 Returns:      nothing
 */
 
-void
-store_reset_3(void *ptr, const char *filename, int linenumber)
+static void
+internal_store_reset(void * ptr, int pool, const char *func, int linenumber)
 {
 storeblock * bb;
-storeblock * b = current_block[store_pool];
+storeblock * b = current_block[pool];
 char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
-int newlength;
+int newlength, count;
+#ifndef COMPILE_UTILITY
+int oldmalloc = pool_malloc;
+#endif
 
 /* Last store operation was not a get */
 
-store_last_get[store_pool] = NULL;
+store_last_get[pool] = NULL;
 
 /* See if the place is in the current block - as it often will be. Otherwise,
 search for the block in which it lies. */
 
 if (CS ptr < bc || CS ptr > bc + b->length)
   {
-  for (b = chainbase[store_pool]; b; b = b->next)
+  for (b = chainbase[pool]; b; b = b->next)
     {
     bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
     if (CS ptr >= bc && CS ptr <= bc + b->length) break;
     }
   if (!b)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal error: store_reset(%p) "
-      "failed: pool=%d %-14s %4d", ptr, store_pool, filename, linenumber);
+      "failed: pool=%d %-14s %4d", ptr, pool, func, linenumber);
   }
 
 /* Back up, rounding to the alignment if necessary. When testing, flatten
@@ -356,7 +450,7 @@ newlength = bc + b->length - CS ptr;
 #ifndef COMPILE_UTILITY
 if (debug_store)
   {
-  assert_no_variables(ptr, newlength, filename, linenumber);
+  assert_no_variables(ptr, newlength, func, linenumber);
   if (f.running_in_test_harness)
     {
     (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
@@ -365,23 +459,25 @@ if (debug_store)
   }
 #endif
 (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
-yield_length[store_pool] = newlength - (newlength % alignment);
-next_yield[store_pool] = CS ptr + (newlength % alignment);
-current_block[store_pool] = b;
+next_yield[pool] = CS ptr + (newlength % alignment);
+count = yield_length[pool];
+count = (yield_length[pool] = newlength - (newlength % alignment)) - count;
+current_block[pool] = b;
 
-/* Free any subsequent block. Do NOT free the first successor, if our
-current block has less than 256 bytes left. This should prevent us from
-flapping memory. However, keep this block only when it has the default size. */
+/* Free any subsequent block. Do NOT free the first
+successor, if our current block has less than 256 bytes left. This should
+prevent us from flapping memory. However, keep this block only when it has
+the default size. */
 
-if (yield_length[store_pool] < STOREPOOL_MIN_SIZE &&
-    b->next &&
-    b->next->length == STORE_BLOCK_SIZE)
+if (  yield_length[pool] < STOREPOOL_MIN_SIZE
+   && b->next
+   && b->next->length == STORE_BLOCK_SIZE)
   {
   b = b->next;
 #ifndef COMPILE_UTILITY
   if (debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
-			filename, linenumber);
+			func, linenumber);
 #endif
   (void) VALGRIND_MAKE_MEM_NOACCESS(CS b + ALIGNED_SIZEOF_STOREBLOCK,
 		b->length - ALIGNED_SIZEOF_STOREBLOCK);
@@ -392,34 +488,154 @@ b->next = NULL;
 
 while ((b = bb))
   {
+  int siz = b->length + ALIGNED_SIZEOF_STOREBLOCK;
 #ifndef COMPILE_UTILITY
   if (debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
-			filename, linenumber);
+			func, linenumber);
 #endif
   bb = bb->next;
-  pool_malloc -= b->length + ALIGNED_SIZEOF_STOREBLOCK;
-  store_free_3(b, filename, linenumber);
+  nbytes[pool] -= siz;
+  pool_malloc -= siz;
+  nblocks[pool]--;
+  if (pool < POOL_TAINT_BASE)
+    internal_store_free(b, func, linenumber);
+  else
+    {
+#ifndef COMPILE_UTILITY
+    DEBUG(D_memory)
+      debug_printf("---Unmap %6p %-20s %4d\n", b, func, linenumber);
+#endif
+    munmap(b, b->length + ALIGNED_SIZEOF_STOREBLOCK);
+    }
   }
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
 #ifdef COMPILE_UTILITY
-filename = filename;
+func = func;
 linenumber = linenumber;
 #else
 DEBUG(D_memory)
-  {
-  if (f.running_in_test_harness)
-    debug_printf("---%d Rst    ** %d\n", store_pool, pool_malloc);
-  else
-    debug_printf("---%d Rst %6p    ** %-14s %4d %d\n", store_pool, ptr,
-      filename, linenumber, pool_malloc);
-  }
+  debug_printf("---%d Rst %6p %5d %-14s %4d %d\n", pool, ptr,
+    count + oldmalloc - pool_malloc,
+    func, linenumber, pool_malloc);
 #endif  /* COMPILE_UTILITY */
 }
 
+
+rmark
+store_reset_3(rmark r, int pool, const char *func, int linenumber)
+{
+void ** ptr = r;
+
+if (pool >= POOL_TAINT_BASE)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "store_reset called for pool %d: %s %d\n", pool, func, linenumber);
+if (!r)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "store_reset called with bad mark: %s %d\n", func, linenumber);
+
+internal_store_reset(*ptr, pool + POOL_TAINT_BASE, func, linenumber);
+internal_store_reset(ptr,  pool,		   func, linenumber);
+return NULL;
+}
+
+
+
+/* Free tail-end unused allocation.  This lets us allocate a big chunk
+early, for cases when we only discover later how much was really needed.
+
+Can be called with a value from store_get(), or an offset after such.  Only
+the tainted or untainted pool that serviced the store_get() will be affected.
+
+This is mostly a cut-down version of internal_store_reset().
+XXX needs rationalising
+*/
+
+void
+store_release_above_3(void *ptr, const char *func, int linenumber)
+{
+/* Search all pools' "current" blocks.  If it isn't one of those,
+ignore it (it usually will be). */
+
+for (int pool = 0; pool < nelem(current_block); pool++)
+  {
+  storeblock * b = current_block[pool];
+  char * bc;
+  int count, newlength;
+
+  if (!b)
+    continue;
+
+  bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
+  if (CS ptr < bc || CS ptr > bc + b->length)
+    continue;
+
+  /* Last store operation was not a get */
+
+  store_last_get[pool] = NULL;
+
+  /* Back up, rounding to the alignment if necessary. When testing, flatten
+  the released memory. */
+
+  newlength = bc + b->length - CS ptr;
+#ifndef COMPILE_UTILITY
+  if (debug_store)
+    {
+    assert_no_variables(ptr, newlength, func, linenumber);
+    if (f.running_in_test_harness)
+      {
+      (void) VALGRIND_MAKE_MEM_DEFINED(ptr, newlength);
+      memset(ptr, 0xF0, newlength);
+      }
+    }
+#endif
+  (void) VALGRIND_MAKE_MEM_NOACCESS(ptr, newlength);
+  next_yield[pool] = CS ptr + (newlength % alignment);
+  count = yield_length[pool];
+  count = (yield_length[pool] = newlength - (newlength % alignment)) - count;
+
+  /* Cut out the debugging stuff for utilities, but stop picky compilers from
+  giving warnings. */
+
+#ifdef COMPILE_UTILITY
+  func = func;
+  linenumber = linenumber;
+#else
+  DEBUG(D_memory)
+    debug_printf("---%d Rel %6p %5d %-14s %4d %d\n", pool, ptr, count,
+      func, linenumber, pool_malloc);
+#endif
+  return;
+  }
+#ifndef COMPILE_UTILITY
+DEBUG(D_memory)
+  debug_printf("non-last memory release try: %s %d\n", func, linenumber);
+#endif
+}
+
+
+
+rmark
+store_mark_3(const char *func, int linenumber)
+{
+void ** p;
+
+if (store_pool >= POOL_TAINT_BASE)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "store_mark called for pool %d: %s %d\n", store_pool, func, linenumber);
+
+/* Stash a mark for the tainted-twin release, in the untainted twin. Return
+a cookie (actually the address in the untainted pool) to the caller.
+Reset uses the cookie to recover the t-mark, winds back the tainted pool with it
+and winds back the untainted pool with the cookie. */
+
+p = store_get_3(sizeof(void *), FALSE, func, linenumber);
+*p = store_get_3(0, TRUE, func, linenumber);
+return p;
+}
 
 
 
@@ -433,38 +649,38 @@ block, and if so, releases that block.
 
 Arguments:
   block       block of store to consider
-  filename    source file from which called
+  func        function from which called
   linenumber  line number in source file
 
 Returns:      nothing
 */
 
 static void
-store_release_3(void * block, const char * filename, int linenumber)
+store_release_3(void * block, int pool, const char * func, int linenumber)
 {
 /* It will never be the first block, so no need to check that. */
 
-for (storeblock * b = chainbase[store_pool]; b; b = b->next)
+for (storeblock * b = chainbase[pool]; b; b = b->next)
   {
   storeblock * bb = b->next;
   if (bb && CS block == CS bb + ALIGNED_SIZEOF_STOREBLOCK)
     {
+    int siz = bb->length + ALIGNED_SIZEOF_STOREBLOCK;
     b->next = bb->next;
-    pool_malloc -= bb->length + ALIGNED_SIZEOF_STOREBLOCK;
+    nbytes[pool] -= siz;
+    pool_malloc -= siz;
+    nblocks[pool]--;
 
     /* Cut out the debugging stuff for utilities, but stop picky compilers
     from giving warnings. */
 
 #ifdef COMPILE_UTILITY
-    filename = filename;
+    func = func;
     linenumber = linenumber;
 #else
     DEBUG(D_memory)
-      if (f.running_in_test_harness)
-        debug_printf("-Release       %d\n", pool_malloc);
-      else
-        debug_printf("-Release %6p %-20s %4d %d\n", (void *)bb, filename,
-          linenumber, pool_malloc);
+      debug_printf("-Release %6p %-20s %4d %d\n", (void *)bb, func,
+	linenumber, pool_malloc);
 
     if (f.running_in_test_harness)
       memset(bb, 0xF0, bb->length+ALIGNED_SIZEOF_STOREBLOCK);
@@ -502,19 +718,73 @@ Returns:	new location of data
 */
 
 void *
-store_newblock_3(void * block, int newsize, int len,
-  const char * filename, int linenumber)
+store_newblock_3(void * block, BOOL tainted, int newsize, int len,
+  const char * func, int linenumber)
 {
-BOOL release_ok = store_last_get[store_pool] == block;
-uschar * newtext = store_get(newsize);
+int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
+BOOL release_ok = !tainted && store_last_get[pool] == block;
+uschar * newtext;
 
+if (is_tainted(block) != tainted)
+  die_tainted(US"store_newblock", CUS func, linenumber);
+
+newtext = store_get(newsize, tainted);
 memcpy(newtext, block, len);
-if (release_ok) store_release_3(block, filename, linenumber);
+if (release_ok) store_release_3(block, pool, func, linenumber);
 return (void *)newtext;
 }
 
 
 
+
+/******************************************************************************/
+static void *
+store_alloc_tail(void * yield, int size, const char * func, int line,
+  const uschar * type)
+{
+if ((nonpool_malloc += size) > max_nonpool_malloc)
+  max_nonpool_malloc = nonpool_malloc;
+
+/* Cut out the debugging stuff for utilities, but stop picky compilers from
+giving warnings. */
+
+#ifdef COMPILE_UTILITY
+func = func; line = line; type = type;
+#else
+
+/* If running in test harness, spend time making sure all the new store
+is not filled with zeros so as to catch problems. */
+
+if (f.running_in_test_harness)
+  memset(yield, 0xF0, (size_t)size);
+DEBUG(D_memory) debug_printf("--%6s %6p %5d bytes\t%-14s %4d\tpool %5d  nonpool %5d\n",
+  type, yield, size, func, line, pool_malloc, nonpool_malloc);
+#endif  /* COMPILE_UTILITY */
+
+return yield;
+}
+
+/*************************************************
+*                Mmap store                      *
+*************************************************/
+
+static void *
+store_mmap(int size, const char * func, int line)
+{
+void * yield, * top;
+
+if (size < 16) size = 16;
+
+if (!(yield = mmap(NULL, (size_t)size,
+		  PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to mmap %d bytes of memory: "
+    "called from line %d of %s", size, line, func);
+
+if (yield < tainted_base) tainted_base = yield;
+if ((top = yield + size) > tainted_top) tainted_top = top;
+
+return store_alloc_tail(yield, size, func, line, US"Mmap");
+}
 
 /*************************************************
 *                Malloc store                    *
@@ -526,50 +796,32 @@ function is called via the macro store_malloc().
 
 Arguments:
   size        amount of store wanted
-  filename    source file from which called
+  func        function from which called
   linenumber  line number in source file
 
 Returns:      pointer to gotten store (panic on failure)
 */
 
-void *
-store_malloc_3(int size, const char *filename, int linenumber)
+static void *
+internal_store_malloc(int size, const char *func, int linenumber)
 {
-void *yield;
+void * yield;
 
 if (size < 16) size = 16;
 
 if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
-    "called from line %d of %s", size, linenumber, filename);
+    "called from line %d in %s", size, linenumber, func);
 
-nonpool_malloc += size;
+return store_alloc_tail(yield, size, func, linenumber, US"Malloc");
+}
 
-/* Cut out the debugging stuff for utilities, but stop picky compilers from
-giving warnings. */
-
-#ifdef COMPILE_UTILITY
-filename = filename;
-linenumber = linenumber;
-#else
-
-/* If running in test harness, spend time making sure all the new store
-is not filled with zeros so as to catch problems. */
-
-if (f.running_in_test_harness)
-  {
-  memset(yield, 0xF0, (size_t)size);
-  DEBUG(D_memory) debug_printf("--Malloc %5d %d %d\n", size, pool_malloc,
-    nonpool_malloc);
-  }
-else
-  {
-  DEBUG(D_memory) debug_printf("--Malloc %6p %5d %-14s %4d %d %d\n", yield,
-    size, filename, linenumber, pool_malloc, nonpool_malloc);
-  }
-#endif  /* COMPILE_UTILITY */
-
-return yield;
+void *
+store_malloc_3(int size, const char *func, int linenumber)
+{
+if (n_nonpool_blocks++ > max_nonpool_blocks)
+  max_nonpool_blocks = n_nonpool_blocks;
+return internal_store_malloc(size, func, linenumber);
 }
 
 
@@ -581,28 +833,48 @@ return yield;
 
 Arguments:
   block       block of store to free
-  filename    source file from which called
+  func        function from which called
   linenumber  line number in source file
 
 Returns:      nothing
 */
 
-void
-store_free_3(void *block, const char *filename, int linenumber)
+static void
+internal_store_free(void *block, const char *func, int linenumber)
 {
 #ifdef COMPILE_UTILITY
-filename = filename;
+func = func;
 linenumber = linenumber;
 #else
 DEBUG(D_memory)
-  {
-  if (f.running_in_test_harness)
-    debug_printf("----Free\n");
-  else
-    debug_printf("----Free %6p %-20s %4d\n", block, filename, linenumber);
-  }
+  debug_printf("----Free %6p %-20s %4d\n", block, func, linenumber);
 #endif  /* COMPILE_UTILITY */
 free(block);
+}
+
+void
+store_free_3(void *block, const char *func, int linenumber)
+{
+n_nonpool_blocks--;
+internal_store_free(block, func, linenumber);
+}
+
+/******************************************************************************/
+/* Stats output on process exit */
+void
+store_exit(void)
+{
+#ifndef COMPILE_UTILITY
+DEBUG(D_memory)
+ {
+ debug_printf("----Exit nonpool max: %3d kB in %d blocks\n",
+  (max_nonpool_malloc+1023)/1024, max_nonpool_blocks);
+ debug_printf("----Exit npools  max: %3d kB\n", max_pool_malloc/1024);
+ for (int i = 0; i < NPOOLS; i++)
+  debug_printf("----Exit  pool %d max: %3d kB in %d blocks\t%s %s\n",
+    i, maxbytes[i]/1024, maxblocks[i], poolclass[i], pooluse[i]);
+ }
+#endif
 }
 
 /* End of store.c */

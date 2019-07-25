@@ -226,7 +226,7 @@ HDEBUG(D_auth)
   debug_printf("CRAM-MD5: user name = %s\n", auth_vars[0]);
   debug_printf("          challenge = %s\n", challenge);
   debug_printf("          received  = %s\n", clear);
-  Ustrcpy(buff,"          digest    = ");
+  Ustrcpy(buff, US"          digest    = ");
   for (i = 0; i < 16; i++) sprintf(CS buff+22+2*i, "%02x", digest[i]);
   debug_printf("%.54s\n", buff);
   }

@@ -9,8 +9,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-rda_interpret (file): TESTSUITE/aux-var/0037.F
-expanded: TESTSUITE/aux-var/0037.F
+rda_interpret (file): 'TESTSUITE/aux-var/0037.F'
+expanded: 'TESTSUITE/aux-var/0037.F'
 ssss bytes read from TESTSUITE/aux-var/0037.F
 data is an Exim filter program
 Filter: start of processing
@@ -39,8 +39,8 @@ local_part=filter-userx domain=test.ex
 checking local_parts
 $home = >/usr<
 calling userfilter router
-rda_interpret (file): TESTSUITE/aux-var/0037.f-user
-expanded: TESTSUITE/aux-var/0037.f-user
+rda_interpret (file): 'TESTSUITE/aux-var/0037.f-user'
+expanded: 'TESTSUITE/aux-var/0037.f-user'
 ssss bytes read from TESTSUITE/aux-var/0037.f-user
 data is an Exim filter program
 Filter: start of processing

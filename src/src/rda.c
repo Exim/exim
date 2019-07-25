@@ -96,37 +96,37 @@ static int
 rda_exists(uschar *filename, uschar **error)
 {
 int rc, saved_errno;
-uschar *slash;
 struct stat statbuf;
+uschar * s;
 
 if ((rc = Ustat(filename, &statbuf)) >= 0) return FILE_EXIST;
 saved_errno = errno;
 
-Ustrncpy(big_buffer, filename, big_buffer_size - 3);
+s = string_copy(filename);
 sigalrm_seen = FALSE;
 
 if (saved_errno == ENOENT)
   {
-  slash = Ustrrchr(big_buffer, '/');
-  Ustrcpy(slash+1, ".");
+  uschar * slash = Ustrrchr(s, '/');
+  Ustrcpy(slash+1, US".");
 
   ALARM(30);
-  rc = Ustat(big_buffer, &statbuf);
+  rc = Ustat(s, &statbuf);
   if (rc != 0 && errno == EACCES && !sigalrm_seen)
     {
     *slash = 0;
-    rc = Ustat(big_buffer, &statbuf);
+    rc = Ustat(s, &statbuf);
     }
   saved_errno = errno;
   ALARM_CLR(0);
 
-  DEBUG(D_route) debug_printf("stat(%s)=%d\n", big_buffer, rc);
+  DEBUG(D_route) debug_printf("stat(%s)=%d\n", s, rc);
   }
 
 if (sigalrm_seen || rc != 0)
   {
-  *error = string_sprintf("failed to stat %s (%s)", big_buffer,
-    sigalrm_seen? "timeout" : strerror(saved_errno));
+  *error = string_sprintf("failed to stat %s (%s)", s,
+    sigalrm_seen?  "timeout" : strerror(saved_errno));
   return FILE_EXIST_UNCLEAR;
   }
 
@@ -281,7 +281,7 @@ if (statbuf.st_size > MAX_FILTER_SIZE)
 
 /* Read the file in one go in order to minimize the time we have it open. */
 
-filebuf = store_get(statbuf.st_size + 1);
+filebuf = store_get(statbuf.st_size + 1, is_tainted(filename));
 
 if (fread(filebuf, 1, statbuf.st_size, fwd) != statbuf.st_size)
   {
@@ -366,7 +366,7 @@ if (*filtertype != FILTER_FORWARD)
   int old_expand_forbid = expand_forbid;
 
   DEBUG(D_route) debug_printf("data is %s filter program\n",
-    (*filtertype == FILTER_EXIM)? "an Exim" : "a Sieve");
+    *filtertype == FILTER_EXIM ? "an Exim" : "a Sieve");
 
   /* RDO_FILTER is an "allow" bit */
 
@@ -377,8 +377,7 @@ if (*filtertype != FILTER_FORWARD)
     }
 
   expand_forbid =
-    (expand_forbid & ~RDO_FILTER_EXPANSIONS) |
-    (options & RDO_FILTER_EXPANSIONS);
+    expand_forbid & ~RDO_FILTER_EXPANSIONS  |  options & RDO_FILTER_EXPANSIONS;
 
   /* RDO_{EXIM,SIEVE}_FILTER are forbid bits */
 
@@ -473,7 +472,8 @@ if (len == 0)
 else
   /* We know we have enough memory so disable the error on "len" */
   /* coverity[tainted_data] */
-  if (read(fd, *sp = store_get(len), len) != len) return FALSE;
+  /* We trust the data source, so untainted */
+  if (read(fd, *sp = store_get(len, FALSE), len) != len) return FALSE;
 return TRUE;
 }
 
@@ -552,13 +552,12 @@ uschar *data;
 uschar *readerror = US"";
 void (*oldsignal)(int);
 
-DEBUG(D_route) debug_printf("rda_interpret (%s): %s\n",
-  (rdata->isfile)? "file" : "string", rdata->string);
+DEBUG(D_route) debug_printf("rda_interpret (%s): '%s'\n",
+  rdata->isfile ? "file" : "string", string_printing(rdata->string));
 
 /* Do the expansions of the file name or data first, while still privileged. */
 
-data = expand_string(rdata->string);
-if (data == NULL)
+if (!(data = expand_string(rdata->string)))
   {
   if (f.expand_string_forcedfail) return FF_NOTDELIVERED;
   *error = string_sprintf("failed to expand \"%s\": %s", rdata->string,
@@ -567,7 +566,7 @@ if (data == NULL)
   }
 rdata->string = data;
 
-DEBUG(D_route) debug_printf("expanded: %s\n", data);
+DEBUG(D_route) debug_printf("expanded: '%s'\n", data);
 
 if (rdata->isfile && data[0] != '/')
   {
@@ -767,7 +766,7 @@ if ((pid = fork()) == 0)
 out:
   (void)close(fd);
   search_tidyup();
-  _exit(0);
+  exim_underbar_exit(0);
 
 bad:
   DEBUG(D_rewrite) debug_printf("rda_interpret: failed write to pipe\n");
@@ -802,7 +801,7 @@ if (eblockp)
     uschar *s;
     if (!rda_read_string(fd, &s)) goto DISASTER;
     if (!s) break;
-    e = store_get(sizeof(error_block));
+    e = store_get(sizeof(error_block), FALSE);
     e->next = NULL;
     e->text1 = s;
     if (!rda_read_string(fd, &s)) goto DISASTER;
@@ -866,7 +865,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
     /* First string is the address; NULL => end of addresses */
 
     if (!rda_read_string(fd, &recipient)) goto DISASTER;
-    if (recipient == NULL) break;
+    if (!recipient) break;
 
     /* Hang on the end of the chain */
 
@@ -901,7 +900,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     if (i > 0)
       {
-      addr->pipe_expandn = store_get((i+1) * sizeof(uschar *));
+      addr->pipe_expandn = store_get((i+1) * sizeof(uschar *), FALSE);
       addr->pipe_expandn[i] = NULL;
       while (--i >= 0) addr->pipe_expandn[i] = expandn[i];
       }
@@ -911,7 +910,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
     if (read(fd, &reply_options, sizeof(int)) != sizeof(int)) goto DISASTER;
     if ((reply_options & REPLY_EXISTS) != 0)
       {
-      addr->reply = store_get(sizeof(reply_item));
+      addr->reply = store_get(sizeof(reply_item), FALSE);
 
       addr->reply->file_expand = (reply_options & REPLY_EXPAND) != 0;
       addr->reply->return_message = (reply_options & REPLY_RETURN) != 0;

@@ -218,6 +218,7 @@ extern const uschar * exim_errstr(int);
 extern void    exim_exit(int, const uschar *) NORETURN;
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
+extern void    exim_underbar_exit(int);
 extern void    exim_wait_tick(struct timeval *, int);
 extern int     exp_bool(address_item *addr,
   uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
@@ -458,7 +459,7 @@ extern void    smtp_log_no_mail(void);
 extern void    smtp_message_code(uschar **, int *, uschar **, uschar **, BOOL);
 extern void    smtp_proxy_tls(void *, uschar *, size_t, int *, int) NORETURN;
 extern BOOL    smtp_read_response(void *, uschar *, int, int, int);
-extern void    smtp_reset(void *);
+extern void   *smtp_reset(void *);
 extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_notquit_exit(uschar *, uschar *, uschar *, ...);
 extern void    smtp_port_for_connect(host_item *, int);
@@ -485,6 +486,8 @@ extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
 extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
+
+extern void    store_exit(void);
 extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;
@@ -496,8 +499,6 @@ extern int     string_compare_by_pointer(const void *, const void *);
 extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
 extern uschar *string_dequote(const uschar **);
-extern gstring *string_fmt_append(gstring *, const char *, ...) ALMOST_PRINTF(2,3);
-extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
@@ -505,7 +506,6 @@ extern int     string_is_ip_address(const uschar *, int *);
 extern BOOL    string_is_utf8(const uschar *);
 #endif
 extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
-extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_timediff(struct timeval *);
@@ -518,7 +518,23 @@ extern uschar *string_domain_utf8_to_alabel(const uschar *, uschar **);
 extern uschar *string_localpart_alabel_to_utf8(const uschar *, uschar **);
 extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
 #endif
-extern gstring *string_vformat(gstring *, BOOL, const char *, va_list);
+
+#define string_format(buf, siz, fmt, ...) \
+	string_format_trc(buf, siz, US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
+extern BOOL    string_format_trc(uschar *, int, const uschar *, unsigned,
+			const char *, ...) ALMOST_PRINTF(5,6);
+
+#define string_vformat(g, flgs, fmt, ap) \
+	string_vformat_trc(g, US __FUNCTION__, __LINE__, \
+			 STRING_SPRINTF_BUFFER_SIZE, flgs, fmt, ap)
+extern gstring *string_vformat_trc(gstring *, const uschar *, unsigned,
+			unsigned, unsigned, const char *, va_list);
+
+#define string_open_failed(eno, fmt, ...) \
+	string_open_failed_trc(eno, US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
+extern uschar *string_open_failed_trc(int, const uschar *, unsigned,
+			const char *, ...) PRINTF_FUNCTION(4,5);
+
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
@@ -623,6 +639,7 @@ return chown(CCS name, owner, group)
 /******************************************************************************/
 /* String functions */
 
+#if !defined(MACRO_PREDEF)
 /*************************************************
 *            Copy and save string                *
 *************************************************/
@@ -630,14 +647,22 @@ return chown(CCS name, owner, group)
 /* This function assumes that memcpy() is faster than strcpy().
 */
 
-#if !defined(MACRO_PREDEF)
 static inline uschar *
-string_copy(const uschar *s)
+string_copy_taint_trc(const uschar *s, BOOL tainted, const char * func, int line)
 {
 int len = Ustrlen(s) + 1;
-uschar *ss = store_get(len);
+uschar *ss = store_get_3(len, tainted, func, line);
 memcpy(ss, s, len);
 return ss;
+}
+
+#define string_copy_taint(s, tainted) \
+	string_copy_taint_trc((s), tainted, __FUNCTION__, __LINE__)
+
+static inline uschar *
+string_copy(const uschar * s)
+{
+return string_copy_taint((s), is_tainted(s));
 }
 
 
@@ -653,7 +678,7 @@ Returns:  copy of string in new store, with letters lowercased
 static inline uschar *
 string_copylc(const uschar *s)
 {
-uschar *ss = store_get(Ustrlen(s) + 1);
+uschar *ss = store_get(Ustrlen(s) + 1, is_tainted(s));
 uschar *p = ss;
 while (*s != 0) *p++ = tolower(*s++);
 *p = 0;
@@ -681,7 +706,7 @@ This is an API for local_scan hence not static.
 static inline uschar *
 string_copyn(const uschar *s, int n)
 {
-uschar *ss = store_get(n + 1);
+uschar *ss = store_get(n + 1, is_tainted(s));
 Ustrncpy(ss, s, n);
 ss[n] = 0;
 return ss;
@@ -704,7 +729,7 @@ Returns:    copy of string in new store, with letters lowercased
 static inline uschar *
 string_copynlc(uschar *s, int n)
 {
-uschar *ss = store_get(n + 1);
+uschar *ss = store_get(n + 1, is_tainted(s));
 uschar *p = ss;
 while (n-- > 0) *p++ = tolower(*s++);
 *p = 0;
@@ -712,19 +737,71 @@ return ss;
 }
 
 
+/*************************************************
+*     Copy and save string in longterm store     *
+*************************************************/
+
+/* This function assumes that memcpy() is faster than strcpy().
+
+Argument: string to copy
+Returns:  copy of string in new store
+*/
+
+static inline uschar *
+string_copy_perm(const uschar *s, BOOL force_taint)
+{
+int old_pool = store_pool;
+int len = Ustrlen(s) + 1;
+uschar *ss;
+
+store_pool = POOL_PERM;
+ss = store_get(len, force_taint || is_tainted(s));
+memcpy(ss, s, len);
+store_pool = old_pool;
+return ss;
+}
+
+
+
+/* sprintf into a buffer, taint-unchecked */
+
+static inline void
+string_format_nt(uschar * buf, int siz, const char * fmt, ...)
+{
+gstring gs = { .size = siz, .ptr = 0, .s = buf };
+va_list ap;
+va_start(ap, fmt);
+(void) string_vformat(&gs, SVFMT_TAINT_NOCHK, fmt, ap);
+va_end(ap);
+}
+
+
+
 /******************************************************************************/
 /* Growable-string functions */
 
-/* Create a growable-string with some preassigned space, in untainted memory */
+/* Create a growable-string with some preassigned space */
+
+#define string_get_tainted(size, tainted) \
+	string_get_tainted_trc((size), (tainted), __FUNCTION__, __LINE__)
 
 static inline gstring *
-string_get(unsigned size)
+string_get_tainted_trc(unsigned size, BOOL tainted, const char * func, unsigned line)
 {
-gstring * g = store_get(sizeof(gstring) + size);
+gstring * g = store_get_3(sizeof(gstring) + size, tainted, func, line);
 g->size = size;
 g->ptr = 0;
 g->s = US(g + 1);
 return g;
+}
+
+#define string_get(size) \
+	string_get_trc((size), __FUNCTION__, __LINE__)
+
+static inline gstring *
+string_get_trc(unsigned size, const char * func, unsigned line)
+{
+return string_get_tainted_trc(size, FALSE, func, line);
 }
 
 /* NUL-terminate the C string in the growable-string, and return it. */
@@ -737,10 +814,37 @@ g->s[g->ptr] = '\0';
 return g->s;
 }
 
+
+#define gstring_release_unused(g) \
+	gstring_release_unused_trc(g, __FUNCTION__, __LINE__)
+
 static inline void
-gstring_release_unused(gstring * g)
+gstring_release_unused_trc(gstring * g, const char * file, unsigned line)
 {
-if (g) store_reset(g->s + (g->size = g->ptr + 1));
+if (g) store_release_above_3(g->s + (g->size = g->ptr + 1), file, line);
+}
+
+
+/* sprintf-append to a growable-string */
+
+#define string_fmt_append(g, fmt, ...) \
+	string_fmt_append_f_trc(g, US __FUNCTION__, __LINE__, \
+	SVFMT_EXTEND|SVFMT_REBUFFER, fmt, __VA_ARGS__)
+
+#define string_fmt_append_f(g, flgs, fmt, ...) \
+	string_fmt_append_f_trc(g, US __FUNCTION__, __LINE__, \
+	flgs,         fmt, __VA_ARGS__)
+
+static inline gstring *
+string_fmt_append_f_trc(gstring * g, const uschar * func, unsigned line,
+  unsigned flags, const char *format, ...)
+{
+va_list ap;
+va_start(ap, format);
+g = string_vformat_trc(g, func, line, STRING_SPRINTF_BUFFER_SIZE,
+			flags, format, ap);
+va_end(ap);
+return g;
 }
 
 /******************************************************************************/

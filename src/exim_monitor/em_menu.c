@@ -651,7 +651,7 @@ static void headersAction(Widget w, XtPointer client_data, XtPointer call_data)
 uschar buffer[256];
 header_line *h, *next;
 Widget text = text_create(US client_data, text_depth);
-void *reset_point;
+rmark reset_point;
 
 w = w;      /* Keep picky compilers happy */
 call_data = call_data;
@@ -659,7 +659,7 @@ call_data = call_data;
 /* Remember the point in the dynamic store so we can recover to it afterwards.
 Then use Exim's function to read the header. */
 
-reset_point = store_get(0);
+reset_point = store_mark();
 
 sprintf(CS buffer, "%s-H", US client_data);
 if (spool_read_header(buffer, TRUE, FALSE) != spool_read_OK)

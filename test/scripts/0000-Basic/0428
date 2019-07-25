@@ -29,9 +29,10 @@ Filter: if true { stop; fileinto "inbox.never"; }
 Test 7
 ****
 # This should fileinto inbox.JUNK (99 equal 99):
-exim -odi userx
+exim -odi userx8
 X-Sieve: 99
-Filter: require["fileinto","comparator-i;ascii-numeric"];
+
+	require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "99" {
           fileinto "inbox.JUNK";
           stop;
@@ -39,9 +40,10 @@ Filter: require["fileinto","comparator-i;ascii-numeric"];
 Test 8
 ****
 # This should not fileinto inbox.JUNK (98 not equal 99):
-exim -odi userx
+exim -odi userx9
 X-Sieve: 99
-Filter: require["fileinto","comparator-i;ascii-numeric"];
+
+	require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "98" {
           fileinto "inbox.JUNK";
           stop;
@@ -49,9 +51,10 @@ Filter: require["fileinto","comparator-i;ascii-numeric"];
 Test 9
 ****
 # This should fileinto inbox.JUNK (99-suffix equal 99):
-exim -odi userx
+exim -odi userx10
 X-Sieve: 99-
-Filter: require["fileinto","comparator-i;ascii-numeric"];
+
+	require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "99" {
           fileinto "inbox.JUNK";
           stop;
@@ -59,9 +62,10 @@ Filter: require["fileinto","comparator-i;ascii-numeric"];
 Test 10
 ****
 # This should fileinto inbox.JUNK (non-numeric equal non-numeric):
-exim -odi userx
+exim -odi userx11
 X-Sieve: -99
-Filter: require["fileinto","comparator-i;ascii-numeric"];
+
+	require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "-99" {
           fileinto "inbox.JUNK";
           stop;
@@ -69,9 +73,10 @@ Filter: require["fileinto","comparator-i;ascii-numeric"];
 Test 11
 ****
 # This should fileinto inbox.JUNK (non-numeric equal non-numeric):
-exim -odi userx
+exim -odi userx12
 X-Sieve: -99
-Filter: require["fileinto","comparator-i;ascii-numeric"];
+
+	require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "-98" {
           fileinto "inbox.JUNK";
           stop;
@@ -79,16 +84,17 @@ Filter: require["fileinto","comparator-i;ascii-numeric"];
 Test 12
 ****
 # This is a simple test of "vacation"
-exim -odi -f someone@test.ex userx 
-To: userx@test.ex
-Filter: require ["vacation"]; 
+exim -odi -f someone@test.ex userx13
+To: userx13@test.ex
+
+	require ["vacation"]; 
         vacation "I am gone.  Not here.";
 Test 13
 ****
 # Test use of suffix
-exim -odi -f someone@test.ex userx-suffix userx-suffix2
-To: userx-suffix@test.ex
-Filter: require ["envelope","fileinto"]; 
+exim -odi -f someone@test.ex userx14-suffix userx14-suffix2
+
+	require ["envelope","fileinto"]; 
         if envelope :matches :localpart "to" "*-suffix" {
           fileinto "userx-sawsuffix";
           stop; 

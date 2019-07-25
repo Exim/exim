@@ -6,10 +6,21 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = DIR/aux-fixed/TESTNUM.acl$local_part
+acl_smtp_rcpt = chk_rcpt
 qualify_domain = test.ex
 trusted_users = CALLER
 
+
+# ----- ACL -----
+begin acl
+
+chk_rcpt:
+  accept	local_parts = 1
+		endpass
+		acl = DIR/aux-fixed/TESTNUM.acl1
+  accept	local_parts = 2
+		endpass
+		acl = DIR/aux-fixed/TESTNUM.acl2
 
 # ----- Routers -----
 

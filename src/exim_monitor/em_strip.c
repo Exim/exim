@@ -141,7 +141,7 @@ while (thresholds[i] > 0)
         thresh : stripchart_midmax[num];
       if (newmax == 10) sprintf(CS buffer, "%s", stripchart_name[num]);
         else sprintf(CS buffer, "%s x%d", stripchart_name[num], newmax/10);
-      if (size_stripchart != NULL && num == 1) Ustrcat(buffer, "%");
+      if (size_stripchart != NULL && num == 1) Ustrcat(buffer, US"%");
       xs_SetValues(stripchart_label[num], 1, "label", buffer);
       oldmax = stripchart_max[num];
       stripchart_max[num] = newmax;

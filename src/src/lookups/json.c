@@ -16,12 +16,14 @@ which is freed once by search_tidyup(). Make the free call a dummy.
 This burns some 300kB in handling a 37kB JSON file, for the benefit of
 a fast free.  The alternative of staying with malloc is nearly as bad,
 eyeballing the activity there are 20% the number of free vs. alloc
-calls (before the big bunch at the end). */
+calls (before the big bunch at the end).
+
+Assume that the file is trusted, so no tainting */
 
 static void *
 json_malloc(size_t nbytes)
 {
-void * p = store_get((int)nbytes);
+void * p = store_get((int)nbytes, FALSE);
 /* debug_printf("%s %d: %p\n", __FUNCTION__, (int)nbytes, p); */
 return p;
 }

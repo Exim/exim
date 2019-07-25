@@ -167,10 +167,10 @@ void cygwin_premain2(int argc, char ** argv, struct per_process * ptr)
         cygwin_debug = TRUE;
         fprintf(stderr, "CYGWIN = \"%s\".\n", cygenv);
         if (((size = cygwin_conv_path(CCP_POSIX_TO_WIN_W,"/", win32_path, 0)) > 0)
- 	 && ((win32_path = malloc(size)) != NULL)
+ 	 && ((win32_path = store_malloc(size)) != NULL)
          && (cygwin_conv_path(CCP_POSIX_TO_WIN_W,"/", win32_path, size) == 0)) {
 	        fprintf(stderr, " Root / mapped to %ls.\n", win32_path);
-		free(win32_path);
+		store_free(win32_path);
 	}
       }
       else if (argv[i][1] == 'b' && argv[i][2] == 'd') {

@@ -42,7 +42,9 @@ regular expression for a long time; the other for short-term use. */
 static void *
 function_store_get(size_t size)
 {
-return store_get((int)size);
+/* For now, regard all RE results as potentially tainted.  We might need
+more intelligence on this point. */
+return store_get((int)size, TRUE);
 }
 
 static void
@@ -181,7 +183,7 @@ va_list ap;
 g = string_fmt_append(&gs, "%5d ", (int)getpid());
 len = g->ptr;
 va_start(ap, format);
-if (!string_vformat(g, FALSE, format, ap))
+if (!string_vformat(g, 0, format, ap))
   {
   gs.ptr = len;
   g = string_cat(&gs, US"**** string overflowed buffer ****");
@@ -502,7 +504,7 @@ for (int i = 0; i <= 2; i++)
     {
     if (devnull < 0) devnull = open("/dev/null", O_RDWR);
     if (devnull < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-      string_open_failed(errno, "/dev/null"));
+      string_open_failed(errno, "/dev/null", NULL));
     if (devnull != i) (void)dup2(devnull, i);
     }
   }
@@ -666,11 +668,20 @@ void
 exim_exit(int rc, const uschar * process)
 {
 search_tidyup();
+store_exit();
 DEBUG(D_any)
   debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d %s%s%sterminating with rc=%d "
     ">>>>>>>>>>>>>>>>\n", (int)getpid(),
     process ? "(" : "", process, process ? ") " : "", rc);
 exit(rc);
+}
+
+
+void
+exim_underbar_exit(int rc)
+{
+store_exit();
+_exit(rc);
 }
 
 
@@ -1254,10 +1265,10 @@ for (int i = 0;; i++)
 
   #ifdef USE_READLINE
   char *readline_line = NULL;
-  if (fn_readline != NULL)
+  if (fn_readline)
     {
-    if ((readline_line = fn_readline((i > 0)? "":"> ")) == NULL) break;
-    if (*readline_line != 0 && fn_addhist != NULL) fn_addhist(readline_line);
+    if (!(readline_line = fn_readline((i > 0)? "":"> "))) break;
+    if (*readline_line != 0 && fn_addhist) fn_addhist(readline_line);
     p = US readline_line;
     }
   else
@@ -1276,9 +1287,7 @@ for (int i = 0;; i++)
   while (ss > p && isspace(ss[-1])) ss--;
 
   if (i > 0)
-    {
     while (p < ss && isspace(*p)) p++;   /* leading space after cont */
-    }
 
   g = string_catn(g, p, ss - p);
 
@@ -1375,7 +1384,7 @@ if ( ! ((real_uid == root_uid)
   }
 
 /* Get a list of macros which are whitelisted */
-whitelisted = string_copy_malloc(US WHITELIST_D_MACROS);
+whitelisted = string_copy_perm(US WHITELIST_D_MACROS, FALSE);
 prev_char_item = FALSE;
 white_count = 0;
 for (p = whitelisted; *p != '\0'; ++p)
@@ -1562,7 +1571,7 @@ uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
 size_t sz;
-void *reset_point;
+rmark reset_point;
 
 struct passwd *pw;
 struct stat statbuf;
@@ -1691,6 +1700,7 @@ big_buffer = store_malloc(big_buffer_size);
 /* Set up the handler for the data request signal, and set the initial
 descriptive text. */
 
+process_info = store_get(PROCESS_INFO_SIZE, TRUE);	/* tainted */
 set_process_info("initializing");
 os_restarting_signal(SIGUSR1, usr1_handler);
 
@@ -2318,7 +2328,7 @@ for (i = 1; i < argc; i++)
 	    else
               {
               /* Well, the trust list at least is up to scratch... */
-              void *reset_point = store_get(0);
+              rmark reset_point = store_mark();
               uschar *trusted_configs[32];
               int nr_configs = 0;
               int i = 0;
@@ -2348,30 +2358,22 @@ for (i = 1; i < argc; i++)
                         &sep, big_buffer, big_buffer_size)) != NULL)
                   {
                   for (i=0; i < nr_configs; i++)
-                    {
                     if (Ustrcmp(filename, trusted_configs[i]) == 0)
                       break;
-                    }
                   if (i == nr_configs)
                     {
                     f.trusted_config = FALSE;
                     break;
                     }
                   }
-                store_reset(reset_point);
                 }
-              else
-                {
-                /* No valid prefixes found in trust_list file. */
+              else	/* No valid prefixes found in trust_list file. */
                 f.trusted_config = FALSE;
-                }
+              store_reset(reset_point);
               }
 	    }
-          else
-            {
-            /* Could not open trust_list file. */
+          else		/* Could not open trust_list file. */
             f.trusted_config = FALSE;
-            }
           }
       #else
         /* Not root; don't trust config */
@@ -2426,8 +2428,8 @@ for (i = 1; i < argc; i++)
 
       if (clmacro_count >= MAX_CLMACROS)
         exim_fail("exim: too many -D options on command line\n");
-      clmacros[clmacro_count++] = string_sprintf("-D%s=%s", m->name,
-        m->replacement);
+      clmacros[clmacro_count++] =
+	string_sprintf("-D%s=%s", m->name, m->replacement);
       }
     #endif
     break;
@@ -2537,7 +2539,7 @@ for (i = 1; i < argc; i++)
           { badarg = TRUE; break; }
         }
       if (*argrest == 0)
-        sender_address = string_sprintf("");  /* Ensure writeable memory */
+        *(sender_address = store_get(1, FALSE)) = '\0';  /* Ensure writeable memory */
       else
         {
         uschar *temp = argrest + Ustrlen(argrest) - 1;
@@ -2550,6 +2552,7 @@ for (i = 1; i < argc; i++)
 #endif
         sender_address = parse_extract_address(argrest, &errmess,
           &dummy_start, &dummy_end, &sender_address_domain, TRUE);
+	sender_address = string_copy_taint(sender_address, TRUE);
 #ifdef SUPPORT_I18N
 	message_smtputf8 =  string_is_utf8(sender_address);
 	allow_utf8_domains = FALSE;
@@ -2995,11 +2998,13 @@ for (i = 1; i < argc; i++)
 
       /* -oMas: setting authenticated sender */
 
-      else if (Ustrcmp(argrest, "Mas") == 0) authenticated_sender = argv[++i];
+      else if (Ustrcmp(argrest, "Mas") == 0)
+	authenticated_sender = string_copy_taint(argv[++i], TRUE);
 
       /* -oMai: setting authenticated id */
 
-      else if (Ustrcmp(argrest, "Mai") == 0) authenticated_id = argv[++i];
+      else if (Ustrcmp(argrest, "Mai") == 0)
+	authenticated_id = string_copy_taint(argv[++i], TRUE);
 
       /* -oMi: Set incoming interface address */
 
@@ -3027,7 +3032,8 @@ for (i = 1; i < argc; i++)
 
       /* -oMs: Set sender host name */
 
-      else if (Ustrcmp(argrest, "Ms") == 0) sender_host_name = argv[++i];
+      else if (Ustrcmp(argrest, "Ms") == 0)
+	sender_host_name = string_copy_taint(argv[++i], TRUE);
 
       /* -oMt: Set sender ident */
 
@@ -3933,7 +3939,7 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
    && f.really_exim && !list_options && !checking)
   {
   uschar *p = big_buffer;
-  Ustrcpy(p, "cwd= (failed)");
+  Ustrcpy(p, US"cwd= (failed)");
 
   if (!initial_cwd)
     p += 13;
@@ -3955,9 +3961,9 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
     uschar *quote;
     if (p + len + 8 >= big_buffer + big_buffer_size)
       {
-      Ustrcpy(p, " ...");
+      Ustrcpy(p, US" ...");
       log_write(0, LOG_MAIN, "%s", big_buffer);
-      Ustrcpy(big_buffer, "...");
+      Ustrcpy(big_buffer, US"...");
       p = big_buffer + 3;
       }
     printing = string_printing(argv[i]);
@@ -4290,15 +4296,6 @@ needed in transports so we lost the optimisation. */
 
 readconf_rest();
 
-/* The configuration data will have been read into POOL_PERM because we won't
-ever want to reset back past it. Change the current pool to POOL_MAIN. In fact,
-this is just a bit of pedantic tidiness. It wouldn't really matter if the
-configuration were read into POOL_MAIN, because we don't do any resets till
-later on. However, it seems right, and it does ensure that both pools get used.
-*/
-
-store_pool = POOL_MAIN;
-
 /* Handle the -brt option. This is for checking out retry configurations.
 The next three arguments are a domain name or a complete address, and
 optionally two error numbers. All it does is to call the function that
@@ -4495,7 +4492,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     else if ((pid = fork()) == 0)
       {
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
-      _exit(EXIT_SUCCESS);
+      exim_underbar_exit(EXIT_SUCCESS);
       }
     else if (pid < 0)
       {
@@ -4664,8 +4661,8 @@ if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
 the caller. This will get overwritten below for an inetd call. If a trusted
 caller has set it empty, unset it. */
 
-if (sender_ident == NULL) sender_ident = originator_login;
-  else if (sender_ident[0] == 0) sender_ident = NULL;
+if (!sender_ident) sender_ident = originator_login;
+else if (!*sender_ident) sender_ident = NULL;
 
 /* Handle the -brw option, which is for checking out rewriting rules. Cause log
 writes (on errors) to go to stderr instead. Can't do this earlier, as want the
@@ -4687,8 +4684,8 @@ if (test_rewrite_arg >= 0)
 unless a trusted caller supplies a sender address with -f, or is passing in the
 message via SMTP (inetd invocation or otherwise). */
 
-if ((sender_address == NULL && !smtp_input) ||
-    (!f.trusted_caller && filter_test == FTEST_NONE))
+if (  !sender_address && !smtp_input
+   || !f.trusted_caller && filter_test == FTEST_NONE)
   {
   f.sender_local = TRUE;
 
@@ -4696,10 +4693,10 @@ if ((sender_address == NULL && !smtp_input) ||
   via -oMas and -oMai and if so, they will already be set. Otherwise, force
   defaults except when host checking. */
 
-  if (authenticated_sender == NULL && !host_checking)
+  if (!authenticated_sender && !host_checking)
     authenticated_sender = string_sprintf("%s@%s", originator_login,
       qualify_domain_sender);
-  if (authenticated_id == NULL && !host_checking)
+  if (!authenticated_id && !host_checking)
     authenticated_id = originator_login;
   }
 
@@ -4709,8 +4706,8 @@ is specified is the empty address. However, if a trusted caller does not
 specify a sender address for SMTP input, we leave sender_address unset. This
 causes the MAIL commands to be honoured. */
 
-if ((!smtp_input && sender_address == NULL) ||
-    !receive_check_set_sender(sender_address))
+if (  !smtp_input && !sender_address
+   || !receive_check_set_sender(sender_address))
   {
   /* Either the caller is not permitted to set a general sender, or this is
   non-SMTP input and the trusted caller has not set a sender. If there is no
@@ -4736,8 +4733,7 @@ f.sender_set_untrusted = sender_address != originator_login && !f.trusted_caller
 address, which indicates an error message, or doesn't exist (root caller, smtp
 interface, no -f argument). */
 
-if (sender_address != NULL && sender_address[0] != 0 &&
-    sender_address_domain == 0)
+if (sender_address && *sender_address && sender_address_domain == 0)
   sender_address = string_sprintf("%s@%s", local_part_quote(sender_address),
     qualify_domain_sender);
 
@@ -4927,7 +4923,7 @@ if (host_checking)
   it. The code works for both IPv4 and IPv6, as it happens. */
 
   size = host_aton(sender_host_address, x);
-  sender_host_address = store_get(48);  /* large enough for full IPv6 */
+  sender_host_address = store_get(48, FALSE);  /* large enough for full IPv6 */
   (void)host_nmtoa(size, x, -1, sender_host_address, ':');
 
   /* Now set up for testing */
@@ -4957,7 +4953,7 @@ if (host_checking)
 
   if (smtp_start_session())
     {
-    for (reset_point = store_get(0); ; store_reset(reset_point))
+    for (; (reset_point = store_mark()); store_reset(reset_point))
       {
       if (smtp_setup_msg() <= 0) break;
       if (!receive_msg(FALSE)) break;
@@ -5200,7 +5196,6 @@ if (!f.synchronous_delivery)
 /* Save the current store pool point, for resetting at the start of
 each message, and save the real sender address, if any. */
 
-reset_point = store_get(0);
 real_sender_address = sender_address;
 
 /* Loop to receive messages; receive_msg() returns TRUE if there are more
@@ -5209,6 +5204,7 @@ collapsed). */
 
 while (more)
   {
+  reset_point = store_mark();
   message_id[0] = 0;
 
   /* Handle the SMTP case; call smtp_setup_mst() to deal with the initial SMTP
@@ -5358,7 +5354,7 @@ while (more)
             }
           }
 
-        receive_add_recipient(recipient, -1);
+        receive_add_recipient(string_copy_taint(recipient, TRUE), -1);
         s = ss;
         if (!finished)
           while (*(++s) != 0 && (*s == ',' || isspace(*s)));
@@ -5580,8 +5576,8 @@ while (more)
 
       rc = deliver_message(message_id, FALSE, FALSE);
       search_tidyup();
-      _exit((!mua_wrapper || rc == DELIVER_MUA_SUCCEEDED)?
-        EXIT_SUCCESS : EXIT_FAILURE);
+      exim_underbar_exit(!mua_wrapper || rc == DELIVER_MUA_SUCCEEDED
+        ? EXIT_SUCCESS : EXIT_FAILURE);
       }
 
     if (pid < 0)

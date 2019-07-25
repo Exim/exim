@@ -120,8 +120,8 @@ userx in "lsearch;TESTSUITE/aux-fixed/0403.data"? yes (matched "lsearch;TESTSUIT
 +++home=/usr
 processing address_data
 calling r1 router
-rda_interpret (string): TESTSUITE/test-mail/junk
-expanded: TESTSUITE/test-mail/junk
+rda_interpret (string): 'TESTSUITE/test-mail/junk'
+expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk

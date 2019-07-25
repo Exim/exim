@@ -10,8 +10,8 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
 running system filter
-Filtering did not set up a significant delivery.
-Normal delivery will occur.
+ Filtering did not set up a significant delivery.
+ Normal delivery will occur.
 system filter returned 1
 LOG: MAIN
   ** userx@test.ex R=r1: forced fail
@@ -27,8 +27,8 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
 running system filter
-Filtering did not set up a significant delivery.
-Normal delivery will occur.
+ Filtering did not set up a significant delivery.
+ Normal delivery will occur.
 system filter returned 1
 LOG: MAIN
   ** CALLER@test.ex: Unrouteable address

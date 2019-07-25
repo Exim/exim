@@ -23,7 +23,7 @@ redundant apparatus. */
 
 address_item *deliver_make_addr(uschar *address, BOOL copy)
 {
-address_item *addr = store_get(sizeof(address_item));
+address_item *addr = store_get(sizeof(address_item), FALSE);
 addr->next = NULL;
 addr->parent = NULL;
 addr->address = address;
@@ -618,7 +618,7 @@ uschar *
 parse_extract_address(uschar *mailbox, uschar **errorptr, int *start, int *end,
   int *domain, BOOL allow_null)
 {
-uschar *yield = store_get(Ustrlen(mailbox) + 1);
+uschar *yield = store_get(Ustrlen(mailbox) + 1, is_tainted(mailbox));
 uschar *startptr, *endptr;
 uschar *s = US mailbox;
 uschar *t = US yield;
@@ -1396,7 +1396,7 @@ for (;;)
 
     if (flen <= 0)
       {
-      *error = string_sprintf("file name missing after :include:");
+      *error = US"file name missing after :include:";
       return FF_ERROR;
       }
 
@@ -1547,7 +1547,7 @@ for (;;)
       return FF_ERROR;
       }
 
-    filebuf = store_get(statbuf.st_size + 1);
+    filebuf = store_get(statbuf.st_size + 1, is_tainted(filename));
     if (fread(filebuf, 1, statbuf.st_size, f) != statbuf.st_size)
       {
       *error = string_sprintf("error while reading included file %s: %s",
@@ -1623,7 +1623,7 @@ for (;;)
 
     if ((*s == '|' || *s == '/') && (recipient == NULL || domain == 0))
       {
-      uschar *t = store_get(Ustrlen(s) + 1);
+      uschar *t = store_get(Ustrlen(s) + 1, is_tainted(s));
       uschar *p = t;
       uschar *q = s;
       while (*q != 0)
@@ -1662,7 +1662,7 @@ for (;;)
 
         if (syntax_errors != NULL)
           {
-          error_block *e = store_get(sizeof(error_block));
+          error_block *e = store_get(sizeof(error_block), FALSE);
           error_block *last = *syntax_errors;
           if (last == NULL) *syntax_errors = e; else
             {
@@ -1730,6 +1730,7 @@ parse_message_id(uschar *str, uschar **yield, uschar **error)
 {
 uschar *domain = NULL;
 uschar *id;
+rmark reset_point;
 
 str = skip_comment(str);
 if (*str != '<')
@@ -1742,27 +1743,28 @@ if (*str != '<')
 for the answer, but it may also be very long if we are processing a header
 line. Therefore, take care to release unwanted store afterwards. */
 
-id = *yield = store_get(Ustrlen(str) + 1);
+reset_point = store_mark();
+id = *yield = store_get(Ustrlen(str) + 1, is_tainted(str));
 *id++ = *str++;
 
 str = read_addr_spec(str, id, '>', error, &domain);
 
-if (*error == NULL)
+if (!*error)
   {
   if (*str != '>') *error = US"Missing '>' after message-id";
     else if (domain == NULL) *error = US"domain missing in message-id";
   }
 
-if (*error != NULL)
+if (*error)
   {
-  store_reset(*yield);
+  store_reset(reset_point);
   return NULL;
   }
 
-while (*id != 0) id++;
+while (*id) id++;
 *id++ = *str++;
 *id++ = 0;
-store_reset(id);
+store_release_above(id);
 
 str = skip_comment(str);
 return str;

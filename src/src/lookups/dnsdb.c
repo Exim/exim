@@ -549,7 +549,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
 /* Reclaim unused memory */
 
-store_reset(yield->s + yield->ptr + 1);
+gstring_release_unused(yield);
 
 /* If yield NULL we have not found anything. Otherwise, insert the terminating
 zero and return the result. */

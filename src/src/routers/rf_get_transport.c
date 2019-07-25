@@ -45,9 +45,9 @@ rf_get_transport(uschar *tpname, transport_instance **tpptr, address_item *addr,
 uschar *ss;
 BOOL expandable;
 
-if (tpname == NULL)
+if (!tpname)
   {
-  if (require_name == NULL) return TRUE;
+  if (!require_name) return TRUE;
   addr->basic_errno = ERRNO_BADTRANSPORT;
   addr->message = string_sprintf("%s unset in %s router", require_name,
     router_name);
@@ -59,16 +59,25 @@ if (*tpptr != NULL && !expandable) return TRUE;
 
 if (expandable)
   {
-  ss = expand_string(tpname);
-  if (ss == NULL)
+  if (!(ss = expand_string(tpname)))
     {
     addr->basic_errno = ERRNO_BADTRANSPORT;
     addr->message = string_sprintf("failed to expand transport "
       "\"%s\" in %s router: %s", tpname, router_name, expand_string_message);
     return FALSE;
     }
+  if (is_tainted(ss))
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "attempt to use tainted value '%s' from '%s' for transport", ss, tpname);
+    addr->basic_errno = ERRNO_BADTRANSPORT;
+    /* Avoid leaking info to an attacker */
+    addr->message = US"internal configuration error";
+    return FALSE;
+    }
   }
-else ss = tpname;
+else
+  ss = tpname;
 
 for (transport_instance * tp = transports; tp; tp = tp->next)
   if (Ustrcmp(tp->name, ss) == 0)

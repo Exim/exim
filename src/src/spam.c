@@ -293,7 +293,7 @@ start = time(NULL);
     uschar * s;
 
     DEBUG(D_acl) debug_printf_indent("spamd: addr entry '%s'\n", address);
-    sd = (spamd_address_container *)store_get(sizeof(spamd_address_container));
+    sd = store_get(sizeof(spamd_address_container), FALSE);
 
     for (sublist = address, args = 0, spamd_param_init(sd);
 	 (s = string_nextinlist(&sublist, &sublist_sep, NULL, 0));
@@ -565,7 +565,7 @@ else
     }
 
   Ustrcpy(spam_action_buffer,
-    spamd_score >= spamd_threshold ? "reject" : "no action");
+    spamd_score >= spamd_threshold ? US"reject" : US"no action");
   }
 
 /* Create report. Since this is a multiline string,

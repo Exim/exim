@@ -43,8 +43,12 @@ static const uschar * dkim_collect_error = NULL;
 uschar *
 dkim_exim_query_dns_txt(uschar * name)
 {
+/*XXX need to always alloc the dnsa, from tainted mem.
+Then, we hope, the answers will be tainted */
+
 dns_answer dnsa;
 dns_scan dnss;
+rmark reset_point = store_mark();
 gstring * g = NULL;
 
 lookup_dnssec_authenticated = NULL;
@@ -84,7 +88,7 @@ for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
     }
 
 bad:
-if (g) store_reset(g);
+store_reset(reset_point);
 return NULL;	/*XXX better error detail?  logging? */
 }
 

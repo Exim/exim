@@ -30,7 +30,7 @@ Lmdbstrct * lmdb_p;
 int ret, save_errno;
 const uschar * errstr;
 
-lmdb_p = store_get(sizeof(Lmdbstrct));
+lmdb_p = store_get(sizeof(Lmdbstrct), FALSE);
 lmdb_p->txn = NULL;
 
 if ((ret = mdb_env_create(&db_env)))

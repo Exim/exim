@@ -446,7 +446,7 @@ if (oncelog && *oncelog != 0 && to)
 
     cache_size = statbuf.st_size;
     add_size = sizeof(time_t) + Ustrlen(to) + 1;
-    cache_buff = store_get(cache_size + add_size);
+    cache_buff = store_get(cache_size + add_size, is_tainted(oncelog));
 
     if (read(cache_fd, cache_buff, cache_size) != cache_size)
       {
@@ -821,48 +821,26 @@ if (logfile)
   int log_fd = Uopen(logfile, O_WRONLY|O_APPEND|O_CREAT, ob->mode);
   if (log_fd >= 0)
     {
-    uschar *ptr = log_buffer;
+    gstring gs = { .size = LOG_BUFFER_SIZE, .ptr = 0, .s = log_buffer }, *g = &gs;
+
+    /* Use taint-unchecked routines for writing into log_buffer, trusting
+    that we'll never expand it. */
+
     DEBUG(D_transport) debug_printf("logging message details\n");
-    sprintf(CS ptr, "%s\n", tod_stamp(tod_log));
-    while(*ptr) ptr++;
+    g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "%s\n", tod_stamp(tod_log));
     if (from)
-      {
-      (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
-        "  From: %s\n", from);
-      while(*ptr) ptr++;
-      }
+      g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "  From: %s\n", from);
     if (to)
-      {
-      (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
-        "  To: %s\n", to);
-      while(*ptr) ptr++;
-      }
+      g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "  To: %s\n", to);
     if (cc)
-      {
-      (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
-        "  Cc: %s\n", cc);
-      while(*ptr) ptr++;
-      }
+      g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "  Cc: %s\n", cc);
     if (bcc)
-      {
-      (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
-        "  Bcc: %s\n", bcc);
-      while(*ptr) ptr++;
-      }
+      g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "  Bcc: %s\n", bcc);
     if (subject)
-      {
-      (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
-        "  Subject: %s\n", subject);
-      while(*ptr) ptr++;
-      }
+      g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "  Subject: %s\n", subject);
     if (headers)
-      {
-      (void)string_format(ptr, LOG_BUFFER_SIZE - (ptr-log_buffer),
-        "  %s\n", headers);
-      while(*ptr) ptr++;
-      }
-    if(write(log_fd, log_buffer, ptr - log_buffer) != ptr-log_buffer
-      || close(log_fd))
+      g = string_fmt_append_f(g, SVFMT_TAINT_NOCHK, "  %s\n", headers);
+    if(write(log_fd, g->s, g->ptr) != g->ptr || close(log_fd))
       DEBUG(D_transport) debug_printf("Problem writing log file %s for %s "
         "transport\n", logfile, tblock->name);
     }

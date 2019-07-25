@@ -296,7 +296,8 @@ static int read_string(int fd, uschar **retval) {
         if (count > MAX_REQ_LEN) {
             return -1;
         } else {
-            *retval = store_get(count + 1);
+	    /* Assume the file is trusted, so no tainting */
+            *retval = store_get(count + 1, FALSE);
             rc = (retry_read(fd, *retval, count) < (int) count);
             (*retval)[count] = '\0';
             return count;

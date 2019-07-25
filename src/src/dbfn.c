@@ -206,7 +206,7 @@ if (created && geteuid() == root_uid)
     if (Ustrncmp(ent->d_name, name, namelen) == 0)
       {
       struct stat statbuf;
-      Ustrcpy(lastname, ent->d_name);
+      Ustrcpy(lastname, US ent->d_name);
       if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
         DEBUG(D_hints_lookup) debug_printf_indent("ensuring %s is owned by exim\n", filename);
@@ -303,7 +303,7 @@ dbfn_read_with_length(open_db *dbblock, const uschar *key, int *length)
 void *yield;
 EXIM_DATUM key_datum, result_datum;
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen);
+uschar * key_copy = store_get(klen, is_tainted(key));
 
 memcpy(key_copy, key, klen);
 
@@ -316,7 +316,10 @@ EXIM_DATUM_SIZE(key_datum) = klen;
 
 if (!EXIM_DBGET(dbblock->dbptr, key_datum, result_datum)) return NULL;
 
-yield = store_get(EXIM_DATUM_SIZE(result_datum));
+/* Assume the data store could have been tainted.  Properly, we should
+store the taint status with the data. */
+
+yield = store_get(EXIM_DATUM_SIZE(result_datum), TRUE);
 memcpy(yield, EXIM_DATUM_DATA(result_datum), EXIM_DATUM_SIZE(result_datum));
 if (length != NULL) *length = EXIM_DATUM_SIZE(result_datum);
 
@@ -347,7 +350,7 @@ dbfn_write(open_db *dbblock, const uschar *key, void *ptr, int length)
 EXIM_DATUM key_datum, value_datum;
 dbdata_generic *gptr = (dbdata_generic *)ptr;
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen);
+uschar * key_copy = store_get(klen, is_tainted(key));
 
 memcpy(key_copy, key, klen);
 gptr->time_stamp = time(NULL);
@@ -381,7 +384,7 @@ int
 dbfn_delete(open_db *dbblock, const uschar *key)
 {
 int klen = Ustrlen(key) + 1;
-uschar * key_copy = store_get(klen);
+uschar * key_copy = store_get(klen, is_tainted(key));
 
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_delete: key=%s\n", key);
 

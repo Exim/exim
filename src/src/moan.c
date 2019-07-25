@@ -308,7 +308,7 @@ if (bounce_return_message)
   if (bounce_return_body && message_file)
     {
     BOOL enddot = f.dot_ends && message_file == stdin;
-    uschar * buf = store_get(bounce_return_linesize_limit+2);
+    uschar * buf = store_get(bounce_return_linesize_limit+2, TRUE);
 
     if (firstline) fprintf(fp, "%s", CS firstline);
 

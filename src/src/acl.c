@@ -777,7 +777,7 @@ while ((s = (*func)()) != NULL)
       *error = string_sprintf("malformed ACL line \"%s\"", saveline);
       return NULL;
       }
-    this = store_get(sizeof(acl_block));
+    this = store_get(sizeof(acl_block), FALSE);
     *lastp = this;
     lastp = &(this->next);
     this->next = NULL;
@@ -824,7 +824,7 @@ while ((s = (*func)()) != NULL)
     return NULL;
     }
 
-  cond = store_get(sizeof(acl_condition_block));
+  cond = store_get(sizeof(acl_condition_block), FALSE);
   cond->next = NULL;
   cond->type = c;
   cond->u.negated = negated;
@@ -1022,7 +1022,9 @@ for (p = q; *p; p = q)
 
   if (!*hptr)
     {
-    header_line *h = store_get(sizeof(header_line));
+    /* The header_line struct itself is not tainted, though it points to
+    tainted data. */
+    header_line *h = store_get(sizeof(header_line), FALSE);
     h->text = hdr;
     h->next = NULL;
     h->type = newtype;
@@ -1355,7 +1357,7 @@ we return from this function. */
 t = tree_search(csa_cache, domain);
 if (t != NULL) return t->data.val;
 
-t = store_get_perm(sizeof(tree_node) + Ustrlen(domain));
+t = store_get_perm(sizeof(tree_node) + Ustrlen(domain), is_tainted(domain));
 Ustrcpy(t->name, domain);
 (void)tree_insertnode(&csa_cache, t);
 
@@ -1726,7 +1728,7 @@ switch(vp->value)
 
     if ((rc = verify_check_notblind(case_sensitive)) != OK)
       {
-      *log_msgptr = string_sprintf("bcc recipient detected");
+      *log_msgptr = US"bcc recipient detected";
       if (smtp_return_error_details)
         *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
       }
@@ -2168,7 +2170,7 @@ gstring * g =
   string_cat(NULL, US"error in arguments to \"ratelimit\" condition: ");
 
 va_start(ap, format);
-g = string_vformat(g, TRUE, format, ap);
+g = string_vformat(g, SVFMT_EXTEND|SVFMT_REBUFFER, format, ap);
 va_end(ap);
 
 gstring_release_unused(g);
@@ -2455,7 +2457,7 @@ if (!dbdb)
     /* No Bloom filter. This basic ratelimit block is initialized below. */
     HDEBUG(D_acl) debug_printf_indent("ratelimit creating new rate data block\n");
     dbdb_size = sizeof(*dbd);
-    dbdb = store_get(dbdb_size);
+    dbdb = store_get(dbdb_size, FALSE);		/* not tainted */
     }
   else
     {
@@ -2469,7 +2471,7 @@ if (!dbdb)
     extra = (int)limit * 2 - sizeof(dbdb->bloom);
     if (extra < 0) extra = 0;
     dbdb_size = sizeof(*dbdb) + extra;
-    dbdb = store_get(dbdb_size);
+    dbdb = store_get(dbdb_size, FALSE);		/* not tainted */
     dbdb->bloom_epoch = tv.tv_sec;
     dbdb->bloom_size = sizeof(dbdb->bloom) + extra;
     memset(dbdb->bloom, 0, dbdb->bloom_size);
@@ -2686,9 +2688,10 @@ else
 
 dbfn_close(dbm);
 
-/* Store the result in the tree for future reference. */
+/* Store the result in the tree for future reference.  Take the taint status
+from the key for consistency even though it's unlikely we'll ever expand this. */
 
-t = store_get(sizeof(tree_node) + Ustrlen(key));
+t = store_get(sizeof(tree_node) + Ustrlen(key), is_tainted(key));
 t->data.ptr = dbd;
 Ustrcpy(t->name, key);
 (void)tree_insertnode(anchor, t);
@@ -2761,7 +2764,7 @@ if (*portend != '\0')
   }
 
 /* Make a single-item host list. */
-h = store_get(sizeof(host_item));
+h = store_get(sizeof(host_item), FALSE);
 memset(h, 0, sizeof(host_item));
 h->name = hostname;
 h->port = portnum;
@@ -3493,7 +3496,7 @@ for (; cb; cb = cb->next)
       (sender_host_address == NULL)? US"" : sender_host_address,
       CUSS &host_data);
     if (rc == DEFER) *log_msgptr = search_error_message;
-    if (host_data) host_data = string_copy_malloc(host_data);
+    if (host_data) host_data = string_copy_perm(host_data, TRUE);
     break;
 
     case ACLC_LOCAL_PARTS:
@@ -3595,7 +3598,7 @@ for (; cb; cb = cb->next)
 	      "Directory separator not permitted in queue name: '%s'", arg);
       return ERROR;
       }
-    queue_name = string_copy_malloc(arg);
+    queue_name = string_copy_perm(arg, FALSE);
     break;
 
     case ACLC_RATELIMIT:
@@ -3995,13 +3998,20 @@ if (Ustrchr(ss, ' ') == NULL)
   else if (*ss == '/')
     {
     struct stat statbuf;
+    if (is_tainted(ss))
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+	"attempt to open tainted ACL file name \"%s\"", ss);
+      /* Avoid leaking info to an attacker */
+      *log_msgptr = US"internal configuration error";
+      return ERROR;
+      }
     if ((fd = Uopen(ss, O_RDONLY, 0)) < 0)
       {
       *log_msgptr = string_sprintf("failed to open ACL file \"%s\": %s", ss,
         strerror(errno));
       return ERROR;
       }
-
     if (fstat(fd, &statbuf) != 0)
       {
       *log_msgptr = string_sprintf("failed to fstat ACL file \"%s\": %s", ss,
@@ -4009,7 +4019,8 @@ if (Ustrchr(ss, ' ') == NULL)
       return ERROR;
       }
 
-    acl_text = store_get(statbuf.st_size + 1);
+    /* If the string being used as a filename is tainted, so is the file content */
+    acl_text = store_get(statbuf.st_size + 1, is_tainted(ss));
     acl_text_end = acl_text + statbuf.st_size + 1;
 
     if (read(fd, acl_text, statbuf.st_size) != statbuf.st_size)
@@ -4039,7 +4050,7 @@ if (!acl)
   if (!acl && *log_msgptr) return ERROR;
   if (fd >= 0)
     {
-    tree_node *t = store_get_perm(sizeof(tree_node) + Ustrlen(ss));
+    tree_node *t = store_get_perm(sizeof(tree_node) + Ustrlen(ss), is_tainted(ss));
     Ustrcpy(t->name, ss);
     t->data.ptr = acl;
     (void)tree_insertnode(&acl_anchor, t);
@@ -4520,7 +4531,7 @@ acl_var_create(uschar * name)
 tree_node * node, ** root = name[0] == 'c' ? &acl_var_c : &acl_var_m;
 if (!(node = tree_search(*root, name)))
   {
-  node = store_get(sizeof(tree_node) + Ustrlen(name));
+  node = store_get(sizeof(tree_node) + Ustrlen(name), is_tainted(name));
   Ustrcpy(node->name, name);
   (void)tree_insertnode(root, node);
   }
@@ -4554,6 +4565,7 @@ void
 acl_var_write(uschar *name, uschar *value, void *ctx)
 {
 FILE *f = (FILE *)ctx;
+if (is_tainted(value)) putc('-', f);
 fprintf(f, "-acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }
 

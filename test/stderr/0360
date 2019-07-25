@@ -28,8 +28,8 @@ r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=cms domain=test.ex
 calling r2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
-expanded: unknown@recurse.test.ex, defer
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
+expanded: 'unknown@recurse.test.ex, defer'
 file is not a filter file
 parse_forward_list: unknown@recurse.test.ex, defer
 extract item: unknown@recurse.test.ex
@@ -83,8 +83,8 @@ r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=defer domain=test.ex
 calling r2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
-expanded: :defer: Forcibly deferred
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
+expanded: ':defer: Forcibly deferred'
 file is not a filter file
 parse_forward_list: :defer: Forcibly deferred
 extract item: :defer: Forcibly deferred
@@ -171,8 +171,8 @@ r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=cms domain=test.ex
 calling r2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
-expanded: unknown@recurse.test.ex, defer
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
+expanded: 'unknown@recurse.test.ex, defer'
 file is not a filter file
 parse_forward_list: unknown@recurse.test.ex, defer
 extract item: unknown@recurse.test.ex
@@ -226,8 +226,8 @@ r1 router skipped: domains mismatch
 --------> r2 router <--------
 local_part=defer domain=test.ex
 calling r2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
-expanded: :defer: Forcibly deferred
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}'
+expanded: ':defer: Forcibly deferred'
 file is not a filter file
 parse_forward_list: :defer: Forcibly deferred
 extract item: :defer: Forcibly deferred

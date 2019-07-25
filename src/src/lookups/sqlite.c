@@ -131,7 +131,7 @@ if (opt != NULL) return NULL;     /* No options recognized */
 while ((c = *t++) != 0) if (c == '\'') count++;
 
 if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1);
+t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
 
 while ((c = *s++) != 0)
   {

@@ -156,11 +156,11 @@ dcc_process(uschar **listptr)
       debug_printf("DCC: Client IP (default): %s\n", client_ip);
   }
   /* strncat(opts, my_request, strlen(my_request)); */
-  Ustrcat(opts, "\n");
+  Ustrcat(opts, US"\n");
   Ustrncat(opts, client_ip, sizeof(opts)-Ustrlen(opts)-1);
-  Ustrncat(opts, "\nHELO ", sizeof(opts)-Ustrlen(opts)-1);
+  Ustrncat(opts, US"\nHELO ", sizeof(opts)-Ustrlen(opts)-1);
   Ustrncat(opts, dcc_helo_option, sizeof(opts)-Ustrlen(opts)-2);
-  Ustrcat(opts, "\n");
+  Ustrcat(opts, US"\n");
 
   /* initialize the other variables */
   dcchdr = header_list;
@@ -176,8 +176,8 @@ dcc_process(uschar **listptr)
   if (Ustrlen(sender_address) > 0)
     Ustrncpy(from, sender_address, sizeof(from));
   else
-    Ustrncpy(from, "<>", sizeof(from));
-  Ustrncat(from, "\n", sizeof(from)-Ustrlen(from)-1);
+    Ustrncpy(from, US"<>", sizeof(from));
+  Ustrncat(from, US"\n", sizeof(from)-Ustrlen(from)-1);
 
   /**************************************
    * Now creating the socket connection *
@@ -211,7 +211,7 @@ dcc_process(uschar **listptr)
     /* connecting to the dccifd UNIX socket */
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sun_family = AF_UNIX;
-    Ustrncpy(serv_addr.sun_path, sockpath, sizeof(serv_addr.sun_path));
+    Ustrncpy(US serv_addr.sun_path, sockpath, sizeof(serv_addr.sun_path));
     if ((sockfd = socket(AF_UNIX, SOCK_STREAM,0)) < 0){
       DEBUG(D_acl)
         debug_printf("DCC: Creating UNIX socket connection failed: %s\n", strerror(errno));
@@ -255,10 +255,10 @@ dcc_process(uschar **listptr)
       bzero(sendbuf, sizeof(sendbuf));
     }
     Ustrncat(sendbuf, recipients_list[i].address, sizeof(sendbuf)-Ustrlen(sendbuf)-1);
-    Ustrncat(sendbuf, "\r\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
+    Ustrncat(sendbuf, US"\r\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
   }
   /* send a blank line between options and message */
-  Ustrncat(sendbuf, "\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
+  Ustrncat(sendbuf, US"\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
   /* Now we send the input buffer */
   DEBUG(D_acl)
     debug_printf("DCC: %s\nDCC: ****************************\n", sendbuf);
@@ -298,7 +298,7 @@ dcc_process(uschar **listptr)
   }
 
   /* a blank line separates header from body */
-  Ustrncat(sendbuf, "\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
+  Ustrncat(sendbuf, US"\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
   flushbuffer(sockfd, sendbuf);
   DEBUG(D_acl)
     debug_printf("\nDCC: ****************************\n%s", sendbuf);
@@ -376,7 +376,7 @@ dcc_process(uschar **listptr)
             if(recvbuf[i] == 'A') {
               DEBUG(D_acl)
                 debug_printf("DCC: Overall result = A\treturning OK\n");
-              Ustrcpy(dcc_return_text, "Mail accepted by DCC");
+              Ustrcpy(dcc_return_text, US"Mail accepted by DCC");
               dcc_result = US"A";
               retval = OK;
             }
@@ -396,7 +396,7 @@ dcc_process(uschar **listptr)
             else if(recvbuf[i] == 'S') {
               DEBUG(D_acl)
                 debug_printf("DCC: Overall result  = S\treturning OK\n");
-              Ustrcpy(dcc_return_text, "Not all recipients accepted by DCC");
+              Ustrcpy(dcc_return_text, US"Not all recipients accepted by DCC");
               /* Since we're in an ACL we want a global result
                * so we accept for all */
               dcc_result = US"A";
@@ -405,7 +405,7 @@ dcc_process(uschar **listptr)
             else if(recvbuf[i] == 'G') {
               DEBUG(D_acl)
                 debug_printf("DCC: Overall result  = G\treturning FAIL\n");
-              Ustrcpy(dcc_return_text, "Greylisted by DCC");
+              Ustrcpy(dcc_return_text, US"Greylisted by DCC");
               dcc_result = US"G";
               retval = FAIL;
             }
@@ -414,7 +414,7 @@ dcc_process(uschar **listptr)
                 debug_printf("DCC: Overall result = T\treturning DEFER\n");
               retval = DEFER;
               log_write(0,LOG_MAIN,"Temporary error with DCC: %s\n", recvbuf);
-              Ustrcpy(dcc_return_text, "Temporary error with DCC");
+              Ustrcpy(dcc_return_text, US"Temporary error with DCC");
               dcc_result = US"T";
             }
             else {
@@ -422,7 +422,7 @@ dcc_process(uschar **listptr)
                 debug_printf("DCC: Overall result = something else\treturning DEFER\n");
               retval = DEFER;
               log_write(0,LOG_MAIN,"Unknown DCC response: %s\n", recvbuf);
-              Ustrcpy(dcc_return_text, "Unknown DCC response");
+              Ustrcpy(dcc_return_text, US"Unknown DCC response");
               dcc_result = US"T";
             }
           }
@@ -492,7 +492,7 @@ dcc_process(uschar **listptr)
     if (((xtra_hdrs = expand_string(US"$acl_m_dcc_add_header")) != NULL) && (xtra_hdrs[0] != '\0')) {
       Ustrncpy(dcc_xtra_hdrs, xtra_hdrs, sizeof(dcc_xtra_hdrs) - 2);
       if (dcc_xtra_hdrs[Ustrlen(dcc_xtra_hdrs)-1] != '\n')
-        Ustrcat(dcc_xtra_hdrs, "\n");
+        Ustrcat(dcc_xtra_hdrs, US"\n");
       header_add(' ', "%s", dcc_xtra_hdrs);
       DEBUG(D_acl)
         debug_printf("DCC: adding additional headers in $acl_m_dcc_add_header: %s", dcc_xtra_hdrs);

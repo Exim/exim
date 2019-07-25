@@ -8,6 +8,7 @@
 log_selector = +subject
 domainlist local_domains = test.ex
 qualify_domain = test.ex
+untrusted_set_sender = *
 
 
 # ----- Routers -----
@@ -17,7 +18,10 @@ begin routers
 smart:
   driver = accept
   retry_use_local_part
-  transport = $h_transport:
+  transport = ${if eq {t1}{$sender_address_local_part} {local_delivery} \
+		{${if eq {t2}{$sender_address_local_part} {local_delivery_fcntl} \
+		{${if eq {t3}{$sender_address_local_part} {local_delivery_fcntl_blocking} \
+		{} }}}}}
 
 
 # ----- Transports -----

@@ -25,7 +25,9 @@ localuser:
   local_part_prefix = bsmtp_ : mmdf_
   local_part_prefix_optional
   retry_use_local_part
-  transport = ${local_part_prefix}local_delivery
+  transport = ${if !def:local_part_prefix {} \
+		{${if eq {bsmtp_}{$local_part_prefix} {bsmtp_}\
+			{${if eq {mmdf_}{$local_part_prefix} {mmdf_} {}}}}}}local_delivery
 
 
 # ----- Transports -----

@@ -772,7 +772,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     }
 
   # Port in host address in spool file output from -Mvh
-  s/^-host_address (.*)\.\d+/-host_address $1.9999/;
+  s/^(--?host_address) (.*)\.\d+/$1 $2.9999/;
 
   if ($dynamic_socket and $dynamic_socket->opened and my $port = $dynamic_socket->sockport) {
     s/^Connecting to 127\.0\.0\.1 port \K$port/<dynamic port>/;

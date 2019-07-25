@@ -258,13 +258,12 @@ off_t sum = 0;
 struct dirent *ent;
 struct stat statbuf;
 
-dir = opendir(CS path);
-if (dir == NULL) return 0;
+if (!(dir = opendir(CS path)))
+  return 0;
 
-while ((ent = readdir(dir)) != NULL)
+while ((ent = readdir(dir)))
   {
-  uschar *name = US ent->d_name;
-  uschar buffer[1024];
+  uschar * s, * name = US ent->d_name;
 
   if (Ustrcmp(name, ".") == 0 || Ustrcmp(name, "..") == 0) continue;
 
@@ -282,26 +281,19 @@ while ((ent = readdir(dir)) != NULL)
 
   /* The name is OK; stat it. */
 
-  if (!string_format(buffer, sizeof(buffer), "%s/%s", path, name))
-    {
-    DEBUG(D_transport)
-      debug_printf("maildir_compute_size: name too long: dir=%s name=%s\n",
-        path, name);
-    continue;
-    }
-
-  if (Ustat(buffer, &statbuf) < 0)
+  s = string_sprintf("%s/%s", path, name);
+  if (Ustat(s, &statbuf) < 0)
     {
     DEBUG(D_transport)
       debug_printf("maildir_compute_size: stat error %d for %s: %s\n", errno,
-        buffer, strerror(errno));
+        s, strerror(errno));
     continue;
     }
 
   if ((statbuf.st_mode & S_IFMT) != S_IFDIR)
     {
     DEBUG(D_transport)
-      debug_printf("skipping %s/%s: not a directory\n", path, name);
+      debug_printf("skipping %s/%s: not a directory\n", s, name);
     continue;
     }
 
@@ -312,18 +304,14 @@ while ((ent = readdir(dir)) != NULL)
   /* If this is a maildir folder, call this function recursively. */
 
   if (name[0] == '.')
-    {
-    sum += maildir_compute_size(buffer, filecount, latest, regex, dir_regex,
+    sum += maildir_compute_size(s, filecount, latest, regex, dir_regex,
       timestamp_only);
-    }
 
   /* Otherwise it must be a folder that contains messages (e.g. new or cur), so
   we need to get its size, unless all we are interested in is the timestamp. */
 
   else if (!timestamp_only)
-    {
-    sum += check_dir_size(buffer, filecount, regex);
-    }
+    sum += check_dir_size(s, filecount, regex);
   }
 
 closedir(dir);
@@ -392,8 +380,7 @@ the same thing. */
 filename = string_sprintf("%s/maildirsize", path);
 
 DEBUG(D_transport) debug_printf("looking for maildirsize in %s\n", path);
-fd = Uopen(filename, O_RDWR|O_APPEND, ob->mode ? ob->mode : 0600);
-if (fd < 0)
+if ((fd = Uopen(filename, O_RDWR|O_APPEND, ob->mode ? ob->mode : 0600)) < 0)
   {
   if (errno != ENOENT) return -1;
   DEBUG(D_transport)
@@ -405,8 +392,7 @@ if (fd < 0)
 still correct, and that the size of the file is still small enough. If so,
 compute the maildir size from the file. */
 
-count = read(fd, buffer, sizeof(buffer));
-if (count >= sizeof(buffer))
+if ((count = read(fd, buffer, sizeof(buffer))) >= sizeof(buffer))
   {
   DEBUG(D_transport)
     debug_printf("maildirsize file too big (%d): recalculating\n", count);

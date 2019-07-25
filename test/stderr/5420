@@ -38,6 +38,7 @@ domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: userx
+            ╰──(tainted)
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -48,6 +49,7 @@ domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: userx
+            ╰──(tainted)
 domain.com in "*"? yes (matched "*")
 Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ...  connected
  ╭considering: $primary_hostname
@@ -67,6 +69,7 @@ cmd buf flush ddd bytes
   ╭considering: $address_data}{usery}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: userx
+             ╰──(tainted)
   ╭considering: usery}{*}{:}}
   ├──expanding: usery
   ╰─────result: usery
@@ -86,6 +89,7 @@ cmd buf flush ddd bytes
   ╭considering: $address_data}{userz}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: userx
+             ╰──(tainted)
   ╭considering: userz}{*}{:}}
   ├──expanding: userz
   ╰─────result: userz
@@ -192,10 +196,12 @@ end of inline ACL: ACCEPT
    	
    ╰─────result: (helo=myhost.test.ex)
    	
+              ╰──(tainted)
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
   ╰─────result: from CALLER (helo=myhost.test.ex)
   	
+             ╰──(tainted)
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -234,6 +240,7 @@ end of inline ACL: ACCEPT
   	for $received_for
   ╰─────result: 
   	for userx@domain.com
+             ╰──(tainted)
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -246,6 +253,7 @@ end of inline ACL: ACCEPT
  	(envelope-from <CALLER@myhost.test.ex>)
  	id 10HmaX-0005vi-00
  	for userx@domain.com
+            ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
  ╭considering: ${tod_full}
@@ -306,6 +314,7 @@ domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
+            ╰──(tainted)
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -316,6 +325,7 @@ domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
+            ╰──(tainted)
 domain.com in "*"? yes (matched "*")
 Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ...  connected
  ╭considering: $primary_hostname
@@ -335,6 +345,7 @@ cmd buf flush ddd bytes
   ╭considering: $address_data}{usery}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: usery
+             ╰──(tainted)
   ╭considering: usery}{*}{:}}
   ├──expanding: usery
   ╰─────result: usery
@@ -428,10 +439,12 @@ end of inline ACL: ACCEPT
    	
    ╰─────result: (helo=myhost.test.ex)
    	
+              ╰──(tainted)
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
   ╰─────result: from CALLER (helo=myhost.test.ex)
   	
+             ╰──(tainted)
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -470,6 +483,7 @@ end of inline ACL: ACCEPT
   	for $received_for
   ╰─────result: 
   	for usery@domain.com
+             ╰──(tainted)
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -482,6 +496,7 @@ end of inline ACL: ACCEPT
  	(envelope-from <CALLER@myhost.test.ex>)
  	id 10HmaZ-0005vi-00
  	for usery@domain.com
+            ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
  ╭considering: ${tod_full}
@@ -542,6 +557,7 @@ domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
+            ╰──(tainted)
 domain.com in "*"? yes (matched "*")
 ----------- end verify ------------
 accept: condition test succeeded in ACL "cutthrough"
@@ -552,6 +568,7 @@ domain.com in "! +local_domains"? yes (end of list)
  ╭considering: $local_part
  ├──expanding: $local_part
  ╰─────result: usery
+            ╰──(tainted)
 domain.com in "*"? yes (matched "*")
 Connecting to 127.0.0.1 [127.0.0.1]:1225 from ip4.ip4.ip4.ip4 ...  connected
  ╭considering: $primary_hostname
@@ -571,6 +588,7 @@ cmd buf flush ddd bytes
   ╭considering: $address_data}{usery}{*}{:}}
   ├──expanding: $address_data
   ╰─────result: usery
+             ╰──(tainted)
   ╭considering: usery}{*}{:}}
   ├──expanding: usery
   ╰─────result: usery
@@ -664,10 +682,12 @@ end of inline ACL: ACCEPT
    	
    ╰─────result: (helo=myhost.test.ex)
    	
+              ╰──(tainted)
   ├──expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
   	}}
   ╰─────result: from CALLER (helo=myhost.test.ex)
   	
+             ╰──(tainted)
  ├──condition: def:received_protocol
  ├─────result: true
   ╭considering: with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -706,6 +726,7 @@ end of inline ACL: ACCEPT
   	for $received_for
   ╰─────result: 
   	for usery@domain.com
+             ╰──(tainted)
  ├──expanding: Received: ${if def:sender_rcvhost {from $sender_rcvhost
  	}{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
  	}}}}by $primary_hostname ${if def:received_protocol {with $received_protocol }}${if def:tls_in_cipher_std { tls $tls_in_cipher_std
@@ -718,6 +739,7 @@ end of inline ACL: ACCEPT
  	(envelope-from <CALLER@myhost.test.ex>)
  	id 10HmbB-0005vi-00
  	for usery@domain.com
+            ╰──(tainted)
 ----------- start cutthrough headers send -----------
 ----------- done cutthrough headers send ------------
  ╭considering: ${tod_full}

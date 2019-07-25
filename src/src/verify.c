@@ -98,7 +98,7 @@ if (type[0] == 'd' && cache_record->result != ccache_reject)
   {
   if (length == sizeof(dbdata_callout_cache_obs))
     {
-    dbdata_callout_cache *new = store_get(sizeof(dbdata_callout_cache));
+    dbdata_callout_cache *new = store_get(sizeof(dbdata_callout_cache), FALSE);
     memcpy(new, cache_record, length);
     new->postmaster_stamp = new->random_stamp = new->time_stamp;
     cache_record = new;
@@ -420,7 +420,7 @@ if (addr->transport == cutthrough.addr.transport)
 
 	if (done)
 	  {
-	  address_item * na = store_get(sizeof(address_item));
+	  address_item * na = store_get(sizeof(address_item), FALSE);
 	  *na = cutthrough.addr;
 	  cutthrough.addr = *addr;
 	  cutthrough.addr.host_used = &cutthrough.host;
@@ -976,8 +976,7 @@ no_conn:
 	{
 	extern int acl_where;	/* src/acl.c */
 	errno = 0;
-	addr->message = string_sprintf(
-	    "response to \"EHLO\" did not include SMTPUTF8");
+	addr->message = US"response to \"EHLO\" did not include SMTPUTF8";
 	addr->user_message = acl_where == ACL_WHERE_RCPT
 	  ? US"533 no support for internationalised mailbox name"
 	  : US"550 mailbox unavailable";
@@ -1089,7 +1088,7 @@ no_conn:
       for (address_item * caddr = &cutthrough.addr, * parent = addr->parent;
 	   parent;
 	   caddr = caddr->parent, parent = parent->parent)
-        *(caddr->parent = store_get(sizeof(address_item))) = *parent;
+        *(caddr->parent = store_get(sizeof(address_item), FALSE)) = *parent;
 
       ctctx.outblock.buffer = ctbuffer;
       ctctx.outblock.buffersize = sizeof(ctbuffer);
@@ -3396,9 +3395,9 @@ else
 
   else
     {	/* Set up a tree entry to cache the lookup */
-    t = store_get(sizeof(tree_node) + Ustrlen(query));
+    t = store_get(sizeof(tree_node) + Ustrlen(query), is_tainted(query));
     Ustrcpy(t->name, query);
-    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
+    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block), FALSE);
     (void)tree_insertnode(&dnsbl_cache, t);
     }
 

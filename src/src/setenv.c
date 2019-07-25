@@ -17,7 +17,7 @@ setenv(const char * name, const char * val, int overwrite)
 uschar * s;
 if (Ustrchr(name, '=')) return -1;
 if (overwrite || !getenv(name))
-  putenv(CS string_copy_malloc(string_sprintf("%s=%s", name, val)));
+  putenv(CS string_copy_perm(string_sprintf("%s=%s", name, val)), FALSE);
 return 0;
 }
 

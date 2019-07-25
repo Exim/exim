@@ -737,21 +737,20 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
       {
       exim_setugid(uid, gid, TRUE,
         string_sprintf("require_files check, file=%s", ss));
-      if (route_check_access(ss, uid, gid, 4)) _exit(0);
+      if (route_check_access(ss, uid, gid, 4))
+	exim_underbar_exit(0);
       DEBUG(D_route) debug_printf("route_check_access() failed\n");
-      _exit(1);
+      exim_underbar_exit(1);
       }
 
     /* In the parent, wait for the child to finish */
 
     while (waitpid(pid, &status, 0) < 0)
-     {
      if (errno != EINTR)  /* unexpected error, interpret as failure */
        {
        status = 1;
        break;
        }
-     }
 
     signal(SIGCHLD, oldsignal);   /* restore */
     if ((status == 0) == invert) return SKIP;
@@ -1101,7 +1100,7 @@ route_finduser(const uschar *s, struct passwd **pw, uid_t *return_uid)
 BOOL cache_set = (Ustrcmp(lastname, s) == 0);
 
 DEBUG(D_uid) debug_printf("seeking password data for user \"%s\": %s\n", s,
-  cache_set? "using cached result" : "cache not available");
+  cache_set ? "using cached result" : "cache not available");
 
 if (!cache_set)
   {
@@ -1115,7 +1114,7 @@ if (!cache_set)
     return TRUE;
     }
 
-  (void)string_format(lastname, sizeof(lastname), "%s", s);
+  string_format_nt(lastname, sizeof(lastname), "%s", s);
 
   /* Force failure if string length is greater than given maximum */
 
@@ -1474,13 +1473,15 @@ for (uschar * ele; (ele = string_nextinlist(&varlist, &sep, NULL, 0)); )
       }
 
   if (!(node = tree_search(*root, name)))
-    {
-    node = store_get(sizeof(tree_node) + Ustrlen(name));
+    {				/* name should never be tainted */
+    node = store_get(sizeof(tree_node) + Ustrlen(name), FALSE);
     Ustrcpy(node->name, name);
     (void)tree_insertnode(root, node);
     }
   node->data.ptr = US val;
-  DEBUG(D_route) debug_printf("set r_%s = '%s'\n", name, val);
+  DEBUG(D_route) debug_printf("set r_%s%s = '%s'%s\n",
+		    name, is_tainted(name)?" (tainted)":"",
+		    val, is_tainted(val)?" (tainted)":"");
 
   /* All expansions after this point need visibility of that variable */
   router_var = *root;
@@ -1789,9 +1790,10 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   /* If succeeded while verifying but fail_verify is set, convert into
   a failure, and take it off the local or remote delivery list. */
 
-  if (((verify == v_sender && r->fail_verify_sender) ||
-       (verify == v_recipient && r->fail_verify_recipient)) &&
-      (yield == OK || yield == PASS))
+  if (  (  verify == v_sender && r->fail_verify_sender
+	|| verify == v_recipient && r->fail_verify_recipient
+	)
+     && (yield == OK || yield == PASS))
     {
     addr->message = string_sprintf("%s router forced verify failure", r->name);
     if (*paddr_remote == addr) *paddr_remote = addr->next;
@@ -1808,7 +1810,7 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   HDEBUG(D_route)
     {
     debug_printf("%s router %s for %s\n", r->name,
-      (yield == PASS)? "passed" : "declined", addr->address);
+      yield == PASS ? "passed" : "declined", addr->address);
     if (Ustrcmp(old_domain, addr->domain) != 0)
       debug_printf("domain %s rewritten\n", old_domain);
     }
@@ -1872,12 +1874,8 @@ if (!r)
 
 if (yield == DEFER)
   {
-  HDEBUG(D_route)
-    {
-    debug_printf("%s router: defer for %s\n", r->name, addr->address);
-    debug_printf("  message: %s\n", (addr->message == NULL)?
-      US"<none>" : addr->message);
-    }
+  HDEBUG(D_route) debug_printf("%s router: defer for %s\n  message: %s\n",
+      r->name, addr->address, addr->message ? addr->message : US"<none>");
   goto ROUTE_EXIT;
   }
 

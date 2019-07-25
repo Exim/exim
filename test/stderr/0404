@@ -193,10 +193,10 @@ r1 router skipped: local_parts mismatch
 --------> r2 router <--------
 local_part=userx domain=test.ex
 calling r2 router
-rda_interpret (string): #Exim filter\nmail text rhubarb\nseen finish
-expanded: #Exim filter
+rda_interpret (string): '#Exim filter\nmail text rhubarb\nseen finish'
+expanded: '#Exim filter
 mail text rhubarb
-seen finish
+seen finish'
 search_tidyup called
 changed uid/gid: r2 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp

@@ -232,7 +232,7 @@ if (!cn)
 
   /* Get store for a new handle, initialize it, and connect to the server */
 
-  mysql_handle = store_get(sizeof(MYSQL));
+  mysql_handle = store_get(sizeof(MYSQL), FALSE);
   mysql_init(mysql_handle);
   mysql_options(mysql_handle, MYSQL_READ_DEFAULT_GROUP, CS group);
   if (mysql_real_connect(mysql_handle,
@@ -248,7 +248,7 @@ if (!cn)
 
   /* Add the connection to the cache */
 
-  cn = store_get(sizeof(mysql_connection));
+  cn = store_get(sizeof(mysql_connection), FALSE);
   cn->server = server_copy;
   cn->handle = mysql_handle;
   cn->next = mysql_connections;
@@ -366,7 +366,7 @@ if (mysql_result) mysql_free_result(mysql_result);
 if (result)
   {
   *resultptr = string_from_gstring(result);
-  store_reset(result->s + (result->size = result->ptr + 1));
+  gstring_release_unused(result);
   return OK;
   }
 else
@@ -432,7 +432,7 @@ while ((c = *t++) != 0)
   if (Ustrchr("\n\t\r\b\'\"\\", c) != NULL) count++;
 
 if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1);
+t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
 
 while ((c = *s++) != 0)
   {

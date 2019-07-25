@@ -128,6 +128,7 @@ dropping to exim gid; retaining priv uid
  ╭considering: $domain
  ├──expanding: $domain
  ╰─────result: domain1.ex
+            ╰──(tainted)
 LOG: MAIN
   == userx@domain1.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
 LOG: MAIN
@@ -176,12 +177,14 @@ LOG: smtp_connection MAIN
   ╭considering: $sender_helo_name}{+dlist}}
   ├──expanding: $sender_helo_name
   ╰─────result: ehlo.domain
+             ╰──(tainted)
   ╭considering: +dlist}}
   ├──expanding: +dlist
   ╰─────result: +dlist
   ╭considering: $domain
   ├──expanding: $domain
   ╰─────result: ehlo.domain
+             ╰──(tainted)
  ├──condition: match_domain {$sender_helo_name}{+dlist}
  ├─────result: true
  ├──expanding: ${if match_domain {$sender_helo_name}{+dlist}}
@@ -189,12 +192,15 @@ LOG: smtp_connection MAIN
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├──expanding: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=/sender_domain=sender.domain
+            ╰──(tainted)
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├──expanding: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
+            ╰──(tainted)
  ╭considering: domain=$domain/sender_domain=$sender_address_domain
  ├──expanding: domain=$domain/sender_domain=$sender_address_domain
  ╰─────result: domain=recipient.domain/sender_domain=sender.domain
+            ╰──(tainted)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>

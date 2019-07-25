@@ -27,8 +27,8 @@ checking domains
 y.z in "test.ex : myhost.test.ex"? no (end of list)
 y.z in "! +local_domains"? yes (end of list)
 calling fail_remote_domains router
-rda_interpret (string): :fail: unrouteable mail domain "$domain"
-expanded: :fail: unrouteable mail domain "y.z"
+rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
+expanded: ':fail: unrouteable mail domain "y.z"'
 file is not a filter file
 parse_forward_list: :fail: unrouteable mail domain "y.z"
 extract item: :fail: unrouteable mail domain "y.z"
@@ -226,8 +226,8 @@ checking domains
 y.z in "test.ex : myhost.test.ex"? no (end of list)
 y.z in "! +local_domains"? yes (end of list)
 calling fail_remote_domains router
-rda_interpret (string): :fail: unrouteable mail domain "$domain"
-expanded: :fail: unrouteable mail domain "y.z"
+rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
+expanded: ':fail: unrouteable mail domain "y.z"'
 file is not a filter file
 parse_forward_list: :fail: unrouteable mail domain "y.z"
 extract item: :fail: unrouteable mail domain "y.z"
@@ -281,8 +281,8 @@ checking domains
 smart.domain in "test.ex : myhost.test.ex"? no (end of list)
 smart.domain in "! +local_domains"? yes (end of list)
 calling fail_remote_domains router
-rda_interpret (string): :fail: unrouteable mail domain "$domain"
-expanded: :fail: unrouteable mail domain "smart.domain"
+rda_interpret (string): ':fail: unrouteable mail domain "$domain"'
+expanded: ':fail: unrouteable mail domain "smart.domain"'
 file is not a filter file
 parse_forward_list: :fail: unrouteable mail domain "smart.domain"
 extract item: :fail: unrouteable mail domain "smart.domain"

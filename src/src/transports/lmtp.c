@@ -175,7 +175,7 @@ if (*errno_value == ERRNO_CHHEADER_FAIL)
 
 if (*errno_value == ERRNO_WRITEINCOMPLETE)
   {
-  *message = string_sprintf("failed to write a data block");
+  *message = US"failed to write a data block";
   return FALSE;
   }
 
@@ -228,8 +228,11 @@ gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
 int rc;
 va_list ap;
 
+/*XXX see comment in smtp_write_command() regarding leaving stuff in
+big_buffer */
+
 va_start(ap, format);
-if (!string_vformat(&gs, FALSE, CS format, ap))
+if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, CS format, ap))
   {
   va_end(ap);
   errno = ERRNO_SMTPFORMAT;
@@ -553,7 +556,7 @@ allows for message+recipient checks after the message has been received. */
 
 /* First thing is to wait for an initial greeting. */
 
-Ustrcpy(big_buffer, "initial connection");
+Ustrcpy(big_buffer, US"initial connection");
 if (!lmtp_read_response(out, buffer, sizeof(buffer), '2',
   timeout)) goto RESPONSE_FAILED;
 
@@ -641,7 +644,7 @@ if (send_data)
 
   sigalrm_seen = FALSE;
   transport_write_timeout = timeout;
-  Ustrcpy(big_buffer, "sending data block");   /* For error messages */
+  Ustrcpy(big_buffer, US"sending data block");   /* For error messages */
   DEBUG(D_transport|D_v)
     debug_printf("  LMTP>> writing message and terminating \".\"\n");
 
@@ -657,7 +660,7 @@ if (send_data)
     goto RESPONSE_FAILED;
     }
 
-  Ustrcpy(big_buffer, "end of data");   /* For error messages */
+  Ustrcpy(big_buffer, US"end of data");   /* For error messages */
 
   /* We now expect a response for every address that was accepted above,
   in the same order. For those that get a response, their status is fixed;
@@ -763,9 +766,9 @@ if (errno == ERRNO_CHHEADER_FAIL)
     string_sprintf("Failed to expand headers_add or headers_remove: %s",
       expand_string_message);
 else if (errno == ERRNO_FILTER_FAIL)
-  addrlist->message = string_sprintf("Filter process failure");
+  addrlist->message = US"Filter process failure";
 else if (errno == ERRNO_WRITEINCOMPLETE)
-  addrlist->message = string_sprintf("Failed repeatedly to write data");
+  addrlist->message = US"Failed repeatedly to write data";
 else if (errno == ERRNO_SMTPFORMAT)
   addrlist->message = US"overlong LMTP command generated";
 else

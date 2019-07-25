@@ -508,7 +508,7 @@ for (struct ifaddrs * ifa = ifalist; ifa; ifa = ifa->ifa_next)
   /* Create a data block for the address, fill in the data, and put it on the
   chain. */
 
-  next = store_get(sizeof(ip_address_item));
+  next = store_get(sizeof(ip_address_item), FALSE);
   next->next = NULL;
   next->port = 0;
   (void)host_ntoa(-1, ifa->ifa_addr, next->address, NULL);
@@ -743,7 +743,7 @@ for (char * cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   /* Create a data block for the address, fill in the data, and put it on the
   chain. */
 
-  next = store_get(sizeof(ip_address_item));
+  next = store_get(sizeof(ip_address_item), FALSE);
   next->next = NULL;
   next->port = 0;
   (void)host_ntoa(-1, addrp, next->address, NULL);
@@ -775,13 +775,13 @@ interfaces. We just return the loopback address(es). */
 ip_address_item *
 os_common_find_running_interfaces(void)
 {
-ip_address_item *yield = store_get(sizeof(address_item));
+ip_address_item *yield = store_get(sizeof(address_item), FALSE);
 yield->address = US"127.0.0.1";
 yield->port = 0;
 yield->next = NULL;
 
 #if HAVE_IPV6
-yield->next = store_get(sizeof(address_item));
+yield->next = store_get(sizeof(address_item), FALSE);
 yield->next->address = US"::1";
 yield->next->port = 0;
 yield->next->next = NULL;

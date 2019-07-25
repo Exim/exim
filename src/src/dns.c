@@ -40,7 +40,7 @@ fakens_search(const uschar *domain, int type, uschar *answerptr, int size)
 {
 int len = Ustrlen(domain);
 int asize = size;                  /* Locally modified */
-uschar name[256];
+uschar * name;
 uschar utilname[256];
 uschar *aptr = answerptr;          /* Locally modified */
 struct stat statbuf;
@@ -48,8 +48,7 @@ struct stat statbuf;
 /* Remove terminating dot. */
 
 if (domain[len - 1] == '.') len--;
-Ustrncpy(name, domain, len);
-name[len] = 0;
+name = string_copyn(domain, len);
 
 /* Look for the fakens utility, and if it exists, call it. */
 
@@ -249,7 +248,7 @@ if (Ustrchr(string, ':') == NULL)
     *pp++ = '.';
     p = ppp - 1;
     }
-  Ustrcpy(pp, "in-addr.arpa");
+  Ustrcpy(pp, US"in-addr.arpa");
   }
 
 /* Handle IPv6 address; convert to binary so as to fill out any
@@ -268,7 +267,7 @@ else
   for (int i = 3; i >= 0; i--)
     for (int j = 0; j < 32; j += 4)
       pp += sprintf(CS pp, "%x.", (v6[i] >> j) & 15);
-  Ustrcpy(pp, "ip6.arpa.");
+  Ustrcpy(pp, US"ip6.arpa.");
 
   /* Another way of doing IPv6 reverse lookups was proposed in conjunction
   with A6 records. However, it fell out of favour when they did. The
@@ -287,7 +286,7 @@ else
     sprintf(pp, "%08X", v6[i]);
     pp += 8;
     }
-  Ustrcpy(pp, "].ip6.arpa.");
+  Ustrcpy(pp, US"].ip6.arpa.");
   **************************************************/
 
   }
@@ -615,7 +614,7 @@ Returns:     the return code
 static int
 dns_return(const uschar * name, int type, int rc)
 {
-tree_node *node = store_get_perm(sizeof(tree_node) + 290);
+tree_node *node = store_get_perm(sizeof(tree_node) + 290, TRUE);
 dns_fail_tag(node->name, name, type);
 node->data.val = rc;
 (void)tree_insertnode(&tree_dns_fails, node);
@@ -947,7 +946,8 @@ for (int i = 0; i <= dns_cname_loops; i++)
   if (!cname_rr.data)
     return DNS_FAIL;
 
-  data = store_get(256);
+  /* DNS data comes from the outside, hence tainted */
+  data = store_get(256, TRUE);
   if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
       cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256) < 0)
     return DNS_FAIL;
@@ -1201,7 +1201,8 @@ if (rr->type == T_A)
   uschar *p = US rr->data;
   if (p + 4 <= dnsa_lim)
     {
-    yield = store_get(sizeof(dns_address) + 20);
+    /* the IP is not regarded as tainted */
+    yield = store_get(sizeof(dns_address) + 20, FALSE);
     (void)sprintf(CS yield->address, "%d.%d.%d.%d", p[0], p[1], p[2], p[3]);
     yield->next = NULL;
     }
@@ -1215,7 +1216,7 @@ else
     {
     struct in6_addr in6;
     for (int i = 0; i < 16; i++) in6.s6_addr[i] = rr->data[i];
-    yield = store_get(sizeof(dns_address) + 50);
+    yield = store_get(sizeof(dns_address) + 50, FALSE);
     inet_ntop(AF_INET6, &in6, CS yield->address, 50);
     yield->next = NULL;
     }

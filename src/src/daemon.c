@@ -146,7 +146,7 @@ int max_for_this_host = 0;
 int save_log_selector = *log_selector;
 gstring * whofrom;
 
-void *reset_point = store_get(0);
+rmark reset_point = store_mark();
 
 /* Make the address available in ASCII representation, and also fish out
 the remote port. */
@@ -395,7 +395,7 @@ if (pid == 0)
           "please try again later.\r\n", FALSE);
         mac_smtp_fflush();
         search_tidyup();
-        _exit(EXIT_FAILURE);
+        exim_underbar_exit(EXIT_FAILURE);
         }
       }
     else if (*nah) smtp_active_hostname = nah;
@@ -481,14 +481,14 @@ if (pid == 0)
     {
     mac_smtp_fflush();
     search_tidyup();
-    _exit(EXIT_SUCCESS);
+    exim_underbar_exit(EXIT_SUCCESS);
     }
 
   for (;;)
     {
     int rc;
     message_id[0] = 0;            /* Clear out any previous message_id */
-    reset_point = store_get(0);   /* Save current store high water point */
+    reset_point = store_mark();   /* Save current store high water point */
 
     DEBUG(D_any)
       debug_printf("Process %d is ready for new message\n", (int)getpid());
@@ -509,7 +509,7 @@ if (pid == 0)
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
         mac_smtp_fflush();
         smtp_log_no_mail();               /* Log no mail if configured */
-        _exit(EXIT_SUCCESS);
+        exim_underbar_exit(EXIT_SUCCESS);
         }
       if (message_id[0] == 0) continue;   /* No message was accepted */
       }
@@ -532,7 +532,7 @@ if (pid == 0)
       /*XXX should we pause briefly, hoping that the client will be the
       active TCP closer hence get the TCP_WAIT endpoint? */
       DEBUG(D_receive) debug_printf("SMTP>>(close on process exit)\n");
-      _exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
+      exim_underbar_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
       }
 
     /* Show the recipients when debugging */
@@ -565,6 +565,7 @@ if (pid == 0)
       int r = receive_messagecount;
       BOOL q = f.queue_only_policy;
       smtp_reset(reset_point);
+      reset_point = NULL;
       f.queue_only_policy = q;
       receive_messagecount = r;
       }
@@ -665,7 +666,7 @@ if (pid == 0)
 
         (void) deliver_message(message_id, FALSE, FALSE);
         search_tidyup();
-        _exit(EXIT_SUCCESS);
+        exim_underbar_exit(EXIT_SUCCESS);
         }
 
       if (dpid > 0)
@@ -696,13 +697,14 @@ else
     if (smtp_slots[i].pid <= 0)
       {
       smtp_slots[i].pid = pid;
-      if (smtp_accept_max_per_host != NULL)
+      /* Connection closes come asyncronously, so we cannot stack this store */
+      if (smtp_accept_max_per_host)
         smtp_slots[i].host_address = string_copy_malloc(sender_host_address);
       smtp_accept_count++;
       break;
       }
   DEBUG(D_any) debug_printf("%d SMTP accept process%s running\n",
-    smtp_accept_count, (smtp_accept_count == 1)? "" : "es");
+    smtp_accept_count, smtp_accept_count == 1 ? "" : "es");
   }
 
 /* Get here via goto in error cases */
@@ -833,7 +835,6 @@ pid_t pid;
 
 while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   {
-  int i;
   DEBUG(D_any)
     {
     debug_printf("child %d ended: status=0x%x\n", (int)pid, status);
@@ -851,6 +852,7 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
 
   if (smtp_slots)
     {
+    int i;
     for (i = 0; i < smtp_accept_max; i++)
       if (smtp_slots[i].pid == pid)
         {
@@ -871,7 +873,7 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   if (queue_pid_slots)
     {
     int max = atoi(CS expand_string(queue_run_max));
-    for (i = 0; i < max; i++)
+    for (int i = 0; i < max; i++)
       if (queue_pid_slots[i] == pid)
         {
         queue_pid_slots[i] = 0;
@@ -927,7 +929,7 @@ DEBUG(D_any|D_v) debug_selector |= D_pid;
 if (f.inetd_wait_mode)
   {
   listen_socket_count = 1;
-  listen_sockets = store_get(sizeof(int));
+  listen_sockets = store_get(sizeof(int), FALSE);
   (void) close(3);
   if (dup2(0, 3) == -1)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
@@ -1115,7 +1117,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
   sep = 0;
   while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
     pct++;
-  default_smtp_port = store_get((pct+1) * sizeof(int));
+  default_smtp_port = store_get((pct+1) * sizeof(int), FALSE);
   list = daemon_smtp_port;
   sep = 0;
   for (pct = 0;
@@ -1203,7 +1205,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     ipa->port = default_smtp_port[0];
     for (int i = 1; default_smtp_port[i] > 0; i++)
       {
-      ip_address_item *new = store_get(sizeof(ip_address_item));
+      ip_address_item *new = store_get(sizeof(ip_address_item), FALSE);
 
       memcpy(new->address, ipa->address, Ustrlen(ipa->address) + 1);
       new->port = default_smtp_port[i];
@@ -1261,7 +1263,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
   for (ipa = addresses; ipa; ipa = ipa->next)
     listen_socket_count++;
-  listen_sockets = store_get(sizeof(int) * listen_socket_count);
+  listen_sockets = store_get(sizeof(int) * listen_socket_count, FALSE);
 
   } /* daemon_listen but not inetd_wait_mode */
 
@@ -1284,7 +1286,7 @@ if (f.daemon_listen)
 
   if (smtp_accept_max > 0)
     {
-    smtp_slots = store_get(smtp_accept_max * sizeof(smtp_slot));
+    smtp_slots = store_get(smtp_accept_max * sizeof(smtp_slot), FALSE);
     for (int i = 0; i < smtp_accept_max; i++) smtp_slots[i] = empty_smtp_slot;
     }
   }
@@ -1572,15 +1574,15 @@ coming from Exim, not whoever started the daemon. */
 
 originator_uid = exim_uid;
 originator_gid = exim_gid;
-originator_login = ((pw = getpwuid(exim_uid)) != NULL)?
-  string_copy_malloc(US pw->pw_name) : US"exim";
+originator_login = (pw = getpwuid(exim_uid))
+  ? string_copy_perm(US pw->pw_name, FALSE) : US"exim";
 
 /* Get somewhere to keep the list of queue-runner pids if we are keeping track
 of them (and also if we are doing queue runs). */
 
 if (queue_interval > 0 && local_queue_run_max > 0)
   {
-  queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t));
+  queue_pid_slots = store_get(local_queue_run_max * sizeof(pid_t), FALSE);
   for (int i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
   }
 
@@ -1895,7 +1897,7 @@ for (;;)
           /* No need to re-exec; SIGALRM remains set to the default handler */
 
           queue_run(NULL, NULL, FALSE);
-          _exit(EXIT_SUCCESS);
+          exim_underbar_exit(EXIT_SUCCESS);
           }
 
         if (pid < 0)

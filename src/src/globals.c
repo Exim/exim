@@ -1169,7 +1169,7 @@ uschar *pipe_connect_advertise_hosts = US"*";
 #endif
 uschar *pipelining_advertise_hosts = US"*";
 uschar *primary_hostname       = NULL;
-uschar  process_info[PROCESS_INFO_SIZE];
+uschar *process_info;
 int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
 

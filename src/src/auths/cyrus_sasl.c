@@ -114,7 +114,8 @@ auth_cyrus_sasl_options_block *ob =
 const uschar *list, *listptr, *buffer;
 int rc, i;
 unsigned int len;
-uschar *rs_point, *expanded_hostname;
+rmark rs_point;
+uschar *expanded_hostname;
 char *realm_expanded;
 
 sasl_conn_t *conn;
@@ -175,7 +176,7 @@ HDEBUG(D_auth)
  * the hierarchy is stored for us behind our back. This point
  * creates a hierarchy point for this function.
  */
-rs_point = store_get(0);
+rs_point = store_mark();
 
 /* loop until either we get to the end of the list, or we match the
  * public name of this authenticator

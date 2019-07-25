@@ -75,7 +75,7 @@ int n = 0;
 int extra = pcount ? *pcount : 0;
 uschar **argv;
 
-argv = store_get((extra + acount + MAX_CLMACROS + 18) * sizeof(char *));
+argv = store_get((extra + acount + MAX_CLMACROS + 18) * sizeof(char *), FALSE);
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */

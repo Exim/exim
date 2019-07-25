@@ -184,7 +184,7 @@ cdb_open(uschar *filename,
   }
 
   /* Having got a file open we need the structure to put things in */
-  cdbp = store_get(sizeof(struct cdb_state));
+  cdbp = store_get(sizeof(struct cdb_state), FALSE);
   /* store_get() does not return if memory was not available... */
   /* preload the structure.... */
   cdbp->fileno = fileno;
@@ -222,7 +222,7 @@ cdb_open(uschar *filename,
 
   /* get a buffer to stash the basic offsets in - this should speed
    * things up a lot - especially on multiple lookups */
-  cdbp->cdb_offsets = store_get(CDB_HASH_TABLE);
+  cdbp->cdb_offsets = store_get(CDB_HASH_TABLE, FALSE);
 
   /* now fill the buffer up... */
   if (cdb_bread(fileno, cdbp->cdb_offsets, CDB_HASH_TABLE) == -1) {
@@ -365,9 +365,10 @@ if (cdbp->cdb_map != NULL)
 
 	   item_ptr += item_key_len;
 
-	   /* ... and the returned result */
+	   /* ... and the returned result.  Assume it is not
+	   tainted, lacking any way of telling.  */
 
-	   *result = store_get(item_dat_len + 1);
+	   *result = store_get(item_dat_len + 1, FALSE);
 	   memcpy(*result, item_ptr, item_dat_len);
 	   (*result)[item_dat_len] = 0;
 	   return OK;
@@ -410,31 +411,32 @@ for (int loop = 0; (loop < hash_offlen); ++loop)
 
     if (item_key_len == key_len)
       {					/* finally check if key matches */
-      uschar * item_key = store_get(key_len);
+      rmark reset_point = store_mark();
+      uschar * item_key = store_get(key_len, TRUE); /* keys liable to be tainted */
 
       if (cdb_bread(cdbp->fileno, item_key, key_len) == -1) return DEFER;
-      if (Ustrncmp(keystring, item_key, key_len) == 0) {
+      if (Ustrncmp(keystring, item_key, key_len) == 0)
+        {
+        /* Reclaim some store */
+        store_reset(reset_point);
 
-       /* Reclaim some store */
-       store_reset(item_key);
+        /* matches - get data length */
+        item_dat_len = cdb_unpack(packbuf + 4);
 
-       /* matches - get data length */
-       item_dat_len = cdb_unpack(packbuf + 4);
+        /* then we build a new result string.  We know we have enough
+        memory so disable Coverity errors about the tainted item_dat_ken */
 
-       /* then we build a new result string.  We know we have enough
-       memory so disable Coverity errors about the tainted item_dat_ken */
+        *result = store_get(item_dat_len + 1, FALSE);
+        /* coverity[tainted_data] */
+        if (cdb_bread(cdbp->fileno, *result, item_dat_len) == -1)
+	  return DEFER;
 
-       *result = store_get(item_dat_len + 1);
-       /* coverity[tainted_data] */
-       if (cdb_bread(cdbp->fileno, *result, item_dat_len) == -1)
-	 return DEFER;
-
-       /* coverity[tainted_data] */
-       (*result)[item_dat_len] = 0;
-       return OK;
-      }
+        /* coverity[tainted_data] */
+        (*result)[item_dat_len] = 0;
+        return OK;
+        }
       /* Reclaim some store */
-      store_reset(item_key);
+      store_reset(reset_point);
       }
     }
   cur_offset += 8;

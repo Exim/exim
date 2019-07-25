@@ -37,6 +37,8 @@ if (!keep_environment || *keep_environment == '\0')
 
   }
 else if (Ustrcmp(keep_environment, "*") != 0)
+  {
+  rmark reset_point = store_mark();
   if (environ) for (uschar ** p = USS environ; *p; /* see below */)
     {
     /* It's considered broken if we do not find the '=', according to
@@ -53,17 +55,18 @@ else if (Ustrcmp(keep_environment, "*") != 0)
         if (os_unsetenv(name) < 0) return FALSE;
         else p = USS environ; /* RESTART from the beginning */
       else p++;
-      store_reset(name);
       }
     }
+  store_reset(reset_point);
+  }
 if (add_environment)
   {
-    uschar * p;
-    int sep = 0;
-    const uschar * envlist = add_environment;
+  uschar * p;
+  int sep = 0;
+  const uschar * envlist = add_environment;
 
-    while ((p = string_nextinlist(&envlist, &sep, NULL, 0))) putenv(CS p);
+  while ((p = string_nextinlist(&envlist, &sep, NULL, 0))) putenv(CS p);
   }
 
-  return TRUE;
+return TRUE;
 }

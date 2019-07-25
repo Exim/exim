@@ -433,7 +433,7 @@ if (!sender_address				/* No transaction in progress */
 
 if (recipients_count > 0)
   {
-  raw_recipients = store_get(recipients_count * sizeof(uschar *));
+  raw_recipients = store_get(recipients_count * sizeof(uschar *), FALSE);
   for (int i = 0; i < recipients_count; i++)
     raw_recipients[i] = recipients_list[i].address;
   raw_recipients_count = recipients_count;
@@ -527,8 +527,8 @@ if (rc <= 0)
       smtp_data_sigint_exit();
 
     smtp_had_error = save_errno;
-    smtp_read_error = string_copy_malloc(
-      string_sprintf(" (error: %s)", strerror(save_errno)));
+    smtp_read_error = string_copy_perm(
+      string_sprintf(" (error: %s)", strerror(save_errno)), FALSE);
     }
   else
     smtp_had_eof = 1;
@@ -898,6 +898,7 @@ va_end(ap);
 /* This is split off so that verify.c:respond_printf() can, in effect, call
 smtp_printf(), bearing in mind that in C a vararg function can't directly
 call another vararg function, only a function which accepts a va_list. */
+/*XXX consider passing caller-info in, for string_vformat-onward */
 
 void
 smtp_vprintf(const char *format, BOOL more, va_list ap)
@@ -905,19 +906,20 @@ smtp_vprintf(const char *format, BOOL more, va_list ap)
 gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
 BOOL yield;
 
-yield = !! string_vformat(&gs, FALSE, format, ap);
+/* Use taint-unchecked routines for writing into big_buffer, trusting
+that we'll never expand it. */
+
+yield = !! string_vformat(&gs, SVFMT_TAINT_NOCHK, format, ap);
 string_from_gstring(&gs);
 
 DEBUG(D_receive)
   {
-  void *reset_point = store_get(0);
   uschar *msg_copy, *cr, *end;
   msg_copy = string_copy(gs.s);
   end = msg_copy + gs.ptr;
   while ((cr = Ustrchr(msg_copy, '\r')) != NULL)   /* lose CRs */
     memmove(cr, cr + 1, (end--) - cr);
   debug_printf("SMTP>> %s", msg_copy);
-  store_reset(reset_point);
   }
 
 if (!yield)
@@ -1906,11 +1908,7 @@ BOOL yield = fl.helo_accept_junk;
 
 /* Discard any previous helo name */
 
-if (sender_helo_name)
-  {
-  store_free(sender_helo_name);
-  sender_helo_name = NULL;
-  }
+sender_helo_name = NULL;
 
 /* Skip tests if junk is permitted. */
 
@@ -1949,7 +1947,7 @@ if (!yield)
 
 /* Save argument if OK */
 
-if (yield) sender_helo_name = string_copy_malloc(start);
+if (yield) sender_helo_name = string_copy_perm(start, TRUE);
 return yield;
 }
 
@@ -2021,7 +2019,7 @@ Argument:   the stacking pool storage reset point
 Returns:    nothing
 */
 
-void
+void *
 smtp_reset(void *reset_point)
 {
 recipients_list = NULL;
@@ -2131,6 +2129,7 @@ while (acl_warn_logged)
   store_free(this);
   }
 store_reset(reset_point);
+return store_mark();
 }
 
 
@@ -2158,7 +2157,7 @@ static int
 smtp_setup_batch_msg(void)
 {
 int done = 0;
-void *reset_point = store_get(0);
+rmark reset_point = store_mark();
 
 /* Save the line count at the start of each transaction - single commands
 like HELO and RSET count as whole transactions. */
@@ -2168,7 +2167,7 @@ bsmtp_transaction_linecount = receive_linecount;
 if ((receive_feof)()) return 0;   /* Treat EOF as QUIT */
 
 cancel_cutthrough_connection(TRUE, US"smtp_setup_batch_msg");
-smtp_reset(reset_point);                /* Reset for start of message */
+reset_point = smtp_reset(reset_point);                /* Reset for start of message */
 
 /* Deal with SMTP commands. This loop is exited by setting done to a POSITIVE
 value. The values are 2 larger than the required yield of the function. */
@@ -2193,7 +2192,7 @@ while (done <= 0)
 
     case RSET_CMD:
       cancel_cutthrough_connection(TRUE, US"RSET received");
-      smtp_reset(reset_point);
+      reset_point = smtp_reset(reset_point);
       bsmtp_transaction_linecount = receive_linecount;
       break;
 
@@ -2217,7 +2216,7 @@ while (done <= 0)
       /* Reset to start of message */
 
       cancel_cutthrough_connection(TRUE, US"MAIL received");
-      smtp_reset(reset_point);
+      reset_point = smtp_reset(reset_point);
 
       /* Apply SMTP rewrite */
 
@@ -2482,11 +2481,9 @@ fl.smtputf8_advertised = FALSE;
 
 acl_var_c = NULL;
 
-/* Allow for trailing 0 in the command and data buffers. */
+/* Allow for trailing 0 in the command and data buffers.  Tainted. */
 
-if (!(smtp_cmd_buffer = US malloc(2*SMTP_CMD_BUFFER_SIZE + 2)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "malloc() failed for SMTP command buffer");
+smtp_cmd_buffer = store_get_perm(2*SMTP_CMD_BUFFER_SIZE + 2, TRUE);
 
 smtp_cmd_buffer[0] = 0;
 smtp_data_buffer = smtp_cmd_buffer + SMTP_CMD_BUFFER_SIZE + 1;
@@ -2597,7 +2594,7 @@ if (!f.sender_host_unknown)
     {
     #if OPTSTYLE == 1
     EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
-    struct ip_options *ipopt = store_get(optlen);
+    struct ip_options *ipopt = store_get(optlen, FALSE);
     #elif OPTSTYLE == 2
     struct ip_opts ipoptblock;
     struct ip_opts *ipopt = &ipoptblock;
@@ -3506,7 +3503,7 @@ if (code && defaultrespond)
     va_list ap;
 
     va_start(ap, defaultrespond);
-    g = string_vformat(NULL, TRUE, CS defaultrespond, ap);
+    g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, CS defaultrespond, ap);
     va_end(ap);
     smtp_printf("%s %s\r\n", FALSE, code, string_from_gstring(g));
     }
@@ -3719,7 +3716,7 @@ switch(rc)
   case OK:
   if (!au->set_id || set_id)    /* Complete success */
     {
-    if (set_id) authenticated_id = string_copy_malloc(set_id);
+    if (set_id) authenticated_id = string_copy_perm(set_id, TRUE);
     sender_host_authenticated = au->name;
     sender_host_auth_pubname  = au->public_name;
     authentication_failed = FALSE;
@@ -3740,7 +3737,7 @@ switch(rc)
   /* Fall through */
 
   case DEFER:
-  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
   *s = string_sprintf("435 Unable to authenticate at present%s",
     auth_defer_user_msg);
   *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
@@ -3760,13 +3757,13 @@ switch(rc)
   break;
 
   case FAIL:
-  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
   *s = US"535 Incorrect authentication data";
   *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
   break;
 
   default:
-  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
   *s = US"435 Internal error";
   *ss = string_sprintf("435 Internal error%s: return %d from authentication "
     "check", set_id, rc);
@@ -3878,7 +3875,7 @@ BOOL toomany = FALSE;
 BOOL discarded = FALSE;
 BOOL last_was_rej_mail = FALSE;
 BOOL last_was_rcpt = FALSE;
-void *reset_point = store_get(0);
+rmark reset_point = store_mark();
 
 DEBUG(D_receive) debug_printf("smtp_setup_msg entered\n");
 
@@ -3888,7 +3885,7 @@ message. Ditto for EHLO/HELO and for STARTTLS, to allow for going in and out of
 TLS between messages (an Exim client may do this if it has messages queued up
 for the host). Note: we do NOT reset AUTH at this point. */
 
-smtp_reset(reset_point);
+reset_point = smtp_reset(reset_point);
 message_ended = END_NOTSTARTED;
 
 chunking_state = f.chunking_offered ? CHUNKING_OFFERED : CHUNKING_NOT_OFFERED;
@@ -4205,11 +4202,7 @@ while (done <= 0)
 		  &user_msg, &log_msg)) != OK)
 	  {
 	  done = smtp_handle_acl_fail(ACL_WHERE_HELO, rc, user_msg, log_msg);
-	  if (sender_helo_name)
-	    {
-	    store_free(sender_helo_name);
-	    sender_helo_name = NULL;
-	    }
+	  sender_helo_name = NULL;
 	  host_build_sender_fullhost();  /* Rebuild */
 	  break;
 	  }
@@ -4239,7 +4232,9 @@ while (done <= 0)
       smtp_code = US"250 ";        /* Default response code plus space*/
       if (!user_msg)
 	{
-	g = string_fmt_append(NULL, "%.3s %s Hello %s%s%s",
+	/* sender_host_name below will be tainted, so save on copy when we hit it */
+	g = string_get_tainted(24, TRUE);
+	g = string_fmt_append(g, "%.3s %s Hello %s%s%s",
 	  smtp_code,
 	  smtp_active_hostname,
 	  sender_ident ? sender_ident : US"",
@@ -4493,7 +4488,7 @@ while (done <= 0)
 	  + (tls_in.active.sock >= 0 ? pcrpted : 0)
 	  ];
       cancel_cutthrough_connection(TRUE, US"sent EHLO response");
-      smtp_reset(reset_point);
+      reset_point = smtp_reset(reset_point);
       toomany = FALSE;
       break;   /* HELO/EHLO */
 
@@ -4548,7 +4543,7 @@ while (done <= 0)
       obviously need to throw away any previous data. */
 
       cancel_cutthrough_connection(TRUE, US"MAIL received");
-      smtp_reset(reset_point);
+      reset_point = smtp_reset(reset_point);
       toomany = FALSE;
       sender_data = recipient_data = NULL;
 
@@ -5424,7 +5419,7 @@ while (done <= 0)
 
       incomplete_transaction_log(US"STARTTLS");
       cancel_cutthrough_connection(TRUE, US"STARTTLS received");
-      smtp_reset(reset_point);
+      reset_point = smtp_reset(reset_point);
       toomany = FALSE;
       cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = FALSE;
 
@@ -5472,7 +5467,6 @@ while (done <= 0)
 	cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
 	if (sender_helo_name)
 	  {
-	  store_free(sender_helo_name);
 	  sender_helo_name = NULL;
 	  host_build_sender_fullhost();  /* Rebuild */
 	  set_process_info("handling incoming TLS connection from %s",
@@ -5563,7 +5557,7 @@ while (done <= 0)
     case RSET_CMD:
       smtp_rset_handler();
       cancel_cutthrough_connection(TRUE, US"RSET received");
-      smtp_reset(reset_point);
+      reset_point = smtp_reset(reset_point);
       toomany = FALSE;
       break;
 
@@ -5585,17 +5579,17 @@ while (done <= 0)
 	{
 	uschar buffer[256];
 	buffer[0] = 0;
-	Ustrcat(buffer, " AUTH");
+	Ustrcat(buffer, US" AUTH");
 	#ifndef DISABLE_TLS
 	if (tls_in.active.sock < 0 &&
 	    verify_check_host(&tls_advertise_hosts) != FAIL)
-	  Ustrcat(buffer, " STARTTLS");
+	  Ustrcat(buffer, US" STARTTLS");
 	#endif
-	Ustrcat(buffer, " HELO EHLO MAIL RCPT DATA BDAT");
-	Ustrcat(buffer, " NOOP QUIT RSET HELP");
-	if (acl_smtp_etrn != NULL) Ustrcat(buffer, " ETRN");
-	if (acl_smtp_expn != NULL) Ustrcat(buffer, " EXPN");
-	if (acl_smtp_vrfy != NULL) Ustrcat(buffer, " VRFY");
+	Ustrcat(buffer, US" HELO EHLO MAIL RCPT DATA BDAT");
+	Ustrcat(buffer, US" NOOP QUIT RSET HELP");
+	if (acl_smtp_etrn) Ustrcat(buffer, US" ETRN");
+	if (acl_smtp_expn) Ustrcat(buffer, US" EXPN");
+	if (acl_smtp_vrfy) Ustrcat(buffer, US" VRFY");
 	smtp_printf("214%s\r\n", FALSE, buffer);
 	}
       break;
@@ -5771,7 +5765,7 @@ while (done <= 0)
 	  }
 
 	enq_end(etrn_serialize_key);
-	_exit(EXIT_SUCCESS);
+	exim_underbar_exit(EXIT_SUCCESS);
 	}
 
       /* Back in the top level SMTP process. Check that we started a subprocess
@@ -5785,10 +5779,10 @@ while (done <= 0)
 	if (smtp_etrn_serialize) enq_end(etrn_serialize_key);
 	}
       else
-	{
-	if (user_msg == NULL) smtp_printf("250 OK\r\n", FALSE);
-	  else smtp_user_msg(US"250", user_msg);
-	}
+	if (!user_msg)
+	  smtp_printf("250 OK\r\n", FALSE);
+	else
+	  smtp_user_msg(US"250", user_msg);
 
       signal(SIGCHLD, oldsignal);
       break;

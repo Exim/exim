@@ -46,7 +46,7 @@ rfc2047_qpdecode(uschar *string, uschar **ptrptr)
 int len = 0;
 uschar *ptr;
 
-ptr = *ptrptr = store_get(Ustrlen(string) + 1);  /* No longer than this */
+ptr = *ptrptr = store_get(Ustrlen(string) + 1, is_tainted(string));  /* No longer than this */
 
 while (*string != 0)
   {
@@ -208,7 +208,7 @@ building the result as we go. The result may be longer than the input if it is
 translated into a multibyte code such as UTF-8. That's why we use the dynamic
 string building code. */
 
-yield = store_get(sizeof(gstring) + ++size);
+yield = store_get(sizeof(gstring) + ++size, is_tainted(string));
 yield->size = size;
 yield->ptr = 0;
 yield->s = US(yield + 1);
@@ -222,6 +222,7 @@ while (mimeword)
 
   if (mimeword != string)
     yield = string_catn(yield, string, mimeword - string);
+/*XXX that might have to convert an untainted string to a tainted one */
 
   /* Do a charset translation if required. This is supported only on hosts
   that have the iconv() function. Translation errors set error, but carry on,

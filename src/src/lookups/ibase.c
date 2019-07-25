@@ -113,6 +113,7 @@ isc_stmt_handle stmth = NULL;
 XSQLDA *out_sqlda;
 XSQLVAR *var;
 int i;
+rmark reset_point;
 
 char buffer[256];
 ISC_STATUS status[20], *statusp = status;
@@ -175,7 +176,7 @@ if (cn)
   }
 else
   {
-  cn = store_get(sizeof(ibase_connection));
+  cn = store_get(sizeof(ibase_connection), FALSE);
   cn->server = server_copy;
   cn->dbh = NULL;
   cn->transh = NULL;
@@ -248,7 +249,9 @@ if (isc_dsql_allocate_statement(status, &cn->dbh, &stmth))
   goto IBASE_EXIT;
   }
 
-out_sqlda = store_get(XSQLDA_LENGTH(1));
+/* Lacking any information, assume that the data is untainted */
+reset_point = store_mark();
+out_sqlda = store_get(XSQLDA_LENGTH(1), FALSE);
 out_sqlda->version = SQLDA_VERSION1;
 out_sqlda->sqln = 1;
 
@@ -256,7 +259,7 @@ if (isc_dsql_prepare
     (status, &cn->transh, &stmth, 0, query, 1, out_sqlda))
   {
   isc_interprete(buffer, &statusp);
-  store_reset(out_sqlda);
+  reset_point = store_reset(reset_point);
   out_sqlda = NULL;
   *errmsg =
       string_sprintf("Interbase prepare_statement() failed: %s",
@@ -268,13 +271,13 @@ if (isc_dsql_prepare
 /* re-allocate the output structure if there's more than one field */
 if (out_sqlda->sqln < out_sqlda->sqld)
   {
-  XSQLDA *new_sqlda = store_get(XSQLDA_LENGTH(out_sqlda->sqld));
+  XSQLDA *new_sqlda = store_get(XSQLDA_LENGTH(out_sqlda->sqld), FALSE);
   if (isc_dsql_describe
       (status, &stmth, out_sqlda->version, new_sqlda))
     {
     isc_interprete(buffer, &statusp);
     isc_dsql_free_statement(status, &stmth, DSQL_drop);
-    store_reset(out_sqlda);
+    reset_point = store_reset(reset_point);
     out_sqlda = NULL;
     *errmsg = string_sprintf("Interbase describe_statement() failed: %s",
 		       buffer);
@@ -290,46 +293,46 @@ for (i = 0, var = out_sqlda->sqlvar; i < out_sqlda->sqld; i++, var++)
   switch (var->sqltype & ~1)
     {
     case SQL_VARYING:
-	var->sqldata = CS store_get(sizeof(char) * var->sqllen + 2);
+	var->sqldata = CS store_get(sizeof(char) * var->sqllen + 2, FALSE);
 	break;
     case SQL_TEXT:
-	var->sqldata = CS store_get(sizeof(char) * var->sqllen);
+	var->sqldata = CS store_get(sizeof(char) * var->sqllen, FALSE);
 	break;
     case SQL_SHORT:
-	var->sqldata = CS  store_get(sizeof(short));
+	var->sqldata = CS  store_get(sizeof(short), FALSE);
 	break;
     case SQL_LONG:
-	var->sqldata = CS  store_get(sizeof(ISC_LONG));
+	var->sqldata = CS  store_get(sizeof(ISC_LONG), FALSE);
 	break;
 #ifdef SQL_INT64
     case SQL_INT64:
-	var->sqldata = CS  store_get(sizeof(ISC_INT64));
+	var->sqldata = CS  store_get(sizeof(ISC_INT64), FALSE);
 	break;
 #endif
     case SQL_FLOAT:
-	var->sqldata = CS  store_get(sizeof(float));
+	var->sqldata = CS  store_get(sizeof(float), FALSE);
 	break;
     case SQL_DOUBLE:
-	var->sqldata = CS  store_get(sizeof(double));
+	var->sqldata = CS  store_get(sizeof(double), FALSE);
 	break;
 #ifdef SQL_TIMESTAMP
     case SQL_DATE:
-	var->sqldata = CS  store_get(sizeof(ISC_QUAD));
+	var->sqldata = CS  store_get(sizeof(ISC_QUAD), FALSE);
 	break;
 #else
     case SQL_TIMESTAMP:
-	var->sqldata = CS  store_get(sizeof(ISC_TIMESTAMP));
+	var->sqldata = CS  store_get(sizeof(ISC_TIMESTAMP), FALSE);
 	break;
     case SQL_TYPE_DATE:
-	var->sqldata = CS  store_get(sizeof(ISC_DATE));
+	var->sqldata = CS  store_get(sizeof(ISC_DATE), FALSE);
 	break;
     case SQL_TYPE_TIME:
-	var->sqldata = CS  store_get(sizeof(ISC_TIME));
+	var->sqldata = CS  store_get(sizeof(ISC_TIME), FALSE);
 	break;
   #endif
     }
   if (var->sqltype & 1)
-    var->sqlind = (short *) store_get(sizeof(short));
+    var->sqlind = (short *) store_get(sizeof(short), FALSE);
   }
 
 /* finally, we're ready to execute the statement */
@@ -411,7 +414,7 @@ if (!result)
   *errmsg = US "Interbase: no data found";
   }
 else
-  store_reset(result->s + result->ptr + 1);
+  gstring_release_unused(result);
 
 
 /* Get here by goto from various error checks. */
@@ -514,7 +517,7 @@ static uschar *ibase_quote(uschar * s, uschar * opt)
 
     if (count == 0)
         return s;
-    t = quoted = store_get(Ustrlen(s) + count + 1);
+    t = quoted = store_get(Ustrlen(s) + count + 1, FALSE);
 
     while ((c = *s++) != 0) {
         if (Ustrchr("'", c) != NULL) {

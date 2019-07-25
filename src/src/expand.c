@@ -1856,22 +1856,17 @@ switch (vp->type)
     return sender_host_name ? sender_host_name : US"";
 
   case vtype_localpart:                      /* Get local part from address */
-    s = *((uschar **)(val));
-    if (s == NULL) return US"";
-    domain = Ustrrchr(s, '@');
-    if (domain == NULL) return s;
+    if (!(s = *((uschar **)(val)))) return US"";
+    if (!(domain = Ustrrchr(s, '@'))) return s;
     if (domain - s > sizeof(var_buffer) - 1)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
 	  " in string expansion", sizeof(var_buffer));
-    Ustrncpy(var_buffer, s, domain - s);
-    var_buffer[domain - s] = 0;
-    return var_buffer;
+    return string_copyn(s, domain - s);
 
   case vtype_domain:                         /* Get domain from address */
-    s = *((uschar **)(val));
-    if (s == NULL) return US"";
+    if (!(s = *((uschar **)(val)))) return US"";
     domain = Ustrrchr(s, '@');
-    return (domain == NULL)? US"" : domain + 1;
+    return domain ? domain + 1 : US"";
 
   case vtype_msgheaders:
     return find_header(NULL, newsize, exists_only ? FH_EXISTS_ONLY : 0, NULL);
@@ -2354,7 +2349,7 @@ switch(cond_type = identify_operator(&s, &opname))
       return NULL;
       }
 
-    s = read_name(name, 256, s+1, US"_");
+    s = read_name(name, sizeof(name), s+1, US"_");
 
     /* Test for a header's existence. If the name contains a closing brace
     character, this may be a user error where the terminating colon has been
@@ -2366,7 +2361,7 @@ switch(cond_type = identify_operator(&s, &opname))
        && (*++t == '_' || Ustrncmp(t, "eader_", 6) == 0)
        )
       {
-      s = read_header_name(name, 256, s);
+      s = read_header_name(name, sizeof(name), s);
       /* {-for-text-editors */
       if (Ustrchr(name, '}') != NULL) malformed_header = TRUE;
       if (yield) *yield =
@@ -2380,9 +2375,9 @@ switch(cond_type = identify_operator(&s, &opname))
       {
       if (!(t = find_variable(name, TRUE, yield == NULL, NULL)))
 	{
-	expand_string_message = (name[0] == 0)?
-	  string_sprintf("variable name omitted after \"def:\"") :
-	  string_sprintf("unknown variable \"%s\" after \"def:\"", name);
+	expand_string_message = name[0]
+	  ? string_sprintf("unknown variable \"%s\" after \"def:\"", name)
+	  : US"variable name omitted after \"def:\"";
 	check_variable_error_message(name);
 	return NULL;
 	}
@@ -3135,7 +3130,7 @@ switch(cond_type = identify_operator(&s, &opname))
 	  return NULL;
 	  }
 
-      DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", name, iterate_item);
+      DEBUG(D_expand) debug_printf_indent("%s: $item = \"%s\"\n", opname, iterate_item);
       if (!eval_condition(sub[1], resetok, &tempcond))
         {
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
@@ -3570,7 +3565,7 @@ Returns:  pointer to string containing the last three
 static uschar *
 prvs_daystamp(int day_offset)
 {
-uschar *days = store_get(32);                /* Need at least 24 for cases */
+uschar *days = store_get(32, FALSE);         /* Need at least 24 for cases */
 (void)string_format(days, 32, TIME_T_FMT,    /* where TIME_T_FMT is %lld */
   (time(NULL) + day_offset*86400)/86400);
 return (Ustrlen(days) >= 3) ? &days[Ustrlen(days)-3] : US"100";
@@ -3607,7 +3602,7 @@ uschar innerhash[20];
 uschar finalhash[20];
 uschar innerkey[64];
 uschar outerkey[64];
-uschar *finalhash_hex = store_get(40);
+uschar *finalhash_hex;
 
 if (key_num == NULL)
   key_num = US"0";
@@ -3640,7 +3635,9 @@ chash_start(HMAC_SHA1, &h);
 chash_mid(HMAC_SHA1, &h, outerkey);
 chash_end(HMAC_SHA1, &h, innerhash, 20, finalhash);
 
-p = finalhash_hex;
+/* Hashing is deemed sufficient to de-taint any input data */
+
+p = finalhash_hex = store_get(40, FALSE);
 for (int i = 0; i < 3; i++)
   {
   *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
@@ -4100,6 +4097,7 @@ static uschar *
 expand_string_internal(const uschar *string, BOOL ket_ends, const uschar **left,
   BOOL skipping, BOOL honour_dollar, BOOL *resetok_p)
 {
+rmark reset_point = store_mark();
 gstring * yield = string_get(Ustrlen(string) + 64);
 int item_type;
 const uschar *s = string;
@@ -4121,6 +4119,14 @@ DEBUG(D_expand)
 
 f.expand_string_forcedfail = FALSE;
 expand_string_message = US"";
+
+if (is_tainted(string))
+  {
+  expand_string_message =
+    string_sprintf("attempt to expand tainted string '%s'", s);
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
+  goto EXPAND_FAILED;
+  }
 
 while (*s != 0)
   {
@@ -4193,12 +4199,13 @@ while (*s != 0)
     buffer. */
 
     if (!yield)
-      g = store_get(sizeof(gstring));
+      g = store_get(sizeof(gstring), FALSE);
     else if (yield->ptr == 0)
       {
-      if (resetok) store_reset(yield);
+      if (resetok) reset_point = store_reset(reset_point);
       yield = NULL;
-      g = store_get(sizeof(gstring));	/* alloc _before_ calling find_variable() */
+      reset_point = store_mark();
+      g = store_get(sizeof(gstring), FALSE);	/* alloc _before_ calling find_variable() */
       }
 
     /* Header */
@@ -5380,7 +5387,7 @@ while (*s != 0)
           {
           if (sigalrm_seen || runrc == -256)
             {
-            expand_string_message = string_sprintf("command timed out");
+            expand_string_message = US"command timed out";
             killpg(pid, SIGKILL);       /* Kill the whole process group */
             }
 
@@ -5922,8 +5929,8 @@ while (*s != 0)
 		while (isspace(*s)) s++;
 		if (*s != ':')
 		  {
-		  expand_string_message = string_sprintf(
-		    "missing object value-separator for extract json");
+		  expand_string_message =
+		    US"missing object value-separator for extract json";
 		  goto EXPAND_FAILED_CURLY;
 		  }
 		s++;
@@ -6421,8 +6428,8 @@ while (*s != 0)
 	}
 
       xtract = s;
-      tmp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
-      if (!tmp) goto EXPAND_FAILED;
+      if (!(tmp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok)))
+	goto EXPAND_FAILED;
       xtract = string_copyn(xtract, s - xtract);
 
       if (*s++ != '}')
@@ -6484,6 +6491,7 @@ while (*s != 0)
 	    newlist = string_append_listele(newlist, sep, dstitem);
 	    newkeylist = string_append_listele(newkeylist, sep, dstfield);
 
+/*XXX why field-at-a-time copy?  Why not just dup the rest of the list? */
 	    while ((dstitem = string_nextinlist(&dstlist, &sep, NULL, 0)))
 	      {
 	      if (!(dstfield = string_nextinlist(&dstkeylist, &sep, NULL, 0)))
@@ -6579,7 +6587,7 @@ while (*s != 0)
           log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
           goto EXPAND_FAILED;
           }
-        t = store_get_perm(sizeof(tree_node) + Ustrlen(argv[0]));
+        t = store_get_perm(sizeof(tree_node) + Ustrlen(argv[0]), is_tainted(argv[0]));
         Ustrcpy(t->name, argv[0]);
         t->data.ptr = handle;
         (void)tree_insertnode(&dlobj_anchor, t);
@@ -7051,7 +7059,7 @@ while (*s != 0)
 	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = US"_h"; break;
 	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = US"_l"; break;
 	  default:
-            expand_string_message = string_sprintf("bad suffix on \"list\" operator");
+            expand_string_message = US"bad suffix on \"list\" operator";
 	    goto EXPAND_FAILED;
 	  }
 
@@ -7875,12 +7883,13 @@ while (*s != 0)
     gstring * g = NULL;
 
     if (!yield)
-      g = store_get(sizeof(gstring));
+      g = store_get(sizeof(gstring), FALSE);
     else if (yield->ptr == 0)
       {
-      if (resetok) store_reset(yield);
+      if (resetok) reset_point = store_reset(reset_point);
       yield = NULL;
-      g = store_get(sizeof(gstring));	/* alloc _before_ calling find_variable() */
+      reset_point = store_mark();
+      g = store_get(sizeof(gstring), FALSE);	/* alloc _before_ calling find_variable() */
       }
     if (!(value = find_variable(name, FALSE, skipping, &newsize)))
       {
@@ -7934,15 +7943,20 @@ if (left) *left = s;
 In many cases the final string will be the first one that was got and so there
 will be optimal store usage. */
 
-if (resetok) store_reset(yield->s + (yield->size = yield->ptr + 1));
+if (resetok) gstring_release_unused(yield);
 else if (resetok_p) *resetok_p = FALSE;
 
 DEBUG(D_expand)
+  {
+  BOOL tainted = is_tainted(yield->s);
   DEBUG(D_noutf8)
     {
     debug_printf_indent("|--expanding: %.*s\n", (int)(s - string), string);
     debug_printf_indent("%sresult: %s\n",
       skipping ? "|-----" : "\\_____", yield->s);
+    if (tainted)
+      debug_printf_indent("%s     \\__(tainted)\n",
+	skipping ? "|     " : "      ");
     if (skipping)
       debug_printf_indent("\\___skipping: result is not used\n");
     }
@@ -7951,15 +7965,19 @@ DEBUG(D_expand)
     debug_printf_indent(UTF8_VERT_RIGHT UTF8_HORIZ UTF8_HORIZ
       "expanding: %.*s\n",
       (int)(s - string), string);
-    debug_printf_indent("%s"
-      UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
+    debug_printf_indent("%s" UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
       "result: %s\n",
       skipping ? UTF8_VERT_RIGHT : UTF8_UP_RIGHT,
       yield->s);
+    if (tainted)
+      debug_printf_indent("%s(tainted)\n",
+	skipping
+	? UTF8_VERT "             " : "           " UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ);
     if (skipping)
       debug_printf_indent(UTF8_UP_RIGHT UTF8_HORIZ UTF8_HORIZ UTF8_HORIZ
 	"skipping: result is not used\n");
     }
+  }
 expand_level--;
 return yield->s;
 
@@ -8457,15 +8475,15 @@ if (opt_perl_startup != NULL)
   }
 #endif /* EXIM_PERL */
 
+/* Thie deliberately regards the input as untainted, so that it can be
+expanded; only reasonable since this is a test for string-expansions. */
+
 while (fgets(buffer, sizeof(buffer), stdin) != NULL)
   {
-  void *reset_point = store_get(0);
+  rmark reset_point = store_mark();
   uschar *yield = expand_string(buffer);
-  if (yield != NULL)
-    {
+  if (yield)
     printf("%s\n", yield);
-    store_reset(reset_point);
-    }
   else
     {
     if (f.search_find_defer) printf("search_find deferred\n");
@@ -8473,6 +8491,7 @@ while (fgets(buffer, sizeof(buffer), stdin) != NULL)
     if (f.expand_string_forcedfail) printf("Forced failure\n");
     printf("\n");
     }
+  store_reset(reset_point);
   }
 
 search_tidyup();

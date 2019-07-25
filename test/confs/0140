@@ -22,7 +22,7 @@ reply:
   driver = accept
   retry_use_local_part
   senders = !
-  transport = $local_part
+  transport = ${if eq {reply1}{$local_part} {reply1}{reply2}}
 
 
 # ----- Transports -----

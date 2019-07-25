@@ -16,7 +16,7 @@ routing x@test.ex
 --------> l1 router <--------
 local_part=x domain=test.ex
 calling l1 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
  search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
    key="x" partial=-1 affix=NULL starflags=0
@@ -28,14 +28,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases1
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l1 router declined for x@test.ex
 --------> l2 router <--------
 local_part=x domain=test.ex
 calling l2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
  search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
    key="x" partial=-1 affix=NULL starflags=0
@@ -48,14 +48,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases2
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l2 router declined for x@test.ex
 --------> l3 router <--------
 local_part=x domain=test.ex
 calling l3 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases3"
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases1
@@ -70,14 +70,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases3
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l3 router declined for x@test.ex
 --------> c1 router <--------
 local_part=x domain=test.ex
 calling c1 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases4"
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases2
@@ -92,14 +92,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases4
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c1 router declined for x@test.ex
 --------> c2 router <--------
 local_part=x domain=test.ex
 calling c2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases5"
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases3
@@ -114,14 +114,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases5
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c2 router declined for x@test.ex
 --------> c3 router <--------
 local_part=x domain=test.ex
 calling c3 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases6"
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases4
@@ -136,7 +136,7 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases6
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c3 router declined for x@test.ex
@@ -150,7 +150,7 @@ routing y@test.ex
 --------> l1 router <--------
 local_part=y domain=test.ex
 calling l1 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
    cached closed
  Too many lookup files open
@@ -166,14 +166,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases1
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l1 router declined for y@test.ex
 --------> l2 router <--------
 local_part=y domain=test.ex
 calling l2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
    cached closed
  Too many lookup files open
@@ -189,14 +189,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases2
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l2 router declined for y@test.ex
 --------> l3 router <--------
 local_part=y domain=test.ex
 calling l3 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases3"
    cached closed
  Too many lookup files open
@@ -212,14 +212,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases3
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l3 router declined for y@test.ex
 --------> c1 router <--------
 local_part=y domain=test.ex
 calling c1 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases4"
    cached closed
  Too many lookup files open
@@ -235,14 +235,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases4
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c1 router declined for y@test.ex
 --------> c2 router <--------
 local_part=y domain=test.ex
 calling c2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases5"
    cached closed
  Too many lookup files open
@@ -258,14 +258,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases5
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c2 router declined for y@test.ex
 --------> c3 router <--------
 local_part=y domain=test.ex
 calling c3 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases6"
    cached closed
  Too many lookup files open
@@ -281,7 +281,7 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases6
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c3 router declined for y@test.ex
@@ -295,7 +295,7 @@ routing z@test.ex
 --------> l1 router <--------
 local_part=z domain=test.ex
 calling l1 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
    cached closed
  Too many lookup files open
@@ -311,14 +311,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases1
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l1 router declined for z@test.ex
 --------> l2 router <--------
 local_part=z domain=test.ex
 calling l2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
    cached closed
  Too many lookup files open
@@ -334,14 +334,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases2
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l2 router declined for z@test.ex
 --------> l3 router <--------
 local_part=z domain=test.ex
 calling l3 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases3"
    cached closed
  Too many lookup files open
@@ -357,14 +357,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases3
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 l3 router declined for z@test.ex
 --------> c1 router <--------
 local_part=z domain=test.ex
 calling c1 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases4"
    cached closed
  Too many lookup files open
@@ -380,14 +380,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases4
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c1 router declined for z@test.ex
 --------> c2 router <--------
 local_part=z domain=test.ex
 calling c2 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases5"
    cached closed
  Too many lookup files open
@@ -403,14 +403,14 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases5
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c2 router declined for z@test.ex
 --------> c3 router <--------
 local_part=z domain=test.ex
 calling c3 router
-rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}
+rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases6"
    cached closed
  Too many lookup files open
@@ -426,7 +426,7 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases6
  lookup failed
-expanded: 
+expanded: ''
 file is not a filter file
 parse_forward_list: 
 c3 router declined for z@test.ex

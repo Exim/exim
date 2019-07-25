@@ -96,7 +96,7 @@ DEBUG(D_route)
   {
   debug_printf("queued for %s transport: local_part = %s\ndomain = %s\n"
     "  errors_to=%s\n",
-    (addr->transport == NULL)? US"<unset>" : addr->transport->name,
+    addr->transport ? addr->transport->name : US"<unset>",
     addr->local_part, addr->domain, addr->prop.errors_address);
   debug_printf("  domain_data=%s localpart_data=%s\n", addr->prop.domain_data,
     addr->prop.localpart_data);

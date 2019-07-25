@@ -489,7 +489,7 @@ if (recipients_count >= recipients_list_max)
   recipient_item *oldlist = recipients_list;
   int oldmax = recipients_list_max;
   recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
-  recipients_list = store_get(recipients_list_max * sizeof(recipient_item));
+  recipients_list = store_get(recipients_list_max * sizeof(recipient_item), FALSE);
   if (oldlist != NULL)
     memcpy(recipients_list, oldlist, oldmax * sizeof(recipient_item));
   }
@@ -1677,6 +1677,7 @@ uschar *frozen_by = NULL;
 uschar *queued_by = NULL;
 
 uschar *errmsg;
+rmark rcvd_log_reset_point;
 gstring * g;
 struct stat statbuf;
 
@@ -1687,6 +1688,7 @@ uschar *user_msg, *log_msg;
 
 /* Working header pointers */
 
+rmark reset_point;
 header_line *next;
 
 /* Flags for noting the existence of certain headers (only one left) */
@@ -1727,7 +1729,7 @@ if (extract_recip || !smtp_input)
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
 pointing to the end of the chain to make adding headers simple. */
 
-received_header = header_list = header_last = store_get(sizeof(header_line));
+received_header = header_list = header_last = store_get(sizeof(header_line), FALSE);
 header_list->next = NULL;
 header_list->type = htype_old;
 header_list->text = NULL;
@@ -1735,8 +1737,9 @@ header_list->slen = 0;
 
 /* Control block for the next header to be read. */
 
-next = store_get(sizeof(header_line));
-next->text = store_get(header_size);
+reset_point = store_mark();
+next = store_get(sizeof(header_line), FALSE);	/* not tainted */
+next->text = store_get(header_size, TRUE);	/* tainted */
 
 /* Initialize message id to be null (indicating no message read), and the
 header names list to be the normal list. Indicate there is no data file open
@@ -1854,8 +1857,10 @@ for (;;)
       goto OVERSIZE;
     header_size *= 2;
 
-    if (!store_extend(next->text, oldsize, header_size))
-      next->text = store_newblock(next->text, header_size, ptr);
+    /* The data came from the message, so is tainted. */
+
+    if (!store_extend(next->text, TRUE, oldsize, header_size))
+      next->text = store_newblock(next->text, TRUE, header_size, ptr);
     }
 
   /* Cope with receiving a binary zero. There is dispute about whether
@@ -1910,7 +1915,7 @@ for (;;)
     if (ch == '\n')
       {
       message_ended = END_DOT;
-      store_reset(next);
+      reset_point = store_reset(reset_point);
       next = NULL;
       break;                    /* End character-reading loop */
       }
@@ -2016,7 +2021,7 @@ OVERSIZE:
 
   if (ptr == 1)
     {
-    store_reset(next);
+    reset_point = store_reset(reset_point);
     next = NULL;
     break;
     }
@@ -2045,7 +2050,7 @@ OVERSIZE:
 
   next->text[ptr] = 0;
   next->slen = ptr;
-  store_reset(next->text + ptr + 1);
+  store_release_above(next->text + ptr + 1);
 
   /* Check the running total size against the overall message size limit. We
   don't expect to fail here, but if the overall limit is set less than MESSAGE_
@@ -2241,9 +2246,10 @@ OVERSIZE:
 
   /* Set up for the next header */
 
+  reset_point = store_mark();
   header_size = 256;
-  next = store_get(sizeof(header_line));
-  next->text = store_get(header_size);
+  next = store_get(sizeof(header_line), FALSE);
+  next->text = store_get(header_size, TRUE);
   ptr = 0;
   had_zero = 0;
   prevlines_length = 0;
@@ -2527,7 +2533,7 @@ if (extract_recip)
         white space that follows the newline must not be removed - it is part
         of the header. */
 
-        pp = recipient = store_get(ss - s + 1);
+        pp = recipient = store_get(ss - s + 1, is_tainted(s));
         for (uschar * p = s; p < ss; p++) if (*p != '\n') *pp++ = *p;
         *pp = 0;
 
@@ -2558,7 +2564,7 @@ if (extract_recip)
         if (recipient == NULL && Ustrcmp(errmess, "empty address") != 0)
           {
           int len = Ustrlen(s);
-          error_block *b = store_get(sizeof(error_block));
+          error_block *b = store_get(sizeof(error_block), FALSE);
           while (len > 0 && isspace(s[len-1])) len--;
           b->next = NULL;
           b->text1 = string_printing(string_copyn(s, len));
@@ -2765,7 +2771,7 @@ function may mess with the real recipients. */
 
 if (LOGGING(received_recipients))
   {
-  raw_recipients = store_get(recipients_count * sizeof(uschar *));
+  raw_recipients = store_get(recipients_count * sizeof(uschar *), FALSE);
   for (int i = 0; i < recipients_count; i++)
     raw_recipients[i] = string_copy(recipients_list[i].address);
   raw_recipients_count = recipients_count;
@@ -3968,6 +3974,7 @@ it first! Include any message id that is in the message - since the syntax of a
 message id is actually an addr-spec, we can use the parse routine to canonicalize
 it. */
 
+rcvd_log_reset_point = store_mark();
 g = string_get(256);
 
 g = string_append(g, 2,
@@ -4231,7 +4238,7 @@ if(cutthrough.cctx.sock >= 0 && cutthrough.delivery)
 
     case '4':	/* Temp-reject. Keep spoolfiles and accept, unless defer-pass mode.
       		... for which, pass back the exact error */
-      if (cutthrough.defer_pass) smtp_reply = string_copy_malloc(msg);
+      if (cutthrough.defer_pass) smtp_reply = string_copy_perm(msg, TRUE);
       cutthrough_done = TMP_REJ;		/* Avoid the usual immediate delivery attempt */
       break;					/* message_id needed for SMTP accept below */
 
@@ -4241,7 +4248,7 @@ if(cutthrough.cctx.sock >= 0 && cutthrough.delivery)
       break;					/* message_id needed for SMTP accept below */
 
     case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
-      smtp_reply = string_copy_malloc(msg);		/* Pass on the exact error */
+      smtp_reply = string_copy_perm(msg, TRUE);		/* Pass on the exact error */
       cutthrough_done = PERM_REJ;
       break;
     }
@@ -4268,7 +4275,8 @@ if(!smtp_reply)
   }
 f.receive_call_bombout = FALSE;
 
-store_reset(g);   /* The store for the main log message can be reused */
+/* The store for the main log message can be reused */
+rcvd_log_reset_point = store_reset(rcvd_log_reset_point);
 
 /* If the message is frozen, and freeze_tell is set, do the telling. */
 

@@ -84,7 +84,8 @@ switch (h->method)
 void
 exim_sha_finish(hctx * h, blob * b)
 {
-b->data = store_get(b->len = h->hashlen);
+/* Hashing is sufficient to purify any tainted input */
+b->data = store_get(b->len = h->hashlen, FALSE);
 switch (h->method)
   {
   case HASH_SHA1:     SHA1_Final  (b->data, &h->u.sha1);     break;
@@ -137,7 +138,7 @@ gnutls_hash(h->sha, data, len);
 void
 exim_sha_finish(hctx * h, blob * b)
 {
-b->data = store_get(b->len = h->hashlen);
+b->data = store_get(b->len = h->hashlen, FALSE);
 gnutls_hash_output(h->sha, b->data);
 }
 
@@ -174,7 +175,7 @@ gcry_md_write(h->sha, data, len);
 void
 exim_sha_finish(hctx * h, blob * b)
 {
-b->data = store_get(b->len = h->hashlen);
+b->data = store_get(b->len = h->hashlen, FALSE);
 memcpy(b->data, gcry_md_read(h->sha, 0), h->hashlen);
 }
 
@@ -212,7 +213,7 @@ switch (h->method)
 void
 exim_sha_finish(hctx * h, blob * b)
 {
-b->data = store_get(b->len = h->hashlen);
+b->data = store_get(b->len = h->hashlen, FALSE);
 switch (h->method)
   {
   case HASH_SHA1:   sha1_finish(h->u.sha1, b->data); break;
@@ -450,7 +451,7 @@ native_sha1_mid(&h->sha1, US data);	/* implicit size always 64 */
 void
 exim_sha_finish(hctx * h, blob * b)
 {
-b->data = store_get(b->len = h->hashlen);
+b->data = store_get(b->len = h->hashlen, FALSE);
 
 native_sha1_end(&h->sha1, NULL, 0, b->data);
 }

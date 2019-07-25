@@ -143,7 +143,7 @@ for (pas = &ctx->arcset_chain, prev = NULL, next = ctx->arcset_chain;
   }
 
 DEBUG(D_acl) debug_printf("ARC: new instance %u\n", i);
-*pas = as = store_get(sizeof(arc_set));
+*pas = as = store_get(sizeof(arc_set), FALSE);
 memset(as, 0, sizeof(arc_set));
 as->next = next;
 as->prev = prev;
@@ -201,7 +201,7 @@ al->complete = h;
 
 if (!instance_only)
   {
-  al->rawsig_no_b_val.data = store_get(h->slen + 1);
+  al->rawsig_no_b_val.data = store_get(h->slen + 1, TRUE);	/* tainted */
   memcpy(al->rawsig_no_b_val.data, h->text, off);	/* copy the header name blind */
   r = al->rawsig_no_b_val.data + off;
   al->rawsig_no_b_val.len = off;
@@ -387,7 +387,7 @@ arc_insert_hdr(arc_ctx * ctx, header_line * h, unsigned off, unsigned hoff,
 {
 unsigned i;
 arc_set * as;
-arc_line * al = store_get(sizeof(arc_line)), ** alp;
+arc_line * al = store_get(sizeof(arc_line), FALSE), ** alp;
 uschar * e;
 
 memset(al, 0, sizeof(arc_line));
@@ -499,7 +499,7 @@ const uschar * e;
 DEBUG(D_acl) debug_printf("ARC: collecting arc sets\n");
 for (h = header_list; h; h = h->next)
   {
-  r = store_get(sizeof(hdr_rlist));
+  r = store_get(sizeof(hdr_rlist), FALSE);
   r->prev = rprev;
   r->used = FALSE;
   r->h = h;
@@ -1100,7 +1100,7 @@ out:
 static hdr_rlist *
 arc_rlist_entry(hdr_rlist * list, const uschar * s, int len)
 {
-hdr_rlist * r = store_get(sizeof(hdr_rlist) + sizeof(header_line));
+hdr_rlist * r = store_get(sizeof(hdr_rlist) + sizeof(header_line), FALSE);
 header_line * h = r->h = (header_line *)(r+1);
 
 r->prev = list;
@@ -1191,7 +1191,8 @@ arc_sign_append_aar(gstring * g, arc_ctx * ctx,
   const uschar * identity, int instance, blob * ar)
 {
 int aar_off = g ? g->ptr : 0;
-arc_set * as = store_get(sizeof(arc_set) + sizeof(arc_line) + sizeof(header_line));
+arc_set * as =
+  store_get(sizeof(arc_set) + sizeof(arc_line) + sizeof(header_line), FALSE);
 arc_line * al = (arc_line *)(as+1);
 header_line * h = (header_line *)(al+1);
 
@@ -1301,7 +1302,7 @@ int col;
 int hashtype = pdkim_hashname_to_hashtype(US"sha256", 6);	/*XXX hardwired */
 blob sig;
 int ams_off;
-arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line));
+arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line), FALSE);
 header_line * h = (header_line *)(al+1);
 
 /* debug_printf("%s\n", __FUNCTION__); */
@@ -1417,7 +1418,7 @@ arc_sign_prepend_as(gstring * arcset_interim, arc_ctx * ctx,
 gstring * arcset;
 arc_set * as;
 uschar * status = arc_ar_cv_status(ar);
-arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line));
+arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line), FALSE);
 header_line * h = (header_line *)(al+1);
 
 gstring * hdata = NULL;

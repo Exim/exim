@@ -873,6 +873,7 @@ xyz
 > escape: B7·F2ò
 > 
 > primary_hostname: myhost.test.ex
+> sender_address: sndr@dom
 > match:  cdab
 > Failed: "if" failed and "fail" requested
 > yes

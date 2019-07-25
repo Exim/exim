@@ -4,24 +4,29 @@ need_ipv6
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****
-exim userx@test.ex
-hosts: 127.0.0.1
+exim user4@h1.test.ex
+
+1
 interface: <; ::1 ; HOSTIPV4
 ****
-exim userx@test.ex
-hosts: <; ::1
+exim user6@h2.test.ex
+
+2
 interface: <; HOSTIPV6 ; HOSTIPV4
 ****
-exim userx@test.ex
-hosts: <; ::1
+exim user6@h3.test.ex
+
+3
 interface: <; ${if eq{0}{1}{HOSTIPV6}fail}
 ****
-exim userx@test.ex
-hosts: <; ::1
+exim user6@h4.test.ex
+
+4
 interface: <; ${if eq{0}{1}{HOSTIPV6}{  }}
 ****
-exim userx@test.ex
-hosts: <; ::1
+exim user6@h5.test.ex
+
+5
 interface: <; ${if 
 ****
 exim -qf

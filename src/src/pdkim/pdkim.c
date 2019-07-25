@@ -238,7 +238,7 @@ debug_printf("\n");
 static pdkim_stringlist *
 pdkim_prepend_stringlist(pdkim_stringlist * base, const uschar * str)
 {
-pdkim_stringlist * new_entry = store_get(sizeof(pdkim_stringlist));
+pdkim_stringlist * new_entry = store_get(sizeof(pdkim_stringlist), FALSE);
 
 memset(new_entry, 0, sizeof(pdkim_stringlist));
 new_entry->value = string_copy(str);
@@ -328,7 +328,7 @@ pdkim_relax_header_n(const uschar * header, int len, BOOL append_crlf)
 {
 BOOL past_field_name = FALSE;
 BOOL seen_wsp = FALSE;
-uschar * relaxed = store_get(len+3);
+uschar * relaxed = store_get(len+3, TRUE);	/* tainted */
 uschar * q = relaxed;
 
 for (const uschar * p = header; p - header < len; p++)
@@ -408,7 +408,7 @@ pdkim_decode_qp(const uschar * str)
 int nchar = 0;
 uschar * q;
 const uschar * p = str;
-uschar * n = store_get(Ustrlen(str)+1);
+uschar * n = store_get(Ustrlen(str)+1, TRUE);
 
 *n = '\0';
 q = n;
@@ -465,7 +465,7 @@ BOOL past_hname = FALSE;
 BOOL in_b_val = FALSE;
 int where = PDKIM_HDR_LIMBO;
 
-sig = store_get(sizeof(pdkim_signature));
+sig = store_get(sizeof(pdkim_signature), FALSE);
 memset(sig, 0, sizeof(pdkim_signature));
 sig->bodylength = -1;
 
@@ -474,7 +474,7 @@ sig->version = 0;
 sig->keytype = -1;
 sig->hashtype = -1;
 
-q = sig->rawsig_no_b_val = store_get(Ustrlen(raw_hdr)+1);
+q = sig->rawsig_no_b_val = store_get(Ustrlen(raw_hdr)+1, TRUE);	/* tainted */
 
 for (uschar * p = raw_hdr; ; p++)
   {
@@ -656,7 +656,7 @@ const uschar * ele;
 int sep = ';';
 pdkim_pubkey * pub;
 
-pub = store_get(sizeof(pdkim_pubkey));
+pub = store_get(sizeof(pdkim_pubkey), TRUE);	/* tainted */
 memset(pub, 0, sizeof(pdkim_pubkey));
 
 while ((ele = string_nextinlist(&raw_record, &sep, NULL, 0)))
@@ -1865,11 +1865,12 @@ pdkim_init_verify(uschar * (*dns_txt_callback)(uschar *), BOOL dot_stuffing)
 {
 pdkim_ctx * ctx;
 
-ctx = store_get(sizeof(pdkim_ctx));
+ctx = store_get(sizeof(pdkim_ctx), FALSE);
 memset(ctx, 0, sizeof(pdkim_ctx));
 
 if (dot_stuffing) ctx->flags = PDKIM_DOT_TERM;
-ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN);
+/* The line-buffer is for message data, hence tainted */
+ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN, TRUE);
 ctx->dns_txt_callback = dns_txt_callback;
 
 return ctx;
@@ -1891,7 +1892,7 @@ if (!domain || !selector || !privkey)
 
 /* Allocate & init one signature struct */
 
-sig = store_get(sizeof(pdkim_signature));
+sig = store_get(sizeof(pdkim_signature), FALSE);
 memset(sig, 0, sizeof(pdkim_signature));
 
 sig->bodylength = -1;
@@ -1977,7 +1978,7 @@ for (b = ctx->bodyhash; b; b = b->next)
 
 DEBUG(D_receive) debug_printf("PDKIM: new bodyhash %d/%d/%ld\n",
 			      hashtype, canon_method, bodylength);
-b = store_get(sizeof(pdkim_bodyhash));
+b = store_get(sizeof(pdkim_bodyhash), FALSE);
 b->next = ctx->bodyhash;
 b->hashtype = hashtype;
 b->canon_method = canon_method;
@@ -2021,7 +2022,8 @@ pdkim_init_context(pdkim_ctx * ctx, BOOL dot_stuffed,
 {
 memset(ctx, 0, sizeof(pdkim_ctx));
 ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;
-ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN);
+/* The line buffer is for message data, hence tainted */
+ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN, TRUE);
 DEBUG(D_acl) ctx->dns_txt_callback = dns_txt_callback;
 }
 

@@ -96,7 +96,7 @@ void auth_heimdal_gssapi_version_report(FILE *f) {}
 static void
   exim_heimdal_error_debug(const char *, krb5_context, krb5_error_code);
 static int
-  exim_gssapi_error_defer(uschar *, OM_uint32, OM_uint32, const char *, ...)
+  exim_gssapi_error_defer(rmark, OM_uint32, OM_uint32, const char *, ...)
     PRINTF_FUNCTION(4, 5);
 
 #define EmptyBuf(buf) do { buf.value = NULL; buf.length = 0; } while (0)
@@ -255,12 +255,12 @@ uschar *tmp1, *tmp2, *from_client;
 auth_heimdal_gssapi_options_block *ob =
   (auth_heimdal_gssapi_options_block *)(ablock->options_block);
 BOOL handled_empty_ir;
-uschar *store_reset_point;
+rmark store_reset_point;
 uschar *keytab;
 uschar sasl_config[4];
 uschar requested_qop;
 
-store_reset_point = store_get(0);
+store_reset_point = store_mark();
 
 HDEBUG(D_auth)
   debug_printf("heimdal: initialising auth context for %s\n", ablock->name);
@@ -558,7 +558,7 @@ return auth_check_serv_cond(ablock);
 
 
 static int
-exim_gssapi_error_defer(uschar *store_reset_point,
+exim_gssapi_error_defer(rmark store_reset_point,
     OM_uint32 major, OM_uint32 minor,
     const char *format, ...)
 {
@@ -571,7 +571,7 @@ gstring * g;
 HDEBUG(D_auth)
   {
   va_start(ap, format);
-  g = string_vformat(NULL, TRUE, format, ap);
+  g = string_vformat(NULL, SVFMT_EXTEND|SVFMT_REBUFFER, format, ap);
   va_end(ap);
   }
 

@@ -34,18 +34,13 @@ aaaa_2nd_time router skipped: condition failure
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
 calling aaaa router
-rda_interpret (string): # Exim filter
-deliver defer_aaaa@$domain
-save TESTSUITE/test-mail/file
-pipe "/bin/sh -c exit"
-mail subject autoreply
-text "This is an autoreply"
-expanded: # Exim filter
+rda_interpret (string): '# Exim filter\ndeliver defer_aaaa@$domain\nsave TESTSUITE/test-mail/file\npipe "/bin/sh -c exit"\nmail subject autoreply\ntext "This is an autoreply"'
+expanded: '# Exim filter
 deliver defer_aaaa@myhost.test.ex
 save TESTSUITE/test-mail/file
 pipe "/bin/sh -c exit"
 mail subject autoreply
-text "This is an autoreply"
+text "This is an autoreply"'
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
@@ -99,8 +94,8 @@ bounce router skipped: senders mismatch
 local_part=defer_aaaa domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer
@@ -141,8 +136,8 @@ routing CALLER@myhost.test.ex
 local_part=CALLER domain=myhost.test.ex
 checking senders
 calling bounce router
-rda_interpret (string): :blackhole:
-expanded: :blackhole:
+rda_interpret (string): ':blackhole:'
+expanded: ':blackhole:'
 file is not a filter file
 parse_forward_list: :blackhole:
 extract item: :blackhole:
@@ -197,8 +192,8 @@ local_part=aaaa domain=myhost.test.ex
 checking local_parts
 checking "condition" "${if first_delivery{no}{yes}}"...
 calling aaaa_2nd_time router
-rda_interpret (string): aaaa@$domain
-expanded: aaaa@myhost.test.ex
+rda_interpret (string): 'aaaa@$domain'
+expanded: 'aaaa@myhost.test.ex'
 file is not a filter file
 parse_forward_list: aaaa@myhost.test.ex
 extract item: aaaa@myhost.test.ex
@@ -229,18 +224,13 @@ aaaa_2nd_time router skipped: previously routed aaaa@myhost.test.ex
 local_part=aaaa domain=myhost.test.ex
 checking local_parts
 calling aaaa router
-rda_interpret (string): # Exim filter
-deliver defer_aaaa@$domain
-save TESTSUITE/test-mail/file
-pipe "/bin/sh -c exit"
-mail subject autoreply
-text "This is an autoreply"
-expanded: # Exim filter
+rda_interpret (string): '# Exim filter\ndeliver defer_aaaa@$domain\nsave TESTSUITE/test-mail/file\npipe "/bin/sh -c exit"\nmail subject autoreply\ntext "This is an autoreply"'
+expanded: '# Exim filter
 deliver defer_aaaa@myhost.test.ex
 save TESTSUITE/test-mail/file
 pipe "/bin/sh -c exit"
 mail subject autoreply
-text "This is an autoreply"
+text "This is an autoreply"'
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
@@ -293,8 +283,8 @@ bounce router skipped: senders mismatch
 local_part=defer_aaaa domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer

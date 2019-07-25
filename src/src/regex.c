@@ -53,7 +53,7 @@ while ((regex_string = string_nextinlist(&list, &sep, NULL, 0)))
       continue;
       }
 
-    ri = store_get(sizeof(pcre_list));
+    ri = store_get(sizeof(pcre_list), FALSE);
     ri->re = re;
     ri->pcre_text = regex_string;
     ri->next = re_list_head;
@@ -125,7 +125,7 @@ if (!(re_list_head = compile(*listptr)))
   return FAIL;			/* no regexes -> nothing to do */
 
 /* match each line against all regexes */
-linebuffer = store_get(32767);
+linebuffer = store_get(32767, TRUE);	/* tainted */
 while (fgets(CS linebuffer, 32767, mbox_file))
   {
   if (  mime_stream && mime_current_boundary		/* check boundary */
@@ -195,8 +195,8 @@ if (!(f = fopen(CS mime_decoded_filename, "rb")))
   return DEFER;
   }
 
-/* get 32k memory */
-mime_subject = store_get(32767);
+/* get 32k memory, tainted */
+mime_subject = store_get(32767, TRUE);
 
 mime_subject_len = fread(mime_subject, 1, 32766, f);
 

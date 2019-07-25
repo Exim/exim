@@ -258,8 +258,8 @@ checking senders
 address match test: subject= pattern=
  in ":"? yes (matched "")
 calling r0 router
-rda_interpret (string): :blackhole:
-expanded: :blackhole:
+rda_interpret (string): ':blackhole:'
+expanded: ':blackhole:'
 file is not a filter file
 parse_forward_list: :blackhole:
 extract item: :blackhole:

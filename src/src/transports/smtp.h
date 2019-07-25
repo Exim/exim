@@ -198,9 +198,6 @@ extern void smtp_transport_closedown(transport_instance *);
 
 
 
-extern BOOL    smtp_mail_auth_str(uschar *, unsigned,
-		 address_item *, smtp_transport_options_block *);
-
 #ifdef SUPPORT_SOCKS
 extern int     socks_sock_connect(host_item *, int, int, uschar *,
 	         transport_instance *, int);

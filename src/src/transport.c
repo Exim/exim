@@ -375,8 +375,11 @@ transport_ctx tctx = {{0}};
 gstring gs = { .size = big_buffer_size, .ptr = 0, .s = big_buffer };
 va_list ap;
 
+/* Use taint-unchecked routines for writing into big_buffer, trusting
+that the result will never be expanded. */
+
 va_start(ap, format);
-if (!string_vformat(&gs, FALSE, format, ap))
+if (!string_vformat(&gs, SVFMT_TAINT_NOCHK, format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "overlong formatted string in transport");
 va_end(ap);
 tctx.u.fd = fd;
@@ -638,7 +641,7 @@ so that we don't handle it again. */
 
 for (ppp = *pdlist; ppp; ppp = ppp->next) if (p == ppp->ptr) return TRUE;
 
-ppp = store_get(sizeof(struct aci));
+ppp = store_get(sizeof(struct aci), FALSE);
 ppp->next = *pdlist;
 *pdlist = ppp;
 ppp->ptr = p;
@@ -662,7 +665,7 @@ if (ppp) return TRUE;
 
 /* Remember what we have output, and output it. */
 
-ppp = store_get(sizeof(struct aci));
+ppp = store_get(sizeof(struct aci), FALSE);
 ppp->next = *pplist;
 *pplist = ppp;
 ppp->ptr = pp;
@@ -742,7 +745,7 @@ for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
     {
     if (tblock && tblock->rewrite_rules)
       {
-      void *reset_point = store_get(0);
+      rmark reset_point = store_mark();
       header_line *hh;
 
       if ((hh = rewrite_header(h, NULL, NULL, tblock->rewrite_rules,
@@ -949,7 +952,7 @@ if (!(tctx->options & topt_no_headers))
     BOOL first = TRUE;
     struct aci *plist = NULL;
     struct aci *dlist = NULL;
-    void *reset_point = store_get(0);
+    rmark reset_point = store_mark();
 
     if (!write_chunk(tctx, US"Envelope-to: ", 13)) goto bad;
 
@@ -1252,7 +1255,7 @@ if ((write_pid = fork()) == 0)
         != sizeof(int)
      )
     rc = FALSE;	/* compiler quietening */
-  _exit(0);
+  exim_underbar_exit(0);
   }
 save_errno = errno;
 
@@ -1498,7 +1501,7 @@ for (host_item * host = hostlist; host; host = host->next)
 
   if (!(host_record = dbfn_read(dbm_file, host->name)))
     {
-    host_record = store_get(sizeof(dbdata_wait) + MESSAGE_ID_LENGTH);
+    host_record = store_get(sizeof(dbdata_wait) + MESSAGE_ID_LENGTH, FALSE);
     host_record->count = host_record->sequence = 0;
     }
 
@@ -1557,7 +1560,7 @@ for (host_item * host = hostlist; host; host = host->next)
   else
     {
     dbdata_wait *newr =
-      store_get(sizeof(dbdata_wait) + host_length + MESSAGE_ID_LENGTH);
+      store_get(sizeof(dbdata_wait) + host_length + MESSAGE_ID_LENGTH, FALSE);
     memcpy(newr, host_record, sizeof(dbdata_wait) + host_length);
     host_record = newr;
     }
@@ -1692,7 +1695,7 @@ while (1)
 
   /* create an array to read entire message queue into memory for processing  */
 
-  msgq = store_malloc(sizeof(msgq_t) * host_record->count);
+  msgq = store_get(sizeof(msgq_t) * host_record->count, FALSE);
   msgq_count = host_record->count;
   msgq_actual = msgq_count;
 
@@ -1700,7 +1703,7 @@ while (1)
     {
     msgq[i].bKeep = TRUE;
 
-    Ustrncpy(msgq[i].message_id, host_record->text + (i * MESSAGE_ID_LENGTH),
+    Ustrncpy_nt(msgq[i].message_id, host_record->text + (i * MESSAGE_ID_LENGTH), 
       MESSAGE_ID_LENGTH);
     msgq[i].message_id[MESSAGE_ID_LENGTH] = 0;
     }
@@ -1728,7 +1731,7 @@ while (1)
       msgq[i].bKeep = FALSE;
     else if (!oicf_func || oicf_func(msgq[i].message_id, oicf_data))
       {
-      Ustrcpy(new_message_id, msgq[i].message_id);
+      Ustrcpy_nt(new_message_id, msgq[i].message_id);
       msgq[i].bKeep = FALSE;
       bFound = TRUE;
       break;
@@ -1798,10 +1801,7 @@ while (1)
     }
 
   if (bFound)		/* Usual exit from main loop */
-    {
-    store_free (msgq);
     break;
-    }
 
   /* If host_length <= 0 we have emptied a record and not found a good message,
   and there are no continuation records. Otherwise there is a continuation
@@ -1824,8 +1824,6 @@ while (1)
     dbfn_close(dbm_file);
     return FALSE;
     }
-
-  store_free(msgq);
   }		/* we need to process a continuation record */
 
 /* Control gets here when an existing message has been encountered; its
@@ -2018,7 +2016,7 @@ delivery batch option is set. */
 
 for (address_item * ad = addr; ad; ad = ad->next) address_count++;
 max_args = address_count + 60;
-*argvptr = argv = store_get((max_args+1)*sizeof(uschar *));
+*argvptr = argv = store_get((max_args+1)*sizeof(uschar *), FALSE);
 
 /* Split the command up into arguments terminated by white space. Lose
 trailing space at the start and end. Double-quoted arguments can contain \\ and
@@ -2028,18 +2026,19 @@ arguments are verbatim. Copy each argument into a new string. */
 s = cmd;
 while (isspace(*s)) s++;
 
-while (*s != 0 && argcount < max_args)
+for (; *s != 0 && argcount < max_args; argcount++)
   {
   if (*s == '\'')
     {
     ss = s + 1;
     while (*ss != 0 && *ss != '\'') ss++;
-    argv[argcount++] = ss = store_get(ss - s++);
+    argv[argcount] = ss = store_get(ss - s++, is_tainted(cmd));
     while (*s != 0 && *s != '\'') *ss++ = *s++;
     if (*s != 0) s++;
     *ss++ = 0;
     }
-  else argv[argcount++] = string_copy(string_dequote(CUSS &s));
+  else
+    argv[argcount] = string_dequote(CUSS &s);
   while (isspace(*s)) s++;
   }
 
@@ -2079,8 +2078,8 @@ $recipients. */
 DEBUG(D_transport)
   {
   debug_printf("direct command:\n");
-  for (int i = 0; argv[i] != US 0; i++)
-    debug_printf("  argv[%d] = %s\n", i, string_printing(argv[i]));
+  for (int i = 0; argv[i]; i++)
+    debug_printf("  argv[%d] = '%s'\n", i, string_printing(argv[i]));
   }
 
 if (expand_arguments)
@@ -2133,6 +2132,7 @@ if (expand_arguments)
       int address_pipe_argcount = 0;
       int address_pipe_max_args;
       uschar **address_pipe_argv;
+      BOOL tainted;
 
       /* We can never have more then the argv we will be loading into */
       address_pipe_max_args = max_args - argcount + 1;
@@ -2141,10 +2141,11 @@ if (expand_arguments)
         debug_printf("address_pipe_max_args=%d\n", address_pipe_max_args);
 
       /* We allocate an additional for (uschar *)0 */
-      address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *));
+      address_pipe_argv = store_get((address_pipe_max_args+1)*sizeof(uschar *), FALSE);
 
       /* +1 because addr->local_part[0] == '|' since af_force_command is set */
       s = expand_string(addr->local_part + 1);
+      tainted = is_tainted(s);
 
       if (s == NULL || *s == '\0')
         {
@@ -2163,7 +2164,7 @@ if (expand_arguments)
           {
           ss = s + 1;
           while (*ss != 0 && *ss != '\'') ss++;
-          address_pipe_argv[address_pipe_argcount++] = ss = store_get(ss - s++);
+          address_pipe_argv[address_pipe_argcount++] = ss = store_get(ss - s++, tainted);
           while (*s != 0 && *s != '\'') *ss++ = *s++;
           if (*s != 0) s++;
           *ss++ = 0;
@@ -2242,12 +2243,12 @@ if (expand_arguments)
       expanded_arg = expand_cstring(argv[i]);
       f.enable_dollar_recipients = FALSE;
 
-      if (expanded_arg == NULL)
+      if (!expanded_arg)
         {
         uschar *msg = string_sprintf("Expansion of \"%s\" "
           "from command \"%s\" in %s failed: %s",
           argv[i], cmd, etext, expand_string_message);
-        if (addr != NULL)
+        if (addr)
           {
           addr->transport_return = expand_failed;
           addr->message = msg;

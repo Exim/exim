@@ -8,8 +8,8 @@ routing /a/b/c@myhost.test.ex
 --------> r1 router <--------
 local_part=/a/b/c domain=myhost.test.ex
 calling r1 router
-rda_interpret (string): $local_part
-expanded: /a/b/c
+rda_interpret (string): '$local_part'
+expanded: '/a/b/c'
 file is not a filter file
 parse_forward_list: /a/b/c
 extract item: /a/b/c
@@ -32,8 +32,8 @@ routing /x/y/z@myhost.test.ex
 --------> r1 router <--------
 local_part=/x/y/z domain=myhost.test.ex
 calling r1 router
-rda_interpret (string): $local_part
-expanded: /x/y/z
+rda_interpret (string): '$local_part'
+expanded: '/x/y/z'
 file is not a filter file
 parse_forward_list: /x/y/z
 extract item: /x/y/z

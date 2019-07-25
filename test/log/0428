@@ -26,28 +26,28 @@
 1999-03-02 09:44:33 10HmbF-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbG-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbG-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx8@test.ex> R=r2_8 T=t1
 1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbH-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbH-0005vi-00 => TESTSUITE/test-mail/userx9 <userx9@test.ex> R=r2_9 T=t1
 1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbI-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbI-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx10@test.ex> R=r2_10 T=t1
 1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx11@test.ex> R=r2_11 T=t1
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbK-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbK-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx12@test.ex> R=r2_12 T=t1
 1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= someone@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbL-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbL-0005vi-00 => TESTSUITE/test-mail/userx13 <userx13@test.ex> R=r2_13 T=t1
 1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> R=10HmbL-0005vi-00 U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbM-0005vi-00 => someone <someone@test.ex> R=rb T=t2
 1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbL-0005vi-00 => >someone@test.ex <userx@test.ex> R=r2 T=t3
+1999-03-02 09:44:33 10HmbL-0005vi-00 => >someone@test.ex <userx13@test.ex> R=r2_13 T=t3
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= someone@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbN-0005vi-00 => TESTSUITE/test-mail/userx <userx-suffix2@test.ex> R=r2 T=t1
-1999-03-02 09:44:33 10HmbN-0005vi-00 => TESTSUITE/test-mail/userx-sawsuffix <userx-suffix@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbN-0005vi-00 => TESTSUITE/test-mail/userx14 <userx14-suffix2@test.ex> R=r2_14 T=t1
+1999-03-02 09:44:33 10HmbN-0005vi-00 => TESTSUITE/test-mail/userx-sawsuffix <userx14-suffix@test.ex> R=r2_14 T=t1
 1999-03-02 09:44:33 10HmbN-0005vi-00 Completed

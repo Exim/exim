@@ -509,7 +509,7 @@ static struct lookupmodulestr *lookupmodules = NULL;
 static void
 addlookupmodule(void *dl, struct lookup_module_info *info)
 {
-struct lookupmodulestr *p = store_malloc(sizeof(struct lookupmodulestr));
+struct lookupmodulestr *p = store_get(sizeof(struct lookupmodulestr), FALSE);
 
 p->dl = dl;
 p->info = info;
@@ -620,12 +620,12 @@ init_lookup_list(void)
   int countmodules = 0;
   int moduleerrors = 0;
 #endif
-  struct lookupmodulestr *p;
   static BOOL lookup_list_init_done = FALSE;
-
+  rmark reset_point;
 
   if (lookup_list_init_done)
     return;
+  reset_point = store_mark();
   lookup_list_init_done = TRUE;
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
@@ -787,17 +787,10 @@ init_lookup_list(void)
   memset(lookup_list, 0, sizeof(lookup_info *) * lookup_list_count);
 
   /* now add all lookups to the real list */
-  p = lookupmodules;
-  while (p) {
-    struct lookupmodulestr *pnext;
-
+  for (struct lookupmodulestr * p = lookupmodules; p; p = p->next)
     for (int j = 0; j < p->info->lookupcount; j++)
       add_lookup_to_list(p->info->lookups[j]);
-
-    pnext = p->next;
-    store_free(p);
-    p = pnext;
-  }
+  store_reset(reset_point);
   /* just to be sure */
   lookupmodules = NULL;
 }

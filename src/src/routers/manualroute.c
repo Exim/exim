@@ -401,7 +401,7 @@ if (transport && transport->info->local)
   if (hostlist[0])
     {
     host_item *h;
-    addr->host_list = h = store_get(sizeof(host_item));
+    addr->host_list = h = store_get(sizeof(host_item), FALSE);
     h->name = string_copy(hostlist);
     h->address = NULL;
     h->port = PORT_NONE;

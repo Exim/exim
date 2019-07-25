@@ -613,11 +613,11 @@ notify_comsat(uschar *user, off_t offset)
 {
 struct servent *sp;
 host_item host;
-uschar buffer[256];
+uschar * s;
 
 DEBUG(D_transport) debug_printf("notify_comsat called\n");
 
-sprintf(CS buffer, "%.200s@" OFF_T_FMT "\n", user, offset);
+s = string_sprintf("%.200s@" OFF_T_FMT "\n", user, offset);
 
 if ((sp = getservbyname("biff", "udp")) == NULL)
   {
@@ -658,7 +658,7 @@ for (host_item * h = &host; h; h = h->next)
   /* Connect never fails for a UDP socket, so don't set a timeout. */
 
   (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0, NULL);
-  rc = send(sock, buffer, Ustrlen(buffer) + 1, 0);
+  rc = send(sock, s, Ustrlen(s) + 1, 0);
   (void)close(sock);
 
   if (rc >= 0) break;
@@ -765,7 +765,7 @@ Returns:        the sum of the sizes of the stattable files
 */
 
 off_t
-check_dir_size(uschar *dirname, int *countptr, const pcre *regex)
+check_dir_size(const uschar * dirname, int *countptr, const pcre *regex)
 {
 DIR *dir;
 off_t sum = 0;
@@ -778,8 +778,7 @@ if (dir == NULL) return 0;
 
 while ((ent = readdir(dir)) != NULL)
   {
-  uschar *name = US ent->d_name;
-  uschar buffer[1024];
+  uschar * path, * name = US ent->d_name;
 
   if (Ustrcmp(name, ".") == 0 || Ustrcmp(name, "..") == 0) continue;
 
@@ -787,7 +786,7 @@ while ((ent = readdir(dir)) != NULL)
 
   /* If there's a regex, try to find the size using it */
 
-  if (regex != NULL)
+  if (regex)
     {
     int ovector[6];
     if (pcre_exec(regex, NULL, CS name, Ustrlen(name), 0, 0, ovector,6) >= 2)
@@ -809,18 +808,12 @@ while ((ent = readdir(dir)) != NULL)
 
   /* No regex or no match for the regex, or captured non-digits */
 
-  if (!string_format(buffer, sizeof(buffer), "%s/%s", dirname, name))
-    {
-    DEBUG(D_transport)
-      debug_printf("check_dir_size: name too long: dir=%s name=%s\n", dirname,
-        name);
-    continue;
-    }
+  path = string_sprintf("%s/%s", dirname, name);
 
-  if (Ustat(buffer, &statbuf) < 0)
+  if (Ustat(path, &statbuf) < 0)
     {
     DEBUG(D_transport)
-      debug_printf("check_dir_size: stat error %d for %s: %s\n", errno, buffer,
+      debug_printf("check_dir_size: stat error %d for %s: %s\n", errno, path,
         strerror(errno));
     continue;
     }
@@ -828,7 +821,7 @@ while ((ent = readdir(dir)) != NULL)
   if ((statbuf.st_mode & S_IFMT) == S_IFREG)
     sum += statbuf.st_size;
   else if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
-    sum += check_dir_size(buffer, &count, regex);
+    sum += check_dir_size(path, &count, regex);
   }
 
 closedir(dir);
@@ -3091,7 +3084,7 @@ if (yield != OK)
     addr->message = string_sprintf("mailbox is full "
       "(quota exceeded while writing to file %s)", filename);
     #else
-    addr->message = string_sprintf("mailbox is full");
+    addr->message = US"mailbox is full";
     #endif  /* EDQUOT */
     addr->user_message = US"mailbox is full";
     DEBUG(D_transport) debug_printf("System quota exceeded for %s%s%s\n",
@@ -3291,7 +3284,7 @@ else
           uschar *iptr = expand_string(nametag);
           if (iptr != NULL)
             {
-            uschar *etag = store_get(Ustrlen(iptr) + 2);
+            uschar *etag = store_get(Ustrlen(iptr) + 2, is_tainted(iptr));
             uschar *optr = etag;
             while (*iptr != 0)
               {

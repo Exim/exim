@@ -78,7 +78,7 @@ FILE *f = (FILE *)handle;
 BOOL last_was_eol = TRUE;
 BOOL this_is_eol = TRUE;
 int old_pool = store_pool;
-void *reset_point = NULL;
+rmark reset_point = NULL;
 uschar buffer[4096];
 
 /* Wildcard searches may use up some store, because of expansions. We don't
@@ -90,7 +90,7 @@ safely stored in the search pool again. */
 if(type == LSEARCH_WILD || type == LSEARCH_NWILD)
   {
   store_pool = POOL_MAIN;
-  reset_point = store_get(0);
+  reset_point = store_mark();
   }
 
 filename = filename;  /* Keep picky compilers happy */
@@ -241,7 +241,7 @@ for (last_was_eol = TRUE;
 
   if (reset_point)
     {
-    store_reset(reset_point);
+    reset_point = store_reset(reset_point);
     store_pool = old_pool;
     }
 
@@ -294,7 +294,7 @@ for (last_was_eol = TRUE;
     yield = string_cat(yield, s);
     }
 
-  store_reset(yield->s + yield->ptr + 1);
+  gstring_release_unused(yield);
   *result = string_from_gstring(yield);
   return OK;
   }

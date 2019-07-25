@@ -291,7 +291,7 @@ Returns:  nothing
 void
 retry_add_item(address_item *addr, uschar *key, int flags)
 {
-retry_item *rti = store_get(sizeof(retry_item));
+retry_item *rti = store_get(sizeof(retry_item), FALSE);
 host_item * host = addr->host_used;
 
 rti->next = addr->retries;
@@ -666,7 +666,8 @@ for (int i = 0; i < 3; i++)
 
         if (!retry_record)
           {
-          retry_record = store_get(sizeof(dbdata_retry) + message_length);
+          retry_record = store_get(sizeof(dbdata_retry) + message_length,
+				   is_tainted(message));
           message_space = message_length;
           retry_record->first_failed = now;
           retry_record->last_try = now;
@@ -810,7 +811,7 @@ for (int i = 0; i < 3; i++)
 
         if (message_length > message_space)
           {
-          dbdata_retry *newr = store_get(sizeof(dbdata_retry) + message_length);
+          dbdata_retry *newr = store_get(sizeof(dbdata_retry) + message_length, FALSE);
           memcpy(newr, retry_record, sizeof(dbdata_retry));
           retry_record = newr;
           }

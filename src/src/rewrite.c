@@ -454,7 +454,7 @@ rewrite_one_header(header_line *h, int flag,
 {
 int lastnewline = 0;
 header_line *newh = NULL;
-void *function_reset_point = store_get(0);
+rmark function_reset_point = store_mark();
 uschar *s = Ustrchr(h->text, ':') + 1;
 while (isspace(*s)) s++;
 
@@ -475,7 +475,7 @@ while (*s)
   uschar *sprev;
   uschar *ss = parse_find_address_end(s, FALSE);
   uschar *recipient, *new, *errmess;
-  void *loop_reset_point = store_get(0);
+  rmark loop_reset_point = store_mark();
   BOOL changed = FALSE;
   int terminator = *ss;
   int start, end, domain;
@@ -496,7 +496,7 @@ while (*s)
 
   if (!recipient)
     {
-    store_reset(loop_reset_point);
+    loop_reset_point = store_reset(loop_reset_point);
     continue;
     }
 
@@ -543,7 +543,7 @@ while (*s)
     if (changed && ((is_recipient && !f.allow_unqualified_recipient) ||
                     (!is_recipient && !f.allow_unqualified_sender)))
       {
-      store_reset(loop_reset_point);
+      loop_reset_point = store_reset(loop_reset_point);
       continue;
       }
     }
@@ -575,7 +575,7 @@ while (*s)
   point, because we may have a rewritten line from a previous time round the
   loop. */
 
-  if (!changed) store_reset(loop_reset_point);
+  if (!changed) loop_reset_point = store_reset(loop_reset_point);
 
   /* If the address has changed, create a new header containing the
   rewritten address. We do not need to set the chain pointers at this
@@ -592,9 +592,9 @@ while (*s)
     int newlen = Ustrlen(new);
     int oldlen = end - start;
 
-    header_line *prev = (newh == NULL)? h : newh;
-    uschar *newt = store_malloc(prev->slen - oldlen + newlen + 4);
-    uschar *newtstart = newt;
+    header_line * prev = newh ? newh : h;
+    uschar * newt = store_get_perm(prev->slen - oldlen + newlen + 4, TRUE);
+    uschar * newtstart = newt;
 
     int type = prev->type;
     int slen = prev->slen - oldlen + newlen;
@@ -633,7 +633,7 @@ while (*s)
       if (*p != '\n')
         {
         lastnewline = newt - newtstart;
-        Ustrcat(newt, "\n\t");
+        Ustrcat(newt, US"\n\t");
         slen += 2;
         }
       }
@@ -656,11 +656,11 @@ while (*s)
     rewritten copy from a previous time round this loop. */
 
     store_reset(function_reset_point);
-    newh = store_get(sizeof(header_line));
+    function_reset_point = store_mark();
+    newh = store_get(sizeof(header_line), FALSE);
     newh->type = type;
     newh->slen = slen;
     newh->text = string_copyn(newtstart, slen);
-    store_free(newtstart);
 
     /* Set up for scanning the rest of the header */
 

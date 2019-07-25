@@ -398,11 +398,11 @@ if (!dmarc_abort && !sender_host_authenticated)
   /* Can't use exim's string manipulation functions so allocate memory
   for libopendmarc using its max hostname length definition. */
 
-  dmarc_domain = US calloc(DMARC_MAXHOSTNAMELEN, sizeof(uschar));
+  dmarc_domain = store_get(DMARC_MAXHOSTNAMELEN, TRUE);
   libdm_status = opendmarc_policy_fetch_utilized_domain(dmarc_pctx,
     dmarc_domain, DMARC_MAXHOSTNAMELEN-1);
-  dmarc_used_domain = string_copy(dmarc_domain);
-  free(dmarc_domain);
+  store_release_above(dmarc_domain + Ustrlen(dmarc_domain)+1);
+  dmarc_used_domain = dmarc_domain;
 
   if (libdm_status != DMARC_PARSE_OKAY)
     log_write(0, LOG_MAIN|LOG_PANIC,

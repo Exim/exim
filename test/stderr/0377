@@ -54,8 +54,8 @@ cccc_2nd_time router skipped: condition failure
 local_part=cccc domain=myhost.test.ex
 checking local_parts
 calling cccc_redirect router
-rda_interpret (string): cccc@$domain, defer_cccc@$domain
-expanded: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
+expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex'
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -88,8 +88,8 @@ local_part=bbbb domain=myhost.test.ex
 checking local_parts
 checking "condition" "${if first_delivery{yes}{no}}"...
 calling bbbb router
-rda_interpret (string): bbbb@$domain, defer_bbbb@$domain
-expanded: bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex
+rda_interpret (string): 'bbbb@$domain, defer_bbbb@$domain'
+expanded: 'bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex'
 file is not a filter file
 parse_forward_list: bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex
 extract item: bbbb@myhost.test.ex
@@ -114,8 +114,8 @@ local_part=aaaa domain=myhost.test.ex
 checking local_parts
 checking "condition" "${if first_delivery{yes}{no}}"...
 calling unseen_aaaa router
-rda_interpret (string): defer_aaaa@$domain
-expanded: defer_aaaa@myhost.test.ex
+rda_interpret (string): 'defer_aaaa@$domain'
+expanded: 'defer_aaaa@myhost.test.ex'
 file is not a filter file
 parse_forward_list: defer_aaaa@myhost.test.ex
 extract item: defer_aaaa@myhost.test.ex
@@ -158,8 +158,8 @@ routing defer_cccc@myhost.test.ex
 local_part=defer_cccc domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer
@@ -216,8 +216,8 @@ routing defer_bbbb@myhost.test.ex
 local_part=defer_bbbb domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer
@@ -261,8 +261,8 @@ routing defer_aaaa@myhost.test.ex
 local_part=defer_aaaa domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer
@@ -356,8 +356,8 @@ local_part=cccc domain=myhost.test.ex
 checking local_parts
 checking "condition" "${if first_delivery{no}{yes}}"...
 calling cccc_2nd_time router
-rda_interpret (string): $local_part@$domain
-expanded: cccc@myhost.test.ex
+rda_interpret (string): '$local_part@$domain'
+expanded: 'cccc@myhost.test.ex'
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -458,8 +458,8 @@ cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
 local_part=cccc domain=myhost.test.ex
 checking local_parts
 calling cccc_redirect router
-rda_interpret (string): cccc@$domain, defer_cccc@$domain
-expanded: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
+expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex'
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -488,8 +488,8 @@ routing defer_cccc@myhost.test.ex
 local_part=defer_cccc domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer
@@ -600,8 +600,8 @@ local_part=cccc domain=myhost.test.ex
 checking local_parts
 checking "condition" "${if first_delivery{no}{yes}}"...
 calling cccc_2nd_time router
-rda_interpret (string): $local_part@$domain
-expanded: cccc@myhost.test.ex
+rda_interpret (string): '$local_part@$domain'
+expanded: 'cccc@myhost.test.ex'
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -702,8 +702,8 @@ cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
 local_part=cccc domain=myhost.test.ex
 checking local_parts
 calling cccc_redirect router
-rda_interpret (string): cccc@$domain, defer_cccc@$domain
-expanded: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
+expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex'
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -732,8 +732,8 @@ routing defer_cccc@myhost.test.ex
 local_part=defer_cccc domain=myhost.test.ex
 checking local_parts
 calling defer router
-rda_interpret (string): :defer: forced defer
-expanded: :defer: forced defer
+rda_interpret (string): ':defer: forced defer'
+expanded: ':defer: forced defer'
 file is not a filter file
 parse_forward_list: :defer: forced defer
 extract item: :defer: forced defer

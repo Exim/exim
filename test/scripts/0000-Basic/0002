@@ -932,8 +932,9 @@ exim -be -DPTBC=print_topbitchars
 escape: ${escape:B7·F2ò}
 ****
 # Checkout expansion debugging
-exim -d-all+expand -be
+exim -d-all+expand -f sndr@dom -be
 primary_hostname: $primary_hostname
+sender_address: $sender_address
 match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
 ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}

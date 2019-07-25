@@ -284,9 +284,10 @@ usery in "usery"? yes (matched "usery")
  ╭considering: /non-exist/$domain
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
+            ╰──(tainted)
 calling r5 router
-rda_interpret (string): TESTSUITE/test-mail/junk
-expanded: TESTSUITE/test-mail/junk
+rda_interpret (string): 'TESTSUITE/test-mail/junk'
+expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
@@ -323,9 +324,10 @@ CALLER in "CALLER"? yes (matched "CALLER")
  ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/CALLER
+            ╰──(tainted)
 calling r4 router
-rda_interpret (string): TESTSUITE/test-mail/junk
-expanded: TESTSUITE/test-mail/junk
+rda_interpret (string): 'TESTSUITE/test-mail/junk'
+expanded: 'TESTSUITE/test-mail/junk'
 file is not a filter file
 parse_forward_list: TESTSUITE/test-mail/junk
 extract item: TESTSUITE/test-mail/junk
@@ -356,6 +358,7 @@ userz in "userz"? yes (matched "userz")
  ╭considering: /non-exist/$domain
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
+            ╰──(tainted)
 calling r3 router
 r3 router called for userz@test.ex
   domain = test.ex
@@ -381,6 +384,7 @@ usery in "usery"? yes (matched "usery")
  ╭considering: /non-exist/$domain
  ├──expanding: /non-exist/$domain
  ╰─────result: /non-exist/test.ex
+            ╰──(tainted)
 calling r2 router
 r2 router called for usery@test.ex
   domain = test.ex
@@ -401,6 +405,7 @@ CALLER in "CALLER"? yes (matched "CALLER")
  ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/CALLER
+            ╰──(tainted)
 calling r1 router
 r1 router called for CALLER@test.ex
   domain = test.ex
@@ -449,6 +454,7 @@ no retry data available
  ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/usery
+            ╰──(tainted)
 search_tidyup called
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
@@ -477,6 +483,7 @@ writing to file TESTSUITE/test-mail/junk
   
   ├──expanding: $return_path
   ╰─────result: CALLER@test.ex
+             ╰──(tainted)
   ╭───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: MAILER-DAEMON
@@ -486,6 +493,7 @@ writing to file TESTSUITE/test-mail/junk
  
  ╰─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
  
+            ╰──(tainted)
 writing data block fd=dddd size=sss timeout=0
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
@@ -534,6 +542,7 @@ writing to file TESTSUITE/test-mail/junk
   
   ├──expanding: $return_path
   ╰─────result: CALLER@test.ex
+             ╰──(tainted)
   ╭───scanning: MAILER-DAEMON}} ${tod_bsdinbox}
   
   ├──expanding: MAILER-DAEMON
@@ -543,6 +552,7 @@ writing to file TESTSUITE/test-mail/junk
  
  ╰─────result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
  
+            ╰──(tainted)
 writing data block fd=dddd size=sss timeout=0
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
@@ -592,6 +602,7 @@ no retry data available
  ╭considering: /non-exist/$local_part
  ├──expanding: /non-exist/$local_part
  ╰─────result: /non-exist/usery
+            ╰──(tainted)
 search_tidyup called
 changed uid/gid: local delivery to usery <usery@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
@@ -621,6 +632,7 @@ no retry data available
  ╭considering: /$local_part
  ├──expanding: /$local_part
  ╰─────result: /userz
+            ╰──(tainted)
 search_tidyup called
 changed uid/gid: local delivery to userz <userz@test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp

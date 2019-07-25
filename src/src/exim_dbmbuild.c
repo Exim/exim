@@ -34,10 +34,10 @@ uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
 
 					/* dummies needed by Solaris build */
 void *
-store_get_3(int size, const char *filename, int linenumber)
+store_get_3(int size, BOOL tainted, const char *filename, int linenumber)
 { return NULL; }
-void
-store_reset_3(void *ptr, const char *filename, int linenumber)
+void **
+store_reset_3(void **ptr, int pool, const char *filename, int linenumber)
 { }
 
 
@@ -213,14 +213,14 @@ if (strlen(argv[arg+1]) > sizeof(temp_dbmname) - 20)
   exit(1);
   }
 
-Ustrcpy(temp_dbmname, argv[arg+1]);
-Ustrcat(temp_dbmname, ".dbmbuild_temp");
+Ustrcpy(temp_dbmname, US argv[arg+1]);
+Ustrcat(temp_dbmname, US".dbmbuild_temp");
 
 Ustrcpy(dirname, temp_dbmname);
 if ((bptr = Ustrrchr(dirname, '/')))
   *bptr = '\0';
 else
-  Ustrcpy(dirname, ".");
+  Ustrcpy(dirname, US".");
 
 /* It is apparently necessary to open with O_RDWR for this to work
 with gdbm-1.7.3, though no reading is actually going to be done. */
@@ -441,7 +441,7 @@ if (yield == 0 || yield == 1)
 
   #if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
   Ustrcpy(real_dbmname, temp_dbmname);
-  Ustrcpy(buffer, argv[arg+1]);
+  Ustrcpy(buffer, US argv[arg+1]);
   if (Urename(real_dbmname, buffer) != 0)
     {
     printf("Unable to rename %s as %s\n", real_dbmname, buffer);

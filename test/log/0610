@@ -2,9 +2,9 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= t2@dustybelt.tld U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qq
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
-1999-03-02 09:44:33 10HmaX-0005vi-00 == fred@anotherone.tld R=client T=t1 defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
+1999-03-02 09:44:33 10HmaX-0005vi-00 == fred@anotherone.tld R=r1 T=t1 defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
-1999-03-02 09:44:33 10HmaY-0005vi-00 == fred@anotherone.tld R=client T=t2 defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
+1999-03-02 09:44:33 10HmaY-0005vi-00 == fred@anotherone.tld R=r2 T=t2 defer (0) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after initial connection: 451 Temporary local problem - please try later
 1999-03-02 09:44:33 End queue run: pid=pppp -qq
 
 ******** SERVER ********

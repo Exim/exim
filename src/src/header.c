@@ -97,14 +97,17 @@ header_line *h, *new = NULL;
 header_line **hptr;
 
 uschar *p, *q;
-uschar buffer[HEADER_ADD_BUFFER_SIZE];
-gstring gs = { .size = HEADER_ADD_BUFFER_SIZE, .ptr = 0, .s = buffer };
+uschar * buf = store_get(HEADER_ADD_BUFFER_SIZE, FALSE);
+gstring gs = { .size = HEADER_ADD_BUFFER_SIZE, .ptr = 0, .s = buf };
 
 if (!header_last) return NULL;
 
-if (!string_vformat(&gs, FALSE, format, ap))
+if (!string_vformat(&gs, SVFMT_REBUFFER, format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "string too long in header_add: "
     "%.100s ...", string_from_gstring(&gs));
+
+if (gs.s != buf) store_release_above(buf);
+gstring_release_unused(&gs);
 string_from_gstring(&gs);
 
 /* Find where to insert this header */
@@ -166,7 +169,7 @@ else
 point, we have hptr pointing to the link field that will point to the new
 header, and h containing the following header, or NULL. */
 
-for (p = q = buffer; *p; p = q)
+for (p = q = gs.s; *p; p = q)
   {
   for (;;)
     {
@@ -175,7 +178,7 @@ for (p = q = buffer; *p; p = q)
     if (*(++q) != ' ' && *q != '\t') break;
     }
 
-  new = store_get(sizeof(header_line));
+  new = store_get(sizeof(header_line), FALSE);
   new->text = string_copyn(p, q - p);
   new->slen = q - p;
   new->type = type;

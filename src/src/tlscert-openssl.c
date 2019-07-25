@@ -65,7 +65,7 @@ return fail;
 int
 tls_import_cert(const uschar * buf, void ** cert)
 {
-void * reset_point = store_get(0);
+rmark reset_point = store_mark();
 const uschar * cp = string_unprinting(US buf);
 BIO * bp;
 X509 * x = *(X509 **)cert;
@@ -172,7 +172,7 @@ else
 
       /* convert to string in our format */
       len = 32;
-      s = store_get(len);
+      s = store_get(len, FALSE);
       strftime(CS s, (size_t)len, "%b %e %T %Y %z", tm_p);
       }
     }
@@ -336,7 +336,7 @@ M_ASN1_OCTET_STRING_print(bp, adata);
 /* binary data, DER encoded */
 /* just dump for now */
 len = BIO_get_mem_data(bp, &cp1);
-cp3 = cp2 = store_get(len*3+1);
+cp3 = cp2 = store_get(len*3+1, TRUE);
 
 while(len)
   {
@@ -503,7 +503,7 @@ if (!X509_digest(cert,fdig,md,&n))
   expand_string_message = US"tls_cert_fprt: out of mem\n";
   return NULL;
   }
-cp = store_get(n*2+1);
+cp = store_get(n*2+1, TRUE);
 for (int j = 0; j < (int)n; j++) sprintf(CS cp+2*j, "%02X", md[j]);
 return(cp);
 }

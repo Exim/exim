@@ -163,13 +163,13 @@ if (!cn)
     socket ? redisConnectUnix(CCS socket) : redisConnect(CCS server, port);
   if (!redis_handle)
     {
-    *errmsg = string_sprintf("REDIS connection failed");
+    *errmsg = US"REDIS connection failed";
     *defer_break = FALSE;
     goto REDIS_EXIT;
     }
 
   /* Add the connection to the cache */
-  cn = store_get(sizeof(redis_connection));
+  cn = store_get(sizeof(redis_connection), FALSE);
   cn->server = server_copy;
   cn->handle = redis_handle;
   cn->next = redis_connections;
@@ -333,7 +333,7 @@ switch (redis_reply->type)
 
 
 if (result)
-  store_reset(result->s + result->ptr + 1);
+  gstring_release_unused(result);
 else
   {
   yield = FAIL;
@@ -416,7 +416,7 @@ while ((c = *t++) != 0)
   if (isspace(c) || c == '\\') count++;
 
 if (count == 0) return s;
-t = quoted = store_get(Ustrlen(s) + count + 1);
+t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
 
 while ((c = *s++) != 0)
   {

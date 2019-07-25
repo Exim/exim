@@ -35,7 +35,7 @@ void
 rf_change_domain(address_item *addr, const uschar *domain, BOOL rewrite,
   address_item **addr_new)
 {
-address_item *parent = store_get(sizeof(address_item));
+address_item *parent = store_get(sizeof(address_item), FALSE);
 uschar *at = Ustrrchr(addr->address, '@');
 uschar *address = string_sprintf("%.*s@%s",
   (int)(at - addr->address), addr->address, domain);

@@ -195,7 +195,7 @@ if (field_name)
   *errmsg = string_sprintf("NIS+ field %s not found for %s", field_name,
     query);
 else
-  store_reset(yield->s + yield->ptr + 1);
+  gstring_release_unused(yield);
 
 /* Free result store before finishing. */
 
@@ -240,7 +240,7 @@ if (opt != NULL) return NULL;    /* No options recognized */
 while (*t != 0) if (*t++ == '\"') count++;
 if (count == 0) return s;
 
-t = quoted = store_get(Ustrlen(s) + count + 1);
+t = quoted = store_get(Ustrlen(s) + count + 1, is_tainted(s));
 
 while (*s != 0)
   {
