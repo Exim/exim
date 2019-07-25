@@ -710,8 +710,10 @@ int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 BOOL release_ok = !tainted && store_last_get[pool] == block;
 uschar * newtext;
 
+#ifndef MACRO_PREDEF
 if (is_tainted(block) != tainted)
   die_tainted(US"store_newblock", CUS func, linenumber);
+#endif
 
 newtext = store_get(newsize, tainted);
 memcpy(newtext, block, len);

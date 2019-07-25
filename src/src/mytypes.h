@@ -134,8 +134,12 @@ By extension, a variable pointing to this address is tainted.
 static inline BOOL
 is_tainted(const void * p)
 {
+#ifdef MACRO_PREDEF
+return FALSE;
+#else
 extern void * tainted_base, * tainted_top;
 return p >= tainted_base && p < tainted_top;
+#endif
 }
 
 static inline uschar * __Ustrcat(uschar * dst, const uschar * src, const char * func, int line)

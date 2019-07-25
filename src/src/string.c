@@ -1277,8 +1277,10 @@ else if (!(flags & SVFMT_TAINT_NOCHK)) dest_tainted = is_tainted(g->s);
 
 if (!(flags & SVFMT_TAINT_NOCHK) && !dest_tainted && is_tainted(format))
   {
+#ifndef MACRO_PREDEF
   if (!(flags & SVFMT_REBUFFER))
     die_tainted(US"string_vformat", func, line);
+#endif
   gstring_rebuffer(g);
   dest_tainted = TRUE;
   }
@@ -1507,8 +1509,10 @@ while (*fp)
 	  gp = CS g->s + g->ptr;
 	  dest_tainted = TRUE;
 	  }
+#ifndef MACRO_PREDEF
 	else
 	  die_tainted(US"string_vformat", func, line);
+#endif
 
     INSERT_STRING:              /* Come to from %D or %M above */
 
