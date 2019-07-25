@@ -125,7 +125,7 @@ QUIT
 221 Bye
 ****
 #
-exim -DSERVER=server -bd -oX PORT_D
+exim -d+all -DSERVER=server -bd -oX PORT_D
 ****
 #
 client 127.0.0.1 PORT_D
@@ -261,4 +261,5 @@ killdaemon
 #
 #
 no_stdout_check
+no_stderr_check
 no_msglog_check
