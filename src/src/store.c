@@ -106,8 +106,8 @@ static int yield_length[NPOOLS] = { -1, -1, -1,  -1, -1, -1 };
 a fast is_tainted implementation. We assume the kernel only allocates mmaps using
 one side or the other of data+heap, not both. */
 
-static void * tainted_base = (void *)-1;
-static void * tainted_top = (void *)0;
+void * tainted_base = (void *)-1;
+void * tainted_top = (void *)0;
 
 /* pool_malloc holds the amount of memory used by the store pools; this goes up
 and down as store is reset or released. nonpool_malloc is the total got by
@@ -158,21 +158,6 @@ static void * internal_store_malloc(int, const char *, int);
 static void   internal_store_free(void *, const char *, int linenumber);
 
 /******************************************************************************/
-
-/* Predicate: if an address is in a tainted pool.
-By extension, a variable pointing to this address is tainted.
-*/
-
-BOOL
-is_tainted(const void * p)
-{
-BOOL rc = p >= tainted_base && p < tainted_top;
-
-#ifndef COMPILE_UTILITY
-DEBUG(D_memory) if (rc) debug_printf_indent("is_tainted: YES\n");
-#endif
-return rc;
-}
 
 void
 die_tainted(const uschar * msg, const uschar * func, int line)

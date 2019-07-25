@@ -53,7 +53,6 @@ tracing information for debugging. */
 /* The real functions */
 typedef void ** rmark;
 
-extern BOOL    is_tainted(const void *);
 extern BOOL    store_extend_3(void *, BOOL, int, int, const char *, int);
 extern void    store_free_3(void *, const char *, int);
 extern void   *store_get_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;

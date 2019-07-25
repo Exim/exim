@@ -125,8 +125,18 @@ functions that are called quite often; for other calls to external libraries
 #define Ustrtoul(s,t,b)    strtoul(CCS(s),CSS(t),b)
 #define Uunlink(s)         unlink(CCS(s))
 
-extern BOOL is_tainted(const void *);
 extern void die_tainted(const uschar *, const uschar *, int);
+
+/* Predicate: if an address is in a tainted pool.
+By extension, a variable pointing to this address is tainted.
+*/
+
+static inline BOOL
+is_tainted(const void * p)
+{
+extern void * tainted_base, * tainted_top;
+return p >= tainted_base && p < tainted_top;
+}
 
 static inline uschar * __Ustrcat(uschar * dst, const uschar * src, const char * func, int line)
 {

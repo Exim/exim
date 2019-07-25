@@ -3337,7 +3337,7 @@ syscalls).  It also assume we're on the relevant pool. */
 if (statbuf.st_size > 8192)
   {
   rmark r = store_mark();
-  store_get((int)statbuf.st_size, FALSE);
+  void * dummy = store_get((int)statbuf.st_size, FALSE);
   store_reset(r);
   }
 
