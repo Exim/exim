@@ -945,13 +945,15 @@ else
 
 /* If there is no buffer, put the string into some new store. */
 
-if (buffer == NULL) return string_copy(yield);
+if (!buffer) buffer = store_get(46, FALSE);
 
 /* Callers of this function with a non-NULL buffer must ensure that it is
 large enough to hold an IPv6 address, namely, at least 46 bytes. That's what
-makes this use of strcpy() OK. */
+makes this use of strcpy() OK.
+If the library returned apparently an apparently tainted string, clean it;
+we trust IP addresses. */
 
-Ustrcpy(buffer, yield);
+string_format_nt(buffer, 46, "%s", yield);
 return buffer;
 }
 
