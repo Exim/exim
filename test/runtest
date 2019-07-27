@@ -4225,14 +4225,22 @@ foreach $test (@test_list)
           print "==================>\n";
           system("tail -20 test-stdout");
           print "===================\n";
+
           print "stderr tail:\n";
           print "==================>\n";
-          system("tail -20 test-stderr");
+          system("tail -30 test-stderr");
           print "===================\n";
+
+          print "stdout-server tail:\n";
+          print "==================>\n";
+          system("tail -20 test-stdout-server");
+          print "===================\n";
+
           print "stderr-server tail:\n";
           print "==================>\n";
-          system("tail -20 test-stderr-server");
+          system("tail -30 test-stderr-server");
           print "===================\n";
+
           print "... continue forced\n";
           }
 
