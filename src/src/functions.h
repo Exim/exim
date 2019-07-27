@@ -737,6 +737,7 @@ return ss;
 }
 
 
+# ifndef COMPILE_UTILITY
 /*************************************************
 *     Copy and save string in longterm store     *
 *************************************************/
@@ -760,6 +761,7 @@ memcpy(ss, s, len);
 store_pool = old_pool;
 return ss;
 }
+# endif
 
 
 

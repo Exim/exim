@@ -32,6 +32,7 @@ characters. */
 
 uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
 
+/******************************************************************************/
 					/* dummies needed by Solaris build */
 void *
 store_get_3(int size, BOOL tainted, const char *filename, int linenumber)
@@ -39,6 +40,14 @@ store_get_3(int size, BOOL tainted, const char *filename, int linenumber)
 void **
 store_reset_3(void **ptr, int pool, const char *filename, int linenumber)
 { }
+void
+store_release_above_3(void *ptr, const char *func, int linenumber)
+{ }
+gstring *
+string_vformat_trc(gstring * g, const uschar * func, unsigned line,
+  unsigned size_limit, unsigned flags, const char *format, va_list ap)
+{ }
+/******************************************************************************/
 
 
 #define max_insize   20000

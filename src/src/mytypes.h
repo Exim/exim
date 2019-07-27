@@ -134,7 +134,7 @@ By extension, a variable pointing to this address is tainted.
 static inline BOOL
 is_tainted(const void * p)
 {
-#ifdef MACRO_PREDEF
+#if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF)
 return FALSE;
 #else
 extern void * tainted_base, * tainted_top;
