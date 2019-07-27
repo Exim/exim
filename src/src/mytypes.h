@@ -144,28 +144,28 @@ return p >= tainted_base && p < tainted_top;
 
 static inline uschar * __Ustrcat(uschar * dst, const uschar * src, const char * func, int line)
 {
-#ifndef COMPILE_UTILITY
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrcat", CUS func, line);
 #endif
 return US strcat(CS dst, CCS src);
 }
 static inline uschar * __Ustrcpy(uschar * dst, const uschar * src, const char * func, int line)
 {
-#ifndef COMPILE_UTILITY
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrcpy", CUS func, line);
 #endif
 return US strcpy(CS dst, CCS src);
 }
 static inline uschar * __Ustrncat(uschar * dst, const uschar * src, size_t n, const char * func, int line)
 {
-#ifndef COMPILE_UTILITY
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncat", CUS func, line);
 #endif
 return US strncat(CS dst, CCS src, n);
 }
 static inline uschar * __Ustrncpy(uschar * dst, const uschar * src, size_t n, const char * func, int line)
 {
-#ifndef COMPILE_UTILITY
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
 if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncpy", CUS func, line);
 #endif
 return US strncpy(CS dst, CCS src, n);
