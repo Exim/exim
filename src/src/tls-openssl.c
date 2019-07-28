@@ -3189,32 +3189,10 @@ switch(error)
   case SSL_ERROR_ZERO_RETURN:
     DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
 
-    receive_getc = smtp_getc;
-    receive_getbuf = smtp_getbuf;
-    receive_get_cache = smtp_get_cache;
-    receive_ungetc = smtp_ungetc;
-    receive_feof = smtp_feof;
-    receive_ferror = smtp_ferror;
-    receive_smtp_buffered = smtp_buffered;
-
     if (SSL_get_shutdown(server_ssl) == SSL_RECEIVED_SHUTDOWN)
 	  SSL_shutdown(server_ssl);
 
-#ifndef DISABLE_OCSP
-    sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
-    server_static_cbinfo->verify_stack = NULL;
-#endif
-    SSL_free(server_ssl);
-    SSL_CTX_free(server_ctx);
-    server_ctx = NULL;
-    server_ssl = NULL;
-    tls_in.active.sock = -1;
-    tls_in.active.tls_ctx = NULL;
-    tls_in.bits = 0;
-    tls_in.cipher = NULL;
-    tls_in.peerdn = NULL;
-    tls_in.sni = NULL;
-
+    tls_close(NULL, TLS_NO_SHUTDOWN);
     return FALSE;
 
   /* Handle genuine errors */
@@ -3503,13 +3481,24 @@ if (shutdown)
     }
   }
 
-#ifndef DISABLE_OCSP
 if (!o_ctx)		/* server side */
   {
+#ifndef DISABLE_OCSP
   sk_X509_pop_free(server_static_cbinfo->verify_stack, X509_free);
   server_static_cbinfo->verify_stack = NULL;
-  }
 #endif
+
+  receive_getc =	smtp_getc;
+  receive_getbuf =	smtp_getbuf;
+  receive_get_cache =	smtp_get_cache;
+  receive_ungetc =	smtp_ungetc;
+  receive_feof =	smtp_feof;
+  receive_ferror =	smtp_ferror;
+  receive_smtp_buffered = smtp_buffered;
+  tls_in.active.tls_ctx = NULL;
+  tls_in.sni = NULL;
+  /* Leave bits, peercert, cipher, peerdn, certificate_verified set, for logging */
+  }
 
 SSL_CTX_free(*ctxp);
 SSL_free(*sslp);

@@ -1172,7 +1172,7 @@ if (!done)
 /* Come here from within the cache-reading code on fast-track exit. */
 
 END_CALLOUT:
-tls_modify_variables(&tls_in);
+tls_modify_variables(&tls_in);	/* return variables to inbound values */
 return yield;
 }
 
@@ -2193,7 +2193,7 @@ the -bv or -bt case). */
 
 out:
 verify_mode = NULL;
-tls_modify_variables(&tls_in);
+tls_modify_variables(&tls_in);	/* return variables to inbound values */
 
 return yield;
 }

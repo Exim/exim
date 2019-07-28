@@ -157,6 +157,10 @@ JH/33 Bug 2413: Fix dkim_strict option.  Previously the expansion result
       was unused and the unexpanded text used for the test.  Found and
       fixed by Ruben Jenster.
 
+JH/34 Fix crash after TLS shutdown.  When the TCP/SMTP channel was left open,
+      an attempt to use a TLS library read routine dereffed a nul pointer,
+      causing a segfault.
+
 
 Exim version 4.92
 -----------------
