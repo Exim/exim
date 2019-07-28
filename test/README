@@ -729,7 +729,8 @@ scripts.
   exim_lock [options] <file name>
 
 This command runs the exim_lock utility with the given options and file name.
-The file remains locked with the following command (normally exim) is obeyed.
+The file remains locked for following commands until a non-daemon "exim"
+completes.
 
 
   exinext <data>
@@ -974,8 +975,9 @@ connections. Here are some example commands:
 
 The following lines, up to a line of four asterisks, are the server's
 controlling standard input (described below). These lines are read and
-remembered; during the following commands, until an "exim" command is reached,
-the server is run in parallel.
+remembered; during the following commands, until a non-deamon "exim" command
+is reached, the server is run in parallel.  Then the server termination
+is waited for.
 
 
   write <file name> [nxm[=start-of-line-text]]*

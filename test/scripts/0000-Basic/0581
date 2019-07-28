@@ -47,6 +47,8 @@ QUIT
 sleep 1
 killdaemon
 #
+exim -z 'test2'
+****
 #
 # smtp send, deliver_drop_priv
 server PORT_S
@@ -94,6 +96,8 @@ sleep 1
 killdaemon
 #
 #
+exim -z 'test3'
+****
 # multiple recipients
 # 1st callout result is cached (above); should not activate LCC
 # smtp send
@@ -155,6 +159,8 @@ QUIT
 sleep 1
 #
 #
+exim -z 'test4'
+****
 # 2nd callout result is cached (above); should not activate LCC
 # smtp send
 server PORT_S 2
@@ -185,6 +191,13 @@ QUIT
 221 Bye
 ****
 #
+# XXX this test intermittently fails, at this client...
+# the client gets a 451 rcpt-v fail for userd3
+# the stderr-server says it got a conn-refused for the verify callout, which should have
+#  gone to the above "server" command, first of the 2 conns it is expecting
+# the stdout-server shows "server" handling the previous subtest (userd, userd2) fine, plus
+#  a fresh "server" startup and listen.  Which should have been this one... perhaps it was
+#  not there in time?  Add server-wait synch point for _previous_ server, using dummy "exim -z".
 client 127.0.0.1 PORT_D
 ??? 220
 EHLO test.ex
@@ -212,6 +225,8 @@ QUIT
 sleep 1
 #
 #
+exim -z 'test5'
+****
 # no cache hits; should do LCC
 # smtp send
 server PORT_S 2
