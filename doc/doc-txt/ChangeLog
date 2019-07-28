@@ -10,10 +10,14 @@ Exim version 4.92.2
 HS/01 Handle trailing backslash gracefully. (CVE-2019-15846)
 
 
-Exim version 4.92.1
--------------------
+Since version 4.92.1
+--------------------
 
 JH/31 Avoid re-expansion in ${sort } expansion. (CVE-2019-13917, OVE-20190718-0006)
+
+JH/34 Fix crash after TLS shutdown.  When the TCP/SMTP channel was left open,
+      an attempt to use a TLS library read routine dereffed a nul pointer,
+      causing a segfault.
 
 
 Since version 4.92
