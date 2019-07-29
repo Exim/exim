@@ -136,6 +136,10 @@ is_tainted(const void * p)
 {
 #if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF)
 return FALSE;
+
+#elif defined(TAINT_CHECK_SLOW)
+return is_tainted_fn(p);
+
 #else
 extern void * tainted_base, * tainted_top;
 return p >= tainted_base && p < tainted_top;

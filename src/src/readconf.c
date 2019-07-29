@@ -3326,19 +3326,19 @@ if (f.trusted_config && Ustrcmp(filename, US"/dev/null"))
 
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Exim configuration file %s has the "
       "wrong owner, group, or mode", big_buffer);
-  }
 
-/* Do a dummy store-allocation of a size related to the (toplevel) file size.
-This assumes we will need this much storage to handle all the allocations
-during startup; it won't help when .include is being used.  When it does, it
-will cut down on the number of store blocks (and malloc calls, and sbrk
-syscalls).  It also assume we're on the relevant pool. */
+  /* Do a dummy store-allocation of a size related to the (toplevel) file size.
+  This assumes we will need this much storage to handle all the allocations
+  during startup; it won't help when .include is being used.  When it does, it
+  will cut down on the number of store blocks (and malloc calls, and sbrk
+  syscalls).  It also assume we're on the relevant pool. */
 
-if (statbuf.st_size > 8192)
-  {
-  rmark r = store_mark();
-  void * dummy = store_get((int)statbuf.st_size, FALSE);
-  store_reset(r);
+  if (statbuf.st_size > 8192)
+    {
+    rmark r = store_mark();
+    void * dummy = store_get((int)statbuf.st_size, FALSE);
+    store_reset(r);
+    }
   }
 
 /* Process the main configuration settings. They all begin with a lower case

@@ -5,6 +5,7 @@ CHGRP_COMMAND=/usr/sbin/chgrp
 CHMOD_COMMAND=/bin/chmod
 
 CFLAGS=-O2 -Wall -Wno-parentheses -Wno-self-assign -Wno-logical-op-parentheses
+CFLAGS += -DTAINT_CHECK_SLOW
 
 LIBS=-lm
 

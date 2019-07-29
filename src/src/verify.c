@@ -2349,7 +2349,7 @@ for (header_line * h = header_list; h; h = h->next)
     if ((*s < 33) || (*s > 126))
       {
       *msgptr = string_sprintf("Invalid character in header \"%.*s\" found",
-			     colon - h->text, h->text);
+			     (int)(colon - h->text), h->text);
       return FAIL;
       }
   }

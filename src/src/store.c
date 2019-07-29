@@ -159,6 +159,35 @@ static void   internal_store_free(void *, const char *, int linenumber);
 
 /******************************************************************************/
 
+/* Slower version check, for use when platform intermixes malloc and mmap area
+addresses. */
+
+BOOL
+is_tainted_fn(const void * p)
+{
+storeblock * b;
+int pool;
+
+for (pool = 0; pool < nelem(chainbase); pool++)
+  if ((b = current_block[pool]))
+    {
+    char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
+    if (CS p >= bc && CS p <= bc + b->length) goto hit;
+    }
+
+for (pool = 0; pool < nelem(chainbase); pool++)
+  for (b = chainbase[pool]; b; b = b->next)
+    {
+    char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
+    if (CS p >= bc && CS p <= bc + b->length) goto hit;
+    }
+return FALSE;
+
+hit:
+return pool >= POOL_TAINT_BASE;
+}
+
+
 void
 die_tainted(const uschar * msg, const uschar * func, int line)
 {

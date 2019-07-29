@@ -8,6 +8,10 @@
 #include "../exim.h"
 #include "smtp.h"
 
+#if defined(SUPPORT_DANE) && defined(DISABLE_TLS)
+# error TLS is required for DANE
+#endif
+
 
 /* Options specific to the smtp transport. This transport also supports LMTP
 over TCP/IP. The options must be in alphabetic order (note that "_" comes
