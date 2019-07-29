@@ -138,6 +138,7 @@ is_tainted(const void * p)
 return FALSE;
 
 #elif defined(TAINT_CHECK_SLOW)
+extern BOOL is_tainted_fn(const void *);
 return is_tainted_fn(p);
 
 #else
