@@ -1963,7 +1963,6 @@ smtp_transport_options_block * ob = sx->conn_args.tblock->options_block;
 BOOL pass_message = FALSE;
 uschar * message = NULL;
 int yield = OK;
-int rc;
 #ifndef DISABLE_TLS
 uschar * tls_errstr;
 #endif
@@ -2074,6 +2073,7 @@ if (!continue_hostname)
 
     if (sx->conn_args.host->dnssec == DS_YES)
       {
+      int rc;
       if(  sx->dane_required
 	|| verify_check_given_host(CUSS &ob->hosts_try_dane, sx->conn_args.host) == OK
 	)

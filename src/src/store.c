@@ -135,6 +135,7 @@ static int max_pool_malloc;	/* max value for pool_malloc */
 static int max_nonpool_malloc;	/* max value for nonpool_malloc */
 
 
+#ifndef COMPILE_UTILITY
 static const uschar * pooluse[NPOOLS] = {
 [POOL_MAIN] =		US"main",
 [POOL_PERM] =		US"perm",
@@ -151,6 +152,7 @@ static const uschar * poolclass[NPOOLS] = {
 [POOL_TAINT_PERM] =	US"tainted",
 [POOL_TAINT_SEARCH] =	US"tainted",
 };
+#endif
 
 
 static void * store_mmap(int, const char *, int);

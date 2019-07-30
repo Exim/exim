@@ -6734,7 +6734,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       (void)post_process_one(addr, DEFER, LOG_MAIN, EXIM_DTYPE_ROUTER, 0);
 
       /* For remote-retry errors (here and just above) that we've not yet
-      hit the rery time, use the error recorded in the retry database
+      hit the retry time, use the error recorded in the retry database
       as info in the warning message.  This lets us send a message even
       when we're not failing on a fresh attempt.  We assume that this
       info is not sensitive. */
@@ -8284,13 +8284,9 @@ else if (addr_defer != (address_item *)(+1))
 
         /* List the addresses, with error information if allowed */
 
-        /* store addr_defer for machine readable part */
-        address_item *addr_dsndefer = addr_defer;
         fputc('\n', f);
-        while (addr_defer)
+	for (address_item * addr = addr_defer; addr; addr = addr->next)
           {
-          address_item *addr = addr_defer;
-          addr_defer = addr->next;
           if (print_address_information(addr, f, US"  ", US"\n    ", US""))
             print_address_error(addr, f, US"Delay reason: ");
           fputc('\n', f);
@@ -8333,16 +8329,16 @@ else if (addr_defer != (address_item *)(+1))
           }
         fputc('\n', f);
 
-        for ( ; addr_dsndefer; addr_dsndefer = addr_dsndefer->next)
+	for (address_item * addr = addr_defer; addr; addr = addr->next)
           {
 	  host_item * hu;
 
-	  print_dsn_addr_action(f, addr_dsndefer, US"delayed", US"4.0.0");
+	  print_dsn_addr_action(f, addr, US"delayed", US"4.0.0");
 
-          if ((hu = addr_dsndefer->host_used) && hu->name)
+          if ((hu = addr->host_used) && hu->name)
             {
             fprintf(f, "Remote-MTA: dns; %s\n", hu->name);
-            print_dsn_diagnostic_code(addr_dsndefer, f);
+            print_dsn_diagnostic_code(addr, f);
             }
 	  fputc('\n', f);
           }
