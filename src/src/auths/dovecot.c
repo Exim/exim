@@ -212,8 +212,8 @@ for (;;)
   {
   if (socket_buffer_left == 0)
     {
-    socket_buffer_left = read(fd, sbuffer, sizeof(sbuffer));
-    if (socket_buffer_left == 0) { if (count == 0) return NULL; else break; }
+    if ((socket_buffer_left = read(fd, sbuffer, sizeof(sbuffer))) <= 0)
+      if (count == 0) return NULL; else break;
     p = 0;
     }
 
