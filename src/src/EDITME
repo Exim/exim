@@ -1443,3 +1443,5 @@ INCLUDE+=-I/usr/local/include/python2.7
 EXTRALIBS+=/usr/local/lib/python2.7/config/libpython2.7.a -lz -lm -lpthread -ldl  -lutil -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
 LOCAL_SCAN_SOURCE=Local/expy_local_scan.c
 LOCAL_SCAN_HAS_OPTIONS=yes
+HAVE_LOCAL_SCAN=yes
+
