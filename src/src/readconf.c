@@ -2843,7 +2843,7 @@ if (!type)
 
   if (Ustrcmp(name, "all") == 0)
     {
-    for (ol = optionlist_config;
+    for (optionlist * ol = optionlist_config;
          ol < optionlist_config + nelem(optionlist_config); ol++)
       if (!(ol->type & opt_hidden))
         (void) print_ol(ol, US ol->name, NULL,
@@ -2858,7 +2858,7 @@ if (!type)
     printf("local_scan() options are not supported\n");
     return FALSE;
 #else
-    for (ol = local_scan_options;
+    for (optionlist * ol = local_scan_options;
          ol < local_scan_options + local_scan_options_count; ol++)
       (void) print_ol(ol, US ol->name, NULL, local_scan_options,
 		  local_scan_options_count, no_labels);
