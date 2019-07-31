@@ -367,7 +367,7 @@ PCRE_CONFIG=yes
 # Uncomment the following line to add DANE support
 # Note: Enabling this unconditionally overrides DISABLE_DNSSEC
 # For DANE under GnuTLS we need an additional library.  See TLS_LIBS below.
-# SUPPORT_DANE=yes
+SUPPORT_DANE=yes
 
 #------------------------------------------------------------------------------
 # Additional libraries and include directories may be required for some
@@ -403,7 +403,7 @@ LOOKUP_LIBS=-lmysqlclient
 # and the MIME ACL. Please read the documentation to learn more about these
 # features.
 
-# WITH_CONTENT_SCAN=yes
+WITH_CONTENT_SCAN=yes
 
 # If you have content scanning you may wish to only include some of the scanner
 # interfaces.  Uncomment any of these lines to remove that code.
@@ -475,16 +475,16 @@ DISABLE_MAL_MKS=yes
 # Depending on where it is installed you may have to edit the CFLAGS and
 # LDFLAGS lines.
 
-# EXPERIMENTAL_SRS=yes
-# CFLAGS  += -I/usr/local/include
-# LDFLAGS += -lsrs_alt
+EXPERIMENTAL_SRS=yes
+CFLAGS  += -I/usr/include
+LDFLAGS += -lsrs_alt
 
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries. You must have SPF and DKIM support enabled also.
-# EXPERIMENTAL_DMARC=yes
-# DMARC_TLD_FILE= /etc/exim/opendmarc.tlds
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -lopendmarc
+EXPERIMENTAL_DMARC=yes
+DMARC_TLD_FILE= /var/cache/effective_tld_names.dat
+CFLAGS += -I/usr/include
+LDFLAGS += -lopendmarc
 
 # Uncomment the following line to add ARC (Authenticated Received Chain)
 # support.  You must have SPF and DKIM support enabled also.
@@ -957,7 +957,7 @@ ZCAT_COMMAND=/usr/bin/zcat
 # If you may want to use outbound (client-side) proxying, using Socks5,
 # uncomment the line below.
 
-# SUPPORT_SOCKS=yes
+SUPPORT_SOCKS=yes
 
 # If you may want to use inbound (server-side) proxying, using Proxy Protocol,
 # uncomment the line below.
@@ -986,10 +986,9 @@ ZCAT_COMMAND=/usr/bin/zcat
 # installed on your system (www.libspf2.org). Depending on where it is installed
 # you may have to edit the CFLAGS and LDFLAGS lines.
 
-# SUPPORT_SPF=yes
-# CFLAGS  += -I/usr/local/include
-# LDFLAGS += -lspf2
-
+SUPPORT_SPF=yes
+CFLAGS  += -I/usr/include
+LDFLAGS += -lspf2
 
 #------------------------------------------------------------------------------
 # Support for authentication via Radius is also available. The Exim support,
@@ -1120,7 +1119,7 @@ SYSTEM_ALIASES_FILE=/etc/aliases
 # is "yes", as well as supporting line editing, a history of input lines in the
 # current run is maintained.
 
-# USE_READLINE=yes
+USE_READLINE=yes
 
 # You may need to add -ldl to EXTRALIBS when you set USE_READLINE=yes.
 # Note that this option adds to the size of the Exim binary, because the
@@ -1137,7 +1136,7 @@ SYSTEM_ALIASES_FILE=/etc/aliases
 #------------------------------------------------------------------------------
 # Uncomment this setting to include IPv6 support.
 
-# HAVE_IPV6=yes
+HAVE_IPV6=yes
 
 ###############################################################################
 #              THINGS YOU ALMOST NEVER NEED TO MENTION                        #
@@ -1315,7 +1314,7 @@ EXIM_TMPDIR="/tmp"
 # local part) can be increased by changing this value. It should be set to
 # a multiple of 16.
 
-# MAX_NAMED_LIST=16
+MAX_NAMED_LIST=32
 
 
 #------------------------------------------------------------------------------
@@ -1438,3 +1437,9 @@ EXIM_TMPDIR="/tmp"
 # ENABLE_DISABLE_FSYNC=yes
 
 # End of EDITME for Exim 4.
+
+CFLAGS+=-fPIC
+INCLUDE+=-I/usr/local/include/python2.7
+EXTRALIBS+=/usr/local/lib/python2.7/config/libpython2.7.a -lz -lm -lpthread -ldl  -lutil -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
+LOCAL_SCAN_SOURCE=Local/expy_local_scan.c
+LOCAL_SCAN_HAS_OPTIONS=yes
