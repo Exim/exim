@@ -18884,10 +18884,23 @@ latter kind.
 
 This option controls whether the local part is used to form the key for retry
 hints for addresses that suffer temporary errors while being handled by this
-router. The default value is true for any router that has &%check_local_user%&
+.new
+router. The default value is true for any router that has any of
+&%check_local_user%&, 
+&%local_parts%&,
+&%condition%&,
+&%local_part_prefix%&,
+&%local_part_suffix%&,
+&%senders%& or
+&%require_files%&
+.wen
 set, and false otherwise. Note that this option does not apply to hints keys
 for transport delays; they are controlled by a generic transport option of the
 same name.
+
+Failing to set this option when it is needed
+(because a remote router handles only some of the local-parts for a domain)
+can result in incorrect error messages being generated.
 
 The setting of &%retry_use_local_part%& applies only to the router on which it
 appears. If the router generates child addresses, they are routed

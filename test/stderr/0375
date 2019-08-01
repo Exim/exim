@@ -910,7 +910,6 @@ After routing:
 locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => CALLER <CALLER@myhost.test.ex> P=<> R=real T=real
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -1019,7 +1018,6 @@ locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   => h1 <h1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=ut8 T=ut1
 log writing disabled
-locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -44,7 +44,21 @@
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmbF-0005vi-00 == r4.a@outside routing defer (-51): retry time not reached
-1999-03-02 09:44:33 10HmbG-0005vi-00 == r4.b@outside routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbG-0005vi-00 == r4.b@outside R=r4 defer (-1): not just now
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbH-0005vi-00 == r5.a@r5domain.ex R=r5 defer (-1): not just now
+1999-03-02 09:44:33 10HmbF-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 == rz.a@outside R=r_remain defer (-1): not just now
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbJ-0005vi-00 == rz.b@outside R=r_remain defer (-1): not just now
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbI-0005vi-00 == rz.a@outside routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbJ-0005vi-00 == rz.b@outside routing defer (-51): retry time not reached
+1999-03-02 09:44:33 End queue run: pid=pppp

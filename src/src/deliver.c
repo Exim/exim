@@ -4794,7 +4794,6 @@ all pipes, so I do not see a reason to use non-blocking IO here
     for(; addr; addr = addr->next)
       {
       uschar *ptr;
-      retry_item *r;
 
       /* The certificate verification status goes into the flags */
       if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
@@ -4894,7 +4893,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
       /* Retry information: for most success cases this will be null. */
 
-      for (r = addr->retries; r; r = r->next)
+      for (retry_item * r = addr->retries; r; r = r->next)
         {
         sprintf(CS big_buffer, "%c%.500s", r->flags, r->key);
         ptr = big_buffer + Ustrlen(big_buffer+2) + 3;

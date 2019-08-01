@@ -27,13 +27,28 @@ exim -q
 ****
 exim -Mrm $msg1 $msg2
 ****
+# Using a router with preconditions (local_parts, here) should get an address-retry record
+sudo rm DIR/spool/db/retry
 exim -odi r4.a@outside
 ****
+dump retry
 exim -odq r4.b@outside
 ****
 exim -q
 ****
 exim -odi r5.a@r5domain.ex
+****
+exim -Mrm $msg1 $msg2 $msg3
+****
+# Using a router with no non-domain preconditions, first should write a domain-retry record.
+sudo rm DIR/spool/db/retry
+exim -odi rz.a@outside
+****
+dump retry
+# Second will find it - this is visible in debug output
+exim -d-all+route+deliver+retry -odi rz.b@outside
+****
+exim -q
 ****
 no_msglog_check
 no_message_check

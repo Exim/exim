@@ -12,3 +12,12 @@ Message 10HmbB-0005vi-00 has been removed
 Message 10HmbC-0005vi-00 has been removed
 Message 10HmbD-0005vi-00 has been removed
 Message 10HmbE-0005vi-00 has been removed
++++++++++++++++++++++++++++
+  R:r4.a@outside -1 0 not just now
+first failed = time last try = time2 next try = time2 + 300
+Message 10HmbF-0005vi-00 has been removed
+Message 10HmbG-0005vi-00 has been removed
+Message 10HmbH-0005vi-00 has been removed
++++++++++++++++++++++++++++
+  R:outside -1 0 not just now
+first failed = time last try = time2 next try = time2 + 300

@@ -281,7 +281,8 @@ for (router_instance * r = routers; r; r = r->next)
   TRUE; otherwise its default is FALSE. */
 
   if (r->retry_use_local_part == TRUE_UNSET)
-    r->retry_use_local_part = r->check_local_user;
+    r->retry_use_local_part =
+      r->check_local_user || r->local_parts || r->condition || r->prefix || r->suffix || r->senders || r->require_files;
 
   /* Build a host list if fallback hosts is set. */
 

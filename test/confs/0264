@@ -63,6 +63,12 @@ r5:
   allow_defer
   data = :defer: not just now
 
+r_remain:
+  driver = redirect
+  allow_defer
+  data = :defer: not just now
+
+
 # ----- Retry -----
 
 begin retry

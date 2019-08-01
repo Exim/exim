@@ -164,6 +164,12 @@ JH/34 Fix crash after TLS shutdown.  When the TCP/SMTP channel was left open,
 JH/35 Bug 2409: filter out-of-spec chars from callout response before using
       them in our smtp response.
 
+JH/35 Have the general router option retry_use_local_part default to true when
+      any of the restrictive preconditions are set (to anything).  Previously it
+      was only for check_local user.  The change removes one item of manual
+      configuration which is required for proper retries when a remote router
+      handles a subset of addresses for a domain.
+
 
 Exim version 4.92
 -----------------
