@@ -6,8 +6,11 @@
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable2@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <uncheckable@localhost1>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550-Multiline error for <>\n550 Here's the second line
 1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root sender verify fail for <uncheckable2@localhost1>: 127.0.0.1 [127.0.0.1] : response to "MAIL FROM:<>" was: 550 Bad-char error for <> topbitchar:\200\377\377
+1999-03-02 09:44:33 H=[V4NET.0.0.1] U=root F=<uncheckable2@localhost1> rejected RCPT <z@test.ex>: Sender verify failed
 1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked
 1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550-Recipient not liked on two lines\n550 Here's the second
+1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> rejected RCPT <z@remote.domain>: 127.0.0.1 [127.0.0.1] : SMTP error from remote mail server after RCPT TO:<z@remote.domain>: 550 Recipient not liked, with bad char:\200\377\377
 1999-03-02 09:44:33 H=[V4NET.0.0.3] U=root F=<uncheckable@localhost1> temporarily rejected RCPT <z@remote.domain>: Could not complete recipient verify callout
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=[V4NET.0.0.4] U=root F=<uncheckable@localhost1> rejected after DATA: there is no valid sender in any header line

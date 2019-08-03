@@ -38,6 +38,10 @@
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
+550 Sender verify failed
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
 550-Callout verification failed:
 550 550 Recipient not liked
 221 myhost.test.ex closing connection
@@ -46,6 +50,11 @@
 550-Callout verification failed:
 550-550-Recipient not liked on two lines
 550 550 Here's the second
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Callout verification failed:
+550 550 Recipient not liked, with bad char:(truncated)
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
@@ -192,6 +201,16 @@ Connection request from [127.0.0.1]
 EHLO myhost.test.ex
 250 OK
 MAIL FROM:<>
+550 Bad-char error for <> topbitchar:€ÿÿ
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<>
 250 OK
 RCPT TO:<z@remote.domain>
 550 Recipient not liked
@@ -208,6 +227,18 @@ MAIL FROM:<>
 RCPT TO:<z@remote.domain>
 550-Recipient not liked on two lines
 550 Here's the second
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<z@remote.domain>
+550 Recipient not liked, with bad char:€ÿÿ
 QUIT
 250 OK
 End of script

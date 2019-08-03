@@ -161,6 +161,9 @@ JH/34 Fix crash after TLS shutdown.  When the TCP/SMTP channel was left open,
       an attempt to use a TLS library read routine dereffed a nul pointer,
       causing a segfault.
 
+JH/35 Bug 2409: filter out-of-spec chars from callout response before using
+      them in our smtp response.
+
 
 Exim version 4.92
 -----------------

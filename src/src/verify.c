@@ -1001,6 +1001,26 @@ no_conn:
 	  string_sprintf("response to \"%s\" was: %s",
 			  big_buffer, string_printing(sx.buffer));
 
+	/* RFC 5321 section 4.2: the text portion of the response may have only
+	HT, SP, Printable US-ASCII.  Deal with awkward chars by cutting the
+	received message off before passing it onward.  Newlines are ok; they
+	just become a multiline response (but wrapped in the error code we
+	produce). */
+
+	for (uschar * s = sx.buffer;
+	     *s && s < sx.buffer + sizeof(sx.buffer);
+	     s++)
+	  {
+	  uschar c = *s;
+	  if (c != '\t' && c != '\n' && (c < ' ' || c > '~'))
+	    {
+	    if (s - sx.buffer < sizeof(sx.buffer) - 12)
+	      memcpy(s, "(truncated)", 12);
+	    else
+	      *s = '\0';
+	    break;
+	    }
+	  }
 	addr->user_message = options & vopt_is_recipient
 	  ? string_sprintf("Callout verification failed:\n%s", sx.buffer)
 	  : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",

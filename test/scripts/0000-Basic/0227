@@ -83,9 +83,24 @@ MAIL FROM
 QUIT
 250 OK
 ****
-# sender, err on mailfrom
+# sender, multiline err on mailfrom
 sudo exim -v -bs -oMa V4NET.0.0.1
 MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+550 Bad-char error for <> topbitchar:\x80\xFF\xFF
+QUIT
+250 OK
+****
+# sender, err on mailfrom, with bad char
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<uncheckable2@localhost1>
 RCPT TO:<z@test.ex>
 QUIT
 ****
@@ -119,6 +134,23 @@ QUIT
 250 OK
 ****
 # recipient, refused
+sudo exim -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Recipient not liked, with bad char:\x80\xFF\xFF
+QUIT
+250 OK
+****
+# recipient, refused, badchar in resp
 sudo exim -v -bs -oMa V4NET.0.0.3
 MAIL FROM:<uncheckable@localhost1>
 RCPT TO:<z@remote.domain>
