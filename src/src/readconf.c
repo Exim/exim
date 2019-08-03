@@ -306,7 +306,7 @@ static optionlist optionlist_config[] = {
   { "smtp_ratelimit_hosts",     opt_stringptr,   &smtp_ratelimit_hosts },
   { "smtp_ratelimit_mail",      opt_stringptr,   &smtp_ratelimit_mail },
   { "smtp_ratelimit_rcpt",      opt_stringptr,   &smtp_ratelimit_rcpt },
-  { "smtp_receive_timeout",     opt_func,        &fn_smtp_receive_timeout },
+  { "smtp_receive_timeout",     opt_func,        (void *) &fn_smtp_receive_timeout },
   { "smtp_reserve_hosts",       opt_stringptr,   &smtp_reserve_hosts },
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
 #ifdef SUPPORT_I18N
@@ -3350,7 +3350,7 @@ syscalls).  It also assume we're on the relevant pool. */
 if (statbuf.st_size > 8192)
   {
   rmark r = store_mark();
-  store_get((int)statbuf.st_size, FALSE);
+  void * dummy = store_get((int)statbuf.st_size, FALSE);
   store_reset(r);
   }
 

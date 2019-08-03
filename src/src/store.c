@@ -788,7 +788,7 @@ if (!(yield = mmap(NULL, (size_t)size,
     "called from line %d of %s", size, line, func);
 
 if (yield < tainted_base) tainted_base = yield;
-if ((top = yield + size) > tainted_top) tainted_top = top;
+if ((top = US yield + size) > tainted_top) tainted_top = top;
 
 return store_alloc_tail(yield, size, func, line, US"Mmap");
 }

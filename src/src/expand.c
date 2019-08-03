@@ -451,6 +451,7 @@ typedef struct {
 } alblock;
 
 static uschar * fn_recipients(void);
+typedef uschar * stringptr_fn_t(void);
 
 /* This table must be kept in alphabetical order. */
 
@@ -472,7 +473,7 @@ static var_entry var_table[] = {
   { "address_file",        vtype_stringptr,   &address_file },
   { "address_pipe",        vtype_stringptr,   &address_pipe },
 #ifdef EXPERIMENTAL_ARC
-  { "arc_domains",         vtype_string_func, &fn_arc_domains },
+  { "arc_domains",         vtype_string_func, (void *) &fn_arc_domains },
   { "arc_oldest_pass",     vtype_int,         &arc_oldest_pass },
   { "arc_state",           vtype_stringptr,   &arc_state },
   { "arc_state_reason",    vtype_stringptr,   &arc_state_reason },
@@ -553,7 +554,7 @@ static var_entry var_table[] = {
   { "exim_path",           vtype_stringptr,   &exim_path },
   { "exim_uid",            vtype_uid,         &exim_uid },
   { "exim_version",        vtype_stringptr,   &version_string },
-  { "headers_added",       vtype_string_func, &fn_hdrs_added },
+  { "headers_added",       vtype_string_func, (void *) &fn_hdrs_added },
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -664,7 +665,7 @@ static var_entry var_table[] = {
   { "received_time",       vtype_int,         &received_time.tv_sec },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
-  { "recipients",          vtype_string_func, &fn_recipients },
+  { "recipients",          vtype_string_func, (void *) &fn_recipients },
   { "recipients_count",    vtype_int,         &recipients_count },
 #ifdef WITH_CONTENT_SCAN
   { "regex_match_string",  vtype_stringptr,   &regex_match_string },
@@ -699,7 +700,7 @@ static var_entry var_table[] = {
   { "smtp_active_hostname", vtype_stringptr,  &smtp_active_hostname },
   { "smtp_command",        vtype_stringptr,   &smtp_cmd_buffer },
   { "smtp_command_argument", vtype_stringptr, &smtp_cmd_argument },
-  { "smtp_command_history", vtype_string_func, &smtp_cmd_hist },
+  { "smtp_command_history", vtype_string_func, (void *) &smtp_cmd_hist },
   { "smtp_count_at_connection_start", vtype_int, &smtp_accept_count },
   { "smtp_notquit_reason", vtype_stringptr,   &smtp_notquit_reason },
   { "sn0",                 vtype_filter_int,  &filter_sn[0] },
@@ -1961,7 +1962,7 @@ switch (vp->type)
 
   case vtype_string_func:
     {
-    uschar * (*fn)() = val;
+    stringptr_fn_t * fn = (stringptr_fn_t *) val;
     return fn();
     }
 

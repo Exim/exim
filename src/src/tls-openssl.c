@@ -148,7 +148,7 @@ Plus SSL_OP_NO_TLSv1_3 for 1.1.2-dev
 static exim_openssl_option exim_openssl_options[] = {
 /* KEEP SORTED ALPHABETICALLY! */
 #ifdef SSL_OP_ALL
-  { US"all", SSL_OP_ALL },
+  { US"all", (long) SSL_OP_ALL },
 #endif
 #ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
   { US"allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },

@@ -1508,11 +1508,11 @@ typedef struct {
   unsigned alt_opt_sep;		/* >0 Non-/ option separator (custom parser) */
   } verify_type_t;
 static verify_type_t verify_type_list[] = {
-    /*	name			value			where	no-opt opt-sep */
-    { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	FALSE, 0 },
-    { US"certificate",	  	VERIFY_CERT,	 	~0,	TRUE,  0 },
-    { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE,  0 },
-    { US"csa",	  		VERIFY_CSA,	 	~0,	FALSE, 0 },
+    /*	name			value			where	        no-opt opt-sep */
+    { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	(unsigned)~0,	FALSE, 0 },
+    { US"certificate",	  	VERIFY_CERT,	 	(unsigned)~0,	TRUE,  0 },
+    { US"helo",	  		VERIFY_HELO,	 	(unsigned)~0,	TRUE,  0 },
+    { US"csa",	  		VERIFY_CSA,	 	(unsigned)~0,	FALSE, 0 },
     { US"header_syntax",	VERIFY_HDR_SYNTAX,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
     { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
