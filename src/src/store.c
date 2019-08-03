@@ -157,7 +157,8 @@ static const uschar * poolclass[NPOOLS] = {
 
 static void * store_mmap(int, const char *, int);
 static void * internal_store_malloc(int, const char *, int);
-static void   internal_store_free(void *, const char *, int linenumber);
+static void   internal_untainted_free(void *, const char *, int linenumber);
+static void   internal_tainted_free(storeblock *, const char *, int linenumber);
 
 /******************************************************************************/
 
@@ -248,15 +249,9 @@ if (size > yield_length[pool])
     /* Give up on this block, because it's too small */
     nblocks[pool]--;
     if (pool < POOL_TAINT_BASE)
-      internal_store_free(newblock, func, linenumber);
+      internal_untainted_free(newblock, func, linenumber);
     else
-      {
-#ifndef COMPILE_UTILITY
-      DEBUG(D_memory)
-	debug_printf("---Unmap %6p %-20s %4d\n", newblock, func, linenumber);
-#endif
-      munmap(newblock, newblock->length + ALIGNED_SIZEOF_STOREBLOCK);
-      }
+      internal_tainted_free(newblock, func, linenumber);
     newblock = NULL;
     }
 
@@ -515,15 +510,9 @@ while ((b = bb))
   pool_malloc -= siz;
   nblocks[pool]--;
   if (pool < POOL_TAINT_BASE)
-    internal_store_free(b, func, linenumber);
+    internal_untainted_free(b, func, linenumber);
   else
-    {
-#ifndef COMPILE_UTILITY
-    DEBUG(D_memory)
-      debug_printf("---Unmap %6p %-20s %4d\n", b, func, linenumber);
-#endif
-    munmap(b, b->length + ALIGNED_SIZEOF_STOREBLOCK);
-    }
+    internal_tainted_free(b, func, linenumber);
   }
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
@@ -858,7 +847,7 @@ Returns:      nothing
 */
 
 static void
-internal_store_free(void *block, const char *func, int linenumber)
+internal_untainted_free(void * block, const char * func, int linenumber)
 {
 #ifdef COMPILE_UTILITY
 func = func;
@@ -871,10 +860,24 @@ free(block);
 }
 
 void
-store_free_3(void *block, const char *func, int linenumber)
+store_free_3(void * block, const char * func, int linenumber)
 {
 n_nonpool_blocks--;
-internal_store_free(block, func, linenumber);
+internal_untainted_free(block, func, linenumber);
+}
+
+/******************************************************************************/
+static void
+internal_tainted_free(storeblock * block, const char * func, int linenumber)
+{
+#ifdef COMPILE_UTILITY
+func = func;
+linenumber = linenumber;
+#else
+DEBUG(D_memory)
+  debug_printf("---Unmap %6p %-20s %4d\n", block, func, linenumber);
+#endif
+munmap((void *)block, block->length + ALIGNED_SIZEOF_STOREBLOCK);
 }
 
 /******************************************************************************/

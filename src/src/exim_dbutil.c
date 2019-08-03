@@ -44,6 +44,14 @@ whose inclusion is controlled by -D on the compilation command. */
 uschar *spool_directory;
 
 
+/******************************************************************************/
+      /* dummies needed by Solaris build */
+gstring *
+string_vformat_trc(gstring * g, const uschar * func, unsigned line,
+  unsigned size_limit, unsigned flags, const char *format, va_list ap)
+{ return NULL; }
+/******************************************************************************/
+
 
 /*************************************************
 *         Berkeley DB error callback             *
