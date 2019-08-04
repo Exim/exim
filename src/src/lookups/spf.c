@@ -35,50 +35,68 @@ static void dummy(int x) { dummy2(x-1); }
 static void *
 spf_open(uschar *filename, uschar **errmsg)
 {
-  SPF_server_t *spf_server = NULL;
-  spf_server = SPF_server_new(SPF_DNS_CACHE, 0);
-  if (spf_server == NULL) {
-    *errmsg = US"SPF_server_new() failed";
-    return NULL;
-  }
+SPF_server_t *spf_server;
+if ((spf_server = SPF_server_new(SPF_DNS_CACHE, 0)))
   return (void *) spf_server;
+*errmsg = US"SPF_server_new() failed";
+return NULL;
 }
 
 static void
 spf_close(void *handle)
 {
-  SPF_server_t *spf_server = handle;
-  if (spf_server) SPF_server_free(spf_server);
+SPF_server_t *spf_server = handle;
+if (spf_server) SPF_server_free(spf_server);
 }
 
 static int
 spf_find(void *handle, uschar *filename, const uschar *keystring, int key_len,
              uschar **result, uschar **errmsg, uint *do_cache)
 {
-  SPF_server_t *spf_server = handle;
-  SPF_request_t *spf_request = NULL;
-  SPF_response_t *spf_response = NULL;
+SPF_server_t *spf_server = handle;
+SPF_request_t *spf_request;
+SPF_response_t *spf_response = NULL;
 
-  spf_request = SPF_request_new(spf_server);
-  if (spf_request == NULL) {
-    *errmsg = US"SPF_request_new() failed";
-    return FAIL;
+if (!(spf_request = SPF_request_new(spf_server)))
+  {
+  *errmsg = US"SPF_request_new() failed";
+  return FAIL;
   }
 
-  if (SPF_request_set_ipv4_str(spf_request, CS filename)) {
+#if HAVE_IPV6
+switch (string_is_ip_address(filename, NULL))
+  {
+  case 4:
+#endif
+    if (!SPF_request_set_ipv4_str(spf_request, CS filename))
+      break;
+    *errmsg = string_sprintf("invalid IPv4 address '%s'", filename);
+    return FAIL;
+#if HAVE_IPV6
+
+  case 6:
+    if (!SPF_request_set_ipv6_str(spf_request, CS filename))
+      break;
+    *errmsg = string_sprintf("invalid IPv6 address '%s'", filename);
+    return FAIL;
+
+  default:
     *errmsg = string_sprintf("invalid IP address '%s'", filename);
     return FAIL;
   }
-  if (SPF_request_set_env_from(spf_request, CS keystring)) {
-    *errmsg = string_sprintf("invalid envelope from address '%s'", keystring);
-    return FAIL;
-  }
+#endif
 
-  SPF_request_query_mailfrom(spf_request, &spf_response);
-  *result = string_copy(US SPF_strresult(SPF_response_result(spf_response)));
-  SPF_response_free(spf_response);
-  SPF_request_free(spf_request);
-  return OK;
+if (SPF_request_set_env_from(spf_request, CS keystring))
+    {
+  *errmsg = string_sprintf("invalid envelope from address '%s'", keystring);
+  return FAIL;
+}
+
+SPF_request_query_mailfrom(spf_request, &spf_response);
+*result = string_copy(US SPF_strresult(SPF_response_result(spf_response)));
+SPF_response_free(spf_response);
+SPF_request_free(spf_request);
+return OK;
 }
 
 

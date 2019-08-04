@@ -31,6 +31,8 @@ Version 4.93
  9. Router variables, $r_... settable from router options and usable in routers
     and transports.
 
+10. The spf lookup now supports IPv6.
+
 
 Version 4.92
 --------------
