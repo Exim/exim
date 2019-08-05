@@ -4845,7 +4845,7 @@ while (done <= 0)
       }
     smtp_code = US"220";   /* Default status code */
 
-    smtp_printf("%s XCLIENT success\r\n", smtp_code);
+    smtp_printf("%s XCLIENT success\r\n", FALSE, smtp_code);
 
     break; /* XCLIENT */
 
