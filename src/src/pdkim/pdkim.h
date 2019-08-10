@@ -74,9 +74,6 @@
 /* Some parameter values */
 #define PDKIM_QUERYMETHOD_DNS_TXT 0
 
-/*#define PDKIM_ALGO_RSA_SHA256     0 */
-/*#define PDKIM_ALGO_RSA_SHA1       1 */
-
 #define PDKIM_CANON_SIMPLE        0
 #define PDKIM_CANON_RELAXED       1
 
@@ -142,7 +139,7 @@ typedef struct pdkim_signature {
   /* (v=) The version, as an integer. Currently, always "1" */
   int version;
 
-  /* (a=) The signature algorithm. Either PDKIM_ALGO_RSA_SHA256 */
+  /* (a=) The signature algorithm. */
   int keytype;	/* pdkim_keytypes index */
   int hashtype;	/* pdkim_hashes index */
 

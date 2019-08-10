@@ -33,6 +33,8 @@ Version 4.93
 
 10. The spf lookup now supports IPv6.
 
+11. Main options for DKIM verify to filter hash and key types.
+
 
 Version 4.92
 --------------

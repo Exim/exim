@@ -1,0 +1,30 @@
+# DKIM verify, multiple and dkim_verify_minimal
+# This relies on multiple-signing working (4545 tests that)
+#
+# Verify both
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+exim -DSELECTOR=sel:sed -DOPT=From: -odf a@test.ex
+From: nobody@example.com
+
+content
+****
+#
+millisleep 500
+killdaemon
+#
+#
+# Verify only EC sig
+exim -bd -DSERVER=server -DFILTER=y -oX PORT_D
+****
+#
+exim -DSELECTOR=sel:sed -DOPT=From: -odf b@test.ex
+From: nobody@example.com
+
+content
+****
+#
+millisleep 500
+killdaemon
+no_msglog_check

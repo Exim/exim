@@ -1,0 +1,28 @@
+# Exim test configuration 4509
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+
+log_selector = +dkim_verbose
+
+# No sha1 !
+dkim_verify_hashes = sha256 : sha512
+
+queue_only
+queue_run_in_order
+
+
+begin acl
+
+check_data:
+  accept logwrite = ${authresults {$primary_hostname}}
+
+# End

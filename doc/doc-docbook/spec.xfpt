@@ -14347,7 +14347,9 @@ listed in more than one group.
 See also the &'Policy controls'& section above.
 
 .table2
-.row &%dkim_verify_signers%&         "DKIM domain for which DKIM ACL is run"
+.row &%dkim_verify_hashes%&          "DKIM hash methods accepted for signatures"
+.row &%dkim_verify_keytypes%&        "DKIM key types accepted for signatures"
+.row &%dkim_verify_signers%&         "DKIM domains for which DKIM ACL is run"
 .row &%host_lookup%&                 "host name looked up for these hosts"
 .row &%host_lookup_order%&           "order of DNS and local name lookups"
 .row &%recipient_unqualified_hosts%& "may send unqualified recipients"
@@ -15091,6 +15093,27 @@ that are listed in &%local_interfaces%&, data for the &%manualroute%& router,
 etc. are ignored. If IP literals are enabled, the &(ipliteral)& router declines
 to handle IPv6 literal addresses.
 
+
+.new
+.option dkim_verify_hashes main "string list" "sha256 : sha512 : sha1"
+.cindex DKIM "selecting signature algorithms"
+This option gives a list of hash types which are acceptable in signatures,
+and an order of processing.
+Signatures with algorithms not in the list will be ignored.
+
+Note that the presence of sha1 violates RFC 8301.
+Signatures using the rsa-sha1 are however (as of writing) still common.
+The default inclusion of sha1 may be dropped in a future release.
+
+.option dkim_verify_keytypes main "string list" "ed25519 : rsa"
+This option gives a list of key types which are acceptable in signatures,
+and an order of processing.
+Signatures with algorithms not in the list will be ignored.
+
+.option dkim_verify_minimal main boolean false
+If set to true, verification of signatures will terminate after the
+first success.
+.wen
 
 .option dkim_verify_signers main "domain list&!!" $dkim_signers
 .cindex DKIM "controlling calls to the ACL"
@@ -39913,15 +39936,28 @@ RFC 6376 lists these tags as RECOMMENDED.
 
 Verification of DKIM signatures in SMTP incoming email is done for all
 messages for which an ACL control &%dkim_disable_verify%& has not been set.
+.new
+.cindex DKIM "selecting signature algorithms"
+Individual classes of signature algorithm can be ignored by changing
+the main options &%dkim_verify_hashes%& or &%dkim_verify_keytypes%&.
+The &%dkim_verify_minimal%& option can be set to cease verification
+processing for a message once the first passing signature is found.
+.wen
+
 .cindex authentication "expansion item"
 Performing verification sets up information used by the
 &$authresults$& expansion item.
 
-The results of that verification are then made available to the
+.new
+For most purposes the default option settings suffice and the remainder
+of this section can be ignored.
+.wen
+
+The results of verification are made available to the
 &%acl_smtp_dkim%& ACL, which can examine and modify them.
-By default, this ACL is called once for each
-syntactically(!) correct signature in the incoming message.
 A missing ACL definition defaults to accept.
+By default, the ACL is called once for each
+syntactically(!) correct signature in the incoming message.
 If any ACL call does not accept, the message is not accepted.
 If a cutthrough delivery was in progress for the message, that is
 summarily dropped (having wasted the transmission effort).
@@ -39932,11 +39968,11 @@ containing the signature status and its details are set up during the
 runtime of the ACL.
 
 Calling the ACL only for existing signatures is not sufficient to build
-more advanced policies. For that reason, the global option
-&%dkim_verify_signers%&, and a global expansion variable
+more advanced policies. For that reason, the main option
+&%dkim_verify_signers%&, and an expansion variable
 &%$dkim_signers%& exist.
 
-The global option &%dkim_verify_signers%& can be set to a colon-separated
+The main option &%dkim_verify_signers%& can be set to a colon-separated
 list of DKIM domains or identities for which the ACL &%acl_smtp_dkim%& is
 called. It is expanded when the message has been received. At this point,
 the expansion variable &%$dkim_signers%& already contains a colon-separated
@@ -39974,7 +40010,7 @@ If multiple signatures match a domain (or identity), the ACL is called once
 for each matching signature.
 
 
-Inside the &%acl_smtp_dkim%&, the following expansion variables are
+Inside the DKIM ACL, the following expansion variables are
 available (from most to least important):
 
 
@@ -40068,8 +40104,12 @@ DKIM signatures identified as having been signed with historic
 algorithms (currently, rsa-sha1) have permanently failed evaluation
 .endd
 
-To enforce this you must have a DKIM ACL which checks this variable
-and overwrites the &$dkim_verify_status$& variable as discussed above.
+To enforce this you must either have a DKIM ACL which checks this variable
+and overwrites the &$dkim_verify_status$& variable as discussed above,
+.new
+or have set the main option &%dkim_verify_hashes%& to exclude
+processing of such signatures.
+.wen
 
 .vitem &%$dkim_canon_body%&
 The body canonicalization method. One of 'relaxed' or 'simple'.

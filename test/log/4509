@@ -1,0 +1,5 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-0005vi-00 Authentication-Results: myhost.test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net

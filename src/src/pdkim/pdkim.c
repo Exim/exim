@@ -121,6 +121,14 @@ return string_sprintf("%s-%s",
 }
 
 
+static int
+pdkim_keyname_to_keytype(const uschar * s)
+{
+for (int i = 0; i < nelem(pdkim_keytypes); i++)
+  if (Ustrcmp(s, pdkim_keytypes[i]) == 0) return i;
+return -1;
+}
+
 int
 pdkim_hashname_to_hashtype(const uschar * s, unsigned len)
 {
@@ -561,9 +569,7 @@ for (uschar * p = raw_hdr; ; p++)
 	    uschar * elem;
 
 	    if ((elem = string_nextinlist(&list, &sep, NULL, 0)))
-	      for (int i = 0; i < nelem(pdkim_keytypes); i++)
-		if (Ustrcmp(elem, pdkim_keytypes[i]) == 0)
-		  { sig->keytype = i; break; }
+	      sig->keytype = pdkim_keyname_to_keytype(elem);
 	    if ((elem = string_nextinlist(&list, &sep, NULL, 0)))
 	      for (int i = 0; i < nelem(pdkim_hashes); i++)
 		if (Ustrcmp(elem, pdkim_hashes[i].dkim_hashname) == 0)
@@ -1411,16 +1417,13 @@ time we do not have a signature so we must interpret the pubkey k= tag
 instead.  Assume writing on the sig is ok in that case. */
 
 if (sig->keytype < 0)
-  {
-  for(int i = 0; i < nelem(pdkim_keytypes); i++)
-    if (Ustrcmp(p->keytype, pdkim_keytypes[i]) == 0)
-      { sig->keytype = i; goto k_ok; }
-  DEBUG(D_acl) debug_printf("verify_init: unhandled keytype %s\n", p->keytype);
-  sig->verify_status =      PDKIM_VERIFY_INVALID;
-  sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
-  return NULL;
-  }
-k_ok:
+  if ((sig->keytype = pdkim_keyname_to_keytype(p->keytype)) < 0)
+    {
+    DEBUG(D_acl) debug_printf("verify_init: unhandled keytype %s\n", p->keytype);
+    sig->verify_status =      PDKIM_VERIFY_INVALID;
+    sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_IMPORT;
+    return NULL;
+    }
 
 if (sig->keytype == KEYTYPE_ED25519)
   check_bare_ed25519_pubkey(p);
@@ -1437,6 +1440,61 @@ if ((*errstr = exim_dkim_verify_init(&p->key,
 
 vctx->keytype = sig->keytype;
 return p;
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Sort and filter the sigs developed from the message */
+
+static pdkim_signature *
+sort_sig_methods(pdkim_signature * siglist)
+{
+pdkim_signature * yield, ** ss;
+const uschar * prefs;
+uschar * ele;
+int sep;
+
+if (!siglist) return NULL;
+
+/* first select in order of hashtypes */
+DEBUG(D_acl) debug_printf("PDKIM: dkim_verify_hashes   '%s'\n", dkim_verify_hashes);
+for (prefs = dkim_verify_hashes, sep = 0, yield = NULL, ss = &yield;
+     ele = string_nextinlist(&prefs, &sep, NULL, 0); )
+  {
+  int i = pdkim_hashname_to_hashtype(CUS ele, 0);
+  for (pdkim_signature * s = siglist, * next, ** prev = &siglist; s;
+       s = next)
+    {
+    next = s->next;
+    if (s->hashtype == i)
+      { *prev = next; s->next = NULL; *ss = s; ss = &s->next; }
+    else
+      prev = &s->next;
+    }
+  }
+
+/* then in order of keytypes */
+siglist = yield;
+DEBUG(D_acl) debug_printf("PDKIM: dkim_verify_keytypes '%s'\n", dkim_verify_keytypes);
+for (prefs = dkim_verify_keytypes, sep = 0, yield = NULL, ss = &yield;
+     ele = string_nextinlist(&prefs, &sep, NULL, 0); )
+  {
+  int i = pdkim_keyname_to_keytype(CUS ele);
+  for (pdkim_signature * s = siglist, * next, ** prev = &siglist; s;
+       s = next)
+    {
+    next = s->next;
+    if (s->keytype == i)
+      { *prev = next; s->next = NULL; *ss = s; ss = &s->next; }
+    else
+      prev = &s->next;
+    }
+  }
+
+DEBUG(D_acl) for (pdkim_signature * s = yield; s; s = s->next)
+  debug_printf(" retain d=%s s=%s a=%s\n",
+    s->domain, s->selector, dkim_sig_to_a_tag(s));
+return yield;
 }
 
 
@@ -1472,6 +1530,11 @@ have a hash to do for ARC. */
 
 pdkim_finish_bodyhash(ctx);
 
+/* Sort and filter the recived signatures */
+
+if (!(ctx->flags & PDKIM_MODE_SIGN))
+  ctx->sig = sort_sig_methods(ctx->sig);
+
 if (!ctx->sig)
   {
   DEBUG(D_acl) debug_printf("PDKIM: no signatures\n");
@@ -1496,7 +1559,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     }
 
   /*XXX The hash of the headers is needed for GCrypt (for which we can do RSA
-  suging only, as it happens) and for either GnuTLS and OpenSSL when we are
+  signing only, as it happens) and for either GnuTLS and OpenSSL when we are
   signing with EC (specifically, Ed25519).  The former is because the GCrypt
   signing operation is pure (does not do its own hash) so we must hash.  The
   latter is because we (stupidly, but this is what the IETF draft is saying)
@@ -1550,7 +1613,6 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
     /* Import private key, including the keytype which we need for building
     the signature header  */
 
-/*XXX extend for non-RSA algos */
     if ((*err = exim_dkim_signing_init(CUS sig->privkey, &sctx)))
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "signing_init: %s", *err);
@@ -1831,6 +1893,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
       {
       sig->verify_status = PDKIM_VERIFY_PASS;
       verify_pass = TRUE;
+      if (dkim_verify_minimal) break;
       }
 
 NEXT_VERIFY:
