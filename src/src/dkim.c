@@ -37,29 +37,28 @@ static const uschar * dkim_collect_error = NULL;
 
 
 
-/*XXX the caller only uses the first record if we return multiple.
+/* Look up the DKIM record in DNS for the given hostname.
+Will use the first found if there are multiple.
+The return string is tainted, having come from off-site.
 */
 
 uschar *
 dkim_exim_query_dns_txt(const uschar * name)
 {
-/*XXX need to always alloc the dnsa, from tainted mem.
-Then, we hope, the answers will be tainted */
-
-dns_answer dnsa;
+dns_answer * dnsa = store_get(sizeof(dns_answer), TRUE);	/* use tainted mem */
 dns_scan dnss;
 rmark reset_point = store_mark();
 gstring * g = NULL;
 
 lookup_dnssec_authenticated = NULL;
-if (dns_lookup(&dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
+if (dns_lookup(dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
   return NULL;	/*XXX better error detail?  logging? */
 
 /* Search for TXT record */
 
-for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
   if (rr->type == T_TXT)
     {
     int rr_offset = 0;
