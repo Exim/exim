@@ -65,9 +65,11 @@ if (!(spf_request = SPF_request_new(spf_server)))
 
 #if HAVE_IPV6
 switch (string_is_ip_address(filename, NULL))
+#else
+switch (4)
+#endif
   {
   case 4:
-#endif
     if (!SPF_request_set_ipv4_str(spf_request, CS filename))
       break;
     *errmsg = string_sprintf("invalid IPv4 address '%s'", filename);
@@ -83,8 +85,8 @@ switch (string_is_ip_address(filename, NULL))
   default:
     *errmsg = string_sprintf("invalid IP address '%s'", filename);
     return FAIL;
-  }
 #endif
+  }
 
 if (SPF_request_set_env_from(spf_request, CS keystring))
     {
