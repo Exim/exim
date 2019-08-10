@@ -41,7 +41,7 @@ static const uschar * dkim_collect_error = NULL;
 */
 
 uschar *
-dkim_exim_query_dns_txt(uschar * name)
+dkim_exim_query_dns_txt(const uschar * name)
 {
 /*XXX need to always alloc the dnsa, from tainted mem.
 Then, we hope, the answers will be tainted */

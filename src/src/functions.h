@@ -186,7 +186,7 @@ extern void    delivery_re_exec(int);
 
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
-extern uschar *dkim_exim_query_dns_txt(uschar *);
+extern uschar *dkim_exim_query_dns_txt(const uschar *);
 extern void    dkim_exim_sign_init(void);
 
 extern BOOL    dkim_transport_write_message(transport_ctx *,

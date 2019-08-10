@@ -1861,7 +1861,7 @@ return ctx->flags & PDKIM_MODE_SIGN  ||  verify_pass
 /* -------------------------------------------------------------------------- */
 
 DLLEXPORT pdkim_ctx *
-pdkim_init_verify(uschar * (*dns_txt_callback)(uschar *), BOOL dot_stuffing)
+pdkim_init_verify(uschar * (*dns_txt_callback)(const uschar *), BOOL dot_stuffing)
 {
 pdkim_ctx * ctx;
 
@@ -2018,7 +2018,7 @@ return b;
 
 void
 pdkim_init_context(pdkim_ctx * ctx, BOOL dot_stuffed,
-  uschar * (*dns_txt_callback)(uschar *))
+  uschar * (*dns_txt_callback)(const uschar *))
 {
 memset(ctx, 0, sizeof(pdkim_ctx));
 ctx->flags = dot_stuffed ? PDKIM_MODE_SIGN | PDKIM_DOT_TERM : PDKIM_MODE_SIGN;
