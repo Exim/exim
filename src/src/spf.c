@@ -39,15 +39,15 @@ static SPF_dns_rr_t *
 SPF_dns_exim_lookup(SPF_dns_server_t *spf_dns_server,
 const char *domain, ns_type rr_type, int should_cache)
 {
-dns_answer dnsa;
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 SPF_dns_rr_t * spfrr;
 
 DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup\n");
 
-if (dns_lookup(&dnsa, US domain, rr_type, NULL) == DNS_SUCCEED)
-  for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
-       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+if (dns_lookup(dnsa, US domain, rr_type, NULL) == DNS_SUCCEED)
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (  rr->type == rr_type
        && Ustrncmp(rr->data+1, "v=spf1", 6) == 0)
       {

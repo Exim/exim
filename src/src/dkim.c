@@ -45,7 +45,7 @@ The return string is tainted, having come from off-site.
 uschar *
 dkim_exim_query_dns_txt(const uschar * name)
 {
-dns_answer * dnsa = store_get(sizeof(dns_answer), TRUE);	/* use tainted mem */
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 rmark reset_point = store_mark();
 gstring * g = NULL;

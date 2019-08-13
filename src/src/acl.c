@@ -1310,7 +1310,7 @@ acl_verify_csa(const uschar *domain)
 tree_node *t;
 const uschar *found;
 int priority, weight, port;
-dns_answer dnsa;
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 dns_record *rr;
 int rc, type;
@@ -1364,7 +1364,7 @@ Ustrcpy(t->name, domain);
 /* Now we are ready to do the actual DNS lookup(s). */
 
 found = domain;
-switch (dns_special_lookup(&dnsa, domain, T_CSA, &found))
+switch (dns_special_lookup(dnsa, domain, T_CSA, &found))
   {
   /* If something bad happened (most commonly DNS_AGAIN), defer. */
 
@@ -1385,9 +1385,9 @@ switch (dns_special_lookup(&dnsa, domain, T_CSA, &found))
 
 /* Scan the reply for well-formed CSA SRV records. */
 
-for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_SRV)
   {
   const uschar * p = rr->data;
 
@@ -1427,7 +1427,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   client's IP address is listed as one of the SRV target addresses. Save the
   target hostname then break to scan the additional data for its addresses. */
 
-  (void)dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+  (void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, p,
     (DN_EXPAND_ARG4_TYPE)target, sizeof(target));
 
   DEBUG(D_acl) debug_printf_indent("CSA target is %s\n", target);
@@ -1452,7 +1452,7 @@ to the target. If the name server didn't return any additional data (e.g.
 because it does not fully support SRV records), we need to do another lookup
 to obtain the target addresses; otherwise we have a definitive result. */
 
-rc = acl_verify_csa_address(&dnsa, &dnss, RESET_ADDITIONAL, target);
+rc = acl_verify_csa_address(dnsa, &dnss, RESET_ADDITIONAL, target);
 if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
 
 /* The DNS lookup type corresponds to the IP version used by the client. */
@@ -1466,7 +1466,7 @@ else
 
 
 lookup_dnssec_authenticated = NULL;
-switch (dns_lookup(&dnsa, target, type, NULL))
+switch (dns_lookup(dnsa, target, type, NULL))
   {
   /* If something bad happened (most commonly DNS_AGAIN), defer. */
 
@@ -1476,7 +1476,7 @@ switch (dns_lookup(&dnsa, target, type, NULL))
   /* If the query succeeded, scan the addresses and return the result. */
 
   case DNS_SUCCEED:
-    rc = acl_verify_csa_address(&dnsa, &dnss, RESET_ANSWERS, target);
+    rc = acl_verify_csa_address(dnsa, &dnss, RESET_ANSWERS, target);
     if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
     /* else fall through */
 

@@ -850,6 +850,15 @@ return g;
 }
 
 /******************************************************************************/
+
+#define store_get_dns_answer() store_get_dns_answer_trc(CUS __FUNCTION__, __LINE__)
+
+static inline dns_answer *
+store_get_dns_answer_trc(const uschar * func, unsigned line)
+{
+return store_get_3(sizeof(dns_answer), TRUE, CCS func, line);  /* use tainted mem */
+}
+
 #endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */

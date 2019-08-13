@@ -145,13 +145,13 @@ const uschar *outsep = CUS"\n";
 const uschar *outsep2 = NULL;
 uschar *equals, *domain, *found;
 
+dns_answer * dnsa = store_get_dns_answer();
+dns_scan dnss;
+
 /* Because we're working in the search pool, we try to reclaim as much
 store as possible later, so we preallocate the result here */
 
 gstring * yield = string_get(256);
-
-dns_answer dnsa;
-dns_scan dnss;
 
 handle = handle;           /* Keep picky compilers happy */
 filename = filename;
@@ -349,18 +349,18 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
       {
       if (searchtype == T_ADDRESSES) searchtype = T_AAAA;
       else if (searchtype == T_AAAA) searchtype = T_A;
-      rc = dns_special_lookup(&dnsa, domain, searchtype, CUSS &found);
+      rc = dns_special_lookup(dnsa, domain, searchtype, CUSS &found);
       }
     else
 #endif
-      rc = dns_special_lookup(&dnsa, domain, type, CUSS &found);
+      rc = dns_special_lookup(dnsa, domain, type, CUSS &found);
 
     lookup_dnssec_authenticated = dnssec_mode==OK ? NULL
-      : dns_is_secure(&dnsa) ? US"yes" : US"no";
+      : dns_is_secure(dnsa) ? US"yes" : US"no";
 
     if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
     if (  rc != DNS_SUCCEED
-       || (dnssec_mode == DEFER && !dns_is_secure(&dnsa))
+       || (dnssec_mode == DEFER && !dns_is_secure(dnsa))
        )
       {
       if (defer_mode == DEFER)
@@ -377,15 +377,15 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
     /* Search the returned records */
 
-    for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
-         rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == searchtype)
+    for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+         rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == searchtype)
       {
       if (*do_cache > rr->ttl)
 	*do_cache = rr->ttl;
 
       if (type == T_A || type == T_AAAA || type == T_ADDRESSES)
         {
-        for (dns_address * da = dns_address_from_rr(&dnsa, rr); da; da = da->next)
+        for (dns_address * da = dns_address_from_rr(dnsa, rr); da; da = da->next)
           {
           if (yield->ptr) yield = string_catn(yield, outsep, 1);
           yield = string_cat(yield, da->address);
@@ -500,7 +500,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
         /* GETSHORT() has advanced the pointer to the target domain. */
 
-        rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+        rc = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, p,
           (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
 
         /* If an overlong response was received, the data will have been
@@ -521,7 +521,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	  p += rc;
 	  yield = string_catn(yield, outsep2, 1);
 
-	  rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+	  rc = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, p,
 	    (DN_EXPAND_ARG4_TYPE)s, sizeof(s));
 	  if (rc < 0)
 	    {

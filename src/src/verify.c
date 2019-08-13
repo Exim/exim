@@ -3371,7 +3371,7 @@ one_check_dnsbl(uschar *domain, uschar *domain_txt, uschar *keydomain,
   uschar *prepend, uschar *iplist, BOOL bitmask, int match_type,
   int defer_return)
 {
-dns_answer dnsa;
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 tree_node *t;
 dnsbl_cache_block *cb;
@@ -3424,7 +3424,7 @@ else
   /* Do the DNS lookup . */
 
   HDEBUG(D_dnsbl) debug_printf("new DNS lookup for %s\n", query);
-  cb->rc = dns_basic_lookup(&dnsa, query, T_A);
+  cb->rc = dns_basic_lookup(dnsa, query, T_A);
   cb->text_set = FALSE;
   cb->text = NULL;
   cb->rhs = NULL;
@@ -3444,11 +3444,11 @@ else
   if (cb->rc == DNS_SUCCEED)
     {
     dns_address ** addrp = &(cb->rhs);
-    for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
-         rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+         rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
       if (rr->type == T_A)
         {
-        dns_address *da = dns_address_from_rr(&dnsa, rr);
+        dns_address *da = dns_address_from_rr(dnsa, rr);
         if (da)
           {
           *addrp = da;
@@ -3596,9 +3596,9 @@ if (cb->rc == DNS_SUCCEED)
   if (!cb->text_set)
     {
     cb->text_set = TRUE;
-    if (dns_basic_lookup(&dnsa, query, T_TXT) == DNS_SUCCEED)
-      for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
-           rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    if (dns_basic_lookup(dnsa, query, T_TXT) == DNS_SUCCEED)
+      for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+           rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
         if (rr->type == T_TXT)
 	  {
 	  int len = (rr->data)[0];

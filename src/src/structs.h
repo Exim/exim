@@ -809,7 +809,7 @@ typedef struct {
 
 #ifdef SUPPORT_DANE
   BOOL dane:1;			/* connection must do dane */
-  dns_answer		tlsa_dnsa;
+  dns_answer		tlsa_dnsa;	/* strictly, this should use tainted mem */
 #endif
 } smtp_connect_args;
 

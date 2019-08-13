@@ -177,7 +177,7 @@ const uschar *lname = name;
 uschar *adds;
 uschar **alist;
 struct hostent *yield;
-dns_answer dnsa;
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 
 DEBUG(D_host_lookup)
@@ -231,7 +231,7 @@ if ((ipa = string_is_ip_address(lname, NULL)) != 0)
 else
   {
   int type = (af == AF_INET)? T_A:T_AAAA;
-  int rc = dns_lookup_timerwrap(&dnsa, lname, type, NULL);
+  int rc = dns_lookup_timerwrap(dnsa, lname, type, NULL);
   int count = 0;
 
   lookup_dnssec_authenticated = NULL;
@@ -246,9 +246,9 @@ else
     case DNS_FAIL:    *error_num = NO_RECOVERY; return NULL;
     }
 
-  for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
        rr;
-       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
+       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
     count++;
 
   yield = store_get(sizeof(struct hostent), FALSE);
@@ -261,13 +261,13 @@ else
   yield->h_length = alen;
   yield->h_addr_list = CSS alist;
 
-  for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
        rr;
-       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
+       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
     {
     int x[4];
     dns_address *da;
-    if (!(da = dns_address_from_rr(&dnsa, rr))) break;
+    if (!(da = dns_address_from_rr(dnsa, rr))) break;
     *alist++ = adds;
     for (int n = host_aton(da->address, x), i = 0; i < n; i++)
       {
@@ -1651,7 +1651,7 @@ uschar **aliases;
 uschar buffer[256];
 uschar *ordername;
 const uschar *list = host_lookup_order;
-dns_answer dnsa;
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 
 sender_host_dnssec = host_lookup_deferred = host_lookup_failed = FALSE;
@@ -1680,7 +1680,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
     {
     dns_init(FALSE, FALSE, FALSE);    /* dnssec ctrl by dns_dnssec_ok glbl */
     dns_build_reverse(sender_host_address, buffer);
-    rc = dns_lookup_timerwrap(&dnsa, buffer, T_PTR, NULL);
+    rc = dns_lookup_timerwrap(dnsa, buffer, T_PTR, NULL);
 
     /* The first record we come across is used for the name; others are
     considered to be aliases. We have to scan twice, in order to find out the
@@ -1695,16 +1695,16 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
       int count = 0;
       int old_pool = store_pool;
 
-      sender_host_dnssec = dns_is_secure(&dnsa);
+      sender_host_dnssec = dns_is_secure(dnsa);
       DEBUG(D_dns)
         debug_printf("Reverse DNS security status: %s\n",
             sender_host_dnssec ? "DNSSEC verified (AD)" : "unverified");
 
       store_pool = POOL_PERM;        /* Save names in permanent storage */
 
-      for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+      for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
            rr;
-           rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
+           rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
 	count++;
 
       /* Get store for the list of aliases. For compatibility with
@@ -1714,16 +1714,16 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
 
       /* Re-scan and extract the names */
 
-      for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+      for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
            rr;
-           rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
+           rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == T_PTR)
         {
         uschar * s = store_get(ssize, TRUE);	/* names are tainted */
 
         /* If an overlong response was received, the data will have been
         truncated and dn_expand may fail. */
 
-        if (dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen,
+        if (dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
              US (rr->data), (DN_EXPAND_ARG4_TYPE)(s), ssize) < 0)
           {
           log_write(0, LOG_MAIN, "host name alias list truncated for %s",
@@ -2309,17 +2309,17 @@ for (; i >= 0; i--)
   int type = types[i];
   int randoffset = i == (whichrrs & HOST_FIND_IPV4_FIRST ? 1 : 0)
     ? 500 : 0;  /* Ensures v6/4 sort order */
-  dns_answer dnsa;
+  dns_answer * dnsa = store_get_dns_answer();
   dns_scan dnss;
 
-  int rc = dns_lookup_timerwrap(&dnsa, host->name, type, fully_qualified_name);
+  int rc = dns_lookup_timerwrap(dnsa, host->name, type, fully_qualified_name);
   lookup_dnssec_authenticated = !dnssec_request ? NULL
-    : dns_is_secure(&dnsa) ? US"yes" : US"no";
+    : dns_is_secure(dnsa) ? US"yes" : US"no";
 
   DEBUG(D_dns)
     if (  (dnssec_request || dnssec_require)
-       && !dns_is_secure(&dnsa)
-       && dns_is_aa(&dnsa)
+       && !dns_is_secure(dnsa)
+       && dns_is_aa(dnsa)
        )
       debug_printf("DNS lookup of %.256s (A/AAAA) requested AD, but got AA\n", host->name);
 
@@ -2347,7 +2347,7 @@ for (; i >= 0; i--)
 
   if (dnssec_request)
     {
-    if (dns_is_secure(&dnsa))
+    if (dns_is_secure(dnsa))
       {
       DEBUG(D_host_lookup) debug_printf("%s A DNSSEC\n", host->name);
       if (host->dnssec == DS_UNK) /* set in host_find_bydns() */
@@ -2378,11 +2378,11 @@ for (; i >= 0; i--)
 
   fully_qualified_name = NULL;
 
-  for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
        rr;
-       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
+       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == type)
     {
-    dns_address * da = dns_address_from_rr(&dnsa, rr);
+    dns_address * da = dns_address_from_rr(dnsa, rr);
 
     DEBUG(D_host_lookup)
       if (!da) debug_printf("no addresses extracted from A6 RR for %s\n",
@@ -2544,7 +2544,7 @@ host_item *h, *last;
 int rc = DNS_FAIL;
 int ind_type = 0;
 int yield;
-dns_answer dnsa;
+dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 BOOL dnssec_require = dnssec_d
 		    && match_isinlist(host->name, CUSS &dnssec_d->require,
@@ -2586,18 +2586,18 @@ if (whichrrs & HOST_FIND_BY_SRV)
 
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup_timerwrap(&dnsa, temp_fully_qualified_name, ind_type,
+  rc = dns_lookup_timerwrap(dnsa, temp_fully_qualified_name, ind_type,
 	CUSS &temp_fully_qualified_name);
 
   DEBUG(D_dns)
     if ((dnssec_request || dnssec_require)
-	&& !dns_is_secure(&dnsa)
-	&& dns_is_aa(&dnsa))
+	&& !dns_is_secure(dnsa)
+	&& dns_is_aa(dnsa))
       debug_printf("DNS lookup of %.256s (SRV) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
     {
-    if (dns_is_secure(&dnsa))
+    if (dns_is_secure(dnsa))
       { dnssec = DS_YES; lookup_dnssec_authenticated = US"yes"; }
     else
       { dnssec = DS_NO; lookup_dnssec_authenticated = US"no"; }
@@ -2609,7 +2609,7 @@ if (whichrrs & HOST_FIND_BY_SRV)
   /* On DNS failures, we give the "try again" error unless the domain is
   listed as one for which we continue. */
 
-  if (rc == DNS_SUCCEED && dnssec_require && !dns_is_secure(&dnsa))
+  if (rc == DNS_SUCCEED && dnssec_require && !dns_is_secure(dnsa))
     {
     log_write(L_host_lookup_failed, LOG_MAIN,
 		"dnssec fail on SRV for %.256s", host->name);
@@ -2639,16 +2639,16 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
   ind_type = T_MX;
   dnssec = DS_UNK;
   lookup_dnssec_authenticated = NULL;
-  rc = dns_lookup_timerwrap(&dnsa, host->name, ind_type, fully_qualified_name);
+  rc = dns_lookup_timerwrap(dnsa, host->name, ind_type, fully_qualified_name);
 
   DEBUG(D_dns)
     if (  (dnssec_request || dnssec_require)
-       && !dns_is_secure(&dnsa)
-       && dns_is_aa(&dnsa))
+       && !dns_is_secure(dnsa)
+       && dns_is_aa(dnsa))
       debug_printf("DNS lookup of %.256s (MX) requested AD, but got AA\n", host->name);
 
   if (dnssec_request)
-    if (dns_is_secure(&dnsa))
+    if (dns_is_secure(dnsa))
       {
       DEBUG(D_host_lookup) debug_printf("%s MX DNSSEC\n", host->name);
       dnssec = DS_YES; lookup_dnssec_authenticated = US"yes";
@@ -2664,7 +2664,7 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
       yield = HOST_FIND_FAILED; goto out;
 
     case DNS_SUCCEED:
-      if (!dnssec_require || dns_is_secure(&dnsa))
+      if (!dnssec_require || dns_is_secure(dnsa))
 	break;
       DEBUG(D_host_lookup)
 	debug_printf("dnssec fail on MX for %.256s", host->name);
@@ -2758,9 +2758,9 @@ host which is not the primary hostname. */
 
 last = NULL;    /* Indicates that not even the first item is filled yet */
 
-for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
      rr;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)) if (rr->type == ind_type)
   {
   int precedence, weight;
   int port = PORT_NONE;
@@ -2785,7 +2785,7 @@ for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
 
   /* Get the name of the host pointed to. */
 
-  (void)dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, s,
+  (void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
     (DN_EXPAND_ARG4_TYPE)data, sizeof(data));
 
   /* Check that we haven't already got this host on the chain; if we have,
