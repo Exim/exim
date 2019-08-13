@@ -25,7 +25,8 @@ typedef struct spf_result_id {
 } spf_result_id;
 
 /* prototypes */
-BOOL spf_init(uschar *,uschar *);
+BOOL spf_init(void);
+BOOL spf_conn_init(uschar *, uschar *);
 int  spf_process(const uschar **, uschar *, int);
 
 #define SPF_PROCESS_NORMAL  0

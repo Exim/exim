@@ -432,7 +432,7 @@ testing.testing in helo_lookup_domains? no (end of list)
 sender_fullhost = (testing.testing) [10.0.0.5]
 sender_rcvhost = [10.0.0.5] (helo=testing.testing ident=CALLER)
 set_process_info: pppp handling incoming connection from (testing.testing) [10.0.0.5] U=CALLER
-spf_init: testing.testing 10.0.0.5
+spf_conn_init: testing.testing 10.0.0.5
 SPF_dns_exim_new
 spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
 spf_compile.c:1210   Debug: Compiling record v=spf1 

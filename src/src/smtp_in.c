@@ -4191,7 +4191,7 @@ while (done <= 0)
 
 #ifdef SUPPORT_SPF
       /* set up SPF context */
-      spf_init(sender_helo_name, sender_host_address);
+      spf_conn_init(sender_helo_name, sender_host_address);
 #endif
 
       /* Apply an ACL check if one is defined; afterwards, recheck

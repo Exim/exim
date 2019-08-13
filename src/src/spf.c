@@ -133,25 +133,18 @@ return spf_dns_server;
 
 
 
-/* spf_init sets up a context that can be re-used for several
-   messages on the same SMTP connection (that come from the
-   same host with the same HELO string).
-XXX the spf_server layer could usefully be separately init'd
-given that it sets up a dns cache.
 
-Return: Boolean success */
+/* Construct the SPF library stack.
+   Return: Boolean success.
+*/
 
 BOOL
-spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr)
+spf_init(void)
 {
-int debug = 0;
 SPF_dns_server_t * dc;
+int debug = 0;
 
-DEBUG(D_receive)
-  {
-  debug_printf("spf_init: %s %s\n", spf_helo_domain, spf_remote_addr);
-  debug = 1;
-  }
+DEBUG(D_receive) debug = 1;
 
 /* We insert our own DNS access layer rather than letting the spf library
 do it, so that our dns access path is used for debug tracing and for the
@@ -172,6 +165,24 @@ if (!(spf_server = SPF_server_new_dns(dc, debug)))
   DEBUG(D_receive) debug_printf("spf: SPF_server_new() failed.\n");
   return FALSE;
   }
+return TRUE;
+}
+
+
+/* Set up a context that can be re-used for several
+   messages on the same SMTP connection (that come from the
+   same host with the same HELO string).
+
+Return: Boolean success
+*/
+
+BOOL
+spf_conn_init(uschar * spf_helo_domain, uschar * spf_remote_addr)
+{
+DEBUG(D_receive)
+  debug_printf("spf_conn_init: %s %s\n", spf_helo_domain, spf_remote_addr);
+
+if (!spf_server && !spf_init()) return FALSE;
 
 if (SPF_server_set_rec_dom(spf_server, CS primary_hostname))
   {

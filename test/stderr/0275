@@ -361,7 +361,7 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [127.0.0.1]
 sender_rcvhost = [127.0.0.1] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [127.0.0.1]
-spf_init: test 127.0.0.1
+spf_conn_init: test 127.0.0.1
 SPF_dns_exim_new
 spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
 spf_compile.c:1210   Debug: Compiling record v=spf1 
