@@ -3,6 +3,7 @@
 *************************************************/
 /* Experimental DMARC support.
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
+   Copyright (c) The Exim Maintainers 2019
    License: GPL */
 
 /* Portions Copyright (c) 2012, 2013, The Trusted Domain Project;
@@ -203,6 +204,25 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
     }
 }
 
+
+/* Look up a DNS dmarc record for the given domain.  Return it or NULL */
+
+static uschar *
+dmarc_dns_lookup(uschar * dom)
+{
+dns_answer * dnsa = store_get_dns_answer();
+dns_scan dnss;
+int rc = dns_lookup(dnsa, string_sprintf("_dmarc.%s", dom), T_TXT, NULL);
+
+if (rc == DNS_SUCCEED)
+  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+    if (rr->type == T_TXT && rr->size > 3)
+      return string_copyn(US rr->data, rr->size);
+return NULL;
+}
+
+
 /* dmarc_process adds the envelope sender address to the existing
 context (if any), retrieves the result, sets up expansion
 strings and evaluates the condition outcome. */
@@ -214,6 +234,7 @@ int sr, origin;             /* used in SPF section */
 int dmarc_spf_result  = 0;  /* stores spf into dmarc conn ctx */
 int tmp_ans, c;
 pdkim_signature * sig = dkim_signatures;
+uschar * rr;
 BOOL has_dmarc_record = TRUE;
 u_char **ruf; /* forensic report addressees, if called for */
 
@@ -358,7 +379,15 @@ if (!dmarc_abort && !sender_host_authenticated)
 					 sig->domain, dkim_ares_result);
     sig = sig->next;
     }
-  libdm_status = opendmarc_policy_query_dmarc(dmarc_pctx, US"");
+
+  /* Look up DMARC policy record in DNS.  We do this explicitly, rather than
+  letting the dmarc library do it with opendmarc_policy_query_dmarc(), so that
+  our dns access path is used for debug tracing and for the testsuite
+  diversion. */
+
+  libdm_status = (rr = dmarc_dns_lookup(header_from_sender))
+    ? opendmarc_policy_store_dmarc(dmarc_pctx, rr, header_from_sender, NULL)
+    : DMARC_DNS_ERROR_NO_RECORD;
   switch (libdm_status)
     {
     case DMARC_DNS_ERROR_NXDOMAIN:
