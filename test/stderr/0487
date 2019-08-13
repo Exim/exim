@@ -19,6 +19,10 @@ LOG: smtp_connection MAIN
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo x.y
+spf_init: x.y NULL
+SPF_dns_exim_new
+spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
+spf_compile.c:1210   Debug: Compiling record v=spf1 
  in dsn_advertise_hosts? no (option unset)
  in pipelining_advertise_hosts? yes (matched "*")
  in chunking_advertise_hosts? no (end of list)

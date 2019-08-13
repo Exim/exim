@@ -18,6 +18,10 @@
 
 example.com.     NS      exim.example.com.
 
+; The real example.com has an SPF record; duplicate that here
+
+example.com.	TXT     v=spf1 -all
+
 ; Alias A record for the local host, under the name "server1"
 
 server1     A       HOSTIPV4

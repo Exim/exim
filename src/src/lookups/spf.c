@@ -32,15 +32,30 @@ static void dummy(int x) { dummy2(x-1); }
 #include <spf2/spf_dns_resolv.h>
 #include <spf2/spf_dns_cache.h>
 
+extern SPF_dns_server_t * SPF_dns_exim_new(int);
+
+
 static void *
 spf_open(uschar *filename, uschar **errmsg)
 {
-SPF_server_t *spf_server;
-if ((spf_server = SPF_server_new(SPF_DNS_CACHE, 0)))
-  return (void *) spf_server;
-*errmsg = US"SPF_server_new() failed";
-return NULL;
+SPF_dns_server_t * dc;
+SPF_server_t *spf_server = NULL;
+int debug = 0;
+
+DEBUG(D_lookup) debug = 1;
+
+if ((dc = SPF_dns_exim_new(debug)))
+  if ((dc = SPF_dns_cache_new(dc, NULL, debug, 8)))
+    spf_server = SPF_server_new_dns(dc, debug);
+
+if (!spf_server)
+  {
+  *errmsg = US"SPF_dns_exim_nnew() failed";
+  return NULL;
+  }
+return (void *) spf_server;
 }
+
 
 static void
 spf_close(void *handle)

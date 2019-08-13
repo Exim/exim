@@ -68,6 +68,10 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = ([V4NET.2.3.4]) [V4NET.2.3.4]
 sender_rcvhost = [V4NET.2.3.4]
 set_process_info: pppp handling incoming connection from ([V4NET.2.3.4]) [V4NET.2.3.4]
+spf_init: [V4NET.2.3.4] V4NET.2.3.4
+SPF_dns_exim_new
+spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
+spf_compile.c:1210   Debug: Compiling record v=spf1 
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)
@@ -142,6 +146,10 @@ SMTP<< EHLO [V4NET.2.3.4]
 sender_fullhost = host.name.tld [V4NET.2.3.4]
 sender_rcvhost = host.name.tld ([V4NET.2.3.4])
 set_process_info: pppp handling incoming connection from host.name.tld [V4NET.2.3.4]
+spf_init: [V4NET.2.3.4] V4NET.2.3.4
+SPF_dns_exim_new
+spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
+spf_compile.c:1210   Debug: Compiling record v=spf1 
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)

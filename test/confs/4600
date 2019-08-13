@@ -20,7 +20,7 @@ check_rcpt:
 		logwrite =	${authresults {$primary_hostname}}
 
   accept	condition =	${if eq {$received_port}{PORT_S}}
-		spf =		pass : softfail : neutral
+		spf =		pass : softfail : neutral : none
 		logwrite =	spf_result         $spf_result
 		logwrite =	spf_header_comment $spf_header_comment
 		logwrite =	spf_smtp_comment   $spf_smtp_comment

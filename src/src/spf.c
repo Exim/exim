@@ -2,10 +2,10 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Experimental SPF support.
+/* SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2014
    License: GPL
-   Copyright (c) The Exim Maintainers 2015 - 2018
+   Copyright (c) The Exim Maintainers 2015 - 2019
 */
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
@@ -31,19 +31,143 @@ SPF_request_t   *spf_request = NULL;
 SPF_response_t  *spf_response = NULL;
 SPF_response_t  *spf_response_2mx = NULL;
 
+SPF_dns_rr_t  * spf_nxdomain = NULL;
+
+
+
+static SPF_dns_rr_t *
+SPF_dns_exim_lookup(SPF_dns_server_t *spf_dns_server,
+const char *domain, ns_type rr_type, int should_cache)
+{
+dns_answer dnsa;
+dns_scan dnss;
+SPF_dns_rr_t * spfrr;
+
+DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup\n");
+
+if (dns_lookup(&dnsa, US domain, rr_type, NULL) == DNS_SUCCEED)
+  for (dns_record * rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS); rr;
+       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    if (  rr->type == rr_type
+       && Ustrncmp(rr->data+1, "v=spf1", 6) == 0)
+      {
+      gstring * g = NULL;
+      uschar chunk_len;
+      uschar * s;
+      SPF_dns_rr_t srr = {
+	.domain = CS rr->name,			/* query information */
+	.domain_buf_len = DNS_MAXNAME,
+	.rr_type = rr->type,
+
+	.num_rr = 1,				/* answer information */
+	.rr = NULL,
+	.rr_buf_len = 0,
+	.rr_buf_num = 0,
+	.ttl = rr->ttl,
+	.utc_ttl = 0,
+	.herrno = NETDB_SUCCESS,
+
+	.hook = NULL,				/* misc information */
+	.source = spf_dns_server
+      };
+
+      for (int off = 0; off < rr->size; off += chunk_len)
+	{
+	chunk_len = (rr->data)[off++];
+	g = string_catn(g, US ((rr->data)+off), chunk_len);
+	}
+      if (!g)
+	{
+	HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
+	  "empty name: treated as non-existent host name\n");
+	continue;
+	}
+      gstring_release_unused(g);
+      s = string_copy_malloc(string_from_gstring(g));
+      srr.rr = (void *) &s;
+
+      /* spfrr->rr must have been malloc()d for this */
+      SPF_dns_rr_dup(&spfrr, &srr);
+
+      return spfrr;
+      }
+
+SPF_dns_rr_dup(&spfrr, spf_nxdomain);
+return spfrr;
+}
+
+
+
+SPF_dns_server_t *
+SPF_dns_exim_new(int debug)
+{
+SPF_dns_server_t *spf_dns_server;
+
+DEBUG(D_receive) debug_printf("SPF_dns_exim_new\n");
+
+if (!(spf_dns_server = malloc(sizeof(SPF_dns_server_t))))
+  return NULL;
+memset(spf_dns_server, 0, sizeof(SPF_dns_server_t));
+
+spf_dns_server->destroy      = NULL;
+spf_dns_server->lookup       = SPF_dns_exim_lookup;
+spf_dns_server->get_spf      = NULL;
+spf_dns_server->get_exp      = NULL;
+spf_dns_server->add_cache    = NULL;
+spf_dns_server->layer_below  = NULL;
+spf_dns_server->name         = "exim";
+spf_dns_server->debug        = debug;
+
+/* XXX This might have to return NO_DATA sometimes. */
+
+spf_nxdomain = SPF_dns_rr_new_init(spf_dns_server,
+  "", ns_t_any, 24 * 60 * 60, HOST_NOT_FOUND);
+if (!spf_nxdomain)
+  {
+  free(spf_dns_server);
+  return NULL;
+  }
+
+return spf_dns_server;
+}
+
+
 
 /* spf_init sets up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
-   same host with the same HELO string)
+   same host with the same HELO string).
+XXX the spf_server layer could usefully be separately init'd
+given that it sets up a dns cache.
 
 Return: Boolean success */
 
 BOOL
 spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr)
 {
-spf_server = SPF_server_new(SPF_DNS_CACHE, 0);
+int debug = 0;
+SPF_dns_server_t * dc;
 
-if (!spf_server)
+DEBUG(D_receive)
+  {
+  debug_printf("spf_init: %s %s\n", spf_helo_domain, spf_remote_addr);
+  debug = 1;
+  }
+
+/* We insert our own DNS access layer rather than letting the spf library
+do it, so that our dns access path is used for debug tracing and for the
+testsuite. */
+
+if (!(dc = SPF_dns_exim_new(debug)))
+  {
+  DEBUG(D_receive) debug_printf("spf: SPF_dns_exim_new() failed\n");
+  return FALSE;
+  }
+if (!(dc = SPF_dns_cache_new(dc, NULL, debug, 8)))
+  {
+  DEBUG(D_receive) debug_printf("spf: SPF_dns_cache_new() failed\n");
+  return FALSE;
+  }
+if (!(spf_server = SPF_server_new_dns(dc, debug)))
   {
   DEBUG(D_receive) debug_printf("spf: SPF_server_new() failed.\n");
   return FALSE;
@@ -97,6 +221,8 @@ int sep = 0;
 const uschar *list = *listptr;
 uschar *spf_result_id;
 int rc = SPF_RESULT_PERMERROR;
+
+DEBUG(D_receive) debug_printf("spf_process\n");
 
 if (!(spf_server && spf_request))
   /* no global context, assume temp error and skip to evaluation */

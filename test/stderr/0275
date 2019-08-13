@@ -361,6 +361,10 @@ test in helo_lookup_domains? no (end of list)
 sender_fullhost = (test) [127.0.0.1]
 sender_rcvhost = [127.0.0.1] (helo=test)
 set_process_info: pppp handling incoming connection from (test) [127.0.0.1]
+spf_init: test 127.0.0.1
+SPF_dns_exim_new
+spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
+spf_compile.c:1210   Debug: Compiling record v=spf1 
 SMTP>> 250 myhost.test.ex Hello test [127.0.0.1]
 SMTP<< MAIL FROM:<test@test.ex>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
