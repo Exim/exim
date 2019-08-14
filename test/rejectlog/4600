@@ -1,0 +1,4 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 H=(testclient) [ip4.ip4.ip4.ip4] F=<b@test.example.com> rejected RCPT <fred@test.ex>
+1999-03-02 09:44:33 H=(testclient) [127.0.0.1] F=<c@example.com> rejected RCPT <fred@test.ex>

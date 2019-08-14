@@ -1203,6 +1203,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms build with DKIM enabled
     next if /^PDKIM >> Body data for hash, canonicalized/;
 
+    # Not all platforms build with SPF enabled
+    next if /^(spf_conn_init|SPF_dns_exim_new|spf_compile\.c)/;
+
     # Not all platforms have sendfile support
     next if /^cannot use sendfile for body: no support$/;
 

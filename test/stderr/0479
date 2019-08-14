@@ -27,10 +27,6 @@ SMTP<< helo [1.2.3.4]
 sender_fullhost = ([1.2.3.4]) [1.2.3.4]
 sender_rcvhost = [1.2.3.4]
 set_process_info: pppp handling incoming connection from ([1.2.3.4]) [1.2.3.4]
-spf_conn_init: [1.2.3.4] 1.2.3.4
-SPF_dns_exim_new
-spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
-spf_compile.c:1210   Debug: Compiling record v=spf1 
 SMTP>> 250 the.local.host.name Hello [1.2.3.4] [1.2.3.4]
 SMTP<< mail from:<a@b>
 spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0

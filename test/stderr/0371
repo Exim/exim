@@ -35,10 +35,6 @@ something in helo_lookup_domains? no (end of list)
 sender_fullhost = (something) [V4NET.0.0.0]
 sender_rcvhost = [V4NET.0.0.0] (helo=something)
 set_process_info: pppp handling incoming connection from (something) [V4NET.0.0.0]
-spf_conn_init: something V4NET.0.0.0
-SPF_dns_exim_new
-spf_compile.c:523    Debug: Parsing macro starting at Please%_see%_http://www.openspf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}
-spf_compile.c:1210   Debug: Compiling record v=spf1 
 host in dsn_advertise_hosts? no (option unset)
 host in pipelining_advertise_hosts? yes (matched "*")
 host in chunking_advertise_hosts? no (end of list)
