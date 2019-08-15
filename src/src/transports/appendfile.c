@@ -773,10 +773,9 @@ int count = *countptr;
 struct dirent *ent;
 struct stat statbuf;
 
-dir = opendir(CS dirname);
-if (dir == NULL) return 0;
+if (!(dir = opendir(CS dirname))) return 0;
 
-while ((ent = readdir(dir)) != NULL)
+while ((ent = readdir(dir)))
   {
   uschar * path, * name = US ent->d_name;
 
@@ -815,13 +814,12 @@ while ((ent = readdir(dir)) != NULL)
     DEBUG(D_transport)
       debug_printf("check_dir_size: stat error %d for %s: %s\n", errno, path,
         strerror(errno));
-    continue;
     }
-
-  if ((statbuf.st_mode & S_IFMT) == S_IFREG)
-    sum += statbuf.st_size;
-  else if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
-    sum += check_dir_size(path, &count, regex);
+  else
+    if ((statbuf.st_mode & S_IFMT) == S_IFREG)
+      sum += statbuf.st_size / statbuf.st_nlink;
+    else if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
+      sum += check_dir_size(path, &count, regex);
   }
 
 closedir(dir);

@@ -22859,6 +22859,15 @@ sometimes add other information onto the ends of message filenames.
 
 Section &<<SECID136>>& contains further information.
 
+.new
+This option should not be used when other message-handling software
+may duplicate messages by making hardlinks to the files.  When that is done Exim
+will count the message size once for each filename, in contrast with the actual
+disk usage.  When the option is not set, calculating total usage requires
+a system-call per file to get the size; the number of links is then available also
+as is used to adjust the effective size.
+.wen
+
 
 .option quota_warn_message appendfile string&!! "see below"
 See below for the use of this option. If it is not set when
