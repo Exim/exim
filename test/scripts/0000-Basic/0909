@@ -1,0 +1,2 @@
+# Check for trailing backslash bug CVE-2019-XXX
+exim -Mset 1i2t1o-0000cD-CV -be '$tls_in_peerdn'

@@ -1,0 +1,4 @@
+keep_environment =
+tls_advertise_hosts =
+log_file_path = DIR/spool/log/%slog
+spool_directory = DIR/aux-fixed/0909

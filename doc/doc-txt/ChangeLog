@@ -4,6 +4,11 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.92.2
+-------------------
+
+HS/01 Handle trailing backslash gracefully. (CVE-2019-15846)
+
 
 Exim version 4.92.1
 -------------------

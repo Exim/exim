@@ -224,6 +224,8 @@ interpreted in strings.
 Arguments:
   pp       points a pointer to the initiating "\" in the string;
            the pointer gets updated to point to the final character
+           If the backslash is the last character in the string, it
+           is not interpreted.
 Returns:   the value of the character escape
 */
 
@@ -236,6 +238,7 @@ const uschar *hex_digits= CUS"0123456789abcdef";
 int ch;
 const uschar *p = *pp;
 ch = *(++p);
+if (ch == '\0') return **pp;
 if (isdigit(ch) && ch != '8' && ch != '9')
   {
   ch -= '0';
@@ -1210,8 +1213,8 @@ memcpy(g->s + p, s, count);
 g->ptr = p + count;
 return g;
 }
- 
- 
+
+
 gstring *
 string_cat(gstring *string, const uschar *s)
 {
