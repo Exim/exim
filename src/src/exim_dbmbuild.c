@@ -48,7 +48,7 @@ string_vformat_trc(gstring * g, const uschar * func, unsigned line,
   unsigned size_limit, unsigned flags, const char *format, va_list ap)
 { return NULL; }
 uschar *
-string_sprintf_trc(const char *, const uschar *, unsigned , ...)
+string_sprintf_trc(const char * a, const uschar * b, unsigned c, ...)
 { return NULL; }
 BOOL split_spool_directory;
 uschar * queue_name;
