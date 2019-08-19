@@ -1957,7 +1957,7 @@ if (sni_type != GNUTLS_NAME_DNS)
 /* We now have a UTF-8 string in sni_name */
 old_pool = store_pool;
 store_pool = POOL_PERM;
-state->received_sni = string_copyn(US sni_name, data_len);
+state->received_sni = string_copy_taint(US sni_name, TRUE);
 store_pool = old_pool;
 
 /* We set this one now so that variable expansions below will work */

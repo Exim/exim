@@ -1570,7 +1570,7 @@ DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", servername,
 
 /* Make the extension value available for expansion */
 store_pool = POOL_PERM;
-tls_in.sni = string_copy(US servername);
+tls_in.sni = string_copy_taint(US servername, TRUE);
 store_pool = old_pool;
 
 if (!reexpand_tls_files_for_sni)
