@@ -185,7 +185,7 @@ BOOL right = buffer[1] == 'Y';
 
 if (n < 5) return FALSE;    /* malformed line */
 buffer[n-1] = 0;            /* Remove \n */
-node = store_get(sizeof(tree_node) + n - 3, is_tainted(buffer));
+node = store_get(sizeof(tree_node) + n - 3, TRUE);	/* rcpt names tainted */
 *connect = node;
 Ustrcpy(node->name, buffer + 3);
 node->data.ptr = NULL;
@@ -708,7 +708,7 @@ host_build_sender_fullhost();
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver)
   debug_printf("sender_local=%d ident=%s\n", f.sender_local,
-    (sender_ident == NULL)? US"unset" : sender_ident);
+    sender_ident ? sender_ident : US"unset");
 #endif  /* COMPILE_UTILITY */
 
 /* We now have the tree of addresses NOT to deliver to, or a line
@@ -920,8 +920,8 @@ while ((n = fgetc(fp)) != EOF)
 
     if (h->type == htype_received) received_count++;
 
-    if (header_list == NULL) header_list = h;
-      else header_last->next = h;
+    if (header_list) header_last->next = h;
+    else header_list = h;
     header_last = h;
 
     for (i = 0; i < n; i++)
@@ -973,7 +973,7 @@ if (errno != 0)
 
   fclose(fp);
   errno = n;
-  return inheader? spool_read_hdrerror : spool_read_enverror;
+  return inheader ? spool_read_hdrerror : spool_read_enverror;
   }
 
 SPOOL_FORMAT_ERROR:

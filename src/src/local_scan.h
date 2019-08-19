@@ -120,7 +120,7 @@ typedef struct {
   void         *value;
 } optionlist;
 
-/*Structure for holding information about an envelope address. The errors_to
+/* Structure for holding information about an envelope address. The errors_to
 field is always NULL except for one_time aliases that had errors_to on the
 routers that generated them. */
 
