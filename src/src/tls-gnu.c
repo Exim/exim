@@ -1938,13 +1938,12 @@ uschar * dummy_errstr;
 rc = gnutls_server_name_get(session, sni_name, &data_len, &sni_type, 0);
 if (rc != GNUTLS_E_SUCCESS)
   {
-  DEBUG(D_tls) {
+  DEBUG(D_tls)
     if (rc == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
       debug_printf("TLS: no SNI presented in handshake.\n");
     else
       debug_printf("TLS failure: gnutls_server_name_get(): %s [%d]\n",
         gnutls_strerror(rc), rc);
-    }
   return 0;
   }
 
