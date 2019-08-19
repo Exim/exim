@@ -181,6 +181,8 @@ JH/38 Bug 1395: Teach the DNS negative-cache about TTL value from the SOA in
       receive process (eg. due to ACL delays) versus a short SOA value could
       surprise.
 
+HS/05 Handle trailing backslash gracefully. (CVE-2019-15846)
+
 
 Exim version 4.92
 -----------------

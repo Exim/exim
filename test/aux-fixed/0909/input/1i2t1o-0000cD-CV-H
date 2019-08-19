@@ -1,0 +1,29 @@
+1i2t1o-0000cD-CV-H
+Debian-exim 107 110
+<>
+1566979804 0
+-ident Debian-exim
+-received_protocol local
+-body_linecount 48
+-max_received_linelength 99
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-frozen 1566979805
+-localerror
+-tls_peerdn example.com\
+XX
+1
+root@schlittermann.de
+
+156P Received: from Debian-exim by muli.schlittermann.de with local (Exim 4.89)
+	id 1i2t1o-0000cD-CV
+	for root@schlittermann.de; Wed, 28 Aug 2019 10:10:04 +0200
+043  X-Failed-Recipients: root@schlittermann.de
+029  Auto-Submitted: auto-replied
+065F From: Mail Delivery System <Mailer-Daemon@muli.schlittermann.de>
+026T To: root@schlittermann.de
+100  Content-Type: multipart/report; report-type=delivery-status; boundary=1566979804-eximdsn-1242325065
+018  MIME-Version: 1.0
+059  Subject: Mail delivery failed: returning message to sender
+054I Message-Id: <E1i2t1o-0000cD-CV@muli.schlittermann.de>
+038  Date: Wed, 28 Aug 2019 10:10:04 +0200

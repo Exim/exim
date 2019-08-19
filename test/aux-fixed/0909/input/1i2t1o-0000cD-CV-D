@@ -1,0 +1,49 @@
+1i2t1o-0000cD-CV-D
+--1566979804-eximdsn-1242325065
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  root@schlittermann.de
+    (generated from root@muli.schlittermann.de)
+    host ssl.schlittermann.de [212.80.235.130]
+    SMTP error from remote mail server after pipelined MAIL FROM:<root@schlittermann.de> SIZE=1882:
+    550 Authenticated connections only.
+
+--1566979804-eximdsn-1242325065
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; muli.schlittermann.de
+
+Action: failed
+Final-Recipient: rfc822;root@schlittermann.de
+Status: 5.0.0
+Remote-MTA: dns; ssl.schlittermann.de
+Diagnostic-Code: smtp; 550 Authenticated connections only.
+
+--1566979804-eximdsn-1242325065
+Content-type: text/rfc822-headers
+
+Return-path: <root@schlittermann.de>
+Received: from root by muli.schlittermann.de with local (Exim 4.89)
+	(envelope-from <root@schlittermann.de>)
+	id 1i2t1l-0000c8-TF
+	for root@muli.schlittermann.de; Wed, 28 Aug 2019 10:10:02 +0200
+From: root@muli.schlittermann.de (Cron Daemon)
+To: root@muli.schlittermann.de
+Subject: Cron <root@muli>    /root/dbsync
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Cron-Env: <SHELL=/bin/sh>
+X-Cron-Env: <PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin>
+X-Cron-Env: <HOME=/root>
+X-Cron-Env: <LOGNAME=root>
+Message-Id: <E1i2t1l-0000c8-TF@muli.schlittermann.de>
+Date: Wed, 28 Aug 2019 10:10:01 +0200
+
+
+--1566979804-eximdsn-1242325065--
