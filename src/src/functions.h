@@ -474,13 +474,10 @@ extern int     spam(const uschar **);
 extern FILE   *spool_mbox(unsigned long *, const uschar *, uschar **);
 #endif
 extern void    spool_clear_header_globals(void);
-extern uschar *spool_dname(const uschar *, uschar *);
-extern uschar *spool_fname(const uschar *, const uschar *, const uschar *, const uschar *);
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern int     spool_open_datafile(uschar *);
 extern int     spool_open_temp(uschar *);
 extern int     spool_read_header(uschar *, BOOL, BOOL);
-extern uschar *spool_sname(const uschar *, uschar *);
 extern int     spool_write_header(uschar *, int, uschar **);
 extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);
@@ -859,6 +856,51 @@ store_get_dns_answer_trc(const uschar * func, unsigned line)
 return store_get_3(sizeof(dns_answer), TRUE, CCS func, line);  /* use tainted mem */
 }
 
+/******************************************************************************/
+/* Routines with knowledge of spool layout */
+
+# ifndef COMPILE_UTILITY
+static inline void
+spool_pname_buf(uschar * buf, int len)
+{
+snprintf(CS buf, len, "%s/%s/input", spool_directory, queue_name);
+}
+
+static inline uschar *
+spool_dname(const uschar * purpose, uschar * subdir)
+{
+return string_sprintf("%s/%s/%s/%s",
+	spool_directory, queue_name, purpose, subdir);
+}
+# endif
+
+static inline uschar *
+spool_sname(const uschar * purpose, uschar * subdir)
+{
+return string_sprintf("%s%s%s%s%s",
+		    queue_name, *queue_name ? "/" : "",
+		    purpose,
+		    *subdir ? "/" : "", subdir);
+}
+
+static inline uschar *
+spool_fname(const uschar * purpose, const uschar * subdir, const uschar * fname,
+       	const uschar * suffix)
+{
+return string_sprintf("%s/%s/%s/%s/%s%s",
+	spool_directory, queue_name, purpose, subdir, fname, suffix);
+}
+
+static void
+set_subdir_str(uschar * subdir_str, const uschar * name,
+	int search_sequence)
+{
+subdir_str[0] = split_spool_directory == (search_sequence == 0)
+       ? name[5] : '\0';
+subdir_str[1] = '\0';
+}
+
+/******************************************************************************/
 #endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */

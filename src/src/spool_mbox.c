@@ -117,7 +117,7 @@ if (!spool_mbox_ok)
     message_subdir[1] = '\0';
     for (int i = 0; i < 2; i++)
       {
-      message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
+      set_subdir_str(message_subdir, message_id, i);
       temp_string = spool_fname(US"input", message_subdir, message_id, US"-D");
       if ((l_data_file = Ufopen(temp_string, "rb"))) break;
       }

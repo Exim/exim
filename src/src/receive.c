@@ -2694,7 +2694,7 @@ it will fit. */
 to be the least significant base-62 digit of the time of arrival. Otherwise
 ensure that it is an empty string. */
 
-message_subdir[0] = split_spool_directory ? message_id[5] : 0;
+set_subdir_str(message_subdir, message_id, 0);
 
 /* Now that we have the message-id, if there is no message-id: header, generate
 one, but only for local (without suppress_local_fixups) or submission mode

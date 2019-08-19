@@ -60,7 +60,7 @@ dcc_process(uschar **listptr)
   uschar *override_client_ip  = NULL;
 
   /* from local_scan */
-  int i, j, k, c, retval, sockfd, resp, line;
+  int j, k, c, retval, sockfd, resp, line;
   unsigned int portnr;
   struct sockaddr_un  serv_addr;
   struct sockaddr_in  serv_addr_in;
@@ -72,7 +72,6 @@ dcc_process(uschar **listptr)
   uschar sendbuf[4096];
   uschar recvbuf[4096];
   uschar dcc_return_text[1024];
-  uschar message_subdir[2];
   struct header_line *dcchdr;
   uschar *dcc_acl_options;
   uschar dcc_acl_options_buffer[10];
@@ -98,11 +97,10 @@ dcc_process(uschar **listptr)
     return dcc_rc;
 
   /* open the spooled body */
-  message_subdir[1] = '\0';
-  for (i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++)
     {
-    message_subdir[0] = split_spool_directory == (i == 0) ? message_id[5] : 0;
-
+    uschar message_subdir[2];
+    set_subdir_str(message_subdir, message_id, i);
     if ((data_file = Ufopen(
 	    spool_fname(US"input", message_subdir, message_id, US"-D"),
 	    "rb")))
@@ -244,7 +242,7 @@ dcc_process(uschar **listptr)
   }
 
   /* let's send each of the recipients to dccifd */
-  for (i = 0; i < recipients_count; i++){
+  for (int i = 0; i < recipients_count; i++){
     DEBUG(D_acl)
       debug_printf("DCC: recipient = %s\n",recipients_list[i].address);
     if(Ustrlen(sendbuf) + Ustrlen(recipients_list[i].address) > sizeof(sendbuf))
@@ -281,7 +279,7 @@ dcc_process(uschar **listptr)
        j = 0;
        while(j < dcchdr->slen)
        {
-        for(i = 0; i < sizeof(sendbuf)-2; i++) {
+        for(int i = 0; i < sizeof(sendbuf)-2; i++) {
           sendbuf[i] = dcchdr->text[j];
           j++;
         }
@@ -359,12 +357,11 @@ dcc_process(uschar **listptr)
       debug_printf("DCC: Length of the output buffer is: %d\nDCC: Output buffer is:\nDCC: ------------\nDCC: %s\nDCC: -----------\n", c, recvbuf);
 
     /* Now let's read each character and see what we've got */
-    for(i = 0; i < c; i++) {
+    for(int i = 0; i < c; i++) {
       /* First check if we reached the end of the line and
        * then increment the line counter */
-      if(recvbuf[i] == '\n') {
+      if(recvbuf[i] == '\n')
         line++;
-      }
       else {
         /* The first character of the first line is the
          * overall response. If there's another character

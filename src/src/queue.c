@@ -12,39 +12,6 @@
 
 
 
-/* Routines with knowledge of spool layout */
-
-#ifndef COMPILE_UTILITY
-static void
-spool_pname_buf(uschar * buf, int len)
-{
-snprintf(CS buf, len, "%s/%s/input", spool_directory, queue_name);
-}
-
-uschar *
-spool_dname(const uschar * purpose, uschar * subdir)
-{
-return string_sprintf("%s/%s/%s/%s",
-	spool_directory, queue_name, purpose, subdir);
-}
-#endif
-
-uschar *
-spool_sname(const uschar * purpose, uschar * subdir)
-{
-return string_sprintf("%s%s%s%s%s",
-		    queue_name, *queue_name ? "/" : "",
-		    purpose,
-		    *subdir ? "/" : "", subdir);
-}
-
-uschar *
-spool_fname(const uschar * purpose, const uschar * subdir, const uschar * fname,
-       	const uschar * suffix)
-{
-return string_sprintf("%s/%s/%s/%s/%s%s",
-	spool_directory, queue_name, purpose, subdir, fname, suffix);
-}
 
 
 
@@ -1034,7 +1001,7 @@ if (action >= MSG_SHOW_BODY)
 
   for (int i = 0; i < 2; i++)
     {
-    message_subdir[0] = split_spool_directory == (i == 0) ? id[5] : 0;
+    set_subdir_str(message_subdir, id, i);
     if ((fd = Uopen(spool_fname(subdirectory, message_subdir, id, suffix),
 		    O_RDONLY, 0)) >= 0)
       break;

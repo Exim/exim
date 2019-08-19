@@ -1722,16 +1722,14 @@ while (1)
   for (i = msgq_count - 1; i >= 0; --i) if (msgq[i].bKeep)
     {
     uschar subdir[2];
+    uschar * mid = msgq[i].message_id;
 
-    subdir[0] = split_spool_directory ? msgq[i].message_id[5] : 0;
-    subdir[1] = 0;
-
-    if (Ustat(spool_fname(US"input", subdir, msgq[i].message_id, US"-D"),
-	      &statbuf) != 0)
+    set_subdir_str(subdir, mid, 0);
+    if (Ustat(spool_fname(US"input", subdir, mid, US"-D"), &statbuf) != 0)
       msgq[i].bKeep = FALSE;
-    else if (!oicf_func || oicf_func(msgq[i].message_id, oicf_data))
+    else if (!oicf_func || oicf_func(mid, oicf_data))
       {
-      Ustrcpy_nt(new_message_id, msgq[i].message_id);
+      Ustrcpy_nt(new_message_id, mid);
       msgq[i].bKeep = FALSE;
       bFound = TRUE;
       break;

@@ -52,7 +52,7 @@ for (int i = 0; i < 2; i++)
   uschar * fname;
   int save_errno;
 
-  message_subdir[0] = split_spool_directory == i ? '\0' : id[5];
+  set_subdir_str(message_subdir, id, i);
   fname = spool_fname(US"input", message_subdir, id, US"-D");
   DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
 
@@ -356,7 +356,7 @@ and unsplit directories, as for the data file above. */
 for (int n = 0; n < 2; n++)
   {
   if (!subdir_set)
-    message_subdir[0] = split_spool_directory == (n == 0) ? name[5] : 0;
+    set_subdir_str(message_subdir, name, n);
 
   if ((fp = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
     break;
