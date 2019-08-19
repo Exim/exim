@@ -3,6 +3,10 @@
 # The 127.0.0.1 source addr seems to be a builtin in the spf library; no dns lookup is done.
 # HOSTIPV4 does get a series of lookups (see server debug output to verify that).
 #
+# The libspf2 object stack is built with an exim-specific DNS lookup base object,
+# so the testsuite intercept to fakedns works.  Be careful of names and addresses
+# used, as nonhandled lookups are passed on to real DNS.
+#
 exim -bd -DSERVER=server -oX PORT_D:PORT_S:PORT_N
 ****
 client 127.0.0.1 PORT_S
