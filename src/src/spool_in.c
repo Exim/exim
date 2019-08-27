@@ -341,7 +341,6 @@ int n;
 int rcount = 0;
 long int uid, gid;
 BOOL inheader = FALSE;
-uschar *p;
 
 /* Reset all the global variables to their default values. However, there is
 one exception. DO NOT change the default value of dont_deliver, because it may
@@ -387,7 +386,8 @@ and the number of warning messages for delivery delays that have been sent. */
 
 if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 
-p = big_buffer + Ustrlen(big_buffer);
+{
+uschar *p = big_buffer + Ustrlen(big_buffer);
 while (p > big_buffer && isspace(p[-1])) p--;
 *p = 0;
 if (!isdigit(p[-1])) goto SPOOL_FORMAT_ERROR;
@@ -400,6 +400,7 @@ while (p > big_buffer && (isdigit(p[-1]) || '-' == p[-1])) p--;
 uid = Uatoi(p);
 if (p <= big_buffer || *(--p) != ' ') goto SPOOL_FORMAT_ERROR;
 *p = 0;
+}
 
 originator_login = string_copy(big_buffer);
 originator_uid = (uid_t)uid;
@@ -449,6 +450,7 @@ for (;;)
   int len;
   BOOL tainted;
   uschar * var;
+  const uschar * p;
 
   if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
@@ -659,7 +661,7 @@ for (;;)
     case 't':
     if (Ustrncmp(p, "ls_", 3) == 0)
       {
-      uschar * q = p + 3;
+      const uschar * q = p + 3;
       if (Ustrncmp(q, "certificate_verified", 20) == 0)
 	tls_in.certificate_verified = TRUE;
       else if (Ustrncmp(q, "cipher", 6) == 0)

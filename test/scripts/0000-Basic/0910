@@ -1,0 +1,2 @@
+# Properly handle lines after very long ones from -H file
+exim -Mset 1i3FVM-0008QX-DU -be '$body_linecount'

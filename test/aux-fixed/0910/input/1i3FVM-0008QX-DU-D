@@ -1,0 +1,49 @@
+1i3FVM-0008QX-DU-D
+--1567066204-eximdsn-2077839047
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  root@example.com
+    (generated from root@muli.example.com)
+    host ssl.example.com [212.80.235.130]
+    SMTP error from remote mail server after pipelined MAIL FROM:<root@example.com> SIZE=1882:
+    550 Authenticated connections only.
+
+--1567066204-eximdsn-2077839047
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; muli.example.com
+
+Action: failed
+Final-Recipient: rfc822;root@example.com
+Status: 5.0.0
+Remote-MTA: dns; ssl.example.com
+Diagnostic-Code: smtp; 550 Authenticated connections only.
+
+--1567066204-eximdsn-2077839047
+Content-type: text/rfc822-headers
+
+Return-path: <root@example.com>
+Received: from root by muli.example.com with local (Exim 4.89)
+	(envelope-from <root@example.com>)
+	id 1i3FVJ-0008QS-Ca
+	for root@muli.example.com; Thu, 29 Aug 2019 10:10:01 +0200
+From: root@muli.example.com (Cron Daemon)
+To: root@muli.example.com
+Subject: Cron <root@muli>    /root/dbsync
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Cron-Env: <SHELL=/bin/sh>
+X-Cron-Env: <PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin>
+X-Cron-Env: <HOME=/root>
+X-Cron-Env: <LOGNAME=root>
+Message-Id: <E1i3FVJ-0008QS-Ca@muli.example.com>
+Date: Thu, 29 Aug 2019 10:10:01 +0200
+
+
+--1567066204-eximdsn-2077839047--

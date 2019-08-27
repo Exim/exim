@@ -17,6 +17,9 @@ JH/02 OpenSSL: Suppress the sending of (stateful) TLS1.3 session tickets.
 
 JH/03 Debug output for ACL now gives the config file name and line number for
       each verb.
+HS/01 Fix handling of very log lines in -H files. If a -<key> <value>
+      line caused the extension of big_buffer, the following lines where
+      ignored.
 
 JH/04 The default received_header_text now uses the RFC 8314 tls cipher clause.
 
