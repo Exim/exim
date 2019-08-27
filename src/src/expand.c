@@ -7206,11 +7206,12 @@ while (*s != 0)
         uschar * t = parse_extract_address(sub, &error, &start, &end, &domain,
           FALSE);
         if (t)
-	  yield = c == EOP_DOMAIN
-	    ? string_cat(yield, t + domain)
-	    : c == EOP_LOCAL_PART && domain > 0
-	    ? string_catn(yield, t, domain - 1 )
-	    : string_cat(yield, t);
+	  if (c != EOP_DOMAIN)
+	    yield = c == EOP_LOCAL_PART && domain > 0
+	      ? string_catn(yield, t, domain - 1)
+	      : string_cat(yield, t);
+	  else if (domain > 0)
+	    yield = string_cat(yield, t + domain);
         continue;
         }
 
