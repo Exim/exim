@@ -1312,7 +1312,8 @@ if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX
   }
 
 supply_response:
-  cbinfo->u_ocsp.server.response = resp;	/*XXX stack?*/
+  /*XXX stack? (these tag points are for multiple leaf-cert support for ocsp */
+  cbinfo->u_ocsp.server.response = resp;
 return;
 
 bad:

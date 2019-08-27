@@ -3,9 +3,20 @@
 
 SERVER =
 
-.include DIR/aux-var/tls_conf_prefix
+exim_path = EXIM_PATH
+keep_environment  = ^EXIM_TESTHARNESS_DISABLE_[O]CSPVALIDITYCHECK$
+host_lookup_order = bydns
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 
 primary_hostname = server1.example.com
+ 
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
 
 
 # ----- Main settings -----

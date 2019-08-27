@@ -6,12 +6,12 @@
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
-1999-03-02 09:44:33 acl_mail: ocsp in status: 2 (vfynotdone)
+1999-03-02 09:44:33 acl_mail: ocsp in status: 1 (notresp)
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
-1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_certificate_set_ocsp_status_request_file2): The session or certificate has expired.
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)
-1999-03-02 09:44:33 TLS error on connection from [ip4.ip4.ip4.ip4] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_certificate_set_ocsp_status_request_file2): The session or certificate has expired.
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 acl_conn: ocsp in status: 0 (notreq)

@@ -180,7 +180,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaX-0005vi-00@myhost.test.ex for getticket@test.ex
@@ -191,7 +191,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for resume@test.ex xyz@test.ex
@@ -203,7 +203,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for abcd@test.ex
@@ -214,7 +214,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbC-0005vi-00@myhost.test.ex for renewal@test.ex
@@ -225,7 +225,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbE-0005vi-00@myhost.test.ex for postrenewal@test.ex
@@ -236,7 +236,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbG-0005vi-00@myhost.test.ex for timeout@test.ex
@@ -247,7 +247,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbI-0005vi-00@myhost.test.ex for notreq@test.ex
@@ -258,7 +258,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	4
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-0005vi-00@myhost.test.ex for noverify_getticket@test.ex
@@ -269,7 +269,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke--AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke--AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbM-0005vi-00@myhost.test.ex for noverify_resume@test.ex
@@ -281,7 +281,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbP-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbO-0005vi-00@myhost.test.ex for getticket@test.ex
@@ -292,7 +292,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbR-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbQ-0005vi-00@myhost.test.ex for resume@test.ex xyz@test.ex
@@ -304,7 +304,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbS-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbQ-0005vi-00@myhost.test.ex for abcd@test.ex
@@ -315,7 +315,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbU-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbT-0005vi-00@myhost.test.ex for renewal@test.ex
@@ -326,7 +326,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	0
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-PSK-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbW-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-PSK-AES256-SHAnnn:xxx* CV=no S=sss id=E10HmbV-0005vi-00@myhost.test.ex for postrenewal@test.ex
@@ -337,7 +337,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmbY-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbX-0005vi-00@myhost.test.ex for timeout@test.ex
@@ -348,7 +348,7 @@
 1999-03-02 09:44:33 peer cert subject	
 1999-03-02 09:44:33 peer cert verified	0
 1999-03-02 09:44:33 peer dn	
-1999-03-02 09:44:33 ocsp	2
+1999-03-02 09:44:33 ocsp	1
 1999-03-02 09:44:33 cipher	TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 bits	256
 1999-03-02 09:44:33 10HmcA-0005vi-00 <= CALLER@myhost.test.ex H=(helo.data.changed) [127.0.0.1] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbZ-0005vi-00@myhost.test.ex for notreq@test.ex
