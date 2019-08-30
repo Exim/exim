@@ -34,11 +34,11 @@ library. It is #included into the tls.c file when that library is used.
 /*****************************************************
 *  Export/import a certificate, binary/printable
 *****************************************************/
-int
+BOOL
 tls_export_cert(uschar * buf, size_t buflen, void * cert)
 {
 BIO * bp = BIO_new(BIO_s_mem());
-int fail;
+BOOL fail;
 
 if ((fail = PEM_write_bio_X509(bp, (X509 *)cert) ? 0 : 1))
   log_write(0, LOG_MAIN, "TLS error in certificate export: %s",
@@ -59,7 +59,7 @@ else
   }
 
 BIO_free(bp);
-return fail;
+return !fail;
 }
 
 int

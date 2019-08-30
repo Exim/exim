@@ -4826,7 +4826,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
       if (addr->peercert)
 	{
         ptr = big_buffer;
-	if (!tls_export_cert(ptr, big_buffer_size-2, addr->peercert))
+	if (tls_export_cert(ptr, big_buffer_size-2, addr->peercert))
 	  while(*ptr++);
 	else
 	  *ptr++ = 0;
@@ -4835,7 +4835,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
       if (addr->ourcert)
 	{
         ptr = big_buffer;
-	if (!tls_export_cert(ptr, big_buffer_size-2, addr->ourcert))
+	if (tls_export_cert(ptr, big_buffer_size-2, addr->ourcert))
 	  while(*ptr++);
 	else
 	  *ptr++ = 0;

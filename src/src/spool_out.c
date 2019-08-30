@@ -249,15 +249,15 @@ if (tls_in.certificate_verified) fprintf(fp, "-tls_certificate_verified\n");
 if (tls_in.cipher) spool_var_write(fp, US"tls_cipher", tls_in.cipher);
 if (tls_in.peercert)
   {
-  (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.peercert);
-  fprintf(fp, "--tls_peercert %s\n", CS big_buffer);
+  if (tls_export_cert(big_buffer, big_buffer_size, tls_in.peercert))
+    fprintf(fp, "--tls_peercert %s\n", CS big_buffer);
   }
 if (tls_in.peerdn)       spool_var_write(fp, US"tls_peerdn", string_printing(tls_in.peerdn));
 if (tls_in.sni)		 spool_var_write(fp, US"tls_sni",    string_printing(tls_in.sni));
 if (tls_in.ourcert)
   {
-  (void) tls_export_cert(big_buffer, big_buffer_size, tls_in.ourcert);
-  fprintf(fp, "-tls_ourcert %s\n", CS big_buffer);
+  if (tls_export_cert(big_buffer, big_buffer_size, tls_in.ourcert))
+    fprintf(fp, "-tls_ourcert %s\n", CS big_buffer);
   }
 if (tls_in.ocsp)	 fprintf(fp, "-tls_ocsp %d\n",   tls_in.ocsp);
 # ifdef EXPERIMENTAL_TLS_RESUME

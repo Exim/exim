@@ -52,7 +52,7 @@ extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
 extern void    tls_close(void *, int);
 extern BOOL    tls_could_read(void);
 extern void    tls_daemon_init(void);
-extern int     tls_export_cert(uschar *, size_t, void *);
+extern BOOL    tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern void    tls_free_cert(void **);

@@ -21,12 +21,12 @@ tls.c when USE_GNUTLS has been set.
 /*****************************************************
 *  Export/import a certificate, binary/printable
 *****************************************************/
-int
+BOOL
 tls_export_cert(uschar * buf, size_t buflen, void * cert)
 {
 size_t sz = buflen;
 rmark reset_point = store_mark();
-int fail;
+BOOL fail;
 const uschar * cp;
 
 if ((fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
@@ -34,7 +34,7 @@ if ((fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
   {
   log_write(0, LOG_MAIN, "TLS error in certificate export: %s",
     gnutls_strerror(fail));
-  return 1;
+  return 0;
   }
 if ((cp = string_printing(buf)) != buf)
   {
@@ -43,7 +43,7 @@ if ((cp = string_printing(buf)) != buf)
     fail = 1;
   }
 store_reset(reset_point);
-return fail;
+return !fail;
 }
 
 int
