@@ -59,7 +59,7 @@ as such then the response will have the "AD" bit set.
 
 Any DNS record line can be prefixed with "NXDOMAIN ";
 The record will be ignored (but the prefix set still applied);
-This lets us return a DNSSEC NXDOMAIN.
+This lets us return a DNSSEC NXDOMAIN (=> HOST_NOT_FOUND).
 
 Any DNS record line can be prefixed with "AA "
 if all the records found by a lookup are marked
@@ -763,21 +763,22 @@ if (zonefile == NULL)
 
 (void)sprintf(CS buffer, "%s/dnszones/%s", argv[1], zonefile);
 
-/* Initialize the start of the response packet. We don't have to fake up
-everything, because we know that Exim will look only at the answer and
-additional section parts. */
+/* Initialize the start of the response packet. */
 
 memset(packet, 0, 12);
 pk += 12;
 
 /* Open the zone file. */
 
-f = fopen(CS buffer, "r");
-if (f == NULL)
+if (!(f = fopen(CS buffer, "r")))
   {
   fprintf(stderr, "fakens: failed to open %s: %s\n", buffer, strerror(errno));
   return NO_RECOVERY;
   }
+
+header->qr = 1;     /* query */
+header->opcode = QUERY; /* standard query */
+header->tc = 0;     /* no trucation */
 
 /* Find the records we want, and add them to the result. */
 
@@ -789,12 +790,14 @@ header->ancount = htons(count);
 /* If the AA bit should be set (as indicated by the AA prefix in the zone file),
 we are expected to return some records in the authoritative section. Bind9: If
 there is data in the answer section, the authoritative section contains the NS
-records, otherwise it contains the SOA record.  Currently we mimic this
-behaviour for the first case (there is some answer record).
+records, otherwise it contains the SOA record.  Mimic that.
 */
 
-if (aa)
-  find_records(f, zone, zone[0] == '.' ? zone+1 : zone, US"NS", 2, &pk, &count, NULL, NULL);
+if (strcmp(qtype, "SOA") != 0 && strcmp(qtype, "NS") != 0)
+  if (count)
+    find_records(f, zone, zone[0] == '.' ? zone+1 : zone, US"NS", 2, &pk, &count, NULL, NULL);
+  else
+    find_records(f, zone, zone[0] == '.' ? zone+1 : zone, US"SOA", 3, &pk, &count, NULL, NULL);
 header->nscount = htons(count - ntohs(header->ancount));
 
 /* There is no need to return any additional records because Exim no longer

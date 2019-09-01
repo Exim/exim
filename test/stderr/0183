@@ -25,6 +25,8 @@ userx in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=userx domain=test.again.dns
+checking local_parts
+userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@test.again.dns
   domain = test.again.dns
@@ -32,6 +34,7 @@ DNS lookup of test.again.dns (MX) using fakens
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
+ writing neg-cache entry for test.again.dns-MX-c1, ttl -1
 lookuphost router: defer for userx@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -52,6 +55,8 @@ abcd in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=abcd domain=test.again.dns
+checking local_parts
+abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@test.again.dns
   domain = test.again.dns
@@ -76,12 +81,15 @@ abcd in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=abcd domain=ten-1.test.ex
+checking local_parts
+abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
+ writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -124,6 +132,7 @@ DNS lookup of test.again.dns (A) using fakens
 DNS lookup of test.again.dns (A) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
+ writing neg-cache entry for test.again.dns-A-41, ttl -1
 useryz router: defer for usery@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -171,6 +180,8 @@ xyz in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=xyz domain=ten-1.test.ex
+checking local_parts
+xyz in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
@@ -216,12 +227,15 @@ userx in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=userx domain=test.fail.dns
+checking local_parts
+userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@test.fail.dns
   domain = test.fail.dns
 DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
+ writing neg-cache entry for test.fail.dns-MX-c1, ttl -1
 lookuphost router: defer for userx@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -242,6 +256,8 @@ abcd in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=abcd domain=test.fail.dns
+checking local_parts
+abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@test.fail.dns
   domain = test.fail.dns
@@ -266,12 +282,15 @@ abcd in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=abcd domain=ten-1.test.ex
+checking local_parts
+abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
+ writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -313,6 +332,7 @@ doing DNS lookup
 DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
+ writing neg-cache entry for test.fail.dns-A-41, ttl -1
 useryz router: defer for usery@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -360,6 +380,8 @@ xyz in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=xyz domain=ten-1.test.ex
+checking local_parts
+xyz in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
@@ -405,12 +427,15 @@ userx in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=userx domain=nonexist.test.ex
+checking local_parts
+userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@nonexist.test.ex
   domain = nonexist.test.ex
 DNS lookup of nonexist.test.ex (MX) using fakens
 DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
+ writing neg-cache entry for nonexist.test.ex-MX-c1, ttl 3600
 lookuphost router declined for userx@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -432,6 +457,8 @@ abcd in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=abcd domain=nonexist.test.ex
+checking local_parts
+abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@nonexist.test.ex
   domain = nonexist.test.ex
@@ -457,12 +484,15 @@ abcd in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=abcd domain=ten-1.test.ex
+checking local_parts
+abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
+ writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -504,6 +534,7 @@ doing DNS lookup
 DNS lookup of nonexist.test.ex (A) using fakens
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
+ writing neg-cache entry for nonexist.test.ex-A-41, ttl 3600
 useryz router: defer for usery@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -551,6 +582,8 @@ xyz in "usery:userz"? no (end of list)
 useryz router skipped: local_parts mismatch
 --------> lookuphost router <--------
 local_part=xyz domain=ten-1.test.ex
+checking local_parts
+xyz in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
@@ -595,6 +628,7 @@ DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
 _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
+ writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-c1, ttl -1
 test.again.dns in "test.fail.dns"? no (end of list)
 srv router: defer for srv@test.again.dns
   message: host lookup did not complete
@@ -614,17 +648,103 @@ srv router called for srv@test.fail.dns
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
 returning DNS_FAIL
+ writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-c1, ttl -1
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
 DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
+ writing neg-cache entry for test.fail.dns-MX-c1, ttl -1
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
 DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
+ writing neg-cache entry for test.fail.dns-A-c1, ttl -1
 srv router: defer for srv@test.fail.dns
   message: host lookup did not complete
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=1 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing userx@nonexist.example.com
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering userx@nonexist.example.com
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@nonexist.example.com
+--------> srv router <--------
+local_part=userx domain=nonexist.example.com
+checking local_parts
+userx in "^srv"? no (end of list)
+srv router skipped: local_parts mismatch
+--------> useryz router <--------
+local_part=userx domain=nonexist.example.com
+checking local_parts
+userx in "usery:userz"? no (end of list)
+useryz router skipped: local_parts mismatch
+--------> lookuphost router <--------
+local_part=userx domain=nonexist.example.com
+checking local_parts
+userx in "!userd"? yes (end of list)
+calling lookuphost router
+lookuphost router called for userx@nonexist.example.com
+  domain = nonexist.example.com
+DNS lookup of nonexist.example.com (MX) using fakens
+DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+ writing neg-cache entry for nonexist.example.com-MX-c1, ttl 2
+lookuphost router declined for userx@nonexist.example.com
+"more" is false: skipping remaining routers
+no more routers
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing userd@nonexist.example.com
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering userd@nonexist.example.com
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userd@nonexist.example.com
+--------> srv router <--------
+local_part=userd domain=nonexist.example.com
+checking local_parts
+userd in "^srv"? no (end of list)
+srv router skipped: local_parts mismatch
+--------> useryz router <--------
+local_part=userd domain=nonexist.example.com
+checking local_parts
+userd in "usery:userz"? no (end of list)
+useryz router skipped: local_parts mismatch
+--------> lookuphost router <--------
+local_part=userd domain=nonexist.example.com
+checking local_parts
+userd in "!userd"? no (matched "!userd")
+lookuphost router skipped: local_parts mismatch
+--------> delay router <--------
+local_part=userd domain=nonexist.example.com
+checking "condition" "${acl {delay}}"...
+  using ACL "delay"
+  processing "accept" (TESTSUITE/test-config 18)
+  check delay = 3s
+  delay modifier requests 3-second delay
+    message: y
+  accept: condition test succeeded in ACL "delay"
+  end of ACL "delay": ACCEPT
+calling delay router
+delay router called for userd@nonexist.example.com
+  domain = nonexist.example.com
+DNS lookup of nonexist.example.com-MX: cached value DNS_NOMATCH past valid time
+DNS lookup of nonexist.example.com (MX) using fakens
+DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+ update neg-cache entry for nonexist.example.com-MX-c1, ttl 2
+delay router declined for userd@nonexist.example.com
+"more" is false: skipping remaining routers
+no more routers
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>

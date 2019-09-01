@@ -99,10 +99,13 @@ r1 router called for kilos@recurse.test.ex
 DNS lookup of recurse.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
+ writing neg-cache entry for recurse.test.ex-MX-c1, ttl 3600
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
 DNS lookup of recurse.test.ex.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
+ writing neg-cache entry for recurse.test.ex.test.ex-MX-c1, ttl 3600
+ writing neg-cache entry for recurse.test.ex.test.ex-AAAA-c1, ttl 3600
 DNS lookup of recurse.test.ex.test.ex (A) using fakens
 DNS lookup of recurse.test.ex.test.ex (A) succeeded
 fully qualified name = recurse.test.ex.test.ex

@@ -11,3 +11,8 @@ exim -d -bt userx@nonexist.test.ex abcd@nonexist.test.ex abcd@ten-1.test.ex user
 1
 exim -d -bt srv@test.again.dns srv@test.fail.dns
 ****
+#
+# Set up a negative-cache entry with a short ttl, check it expires
+2
+exim -d -bt userx@nonexist.example.com userd@nonexist.example.com
+****

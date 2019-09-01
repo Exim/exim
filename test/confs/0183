@@ -10,6 +10,15 @@ dns_ipv4_lookup = *
 queue_run_in_order
 
 
+# ----- ACL -----
+
+begin acl
+
+delay:
+  accept
+	delay = 3s
+	message = y
+
 # ----- Routers -----
 
 begin routers
@@ -31,6 +40,13 @@ useryz:
 
 lookuphost:
   driver = dnslookup
+  local_parts = !userd
+  transport = smtp
+  no_more
+
+delay:
+  driver = dnslookup
+  condition =	${acl {delay}}
   transport = smtp
   no_more
 

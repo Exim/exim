@@ -728,7 +728,11 @@ for the lookups cache */
 
 typedef struct expiring_data {
   time_t expiry;		  /* if nonzero, data invalid after this time */
-  void   *ptr;			  /* pointer to data */
+  union
+    {
+    void  *ptr;                   /* pointer to data */
+    int val;                      /* or integer data */
+    } data;
 } expiring_data;
 
 /* Structure for holding the handle and the cached last lookup for searches.

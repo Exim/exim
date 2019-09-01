@@ -831,7 +831,7 @@ return type.
 res_state
 os_get_dns_resolver_res(void)
 {
-  return &_res;
+return &_res;
 }
 
 #endif /* OS_GET_DNS_RESOLVER_RES */

@@ -435,6 +435,7 @@ dnss->aptr += dnss->srr.size;			/* Advance to next RR */
 /* Return a pointer to the dns_record structure within the dns_answer. This is
 for convenience so that the scans can use nice-looking for loops. */
 
+TRACE debug_printf("%s: return %s\n", __FUNCTION__, dns_text_type(dnss->srr.type));
 return &dnss->srr;
 
 null_return:
@@ -593,6 +594,10 @@ static void
 dns_fail_tag(uschar * buf, const uschar * name, int dns_type)
 {
 res_state resp = os_get_dns_resolver_res();
+
+/*XX buf needs to be 255 +1 + (max(typetext) == 5) +1 + max(chars_for_long-max) +1
+We truncate the name here for safety... could use a dynamic string. */
+
 sprintf(CS buf, "%.255s-%s-%lx", name, dns_text_type(dns_type),
   (unsigned long) resp->options);
 }
@@ -606,20 +611,139 @@ caching.
 Arguments:
   name       the domain name
   type       the lookup type
+  expiry     time TTL expires, or zero for unlimited
   rc         the return code
 
 Returns:     the return code
 */
 
+/*XXX the derivation of this value needs explaining */
+#define DNS_FAILTAG_MAX 290
+
 static int
-dns_return(const uschar * name, int type, int rc)
+dns_fail_return(const uschar * name, int type, time_t expiry, int rc)
 {
-tree_node *node = store_get_perm(sizeof(tree_node) + 290, TRUE);
-dns_fail_tag(node->name, name, type);
-node->data.val = rc;
-(void)tree_insertnode(&tree_dns_fails, node);
+uschar node_name[DNS_FAILTAG_MAX];
+tree_node * previous, * new;
+expiring_data * e;
+
+dns_fail_tag(node_name, name, type);
+if ((previous = tree_search(tree_dns_fails, node_name)))
+  e = previous->data.ptr;
+else
+  {
+  new = store_get_perm(
+    sizeof(tree_node) + DNS_FAILTAG_MAX + sizeof(expiring_data), is_tainted(name));
+
+  dns_fail_tag(new->name, name, type);
+  e = (expiring_data *)((char *)new + sizeof(tree_node) + DNS_FAILTAG_MAX);
+  new->data.ptr = e;
+  (void)tree_insertnode(&tree_dns_fails, new);
+  }
+
+DEBUG(D_dns) debug_printf(" %s neg-cache entry for %s, ttl %d\n",
+  previous ? "update" : "writing",
+  node_name, expiry ? (int)(expiry - time(NULL)) : -1);
+e->expiry = expiry;
+e->data.val = rc;
 return rc;
 }
+
+
+/* Return the cached result of a known-bad lookup, or -1.
+*/
+static int
+dns_fail_cache_hit(const uschar * name, int type)
+{
+uschar node_name[DNS_FAILTAG_MAX];
+tree_node * previous;
+expiring_data * e;
+int val, rc;
+
+dns_fail_tag(node_name, name, type);
+if (!(previous = tree_search(tree_dns_fails, node_name)))
+  return -1;
+
+e = previous->data.ptr;
+val = e->data.val;
+rc = e->expiry && e->expiry <= time(NULL) ? -1 : val;
+
+DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: %scached value %s%s\n",
+  name, dns_text_type(type),
+  rc == -1 ? "" : "using ",
+    val == DNS_NOMATCH ? "DNS_NOMATCH" :
+    val == DNS_NODATA ? "DNS_NODATA" :
+    val == DNS_AGAIN ? "DNS_AGAIN" :
+    val == DNS_FAIL ? "DNS_FAIL" : "??",
+  rc == -1 ? " past valid time" : "");
+
+return rc;
+}
+
+
+
+/* Return the TTL suitable for an NXDOMAIN result, which is given
+in the SOA.  We hope that one was returned in the lookup, and do not
+bother doing a separate lookup; if not found return a forever TTL.
+*/
+
+static time_t
+dns_expire_from_soa(dns_answer * dnsa)
+{
+const HEADER * h = (const HEADER *)dnsa->answer;
+dns_scan dnss;
+
+/* This is really gross. The successful return value from res_search() is
+the packet length, which is stored in dnsa->answerlen. If we get a
+negative DNS reply then res_search() returns -1, which causes the bounds
+checks for name decompression to fail when it is treated as a packet
+length, which in turn causes the authority search to fail. The correct
+packet length has been lost inside libresolv, so we have to guess a
+replacement value. (The only way to fix this properly would be to
+re-implement res_search() and res_query() so that they don't muddle their
+success and packet length return values.) For added safety we only reset
+the packet length if the packet header looks plausible. */
+
+if (  h->qr == 1 && h->opcode == QUERY && h->tc == 0
+   && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
+   && (ntohs(h->qdcount) == 1 || f.running_in_test_harness)
+   && ntohs(h->ancount) == 0
+   && ntohs(h->nscount) >= 1)
+      dnsa->answerlen = sizeof(dnsa->answer);
+
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
+     rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
+    ) if (rr->type == T_SOA)
+  {
+  const uschar * p = rr->data;
+  uschar discard_buf[256];
+  int len;
+  unsigned long ttl;
+
+  /* Skip the mname & rname strings */
+
+  if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+      p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
+    break;
+  p += len;
+  if ((len = dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen,
+      p, (DN_EXPAND_ARG4_TYPE)discard_buf, 256)) < 0)
+    break;
+  p += len;
+
+  /* Skip the SOA serial, refresh, retry & expire.  Grab the TTL */
+
+  if (p > dnsa->answer + dnsa->answerlen - 5 * NS_INT32SZ)
+    break;
+  p += 4 * NS_INT32SZ;
+  GETLONG(ttl, p);
+
+  return time(NULL) + ttl;
+  }
+DEBUG(D_dns) debug_printf("DNS: no SOA record found for neg-TTL\n");
+return 0;
+}
+
 
 /*************************************************
 *              Do basic DNS lookup               *
@@ -651,32 +775,21 @@ Returns:    DNS_SUCCEED   successful lookup
 */
 
 int
-dns_basic_lookup(dns_answer *dnsa, const uschar *name, int type)
+dns_basic_lookup(dns_answer * dnsa, const uschar * name, int type)
 {
+int rc;
 #ifndef STAND_ALONE
-int rc = -1;
-const uschar *save_domain;
+const uschar * save_domain;
 #endif
-
-tree_node *previous;
-uschar node_name[290];
 
 /* DNS lookup failures of any kind are cached in a tree. This is mainly so that
 a timeout on one domain doesn't happen time and time again for messages that
 have many addresses in the same domain. We rely on the resolver and name server
-caching for successful lookups. */
+caching for successful lookups.
+*/
 
-dns_fail_tag(node_name, name, type);
-if ((previous = tree_search(tree_dns_fails, node_name)))
-  {
-  DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: using cached value %s\n",
-    name, dns_text_type(type),
-      previous->data.val == DNS_NOMATCH ? "DNS_NOMATCH" :
-      previous->data.val == DNS_NODATA ? "DNS_NODATA" :
-      previous->data.val == DNS_AGAIN ? "DNS_AGAIN" :
-      previous->data.val == DNS_FAIL ? "DNS_FAIL" : "??");
-  return previous->data.val;
-  }
+if ((rc = dns_fail_cache_hit(name, type)) > 0)
+  return rc;
 
 #ifdef SUPPORT_I18N
 /* Convert all names to a-label form before doing lookup */
@@ -779,7 +892,7 @@ if (dnsa->answerlen < 0) switch (h_errno)
   case HOST_NOT_FOUND:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
       "returning DNS_NOMATCH\n", name, dns_text_type(type));
-    return dns_return(name, type, DNS_NOMATCH);
+    return dns_fail_return(name, type, dns_expire_from_soa(dnsa), DNS_NOMATCH);
 
   case TRY_AGAIN:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
@@ -795,30 +908,30 @@ if (dnsa->answerlen < 0) switch (h_errno)
     if (rc != OK)
       {
       DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
-      return dns_return(name, type, DNS_AGAIN);
+      return dns_fail_return(name, type, 0, DNS_AGAIN);
       }
     DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
       "DNS_NOMATCH\n", name);
-    return dns_return(name, type, DNS_NOMATCH);
+    return dns_fail_return(name, type, dns_expire_from_soa(dnsa), DNS_NOMATCH);
 
 #else   /* For stand-alone tests */
-    return dns_return(name, type, DNS_AGAIN);
+    return dns_fail_return(name, type, 0, DNS_AGAIN);
 #endif
 
   case NO_RECOVERY:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_RECOVERY\n"
       "returning DNS_FAIL\n", name, dns_text_type(type));
-    return dns_return(name, type, DNS_FAIL);
+    return dns_fail_return(name, type, 0, DNS_FAIL);
 
   case NO_DATA:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
       "returning DNS_NODATA\n", name, dns_text_type(type));
-    return dns_return(name, type, DNS_NODATA);
+    return dns_fail_return(name, type, dns_expire_from_soa(dnsa), DNS_NODATA);
 
   default:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
       "returning DNS_FAIL\n", name, dns_text_type(type), h_errno);
-    return dns_return(name, type, DNS_FAIL);
+    return dns_fail_return(name, type, 0, DNS_FAIL);
   }
 
 DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) succeeded\n",

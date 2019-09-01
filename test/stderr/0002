@@ -298,6 +298,7 @@ looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "ten-1.test.ex"
+ writing neg-cache entry for ten-1.test.ex-AAAA-41, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 

@@ -17,9 +17,6 @@ JH/02 OpenSSL: Suppress the sending of (stateful) TLS1.3 session tickets.
 
 JH/03 Debug output for ACL now gives the config file name and line number for
       each verb.
-HS/01 Fix handling of very log lines in -H files. If a -<key> <value>
-      line caused the extension of big_buffer, the following lines where
-      ignored.
 
 JH/04 The default received_header_text now uses the RFC 8314 tls cipher clause.
 
@@ -73,10 +70,10 @@ HS/01 Bug 2390: Use message_id for tempfile creation to avoid races in a
       systems which restrict the file name length to lower values.
       (It was "hdr.$pid".)
 
-HS/01 Bug 2390: Use message_id for tempfile creation to avoid races in a
+HS/02 Bug 2390: Use message_id for tempfile creation to avoid races in a
       shared (NFS) environment.
 
-HS/02 Bug 2392: exigrep does case sensitive *option* processing (as it
+HS/03 Bug 2392: exigrep does case sensitive *option* processing (as it
       did for all versions <4.90). Notably -M, -m, --invert, -I may be
       affected.
 
@@ -175,6 +172,14 @@ JH/36 Have the general router option retry_use_local_part default to true when
 
 JH/37 Appendfile: when evaluating quota use (non-quota_size_regex) take the file
       link count into consideration.
+
+HS/04 Fix handling of very log lines in -H files. If a -<key> <value> line
+      caused the extension of big_buffer, the following lines were ignored.
+
+JH/38 Bug 1395: Teach the DNS negative-cache about TTL value from the SOA in
+      accordance with RFC 2308.  Previously there was no expiry, so a longlived
+      receive process (eg. due to ACL delays) versus a short SOA value could
+      surprise.
 
 
 Exim version 4.92

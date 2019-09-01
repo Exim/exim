@@ -30,3 +30,5 @@ xyz@ten-1.test.ex
   host ten-1.test.ex [V4NET.0.0.1]
 srv@test.again.dns cannot be resolved at this time: host lookup did not complete
 srv@test.fail.dns cannot be resolved at this time: host lookup did not complete
+userx@nonexist.example.com is undeliverable: Unrouteable address
+userd@nonexist.example.com is undeliverable: Unrouteable address

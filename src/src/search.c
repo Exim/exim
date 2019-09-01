@@ -492,7 +492,7 @@ if (  (t = tree_search(c->item_cache, keystring))
    && (!(e = t->data.ptr)->expiry || e->expiry > time(NULL))
    )
   { /* Data was in the cache already; set the pointer from the tree node */
-  data = e->ptr;
+  data = e->data.ptr;
   DEBUG(D_lookup) debug_printf_indent("cached data used for lookup of %s%s%s\n",
     keystring,
     filename ? US"\n  in " : US"", filename ? filename : US"");
@@ -532,13 +532,13 @@ else
     if (t)	/* Previous, out-of-date cache entry.  Update with the */
       { 	/* new result and forget the old one */
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
-      e->ptr = data;
+      e->data.ptr = data;
       }
     else
       {
       e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, is_tainted(keystring));
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
-      e->ptr = data;
+      e->data.ptr = data;
       t = (tree_node *)(e+1);
       memcpy(t->name, keystring, len);
       t->data.ptr = e;

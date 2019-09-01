@@ -16,6 +16,9 @@
 ; the use of V4NET and V6NET. These networks should be such that no real
 ; host ever uses them.
 
+; really short neg-cache interval, for testing NXDOMAIN caching
+example.com.     SOA     exim.test.ex. hostmaster.exim.test.ex 1430683638 1200 120 604800 2
+
 example.com.     NS      exim.example.com.
 
 ; The real example.com has an SPF record; duplicate that here
