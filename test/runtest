@@ -1093,6 +1093,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /get\[host\|ipnode\]byname\[2\]\(af=inet6\)/;
     next if /DNS lookup of \S+ \(AAAA\) using fakens/;
     next if / in dns_ipv4_lookup?/;
+    next if / writing neg-cache entry for .*AAAA/;
 
     if (/DNS lookup of \S+ \(AAAA\) gave NO_DATA/)
       {

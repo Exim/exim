@@ -41,14 +41,12 @@ DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "x.gov.uk.test.ex"
   alias "x.co.uk.test.ex"
- writing neg-cache entry for x.gov.uk.test.ex-AAAA-41, ttl 3600
 DNS lookup of x.gov.uk.test.ex (A) using fakens
 DNS lookup of x.gov.uk.test.ex (A) succeeded
 x.gov.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
 checking addresses for x.gov.uk.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.97 OK
- writing neg-cache entry for x.co.uk.test.ex-AAAA-41, ttl 3600
 DNS lookup of x.co.uk.test.ex (A) using fakens
 DNS lookup of x.co.uk.test.ex (A) succeeded
 x.co.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 

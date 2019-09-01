@@ -29,7 +29,6 @@ DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1-MX-c1, ttl 3600
- writing neg-cache entry for ten-1-AAAA-c1, ttl 3600
 DNS lookup of ten-1 (A) using fakens
 DNS lookup of ten-1 (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -57,7 +56,6 @@ DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
- writing neg-cache entry for ten-1.test.ex-AAAA-c1, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex

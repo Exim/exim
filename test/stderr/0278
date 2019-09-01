@@ -292,7 +292,6 @@ DNS lookup of test.ex (MX) using fakens
 DNS lookup of test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for test.ex-MX-c1, ttl 3600
- writing neg-cache entry for test.ex-AAAA-c1, ttl 3600
 DNS lookup of test.ex (A) using fakens
 DNS lookup of test.ex (A) gave NO_DATA
 returning DNS_NODATA

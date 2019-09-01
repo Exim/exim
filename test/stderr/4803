@@ -4,7 +4,6 @@ admin user
 dropping to exim gid; retaining priv uid
 DNS lookup of mx-sec-a-aa.test.ex (MX) using fakens
 DNS lookup of mx-sec-a-aa.test.ex (MX) succeeded
- writing neg-cache entry for a-aa.test.ex-AAAA-800041, ttl 3600
 DNS lookup of a-aa.test.ex (A) using fakens
 DNS lookup of a-aa.test.ex (A) succeeded
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
@@ -20,7 +19,6 @@ DNS lookup of mx-aa-a-sec.test.ex (MX) succeeded
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
- writing neg-cache entry for a-sec.test.ex-AAAA-800041, ttl 3600
 DNS lookup of a-sec.test.ex (A) using fakens
 DNS lookup of a-sec.test.ex (A) succeeded
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
