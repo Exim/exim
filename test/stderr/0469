@@ -25,7 +25,7 @@ fakens returned PASS_ON
 passing dontqualify on to res_search()
 DNS lookup of dontqualify (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for dontqualify-A-41, ttl 86400
+ writing neg-cache entry for dontqualify-A-xxxx, ttl 86400
 fully qualified name = mxt1c.test.ex
 host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
   dontqualify <null> MX=1 *

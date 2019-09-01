@@ -19,7 +19,7 @@ DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
- writing neg-cache entry for 4.3.2.V4NET.in-addr.arpa-PTR-41, ttl -1
+ writing neg-cache entry for 4.3.2.V4NET.in-addr.arpa-PTR-xxxx, ttl -1
 LOG: host_lookup_failed MAIN
   no host name found for IP address V4NET.2.3.4
 sender_fullhost = [V4NET.2.3.4]
@@ -97,7 +97,7 @@ DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
- writing neg-cache entry for 12.11.10.V4NET.in-addr.arpa-PTR-41, ttl -1
+ writing neg-cache entry for 12.11.10.V4NET.in-addr.arpa-PTR-xxxx, ttl -1
 LOG: host_lookup_failed MAIN
   no host name found for IP address V4NET.10.11.12
 sender_fullhost = [V4NET.10.11.12]
@@ -142,7 +142,7 @@ DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
- writing neg-cache entry for 1.1.1.V4NET.in-addr.arpa-PTR-41, ttl -1
+ writing neg-cache entry for 1.1.1.V4NET.in-addr.arpa-PTR-xxxx, ttl -1
 LOG: host_lookup_failed MAIN
   no host name found for IP address V4NET.1.1.1
 sender_fullhost = [V4NET.1.1.1]
@@ -187,7 +187,7 @@ DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
- writing neg-cache entry for 2.2.2.V4NET.in-addr.arpa-PTR-41, ttl -1
+ writing neg-cache entry for 2.2.2.V4NET.in-addr.arpa-PTR-xxxx, ttl -1
 LOG: host_lookup_failed MAIN
   no host name found for IP address V4NET.2.2.2
 sender_fullhost = [V4NET.2.2.2]

@@ -34,7 +34,7 @@ DNS lookup of test.again.dns (MX) using fakens
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
- writing neg-cache entry for test.again.dns-MX-c1, ttl -1
+ writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
 lookuphost router: defer for userx@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -89,7 +89,7 @@ lookuphost router called for abcd@ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
+ writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -132,7 +132,7 @@ DNS lookup of test.again.dns (A) using fakens
 DNS lookup of test.again.dns (A) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
- writing neg-cache entry for test.again.dns-A-41, ttl -1
+ writing neg-cache entry for test.again.dns-A-xxxx, ttl -1
 useryz router: defer for usery@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -235,7 +235,7 @@ lookuphost router called for userx@test.fail.dns
 DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-MX-c1, ttl -1
+ writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
 lookuphost router: defer for userx@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -290,7 +290,7 @@ lookuphost router called for abcd@ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
+ writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -332,7 +332,7 @@ doing DNS lookup
 DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-A-41, ttl -1
+ writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
 useryz router: defer for usery@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -435,7 +435,7 @@ lookuphost router called for userx@nonexist.test.ex
 DNS lookup of nonexist.test.ex (MX) using fakens
 DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for nonexist.test.ex-MX-c1, ttl 3600
+ writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3600
 lookuphost router declined for userx@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -492,7 +492,7 @@ lookuphost router called for abcd@ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for ten-1.test.ex-MX-c1, ttl 3600
+ writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3600
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -534,7 +534,7 @@ doing DNS lookup
 DNS lookup of nonexist.test.ex (A) using fakens
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for nonexist.test.ex-A-41, ttl 3600
+ writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3600
 useryz router: defer for usery@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -628,7 +628,7 @@ DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
 _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
- writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-c1, ttl -1
+ writing neg-cache entry for _smtp._tcp.test.again.dns-SRV-xxxx, ttl -1
 test.again.dns in "test.fail.dns"? no (end of list)
 srv router: defer for srv@test.again.dns
   message: host lookup did not complete
@@ -648,19 +648,19 @@ srv router called for srv@test.fail.dns
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
 returning DNS_FAIL
- writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-c1, ttl -1
+ writing neg-cache entry for _smtp._tcp.test.fail.dns-SRV-xxxx, ttl -1
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
 DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-MX-c1, ttl -1
+ writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
 DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
- writing neg-cache entry for test.fail.dns-A-c1, ttl -1
+ writing neg-cache entry for test.fail.dns-A-xxxx, ttl -1
 srv router: defer for srv@test.fail.dns
   message: host lookup did not complete
 search_tidyup called
@@ -700,7 +700,7 @@ lookuphost router called for userx@nonexist.example.com
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for nonexist.example.com-MX-c1, ttl 2
+ writing neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
 lookuphost router declined for userx@nonexist.example.com
 "more" is false: skipping remaining routers
 no more routers
