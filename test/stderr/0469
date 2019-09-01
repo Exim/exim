@@ -21,11 +21,10 @@ r1 router called for x@mxt1c.test.ex
 DNS lookup of mxt1c.test.ex (MX) using fakens
 DNS lookup of mxt1c.test.ex (MX) succeeded
 DNS lookup of dontqualify (A) using fakens
-fakens returned PASS_ON
-passing dontqualify on to res_search()
-DNS lookup of dontqualify (A) gave HOST_NOT_FOUND
-returning DNS_NOMATCH
- writing neg-cache entry for dontqualify-A-xxxx, ttl 86400
+DNS lookup of dontqualify (A) gave NO_DATA
+returning DNS_NODATA
+DNS: no SOA record found for neg-TTL
+ writing neg-cache entry for dontqualify-A-xxxx, ttl -1
 fully qualified name = mxt1c.test.ex
 host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
   dontqualify <null> MX=1 *

@@ -1,0 +1,5 @@
+; This is a testing zone file for use when testing DNS handling in Exim. This
+; is a fake zone of no real use. The zone name is dontqualify.
+
+NXDOMAIN dontqualify.     A 127.0.0.1
+; End
