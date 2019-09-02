@@ -742,7 +742,7 @@ DNS lookup of nonexist.example.com-MX: cached value DNS_NOMATCH past valid time
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- update neg-cache entry for nonexist.example.com-MX-c1, ttl 2
+ update neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
 delay router declined for userd@nonexist.example.com
 "more" is false: skipping remaining routers
 no more routers
