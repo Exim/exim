@@ -50,6 +50,11 @@ gstring *
 string_vformat_trc(gstring * g, const uschar * func, unsigned line,
   unsigned size_limit, unsigned flags, const char *format, va_list ap)
 { return NULL; }
+uschar *
+string_sprintf_trc(const char * fmt, const uschar * func, unsigned line, ...)
+{ return NULL; }
+extern BOOL split_spool_directory;
+extern uschar * queue_name;
 /******************************************************************************/
 
 
