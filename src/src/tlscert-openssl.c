@@ -33,7 +33,9 @@ library. It is #included into the tls.c file when that library is used.
 
 /*****************************************************
 *  Export/import a certificate, binary/printable
-*****************************************************/
+******************************************************
+Return booolean success
+*/
 BOOL
 tls_export_cert(uschar * buf, size_t buflen, void * cert)
 {
@@ -62,29 +64,26 @@ BIO_free(bp);
 return !fail;
 }
 
-int
+/* On error, NULL out the destination */
+BOOL
 tls_import_cert(const uschar * buf, void ** cert)
 {
 rmark reset_point = store_mark();
 const uschar * cp = string_unprinting(US buf);
 BIO * bp;
 X509 * x = *(X509 **)cert;
-int fail = 0;
 
 if (x) X509_free(x);
 
 bp = BIO_new_mem_buf(US cp, -1);
 if (!(x = PEM_read_bio_X509(bp, NULL, 0, NULL)))
-  {
   log_write(0, LOG_MAIN, "TLS error in certificate import: %s",
     ERR_error_string(ERR_get_error(), NULL));
-  fail = 1;
-  }
-else
-  *cert = (void *)x;
+
+*cert = (void *)x;
 BIO_free(bp);
 store_reset(reset_point);
-return fail;
+return !!x;
 }
 
 void

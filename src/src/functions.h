@@ -59,7 +59,7 @@ extern void    tls_free_cert(void **);
 extern int     tls_getc(unsigned);
 extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(void);
-extern int     tls_import_cert(const uschar *, void **);
+extern BOOL    tls_import_cert(const uschar *, void **);
 extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(const uschar *, uschar **);
 extern BOOL    tls_smtp_buffered(void);

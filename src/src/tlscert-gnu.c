@@ -20,7 +20,10 @@ tls.c when USE_GNUTLS has been set.
 
 /*****************************************************
 *  Export/import a certificate, binary/printable
-*****************************************************/
+******************************************************
+Return: boolean success
+*/
+
 BOOL
 tls_export_cert(uschar * buf, size_t buflen, void * cert)
 {
@@ -34,7 +37,7 @@ if ((fail = gnutls_x509_crt_export((gnutls_x509_crt_t)cert,
   {
   log_write(0, LOG_MAIN, "TLS error in certificate export: %s",
     gnutls_strerror(fail));
-  return 0;
+  return FALSE;
   }
 if ((cp = string_printing(buf)) != buf)
   {
@@ -46,13 +49,14 @@ store_reset(reset_point);
 return !fail;
 }
 
-int
+/* On error, NULL out the destination */
+BOOL
 tls_import_cert(const uschar * buf, void ** cert)
 {
 rmark reset_point = store_mark();
 gnutls_datum_t datum;
 gnutls_x509_crt_t crt = *(gnutls_x509_crt_t *)cert;
-int fail = 0;
+int rc;
 
 if (crt)
   gnutls_x509_crt_deinit(crt);
@@ -63,17 +67,15 @@ gnutls_x509_crt_init(&crt);
 
 datum.data = string_unprinting(US buf);
 datum.size = Ustrlen(datum.data);
-if ((fail = gnutls_x509_crt_import(crt, &datum, GNUTLS_X509_FMT_PEM)))
+if ((rc = gnutls_x509_crt_import(crt, &datum, GNUTLS_X509_FMT_PEM)))
   {
   log_write(0, LOG_MAIN, "TLS error in certificate import: %s",
-    gnutls_strerror(fail));
-  fail = 1;
+    gnutls_strerror(rc));
+  crt = NULL;
   }
-else
-  *cert = (void *)crt;
-
+*cert = (void *)crt;
 store_reset(reset_point);
-return fail;
+return rc != 0;
 }
 
 void

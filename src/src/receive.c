@@ -3837,7 +3837,6 @@ else
     string_from_gstring(g), istemp, string_printing(errmsg));
 
   if (smtp_input)
-    {
     if (!smtp_batched_input)
       {
       smtp_respond(smtp_code, 3, TRUE, errmsg);
@@ -3848,7 +3847,6 @@ else
     else
       moan_smtp_batch(NULL, "%s %s", smtp_code, errmsg);
       /* Does not return */
-    }
   else
     {
     fseek(spool_data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
@@ -4026,18 +4024,14 @@ if (proxy_session && LOGGING(proxy))
 if (chunking_state > CHUNKING_OFFERED)
   g = string_catn(g, US" K", 2);
 
-sprintf(CS big_buffer, "%d", msg_size);
-g = string_append(g, 2, US" S=", big_buffer);
+g = string_fmt_append(g, " S=%d", msg_size);
 
 /* log 8BITMIME mode announced in MAIL_FROM
    0 ... no BODY= used
    7 ... 7BIT
    8 ... 8BITMIME */
 if (LOGGING(8bitmime))
-  {
-  sprintf(CS big_buffer, "%d", body_8bitmime);
-  g = string_append(g, 2, US" M8S=", big_buffer);
-  }
+  g = string_fmt_append(g, " M8S=%d", body_8bitmime);
 
 #ifndef DISABLE_DKIM
 if (LOGGING(dkim) && dkim_verify_overall)
