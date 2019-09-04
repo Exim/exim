@@ -3479,15 +3479,14 @@ smtp_active_hostname = primary_hostname;
 got set above. Of course, writing to the log may not work if log_file_path is
 not set, but it will at least get to syslog or somewhere, with any luck. */
 
-if (*spool_directory == 0)
+if (!*spool_directory)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "spool_directory undefined: cannot "
     "proceed");
 
 /* Expand the spool directory name; it may, for example, contain the primary
 host name. Same comment about failure. */
 
-s = expand_string(spool_directory);
-if (s == NULL)
+if (!(s = expand_string(spool_directory)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand spool_directory "
     "\"%s\": %s", spool_directory, expand_string_message);
 spool_directory = s;
@@ -3496,32 +3495,27 @@ spool_directory = s;
 the null string or "syslog". It is also allowed to contain one instance of %D
 or %M. However, it must NOT contain % followed by anything else. */
 
-if (*log_file_path != 0)
+if (*log_file_path)
   {
   const uschar *ss, *sss;
   int sep = ':';                       /* Fixed for log file path */
-  s = expand_string(log_file_path);
-  if (s == NULL)
+  if (!(s = expand_string(log_file_path)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to expand log_file_path "
       "\"%s\": %s", log_file_path, expand_string_message);
 
   ss = s;
-  while ((sss = string_nextinlist(&ss,&sep,big_buffer,big_buffer_size)) != NULL)
+  while ((sss = string_nextinlist(&ss, &sep, big_buffer, big_buffer_size)))
     {
     uschar *t;
     if (sss[0] == 0 || Ustrcmp(sss, "syslog") == 0) continue;
-    t = Ustrstr(sss, "%s");
-    if (t == NULL)
+    if (!(t = Ustrstr(sss, "%s")))
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "log_file_path \"%s\" does not "
         "contain \"%%s\"", sss);
     *t = 'X';
-    t = Ustrchr(sss, '%');
-    if (t != NULL)
-      {
+    if ((t = Ustrchr(sss, '%')))
       if ((t[1] != 'D' && t[1] != 'M') || Ustrchr(t+2, '%') != NULL)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "log_file_path \"%s\" contains "
           "unexpected \"%%\" character", s);
-      }
     }
 
   log_file_path = s;

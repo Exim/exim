@@ -222,7 +222,7 @@ if (rc != spool_read_OK)
     struct stat statbuf;
     sprintf(CS big_buffer, "%s/input/%s", spool_directory, buffer);
     if (Ustat(big_buffer, &statbuf) == 0)
-      msg = string_sprintf("*** Format error in spool file: size = %d ***",
+      msg = string_sprintf("*** Format error in spool file: size = " OFF_T_FMT " ***",
         statbuf.st_size);
     else msg = US"*** Format error in spool file ***";
     }

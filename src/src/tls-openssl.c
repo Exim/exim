@@ -912,7 +912,7 @@ if (enc)
   if (!(key = tk_current()))	/* current key doesn't exist or isn't valid */
      return 0;			/* key couldn't be created */
   memcpy(key_name, key->name, 16);
-  DEBUG(D_tls) debug_printf("STEK expire %ld\n", key->expire - time(NULL));
+  DEBUG(D_tls) debug_printf("STEK expire " TIME_T_FMT "\n", key->expire - time(NULL));
 
   /*XXX will want these dependent on the ssl session strength */
   HMAC_Init_ex(hctx, key->hmac_key, sizeof(key->hmac_key),
@@ -934,7 +934,7 @@ else
     DEBUG(D_tls)
       {
       debug_printf("ticket not usable (%s)\n", key ? "expired" : "not found");
-      if (key) debug_printf("STEK expire %ld\n", key->expire - now);
+      if (key) debug_printf("STEK expire " TIME_T_FMT "\n", key->expire - now);
       }
     return 0;
     }
@@ -943,7 +943,7 @@ else
 		key->hmac_hash, NULL);
   EVP_DecryptInit_ex(ctx, key->aes_cipher, NULL, key->aes_key, iv);
 
-  DEBUG(D_tls) debug_printf("ticket usable, STEK expire %ld\n", key->expire - now);
+  DEBUG(D_tls) debug_printf("ticket usable, STEK expire " TIME_T_FMT "\n", key->expire - now);
 
   /* The ticket lifetime and renewal are the same as the STEK lifetime and
   renewal, which is overenthusiastic.  A factor of, say, 3x longer STEK would

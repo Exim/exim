@@ -599,7 +599,7 @@ uschar * dns_txt;
 pdkim_pubkey * p;
 
 if (!(dns_txt = dkim_exim_query_dns_txt(string_sprintf("%.*s._domainkey.%.*s",
-	  al->s.len, al->s.data, al->d.len, al->d.data))))
+	  (int)al->s.len, al->s.data, (int)al->d.len, al->d.data))))
   {
   DEBUG(D_acl) debug_printf("pubkey dns lookup fail\n");
   return NULL;

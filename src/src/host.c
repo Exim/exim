@@ -1503,9 +1503,7 @@ Returns:     OK, DEFER, FAIL
 static int
 host_name_lookup_byaddr(void)
 {
-int len;
-uschar *s, *t;
-struct hostent *hosts;
+struct hostent * hosts;
 struct in_addr addr;
 unsigned long time_msec = 0;	/* init to quieten dumb static analysis */
 

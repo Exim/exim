@@ -10,7 +10,6 @@
 #include "exim.h"
 
 
-
 /*************************************************
 *               Fake DNS resolver                *
 *************************************************/
@@ -733,9 +732,9 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
 
   /* Skip the SOA serial, refresh, retry & expire.  Grab the TTL */
 
-  if (p > dnsa->answer + dnsa->answerlen - 5 * NS_INT32SZ)
+  if (p > dnsa->answer + dnsa->answerlen - 5 * INT32SZ)
     break;
-  p += 4 * NS_INT32SZ;
+  p += 4 * INT32SZ;
   GETLONG(ttl, p);
 
   return time(NULL) + ttl;

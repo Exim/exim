@@ -712,7 +712,7 @@ Return: NULL for success, or an error string */
 const uschar *
 exim_dkim_signing_init(const uschar * privkey_pem, es_ctx * sign_ctx)
 {
-BIO * bp = BIO_new_mem_buf(privkey_pem, -1);
+BIO * bp = BIO_new_mem_buf((void *)privkey_pem, -1);
 
 if (!(sign_ctx->key = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL)))
   return string_sprintf("privkey PEM-block import: %s",
