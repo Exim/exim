@@ -6,6 +6,8 @@ CHOWN_COMMAND=/usr/sbin/chown
 STRIP_COMMAND=/usr/bin/strip
 CHMOD_COMMAND=/bin/chmod
 
+CFLAGS += -DTAINT_CHECK_SLOW
+
 # FreeBSD Ports no longer insert compatibility symlinks into /usr/bin for
 # scripting languages which traditionally have had them.
 PERL_COMMAND=/usr/local/bin/perl
