@@ -12,6 +12,8 @@ CHOWN_COMMAND=look_for_it
 CHGRP_COMMAND=look_for_it
 CHMOD_COMMAND=look_for_it
 
+# The system cc may be gcc or clang; do not force gcc
+CC=cc
 # Preserve CFLAGS and CFLAGS_DYNAMIC from the caller/environment
 CFLAGS ?= -O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 CFLAGS_DYNAMIC ?= -shared -rdynamic

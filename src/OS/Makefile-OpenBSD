@@ -4,6 +4,7 @@ CHOWN_COMMAND=/usr/sbin/chown
 CHGRP_COMMAND=/usr/sbin/chgrp
 CHMOD_COMMAND=/bin/chmod
 
+CC=cc
 CFLAGS=-O2 -Wall -Wno-parentheses -Wno-self-assign -Wno-logical-op-parentheses
 CFLAGS += -DTAINT_CHECK_SLOW
 
