@@ -99,7 +99,7 @@ dnsdb key: unknown
 DNS lookup of unknown (TXT) using fakens
 DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for unknown-TXT-xxxx, ttl 3600
+ writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
 lookup failed
 unknown in "dnsdb;unknown"? no (end of list)
 r1 router skipped: local_parts mismatch

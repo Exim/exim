@@ -20,7 +20,7 @@
 > csa=csa2.test.ex           N csa2.test.ex
 > 
 > soa=test.ex                exim.test.ex
-> soa=a.test.ex              exim.test.ex hostmaster.exim.test.ex 1430683638 1200 120 604800 3600
+> soa=a.test.ex              exim.test.ex hostmaster.exim.test.ex 1430683638 1200 120 604800 3000
 > 
 > # DNS lookups with multiple items
 > 

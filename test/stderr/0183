@@ -89,7 +89,7 @@ lookuphost router called for abcd@ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3600
+ writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -290,7 +290,7 @@ lookuphost router called for abcd@ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3600
+ writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -435,7 +435,7 @@ lookuphost router called for userx@nonexist.test.ex
 DNS lookup of nonexist.test.ex (MX) using fakens
 DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3600
+ writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3000
 lookuphost router declined for userx@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -492,7 +492,7 @@ lookuphost router called for abcd@ten-1.test.ex
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3600
+ writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -534,7 +534,7 @@ doing DNS lookup
 DNS lookup of nonexist.test.ex (A) using fakens
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
- writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3600
+ writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3000
 useryz router: defer for usery@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

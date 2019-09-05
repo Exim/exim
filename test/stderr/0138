@@ -72,7 +72,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> check dnslists = rbl3.test.ex
 >>> dnslists check: rbl3.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl3.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for 13.12.11.V4NET.rbl3.test.ex failed
 >>> => that means V4NET.11.12.13 is not listed at rbl3.test.ex
 >>> accept: condition test failed in ACL "check_recipient"
@@ -81,7 +81,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> check dnslists = rbl2.test.ex
 >>> dnslists check: rbl2.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl2.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for 13.12.11.V4NET.rbl2.test.ex failed
 >>> => that means V4NET.11.12.13 is not listed at rbl2.test.ex
 >>> deny: condition test failed in ACL "check_recipient"

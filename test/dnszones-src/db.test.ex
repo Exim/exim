@@ -20,7 +20,7 @@
 ; and description.
 
 test.ex.     NS      exim.test.ex.
-test.ex.     SOA     exim.test.ex. hostmaster.exim.test.ex 1430683638 1200 120 604800 3600
+test.ex.     SOA     exim.test.ex. hostmaster.exim.test.ex 1430683638 1200 120 604800 3000
 
 test.ex.     TXT     "A TXT record for test.ex."
 s/lash       TXT     "A TXT record for s/lash.test.ex."

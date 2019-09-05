@@ -291,11 +291,11 @@ r2 router called for unknown@test.ex
 DNS lookup of test.ex (MX) using fakens
 DNS lookup of test.ex (MX) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for test.ex-MX-xxxx, ttl 3600
+ writing neg-cache entry for test.ex-MX-xxxx, ttl 3000
 DNS lookup of test.ex (A) using fakens
 DNS lookup of test.ex (A) gave NO_DATA
 returning DNS_NODATA
- writing neg-cache entry for test.ex-A-xxxx, ttl 3600
+ writing neg-cache entry for test.ex-A-xxxx, ttl 3000
 r2 router declined for unknown@test.ex
 --------> r3 router <--------
 local_part=unknown domain=test.ex

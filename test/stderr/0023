@@ -688,7 +688,7 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> new DNS lookup for 12.12.11.V4NET.rbl.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for 12.12.11.V4NET.rbl.test.ex failed
 >>> => that means V4NET.11.12.12 is not listed at rbl.test.ex
 >>> deny: condition test failed in ACL "acl_V4NET_11_12"
@@ -1184,7 +1184,7 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>>                = test.ex/elsewhere
 >>> dnslists check: test.ex/elsewhere
 >>> new DNS lookup for elsewhere.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for elsewhere.test.ex failed
 >>> => that means elsewhere is not listed at test.ex
 >>> deny: condition test failed in ACL "acl_29_29_29"

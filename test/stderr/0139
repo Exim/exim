@@ -11,7 +11,7 @@
 >>> check dnslists = rbl4.test.ex&0.0.0.6
 >>> dnslists check: rbl4.test.ex&0.0.0.6
 >>> new DNS lookup for 14.12.11.V4NET.rbl4.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
@@ -143,7 +143,7 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> check dnslists = rbl4.test.ex&0.0.0.6
 >>> dnslists check: rbl4.test.ex&0.0.0.6
 >>> new DNS lookup for 15.12.11.V4NET.rbl4.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
@@ -294,7 +294,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> check dnslists = rbl2.test.ex!=127.0.0.3 : rbl3.test.ex=127.0.0.3
 >>> dnslists check: rbl2.test.ex!=127.0.0.3
 >>> new DNS lookup for 15.12.11.V4NET.rbl2.test.ex
->>> dnslists: wrote cache entry, ttl=3600
+>>> dnslists: wrote cache entry, ttl=3000
 >>> DNS lookup for 15.12.11.V4NET.rbl2.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl2.test.ex
 >>> dnslists check: rbl3.test.ex=127.0.0.3
