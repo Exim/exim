@@ -10,8 +10,9 @@
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>>   message: dnslist_value is $dnslist_value
 >>> check dnslists = rbl.test.ex=127.0.0.2
->>> DNS list check: rbl.test.ex=127.0.0.2
+>>> dnslists check: rbl.test.ex=127.0.0.2
 >>> new DNS lookup for 1.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 1.13.13.V4NET.rbl.test.ex failed
 >>> => that means V4NET.13.13.1 is not listed at rbl.test.ex
 >>> deny: condition test failed in ACL "connect"
@@ -30,8 +31,9 @@
 >>> processing "deny" (TESTSUITE/test-config 19)
 >>>   message: dnslist_value is $dnslist_value
 >>> check dnslists = rbl.test.ex=127.0.0.2
->>> DNS list check: rbl.test.ex=127.0.0.2
+>>> dnslists check: rbl.test.ex=127.0.0.2
 >>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> deny: condition test succeeded in ACL "connect"

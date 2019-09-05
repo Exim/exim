@@ -12,6 +12,7 @@
 250 OK
 250 Accepted
 550 host is listed in rbl.test.ex
+550 host is listed in rbl.test.ex
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaX-0005vi-00
 
@@ -37,3 +38,19 @@
 **** SMTP testing: that is not a real message id!
 
 221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host V4NET.99.99.99
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello exim.test.ex [V4NET.99.99.99]
+250-SIZE 52428800
+250-8BITMIME
+250-PIPELINING
+250 HELP
+250 OK
+550-Verification failed for <postmaster@exim.test.ex>
+550-Unrouteable address
+550 Sender verify failed
+421 the.local.host.name lost input connection

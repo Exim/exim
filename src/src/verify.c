@@ -3396,7 +3396,7 @@ if (  (t = tree_search(dnsbl_cache, query))
 /* Previous lookup was cached */
 
   {
-  HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
+  HDEBUG(D_dnsbl) debug_printf("dnslists: using result of previous lookup\n");
   }
 
 /* If not cached from a previous lookup, we must do a DNS lookup, and
@@ -3404,7 +3404,7 @@ cache the result in permanent memory. */
 
 else
   {
-  uint ttl = 3600;
+  uint ttl = 3600;	/* max TTL for positive cache entries */
 
   store_pool = POOL_PERM;
 
@@ -3439,34 +3439,58 @@ else
   addresses generated in that way as well.
 
   Mark the cache entry with the "now" plus the minimum of the address TTLs,
-  or some suitably far-future time if none were found. */
+  or the RFC 2308 negative-cache value from the SOA if none were found. */
 
-  if (cb->rc == DNS_SUCCEED)
+  switch (cb->rc)
     {
-    dns_address ** addrp = &(cb->rhs);
-    for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
-         rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-      if (rr->type == T_A)
-        {
-        dns_address *da = dns_address_from_rr(dnsa, rr);
-        if (da)
-          {
-          *addrp = da;
-          while (da->next) da = da->next;
-          addrp = &da->next;
+    case DNS_SUCCEED:
+      {
+      dns_address ** addrp = &cb->rhs;
+      dns_address * da;
+      for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+	   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+	if (rr->type == T_A && (da = dns_address_from_rr(dnsa, rr)))
+	  {
+	  *addrp = da;
+	  while (da->next) da = da->next;
+	  addrp = &da->next;
 	  if (ttl > rr->ttl) ttl = rr->ttl;
-          }
-        }
+	  }
 
-    /* If we didn't find any A records, change the return code. This can
-    happen when there is a CNAME record but there are no A records for what
-    it points to. */
+      if (cb->rhs)
+	{
+	cb->expiry = time(NULL) + ttl;
+	break;
+	}
 
-    if (!cb->rhs) cb->rc = DNS_NODATA;
+      /* If we didn't find any A records, change the return code. This can
+      happen when there is a CNAME record but there are no A records for what
+      it points to. */
+
+      cb->rc = DNS_NODATA;
+      }
+      /*FALLTHROUGH*/
+
+    case DNS_NOMATCH:
+    case DNS_NODATA:
+      {
+      /* Although there already is a neg-cache layer maintained by
+      dns_basic_lookup(), we have a dnslist cache entry allocated and
+      tree-inserted. So we may as well use it. */
+
+      time_t soa_negttl = dns_expire_from_soa(dnsa);
+      cb->expiry = soa_negttl ? soa_negttl : time(NULL) + ttl;
+      break;
+      }
+
+    default:
+      cb->expiry = time(NULL) + ttl;
+      break;
     }
 
-  cb->expiry = time(NULL)+ttl;
   store_pool = old_pool;
+  HDEBUG(D_dnsbl) debug_printf("dnslists: wrote cache entry, ttl=%d\n",
+    (int)(cb->expiry - time(NULL)));
   }
 
 /* We now have the result of the DNS lookup, either newly done, or cached
@@ -3477,7 +3501,7 @@ list (introduced by "&"), or a negative bitmask list (introduced by "!&").*/
 
 if (cb->rc == DNS_SUCCEED)
   {
-  dns_address *da = NULL;
+  dns_address * da = NULL;
   uschar *addlist = cb->rhs->address;
 
   /* For A and AAAA records, there may be multiple addresses from multiple
@@ -3714,7 +3738,7 @@ dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
 
 /* Loop through all the domains supplied, until something matches */
 
-while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
   {
   int rc;
   BOOL bitmask = FALSE;
@@ -3724,7 +3748,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
   uschar *iplist;
   uschar *key;
 
-  HDEBUG(D_dnsbl) debug_printf("DNS list check: %s\n", domain);
+  HDEBUG(D_dnsbl) debug_printf("dnslists check: %s\n", domain);
 
   /* Deal with special values that change the behaviour on defer */
 
@@ -3778,8 +3802,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
   set domain_txt == domain. */
 
   domain_txt = domain;
-  comma = Ustrchr(domain, ',');
-  if (comma != NULL)
+  if ((comma = Ustrchr(domain, ',')))
     {
     *comma++ = 0;
     domain = comma;
@@ -3821,7 +3844,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 	  acl_wherenames[where]);
       return ERROR;
       }
-    if (sender_host_address == NULL) return FAIL;    /* can never match */
+    if (!sender_host_address) return FAIL;    /* can never match */
     if (revadd[0] == 0) invert_address(revadd, sender_host_address);
     rc = one_check_dnsbl(domain, domain_txt, sender_host_address, revadd,
       iplist, bitmask, match_type, defer_return);
@@ -3843,11 +3866,9 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     int keysep = 0;
     BOOL defer = FALSE;
     uschar *keydomain;
-    uschar keybuffer[256];
     uschar keyrevadd[128];
 
-    while ((keydomain = string_nextinlist(CUSS &key, &keysep, keybuffer,
-            sizeof(keybuffer))) != NULL)
+    while ((keydomain = string_nextinlist(CUSS &key, &keysep, NULL, 0)))
       {
       uschar *prepend = keydomain;
 
@@ -3859,7 +3880,6 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 
       rc = one_check_dnsbl(domain, domain_txt, keydomain, prepend, iplist,
         bitmask, match_type, defer_return);
-
       if (rc == OK)
         {
         dnslist_domain = string_copy(domain_txt);

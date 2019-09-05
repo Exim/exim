@@ -1,9 +1,13 @@
 # RBL blocking (unregistered host)
-exim -bh V4NET.11.12.13
+#
+# The list2 checks the dnslist layer positive caching
+# We cannot check the cache ttl because -bh defeats delays
+exim -d -bh V4NET.11.12.13
 ehlo exim.test.ex
 mail from:postmaster@exim.test.ex
 rcpt to:<postmaster@exim.test.ex>
 rcpt to:list@exim.test.ex
+rcpt to:list2@exim.test.ex
 data
 test data
 .
@@ -17,5 +21,12 @@ data
 test data
 .
 quit
+****
+#
+# check negative-cache ttl
+exim -d -bh V4NET.99.99.99
+ehlo exim.test.ex
+mail from:postmaster@exim.test.ex
+rcpt to:list@exim.test.ex
 ****
 no_msglog_check

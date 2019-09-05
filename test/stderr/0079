@@ -19,8 +19,9 @@
 >>>   message: X-Warning: $sender_host_address is blacklisted at $dnslist_domain
 >>> l_message: $sender_host_address is in $dnslist_domain
 >>> check dnslists = rbl.test.ex
->>> DNS list check: rbl.test.ex
+>>> dnslists check: rbl.test.ex
 >>> new DNS lookup for 14.12.11.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=2
 >>> DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
@@ -32,8 +33,9 @@ LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: V4NET.11.12.14 is in rbl.test.ex
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
 >>> check dnslists = rbl2.test.ex
->>> DNS list check: rbl2.test.ex
+>>> dnslists check: rbl2.test.ex
 >>> new DNS lookup for 14.12.11.V4NET.rbl2.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 14.12.11.V4NET.rbl2.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl2.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
@@ -53,8 +55,8 @@ LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: accepting postmaster from host i
 >>>   message: X-Warning: $sender_host_address is blacklisted at $dnslist_domain
 >>> l_message: $sender_host_address is in $dnslist_domain
 >>> check dnslists = rbl.test.ex
->>> DNS list check: rbl.test.ex
->>> using result of previous DNS lookup
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
@@ -71,8 +73,8 @@ LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: accepting postmaster from host i
 >>> processing "deny" (TESTSUITE/test-config 33)
 >>>   message: host is listed in $dnslist_domain
 >>> check dnslists = rbl2.test.ex
->>> DNS list check: rbl2.test.ex
->>> using result of previous DNS lookup
+>>> dnslists check: rbl2.test.ex
+>>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl2.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl2.test.ex
 >>> deny: condition test succeeded in ACL "check_recipient"

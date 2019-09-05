@@ -653,8 +653,9 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
 >>> l_message: DNSLIST ($dnslist_domain: $dnslist_text)
 >>> check dnslists = rbl.test.ex
->>> DNS list check: rbl.test.ex
+>>> dnslists check: rbl.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=1
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
 >>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
@@ -665,8 +666,8 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This 
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
 >>> l_message: DNSLIST ($dnslist_domain: $dnslist_text)
 >>> check dnslists = rbl.test.ex
->>> DNS list check: rbl.test.ex
->>> using result of previous DNS lookup
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
 >>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
@@ -685,8 +686,9 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
 >>> l_message: DNSLIST ($dnslist_domain: $dnslist_text)
 >>> check dnslists = rbl.test.ex
->>> DNS list check: rbl.test.ex
+>>> dnslists check: rbl.test.ex
 >>> new DNS lookup for 12.12.11.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 12.12.11.V4NET.rbl.test.ex failed
 >>> => that means V4NET.11.12.12 is not listed at rbl.test.ex
 >>> deny: condition test failed in ACL "acl_V4NET_11_12"
@@ -698,8 +700,8 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>>   message: host in DNS list $dnslist_domain: $dnslist_text
 >>> l_message: DNSLIST ($dnslist_domain: $dnslist_text)
 >>> check dnslists = rbl.test.ex
->>> DNS list check: rbl.test.ex
->>> using result of previous DNS lookup
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
 >>> DNS lookup for 12.12.11.V4NET.rbl.test.ex failed
 >>> => that means V4NET.11.12.12 is not listed at rbl.test.ex
 >>> deny: condition test failed in ACL "acl_V4NET_11_12"
@@ -1168,8 +1170,9 @@ LOG: H=[V4NET.99.99.96] F=<> temporarily rejected RCPT <x@y>: host lookup deferr
 >>> processing "deny" (TESTSUITE/test-config 154)
 >>> check dnslists = test.ex/$sender_address_domain
 >>>                = test.ex/localhost
->>> DNS list check: test.ex/localhost
+>>> dnslists check: test.ex/localhost
 >>> new DNS lookup for localhost.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for localhost.test.ex succeeded (yielding 127.0.0.1)
 >>> => that means localhost is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_29_29_29"
@@ -1179,8 +1182,9 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> processing "deny" (TESTSUITE/test-config 154)
 >>> check dnslists = test.ex/$sender_address_domain
 >>>                = test.ex/elsewhere
->>> DNS list check: test.ex/elsewhere
+>>> dnslists check: test.ex/elsewhere
 >>> new DNS lookup for elsewhere.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for elsewhere.test.ex failed
 >>> => that means elsewhere is not listed at test.ex
 >>> deny: condition test failed in ACL "acl_29_29_29"
@@ -1200,8 +1204,9 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
 >>> check dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
 >>>                = test.ex=V4NET.0.0.1,127.0.0.2/ten-1
->>> DNS list check: test.ex=V4NET.0.0.1,127.0.0.2/ten-1
+>>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/ten-1
 >>> new DNS lookup for ten-1.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for ten-1.test.ex succeeded (yielding V4NET.0.0.1)
 >>> => that means ten-1 is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_30_30_30"
@@ -1212,8 +1217,9 @@ LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
 >>> check dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
 >>>                = test.ex=V4NET.0.0.1,127.0.0.2/ten-2
->>> DNS list check: test.ex=V4NET.0.0.1,127.0.0.2/ten-2
+>>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/ten-2
 >>> new DNS lookup for ten-2.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for ten-2.test.ex succeeded (yielding V4NET.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there was no match for =V4NET.0.0.1,127.0.0.2
@@ -1227,8 +1233,9 @@ LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>>   message: domain=$dnslist_domain\nvalue=$dnslist_value\nmatched=$dnslist_matched\ntext="$dnslist_text"
 >>> check dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
 >>>                = test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
->>> DNS list check: test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
+>>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=1
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means 13.12.11.V4NET.rbl is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_30_30_30"
@@ -1246,8 +1253,8 @@ LOG: H=[30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain=test.e
 >>> processing "deny" (TESTSUITE/test-config 167)
 >>> check dnslists = test.ex/$sender_address_domain+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
 >>>                = test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
->>> DNS list check: test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
-LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+e...
+>>> dnslists check: test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
+LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+...
 >>> deny: condition test failed in ACL "acl_31_31_31"
 >>> processing "accept" (TESTSUITE/test-config 168)
 >>> accept: condition test succeeded in ACL "acl_31_31_31"
@@ -1293,31 +1300,32 @@ LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> using ACL "acl_44_44_44"
 >>> processing "warn" (TESTSUITE/test-config 192)
 >>> check dnslists = test.again.dns
->>> DNS list check: test.again.dns
+>>> dnslists check: test.again.dns
 >>> new DNS lookup for 1.44.44.44.test.again.dns
 >>> 1.44.44.44.test.again.dns in dns_again_means_nonexist? no (option unset)
+>>> dnslists: wrote cache entry, ttl=3600
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: assumed not in list
 >>> warn: condition test failed in ACL "acl_44_44_44"
 >>> processing "warn" (TESTSUITE/test-config 193)
 >>> check dnslists = +include_unknown : test.again.dns
->>> DNS list check: +include_unknown
->>> DNS list check: test.again.dns
->>> using result of previous DNS lookup
+>>> dnslists check: +include_unknown
+>>> dnslists check: test.again.dns
+>>> dnslists: using result of previous lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: assumed in list
 >>> => that means 44.44.44.1 is listed at test.again.dns
 >>> warn: condition test succeeded in ACL "acl_44_44_44"
 >>> processing "warn" (TESTSUITE/test-config 194)
 >>> check dnslists = +exclude_unknown : test.again.dns
->>> DNS list check: +exclude_unknown
->>> DNS list check: test.again.dns
->>> using result of previous DNS lookup
+>>> dnslists check: +exclude_unknown
+>>> dnslists check: test.again.dns
+>>> dnslists: using result of previous lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: assumed not in list
 >>> warn: condition test failed in ACL "acl_44_44_44"
 >>> processing "warn" (TESTSUITE/test-config 195)
 >>> check dnslists = +defer_unknown : test.again.dns
->>> DNS list check: +defer_unknown
->>> DNS list check: test.again.dns
->>> using result of previous DNS lookup
+>>> dnslists check: +defer_unknown
+>>> dnslists check: test.again.dns
+>>> dnslists: using result of previous lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: returned DEFER
 >>> warn: condition test deferred in ACL "acl_44_44_44"
 LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferred

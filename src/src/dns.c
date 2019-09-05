@@ -686,7 +686,7 @@ in the SOA.  We hope that one was returned in the lookup, and do not
 bother doing a separate lookup; if not found return a forever TTL.
 */
 
-static time_t
+time_t
 dns_expire_from_soa(dns_answer * dnsa)
 {
 const HEADER * h = (const HEADER *)dnsa->answer;

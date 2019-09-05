@@ -192,10 +192,11 @@ check acl = TESTSUITE/aux-fixed/0386.acl2
    message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
  l_message: found in $dnslist_domain: $dnslist_text
  check dnslists = rbl.test.ex 
-DNS list check: rbl.test.ex
+dnslists check: rbl.test.ex
 new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) using fakens
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) succeeded
+dnslists: wrote cache entry, ttl=1
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
@@ -390,8 +391,8 @@ check acl = TESTSUITE/aux-fixed/0386.acl2
    message: X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
  l_message: found in $dnslist_domain: $dnslist_text
  check dnslists = rbl.test.ex 
-DNS list check: rbl.test.ex
-using result of previous DNS lookup
+dnslists check: rbl.test.ex
+dnslists: using result of previous lookup
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 => that means V4NET.11.12.13 is listed at rbl.test.ex
  warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"

@@ -203,16 +203,18 @@ ppppp 1 SMTP accept process running
 ppppp Listening...
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
-ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
+ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
 ppppp new DNS lookup for 14.12.11.V4NET.rbl.test.ex
+ppppp dnslists: wrote cache entry, ttl=2
 ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
-ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
-ppppp using result of previous DNS lookup
+ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
+ppppp dnslists: using result of previous lookup
 ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
-ppppp DNS list check: rbl.test.ex/V4NET.11.12.14
+ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
 ppppp cached data found but past valid time; new DNS lookup for 14.12.11.V4NET.rbl.test.ex
+ppppp dnslists: wrote cache entry, ttl=2
 ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
 ppppp LOG: MAIN
