@@ -172,7 +172,7 @@ cname4       CNAME   thishost
 
 ; V4NET.11.12.13 is deliberately not reverse-registered
 
-TTL=1 13.12.11.V4NET.rbl    A   127.0.0.2
+TTL=3 13.12.11.V4NET.rbl    A   127.0.0.2
                       TXT "This is a test blacklisting message"
 TTL=2 14.12.11.V4NET.rbl A 127.0.0.2
                       TXT "This is a test blacklisting message"

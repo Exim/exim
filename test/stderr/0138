@@ -90,7 +90,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
->>> dnslists: wrote cache entry, ttl=1
+>>> dnslists: wrote cache entry, ttl=3
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"

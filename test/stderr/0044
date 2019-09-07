@@ -79,7 +79,7 @@ dnslists check: rbl.test.ex
 new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) using fakens
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) succeeded
-dnslists: wrote cache entry, ttl=1
+dnslists: wrote cache entry, ttl=3
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded

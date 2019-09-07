@@ -655,7 +655,7 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
->>> dnslists: wrote cache entry, ttl=1
+>>> dnslists: wrote cache entry, ttl=3
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
 >>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
@@ -1235,7 +1235,7 @@ LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>>                = test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
 >>> dnslists check: test.ex=V4NET.0.0.1,127.0.0.2/13.12.11.V4NET.rbl
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
->>> dnslists: wrote cache entry, ttl=1
+>>> dnslists: wrote cache entry, ttl=3
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means 13.12.11.V4NET.rbl is listed at test.ex
 >>> deny: condition test succeeded in ACL "acl_30_30_30"
