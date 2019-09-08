@@ -1161,6 +1161,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Platform-dependent resolver option bits
     s/^ (?:writing|update) neg-cache entry for [^,]+-\K[0-9a-f]+, ttl/xxxx, ttl/;
 
+    # timing variance, run-to-run
+    s/^time on queue = \K1s/0s/;
+
     # Skip hosts_require_dane checks when the options
     # are unset, because dane ain't always there.
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
