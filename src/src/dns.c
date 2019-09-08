@@ -616,14 +616,10 @@ Arguments:
 Returns:     the return code
 */
 
-/*XXX the derivation of this value needs explaining */
+/* we need:  255 +1 + (max(typetext) == 5) +1 + max(chars_for_long-max) +1 */
 #define DNS_FAILTAG_MAX 290
-#define alignment \
-  (sizeof(void *) > sizeof(double) ? sizeof(void *) : sizeof(double))
-#define align(n) \
-  (((((intptr_t)n) + (alignment-1)) / alignment) * alignment)
 #define DNS_FAILNODE_SIZE \
-  align(sizeof(tree_node) + DNS_FAILTAG_MAX + sizeof(expiring_data))
+  (sizeof(expiring_data) + sizeof(tree_node) + DNS_FAILTAG_MAX)
 
 static int
 dns_fail_return(const uschar * name, int type, time_t expiry, int rc)
@@ -637,10 +633,9 @@ if ((previous = tree_search(tree_dns_fails, node_name)))
   e = previous->data.ptr;
 else
   {
-  new = store_get_perm(DNS_FAILNODE_SIZE, is_tainted(name));
-
+  e = store_get_perm(DNS_FAILNODE_SIZE, is_tainted(name));
+  new = (void *)(e+1);
   dns_fail_tag(new->name, name, type);
-  e = (expiring_data *) align((char *)new + sizeof(tree_node) + DNS_FAILTAG_MAX);
   new->data.ptr = e;
   (void)tree_insertnode(&tree_dns_fails, new);
   }
