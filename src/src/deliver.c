@@ -328,6 +328,10 @@ Returns:    a file descriptor, or -1 (with errno set)
 static int
 open_msglog_file(uschar *filename, int mode, uschar **error)
 {
+if (Ustrstr(filename, US"/../"))
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Attempt to open msglog file path with upward-traversal: '%s'\n", filename);
+
 for (int i = 2; i > 0; i--)
   {
   int fd = Uopen(filename,
