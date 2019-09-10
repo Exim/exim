@@ -313,9 +313,9 @@ if (!outsep2) switch(type)
 while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
   {
   uschar rbuffer[256];
-  int searchtype = (type == T_CSA)? T_SRV :         /* record type we want */
-                   (type == T_MXH)? T_MX :
-                   (type == T_ZNS)? T_NS : type;
+  int searchtype = type == T_CSA ? T_SRV :         /* record type we want */
+                   type == T_MXH ? T_MX :
+                   type == T_ZNS ? T_NS : type;
 
   /* If the type is PTR or CSA, we have to construct the relevant magic lookup
   key if the original is an IP address (some experimental protocols are using

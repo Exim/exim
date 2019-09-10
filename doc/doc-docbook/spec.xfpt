@@ -17644,8 +17644,8 @@ is not required the &%tls_advertise_hosts%& option should be set empty.
 .cindex "TLS" "server certificate; location of"
 .cindex "certificate" "server, location of"
 The value of this option is expanded, and must then be a list of absolute paths to
-files which contains the server's certificates.  Commonly only one file is
-needed.
+files which contain the server's certificates (in PEM format).
+Commonly only one file is needed.
 The server's private key is also
 assumed to be in this file if &%tls_privatekey%& is unset. See chapter
 &<<CHAPTLS>>& for further details.
@@ -28663,7 +28663,7 @@ Great care should be taken to deal with matters of case, various injection
 attacks in the string (&`../`& or SQL), and ensuring that a valid filename
 can always be referenced; it is important to remember that &$tls_in_sni$& is
 arbitrary unverified data provided prior to authentication.
-Further, the initial certificate is loaded before SNI is arrived, so
+Further, the initial certificate is loaded before SNI has arrived, so
 an expansion for &%tls_certificate%& must have a default which is used
 when &$tls_in_sni$& is empty.
 

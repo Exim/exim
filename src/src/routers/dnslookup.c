@@ -289,7 +289,7 @@ for (;;)
 
   /* Unfortunately, we cannot set the mx_only option in advance, because the
   DNS lookup may extend an unqualified name. Therefore, we must do the test
-  stoubsequently. We use the same logic as that for widen_domains above to avoid
+  subsequently. We use the same logic as that for widen_domains above to avoid
   requesting a header rewrite that cannot work. */
 
   if (verify != v_sender || !ob->rewrite_headers || addr->parent)
