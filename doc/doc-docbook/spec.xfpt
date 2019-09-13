@@ -16898,11 +16898,11 @@ it qualifies them only if the message came from a host that matches
 &%sender_unqualified_hosts%&, or if the message was submitted locally (not
 using TCP/IP), and the &%-bnq%& option was not set.
 
-.option set_environment main "string list" empty
+.option add_environment main "string list" empty
 .cindex "environment"
-This option allows to set individual environment variables that the
+This option allows to add individual environment variables that the
 currently linked libraries and programs in child processes use. The
-default list is empty,
+default list is empty.
 
 
 .option slow_lookup_log main integer 0
@@ -18909,7 +18909,7 @@ This option controls whether the local part is used to form the key for retry
 hints for addresses that suffer temporary errors while being handled by this
 .new
 router. The default value is true for any router that has any of
-&%check_local_user%&, 
+&%check_local_user%&,
 &%local_parts%&,
 &%condition%&,
 &%local_part_prefix%&,
