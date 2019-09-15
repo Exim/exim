@@ -24462,15 +24462,23 @@ of the message. Its value must not be zero. See also &%final_timeout%&.
 
 
 .option dkim_canon smtp string&!! unset
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_domain smtp string list&!! unset
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_hash smtp string&!! sha256
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_identity smtp string&!! unset
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_private_key smtp string&!! unset
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_selector smtp string&!! unset
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_strict smtp string&!! unset
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_sign_headers smtp string&!! "per RFC"
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 .option dkim_timestamps smtp string&!! unset
-DKIM signing options.  For details see section &<<SECDKIMSIGN>>&.
+DKIM signing option.  For details see section &<<SECDKIMSIGN>>&.
 
 
 .option delay_after_cutoff smtp boolean true
