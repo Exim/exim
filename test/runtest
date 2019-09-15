@@ -1085,7 +1085,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /name=localhost address=::1/;
 
     # drop pdkim debugging header
-    next if /^PDKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
+    next if /^DKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
 
     # Various other IPv6 lines must be omitted too
 
@@ -1208,7 +1208,7 @@ RESET_AFTER_EXTRA_LINE_READ:
       }
 
     # Not all platforms build with DKIM enabled
-    next if /^PDKIM >> Body data for hash, canonicalized/;
+    next if /^DKIM >> Body data for hash, canonicalized/;
 
     # Not all platforms build with SPF enabled
     next if /^(spf_conn_init|SPF_dns_exim_new|spf_compile\.c)/;
@@ -1218,7 +1218,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     #  Parts of DKIM-specific debug output depend on the time/date
     next if /^date:\w+,\{SP\}/;
-    next if /^PDKIM \[[^[]+\] (Header hash|b) computed:/;
+    next if /^DKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
     if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|yes \(matched "\*"\))\n$//)
