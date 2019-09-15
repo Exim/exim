@@ -6,5 +6,5 @@ munge sys_bindir
 #
 exim a
 ****
-sleep 1
+sleep 2
 no_msglog_check

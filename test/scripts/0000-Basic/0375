@@ -2,7 +2,7 @@
 need_ipv4
 munge optional_dsn_info
 #
-server -t 10 PORT_S 7
+server -t 20 PORT_S 7
 220
 EHLO
 220 OK
