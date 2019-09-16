@@ -1168,7 +1168,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # are unset, because dane ain't always there.
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
 
-    # DISABLE_OCSP 
+    # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
 
     # SUPPORT_PROXY
@@ -1234,7 +1234,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     if (/^([0-9: ]*						# possible timestamp
 	Connecting\ to\ [^ ]+\ [^ ]+(\ from\ [^ ]+)?)\ \.\.\.
-	\ .*TFO\ mode\ 
+	\ .*TFO\ mode\x20
 	(sendto,\ no\ data:\ EINPROGRESS			# Linux
 	|connection\ attempt\ to\ [^,]+,\ 0\ data)		# MacOS & no-support
 	$/x)
