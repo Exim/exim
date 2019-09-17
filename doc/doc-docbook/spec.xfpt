@@ -6109,6 +6109,9 @@ dnslookup:
   domains = ! +local_domains
   transport = remote_smtp
   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+.ifdef _HAVE_DNSSEC
+  dnssec_request_domains = *
+.endif
   no_more
 .endd
 The &%domains%& option behaves as per smarthost, above.
@@ -6260,7 +6263,6 @@ remote_smtp:
   driver = smtp
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
 .ifdef _HAVE_DANE
-  dnssec_request_domains = *
   hosts_try_dane = *
 .endif
 .ifdef _HAVE_PRDR
@@ -6271,7 +6273,7 @@ This transport is used for delivering messages over SMTP connections.
 The list of remote hosts comes from the router.
 The &%message_size_limit%& usage is a hack to avoid sending on messages
 with over-long lines.  The built-in macro _HAVE_DANE guards configuration
-to try to use DNSSEC for all queries and to use DANE for delivery;
+to use DANE for delivery;
 see section &<<SECDANE>>& for more details.
 
 The &%hosts_try_prdr%& option enables an efficiency SMTP option.  It is
@@ -24526,8 +24528,9 @@ details.
 .cindex "security" "MX lookup"
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
-the dnssec request bit set.
-This applies to all of the SRV, MX, AAAA, A lookup sequence.
+the dnssec request bit set. Setting this transport option is only useful if the
+transport overrides or sets the host names. See the &%dnssec_request_domains%&
+router option.
 
 
 
@@ -24537,9 +24540,9 @@ This applies to all of the SRV, MX, AAAA, A lookup sequence.
 .cindex "security" "MX lookup"
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_require_domains%& will be done with
-the dnssec request bit set.  Any returns not having the Authenticated Data bit
-(AD bit) set will be ignored and logged as a host-lookup failure.
-This applies to all of the SRV, MX, AAAA, A lookup sequence.
+the dnssec request bit set.  Setting this transport option is only
+useful if the transport overrides or sets the host names. See the
+&%dnssec_require_domains%& router option.
 
 
 
@@ -24818,7 +24821,8 @@ TLS session for any host that matches this list.
 .cindex DANE "requiring for certain servers"
 If built with DANE support, Exim  will require that a DNSSEC-validated
 TLSA record is present for any host matching the list,
-and that a DANE-verified TLS connection is made.
+and that a DANE-verified TLS connection is made. See
+the &%dnssec_request_domains%& router and transport options.
 There will be no fallback to in-clear communication.
 See section &<<SECDANE>>&.
 
@@ -24854,11 +24858,11 @@ BDAT will not be used in conjunction with a transport filter.
 .option hosts_try_dane smtp "host list&!!" *
 .cindex DANE "transport options"
 .cindex DANE "attempting for certain servers"
-If built with DANE support, Exim  will lookup a
-TLSA record for any host matching the list.
-If found and verified by DNSSEC,
-a DANE-verified TLS connection is made to that host;
-there will be no fallback to in-clear communication.
+If built with DANE support, Exim  will require that a DNSSEC-validated
+TLSA record is present for any host matching the list,
+and that a DANE-verified TLS connection is made. See
+the &%dnssec_request_domains%& router and transport options.
+There will be no fallback to in-clear communication.
 See section &<<SECDANE>>&.
 
 .option hosts_try_fastopen smtp "host list&!!" *
@@ -28866,7 +28870,12 @@ Support for client-side operation of DANE can be included at compile time by def
 in &_Local/Makefile_&.
 If it has been included, the macro "_HAVE_DANE" will be defined.
 
-The TLSA record for the server may have "certificate usage" of DANE-TA(2) or DANE-EE(3).
+A TLSA record consist of 4 fields, the "Certificate Usage", the
+"Selector", the "Matching type", and the "Certificate Association Data".
+For a detailed description of the TLSA record see
+&url(https://tools.ietf.org/html/rfc7671#page-5,RFC 7671).
+
+The TLSA record for the server may have "Certificate Usage" (1st) field of DANE-TA(2) or DANE-EE(3).
 These are the "Trust Anchor" and "End Entity" variants.
 The latter specifies the End Entity directly, i.e. the certificate involved is that of the server
 (and if only DANE-EE is used then it should be the sole one transmitted during the TLS handshake);
@@ -28907,19 +28916,29 @@ If you're not already using a private CA, or it doesn't meet these
 requirements, then we encourage you to avoid all these issues and use a public
 CA such as &url(https://letsencrypt.org/,Let's Encrypt) instead.
 
-The TLSA record should have a Selector field of SPKI(1) and a Matching Type field of SHA2-512(2).
+The TLSA record should have a "Selector" (2nd) field of SPKI(1) and
+a "Matching Type" (3rd) field of SHA2-512(2).
 
-At the time of writing, &url(https://www.huque.com/bin/gen_tlsa)
-is useful for quickly generating TLSA records; and commands like
+For the "Certificate Authority Data" (4th) field, commands like
 
 .code
-  openssl x509 -in -pubkey -noout <certificate.pem \
+  openssl x509 -pubkey -noout <certificate.pem \
   | openssl rsa -outform der -pubin 2>/dev/null \
   | openssl sha512 \
   | awk '{print $2}'
 .endd
 
-are workable for 4th-field hashes.
+are workable to create a hash of the certificate's public key.
+
+An example TLSA record for DANE-EE(3), SPKI(1), and SHA-512 (2) looks like
+
+.code
+  _25._tcp.mail.example.com. TLSA 3 1 2 8BA8A336E...
+.endd
+
+At the time of writing, &url(https://www.huque.com/bin/gen_tlsa)
+is useful for quickly generating TLSA records.
+
 
 For use with the DANE-TA model, server certificates must have a correct name (SubjectName or SubjectAltName).
 
@@ -28953,7 +28972,9 @@ those who use &%hosts_require_ocsp%&, should consider the interaction with DANE 
 
 For client-side DANE there are three new smtp transport options, &%hosts_try_dane%&, &%hosts_require_dane%&
 and &%dane_require_tls_ciphers%&.
-The require variant will result in failure if the target host is not DNSSEC-secured.
+The require variant will result in failure if the target host is not
+DNSSEC-secured. To get DNSSEC-secured hostname resolution, use
+the &%dnssec_request_domains%& router or transport option.
 
 DANE will only be usable if the target host has DNSSEC-secured MX, A and TLSA records.
 
@@ -28983,7 +29004,7 @@ If DANE is requested and useable (see above) the following transport options are
 If DANE is not usable, whether requested or not, and CA-anchored
 verification evaluation is wanted, the above variables should be set appropriately.
 
-Currently the &%dnssec_request_domains%& must be active and &%dnssec_require_domains%& is ignored.
+Currently the (router or transport options) &%dnssec_request_domains%& must be active and &%dnssec_require_domains%& is ignored.
 
 If verification was successful using DANE then the "CV" item in the delivery log line will show as "CV=dane".
 

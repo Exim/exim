@@ -658,6 +658,9 @@ smarthost:
   transport = smarthost_smtp
   route_data = ROUTER_SMARTHOST
   ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
+.ifdef _HAVE_DNSSEC
+  dnssec_request_domains = *
+.endif
   no_more
 
 .else
@@ -682,7 +685,9 @@ dnslookup:
   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
 # if ipv6-enabled then instead use:
 # ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
+.ifdef _HAVE_DNSSEC
   dnssec_request_domains = *
+.endif
   no_more
 
 # This closes the ROUTER_SMARTHOST ifdef around the choice of routing for
@@ -805,7 +810,6 @@ remote_smtp:
   driver = smtp
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
 .ifdef _HAVE_DANE
-  dnssec_request_domains = *
   hosts_try_dane = *
 .endif
 .ifdef _HAVE_PRDR
