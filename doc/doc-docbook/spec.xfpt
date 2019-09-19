@@ -16043,6 +16043,10 @@ when Exim is entered, so it can, for example, contain a reference to the host
 name. If no specific path is set for the log files at compile or runtime,
 or if the option is unset at runtime (i.e.  &`log_file_path = `&)
 they are written in a sub-directory called &_log_& in Exim's spool directory.
+.new
+A path must start with a slash.
+To send to syslog, use the word &"syslog"&.
+.wen
 Chapter &<<CHAPlog>>& contains further details about Exim's logging, and
 section &<<SECTwhelogwri>>& describes how the contents of &%log_file_path%& are
 used. If this string is fixed at your installation (contains no expansion
