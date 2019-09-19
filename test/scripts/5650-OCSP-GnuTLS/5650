@@ -34,6 +34,7 @@ killdaemon
 #
 exim -z '2: Server does not staple an outdated response'
 ****
+# This test fails on older GnuTLS versions, which do not check the resp on the server
 #
 exim -bd -oX PORT_D -DSERVER=server \
  -DOPTION=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.dated.resp
@@ -58,6 +59,7 @@ killdaemon
 #
 exim -z '3: Server does not staple a response for a revoked cert'
 ****
+# This test fails on older GnuTLS versions, which do not check the resp on the server
 #
 exim -bd -oX PORT_D -DSERVER=server \
  -DOPTION=DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.ocsp.revoked.resp

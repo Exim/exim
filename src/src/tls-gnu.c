@@ -296,11 +296,6 @@ static void exim_gnutls_logger_cb(int level, const char *message);
 
 static int exim_sni_handling_cb(gnutls_session_t session);
 
-#if !defined(DISABLE_OCSP)
-static int server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
-  gnutls_datum_t * ocsp_response);
-#endif
-
 #ifdef EXPERIMENTAL_TLS_RESUME
 static int
 tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
@@ -882,6 +877,32 @@ return -rc;
 }
 
 
+#if !defined(DISABLE_OCSP) && !defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
+/* Load an OCSP proof from file for sending by the server.  Called
+on getting a status-request handshake message, for earlier versions
+of GnuTLS. */
+
+static int
+server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
+  gnutls_datum_t * ocsp_response)
+{
+int ret;
+DEBUG(D_tls) debug_printf("OCSP stapling callback: %s\n", US ptr);
+
+if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
+  {
+  DEBUG(D_tls) debug_printf("Failed to load ocsp stapling file %s\n",
+			      CS ptr);
+  tls_in.ocsp = OCSP_NOT_RESP;
+  return GNUTLS_E_NO_CERTIFICATE_STATUS;
+  }
+
+tls_in.ocsp = OCSP_VFY_NOT_TRIED;
+return 0;
+}
+#endif
+
+
 #ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
 /* Make a note that we saw a status-request */
 static int
@@ -1209,8 +1230,8 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 		  debug_printf("oops; multiple OCSP files not supported\n");
 		break;
 		}
-		gnutls_certificate_set_ocsp_status_request_function(
-		  state->x509_cred, server_ocsp_stapling_cb, ofile);
+	      gnutls_certificate_set_ocsp_status_request_function(
+		state->x509_cred, server_ocsp_stapling_cb, ofile);
 	      }
 # endif	/* SUPPORT_GNUTLS_EXT_RAW_PARSE */
 	    }
@@ -1273,7 +1294,7 @@ else
   {
   if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "could not stat %s "
+    log_write(0, LOG_MAIN|LOG_PANIC, "could not stat '%s' "
 	"(tls_verify_certificates): %s", state->exp_tls_verify_certificates,
 	strerror(errno));
     return DEFER;
@@ -2156,30 +2177,6 @@ if (rc != OK) return GNUTLS_E_APPLICATION_ERROR_MIN;
 return 0;
 }
 
-
-
-#if !defined(DISABLE_OCSP)
-
-static int
-server_ocsp_stapling_cb(gnutls_session_t session, void * ptr,
-  gnutls_datum_t * ocsp_response)
-{
-int ret;
-DEBUG(D_tls) debug_printf("OCSP stapling callback: %s\n", US ptr);
-
-if ((ret = gnutls_load_file(ptr, ocsp_response)) < 0)
-  {
-  DEBUG(D_tls) debug_printf("Failed to load ocsp stapling file %s\n",
-			      CS ptr);
-  tls_in.ocsp = OCSP_NOT_RESP;
-  return GNUTLS_E_NO_CERTIFICATE_STATUS;
-  }
-
-tls_in.ocsp = OCSP_VFY_NOT_TRIED;
-return 0;
-}
-
-#endif
 
 
 #ifndef DISABLE_EVENT

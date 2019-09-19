@@ -9377,7 +9377,7 @@ If the ACL returns defer the result is a forced-fail.  Otherwise the expansion f
 .cindex headers "authentication-results:"
 .cindex authentication "expansion item"
 This item returns a string suitable for insertion as an
-&'Authentication-Results"'&
+&'Authentication-Results:'&
 header line.
 The given <&'authserv-id'&> is included in the result; typically this
 will be a domain name identifying the system performing the authentications.
