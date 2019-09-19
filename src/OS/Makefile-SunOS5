@@ -1,6 +1,6 @@
 # Exim: OS-specific make file for SunOS5
 
-CFLAGS=-O
+CFLAGS=-O -DTAINT_CHECK_SLOW
 
 HAVE_ICONV=yes
 
