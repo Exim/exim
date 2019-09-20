@@ -115,7 +115,7 @@ In order to run this test suite, the following requirements must be met:
     is also an IPv6 address, additional tests are run when the Exim binary
     contains IPv6 support. There are checks in the scripts for a running IPv4
     interface; when one is not found, some tests are skipped (with a warning
-    message).  The local net may not be in 10.0/8 as that is used by the suite.
+    message).  The local net may not be in 10.250.0/16 as that is used by the suite.
 
 (9) Exim must be built with TRUSTED_CONFIG_LIST support, so that the test
     configs can be placed into it.  A suitable file location is .../exim/test/trusted_configs
