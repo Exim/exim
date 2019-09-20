@@ -1131,8 +1131,8 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 	    }
 	  else
 	    DEBUG(D_tls) debug_printf("ran out of OCSP response files in list\n");
-#endif
 	  }
+#endif /* DISABLE_OCSP */
 	}
     }
   else	/* client */
