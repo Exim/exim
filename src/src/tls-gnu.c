@@ -903,6 +903,7 @@ return gnutls_ext_raw_parse(NULL, tls_server_clienthello_ext, msg,
 }
 #endif
 
+#if defined(EXPERIMENTAL_TLS_RESUME) || defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
 /* Callback for certificate-status, on server. We sent stapled OCSP. */
 static int
 tls_server_certstatus_cb(gnutls_session_t session, unsigned int htype,
@@ -925,22 +926,24 @@ tls_server_hook_cb(gnutls_session_t sess, u_int htype, unsigned when,
 {
 switch (htype)
   {
-#ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
+# ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
   case GNUTLS_HANDSHAKE_CLIENT_HELLO:
     return tls_server_clienthello_cb(sess, htype, when, incoming, msg);
-#endif
+# endif
   case GNUTLS_HANDSHAKE_CERTIFICATE_STATUS:
     return tls_server_certstatus_cb(sess, htype, when, incoming, msg);
-#ifdef EXPERIMENTAL_TLS_RESUME
+# ifdef EXPERIMENTAL_TLS_RESUME
   case GNUTLS_HANDSHAKE_NEW_SESSION_TICKET:
     return tls_server_ticket_cb(sess, htype, when, incoming, msg);
-#endif
+# endif
   default:
     return 0;
   }
 }
+#endif
 
 
+#if !defined(DISABLE_OCSP) && defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
 static void
 tls_server_testharness_ocsp_fiddle(void)
 {
@@ -952,6 +955,7 @@ if (environ) for (uschar ** p = USS environ; *p; p++)
     exim_testharness_disable_ocsp_validity_check = TRUE;
     }
 }
+#endif
 
 /*************************************************
 *       Variables re-expanded post-SNI           *
