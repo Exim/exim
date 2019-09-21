@@ -76,6 +76,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
 # define SUPPORT_SRV_OCSP_STACK
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030603
+# define SUPPORT_GNUTLS_EXT_RAW_PARSE
+#endif
 
 #ifdef SUPPORT_DANE
 # if GNUTLS_VERSION_NUMBER >= 0x030000
@@ -864,9 +867,6 @@ static int
 tls_add_certfile(exim_gnutls_state_st * state, const host_item * host,
   uschar * certfile, uschar * keyfile, uschar ** errstr)
 {
-/*XXX returns certs index for gnutls_certificate_set_x509_key_file(),
-given suitable flags set */
-
 int rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
     CS certfile, CS keyfile, GNUTLS_X509_FMT_PEM);
 if (rc < 0)
@@ -877,6 +877,7 @@ return -rc;
 }
 
 
+#ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
 /* Make a note that we saw a status-request */
 static int
 tls_server_clienthello_ext(void * ctx, unsigned tls_id,
@@ -900,6 +901,7 @@ tls_server_clienthello_cb(gnutls_session_t session, unsigned int htype,
 return gnutls_ext_raw_parse(NULL, tls_server_clienthello_ext, msg,
 			   GNUTLS_EXT_RAW_FLAG_TLS_CLIENT_HELLO);
 }
+#endif
 
 /* Callback for certificate-status, on server. We sent stapled OCSP. */
 static int
@@ -923,8 +925,10 @@ tls_server_hook_cb(gnutls_session_t sess, u_int htype, unsigned when,
 {
 switch (htype)
   {
+#ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
   case GNUTLS_HANDSHAKE_CLIENT_HELLO:
     return tls_server_clienthello_cb(sess, htype, when, incoming, msg);
+#endif
   case GNUTLS_HANDSHAKE_CERTIFICATE_STATUS:
     return tls_server_certstatus_cb(sess, htype, when, incoming, msg);
 #ifdef EXPERIMENTAL_TLS_RESUME
@@ -1099,7 +1103,7 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 	    {
 	    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", ofile);
 
-# ifdef SUPPORT_SRV_OCSP_STACK
+# ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
 	    if (f.running_in_test_harness) tls_server_testharness_ocsp_fiddle();
 
 	    if (!exim_testharness_disable_ocsp_validity_check)
@@ -1116,6 +1120,14 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 	      gnutls_handshake_set_hook_function(state->session,
 		GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
 	      }
+	    else
+# elif defined(SUPPORT_SRV_OCSP_STACK)
+	    if ((rc = gnutls_certificate_set_ocsp_status_request_function2(
+			 state->x509_cred, gnutls_cert_index,
+			 server_ocsp_stapling_cb, ofile)))
+		return tls_error_gnu(
+		      US"gnutls_certificate_set_ocsp_status_request_function2",
+		      rc, host, errstr);
 	    else
 # endif
 	      {
