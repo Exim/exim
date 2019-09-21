@@ -30892,7 +30892,9 @@ the next &%local_parts%& test.
 .cindex "&ACL;" "virus scanning"
 .cindex "&ACL;" "scanning for viruses"
 This condition is available only when Exim is compiled with the
-content-scanning extension. It causes the incoming message to be scanned for
+content-scanning extension
+and only after a DATA command.
+It causes the incoming message to be scanned for
 viruses. For details, see chapter &<<CHAPexiscan>>&.
 
 .vitem &*mime_regex&~=&~*&<&'list&~of&~regular&~expressions'&>
@@ -32679,6 +32681,15 @@ The &%malware%& ACL condition lets you connect virus scanner software to Exim.
 It supports a &"generic"& interface to scanners called via the shell, and
 specialized interfaces for &"daemon"& type virus scanners, which are resident
 in memory and thus are much faster.
+
+.new
+Since message data needs to have arrived,
+the condition may be only called in ACL defined by
+&%acl_smtp_data%&,
+&%acl_smtp_data_prdr%&,
+&%acl_smtp_mime%& or
+&%acl_smtp_dkim%&
+.wen
 
 A timeout of 2 minutes is applied to a scanner call (by default);
 if it expires then a defer action is taken.
