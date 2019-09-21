@@ -40504,10 +40504,11 @@ defines the location of a text file of valid
 top level domains the opendmarc library uses
 during domain parsing. Maintained by Mozilla,
 the most current version can be downloaded
-from a link at &url(http://publicsuffix.org/list/).
+from a link at &url(https://publicsuffix.org/list/, currently pointing
+at https://publicsuffix.org/list/public_suffix_list.dat)
 See also util/renew-opendmarc-tlds.sh script.
-The default for the option is currently
-/etc/exim/opendmarc.tlds
+The default for the option is /etc/exim/opendmarc.tlds.
+
 
 The &%dmarc_history_file%& option, if set
 .oindex &%dmarc_history_file%&
