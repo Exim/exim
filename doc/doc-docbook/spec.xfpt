@@ -9661,7 +9661,7 @@ input, but a separator setting is not included in the output. For example:
 ${filter{a:b:c}{!eq{$item}{b}}}
 .endd
 yields &`a:c`&. At the end of the expansion, the value of &$item$& is restored
-to what it was before. See also the &*map*& and &*reduce*& expansion items.
+to what it was before. See also the &%map%& and &%reduce%& expansion items.
 
 
 .vitem &*${hash{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
@@ -10012,8 +10012,8 @@ setting is not included in the output. For example:
 ${map{a:b:c}{[$item]}} ${map{<- x-y-z}{($item)}}
 .endd
 expands to &`[a]:[b]:[c] (x)-(y)-(z)`&. At the end of the expansion, the
-value of &$item$& is restored to what it was before. See also the &*filter*&
-and &*reduce*& expansion items.
+value of &$item$& is restored to what it was before. See also the &%filter%&
+and &%reduce%& expansion items.
 
 .vitem &*${nhash{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
 .cindex "expansion" "numeric hash"
@@ -10212,7 +10212,7 @@ assigned to the &$value$& variable. After this, each item in the <&'string1'&>
 list is assigned to &$item$&, in turn, and <&'string3'&> is expanded for each of
 them. The result of that expansion is assigned to &$value$& before the next
 iteration. When the end of the list is reached, the final value of &$value$& is
-added to the expansion output. The &*reduce*& expansion item can be used in a
+added to the expansion output. The &%reduce%& expansion item can be used in a
 number of ways. For example, to add up a list of numbers:
 .code
 ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
@@ -10223,7 +10223,7 @@ can be found:
 ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
 .endd
 At the end of a &*reduce*& expansion, the values of &$item$& and &$value$& are
-restored to what they were before. See also the &*filter*& and &*map*&
+restored to what they were before. See also the &%filter%& and &%map%&
 expansion items.
 
 .vitem &*$rheader_*&<&'header&~name'&>&*:*&&~or&~&*$rh_*&<&'header&~name'&>&*:*&
@@ -10483,9 +10483,9 @@ separator explicitly:
 ${addresses:>:$h_from:}
 .endd
 
-Compare the &*address*& (singular)
+Compare the &%address%& (singular)
 expansion item, which extracts the working address from a single RFC2822
-address. See the &*filter*&, &*map*&, and &*reduce*& items for ways of
+address. See the &%filter%&, &%map%&, and &%reduce%& items for ways of
 processing lists.
 
 To clarify "list of addresses in RFC 2822 format" mentioned above, Exim follows
@@ -11378,7 +11378,7 @@ list separator is changed to a comma:
 .code
 ${if forany{<, $recipients}{match{$item}{^user3@}}{yes}{no}}
 .endd
-The value of &$item$& is saved and restored while &*forany*& or &*forall*& is
+The value of &$item$& is saved and restored while &%forany%& or &%forall%& is
 being processed, to enable these expansion items to be nested.
 
 To scan a named list, expand it with the &*listnamed*& operator.
@@ -12306,7 +12306,7 @@ the result, the name is not accepted, and &$host_lookup_deferred$& is set to
 
 .cindex authentication "expansion item"
 Performing these checks sets up information used by the
-&$authresults$& expansion item.
+&%authresults%& expansion item.
 
 
 .vitem &$host_lookup_failed$&
@@ -26706,7 +26706,7 @@ no successful authentication.
 
 .cindex authentication "expansion item"
 Successful authentication sets up information used by the
-&$authresults$& expansion item.
+&%authresults%& expansion item.
 
 
 
@@ -40000,7 +40000,7 @@ processing for a message once the first passing signature is found.
 
 .cindex authentication "expansion item"
 Performing verification sets up information used by the
-&$authresults$& expansion item.
+&%authresults%& expansion item.
 
 .new
 For most purposes the default option settings suffice and the remainder
@@ -40293,7 +40293,7 @@ publishing certain DNS records is all that is required.
 For verification, an ACL condition and an expansion lookup are provided.
 .cindex authentication "expansion item"
 Performing verification sets up information used by the
-&$authresults$& expansion item.
+&%authresults%& expansion item.
 
 
 .cindex SPF "ACL condition"
