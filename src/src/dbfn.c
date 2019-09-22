@@ -206,7 +206,8 @@ if (created && geteuid() == root_uid)
     if (Ustrncmp(ent->d_name, name, namelen) == 0)
       {
       struct stat statbuf;
-      Ustrcpy(lastname, US ent->d_name);
+      /* Filenames from readdir() are trusted, so use a taint-nonchecking copy */
+      strcpy(CS lastname, CCS ent->d_name);
       if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
         DEBUG(D_hints_lookup) debug_printf_indent("ensuring %s is owned by exim\n", filename);
