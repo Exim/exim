@@ -124,7 +124,7 @@ extern gstring *authres_arc(gstring *);
 #ifndef DISABLE_DKIM
 extern gstring *authres_dkim(gstring *);
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 extern gstring *authres_dmarc(gstring *);
 #endif
 extern gstring *authres_smtpauth(gstring *);

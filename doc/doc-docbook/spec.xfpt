@@ -12079,6 +12079,15 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
+.new
+.vitem &$dmarc_domain_policy$& &&&
+       &$dmarc_status$& &&&
+       &$dmarc_status_text$& &&&
+       &$dmarc_used_domains$&
+Results of DMARC verification.
+For details see section &<<SECDMARC>>&.
+.wen
+
 .vitem &$dkim_verify_status$&
 Results of DKIM verification.
 For details see section &<<SECDKIMVFY>>&.
@@ -39752,11 +39761,11 @@ There is no dot-stuffing (and no dot-termination).
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "DKIM and SPF" "CHAPdkim" &&&
-         "DKIM and SPF Support"
-.cindex "DKIM"
+.chapter "DKIM, SPF and DMARC" "CHAPdkim" &&&
+         "DKIM, SPF and DMARC Support"
 
 .section "DKIM (DomainKeys Identified Mail)" SECDKIM
+.cindex "DKIM"
 
 DKIM is a mechanism by which messages sent by some entity can be provably
 linked to a domain which that entity controls.  It permits reputation to
@@ -40442,6 +40451,240 @@ as the database:
 
 The lookup will return the same result strings as can appear in
 &$spf_result$& (pass,fail,softfail,neutral,none,err_perm,err_temp).
+
+
+
+
+
+.new
+.section DMARC SECDMARC
+.cindex DMARC verification
+
+DMARC combines feedback from SPF, DKIM, and header From: in order
+to attempt to provide better indicators of the authenticity of an
+email.  This document does not explain the fundamentals; you
+should read and understand how it works by visiting the website at
+&url(http://www.dmarc.org/).
+
+If Exim is built with DMARC support,
+the libopendmarc library is used.
+
+For building Exim yourself, obtain the library from
+&url(http://sourceforge.net/projects/opendmarc/)
+to obtain a copy, or find it in your favorite rpm package
+repository.  You will need to attend to the local/Makefile feature
+SUPPORT_DMARC and the associated LDFLAGS addition.
+This description assumes
+that headers will be in /usr/local/include, and that the libraries
+are in /usr/local/lib.
+
+. subsection
+
+There are three main-configuration options:
+.cindex DMARC "configuration options"
+
+The &%dmarc_tld_file%& option
+.oindex &%dmarc_tld_file%&
+defines the location of a text file of valid
+top level domains the opendmarc library uses
+during domain parsing. Maintained by Mozilla,
+the most current version can be downloaded
+from a link at &url(http://publicsuffix.org/list/).
+See also util/renew-opendmarc-tlds.sh script.
+The default for the option is currently
+/etc/exim/opendmarc.tlds
+
+The &%dmarc_history_file%& option, if set
+.oindex &%dmarc_history_file%&
+defines the location of a file to log results
+of dmarc verification on inbound emails. The
+contents are importable by the opendmarc tools
+which will manage the data, send out DMARC
+reports, and expire the data. Make sure the
+directory of this file is writable by the user
+exim runs as.
+The default is unset.
+
+The &%dmarc_forensic_sender%& option
+.oindex &%dmarc_forensic_sender%&
+defines an alternate email address to use when sending a
+forensic report detailing alignment failures
+if a sender domain's dmarc record specifies it
+and you have configured Exim to send them.
+If set, this is expanded and used for the
+From: header line; the address is extracted
+from it and used for the envelope from.
+If not set (the default), the From: header is expanded from
+the dsn_from option, and <> is used for the
+envelope from.
+
+. I wish we had subsections...
+
+.cindex DMARC controls
+By default, the DMARC processing will run for any remote,
+non-authenticated user.  It makes sense to only verify DMARC
+status of messages coming from remote, untrusted sources.  You can
+use standard conditions such as hosts, senders, etc, to decide that
+DMARC verification should *not* be performed for them and disable
+DMARC with a control setting:
+.code
+  control = dmarc_disable_verify
+.endd
+A DMARC record can also specify a "forensic address", which gives
+exim an email address to submit reports about failed alignment.
+Exim does not do this by default because in certain conditions it
+results in unintended information leakage (what lists a user might
+be subscribed to, etc).  You must configure exim to submit forensic
+reports to the owner of the domain.  If the DMARC record contains a
+forensic address and you specify the control statement below, then
+exim will send these forensic emails.  It's also advised that you
+configure a dmarc_forensic_sender because the default sender address
+construction might be inadequate.
+.code
+  control = dmarc_enable_forensic
+.endd
+(AGAIN: You can choose not to send these forensic reports by simply
+not putting the dmarc_enable_forensic control line at any point in
+your exim config.  If you don't tell it to send them, it will not
+send them.)
+
+There are no options to either control.  Both must appear before
+the DATA acl.
+
+. subsection
+
+DMARC checks cam be run on incoming SMTP  messages by using the
+"dmarc_status" ACL condition in the DATA ACL.  You are required to
+call the "spf" condition first in the ACLs, then the "dmarc_status"
+condition.  Putting this condition in the ACLs is required in order
+for a DMARC check to actually occur.  All of the variables are set
+up before the DATA ACL, but there is no actual DMARC check that
+occurs until a "dmarc_status" condition is encountered in the ACLs.
+
+The dmarc_status condition takes a list of strings on its
+right-hand side.  These strings describe recommended action based
+on the DMARC check.  To understand what the policy recommendations
+mean, refer to the DMARC website above.  Valid strings are:
+.display
+&'accept      '& The DMARC check passed and the library recommends accepting the email.
+&'reject      '& The DMARC check failed and the library recommends rejecting the email.
+&'quarantine  '& The DMARC check failed and the library recommends keeping it for further inspection.
+&'none        '& The DMARC check passed and the library recommends no specific action, neutral.
+&'norecord    '& No policy section in the DMARC record for this sender domain.
+&'nofrom      '& Unable to determine the domain of the sender.
+&'temperror   '& Library error or dns error.
+&'off         '& The DMARC check was disabled for this email.
+.endd
+You can prefix each string with an exclamation mark to invert its
+meaning, for example "!accept" will match all results but
+"accept".  The string list is evaluated left-to-right in a
+short-circuit fashion.  When a string matches the outcome of the
+DMARC check, the condition succeeds.  If none of the listed
+strings matches the outcome of the DMARC check, the condition
+fails.
+
+Of course, you can also use any other lookup method that Exim
+supports, including LDAP, Postgres, MySQL, etc, as long as the
+result is a list of colon-separated strings.
+
+Performing the check sets up information used by the
+&%authresults%& expansion item.
+
+Several expansion variables are set before the DATA ACL is
+processed, and you can use them in this ACL.  The following
+expansion variables are available:
+
+&$dmarc_status$&
+.vindex &$dmarc_status$&
+.cindex DMARC result
+is a one word status indicating what the DMARC library
+thinks of the email.  It is a combination of the results of
+DMARC record lookup and the SPF/DKIM/DMARC processing results
+(if a DMARC record was found).  The actual policy declared
+in the DMARC record is in a separate expansion variable.
+
+&$dmarc_status_text$&
+.vindex &$dmarc_status_text$&
+is a slightly longer, human readable status.
+
+&$dmarc_used_domain$&
+.vindex &$dmarc_used_domain$&
+is the domain which DMARC used to look up the DMARC policy record.
+
+&$dmarc_domain_policy$&
+.vindex &$dmarc_domain_policy$&
+is the policy declared in the DMARC record.  Valid values
+are "none", "reject" and "quarantine".  It is blank when there
+is any error, including no DMARC record.
+
+. subsection
+
+By default, Exim's DMARC configuration is intended to be
+non-intrusive and conservative.  To facilitate this, Exim will not
+create any type of logging files without explicit configuration by
+you, the admin.  Nor will Exim send out any emails/reports about
+DMARC issues without explicit configuration by you, the admin (other
+than typical bounce messages that may come about due to ACL
+processing or failure delivery issues).
+
+In order to log statistics suitable to be imported by the opendmarc
+tools, you need to:
+.ilist
+Configure the global setting dmarc_history_file
+.next
+Configure cron jobs to call the appropriate opendmarc history
+import scripts and truncating the dmarc_history_file
+.endlist
+
+In order to send forensic reports, you need to:
+.ilist
+Configure the global setting dmarc_forensic_sender
+.next
+Configure, somewhere before the DATA ACL, the control option to
+enable sending DMARC forensic reports
+.endlist
+
+. subsection
+
+Example usage:
+.code
+(RCPT ACL)
+  warn    domains        = +local_domains
+          hosts          = +local_hosts
+          control        = dmarc_disable_verify
+
+  warn    !domains       = +screwed_up_dmarc_records
+          control        = dmarc_enable_forensic
+
+  warn    condition      = (lookup if destined to mailing list)
+          set acl_m_mailing_list = 1
+
+(DATA ACL)
+  warn    dmarc_status   = accept : none : off
+          !authenticated = *
+          log_message    = DMARC DEBUG: $dmarc_status $dmarc_used_domain
+
+  warn    dmarc_status   = !accept
+          !authenticated = *
+          log_message    = DMARC DEBUG: '$dmarc_status' for $dmarc_used_domain
+
+  warn    dmarc_status   = quarantine
+          !authenticated = *
+          set $acl_m_quarantine = 1
+          # Do something in a transport with this flag variable
+
+  deny    condition      = ${if eq{$dmarc_domain_policy}{reject}}
+          condition      = ${if eq{$acl_m_mailing_list}{1}}
+          message        = Messages from $dmarc_used_domain break mailing lists
+
+  deny    dmarc_status   = reject
+          !authenticated = *
+          message        = Message from $dmarc_used_domain failed sender's DMARC policy, REJECT
+
+  warn    add_header     = :at_start:${authresults {$primary_hostname}}
+.endd
+
+.wen
 
 
 

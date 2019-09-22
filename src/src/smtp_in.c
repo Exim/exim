@@ -2075,7 +2075,7 @@ dkim_collect_input = 0;
 dkim_verify_overall = dkim_verify_status = dkim_verify_reason = NULL;
 dkim_key_length = 0;
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 f.dmarc_has_been_checked = f.dmarc_disable_verify = f.dmarc_enable_forensic = FALSE;
 dmarc_domain_policy = dmarc_status = dmarc_status_text =
 dmarc_used_domain = NULL;

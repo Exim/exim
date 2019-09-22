@@ -73,7 +73,7 @@ int size_limit = bounce_return_size_limit;
 FILE * fp;
 int pid;
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 uschar * s, * s2;
 
 /* For DMARC if there is a specific sender set, expand the variable for the
@@ -111,7 +111,7 @@ fp = fdopen(fd, "wb");
 if (errors_reply_to) fprintf(fp, "Reply-To: %s\n", errors_reply_to);
 fprintf(fp, "Auto-Submitted: auto-replied\n");
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 if (s)
   fprintf(fp, "From: %s\n", s);
 else
@@ -228,7 +228,7 @@ switch(ident)
   fprintf(fp, "\n");
   break;
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
   case ERRMESS_DMARC_FORENSIC:
     bounce_return_message = TRUE;
     bounce_return_body    = FALSE;
@@ -339,7 +339,7 @@ if (bounce_return_message)
       fputs(CS buf, fp);
       }
     }
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
   /* Overkill, but use exact test in case future code gets inserted */
   else if (bounce_return_body && message_file == NULL)
     {

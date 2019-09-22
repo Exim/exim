@@ -1,7 +1,7 @@
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
-/* Experimental DMARC support.
+/* DMARC support.
    Copyright (c) Todd Lyons <tlyons@exim.org> 2012 - 2014
    Copyright (c) The Exim Maintainers 2019
    License: GPL */
@@ -12,7 +12,7 @@
 /* Code for calling dmarc checks via libopendmarc. Called from acl.c. */
 
 #include "exim.h"
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 # if !defined SUPPORT_SPF
 #  error SPF must also be enabled for DMARC
 # elif defined DISABLE_DKIM
@@ -635,6 +635,6 @@ return g;
 }
 
 # endif /* SUPPORT_SPF */
-#endif /* EXPERIMENTAL_DMARC */
+#endif /* SUPPORT_DMARC */
 /* vi: aw ai sw=2
  */

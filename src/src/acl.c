@@ -70,7 +70,7 @@ enum { ACLC_ACL,
        ACLC_DKIM_SIGNER,
        ACLC_DKIM_STATUS,
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
        ACLC_DMARC_STATUS,
 #endif
        ACLC_DNSLISTS,
@@ -192,7 +192,7 @@ static condition_def conditions[] = {
   [ACLC_DKIM_SIGNER] =		{ US"dkim_signers",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
   [ACLC_DKIM_STATUS] =		{ US"dkim_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DKIM },
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
   [ACLC_DMARC_STATUS] =		{ US"dmarc_status",	TRUE, FALSE, (unsigned int) ~ACL_BIT_DATA },
 #endif
 
@@ -346,7 +346,7 @@ enum {
 #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
   CONTROL_DMARC_VERIFY,
   CONTROL_DMARC_FORENSIC,
 #endif
@@ -417,7 +417,7 @@ static control_def controls_list[] = {
   },
 #endif
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 [CONTROL_DMARC_VERIFY] =
   { US"dmarc_disable_verify",    FALSE,
 	  ACL_BIT_DATA | ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
@@ -3029,18 +3029,18 @@ for (; cb; cb = cb->next)
 	break;
 	#endif
 
-	#ifndef DISABLE_DKIM
+#ifndef DISABLE_DKIM
 	case CONTROL_DKIM_VERIFY:
 	f.dkim_disable_verify = TRUE;
-	#ifdef EXPERIMENTAL_DMARC
+# ifdef SUPPORT_DMARC
 	/* Since DKIM was blocked, skip DMARC too */
 	f.dmarc_disable_verify = TRUE;
 	f.dmarc_enable_forensic = FALSE;
-	#endif
+# endif
 	break;
-	#endif
+#endif
 
-	#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 	case CONTROL_DMARC_VERIFY:
 	f.dmarc_disable_verify = TRUE;
 	break;
@@ -3048,7 +3048,7 @@ for (; cb; cb = cb->next)
 	case CONTROL_DMARC_FORENSIC:
 	f.dmarc_enable_forensic = TRUE;
 	break;
-	#endif
+#endif
 
 	case CONTROL_DSCP:
 	if (*p == '/')
@@ -3442,7 +3442,7 @@ for (; cb; cb = cb->next)
     break;
     #endif
 
-    #ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
     case ACLC_DMARC_STATUS:
     if (!f.dmarc_has_been_checked)
       dmarc_process();
@@ -3452,7 +3452,7 @@ for (; cb; cb = cb->next)
     rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
                         &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     break;
-    #endif
+#endif
 
     case ACLC_DNSLISTS:
     rc = verify_check_dnsbl(where, &arg, log_msgptr);

@@ -14,9 +14,9 @@
 extern int dcc_ok;
 #endif
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 # include "dmarc.h"
-#endif /* EXPERIMENTAL_DMARC */
+#endif
 
 /*************************************************
 *                Local static variables          *
@@ -1703,9 +1703,9 @@ header_line *msgid_header = NULL;
 header_line *received_header;
 BOOL msgid_header_newly_created = FALSE;
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 int dmarc_up = 0;
-#endif /* EXPERIMENTAL_DMARC */
+#endif
 
 /* Variables for use when building the Received: header. */
 
@@ -1767,9 +1767,8 @@ if (smtp_input && !smtp_batched_input && !f.dkim_disable_verify)
   dkim_exim_verify_init(chunking_state <= CHUNKING_OFFERED);
 #endif
 
-#ifdef EXPERIMENTAL_DMARC
-/* initialize libopendmarc */
-dmarc_up = dmarc_init();
+#ifdef SUPPORT_DMARC
+dmarc_up = dmarc_init();	/* initialize libopendmarc */
 #endif
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
@@ -3499,9 +3498,9 @@ else
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
     dmarc_up = dmarc_store_data(from_header);
-#endif /* EXPERIMENTAL_DMARC */
+#endif
 
 #ifndef DISABLE_PRDR
     if (prdr_requested && recipients_count > 1 && acl_smtp_data_prdr)

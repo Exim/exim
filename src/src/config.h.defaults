@@ -143,6 +143,8 @@ Do not put spaces between # and the 'define'.
 
 #define SUPPORT_CRYPTEQ
 #define SUPPORT_DANE
+#define SUPPORT_DMARC
+#define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
 #define SUPPORT_I18N
 #define SUPPORT_I18N_2008
 #define SUPPORT_MAILDIR
@@ -199,8 +201,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
-#define EXPERIMENTAL_DMARC
-#define DMARC_TLD_FILE "/etc/exim/opendmarc.tlds"
 #define EXPERIMENTAL_LMDB
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_SRS

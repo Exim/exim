@@ -9,7 +9,7 @@
 /* Portions Copyright (c) 2012, 2013, The Trusted Domain Project;
    All rights reserved, licensed for use per LICENSE.opendmarc. */
 
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 
 # include "opendmarc/dmarc.h"
 # ifdef SUPPORT_SPF
@@ -58,4 +58,4 @@ static int dmarc_write_history_file();
 #define ARES_RESULT_UNKNOWN 11
 #define ARES_RESULT_DISCARD 12
 
-#endif /* EXPERIMENTAL_DMARC */
+#endif /* SUPPORT_DMARC */

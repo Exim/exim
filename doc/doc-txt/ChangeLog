@@ -183,6 +183,8 @@ JH/38 Bug 1395: Teach the DNS negative-cache about TTL value from the SOA in
 
 HS/05 Handle trailing backslash gracefully. (CVE-2019-15846)
 
+JH/39 Promote DMARC support to mainline.
+
 
 Exim version 4.92
 -----------------

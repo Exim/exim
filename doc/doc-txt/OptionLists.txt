@@ -182,9 +182,9 @@ directory_transport                  string*         unset         redirect     
 disable_ipv6                         boolean         false         main              4.61
 disable_logging                      boolean         false         routers           4.11
                                                      false         transports        4.11
-dmarc_forensic_sender                string          unset         main              4.82 if experimental_dmarc
-dmarc_history_file                   string          unset         main              4.82 if experimental_dmarc
-dmarc_tld_file                       string          unset         main              4.82 if experimental_dmarc
+dmarc_forensic_sender                string          unset         main              4.82 if experimental_dmarc, 4.93 mainline
+dmarc_history_file                   string          unset         main              4.82 if experimental_dmarc, 4.93 mainline
+dmarc_tld_file                       string          unset         main              4.82 if experimental_dmarc, 4.93 mainline
 dns_again_means_nonexist             domain list     unset         main              1.89
 dns_check_names_pattern              string          +             main              2.11
 dns_cname_loops                      integer         0             main              4.92 Set to 9 for older behaviour

@@ -238,7 +238,7 @@ enum {
   ERRMESS_TOOMANYRECIP,     /* Too many recipients */
   ERRMESS_LOCAL_SCAN,       /* Rejected by local scan */
   ERRMESS_LOCAL_ACL         /* Rejected by non-SMTP ACL */
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
  ,ERRMESS_DMARC_FORENSIC    /* DMARC Forensic Report */
 #endif
 };

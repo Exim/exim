@@ -239,7 +239,7 @@ struct global_flags f =
 #ifndef DISABLE_DKIM
 	.dkim_disable_verify      = FALSE,
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 	.dmarc_has_been_checked  = FALSE,
 	.dmarc_disable_verify    = FALSE,
 	.dmarc_enable_forensic   = FALSE,
@@ -838,7 +838,7 @@ uschar *dkim_verify_signers      = US"$dkim_signers";
 uschar *dkim_verify_status	 = NULL;
 uschar *dkim_verify_reason	 = NULL;
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 uschar *dmarc_domain_policy     = NULL;
 uschar *dmarc_forensic_sender   = NULL;
 uschar *dmarc_history_file      = NULL;

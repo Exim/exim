@@ -146,6 +146,9 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_DKIM
   builtin_macro_create(US"_HAVE_DKIM");
 #endif
+#ifdef SUPPORT_DMARC
+  builtin_macro_create(US"_HAVE_DMARC");
+#endif
 #ifndef DISABLE_DNSSEC
   builtin_macro_create(US"_HAVE_DNSSEC");
 #endif
@@ -193,9 +196,6 @@ due to conflicts with other common macros. */
 #endif
 #ifdef EXPERIMENTAL_DCC
   builtin_macro_create(US"_HAVE_DCC");
-#endif
-#ifdef EXPERIMENTAL_DMARC
-  builtin_macro_create(US"_HAVE_DMARC");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_HAVE_DSN_INFO");

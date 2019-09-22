@@ -199,7 +199,7 @@ extern struct global_flags {
 #ifndef DISABLE_DKIM
  BOOL   dkim_disable_verify		:1; /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
  BOOL   dmarc_has_been_checked		:1; /* Global variable to check if test has been called yet */
  BOOL   dmarc_disable_verify		:1; /* Set via ACL control statement. When set, DMARC verification is disabled for the current message */
  BOOL   dmarc_enable_forensic		:1; /* Set via ACL control statement. When set, DMARC forensic reports are enabled for the current message */
@@ -511,7 +511,7 @@ extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for ea
 extern uschar *dkim_verify_status;     /* result for this signature */
 extern uschar *dkim_verify_reason;     /* result for this signature */
 #endif
-#ifdef EXPERIMENTAL_DMARC
+#ifdef SUPPORT_DMARC
 extern uschar *dmarc_domain_policy;    /* Expansion for declared policy of used domain */
 extern uschar *dmarc_forensic_sender;  /* Set sender address for forensic reports */
 extern uschar *dmarc_history_file;     /* Expansion variable, file to store dmarc results */

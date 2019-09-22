@@ -916,6 +916,9 @@ fprintf(fp, "Support for:");
 #ifdef SUPPORT_SPF
   fprintf(fp, " SPF");
 #endif
+#ifdef SUPPORT_DMARC
+  fprintf(fp, " DMARC");
+#endif
 #ifdef TCP_FASTOPEN
   deliver_init();
   if (f.tcp_fastopen_ok) fprintf(fp, " TCP_Fast_Open");
@@ -937,9 +940,6 @@ fprintf(fp, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DCC
   fprintf(fp, " Experimental_DCC");
-#endif
-#ifdef EXPERIMENTAL_DMARC
-  fprintf(fp, " Experimental_DMARC");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(fp, " Experimental_DSN_info");
