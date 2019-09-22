@@ -14691,13 +14691,20 @@ recommended, except when you have no other choice.
 .cindex "UTF-8" "in domain name"
 Lots of discussion is going on about internationalized domain names. One
 camp is strongly in favour of just using UTF-8 characters, and it seems
-that at least two other MTAs permit this. This option allows Exim users to
-experiment if they wish.
+that at least two other MTAs permit this.
+This option allows Exim users to experiment if they wish.
 
 If it is set true, Exim's domain parsing function allows valid
 UTF-8 multicharacters to appear in domain name components, in addition to
-letters, digits, and hyphens. However, just setting this option is not
-enough; if you want to look up these domain names in the DNS, you must also
+letters, digits, and hyphens.
+
+.new
+If Exim is built with internationalization support
+and the SMTPUTF8 ESMTP option is in use (see chapter &<<CHAPi18n>>&)
+this option can be left as default.
+.wen
+Without that,
+if you want to look up such domain names in the DNS, you must also
 adjust the value of &%dns_check_names_pattern%& to match the extended form. A
 suitable setting is:
 .code
