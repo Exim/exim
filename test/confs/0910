@@ -1,3 +1,3 @@
 keep_environment =
 tls_advertise_hosts =
-spool_directory = DIR/aux-fixed/0910
+spool_directory = DIR/tmp

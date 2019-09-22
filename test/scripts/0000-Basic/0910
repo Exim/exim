@@ -1,2 +1,6 @@
 # Properly handle lines after very long ones from -H file
+mkdir -p DIR/tmp/input
+cp DIR/aux-fixed/TESTNUM/input/* DIR/tmp/input/
+sudo chmod 666 DIR/tmp/input/*
 exim -Mset 1i3FVM-0008QX-DU -be '$body_linecount'
+sudo rm -fr DIR/tmp
