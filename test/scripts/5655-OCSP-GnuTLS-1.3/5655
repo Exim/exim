@@ -1,0 +1,59 @@
+# OCSP stapling, server, multiple chain-element OCSP
+#
+#
+#
+mkdir -p DIR/tmp/ocsp
+sudo chown -R EXIMUSER:EXIMGROUP tmp
+sudo chmod -R a+rwx DIR/tmp/ocsp
+perl
+chdir 'aux-fixed/exim-ca/example.com';
+system 'cat server1.example.com/server1.example.com.ocsp.signernocert.good.resp.pem CA/Signer.ocsp.signernocert.good.resp.pem CA/CA.ocsp.signernocert.good.resp.pem > DIR/tmp/ocsp/triple.ocsp.pem';
+system 'cat server1.example.com/server1.example.com.ocsp.signernocert.good.resp.pem CA/Signer.ocsp.signernocert.revoked.resp.pem > DIR/tmp/ocsp/double_r.ocsp.pem';
+****
+#
+#
+exim -z '1: TLS1.2 Server sends good leaf-staple on request, to client requiring RSA auth'
+****
+#
+exim -bd -oX PORT_D -DSERVER=server -DLIMIT=TLS1.2
+****
+#
+exim -odf -DOPT=rsa -DLIMIT=TLS1.2 rsa.auth@test.ex
+Subject: test
+
+.
+****
+killdaemon
+#
+#
+exim -z '2: TLS1.3 Server sends good 3-element staple on request, to client requiring RSA auth'
+****
+#
+exim -bd -oX PORT_D -DSERVER=server -DLIMIT=TLS1.3
+****
+exim -odf -DOPT=rsa rsa.auth@test.ex
+Subject: test
+
+.
+****
+killdaemon
+#
+#
+#
+exim -z '3: TLS1.3 Server sends bad nonleaf staple, client detects it'
+****
+#
+EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK=y exim -bd -oX PORT_D -DSERVER=server -DLIMIT=TLS1.3 -DCONTROL=bad
+****
+exim -odf -DOPT=rsa rsa.auth@test.ex
+Subject: test
+
+.
+****
+killdaemon
+#
+#
+#
+#
+sudo rm -fr tmp/
+no_msglog_check

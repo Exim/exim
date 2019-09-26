@@ -26,6 +26,14 @@ do
     rm -fr "$idir"
 
     # create CA cert + templates
+    # -D  dir to work in
+    # -p  passwd for cert
+    # -B  keysize in bits
+    # -I  create CA cert
+    # -N  org name
+    # -F  create sub-signing cert
+    # -C CRL
+    # -O create OCSP responder cert
     clica $V -D "$idir" -p password -B 2048 -I -N $iname -F -C http://crl.$iname/latest.crl -O http://oscp.$iname/
 
     # create server certs
@@ -67,8 +75,15 @@ do
 
 ####
 
+ # so, for full-chain OCSP we sill want an OCSP resp for the Signer cert and also (?) one for the
+ # CA cert itself.  The existing bits below only create for the leaf certs, next layer down.
+ #
+ # First test will be just adding OCSP for the Signer cert. Presumably we could use the CA cert
+ # to sign that.
+
     # create OCSP reqs & resps
     CADIR=$idir/CA
+
     #give ourselves an OSCP key to work with
     pk12util -o $CADIR/OCSP.p12 -n 'OCSP Signer rsa' -d $CADIR -K password -W password
     openssl pkcs12 -in $CADIR/OCSP.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/OCSP.key
@@ -77,12 +92,17 @@ do
     pk12util -o $CADIR/Signer.p12 -n 'Signing Cert rsa' -d $CADIR -K password -W password
     openssl pkcs12 -in $CADIR/Signer.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/Signer.key
 
+    # ditto for CA
+    # - the "-n names" here appear to be hardcoded in clica
+    pk12util -o $CADIR/CA.p12 -n 'Certificate Authority rsa' -d $CADIR -K password -W password
+    openssl pkcs12 -in $CADIR/CA.p12 -passin pass:password -passout pass:password -nodes -nocerts -out $CADIR/CA.key
+
     # create some index files for the ocsp responder to work with
-# tab-sep
+# tab-sep, and fields can be empty
 # 0: Revoked/Expired/Valid letter
 # 1: Expiry date (ASN1_UTCTIME)
 # 2: Revocation date
-# 3: Serial no. (unique)
+# 3: Serial no. (unique, in hex)
 # 4: file
 # 5: DN, index
 
@@ -93,6 +113,8 @@ V	130110200751Z		67	unknown	CN=expired1.$iname
 V	130110200751Z		c9	unknown	CN=server2.$iname
 V	130110200751Z		ca	unknown	CN=revoked2.$iname
 V	130110200751Z		cb	unknown	CN=expired2.$iname
+V	130110200751Z		42	unknown	CN=clica Signing Cert rsa
+V	130110200751Z		41	unknown	CN=clica CA rsa
 EOF
     cat >$CADIR/index.revoked.txt <<EOF
 R	130110200751Z	100201142709Z,superseded	65	unknown	CN=server1.$iname
@@ -101,9 +123,10 @@ R	130110200751Z	100201142709Z,superseded	67	unknown	CN=expired1.$iname
 R	130110200751Z	100201142709Z,superseded	c9	unknown	CN=server2.$iname
 R	130110200751Z	100201142709Z,superseded	ca	unknown	CN=revoked2.$iname
 R	130110200751Z	100201142709Z,superseded	cb	unknown	CN=expired2.$iname
+R	130110200751Z	100201142709Z,superseded	42	unknown	CN=clica Signing Cert rsa
 EOF
 
-    # Now create all the ocsp requests and responses
+    # Now create all the ocsp requests and responses for the leaf certs
     IVALID="-index $CADIR/index.valid.txt"
     IREVOKED="-index $CADIR/index.revoked.txt"
 
@@ -116,6 +139,8 @@ EOF
 	openssl ocsp -issuer $CADIR/Signer.pem -sha256 -cert $SPFX.pem -no_nonce -reqout $SPFX.ocsp.req
 	REQIN="-reqin $SPFX.ocsp.req"
 
+	# These ones get used by the "traditional" testcases. OCSP resp signed by a cert which is
+	# signed by the signer of the leaf-cert being attested to.
 	OGENCOMMON="-rsigner $CADIR/OCSP.pem -rkey $CADIR/OCSP.key -CA $CADIR/Signer.pem -noverify"
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.good.resp
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   $REQIN -respout $SPFX.ocsp.dated.resp
@@ -126,11 +151,40 @@ EOF
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   $REQIN -respout $SPFX.ocsp.signer.dated.resp
 	openssl ocsp $IREVOKED $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.signer.revoked.resp
 
+	# These ones get used by the "LetsEncrypt mode" testcases. OCSP resp is signed directly by the
+	# signer of the leaf-cert being attested to.
 	OGENCOMMON="-rsigner $CADIR/Signer.pem -rkey $CADIR/Signer.key -CA $CADIR/Signer.pem -resp_no_certs -noverify"
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.signernocert.good.resp
 	openssl ocsp $IVALID   $OGENCOMMON -ndays 30   $REQIN -respout $SPFX.ocsp.signernocert.dated.resp
 	openssl ocsp $IREVOKED $OGENCOMMON -ndays 3652 $REQIN -respout $SPFX.ocsp.signernocert.revoked.resp
     done
+
+    # convert one good leaf-resp to PEM
+    $server=server1
+    RESP=$idir/$server.$iname/$server.$iname.ocsp.signernocert.good.resp
+    ocsptool -S $RESP -j > $RESP.pem
+
+    # Then, ocsp request and responses for the signer cert
+    REQ=$CADIR/Signer.ocsp.req
+    RESP=$CADIR/Signer.ocsp.signernocert.good.resp
+    openssl ocsp -issuer $CADIR/CA.pem -sha256 -cert $CADIR/Signer.pem -no_nonce -reqout $REQ
+    openssl ocsp $IVALID -rsigner $CADIR/CA.pem -rkey $CADIR/CA.key -CA $CADIR/CA.pem -resp_no_certs -noverify \
+	-ndays 3652 -reqin $REQ -respout $RESP
+    ocsptool -S $RESP -j > $RESP.pem
+
+    RESP=$CADIR/Signer.ocsp.signernocert.revoked.resp
+    openssl ocsp $IREVOKED -rsigner $CADIR/CA.pem -rkey $CADIR/CA.key -CA $CADIR/CA.pem -resp_no_certs -noverify \
+	-ndays 3652 -reqin $REQ -respout $RESP
+    ocsptool -S $RESP -j > $RESP.pem
+
+    # Then, ocsp request and response for the CA cert
+    REQ=$CADIR/CA.ocsp.req
+    RESP=$CADIR/CA.ocsp.signernocert.good.resp
+    openssl ocsp -issuer $CADIR/CA.pem -sha256 -cert $CADIR/CA.pem -no_nonce -reqout $REQ
+    openssl ocsp $IVALID -rsigner $CADIR/CA.pem -rkey $CADIR/CA.key -CA $CADIR/CA.pem -resp_no_certs -noverify \
+	-ndays 3652 -reqin $REQ -respout $RESP
+    ocsptool -S $RESP -j > $RESP.pem
+
 ####
 done
 

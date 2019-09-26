@@ -77,7 +77,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # define SUPPORT_SRV_OCSP_STACK
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030603
+# define EXIM_HAVE_TLS1_3
 # define SUPPORT_GNUTLS_EXT_RAW_PARSE
+# define GNUTLS_OCSP_STATUS_REQUEST_GET2
 #endif
 
 #ifdef SUPPORT_DANE
@@ -114,6 +116,9 @@ options_tls(void)
 {
 # ifdef EXPERIMENTAL_TLS_RESUME
 builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
+# endif
+# ifdef EXIM_HAVE_TLS1_3
+builtin_macro_create(US"_HAVE_TLS1_3");
 # endif
 }
 #else
@@ -886,7 +891,7 @@ tls_server_clienthello_ext(void * ctx, unsigned tls_id,
 /* https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml */
 if (tls_id == 5)	/* status_request */
   {
-  DEBUG(D_tls) debug_printf("Seen status_request extension\n");
+  DEBUG(D_tls) debug_printf("Seen status_request extension from client\n");
   tls_in.ocsp = OCSP_NOT_RESP;
   }
 return 0;
@@ -901,7 +906,43 @@ tls_server_clienthello_cb(gnutls_session_t session, unsigned int htype,
 return gnutls_ext_raw_parse(NULL, tls_server_clienthello_ext, msg,
 			   GNUTLS_EXT_RAW_FLAG_TLS_CLIENT_HELLO);
 }
+
+
+/* Make a note that we saw a status-response */
+static int
+tls_server_servercerts_ext(void * ctx, unsigned tls_id,
+  const unsigned char *data, unsigned size)
+{
+/* debug_printf("%s %u\n", __FUNCTION__, tls_id); */
+/* https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml */
+if (FALSE && tls_id == 5)	/* status_request */
+  {
+  DEBUG(D_tls) debug_printf("Seen status_request extension\n");
+  tls_in.ocsp = exim_testharness_disable_ocsp_validity_check
+    ? OCSP_VFY_NOT_TRIED : OCSP_VFIED;	/* We know that GnuTLS verifies responses */
+  }
+return 0;
+}
+
+/* Callback for certificates packet, on server, if we think we might serve stapled-OCSP */
+static int
+tls_server_servercerts_cb(gnutls_session_t session, unsigned int htype,
+  unsigned when, unsigned int incoming, const gnutls_datum_t * msg)
+{
+/* Call fn for each extension seen.  3.6.3 onwards */
+#ifdef notdef
+/*XXX crashes */
+return gnutls_ext_raw_parse(NULL, tls_server_servercerts_ext, msg, 0);
 #endif
+}
+#endif
+
+/*XXX in tls1.3 the cert-status travel as an extension next to the cert, in the
+ "Handshake Protocol: Certificate" record.
+So we need to spot the Certificate handshake message, parse it and spot any status_request extension(s)
+
+This is different to tls1.2 - where it is a separate record (wireshake term) / handshake message (gnutls term).
+*/
 
 #if defined(EXPERIMENTAL_TLS_RESUME) || defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
 /* Callback for certificate-status, on server. We sent stapled OCSP. */
@@ -909,7 +950,7 @@ static int
 tls_server_certstatus_cb(gnutls_session_t session, unsigned int htype,
   unsigned when, unsigned int incoming, const gnutls_datum_t * msg)
 {
-DEBUG(D_tls) debug_printf("Sending certificate-status\n");
+DEBUG(D_tls) debug_printf("Sending certificate-status\n");		/*XXX we get this for tls1.2 but not for 1.3 */
 #ifdef SUPPORT_SRV_OCSP_STACK
 tls_in.ocsp = exim_testharness_disable_ocsp_validity_check
   ? OCSP_VFY_NOT_TRIED : OCSP_VFIED;	/* We know that GnuTLS verifies responses */
@@ -924,11 +965,14 @@ static int
 tls_server_hook_cb(gnutls_session_t sess, u_int htype, unsigned when,
   unsigned incoming, const gnutls_datum_t * msg)
 {
+/* debug_printf("%s: htype %u\n", __FUNCTION__, htype); */
 switch (htype)
   {
 # ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
   case GNUTLS_HANDSHAKE_CLIENT_HELLO:
     return tls_server_clienthello_cb(sess, htype, when, incoming, msg);
+  case GNUTLS_HANDSHAKE_CERTIFICATE_PKT:
+    return tls_server_servercerts_cb(sess, htype, when, incoming, msg);
 # endif
   case GNUTLS_HANDSHAKE_CERTIFICATE_STATUS:
     return tls_server_certstatus_cb(sess, htype, when, incoming, msg);
@@ -1017,6 +1061,18 @@ if ((rc = gnutls_certificate_allocate_credentials(&state->x509_cred)))
 
 #ifdef SUPPORT_SRV_OCSP_STACK
 gnutls_certificate_set_flags(state->x509_cred, GNUTLS_CERTIFICATE_API_V2);
+
+# if !defined(DISABLE_OCSP) && defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
+if (!host && tls_ocsp_file)
+  {
+  if (f.running_in_test_harness)
+    tls_server_testharness_ocsp_fiddle();
+
+  if (exim_testharness_disable_ocsp_validity_check)
+    gnutls_certificate_set_flags(state->x509_cred,
+      GNUTLS_CERTIFICATE_API_V2 | GNUTLS_CERTIFICATE_SKIP_OCSP_RESPONSE_CHECK);
+  }
+# endif
 #endif
 
 /* remember: expand_check_tlsvar() is expand_check() but fiddling with
@@ -1044,7 +1100,7 @@ if (state->tls_privatekey && !expand_check_tlsvar(tls_privatekey, errstr))
 
 /* tls_privatekey is optional, defaulting to same file as certificate */
 
-if (state->tls_privatekey == NULL || *state->tls_privatekey == '\0')
+if (!state->tls_privatekey || !*state->tls_privatekey)
   {
   state->tls_privatekey = state->tls_certificate;
   state->exp_tls_privatekey = state->exp_tls_certificate;
@@ -1075,8 +1131,11 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
     const uschar * olist;
     int csep = 0, ksep = 0, osep = 0, cnt = 0;
     uschar * cfile, * kfile, * ofile;
-
 #ifndef DISABLE_OCSP
+# ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
+    gnutls_x509_crt_fmt_t ocsp_fmt = GNUTLS_X509_FMT_DER;
+# endif
+
     if (!expand_check(tls_ocsp_file, US"tls_ocsp_file", &ofile, errstr))
       return DEFER;
     olist = ofile;
@@ -1091,13 +1150,13 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       else
 	{
 	int gnutls_cert_index = -rc;
-	DEBUG(D_tls) debug_printf("TLS: cert/key %d %s registered\n", gnutls_cert_index, cfile);
-
-	/* Set the OCSP stapling server info */
+	DEBUG(D_tls) debug_printf("TLS: cert/key %d %s registered\n",
+				  gnutls_cert_index, cfile);
 
 #ifndef DISABLE_OCSP
 	if (tls_ocsp_file)
 	  {
+	  /* Set the OCSP stapling server info */
 	  if (gnutls_buggy_ocsp)
 	    {
 	    DEBUG(D_tls)
@@ -1105,27 +1164,36 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 	    }
 	  else if ((ofile = string_nextinlist(&olist, &osep, NULL, 0)))
 	    {
-	    DEBUG(D_tls) debug_printf("OCSP response file = %s\n", ofile);
-
+	    DEBUG(D_tls) debug_printf("OCSP response file %d  = %s\n",
+				      gnutls_cert_index, ofile);
 # ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
-	    if (f.running_in_test_harness) tls_server_testharness_ocsp_fiddle();
-
-	    if (!exim_testharness_disable_ocsp_validity_check)
+	    if (Ustrncmp(ofile, US"PEM ", 4) == 0)
 	      {
-	      if  ((rc = gnutls_certificate_set_ocsp_status_request_file2(
-			  state->x509_cred, CCS ofile, gnutls_cert_index,
-			  GNUTLS_X509_FMT_DER)) < 0)
-		return tls_error_gnu(
-			US"gnutls_certificate_set_ocsp_status_request_file2",
-			rc, host, errstr);
-
-	      /* Arrange callbacks for OCSP request observability */
-
-	      gnutls_handshake_set_hook_function(state->session,
-		GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
+	      ocsp_fmt = GNUTLS_X509_FMT_PEM;
+	      ofile += 4;
 	      }
-	    else
-# elif defined(SUPPORT_SRV_OCSP_STACK)
+	    else if (Ustrncmp(ofile, US"DER ", 4) == 0)
+	      {
+	      ocsp_fmt = GNUTLS_X509_FMT_DER;
+	      ofile += 4;
+	      }
+
+	    if  ((rc = gnutls_certificate_set_ocsp_status_request_file2(
+		      state->x509_cred, CCS ofile, gnutls_cert_index,
+		      ocsp_fmt)) < 0)
+	      return tls_error_gnu(
+		      US"gnutls_certificate_set_ocsp_status_request_file2",
+		      rc, host, errstr);
+	    DEBUG(D_tls)
+	      debug_printf(" %d response%s loaded\n", rc, rc>1 ? "s":"");
+
+	    /* Arrange callbacks for OCSP request observability */
+
+	    gnutls_handshake_set_hook_function(state->session,
+	      GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
+
+# else
+#  if defined(SUPPORT_SRV_OCSP_STACK)
 	    if ((rc = gnutls_certificate_set_ocsp_status_request_function2(
 			 state->x509_cred, gnutls_cert_index,
 			 server_ocsp_stapling_cb, ofile)))
@@ -1133,7 +1201,7 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 		      US"gnutls_certificate_set_ocsp_status_request_function2",
 		      rc, host, errstr);
 	    else
-# endif
+#  endif
 	      {
 	      if (cnt++ > 0)
 		{
@@ -1144,6 +1212,7 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
 		gnutls_certificate_set_ocsp_status_request_function(
 		  state->x509_cred, server_ocsp_stapling_cb, ofile);
 	      }
+# endif	/* SUPPORT_GNUTLS_EXT_RAW_PARSE */
 	    }
 	  else
 	    DEBUG(D_tls) debug_printf("ran out of OCSP response files in list\n");
@@ -2181,7 +2250,8 @@ post_handshake_debug(exim_gnutls_state_st * state)
 debug_printf("%s\n", gnutls_session_get_desc(state->session));
 #endif
 #ifdef SUPPORT_GNUTLS_KEYLOG
-# ifdef GNUTLS_TLS1_3
+
+# ifdef EXIM_HAVE_TLS1_3
 if (gnutls_protocol_get_version(state->session) < GNUTLS_TLS1_3)
 #else
 if (TRUE)
@@ -2201,7 +2271,8 @@ else
     " set environment variable SSLKEYLOGFILE to a filename writable by uid exim\n"
     " add SSLKEYLOGFILE to keep_environment in the exim config\n"
     " run exim as root\n"
-    " if using sudo, add SSLKEYLOGFILE to env_keep in /etc/sudoers\n");
+    " if using sudo, add SSLKEYLOGFILE to env_keep in /etc/sudoers\n"
+    " (works for TLS1.2 also, and saves cut-paste into file)\n");
 #endif
 }
 
@@ -2878,16 +2949,26 @@ if (request_ocsp)
     gnutls_datum_t stapling;
     gnutls_ocsp_resp_t resp;
     gnutls_datum_t printed;
-    if (  (rc= gnutls_ocsp_status_request_get(state->session, &stapling)) == 0
-       && (rc= gnutls_ocsp_resp_init(&resp)) == 0
-       && (rc= gnutls_ocsp_resp_import(resp, &stapling)) == 0
-       && (rc= gnutls_ocsp_resp_print(resp, GNUTLS_OCSP_PRINT_FULL, &printed)) == 0
-       )
-      {
-      debug_printf("%.4096s", printed.data);
-      gnutls_free(printed.data);
-      }
-    else
+    unsigned idx = 0;
+
+    for (;
+# ifdef GNUTLS_OCSP_STATUS_REQUEST_GET2
+	 (rc = gnutls_ocsp_status_request_get2(state->session, idx, &stapling)) == 0;
+#else
+	 (rc = gnutls_ocsp_status_request_get(state->session, &stapling)) == 0;
+#endif
+	 idx++)
+      if (  (rc= gnutls_ocsp_resp_init(&resp)) == 0
+	 && (rc= gnutls_ocsp_resp_import(resp, &stapling)) == 0
+	 && (rc= gnutls_ocsp_resp_print(resp, GNUTLS_OCSP_PRINT_COMPACT, &printed)) == 0
+	 )
+	{
+	debug_printf("%.4096s", printed.data);
+	gnutls_free(printed.data);
+	}
+      else
+	(void) tls_error_gnu(US"ocsp decode", rc, state->host, errstr);
+    if (idx == 0 && rc)
       (void) tls_error_gnu(US"ocsp decode", rc, state->host, errstr);
     }
 

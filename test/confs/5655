@@ -1,5 +1,5 @@
-# Exim test configuration 5652
-# OCSP stapling, server, multiple certs
+# Exim test configuration 5655
+# OCSP stapling, server, multiple chain-element OCSP
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -7,6 +7,7 @@ primary_hostname = server1.example.com
 
 # ----- Main settings -----
 
+acl_smtp_connect = accept logwrite = ${env {SSLKEYLOGFILE}}
 acl_smtp_mail = check_mail
 acl_smtp_rcpt = check_recipient
 
@@ -21,15 +22,23 @@ CADIR = DIR/aux-fixed/exim-ca
 DRSA = CADIR/example.com
 DECDSA = CADIR/example_ec.com
 
-tls_certificate = DRSA/server1.example.com/server1.example.com.pem \
+tls_certificate = DRSA/server1.example.com/fullchain.pem \
 	      : DECDSA/server1.example_ec.com/server1.example_ec.com.pem
 tls_privatekey =  DRSA/server1.example.com/server1.example.com.unlocked.key \
 	      : DECDSA/server1.example_ec.com/server1.example_ec.com.unlocked.key
-tls_ocsp_file =   DRSA/server1.example.com/server1.example.com.ocsp.good.resp \
-	      : DECDSA/server1.example_ec.com/server1.example_ec.com.ocsp.good.resp
+
+.ifndef CONTROL
+tls_ocsp_file =   PEM DIR/tmp/ocsp/triple.ocsp.pem \
+	      : DER DECDSA/server1.example_ec.com/server1.example_ec.com.ocsp.good.resp
+.else
+tls_ocsp_file =   PEM DIR/tmp/ocsp/double_r.ocsp.pem \
+	      : DER DECDSA/server1.example_ec.com/server1.example_ec.com.ocsp.good.resp
+.endif
 
 
-tls_require_ciphers = NORMAL:!VERS-ALL:+VERS-TLS1.2:+VERS-TLS1.0
+.ifdef _HAVE_GNUTLS
+tls_require_ciphers = ${if eq {LIMIT}{TLS1.2} {NORMAL:!VERS-ALL:+VERS-TLS1.2} {}}
+.endif
 
 # ------ ACL ------
 
@@ -70,9 +79,22 @@ remote_delivery:
   driver =			smtp
   port =			PORT_D
   hosts_require_tls =		*
-  tls_require_ciphers =		OPT
+.ifdef _HAVE_GNUTLS
+
+  tls_require_ciphers =		${if eq {LIMIT}{TLS1.2} \
+				  {NONE:\
+				    ${if eq {OPT}{rsa} \
+				      {+SIGN-RSA-SHA256:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA} \
+				      {+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+KX-ALL}}\
+				  :+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509} \
+				  {}}
+  tls_verify_certificates =	CADIR/\
+				  ${if eq {OPT}{rsa} \
+				    {example.com/server1.example.com} \
+				    {example_ec.com/server1.example_ec.com}}\
+				/ca_chain.pem
+.endif
   hosts_require_ocsp =		*
-  tls_verify_certificates =	CERT
   tls_verify_cert_hostnames =	:
 
 local_delivery:

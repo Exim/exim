@@ -4,3 +4,4 @@ R	130110200751Z	100201142709Z,superseded	67	unknown	CN=expired1.example.com
 R	130110200751Z	100201142709Z,superseded	c9	unknown	CN=server2.example.com
 R	130110200751Z	100201142709Z,superseded	ca	unknown	CN=revoked2.example.com
 R	130110200751Z	100201142709Z,superseded	cb	unknown	CN=expired2.example.com
+R	130110200751Z	100201142709Z,superseded	42	unknown	CN=clica Signing Cert rsa

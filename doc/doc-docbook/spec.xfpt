@@ -17836,7 +17836,15 @@ For GnuTLS 3.5.6 or later the expanded value of this option can be a list
 of files, to match a list given for the &%tls_certificate%& option.
 The ordering of the two lists must match.
 
-The file(s) should be in DER format
+.new
+The file(s) should be in DER format,
+except for GnuTLS 3.6.3 or later when an optional filetype prefix
+can be used.  The prefix must be one of "DER" or "PEM", followed by
+a single space.  If one is used it sets the format for subsequent
+files in the list; the initial format is DER.
+When a PEM format file is used it may contain multiple proofs,
+for multiple certificate chain element proofs under TLS1.3.
+.wen
 
 .option tls_on_connect_ports main "string list" unset
 .cindex SSMTP

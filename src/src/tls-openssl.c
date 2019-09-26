@@ -261,6 +261,9 @@ for (struct exim_openssl_option * o = exim_openssl_options;
 # ifdef EXPERIMENTAL_TLS_RESUME
 builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
 # endif
+# ifdef SSL_OP_NO_TLSv1_3
+builtin_macro_create(US"_HAVE_TLS1_3");
+# endif
 }
 #else
 

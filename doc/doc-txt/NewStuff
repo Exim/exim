@@ -35,6 +35,8 @@ Version 4.93
 
 11. Main options for DKIM verify to filter hash and key types.
 
+12. Under GnuTLS, with TLS1.3, support for full-chain OCSP stapling.
+
 
 Version 4.92
 --------------
