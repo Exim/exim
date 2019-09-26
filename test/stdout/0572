@@ -78,7 +78,7 @@ OPT =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
-keep_environment = PATH:SSLKEYLOGFILE
+keep_environment = PATH:SSLKEYLOGFILE:EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
 exim_path = TESTSUITE/eximdir/exim
 host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
@@ -118,7 +118,7 @@ OPT =
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/std_conf_prefix"
 # 1 "TESTSUITE/aux-var/tls_conf_prefix"
-keep_environment = PATH:SSLKEYLOGFILE
+keep_environment = PATH:SSLKEYLOGFILE:EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
 exim_path = TESTSUITE/eximdir/exim
 host_lookup_order = bydns
 spool_directory = TESTSUITE/spool
