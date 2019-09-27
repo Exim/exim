@@ -1132,7 +1132,7 @@ store_reset(g->s + (g->size = g->ptr + 1));
 Arguments:
   g		the growable-string
   p		current end of data
-  count		amount to grow by
+  count		amount to grow by, offset from p
 */
 
 static void
@@ -1590,7 +1590,7 @@ while (*fp)
 	}
       else if (g->ptr >= lim - width)
 	{
-	gstring_grow(g, g->ptr, width - (lim - g->ptr));
+	gstring_grow(g, g->ptr, width);
 	lim = g->size - 1;
 	gp = CS g->s + g->ptr;
 	}
