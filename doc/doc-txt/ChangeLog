@@ -192,6 +192,7 @@ JH/41 With GnuTLS 3.6.0 (and later) do not attempt to manage Diffie-Hellman
       function is unnecessary and discouraged on GnuTLS 3.6.0 or later. Since
       3.6.0, DH parameters are negotiated following RFC7919."
 
+HS/06 Change the default of dnssec_request_domains to "*"
 
 Exim version 4.92
 -----------------

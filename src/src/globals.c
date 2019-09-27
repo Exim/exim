@@ -1362,7 +1362,7 @@ router_instance  router_defaults = {
     .pass_router =		NULL,
     .redirect_router =		NULL,
 
-    .dnssec =			{ NULL, NULL },            /* dnssec_domains {require,request} */
+    .dnssec =                   { .request= US"*", .require=NULL },
 };
 
 uschar *router_name            = NULL;

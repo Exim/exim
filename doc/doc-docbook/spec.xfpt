@@ -7331,7 +7331,7 @@ with the lookup.
 With &"strict"& a response from the DNS resolver that
 is not labelled as authenticated data
 is treated as equivalent to a temporary DNS error.
-The default is &"never"&.
+The default is &"lax"&.
 
 See also the &$lookup_dnssec_authenticated$& variable.
 
@@ -18382,7 +18382,7 @@ or for any deliveries caused by this router. You should not set this option
 unless you really, really know what you are doing. See also the generic
 transport option of the same name.
 
-.option dnssec_request_domains routers "domain list&!!" unset
+.option dnssec_request_domains routers "domain list&!!" *
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
 .cindex "security" "MX lookup"
@@ -24571,7 +24571,7 @@ See the &%search_parents%& option in chapter &<<CHAPdnslookup>>& for more
 details.
 
 
-.option dnssec_request_domains smtp "domain list&!!" unset
+.option dnssec_request_domains smtp "domain list&!!" *
 .cindex "MX record" "security"
 .cindex "DNSSEC" "MX lookup"
 .cindex "security" "MX lookup"
@@ -29055,7 +29055,8 @@ If DANE is requested and useable (see above) the following transport options are
 If DANE is not usable, whether requested or not, and CA-anchored
 verification evaluation is wanted, the above variables should be set appropriately.
 
-Currently the (router or transport options) &%dnssec_request_domains%& must be active and &%dnssec_require_domains%& is ignored.
+The router and transport option &%dnssec_request_domains%& must not be
+set to "never" and &%dnssec_require_domains%& is ignored.
 
 If verification was successful using DANE then the "CV" item in the delivery log line will show as "CV=dane".
 

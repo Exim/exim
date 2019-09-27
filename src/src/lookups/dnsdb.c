@@ -112,7 +112,7 @@ terminates option processing.  Recognised options are:
 causes the whole lookup to defer only if none of the DNS queries succeeds; and
 'never', where all defers are as if the lookup failed. The default is 'lax'.
 
-- 'dnssec_FOO', with 'strict', 'lax' and 'never' (default).  The meanings are
+- 'dnssec_FOO', with 'strict', 'lax' (default), and 'never'.  The meanings are
 require, try and don't-try dnssec respectively.
 
 - 'retrans_VAL', set the timeout value.  VAL is an Exim time specification
@@ -136,7 +136,7 @@ dnsdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
 int rc;
 int sep = 0;
 int defer_mode = PASS;
-int dnssec_mode = OK;
+int dnssec_mode = PASS;
 int save_retrans = dns_retrans;
 int save_retry =   dns_retry;
 int type;

@@ -281,7 +281,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .gethostbyname =		FALSE,
   .dns_qualify_single =		TRUE,
   .dns_search_parents =		FALSE,
-  .dnssec = { .request=NULL, .require=NULL },
+  .dnssec = { .request= US"*", .require=NULL },
   .delay_after_cutoff =		TRUE,
   .hosts_override =		FALSE,
   .hosts_randomize =		FALSE,

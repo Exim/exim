@@ -690,9 +690,6 @@ dnslookup:
   ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
 # if ipv6-enabled then instead use:
 # ignore_target_hosts = <; 0.0.0.0 ; 127.0.0.0/8 ; ::1
-.ifdef _HAVE_DNSSEC
-  dnssec_request_domains = *
-.endif
   no_more
 
 # This closes the ROUTER_SMARTHOST ifdef around the choice of routing for
