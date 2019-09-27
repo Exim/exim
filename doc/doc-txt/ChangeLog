@@ -1,5 +1,3 @@
-Change log file for Exim from version 4.21
-------------------------------------------
 This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.

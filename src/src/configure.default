@@ -811,9 +811,6 @@ begin transports
 remote_smtp:
   driver = smtp
   message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
-.ifdef _HAVE_DANE
-  hosts_try_dane = *
-.endif
 .ifdef _HAVE_PRDR
   hosts_try_prdr = *
 .endif
