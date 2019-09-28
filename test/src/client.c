@@ -570,12 +570,14 @@ nextinput:
     if (*inptr == 0)   /* Refill input buffer */
       {
       alarm(timeout);
+      unsigned char *inbufferp = inbuffer;
+      for (;;) {
       if (srv->tls_active)
         {
 #ifdef HAVE_OPENSSL
 	int error;
 	DEBUG { printf("call SSL_read\n"); fflush(stdout); }
-        rc = SSL_read(srv->ssl, inbuffer, bsiz - 1);
+        rc = SSL_read(srv->ssl, inbufferp, bsiz - (inbufferp - inbuffer) - 1);
 	DEBUG { printf("SSL_read: %d\n", rc); fflush(stdout); }
 	if (rc <= 0)
           switch (error = SSL_get_error(srv->ssl, rc))
@@ -604,15 +606,25 @@ nextinput:
 	    }
 #endif
 #ifdef HAVE_GNUTLS
-        rc = gnutls_record_recv(tls_session, CS inbuffer, bsiz - 1);
+        rc = gnutls_record_recv(tls_session, CS inbufferp, bsiz - (inbufferp - inbuffer) - 1);
 #endif
         }
       else
 	{
 	DEBUG { printf("call read\n"); fflush(stdout); }
-	rc = read(srv->sock, inbuffer, bsiz);
+	rc = read(srv->sock, inbufferp, bsiz - (inbufferp - inbuffer) - 1);
 	DEBUG { printf("read: %d\n", rc); fflush(stdout); }
 	}
+
+        if (rc > 0) inbufferp[rc] = '\0';
+        if (rc <= 0 || strchr(inbufferp, '\n')) break;
+        inbufferp += rc;
+        if (inbufferp >= inbuffer + bsiz) {
+          printf("Input buffer overrun, need more than %d bytes input buffer\n", bsiz);
+          exit(73);
+        }
+        DEBUG { printf("read more\n"); }
+      }
       alarm(0);
 
       if (rc < 0)
@@ -643,10 +655,7 @@ nextinput:
         exit(74);
         }
       else
-        {
-        inbuffer[rc] = 0;
         inptr = inbuffer;
-        }
       }
     DEBUG { printf("read: '%s'\n", inptr); fflush(stdout); }
 
@@ -941,7 +950,7 @@ struct sockaddr_in6 s_in6;
 
 srv_ctx srv;
 
-unsigned char inbuffer[10240];
+unsigned char inbuffer[100 * 1024];
 unsigned char *inptr = inbuffer;
 
 *inptr = 0;   /* Buffer empty */
