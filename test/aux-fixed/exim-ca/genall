@@ -263,7 +263,7 @@ do
 # 5: DN, index
 
     cat >$CADIR/index.valid.txt <<EOF
-V	130110200751Z		65	unknown	CN=server1.$iname
+V	130110200751Z		835	unknown	CN=server1.$iname
 EOF
 
     # Now create all the ocsp requests and responses

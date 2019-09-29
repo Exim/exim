@@ -1,5 +1,5 @@
 # Exim test configuration 5652
-# OCSP stapling, server, multiple certs
+# OCSP stapling, server, multiple leaf-certs
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -29,7 +29,12 @@ tls_ocsp_file =   DRSA/server1.example.com/server1.example.com.ocsp.good.resp \
 	      : DECDSA/server1.example_ec.com/server1.example_ec.com.ocsp.good.resp
 
 
+.ifdef _HAVE_GNUTLS
 tls_require_ciphers = NORMAL:!VERS-ALL:+VERS-TLS1.2:+VERS-TLS1.0
+.endif
+.ifdef _OPT_OPENSSL_NO_TLSV1_3_X
+openssl_options = +no_tlsv1_3
+.endif
 
 # ------ ACL ------
 
@@ -70,9 +75,21 @@ remote_delivery:
   driver =			smtp
   port =			PORT_D
   hosts_require_tls =		*
-  tls_require_ciphers =		OPT
+.ifdef _HAVE_GNUTLS
+  tls_require_ciphers =		NONE:\
+				${if eq {SELECTOR}{auth_ecdsa} \
+					{+SIGN-ECDSA-SHA512:+VERS-TLS-ALL:+KX-ALL:} \
+					{+SIGN-RSA-SHA256:+VERS-TLS-ALL:+ECDHE-RSA:+DHE-RSA:+RSA:}}\
+				+CIPHER-ALL:+MAC-ALL:+COMP-NULL:+CURVE-ALL:+CTYPE-X509
+.endif
+.ifdef _HAVE_OPENSSL
+  tls_require_ciphers =		${if eq {SELECTOR}{auth_ecdsa} {ECDSA:RSA:!COMPLEMENTOFDEFAULT} {RSA}}
+.endif
   hosts_require_ocsp =		*
-  tls_verify_certificates =	CERT
+  tls_verify_certificates =	CADIR/\
+				${if eq {SELECTOR}{auth_ecdsa} \
+					{example_ec.com/server1.example_ec.com/ca_chain.pem}\
+					{example.com/server1.example.com/ca_chain.pem}}
   tls_verify_cert_hostnames =	:
 
 local_delivery:

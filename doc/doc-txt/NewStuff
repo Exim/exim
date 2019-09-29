@@ -37,6 +37,8 @@ Version 4.93
 
 12. Under GnuTLS, with TLS1.3, support for full-chain OCSP stapling.
 
+13. Dual-certificate stacks on servers now support OCSP stapling, under OpenSSL.
+
 
 Version 4.92
 --------------

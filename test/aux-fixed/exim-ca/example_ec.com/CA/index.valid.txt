@@ -1,1 +1,1 @@
-V	130110200751Z		65	unknown	CN=server1.example_ec.com
+V	130110200751Z		835	unknown	CN=server1.example_ec.com

@@ -325,6 +325,11 @@ static BOOL server_verify_optional = FALSE;
 static BOOL reexpand_tls_files_for_sni = FALSE;
 
 
+typedef struct ocsp_resp {
+  struct ocsp_resp *	next;
+  OCSP_RESPONSE *	resp;
+} ocsp_resplist;
+
 typedef struct tls_ext_ctx_cb {
   tls_support * tlsp;
   uschar *certificate;
@@ -335,8 +340,8 @@ typedef struct tls_ext_ctx_cb {
   union {
     struct {
       uschar        *file;
-      uschar        *file_expanded;
-      OCSP_RESPONSE *response;
+      const uschar  *file_expanded;
+      ocsp_resplist *olist;
     } server;
     struct {
       X509_STORE    *verify_store;	/* non-null if status requested */
@@ -1192,12 +1197,13 @@ ASSUMES: single response, for single cert.
 Arguments:
   sctx            the SSL_CTX* to update
   cbinfo          various parts of session state
-  expanded        the filename putatively holding an OCSP response
+  filename        the filename putatively holding an OCSP response
 
 */
 
 static void
-ocsp_load_response(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo, const uschar *expanded)
+ocsp_load_response(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo,
+  const uschar * filename)
 {
 BIO * bio;
 OCSP_RESPONSE * resp;
@@ -1208,17 +1214,12 @@ STACK_OF(X509) * sk;
 unsigned long verify_flags;
 int status, reason, i;
 
-cbinfo->u_ocsp.server.file_expanded = string_copy(expanded);
-if (cbinfo->u_ocsp.server.response)
-  {
-  OCSP_RESPONSE_free(cbinfo->u_ocsp.server.response);
-  cbinfo->u_ocsp.server.response = NULL;
-  }
+DEBUG(D_tls) debug_printf("tls_ocsp_file        '%s'\n", filename);
 
-if (!(bio = BIO_new_file(CS cbinfo->u_ocsp.server.file_expanded, "rb")))
+if (!(bio = BIO_new_file(CS filename, "rb")))
   {
   DEBUG(D_tls) debug_printf("Failed to open OCSP response file \"%s\"\n",
-      cbinfo->u_ocsp.server.file_expanded);
+      filename);
   return;
   }
 
@@ -1236,6 +1237,14 @@ if ((status = OCSP_response_status(resp)) != OCSP_RESPONSE_STATUS_SUCCESSFUL)
       OCSP_response_status_str(status), status);
   goto bad;
   }
+
+#ifdef notdef
+  {
+  BIO * bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
+  OCSP_RESPONSE_print(bp, resp, 0);  /* extreme debug: stapling content */
+  BIO_free(bp);
+  }
+#endif
 
 if (!(basic_response = OCSP_response_get1_basic(resp)))
   {
@@ -1290,7 +1299,10 @@ proves false, we need to extract a cert id from our issued cert
 (tls_certificate) and use that for OCSP_resp_find_status() (which finds the
 right cert in the stack and then calls OCSP_single_get0_status()).
 
-I'm hoping to avoid reworking a bunch more of how we handle state here. */
+I'm hoping to avoid reworking a bunch more of how we handle state here.
+
+XXX that will change when we add support for (TLS1.3) whole-chain stapling
+*/
 
 if (!(single_response = OCSP_resp_get0(basic_response, 0)))
   {
@@ -1315,8 +1327,15 @@ if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX
   }
 
 supply_response:
-  /*XXX stack? (these tag points are for multiple leaf-cert support for ocsp */
-  cbinfo->u_ocsp.server.response = resp;
+  /* Add the resp to the list used by tls_server_stapling_cb() */
+  {
+  ocsp_resplist ** op = &cbinfo->u_ocsp.server.olist, * oentry;
+  while (oentry = *op)
+    op = &oentry->next;
+  *op = oentry = store_get(sizeof(ocsp_resplist), FALSE);
+  oentry->next = NULL;
+  oentry->resp = resp;
+  }
 return;
 
 bad:
@@ -1331,6 +1350,16 @@ bad:
 	}
     }
 return;
+}
+
+
+static void
+ocsp_free_response_list(tls_ext_ctx_cb * cbinfo)
+{
+for (ocsp_resplist * olist = cbinfo->u_ocsp.server.olist; olist;
+     olist = olist->next)
+  OCSP_RESPONSE_free(olist->resp);
+cbinfo->u_ocsp.server.olist = NULL;
 }
 #endif	/*!DISABLE_OCSP*/
 
@@ -1407,7 +1436,7 @@ static int
 tls_add_certfile(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo, uschar * file,
   uschar ** errstr)
 {
-DEBUG(D_tls) debug_printf("tls_certificate file %s\n", file);
+DEBUG(D_tls) debug_printf("tls_certificate file '%s'\n", file);
 if (!SSL_CTX_use_certificate_chain_file(sctx, CS file))
   return tls_error(string_sprintf(
     "SSL_CTX_use_certificate_chain_file file=%s", file),
@@ -1419,7 +1448,7 @@ static int
 tls_add_pkeyfile(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo, uschar * file,
   uschar ** errstr)
 {
-DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", file);
+DEBUG(D_tls) debug_printf("tls_privatekey file  '%s'\n", file);
 if (!SSL_CTX_use_PrivateKey_file(sctx, CS file, SSL_FILETYPE_PEM))
   return tls_error(string_sprintf(
     "SSL_CTX_use_PrivateKey_file file=%s", file), cbinfo->host, NULL, errstr);
@@ -1444,10 +1473,10 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_expand_session_files(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo,
+tls_expand_session_files(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo,
   uschar ** errstr)
 {
-uschar *expanded;
+uschar * expanded;
 
 if (!cbinfo->certificate)
   {
@@ -1461,10 +1490,11 @@ else
   {
   int err;
 
-  if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
-      Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
-      Ustrstr(cbinfo->certificate, US"tls_out_sni")
-     )
+  if ( !reexpand_tls_files_for_sni
+     && (  Ustrstr(cbinfo->certificate, US"tls_sni")
+	|| Ustrstr(cbinfo->certificate, US"tls_in_sni")
+	|| Ustrstr(cbinfo->certificate, US"tls_out_sni")
+     )  )
     reexpand_tls_files_for_sni = TRUE;
 
   if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded, errstr))
@@ -1476,10 +1506,43 @@ else
       const uschar * file_list = expanded;
       int sep = 0;
       uschar * file;
+#ifndef DISABLE_OCSP
+      const uschar * olist = cbinfo->u_ocsp.server.file;
+      int osep = 0;
+      uschar * ofile;
+
+      if (olist)
+	if (!expand_check(olist, US"tls_ocsp_file", USS &olist, errstr))
+	  return DEFER;
+      if (olist && !*olist)
+	olist = NULL;
+
+      if (  cbinfo->u_ocsp.server.file_expanded && olist
+	 && (Ustrcmp(olist, cbinfo->u_ocsp.server.file_expanded) == 0))
+	{
+	DEBUG(D_tls) debug_printf(" - value unchanged, using existing values\n");
+	olist = NULL;
+	}
+      else
+	{
+	ocsp_free_response_list(cbinfo);
+	cbinfo->u_ocsp.server.file_expanded = olist;
+	}
+#endif
 
       while (file = string_nextinlist(&file_list, &sep, NULL, 0))
+	{
 	if ((err = tls_add_certfile(sctx, cbinfo, file, errstr)))
 	  return err;
+
+#ifndef DISABLE_OCSP
+	if (olist)
+	  if ((ofile = string_nextinlist(&olist, &osep, NULL, 0)))
+	    ocsp_load_response(sctx, cbinfo, ofile);
+	  else
+	    DEBUG(D_tls) debug_printf("ran out of ocsp file list\n");
+#endif
+	}
       }
     else	/* would there ever be a need for multiple client certs? */
       if ((err = tls_add_certfile(sctx, cbinfo, expanded, errstr)))
@@ -1508,27 +1571,6 @@ else
       if ((err = tls_add_pkeyfile(sctx, cbinfo, expanded, errstr)))
 	return err;
   }
-
-#ifndef DISABLE_OCSP
-if (cbinfo->is_server && cbinfo->u_ocsp.server.file)
-  {
-  /*XXX stack*/
-  if (!expand_check(cbinfo->u_ocsp.server.file, US"tls_ocsp_file", &expanded, errstr))
-    return DEFER;
-
-  if (expanded && *expanded)
-    {
-    DEBUG(D_tls) debug_printf("tls_ocsp_file %s\n", expanded);
-    if (  cbinfo->u_ocsp.server.file_expanded
-       && (Ustrcmp(expanded, cbinfo->u_ocsp.server.file_expanded) == 0))
-      {
-      DEBUG(D_tls) debug_printf(" - value unchanged, using existing values\n");
-      }
-    else
-      ocsp_load_response(sctx, cbinfo, expanded);
-    }
-  }
-#endif
 
 return OK;
 }
@@ -1659,27 +1701,70 @@ project.
 static int
 tls_server_stapling_cb(SSL *s, void *arg)
 {
-const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
-uschar *response_der;	/*XXX blob */
+const tls_ext_ctx_cb * cbinfo = (tls_ext_ctx_cb *) arg;
+ocsp_resplist * olist = cbinfo->u_ocsp.server.olist;
+uschar * response_der;	/*XXX blob */
 int response_der_len;
 
-/*XXX stack: use SSL_get_certificate() to see which cert; from that work
-out which ocsp blob to send.  Unfortunately, SSL_get_certificate is known
-buggy in current OpenSSL; it returns the last cert loaded always rather than
-the one actually presented.  So we can't support a stack of OCSP proofs at
-this time. */
-
 DEBUG(D_tls)
-  debug_printf("Received TLS status request (OCSP stapling); %s response\n",
-    cbinfo->u_ocsp.server.response ? "have" : "lack");
+  debug_printf("Received TLS status request (OCSP stapling); %s response list\n",
+    olist ? "have" : "lack");
 
 tls_in.ocsp = OCSP_NOT_RESP;
-if (!cbinfo->u_ocsp.server.response)
+if (!olist)
   return SSL_TLSEXT_ERR_NOACK;
 
+ {
+  const X509 * cert_sent = SSL_get_certificate(s);
+  const ASN1_INTEGER * cert_serial = X509_get0_serialNumber(cert_sent);
+  const BIGNUM * cert_bn = ASN1_INTEGER_to_BN(cert_serial, NULL);
+  const X509_NAME * cert_issuer = X509_get_issuer_name(cert_sent);
+  uschar * chash;
+  uint chash_len;
+
+  for (; olist; olist = olist->next)
+    {
+    OCSP_BASICRESP * bs = OCSP_response_get1_basic(olist->resp);
+    const OCSP_SINGLERESP * single = OCSP_resp_get0(bs, 0);
+    const OCSP_CERTID * cid = OCSP_SINGLERESP_get0_id(single);
+    ASN1_INTEGER * res_cert_serial;
+    const BIGNUM * resp_bn;
+    ASN1_OCTET_STRING * res_cert_iNameHash;
+
+
+    (void) OCSP_id_get0_info(&res_cert_iNameHash, NULL, NULL, &res_cert_serial,
+      (OCSP_CERTID *) cid);
+    resp_bn = ASN1_INTEGER_to_BN(res_cert_serial, NULL);
+
+    DEBUG(D_tls)
+      {
+      debug_printf("cert serial: %s\n", BN_bn2hex(cert_bn));
+      debug_printf("resp serial: %s\n", BN_bn2hex(resp_bn));
+      }
+
+    if (BN_cmp(cert_bn, resp_bn) == 0)
+      {
+      DEBUG(D_tls) debug_printf("matched serial for ocsp\n");
+
+      /*XXX TODO: check the rest of the list for duplicate matches.
+      If any, need to also check the Issuer Name hash.
+      Without this, we will provide the wrong status in the case of
+      duplicate id. */
+
+      break;
+      }
+    DEBUG(D_tls) debug_printf("not match serial for ocsp\n");
+    }
+  if (!olist)
+    {
+    DEBUG(D_tls) debug_printf("failed to find match for ocsp\n");
+    return SSL_TLSEXT_ERR_NOACK;
+    }
+ }
+
+/*XXX could we do the i2d earlier, rather than during the callback? */
 response_der = NULL;
-response_der_len = i2d_OCSP_RESPONSE(cbinfo->u_ocsp.server.response,	/*XXX stack*/
-		      &response_der);
+response_der_len = i2d_OCSP_RESPONSE(olist->resp, &response_der);
 if (response_der_len <= 0)
   return SSL_TLSEXT_ERR_NOACK;
 
@@ -1872,7 +1957,7 @@ static int
 tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
   uschar *privatekey,
 #ifndef DISABLE_OCSP
-  uschar *ocsp_file,	/*XXX stack, in server*/
+  uschar *ocsp_file,
 #endif
   address_item *addr, tls_ext_ctx_cb ** cbp,
   tls_support * tlsp,
@@ -1894,7 +1979,7 @@ if (!host)
   {
   cbinfo->u_ocsp.server.file = ocsp_file;
   cbinfo->u_ocsp.server.file_expanded = NULL;
-  cbinfo->u_ocsp.server.response = NULL;
+  cbinfo->u_ocsp.server.olist = NULL;
   }
 else
   cbinfo->u_ocsp.client.verify_store = NULL;
@@ -2046,7 +2131,7 @@ if ((rc = tls_expand_session_files(ctx, cbinfo, errstr)) != OK)
 if (!host)		/* server */
   {
 # ifndef DISABLE_OCSP
-  /* We check u_ocsp.server.file, not server.response, because we care about if
+  /* We check u_ocsp.server.file, not server.olist, because we care about if
   the option exists, not what the current expansion might be, as SNI might
   change the certificate and OCSP file in use between now and the time the
   callback is invoked. */
@@ -2273,6 +2358,10 @@ if (expcerts && *expcerts)
 	/* In the server if we will be offering an OCSP proof, load chain from
 	file for verifying the OCSP proof at load time. */
 
+/*XXX Glitch!   The file here is tls_verify_certs: the chain for verifying the client cert.
+This is inconsistent with the need to verify the OCSP proof of the server cert.
+*/
+
 	if (  !host
 	   && statbuf.st_size > 0
 	   && server_static_cbinfo->u_ocsp.server.file
@@ -2421,7 +2510,7 @@ the error. */
 
 rc = tls_init(&server_ctx, NULL, tls_dhparam, tls_certificate, tls_privatekey,
 #ifndef DISABLE_OCSP
-    tls_ocsp_file,	/*XXX stack*/
+    tls_ocsp_file,
 #endif
     NULL, &server_static_cbinfo, &tls_in, errstr);
 if (rc != OK) return rc;
