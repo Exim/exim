@@ -412,8 +412,9 @@ if (  !(s1 = Ustrstr(CS privkey_pem, "-----BEGIN RSA PRIVATE KEY-----"))
 
 *s2 = '\0';
 
-if ((der.len = b64decode(s1, &der.data)) < 0)
+if ((rc = b64decode(s1, &der.data) < 0))
   return US"Bad PEM-DER b64 decode";
+der.len = rc;
 
 /* untangle asn.1 */
 
