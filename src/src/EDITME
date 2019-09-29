@@ -432,6 +432,9 @@ LOOKUP_DNSDB=yes
 # LOOKUP_NWILDLSEARCH=yes
 
 
+# Some platforms may need this for LOOKUP_NIS:
+# LIBS += -lnsl
+
 #------------------------------------------------------------------------------
 # If you have set LOOKUP_LDAP=yes, you should set LDAP_LIB_TYPE to indicate
 # which LDAP library you have. Unfortunately, though most of their functions

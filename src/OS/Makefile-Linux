@@ -21,7 +21,7 @@ CFLAGS_DYNAMIC ?= -shared -rdynamic
 DBMLIB = -ldb
 USE_DB = yes
 
-LIBS = -lnsl -lcrypt -lm
+LIBS = -lcrypt -lm
 LIBRESOLV = -lresolv
 
 X11=/usr/X11R6
