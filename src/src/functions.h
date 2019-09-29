@@ -892,7 +892,7 @@ return string_sprintf("%s/%s/%s/%s/%s%s",
 	spool_directory, queue_name, purpose, subdir, fname, suffix);
 }
 
-static void
+static inline void
 set_subdir_str(uschar * subdir_str, const uschar * name,
 	int search_sequence)
 {

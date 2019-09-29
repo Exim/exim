@@ -569,76 +569,79 @@ while (fgets(CS outbuffer, sizeof(outbuffer), f) != NULL)
 nextinput:
     if (*inptr == 0)   /* Refill input buffer */
       {
-      alarm(timeout);
       unsigned char *inbufferp = inbuffer;
-      for (;;) {
-      if (srv->tls_active)
-        {
+
+      alarm(timeout);
+      for (;;)
+	{
+	if (srv->tls_active)
+	  {
 #ifdef HAVE_OPENSSL
-	int error;
-	DEBUG { printf("call SSL_read\n"); fflush(stdout); }
-        rc = SSL_read(srv->ssl, inbufferp, bsiz - (inbufferp - inbuffer) - 1);
-	DEBUG { printf("SSL_read: %d\n", rc); fflush(stdout); }
-	if (rc <= 0)
-          switch (error = SSL_get_error(srv->ssl, rc))
-	    {
-	    case SSL_ERROR_ZERO_RETURN:
-	      break;
-	    case SSL_ERROR_SYSCALL:
-	      printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
-	      rc = -1;
-	      break;
-	    case SSL_ERROR_SSL:
-	      printf("%s\nTLS terminated\n", ERR_error_string(ERR_get_error(), NULL));
-	      SSL_shutdown(srv->ssl);
-	      SSL_free(srv->ssl);
-	      srv->tls_active = FALSE;
-	      {	/* OpenSSL leaves it in restartsys mode */
-	      struct sigaction act = {.sa_handler = sigalrm_handler_flag, .sa_flags = 0};
-	      sigalrm_seen = 1;
-	      sigaction(SIGALRM, &act, NULL);
+	  int error;
+	  DEBUG { printf("call SSL_read\n"); fflush(stdout); }
+	  rc = SSL_read(srv->ssl, inbufferp, bsiz - (inbufferp - inbuffer) - 1);
+	  DEBUG { printf("SSL_read: %d\n", rc); fflush(stdout); }
+	  if (rc <= 0)
+	    switch (error = SSL_get_error(srv->ssl, rc))
+	      {
+	      case SSL_ERROR_ZERO_RETURN:
+		break;
+	      case SSL_ERROR_SYSCALL:
+		printf("%s\n", ERR_error_string(ERR_get_error(), NULL));
+		rc = -1;
+		break;
+	      case SSL_ERROR_SSL:
+		printf("%s\nTLS terminated\n", ERR_error_string(ERR_get_error(), NULL));
+		SSL_shutdown(srv->ssl);
+		SSL_free(srv->ssl);
+		srv->tls_active = FALSE;
+		{	/* OpenSSL leaves it in restartsys mode */
+		struct sigaction act = {.sa_handler = sigalrm_handler_flag, .sa_flags = 0};
+		sigalrm_seen = 1;
+		sigaction(SIGALRM, &act, NULL);
+		}
+		*inptr = 0;
+		DEBUG { printf("go round\n"); fflush(stdout); }
+		goto nextinput;
+	      default:
+		printf("SSL error code %d\n", error);
 	      }
-	      *inptr = 0;
-	      DEBUG { printf("go round\n"); fflush(stdout); }
-	      goto nextinput;
-	    default:
-	      printf("SSL error code %d\n", error);
-	    }
 #endif
 #ifdef HAVE_GNUTLS
-      retry1:
-	DEBUG { printf("call gnutls_record_recv\n"); fflush(stdout); }
-        rc = gnutls_record_recv(tls_session, CS inbufferp, bsiz - (inbufferp - inbuffer) - 1);
-	if (rc < 0)
-	  {
-	  DEBUG { printf("gnutls_record_recv: %s\n", gnutls_strerror(rc)); fflush(stdout); }
-	  if (rc == GNUTLS_E_INTERRUPTED || rc == GNUTLS_E_AGAIN)
-	    goto retry1;
-	  printf("%s\n", gnutls_strerror(rc));
-	  srv->tls_active = FALSE;
-	  *inptr = 0;
-	  DEBUG { printf("go round\n"); fflush(stdout); }
-	  goto nextinput;
-	  }
-	DEBUG { printf("gnutls_record_recv: %d\n", rc); fflush(stdout); }
+	retry1:
+	  DEBUG { printf("call gnutls_record_recv\n"); fflush(stdout); }
+	  rc = gnutls_record_recv(tls_session, CS inbufferp, bsiz - (inbufferp - inbuffer) - 1);
+	  if (rc < 0)
+	    {
+	    DEBUG { printf("gnutls_record_recv: %s\n", gnutls_strerror(rc)); fflush(stdout); }
+	    if (rc == GNUTLS_E_INTERRUPTED || rc == GNUTLS_E_AGAIN)
+	      goto retry1;
+	    printf("%s\n", gnutls_strerror(rc));
+	    srv->tls_active = FALSE;
+	    *inptr = 0;
+	    DEBUG { printf("go round\n"); fflush(stdout); }
+	    goto nextinput;
+	    }
+	  DEBUG { printf("gnutls_record_recv: %d\n", rc); fflush(stdout); }
 #endif
-        }
-      else
-	{
-	DEBUG { printf("call read\n"); fflush(stdout); }
-	rc = read(srv->sock, inbufferp, bsiz - (inbufferp - inbuffer) - 1);
-	DEBUG { printf("read: %d\n", rc); fflush(stdout); }
-	}
+	  }
+	else
+	  {
+	  DEBUG { printf("call read\n"); fflush(stdout); }
+	  rc = read(srv->sock, inbufferp, bsiz - (inbufferp - inbuffer) - 1);
+	  DEBUG { printf("read: %d\n", rc); fflush(stdout); }
+	  }
 
-        if (rc > 0) inbufferp[rc] = '\0';
-        if (rc <= 0 || strchr(inbufferp, '\n')) break;
-        inbufferp += rc;
-        if (inbufferp >= inbuffer + bsiz) {
-          printf("Input buffer overrun, need more than %d bytes input buffer\n", bsiz);
-          exit(73);
-        }
-        DEBUG { printf("read more\n"); }
-      }
+	  if (rc > 0) inbufferp[rc] = '\0';
+	  if (rc <= 0 || strchr(inbufferp, '\n')) break;
+	  inbufferp += rc;
+	  if (inbufferp >= inbuffer + bsiz)
+	    {
+	    printf("Input buffer overrun, need more than %d bytes input buffer\n", bsiz);
+	    exit(73);
+	    }
+	  DEBUG { printf("read more\n"); }
+	}
       alarm(0);
 
       if (rc < 0)
