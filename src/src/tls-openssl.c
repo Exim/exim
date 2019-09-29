@@ -74,6 +74,7 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_OPENSSL_CIPHER_GET_ID
 #  define EXIM_HAVE_SESSION_TICKET
 #  define EXIM_HAVE_OPESSL_TRACE
+#  define EXIM_HAVE_OPESSL_GET0_SERIAL
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -1714,6 +1715,7 @@ tls_in.ocsp = OCSP_NOT_RESP;
 if (!olist)
   return SSL_TLSEXT_ERR_NOACK;
 
+#ifdef EXIM_HAVE_OPESSL_GET0_SERIAL
  {
   const X509 * cert_sent = SSL_get_certificate(s);
   const ASN1_INTEGER * cert_serial = X509_get0_serialNumber(cert_sent);
@@ -1761,6 +1763,13 @@ if (!olist)
     return SSL_TLSEXT_ERR_NOACK;
     }
  }
+#else
+if (olist->next)
+  {
+  DEBUG(D_tls) debug_printf("OpenSSL version too early to support multi-leaf OCSP\n");
+  return SSL_TLSEXT_ERR_NOACK;
+  }
+#endif
 
 /*XXX could we do the i2d earlier, rather than during the callback? */
 response_der = NULL;

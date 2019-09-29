@@ -17833,7 +17833,7 @@ Certificate Authority.
 Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
 
 .new
-For OpenSSL, and
+For OpenSSL 1.1.0 or later, and
 .wen
 for GnuTLS 3.5.6 or later the expanded value of this option can be a list
 of files, to match a list given for the &%tls_certificate%& option.
