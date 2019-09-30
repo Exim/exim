@@ -31,7 +31,7 @@ dnl "install" script for some weird reason.
 host_os=`uname -s`
 
 case $CC-$host_os in
-  gcc-*linux* | gcc-*Linux* | gcc-*LINUX* | gcc-FreeBSD)
+  gcc-*linux* | gcc-*Linux* | gcc-*LINUX* | gcc-FreeBSD | gcc-*SunOS* | cc-*SunOS* )
     LOADED=bin/loaded
     LOADED_OPT="-shared -fPIC"
     echo "Using gcc on $host_os: will compile dynamically loaded module"
