@@ -2630,8 +2630,41 @@ ALARM_CLR(0);
 
 if (rc <= 0)
   {
-  (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
-  return FAIL;
+  int error = SSL_get_error(server_ssl, rc);
+  switch(error)
+    {
+    case SSL_ERROR_NONE:
+      break;
+
+    case SSL_ERROR_ZERO_RETURN:
+      DEBUG(D_tls) debug_printf("Got SSL_ERROR_ZERO_RETURN\n");
+      (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+
+      if (SSL_get_shutdown(server_ssl) == SSL_RECEIVED_SHUTDOWN)
+	    SSL_shutdown(server_ssl);
+
+      tls_close(NULL, TLS_NO_SHUTDOWN);
+      return FAIL;
+
+    /* Handle genuine errors */
+    case SSL_ERROR_SSL:
+      (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+      return FAIL;
+
+    default:
+      DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
+      if (error == SSL_ERROR_SYSCALL)
+	{
+	if (!errno)
+	  {
+	  *errstr = US"SSL_accept: TCP connection closed by peer";
+	  return FAIL;
+	  }
+	DEBUG(D_tls) debug_printf(" - syscall %s\n", strerror(errno));
+	}
+      (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+      return FAIL;
+    }
   }
 
 DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
