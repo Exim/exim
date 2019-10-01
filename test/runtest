@@ -3913,14 +3913,25 @@ if ($have_ipv4 || $have_ipv6)
 if ($have_ipv4 && $parm_ipv4 ne "127.0.0.1")
   {
   my(@components) = $parm_ipv4 =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)/;
-  open(OUT, ">$parm_cwd/dnszones/db.ip4.$components[0]") ||
-    tests_exit(-1,
-      "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!");
-  print OUT "; This is a dynamically constructed fake zone file.\n" .
-    "; The zone is $components[0].in-addr.arpa.\n\n" .
-    "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n" .
-    "; End\n";
-  close(OUT);
+
+  if ($components[0]=='10')
+    {
+    open(OUT, ">>$parm_cwd/dnszones/db.ip4.$components[0]") ||
+      tests_exit(-1, "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!");
+    print OUT "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n";
+    close(OUT);
+    } 
+  else
+    {
+    open(OUT, ">$parm_cwd/dnszones/db.ip4.$components[0]") ||
+      tests_exit(-1,
+	"Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!");
+    print OUT "; This is a dynamically constructed fake zone file.\n" .
+      "; The zone is $components[0].in-addr.arpa.\n\n" .
+      "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n" .
+      "; End\n";
+    close(OUT);
+    }
   }
 
 if ($have_ipv6 && $parm_ipv6 ne "::1")

@@ -278,7 +278,7 @@ if (initial_pause > 0)
 
 if (port == 0)  /* Unix domain */
   {
-  if (debug) printf("%d: Creating Unix domain socket\n", time(NULL));
+  if (debug) printf("%l: Creating Unix domain socket\n", (long) time(NULL));
   listen_socket[udn] = socket(PF_UNIX, SOCK_STREAM, 0);
   if (listen_socket[udn] < 0)
     {
