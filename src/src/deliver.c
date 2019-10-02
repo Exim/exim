@@ -7344,7 +7344,7 @@ if (addr_senddsn)
   if (pid < 0)  /* Creation of child failed */
     {
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
-      "create child process to send failure message: %s", getpid(),
+      "create child process to send success-dsn message: %s", getpid(),
       getppid(), strerror(errno));
 
     DEBUG(D_deliver) debug_printf("DSN: child_open_exim failed\n");
@@ -7357,7 +7357,7 @@ if (addr_senddsn)
     transport_ctx tctx = {{0}};
 
     DEBUG(D_deliver)
-      debug_printf("sending error message to: %s\n", sender_address);
+      debug_printf("sending success-dsn to: %s\n", sender_address);
 
     /* build unique id for MIME boundary */
     bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
@@ -7369,8 +7369,11 @@ if (addr_senddsn)
     moan_write_from(f);
     fprintf(f, "Auto-Submitted: auto-generated\n"
 	"To: %s\n"
-	"Subject: Delivery Status Notification\n"
-	"Content-Type: multipart/report; report-type=delivery-status; boundary=%s\n"
+	"Subject: Delivery Status Notification\n",
+      sender_address);
+    moan_write_references(f, NULL);
+    fprintf(f, "Content-Type: multipart/report;"
+    		" report-type=delivery-status; boundary=%s\n"
 	"MIME-Version: 1.0\n\n"
 
 	"--%s\n"
@@ -7378,7 +7381,7 @@ if (addr_senddsn)
 
 	"This message was created automatically by mail delivery software.\n"
 	" ----- The following addresses had successful delivery notifications -----\n",
-      sender_address, bound, bound);
+      bound, bound);
 
     for (address_item * a = addr_senddsn; a; a = a->next)
       fprintf(f, "<%s> (relayed %s)\n\n",
@@ -7607,6 +7610,7 @@ while (addr_failed)
       fprintf(fp, "Auto-Submitted: auto-replied\n");
       moan_write_from(fp);
       fprintf(fp, "To: %s\n", bounce_recipient);
+      moan_write_references(fp, NULL);
 
       /* generate boundary string and output MIME-Headers */
       bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());
@@ -8192,7 +8196,8 @@ else if (addr_defer != (address_item *)(+1))
 
     DEBUG(D_deliver)
       {
-      debug_printf("time on queue = %s  id %s  addr %s\n", readconf_printtime(queue_time), message_id, addr_defer->address);
+      debug_printf("time on queue = %s  id %s  addr %s\n",
+	readconf_printtime(queue_time), message_id, addr_defer->address);
       debug_printf("warning counts: required %d done %d\n", count,
         warning_count);
       }
@@ -8230,6 +8235,7 @@ else if (addr_defer != (address_item *)(+1))
         fprintf(f, "Auto-Submitted: auto-replied\n");
         moan_write_from(f);
         fprintf(f, "To: %s\n", recipients);
+	moan_write_references(f, NULL);
 
         /* generated boundary string and output MIME-Headers */
         bound = string_sprintf(TIME_T_FMT "-eximdsn-%d", time(NULL), rand());

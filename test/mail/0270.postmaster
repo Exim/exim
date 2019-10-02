@@ -11,6 +11,7 @@ Subject: error(s) in forwarding or filtering
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 The r1 router encountered the following error(s):
 
   domain missing or malformed in the address
@@ -31,6 +32,7 @@ Subject: error(s) in forwarding or filtering
 Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+References: <E10HmaZ-0005vi-00@myhost.test.ex>
 The r1 router encountered the following error(s):
 
   domain missing or malformed in the address
@@ -51,6 +53,7 @@ Subject: error(s) in forwarding or filtering
 Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+References: <E10HmbB-0005vi-00@myhost.test.ex>
 There's an error in your filter file.
 The file has been ignored.
 
@@ -73,6 +76,7 @@ Subject: error(s) in forwarding or filtering
 Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+References: <E10HmbD-0005vi-00@myhost.test.ex>
 The r1a router encountered the following error(s):
 
   domain missing or malformed in the address
@@ -93,6 +97,7 @@ Subject: error(s) in forwarding or filtering
 Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+References: <E10HmbG-0005vi-00@myhost.test.ex>
 There's an error in your filter file.
 The file has been ignored.
 
@@ -115,6 +120,7 @@ Subject: error(s) in forwarding or filtering
 Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
+References: <E10HmbI-0005vi-00@myhost.test.ex>
 There's an error in your filter file.
 The file has been ignored.
 

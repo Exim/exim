@@ -598,52 +598,7 @@ if (h)
   fprintf(fp, "In-Reply-To: %s", message_id);
   }
 
-/* Generate a References header if there is at least one of Message-ID:,
-References:, or In-Reply-To: (see RFC 2822). */
-
-for (h = header_list; h; h = h->next)
-  if (h->type != htype_old && strncmpic(US"References:", h->text, 11) == 0)
-    break;
-
-if (!h)
-  for (h = header_list; h; h = h->next)
-    if (h->type != htype_old && strncmpic(US"In-Reply-To:", h->text, 12) == 0)
-      break;
-
-/* We limit the total length of references.  Although there is no fixed
-limit, some systems do not like headers growing beyond recognition.
-Keep the first message ID for the thread root and the last few for
-the position inside the thread, up to a maximum of 12 altogether. */
-
-if (h || message_id)
-  {
-  fprintf(fp, "References:");
-  if (h)
-    {
-    uschar *s, *id, *error;
-    uschar *referenced_ids[12];
-    int reference_count = 0;
-
-    s = Ustrchr(h->text, ':') + 1;
-    f.parse_allow_group = FALSE;
-    while (*s != 0 && (s = parse_message_id(s, &id, &error)) != NULL)
-      {
-      if (reference_count == nelem(referenced_ids))
-        {
-        memmove(referenced_ids + 1, referenced_ids + 2,
-           sizeof(referenced_ids) - 2*sizeof(uschar *));
-        referenced_ids[reference_count - 1] = id;
-        }
-      else referenced_ids[reference_count++] = id;
-      }
-    for (int i = 0; i < reference_count; ++i) fprintf(fp, " %s", referenced_ids[i]);
-    }
-
-  /* The message id will have a newline on the end of it. */
-
-  if (message_id) fprintf(fp, " %s", message_id);
-  else fprintf(fp, "\n");
-  }
+moan_write_references(fp, message_id);
 
 /* Add an Auto-Submitted: header */
 

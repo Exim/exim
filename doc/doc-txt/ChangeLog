@@ -185,6 +185,8 @@ HS/05 Handle trailing backslash gracefully. (CVE-2019-15846)
 
 JH/39 Promote DMARC support to mainline.
 
+JH/40 Bug 2452: Add a References: header to DSNs.
+
 
 Exim version 4.92
 -----------------

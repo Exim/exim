@@ -9,6 +9,7 @@ X-Failed-Recipients: xx99@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+References: <E10HmaX-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
@@ -62,6 +63,7 @@ X-Failed-Recipients: !two@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+References: <E10HmbB-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender

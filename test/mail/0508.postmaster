@@ -6,6 +6,7 @@ X-Failed-Recipients: userx@myhost.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: postmaster@test.ex
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed

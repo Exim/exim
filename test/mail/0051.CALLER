@@ -9,6 +9,7 @@ X-Failed-Recipients: userx@bad.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+References: <E10HmaY-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
@@ -62,6 +63,7 @@ X-Failed-Recipients: userx@badbad.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+References: <E10HmbA-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
@@ -115,6 +117,7 @@ X-Failed-Recipients: userx@domain4.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+References: <E10HmbD-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
@@ -168,6 +171,7 @@ X-Failed-Recipients: userx@domain2.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.ex>
 To: CALLER@myhost.ex
+References: <E10HmbF-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender

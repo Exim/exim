@@ -9,6 +9,7 @@ X-Failed-Recipients: userx@mxt1.test.ex
 Auto-Submitted: auto-replied
 From: MailProgram <xyz@some.where>
 To: CALLER@myhost.ex
+References: <E10HmaX-0005vi-00@myhost.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender

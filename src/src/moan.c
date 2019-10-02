@@ -28,7 +28,7 @@ Returns:    nothing
 void
 moan_write_from(FILE *f)
 {
-uschar *s = expand_string(dsn_from);
+uschar * s = expand_string(dsn_from);
 if (!s)
   {
   log_write(0, LOG_MAIN|LOG_PANIC,
@@ -36,6 +36,80 @@ if (!s)
   s = expand_string(US DEFAULT_DSN_FROM);
   }
 fprintf(f, "From: %s\n", s);
+}
+
+
+
+/*************************************************
+*            Write References: line for DSN      *
+*************************************************/
+
+/* Generate a References: header if there is in the header_list
+at least one of Message-ID:, References:, or In-Reply-To: (see RFC 2822).
+
+Arguments:  f		the FILE to write to
+	    message_id	optional already-found message-id, or NULL
+
+Returns:    nothing
+*/
+
+void
+moan_write_references(FILE * fp, uschar * message_id)
+{
+header_line * h;
+
+if (!message_id)
+  for (h = header_list; h; h = h->next)
+    if (h->type == htype_id)
+      {
+      message_id = Ustrchr(h->text, ':') + 1;
+      while (isspace(*message_id)) message_id++;
+      }
+
+for (h = header_list; h; h = h->next)
+  if (h->type != htype_old && strncmpic(US"References:", h->text, 11) == 0)
+    break;
+
+if (!h)
+  for (h = header_list; h; h = h->next)
+    if (h->type != htype_old && strncmpic(US"In-Reply-To:", h->text, 12) == 0)
+      break;
+
+/* We limit the total length of references.  Although there is no fixed
+limit, some systems do not like headers growing beyond recognition.
+Keep the first message ID for the thread root and the last few for
+the position inside the thread, up to a maximum of 12 altogether. */
+
+if (h || message_id)
+  {
+  fprintf(fp, "References:");
+  if (h)
+    {
+    uschar * s, * id, * error;
+    uschar * referenced_ids[12];
+    int reference_count = 0;
+
+    s = Ustrchr(h->text, ':') + 1;
+    f.parse_allow_group = FALSE;
+    while (*s && (s = parse_message_id(s, &id, &error)))
+      if (reference_count == nelem(referenced_ids))
+        {
+        memmove(referenced_ids + 1, referenced_ids + 2,
+           sizeof(referenced_ids) - 2*sizeof(uschar *));
+        referenced_ids[reference_count - 1] = id;
+        }
+      else
+	referenced_ids[reference_count++] = id;
+
+    for (int i = 0; i < reference_count; ++i)
+      fprintf(fp, " %s", referenced_ids[i]);
+    }
+
+  /* The message id will have a newline on the end of it. */
+
+  if (message_id) fprintf(fp, " %s", message_id);
+  else fprintf(fp, "\n");
+  }
 }
 
 
@@ -119,6 +193,7 @@ else
   moan_write_from(fp);
 
 fprintf(fp, "To: %s\n", recipient);
+moan_write_references(fp, NULL);
 
 switch(ident)
   {
@@ -145,7 +220,7 @@ switch(ident)
       "A message that you sent contained one or more recipient addresses that were\n"
       "incorrectly constructed:\n\n");
 
-    while (eblock != NULL)
+    while (eblock)
       {
       fprintf(fp, "  %s: %s\n", eblock->text1, eblock->text2);
       count++;
@@ -522,6 +597,7 @@ f = fdopen(fd, "wb");
 fprintf(f, "Auto-Submitted: auto-replied\n");
 moan_write_from(f);
 fprintf(f, "To: %s\n", who);
+moan_write_references(f, NULL);
 fprintf(f, "Subject: %s\n\n", subject);
 va_start(ap, format);
 vfprintf(f, format, ap);
@@ -656,8 +732,7 @@ llen = domain++ - recipient;
 
 /* Scan through the configured items */
 
-while ((item = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer)))
-       != NULL)
+while ((item = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
   {
   const uschar *newaddress = item;
   const uschar *pattern = string_dequote(&newaddress);
@@ -759,6 +834,7 @@ fprintf(f, "Auto-Submitted: auto-replied\n");
 moan_write_from(f);
 fprintf(f, "To: %s\n", s);
 fprintf(f, "Subject: error(s) in forwarding or filtering\n\n");
+moan_write_references(f, NULL);
 
 if (custom)
   {

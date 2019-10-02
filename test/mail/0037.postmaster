@@ -8,6 +8,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
+References: <E10HmbA-0005vi-00@the.local.host.name>
 Subject: Message frozen
 Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -31,6 +32,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: postmaster@test.ex
+References: <E10HmbS-0005vi-00@the.local.host.name>
 Subject: Message frozen
 Message-Id: <E10HmbT-0005vi-00@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000

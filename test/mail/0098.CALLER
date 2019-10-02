@@ -8,6 +8,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmaX-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmaX-0005vi-00 delayed 0 minutes
@@ -73,6 +74,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmaZ-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmaZ-0005vi-00 delayed 0 minutes
@@ -138,6 +140,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmaX-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmaX-0005vi-00 delayed 0 minutes
@@ -203,6 +206,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmaX-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmaX-0005vi-00 delayed by 10 minutes
@@ -263,6 +267,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmaZ-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmaZ-0005vi-00 delayed by 0 minutes
@@ -323,6 +328,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmbB-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmbB-0005vi-00 delayed by 0 minutes
@@ -377,6 +383,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmbD-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmbD-0005vi-00 delayed by 0 minutes
@@ -431,6 +438,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
+References: <E10HmbM-0005vi-00@the.local.host.name>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Warning: message 10HmbM-0005vi-00 delayed 0 minutes

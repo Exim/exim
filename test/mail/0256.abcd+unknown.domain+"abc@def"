@@ -5,6 +5,7 @@ X-Failed-Recipients: unknown@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: "abc@def"@unknown.domain
+References: <E10HmaZ-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender

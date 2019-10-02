@@ -335,6 +335,7 @@ extern void    moan_tell_someone(uschar *, address_item *,
                  const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
+extern void    moan_write_references(FILE *, uschar *);
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
 extern int     open_cutthrough_connection( address_item * addr );

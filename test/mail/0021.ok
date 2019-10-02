@@ -5,6 +5,7 @@ Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: ok@test2
+References: <E10HmaZ-0005vi-00@myhost.test.ex>
 Subject: Mail failure - rejected by local scanning code
 Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
@@ -33,6 +34,7 @@ Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: ok@test4
+References: <E10HmbA-0005vi-00@myhost.test.ex>
 Subject: Mail failure - rejected by local scanning code
 Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
