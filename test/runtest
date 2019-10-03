@@ -112,7 +112,7 @@ $ENV{LC_ALL} = 'C';
 $ENV{USER} = getpwuid($>) if not exists $ENV{USER};
 
 my ($parm_configure_owner, $parm_configure_group);
-my ($parm_ipv4, $parm_ipv6);
+my ($parm_ipv4, $parm_ipv6, $parm_ipv6_stripped);
 my $parm_hostname;
 
 ###############################################################################
@@ -794,6 +794,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/host\s\Q$parm_ipv6\E\s\[\Q$parm_ipv6\E\]/host ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]/;
   s/\b\Q$parm_ipv4\E\b/ip4.ip4.ip4.ip4/g;
   s/(^|\W)\K\Q$parm_ipv6\E/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
+  s/(^|\W)\K\Q$parm_ipv6_stripped\E/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
   s/\b\Q$parm_ipv4r\E\b/ip4-reverse/g;
   s/(^|\W)\K\Q$parm_ipv6r\E/ip6-reverse/g;
   s/^(\s+host\s\S+\s+\[\S+\]) +$/$1 /;
@@ -3405,6 +3406,8 @@ open(IFCONFIG, '-|', (grep { -x "$_/ip" } split /:/, $ENV{PATH}) ? 'ip address' 
   or die "** Cannot run 'ip address' or 'ifconfig -a'\n";
 while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
   {
+  if (/^(?:[0-9]+: )([^:]+): /) { $ifname = $1; }
+
   if (not $parm_ipv4 and /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)(?:\/\d+)?\s/i)
     {
     # It would ne nice to be able to vary the /16 used for manyhome; we could take
@@ -3416,8 +3419,9 @@ while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
 
   if (not $parm_ipv6 and /^\s*inet6(?:\saddr)?:?\s?([abcdef\d:]+)(?:%[^ \/]+)?(?:\/\d+)?/i)
     {
-    next if $1 eq '::' or $1 eq '::1' or $1 =~ /^fe80/i;
+    next if $1 eq '::' or $1 eq '::1' or $1 =~ /^ff00/i;
     $parm_ipv6 = $1;
+    if ($1 =~ /^fe80/i) { $parm_ipv6 .= '%' . $ifname; }
     }
   }
 close(IFCONFIG);
@@ -3475,6 +3479,8 @@ else
 print "IPv4 address is $parm_ipv4\n";
 print "IPv6 address is $parm_ipv6\n";
 $parm_ipv6 =~ /^[^%\/]*/;
+# drop any %scope from the ipv6, for some uses
+($parm_ipv6_stripped = $parm_ipv6) =~ s/%.*//g;
 
 # For munging test output, we need the reversed IP addresses.
 
@@ -3484,7 +3490,7 @@ $parm_ipv4r = ($parm_ipv4 !~ /^\d/)? '' :
 $parm_ipv6r = $parm_ipv6;             # Appropriate if not in use
 if ($parm_ipv6 =~ /^[\da-f]/)
   {
-  my(@comps) = split /:/, $parm_ipv6;
+  my(@comps) = split /:/, $parm_ipv6_stripped;
   my(@nibbles);
   foreach $comp (@comps)
     {
@@ -3905,7 +3911,7 @@ if ($have_ipv4 || $have_ipv6)
     "; for queries that it cannot answer\n\n" .
     "PASS ON NOT FOUND\n\n";
   print OUT "$shortname  A     $parm_ipv4\n" if $have_ipv4;
-  print OUT "$shortname  AAAA  $parm_ipv6\n" if $have_ipv6;
+  print OUT "$shortname  AAAA  $parm_ipv6_stripped\n" if $have_ipv6;
   print OUT "\n; End\n";
   close(OUT);
   }
@@ -3934,18 +3940,18 @@ if ($have_ipv4 && $parm_ipv4 ne "127.0.0.1")
     }
   }
 
-if ($have_ipv6 && $parm_ipv6 ne "::1")
+if ($have_ipv6 && $parm_ipv6_stripped ne "::1")
   {
-  my($exp_v6) = $parm_ipv6;
+  my($exp_v6) = $parm_ipv6_stripped;
   $exp_v6 =~ s/[^:]//g;
-  if ( $parm_ipv6 =~ /^([^:].+)::$/ ) {
+  if ( $parm_ipv6_stripped =~ /^([^:].+)::$/ ) {
     $exp_v6 = $1 . ':0' x (9-length($exp_v6));
-  } elsif ( $parm_ipv6 =~ /^(.+)::(.+)$/ ) {
+  } elsif ( $parm_ipv6_stripped =~ /^(.+)::(.+)$/ ) {
     $exp_v6 = $1 . ':0' x (8-length($exp_v6)) . ':' . $2;
-  } elsif ( $parm_ipv6 =~ /^::(.+[^:])$/ ) {
+  } elsif ( $parm_ipv6_stripped =~ /^::(.+[^:])$/ ) {
     $exp_v6 = '0:' x (9-length($exp_v6)) . $1;
   } else {
-    $exp_v6 = $parm_ipv6;
+    $exp_v6 = $parm_ipv6_stripped;
   }
   my(@components) = split /:/, $exp_v6;
   my(@nibbles) = reverse (split /\s*/, shift @components);

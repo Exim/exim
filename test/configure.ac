@@ -57,6 +57,8 @@ AC_SEARCH_LIBS([connect], [socket])
 AC_SEARCH_LIBS([inet_pton], [nsl socket resolv])
 AC_SEARCH_LIBS([inet_ntop], [nsl socket resolv])
 
+AC_CHECK_FUNCS_ONCE(getaddrinfo)
+
 dnl "Export" these variables
 
 AC_SUBST(BIND_8_COMPAT)

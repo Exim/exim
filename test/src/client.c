@@ -1179,14 +1179,30 @@ if (interface != NULL)
 #if HAVE_IPV6
 if (host_af == AF_INET6)
   {
+# ifdef HAVE_GETADDRINFO
+  struct addrinfo hints, *res;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET6;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_NUMERICHOST;
+  if ((rc = getaddrinfo(address, NULL, &hints, &res)) != 0 || res == NULL)
+    {
+    printf("unable to parse \"%s\" as an IP address: %s\n", address,
+      rc == 0 ? "NULL result returned" : gai_strerror(rc));
+    exit(86);
+    }
+  memcpy(&s_in6, res->ai_addr, res->ai_addrlen);
+  freeaddrinfo(res);
+# else
   memset(&s_in6, 0, sizeof(s_in6));
   s_in6.sin6_family = AF_INET6;
-  s_in6.sin6_port = htons(port);
   if (inet_pton(host_af, address, &s_in6.sin6_addr) != 1)
     {
     printf("Unable to parse \"%s\"", address);
     exit(86);
     }
+# endif
+  s_in6.sin6_port = htons(port);
   }
 else
 #endif
