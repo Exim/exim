@@ -265,6 +265,11 @@ dns_dnssec_ok = 1
 # Enable an efficiency feature.  We advertise the feature; clients
 # may request to use it.  For multi-recipient mails we then can
 # reject or accept per-user after the message is received.
+# This supports recipient-dependent content filtering; without it
+# you have to temp-reject any recipients after the first that have
+# incompatible filtering, and do the filtering in the data ACL.
+# Even with this enabled, you must support the old style for peers
+# not flagging support for PRDR (visible via $prdr_requested).
 #
 .ifdef _HAVE_PRDR
 prdr_enable = true
