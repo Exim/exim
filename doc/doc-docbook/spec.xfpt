@@ -41032,7 +41032,9 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
+.new
 The current list of events is:
+.wen
 .display
 &`dane:fail              after    transport  `& per connection
 &`msg:complete           after    main       `& per message
@@ -41046,6 +41048,7 @@ The current list of events is:
 &`tcp:close              after    transport  `& per connection
 &`tls:cert               before   both       `& per certificate in verification chain
 &`smtp:connect           after    transport  `& per connection
+&`smtp:ehlo              after    transport  `& per connection
 .endd
 New event types may be added in future.
 
@@ -41072,6 +41075,7 @@ with the event type:
 &`msg:host:defer       `& error string
 &`tls:cert             `& verification chain depth
 &`smtp:connect         `& smtp banner
+&`smtp:ehlo            `& smtp ehlo response
 .endd
 
 The :defer events populate one extra variable: &$event_defer_errno$&.

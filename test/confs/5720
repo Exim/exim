@@ -69,6 +69,8 @@ logger:
 	 acl =	     ev_msg $event_name $acl_arg2
   accept condition = ${if eq {tls} {${listextract{1}{$event_name}}}}
 	 message =   ${acl {ev_tls}}
+  accept condition = ${if eq {smtp:ehlo}{$event_name}}
+	 logwrite =  $tls_out_cipher smtp:ehlo $event_data
   accept
 
 # ----- Routers -----

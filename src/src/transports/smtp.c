@@ -814,6 +814,10 @@ if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
 #ifdef EXPERIMENTAL_DSN_INFO
 sx->helo_response = string_copy(sx->buffer);
 #endif
+#ifndef DISABLE_EVENT
+(void) event_raise(sx->conn_args.tblock->event_action,
+  US"smtp:ehlo", sx->buffer);
+#endif
 return TRUE;
 }
 

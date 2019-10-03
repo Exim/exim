@@ -5,6 +5,9 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 event smtp:connect
 1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaY-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaY-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmaY-0005vi-00 . ehlo-resp <250-OK\n250 HELP>
 1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:close
 1999-03-02 09:44:33 10HmaY-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
@@ -21,6 +24,9 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
 1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaX-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmaX-0005vi-00 . ehlo-resp <250-OK\n250 HELP>
 1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:close
 1999-03-02 09:44:33 10HmaX-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@expansionfail R=others T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK"
@@ -57,6 +63,9 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 event smtp:connect
 1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbA-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmbA-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmbA-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmbA-0005vi-00 . ehlo-resp <250-OK\n250 HELP>
 1999-03-02 09:44:33 10HmbA-0005vi-00 event msg:rcpt:host:defer
 1999-03-02 09:44:33 10HmbA-0005vi-00 event msg:rcpt:defer
 1999-03-02 09:44:33 10HmbA-0005vi-00 . rcpt deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> err <12865>:<A:450> errstr <SMTP error from remote mail server after RCPT TO:<userx@domain1>: 450 NOT RIGHT NOW> router <others> transport <smtp>
@@ -78,6 +87,9 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 event smtp:connect
 1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbB-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmbB-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmbB-0005vi-00 . ehlo-resp <250-OK\n250 HELP>
 1999-03-02 09:44:33 10HmbB-0005vi-00 event tcp:close
 1999-03-02 09:44:33 10HmbB-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
 1999-03-02 09:44:33 10HmbB-0005vi-00 ** userx@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@domain1>: 550 GO AWAY

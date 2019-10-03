@@ -39,6 +39,8 @@ Version 4.93
 
 13. Dual-certificate stacks on servers now support OCSP stapling, under OpenSSL.
 
+14: An smtp:ehlo transport event, for observability of the remote offered features.
+
 
 Version 4.92
 --------------
