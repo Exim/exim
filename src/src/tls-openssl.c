@@ -2706,8 +2706,14 @@ if (rc <= 0)
 
     /* Handle genuine errors */
     case SSL_ERROR_SSL:
-      (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+      {
+      uschar * s = US"SSL_accept";
+      ulong e = ERR_peek_error();
+      if (ERR_GET_REASON(e) == SSL_R_WRONG_VERSION_NUMBER)
+	s = string_sprintf("%s (%s)", s, SSL_get_version(server_ssl));
+      (void) tls_error(s, NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
       return FAIL;
+      }
 
     default:
       DEBUG(D_tls) debug_printf("Got SSL error %d\n", error);
