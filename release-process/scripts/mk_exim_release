@@ -563,7 +563,7 @@ MAIN: {
         sizes       => 1,
         compressors => {
             gzip  => { use => 1, extension => 'gz',  flags => compressor('gzip -9', sub { $ENV{GZIP} = '-9'; '--gzip' }) },
-            bzip2 => { use => 1, extension => 'bz2', flags => compressor('bzip -9', sub { $ENV{BZIP2} = '-9'; '--bzip2' }) },
+            bzip2 => { use => 1, extension => 'bz2', flags => compressor('bzip2 -9', sub { $ENV{BZIP2} = '-9'; '--bzip2' }) },
             xz    => { use => 1, extension => 'xz',  flags => compressor('xz -9', sub { $ENV{XZ_OPT} = '-9'; '--xz' }) },
             lzip  => { use => 0, extension => 'lz',  flags => compressor('lzip -9', '--lzip') },
         },
