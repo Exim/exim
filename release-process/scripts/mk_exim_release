@@ -12,6 +12,7 @@ use Getopt::Long;
 use IO::File;
 use Pod::Usage;
 use Digest::SHA;
+use feature 'state';
 use if $ENV{DEBUG} => 'Smart::Comments';
 
 my $ME = basename $0;
@@ -535,6 +536,17 @@ __
 
 }
 
+# Check, if tar understands --use-compress-program and use this, as
+# at least gzip deprecated passing options via the environment.
+sub compressor {
+    my ($compressor, $fallback) = @_;
+    state $use_compress_option  =
+        0 == system("tar c -f /dev/null -C / --use-compress-program=cat dev/null 2>/dev/null");
+    return $use_compress_option
+        ? "--use-compress-program=$compressor"
+        : ref $fallback eq ref sub {} ? $fallback->() : $fallback;
+}
+
 MAIN: {
 
     # some of these settings are useful only if we're in the
@@ -550,10 +562,10 @@ MAIN: {
         make_cmd    => 'make',  # for 'make'ing the docs
         sizes       => 1,
         compressors => {
-            gzip  => { use => 1, extension => 'gz',  flags => '--gzip' },
-            bzip2 => { use => 1, extension => 'bz2', flags => '--bzip2' },
-            xz    => { use => 1, extension => 'xz',  flags => '--xz' },
-            lzip  => { use => 0, extension => 'lz',  flags => '--lzip' },
+            gzip  => { use => 1, extension => 'gz',  flags => compressor('gzip -9', sub { $ENV{GZIP} = '-9'; '--gzip' }) },
+            bzip2 => { use => 1, extension => 'bz2', flags => compressor('bzip -9', sub { $ENV{BZIP2} = '-9'; '--bzip2' }) },
+            xz    => { use => 1, extension => 'xz',  flags => compressor('xz -9', sub { $ENV{XZ_OPT} = '-9'; '--xz' }) },
+            lzip  => { use => 0, extension => 'lz',  flags => compressor('lzip -9', '--lzip') },
         },
         docs         => 1,
         web          => 1,
@@ -567,13 +579,6 @@ MAIN: {
     );
 
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
-    # We are creating files for mass distribution, so work harder to make smaller files.
-    $ENV{GZIP} = -9;
-    $ENV{BZIP2} = -9;
-    # xz documents minimum file sizes for levels higher than -6 to be useful and each
-    # requires more RAM on the decompressing system.  Exim tarball currently 24MiB so
-    # using -8.
-    $ENV{XZ_DEFAULTS} = -8;
 
     GetOptions(
         $context,
@@ -762,7 +767,7 @@ Write the sizes information to F<sizes.txt>. (default: write sizes)
 =item B<--tar-cmd> I<cmd>
 
 Use to override the path to the C<tar> command.  Need GNU tar in case
-I<lzip> is selected. (default: C<gtar>, if not found, use C<tar>)
+I<lzip> is selected. (default: C<gtar>, if not found, use C<tar>).
 
 =item B<--tmpdir> I<dir>
 
