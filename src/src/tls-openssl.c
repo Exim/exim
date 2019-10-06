@@ -46,6 +46,7 @@ functions from the OpenSSL library. */
 #endif
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
 # define EXIM_HAVE_OCSP_RESP_COUNT
+# define OPENSSL_AUTO_SHA256
 #else
 # define EXIM_HAVE_EPHEM_RSA_KEX
 # define EXIM_HAVE_RAND_PSEUDO
@@ -1945,6 +1946,23 @@ return i;
 *            Initialize for TLS                  *
 *************************************************/
 
+static void
+tls_openssl_init(void)
+{
+#ifdef EXIM_NEED_OPENSSL_INIT
+SSL_load_error_strings();          /* basic set up */
+OpenSSL_add_ssl_algorithms();
+#endif
+
+#if defined(EXIM_HAVE_SHA256) && !defined(OPENSSL_AUTO_SHA256)
+/* SHA256 is becoming ever more popular. This makes sure it gets added to the
+list of available digests. */
+EVP_add_digest(EVP_sha256());
+#endif
+}
+
+
+
 /* Called from both server and client code, to do preliminary initialization
 of the library.  We allocate and return a context structure.
 
@@ -2000,16 +2018,7 @@ cbinfo->host = host;
 cbinfo->event_action = NULL;
 #endif
 
-#ifdef EXIM_NEED_OPENSSL_INIT
-SSL_load_error_strings();          /* basic set up */
-OpenSSL_add_ssl_algorithms();
-#endif
-
-#ifdef EXIM_HAVE_SHA256
-/* SHA256 is becoming ever more popular. This makes sure it gets added to the
-list of available digests. */
-EVP_add_digest(EVP_sha256());
-#endif
+tls_openssl_init();
 
 /* Create a context.
 The OpenSSL docs in 1.0.1b have not been updated to clarify TLS variant
@@ -3661,18 +3670,7 @@ tls_validate_require_cipher(void)
 SSL_CTX *ctx;
 uschar *s, *expciphers, *err;
 
-/* this duplicates from tls_init(), we need a better "init just global
-state, for no specific purpose" singleton function of our own */
-
-#ifdef EXIM_NEED_OPENSSL_INIT
-SSL_load_error_strings();
-OpenSSL_add_ssl_algorithms();
-#endif
-#if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
-/* SHA256 is becoming ever more popular. This makes sure it gets added to the
-list of available digests. */
-EVP_add_digest(EVP_sha256());
-#endif
+tls_openssl_init();
 
 if (!(tls_require_ciphers && *tls_require_ciphers))
   return NULL;
