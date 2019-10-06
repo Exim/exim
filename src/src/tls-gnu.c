@@ -70,6 +70,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x03010a
 # define SUPPORT_GNUTLS_SESS_DESC
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030300
+# define GNUTLS_AUTO_GLOBAL_INIT
+#endif
 #if GNUTLS_VERSION_NUMBER >= 0x030500
 # define SUPPORT_GNUTLS_KEYLOG
 #endif
@@ -1508,8 +1511,10 @@ if (!exim_gnutls_base_init_done)
       return tls_error_gnu(US"gnutls_pkcs11_init", rc, host, errstr);
 #endif
 
+#ifndef GNUTLS_AUTO_GLOBAL_INIT
   if ((rc = gnutls_global_init()))
     return tls_error_gnu(US"gnutls_global_init", rc, host, errstr);
+#endif
 
 #if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
   DEBUG(D_tls)
@@ -3417,10 +3422,17 @@ gnutls_priority_t priority_cache;
 const char *errpos;
 uschar * dummy_errstr;
 
-#define validate_check_rc(Label) do { \
+#ifdef GNUTLS_AUTO_GLOBAL_INIT
+# define validate_check_rc(Label) do { \
+  if (rc != GNUTLS_E_SUCCESS) { if (exim_gnutls_base_init_done) \
+    return string_sprintf("%s failed: %s", (Label), gnutls_strerror(rc)); } } while (0)
+# define return_deinit(Label) do { return (Label); } while (0)
+#else
+# define validate_check_rc(Label) do { \
   if (rc != GNUTLS_E_SUCCESS) { if (exim_gnutls_base_init_done) gnutls_global_deinit(); \
-  return string_sprintf("%s failed: %s", (Label), gnutls_strerror(rc)); } } while (0)
-#define return_deinit(Label) do { gnutls_global_deinit(); return (Label); } while (0)
+    return string_sprintf("%s failed: %s", (Label), gnutls_strerror(rc)); } } while (0)
+# define return_deinit(Label) do { gnutls_global_deinit(); return (Label); } while (0)
+#endif
 
 if (exim_gnutls_base_init_done)
   log_write(0, LOG_MAIN|LOG_PANIC,
@@ -3433,8 +3445,10 @@ if (!gnutls_allow_auto_pkcs11)
   validate_check_rc(US"gnutls_pkcs11_init");
   }
 #endif
+#ifndef GNUTLS_AUTO_GLOBAL_INIT
 rc = gnutls_global_init();
 validate_check_rc(US"gnutls_global_init()");
+#endif
 exim_gnutls_base_init_done = TRUE;
 
 if (!(tls_require_ciphers && *tls_require_ciphers))
@@ -3457,7 +3471,9 @@ validate_check_rc(string_sprintf(
 
 #undef return_deinit
 #undef validate_check_rc
+#ifndef GNUTLS_AUTO_GLOBAL_INIT
 gnutls_global_deinit();
+#endif
 
 return NULL;
 }
