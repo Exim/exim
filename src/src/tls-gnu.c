@@ -72,6 +72,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030300
 # define GNUTLS_AUTO_GLOBAL_INIT
+# define GNUTLS_AUTO_PKCS11_MANUAL
 #endif
 #if GNUTLS_VERSION_NUMBER >= 0x030500
 # define SUPPORT_GNUTLS_KEYLOG
@@ -1500,7 +1501,7 @@ if (!exim_gnutls_base_init_done)
   {
   DEBUG(D_tls) debug_printf("GnuTLS global init required.\n");
 
-#ifdef HAVE_GNUTLS_PKCS11
+#if defined(HAVE_GNUTLS_PKCS11) && !defined(GNUTLS_AUTO_PKCS11_MANUAL)
   /* By default, gnutls_global_init will init PKCS11 support in auto mode,
   which loads modules from a config file, which sounds good and may be wanted
   by some sysadmin, but also means in common configurations that GNOME keyring
@@ -3438,7 +3439,7 @@ if (exim_gnutls_base_init_done)
   log_write(0, LOG_MAIN|LOG_PANIC,
       "already initialised GnuTLS, Exim developer bug");
 
-#ifdef HAVE_GNUTLS_PKCS11
+#if defined(HAVE_GNUTLS_PKCS11) && !defined(GNUTLS_AUTO_PKCS11_MANUAL)
 if (!gnutls_allow_auto_pkcs11)
   {
   rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL);
