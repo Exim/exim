@@ -76,6 +76,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 #if GNUTLS_VERSION_NUMBER >= 0x030506 && !defined(DISABLE_OCSP)
 # define SUPPORT_SRV_OCSP_STACK
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030600
+# define GNUTLS_AUTO_DHPARAMS
+#endif
 #if GNUTLS_VERSION_NUMBER >= 0x030603
 # define EXIM_HAVE_TLS1_3
 # define SUPPORT_GNUTLS_EXT_RAW_PARSE
@@ -217,11 +220,13 @@ XXX But see gnutls_session_get_ptr()
 
 static exim_gnutls_state_st state_server;
 
+#ifndef GNUTLS_AUTO_DHPARAMS
 /* dh_params are initialised once within the lifetime of a process using TLS;
 if we used TLS in a long-lived daemon, we'd have to reconsider this.  But we
 don't want to repeat this. */
 
 static gnutls_dh_params_t dh_server_params = NULL;
+#endif
 
 static int ssl_session_timeout = 7200;	/* Two hours */
 
@@ -524,6 +529,7 @@ tlsp->sni =    state->received_sni;
 
 
 
+#ifndef GNUTLS_AUTO_DHPARAMS
 /*************************************************
 *            Setup up DH parameters              *
 *************************************************/
@@ -546,7 +552,7 @@ init_server_dh(uschar ** errstr)
 {
 int fd, rc;
 unsigned int dh_bits;
-gnutls_datum_t m;
+gnutls_datum_t m = {.data = NULL, .size = 0};
 uschar filename_buf[PATH_MAX];
 uschar *filename = NULL;
 size_t sz;
@@ -558,9 +564,6 @@ DEBUG(D_tls) debug_printf("Initialising GnuTLS server params.\n");
 
 if ((rc = gnutls_dh_params_init(&dh_server_params)))
   return tls_error_gnu(US"gnutls_dh_params_init", rc, host, errstr);
-
-m.data = NULL;
-m.size = 0;
 
 if (!expand_check(tls_dhparam, US"tls_dhparam", &exp_tls_dhparam, errstr))
   return DEFER;
@@ -711,14 +714,12 @@ if (rc < 0)
     return tls_error_sys(US"Unable to open temp file", errno, NULL, errstr);
   (void)exim_chown(temp_fn, exim_uid, exim_gid);   /* Probably not necessary */
 
-  /* GnuTLS overshoots!
-   * If we ask for 2236, we might get 2237 or more.
-   * But there's no way to ask GnuTLS how many bits there really are.
-   * We can ask how many bits were used in a TLS session, but that's it!
-   * The prime itself is hidden behind too much abstraction.
-   * So we ask for less, and proceed on a wing and a prayer.
-   * First attempt, subtracted 3 for 2233 and got 2240.
-   */
+  /* GnuTLS overshoots!  If we ask for 2236, we might get 2237 or more.  But
+  there's no way to ask GnuTLS how many bits there really are.  We can ask
+  how many bits were used in a TLS session, but that's it!  The prime itself
+  is hidden behind too much abstraction.  So we ask for less, and proceed on
+  a wing and a prayer.  First attempt, subtracted 3 for 2233 and got 2240.  */
+
   if (dh_bits >= EXIM_CLIENT_DH_MIN_BITS + 10)
     {
     dh_bits_gen = dh_bits - 10;
@@ -781,6 +782,7 @@ if (rc < 0)
 DEBUG(D_tls) debug_printf("initialized server D-H parameters\n");
 return OK;
 }
+#endif
 
 
 
@@ -1395,6 +1397,7 @@ tls_set_remaining_x509(exim_gnutls_state_st *state, uschar ** errstr)
 int rc;
 const host_item *host = state->host;  /* macro should be reconsidered? */
 
+#ifndef GNUTLS_AUTO_DHPARAMS
 /* Create D-H parameters, or read them from the cache file. This function does
 its own SMTP error messaging. This only happens for the server, TLS D-H ignores
 client-side params. */
@@ -1403,8 +1406,11 @@ if (!state->host)
   {
   if (!dh_server_params)
     if ((rc = init_server_dh(errstr)) != OK) return rc;
+
+  /* Unnecessary & discouraged with 3.6.0 or later */
   gnutls_certificate_set_dh_params(state->x509_cred, dh_server_params);
   }
+#endif
 
 /* Link the credentials to the session. */
 

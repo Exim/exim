@@ -187,6 +187,11 @@ JH/39 Promote DMARC support to mainline.
 
 JH/40 Bug 2452: Add a References: header to DSNs.
 
+JH/41 With GnuTLS 3.6.0 (and later) do not attempt to manage Diffie-Hellman
+      parameters.  The relevant library call is documented as "Deprecated: This
+      function is unnecessary and discouraged on GnuTLS 3.6.0 or later. Since
+      3.6.0, DH parameters are negotiated following RFC7919."
+
 
 Exim version 4.92
 -----------------

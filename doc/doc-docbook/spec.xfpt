@@ -17736,7 +17736,14 @@ larger prime than requested.
 The value of this option is expanded and indicates the source of DH parameters
 to be used by Exim.
 
-&*Note: The Exim Maintainers strongly recommend using a filename with site-generated
+.new
+&*Note: This option is ignored for GnuTLS version 3.6.0 and later.
+The library manages parameter negitiation internally.
+.wen
+
+&*Note: The Exim Maintainers strongly recommend,
+for other TLS braries,
+using a filename with site-generated
 local DH parameters*&, which has been supported across all versions of Exim.  The
 other specific constants available are a fallback so that even when
 "unconfigured", Exim can offer Perfect Forward Secrecy in older ciphersuites in TLS.
