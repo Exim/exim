@@ -3516,7 +3516,7 @@ Returns:       nothing
 */
 
 static void
-chash_start(int type, void *base)
+chash_start(int type, void * base)
 {
 if (type == HMAC_MD5)
   md5_start((md5 *)base);
@@ -3525,7 +3525,7 @@ else
 }
 
 static void
-chash_mid(int type, void *base, uschar *string)
+chash_mid(int type, void * base, const uschar * string)
 {
 if (type == HMAC_MD5)
   md5_mid((md5 *)base, string);
@@ -3534,7 +3534,8 @@ else
 }
 
 static void
-chash_end(int type, void *base, uschar *string, int length, uschar *digest)
+chash_end(int type, void * base, const uschar * string, int length,
+  uschar * digest)
 {
 if (type == HMAC_MD5)
   md5_end((md5 *)base, string, length, digest);

@@ -1085,52 +1085,52 @@ if (dane->selectors[DANESSL_USAGE_DANE_EE])
     }
   }
 
-  if (dane->selectors[DANESSL_USAGE_DANE_TA])
+if (dane->selectors[DANESSL_USAGE_DANE_TA])
+  {
+  if ((matched = set_trust_anchor(ctx, dane, cert)) < 0)
     {
-    if ((matched = set_trust_anchor(ctx, dane, cert)) < 0)
-      {
-      X509_STORE_CTX_set_error(ctx, X509_V_ERR_OUT_OF_MEM);
-      return -1;
-      }
-    if (matched)
-      {
-      /*
-       * Check that setting the untrusted chain updates the expected
-       * structure member at the expected offset.
-       */
-      X509_STORE_CTX_trusted_stack(ctx, dane->roots);
-      X509_STORE_CTX_set_chain(ctx, dane->chain);
-      OPENSSL_assert(dane->chain == X509_STORE_CTX_get0_untrusted(ctx));
-      }
+    X509_STORE_CTX_set_error(ctx, X509_V_ERR_OUT_OF_MEM);
+    return -1;
     }
-
-  /*
-   * Name checks and usage 0/1 constraint enforcement are delayed until
-   * X509_verify_cert() builds the full chain and calls our verify_chain()
-   * wrapper.
-   */
-  dane->verify = X509_STORE_CTX_get_verify(ctx);
-  X509_STORE_CTX_set_verify(ctx, verify_chain);
-
-  if (X509_verify_cert(ctx))
-    return 1;
-
-  /*
-   * If the chain is invalid, clear any matching cert or hostname, to
-   * protect callers that might erroneously rely on these alone without
-   * checking the validation status.
-   */
-  if (dane->match)
+  if (matched)
     {
-    X509_free(dane->match);
-    dane->match = 0;
+    /*
+     * Check that setting the untrusted chain updates the expected
+     * structure member at the expected offset.
+     */
+    X509_STORE_CTX_trusted_stack(ctx, dane->roots);
+    X509_STORE_CTX_set_chain(ctx, dane->chain);
+    OPENSSL_assert(dane->chain == X509_STORE_CTX_get0_untrusted(ctx));
     }
-  if (dane->mhost)
-    {
-    OPENSSL_free(dane->mhost);
-    dane->mhost = 0;
-    }
-   return 0;
+  }
+
+/*
+ * Name checks and usage 0/1 constraint enforcement are delayed until
+ * X509_verify_cert() builds the full chain and calls our verify_chain()
+ * wrapper.
+ */
+dane->verify = X509_STORE_CTX_get_verify(ctx);
+X509_STORE_CTX_set_verify(ctx, verify_chain);
+
+if (X509_verify_cert(ctx))
+  return 1;
+
+/*
+ * If the chain is invalid, clear any matching cert or hostname, to
+ * protect callers that might erroneously rely on these alone without
+ * checking the validation status.
+ */
+if (dane->match)
+  {
+  X509_free(dane->match);
+  dane->match = 0;
+  }
+if (dane->mhost)
+  {
+  OPENSSL_free(dane->mhost);
+  dane->mhost = 0;
+  }
+ return 0;
 }
 
 static dane_list
