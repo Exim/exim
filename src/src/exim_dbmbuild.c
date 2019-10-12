@@ -34,6 +34,12 @@ uschar * spool_directory = NULL;	/* dummy for dbstuff.h */
 
 /******************************************************************************/
 					/* dummies needed by Solaris build */
+void
+millisleep(int msec)
+{}
+uschar *
+readconf_printtime(int t)
+{ return NULL; }
 void *
 store_get_3(int size, BOOL tainted, const char *filename, int linenumber)
 { return NULL; }
@@ -50,8 +56,11 @@ string_vformat_trc(gstring * g, const uschar * func, unsigned line,
 uschar *
 string_sprintf_trc(const char * a, const uschar * b, unsigned c, ...)
 { return NULL; }
-BOOL split_spool_directory;
-uschar * queue_name;
+
+struct global_flags	f;
+unsigned int		log_selector[1];
+uschar *		queue_name;
+BOOL			split_spool_directory;
 /******************************************************************************/
 
 
