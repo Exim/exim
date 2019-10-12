@@ -4290,7 +4290,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  /* Set up a pipe for proxying TLS for the new transport process */
 
 	  smtp_peer_options |= OPTION_TLS;
-	  if (sx.ok = (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0))
+	  if ((sx.ok = socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0))
 	    socket_fd = pfd[1];
 	  else
 	    set_errno(sx.first_addr, errno, US"internal allocation problem",
