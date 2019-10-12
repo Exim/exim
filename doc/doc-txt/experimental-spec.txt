@@ -312,6 +312,35 @@ EXPERIMENTAL_SRS=yes
 
 in your Local/Makefile.
 
+The following main-section options become available:
+	srs_config		string
+	srs_hashlength		int
+	srs_hashmin		int
+	srs_maxage		int
+	srs_secrets		string
+	srs_usehash		bool
+	srs_usetimestamp	bool
+
+The redirect router gains these options (all of type string, unset by default):
+	srs
+	srs_alias
+	srs_condition
+	srs_dbinsert
+	srs_dbselect
+
+The following variables become available:
+	$srs_db_address
+	$srs_db_key
+	$srs_orig_recipient
+	$srs_orig_sender
+	$srs_recipient
+	$srs_status
+
+The predefined feature-macro _HAVE_SRS will be present.
+Additional delivery log line elements, tagged with "SRS=" will show the srs sender.	
+For configuration information see https://github.com/Exim/exim/wiki/SRS .
+
+
 
 
 DCC Support
