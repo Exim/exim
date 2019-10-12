@@ -1740,6 +1740,20 @@ else
 (eg: compile regex) */
 
 dns_pattern_init();
+smtp_deliver_init();	/* Used for callouts */
+
+#ifndef DISABLE_DKIM
+  {
+# ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+# endif
+  dkim_exim_init();
+# ifdef MEASURE_TIMING
+  report_time_since(&t0, US"dkim_exim_init (delta)");
+# endif
+  }
+#endif
 
 #ifdef WITH_CONTENT_SCAN
 malware_init();

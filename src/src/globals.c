@@ -238,6 +238,7 @@ struct global_flags f =
 	.disable_logging        = FALSE,
 #ifndef DISABLE_DKIM
 	.dkim_disable_verify      = FALSE,
+	.dkim_init_done           = FALSE,
 #endif
 #ifdef SUPPORT_DMARC
 	.dmarc_has_been_checked  = FALSE,

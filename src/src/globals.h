@@ -198,6 +198,7 @@ extern struct global_flags {
  BOOL   disable_logging			:1; /* Disables log writing when TRUE */
 #ifndef DISABLE_DKIM
  BOOL   dkim_disable_verify		:1; /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
+ BOOL   dkim_init_done			:1; /* lazy-init status */
 #endif
 #ifdef SUPPORT_DMARC
  BOOL   dmarc_has_been_checked		:1; /* Global variable to check if test has been called yet */

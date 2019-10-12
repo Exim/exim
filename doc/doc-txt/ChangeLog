@@ -5,6 +5,14 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim version 4.next
+-------------------
+
+JH/01 Avoid costly startup code when not strictly needed.  This reduces time
+      for some exim process initialisations.  It does mean that the logging
+      of TLS configuration problems is only done for the daemon startup.
+
+
 Exim version 4.93
 -----------------
 

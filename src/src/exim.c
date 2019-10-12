@@ -920,7 +920,7 @@ fprintf(fp, "Support for:");
   fprintf(fp, " DMARC");
 #endif
 #ifdef TCP_FASTOPEN
-  deliver_init();
+  tcp_init();
   if (f.tcp_fastopen_ok) fprintf(fp, " TCP_Fast_Open");
 #endif
 #ifdef EXPERIMENTAL_LMDB
@@ -4480,31 +4480,9 @@ if (list_config)
   }
 
 
-/* Initialise subsystems as required */
-#ifndef DISABLE_DKIM
-  {
-# ifdef MEASURE_TIMING
-  struct timeval t0;
-  gettimeofday(&t0, NULL);
-# endif
-  dkim_exim_init();
-# ifdef MEASURE_TIMING
-  report_time_since(&t0, US"dkim_exim_init (delta)");
-# endif
-  }
-#endif
+/* Initialise subsystems as required. */
 
-  {
-#ifdef MEASURE_TIMING
-  struct timeval t0;
-  gettimeofday(&t0, NULL);
-#endif
-  deliver_init();
-#ifdef MEASURE_TIMING
-  report_time_since(&t0, US"deliver_init (delta)");
-#endif
-  }
-
+tcp_init();
 
 /* Handle a request to deliver one or more messages that are already on the
 queue. Values of msg_action other than MSG_DELIVER and MSG_LOAD are dealt with
@@ -4699,6 +4677,21 @@ if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Daemon cannot be run when "
       "mua_wrapper is set");
     }
+
+  /* This also checks that the library linkage is working and we can call
+  routines in it, so call even if tls_require_ciphers is unset */
+    {
+#ifdef MEASURE_TIMING
+    struct timeval t0, diff;
+    (void)gettimeofday(&t0, NULL);
+#endif
+    if (!tls_dropprivs_validate_require_cipher(FALSE))
+      exit(1);
+#ifdef MEASURE_TIMING
+    report_time_since(&t0, US"validate_ciphers (delta)");
+#endif
+    }
+
   daemon_go();
   }
 

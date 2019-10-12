@@ -2385,9 +2385,20 @@ and sent an SMTP response. */
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
 
-if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
-    NULL, tls_verify_certificates, tls_crl,
-    require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+#endif
+
+  if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
+      NULL, tls_verify_certificates, tls_crl,
+      require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
+
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"server tls_init (delta)");
+#endif
+  }
 
 #ifdef EXPERIMENTAL_TLS_RESUME
 tls_server_resume_prehandshake(state);
@@ -2821,10 +2832,21 @@ if (conn_args->dane && ob->dane_require_tls_ciphers)
 if (!cipher_list)
   cipher_list = ob->tls_require_ciphers;
 
-if (tls_init(host, ob->tls_certificate, ob->tls_privatekey,
-    ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
-    cipher_list, &state, tlsp, errstr) != OK)
-  return FALSE;
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+#endif
+
+  if (tls_init(host, ob->tls_certificate, ob->tls_privatekey,
+      ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
+      cipher_list, &state, tlsp, errstr) != OK)
+    return FALSE;
+
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"client tls_init (delta)");
+#endif
+  }
 
   {
   int dh_min_bits = ob->tls_dh_min_bits;
