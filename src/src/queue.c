@@ -347,6 +347,10 @@ uschar *log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
 
+#ifdef MEASURE_TIMING
+report_time_since(&timestamp_startup, US"queue_run start");
+#endif
+
 /* Cancel any specific queue domains. Turn off the flag that causes SMTP
 deliveries not to happen, unless doing a 2-stage queue run, when the SMTP flag
 gets set. Save the queue_runner's pid and the flag that indicates any
@@ -608,10 +612,14 @@ for (int i = queue_run_in_order ? -1 : 0;
 
     set_process_info("running queue: %s", fq->text);
     fq->text[SPOOL_NAME_LENGTH-2] = 0;
+#ifdef MEASURE_TIMING
+    report_time_since(&timestamp_startup, US"queue msg selected");
+#endif
+
     if ((pid = fork()) == 0)
       {
       int rc;
-      if (f.running_in_test_harness) millisleep(100);
+      testharness_pause_ms(100);
       (void)close(pfd[pipe_read]);
       rc = deliver_message(fq->text, force_delivery, FALSE);
       exim_underbar_exit(rc == DELIVER_NOT_ATTEMPTED);

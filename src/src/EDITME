@@ -1480,4 +1480,8 @@ EXIM_TMPDIR="/tmp"
 
 # ENABLE_DISABLE_FSYNC=yes
 
+#------------------------------------------------------------------------------
+# For development, add this to include code to time various stages and report.
+# CFLAGS += -DMEASURE_TIMING
+
 # End of EDITME for Exim 4.

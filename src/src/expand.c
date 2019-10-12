@@ -5200,7 +5200,7 @@ while (*s != 0)
 #endif
 
 	/* Allow sequencing of test actions */
-	if (f.running_in_test_harness) millisleep(100);
+	testharness_pause_ms(100);
 
         /* Write the request string, if not empty or already done */
 
@@ -5228,7 +5228,7 @@ while (*s != 0)
 	if (!do_tls && do_shutdown) shutdown(cctx.sock, SHUT_WR);
 #endif
 
-	if (f.running_in_test_harness) millisleep(100);
+	testharness_pause_ms(100);
 
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */

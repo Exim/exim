@@ -1092,42 +1092,6 @@ return g;
 
 
 
-void
-timesince(struct timeval * diff, struct timeval * then)
-{
-gettimeofday(diff, NULL);
-diff->tv_sec -= then->tv_sec;
-if ((diff->tv_usec -= then->tv_usec) < 0)
-  {
-  diff->tv_sec--;
-  diff->tv_usec += 1000*1000;
-  }
-}
-
-
-
-uschar *
-string_timediff(struct timeval * diff)
-{
-static uschar buf[sizeof("0.000s")];
-
-if (diff->tv_sec >= 5 || !LOGGING(millisec))
-  return readconf_printtime((int)diff->tv_sec);
-
-sprintf(CS buf, "%u.%03us", (uint)diff->tv_sec, (uint)diff->tv_usec/1000);
-return buf;
-}
-
-
-uschar *
-string_timesince(struct timeval * then)
-{
-struct timeval diff;
-
-timesince(&diff, then);
-return string_timediff(&diff);
-}
-
 /******************************************************************************/
 
 
@@ -2579,7 +2543,7 @@ if (!shadowing)
       /* In the test harness, wait just a bit to let the subprocess finish off
       any debug output etc first. */
 
-      if (f.running_in_test_harness) millisleep(300);
+      testharness_pause_ms(300);
 
       DEBUG(D_deliver) debug_printf("journalling %s", big_buffer);
       len = Ustrlen(big_buffer);
@@ -5062,7 +5026,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
   newly created process get going before we create another process. This should
   ensure repeatability in the tests. We only need to wait a tad. */
 
-  else if (f.running_in_test_harness) millisleep(500);
+  else testharness_pause_ms(500);
 
   continue;
 
@@ -5560,8 +5524,13 @@ int process_recipients = RECIP_ACCEPT;
 open_db dbblock;
 open_db *dbm_file;
 extern int acl_where;
+uschar *info;
 
-uschar *info = queue_run_pid == (pid_t)0
+#ifdef MEASURE_TIMING
+report_time_since(&timestamp_startup, US"delivery start");	/* testcase 0022, 2100 */
+#endif
+
+info = queue_run_pid == (pid_t)0
   ? string_sprintf("delivering %s", id)
   : string_sprintf("delivering %s (queue run pid %d)", id, queue_run_pid);
 
@@ -7921,7 +7890,7 @@ wording. */
 
       /* In the test harness, let the child do it's thing first. */
 
-      if (f.running_in_test_harness) millisleep(500);
+      testharness_pause_ms(500);
 
       /* If the process failed, there was some disaster in setting up the
       error message. Unless the message is very old, ensure that addr_defer
@@ -8497,6 +8466,9 @@ to try delivery. */
 (void)close(deliver_datafile);
 deliver_datafile = -1;
 DEBUG(D_deliver) debug_printf("end delivery of %s\n", id);
+#ifdef MEASURE_TIMING
+report_time_since(&timestamp_startup, US"delivery end"); /* testcase 0005 */
+#endif
 
 /* It is unlikely that there will be any cached resources, since they are
 released after routing, and in the delivery subprocesses. However, it's
@@ -8639,7 +8611,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
 
     else if (pid == 0)		/* child: fork again to totally disconnect */
       {
-      if (f.running_in_test_harness) millisleep(100); /* let parent debug out */
+      testharness_pause_ms(100); /* let parent debug out */
       /* does not return */
       smtp_proxy_tls(cutthrough.cctx.tls_ctx, big_buffer, big_buffer_size,
 		      pfd, 5*60);

@@ -1593,6 +1593,10 @@ because some OS define it in /usr/include/unistd.h. */
 
 extern char **environ;
 
+#ifdef MEASURE_TIMING
+(void)gettimeofday(&timestamp_startup, NULL);
+#endif
+
 /* If the Exim user and/or group and/or the configuration file owner/group were
 defined by ref:name at build time, we must now find the actual uid/gid values.
 This is a feature to make the lives of binary distributors easier. */
@@ -2665,7 +2669,7 @@ for (i = 1; i < argc; i++)
 	  exim_fail("exim: getsockname() failed after -MC option: %s\n",
 	    strerror(errno));
 
-      if (f.running_in_test_harness) millisleep(500);
+      testharness_pause_ms(500);
       break;
       }
 
@@ -3464,7 +3468,7 @@ if (debug_selector != 0)
   debug_file = stderr;
   debug_fd = fileno(debug_file);
   f.background_daemon = FALSE;
-  if (f.running_in_test_harness) millisleep(100);   /* lets caller finish */
+  testharness_pause_ms(100);   /* lets caller finish */
   if (debug_selector != D_v)    /* -v only doesn't show this */
     {
     debug_printf("Exim version %s uid=%ld gid=%ld pid=%d D=%x\n",
@@ -3686,7 +3690,18 @@ If any of these options is set, we suppress warnings about configuration
 issues (currently about tls_advertise_hosts and keep_environment not being
 defined) */
 
-readconf_main(checking || list_options);
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0, diff;
+  (void)gettimeofday(&t0, NULL);
+#endif
+
+  readconf_main(checking || list_options);
+
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"readconf_main (delta)");
+#endif
+  }
 
 
 /* Now in directory "/" */
@@ -4294,7 +4309,18 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
 Now, since the intro of the ${acl } expansion, ACL definitions may be
 needed in transports so we lost the optimisation. */
 
-readconf_rest();
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0, diff;
+  (void)gettimeofday(&t0, NULL);
+#endif
+
+  readconf_rest();
+
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"readconf_rest (delta)");
+#endif
+  }
 
 /* Handle the -brt option. This is for checking out retry configurations.
 The next three arguments are a domain name or a complete address, and
@@ -4456,9 +4482,28 @@ if (list_config)
 
 /* Initialise subsystems as required */
 #ifndef DISABLE_DKIM
-dkim_exim_init();
+  {
+# ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+# endif
+  dkim_exim_init();
+# ifdef MEASURE_TIMING
+  report_time_since(&t0, US"dkim_exim_init (delta)");
+# endif
+  }
 #endif
-deliver_init();
+
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+#endif
+  deliver_init();
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"deliver_init (delta)");
+#endif
+  }
 
 
 /* Handle a request to deliver one or more messages that are already on the

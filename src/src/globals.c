@@ -1522,6 +1522,9 @@ uschar *tcp_wrappers_daemon_name = US TCP_WRAPPERS_DAEMON_NAME;
 int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;
+#ifdef MEASURE_TIMING
+struct timeval timestamp_startup;
+#endif
 
 transport_instance  *transports = NULL;
 

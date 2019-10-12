@@ -1019,6 +1019,9 @@ extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
 extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
+#ifdef MEASURE_TIMING
+extern struct timeval timestamp_startup; /* For development measurements */
+#endif
 
 extern uschar *transport_name;         /* Name of transport last started */
 extern int     transport_count;        /* Count of bytes transported */

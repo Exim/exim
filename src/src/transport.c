@@ -1275,7 +1275,7 @@ if (write_pid < 0)
 
 /* When testing, let the subprocess get going */
 
-if (f.running_in_test_harness) millisleep(250);
+testharness_pause_ms(250);
 
 DEBUG(D_transport)
   debug_printf("process %d writing to transport filter\n", (int)write_pid);
@@ -1944,7 +1944,7 @@ if ((pid = fork()) == 0)
     DEBUG(D_transport) debug_printf("transport_pass_socket succeeded (final-pid %d)\n", pid);
     _exit(EXIT_SUCCESS);
     }
-  if (f.running_in_test_harness) sleep(1);
+  testharness_pause_ms(1000);
 
   transport_do_pass_socket(transport_name, hostname, hostaddress,
     id, socket_fd);

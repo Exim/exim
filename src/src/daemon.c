@@ -1760,6 +1760,10 @@ DEBUG(D_any) debug_print_ids(US"daemon running with");
 
 smtp_input = TRUE;
 
+#ifdef MEASURE_TIMING
+report_time_since(&timestamp_startup, US"daemon loop start");	/* testcase 0022 */
+#endif
+
 /* Enter the never-ending loop... */
 
 for (;;)

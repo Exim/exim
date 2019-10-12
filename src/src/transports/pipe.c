@@ -813,7 +813,7 @@ bit here to let the sub-process get going, but it may still not complete. So we
 ignore all writing errors. (When in the test harness, we do do a short sleep so
 any debugging output is likely to be in the same order.) */
 
-if (f.running_in_test_harness) millisleep(500);
+testharness_pause_ms(500);
 
 DEBUG(D_transport) debug_printf("Writing message to pipe\n");
 

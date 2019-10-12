@@ -13,6 +13,8 @@ are in in fact in separate headers. */
 #ifndef _FUNCTIONS_H_
 #define _FUNCTIONS_H_
 
+#include <sys/time.h>
+
 
 #ifdef EXIM_PERL
 extern gstring *call_perl_cat(gstring *, uschar **, uschar *,
@@ -507,8 +509,6 @@ extern BOOL    string_is_utf8(const uschar *);
 extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
 extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
-extern uschar *string_timediff(struct timeval *);
-extern uschar *string_timesince(struct timeval *);
 extern uschar *string_unprinting(uschar *);
 #ifdef SUPPORT_I18N
 extern uschar *string_address_utf8_to_alabel(const uschar *, uschar **);
@@ -541,7 +541,6 @@ extern uschar *strstric(uschar *, uschar *, BOOL);
 #ifdef EXIM_TFO_PROBE
 extern void    tfo_probe(void);
 #endif
-extern void    timesince(struct timeval * diff, struct timeval * then);
 extern void    tls_modify_variables(tls_support *);
 extern uschar *tod_stamp(int);
 
@@ -903,6 +902,59 @@ subdir_str[1] = '\0';
 }
 
 /******************************************************************************/
+static inline void
+timesince(struct timeval * diff, struct timeval * then)
+{
+gettimeofday(diff, NULL);
+diff->tv_sec -= then->tv_sec;
+if ((diff->tv_usec -= then->tv_usec) < 0)
+  {
+  diff->tv_sec--;
+  diff->tv_usec += 1000*1000;
+  }
+}
+
+static inline uschar *
+string_timediff(struct timeval * diff)
+{
+static uschar buf[sizeof("0.000s")];
+
+if (diff->tv_sec >= 5 || !LOGGING(millisec))
+  return readconf_printtime((int)diff->tv_sec);
+
+sprintf(CS buf, "%u.%03us", (uint)diff->tv_sec, (uint)diff->tv_usec/1000);
+return buf;
+}
+
+
+static inline uschar *
+string_timesince(struct timeval * then)
+{
+struct timeval diff;
+timesince(&diff, then);
+return string_timediff(&diff);
+}
+
+static inline void
+report_time_since(struct timeval * t0, uschar * where)
+{
+# ifdef MEASURE_TIMING
+struct timeval diff;
+timesince(&diff, t0);
+fprintf(stderr, "%d %s:\t%ld.%06ld\n",
+       (uint)getpid(), where, (long)diff.tv_sec, (long)diff.tv_usec);
+# endif
+}
+
+
+static inline void
+testharness_pause_ms(int millisec)
+{
+#ifndef MEASURE_TIMING
+if (f.running_in_test_harness) millisleep(millisec);
+#endif
+}
+
 #endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */

@@ -3340,7 +3340,7 @@ if ((rc = fork()))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
   }
 
-if (f.running_in_test_harness) millisleep(100); /* let parent debug out */
+testharness_pause_ms(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active.sock, &rfds);
@@ -3414,7 +3414,7 @@ for (int fd_bits = 3; fd_bits; )
   }
 
 done:
-  if (f.running_in_test_harness) millisleep(100);	/* let logging complete */
+  testharness_pause_ms(100);	/* let logging complete */
   exim_exit(0, US"TLS proxy");
 }
 #endif
@@ -3703,6 +3703,11 @@ else
   transport_count = 0;
 
 #ifndef DISABLE_DKIM
+  {
+# ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+# endif
   dkim_exim_sign_init();
 # ifdef EXPERIMENTAL_ARC
     {
@@ -3727,6 +3732,10 @@ else
       }
     }
 # endif
+# ifdef MEASURE_TIMING
+  report_time_since(&t0, US"dkim_exim_sign_init (delta)");
+# endif
+  }
   sx.ok = dkim_transport_write_message(&tctx, &ob->dkim, CUSS &message);
 #else
   sx.ok = transport_write_message(&tctx, 0);
@@ -4313,7 +4322,7 @@ propagate it from the initial
 	  int pid = fork();
 	  if (pid == 0)		/* child; fork again to disconnect totally */
 	    {
-	    if (f.running_in_test_harness) millisleep(100); /* let parent debug out */
+	    testharness_pause_ms(100); /* let parent debug out */
 	    /* does not return */
 	    smtp_proxy_tls(sx.cctx.tls_ctx, sx.buffer, sizeof(sx.buffer), pfd,
 			    ob->command_timeout);
@@ -4394,7 +4403,8 @@ HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 if (sx.send_quit)
   {
   shutdown(sx.cctx.sock, SHUT_WR);
-  millisleep(f.running_in_test_harness ? 200 : 20);
+  millisleep(20);
+  testharness_pause_ms(200);
   if (fcntl(sx.cctx.sock, F_SETFL, O_NONBLOCK) == 0)
     for (int i = 16; read(sx.cctx.sock, sx.inbuffer, sizeof(sx.inbuffer)) > 0 && i > 0;)
       i--;				/* drain socket */
@@ -5348,7 +5358,7 @@ retry_non_continued:
 	  ob->hosts_max_try_hardlimit);
       }
 
-    if (f.running_in_test_harness) millisleep(500); /* let server debug out */
+    testharness_pause_ms(500); /* let server debug out */
     }   /* End of loop for trying multiple hosts. */
 
   /* If we failed to find a matching host in the list, for an already-open
