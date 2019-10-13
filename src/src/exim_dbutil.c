@@ -49,6 +49,7 @@ uschar *spool_directory;
 void
 millisleep(int msec)
 {}
+uschar *
 readconf_printtime(int t)
 { return NULL; }
 gstring *
