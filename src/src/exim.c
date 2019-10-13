@@ -929,7 +929,7 @@ fprintf(fp, "Support for:");
 #ifdef EXPERIMENTAL_QUEUEFILE
   fprintf(fp, " Experimental_QUEUEFILE");
 #endif
-#ifdef EXPERIMENTAL_SRS
+#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
   fprintf(fp, " Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_ARC

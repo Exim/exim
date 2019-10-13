@@ -1,0 +1,16 @@
+# SRS native implementation
+#
+exim -bd -DSERVER=server -oX 127.0.0.1:PORT_S
+****
+# Inject a message; will be passed on to remote and queued there
+exim -odi redirect@test.ex
+Message body
+****
+# Run the queue for the remote, will generate bounce which is queued
+exim -q
+****
+# Run the queue for the remote, will send bounce to origin
+exim -q
+****
+#
+killdaemon

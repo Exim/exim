@@ -986,6 +986,9 @@ extern uschar *srs_status;             /* SRS staus */
 extern BOOL    srs_usehash;            /* SRS use hash flag */
 extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
 #endif
+#ifdef EXPERIMENTAL_SRS_NATIVE
+extern uschar *srs_recipient;          /* SRS recipient */
+#endif
 extern BOOL    strict_acl_vars;        /* ACL variables have to be set before being used */
 extern int     string_datestamp_offset;/* After insertion by string_format */
 extern int     string_datestamp_length;/* After insertion by string_format */

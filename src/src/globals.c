@@ -1498,6 +1498,9 @@ uschar *srs_recipient          = NULL;
 uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
 #endif
+#ifdef EXPERIMENTAL_SRS_NATIVE
+uschar *srs_recipient          = NULL;
+#endif
 int     string_datestamp_offset= -1;
 int     string_datestamp_length= 0;
 int     string_datestamp_type  = -1;

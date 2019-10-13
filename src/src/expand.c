@@ -129,6 +129,9 @@ static uschar *item_table[] = {
   US"run",
   US"sg",
   US"sort",
+#ifdef EXPERIMENTAL_SRS_NATIVE
+  US"srs_encode",
+#endif
   US"substr",
   US"tr" };
 
@@ -160,6 +163,9 @@ enum {
   EITEM_RUN,
   EITEM_SG,
   EITEM_SORT,
+#ifdef EXPERIMENTAL_SRS_NATIVE
+  EITEM_SRS_ENCODE,
+#endif
   EITEM_SUBSTR,
   EITEM_TR };
 
@@ -323,6 +329,9 @@ static uschar *cond_table[] = {
   US"gei",
   US"gt",
   US"gti",
+#ifdef EXPERIMENTAL_SRS_NATIVE
+  US"inbound_srs",
+#endif
   US"inlist",
   US"inlisti",
   US"isip",
@@ -373,6 +382,9 @@ enum {
   ECOND_STR_GEI,
   ECOND_STR_GT,
   ECOND_STR_GTI,
+#ifdef EXPERIMENTAL_SRS_NATIVE
+  ECOND_INBOUND_SRS,
+#endif
   ECOND_INLIST,
   ECOND_INLISTI,
   ECOND_ISIP,
@@ -736,7 +748,11 @@ static var_entry var_table[] = {
   { "srs_db_key",          vtype_stringptr,   &srs_db_key },
   { "srs_orig_recipient",  vtype_stringptr,   &srs_orig_recipient },
   { "srs_orig_sender",     vtype_stringptr,   &srs_orig_sender },
+#endif
+#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
   { "srs_recipient",       vtype_stringptr,   &srs_recipient },
+#endif
+#ifdef EXPERIMENTAL_SRS
   { "srs_status",          vtype_stringptr,   &srs_status },
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
@@ -2293,6 +2309,127 @@ return chop_match(name, cond_table, nelem(cond_table));
 
 
 /*************************************************
+*    Handle MD5 or SHA-1 computation for HMAC    *
+*************************************************/
+
+/* These are some wrapping functions that enable the HMAC code to be a bit
+cleaner. A good compiler will spot the tail recursion.
+
+Arguments:
+  type         HMAC_MD5 or HMAC_SHA1
+  remaining    are as for the cryptographic hash functions
+
+Returns:       nothing
+*/
+
+static void
+chash_start(int type, void * base)
+{
+if (type == HMAC_MD5)
+  md5_start((md5 *)base);
+else
+  sha1_start((hctx *)base);
+}
+
+static void
+chash_mid(int type, void * base, const uschar * string)
+{
+if (type == HMAC_MD5)
+  md5_mid((md5 *)base, string);
+else
+  sha1_mid((hctx *)base, string);
+}
+
+static void
+chash_end(int type, void * base, const uschar * string, int length,
+  uschar * digest)
+{
+if (type == HMAC_MD5)
+  md5_end((md5 *)base, string, length, digest);
+else
+  sha1_end((hctx *)base, string, length, digest);
+}
+
+
+
+
+/* Do an hmac_md5.  The result is _not_ nul-terminated, and is sized as
+the smaller of a full hmac_md5 result (16 bytes) or the supplied output buffer.
+
+Arguments:
+	key	encoding key, nul-terminated
+	src	data to be hashed, nul-terminated
+	buf	output buffer
+	len	size of output buffer
+*/
+
+static void
+hmac_md5(const uschar * key, const uschar * src, uschar * buf, unsigned len)
+{
+md5 md5_base;
+const uschar * keyptr;
+uschar * p;
+unsigned int keylen;
+
+#define MD5_HASHLEN      16
+#define MD5_HASHBLOCKLEN 64
+
+uschar keyhash[MD5_HASHLEN];
+uschar innerhash[MD5_HASHLEN];
+uschar finalhash[MD5_HASHLEN];
+uschar innerkey[MD5_HASHBLOCKLEN];
+uschar outerkey[MD5_HASHBLOCKLEN];
+
+keyptr = key;
+keylen = Ustrlen(keyptr);
+
+/* If the key is longer than the hash block length, then hash the key
+first */
+
+if (keylen > MD5_HASHBLOCKLEN)
+  {
+  chash_start(HMAC_MD5, &md5_base);
+  chash_end(HMAC_MD5, &md5_base, keyptr, keylen, keyhash);
+  keyptr = keyhash;
+  keylen = MD5_HASHLEN;
+  }
+
+/* Now make the inner and outer key values */
+
+memset(innerkey, 0x36, MD5_HASHBLOCKLEN);
+memset(outerkey, 0x5c, MD5_HASHBLOCKLEN);
+
+for (int i = 0; i < keylen; i++)
+  {
+  innerkey[i] ^= keyptr[i];
+  outerkey[i] ^= keyptr[i];
+  }
+
+/* Now do the hashes */
+
+chash_start(HMAC_MD5, &md5_base);
+chash_mid(HMAC_MD5, &md5_base, innerkey);
+chash_end(HMAC_MD5, &md5_base, src, Ustrlen(src), innerhash);
+
+chash_start(HMAC_MD5, &md5_base);
+chash_mid(HMAC_MD5, &md5_base, outerkey);
+chash_end(HMAC_MD5, &md5_base, innerhash, MD5_HASHLEN, finalhash);
+
+/* Encode the final hash as a hex string, limited by output buffer size */
+
+p = buf;
+for (int i = 0, j = len; i < MD5_HASHLEN; i++)
+  {
+  if (j-- <= 0) break;
+  *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
+  if (j-- <= 0) break;
+  *p++ = hex_digits[finalhash[i] & 0x0f];
+  }
+return;
+}
+
+
+/*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
 
@@ -3229,6 +3366,100 @@ switch(cond_type = identify_operator(&s, &opname))
     return s;
     }
 
+#ifdef EXPERIMENTAL_SRS_NATIVE
+  case ECOND_INBOUND_SRS:
+    /* ${if inbound_srs {local_part}{secret}  {yes}{no}} */
+    {
+    uschar * sub[2];
+    const pcre * re;
+    int ovec[3*(4+1)];
+    int n;
+    uschar cksum[4];
+    BOOL boolvalue = FALSE;
+
+    switch(read_subs(sub, 2, 2, CUSS &s, yield == NULL, FALSE, US"inbound_srs", resetok))
+      {
+      case 1: expand_string_message = US"too few arguments or bracketing "
+	"error for inbound_srs";
+      case 2:
+      case 3: return NULL;
+      }
+
+    /* Match the given local_part against the SRS-encoded pattern */
+
+    re = regex_must_compile(US"^(?i)SRS0=([^=]+)=([A-Z2-7]+)=([^=]*)=(.*)$",
+			    TRUE, FALSE);
+    if (pcre_exec(re, NULL, CS sub[0], Ustrlen(sub[0]), 0, PCRE_EOPT,
+		  ovec, nelem(ovec)) < 0)
+      {
+      DEBUG(D_expand) debug_printf("no match for SRS'd local-part pattern\n");
+      goto srs_result;
+      }
+
+    /* Side-effect: record the decoded recipient */
+
+    srs_recipient = string_sprintf("%.*S@%.*S",   		/* lowercased */
+		      ovec[9]-ovec[8], sub[0] + ovec[8],	/* substring 4 */
+		      ovec[7]-ovec[6], sub[0] + ovec[6]);	/* substring 3 */
+
+    /* If a zero-length secret was given, we're done.  Otherwise carry on
+    and validate the given SRS local_part againt our secret. */
+
+    if (!*sub[1])
+      {
+      boolvalue = TRUE;
+      goto srs_result;
+      }
+
+    /* check the timestamp */
+      {
+      struct timeval now;
+      uschar * ss = sub[0] + ovec[4];	/* substring 2, the timestamp */
+      long d;
+
+      gettimeofday(&now, NULL);
+      now.tv_sec /= 86400;		/* days since epoch */
+
+      /* Decode substring 2 from base32 to a number */
+
+      for (d = 0, n = ovec[5]-ovec[4]; n; n--)
+	{
+	uschar * t = Ustrchr(base32_chars, *ss++);
+	d = d * 32 + (t - base32_chars);
+	}
+
+      if (((now.tv_sec - d) & 0x3ff) > 10)	/* days since SRS generated */
+	{
+	DEBUG(D_expand) debug_printf("SRS too old\n");
+	goto srs_result;
+	}
+      }
+
+    /* check length of substring 1, the offered checksum */
+
+    if (ovec[3]-ovec[2] != 4)
+      {
+      DEBUG(D_expand) debug_printf("SRS checksum wrong size\n");
+      goto srs_result;
+      }
+
+    /* Hash the address with our secret, and compare that computed checksum
+    with the one extracted from the arg */
+
+    hmac_md5(sub[1], srs_recipient, cksum, sizeof(cksum));
+    if (Ustrncmp(cksum, sub[0] + ovec[2], 4) != 0)
+      {
+      DEBUG(D_expand) debug_printf("SRS checksum mismatch\n");
+      goto srs_result;
+      }
+    boolvalue = TRUE;
+
+srs_result:
+    if (yield) *yield = (boolvalue == testfor);
+    return s;
+    }
+#endif /*EXPERIMENTAL_SRS_NATIVE*/
+
   /* Unknown condition */
 
   default:
@@ -3497,51 +3728,6 @@ FAILED:
   rc = 1;
   goto RETURN;
 }
-
-
-
-
-/*************************************************
-*    Handle MD5 or SHA-1 computation for HMAC    *
-*************************************************/
-
-/* These are some wrapping functions that enable the HMAC code to be a bit
-cleaner. A good compiler will spot the tail recursion.
-
-Arguments:
-  type         HMAC_MD5 or HMAC_SHA1
-  remaining    are as for the cryptographic hash functions
-
-Returns:       nothing
-*/
-
-static void
-chash_start(int type, void *base)
-{
-if (type == HMAC_MD5)
-  md5_start((md5 *)base);
-else
-  sha1_start((hctx *)base);
-}
-
-static void
-chash_mid(int type, void *base, uschar *string)
-{
-if (type == HMAC_MD5)
-  md5_mid((md5 *)base, string);
-else
-  sha1_mid((hctx *)base, string);
-}
-
-static void
-chash_end(int type, void *base, uschar *string, int length, uschar *digest)
-{
-if (type == HMAC_MD5)
-  md5_end((md5 *)base, string, length, digest);
-else
-  sha1_end((hctx *)base, string, length, digest);
-}
-
 
 
 
@@ -6668,6 +6854,62 @@ while (*s != 0)
         }
       continue;
       }
+
+#ifdef EXPERIMENTAL_SRS_NATIVE
+    case EITEM_SRS_ENCODE:
+      /* ${srs_encode {secret} {return_path} {orig_domain}} */
+      {
+      uschar * sub[3];
+      uschar cksum[4];
+
+      switch (read_subs(sub, 3, 3, CUSS &s, skipping, TRUE, name, &resetok))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      yield = string_catn(yield, US"SRS0=", 5);
+
+      /* ${l_4:${hmac{md5}{SRS_SECRET}{${lc:$return_path}}}}= */
+      hmac_md5(sub[0], string_copylc(sub[1]), cksum, sizeof(cksum));
+      yield = string_catn(yield, cksum, sizeof(cksum));
+      yield = string_catn(yield, US"=", 1);
+
+      /* ${base32:${eval:$tod_epoch/86400&0x3ff}}= */
+	{
+	struct timeval now;
+	unsigned long i;
+	gstring * g = NULL;
+
+	gettimeofday(&now, NULL);
+	for (unsigned long i = (now.tv_sec / 86400) & 0x3ff; i; i >>= 5)
+	  g = string_catn(g, &base32_chars[i & 0x1f], 1);
+	if (g) while (g->ptr > 0)
+	  yield = string_catn(yield, &g->s[--g->ptr], 1);
+	}
+      yield = string_catn(yield, US"=", 1);
+
+      /* ${domain:$return_path}=${local_part:$return_path} */
+	{
+        int start, end, domain;
+        uschar * t = parse_extract_address(sub[1], &expand_string_message,
+					  &start, &end, &domain, FALSE);
+        if (!t)
+	  goto EXPAND_FAILED;
+
+	if (domain > 0) yield = string_cat(yield, t + domain);
+	yield = string_catn(yield, US"=", 1);
+	yield = domain > 0
+	  ? string_catn(yield, t, domain - 1) : string_cat(yield, t);
+        }
+
+      /* @$original_domain */
+      yield = string_catn(yield, US"@", 1);
+      yield = string_cat(yield, sub[2]);
+      continue;
+      }
+#endif /*EXPERIMENTAL_SRS_NATIVE*/
     }	/* EITEM_* switch */
 
   /* Control reaches here if the name is not recognized as one of the more
