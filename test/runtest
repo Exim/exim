@@ -913,6 +913,11 @@ RESET_AFTER_EXTRA_LINE_READ:
   last if !defined $_;
 
 
+  # SRS timestamps and signatures vary by hostname and from run to run
+
+  s/SRS0=....=..=[^=]+=[^@]+\@test.ex/SRS0=ZZZZ=YY=the.local.host.name=CALLER\@test.ex/;
+
+
   # ======== Output from the "fd" program about open descriptors ========
   # The statuses seem to be different on different operating systems, but
   # at least we'll still be checking the number of open fd's.
