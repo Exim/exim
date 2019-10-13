@@ -4678,19 +4678,21 @@ if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
       "mua_wrapper is set");
     }
 
+# ifndef DISABLE_TLS
   /* This also checks that the library linkage is working and we can call
   routines in it, so call even if tls_require_ciphers is unset */
     {
-#ifdef MEASURE_TIMING
+# ifdef MEASURE_TIMING
     struct timeval t0, diff;
     (void)gettimeofday(&t0, NULL);
-#endif
+# endif
     if (!tls_dropprivs_validate_require_cipher(FALSE))
       exit(1);
-#ifdef MEASURE_TIMING
+# ifdef MEASURE_TIMING
     report_time_since(&t0, US"validate_ciphers (delta)");
-#endif
+# endif
     }
+#endif
 
   daemon_go();
   }
