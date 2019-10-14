@@ -59,6 +59,9 @@ else if (Ustrcmp(keep_environment, "*") != 0)
     }
   store_reset(reset_point);
   }
+#ifndef DISABLE_TLS
+tls_clean_env();
+#endif
 if (add_environment)
   {
   uschar * p;

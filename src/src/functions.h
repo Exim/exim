@@ -48,6 +48,7 @@ extern uschar * tls_cert_fprt_md5(void *);
 extern uschar * tls_cert_fprt_sha1(void *);
 extern uschar * tls_cert_fprt_sha256(void *);
 
+extern void    tls_clean_env(void);
 extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
 		  void *, tls_support *, uschar **);
 

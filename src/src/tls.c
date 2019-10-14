@@ -369,6 +369,35 @@ else if ((subjdn = tls_cert_subject(cert, NULL)))
   }
 return FALSE;
 }
+
+
+/* Environment cleanup: The GnuTLS library spots SSLKEYLOGFILE in the envonment
+and writes a file by that name.  We might make the OpenSSL support do the same,
+in some future release.  Restrict that filename to be under the spool directory.
+
+If the path is absolute, require it starts with the spooldir; otherwise delete
+the env variable.  If relative, prefix the spooldir.
+*/
+void
+tls_clean_env(void)
+{
+uschar * path = US getenv("SSLKEYLOGFILE");
+if (path)
+  if (!*path)
+    unsetenv("SSLKEYLOGFILE");
+  else if (*path != '/')
+    {
+    DEBUG(D_tls)
+      debug_printf("prepending spooldir to  env SSLKEYLOGFILE\n");
+    setenv("SSLKEYLOGFILE", CCS string_sprintf("%s/%s", spool_directory, path), 1);
+    }
+  else if (Ustrncmp(path, spool_directory, Ustrlen(spool_directory)) != 0)
+    {
+    DEBUG(D_tls)
+      debug_printf("removing env SSLKEYLOGFILE: not under spooldir\n");
+    unsetenv("SSLKEYLOGFILE");
+    }
+}
 #endif	/*!DISABLE_TLS*/
 #endif	/*!MACRO_PREDEF*/
 
