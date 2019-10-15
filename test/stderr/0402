@@ -1,6 +1,7 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
@@ -179,6 +180,7 @@ exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

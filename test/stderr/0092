@@ -35,6 +35,7 @@ LOG: SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<u
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
