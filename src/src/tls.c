@@ -371,9 +371,14 @@ return FALSE;
 }
 
 
-/* Environment cleanup: The GnuTLS library spots SSLKEYLOGFILE in the envonment
-and writes a file by that name.  We might make the OpenSSL support do the same,
-in some future release.  Restrict that filename to be under the spool directory.
+/* Environment cleanup: The GnuTLS library uses SSLKEYLOGFILE in the environment
+and writes a file by that name.  Our OpenSSL code does the same, using keying
+info from the library API.
+The GnuTLS support only works if exim is run by root, not taking advantage of
+the setuid bit.
+You can use either the external environment (modulo the keep_environment config)
+or the add_environment config option for SSLKEYLOGFILE; the latter takes
+precedence.
 
 If the path is absolute, require it starts with the spooldir; otherwise delete
 the env variable.  If relative, prefix the spooldir.

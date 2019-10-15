@@ -24,6 +24,9 @@ Returns:    TRUE if successful
 BOOL
 cleanup_environment()
 {
+int old_pool = store_pool;
+store_pool = POOL_PERM;		/* Need perm memory for any created env vars */
+
 if (!keep_environment || *keep_environment == '\0')
   {
   /* From: https://github.com/dovecot/core/blob/master/src/lib/env-util.c#L55
@@ -59,17 +62,23 @@ else if (Ustrcmp(keep_environment, "*") != 0)
     }
   store_reset(reset_point);
   }
-#ifndef DISABLE_TLS
-tls_clean_env();
-#endif
 if (add_environment)
   {
   uschar * p;
   int sep = 0;
   const uschar * envlist = add_environment;
+  int old_pool = store_pool;
 
-  while ((p = string_nextinlist(&envlist, &sep, NULL, 0))) putenv(CS p);
+  while ((p = string_nextinlist(&envlist, &sep, NULL, 0)))
+    {
+    DEBUG(D_expand) debug_printf("adding %s\n", p);
+    putenv(CS p);
+    }
   }
+#ifndef DISABLE_TLS
+tls_clean_env();
+#endif
 
+store_pool = old_pool;
 return TRUE;
 }

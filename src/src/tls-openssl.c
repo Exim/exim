@@ -841,7 +841,13 @@ DEBUG(D_tls)
 static void
 keylog_callback(const SSL *ssl, const char *line)
 {
+char * filename;
+FILE * fp;
 DEBUG(D_tls) debug_printf("%.200s\n", line);
+if (!(filename = getenv("SSLKEYLOGFILE"))) return;
+if (!(fp = fopen(filename, "a"))) return;
+fprintf(fp, "%s\n", line);
+fclose(fp);
 }
 #endif
 

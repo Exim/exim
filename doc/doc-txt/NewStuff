@@ -41,6 +41,13 @@ Version 4.93
 
 14: An smtp:ehlo transport event, for observability of the remote offered features.
 
+15: Support under OpenSSL for writing NSS-style key files for packet-capture
+    decode.  The environment variable SSLKEYLOGFILE is used; if an absolute path
+    it must indicate a file under the spool directory; if relative the the spool
+    directory is prepended.  Works on the server side only.  Support under 
+    GnuTLS was already there, being done purely by the library (server side
+    only, and exim must be run as root).
+
 
 Version 4.92
 --------------
