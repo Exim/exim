@@ -48,6 +48,7 @@ GetOptions(
   'spool=s'     => \$G::spool,      # exim spool dir
   'C|Config=s'  => \$G::config,     # use alternative Exim configuration file
   'input-dir=s' => \$G::input_dir,  # name of the "input" dir
+  'queue=s'     => \$G::queue,      # name of the queue
   'finput'      => \$G::finput,     # same as "--input-dir Finput"
   'bp'          => \$G::mailq_bp,   # List the queue (noop - default)
   'bpa'         => \$G::mailq_bpa,  # ... with generated address as well
@@ -128,7 +129,8 @@ $G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
 $spool              = defined $G::spool ? $G::spool
 		      : do { chomp($_ = `$exim @{[defined $G::config ? "-C $G::config" : '']} -n -bP spool_directory`)
                              and $_ or $spool };
-my $input_dir       = $G::input_dir || ($G::finput ? "Finput" : "input");
+my $input_dir       = (defined $G::queue ? "$G::queue/" : '')
+                    . (defined $G::input_dir || ($G::finput ? "Finput" : "input"));
 my $count_only      = 1 if ($G::mailq_bpc  || $G::qgrep_c);
 my $unsorted        = 1 if ($G::mailq_bpr  || $G::mailq_bpra ||
                             $G::mailq_bpru || $G::unsorted);
@@ -1425,6 +1427,10 @@ Same as '$message_age > <seconds>' (exiqgrep)
 =item --or
 
 Display messages matching any criteria
+
+=item --queue <name>
+
+Name of the queue (default: ''). See "named queues" in the spec.
 
 =item -R
 
