@@ -159,7 +159,8 @@ putchar('\n');
 #define udn 2    /* Unix domain socket number */
 #define skn 2    /* Potential number of sockets */
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 int i;
 int port = 0;

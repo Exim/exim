@@ -1206,12 +1206,13 @@ Arguments:
   sctx            the SSL_CTX* to update
   cbinfo          various parts of session state
   filename        the filename putatively holding an OCSP response
+  is_pem	  file is PEM format; otherwise is DER
 
 */
 
 static void
 ocsp_load_response(SSL_CTX * sctx, tls_ext_ctx_cb * cbinfo,
-  const uschar * filename)
+  const uschar * filename, BOOL is_pem)
 {
 BIO * bio;
 OCSP_RESPONSE * resp;
@@ -1222,7 +1223,8 @@ STACK_OF(X509) * sk;
 unsigned long verify_flags;
 int status, reason, i;
 
-DEBUG(D_tls) debug_printf("tls_ocsp_file        '%s'\n", filename);
+DEBUG(D_tls)
+  debug_printf("tls_ocsp_file (%s)  '%s'\n", is_pem ? "PEM" : "DER", filename);
 
 if (!(bio = BIO_new_file(CS filename, "rb")))
   {
@@ -1231,8 +1233,26 @@ if (!(bio = BIO_new_file(CS filename, "rb")))
   return;
   }
 
-resp = d2i_OCSP_RESPONSE_bio(bio, NULL);
+if (is_pem)
+  {
+  uschar * data, * freep;
+  char * dummy;
+  long len;
+  if (!PEM_read_bio(bio, &dummy, &dummy, &data, &len))
+    {
+    DEBUG(D_tls) debug_printf("Failed to read PEM file \"%s\"\n",
+	filename);
+    return;
+    }
+debug_printf("read pem file\n");
+  freep = data;
+  resp = d2i_OCSP_RESPONSE(NULL, CUSS &data, len);
+  OPENSSL_free(freep);
+  }
+else
+  resp = d2i_OCSP_RESPONSE_bio(bio, NULL);
 BIO_free(bio);
+
 if (!resp)
   {
   DEBUG(D_tls) debug_printf("Error reading OCSP response.\n");
@@ -1518,6 +1538,7 @@ else
       const uschar * olist = cbinfo->u_ocsp.server.file;
       int osep = 0;
       uschar * ofile;
+      BOOL fmt_pem = FALSE;
 
       if (olist)
 	if (!expand_check(olist, US"tls_ocsp_file", USS &olist, errstr))
@@ -1546,7 +1567,19 @@ else
 #ifndef DISABLE_OCSP
 	if (olist)
 	  if ((ofile = string_nextinlist(&olist, &osep, NULL, 0)))
-	    ocsp_load_response(sctx, cbinfo, ofile);
+	    {
+	    if (Ustrncmp(ofile, US"PEM ", 4) == 0)
+	      {
+	      fmt_pem = TRUE;
+	      ofile += 4;
+	      }
+	    else if (Ustrncmp(ofile, US"DER ", 4) == 0)
+	      {
+	      fmt_pem = FALSE;
+	      ofile += 4;
+	      }
+	    ocsp_load_response(sctx, cbinfo, ofile, fmt_pem);
+	    }
 	  else
 	    DEBUG(D_tls) debug_printf("ran out of ocsp file list\n");
 #endif
@@ -1808,7 +1841,7 @@ OCSP_RESPONSE * rsp;
 OCSP_BASICRESP * bs;
 int i;
 
-DEBUG(D_tls) debug_printf("Received TLS status response (OCSP stapling):");
+DEBUG(D_tls) debug_printf("Received TLS status response (OCSP stapling):\n");
 len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 if(!p)
  {
@@ -1850,8 +1883,9 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 */
   {
     BIO * bp = NULL;
-    int status, reason;
-    ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
+#ifndef EXIM_HAVE_OCSP_RESP_COUNT
+    STACK_OF(OCSP_SINGLERESP) * sresp = bs->tbsResponseData->responses;
+#endif
 
     DEBUG(D_tls) bp = BIO_new_fp(debug_file, BIO_NOCLOSE);
 
@@ -1861,19 +1895,23 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
     /* DEBUG(D_tls) x509_store_dump_cert_s_names(cbinfo->u_ocsp.client.verify_store); */
 
     if ((i = OCSP_basic_verify(bs, cbinfo->verify_stack,
-	      cbinfo->u_ocsp.client.verify_store, 0)) <= 0)
-      {
-      tls_out.ocsp = OCSP_FAILED;
-      if (LOGGING(tls_cipher)) log_write(0, LOG_MAIN,
-	      "Received TLS cert status response, itself unverifiable: %s",
-	      ERR_reason_error_string(ERR_peek_error()));
-      BIO_printf(bp, "OCSP response verify failure\n");
-      ERR_print_errors(bp);
-      OCSP_RESPONSE_print(bp, rsp, 0);
-      goto failed;
-      }
+	      cbinfo->u_ocsp.client.verify_store, OCSP_NOEXPLICIT)) <= 0)
+      if (ERR_peek_error())
+	{
+	tls_out.ocsp = OCSP_FAILED;
+	if (LOGGING(tls_cipher)) log_write(0, LOG_MAIN,
+		"Received TLS cert status response, itself unverifiable: %s",
+		ERR_reason_error_string(ERR_peek_error()));
+	BIO_printf(bp, "OCSP response verify failure\n");
+	ERR_print_errors(bp);
+	OCSP_RESPONSE_print(bp, rsp, 0);
+	goto failed;
+	}
+      else
+	DEBUG(D_tls) debug_printf("no explicit trust for OCSP signing"
+	  " in the root CA certificate; ignoring\n");
 
-    BIO_printf(bp, "OCSP response well-formed and signed OK\n");
+    DEBUG(D_tls) debug_printf("OCSP response well-formed and signed OK\n");
 
     /*XXX So we have a good stapled OCSP status.  How do we know
     it is for the cert of interest?  OpenSSL 1.1.0 has a routine
@@ -1883,60 +1921,65 @@ if (!(bs = OCSP_response_get1_basic(rsp)))
 
     For now, carry on blindly accepting the resp. */
 
-      {
-      OCSP_SINGLERESP * single;
-
+    for (int idx =
 #ifdef EXIM_HAVE_OCSP_RESP_COUNT
-      if (OCSP_resp_count(bs) != 1)
+	    OCSP_resp_count(bs) - 1;
 #else
-      STACK_OF(OCSP_SINGLERESP) * sresp = bs->tbsResponseData->responses;
-      if (sk_OCSP_SINGLERESP_num(sresp) != 1)
+	    sk_OCSP_SINGLERESP_num(sresp) - 1;
 #endif
-        {
-	tls_out.ocsp = OCSP_FAILED;
-        log_write(0, LOG_MAIN, "OCSP stapling "
-	    "with multiple responses not handled");
-        goto failed;
-        }
-      single = OCSP_resp_get0(bs, 0);
+	 idx >= 0; idx--)
+      {
+      OCSP_SINGLERESP * single = OCSP_resp_get0(bs, idx);
+      int status, reason;
+      ASN1_GENERALIZEDTIME * rev, * thisupd, * nextupd;
+
+  /*XXX so I can see putting a loop in here to handle a rsp with >1 singleresp
+  - but what happens with a GnuTLS-style input?
+
+  we could do with a debug label for each singleresp
+  - it has a certID with a serialNumber, but I see no API to get that
+  */
       status = OCSP_single_get0_status(single, &reason, &rev,
 		  &thisupd, &nextupd);
-      }
 
-    DEBUG(D_tls) time_print(bp, "This OCSP Update", thisupd);
-    DEBUG(D_tls) if(nextupd) time_print(bp, "Next OCSP Update", nextupd);
-    if (!OCSP_check_validity(thisupd, nextupd,
-	  EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
-      {
-      tls_out.ocsp = OCSP_FAILED;
-      DEBUG(D_tls) ERR_print_errors(bp);
-      log_write(0, LOG_MAIN, "Server OSCP dates invalid");
-      }
-    else
-      {
+      DEBUG(D_tls) time_print(bp, "This OCSP Update", thisupd);
+      DEBUG(D_tls) if(nextupd) time_print(bp, "Next OCSP Update", nextupd);
+      if (!OCSP_check_validity(thisupd, nextupd,
+	    EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
+	{
+	tls_out.ocsp = OCSP_FAILED;
+	DEBUG(D_tls) ERR_print_errors(bp);
+	log_write(0, LOG_MAIN, "Server OSCP dates invalid");
+	goto failed;
+	}
+
       DEBUG(D_tls) BIO_printf(bp, "Certificate status: %s\n",
 		    OCSP_cert_status_str(status));
       switch(status)
 	{
 	case V_OCSP_CERTSTATUS_GOOD:
-	  tls_out.ocsp = OCSP_VFIED;
-	  i = 1;
-	  goto good;
+	  continue;	/* the idx loop */
 	case V_OCSP_CERTSTATUS_REVOKED:
-	  tls_out.ocsp = OCSP_FAILED;
 	  log_write(0, LOG_MAIN, "Server certificate revoked%s%s",
 	      reason != -1 ? "; reason: " : "",
 	      reason != -1 ? OCSP_crl_reason_str(reason) : "");
 	  DEBUG(D_tls) time_print(bp, "Revocation Time", rev);
 	  break;
 	default:
-	  tls_out.ocsp = OCSP_FAILED;
 	  log_write(0, LOG_MAIN,
 	      "Server certificate status unknown, in OCSP stapling");
 	  break;
 	}
+
+      goto failed;
       }
+
+    i = 1;
+    tls_out.ocsp = OCSP_VFIED;
+    goto good;
+
   failed:
+    tls_out.ocsp = OCSP_FAILED;
     i = cbinfo->u_ocsp.client.verify_required ? 0 : 1;
   good:
     BIO_free(bp);
@@ -3904,7 +3947,7 @@ BOOL
 tls_openssl_options_parse(uschar *option_spec, long *results)
 {
 long result, item;
-uschar *end;
+uschar * exp, * end;
 uschar keep_c;
 BOOL adding, item_parsed;
 
@@ -3912,7 +3955,7 @@ BOOL adding, item_parsed;
 result = SSL_OP_NO_TICKET;
 
 /* Prior to 4.80 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
- * from default because it increases BEAST susceptibility. */
+from default because it increases BEAST susceptibility. */
 #ifdef SSL_OP_NO_SSLv2
 result |= SSL_OP_NO_SSLv2;
 #endif
@@ -3929,7 +3972,10 @@ if (!option_spec)
   return TRUE;
   }
 
-for (uschar * s = option_spec; *s; /**/)
+if (!expand_check(option_spec, US"openssl_options", &exp, &end))
+  return FALSE;
+
+for (uschar * s = exp; *s; /**/)
   {
   while (isspace(*s)) ++s;
   if (*s == '\0')

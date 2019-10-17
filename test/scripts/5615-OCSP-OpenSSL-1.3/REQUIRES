@@ -1,0 +1,4 @@
+support OpenSSL
+support OCSP
+running IPv4
+feature _HAVE_TLS1_3

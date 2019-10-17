@@ -16459,6 +16459,8 @@ and from which pipeline early-connection (before MAIL) SMTP
 commands are acceptable.
 When used, the pipelining saves on roundtrip times.
 
+See also the &%hosts_pipe_connect%& smtp transport option.
+
 Currently the option name &"X_PIPE_CONNECT"& is used.
 .wen
 
@@ -17848,12 +17850,20 @@ The ordering of the two lists must match.
 
 .new
 The file(s) should be in DER format,
-except for GnuTLS 3.6.3 or later when an optional filetype prefix
-can be used.  The prefix must be one of "DER" or "PEM", followed by
+except for GnuTLS 3.6.3 or later
+or for OpenSSL,
+when an optional filetype prefix can be used.
+The prefix must be one of "DER" or "PEM", followed by
 a single space.  If one is used it sets the format for subsequent
 files in the list; the initial format is DER.
-When a PEM format file is used it may contain multiple proofs,
-for multiple certificate chain element proofs under TLS1.3.
+If multiple proofs are wanted, for multiple chain elements
+(this only works under TLS1.3)
+they must be coded as a combined OCSP response.
+
+Although GnuTLS will accept PEM files with multiple separate
+PEM blobs (ie. separate OCSP responses), it sends them in the
+TLS Certificate record interleaved with the certificates of the chain;
+although a GnuTLS client is happy with that, an OpenSSL client is not.
 .wen
 
 .option tls_on_connect_ports main "string list" unset
@@ -24739,6 +24749,8 @@ and records are subject to the &%retry_data_expire%& option.
 When used, the pipelining saves on roundtrip times.
 It also turns SMTP into a client-first protocol
 so combines well with TCP Fast Open.
+
+See also the &%pipelining_connect_advertise_hosts%& main option.
 
 Note:
 When the facility is used, the transport &%helo_data%& option

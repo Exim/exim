@@ -75,12 +75,6 @@ do
 
 ####
 
- # so, for full-chain OCSP we sill want an OCSP resp for the Signer cert and also (?) one for the
- # CA cert itself.  The existing bits below only create for the leaf certs, next layer down.
- #
- # First test will be just adding OCSP for the Signer cert. Presumably we could use the CA cert
- # to sign that.
-
     # create OCSP reqs & resps
     CADIR=$idir/CA
 
@@ -160,11 +154,11 @@ EOF
     done
 
     # convert one good leaf-resp to PEM
-    $server=server1
+    server=server1
     RESP=$idir/$server.$iname/$server.$iname.ocsp.signernocert.good.resp
     ocsptool -S $RESP -j > $RESP.pem
 
-    # Then, ocsp request and responses for the signer cert
+    # Then, ocsp request and (valid, revoked) responses for the signer cert
     REQ=$CADIR/Signer.ocsp.req
     RESP=$CADIR/Signer.ocsp.signernocert.good.resp
     openssl ocsp -issuer $CADIR/CA.pem -sha256 -cert $CADIR/Signer.pem -no_nonce -reqout $REQ
@@ -177,11 +171,18 @@ EOF
 	-ndays 3652 -reqin $REQ -respout $RESP
     ocsptool -S $RESP -j > $RESP.pem
 
-    # Then, ocsp request and response for the CA cert
-    REQ=$CADIR/CA.ocsp.req
-    RESP=$CADIR/CA.ocsp.signernocert.good.resp
-    openssl ocsp -issuer $CADIR/CA.pem -sha256 -cert $CADIR/CA.pem -no_nonce -reqout $REQ
-    openssl ocsp $IVALID -rsigner $CADIR/CA.pem -rkey $CADIR/CA.key -CA $CADIR/CA.pem -resp_no_certs -noverify \
+    # Finally, a full-chain all-good request and response
+    REQ=$idir/$server.$iname/fullchain.ocsp.req
+    leafcert=$idir/$server.$iname/$server.$iname.pem
+    signercert=$CADIR/Signer.pem
+    cacert=$CADIR/CA.pem
+    openssl ocsp -sha256 -no_nonce -reqout $REQ \
+    	-issuer $signercert -cert $leafcert \
+    	-issuer $cacert     -cert $CADIR/Signer.pem -cert $CADIR/CA.pem
+
+    RESP=$idir/$server.$iname/fullchain.ocsp.resp
+    authorities=$idir/$server.$iname/ca_chain.pem
+    openssl ocsp $IVALID -rsigner $CADIR/CA.pem -rkey $CADIR/CA.key -CA $authorities -resp_no_certs -noverify \
 	-ndays 3652 -reqin $REQ -respout $RESP
     ocsptool -S $RESP -j > $RESP.pem
 

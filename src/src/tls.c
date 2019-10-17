@@ -399,7 +399,7 @@ if (path)
   else if (Ustrncmp(path, spool_directory, Ustrlen(spool_directory)) != 0)
     {
     DEBUG(D_tls)
-      debug_printf("removing env SSLKEYLOGFILE: not under spooldir\n");
+      debug_printf("removing env SSLKEYLOGFILE=%s: not under spooldir\n", path);
     unsetenv("SSLKEYLOGFILE");
     }
 }

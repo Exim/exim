@@ -2258,17 +2258,17 @@ post_handshake_debug(exim_gnutls_state_st * state)
 #ifdef SUPPORT_GNUTLS_SESS_DESC
 debug_printf("%s\n", gnutls_session_get_desc(state->session));
 #endif
-#ifdef SUPPORT_GNUTLS_KEYLOG
 
+#ifdef SUPPORT_GNUTLS_KEYLOG
 # ifdef EXIM_HAVE_TLS1_3
 if (gnutls_protocol_get_version(state->session) < GNUTLS_TLS1_3)
-#else
+# else
 if (TRUE)
-#endif
+# endif
   {
   gnutls_datum_t c, s;
   gstring * gc, * gs;
-  /* we only want the client random and the master secret */
+  /* For TLS1.2 we only want the client random and the master secret */
   gnutls_session_get_random(state->session, &c, &s);
   gnutls_session_get_master_secret(state->session, &s);
   gc = ddump(&c);
@@ -2281,7 +2281,8 @@ else
     " add SSLKEYLOGFILE to keep_environment in the exim config\n"
     " run exim as root\n"
     " if using sudo, add SSLKEYLOGFILE to env_keep in /etc/sudoers\n"
-    " (works for TLS1.2 also, and saves cut-paste into file)\n");
+    " (works for TLS1.2 also, and saves cut-paste into file)"
+    " Trying to use add_environment for this will not work\n");
 #endif
 }
 
