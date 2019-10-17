@@ -544,7 +544,8 @@ hctx hhash_ctx;
 const uschar * s;
 int len;
 
-if (!exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
+if (  hashtype == -1
+   || !exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
   {
   DEBUG(D_acl)
       debug_printf("ARC: hash setup error, possibly nonhandled hashtype\n");
@@ -639,7 +640,7 @@ return p;
 static pdkim_bodyhash *
 arc_ams_setup_vfy_bodyhash(arc_line * ams)
 {
-int canon_head, canon_body;
+int canon_head = -1, canon_body = -1;
 long bodylen;
 
 if (!ams->c.data) ams->c.data = US"simple";	/* RFC 6376 (DKIM) default */
@@ -745,6 +746,11 @@ if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx)))
   }
 
 hashtype = pdkim_hashname_to_hashtype(ams->a_hash.data, ams->a_hash.len);
+if (hashtype == -1)
+  {
+  DEBUG(D_acl) debug_printf("ARC i=%d AMS verify bad a_hash\n", as->instance);
+  return as->ams_verify_done = arc_state_reason = US"AMS sig nonverify";
+  }
 
 if ((errstr = exim_dkim_verify(&vctx,
 	  pdkim_hashes[hashtype].exim_hashmethod, &hhash, &sighash)))
@@ -871,7 +877,8 @@ if (  as->instance == 1 && !arc_cv_match(hdr_as, US"none")
 
 hashtype = pdkim_hashname_to_hashtype(hdr_as->a_hash.data, hdr_as->a_hash.len);
 
-if (!exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
+if (  hashtype == -1
+   || !exim_sha_init(&hhash_ctx, pdkim_hashes[hashtype].exim_hashmethod))
   {
   DEBUG(D_acl)
       debug_printf("ARC: hash setup error, possibly nonhandled hashtype\n");
@@ -965,8 +972,6 @@ if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx)))
   DEBUG(D_acl) debug_printf("ARC verify init: %s\n", errstr);
   return US"fail";
   }
-
-hashtype = pdkim_hashname_to_hashtype(hdr_as->a_hash.data, hdr_as->a_hash.len);
 
 if ((errstr = exim_dkim_verify(&vctx,
 	      pdkim_hashes[hashtype].exim_hashmethod,
@@ -1738,7 +1743,13 @@ memset(&al, 0, sizeof(arc_line));
 if ((errstr = arc_parse_line(&al, &h, ARC_HDRLEN_AMS, FALSE)))
   {
   DEBUG(D_acl) if (errstr) debug_printf("ARC: %s\n", errstr);
-  return US"line parsing error";
+  goto badline;
+  }
+
+if (!al.a_hash.data)
+  {
+  DEBUG(D_acl) debug_printf("ARC: no a_hash from '%.*s'\n", h.slen, h.text);
+  goto badline;
   }
 
 /* defaults */
@@ -1757,6 +1768,9 @@ if (!(b = arc_ams_setup_vfy_bodyhash(&al)))
 should have been created here. */
 
 return NULL;
+
+badline:
+  return US"line parsing error";
 }
 
 

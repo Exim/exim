@@ -2029,6 +2029,8 @@ pdkim_set_bodyhash(pdkim_ctx * ctx, int hashtype, int canon_method,
 {
 pdkim_bodyhash * b;
 
+if (hashtype == -1 || canon_method == -1) return NULL;
+
 for (b = ctx->bodyhash; b; b = b->next)
   if (  hashtype == b->hashtype
      && canon_method == b->canon_method
