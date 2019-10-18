@@ -494,12 +494,12 @@ SUPPORT_DANE=yes
 #------------------------------------------------------------------------------
 # Compiling the Exim monitor: If you want to compile the Exim monitor, a
 # program that requires an X11 display, then EXIM_MONITOR should be set to the
-# value "eximon.bin". Comment out this setting to disable compilation of the
+# value "eximon.bin". De-comment this setting to enable compilation of the
 # monitor. The locations of various X11 directories for libraries and include
 # files are defaulted in the OS/Makefile-Default file, but can be overridden in
 # local OS-specific make files.
 
-EXIM_MONITOR=eximon.bin
+# EXIM_MONITOR=eximon.bin
 
 
 #------------------------------------------------------------------------------
