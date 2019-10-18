@@ -486,7 +486,7 @@ __
 
         # See also environment variables set in main, tuning compression levels
 
-        my (%size, %sha256);
+        my (%size, %sha256, %sha512);
 
         foreach my $dir ( glob( catdir( $pkg_trees, ( 'exim*-' . $context->{v}{release} ) ) ) ) {
             my $dirname = ( splitdir($dir) )[-1];
@@ -506,24 +506,30 @@ __
 
                 # calculate size and md5sum
                 $size{$basename} = -s $outfile;
-                $sha256{$basename} = do {
-                    my $sha = Digest::SHA->new(256);
-                    $sha->addfile($outfile);
-                    $sha->hexdigest;
-                };
+                $sha256{$basename} = Digest::SHA->new(256)->addfile($outfile)->hexdigest;
+                $sha512{$basename} = Digest::SHA->new(512)->addfile($outfile)->hexdigest;
             }
         }
 
         # write the sizes file
         if ($context->{sizes}) {
-            open my $sizes, '>', $_ = catfile $pkg_tars, 'sizes.txt'
-                or die "$ME: Can't open `$_': $!\n";
+            for ([ sizes => 'SIZE' => \%size ],
+                 [ sha256sums => 'SHA256' => \%sha256 ],
+                 [ sha512sums => 'SHA512' => \%sha512 ]) {
 
-            print $sizes join "\n",
-                (map { "SIZE($_) = $size{$_}" } sort keys %size),
-                (map { "SHA256($_) = $sha256{$_}" } sort keys %sha256);
+                my $outfile = catfile $pkg_tars, "00-$_->[0].txt";
+                my $tag = $_->[1];
+                my $sizes = $_->[2];
 
-            close($sizes) or die "$ME: Can't close $_: $!\n";
+                open my $out, '>', $outfile
+                    or die "$ME: Can't open `$outfile': $!\n";
+
+                print $out join "\n",
+                    (map { "$tag ($_) = $sizes->{$_}" } sort keys %$sizes),
+                    '';
+
+                close($out) or die "$ME: Can't close $outfile: $!\n";
+            }
         }
     }
 
