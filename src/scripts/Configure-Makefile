@@ -165,7 +165,7 @@ then
         eval "pc_value=\"\$$var\""
         need_this=''
         need_core=''
-        if [ ".$SUPPORT_TLS" = "." ]; then
+        if [ ".$DISABLE_TLS" = .yes ]; then
           # no TLS, not referencing
           true
         elif [ ".$var" = ".USE_GNUTLS_PC" ] && [ ".$USE_GNUTLS" != "." ]; then
