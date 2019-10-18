@@ -288,10 +288,12 @@ unknown in "+never_localparts : +n2_localparts : !+local_localparts"? yes (end o
 calling r2 router
 r2 router called for unknown@test.ex
   domain = test.ex
+test.ex in "*"? yes (matched "*")
 DNS lookup of test.ex (MX) using fakens
 DNS lookup of test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for test.ex-MX-xxxx, ttl 3000
+test.ex MX DNSSEC
 DNS lookup of test.ex (A) using fakens
 DNS lookup of test.ex (A) gave NO_DATA
 returning DNS_NODATA

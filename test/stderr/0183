@@ -30,11 +30,13 @@ userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@test.again.dns
   domain = test.again.dns
+test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns (MX) using fakens
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
  writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
+test.again.dns MX DNSSEC
 lookuphost router: defer for userx@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -60,7 +62,9 @@ abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@test.again.dns
   domain = test.again.dns
+test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns-MX: using cached value DNS_AGAIN
+test.again.dns MX DNSSEC
 lookuphost router: defer for abcd@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -86,10 +90,12 @@ abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -128,6 +134,7 @@ expanded list of hosts = 'test.again.dns' options = 'bydns'
 set transport smtp
 finding IP address for test.again.dns
 doing DNS lookup
+test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns (A) using fakens
 DNS lookup of test.again.dns (A) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
@@ -159,6 +166,7 @@ original list of hosts = '$domain' options = 'bydns'
 expanded list of hosts = 'test.again.dns' options = 'bydns'
 finding IP address for test.again.dns
 doing DNS lookup
+test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns-A: using cached value DNS_AGAIN
 useryz router: defer for userz@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
@@ -185,7 +193,9 @@ xyz in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -232,10 +242,12 @@ userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@test.fail.dns
   domain = test.fail.dns
+test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
+test.fail.dns MX DNSSEC
 lookuphost router: defer for userx@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -261,7 +273,9 @@ abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@test.fail.dns
   domain = test.fail.dns
+test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns-MX: using cached value DNS_FAIL
+test.fail.dns MX DNSSEC
 lookuphost router: defer for abcd@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -287,10 +301,12 @@ abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -329,6 +345,7 @@ expanded list of hosts = 'test.fail.dns' options = 'bydns'
 set transport smtp
 finding IP address for test.fail.dns
 doing DNS lookup
+test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns (A) using fakens
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
@@ -359,6 +376,7 @@ original list of hosts = '$domain' options = 'bydns'
 expanded list of hosts = 'test.fail.dns' options = 'bydns'
 finding IP address for test.fail.dns
 doing DNS lookup
+test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns-A: using cached value DNS_FAIL
 useryz router: defer for userz@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
@@ -385,7 +403,9 @@ xyz in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -432,6 +452,7 @@ userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@nonexist.test.ex
   domain = nonexist.test.ex
+nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex (MX) using fakens
 DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -462,7 +483,9 @@ abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@nonexist.test.ex
   domain = nonexist.test.ex
+nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex-MX: using cached value DNS_NOMATCH
+nonexist.test.ex MX DNSSEC
 lookuphost router declined for abcd@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -489,10 +512,12 @@ abcd in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for abcd@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -531,6 +556,7 @@ expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
 set transport smtp
 finding IP address for nonexist.test.ex
 doing DNS lookup
+nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex (A) using fakens
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -561,6 +587,7 @@ original list of hosts = '$domain' options = 'bydns'
 expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
 finding IP address for nonexist.test.ex
 doing DNS lookup
+nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex-A: using cached value DNS_NOMATCH
 useryz router: defer for userz@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
@@ -587,7 +614,9 @@ xyz in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -624,6 +653,7 @@ srv in "^srv"? yes (matched "^srv")
 calling srv router
 srv router called for srv@test.again.dns
   domain = test.again.dns
+test.again.dns in "*"? yes (matched "*")
 DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
 _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
@@ -645,6 +675,7 @@ srv in "^srv"? yes (matched "^srv")
 calling srv router
 srv router called for srv@test.fail.dns
   domain = test.fail.dns
+test.fail.dns in "*"? yes (matched "*")
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
 returning DNS_FAIL
@@ -655,6 +686,7 @@ DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
+test.fail.dns MX DNSSEC
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
 DNS lookup of test.fail.dns (A) using fakens
@@ -697,6 +729,7 @@ userx in "!userd"? yes (end of list)
 calling lookuphost router
 lookuphost router called for userx@nonexist.example.com
   domain = nonexist.example.com
+nonexist.example.com in "*"? yes (matched "*")
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -738,6 +771,7 @@ checking "condition" "${acl {delay}}"...
 calling delay router
 delay router called for userd@nonexist.example.com
   domain = nonexist.example.com
+nonexist.example.com in "*"? yes (matched "*")
 DNS lookup of nonexist.example.com-MX: cached value DNS_NOMATCH past valid time
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND

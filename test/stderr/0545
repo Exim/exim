@@ -18,6 +18,7 @@ local_part=userx domain=alias-eximtesthost
 calling dns router
 dns router called for userx@alias-eximtesthost
   domain = alias-eximtesthost
+alias-eximtesthost in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost (MX) using fakens
 DNS lookup of alias-eximtesthost (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -25,6 +26,7 @@ DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
+alias-eximtesthost MX DNSSEC
 DNS lookup of alias-eximtesthost (A) using fakens
 DNS lookup of alias-eximtesthost (A) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -45,6 +47,7 @@ local_part=userx domain=alias-eximtesthost.test.ex
 calling dns router
 dns router called for userx@alias-eximtesthost.test.ex
   domain = alias-eximtesthost.test.ex
+alias-eximtesthost.test.ex in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -89,6 +92,7 @@ local_part=userx domain=alias-eximtesthost.test.ex
 calling dns router
 dns router called for userx@alias-eximtesthost.test.ex
   domain = alias-eximtesthost.test.ex
+alias-eximtesthost.test.ex in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -96,6 +100,7 @@ DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
+alias-eximtesthost.test.ex MX DNSSEC
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex

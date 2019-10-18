@@ -22,6 +22,7 @@ mxt13.test.ex in "! +local_domains"? yes (end of list)
 calling dnslookup router
 dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
+mxt13.test.ex in "*"? yes (matched "*")
 DNS lookup of mxt13.test.ex (MX) using fakens
 DNS lookup of mxt13.test.ex (MX) succeeded
 DNS lookup of other1.test.ex (A) using fakens
@@ -46,6 +47,6 @@ domain = mxt13.test.ex
 routed by dnslookup router
   envelope to: k@mxt13.test.ex
   transport: smtp
-  host other1.test.ex [V4NET.12.4.5] MX=4
+  host other1.test.ex [V4NET.12.4.5] MX=4 dnssec=no
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

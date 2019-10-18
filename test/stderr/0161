@@ -23,7 +23,7 @@ domain = mxt6.test.ex
 routed by lookuphost router
   envelope to: xx@mxt6.test.ex
   transport: remote_smtp
-  host ten-1.test.ex [V4NET.0.0.1] MX=5
+  host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config

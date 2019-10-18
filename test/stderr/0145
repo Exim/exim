@@ -12,6 +12,7 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
 >>> calling domainlist router
+>>> mxt10.test.ex in "*"? yes (matched "*")
 >>> domainlist router declined for x@mxt10.test.ex
 >>> "more" is false: skipping remaining routers
 >>> no more routers
@@ -34,6 +35,7 @@ LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify fail
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling domainlist router
+>>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by domainlist router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
@@ -42,6 +44,7 @@ LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify fail
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt10.test.ex
 >>> calling domainlist router
+>>> mxt10.test.ex in "*"? yes (matched "*")
 >>> domainlist router declined for x@mxt10.test.ex
 >>> "more" is false: skipping remaining routers
 >>> no more routers

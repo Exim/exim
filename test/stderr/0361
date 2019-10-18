@@ -96,15 +96,18 @@ recurse.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? yes (end of l
 calling r1 router
 r1 router called for kilos@recurse.test.ex
   domain = recurse.test.ex
+recurse.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
  writing neg-cache entry for recurse.test.ex-MX-xxxx, ttl 3000
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
+recurse.test.ex.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for recurse.test.ex.test.ex-MX-xxxx, ttl 3000
+recurse.test.ex.test.ex MX DNSSEC
 DNS lookup of recurse.test.ex.test.ex (A) using fakens
 DNS lookup of recurse.test.ex.test.ex (A) succeeded
 fully qualified name = recurse.test.ex.test.ex

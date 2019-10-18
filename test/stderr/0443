@@ -12,6 +12,7 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling r1 router
+>>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by r1 router
 >>> Attempting full verification using callout
 >>> callout cache: no domain record found for ten-1.test.ex

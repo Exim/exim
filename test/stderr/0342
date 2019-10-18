@@ -13,10 +13,12 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1
 >>> calling dnslookup router
+>>> ten-1 in "*"? yes (matched "*")
 >>> re-routed to x@ten-1.test.ex
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@ten-1.test.ex
 >>> calling dnslookup router
+>>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by dnslookup router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_rcpt"

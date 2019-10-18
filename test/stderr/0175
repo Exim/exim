@@ -81,6 +81,7 @@ LOG: H=[V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender 
 >>> fail_sender2 router declined for user@ten-1.test.ex
 >>> ten-1.test.ex in "! +local_domains"? yes (end of list)
 >>> calling lookuphost router
+>>> ten-1.test.ex in "*"? yes (matched "*")
 >>> routed by lookuphost router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"

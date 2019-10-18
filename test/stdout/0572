@@ -41,7 +41,7 @@ data_timeout = 5m
 delay_after_cutoff
 dns_qualify_single
 no_dns_search_parents
-dnssec_request_domains = 
+dnssec_request_domains = *
 dnssec_require_domains = 
 dscp = 
 fallback_hosts = 

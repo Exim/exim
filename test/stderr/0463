@@ -25,10 +25,12 @@ ten-1 in "!@mx_any"? yes (end of list)
 calling all router
 all router called for x@ten-1
   domain = ten-1
+ten-1 in "*"? yes (matched "*")
 DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
+ten-1 MX DNSSEC
 DNS lookup of ten-1 (A) using fakens
 DNS lookup of ten-1 (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -52,10 +54,12 @@ ten-1.test.ex in "!@mx_any"? yes (end of list)
 calling all router
 all router called for x@ten-1.test.ex
   domain = ten-1.test.ex
+ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
+ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex

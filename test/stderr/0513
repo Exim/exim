@@ -16,6 +16,7 @@
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing x@mxt2.test.ex
 >>> calling r1 router
+>>> mxt2.test.ex in "*"? yes (matched "*")
 >>> r1 router declined for x@mxt2.test.ex
 >>> no more routers
 >>> ----------- end verify ------------

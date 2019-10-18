@@ -23,7 +23,7 @@ no_check_local_user
 condition = 
 debug_print = 
 no_disable_logging
-dnssec_request_domains = 
+dnssec_request_domains = *
 dnssec_require_domains = 
 domains = 
 driver = accept

@@ -15,6 +15,7 @@
 >>> calling skipped router
 >>> skipped router declined for userx@test.again.dns
 >>> calling temp router
+>>> test.again.dns in "*"? yes (matched "*")
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> temp router: defer for userx@test.again.dns
 >>>   message: host lookup did not complete
@@ -36,6 +37,7 @@ LOG: H=[1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.again.d
 >>> routing r1-userx@test.again.dns
 >>> test.again.dns in "!testdb;fail"? yes (end of list)
 >>> calling r1 router
+>>> test.again.dns in "*"? yes (matched "*")
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
 >>> r1 router: defer for r1-userx@test.again.dns
 >>>   message: host lookup did not complete

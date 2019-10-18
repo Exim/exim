@@ -18,6 +18,7 @@ local_part=x domain=mxt1c.test.ex
 calling r1 router
 r1 router called for x@mxt1c.test.ex
   domain = mxt1c.test.ex
+mxt1c.test.ex in "*"? yes (matched "*")
 DNS lookup of mxt1c.test.ex (MX) using fakens
 DNS lookup of mxt1c.test.ex (MX) succeeded
 DNS lookup of dontqualify (A) using fakens
