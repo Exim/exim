@@ -146,6 +146,31 @@ QUIT
 ****
 #
 #
+# Server rejects RCPT.  Client should not proceed to BDAT.
+server PORT_S
+220 Greetings
+EHLO
+250-Hello there
+250 CHUNKING
+MAIL FROM
+250 OK
+RCPT TO
+550 sorry, no
+QUIT
+****
+sudo exim -odf -bS
+EHLO test
+MAIL FROM:<sender@source.dom>
+RCPT TO:<ebad@test.ex>
+DATA
+Subject: foo
+
+data
+.
+QUIT
+****
+#
+#
 ###################################################
 #
 # Pipelined cases

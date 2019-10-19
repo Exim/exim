@@ -192,6 +192,11 @@ JH/41 With GnuTLS 3.6.0 (and later) do not attempt to manage Diffie-Hellman
 
 HS/06 Change the default of dnssec_request_domains to "*"
 
+JH/42 Bug 2545: Fix CHUNKING for all RCPT commands rejected.  Previously we
+      carried on and emitted a BDAT command, even when PIPELINING was not
+      active.
+
+
 Exim version 4.92
 -----------------
 
