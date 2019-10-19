@@ -5024,9 +5024,10 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   /* Otherwise, if we are running in the test harness, wait a bit, to let the
   newly created process get going before we create another process. This should
-  ensure repeatability in the tests. We only need to wait a tad. */
+  ensure repeatability in the tests. Wait long enough for most cases to complete
+  the transport. */
 
-  else testharness_pause_ms(500);
+  else testharness_pause_ms(600);
 
   continue;
 
