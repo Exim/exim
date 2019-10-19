@@ -3517,14 +3517,14 @@ a store reset there, so use POOL_PERM. */
 
 if ((more || corked))
   {
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   int save_pool = store_pool;
   store_pool = POOL_PERM;
 #endif
 
   corked = string_catn(corked, buff, len);
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   store_pool = save_pool;
 #endif
 

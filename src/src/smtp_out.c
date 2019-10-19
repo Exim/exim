@@ -717,7 +717,7 @@ time_t timelimit = time(NULL) + timeout;
 
 errno = 0;  /* Ensure errno starts out zero */
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 if (sx->pending_BANNER || sx->pending_EHLO)
   {
   int rc;

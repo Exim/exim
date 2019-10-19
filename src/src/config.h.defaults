@@ -50,6 +50,7 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_DKIM
 #define DISABLE_EVENT
 #define DISABLE_OCSP
+#define DISABLE_PIPE_CONNECT
 #define DISABLE_PRDR
 #define DISABLE_TLS
 #define DISABLE_D_OPTION
@@ -151,7 +152,6 @@ Do not put spaces between # and the 'define'.
 #define SUPPORT_MAILSTORE
 #define SUPPORT_MBX
 #define SUPPORT_MOVE_FROZEN_MESSAGES
-#define SUPPORT_PIPE_CONNECT
 #define SUPPORT_PAM
 #define SUPPORT_PROXY
 #define SUPPORT_SOCKS

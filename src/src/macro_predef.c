@@ -161,7 +161,7 @@ due to conflicts with other common macros. */
 #ifndef DISABLE_OCSP
   builtin_macro_create(US"_HAVE_OCSP");
 #endif
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   builtin_macro_create(US"_HAVE_PIPE_CONNECT");
 #endif
 #ifndef DISABLE_PRDR

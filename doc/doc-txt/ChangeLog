@@ -12,6 +12,8 @@ JH/01 Avoid costly startup code when not strictly needed.  This reduces time
       for some exim process initialisations.  It does mean that the logging
       of TLS configuration problems is only done for the daemon startup.
 
+JH/02 Early-pipelining support code is now included unless disabled in Makefile.
+
 
 Exim version 4.93
 -----------------

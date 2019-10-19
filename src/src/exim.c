@@ -901,7 +901,7 @@ fprintf(fp, "Support for:");
 #ifndef DISABLE_OCSP
   fprintf(fp, " OCSP");
 #endif
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   fprintf(fp, " PIPE_CONNECT");
 #endif
 #ifndef DISABLE_PRDR

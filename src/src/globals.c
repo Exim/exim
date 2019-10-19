@@ -298,7 +298,7 @@ struct global_flags f =
 	.sender_name_forced     = FALSE,
 	.sender_set_untrusted   = FALSE,
 	.smtp_authenticated     = FALSE,
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	.smtp_in_early_pipe_advertised = FALSE,
 	.smtp_in_early_pipe_no_auth = FALSE,
 	.smtp_in_early_pipe_used = FALSE,
@@ -1168,7 +1168,7 @@ uschar *override_pid_file_path = NULL;
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 uschar *pipe_connect_advertise_hosts = US"*";
 #endif
 uschar *pipelining_advertise_hosts = US"*";
@@ -1258,7 +1258,7 @@ const pcre *regex_From         = NULL;
 const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 const pcre *regex_EARLY_PIPE   = NULL;
 #endif
 const pcre *regex_ismsgid      = NULL;

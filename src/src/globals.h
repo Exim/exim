@@ -258,7 +258,7 @@ extern struct global_flags {
  BOOL   sender_name_forced		:1; /* Set by -F */
  BOOL   sender_set_untrusted		:1; /* Sender set by untrusted caller */
  BOOL   smtp_authenticated		:1; /* Sending client has authenticated */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
  BOOL   smtp_in_early_pipe_advertised	:1; /* server advertised PIPE_CONNECT */
  BOOL	smtp_in_early_pipe_no_auth	:1; /* too many authenticator names */
  BOOL   smtp_in_early_pipe_used		:1; /* client did send early data */
@@ -750,7 +750,7 @@ extern uschar *override_pid_file_path; /* Value of -oP argument */
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 extern uschar *pipe_connect_advertise_hosts; /* for banner/EHLO pipelining */
 #endif
 extern uschar *pipelining_advertise_hosts; /* As it says */
@@ -833,7 +833,7 @@ extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 extern const pcre  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 #endif
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */

@@ -1221,7 +1221,7 @@ else
     {
     if (testflag(addr, af_pipelining))
       g = string_catn(g, US" L", 2);
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
     if (testflag(addr, af_early_pipe))
       g = string_catn(g, US"*", 1);
 #endif
@@ -3533,7 +3533,7 @@ while (!done)
     case 'L':
       switch (*subid)
 	{
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	case 2: setflag(addr, af_early_pipe);	/*FALLTHROUGH*/
 #endif
 	case 1: setflag(addr, af_pipelining); break;
@@ -4840,7 +4840,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #endif
 
       if (testflag(addr, af_pipelining))
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	if (testflag(addr, af_early_pipe))
 	  rmt_dlv_checked_write(fd, 'L', '2', NULL, 0);
 	else
