@@ -4,6 +4,14 @@ This document describes *changes* to previous versions, that might
 affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
+Exim version 4.92.3
+-------------------
+
+JH/42 Bug 2545: Fix CHUNKING for all RCPT commands rejected.  Previously we
+      carried on and emitted a BDAT command, even when PIPELINING was not
+      active.
+
+
 Exim version 4.92.2
 -------------------
 

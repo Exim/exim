@@ -78,6 +78,18 @@ Connection request from [127.0.0.1]
 220 Greetings
 EHLO testhost.test.ex
 250-Hello there
+250 CHUNKING
+MAIL FROM:<>
+250 OK
+RCPT TO:<ebad@test.ex>
+550 sorry, no
+QUIT
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Greetings
+EHLO testhost.test.ex
+250-Hello there
 250-PIPELINING
 250 CHUNKING
 MAIL FROM:<>
