@@ -199,10 +199,12 @@ we can use an inlined implementation in the compiles of the main Exim files,
 with the original name. */
 
 # define string_copy(s) string_copy_function(s)
-# define string_copyn(s, n) string_copyn_function(s, n)
+# define string_copyn(s, n) string_copyn_function((s), (n))
+# define string_copy_taint(s, t) string_copy_taint_function((s), (t))
 
 extern uschar * string_copy_function(const uschar *);
 extern uschar * string_copyn_function(const uschar *);
+extern uschar * string_copy_taint_function(const uschar *);
 #endif
 
 /* End of local_scan.h */

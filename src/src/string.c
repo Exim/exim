@@ -411,7 +411,7 @@ return ss;
 
 
 
-#ifdef HAVE_LOCAL_SCAN
+#if defined(HAVE_LOCAL_SCAN) && !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 /*************************************************
 *            Copy and save string                *
 *************************************************/
@@ -432,7 +432,7 @@ As above, but explicitly specifying the result taint status
 */
 
 uschar *
-string_copy_taint(const uschar * s, BOOL tainted)
+string_copy_taint_function(const uschar * s, BOOL tainted)
 {
 int len = Ustrlen(s) + 1;
 uschar *ss = store_get(len, tainted);
