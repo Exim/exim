@@ -1276,8 +1276,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /in tls_resumption_hosts\?/;
 
     # Most builds are without HAVE_LOCAL_SCAN
-    next if /^calling local_scan(); timeout=300$/;
-    next if /^local_scan() returned 0 NULL$/;
+    next if /^calling local_scan\(\); timeout=300$/;
+    next if /^local_scan\(\) returned 0 NULL$/;
 
     # Platform differences in errno strings
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
