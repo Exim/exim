@@ -1841,13 +1841,13 @@ OCSP_RESPONSE * rsp;
 OCSP_BASICRESP * bs;
 int i;
 
-DEBUG(D_tls) debug_printf("Received TLS status response (OCSP stapling):\n");
+DEBUG(D_tls) debug_printf("Received TLS status callback (OCSP stapling):\n");
 len = SSL_get_tlsext_status_ocsp_resp(s, &p);
 if(!p)
  {
   /* Expect this when we requested ocsp but got none */
   if (cbinfo->u_ocsp.client.verify_required && LOGGING(tls_cipher))
-    log_write(0, LOG_MAIN, "Received TLS status callback, null content");
+    log_write(0, LOG_MAIN, "Required TLS certificate status not received");
   else
     DEBUG(D_tls) debug_printf(" null\n");
   return cbinfo->u_ocsp.client.verify_required ? 0 : 1;
