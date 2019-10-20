@@ -1,0 +1,4 @@
+support GnuTLS
+support OCSP
+running IPv4
+feature _HAVE_TLS_OCSP_LIST
