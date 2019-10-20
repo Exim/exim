@@ -1886,11 +1886,10 @@ to your &_Local/Makefile_& and rebuild Exim.
 .section "Including TLS/SSL encryption support" "SECTinctlsssl"
 .cindex "TLS" "including support for TLS"
 .cindex "encryption" "including support for"
-.cindex "SUPPORT_TLS"
 .cindex "OpenSSL" "building Exim with"
 .cindex "GnuTLS" "building Exim with"
-Exim can be built to support encrypted SMTP connections, using the STARTTLS
-command as per RFC 2487. It can also support legacy clients that expect to
+Exim is usually built to support encrypted SMTP connections, using the STARTTLS
+command as per RFC 2487. It can also support clients that expect to
 start a TLS session immediately on connection to a non-standard port (see the
 &%tls_on_connect_ports%& runtime option and the &%-tls-on-connect%& command
 line option).
@@ -1899,35 +1898,41 @@ If you want to build Exim with TLS support, you must first install either the
 OpenSSL or GnuTLS library. There is no cryptographic code in Exim itself for
 implementing SSL.
 
+.new
+If you do not want TLS support you should set
+.code
+DISABLE_TLS=yes
+.endd
+in &_Local/Makefile_&.
+.wen
+
 If OpenSSL is installed, you should set
 .code
-SUPPORT_TLS=yes
+USE_OPENSL=yes
 TLS_LIBS=-lssl -lcrypto
 .endd
 in &_Local/Makefile_&. You may also need to specify the locations of the
 OpenSSL library and include files. For example:
 .code
-SUPPORT_TLS=yes
+USE_OPENSL=yes
 TLS_LIBS=-L/usr/local/openssl/lib -lssl -lcrypto
 TLS_INCLUDE=-I/usr/local/openssl/include/
 .endd
 .cindex "pkg-config" "OpenSSL"
 If you have &'pkg-config'& available, then instead you can just use:
 .code
-SUPPORT_TLS=yes
+USE_OPENSL=yes
 USE_OPENSSL_PC=openssl
 .endd
 .cindex "USE_GNUTLS"
 If GnuTLS is installed, you should set
 .code
-SUPPORT_TLS=yes
 USE_GNUTLS=yes
 TLS_LIBS=-lgnutls -ltasn1 -lgcrypt
 .endd
 in &_Local/Makefile_&, and again you may need to specify the locations of the
 library and include files. For example:
 .code
-SUPPORT_TLS=yes
 USE_GNUTLS=yes
 TLS_LIBS=-L/usr/gnu/lib -lgnutls -ltasn1 -lgcrypt
 TLS_INCLUDE=-I/usr/gnu/include
@@ -1935,7 +1940,6 @@ TLS_INCLUDE=-I/usr/gnu/include
 .cindex "pkg-config" "GnuTLS"
 If you have &'pkg-config'& available, then instead you can just use:
 .code
-SUPPORT_TLS=yes
 USE_GNUTLS=yes
 USE_GNUTLS_PC=gnutls
 .endd
@@ -28032,11 +28036,8 @@ to use GnuTLS, you need to set
 .code
 USE_GNUTLS=yes
 .endd
-in Local/Makefile, in addition to
-.code
-SUPPORT_TLS=yes
-.endd
-You must also set TLS_LIBS and TLS_INCLUDE appropriately, so that the
+in Local/Makefile
+you must also set TLS_LIBS and TLS_INCLUDE appropriately, so that the
 include files and libraries for GnuTLS can be found.
 
 There are some differences in usage when using GnuTLS instead of OpenSSL:
