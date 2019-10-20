@@ -74,6 +74,12 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # define GNUTLS_AUTO_GLOBAL_INIT
 # define GNUTLS_AUTO_PKCS11_MANUAL
 #endif
+#if (GNUTLS_VERSION_NUMBER >= 0x030404) \
+  || (GNUTLS_VERSION_NUMBER >= 0x030311) && (GNUTLS_VERSION_NUMBER & 0xffff00 == 0x030300)
+# ifndef DISABLE_OCSP
+#  define EXIM_HAVE_OCSP
+# endif
+#endif
 #if GNUTLS_VERSION_NUMBER >= 0x030500
 # define SUPPORT_GNUTLS_KEYLOG
 #endif
@@ -126,6 +132,12 @@ builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
 # endif
 # ifdef EXIM_HAVE_TLS1_3
 builtin_macro_create(US"_HAVE_TLS1_3");
+# endif
+# ifdef EXIM_HAVE_OCSP
+builtin_macro_create(US"_HAVE_TLS_OCSP");
+# endif
+# ifdef SUPPORT_SRV_OCSP_STACK
+builtin_macro_create(US"_HAVE_TLS_OCSP_LIST");
 # endif
 }
 #else

@@ -76,6 +76,9 @@ change this guard and punt the issue for a while longer. */
 #  define EXIM_HAVE_SESSION_TICKET
 #  define EXIM_HAVE_OPESSL_TRACE
 #  define EXIM_HAVE_OPESSL_GET0_SERIAL
+#  ifndef DISABLE_OCSP
+#   define EXIM_HAVE_OCSP
+#  endif
 # else
 #  define EXIM_NEED_OPENSSL_INIT
 # endif
@@ -102,6 +105,8 @@ change this guard and punt the issue for a while longer. */
 #  define OPENSSL_HAVE_KEYLOG_CB
 #  define OPENSSL_HAVE_NUM_TICKETS
 #  define EXIM_HAVE_OPENSSL_CIPHER_STD_NAME
+# else
+#  define OPENSSL_BAD_SRVR_OURCERT
 # endif
 #endif
 
@@ -265,6 +270,13 @@ builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
 # endif
 # ifdef SSL_OP_NO_TLSv1_3
 builtin_macro_create(US"_HAVE_TLS1_3");
+# endif
+# ifdef OPENSSL_BAD_SRVR_OURCERT
+builtin_macro_create(US"_TLS_BAD_MULTICERT_IN_OURCERT");
+# endif
+# ifdef EXIM_HAVE_OCSP
+builtin_macro_create(US"_HAVE_TLS_OCSP");
+builtin_macro_create(US"_HAVE_TLS_OCSP_LIST");
 # endif
 }
 #else

@@ -13354,6 +13354,9 @@ or a &%def%& condition.
 &*Note*&: Under versions of OpenSSL preceding 1.1.1,
 when a list of more than one
 file is used for &%tls_certificate%&, this variable is not reliable.
+.new
+The macro "_TLS_BAD_MULTICERT_IN_OURCERT" will be defined for those versions.
+.wen
 
 .vitem &$tls_in_peercert$&
 .vindex "&$tls_in_peercert$&"
@@ -17686,9 +17689,9 @@ separator in the usual way (&<<SECTlistsepchange>>&) to avoid confusion under IP
 &*Note*&: Under versions of OpenSSL preceding 1.1.1,
 when a list of more than one
 file is used, the &$tls_in_ourcert$& variable is unreliable.
-
-&*Note*&: OCSP stapling is not usable under OpenSSL
-when a list of more than one file is used.
+.new
+The macro "_TLS_BAD_MULTICERT_IN_OURCERT" will be defined for those versions.
+.wen
 
 If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
@@ -17841,6 +17844,9 @@ status proof for the server's certificate, as obtained from the
 Certificate Authority.
 
 Usable for GnuTLS 3.4.4 or 3.3.17 or OpenSSL 1.1.0 (or later).
+.new
+The macro "_HAVE_TLS_OCSP" will be defined for those versions.
+.wen
 
 .new
 For OpenSSL 1.1.0 or later, and
@@ -17848,6 +17854,9 @@ For OpenSSL 1.1.0 or later, and
 for GnuTLS 3.5.6 or later the expanded value of this option can be a list
 of files, to match a list given for the &%tls_certificate%& option.
 The ordering of the two lists must match.
+.new
+The macro "_HAVE_TLS_OCSP_LIST" will be defined for those versions.
+.wen
 
 .new
 The file(s) should be in DER format,
