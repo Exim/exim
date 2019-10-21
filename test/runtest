@@ -1102,6 +1102,17 @@ RESET_AFTER_EXTRA_LINE_READ:
       next;
       }
 
+    # Non-TLS bulds have a different Recieved: header expansion
+    s/^((.*)\t}}}}by \$primary_hostname \${if def:received_protocol {with \$received_protocol }})\(Exim \$version_number\)$/$1\${if def:tls_in_cipher_std { tls \$tls_in_cipher_std\n$2\t}}(Exim \$version_number)/;
+    s/^((\s*).*considering: with \$received_protocol }})\(Exim \$version_number\)$/$1\${if def:tls_in_cipher_std { tls \$tls_in_cipher_std\n$2\t}}(Exim \$version_number)/;
+    if (/condition: def:tls_in_cipher_std$/)
+      {
+      $_= <IN>; $_= <IN>; $_= <IN>; $_= <IN>;
+      $_= <IN>; $_= <IN>; $_= <IN>; $_= <IN>;
+      $_= <IN>; $_= <IN>; $_= <IN>; next;
+      }
+
+
     # Skip tls_advertise_hosts and hosts_require_tls checks when the options
     # are unset, because tls ain't always there.
 
