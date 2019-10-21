@@ -2347,7 +2347,11 @@ if (tlsp->peercert)
     for resumption next to the TLS session, and used here. */
 
     if (!tlsp->verify_override)
-      tlsp->certificate_verified = SSL_get_verify_result(ssl) == X509_V_OK;
+      tlsp->certificate_verified =
+#ifdef SUPPORT_DANE
+	tlsp->dane_verified ||
+#endif
+	SSL_get_verify_result(ssl) == X509_V_OK;
     }
 }
 
@@ -2720,7 +2724,7 @@ if (rc <= 0)
     case SSL_ERROR_SSL:
       {
       uschar * s = US"SSL_accept";
-      ulong e = ERR_peek_error();
+      unsigned long e = ERR_peek_error();
       if (ERR_GET_REASON(e) == SSL_R_WRONG_VERSION_NUMBER)
 	s = string_sprintf("%s (%s)", s, SSL_get_version(server_ssl));
       (void) tls_error(s, NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
