@@ -94,6 +94,7 @@ string_interpret_escape(const uschar **pp)
 int ch;
 const uschar *p = *pp;
 ch = *(++p);
+if (ch == '\0') return **pp;
 if (isdigit(ch) && ch != '8' && ch != '9')
   {
   ch -= '0';

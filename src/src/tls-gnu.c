@@ -2569,8 +2569,9 @@ void
 tls_close(void * ct_ctx, int shutdown)
 {
 exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
+tls_support * tlsp = state->tlsp;
 
-if (!state->tlsp || state->tlsp->active.sock < 0) return;  /* TLS was not active */
+if (!tlsp || tlsp->active.sock < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
@@ -2582,12 +2583,26 @@ if (shutdown)
   ALARM_CLR(0);
   }
 
+if (!ct_ctx)	/* server */
+  {
+  receive_getc =	smtp_getc;
+  receive_getbuf =	smtp_getbuf;
+  receive_get_cache =	smtp_get_cache;
+  receive_ungetc =	smtp_ungetc;
+  receive_feof =	smtp_feof;
+  receive_ferror =	smtp_ferror;
+  receive_smtp_buffered = smtp_buffered;
+  }
+
 gnutls_deinit(state->session);
 gnutls_certificate_free_credentials(state->x509_cred);
 
+tlsp->active.sock = -1;
+tlsp->active.tls_ctx = NULL;
+/* Leave bits, peercert, cipher, peerdn, certificate_verified set, for logging */
+tls_channelbinding_b64 = NULL;
 
-state->tlsp->active.sock = -1;
-state->tlsp->active.tls_ctx = NULL;
+
 if (state->xfer_buffer) store_free(state->xfer_buffer);
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
 }
@@ -2637,28 +2652,7 @@ if (sigalrm_seen)
 else if (inbytes == 0)
   {
   DEBUG(D_tls) debug_printf("Got TLS_EOF\n");
-
-  receive_getc = smtp_getc;
-  receive_getbuf = smtp_getbuf;
-  receive_get_cache = smtp_get_cache;
-  receive_ungetc = smtp_ungetc;
-  receive_feof = smtp_feof;
-  receive_ferror = smtp_ferror;
-  receive_smtp_buffered = smtp_buffered;
-
-  gnutls_deinit(state->session);
-  gnutls_certificate_free_credentials(state->x509_cred);
-
-  state->session = NULL;
-  state->tlsp->active.sock = -1;
-  state->tlsp->active.tls_ctx = NULL;
-  state->tlsp->bits = 0;
-  state->tlsp->certificate_verified = FALSE;
-  tls_channelbinding_b64 = NULL;
-  state->tlsp->cipher = NULL;
-  state->tlsp->peercert = NULL;
-  state->tlsp->peerdn = NULL;
-
+  tls_close(NULL, TLS_NO_SHUTDOWN);
   return FALSE;
   }
 

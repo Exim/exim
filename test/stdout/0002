@@ -161,6 +161,7 @@
 > domain: dom.ain
 > domain: dom.ain
 > domain: dom.ain
+> domain: 
 > 
 > addresses: ''abc@xyz' ''pqr@xyz
 > addresses: local-part@dom.ain
@@ -237,6 +238,7 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > lclpt:  local-part
 > lclpt:  local-part
 > lclpt:  local.part
+> lclpt:  a.b.c
 > quote:  aZ09_.-Q "ab*cd" "abcd\"ef"
 > quote:  "nl(\n)"
 > quote:  "cr(\r)"

@@ -3656,7 +3656,8 @@ for handling the SMTP dot-handling protocol, flagging to apply to headers as
 well as body. Set the appropriate timeout value to be used for each chunk.
 (Haven't been able to make it work using select() for writing yet.) */
 
-if (!(sx.peer_offered & OPTION_CHUNKING) && !sx.ok)
+if (  !sx.ok
+   && (!(sx.peer_offered & OPTION_CHUNKING) || !pipelining_active))
   {
   /* Save the first address of the next batch. */
   sx.first_addr = sx.next_addr;
@@ -4290,7 +4291,7 @@ if (sx.completed_addr && sx.ok && sx.send_quit)
 	  /* Set up a pipe for proxying TLS for the new transport process */
 
 	  smtp_peer_options |= OPTION_TLS;
-	  if (sx.ok = (socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0))
+	  if ((sx.ok = socketpair(AF_UNIX, SOCK_STREAM, 0, pfd) == 0))
 	    socket_fd = pfd[1];
 	  else
 	    set_errno(sx.first_addr, errno, US"internal allocation problem",
