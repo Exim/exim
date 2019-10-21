@@ -1,0 +1,30 @@
+; This is a testing zone file for use when testing DNS handling in Exim. This
+; is a fake zone of no real use. The zone name is
+; test.ex. This file is passed through the substitution mechanism before being
+; used by the fakens auxiliary program. This inserts the actual IP addresses
+; of the local host into the zone.
+
+; NOTE (1): apart from ::1, IPv6 addresses must always have 8 components. Do
+; not abbreviate them by using the :: feature. Leading zeros in components may,
+; however, be omitted.
+
+; NOTE (2): the fakens program is very simple and assumes that the buffer into
+; which is puts the response is always going to be big enough. In other words,
+; the expectation is for just a few RRs for each query.
+
+; NOTE (3): the top-level networks for testing addresses are parameterized by
+; the use of V4NET and V6NET. These networks should be such that no real
+; host ever uses them.
+;
+; Several prefixes may be used, see the source in src/fakens.c for a complete list
+; and description.
+
+kitterman.org.     NS      exim.kitterman.org.
+kitterman.org.     SOA     exim.kitterman.org. hostmaster.exim.kitterman.org 1430683638 1200 120 604800 3000
+
+; Record copied 2019/10/22
+
+ed25519._domainkey TXT   "v=DKIM1; k=ed25519; p=yi50DjK5O9pqbFpNHklsv9lqaS0ArSYu02qp1S0DW1Y="
+
+
+; End

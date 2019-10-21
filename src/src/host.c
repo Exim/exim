@@ -2648,7 +2648,7 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
   if (dnssec_request)
     if (dns_is_secure(dnsa))
       {
-      DEBUG(D_host_lookup) debug_printf("%s MX DNSSEC\n", host->name);
+      DEBUG(D_host_lookup) debug_printf("%s (MX resp) DNSSEC\n", host->name);
       dnssec = DS_YES; lookup_dnssec_authenticated = US"yes";
       }
     else

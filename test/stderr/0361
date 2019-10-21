@@ -107,7 +107,7 @@ DNS lookup of recurse.test.ex.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for recurse.test.ex.test.ex-MX-xxxx, ttl 3000
-recurse.test.ex.test.ex MX DNSSEC
+recurse.test.ex.test.ex (MX resp) DNSSEC
 DNS lookup of recurse.test.ex.test.ex (A) using fakens
 DNS lookup of recurse.test.ex.test.ex (A) succeeded
 fully qualified name = recurse.test.ex.test.ex

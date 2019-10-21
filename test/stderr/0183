@@ -36,7 +36,6 @@ DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
 returning DNS_AGAIN
  writing neg-cache entry for test.again.dns-MX-xxxx, ttl -1
-test.again.dns MX DNSSEC
 lookuphost router: defer for userx@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -64,7 +63,6 @@ lookuphost router called for abcd@test.again.dns
   domain = test.again.dns
 test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns-MX: using cached value DNS_AGAIN
-test.again.dns MX DNSSEC
 lookuphost router: defer for abcd@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -95,7 +93,7 @@ DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex MX DNSSEC
+ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -195,7 +193,6 @@ lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
-ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -247,7 +244,6 @@ DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
-test.fail.dns MX DNSSEC
 lookuphost router: defer for userx@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -275,7 +271,6 @@ lookuphost router called for abcd@test.fail.dns
   domain = test.fail.dns
 test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns-MX: using cached value DNS_FAIL
-test.fail.dns MX DNSSEC
 lookuphost router: defer for abcd@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -306,7 +301,7 @@ DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex MX DNSSEC
+ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -405,7 +400,6 @@ lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
-ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -485,7 +479,6 @@ lookuphost router called for abcd@nonexist.test.ex
   domain = nonexist.test.ex
 nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex-MX: using cached value DNS_NOMATCH
-nonexist.test.ex MX DNSSEC
 lookuphost router declined for abcd@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -517,7 +510,7 @@ DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex MX DNSSEC
+ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -616,7 +609,6 @@ lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
-ten-1.test.ex MX DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -686,7 +678,6 @@ DNS lookup of test.fail.dns (MX) using fakens
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
  writing neg-cache entry for test.fail.dns-MX-xxxx, ttl -1
-test.fail.dns MX DNSSEC
 test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
 DNS lookup of test.fail.dns (A) using fakens

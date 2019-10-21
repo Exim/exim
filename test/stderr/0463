@@ -30,7 +30,7 @@ DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
-ten-1 MX DNSSEC
+ten-1 (MX resp) DNSSEC
 DNS lookup of ten-1 (A) using fakens
 DNS lookup of ten-1 (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -59,7 +59,7 @@ DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
-ten-1.test.ex MX DNSSEC
+ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex

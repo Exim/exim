@@ -498,13 +498,13 @@ const HEADER * h = (const HEADER *) dnsa->answer;
 const uschar * auth_name;
 const uschar * trusted;
 
+if (dnsa->answerlen < 0) return FALSE;
 if (h->ad) return TRUE;
 
-/* If the resolver we ask is authoritative for the domain in question, it
-* may not set the AD but the AA bit. If we explicitly trust
-* the resolver for that domain (via a domainlist in dns_trust_aa),
-* we return TRUE to indicate a secure answer.
-*/
+/* If the resolver we ask is authoritative for the domain in question, it may
+not set the AD but the AA bit. If we explicitly trust the resolver for that
+domain (via a domainlist in dns_trust_aa), we return TRUE to indicate a secure
+answer.  */
 
 if (  !h->aa
    || !dns_trust_aa
@@ -540,12 +540,12 @@ h->aa = h->ad = 0;
  ************************************************/
 
 BOOL
-dns_is_aa(const dns_answer *dnsa)
+dns_is_aa(const dns_answer * dnsa)
 {
 #ifdef DISABLE_DNSSEC
 return FALSE;
 #else
-return ((const HEADER*)dnsa->answer)->aa;
+return dnsa->answerlen >= 0 && ((const HEADER *)dnsa->answer)->aa;
 #endif
 }
 
@@ -788,7 +788,10 @@ caching for successful lookups.
 */
 
 if ((rc = dns_fail_cache_hit(name, type)) > 0)
+  {
+  dnsa->answerlen = -1;
   return rc;
+  }
 
 #ifdef SUPPORT_I18N
 /* Convert all names to a-label form before doing lookup */
@@ -857,6 +860,7 @@ if ((type == T_A || type == T_AAAA) && string_is_ip_address(name, NULL) != 0)
 (res_search), we call fakens_search(), which recognizes certain special
 domains, and interfaces to a fake nameserver for certain special zones. */
 
+h_errno = 0;
 dnsa->answerlen = f.running_in_test_harness
   ? fakens_search(name, type, dnsa->answer, sizeof(dnsa->answer))
   : res_search(CCS name, C_IN, type, dnsa->answer, sizeof(dnsa->answer));

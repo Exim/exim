@@ -79,8 +79,7 @@ QUIT
 #
 
 # This should pass, an independently-generated sample from Scott Kitterman.
-# I don't want to retain this longterm as it hits an external DNS record,
-# not under the testsuite.
+# We use a copied version of his DNS record.
 client 127.0.0.1 PORT_D
 ??? 220
 HELO xxx

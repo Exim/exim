@@ -26,7 +26,7 @@ DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
-alias-eximtesthost MX DNSSEC
+alias-eximtesthost (MX resp) DNSSEC
 DNS lookup of alias-eximtesthost (A) using fakens
 DNS lookup of alias-eximtesthost (A) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -100,7 +100,7 @@ DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
-alias-eximtesthost.test.ex MX DNSSEC
+alias-eximtesthost.test.ex (MX resp) DNSSEC
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex
