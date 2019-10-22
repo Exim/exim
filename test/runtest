@@ -758,6 +758,10 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/waiting for children of \d+/waiting for children of pppp/;
   s/waiting for (\S+) \(\d+\)/waiting for $1 (pppp)/;
 
+  # Most builds are without HAVE_LOCAL_SCAN
+  next if /^calling local_scan\(\); timeout=300$/;
+  next if /^local_scan\(\) returned 0 NULL$/;
+
   # ======== Port numbers ========
   # Incoming port numbers may vary, but not in daemon startup line.
 
@@ -1279,10 +1283,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TLS resumption is not always supported by the build
     next if /in tls_resumption_hosts\?/;
-
-    # Most builds are without HAVE_LOCAL_SCAN
-    next if /^calling local_scan\(\); timeout=300$/;
-    next if /^local_scan\(\) returned 0 NULL$/;
 
     # Platform differences in errno strings
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
