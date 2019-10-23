@@ -15113,15 +15113,20 @@ to handle IPv6 literal addresses.
 
 
 .new
-.option dkim_verify_hashes main "string list" "sha256 : sha512 : sha1"
+.option dkim_verify_hashes main "string list" "sha256 : sha512"
 .cindex DKIM "selecting signature algorithms"
 This option gives a list of hash types which are acceptable in signatures,
 and an order of processing.
 Signatures with algorithms not in the list will be ignored.
 
-Note that the presence of sha1 violates RFC 8301.
-Signatures using the rsa-sha1 are however (as of writing) still common.
-The default inclusion of sha1 may be dropped in a future release.
+Acceptable values include:
+.code
+sha1
+sha256
+sha512
+.endd
+
+Note that the acceptance of sha1 violates RFC 8301.
 
 .option dkim_verify_keytypes main "string list" "ed25519 : rsa"
 This option gives a list of key types which are acceptable in signatures,
