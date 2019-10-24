@@ -7,8 +7,8 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-ignore_bounce_errors_after = 2s
-timeout_frozen_after = 5s
+ignore_bounce_errors_after = 4s
+timeout_frozen_after = 10s
 queue_run_in_order
 
 

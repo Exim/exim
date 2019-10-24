@@ -5474,6 +5474,26 @@ fprintf(f, "Action: %s\n"
 }
 
 
+
+/* When running in the test harness, there's an option that allows us to
+fudge this time so as to get repeatability of the tests. Take the first
+time off the list. In queue runs, the list pointer gets updated in the
+calling process. */
+
+int
+test_harness_fudged_queue_time(int actual_time)
+{
+int qt;
+if (  f.running_in_test_harness && *fudged_queue_times
+   && (qt = readconf_readtime(fudged_queue_times, '/', FALSE)) >= 0)
+  {
+  DEBUG(D_deliver) debug_printf("fudged queue_times = %s\n",
+    fudged_queue_times);
+  return qt;
+  }
+return actual_time;
+}
+
 /*************************************************
 *              Deliver one message               *
 *************************************************/
@@ -6164,7 +6184,8 @@ if (process_recipients != RECIP_IGNORE)
         new->onetime_parent = recipients_list[r->pno].address;
 
       /* If DSN support is enabled, set the dsn flags and the original receipt
-         to be passed on to other DSN enabled MTAs */
+      to be passed on to other DSN enabled MTAs */
+
       new->dsn_flags = r->dsn_flags & rf_dsnflags;
       new->dsn_orcpt = r->orcpt;
       DEBUG(D_deliver) debug_printf("DSN: set orcpt: %s  flags: 0x%x\n",
@@ -7284,10 +7305,9 @@ for (address_item * a = addr_succeed; a; a = a->next)
       );
 
   /* send report if next hop not DSN aware or a router flagged "last DSN hop"
-     and a report was requested */
-  if (  (  a->dsn_aware != dsn_support_yes
-	|| a->dsn_flags & rf_dsnlasthop
-        )
+  and a report was requested */
+
+  if (  (a->dsn_aware != dsn_support_yes || a->dsn_flags & rf_dsnlasthop)
      && a->dsn_flags & rf_notify_success
      )
     {
@@ -8131,21 +8151,7 @@ else if (addr_defer != (address_item *)(+1))
     int show_time;
     int queue_time = time(NULL) - received_time.tv_sec;
 
-    /* When running in the test harness, there's an option that allows us to
-    fudge this time so as to get repeatability of the tests. Take the first
-    time off the list. In queue runs, the list pointer gets updated in the
-    calling process. */
-
-    if (f.running_in_test_harness && fudged_queue_times[0] != 0)
-      {
-      int qt = readconf_readtime(fudged_queue_times, '/', FALSE);
-      if (qt >= 0)
-        {
-        DEBUG(D_deliver) debug_printf("fudged queue_times = %s\n",
-          fudged_queue_times);
-        queue_time = qt;
-        }
-      }
+    queue_time = test_harness_fudged_queue_time(queue_time);
 
     /* See how many warnings we should have sent by now */
 

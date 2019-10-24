@@ -539,6 +539,7 @@ extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
+extern int     test_harness_fudged_queue_time(int);
 #ifdef EXIM_TFO_PROBE
 extern void    tfo_probe(void);
 #endif

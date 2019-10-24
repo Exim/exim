@@ -11,7 +11,7 @@ primary_hostname = myhost.test.ex
 .ifdef OPT
 dsn_advertise_hosts = *
 .endif
-delay_warning = 3s : 24h
+delay_warning = 6s : 24h
 
 accept_8bitmime = false
 pipelining_advertise_hosts = :
@@ -89,5 +89,5 @@ tofile:
 
 begin retry
 
-*	*	F,1m,3s
+*	*	F,2m,10s
 # End

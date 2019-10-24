@@ -423,12 +423,16 @@ if (sscanf(CS big_buffer, TIME_T_FMT " %d", &received_time.tv_sec, &warning_coun
 received_time.tv_usec = 0;
 
 message_age = time(NULL) - received_time.tv_sec;
+#ifndef COMPILE_UTILITY
+if (f.running_in_test_harness)
+  message_age = test_harness_fudged_queue_time(message_age);
+#endif
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver) debug_printf("user=%s uid=%ld gid=%ld sender=%s\n",
   originator_login, (long int)originator_uid, (long int)originator_gid,
   sender_address);
-#endif  /* COMPILE_UTILITY */
+#endif
 
 /* Now there may be a number of optional lines, each starting with "-". If you
 add a new setting here, make sure you set the default above.

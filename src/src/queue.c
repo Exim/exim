@@ -664,8 +664,8 @@ for (int i = queue_run_in_order ? -1 : 0;
 
     if (f.running_in_test_harness && !f.queue_2stage)
       {
-      uschar *fqtnext = Ustrchr(fudged_queue_times, '/');
-      if (fqtnext != NULL) fudged_queue_times = fqtnext + 1;
+      uschar * fqtnext = Ustrchr(fudged_queue_times, '/');
+      if (fqtnext) fudged_queue_times = fqtnext + 1;
       }
     }                                  /* End loop for list of messages */
 
