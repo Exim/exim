@@ -98,14 +98,14 @@ exists" when you try to open a db file. The API changed at release 4.3. */
 
 #if defined(USE_DB) && defined(DB_VERSION_STRING)
 void
-#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+# if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 dbfn_bdb_error_callback(const DB_ENV *dbenv, const char *pfx, const char *msg)
 {
 dbenv = dbenv;
-#else
+# else
 dbfn_bdb_error_callback(const char *pfx, char *msg)
 {
-#endif
+# endif
 pfx = pfx;
 printf("Berkeley DB error: %s\n", msg);
 }
@@ -212,14 +212,12 @@ if (argc != 3)
   exit(1);
   }
 
-if (Ustrcmp(argv[arg], "-") == 0) f = stdin; else
+if (Ustrcmp(argv[arg], "-") == 0)
+  f = stdin;
+else if (!(f = fopen(argv[arg], "rb")))
   {
-  f = fopen(argv[arg], "rb");
-  if (f == NULL)
-    {
-    printf("exim_dbmbuild: unable to open %s: %s\n", argv[arg], strerror(errno));
-    exit(1);
-    }
+  printf("exim_dbmbuild: unable to open %s: %s\n", argv[arg], strerror(errno));
+  exit(1);
   }
 
 /* By default Berkeley db does not put extensions on... which

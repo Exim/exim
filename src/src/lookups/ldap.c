@@ -1104,7 +1104,7 @@ NAME has the value "ldap". */
 while (strncmpic(url, US"ldap", 4) != 0)
   {
   const uschar *name = url;
-  while (*url != 0 && *url != '=') url++;
+  while (*url && *url != '=') url++;
   if (*url == '=')
     {
     int namelen;
@@ -1188,7 +1188,7 @@ result of ${quote_ldap_dn:...} quoting, which does apply URL quoting, because
 that is needed when the DN is used as a base DN in a query. Sigh. This is all
 far too complicated. */
 
-if (user != NULL)
+if (user)
   {
   uschar *t = user;
   for (uschar * s = user; *s != 0; s++)
@@ -1211,7 +1211,7 @@ if (user != NULL)
 DEBUG(D_lookup)
   debug_printf_indent("LDAP parameters: user=%s pass=%s size=%d time=%d connect=%d "
     "dereference=%d referrals=%s\n", user, password, sizelimit, timelimit,
-    tcplimit, dereference, (referrals == LDAP_OPT_ON)? "on" : "off");
+    tcplimit, dereference, referrals == LDAP_OPT_ON ? "on" : "off");
 
 /* If the request is just to check authentication, some credentials must
 be given. The password must not be empty because LDAP binds with an empty
@@ -1219,12 +1219,12 @@ password are considered anonymous, and will succeed on most installations. */
 
 if (search_type == SEARCH_LDAP_AUTH)
   {
-  if (user == NULL || password == NULL)
+  if (!user || !password)
     {
     *errmsg = US"ldapauth lookups must specify the username and password";
     return DEFER;
     }
-  if (password[0] == 0)
+  if (!*password)
     {
     DEBUG(D_lookup) debug_printf_indent("Empty password: ldapauth returns FAIL\n");
     return FAIL;
@@ -1245,22 +1245,20 @@ if (Ustrncmp(p, "://", 3) != 0)
 
 /* No default servers, or URL contains a server name: just one attempt */
 
-if ((eldap_default_servers == NULL && local_servers == NULL) || p[3] != '/')
-  {
+if (!eldap_default_servers && !local_servers  || p[3] != '/')
   return perform_ldap_search(url, NULL, 0, search_type, res, errmsg,
     &defer_break, user, password, sizelimit, timelimit, tcplimit, dereference,
     referrals);
-  }
 
 /* Loop through the default servers until OK or FAIL. Use local_servers list
  * if defined in the lookup, otherwise use the global default list */
-list = (local_servers == NULL) ? eldap_default_servers : local_servers;
-while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+list = !local_servers ? eldap_default_servers : local_servers;
+while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
   {
   int rc;
   int port = 0;
   uschar *colon = Ustrchr(server, ':');
-  if (colon != NULL)
+  if (colon)
     {
     *colon = 0;
     port = Uatoi(colon+1);

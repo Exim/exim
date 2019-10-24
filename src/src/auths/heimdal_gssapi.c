@@ -134,10 +134,9 @@ if (!ob->server_service || !*ob->server_service)
   {
   HDEBUG(D_auth) debug_printf("heimdal: missing server_service\n");
   return;
-}
+  }
 
-krc = krb5_init_context(&context);
-if (krc != 0)
+if ((krc = krb5_init_context(&context)))
   {
   int kerr = errno;
   HDEBUG(D_auth) debug_printf("heimdal: failed to initialise krb5 context: %s\n",
@@ -149,8 +148,7 @@ if (ob->server_keytab)
   {
   k_keytab_typed_name = CCS string_sprintf("file:%s", expand_string(ob->server_keytab));
   HDEBUG(D_auth) debug_printf("heimdal: using keytab %s\n", k_keytab_typed_name);
-  krc = krb5_kt_resolve(context, k_keytab_typed_name, &keytab);
-  if (krc)
+  if ((krc = krb5_kt_resolve(context, k_keytab_typed_name, &keytab)))
     {
     HDEBUG(D_auth) exim_heimdal_error_debug("krb5_kt_resolve", context, krc);
     return;
@@ -159,8 +157,7 @@ if (ob->server_keytab)
 else
  {
   HDEBUG(D_auth) debug_printf("heimdal: using system default keytab\n");
-  krc = krb5_kt_default(context, &keytab);
-  if (krc)
+  if ((krc = krb5_kt_default(context, &keytab)))
     {
     HDEBUG(D_auth) exim_heimdal_error_debug("krb5_kt_default", context, krc);
     return;
@@ -170,12 +167,11 @@ else
 HDEBUG(D_auth)
   {
   /* http://www.h5l.org/manual/HEAD/krb5/krb5_keytab_intro.html */
-  krc = krb5_kt_start_seq_get(context, keytab, &cursor);
-  if (krc)
+  if ((krc = krb5_kt_start_seq_get(context, keytab, &cursor)))
     exim_heimdal_error_debug("krb5_kt_start_seq_get", context, krc);
   else
     {
-    while ((krc = krb5_kt_next_entry(context, keytab, &entry, &cursor)) == 0)
+    while (!(krc = krb5_kt_next_entry(context, keytab, &entry, &cursor)))
       {
       principal = enctype_s = NULL;
       krb5_unparse_name(context, entry.principal, &principal);
@@ -188,14 +184,12 @@ HDEBUG(D_auth)
       free(enctype_s);
       krb5_kt_free_entry(context, &entry);
       }
-    krc = krb5_kt_end_seq_get(context, keytab, &cursor);
-    if (krc)
+    if ((krc = krb5_kt_end_seq_get(context, keytab, &cursor)))
       exim_heimdal_error_debug("krb5_kt_end_seq_get", context, krc);
     }
   }
 
-krc = krb5_kt_close(context, keytab);
-if (krc)
+if ((krc = krb5_kt_close(context, keytab)))
   HDEBUG(D_auth) exim_heimdal_error_debug("krb5_kt_close", context, krc);
 
 krb5_free_context(context);
@@ -317,7 +311,7 @@ while (step < 4)
   switch (step)
     {
     case 0:
-      if (!from_client || *from_client == '\0')
+      if (!from_client || !*from_client)
         {
 	if (handled_empty_ir)
 	  {
@@ -325,15 +319,13 @@ while (step < 4)
 	  error_out = BAD64;
 	  goto ERROR_OUT;
 	  }
-	else
-	  {
-	  HDEBUG(D_auth) debug_printf("gssapi: missing initial response, nudging.\n");
-	  error_out = auth_get_data(&from_client, US"", 0);
-	  if (error_out != OK)
-	    goto ERROR_OUT;
-	  handled_empty_ir = TRUE;
-	  continue;
-	  }
+
+	HDEBUG(D_auth) debug_printf("gssapi: missing initial response, nudging.\n");
+	error_out = auth_get_data(&from_client, US"", 0);
+	if (error_out != OK)
+	  goto ERROR_OUT;
+	handled_empty_ir = TRUE;
+	continue;
 	}
       /* We should now have the opening data from the client, base64-encoded. */
       step += 1;
@@ -451,7 +443,7 @@ while (step < 4)
 	}
 
       requested_qop = (CS gbufdesc_out.value)[0];
-      if ((requested_qop & 0x01) == 0)
+      if (!(requested_qop & 0x01))
         {
 	HDEBUG(D_auth)
 	  debug_printf("gssapi: client requested security layers (%x)\n",
@@ -483,9 +475,7 @@ while (step < 4)
 
       /* $auth1 is GSSAPI display name */
       maj_stat = gss_display_name(&min_stat,
-	  gclient,
-	  &gbufdesc_out,
-	  &mech_type);
+	  gclient, &gbufdesc_out, &mech_type);
       if (GSS_ERROR(maj_stat))
         {
 	auth_vars[1] = expand_nstring[2] = NULL;
