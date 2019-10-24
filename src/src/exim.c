@@ -2787,6 +2787,11 @@ for (i = 1; i < argc; i++)
       msg_action = MSG_DELIVER;
       deliver_give_up = TRUE;
       }
+   else if (Ustrcmp(argrest, "G") == 0)
+      {
+      msg_action = MSG_SETQUEUE;
+      queue_name_dest = argv[++i];
+      }
     else if (Ustrcmp(argrest, "mad") == 0)
       {
       msg_action = MSG_MARK_ALL_DELIVERED;
@@ -4064,11 +4069,13 @@ count. Only an admin user can use the test interface to scan for email
 if (!f.admin_user)
   {
   BOOL debugset = (debug_selector & ~D_v) != 0;
-  if (deliver_give_up || f.daemon_listen || malware_test_file ||
-     (count_queue && queue_list_requires_admin) ||
-     (list_queue && queue_list_requires_admin) ||
-     (queue_interval >= 0 && prod_requires_admin) ||
-     (debugset && !f.running_in_test_harness))
+  if (  deliver_give_up || f.daemon_listen || malware_test_file
+     || count_queue && queue_list_requires_admin
+     || list_queue && queue_list_requires_admin
+     || queue_interval >= 0 && prod_requires_admin
+     || queue_name_dest && prod_requires_admin
+     || debugset && !f.running_in_test_harness
+     )
     exim_fail("exim:%s permission denied\n", debugset? " debugging" : "");
   }
 
@@ -4165,13 +4172,9 @@ now for those OS that require the first call to os_getloadavg() to be done as
 root. There will be further calls later for each message received. */
 
 #ifdef LOAD_AVG_NEEDS_ROOT
-if (receiving_message &&
-      (queue_only_load >= 0 ||
-        (f.is_inetd && smtp_load_reserve >= 0)
-      ))
-  {
+if (  receiving_message
+   && (queue_only_load >= 0 || (f.is_inetd && smtp_load_reserve >= 0)))
   load_average = OS_GETLOADAVG();
-  }
 #endif
 
 /* The queue_only configuration option can be overridden by -odx on the command

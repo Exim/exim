@@ -1194,6 +1194,7 @@ uschar *qualify_domain_sender  = NULL;
 uschar *queue_domains          = NULL;
 int     queue_interval         = -1;
 uschar *queue_name             = US"";
+uschar *queue_name_dest        = NULL;
 uschar *queue_only_file        = NULL;
 int     queue_only_load        = -1;
 uschar *queue_run_max          = US"5";

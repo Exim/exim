@@ -72,4 +72,44 @@ sudo mv DIR/spool/alternate/input/* DIR/spool/input/
 exim -q
 ****
 #
+#
+# Native queue transfer
+exim -bs
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <normal@test.ex>
+DATA
+Subject: test
+
+foo
+.
+RSET
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO: <alternate@test.ex>
+DATA
+Subject: test
+
+foo
+.
+QUIT
+****
+exim -bp
+****
+exim -bp -qGalternate
+****
+#
+exim -MG third $msg1
+****
+exim -qGalternate -MG third $msg1
+****
+exim -bp -qGthird
+****
+exim -qGthird -MG '' $msg1 $msg2
+****
+exim -bp
+****
+exim -bp -qGalternate
+****
+exim -bp -qGthird
+****
+#
 no_stderr_check

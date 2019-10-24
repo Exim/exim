@@ -3963,6 +3963,20 @@ is sent to the sender, containing the text &"cancelled by administrator"&.
 Bounce messages are just discarded. This option can be used only by an admin
 user.
 
+.new
+.vitem &%-MG%&&~<&'queue&~name'&&~<&'message&~id'&>&~<&'message&~id'&>&~...
+.oindex "&%-MG%&"
+.cindex queue named
+.cindex "named queues"
+.cindex "queue" "moving messages"
+This option requests that each listed message be moved from its current
+queue to the given named queue.
+The destination queue name argument is required, but can be an empty
+string to define the default queue.
+If the messages are not currently located in the default queue,
+a &%-qG<name>%& option will be required to define the source queue.
+.wen
+
 .vitem &%-Mmad%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
 .oindex "&%-Mmad%&"
 .cindex "delivery" "cancelling all"

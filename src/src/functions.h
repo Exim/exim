@@ -878,20 +878,33 @@ return string_sprintf("%s/%s/%s/%s",
 # endif
 
 static inline uschar *
-spool_sname(const uschar * purpose, uschar * subdir)
+spool_q_sname(const uschar * purpose, const uschar * q, uschar * subdir)
 {
 return string_sprintf("%s%s%s%s%s",
-		    queue_name, *queue_name ? "/" : "",
+		    q, *q ? "/" : "",
 		    purpose,
 		    *subdir ? "/" : "", subdir);
+}
+
+static inline uschar *
+spool_sname(const uschar * purpose, uschar * subdir)
+{
+return spool_q_sname(purpose, queue_name, subdir);
+}
+
+static inline uschar *
+spool_q_fname(const uschar * purpose, const uschar * q,
+	const uschar * subdir, const uschar * fname, const uschar * suffix)
+{
+return string_sprintf("%s/%s/%s/%s/%s%s",
+	spool_directory, q, purpose, subdir, fname, suffix);
 }
 
 static inline uschar *
 spool_fname(const uschar * purpose, const uschar * subdir, const uschar * fname,
        	const uschar * suffix)
 {
-return string_sprintf("%s/%s/%s/%s/%s%s",
-	spool_directory, queue_name, purpose, subdir, fname, suffix);
+return spool_q_fname(purpose, queue_name, subdir, fname, suffix);
 }
 
 static inline void

@@ -20,6 +20,14 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 => alternate <alternate@test.ex> F=<CALLER@the.local.host.name> R=all T=dump
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 using queue ''
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss for normal@test.ex
+1999-03-02 09:44:33 using queue 'alternate'
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss Q=alternate for alternate@test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 moved from input, msglog to (third) input, msglog
+1999-03-02 09:44:33 10HmbC-0005vi-00 moved from (alternate) input, msglog to (third) input, msglog
+1999-03-02 09:44:33 10HmbB-0005vi-00 moved from (third) input, msglog to input, msglog
+1999-03-02 09:44:33 10HmbC-0005vi-00 moved from (third) input, msglog to input, msglog
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, -qGlowpri/3s, not listening for SMTP

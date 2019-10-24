@@ -48,6 +48,8 @@ Version 4.93
     GnuTLS was already there, being done purely by the library (server side
     only, and exim must be run as root).
 
+16: Command-line option to move messages from one named queue to another.
+
 
 Version 4.92
 --------------

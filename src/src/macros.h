@@ -845,7 +845,7 @@ enum {
 
 enum { MSG_DELIVER, MSG_FREEZE, MSG_REMOVE, MSG_THAW, MSG_ADD_RECIPIENT,
        MSG_MARK_ALL_DELIVERED, MSG_MARK_DELIVERED, MSG_EDIT_SENDER,
-       MSG_SHOW_COPY, MSG_LOAD,
+       MSG_SHOW_COPY, MSG_LOAD, MSG_SETQUEUE,
        /* These ones must be last: a test for >= MSG_SHOW_BODY is used
        to test for actions that list individual spool files. */
        MSG_SHOW_BODY, MSG_SHOW_HEADER, MSG_SHOW_LOG };

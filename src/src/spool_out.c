@@ -417,6 +417,7 @@ start-up time.
 
 Arguments:
   dir        base directory name
+  dq	     destiinationqueue name
   subdir     subdirectory name
   id         message id
   suffix     suffix to add to id
@@ -429,11 +430,11 @@ Returns:     TRUE if all went well
 */
 
 static BOOL
-make_link(uschar *dir, uschar *subdir, uschar *id, uschar *suffix, uschar *from,
-  uschar *to, BOOL noentok)
+make_link(uschar *dir, uschar * dq, uschar *subdir, uschar *id, uschar *suffix,
+  uschar *from, uschar *to, BOOL noentok)
 {
 uschar * fname = spool_fname(string_sprintf("%s%s", from, dir), subdir, id, suffix);
-uschar * tname = spool_fname(string_sprintf("%s%s", to,   dir), subdir, id, suffix);
+uschar * tname = spool_q_fname(string_sprintf("%s%s", to,   dir), dq, subdir, id, suffix);
 if (Ulink(fname, tname) < 0 && (!noentok || errno != ENOENT))
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "link(\"%s\", \"%s\") failed while moving "
@@ -503,13 +504,15 @@ Returns:      TRUE if all is well
 BOOL
 spool_move_message(uschar *id, uschar *subdir, uschar *from, uschar *to)
 {
+uschar * dest_qname = queue_name_dest ? queue_name_dest : queue_name;
+
 /* Create any output directories that do not exist. */
 
 (void) directory_make(spool_directory,
-  spool_sname(string_sprintf("%sinput", to), subdir),
+  spool_q_sname(string_sprintf("%sinput", to), dest_qname, subdir),
   INPUT_DIRECTORY_MODE, TRUE);
 (void) directory_make(spool_directory,
-  spool_sname(string_sprintf("%smsglog", to), subdir),
+  spool_q_sname(string_sprintf("%smsglog", to), dest_qname, subdir),
   INPUT_DIRECTORY_MODE, TRUE);
 
 /* Move the message by first creating new hard links for all the files, and
@@ -521,9 +524,9 @@ rule of waiting for a -H file before doing anything. When moving messages off
 the mail spool, the -D file should be open and locked at the time, thus keeping
 Exim's hands off. */
 
-if (!make_link(US"msglog", subdir, id, US"", from, to, TRUE) ||
-    !make_link(US"input",  subdir, id, US"-D", from, to, FALSE) ||
-    !make_link(US"input",  subdir, id, US"-H", from, to, FALSE))
+if (!make_link(US"msglog", dest_qname, subdir, id, US"", from, to, TRUE) ||
+    !make_link(US"input",  dest_qname, subdir, id, US"-D", from, to, FALSE) ||
+    !make_link(US"input",  dest_qname, subdir, id, US"-H", from, to, FALSE))
   return FALSE;
 
 if (!break_link(US"input",  subdir, id, US"-H", from, FALSE) ||
@@ -531,8 +534,11 @@ if (!break_link(US"input",  subdir, id, US"-H", from, FALSE) ||
     !break_link(US"msglog", subdir, id, US"", from, TRUE))
   return FALSE;
 
-log_write(0, LOG_MAIN, "moved from %sinput, %smsglog to %sinput, %smsglog",
-   from, from, to, to);
+log_write(0, LOG_MAIN, "moved from %s%s%s%sinput, %smsglog to %s%s%s%sinput, %smsglog",
+   *queue_name?"(":"", *queue_name?queue_name:US"", *queue_name?") ":"",
+   from, from,
+   *dest_qname?"(":"", *dest_qname?dest_qname:US"", *dest_qname?") ":"",
+   to, to);
 
 return TRUE;
 }

@@ -2546,9 +2546,24 @@ elsif (/^((?i:[A-Z\d_]+=\S+\s+)+)?(\d+)?\s*(sudo(?:\s+-u\s+(\w+))?\s+)?exim(_\S+
 
   if ($args =~ /\$msg/)
     {
-    my @listcmd  = ("$parm_cwd/eximdir/exim", '-bp',
+    my($queuespec);
+    if ($args =~ /-qG\w+/) { $queuespec = $&; }
+
+    my @listcmd;
+
+    if (defined $queuespec)
+      {
+      @listcmd  = ("$parm_cwd/eximdir/exim", '-bp',
+		   $queuespec,
                    "-DEXIM_PATH=$parm_cwd/eximdir/exim",
                    -C => "$parm_cwd/test-config");
+      }
+    else
+      {
+      @listcmd  = ("$parm_cwd/eximdir/exim", '-bp',
+                   "-DEXIM_PATH=$parm_cwd/eximdir/exim",
+                   -C => "$parm_cwd/test-config");
+      }
     print ">> Getting queue list from:\n>>    @listcmd\n" if $debug;
     # We need the message ids sorted in ascending order.
     # Message id is: <timestamp>-<pid>-<fractional-time>. On some systems (*BSD) the

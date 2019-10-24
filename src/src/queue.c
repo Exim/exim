@@ -1265,6 +1265,14 @@ switch(action)
     }
 
 
+  case MSG_SETQUEUE:
+    /* The global "queue_name_dest" is used as destination, "queue_name"
+    as source */
+
+    spool_move_message(id, message_subdir, US"", US"");
+    break;
+
+
   case MSG_MARK_ALL_DELIVERED:
   for (int i = 0; i < recipients_count; i++)
     tree_add_nonrecipient(recipients_list[i].address);
