@@ -634,11 +634,11 @@ coding means skipping this whole loop and doing the append separately.  */
 
     if (options & vopt_is_recipient)
     {
-      recipient_verify_message = string_sprintf("%s", sx.buffer);
+      recipient_verify_message = addr->user_message;
     }
     else
     {
-      sender_verify_message = string_sprintf("%s", sx.buffer);
+      sender_verify_message = addr->user_message;
     }
 
   /* If we did not use a cached connection, make connections to the hosts
