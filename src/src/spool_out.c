@@ -405,8 +405,6 @@ return statbuf.st_size - size_correction;
 }
 
 
-#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-
 /************************************************
 *              Make a hard link                 *
 ************************************************/
@@ -488,8 +486,7 @@ return TRUE;
 
 /* Move the files for a message (-H, -D, and msglog) from one directory (or
 hierarchy) to another. It is assume that there is no -J file in existence when
-this is done. At present, this is used only when move_frozen_messages is set,
-so compile it only when that support is configured.
+this is done.
 
 Arguments:
   id          the id of the message to be delivered
@@ -543,7 +540,6 @@ log_write(0, LOG_MAIN, "moved from %s%s%s%sinput, %smsglog to %s%s%s%sinput, %sm
 return TRUE;
 }
 
-#endif
 
 /* End of spool_out.c */
 /* vi: aw ai sw=2
