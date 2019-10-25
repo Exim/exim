@@ -74,6 +74,7 @@ exim -q
 #
 #
 # Native queue transfer
+### load messages
 exim -bs
 MAIL FROM:<CALLER@myhost.test.ex>
 RCPT TO: <normal@test.ex>
@@ -92,8 +93,10 @@ foo
 .
 QUIT
 ****
+### default q
 exim -bp
 ****
+### alternate q
 exim -bp -qGalternate
 ****
 #
@@ -101,14 +104,18 @@ exim -MG third $msg1
 ****
 exim -qGalternate -MG third $msg1
 ****
+### third q
 exim -bp -qGthird
 ****
 exim -qGthird -MG '' $msg1 $msg2
 ****
+### default q
 exim -bp
 ****
+### alternate q
 exim -bp -qGalternate
 ****
+### third q
 exim -bp -qGthird
 ****
 #

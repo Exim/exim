@@ -4300,6 +4300,11 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
     for (i = msg_action_arg; i < argc; i++)
       if (!queue_action(argv[i], msg_action, NULL, 0, 0))
         yield = EXIT_FAILURE;
+    switch (msg_action)
+      {
+      case MSG_REMOVE: MSG_DELETE: case MSG_FREEZE: case MSG_THAW: break;
+      default: printf("\n"); break;
+      }
     }
 
   else if (!queue_action(argv[msg_action_arg], msg_action, argv, argc,

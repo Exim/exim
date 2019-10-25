@@ -29,6 +29,7 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmbA-0005vi-00
 221 the.local.host.name closing connection
+### load messages
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
 250 Accepted
@@ -40,25 +41,41 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmbC-0005vi-00
 221 the.local.host.name closing connection
+### default q
+ 0m   sss 10HmbB-0005vi-00 <CALLER@the.local.host.name>
+          normal@test.ex
+
+### alternate q
+ 0m   sss 10HmbC-0005vi-00 <CALLER@the.local.host.name>
+          alternate@test.ex
+
+Message 10HmbB-0005vi-00 
+Message 10HmbC-0005vi-00 
+### third q
  0m   sss 10HmbB-0005vi-00 <CALLER@the.local.host.name>
           normal@test.ex
 
  0m   sss 10HmbC-0005vi-00 <CALLER@the.local.host.name>
           alternate@test.ex
 
-Message 10HmbB-0005vi-00 Message 10HmbC-0005vi-00  0m   323 10HmbB-0005vi-00 <CALLER@the.local.host.name>
+Message 10HmbB-0005vi-00 Message 10HmbC-0005vi-00 
+### default q
+ 0m   sss 10HmbB-0005vi-00 <CALLER@the.local.host.name>
           normal@test.ex
 
  0m   sss 10HmbC-0005vi-00 <CALLER@the.local.host.name>
           alternate@test.ex
 
-Message 10HmbB-0005vi-00 Message 10HmbC-0005vi-00  0m   323 10HmbB-0005vi-00 <CALLER@the.local.host.name>
-          normal@test.ex
-
- 0m   sss 10HmbC-0005vi-00 <CALLER@the.local.host.name>
-          alternate@test.ex
-
+### alternate q
+### third q
 
 ******** SERVER ********
 ### default q
 ### alternate q
+### load messages
+### default q
+### alternate q
+### third q
+### default q
+### alternate q
+### third q
