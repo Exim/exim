@@ -99,7 +99,7 @@ each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
 #define LOCAL_SCAN_ABI_VERSION_MAJOR 2
-#define LOCAL_SCAN_ABI_VERSION_MINOR 0
+#define LOCAL_SCAN_ABI_VERSION_MINOR 1
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 
@@ -203,8 +203,8 @@ with the original name. */
 # define string_copy_taint(s, t) string_copy_taint_function((s), (t))
 
 extern uschar * string_copy_function(const uschar *);
-extern uschar * string_copyn_function(const uschar *);
-extern uschar * string_copy_taint_function(const uschar *);
+extern uschar * string_copyn_function(const uschar *, int n);
+extern uschar * string_copy_taint_function(const uschar *, BOOL tainted);
 #endif
 
 /* End of local_scan.h */
