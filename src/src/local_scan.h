@@ -99,7 +99,7 @@ each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
 #define LOCAL_SCAN_ABI_VERSION_MAJOR 2
-#define LOCAL_SCAN_ABI_VERSION_MINOR 1
+#define LOCAL_SCAN_ABI_VERSION_MINOR 0
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 
@@ -190,7 +190,7 @@ extern void    smtp_printf(const char *, BOOL, ...) PRINTF_FUNCTION(1,3);
 extern void    smtp_vprintf(const char *, BOOL, va_list);
 
 #define string_sprintf(fmt, ...) \
-	string_sprintf_trc(fmt, US __FUNCTION__, __LINE__ __VA_OPT__(,) __VA_ARGS__)
+	string_sprintf_trc(fmt, US __FUNCTION__, __LINE__, __VA_ARGS__)
 extern uschar *string_sprintf_trc(const char *, const uschar *, unsigned, ...) ALMOST_PRINTF(1,4);
 
 #ifdef LOCAL_SCAN
@@ -203,8 +203,8 @@ with the original name. */
 # define string_copy_taint(s, t) string_copy_taint_function((s), (t))
 
 extern uschar * string_copy_function(const uschar *);
-extern uschar * string_copyn_function(const uschar *, int n);
-extern uschar * string_copy_taint_function(const uschar *, BOOL tainted);
+extern uschar * string_copyn_function(const uschar *);
+extern uschar * string_copy_taint_function(const uschar *);
 #endif
 
 /* End of local_scan.h */
