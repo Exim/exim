@@ -365,9 +365,8 @@ if (log_datestamping)
   {
   uschar log_file_wanted[256];
   /* Do *not* use "%s" here, we need the %D datestamp in the log_file string to
-  be expanded.  The trailing NULL arg is to quieten preprocessors that need at
-  least one arg for a variadic set in a macro. */
-  string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file, NULL);
+  be expanded. */
+  string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file);
   if (Ustrcmp(log_file_wanted, log_file_open) != 0)
     {
     if (LOG != NULL)

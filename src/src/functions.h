@@ -520,7 +520,8 @@ extern uschar *string_localpart_utf8_to_alabel(const uschar *, uschar **);
 #endif
 
 #define string_format(buf, siz, fmt, ...) \
-	string_format_trc(buf, siz, US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
+	string_format_trc(buf, siz, US __FUNCTION__, __LINE__, \
+				fmt __VA_OPT__(,) __VA_ARGS__)
 extern BOOL    string_format_trc(uschar *, int, const uschar *, unsigned,
 			const char *, ...) ALMOST_PRINTF(5,6);
 
@@ -531,7 +532,8 @@ extern gstring *string_vformat_trc(gstring *, const uschar *, unsigned,
 			unsigned, unsigned, const char *, va_list);
 
 #define string_open_failed(eno, fmt, ...) \
-	string_open_failed_trc(eno, US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
+	string_open_failed_trc(eno, US __FUNCTION__, __LINE__, \
+				fmt __VA_OPT__(,) __VA_ARGS__)
 extern uschar *string_open_failed_trc(int, const uschar *, unsigned,
 			const char *, ...) PRINTF_FUNCTION(4,5);
 
@@ -831,11 +833,11 @@ if (g) store_release_above_3(g->s + (g->size = g->ptr + 1), file, line);
 
 #define string_fmt_append(g, fmt, ...) \
 	string_fmt_append_f_trc(g, US __FUNCTION__, __LINE__, \
-	SVFMT_EXTEND|SVFMT_REBUFFER, fmt, __VA_ARGS__)
+	SVFMT_EXTEND|SVFMT_REBUFFER, fmt __VA_OPT__(,) __VA_ARGS__)
 
 #define string_fmt_append_f(g, flgs, fmt, ...) \
 	string_fmt_append_f_trc(g, US __FUNCTION__, __LINE__, \
-	flgs,         fmt, __VA_ARGS__)
+				flgs, fmt __VA_OPT__(,) __VA_ARGS__)
 
 static inline gstring *
 string_fmt_append_f_trc(gstring * g, const uschar * func, unsigned line,
