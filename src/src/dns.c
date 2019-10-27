@@ -681,17 +681,6 @@ return rc;
 
 
 
-/* Return the TTL suitable for an NXDOMAIN result, which is given
-in the SOA.  We hope that one was returned in the lookup, and do not
-bother doing a separate lookup; if not found return a forever TTL.
-*/
-
-time_t
-dns_expire_from_soa(dns_answer * dnsa)
-{
-const HEADER * h = (const HEADER *)dnsa->answer;
-dns_scan dnss;
-
 /* This is really gross. The successful return value from res_search() is
 the packet length, which is stored in dnsa->answerlen. If we get a
 negative DNS reply then res_search() returns -1, which causes the bounds
@@ -703,12 +692,38 @@ re-implement res_search() and res_query() so that they don't muddle their
 success and packet length return values.) For added safety we only reset
 the packet length if the packet header looks plausible. */
 
-if (  h->qr == 1 && h->opcode == QUERY && h->tc == 0
+static void
+fake_dnsa_len_for_fail(dns_answer * dnsa)
+{
+const HEADER * h = (const HEADER *)dnsa->answer;
+
+if (  h->qr == 1				/* a response */
+   && h->opcode == QUERY
+   && h->tc == 0				/* nmessage not truncated */
    && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
-   && (ntohs(h->qdcount) == 1 || f.running_in_test_harness)
-   && ntohs(h->ancount) == 0
-   && ntohs(h->nscount) >= 1)
-      dnsa->answerlen = sizeof(dnsa->answer);
+   && (  ntohs(h->qdcount) == 1			/* one question record */
+      || f.running_in_test_harness)
+   && ntohs(h->ancount) == 0			/* no answer records */
+   && ntohs(h->nscount) >= 1)			/* authority records */
+  {
+  DEBUG(D_dns) debug_printf("faking res_search() response length as %d\n",
+    (int)sizeof(dnsa->answer));
+  dnsa->answerlen = sizeof(dnsa->answer);
+  }
+}
+
+
+/* Return the TTL suitable for an NXDOMAIN result, which is given
+in the SOA.  We hope that one was returned in the lookup, and do not
+bother doing a separate lookup; if not found return a forever TTL.
+*/
+
+time_t
+dns_expire_from_soa(dns_answer * dnsa)
+{
+dns_scan dnss;
+
+fake_dnsa_len_for_fail(dnsa);
 
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
      rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
@@ -1185,23 +1200,7 @@ switch (type)
 
     if (rc == DNS_NOMATCH)
       {
-      /* This is really gross. The successful return value from res_search() is
-      the packet length, which is stored in dnsa->answerlen. If we get a
-      negative DNS reply then res_search() returns -1, which causes the bounds
-      checks for name decompression to fail when it is treated as a packet
-      length, which in turn causes the authority search to fail. The correct
-      packet length has been lost inside libresolv, so we have to guess a
-      replacement value. (The only way to fix this properly would be to
-      re-implement res_search() and res_query() so that they don't muddle their
-      success and packet length return values.) For added safety we only reset
-      the packet length if the packet header looks plausible. */
-
-      const HEADER * h = (const HEADER *)dnsa->answer;
-      if (h->qr == 1 && h->opcode == QUERY && h->tc == 0
-	  && (h->rcode == NOERROR || h->rcode == NXDOMAIN)
-	  && ntohs(h->qdcount) == 1 && ntohs(h->ancount) == 0
-	  && ntohs(h->nscount) >= 1)
-	    dnsa->answerlen = sizeof(dnsa->answer);
+      fake_dnsa_len_for_fail(dnsa);
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
 	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)

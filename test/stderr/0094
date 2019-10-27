@@ -83,12 +83,14 @@ DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "oneback.test.ex"
   alias "host1.masq.test.ex"
+faking res_search() response length as 65535
 DNS lookup of oneback.test.ex (A) using fakens
 DNS lookup of oneback.test.ex (A) succeeded
 oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
 checking addresses for oneback.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.90 OK
+faking res_search() response length as 65535
 DNS lookup of host1.masq.test.ex (A) using fakens
 DNS lookup of host1.masq.test.ex (A) succeeded
 host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 

@@ -4,6 +4,7 @@ admin user
 dropping to exim gid; retaining priv uid
 DNS lookup of mx-sec-a-aa.test.ex (MX) using fakens
 DNS lookup of mx-sec-a-aa.test.ex (MX) succeeded
+faking res_search() response length as 65535
 DNS lookup of a-aa.test.ex (A) using fakens
 DNS lookup of a-aa.test.ex (A) succeeded
 DNS lookup of a-aa.test.ex (A/AAAA) requested AD, but got AA
@@ -15,6 +16,7 @@ dropping to exim gid; retaining priv uid
 DNS lookup of mx-aa-a-sec.test.ex (MX) using fakens
 DNS lookup of mx-aa-a-sec.test.ex (MX) succeeded
 DNS lookup of mx-aa-a-sec.test.ex (MX) requested AD, but got AA
+faking res_search() response length as 65535
 DNS lookup of a-sec.test.ex (A) using fakens
 DNS lookup of a-sec.test.ex (A) succeeded
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

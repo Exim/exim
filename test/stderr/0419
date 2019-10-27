@@ -25,8 +25,10 @@ dnslookup router called for k@mxt13.test.ex
 mxt13.test.ex in "*"? yes (matched "*")
 DNS lookup of mxt13.test.ex (MX) using fakens
 DNS lookup of mxt13.test.ex (MX) succeeded
+faking res_search() response length as 65535
 DNS lookup of other1.test.ex (A) using fakens
 DNS lookup of other1.test.ex (A) succeeded
+faking res_search() response length as 65535
 DNS lookup of other2.test.ex (A) using fakens
 DNS lookup of other2.test.ex (A) succeeded
 other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
