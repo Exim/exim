@@ -19,6 +19,7 @@ checking domains
 DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
+faking res_search() response length as 65535
  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
 Address records are not being sought
 ten-1 in "!@mx_any"? yes (end of list)
@@ -29,8 +30,10 @@ ten-1 in "*"? yes (matched "*")
 DNS lookup of ten-1 (MX) using fakens
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
+faking res_search() response length as 65535
  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
 ten-1 (MX resp) DNSSEC
+faking res_search() response length as 65535
 DNS lookup of ten-1 (A) using fakens
 DNS lookup of ten-1 (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -48,6 +51,7 @@ checking domains
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
+faking res_search() response length as 65535
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 Address records are not being sought
 ten-1.test.ex in "!@mx_any"? yes (end of list)
@@ -58,8 +62,10 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
+faking res_search() response length as 65535
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 ten-1.test.ex (MX resp) DNSSEC
+faking res_search() response length as 65535
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
