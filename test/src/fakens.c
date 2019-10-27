@@ -313,8 +313,8 @@ Arguments:
   qtypelen    the length of qtype
   pkptr       points to the output buffer pointer; this is updated
   countptr    points to the record count; this is updated
-  dnssec      points to the AD flag indicator; this is updated
-  aa          points to the AA flag indicator; this is updated
+  dnssec_p    points to the AD flag indicator; this is updated
+  aa_p        points to the AA flag indicator; this is updated
 
 Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
               PASS_ON - the latter if a "PASS ON NOT FOUND" line is seen
@@ -322,7 +322,7 @@ Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
 
 static int
 find_records(FILE *f, uschar *zone, uschar *domain, uschar *qtype,
-  int qtypelen, uschar **pkptr, int *countptr, BOOL * dnssec, BOOL * aa)
+  int qtypelen, uschar **pkptr, int *countptr, BOOL * dnssec_p, BOOL * aa_p)
 {
 int yield = HOST_NOT_FOUND;
 int domainlen = Ustrlen(domain);
@@ -448,8 +448,8 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   if (yield == HOST_NOT_FOUND)
     {
     yield = NO_DATA;
-    if (dnssec) *dnssec = TRUE;     /* cancelled by first nonsecure rec found */
-    if (aa) *aa = TRUE;             /* cancelled by first non-aa rec found */
+    if (dnssec_p) *dnssec_p = TRUE;     /* cancelled by first nonsecure rec found */
+    if (aa_p) *aa_p = TRUE;             /* cancelled by first non-aa rec found */
     }
 
   /* Compare RR types; a CNAME record is always returned */
@@ -468,11 +468,11 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   if (delay)
     millisleep(delay);
 
-  if (dnssec && !rr_sec)
-    *dnssec = FALSE;                    /* cancel AD return */
+  if (dnssec_p && !rr_sec)
+    *dnssec_p = FALSE;                    /* cancel AD return */
 
-  if (aa && !rr_aa)
-    *aa = FALSE;                        /* cancel AA return */
+  if (aa_p && !rr_aa)
+    *aa_p = FALSE;                        /* cancel AA return */
 
   if (rr_ignore) continue;
 
@@ -668,8 +668,8 @@ uschar qtype[12];
 uschar packet[2048 * 32 + 32];
 HEADER *header = (HEADER *)packet;
 uschar *pk = packet;
-BOOL dnssec;
-BOOL aa;
+BOOL dnssec = FALSE;
+BOOL aa = FALSE;
 
 signal(SIGALRM, alarmfn);
 
@@ -683,15 +683,14 @@ if (argc != 4)
 
 (void)sprintf(CS buffer, "%s/dnszones", argv[1]);
 
-d = opendir(CCS buffer);
-if (d == NULL)
+if (!(d = opendir(CCS buffer)))
   {
   fprintf(stderr, "fakens: failed to opendir %s: %s\n", buffer,
     strerror(errno));
   return NO_RECOVERY;
   }
 
-while ((de = readdir(d)) != NULL)
+while ((de = readdir(d)))
   {
   uschar *name = US de->d_name;
   if (Ustrncmp(name, "qualify.", 8) == 0)
@@ -778,7 +777,7 @@ if (!(f = fopen(CS buffer, "r")))
 
 header->qr = 1;     /* query */
 header->opcode = QUERY; /* standard query */
-header->tc = 0;     /* no trucation */
+header->tc = 0;     /* no truncation */
 
 /* Find the records we want, and add them to the result. */
 
