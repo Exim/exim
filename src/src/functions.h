@@ -198,7 +198,7 @@ extern BOOL    dkim_transport_write_message(transport_ctx *,
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern int     dns_basic_lookup(dns_answer *, const uschar *, int);
 extern void    dns_build_reverse(const uschar *, uschar *);
-extern time_t  dns_expire_from_soa(dns_answer *);
+extern time_t  dns_expire_from_soa(dns_answer *, int);
 extern void    dns_init(BOOL, BOOL, BOOL);
 extern BOOL    dns_is_aa(const dns_answer *);
 extern BOOL    dns_is_secure(const dns_answer *);

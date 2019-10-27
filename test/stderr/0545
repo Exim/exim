@@ -25,7 +25,7 @@ CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
 alias-eximtesthost (MX resp) DNSSEC
 DNS lookup of alias-eximtesthost (A) using fakens
@@ -100,7 +100,7 @@ CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
 alias-eximtesthost.test.ex (MX resp) DNSSEC
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens

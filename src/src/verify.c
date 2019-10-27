@@ -3478,7 +3478,7 @@ else
       dns_basic_lookup(), we have a dnslist cache entry allocated and
       tree-inserted. So we may as well use it. */
 
-      time_t soa_negttl = dns_expire_from_soa(dnsa);
+      time_t soa_negttl = dns_expire_from_soa(dnsa, T_A);
       cb->expiry = soa_negttl ? soa_negttl : time(NULL) + ttl;
       break;
       }

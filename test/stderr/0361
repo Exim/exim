@@ -100,17 +100,16 @@ recurse.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for recurse.test.ex-MX-xxxx, ttl 3000
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
 recurse.test.ex.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex.test.ex (MX) using fakens
 DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for recurse.test.ex.test.ex-MX-xxxx, ttl 3000
 recurse.test.ex.test.ex (MX resp) DNSSEC
-faking res_search() response length as 65535
 DNS lookup of recurse.test.ex.test.ex (A) using fakens
 DNS lookup of recurse.test.ex.test.ex (A) succeeded
 fully qualified name = recurse.test.ex.test.ex

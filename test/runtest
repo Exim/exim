@@ -1099,6 +1099,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /DNS lookup of \S+ \(AAAA\) using fakens/;
     next if / in dns_ipv4_lookup?/;
     next if / writing neg-cache entry for .*AAAA/;
+    next if /^faking res_search\(AAAA\) response length as 65535/;
 
     if (/DNS lookup of \S+ \(AAAA\) gave NO_DATA/)
       {

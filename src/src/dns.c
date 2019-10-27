@@ -693,7 +693,7 @@ success and packet length return values.) For added safety we only reset
 the packet length if the packet header looks plausible. */
 
 static void
-fake_dnsa_len_for_fail(dns_answer * dnsa)
+fake_dnsa_len_for_fail(dns_answer * dnsa, int type)
 {
 const HEADER * h = (const HEADER *)dnsa->answer;
 
@@ -706,8 +706,8 @@ if (  h->qr == 1				/* a response */
    && ntohs(h->ancount) == 0			/* no answer records */
    && ntohs(h->nscount) >= 1)			/* authority records */
   {
-  DEBUG(D_dns) debug_printf("faking res_search() response length as %d\n",
-    (int)sizeof(dnsa->answer));
+  DEBUG(D_dns) debug_printf("faking res_search(%s) response length as %d\n",
+    dns_text_type(type), (int)sizeof(dnsa->answer));
   dnsa->answerlen = sizeof(dnsa->answer);
   }
 }
@@ -719,11 +719,11 @@ bother doing a separate lookup; if not found return a forever TTL.
 */
 
 time_t
-dns_expire_from_soa(dns_answer * dnsa)
+dns_expire_from_soa(dns_answer * dnsa, int type)
 {
 dns_scan dnss;
 
-fake_dnsa_len_for_fail(dnsa);
+fake_dnsa_len_for_fail(dnsa, type);
 
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
      rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)
@@ -893,7 +893,7 @@ if (dnsa->answerlen < 0) switch (h_errno)
   case HOST_NOT_FOUND:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave HOST_NOT_FOUND\n"
       "returning DNS_NOMATCH\n", name, dns_text_type(type));
-    return dns_fail_return(name, type, dns_expire_from_soa(dnsa), DNS_NOMATCH);
+    return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NOMATCH);
 
   case TRY_AGAIN:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave TRY_AGAIN\n",
@@ -913,7 +913,7 @@ if (dnsa->answerlen < 0) switch (h_errno)
       }
     DEBUG(D_dns) debug_printf("%s is in dns_again_means_nonexist: returning "
       "DNS_NOMATCH\n", name);
-    return dns_fail_return(name, type, dns_expire_from_soa(dnsa), DNS_NOMATCH);
+    return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NOMATCH);
 
 #else   /* For stand-alone tests */
     return dns_fail_return(name, type, 0, DNS_AGAIN);
@@ -927,7 +927,7 @@ if (dnsa->answerlen < 0) switch (h_errno)
   case NO_DATA:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave NO_DATA\n"
       "returning DNS_NODATA\n", name, dns_text_type(type));
-    return dns_fail_return(name, type, dns_expire_from_soa(dnsa), DNS_NODATA);
+    return dns_fail_return(name, type, dns_expire_from_soa(dnsa, type), DNS_NODATA);
 
   default:
     DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) gave unknown DNS error %d\n"
@@ -1200,7 +1200,7 @@ switch (type)
 
     if (rc == DNS_NOMATCH)
       {
-      fake_dnsa_len_for_fail(dnsa);
+      fake_dnsa_len_for_fail(dnsa, T_CSA);
 
       for (rr = dns_next_rr(dnsa, &dnss, RESET_AUTHORITY);
 	   rr; rr = dns_next_rr(dnsa, &dnss, RESET_NEXT)

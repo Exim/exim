@@ -92,7 +92,7 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
@@ -301,7 +301,7 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
@@ -452,7 +452,7 @@ nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex (MX) using fakens
 DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for nonexist.test.ex-MX-xxxx, ttl 3000
 lookuphost router declined for userx@nonexist.test.ex
 "more" is false: skipping remaining routers
@@ -512,7 +512,7 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
@@ -557,7 +557,7 @@ nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex (A) using fakens
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
-faking res_search() response length as 65535
+faking res_search(A) response length as 65535
  writing neg-cache entry for nonexist.test.ex-A-xxxx, ttl 3000
 useryz router: defer for usery@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
@@ -729,7 +729,7 @@ nonexist.example.com in "*"? yes (matched "*")
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  writing neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
 lookuphost router declined for userx@nonexist.example.com
 "more" is false: skipping remaining routers
@@ -773,7 +773,7 @@ DNS lookup of nonexist.example.com-MX: cached value DNS_NOMATCH past valid time
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
-faking res_search() response length as 65535
+faking res_search(MX) response length as 65535
  update neg-cache entry for nonexist.example.com-MX-xxxx, ttl 2
 delay router declined for userd@nonexist.example.com
 "more" is false: skipping remaining routers
