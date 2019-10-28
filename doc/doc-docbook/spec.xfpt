@@ -52,7 +52,7 @@
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
 
 .macro copyyear
-2018
+2018, 2019
 .endmacro
 
 . /////////////////////////////////////////////////////////////////////////////
@@ -6677,11 +6677,10 @@ aliases or other indexed data referenced by an MTA. Information about cdb and
 tools for building the files can be found in several places:
 .display
 &url(https://cr.yp.to/cdb.html)
-&url(http://www.corpit.ru/mjt/tinycdb.html)
+&url(https://www.corpit.ru/mjt/tinycdb.html)
 &url(https://packages.debian.org/stable/utils/freecdb)
 &url(https://github.com/philpennock/cdbtools) (in Go)
 .endd
-. --- 2018-09-07: corpit.ru http:-only
 A cdb distribution is not needed in order to build Exim with cdb support,
 because the code for reading cdb files is included directly in Exim itself.
 However, no means of building or testing cdb files is provided with Exim, so
