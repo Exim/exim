@@ -40342,8 +40342,12 @@ for more information of what they mean.
 
 SPF is a mechanism whereby a domain may assert which IP addresses may transmit
 messages with its domain in the envelope from, documented by RFC 7208.
-For more information on SPF see &url(http://www.openspf.org).
-. --- 2018-09-07: still not https
+For more information on SPF see &url(http://www.open-spf.org), a static copy of
+the &url(http://openspf.org).
+. --- 2019-10-28: still not https, open-spf.org is told to be a
+. --- web-archive copy of the now dead openspf.org site
+. --- See https://www.mail-archive.com/mailop@mailop.org/msg08019.html for a
+. --- discussion.
 
 Messages sent by a system not authorised will fail checking of such assertions.
 This includes retransmissions done by traditional forwarders.
@@ -40406,7 +40410,7 @@ deny spf = fail
      message = $sender_host_address is not allowed to send mail from \
                ${if def:sender_address_domain \
                     {$sender_address_domain}{$sender_helo_name}}.  \
-               Please see http://www.openspf.org/Why?scope=\
+               Please see http://www.open-spf.org/Why?scope=\
                ${if def:sender_address_domain {mfrom}{helo}};\
                identity=${if def:sender_address_domain \
                              {$sender_address}{$sender_helo_name}};\
@@ -40459,9 +40463,9 @@ In addition to SPF, you can also perform checks for so-called
 "Best-guess".  Strictly speaking, "Best-guess" is not standard
 SPF, but it is supported by the same framework that enables SPF
 capability.
-Refer to &url(http://www.openspf.org/FAQ/Best_guess_record)
+Refer to &url(http://www.open-spf.org/FAQ/Best_guess_record)
 for a description of what it means.
-. --- 2018-09-07: still not https:
+. --- 2019-10-28: still not https:
 
 To access this feature, simply use the spf_guess condition in place
 of the spf one.  For example:

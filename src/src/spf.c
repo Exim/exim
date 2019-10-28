@@ -165,6 +165,12 @@ if (!(spf_server = SPF_server_new_dns(dc, debug)))
   DEBUG(D_receive) debug_printf("spf: SPF_server_new() failed.\n");
   return FALSE;
   }
+  /* Quick hack to override the outdated explanation URL.
+  See https://www.mail-archive.com/mailop@mailop.org/msg08019.html */
+  SPF_server_set_explanation(spf_server, "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}", &spf_response);
+  if (SPF_response_errcode(spf_response) != SPF_E_SUCCESS)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", SPF_strerror(SPF_response_errcode(spf_response)));
+
 return TRUE;
 }
 
