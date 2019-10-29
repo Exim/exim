@@ -3993,6 +3993,9 @@ if (acl_smtp_auth != NULL)
   if (acl_rc != OK)
   {
     smtp_handle_acl_fail(ACL_WHERE_AUTH, acl_rc, user_msg, log_msg);
+    if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+    *s = US"535 Incorrect authentication data";
+    *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
     return acl_rc;
   }
  }
@@ -4011,16 +4014,6 @@ switch(rc)
   case OK:
   if (!au->set_id || set_id)    /* Complete success */
     {
-    if (acl_smtp_auth_accept != NULL)
-      {
-        acl_rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth_accept, &user_msg, &log_msg);
-        if (acl_rc != OK)
-        {
-          smtp_handle_acl_fail(ACL_WHERE_AUTH, acl_rc, user_msg, log_msg);
-          rc = acl_rc;
-          break;
-        }
-      }
     if (set_id) authenticated_id = string_copy_malloc(set_id);
     sender_host_authenticated = au->name;
     sender_host_auth_pubname  = au->public_name;
@@ -4032,6 +4025,17 @@ switch(rc)
 	[pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
     *s = *ss = US"235 Authentication succeeded";
     authenticated_by = au;
+
+    if (acl_smtp_auth_accept != NULL)
+      {
+        acl_rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth_accept, &user_msg, &log_msg);
+        if (acl_rc != OK)
+        {
+          smtp_handle_acl_fail(ACL_WHERE_AUTH, acl_rc, user_msg, log_msg);
+          rc = acl_rc;
+          break;
+        }
+      }
     break;
     }
 
@@ -4062,6 +4066,10 @@ switch(rc)
   break;
 
   case FAIL:
+  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
+  *s = US"535 Incorrect authentication data";
+  *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
+
   if (acl_smtp_auth_fail != NULL)
     {
       acl_rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth_fail, &user_msg, &log_msg);
@@ -4071,9 +4079,6 @@ switch(rc)
         break;
       }
     }
-  if (set_id) authenticated_fail_id = string_copy_malloc(set_id);
-  *s = US"535 Incorrect authentication data";
-  *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
   break;
 
   default:
