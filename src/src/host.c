@@ -138,7 +138,7 @@ if (!slow_lookup_log)
 time_msec = get_time_in_ms();
 retval = dns_lookup(dnsa, name, type, fully_qualified_name);
 if ((time_msec = get_time_in_ms() - time_msec) > slow_lookup_log)
-  log_long_lookup(US"name", name, time_msec);
+  log_long_lookup(dns_text_type(type), name, time_msec);
 return retval;
 }
 
@@ -1546,7 +1546,7 @@ hosts = gethostbyaddr(CS(&addr), sizeof(addr), AF_INET);
 if (  slow_lookup_log
    && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log
    )
-  log_long_lookup(US"name", sender_host_address, time_msec);
+  log_long_lookup(US"gethostbyaddr", sender_host_address, time_msec);
 
 /* Failed to look up the host. */
 
@@ -2032,7 +2032,7 @@ for (int i = 1; i <= times;
 
   if (   slow_lookup_log
       && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log)
-    log_long_lookup(US"name", host->name, time_msec);
+    log_long_lookup(US"gethostbyname", host->name, time_msec);
 
   if (hostdata == NULL)
     {
@@ -3153,6 +3153,79 @@ out:
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 return yield;
 }
+
+
+
+
+#ifdef SUPPORT_DANE
+/* Lookup TLSA record for host/port.
+Return:  OK		success with dnssec; DANE mode
+         DEFER		Do not use this host now, may retry later
+	 FAIL_FORCED	No TLSA record; DANE not usable
+	 FAIL		Do not use this connection
+*/
+
+int
+tlsa_lookup(const host_item * host, dns_answer * dnsa, BOOL dane_required)
+{
+uschar buffer[300];
+const uschar * fullname = buffer;
+int rc;
+BOOL sec;
+
+/* TLSA lookup string */
+(void)sprintf(CS buffer, "_%d._tcp.%.256s", host->port, host->name);
+
+rc = dns_lookup_timerwrap(dnsa, buffer, T_TLSA, &fullname);
+sec = dns_is_secure(dnsa);
+DEBUG(D_transport)
+  debug_printf("TLSA lookup ret %d %sDNSSEC\n", rc, sec ? "" : "not ");
+
+switch (rc)
+  {
+  case DNS_AGAIN:
+    return DEFER; /* just defer this TLS'd conn */
+
+  case DNS_SUCCEED:
+    if (sec)
+      {
+      DEBUG(D_transport)
+	{
+	dns_scan dnss;
+	for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+	     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+	  if (rr->type == T_TLSA && rr->size > 3)
+	    {
+	    uint16_t payload_length = rr->size - 3;
+	    uschar s[MAX_TLSA_EXPANDED_SIZE], * sp = s, * p = US rr->data;
+
+	    sp += sprintf(CS sp, "%d ", *p++); /* usage */
+	    sp += sprintf(CS sp, "%d ", *p++); /* selector */
+	    sp += sprintf(CS sp, "%d ", *p++); /* matchtype */
+	    while (payload_length-- > 0 && sp-s < (MAX_TLSA_EXPANDED_SIZE - 4))
+	      sp += sprintf(CS sp, "%02x", *p++);
+
+	    debug_printf(" %s\n", s);
+	    }
+	}
+      return OK;
+      }
+    log_write(0, LOG_MAIN,
+      "DANE error: TLSA lookup for %s not DNSSEC", host->name);
+    /*FALLTRHOUGH*/
+
+  case DNS_NODATA:	/* no TLSA RR for this lookup */
+  case DNS_NOMATCH:	/* no records at all for this lookup */
+    return dane_required ? FAIL : FAIL_FORCED;
+
+  default:
+  case DNS_FAIL:
+    return dane_required ? FAIL : DEFER;
+  }
+}
+#endif	/*SUPPORT_DANE*/
+
+
 
 /*************************************************
 **************************************************
