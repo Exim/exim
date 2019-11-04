@@ -7,6 +7,7 @@
 */
 
 #include "exim.h"
+#if defined EXPERIMENTAL_ARC
 # if defined DISABLE_DKIM
 #  error DKIM must also be enabled for ARC
 # else
