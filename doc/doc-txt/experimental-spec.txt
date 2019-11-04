@@ -585,6 +585,13 @@ identify the ADMD.  Messages should be ARC-verified on entry to the ADMD,
 and ARC-signed on exit from it.
 
 
+Building with ARC Support
+--
+Enable using EXPERIMENTAL_ARC=yes in your Local/Makefile.
+You must also have DKIM present (not disabled), and you very likely
+want to have SPF enabled.
+
+
 Verification
 --
 An ACL condition is provided to perform the "verifier actions" detailed

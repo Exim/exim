@@ -7,10 +7,7 @@
 */
 
 #include "exim.h"
-#ifdef EXPERIMENTAL_ARC
-# if !defined SUPPORT_SPF
-#  error SPF must also be enabled for ARC
-# elif defined DISABLE_DKIM
+# if defined DISABLE_DKIM
 #  error DKIM must also be enabled for ARC
 # else
 
@@ -1862,7 +1859,7 @@ return g;
 }
 
 
-# endif /* SUPPORT_SPF */
+# endif /* DISABLE_DKIM */
 #endif /* EXPERIMENTAL_ARC */
 /* vi: aw ai sw=2
  */
