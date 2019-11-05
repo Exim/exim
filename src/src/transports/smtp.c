@@ -3571,6 +3571,11 @@ if (tblock->filter_command)
      && *transport_filter_argv
      && **transport_filter_argv
      && sx.peer_offered & OPTION_CHUNKING
+#ifndef DISABLE_DKIM
+    /* When dkim signing, chunking is handled even with a transport-filter */
+     && !(ob->dkim.dkim_private_key && ob->dkim.dkim_domain && ob->dkim.dkim_selector)
+     && !ob->dkim.force_bodyhash
+#endif
      )
     {
     sx.peer_offered &= ~OPTION_CHUNKING;
