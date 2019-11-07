@@ -65,13 +65,13 @@ return lf_check_file(-1, filename, S_IFDIR, modemask, owners, owngroups,
 scanning the directory, as it is hopefully faster to let the OS do the scanning
 for us. */
 
-int
-static dsearch_find(void *handle, uschar *dirname, const uschar *keystring, int length,
+static int
+dsearch_find(void *handle, uschar *dirname, const uschar *keystring, int length,
   uschar **result, uschar **errmsg, uint *do_cache)
 {
 struct stat statbuf;
 int save_errno;
-uschar filename[PATH_MAX];
+uschar * filename;
 
 handle = handle;  /* Keep picky compilers happy */
 length = length;
@@ -84,12 +84,7 @@ if (Ustrchr(keystring, '/') != 0)
   return DEFER;
   }
 
-if (!string_format(filename, sizeof(filename), "%s/%s", dirname, keystring))
-  {
-  *errmsg = US"path name too long";
-  return DEFER;
-  }
-
+filename = string_sprintf("%s/%s", dirname, keystring);
 if (Ulstat(filename, &statbuf) >= 0)
   {
   *result = string_copy(keystring);

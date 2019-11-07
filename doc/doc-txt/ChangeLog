@@ -196,6 +196,10 @@ JH/42 Bug 2545: Fix CHUNKING for all RCPT commands rejected.  Previously we
       carried on and emitted a BDAT command, even when PIPELINING was not
       active.
 
+JH/43 Bug 2465: Fix taint-handling in dsearch lookup.  Previously a nontainted
+      buffer was used for the filename, resulting in a trap when tainted
+      arguments (eg. $domain) were used.
+
 
 Exim version 4.92
 -----------------
