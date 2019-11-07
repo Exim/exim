@@ -664,7 +664,7 @@ return yield;
 *************************************************/
 
 /* The formatting is done by string_vformat, which checks the length of
-everything.
+everything.  Taint is taken from the worst of the arguments.
 
 Arguments:
   format    a printf() format - deliberately char * rather than uschar *

@@ -212,6 +212,10 @@ JH/41 With GnuTLS 3.6.0 (and later) do not attempt to manage Diffie-Hellman
       function is unnecessary and discouraged on GnuTLS 3.6.0 or later. Since
       3.6.0, DH parameters are negotiated following RFC7919."
 
+JH/43 Bug 2465: Fix taint-handling in dsearch lookup.  Previously a nontainted
+      buffer was used for the filename, resulting in a trap when tainted
+      arguments (eg. $domain) were used.
+
 
 Exim version 4.92
 -----------------
