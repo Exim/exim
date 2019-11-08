@@ -22,6 +22,8 @@ JH/04 Support CHUNKING from an smtp transport using a transport_filter, when
       DKIM signing is being done.  Previously a transport_filter would always
       disable CHUNKING, falling back to traditional DATA.
 
+JH/05 Regard command-line receipients as tainted.
+
 
 Exim version 4.93
 -----------------
