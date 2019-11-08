@@ -4822,8 +4822,9 @@ if (verify_address_mode || f.address_test_mode)
     {
     while (recipients_arg < argc)
       {
-      uschar *s = argv[recipients_arg++];
-      while (*s != 0)
+      /* Supplied addresses are tainted since they come from a user */
+      uschar * s = string_copy_taint(argv[recipients_arg++], TRUE);
+      while (*s)
         {
         BOOL finished = FALSE;
         uschar *ss = parse_find_address_end(s, FALSE);
@@ -4831,16 +4832,16 @@ if (verify_address_mode || f.address_test_mode)
         test_address(s, flags, &exit_value);
         s = ss;
         if (!finished)
-          while (*(++s) != 0 && (*s == ',' || isspace(*s)));
+          while (*++s == ',' || isspace(*s)) ;
         }
       }
     }
 
   else for (;;)
     {
-    uschar *s = get_stdinput(NULL, NULL);
-    if (s == NULL) break;
-    test_address(s, flags, &exit_value);
+    uschar * s = get_stdinput(NULL, NULL);
+    if (!s) break;
+    test_address(string_copy_taint(s, TRUE), flags, &exit_value);
     }
 
   route_tidyup();
@@ -5334,13 +5335,13 @@ while (more)
 
     raw_sender = string_copy(sender_address);
 
-    /* Loop for each argument */
+    /* Loop for each argument (supplied by user hence tainted) */
 
     for (int i = 0; i < count; i++)
       {
       int start, end, domain;
-      uschar *errmess;
-      uschar *s = list[i];
+      uschar * errmess;
+      uschar * s = string_copy_taint(list[i], TRUE);
 
       /* Loop for each comma-separated address */
 

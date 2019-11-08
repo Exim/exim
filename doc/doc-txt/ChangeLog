@@ -9,6 +9,8 @@ This is not an official release. It is just a branch, collecting
 proposed bugfixes. Depending on your environment the fixes may be
 necessary to build and/or run Exim successfully.
 
+JH/05 Regard command-line receipients as tainted.
+
 JH/07 Bug 2489: Fix crash in the "pam" expansion condition.  It seems that the
       PAM library frees one of the arguments given to it, despite the
       documentation.  Therefore a plain malloc must be used.
