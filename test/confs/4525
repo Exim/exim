@@ -4,16 +4,15 @@ SERVER=
 OPT=
 FAKE =
 
-keep_environment = PATH:EXIM_TESTHARNESS_DISABLE_OCSPVALIDITYCHECK
-add_environment = SSLKEYLOGFILE=/home/jgh/git/exim/test/spool/sslkeys
+keep_environment = PATH
 exim_path = EXIM_PATH
 host_lookup_order = bydns
-spool_directory = /home/jgh/git/exim/test/spool
+spool_directory = DIR/spool
 
 .ifdef SERVER
-log_file_path = /home/jgh/git/exim/test/spool/log/SERVER%slog
+log_file_path = DIR/spool/log/SERVER%slog
 .else
-log_file_path = /home/jgh/git/exim/test/spool/log/%slog
+log_file_path = DIR/spool/log/%slog
 .endif
 
 gecos_pattern = ""
