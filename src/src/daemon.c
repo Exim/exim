@@ -31,6 +31,7 @@ static smtp_slot empty_smtp_slot = { .pid = 0, .host_address = NULL };
 
 static SIGNAL_BOOL sigchld_seen;
 static SIGNAL_BOOL sighup_seen;
+static SIGNAL_BOOL sigterm_seen;
 
 static int   accept_retry_count = 0;
 static int   accept_retry_errno;
@@ -84,6 +85,16 @@ main_sigchld_handler(int sig)
 sig = sig;    /* Keep picky compilers happy */
 os_non_restarting_signal(SIGCHLD, SIG_DFL);
 sigchld_seen = TRUE;
+}
+
+
+/* SIGTERM handler.  Try to get the damon pif file removed
+before exiting. */
+
+static void
+main_sigterm_handler(int sig)
+{
+sigterm_seen = TRUE;
 }
 
 
@@ -430,6 +441,7 @@ if (pid == 0)
   #else
   signal(SIGCHLD, SIG_IGN);
   #endif
+  signal(SIGTERM, SIG_DFL);
 
   /* Attempt to get an id from the sending machine via the RFC 1413
   protocol. We do this in the sub-process in order not to hold up the
@@ -654,6 +666,7 @@ if (pid == 0)
 
         signal(SIGHUP,  SIG_DFL);
         signal(SIGCHLD, SIG_DFL);
+        signal(SIGTERM, SIG_DFL);
 
         if (geteuid() != root_uid && !deliver_drop_privilege)
           {
@@ -888,6 +901,77 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
 
 
 
+static void
+set_pid_file_path(void)
+{
+if (override_pid_file_path)
+  pid_file_path = override_pid_file_path;
+
+if (!*pid_file_path)
+  pid_file_path = string_sprintf("%s/exim-daemon.pid", spool_directory);
+}
+
+
+/* Remove the daemon's pidfile.  Note: runs with root privilege,
+as a direct child of the daemon.  Does not return. */
+
+void
+delete_pid_file(void)
+{
+uschar * daemon_pid = string_sprintf("%d\n", (int)getppid());
+FILE * f;
+
+set_pid_file_path();
+if ((f = Ufopen(pid_file_path, "rb")))
+  {
+  if (  fgets(CS big_buffer, big_buffer_size, f)
+	&& Ustrcmp(daemon_pid, big_buffer) == 0
+     )
+    if (Uunlink(pid_file_path) == 0)
+      {
+      DEBUG(D_any)
+	debug_printf("%s unlink: %s\n", pid_file_path, strerror(errno));
+      }
+    else
+      DEBUG(D_any)
+	debug_printf("unlinked %s\n", pid_file_path);
+  fclose(f);
+  }
+else
+  DEBUG(D_any)
+    debug_printf("%s\n", string_open_failed(errno, "pid file %s",
+      pid_file_path));
+exim_exit(EXIT_SUCCESS, US"pid file remover");
+}
+
+
+/* Called by the daemon; exec a child to get the pid file deleted
+since we may require privs for the containing directory */
+
+static void
+daemon_die(void)
+{
+int pid;
+
+if (f.running_in_test_harness || write_pid)
+  {
+  if ((pid = fork()) == 0)
+    {
+    if (override_pid_file_path)
+      (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 3,
+	"-oP", override_pid_file_path, "-oPX");
+    else
+      (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 1, "-oPX");
+
+    /* Control never returns here. */
+    }
+  if (pid > 0)
+    child_close(pid, 1);
+  }
+exim_exit(EXIT_SUCCESS, US"daemon");
+}
+
+
 /*************************************************
 *              Exim Daemon Mainline              *
 *************************************************/
@@ -1068,19 +1152,14 @@ if (f.daemon_listen && !f.inetd_wait_mode)
     gstring * new_smtp_port = NULL;
     gstring * new_local_interfaces = NULL;
 
-    if (override_pid_file_path == NULL) write_pid = FALSE;
+    if (!override_pid_file_path) write_pid = FALSE;
 
     list = override_local_interfaces;
     sep = 0;
     while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
       {
       uschar joinstr[4];
-      gstring ** gp;
-
-      if (Ustrpbrk(s, ".:") == NULL)
-        gp = &new_smtp_port;
-      else
-        gp = &new_local_interfaces;
+      gstring ** gp = Ustrpbrk(s, ".:") ? &new_local_interfaces : &new_smtp_port;
 
       if (!*gp)
         {
@@ -1538,12 +1617,7 @@ if (f.running_in_test_harness || write_pid)
   {
   FILE *f;
 
-  if (override_pid_file_path)
-    pid_file_path = override_pid_file_path;
-
-  if (pid_file_path[0] == 0)
-    pid_file_path = string_sprintf("%s/exim-daemon.pid", spool_directory);
-
+  set_pid_file_path();
   if ((f = modefopen(pid_file_path, "wb", 0644)))
     {
     (void)fprintf(f, "%d\n", (int)getpid());
@@ -1586,10 +1660,14 @@ if (queue_interval > 0 && local_queue_run_max > 0)
   for (int i = 0; i < local_queue_run_max; i++) queue_pid_slots[i] = 0;
   }
 
-/* Set up the handler for termination of child processes. */
+/* Set up the handler for termination of child processes, and the one
+telling us to die. */
 
 sigchld_seen = FALSE;
 os_non_restarting_signal(SIGCHLD, main_sigchld_handler);
+
+sigterm_seen = FALSE;
+os_non_restarting_signal(SIGTERM, main_sigterm_handler);
 
 /* If we are to run the queue periodically, pretend the alarm has just gone
 off. This will cause the first queue-runner to get kicked off straight away. */
@@ -1791,6 +1869,9 @@ for (;;)
   EXIM_SOCKLEN_T len;
   pid_t pid;
 
+  if (sigterm_seen)
+    daemon_die();	/* Does not return */
+
   /* This code is placed first in the loop, so that it gets obeyed at the
   start, before the first wait, for the queue-runner case, so that the first
   one can be started immediately.
@@ -1868,6 +1949,7 @@ for (;;)
 
           signal(SIGHUP,  SIG_DFL);
           signal(SIGCHLD, SIG_DFL);
+          signal(SIGTERM, SIG_DFL);
 
           /* Re-exec if privilege has been given up, unless deliver_drop_
           privilege is set. Reset SIGALRM before exec(). */

@@ -175,6 +175,7 @@ extern void    debug_print_tree(tree_node *);
 extern void    debug_vprintf(int, const char *, va_list);
 extern void    decode_bits(unsigned int *, size_t, int *,
 	           uschar *, bit_table *, int, uschar *, int);
+extern void    delete_pid_file(void);
 extern address_item *deliver_make_addr(uschar *, BOOL);
 extern void    delivery_log(int, address_item *, int, uschar *);
 extern int     deliver_message(uschar *, BOOL, BOOL);

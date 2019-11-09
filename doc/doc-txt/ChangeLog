@@ -24,6 +24,8 @@ JH/04 Support CHUNKING from an smtp transport using a transport_filter, when
 
 JH/05 Regard command-line receipients as tainted.
 
+JH/06 Bug 340: Remove the daemon pid file on exit, whe due to SIGTERM.
+
 
 Exim version 4.93
 -----------------

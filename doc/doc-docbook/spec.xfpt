@@ -4367,6 +4367,17 @@ written. When &%-oX%& is used with &%-bd%&, or when &%-q%& with a time is used
 without &%-bd%&, this is the only way of causing Exim to write a pid file,
 because in those cases, the normal pid file is not used.
 
+.new
+.vitem &%-oPX%&
+.oindex "&%-oPX%&"
+.cindex "pid (process id)" "of daemon"
+.cindex "daemon" "process id (pid)"
+This option is not intended for general use.
+The daemon uses it when terminating due to a SIGTEM, possibly in
+combination with &%-oP%&&~<&'path'&>.
+It causes the pid file to be removed.
+.wen
+
 .vitem &%-or%&&~<&'time'&>
 .oindex "&%-or%&"
 .cindex "timeout" "for non-SMTP input"

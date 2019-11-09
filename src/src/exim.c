@@ -202,7 +202,7 @@ va_end(ap);
 static void
 term_handler(int sig)
 {
-  exit(1);
+exit(1);
 }
 
 
@@ -3067,10 +3067,14 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "o") == 0) {}
 
-    /* -oP <name>: set pid file path for daemon */
+    /* -oP <name>: set pid file path for daemon
+       -oPX:       delete pid file of daemon */
 
     else if (Ustrcmp(argrest, "P") == 0)
       override_pid_file_path = argv[++i];
+
+    else if (Ustrcmp(argrest, "PX") == 0)
+      delete_pid_file();
 
     /* -or <n>: set timeout for non-SMTP acceptance
        -os <n>: set timeout for SMTP acceptance */
