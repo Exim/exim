@@ -1345,8 +1345,7 @@ extension to CSA, so we allow it to be turned off for proper conformance. */
 if (string_is_ip_address(domain, NULL) != 0)
   {
   if (!dns_csa_use_reverse) return CSA_UNKNOWN;
-  dns_build_reverse(domain, target);
-  domain = target;
+  domain = dns_build_reverse(domain);
   }
 
 /* Find out if we've already done the CSA check for this domain. If we have,

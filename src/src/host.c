@@ -1646,7 +1646,6 @@ int old_pool, rc;
 int sep = 0;
 uschar *save_hostname;
 uschar **aliases;
-uschar buffer[256];
 uschar *ordername;
 const uschar *list = host_lookup_order;
 dns_answer * dnsa = store_get_dns_answer();
@@ -1672,13 +1671,14 @@ if (f.running_in_test_harness &&
 /* Do lookups directly in the DNS or via gethostbyaddr() (or equivalent), in
 the order specified by the host_lookup_order option. */
 
-while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+while ((ordername = string_nextinlist(&list, &sep, NULL, 0)))
   {
   if (strcmpic(ordername, US"bydns") == 0)
     {
+    uschar * name = dns_build_reverse(sender_host_address);
+
     dns_init(FALSE, FALSE, FALSE);    /* dnssec ctrl by dns_dnssec_ok glbl */
-    dns_build_reverse(sender_host_address, buffer);
-    rc = dns_lookup_timerwrap(dnsa, buffer, T_PTR, NULL);
+    rc = dns_lookup_timerwrap(dnsa, name, T_PTR, NULL);
 
     /* The first record we come across is used for the name; others are
     considered to be aliases. We have to scan twice, in order to find out the

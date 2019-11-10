@@ -221,16 +221,15 @@ a name that can be used to look up PTR records.
 
 Arguments:
   string     the IP address as a string
-  buffer     a suitable buffer, long enough to hold the result
 
-Returns:     nothing
+Returns:     an allocated string
 */
 
-void
-dns_build_reverse(const uschar *string, uschar *buffer)
+uschar *
+dns_build_reverse(const uschar * string)
 {
-const uschar *p = string + Ustrlen(string);
-uschar *pp = buffer;
+const uschar * p = string + Ustrlen(string);
+gstring * g = NULL;
 
 /* Handle IPv4 address */
 
@@ -240,14 +239,13 @@ if (Ustrchr(string, ':') == NULL)
   {
   for (int i = 0; i < 4; i++)
     {
-    const uschar *ppp = p;
+    const uschar * ppp = p;
     while (ppp > string && ppp[-1] != '.') ppp--;
-    Ustrncpy(pp, ppp, p - ppp);
-    pp += p - ppp;
-    *pp++ = '.';
+    g = string_catn(g, ppp, p - ppp);
+    g = string_catn(g, US".", 1);
     p = ppp - 1;
     }
-  Ustrcpy(pp, US"in-addr.arpa");
+  g = string_catn(g, US"in-addr.arpa", 12);
   }
 
 /* Handle IPv6 address; convert to binary so as to fill out any
@@ -257,6 +255,8 @@ abbreviation in the textual form. */
 else
   {
   int v6[4];
+
+  g = string_get_tainted(32, is_tainted(string));
   (void)host_aton(string, v6);
 
   /* The original specification for IPv6 reverse lookup was to invert each
@@ -265,8 +265,8 @@ else
 
   for (int i = 3; i >= 0; i--)
     for (int j = 0; j < 32; j += 4)
-      pp += sprintf(CS pp, "%x.", (v6[i] >> j) & 15);
-  Ustrcpy(pp, US"ip6.arpa.");
+      g = string_fmt_append(g, "%x.", (v6[i] >> j) & 15);
+  g = string_catn(g, US"ip6.arpa.", 9);
 
   /* Another way of doing IPv6 reverse lookups was proposed in conjunction
   with A6 records. However, it fell out of favour when they did. The
@@ -290,6 +290,7 @@ else
 
   }
 #endif
+return string_from_gstring(g);
 }
 
 

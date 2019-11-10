@@ -312,7 +312,6 @@ if (!outsep2) switch(type)
 
 while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
   {
-  uschar rbuffer[256];
   int searchtype = type == T_CSA ? T_SRV :         /* record type we want */
                    type == T_MXH ? T_MX :
                    type == T_ZNS ? T_NS : type;
@@ -325,10 +324,7 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 
   if ((type == T_PTR || type == T_CSA) &&
       string_is_ip_address(domain, NULL) != 0)
-    {
-    dns_build_reverse(domain, rbuffer);
-    domain = rbuffer;
-    }
+    domain = dns_build_reverse(domain);
 
   do
     {
