@@ -9485,9 +9485,15 @@ set in &_Local/Makefile_&. Once loaded, Exim remembers the dynamically loaded
 object so that it doesn't reload the same object file in the same Exim process
 (but of course Exim does start new processes frequently).
 
-There may be from zero to eight arguments to the function. When compiling
-a local function that is to be called in this way, &_local_scan.h_& should be
-included. The Exim variables and functions that are defined by that API
+There may be from zero to eight arguments to the function.
+
+.new
+When compiling
+a local function that is to be called in this way,
+first &_DLFUNC_IMPL_& should be defined,
+and second &_local_scan.h_& should be included.
+.wen
+The Exim variables and functions that are defined by that API
 are also available for dynamically loaded functions. The function itself
 must have the following type:
 .code

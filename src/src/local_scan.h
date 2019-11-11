@@ -193,7 +193,7 @@ extern void    smtp_vprintf(const char *, BOOL, va_list);
 	string_sprintf_trc(fmt, US __FUNCTION__, __LINE__, __VA_ARGS__)
 extern uschar *string_sprintf_trc(const char *, const uschar *, unsigned, ...) ALMOST_PRINTF(1,4);
 
-#ifdef LOCAL_SCAN
+#if defined(LOCAL_SCAN) || defined(DLFUNC_IMPL)
 /* When compiling a local_scan() file we want to rename a published API, so that
 we can use an inlined implementation in the compiles of the main Exim files,
 with the original name. */
