@@ -411,7 +411,8 @@ return ss;
 
 
 
-#if defined(HAVE_LOCAL_SCAN) && !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
+#if (defined(HAVE_LOCAL_SCAN) || defined(EXPAND_DLFUNC)) \
+	&& !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 /*************************************************
 *            Copy and save string                *
 *************************************************/
