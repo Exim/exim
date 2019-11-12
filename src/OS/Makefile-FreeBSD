@@ -1,6 +1,4 @@
 # Exim: OS-specific make file for FreeBSD
-# There's no setting of CFLAGS here, to allow the system default
-# for "make" to be the default.
 
 CHOWN_COMMAND=/usr/sbin/chown
 STRIP_COMMAND=/usr/bin/strip
