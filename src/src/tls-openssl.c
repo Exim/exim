@@ -151,6 +151,11 @@ This list is current as of:
   ==>  1.0.1b  <==
 Plus SSL_OP_SAFARI_ECDHE_ECDSA_BUG from 2013-June patch/discussion on openssl-dev
 Plus SSL_OP_NO_TLSv1_3 for 1.1.2-dev
+Plus SSL_OP_NO_RENEGOTIATION for 1.1.1
+
+XXX could we autobuild this list, as with predefined-macros?
+Seems just parsing ssl.h for SSL_OP_.* would be enough.
+Also allow a numeric literal?
 */
 static exim_openssl_option exim_openssl_options[] = {
 /* KEEP SORTED ALPHABETICALLY! */
@@ -189,6 +194,9 @@ static exim_openssl_option exim_openssl_options[] = {
 #endif
 #ifdef SSL_OP_NO_COMPRESSION
   { US"no_compression", SSL_OP_NO_COMPRESSION },
+#endif
+#ifdef SSL_OP_NO_RENEGOTIATION
+  { US"no_renegotiation", SSL_OP_NO_RENEGOTIATION },
 #endif
 #ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
   { US"no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
@@ -3987,6 +3995,9 @@ result |= SSL_OP_NO_SSLv3;
 #ifdef SSL_OP_SINGLE_DH_USE
 result |= SSL_OP_SINGLE_DH_USE;
 #endif
+#ifdef SSL_OP_SINGLE_DH_USE
+result |= SSL_OP_NO_RENEGOTIATION;
+#endif
 
 if (!option_spec)
   {
@@ -4019,7 +4030,7 @@ for (uschar * s = exp; *s; /**/)
     DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);
     return FALSE;
     }
-  DEBUG(D_tls) debug_printf("openssl option, %s %8lx: %lx (%s)\n",
+  DEBUG(D_tls) debug_printf("openssl option, %s %08lx: %08lx (%s)\n",
       adding ? "adding to    " : "removing from", result, item, s);
   if (adding)
     result |= item;

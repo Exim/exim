@@ -200,6 +200,10 @@ JH/43 Bug 2465: Fix taint-handling in dsearch lookup.  Previously a nontainted
       buffer was used for the filename, resulting in a trap when tainted
       arguments (eg. $domain) were used.
 
+JH/44 With OpenSSL 1.1.1 (onwards) disable renegotiation for TLS1.2 and below;
+      recommended to avoid a possible server-load attack.  The feature can be
+      re-enabled via the openssl_options main cofiguration option.
+
 
 Exim version 4.92
 -----------------
