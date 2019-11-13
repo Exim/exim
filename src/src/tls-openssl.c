@@ -3995,7 +3995,7 @@ result |= SSL_OP_NO_SSLv3;
 #ifdef SSL_OP_SINGLE_DH_USE
 result |= SSL_OP_SINGLE_DH_USE;
 #endif
-#ifdef SSL_OP_SINGLE_DH_USE
+#ifdef SSL_OP_NO_RENEGOTIATION
 result |= SSL_OP_NO_RENEGOTIATION;
 #endif
 
