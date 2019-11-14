@@ -3,7 +3,7 @@ Authentication-Results: myhost.test.ex;
 	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
 	auth=pass (tls) x509.auth="Phil Pennock"
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtpsa (TLS_proto_and_cipher)
+	by myhost.test.ex with esmtpsa  (TLS_proto_and_cipher) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim x.yz)
 	(envelope-from <ok@test.ex>)
 	id 10HmaZ-0005vi-00

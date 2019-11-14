@@ -6,7 +6,7 @@
 Envelope-from: <>
 Envelope-to: <data_defer@test.ex>
 P Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with esmtps  (TLS1.x) tls ke-RSA-AES256-SHAnnn
 	(Exim x.yz)
 	id 10HmaX-0005vi-00
 	for data_defer@test.ex; Tue, 2 Mar 1999 09:44:33 +0000

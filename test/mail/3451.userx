@@ -1,12 +1,12 @@
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtpsa (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with esmtpsa  (TLS1.x) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtpsa (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with esmtpsa  (TLS1.x) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
@@ -24,13 +24,13 @@ Test message 1
 
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtpsa (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with esmtpsa  (TLS1.x) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbC-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Received: from localhost ([127.0.0.1] helo=myhost.test.ex)
-	by myhost.test.ex with esmtpsa (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
+	by myhost.test.ex with esmtpsa  (TLS1.x) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbA-0005vi-00

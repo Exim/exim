@@ -16763,6 +16763,7 @@ received_header_text = Received: \
         ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
   by $primary_hostname \
   ${if def:received_protocol {with $received_protocol }}\
+  ${if def:tls_ver           { ($tls_ver)}}\
   ${if def:tls_in_cipher_std { tls $tls_in_cipher_std\n\t}}\
   (Exim $version_number)\n\t\
   ${if def:sender_address \

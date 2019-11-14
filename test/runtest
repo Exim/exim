@@ -656,6 +656,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # Separate reporting of TLS version
   s/ver:    TLS1(\.[123])?$/ver:    TLS1.x/;
+  s/ \(TLS1(\.[123])?\) / (TLS1.x) /;
 
   # GnuTLS library error message changes
   s/(No certificate was found|Certificate is required)/The peer did not send any certificate/g;
