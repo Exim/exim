@@ -25,6 +25,7 @@ my $p_version = "20100323.0";
 my $p_usage   = "Usage: $p_name [--help|--man|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2010 John Jetmore <jj33\@pobox.com>
+        Copyright (c) 2019 The Exim Maintainers
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -903,8 +904,8 @@ sub _parse_header {
   $self->{_vars}{message_age}      = time() - $self->{_vars}{received_time};
 
   TAGGED: while (<I>) {
-    chomp;
     my ($tag, $arg) = /^-?(-\S+)(?:\s+(.*))?$/ or last TAGGED;
+    chomp;
 
     if ($tag eq '-acl') {
       my $t;
@@ -1007,6 +1008,7 @@ sub _parse_header {
   # when we drop out of the while loop, we have the first line of the
   # delivered tree in $_
   do {
+    chomp;
     if ($_ eq 'XX') {
       ; # noop
     } elsif ($_ =~ s/^[YN][YN]\s+//) {
@@ -1014,7 +1016,7 @@ sub _parse_header {
     } else {
       return(0);
     }
-    chomp($_ = <I>);
+    $_ = <I>;
   } while ($_ !~ /^\d+$/);
 
   $self->{_numrecips} = $_;
