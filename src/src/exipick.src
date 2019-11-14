@@ -902,12 +902,11 @@ sub _parse_header {
   $self->{_vars}{warning_count}    = $2;
   $self->{_vars}{message_age}      = time() - $self->{_vars}{received_time};
 
-  while (<I>) {
-    chomp();
-    if (/^(-\S+)\s*(.*$)/) {
-      my $tag = $1;
-      my $arg = $2;
-      if ($tag eq '-acl') {
+  TAGGED: while (<I>) {
+    chomp;
+    my ($tag, $arg) = /^-?(-\S+)(?:\s+(.*))?$/ or last TAGGED;
+
+    if ($tag eq '-acl') {
         my $t;
         return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
         if ($1 < $Exim::SpoolFile::ACL_C_MAX_LEGACY) {
@@ -917,94 +916,91 @@ sub _parse_header {
         }
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
-      } elsif ($tag eq '-aclc') {
+    } elsif ($tag eq '-aclc') {
         #return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
         return(0) if ($arg !~ /^(\S+)\s(\d+)$/);
         my $t = "acl_c$1";
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
-      } elsif ($tag eq '-aclm') {
+    } elsif ($tag eq '-aclm') {
         #return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
         return(0) if ($arg !~ /^(\S+)\s(\d+)$/);
         my $t = "acl_m$1";
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
-      } elsif ($tag eq '-local') {
+    } elsif ($tag eq '-local') {
         $self->{_vars}{sender_local} = 1;
-      } elsif ($tag eq '-localerror') {
+    } elsif ($tag eq '-localerror') {
         $self->{_vars}{local_error_message} = 1;
-      } elsif ($tag eq '-local_scan') {
+    } elsif ($tag eq '-local_scan') {
         $self->{_vars}{local_scan_data} = $arg;
-      } elsif ($tag eq '-spam_score_int') {
+    } elsif ($tag eq '-spam_score_int') {
         $self->{_vars}{spam_score_int} = $arg;
         $self->{_vars}{spam_score}     = $arg / 10;
-      } elsif ($tag eq '-bmi_verdicts') {
+    } elsif ($tag eq '-bmi_verdicts') {
         $self->{_vars}{bmi_verdicts} = $arg;
-      } elsif ($tag eq '-host_lookup_deferred') {
+    } elsif ($tag eq '-host_lookup_deferred') {
         $self->{_vars}{host_lookup_deferred} = 1;
-      } elsif ($tag eq '-host_lookup_failed') {
+    } elsif ($tag eq '-host_lookup_failed') {
         $self->{_vars}{host_lookup_failed} = 1;
-      } elsif ($tag eq '-body_linecount') {
+    } elsif ($tag eq '-body_linecount') {
         $self->{_vars}{body_linecount} = $arg;
-      } elsif ($tag eq '-max_received_linelength') {
+    } elsif ($tag eq '-max_received_linelength') {
         $self->{_vars}{max_received_linelength} = $arg;
-      } elsif ($tag eq '-body_zerocount') {
+    } elsif ($tag eq '-body_zerocount') {
         $self->{_vars}{body_zerocount} = $arg;
-      } elsif ($tag eq '-frozen') {
+    } elsif ($tag eq '-frozen') {
         $self->{_vars}{deliver_freeze} = 1;
         $self->{_vars}{deliver_frozen_at} = $arg;
-      } elsif ($tag eq '-allow_unqualified_recipient') {
+    } elsif ($tag eq '-allow_unqualified_recipient') {
         $self->{_vars}{allow_unqualified_recipient} = 1;
-      } elsif ($tag eq '-allow_unqualified_sender') {
+    } elsif ($tag eq '-allow_unqualified_sender') {
         $self->{_vars}{allow_unqualified_sender} = 1;
-      } elsif ($tag eq '-deliver_firsttime') {
+    } elsif ($tag eq '-deliver_firsttime') {
         $self->{_vars}{deliver_firsttime} = 1;
         $self->{_vars}{first_delivery} = 1;
-      } elsif ($tag eq '-manual_thaw') {
+    } elsif ($tag eq '-manual_thaw') {
         $self->{_vars}{deliver_manual_thaw} = 1;
         $self->{_vars}{manually_thawed} = 1;
-      } elsif ($tag eq '-auth_id') {
+    } elsif ($tag eq '-auth_id') {
         $self->{_vars}{authenticated_id} = $arg;
-      } elsif ($tag eq '-auth_sender') {
+    } elsif ($tag eq '-auth_sender') {
         $self->{_vars}{authenticated_sender} = $arg;
-      } elsif ($tag eq '-sender_set_untrusted') {
+    } elsif ($tag eq '-sender_set_untrusted') {
         $self->{_vars}{sender_set_untrusted} = 1;
-      } elsif ($tag eq '-tls_certificate_verified') {
+    } elsif ($tag eq '-tls_certificate_verified') {
         $self->{_vars}{tls_certificate_verified} = 1;
-      } elsif ($tag eq '-tls_cipher') {
+    } elsif ($tag eq '-tls_cipher') {
         $self->{_vars}{tls_cipher} = $arg;
-      } elsif ($tag eq '-tls_peerdn') {
+    } elsif ($tag eq '-tls_peerdn') {
         $self->{_vars}{tls_peerdn} = $arg;
-      } elsif ($tag eq '-tls_sni') {
+    } elsif ($tag eq '-tls_sni') {
         $self->{_vars}{tls_sni} = $arg;
-      } elsif ($tag eq '-host_address') {
+    } elsif ($tag eq '-host_address') {
         $self->{_vars}{sender_host_port} = $self->_get_host_and_port(\$arg);
         $self->{_vars}{sender_host_address} = $arg;
-      } elsif ($tag eq '-interface_address') {
+    } elsif ($tag eq '-interface_address') {
         $self->{_vars}{received_port} =
             $self->{_vars}{interface_port} = $self->_get_host_and_port(\$arg);
         $self->{_vars}{received_ip_address} =
             $self->{_vars}{interface_address} = $arg;
-      } elsif ($tag eq '-active_hostname') {
+    } elsif ($tag eq '-active_hostname') {
         $self->{_vars}{smtp_active_hostname} = $arg;
-      } elsif ($tag eq '-host_auth') {
+    } elsif ($tag eq '-host_auth') {
         $self->{_vars}{sender_host_authenticated} = $arg;
-      } elsif ($tag eq '-host_name') {
+    } elsif ($tag eq '-host_name') {
         $self->{_vars}{sender_host_name} = $arg;
-      } elsif ($tag eq '-helo_name') {
+    } elsif ($tag eq '-helo_name') {
         $self->{_vars}{sender_helo_name} = $arg;
-      } elsif ($tag eq '-ident') {
+    } elsif ($tag eq '-ident') {
         $self->{_vars}{sender_ident} = $arg;
-      } elsif ($tag eq '-received_protocol') {
+    } elsif ($tag eq '-received_protocol') {
         $self->{_vars}{received_protocol} = $arg;
-      } elsif ($tag eq '-N') {
+    } elsif ($tag eq '-N') {
         $self->{_vars}{dont_deliver} = 1;
-      } else {
+    } else {
         # unrecognized tag, save it for reference
         $self->{$tag} = $arg;
-      }
-    } else {
-      last;
     }
   }
 
