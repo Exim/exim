@@ -776,6 +776,7 @@ static var_entry var_table[] = {
 #ifndef DISABLE_TLS
   { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
 #endif
+  { "tls_in_ver",          vtype_stringptr,   &tls_in.ver },
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
   { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
   { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
@@ -796,6 +797,7 @@ static var_entry var_table[] = {
 #ifdef SUPPORT_DANE
   { "tls_out_tlsa_usage",  vtype_int,         &tls_out.tlsa_usage },
 #endif
+  { "tls_out_ver",         vtype_stringptr,   &tls_out.ver },
 
   { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },	/* mind the alphabetical order! */
 #ifndef DISABLE_TLS

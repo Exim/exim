@@ -1610,6 +1610,7 @@ if (result == OK)
   tls_out.peercert = addr->peercert;
   addr->peercert = NULL;
 
+  tls_out.ver = addr->tlsver;
   tls_out.cipher = addr->cipher;
   tls_out.peerdn = addr->peerdn;
   tls_out.ocsp = addr->ocsp;
@@ -1623,6 +1624,7 @@ if (result == OK)
 #ifndef DISABLE_TLS
   tls_free_cert(&tls_out.ourcert);
   tls_free_cert(&tls_out.peercert);
+  tls_out.ver = NULL;
   tls_out.cipher = NULL;
   tls_out.peerdn = NULL;
   tls_out.ocsp = OCSP_NOT_REQ;
@@ -3480,11 +3482,13 @@ while (!done)
       switch (*subid)
 	{
 	case '1':
-	  addr->cipher = NULL;
-	  addr->peerdn = NULL;
+	  addr->tlsver = addr->cipher = addr->peerdn = NULL;
 
 	  if (*ptr)
+	    {
 	    addr->cipher = string_copy(ptr);
+	    addr->tlsver = string_copyn(ptr, Ustrchr(ptr, ':') - ptr);
+	    }
 	  while (*ptr++);
 	  if (*ptr)
 	    addr->peerdn = string_copy(ptr);

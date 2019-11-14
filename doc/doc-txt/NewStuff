@@ -12,6 +12,9 @@ Version 4.next
  1. EXPERIMENTAL_SRS_NATIVE optional build feature.  See the experimental.spec
     file.
 
+ 2. Variables $tls_in_ver, $tls_out_ver.
+
+
 Version 4.93
 ------------
 

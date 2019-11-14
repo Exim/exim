@@ -552,15 +552,19 @@ RESET_AFTER_EXTRA_LINE_READ:
   # the older (comment) style, keeping only the Auth element
   # (discarding kex, cipher, mac).  For TLS 1.3 there is no kex
   # element (and no _WITH); insert a spurious "RSA".
+  # Also in $tls_X_cipher_std reporting.
 
   s/^\s+by .+ with .+ \K tls TLS_.*?([^_]+)_WITH.+$/(TLS1.x:ke-$1-AES256-SHAnnn:xxx)/;
   s/^\s+by .+ with .+ \K tls TLS_.+$/(TLS1.x:ke-RSA-AES256-SHAnnn:xxx)/;
+
+  s/ cipher_ TLS_.*?([^_]+)_WITH.+$/ cipher_ TLS1.x:ke_$1_WITH_ci_mac/;
+  s/ cipher_ TLS_.*$/ cipher_ TLS1.x:ke_RSA_WITH_ci_mac/;
 
   # Test machines might have various different TLS library versions supporting
   # different protocols; can't rely upon TLS 1.2's AES256-GCM-SHA384, so we
   # treat the standard algorithms the same.
   #
-  # TLSversion : KeyExchange? - Authentication/Signature - C_iph_er - MAC : ???
+  # TLSversion : KeyExchange? - Authentication/Signature - C_iph_er - MAC : bits
   #
   # So far, have seen:
   #   TLSv1:AES128-GCM-SHA256:128
@@ -578,7 +582,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   #
   # Retain the authentication algorith field as we want to test that.
 
-  s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1(\.[123])?:/$1TLS1.x:/xg;
+  s/( (?: (?:\b|\s) [\(=] ) | \s )TLS1(\.[123])?:/$1TLS1.x:/xg;
   s/(?<!ke-)((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA)(?!:)/ke-$3-AES256-SHAnnn/g;
   s/(?<!ke-)((EC)?DHE-)?(RSA|ECDSA)-AES(128|256)-(GCM-SHA(256|384)|SHA):(128|256)/ke-$3-AES256-SHAnnn:xxx/g;
 
@@ -633,10 +637,11 @@ RESET_AFTER_EXTRA_LINE_READ:
   #   DHE-RSA-AES256-SHA
   # picking latter as canonical simply because regex easier that way.
   s/\bDHE_RSA_AES_128_CBC_SHA1:128/RSA-AES256-SHA1:256/g;
-  s/TLS1.[0123](-PKIX)?:						# TLS version
+  s/TLS1.[x0123](-PKIX)?:						# TLS version
     ((EC)?DHE(_((?<psk>PSK)_)?((?<auth>RSA|ECDSA)_)?
 				(SECP(256|521)R1|X25519))?__?)?		# key-exchange
     ((?<auth>RSA|ECDSA)((_PSS_RSAE)?_SHA(512|256))?__?)?		# authentication
+    (?<with>WITH_)?							# stdname-with
     AES_(256|128)_(CBC|GCM)						# cipher
     (__?AEAD)?								# pseudo-MAC
     (__?SHA(1|256|384))?						# PRF
@@ -644,9 +649,13 @@ RESET_AFTER_EXTRA_LINE_READ:
     /"TLS1.x:ke-"
 	. (defined($+{psk}) ? $+{psk} : "")
 	. (defined($+{auth}) ? $+{auth} : "")
+	. (defined($+{with}) ? $+{with} : "")
 	. "-AES256-SHAnnn:xxx"/gex;
   s/TLS1.2:RSA__CAMELLIA_256_GCM(_SHA384)?:256/TLS1.2:RSA_CAMELLIA_256_GCM-SHAnnn:256/g;
   s/\b(ECDHE-(RSA|ECDSA)-AES256-SHA|DHE-RSA-AES256-SHA256)\b/ke-$2-AES256-SHAnnn/g;
+
+  # Separate reporting of TLS version
+  s/ver:    TLS1(\.[123])?$/ver:    TLS1.x/;
 
   # GnuTLS library error message changes
   s/(No certificate was found|Certificate is required)/The peer did not send any certificate/g;

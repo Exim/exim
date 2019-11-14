@@ -468,6 +468,7 @@ Sets:
   tls_bits                  strength indicator
   tls_certificate_verified  bool indicator
   tls_channelbinding_b64    for some SASL mechanisms
+  tls_ver                   a string
   tls_cipher                a string
   tls_peercert              pointer to library internal
   tls_peerdn                a string
@@ -1754,6 +1755,7 @@ old_pool = store_pool;
     /* debug_printf("peer_status: gnutls_session_get_desc %s\n", s); */
 
     for (s++; (c = *s) && c != ')'; s++) g = string_catn(g, s, 1);
+    tlsp->ver = string_copyn(g->s, g->ptr);
     g = string_catn(g, US":", 1);
     if (*s) s++;		/* now on _ between groups */
     while ((c = *s))
@@ -1778,6 +1780,8 @@ old_pool = store_pool;
   releases did return "TLS 1.0"; play it safe, just in case. */
 
   for (uschar * p = state->ciphersuite; *p; p++) if (isspace(*p)) *p = '-';
+  tlsp->ver = string_copyn(state->ciphersuite,
+			Ustrchr(state->ciphersuite, ':') - state->ciphersuite);
 #endif
 
 /* debug_printf("peer_status: ciphersuite %s\n", state->ciphersuite); */

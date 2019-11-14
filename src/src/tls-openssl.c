@@ -2212,14 +2212,13 @@ Returns:    pointer to allocated string in perm-pool
 */
 
 static uschar *
-construct_cipher_name(SSL * ssl, int * bits)
+construct_cipher_name(SSL * ssl, const uschar * ver, int * bits)
 {
 int pool = store_pool;
 /* With OpenSSL 1.0.0a, 'c' needs to be const but the documentation doesn't
 yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
 the accessor functions use const in the prototype. */
 
-const uschar * ver = CUS SSL_get_version(ssl);
 const SSL_CIPHER * c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
 uschar * s;
 
@@ -2247,6 +2246,21 @@ return CUS SSL_CIPHER_standard_name(SSL_get_current_cipher(ssl));
 ushort id = 0xffff & SSL_CIPHER_get_id(SSL_get_current_cipher(ssl));
 return cipher_stdname(id >> 8, id & 0xff);
 #endif
+}
+
+
+static const uschar *
+tlsver_name(SSL * ssl)
+{
+uschar * s, * p;
+int pool = store_pool;
+
+store_pool = POOL_PERM;
+s = string_copy(US SSL_get_version(ssl));
+store_pool = pool;
+if ((p = Ustrchr(s, 'v')))	/* TLSv1.2 -> TLS1.2 */
+  for (;; p++) if (!(*p = p[1])) break;
+return CUS s;
 }
 
 
@@ -2688,12 +2702,13 @@ if (SSL_session_reused(server_ssl))
   }
 #endif
 
-/* TLS has been set up. Adjust the input functions to read via TLS,
-and initialize things. */
+/* TLS has been set up. Record data for the connection,
+adjust the input functions to read via TLS, and initialize things. */
 
 peer_cert(server_ssl, &tls_in, peerdn, sizeof(peerdn));
 
-tls_in.cipher = construct_cipher_name(server_ssl, &tls_in.bits);
+tls_in.ver = tlsver_name(server_ssl);
+tls_in.cipher = construct_cipher_name(server_ssl, tls_in.ver, &tls_in.bits);
 tls_in.cipher_stdname = cipher_stdname_ssl(server_ssl);
 
 DEBUG(D_tls)
@@ -3278,7 +3293,8 @@ tls_client_resume_posthandshake(exim_client_ctx, tlsp);
 
 peer_cert(exim_client_ctx->ssl, tlsp, peerdn, sizeof(peerdn));
 
-tlsp->cipher = construct_cipher_name(exim_client_ctx->ssl, &tlsp->bits);
+tlsp->ver = tlsver_name(exim_client_ctx->ssl);
+tlsp->cipher = construct_cipher_name(exim_client_ctx->ssl, tlsp->ver, &tlsp->bits);
 tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
 
 /* Record the certificate we presented */

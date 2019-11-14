@@ -2466,7 +2466,7 @@ if (!host_checking && !f.sender_host_notsocket)
 authenticated_by = NULL;
 
 #ifndef DISABLE_TLS
-tls_in.cipher = tls_in.peerdn = NULL;
+tls_in.ver = tls_in.cipher = tls_in.peerdn = NULL;
 tls_in.ourcert = tls_in.peercert = NULL;
 tls_in.sni = NULL;
 tls_in.ocsp = OCSP_NOT_REQ;

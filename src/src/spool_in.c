@@ -278,7 +278,7 @@ tls_in.certificate_verified = FALSE;
 # ifdef SUPPORT_DANE
 tls_in.dane_verified = FALSE;
 # endif
-tls_in.cipher = NULL;
+tls_in.ver = tls_in.cipher = NULL;
 # ifndef COMPILE_UTILITY	/* tls support fns not built in */
 tls_free_cert(&tls_in.ourcert);
 tls_free_cert(&tls_in.peercert);
@@ -665,24 +665,25 @@ for (;;)
       if (Ustrncmp(q, "certificate_verified", 20) == 0)
 	tls_in.certificate_verified = TRUE;
       else if (Ustrncmp(q, "cipher", 6) == 0)
-	tls_in.cipher = string_copy_taint(var + 11, tainted);
+	tls_in.cipher = string_copy_taint(q+7, tainted);
 # ifndef COMPILE_UTILITY	/* tls support fns not built in */
       else if (Ustrncmp(q, "ourcert", 7) == 0)
-	(void) tls_import_cert(var + 12, &tls_in.ourcert);
+	(void) tls_import_cert(q+8, &tls_in.ourcert);
       else if (Ustrncmp(q, "peercert", 8) == 0)
-	(void) tls_import_cert(var + 13, &tls_in.peercert);
+	(void) tls_import_cert(q+9, &tls_in.peercert);
 # endif
       else if (Ustrncmp(q, "peerdn", 6) == 0)
-	tls_in.peerdn = string_unprinting(string_copy_taint(var + 11, tainted));
+	tls_in.peerdn = string_unprinting(string_copy_taint(q+7, tainted));
       else if (Ustrncmp(q, "sni", 3) == 0)
-	tls_in.sni = string_unprinting(string_copy_taint(var + 8, tainted));
+	tls_in.sni = string_unprinting(string_copy_taint(q+4, tainted));
       else if (Ustrncmp(q, "ocsp", 4) == 0)
-	tls_in.ocsp = var[9] - '0';
+	tls_in.ocsp = q[5] - '0';
 # ifdef EXPERIMENTAL_TLS_RESUME
       else if (Ustrncmp(q, "resumption", 10) == 0)
-	tls_in.resumption = var[15] - 'A';
+	tls_in.resumption = q[11] - 'A';
 # endif
-
+      else if (Ustrncmp(q, "ver", 3) == 0)
+	tls_in.ver = string_copy_taint(q+4, tainted);
       }
     break;
 #endif
