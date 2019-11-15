@@ -173,6 +173,7 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
    || dmarc_policy == DMARC_POLICY_QUARANTINE && action == DMARC_RESULT_QUARANTINE
    || dmarc_policy == DMARC_POLICY_NONE       && action == DMARC_RESULT_REJECT
    || dmarc_policy == DMARC_POLICY_NONE       && action == DMARC_RESULT_QUARANTINE
+   || dmarc_policy == DMARC_POLICY_NONE       && action == DMARC_RESULT_ACCEPT
    )
   if (ruf)
     {
