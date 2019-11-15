@@ -165,6 +165,8 @@ if (!dmarc_enable_forensic)
 
 
 log_write(0, LOG_MAIN, "DMARC SEND FORENSIC REPORT: dmarc_policy=%d action=%d", dmarc_policy, action);
+log_write(0, LOG_MAIN, "POLICY - REJECT IS %d, QUARANTINE IS %d, NONE IS %d", DMARC_POLICY_REJECT, DMARC_POLICY_QUARANTINE, DMARC_POLICY_NONE);
+log_write(0, LOG_MAIN, "RESULT - REJECT IS %d, QUARANTINE IS %d", DMARC_RESULT_REJECT, DMARC_RESULT_QUARANTINE);
 
 
 if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
