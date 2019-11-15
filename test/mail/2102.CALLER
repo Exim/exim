@@ -1,6 +1,6 @@
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1]
-	by myhost.test.ex with smtps  (TLS1.x) tls TLS_RSA_WITH_AES_256_GCM_SHA384
+	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
@@ -12,7 +12,7 @@ This is a test encrypted message.
 
 From "name with spaces"@test.ex Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1]
-	by myhost.test.ex with smtps  (TLS1.x) tls TLS_RSA_WITH_AES_256_GCM_SHA384
+	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <"name with spaces"@test.ex>)
 	id 10HmaY-0005vi-00
@@ -24,7 +24,7 @@ This is a test encrypted message.
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from [ip4.ip4.ip4.ip4]
-	by myhost.test.ex with smtps  (TLS1.x) tls TLS_RSA_WITH_AES_256_GCM_SHA384
+	by myhost.test.ex with smtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
@@ -36,7 +36,7 @@ This is a test encrypted message from a verified host.
 
 From CALLER@test.ex Tue Mar 02 09:44:33 1999
 Received: from [127.0.0.1]
-	by myhost.test.ex with smtps  (TLS1.x) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+	by myhost.test.ex with smtps (TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00

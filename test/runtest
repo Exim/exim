@@ -554,8 +554,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   # element (and no _WITH); insert a spurious "RSA".
   # Also in $tls_X_cipher_std reporting.
 
-  s/^\s+by .+ with .+ \K tls TLS_.*?([^_]+)_WITH.+$/(TLS1.x:ke-$1-AES256-SHAnnn:xxx)/;
-  s/^\s+by .+ with .+ \K tls TLS_.+$/(TLS1.x:ke-RSA-AES256-SHAnnn:xxx)/;
+  s/^\s+by \S+ with .+ \K \(TLS1(?:\.[0-3])?\) tls TLS_.*?([^_]+)_WITH.+$/(TLS1.x:ke-$1-AES256-SHAnnn:xxx)/;
+  s/^\s+by \S+ with .+ \K \(TLS1(?:\.[0-3])?\) tls TLS_.+$/(TLS1.x:ke-RSA-AES256-SHAnnn:xxx)/;
 
   s/ cipher_ TLS_.*?([^_]+)_WITH.+$/ cipher_ TLS1.x:ke_$1_WITH_ci_mac/;
   s/ cipher_ TLS_.*$/ cipher_ TLS1.x:ke_RSA_WITH_ci_mac/;
@@ -655,8 +655,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/\b(ECDHE-(RSA|ECDSA)-AES256-SHA|DHE-RSA-AES256-SHA256)\b/ke-$2-AES256-SHAnnn/g;
 
   # Separate reporting of TLS version
-  s/ver:    TLS1(\.[123])?$/ver:    TLS1.x/;
-  s/ \(TLS1(\.[123])?\) / (TLS1.x) /;
+  s/ver:    TLS1(\.[0-3])?$/ver:    TLS1.x/;
+  s/ \(TLS1(\.[0-3])?\) / (TLS1.x) /;
 
   # GnuTLS library error message changes
   s/(No certificate was found|Certificate is required)/The peer did not send any certificate/g;
@@ -1769,9 +1769,6 @@ $munges =
 		      s! DN="[^,"]*\K,!/!;
 		     ',
       'rejectlog' => 's/ X=TLS\S+ / X=TLS_proto_and_cipher /',
-      'mail'      => 's/^\s+by .+ with .+ \K tls TLS_.+$/(TLS_proto_and_cipher)/;
-		      s/ \(TLS[^)]*\)/ (TLS_proto_and_cipher)/;
-		     ',
     },
 
     'debug_pid' =>

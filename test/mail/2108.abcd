@@ -1,6 +1,6 @@
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from the.local.host.name ([ip4.ip4.ip4.ip4] helo=myhost.test.ex)
-	by myhost.test.ex with esmtps  (TLS1.x) tls ke-RSA-AES256-SHAnnn
+	by myhost.test.ex with esmtps (TLS1.x:ke-RSA-AES256-SHAnnn:xxx)
 	(Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
