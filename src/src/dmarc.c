@@ -164,7 +164,7 @@ if (!dmarc_enable_forensic)
   return;
 
 
-//log_write(0, LOG_MAIN, "DMARC SEND FORENSIC REPORT: dmarc_policy=%s action=%s", dmarc_policy, action);
+log_write(0, LOG_MAIN, "DMARC SEND FORENSIC REPORT: dmarc_policy=%d action=%d", dmarc_policy, action);
 
 
 if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
@@ -174,7 +174,7 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
    )
   if (ruf)
     {
-    //log_write(0, LOG_MAIN, "DMARC SEND FORENSIC REPORT: success");
+    log_write(0, LOG_MAIN, "DMARC SEND FORENSIC REPORT: success");
     eblock = add_to_eblock(eblock, US"Sender Domain", dmarc_used_domain);
     eblock = add_to_eblock(eblock, US"Sender IP Address", sender_host_address);
     eblock = add_to_eblock(eblock, US"Received Date", tod_stamp(tod_full));
