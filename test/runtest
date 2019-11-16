@@ -2168,16 +2168,15 @@ if (/^dump\s+(\S+)/)
 
   if ($which eq "retry")
     {
-    $/ = "\n  ";
-    @temp = <IN>;
-    $/ = "\n";
-
-    @temp = sort {
-                   my($aa) = split(' ', $a);
-                   my($bb) = split(' ', $b);
-                   return $aa cmp $bb;
-                 } @temp;
-
+    # the sort key is the first part of the retry db dump line, but for
+    # sorting we (temporarly) replace the own hosts ipv4 with a munged
+    # version, which matches the munging that is done later
+    # Why? We must ensure sure, that 127.0.0.1 always sorts first
+    # map-sort-map: Schwartz's transformation
+    my @temp = map  { $_->[1] }
+               sort { $a->[0] cmp $b->[0] }
+               map  { [ (split)[0] =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/gr, $_ ] }
+               do { local $/ = "\n  "; <$in> };
     foreach $item (@temp)
       {
       $item =~ s/^\s*(.*)\n(.*)\n?\s*$/$1\n$2/m;
