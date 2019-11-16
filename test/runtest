@@ -1622,21 +1622,20 @@ if (-e $sf_current)
         }
       }
 
-    open(MUNGED, '>', $mf) || tests_exit(-1, "Failed to open $mf: $!");
-    for ($i = 0; $i < @munged; $i++)
-      { print MUNGED $munged[$i]; }
-    close(MUNGED);
+    open(my $fh, '>', $mf) or tests_exit(-1, "Failed to open $mf: $!");
+    print $fh @munged;
     }
 
   # Deal with log sorting
 
   if ($sortfile)
     {
-    my(@munged, $i, $j);
+    my ($i, $j);
 
-    open(MUNGED, $mf) || tests_exit(-1, "Failed to open $mf: $!");
-    @munged = <MUNGED>;
-    close(MUNGED);
+    my @munged = do {
+      open(my $fh, '<', $mf) or tests_exit(-1, "Failed to open $mf: $!");
+      <$fh>;
+    };
 
     for ($i = 0; $i < @munged; $i++)
       {
@@ -1653,11 +1652,9 @@ if (-e $sf_current)
         }
       }
 
-    open(MUNGED, ">$mf") || tests_exit(-1, "Failed to open $mf: $!");
-    print MUNGED "**NOTE: The delivery lines in this file have been sorted.\n";
-    for ($i = 0; $i < @munged; $i++)
-      { print MUNGED $munged[$i]; }
-    close(MUNGED);
+    open(my $fh, '>', $mf) or tests_exit(-1, "Failed to open $mf: $!");
+    print $fh "**NOTE: The delivery lines in this file have been sorted.\n";
+    print $fh @munged;
     }
 
   # Do the comparison
@@ -1698,8 +1695,7 @@ else
     # if we deal with a flavour file, we can't delete it, because next time the generic
     # file would be used again
     if ($sf_current eq $sf_flavour) {
-      open(FOO, ">$sf_current");
-      close(FOO);
+      open(my $fh, '>', $sf_current);
     }
     else {
       tests_exit(-1, "Failed to unlink $sf_current") if !unlink($sf_current);
@@ -2164,12 +2160,11 @@ if (/^dbmbuild\s+(\S+)\s+(\S+)/)
 
 if (/^dump\s+(\S+)/)
   {
-  my($which) = $1;
-  my(@temp);
+  my $which  = $1;
   print ">> ./eximdir/exim_dumpdb $parm_cwd/spool $which\n" if $debug;
-  open(IN, "./eximdir/exim_dumpdb $parm_cwd/spool $which |");
-  open(OUT, ">>test-stdout");
-  print OUT "+++++++++++++++++++++++++++\n";
+  open(my $in, "-|", './eximdir/exim_dumpdb', "$parm_cwd/spool", $which) or die "Can't run exim_dumpdb: $!";
+  open(my $out, ">>test-stdout");
+  print $out "+++++++++++++++++++++++++++\n";
 
   if ($which eq "retry")
     {
@@ -2186,12 +2181,12 @@ if (/^dump\s+(\S+)/)
     foreach $item (@temp)
       {
       $item =~ s/^\s*(.*)\n(.*)\n?\s*$/$1\n$2/m;
-      print OUT "  $item\n";
+      print $out "  $item\n";
       }
     }
   else
     {
-    @temp = <IN>;
+    my @temp = <$in>;
     if ($which eq "callout")
       {
       @temp = sort {
@@ -2200,11 +2195,9 @@ if (/^dump\s+(\S+)/)
                    return $aa cmp $bb;
                    } @temp;
       }
-    print OUT @temp;
+    print $out @temp;
     }
-
-  close(IN);
-  close(OUT);
+  close($in); # close it explicitly, otherwise $? does not get set
   return 1;
   }
 
@@ -3957,7 +3950,7 @@ if ($have_ipv4 && $parm_ipv4 ne "127.0.0.1")
       tests_exit(-1, "Failed  to open $parm_cwd/dnszones/db.ip4.$components[0]: $!");
     print OUT "$components[3].$components[2].$components[1]  PTR  $parm_hostname.\n\n";
     close(OUT);
-    } 
+    }
   else
     {
     open(OUT, ">$parm_cwd/dnszones/db.ip4.$components[0]") ||
