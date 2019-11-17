@@ -1630,17 +1630,17 @@ if (-e $sf_current)
 
   if ($sortfile)
     {
-    my ($i, $j);
 
     my @munged = do {
       open(my $fh, '<', $mf) or tests_exit(-1, "Failed to open $mf: $!");
       <$fh>;
     };
 
-    for ($i = 0; $i < @munged; $i++)
+    for (my $i = 0; $i < @munged; $i++)
       {
       if ($munged[$i] =~ /^[-\d]{10}\s[:\d]{8}\s[-A-Za-z\d]{16}\s[-=*]>/)
         {
+        my $j;
         for ($j = $i + 1; $j < @munged; $j++)
           {
           last if $munged[$j] !~
