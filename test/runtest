@@ -2173,9 +2173,14 @@ if (/^dump\s+(\S+)/)
     # version, which matches the munging that is done later
     # Why? We must ensure sure, that 127.0.0.1 always sorts first
     # map-sort-map: Schwartz's transformation
+    # test 0099
     my @temp = map  { $_->[1] }
                sort { $a->[0] cmp $b->[0] }
-               map  { [ (split)[0] =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/gr, $_ ] }
+               #map  { [ (split)[0] =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/gr, $_ ] }  # this is too modern for 5.10.1
+               map  {
+                (my $k = (split)[0]) =~ s/\Q$parm_ipv4/ip4.ip4.ip4.ip4/g;
+                [ $k, $_ ]
+               }
                do { local $/ = "\n  "; <$in> };
     foreach $item (@temp)
       {
