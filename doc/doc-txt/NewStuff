@@ -14,6 +14,9 @@ Version 4.next
 
  2. Variables $tls_in_ver, $tls_out_ver.
 
+ 3. Channel-binding for authenticators is now supported under OpenSSL.
+    Previously it was GnuTLS-only.
+
 
 Version 4.93
 ------------

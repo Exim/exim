@@ -61,8 +61,6 @@ static int ssl_xfer_eof = FALSE;
 static BOOL ssl_xfer_error = FALSE;
 #endif
 
-uschar *tls_channelbinding_b64 = NULL;
-
 
 /*************************************************
 *       Expand string; give error on failure     *

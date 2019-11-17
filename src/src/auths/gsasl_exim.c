@@ -292,7 +292,7 @@ if (ob->server_realm)
 gsasl_property_set(sctx, GSASL_QOPS, "qop-auth");
 
 #ifndef DISABLE_TLS
-if (tls_channelbinding_b64)
+if (tls_in.channelbinding)
   {
   /* Some auth mechanisms can ensure that both sides are talking withing the
   same security context; for TLS, this means that even if a bad certificate
@@ -317,7 +317,7 @@ if (tls_channelbinding_b64)
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
 	ablock->name);
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE,
-	CCS  tls_channelbinding_b64);
+	CCS  tls_in.channelbinding);
     }
   else
     HDEBUG(D_auth)

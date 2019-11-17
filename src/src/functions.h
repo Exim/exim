@@ -136,6 +136,7 @@ extern gstring *authres_spf(gstring *);
 #endif
 
 extern uschar *b64encode(const uschar *, int);
+extern uschar *b64encode_taint(const uschar *, int, BOOL);
 extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);

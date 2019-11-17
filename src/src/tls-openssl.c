@@ -2741,6 +2741,20 @@ DEBUG(D_tls)
   tls_in.ourcert = crt ? X509_dup(crt) : NULL;
   }
 
+/* Channel-binding info for authenticators
+See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/ */
+  {
+  uschar c, * s;
+  size_t len = SSL_get_peer_finished(server_ssl, &c, 0);
+  int old_pool = store_pool;
+  
+  SSL_get_peer_finished(server_ssl, s = store_get((int)len, FALSE), len);
+  store_pool = POOL_PERM;
+    tls_in.channelbinding = b64encode_taint(CUS s, (int)len, FALSE);
+  store_pool = old_pool;
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+  }
+
 /* Only used by the server-side tls (tls_in), including tls_getc.
    Client-side (tls_out) reads (seem to?) go via
    smtp_read_response()/ip_recv().
@@ -3301,6 +3315,20 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   {
   X509 * crt = SSL_get_certificate(exim_client_ctx->ssl);
   tlsp->ourcert = crt ? X509_dup(crt) : NULL;
+  }
+
+/*XXX will this work with continued-TLS? */
+/* Channel-binding info for authenticators */
+  {
+  uschar c, * s;
+  size_t len = SSL_get_finished(exim_client_ctx->ssl, &c, 0);
+  int old_pool = store_pool;
+  
+  SSL_get_finished(exim_client_ctx->ssl, s = store_get((int)len, TRUE), len);
+  store_pool = POOL_PERM;
+    tlsp->channelbinding = b64encode_taint(CUS s, (int)len, TRUE);
+  store_pool = old_pool;
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
   }
 
 tlsp->active.sock = cctx->sock;

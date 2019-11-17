@@ -97,6 +97,7 @@ typedef struct {
   void	 *peercert;           /* Certificate of peer, binary */
   uschar *peerdn;             /* DN from peer */
   uschar *sni;                /* Server Name Indication */
+  uschar *channelbinding;     /* b64'd data identifying channel, for authenticators */
   enum {
     OCSP_NOT_REQ=0,		/* not requested */
     OCSP_NOT_RESP,		/* no response to request */
@@ -120,7 +121,6 @@ extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules *
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_certificate;        /* Certificate file */
-extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */

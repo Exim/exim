@@ -155,7 +155,7 @@ Some of these correspond to variables in globals.c; those variables will
 be set to point to content in one of these instances, as appropriate for
 the stage of the process lifetime.
 
-Not handled here: global tls_channelbinding_b64.
+Not handled here: global tlsp->tls_channelbinding.
 */
 
 typedef struct exim_gnutls_state {
@@ -467,7 +467,7 @@ Sets:
   tls_active                fd
   tls_bits                  strength indicator
   tls_certificate_verified  bool indicator
-  tls_channelbinding_b64    for some SASL mechanisms
+  tls_channelbinding        for some SASL mechanisms
   tls_ver                   a string
   tls_cipher                a string
   tls_peercert              pointer to library internal
@@ -499,10 +499,10 @@ tlsp->certificate_verified = state->peer_cert_verified;
 tlsp->dane_verified = state->peer_dane_verified;
 #endif
 
-/* note that tls_channelbinding_b64 is not saved to the spool file, since it's
+/* note that tls_channelbinding is not saved to the spool file, since it's
 only available for use for authenticators while this TLS session is running. */
 
-tls_channelbinding_b64 = NULL;
+tlsp->channelbinding = NULL;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 channel.data = NULL;
 channel.size = 0;
@@ -510,11 +510,15 @@ if ((rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_UNIQUE, &
   { DEBUG(D_tls) debug_printf("Channel binding error: %s\n", gnutls_strerror(rc)); }
 else
   {
+  /* Declare the taintedness of the binding info.  On server, untainted; on
+  client, tainted - being the Finish msg from the server. */
+
   old_pool = store_pool;
   store_pool = POOL_PERM;
-  tls_channelbinding_b64 = b64encode(CUS channel.data, (int)channel.size);
+  tlsp->channelbinding = b64encode_taint(CUS channel.data, (int)channel.size,
+					  !!state->host);
   store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage.\n");
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
   }
 #endif
 
@@ -3093,7 +3097,7 @@ gnutls_certificate_free_credentials(state->x509_cred);
 tlsp->active.sock = -1;
 tlsp->active.tls_ctx = NULL;
 /* Leave bits, peercert, cipher, peerdn, certificate_verified set, for logging */
-tls_channelbinding_b64 = NULL;
+tlsp->channelbinding = NULL;
 
 
 if (state->xfer_buffer) store_free(state->xfer_buffer);
