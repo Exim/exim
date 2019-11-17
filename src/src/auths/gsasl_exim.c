@@ -134,27 +134,29 @@ auth_gsasl_options_block *ob =
 the default for the mechanism name; we don't handle multiple mechanisms
 in one authenticator, but the same driver can be used multiple times. */
 
-if (ob->server_mech == NULL)
+if (!ob->server_mech)
   ob->server_mech = string_copy(ablock->public_name);
 
 /* Can get multiple session contexts from one library context, so just
 initialise the once. */
-if (gsasl_ctx == NULL) {
-  rc = gsasl_init(&gsasl_ctx);
-  if (rc != GSASL_OK) {
+
+if (!gsasl_ctx)
+  {
+  if ((rc = gsasl_init(&gsasl_ctx)) != GSASL_OK)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	      "couldn't initialise GNU SASL library: %s (%s)",
 	      ablock->name, gsasl_strerror_name(rc), gsasl_strerror(rc));
-  }
+
   gsasl_callback_set(gsasl_ctx, main_callback);
-}
+  }
 
 /* We don't need this except to log it for debugging. */
-rc = gsasl_server_mechlist(gsasl_ctx, &p);
-if (rc != GSASL_OK)
+
+if ((rc = gsasl_server_mechlist(gsasl_ctx, &p)) != GSASL_OK)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	    "failed to retrieve list of mechanisms: %s (%s)",
 	    ablock->name,  gsasl_strerror_name(rc), gsasl_strerror(rc));
+
 HDEBUG(D_auth) debug_printf("GNU SASL supports: %s\n", p);
 
 supported = gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech);
@@ -163,19 +165,21 @@ if (!supported)
 	    "GNU SASL does not support mechanism \"%s\"",
 	    ablock->name, ob->server_mech);
 
-if ((ablock->server_condition == NULL) &&
-    (streqic(ob->server_mech, US"EXTERNAL") ||
-     streqic(ob->server_mech, US"ANONYMOUS") ||
-     streqic(ob->server_mech, US"PLAIN") ||
-     streqic(ob->server_mech, US"LOGIN")))
+if (  !ablock->server_condition
+   && (  streqic(ob->server_mech, US"EXTERNAL")
+      || streqic(ob->server_mech, US"ANONYMOUS")
+      || streqic(ob->server_mech, US"PLAIN")
+      || streqic(ob->server_mech, US"LOGIN")
+   )  )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	    "Need server_condition for %s mechanism",
 	    ablock->name, ob->server_mech);
 
 /* This does *not* scale to new SASL mechanisms.  Need a better way to ask
 which properties will be needed. */
-if ((ob->server_realm == NULL) &&
-    streqic(ob->server_mech, US"DIGEST-MD5"))
+
+if (  !ob->server_realm
+   && streqic(ob->server_mech, US"DIGEST-MD5"))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	    "Need server_realm for %s mechanism",
 	    ablock->name, ob->server_mech);
@@ -187,7 +191,8 @@ etc) it clearly is critical.
 
 So don't activate without server_condition, this might be relaxed in the future.
 */
-if (ablock->server_condition != NULL) ablock->server = TRUE;
+
+if (ablock->server_condition) ablock->server = TRUE;
 ablock->client = FALSE;
 }
 
@@ -206,7 +211,7 @@ HDEBUG(D_auth)
   debug_printf("GNU SASL Callback entered, prop=%d (loop prop=%d)\n",
       prop, callback_loop);
 
-if (cb_state == NULL)
+if (!cb_state)
   {
   HDEBUG(D_auth) debug_printf("  not from our server/client processing.\n");
   return GSASL_NO_CALLBACK;
@@ -259,8 +264,7 @@ HDEBUG(D_auth)
   debug_printf("GNU SASL: initialising session for %s, mechanism %s.\n",
       ablock->name, ob->server_mech);
 
-rc = gsasl_server_start(gsasl_ctx, CCS ob->server_mech, &sctx);
-if (rc != GSASL_OK)
+if ((rc = gsasl_server_start(gsasl_ctx, CCS ob->server_mech, &sctx)) != GSASL_OK)
   {
   auth_defer_msg = string_sprintf("GNU SASL: session start failure: %s (%s)",
       gsasl_strerror_name(rc), gsasl_strerror(rc));
@@ -286,6 +290,7 @@ if (ob->server_realm)
   }
 /* We don't support protection layers. */
 gsasl_property_set(sctx, GSASL_QOPS, "qop-auth");
+
 #ifndef DISABLE_TLS
 if (tls_channelbinding_b64)
   {
@@ -315,11 +320,9 @@ if (tls_channelbinding_b64)
 	CCS  tls_channelbinding_b64);
     }
   else
-    {
     HDEBUG(D_auth)
       debug_printf("Auth %s: Not enabling channel-binding (data available)\n",
 	  ablock->name);
-    }
   }
 else
   HDEBUG(D_auth)
@@ -334,9 +337,7 @@ to_send = NULL;
 exim_error = exim_error_override = OK;
 
 do {
-  rc = gsasl_step64(sctx, received, &to_send);
-
-  switch (rc)
+  switch (rc = gsasl_step64(sctx, received, &to_send))
     {
     case GSASL_OK:
       if (!to_send)
@@ -373,10 +374,8 @@ do {
       goto STOP_INTERACTION;
     }
 
-  if ((rc == GSASL_NEEDS_MORE) ||
-      (to_send && *to_send))
-    exim_error =
-      auth_get_no64_data((uschar **)&received, US to_send);
+  if ((rc == GSASL_NEEDS_MORE) || (to_send && *to_send))
+    exim_error = auth_get_no64_data((uschar **)&received, US to_send);
 
   if (to_send)
     {
@@ -419,29 +418,25 @@ return checked_server_condition ? OK : auth_check_serv_cond(ablock);
 static int
 condition_check(auth_instance *ablock, uschar *label, uschar *condition_string)
 {
-int exim_rc;
-
-exim_rc = auth_check_some_cond(ablock, label, condition_string, FAIL);
-
-if (exim_rc == OK)
-  return GSASL_OK;
-else if (exim_rc == DEFER)
+int exim_rc = auth_check_some_cond(ablock, label, condition_string, FAIL);
+switch (exim_rc)
   {
-  sasl_error_should_defer = TRUE;
-  return GSASL_AUTHENTICATION_ERROR;
+  case OK:	return GSASL_OK;
+  case DEFER:	sasl_error_should_defer = TRUE;
+		return GSASL_AUTHENTICATION_ERROR;
+  case FAIL:	return GSASL_AUTHENTICATION_ERROR;
+  default:	log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
+		  "Unhandled return from checking %s: %d",
+		  ablock->name, label, exim_rc);
   }
-else if (exim_rc == FAIL)
-  return GSASL_AUTHENTICATION_ERROR;
 
-log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
-	  "Unhandled return from checking %s: %d",
-	  ablock->name, label, exim_rc);
 /* NOTREACHED */
 return GSASL_AUTHENTICATION_ERROR;
 }
 
 static int
-server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_instance *ablock)
+server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop,
+  auth_instance *ablock)
 {
 char *tmps;
 uschar *propval;
@@ -475,13 +470,14 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_EXTERNAL:
-    if (ablock->server_condition == NULL)
+    if (!ablock->server_condition)
       {
       HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate EXTERNAL.\n");
       cbrc = GSASL_AUTHENTICATION_ERROR;
       break;
       }
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
+
     /* We always set $auth1, even if only to empty string. */
     auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
@@ -493,14 +489,16 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_ANONYMOUS:
-    if (ablock->server_condition == NULL)
+    if (!ablock->server_condition)
       {
       HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate ANONYMOUS.\n");
       cbrc = GSASL_AUTHENTICATION_ERROR;
       break;
       }
     propval = US  gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
+
     /* We always set $auth1, even if only to empty string. */
+
     auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
     expand_nmax = 1;
@@ -516,10 +514,10 @@ switch (prop)
     by the SASL integration after authentication; protected against tampering
     (if the SASL mechanism supports that, which Kerberos does) but is
     unverified, same as normal for other mechanisms.
-
-    First coding, we had these values swapped, but for consistency and prior
+     First coding, we had these values swapped, but for consistency and prior
     to the first release of Exim with this authenticator, they've been
     switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
+
     propval = US  gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
     auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
@@ -530,6 +528,7 @@ switch (prop)
 
     /* In this one case, it perhaps makes sense to default back open?
     But for consistency, let's just mandate server_condition here too. */
+
     cbrc = condition_check(ablock,
 	US"server_condition (GSSAPI family)", ablock->server_condition);
     checked_server_condition = TRUE;
@@ -551,12 +550,14 @@ switch (prop)
       tmps = CS expand_string(ob->server_scram_salt);
       gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
       }
+
     /* Asking for GSASL_AUTHZID calls back into us if we use
     gsasl_property_get(), thus the use of gsasl_property_fast().
     Do we really want to hardcode limits per mechanism?  What happens when
     a new mechanism is added to the library.  It *shouldn't* result in us
     needing to add more glue, since avoiding that is a large part of the
     point of SASL. */
+
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
     auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
@@ -567,8 +568,7 @@ switch (prop)
     for (int i = 1; i <= 3; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
 
-    tmps = CS expand_string(ob->server_password);
-    if (tmps == NULL)
+    if (!(tmps = CS expand_string(ob->server_password)))
       {
       sasl_error_should_defer = f.expand_string_forcedfail ? FALSE : TRUE;
       HDEBUG(D_auth) debug_printf("server_password expansion failed, so "
@@ -576,9 +576,11 @@ switch (prop)
       return GSASL_AUTHENTICATION_ERROR;
       }
     gsasl_property_set(sctx, GSASL_PASSWORD, tmps);
+
     /* This is inadequate; don't think Exim's store stacks are geared
     for memory wiping, so expanding strings will leave stuff laying around.
     But no need to compound the problem, so get rid of the one we can. */
+
     memset(tmps, '\0', strlen(tmps));
     cbrc = GSASL_OK;
     break;
