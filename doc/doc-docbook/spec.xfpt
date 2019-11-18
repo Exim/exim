@@ -13522,6 +13522,19 @@ the transport.
 .vindex &$tls_out_tlsa_usage$&
 Bitfield of TLSA record types found.  See section &<<SECDANE>>&.
 
+.new
+.vitem &$tls_in_ver$&
+.vindex "&$tls_in_ver$&"
+When a message is received from a remote host over an encrypted SMTP connection
+this variable is set to the protocol version, eg &'TLS1.2'&.
+
+.vitem &$tls_out_ver$&
+.vindex "&$tls_out_ver$&"
+When a message is being delivered to a remote host over an encrypted SMTP connection
+this variable is set to the protocol version.
+.wen
+
+
 .vitem &$tod_bsdinbox$&
 .vindex "&$tod_bsdinbox$&"
 The time of day and the date, in the format required for BSD-style mailbox
@@ -16756,6 +16769,7 @@ received_header_text = Received: \
         ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
   by $primary_hostname \
   ${if def:received_protocol {with $received_protocol }}\
+  ${if def:tls_ver           { ($tls_ver)}}\
   ${if def:tls_in_cipher_std { tls $tls_in_cipher_std\n\t}}\
   (Exim $version_number)\n\t\
   ${if def:sender_address \

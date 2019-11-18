@@ -263,6 +263,7 @@ if (tls_in.ocsp)	 fprintf(fp, "-tls_ocsp %d\n",   tls_in.ocsp);
 # ifdef EXPERIMENTAL_TLS_RESUME
 fprintf(fp, "-tls_resumption %c\n", 'A' + tls_in.resumption);
 # endif
+if (tls_in.ver) spool_var_write(fp, US"tls_ver", tls_in.ver);
 #endif
 
 #ifdef SUPPORT_I18N

@@ -89,6 +89,7 @@ typedef struct {
 #endif
   uschar *cipher;             /* Cipher used */
   const uschar *cipher_stdname; /* Cipher used, RFC version */
+  const uschar *ver;	      /* TLS version */
   
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
   uschar *on_connect_ports;   /* Ports always tls-on-connect */

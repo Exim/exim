@@ -1968,6 +1968,7 @@ tls_out.ocsp = OCSP_NOT_REQ;
 #ifdef EXPERIMENTAL_TLS_RESUME
 tls_out.resumption = 0;
 #endif
+tls_out.ver = NULL;
 
 /* Flip the legacy TLS-related variables over to the outbound set in case
 they're used in the context of the transport.  Don't bother resetting
@@ -2488,6 +2489,7 @@ if (  smtp_peer_options & OPTION_TLS
         addr->peercert = tls_out.peercert;
         addr->peerdn = tls_out.peerdn;
 	addr->ocsp = tls_out.ocsp;
+        addr->tlsver = tls_out.ver;
         }
     }
   }
@@ -4440,6 +4442,7 @@ for (address_item * addr = addrlist; addr; addr = addr->next)
     addr->peercert = NULL;
     addr->peerdn = NULL;
     addr->ocsp = OCSP_NOT_REQ;
+    addr->tlsver = NULL;
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
     addr->smtp_greeting = NULL;

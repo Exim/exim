@@ -1233,6 +1233,7 @@ uschar *received_header_text   = US
      "by $primary_hostname "
      "${if def:received_protocol {with $received_protocol }}"
 #ifndef DISABLE_TLS
+     "${if def:tls_in_ver        { ($tls_in_ver)}}"
      "${if def:tls_in_cipher_std { tls $tls_in_cipher_std\n\t}}"
 #endif
      "(Exim $version_number)\n\t"

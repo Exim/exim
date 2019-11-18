@@ -570,6 +570,7 @@ typedef struct address_item {
   uschar *shadow_message;         /* info about shadow transporting */
 
 #ifndef DISABLE_TLS
+  const uschar *tlsver;           /* version used for transport */
   uschar *cipher;                 /* Cipher used for transport */
   void   *ourcert;                /* Certificate offered to peer, binary */
   void   *peercert;               /* Certificate from peer, binary */

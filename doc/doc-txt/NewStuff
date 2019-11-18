@@ -50,6 +50,8 @@ Version 4.93
 
 16: Command-line option to move messages from one named queue to another.
 
+17. Variables $tls_in_ver, $tls_out_ver.
+
 
 Version 4.92
 --------------
