@@ -571,6 +571,9 @@ ARC support
 Specification: https://tools.ietf.org/html/draft-ietf-dmarc-arc-protocol-11
 Note that this is not an RFC yet, so may change.
 
+[RFC 8617 was published 2019/06.  Draft 11 was 2018/01.  A review of the
+changes has not yet been done]
+
 ARC is intended to support the utility of SPF and DKIM in the presence of
 intermediaries in the transmission path - forwarders and mailinglists -
 by establishing a cryptographically-signed chain in headers.
@@ -579,10 +582,11 @@ Normally one would only bother doing ARC-signing when functioning as
 an intermediary.  One might do verify for local destinations.
 
 ARC uses the notion of a "ADministrative Management Domain" (ADMD).
-Described in RFC 5598 (section 2.3), this is essentially the set of
-mail-handling systems that the mail transits.  A label should be chosen to
-identify the ADMD.  Messages should be ARC-verified on entry to the ADMD,
-and ARC-signed on exit from it.
+Described in RFC 5598 (section 2.3), this is essentially a set of
+mail-handling systems that mail transits that are all under the control
+of one organisation.  A label should be chosen to identify the ADMD.
+Messages should be ARC-verified on entry to the ADMD, and ARC-signed on exit
+from it.
 
 
 Building with ARC Support
