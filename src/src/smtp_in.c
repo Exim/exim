@@ -3714,60 +3714,60 @@ if (rc != OK)
 switch(rc)
   {
   case OK:
-  if (!au->set_id || set_id)    /* Complete success */
-    {
-    if (set_id) authenticated_id = string_copy_perm(set_id, TRUE);
-    sender_host_authenticated = au->name;
-    sender_host_auth_pubname  = au->public_name;
-    authentication_failed = FALSE;
-    authenticated_fail_id = NULL;   /* Impossible to already be set? */
+    if (!au->set_id || set_id)    /* Complete success */
+      {
+      if (set_id) authenticated_id = string_copy_perm(set_id, TRUE);
+      sender_host_authenticated = au->name;
+      sender_host_auth_pubname  = au->public_name;
+      authentication_failed = FALSE;
+      authenticated_fail_id = NULL;   /* Impossible to already be set? */
 
-    received_protocol =
-      (sender_host_address ? protocols : protocols_local)
-	[pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
-    *s = *ss = US"235 Authentication succeeded";
-    authenticated_by = au;
-    break;
-    }
+      received_protocol =
+	(sender_host_address ? protocols : protocols_local)
+	  [pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
+      *s = *ss = US"235 Authentication succeeded";
+      authenticated_by = au;
+      break;
+      }
 
-  /* Authentication succeeded, but we failed to expand the set_id string.
-  Treat this as a temporary error. */
+    /* Authentication succeeded, but we failed to expand the set_id string.
+    Treat this as a temporary error. */
 
-  auth_defer_msg = expand_string_message;
-  /* Fall through */
+    auth_defer_msg = expand_string_message;
+    /* Fall through */
 
   case DEFER:
-  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-  *s = string_sprintf("435 Unable to authenticate at present%s",
-    auth_defer_user_msg);
-  *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
-    set_id, auth_defer_msg);
-  break;
+    if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
+    *s = string_sprintf("435 Unable to authenticate at present%s",
+      auth_defer_user_msg);
+    *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
+      set_id, auth_defer_msg);
+    break;
 
   case BAD64:
-  *s = *ss = US"501 Invalid base64 data";
-  break;
+    *s = *ss = US"501 Invalid base64 data";
+    break;
 
   case CANCELLED:
-  *s = *ss = US"501 Authentication cancelled";
-  break;
+    *s = *ss = US"501 Authentication cancelled";
+    break;
 
   case UNEXPECTED:
-  *s = *ss = US"553 Initial data not expected";
-  break;
+    *s = *ss = US"553 Initial data not expected";
+    break;
 
   case FAIL:
-  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-  *s = US"535 Incorrect authentication data";
-  *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
-  break;
+    if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
+    *s = US"535 Incorrect authentication data";
+    *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
+    break;
 
   default:
-  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-  *s = US"435 Internal error";
-  *ss = string_sprintf("435 Internal error%s: return %d from authentication "
-    "check", set_id, rc);
-  break;
+    if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
+    *s = US"435 Internal error";
+    *ss = string_sprintf("435 Internal error%s: return %d from authentication "
+      "check", set_id, rc);
+    break;
   }
 
 return rc;
