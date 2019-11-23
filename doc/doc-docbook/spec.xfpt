@@ -27460,9 +27460,11 @@ This should have meant that certificate identity and verification becomes a
 non-issue, as a man-in-the-middle attack will cause the correct client and
 server to see different identifiers and authentication will fail.
 
-This is currently only supported when using the GnuTLS library.  This is
+.new
+This is
 only usable by mechanisms which support "channel binding"; at time of
 writing, that's the SCRAM family.
+.wen
 
 This defaults off to ensure smooth upgrade across Exim releases, in case
 this option causes some clients to start failing.  Some future release
