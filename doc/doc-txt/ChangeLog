@@ -204,6 +204,9 @@ JH/44 With OpenSSL 1.1.1 (onwards) disable renegotiation for TLS1.2 and below;
       recommended to avoid a possible server-load attack.  The feature can be
       re-enabled via the openssl_options main cofiguration option.
 
+JH/45 local_scan API: documented the current smtp_printf() call. This changed
+      for version 4.90 - adding a "more data" boolean to the arguments.
+
 
 Exim version 4.92
 -----------------

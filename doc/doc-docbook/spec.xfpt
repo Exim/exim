@@ -34313,8 +34313,10 @@ with translation.
 This function is used in conjunction with &'smtp_printf()'&, as described
 below.
 
-.vitem &*void&~smtp_printf(char&~*,&~...)*&
-The arguments of this function are like &[printf()]&; it writes to the SMTP
+.new
+.vitem &*void&~smtp_printf(char&~*,BOOL,&~...)*&
+The arguments of this function are almost like &[printf()]&; it writes to the SMTP
+.wen
 output stream. You should use this function only when there is an SMTP output
 stream, that is, when the incoming message is being received via interactive
 SMTP. This is the case when &%smtp_input%& is TRUE and &%smtp_batched_input%&
@@ -34325,6 +34327,17 @@ is involved.
 
 If an SMTP TLS connection is established, &'smtp_printf()'& uses the TLS
 output function, so it can be used for all forms of SMTP connection.
+
+.new
+The second argument is used to request that the data be buffered
+(when TRUE) or flushed (along with any previously buffered, when FALSE).
+This is advisory only, but likely to save on system-calls and packets
+sent when a sequence of calls to the function are made.
+
+The argument was added in Exim version 4.90 - changing the API.
+Nobody noticed until 4.93 was imminent.
+A decision on the way forward has not yet been made.
+.wen
 
 Strings that are written by &'smtp_printf()'& from within &[local_scan()]&
 must start with an appropriate response code: 550 if you are going to return
@@ -34343,7 +34356,11 @@ the data returned via the &%return_text%& argument. The added value of using
 multiple output lines.
 
 The &'smtp_printf()'& function does not return any error indication, because it
-does not automatically flush pending output, and therefore does not test
+does not
+.new
+guarantee a flush of
+.wen
+pending output, and therefore does not test
 the state of the stream. (In the main code of Exim, flushing and error
 detection is done when Exim is ready for the next SMTP input command.) If
 you want to flush the output and check for an error (for example, the

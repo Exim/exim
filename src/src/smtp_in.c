@@ -877,6 +877,8 @@ flush for non-TLS connections. The smtp_fflush() function is available for
 checking that: for convenience, TLS output errors are remembered here so that
 they are also picked up later by smtp_fflush().
 
+This function is exposed to the local_scan API; do not change the signature.
+
 Arguments:
   format      format string
   more	      further data expected
@@ -897,7 +899,10 @@ va_end(ap);
 
 /* This is split off so that verify.c:respond_printf() can, in effect, call
 smtp_printf(), bearing in mind that in C a vararg function can't directly
-call another vararg function, only a function which accepts a va_list. */
+call another vararg function, only a function which accepts a va_list.
+
+This function is exposed to the local_scan API; do not change the signature.
+*/
 /*XXX consider passing caller-info in, for string_vformat-onward */
 
 void
