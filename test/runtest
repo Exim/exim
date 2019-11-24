@@ -1256,9 +1256,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Not all platforms support TCP Fast Open, and the compile omits the check
     if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|yes \(matched "\*"\))\n$//)
       {
+      chomp;
       $_ .= <IN>;
       s/ \.\.\. >>> / ... /;
-      if (s/ non-TFO mode connection attempt to 224.0.0.0, 0 data\b$//) { $_ .= <IN>; }
+      if (s/ non-TFO mode connection attempt to 224.0.0.0, 0 data\b$//) { chomp; $_ .= <IN>; }
       s/Address family not supported by protocol family/Network Error/;
       s/Network is unreachable/Network Error/;
       }
