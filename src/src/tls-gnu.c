@@ -3311,6 +3311,9 @@ Arguments:
   len       number of bytes
   more	    more data expected soon
 
+Calling with len zero and more unset will flush buffered writes.  The buff
+argument can be null for that case.
+
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
 */

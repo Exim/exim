@@ -3531,11 +3531,12 @@ Arguments:
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
 
-Used by both server-side and client-side TLS.
+Used by both server-side and client-side TLS.  Calling with len zero and more unset
+will flush buffered writes; buff can be null for this case.
 */
 
 int
-tls_write(void * ct_ctx, const uschar *buff, size_t len, BOOL more)
+tls_write(void * ct_ctx, const uschar * buff, size_t len, BOOL more)
 {
 size_t olen = len;
 int outbytes, error;
@@ -3561,6 +3562,8 @@ a store reset there, so use POOL_PERM. */
 
 if ((more || corked))
   {
+  if (!len) buff = US &error;	/* dummy just so that string_catn is ok */
+
 #ifndef DISABLE_PIPE_CONNECT
   int save_pool = store_pool;
   store_pool = POOL_PERM;
@@ -3590,15 +3593,15 @@ for (int left = len; left > 0;)
   DEBUG(D_tls) debug_printf("outbytes=%d error=%d\n", outbytes, error);
   switch (error)
     {
+    case SSL_ERROR_NONE:	/* the usual case */
+      left -= outbytes;
+      buff += outbytes;
+      break;
+
     case SSL_ERROR_SSL:
       ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
       log_write(0, LOG_MAIN, "TLS error (SSL_write): %s", ssl_errstring);
       return -1;
-
-    case SSL_ERROR_NONE:
-      left -= outbytes;
-      buff += outbytes;
-      break;
 
     case SSL_ERROR_ZERO_RETURN:
       log_write(0, LOG_MAIN, "SSL channel closed on write");

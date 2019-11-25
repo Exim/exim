@@ -947,16 +947,13 @@ if (fl.rcpt_in_progress)
 
 /* Now write the string */
 
+if (
 #ifndef DISABLE_TLS
-if (tls_in.active.sock >= 0)
-  {
-  if (tls_write(NULL, gs.s, gs.ptr, more) < 0)
-    smtp_write_error = -1;
-  }
-else
+    tls_in.active.sock >= 0 ? (tls_write(NULL, gs.s, gs.ptr, more) < 0) :
 #endif
-
-if (fprintf(smtp_out, "%s", gs.s) < 0) smtp_write_error = -1;
+    (fwrite(gs.s, gs.ptr, 1, smtp_out) == 0)
+   )
+    smtp_write_error = -1;
 }
 
 
@@ -967,8 +964,7 @@ if (fprintf(smtp_out, "%s", gs.s) < 0) smtp_write_error = -1;
 
 /* This function isn't currently used within Exim (it detects errors when it
 tries to read the next SMTP input), but is available for use in local_scan().
-For non-TLS connections, it flushes the output and checks for errors. For
-TLS-connections, it checks for a previously-detected TLS write error.
+It flushes the output and checks for errors.
 
 Arguments:  none
 Returns:    0 for no error; -1 after an error
@@ -978,6 +974,15 @@ int
 smtp_fflush(void)
 {
 if (tls_in.active.sock < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
+
+if (
+#ifndef DISABLE_TLS
+    tls_in.active.sock >= 0 ? (tls_write(NULL, NULL, 0, FALSE) < 0) :
+#endif
+    (fflush(smtp_out) != 0)
+   )
+    smtp_write_error = -1;
+
 return smtp_write_error;
 }
 
