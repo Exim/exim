@@ -34359,9 +34359,9 @@ The second argument is used to request that the data be buffered
 This is advisory only, but likely to save on system-calls and packets
 sent when a sequence of calls to the function are made.
 
-The argument was added in Exim version 4.90 - changing the API.
-Nobody noticed until 4.93 was imminent.
-A decision on the way forward has not yet been made.
+The argument was added in Exim version 4.90 - changing the API/ABI.
+Nobody noticed until 4.93 was imminent, at which point the
+ABI version number was incremented.
 .wen
 
 Strings that are written by &'smtp_printf()'& from within &[local_scan()]&

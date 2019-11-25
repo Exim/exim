@@ -98,7 +98,7 @@ ABI is changed in a non backward compatible way. The minor number is increased
 each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
-#define LOCAL_SCAN_ABI_VERSION_MAJOR 2
+#define LOCAL_SCAN_ABI_VERSION_MAJOR 3
 #define LOCAL_SCAN_ABI_VERSION_MINOR 1
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR

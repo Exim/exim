@@ -206,6 +206,12 @@ JH/44 With OpenSSL 1.1.1 (onwards) disable renegotiation for TLS1.2 and below;
 
 JH/45 local_scan API: documented the current smtp_printf() call. This changed
       for version 4.90 - adding a "more data" boolean to the arguments.
+      Bumped the ABI version number also, this having been missed previously;
+      release versions 4.90 to 4.92.3 inclusive were effectively broken in
+      respect of usage of smtp_printf() by either local_scan code or libraries
+      accessed via the ${dlfunc } expansion item.  Both will need coding
+      adjustment for any calls to smtp_printf() to match the new function
+      signature; a FALSE value for the new argument is always safe.
 
 
 Exim version 4.92
