@@ -16451,9 +16451,9 @@ interpreter. See chapter &<<CHAPperl>>& for details of its use.
 This option is available only when Exim is built with an embedded Perl
 interpreter. See chapter &<<CHAPperl>>& for details of its use.
 
-.option perl_startup main boolean false
+.option perl_taintmode main boolean false
 .cindex "Perl"
-This Option enables the taint mode of the embedded Perl interpreter.
+This option enables the taint mode of the embedded Perl interpreter.
 
 
 .option pgsql_servers main "string list" unset
