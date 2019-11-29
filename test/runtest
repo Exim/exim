@@ -64,7 +64,7 @@ my $force_continue = 0;
 my $force_update = 0;
 my $log_failed_filename = 'failed-summary.log';
 my $log_summary_filename = 'run-summary.log';
-my $more = 'less -XF';
+my @more = qw'less -XF';
 my $optargs = '';
 my $save_output = 0;
 my $server_opts = '';
@@ -1550,7 +1550,7 @@ if (! -e $sf_current)
       print "\n";
       print "------------ $f -----------\n"
         if (defined $rf && -s $rf && defined $rsf && -s $rsf);
-      system("$more '$f'");
+      system @more => $f;
       }
     }
 
@@ -1674,7 +1674,7 @@ if (-e $sf_current)
   # Handle comparison failure
 
   print "** Comparison of $mf with $sf_current failed";
-  system("$more test-cf");
+  system @more => 'test-cf';
 
   print "\n";
   for (;;)
@@ -2793,7 +2793,7 @@ umask 022;
 #       Check for the "less" command             #
 ##################################################
 
-$more = 'more' if system('which less >/dev/null 2>&1') != 0;
+@more = 'more' if system('which less >/dev/null 2>&1') != 0;
 
 
 
@@ -2818,7 +2818,7 @@ Getopt::Long::Configure qw(no_getopt_compat);
 GetOptions(
     'debug'    => sub { $debug          = 1; $cr   = "\n" },
     'diff'     => sub { $cf             = 'diff -u' },
-    'continue' => sub { $force_continue = 1; $more = 'cat' },
+    'continue' => sub { $force_continue = 1; @more = 'cat' },
     'update'   => \$force_update,
     'ipv4!'    => \$have_ipv4,
     'ipv6!'    => \$have_ipv6,
@@ -4313,11 +4313,11 @@ foreach $test (@test_list)
         last if /^[rc]$/i;
         if (/^e$/i)
           {
-          system("$more test-stderr");
+          system @more => 'test-stderr';
           }
         elsif (/^o$/i)
           {
-          system("$more test-stdout");
+          system @more => 'test-stdout';
           }
         }
 
