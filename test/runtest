@@ -800,6 +800,12 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Also, the length of space at the end of the host line is dependent
   # on the length of the longest line, so strip it also on otherwise
   # un-rewritten lines like localhost
+  #
+  # host 127.0.0.1     [127.0.0.1]
+  # host 10.0.0.1      [10.0.0.1]-
+  #
+  # host 127.0.0.1     [127.0.0.1]--
+  # host 169.16.16.16  [169.16.16.10]
 
   s/^\s+host\s(\S+)\s+(\S+)/  host $1 $2/;
   s/^\s+(host\s\S+\s\S+)\s+(port=.*)/  host $1 $2/;
@@ -811,7 +817,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/(^|\W)\K\Q$parm_ipv6_stripped\E/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
   s/\b\Q$parm_ipv4r\E\b/ip4-reverse/g;
   s/(^|\W)\K\Q$parm_ipv6r\E/ip6-reverse/g;
-  s/^(\s+host\s\S+\s+\[\S+\]) +$/$1 /;
+  s/^\s+host\s\S+\s+\[\S+\]\K +$//;     # strip, not collapse the trailing whitespace
 
 
   # ======== Test network IP addresses ========

@@ -97,17 +97,17 @@ y@batch4
 userx@bdomain1
   router = r3, transport = smtp2
   host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]
-  host 127.0.0.1 [127.0.0.1] 
+  host 127.0.0.1 [127.0.0.1]
   host the.local.host.name [ip4.ip4.ip4.ip4]
 userx@bdomain2
   router = r3, transport = smtp2
   host the.local.host.name [ip4.ip4.ip4.ip4]
-  host 127.0.0.1 [127.0.0.1] 
+  host 127.0.0.1 [127.0.0.1]
   host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]
 userx@bdomain3
   router = r3, transport = smtp2
   host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]
-  host 127.0.0.1 [127.0.0.1] 
+  host 127.0.0.1 [127.0.0.1]
   host the.local.host.name [ip4.ip4.ip4.ip4]
 
 ******** SERVER ********
