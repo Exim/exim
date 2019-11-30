@@ -213,6 +213,10 @@ JH/45 local_scan API: documented the current smtp_printf() call. This changed
       adjustment for any calls to smtp_printf() to match the new function
       signature; a FALSE value for the new argument is always safe.
 
+JH/46 FreeBSD: fix use of the sendfile() syscall.  The shim was not updating
+      the file-offset (which the Linux syscall does, and exim expects); this
+      resulted in an indefinite loop.
+
 
 Exim version 4.92
 -----------------

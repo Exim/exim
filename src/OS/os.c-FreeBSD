@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Jeremy Harris 1995 - 2018 */
+/* Copyright (c) Jeremy Harris 1995 - 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* FreeBSD-specific code. This is concatenated onto the generic
@@ -14,11 +14,13 @@ src/os.c file. */
 *************/
 
 ssize_t
-os_sendfile(int out, int in, off_t * off, size_t cnt)
+os_sendfile(int out, int in, off_t * offp, size_t cnt)
 {
-off_t written;
-return sendfile(in, out, *off, cnt, NULL, &written, 0) < 0
-  ? (ssize_t) -1 : (ssize_t) written;
+off_t loff = *offp, written;
+
+if (sendfile(in, out, loff, cnt, NULL, &written, 0) < 0) return (ssize_t)-1;
+*offp = loff + written;
+return (ssize_t)written;
 }
 
 /* End of os.c-Linux */
