@@ -9,16 +9,6 @@ exim user4@h1.test.ex
 1
 interface: <; ::1 ; HOSTIPV4
 ****
-#
-# This tries to send to ::1 from HOSTIPV6 - which is ok until HOSTIPV6
-# is a link-local addr (with a scope-id specifying the link).  Then,
-# it seems, ::1 is not on that link (for Linux, at least).  The connect
-# times out and the testcase fails.
-exim user6@h2.test.ex
-
-2
-interface: <; HOSTIPV6 ; HOSTIPV4
-****
 exim user6@h3.test.ex
 
 3

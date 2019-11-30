@@ -1,0 +1,20 @@
+# interface selection (v4 vs v6) in outgoing SMTP, non-linklocal
+need_ipv4
+need_ipv6
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+#
+# This tries to send to ::1 from HOSTIPV6 - which is ok until HOSTIPV6
+# is a link-local addr (with a scope-id specifying the link).  Then,
+# it seems, ::1 is not on that link (for Linux & FreeBSD, at least).  The connect
+# times out and the testcase fails.
+exim user6@h2.test.ex
+
+2
+interface: <; HOSTIPV6 ; HOSTIPV4
+****
+exim -qf
+****
+killdaemon
+no_msglog_check
