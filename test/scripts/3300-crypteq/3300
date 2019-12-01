@@ -2,6 +2,11 @@
 
 exim -be
 badCrypt: ${if crypteq{MySecret}{}{yes}{no}}
+
+# Defined-routine, and default, crypt mehods.  These fail on FreeBSD because
+# the crypt() call does something different to that on Linux.  The output
+# is therefore different, and the compare fails.
+
 mySecret: ${if crypteq{MySecret}{azrazPWCQJhyg}{yes}{no}}
 mySecret: ${if crypteq{MySecret}{aarazPWCQJhyg}{yes}{no}}
 mySecret: ${if crypteq{MySecret}{\{crypt\}azrazPWCQJhyg}{yes}{no}}
@@ -12,19 +17,23 @@ crypt16: ${if crypteq{MySecretRhubarb}{\{crypt\}azrazPWCQJhyg}{yes}{no}}
 crypt16: ${if crypteq{MySecretRhubarb}{\{crypt16\}azrazPWCQJhyg}{yes}{no}}
 crypt16: ${if crypteq{MySecretRhubarb}{\{CRYPT16\}azrazPWCQJhygdJWzb77lQMA}{yes}{no}}
 
-test: ${if crypteq{test}{\{md5\}CY9rzUYh03PK3k6DJie09g==}{yes}{no}}
-test: ${if crypteq{test}{\{MD5\}CY9rzUYh03PK3k6DJie09g==}{yes}{no}}
-test: ${if crypteq{test}{\{md5\}AY9rzUYh03PK3k6DJie09g==}{yes}{no}}
-test: ${if crypteq{test}{\{md5\}098f6bcd4621d373cade4e832627b4f6}{yes}{no}}
-test: ${if crypteq{test}{\{md5\}198f6bcd4621d373cade4e832627b4f6}{yes}{no}}
-test: ${if crypteq{test}{\{md5\}098f6bcd4621d373cade4e832627b4f}{yes}{no}}
 
-abc:  ${if crypteq{abc}{\{sha1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{no}}
-abc:  ${if crypteq{abc}{\{SHA1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{no}}
-abc:  ${if crypteq{abc}{\{sha1\}qZk+NkcGgWq6PiVxeFDCbJzQ2J0=}{yes}{no}}
-abd:  ${if crypteq{abd}{\{sha1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{no}}
+# Defined-algo methods.
 
-# Combinations
+md5: ${if crypteq{test}{\{md5\}CY9rzUYh03PK3k6DJie09g==}{yes}{no}}
+md5: ${if crypteq{test}{\{MD5\}CY9rzUYh03PK3k6DJie09g==}{yes}{no}}
+md5: ${if crypteq{test}{\{md5\}AY9rzUYh03PK3k6DJie09g==}{yes}{no}}
+md5: ${if crypteq{test}{\{md5\}098f6bcd4621d373cade4e832627b4f6}{yes}{no}}
+md5: ${if crypteq{test}{\{md5\}198f6bcd4621d373cade4e832627b4f6}{yes}{no}}
+md5: ${if crypteq{test}{\{md5\}098f6bcd4621d373cade4e832627b4f}{yes}{no}}
+
+sha1:  ${if crypteq{abc}{\{sha1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{no}}
+sha1:  ${if crypteq{abc}{\{SHA1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{no}}
+sha1:  ${if crypteq{abc}{\{sha1\}qZk+NkcGgWq6PiVxeFDCbJzQ2J0=}{yes}{no}}
+sha1:  ${if crypteq{abd}{\{sha1\}A9993E364706816ABA3E25717850C26C9CD0D89D}{yes}{no}}
+
+
+# Combinations.  These fail on FreeBSD as above.
 
 y:      ${if and {{crypteq{MySecret}{azrazPWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
 y:      ${if or  {{crypteq{MySecret}{azrazQWCQJhyg}}{exists{/etc/passwd}}}{Y}{N}}
