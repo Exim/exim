@@ -2405,20 +2405,35 @@ struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
 if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
-#ifdef TCPI_OPT_SYN_DATA	/* FreeBSD 11 does not seem to have this yet */
+#  ifdef TCPI_OPT_SYN_DATA	/* FreeBSD 11,12 do not seem to have this yet */
   if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
     {
-    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (ACKd data-on-SYN)\n");
+    DEBUG(D_receive)
+      debug_printf("TCP_FASTOPEN mode connection (ACKd data-on-SYN)\n");
     f.tcp_in_fastopen_data = f.tcp_in_fastopen = TRUE;
     }
   else
-#endif
-    if (tinfo.tcpi_state == TCP_SYN_RECV)
+#  endif
+    if (tinfo.tcpi_state == TCP_SYN_RECV)	/* Not seen on FreeBSD 12.1 */
     {
-    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
+    DEBUG(D_receive)
+      debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
     f.tcp_in_fastopen = TRUE;
     }
+#  ifdef __FreeBSD__
+  else if (tinfo.tcpi_options & TCPOPT_FAST_OPEN)
+    {
+    /* This only tells us that some combination of the TCP options was used. It
+    can be a TFO-R received (as of 12.1).  However, pretend it shows real usage
+    (that an acceptable TFO-C was received and acted on).  Ignore the possibility
+    of data-on-SYN for now. */
+    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (TFO option used)\n");
+    f.tcp_in_fastopen = TRUE;
+    }
+#  endif
 # endif
+else DEBUG(D_receive)
+  debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
 }
 #endif
 

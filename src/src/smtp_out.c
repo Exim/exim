@@ -155,9 +155,28 @@ return TRUE;
 static void
 tfo_out_check(int sock)
 {
-# if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
 struct tcp_info tinfo;
-socklen_t len = sizeof(tinfo);
+int val;
+socklen_t len = sizeof(val);
+
+# ifdef __FreeBSD__
+/* The observability as of 12.1 is not useful as a client, only telling us that
+a TFO option was used on SYN.  It could have been a TFO-R, or ignored by the
+server. */
+
+/*
+if (tcp_out_fastopen == TFO_ATTEMPTED_NODATA || tcp_out_fastopen == TFO_ATTEMPTED_DATA)
+  if (getsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &val, &len) == 0 && val != 0) {}
+*/
+switch (tcp_out_fastopen)
+  {
+  case TFO_ATTEMPTED_NODATA:	tcp_out_fastopen = TFO_USED_NODATA; break;
+  case TFO_ATTEMPTED_DATA:	tcp_out_fastopen = TFO_USED_DATA; break;
+  default: break; /* compiler quietening */
+  }
+
+# else	/* Linux & Apple */
+#  if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
 
 switch (tcp_out_fastopen)
   {
@@ -205,7 +224,8 @@ switch (tcp_out_fastopen)
 
   default: break; /* compiler quietening */
   }
-# endif
+#  endif
+# endif	/* Linux & Apple */
 }
 #endif
 
