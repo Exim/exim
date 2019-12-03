@@ -97,6 +97,7 @@ Makefile: ../OS/Makefile-Base ../OS/Makefile-Default \
 
 os.h:	$(SCRIPTS)/Configure-os.h \
 	$(O)/os.h-FreeBSD	\
+	$(O)/os.h-GNU		\
 	$(O)/os.h-Linux		\
 	$(O)/os.h-OpenBSD	\
 	$(O)/os.h-SunOS5
@@ -113,6 +114,7 @@ os.h:	$(SCRIPTS)/Configure-os.h \
 
 os.c:   ../src/os.c \
 	$(SCRIPTS)/Configure-os.c \
+	$(O)/os.c-GNU		\
 	$(O)/os.c-Linux
 	$(SHELL) $(SCRIPTS)/Configure-os.c
 
