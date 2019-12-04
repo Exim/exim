@@ -1419,10 +1419,10 @@ arc_sign_prepend_as(gstring * arcset_interim, arc_ctx * ctx,
   const uschar * privkey, unsigned options)
 {
 gstring * arcset;
-arc_set * as;
 uschar * status = arc_ar_cv_status(ar);
 arc_line * al = store_get(sizeof(header_line) + sizeof(arc_line), FALSE);
 header_line * h = (header_line *)(al+1);
+uschar * badline_str;
 
 gstring * hdata = NULL;
 int hashtype = pdkim_hashname_to_hashtype(US"sha256", 6);	/*XXX hardwired */
@@ -1440,6 +1440,7 @@ blob sig;
       - all ARC set headers, set-number order, aar then ams then as,
         including self (but with an empty b= in self)
 */
+DEBUG(D_transport) debug_printf("ARC: building AS for status '%s'\n", status);
 
 /* Construct the AS except for the signature */
 
@@ -1463,18 +1464,25 @@ ctx->arcset_chain_last->hdr_as = al;
 /* For any but "fail" chain-verify status, walk the entire chain in order by
 instance.  For fail, only the new arc-set.  Accumulate the elements walked. */
 
-for (as = Ustrcmp(status, US"fail") == 0
+for (arc_set * as = Ustrcmp(status, US"fail") == 0
 	? ctx->arcset_chain_last : ctx->arcset_chain;
      as; as = as->next)
   {
+  arc_line * l;
   /* Accumulate AAR then AMS then AS.  Relaxed canonicalisation
   is required per standard. */
 
-  h = as->hdr_aar->complete;
+  badline_str = US"aar";
+  if (!(l = as->hdr_aar)) goto badline;
+  h = l->complete;
   hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, TRUE));
-  h = as->hdr_ams->complete;
+  badline_str = US"ams";
+  if (!(l = as->hdr_ams)) goto badline;
+  h = l->complete;
   hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, TRUE));
-  h = as->hdr_as->complete;
+  badline_str = US"as";
+  if (!(l = as->hdr_as)) goto badline;
+  h = l->complete;
   hdata = string_cat(hdata, pdkim_relax_header_n(h->text, h->slen, !!as->next));
   }
 
@@ -1491,6 +1499,11 @@ DEBUG(D_transport) debug_printf("ARC: AS  '%.*s'\n", arcset->ptr - 2, arcset->s)
 /* Finally, append the AMS and AAR to the new AS */
 
 return string_catn(arcset, arcset_interim->s, arcset_interim->ptr);
+
+badline:
+  DEBUG(D_transport)
+    debug_printf("ARC: while building AS, missing %s in chain\n", badline_str);
+  return NULL;
 }
 
 

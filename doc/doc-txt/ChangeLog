@@ -217,6 +217,10 @@ JH/46 FreeBSD: fix use of the sendfile() syscall.  The shim was not updating
       the file-offset (which the Linux syscall does, and exim expects); this
       resulted in an indefinite loop.
 
+JH/47 ARC: fix crash in signing, triggered when a configuration error failed
+      to do ARC verification.  The Authentication-Results: header line added
+      by the configuration then had no ARC item.
+
 
 Exim version 4.92
 -----------------
