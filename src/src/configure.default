@@ -554,7 +554,6 @@ acl_check_rcpt:
 .ifdef _HAVE_PRDR
 acl_check_prdr:
   warn  set acl_m_did_prdr = y
-.endif
 
   #############################################################################
   # do lookup on filtering, with $local_part@$domain, deny on filter match
@@ -564,6 +563,7 @@ acl_check_prdr:
   #############################################################################
 
   accept
+.endif
 
 # This ACL is used after the contents of a message have been received. This
 # is the ACL in which you can test a message's headers or body, and in
