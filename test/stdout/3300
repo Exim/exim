@@ -30,7 +30,7 @@
 > sha1:  no
 > 
 > 
-> # Combinations.  These fail on FreddBSD as above.
+> # Combinations.  These fail on FreeBSD as above.
 > 
 > y:      Y
 > y:      Y

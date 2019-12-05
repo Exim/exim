@@ -5,6 +5,6 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 == CALLER@test.ex R=caller T=local_delivery defer (-1)
 1999-03-02 09:44:33 10HmaX-0005vi-00 Frozen
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 == EXIMUSER@test.ex R=caller T=local_delivery defer (13): Permission denied: creating lock file hitching post TESTSUITE/test-mail/EXIMUSER.lock.test.ex.dddddddd.pppppppp (euid=EXIM_UID egid=EXIM_GID)
+1999-03-02 09:44:33 10HmaY-0005vi-00 == EXIMUSER@test.ex R=caller T=local_delivery defer (EEE): Permission denied: creating lock file hitching post TESTSUITE/test-mail/EXIMUSER.lock.test.ex.dddddddd.pppppppp (euid=EXIM_UID egid=EXIM_GID)
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == EXIMUSER@test.ex R=caller T=local_delivery defer (13): Permission denied: creating lock file hitching post TESTSUITE/test-mail/EXIMUSER.lock.test.ex.dddddddd.pppppppp (euid=EXIM_UID egid=EXIM_GID)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == EXIMUSER@test.ex R=caller T=local_delivery defer (EEE): Permission denied: creating lock file hitching post TESTSUITE/test-mail/EXIMUSER.lock.test.ex.dddddddd.pppppppp (euid=EXIM_UID egid=EXIM_GID)

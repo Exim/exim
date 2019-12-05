@@ -23,7 +23,7 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 failed to expand dkim_timestamps: unknown variable in "${bogus}"
 1999-03-02 09:44:33 10HmaX-0005vi-00 DKIM: message could not be signed, and dkim_strict is set. Deferring message delivery.
 1999-03-02 09:44:33 10HmaX-0005vi-00 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: send() to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}": No such file or directory
-1999-03-02 09:44:33 10HmaX-0005vi-00 == e0@test.ex R=client T=send_to_server defer (2): No such file or directory H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: send() to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}"
+1999-03-02 09:44:33 10HmaX-0005vi-00 == e0@test.ex R=client T=send_to_server defer (EEE): No such file or directory H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]: send() to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] failed: failed to expand dkim_timestamps: unknown variable in "${bogus}"
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** e0@test.ex: retry timeout exceeded
 1999-03-02 09:44:33 10HmaX-0005vi-00 e0@test.ex: error ignored
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

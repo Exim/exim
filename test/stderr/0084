@@ -53,7 +53,7 @@ checking require_files
 file check: ! TESTSUITE/aux-fixed/0084.$local_part
 expanded file: TESTSUITE/aux-fixed/0084.no
 stat() yielded -1
-errno = 2
+errno = EEE
 calling smart router
 smart router called for no@myhost.test.ex
   domain = myhost.test.ex

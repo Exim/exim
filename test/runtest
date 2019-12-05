@@ -1302,6 +1302,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Platform differences in errno strings
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
 
+    # Platform differences for errno values (eg. Hurd)
+    s/^errno = \d+$/errno = EEE/;
+    s/^writing error \d+: /writing error EEE: /;
+
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
     # of the files that are obtained using readdir() varies from system to
@@ -1396,6 +1400,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/(?:\[[^\]]*\]:|port )\K$parm_port_n/PORT_N/;
     s/I=\[[^\]]*\]:\K\d+/ppppp/;
 
+    # Platform differences for errno values (eg. Hurd).  Leave 0 and negative numbers alone.
+    s/R=\w+ T=\w+ defer\K \([1-9]\d*\): / (EEE): /;
     }
 
   # ======== mail ========
