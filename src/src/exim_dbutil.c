@@ -332,7 +332,7 @@ if (asprintf(CSS &filename, "%s/%s", dirname, name) < 0) return NULL;
 #else
 filename = string_sprintf("%s/%s", dirname, name);
 #endif
-EXIM_DBOPEN(filename, dirname, flags, 0, &(dbblock->dbptr));
+EXIM_DBOPEN(filename, dirname, flags, 0, &dbblock->dbptr);
 
 if (!dbblock->dbptr)
   {

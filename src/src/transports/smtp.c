@@ -4925,7 +4925,7 @@ retry_non_continued:
         {
         for (address_item * addr = addrlist; addr; addr = addr->next)
           {
-          addr->basic_errno = 0;
+          addr->basic_errno = ERRNO_HOST_IS_LOCAL;
           addr->message = string_sprintf("%s transport found host %s to be "
             "local", tblock->name, host->name);
           }
