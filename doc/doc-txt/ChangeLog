@@ -218,6 +218,10 @@ JH/43 Bug 2465: Fix taint-handling in dsearch lookup.  Previously a nontainted
       buffer was used for the filename, resulting in a trap when tainted
       arguments (eg. $domain) were used.
 
+JH/46 FreeBSD: fix use of the sendfile() syscall.  The shim was not updating
+      the file-offset (which the Linux syscall does, and exim expects); this
+      resulted in an indefinite loop.
+
 
 Exim version 4.92
 -----------------
