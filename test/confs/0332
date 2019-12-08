@@ -34,6 +34,7 @@ t1:
   hosts = 127.0.0.1
   hosts_override
   port = PORT_S
+  hosts_try_fastopen = :
 
 
 # ----- Retry -----

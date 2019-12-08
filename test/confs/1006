@@ -37,6 +37,7 @@ begin transports
 
 smtp:
   driver = smtp
+  hosts_try_fastopen =	:
 
 
 # End

@@ -35,6 +35,7 @@ t3:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen =	:
   allow_localhost
   transport_filter = /non/existent/file
 

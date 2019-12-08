@@ -75,6 +75,7 @@ remote_delivery:
   hosts = 127.0.0.1
   allow_localhost
   port = PORT_D
+  hosts_try_fastopen =	:
 
 # ----- Retry -----
 

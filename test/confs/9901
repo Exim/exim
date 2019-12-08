@@ -47,6 +47,7 @@ t1:
   hosts = 127.0.0.1
   hosts_override
   port = PORT_D
+  hosts_try_fastopen =	:
 
 t2:
   driver = appendfile

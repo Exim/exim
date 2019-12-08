@@ -92,10 +92,12 @@ smtp:
   driver = smtp
   connect_timeout = 1s
   port = PORT_D
+  hosts_try_fastopen =	:
 
 smtp_connect_refused:
   driver = smtp
   port = PORT_N
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

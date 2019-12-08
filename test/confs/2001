@@ -49,6 +49,7 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
+  hosts_try_fastopen =	:
   OPTION
   port = PORT_D
   tls_certificate = DIR/aux-fixed/cert2

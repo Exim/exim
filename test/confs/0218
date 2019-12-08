@@ -52,6 +52,7 @@ send_to_server:
   command_timeout = 1s
   hosts = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen = :
   debug_print = T: $transport_name  (${acl {expand_check}})
 
 

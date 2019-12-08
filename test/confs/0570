@@ -35,6 +35,7 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_D
+  hosts_try_fastopen = :
   OPTION
   max_parallel = 1
 

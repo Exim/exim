@@ -85,10 +85,12 @@ smtp:
   max_rcpt = 1
   connection_max_messages = 1
   port = PORT_S
+  hosts_try_fastopen = :
 
 smtp2:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen = :
 
 smtp3:
   driver = smtp
@@ -96,6 +98,7 @@ smtp3:
   max_rcpt = 2
   connection_max_messages = 1
   port = PORT_S
+  hosts_try_fastopen = :
 
 
 # ----- Retry -----

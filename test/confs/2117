@@ -53,9 +53,10 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
-  hosts_nopass_tls = *
   port = PORT_D
+  hosts_try_fastopen = :
   tls_try_verify_hosts = :
+  hosts_nopass_tls = *
 
 
 # ----- Retry -----

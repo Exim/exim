@@ -28,6 +28,7 @@ begin transports
 t1:
   driver = smtp
   hosts = 127.0.0.1
+  hosts_try_fastopen =	:
   allow_localhost
   port = ${if queue_running{PORT_D2}{PORT_D}}EXTRA
 

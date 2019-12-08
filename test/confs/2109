@@ -54,7 +54,8 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
-  hosts_avoid_tls = 127.0.0.1
   port = PORT_D
+  hosts_try_fastopen =	:
+  hosts_avoid_tls = 127.0.0.1
 
 # End

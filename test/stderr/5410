@@ -130,7 +130,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept" (TESTSUITE/test-config 55)
+processing "accept" (TESTSUITE/test-config 56)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -383,7 +383,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept" (TESTSUITE/test-config 55)
+processing "accept" (TESTSUITE/test-config 56)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -636,7 +636,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept" (TESTSUITE/test-config 55)
+processing "accept" (TESTSUITE/test-config 56)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA

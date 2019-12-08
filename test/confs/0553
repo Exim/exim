@@ -45,6 +45,7 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_D
+  hosts_try_fastopen = :
   command_timeout = 2s
 
 

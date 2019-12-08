@@ -38,6 +38,7 @@ t1:
 
 t2:
   driver = smtp
+  hosts_try_fastopen =	:
   debug_print = \$host=$host \$host_address=$host_address
 
 # End

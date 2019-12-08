@@ -48,6 +48,7 @@ send_to_server:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_certificate = DIR/aux-fixed/cert2
   tls_privatekey = DIR/aux-fixed/cert2
   tls_verify_certificates = DIR/aux-fixed/cert2

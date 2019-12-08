@@ -76,6 +76,7 @@ t1:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_D
+  hosts_try_fastopen =	:
   allow_localhost
   tls_certificate =         DIR/aux-fixed/cert2
   tls_verify_certificates = DIR/aux-fixed/cert1
@@ -85,6 +86,7 @@ t2:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen =	:
   protocol = smtps
   allow_localhost
   tls_certificate =         DIR/aux-fixed/cert2

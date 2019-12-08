@@ -82,6 +82,7 @@ local_delivery:
 
 smtp:
   driver = smtp
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

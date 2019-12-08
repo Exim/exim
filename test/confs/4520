@@ -45,6 +45,7 @@ send_to_server:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
 
   dkim_domain =		test.ex
 .ifdef SELECTOR

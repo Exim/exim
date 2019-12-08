@@ -115,6 +115,7 @@ local_delivery:
 
 rmt_smtp:
   driver = smtp
+  hosts_try_fastopen =	:
   hosts_require_tls = *
   tls_try_verify_hosts = :
 

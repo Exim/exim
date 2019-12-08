@@ -62,6 +62,7 @@ begin transports
 
 remote_smtp:
   driver = smtp
+  hosts_try_fastopen =	:
 
 
 # End

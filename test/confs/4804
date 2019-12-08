@@ -40,5 +40,6 @@ begin transports
 send_to_server:
   driver = smtp
   port = PORT_D
+  hosts_try_fastopen =	:
 
 # End

@@ -46,8 +46,9 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
-  hosts_require_tls = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen = :
+  hosts_require_tls = HOSTIPV4
   tls_certificate = DIR/aux-fixed/cert2
   tls_privatekey = DIR/aux-fixed/cert2
   tls_require_ciphers = IDEA-CBC-MD5:\

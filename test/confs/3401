@@ -55,14 +55,16 @@ begin transports
 
 smtp_try:
   driver = smtp
-  hosts_try_auth = *
   port = PORT_S
+  hosts_try_fastopen =	:
+  hosts_try_auth = *
   authenticated_sender = ${if eq{$local_part}{forcesender}{force@x.y.z}fail}
 
 smtp_force:
   driver = smtp
-  hosts_require_auth = *
   port = PORT_S
+  hosts_try_fastopen =	:
+  hosts_require_auth = *
 
 
 # ----- Retry -----

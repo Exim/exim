@@ -16,10 +16,12 @@ begin transports
 remote_delivery:
   driver = smtp
   hosts = V4NET.0.0.1
+  hosts_try_fastopen =	:
 
 bad_return:
   driver = smtp
   hosts = V4NET.0.0.0
+  hosts_try_fastopen =	:
   return_path = ${if
 
 no_hosts:

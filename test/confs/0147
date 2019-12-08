@@ -60,6 +60,7 @@ begin transports
 
 T1:
   driver = smtp
+  hosts_try_fastopen =	:
 
 
 #----- ACL -----

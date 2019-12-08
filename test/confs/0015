@@ -100,6 +100,7 @@ delivery_s:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen = :
   allow_localhost
 
 address_reply:

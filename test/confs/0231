@@ -65,6 +65,7 @@ smtp_rewrite:
   headers_rewrite = *@domain1 $1-rewrite@domain2 f :\
                     *@domain1 $1-other@domain2
   port = PORT_S
+  hosts_try_fastopen = :
 
 
 # ----- Retry -----

@@ -28,6 +28,7 @@ smtp:
   hosts_max_try = 1
   allow_localhost
   port = PORT_S
+  hosts_try_fastopen = :
 
 
 # ----- Retry -----

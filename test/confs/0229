@@ -32,6 +32,7 @@ smtp:
           127.0.0.1 : 127.0.0.1 : HOSTIPV4 : \
           127.0.0.1 : 127.0.0.1 : HOSTIPV4
   port = PORT_S
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

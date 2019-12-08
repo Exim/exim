@@ -55,6 +55,7 @@ begin transports
 
 pass_on:
   driver = smtp
+  hosts_try_fastopen =	:
   connect_timeout = 1s
   gethostbyname
   hosts = NEXTHOST

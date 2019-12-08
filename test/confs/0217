@@ -41,6 +41,7 @@ send_to_server:
   command_timeout = 1s
   hosts = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen = :
   HAP
   max_rcpt = 1000
 

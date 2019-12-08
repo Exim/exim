@@ -75,6 +75,7 @@ begin transports
 smtp:
   driver =	smtp
   event_action = ${acl {ev_log}}
+  hosts_try_fastopen = :
 
 bad_tpt:
   driver =	smtp

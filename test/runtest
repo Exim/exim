@@ -1245,7 +1245,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
-    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|yes \(matched "\*"\))\n$//)
+    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$//)
       {
       chomp;
       $_ .= <IN>;

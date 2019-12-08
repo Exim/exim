@@ -51,9 +51,11 @@ begin transports
 
 smtp:
   driver = smtp
+  hosts_try_fastopen =	:
 
 other_smtp:
   driver = smtp
+  hosts_try_fastopen =	:
 
 null:
   driver = appendfile

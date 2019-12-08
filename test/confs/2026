@@ -63,6 +63,7 @@ t1:
   driver = smtp
   hosts = 127.0.0.1 : HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
   allow_localhost
 
 t2:

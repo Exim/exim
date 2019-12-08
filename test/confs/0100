@@ -72,10 +72,12 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen = :
 
 filtered_smtp:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen = :
   transport_filter = /bin/sh -c "echo 'X-Filtered: just checking'; cat"
 
 local_delivery:

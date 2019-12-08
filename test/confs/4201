@@ -124,6 +124,7 @@ local_delivery:
 
 rmt_smtp:
   driver = smtp
+  hosts_try_fastopen =	:
 .ifdef STRICT
   utf8_downconvert = STRICT
 .endif

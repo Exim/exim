@@ -66,6 +66,7 @@ send_to_server:
   driver = smtp
   allow_localhost
   port = PORT_D
+  hosts_try_fastopen =	:
 
   hosts_try_dane =     CONTROL
   hosts_require_dane = HOSTIPV4

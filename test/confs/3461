@@ -69,9 +69,10 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
+  port = PORT_D
+  hosts_try_fastopen =	:
   hosts_try_auth = *
   hosts_noproxy_tls = PEX
-  port = PORT_D
   tls_try_verify_hosts = :
 
 # End

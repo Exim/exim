@@ -53,6 +53,7 @@ send_to_server1:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_sni = fred
   tls_try_verify_hosts = :
 
@@ -61,6 +62,7 @@ send_to_server2:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_try_verify_hosts = :
 
 
