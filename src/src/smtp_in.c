@@ -2400,7 +2400,26 @@ return FALSE;
 static void
 tfo_in_check(void)
 {
-# ifdef TCP_INFO
+# ifdef __FreeBSD__
+int is_fastopen;
+socklen_t len = sizeof(is_fastopen);
+
+/* The tinfo TCPOPT_FAST_OPEN bit seems unreliable, and we don't see state
+TCP_SYN_RCV (as of 12.1) so no idea about data-use. */
+
+if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
+  {
+  if (is_fastopen) 
+    {
+    DEBUG(D_receive)
+      debug_printf("TFO mode connection (TCP_FASTOPEN getsockopt)\n");
+    f.tcp_in_fastopen = TRUE;
+    }
+  }
+else DEBUG(D_receive)
+  debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
+
+# elif defined(TCP_INFO)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
@@ -2409,7 +2428,7 @@ if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
   if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
     {
     DEBUG(D_receive)
-      debug_printf("TCP_FASTOPEN mode connection (ACKd data-on-SYN)\n");
+      debug_printf("TFO mode connection (ACKd data-on-SYN)\n");
     f.tcp_in_fastopen_data = f.tcp_in_fastopen = TRUE;
     }
   else
@@ -2417,20 +2436,9 @@ if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
     if (tinfo.tcpi_state == TCP_SYN_RECV)	/* Not seen on FreeBSD 12.1 */
     {
     DEBUG(D_receive)
-      debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
+      debug_printf("TFO mode connection (state TCP_SYN_RECV)\n");
     f.tcp_in_fastopen = TRUE;
     }
-#  ifdef __FreeBSD__
-  else if (tinfo.tcpi_options & TCPOPT_FAST_OPEN)
-    {
-    /* This only tells us that some combination of the TCP options was used. It
-    can be a TFO-R received (as of 12.1).  However, pretend it shows real usage
-    (that an acceptable TFO-C was received and acted on).  Ignore the possibility
-    of data-on-SYN for now. */
-    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (TFO option used)\n");
-    f.tcp_in_fastopen = TRUE;
-    }
-#  endif
 else DEBUG(D_receive)
   debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
 # endif
@@ -3050,7 +3058,7 @@ smtp_printf("%s",
 handshake arrived.  If so we must have managed a TFO. */
 
 #ifdef TCP_FASTOPEN
-tfo_in_check();
+if (sender_host_address && !f.sender_host_notsocket) tfo_in_check();
 #endif
 
 return TRUE;

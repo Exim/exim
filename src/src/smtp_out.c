@@ -155,11 +155,11 @@ return TRUE;
 static void
 tfo_out_check(int sock)
 {
+# ifdef __FreeBSD__
 struct tcp_info tinfo;
 int val;
 socklen_t len = sizeof(val);
 
-# ifdef __FreeBSD__
 /* The observability as of 12.1 is not useful as a client, only telling us that
 a TFO option was used on SYN.  It could have been a TFO-R, or ignored by the
 server. */
@@ -177,6 +177,8 @@ switch (tcp_out_fastopen)
 
 # else	/* Linux & Apple */
 #  if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
+struct tcp_info tinfo;
+socklen_t len = sizeof(tinfo);
 
 switch (tcp_out_fastopen)
   {
