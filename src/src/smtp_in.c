@@ -2431,9 +2431,9 @@ if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
     f.tcp_in_fastopen = TRUE;
     }
 #  endif
-# endif
 else DEBUG(D_receive)
   debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
+# endif
 }
 #endif
 
