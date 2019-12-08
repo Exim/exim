@@ -25,6 +25,37 @@ there have been two big upheavals...
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
+Exim version 4.93
+-----------------
+
+For a detailed list of changes that might affect Exim's operation with
+an unchanged configuration, please see the doc/ChangeLog file.
+
+Build:
+
+ * SUPPORT_DMARC replaces EXPERIMENTAL_DMARC
+
+ * DISABLE_TLS replaces SUPPORT_TLS
+
+ * Bump the version for the local_scan API.
+
+Runtime:
+
+ * smtp transport option hosts_try_fastopen defaults to "*".
+
+ * DNSSec is requested (not required) for all queries. (This seemes to
+   ask for trouble if your resolver is a systemd-resolved.)
+
+ * Generic router option retry_use_local_part defaults to "true" under specific
+   pre-conditions.
+
+ * Introduce a tainting mechanism for values read from untrusted sources.
+
+ * Use longer file names for temporary spool files (this avoids
+   name conflicts with spool on a shared file system).
+
+ * Use dsn_from main config option (was ignored previously).
+
 
 Exim version 4.92
 -----------------
