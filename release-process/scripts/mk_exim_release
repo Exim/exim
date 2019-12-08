@@ -256,8 +256,8 @@ package Context {
 
             #my $stamp = $context->{minor} ? '_'.$context->{minor} : '';
             #$stamp .= $context->{rc} if $context->{rc};
-            my $release = $context->{v}{rc} ? $context->{v}{target_release}
-                                            : $context->{v}{last_tag};
+            my $release = $context->{quick} ? $context->{v}{last_tag}
+                                            : $context->{v}{target_release};
 
             my $variant =
                   $context->{v}{rc} ? $context->{v}{rc}
