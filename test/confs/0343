@@ -25,6 +25,7 @@ remote_smtp:
   hosts = 127.0.0.1
   allow_localhost
   port = PORT_N
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

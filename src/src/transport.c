@@ -172,6 +172,20 @@ for (transport_instance * t = transports; t; t = t->next)
 *             Write block of data                *
 *************************************************/
 
+static int
+tpt_write(int fd, uschar * block, int len, BOOL more, int options)
+{
+return
+#ifndef DISABLE_TLS
+  tls_out.active.sock == fd
+    ? tls_write(tls_out.active.tls_ctx, block, len, more) :
+#endif
+#ifdef MSG_MORE
+  more && !(options & topt_not_socket) ? send(fd, block, len, MSG_MORE) :
+#endif
+  write(fd, block, len);
+}
+
 /* Subroutine called by write_chunk() and at the end of the message actually
 to write a data block. Also called directly by some transports to write
 additional data to the file descriptor (e.g. prefix, suffix).
@@ -215,10 +229,11 @@ Returns:    TRUE on success, FALSE on failure (with errno preserved);
 */
 
 static BOOL
-transport_write_block_fd(transport_ctx * tctx, uschar *block, int len, BOOL more)
+transport_write_block_fd(transport_ctx * tctx, uschar * block, int len, BOOL more)
 {
 int rc, save_errno;
 int local_timeout = transport_write_timeout;
+int connretry = 1;
 int fd = tctx->u.fd;
 
 /* This loop is for handling incomplete writes and other retries. In most
@@ -230,48 +245,42 @@ for (int i = 0; i < 100; i++)
     debug_printf("writing data block fd=%d size=%d timeout=%d%s\n",
       fd, len, local_timeout, more ? " (more expected)" : "");
 
-  /* This code makes use of alarm() in order to implement the timeout. This
-  isn't a very tidy way of doing things. Using non-blocking I/O with select()
-  provides a neater approach. However, I don't know how to do this when TLS is
-  in use. */
+  /* When doing TCP Fast Open we may get this far before the 3-way handshake
+  is complete, and write returns ENOTCONN.  Detect that, wait for the socket
+  to become writable, and retry once only. */
 
-  if (transport_write_timeout <= 0)   /* No timeout wanted */
+  for(;;)
     {
-    rc =
-#ifndef DISABLE_TLS
-	tls_out.active.sock == fd ? tls_write(tls_out.active.tls_ctx, block, len, more) :
-#endif
-#ifdef MSG_MORE
-	more && !(tctx->options & topt_not_socket)
-	  ? send(fd, block, len, MSG_MORE) :
-#endif
-	write(fd, block, len);
-    save_errno = errno;
-    }
+    fd_set fds;
+    /* This code makes use of alarm() in order to implement the timeout. This
+    isn't a very tidy way of doing things. Using non-blocking I/O with select()
+    provides a neater approach. However, I don't know how to do this when TLS is
+    in use. */
 
-  /* Timeout wanted. */
-
-  else
-    {
-    ALARM(local_timeout);
-
-    rc =
-#ifndef DISABLE_TLS
-	tls_out.active.sock == fd ? tls_write(tls_out.active.tls_ctx, block, len, more) :
-#endif
-#ifdef MSG_MORE
-	more && !(tctx->options & topt_not_socket)
-	  ? send(fd, block, len, MSG_MORE) :
-#endif
-	write(fd, block, len);
-
-    save_errno = errno;
-    local_timeout = ALARM_CLR(0);
-    if (sigalrm_seen)
+    if (transport_write_timeout <= 0)   /* No timeout wanted */
       {
-      errno = ETIMEDOUT;
-      return FALSE;
+      rc = tpt_write(fd, block, len, more, tctx->options);
+      save_errno = errno;
       }
+    else				/* Timeout wanted. */
+      {
+      ALARM(local_timeout);
+	rc = tpt_write(fd, block, len, more, tctx->options);
+	save_errno = errno;
+      local_timeout = ALARM_CLR(0);
+      if (sigalrm_seen)
+	{
+	errno = ETIMEDOUT;
+	return FALSE;
+	}
+      }
+
+    if (rc >= 0 || errno != ENOTCONN || connretry <= 0)
+      break;
+
+    FD_ZERO(&fds); FD_SET(fd, &fds);
+    select(fd+1, NULL, &fds, NULL, NULL);	/* could set timout? */
+    connretry--;
     }
 
   /* Hopefully, the most common case is success, so test that first. */

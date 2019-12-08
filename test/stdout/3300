@@ -1,4 +1,9 @@
 > badCrypt: no
+> 
+> # Defined-routine, and default, crypt mehods.  These fail on FreeBSD because
+> # the crypt() call does something different to that on Linux.  The output
+> # is therefore different, and the compare fails.
+> 
 > mySecret: yes
 > mySecret: no
 > mySecret: yes
@@ -9,19 +14,23 @@
 > crypt16: no
 > crypt16: yes
 > 
-> test: yes
-> test: yes
-> test: no
-> test: yes
-> test: no
-> test: no
 > 
-> abc:  yes
-> abc:  yes
-> abc:  yes
-> abd:  no
+> # Defined-algo methods.
 > 
-> # Combinations
+> md5: yes
+> md5: yes
+> md5: no
+> md5: yes
+> md5: no
+> md5: no
+> 
+> sha1:  yes
+> sha1:  yes
+> sha1:  yes
+> sha1:  no
+> 
+> 
+> # Combinations.  These fail on FreeBSD as above.
 > 
 > y:      Y
 > y:      Y

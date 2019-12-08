@@ -933,6 +933,11 @@ RESET_AFTER_EXTRA_LINE_READ:
   last if !defined $_;
 
 
+  # SRS timestamps and signatures vary by hostname and from run to run
+
+  s/SRS0=....=..=[^=]+=[^@]+\@test.ex/SRS0=ZZZZ=YY=the.local.host.name=CALLER\@test.ex/;
+
+
   # ======== Output from the "fd" program about open descriptors ========
   # The statuses seem to be different on different operating systems, but
   # at least we'll still be checking the number of open fd's.
@@ -1040,6 +1045,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     s/(?<=^>>>>>>>>>>>>>>>> Exim pid=)\d+(?= terminating)/pppp/;
     s/^(proxy-proc \w{5}-pid) \d+$/$1 pppp/;
+    s/^(?:\s*\d+ )(exec .* -oPX)$/pppp $1/;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.
@@ -1056,6 +1062,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # drop openssl version strings
     next if /OpenSSL compile-time version: OpenSSL \d+[\.\da-z]+/;
     next if /OpenSSL runtime version: OpenSSL \d+[\.\da-z]+/;
+
+    # this is timing-dependent
+    next if /^OpenSSL: creating STEK$/;
 
     # drop lookups
     next if /^Lookups \(built-in\):/;
@@ -1254,7 +1263,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^DKIM \[[^[]+\] (Header hash|b) computed:/;
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
-    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|yes \(matched "\*"\))\n$//)
+    if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$//)
       {
       chomp;
       $_ .= <IN>;
@@ -1310,6 +1319,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Platform differences in errno strings
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
+
+    # Platform differences for errno values (eg. Hurd)
+    s/^errno = \d+$/errno = EEE/;
+    s/^writing error \d+: /writing error EEE: /;
 
     # When Exim is checking the size of directories for maildir, it uses
     # the check_dir_size() function to scan directories. Of course, the order
@@ -1405,6 +1418,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/(?:\[[^\]]*\]:|port )\K$parm_port_n/PORT_N/;
     s/I=\[[^\]]*\]:\K\d+/ppppp/;
 
+    # Platform differences for errno values (eg. Hurd).  Leave 0 and negative numbers alone.
+    s/R=\w+ T=\w+ defer\K \([1-9]\d*\): / (EEE): /;
     }
 
   # ======== mail ========
@@ -1546,7 +1561,7 @@ if (! -e $sf_current)
       log_failure($log_failed_filename, $testno, $rf);
       log_test($log_summary_filename, $testno, 'F') if ($force_continue);
     }
-    return 1 if /^c$/i && $rf !~ /paniclog/ && $rsf !~ /paniclog/;
+    return 1 if /^c$/i && $rf !~ /paniclog/ && (!defined $rsf || $rsf !~ /paniclog/);
     last if (/^[sc]$/);
     }
 
@@ -3450,7 +3465,7 @@ while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
   {
   if (/^(?:[0-9]+: )?([a-z0-9]+): /) { $ifname = $1; }
 
-  if (not $parm_ipv4 and /^\s*inet(?:\saddr)?:?\s?(\d+\.\d+\.\d+\.\d+)(?:\/\d+)?\s/i)
+  if (not $parm_ipv4 and /^\s*inet(?:\saddr(?:ess))?:?\s*(\d+\.\d+\.\d+\.\d+)(?:\/\d+)?\s/i)
     {
     # It would be nice to be able to vary the /16 used for manyhome; we could take
     # an option to runtest used here - but we'd also have to pass it on to fakens.
@@ -3460,7 +3475,7 @@ while (not ($parm_ipv4 and $parm_ipv6) and defined($_ = <IFCONFIG>))
     }
 
   if (   (not $parm_ipv6 or $parm_ipv6 =~ /%/)
-     and /^\s*inet6(?:\saddr)?:?\s?([abcdef\d:]+)(?:%[^ \/]+)?(?:\/\d+)?/i)
+     and /^\s*inet6(?:\saddr(?:ess))?:?\s*([abcdef\d:]+)(?:%[^ \/]+)?(?:\/\d+)?/i)
     {
     next if $1 eq '::' or $1 eq '::1' or $1 =~ /^ff00/i or $1 =~ /^fe80::1/i;
     $parm_ipv6 = $1;

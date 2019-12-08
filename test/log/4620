@@ -1,0 +1,16 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss for redirect@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => remote_user@remote.ex <redirect@test.ex> R=external T=forwarded_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** remote_user@remote.ex R=remote_bouncer: account disabled
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex> R=local T=appendfile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex H=localhost (the.local.host.name) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@the.local.host.name for remote_user@remote.ex

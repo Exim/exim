@@ -1343,7 +1343,7 @@ if (received_protocol)
 if (LOGGING(pipelining) && f.smtp_in_pipelining_advertised)
   {
   g = string_catn(g, US" L", 2);
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   if (f.smtp_in_early_pipe_used)
     g = string_catn(g, US"*", 1);
   else if (f.smtp_in_early_pipe_advertised)

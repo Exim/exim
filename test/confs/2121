@@ -28,6 +28,7 @@ send_to_server:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen = :
   REQUIRE
   TRYCLEAR
 

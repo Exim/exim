@@ -45,6 +45,7 @@ send_to_server:
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
   port = PORT_D
+  hosts_try_fastopen =	:
   hosts_require_tls = HOSTIPV4
   tls_require_ciphers = NORMAL:-VERS-ALL:+VERS-TLS1.2:-MAC-ALL:+SHA\
 	 ${if eq{$host}{HOSTIPV4} {384} {256} }

@@ -61,8 +61,6 @@ static int ssl_xfer_eof = FALSE;
 static BOOL ssl_xfer_error = FALSE;
 #endif
 
-uschar *tls_channelbinding_b64 = NULL;
-
 
 /*************************************************
 *       Expand string; give error on failure     *
@@ -403,6 +401,79 @@ if (path)
     unsetenv("SSLKEYLOGFILE");
     }
 }
+
+/*************************************************
+*       Drop privs for checking TLS config      *
+*************************************************/
+
+/* We want to validate TLS options during readconf, but do not want to be
+root when we call into the TLS library, in case of library linkage errors
+which cause segfaults; before this check, those were always done as the Exim
+runtime user and it makes sense to continue with that.
+
+Assumes:  tls_require_ciphers has been set, if it will be
+          exim_user has been set, if it will be
+          exim_group has been set, if it will be
+
+Returns:  bool for "okay"; false will cause caller to immediately exit.
+*/
+
+BOOL
+tls_dropprivs_validate_require_cipher(BOOL nowarn)
+{
+const uschar *errmsg;
+pid_t pid;
+int rc, status;
+void (*oldsignal)(int);
+
+/* If TLS will never be used, no point checking ciphers */
+
+if (  !tls_advertise_hosts
+   || !*tls_advertise_hosts
+   || Ustrcmp(tls_advertise_hosts, ":") == 0
+   )
+  return TRUE;
+else if (!nowarn && !tls_certificate)
+  log_write(0, LOG_MAIN,
+    "Warning: No server certificate defined; will use a selfsigned one.\n"
+    " Suggested action: either install a certificate or change tls_advertise_hosts option");
+
+oldsignal = signal(SIGCHLD, SIG_DFL);
+
+fflush(NULL);
+if ((pid = fork()) < 0)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork failed for TLS check");
+
+if (pid == 0)
+  {
+  /* in some modes, will have dropped privilege already */
+  if (!geteuid())
+    exim_setugid(exim_uid, exim_gid, FALSE,
+        US"calling tls_validate_require_cipher");
+
+  if ((errmsg = tls_validate_require_cipher()))
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+        "tls_require_ciphers invalid: %s", errmsg);
+  fflush(NULL);
+  exim_underbar_exit(0);
+  }
+
+do {
+  rc = waitpid(pid, &status, 0);
+} while (rc < 0 && errno == EINTR);
+
+DEBUG(D_tls)
+  debug_printf("tls_validate_require_cipher child %d ended: status=0x%x\n",
+      (int)pid, status);
+
+signal(SIGCHLD, oldsignal);
+
+return status == 0;
+}
+
+
+
+
 #endif	/*!DISABLE_TLS*/
 #endif	/*!MACRO_PREDEF*/
 

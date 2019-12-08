@@ -30,6 +30,7 @@ smtp:
   connect_timeout = 1s
   fallback_hosts = ten-2.test.ex
   port = PORT_S
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

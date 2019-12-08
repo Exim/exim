@@ -54,11 +54,13 @@ send_to_server1:
   allow_localhost
   hosts = 127.0.0.1
   port = PORT_D
+  hosts_try_fastopen = :
 
 send_to_server2:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen = :
 
 # End

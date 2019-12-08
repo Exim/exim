@@ -28,6 +28,7 @@ begin transports
 
 smtp:
   driver = smtp
+  hosts_try_fastopen =	:
   connect_timeout = 1s
 
 

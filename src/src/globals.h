@@ -97,6 +97,7 @@ typedef struct {
   void	 *peercert;           /* Certificate of peer, binary */
   uschar *peerdn;             /* DN from peer */
   uschar *sni;                /* Server Name Indication */
+  uschar *channelbinding;     /* b64'd data identifying channel, for authenticators */
   enum {
     OCSP_NOT_REQ=0,		/* not requested */
     OCSP_NOT_RESP,		/* no response to request */
@@ -120,7 +121,6 @@ extern BOOL    gnutls_allow_auto_pkcs11; /* Let GnuTLS autoload PKCS11 modules *
 extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_certificate;        /* Certificate file */
-extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
 extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */
@@ -199,6 +199,7 @@ extern struct global_flags {
  BOOL   disable_logging			:1; /* Disables log writing when TRUE */
 #ifndef DISABLE_DKIM
  BOOL   dkim_disable_verify		:1; /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
+ BOOL   dkim_init_done			:1; /* lazy-init status */
 #endif
 #ifdef SUPPORT_DMARC
  BOOL   dmarc_has_been_checked		:1; /* Global variable to check if test has been called yet */
@@ -258,7 +259,7 @@ extern struct global_flags {
  BOOL   sender_name_forced		:1; /* Set by -F */
  BOOL   sender_set_untrusted		:1; /* Sender set by untrusted caller */
  BOOL   smtp_authenticated		:1; /* Sending client has authenticated */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
  BOOL   smtp_in_early_pipe_advertised	:1; /* server advertised PIPE_CONNECT */
  BOOL	smtp_in_early_pipe_no_auth	:1; /* too many authenticator names */
  BOOL   smtp_in_early_pipe_used		:1; /* client did send early data */
@@ -750,7 +751,7 @@ extern uschar *override_pid_file_path; /* Value of -oP argument */
 
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 extern uschar *pipe_connect_advertise_hosts; /* for banner/EHLO pipelining */
 #endif
 extern uschar *pipelining_advertise_hosts; /* As it says */
@@ -834,7 +835,7 @@ extern const pcre  *regex_CHUNKING;    /* For recognizing CHUNKING (RFC 3030) */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 extern const pcre  *regex_EARLY_PIPE;  /* For recognizing PIPE_CONNCT */
 #endif
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
@@ -986,6 +987,9 @@ extern uschar *srs_secrets;            /* SRS secrets list */
 extern uschar *srs_status;             /* SRS staus */
 extern BOOL    srs_usehash;            /* SRS use hash flag */
 extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
+#endif
+#ifdef EXPERIMENTAL_SRS_NATIVE
+extern uschar *srs_recipient;          /* SRS recipient */
 #endif
 extern BOOL    strict_acl_vars;        /* ACL variables have to be set before being used */
 extern int     string_datestamp_offset;/* After insertion by string_format */

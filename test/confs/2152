@@ -53,6 +53,7 @@ send_to_server:
   allow_localhost
   hosts =	127.0.0.1
   port =	PORT_D
+  hosts_try_fastopen =	:
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
 
@@ -61,6 +62,7 @@ send_to_server_v:
   allow_localhost
   hosts =	127.0.0.1
   port =	PORT_D2
+  hosts_try_fastopen =	:
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
 

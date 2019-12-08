@@ -37,5 +37,6 @@ begin transports
 t1:
   driver = smtp
   hosts = V4NET.0.0.0
+  hosts_try_fastopen =	:
 
 # End

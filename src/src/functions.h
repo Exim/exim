@@ -55,6 +55,7 @@ extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
 extern void    tls_close(void *, int);
 extern BOOL    tls_could_read(void);
 extern void    tls_daemon_init(void);
+extern BOOL    tls_dropprivs_validate_require_cipher(BOOL);
 extern BOOL    tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
@@ -136,6 +137,7 @@ extern gstring *authres_spf(gstring *);
 #endif
 
 extern uschar *b64encode(const uschar *, int);
+extern uschar *b64encode_taint(const uschar *, int, BOOL);
 extern int     b64decode(const uschar *, uschar **);
 extern int     bdat_getc(unsigned);
 extern uschar *bdat_getbuf(unsigned *);
@@ -175,8 +177,8 @@ extern void    debug_print_tree(tree_node *);
 extern void    debug_vprintf(int, const char *, va_list);
 extern void    decode_bits(unsigned int *, size_t, int *,
 	           uschar *, bit_table *, int, uschar *, int);
+extern void    delete_pid_file(void);
 extern address_item *deliver_make_addr(uschar *, BOOL);
-extern void    deliver_init(void);
 extern void    delivery_log(int, address_item *, int, uschar *);
 extern int     deliver_message(uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
@@ -446,6 +448,7 @@ extern void    smtp_command_timeout_exit(void) NORETURN;
 extern void    smtp_command_sigterm_exit(void) NORETURN;
 extern void    smtp_data_timeout_exit(void) NORETURN;
 extern void    smtp_data_sigint_exit(void) NORETURN;
+extern void    smtp_deliver_init(void);
 extern uschar *smtp_cmd_hist(void);
 extern int     smtp_connect(smtp_connect_args *, const blob *);
 extern int     smtp_sock_connect(host_item *, int, int, uschar *,
@@ -540,6 +543,7 @@ extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern int     test_harness_fudged_queue_time(int);
+extern void    tcp_init(void);
 #ifdef EXIM_TFO_PROBE
 extern void    tfo_probe(void);
 #endif

@@ -3,6 +3,28 @@ affect Exim's operation, with an unchanged configuration file.  For new
 options, and new features, see the NewStuff file next to this ChangeLog.
 
 
+Exim version 4.94
+-----------------
+
+JH/01 Avoid costly startup code when not strictly needed.  This reduces time
+      for some exim process initialisations.  It does mean that the logging
+      of TLS configuration problems is only done for the daemon startup.
+
+JH/02 Early-pipelining support code is now included unless disabled in Makefile.
+
+JH/03 DKIM verification defaults no long accept sha1 hashes, to conform to
+      RFC 8301.  They can still be enabled, using the dkim_verify_hashes main
+      option.
+
+JH/04 Support CHUNKING from an smtp transport using a transport_filter, when
+      DKIM signing is being done.  Previously a transport_filter would always
+      disable CHUNKING, falling back to traditional DATA.
+
+JH/05 Regard command-line receipients as tainted.
+
+JH/06 Bug 340: Remove the daemon pid file on exit, whe due to SIGTERM.
+
+
 Exim version 4.93
 -----------------
 

@@ -64,6 +64,7 @@ t1:
   driver = smtp
   hosts = 127.0.0.1 : HOSTIPV4
   port = PORT_S
+  hosts_try_fastopen = :
   allow_localhost
   command_timeout = 1s
 
@@ -71,6 +72,7 @@ t2:
   driver = smtp
   hosts = V4NET.9.8.7
   port = PORT_S
+  hosts_try_fastopen =	:
 
 t3:
   driver = appendfile
@@ -81,5 +83,6 @@ t4:
   driver = smtp
   hosts = V4NET.10.10.10
   port = nonexistent
+  hosts_try_fastopen =	:
 
 # End

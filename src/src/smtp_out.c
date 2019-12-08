@@ -155,7 +155,28 @@ return TRUE;
 static void
 tfo_out_check(int sock)
 {
-# if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
+# ifdef __FreeBSD__
+struct tcp_info tinfo;
+int val;
+socklen_t len = sizeof(val);
+
+/* The observability as of 12.1 is not useful as a client, only telling us that
+a TFO option was used on SYN.  It could have been a TFO-R, or ignored by the
+server. */
+
+/*
+if (tcp_out_fastopen == TFO_ATTEMPTED_NODATA || tcp_out_fastopen == TFO_ATTEMPTED_DATA)
+  if (getsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &val, &len) == 0 && val != 0) {}
+*/
+switch (tcp_out_fastopen)
+  {
+  case TFO_ATTEMPTED_NODATA:	tcp_out_fastopen = TFO_USED_NODATA; break;
+  case TFO_ATTEMPTED_DATA:	tcp_out_fastopen = TFO_USED_DATA; break;
+  default: break; /* compiler quietening */
+  }
+
+# else	/* Linux & Apple */
+#  if defined(TCP_INFO) && defined(EXIM_HAVE_TCPI_UNACKED)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
@@ -205,7 +226,8 @@ switch (tcp_out_fastopen)
 
   default: break; /* compiler quietening */
   }
-# endif
+#  endif
+# endif	/* Linux & Apple */
 }
 #endif
 
@@ -717,7 +739,7 @@ time_t timelimit = time(NULL) + timeout;
 
 errno = 0;  /* Ensure errno starts out zero */
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 if (sx->pending_BANNER || sx->pending_EHLO)
   {
   int rc;

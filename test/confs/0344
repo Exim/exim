@@ -32,15 +32,19 @@ begin transports
 
 t1:
   driver = smtp
+  hosts_try_fastopen =	:
 
 t2:
   driver = smtp
+  hosts_try_fastopen =	:
 
 t3:
   driver = smtp
+  hosts_try_fastopen =	:
 
 t4:
   driver = smtp
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

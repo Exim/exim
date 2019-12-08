@@ -68,6 +68,7 @@ send_to_server:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
 
 .ifdef FILTER
   transport_filter =	/bin/cat - DIR/aux-fixed/TESTNUM.mlistfooter

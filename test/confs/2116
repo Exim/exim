@@ -27,8 +27,9 @@ begin transports
 smtp:
   driver = smtp
   command_timeout = 1s
-  hosts_require_tls = 127.0.0.1
   port = PORT_S
+  hosts_try_fastopen =	:
+  hosts_require_tls = 127.0.0.1
 
 
 # ----- Retry -----

@@ -19,13 +19,13 @@ From: nobody@example.com
 content
 ****
 millisleep 500
-## with transport_filter and CHUNKING
-#exim -DOPT=From -DFILTER=y -DALLOW=y -odf c@test.ex
-#From: nobody@example.com
-#
-#content
-#****
-#millisleep 500
+# with transport_filter and CHUNKING
+exim -DOPT=From -DFILTER=y -DALLOW=y -odf c@test.ex
+From: nobody@example.com
+
+content
+****
+millisleep 500
 #
 # for comparison, mails that should get identical sigs, though not using a transport_filter
 exim -DOPT=From -odf b@test.ex
@@ -38,16 +38,16 @@ This is a generic mailinglist footer, using a traditional .sig-separator line
 ----
 ****
 millisleep 500
-#exim -DOPT=From -DALLOW=y -odf c@test.ex
-#From: nobody@example.com
-#
-#content
-#
-#-- 
-#This is a generic mailinglist footer, using a traditional .sig-separator line
-#----
-#****
-#millisleep 500
+exim -DOPT=From -DALLOW=y -odf c@test.ex
+From: nobody@example.com
+
+content
+
+-- 
+This is a generic mailinglist footer, using a traditional .sig-separator line
+----
+****
+millisleep 500
 #
 #
 killdaemon

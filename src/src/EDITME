@@ -590,6 +590,10 @@ DISABLE_MAL_MKS=yes
 # CFLAGS  += -I/usr/local/include
 # LDFLAGS += -lsrs_alt
 
+# Uncomment the following lines to add SRS (Sender rewriting scheme) support
+# using only native facilities.
+# EXPERIMENTAL_SRS_NATIVE=yes
+
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries. You must have SPF and DKIM support enabled also.
 # SUPPORT_DMARC=yes

@@ -48,6 +48,7 @@ begin transports
 my_smtp:
   driver = smtp
   port = PORT_D
+  hosts_try_fastopen =	:
   socks_proxy = 127.0.0.1 port=1080 OPT
   tls_certificate = DIR/aux-fixed/cert2
   tls_privatekey = DIR/aux-fixed/cert2

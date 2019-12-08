@@ -58,7 +58,7 @@ no_hosts_randomize
 hosts_require_auth = 
 hosts_try_auth = 
 hosts_try_chunking = *
-hosts_try_fastopen = *
+hosts_try_fastopen = :
 hosts_try_prdr = *
 interface = ip4.ip4.ip4.ip4
 keepalive
@@ -111,6 +111,7 @@ begin transports
     driver = smtp
     interface = ip4.ip4.ip4.ip4
     port = 1224
+    hosts_try_fastopen = :
     debug_print = transport_name <$transport_name>
 # Exim Configuration (X)
 # 1 "TESTSUITE/test-config"
@@ -148,4 +149,5 @@ my_smtp:
 driver = smtp
 interface = ip4.ip4.ip4.ip4
 port = 1224
+hosts_try_fastopen = :
 debug_print = transport_name <$transport_name>

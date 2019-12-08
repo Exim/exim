@@ -32,6 +32,7 @@ begin transports
 
 t1:
   driver = smtp
+  hosts_try_fastopen =	:
   hosts_max_try = 20
   allow_localhost
 

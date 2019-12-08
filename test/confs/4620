@@ -1,0 +1,87 @@
+# Exim test configuration 4620
+
+.include DIR/aux-var/std_conf_prefix
+
+SRS_SECRET = mysecret
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+domainlist local_domains = test.ex
+domainlist remotesite_domains = remote.ex
+
+log_selector = +all_parents +received_recipients
+queue_only
+
+# ----- Routers -----
+
+begin routers
+
+remote_bouncer:
+  driver =	redirect
+  condition =	${if eq {$sender_host_address}{127.0.0.1}}
+  data =	:fail: account disabled
+  allow_fail
+
+external:
+  driver =	manualroute
+  domains =	!+local_domains
+  route_list =	remote.ex	127.0.0.1::PORT_S
+  self =	send
+  transport =	${if eq {$local_part@$domain} {$original_local_part@$original_domain} \
+			{to_external} {forwarded_external}}
+
+inbound_srs:
+  driver =	redirect
+  senders =	:
+  domains =	+local_domains
+  # detect inbound bounces which are SRS'd, and decode them
+  condition =	${if inbound_srs {$local_part} {SRS_SECRET}}
+  data =	$srs_recipient
+
+inbound_srs_failure:
+  driver =	redirect
+  senders =	:
+  domains =	+local_domains
+  # detect inbound bounces which look SRS'd but are invalid
+  condition =	${if inbound_srs {$local_part} {}}
+  allow_fail
+  data =	:fail: Invalid SRS recipient address
+
+
+local_redirect:
+  driver =	redirect
+  local_parts = redirect
+  data =	remote_user@remote.ex
+
+local:
+  driver =	accept
+  transport =	appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+to_external:
+  driver =	smtp
+
+forwarded_external:
+  driver =	smtp
+  max_rcpt =	1
+  return_path =	${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
+
+
+appendfile:
+  driver =	appendfile
+  file =	DIR/test-mail/$local_part
+  user =	CALLER
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,1d
+
+# End

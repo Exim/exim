@@ -10,7 +10,7 @@ src/os.c file. */
 
 
 /*************
-* Sendfile   *
+Sendfile shim
 *************/
 
 ssize_t
@@ -22,5 +22,26 @@ if (sendfile(in, out, loff, cnt, NULL, &written, 0) < 0) return (ssize_t)-1;
 *offp = loff + written;
 return (ssize_t)written;
 }
+
+/*************************************************
+TCP Fast Open:  check that the ioctl is accepted
+*************************************************/
+
+#ifndef COMPILE_UTILITY
+void
+tfo_probe(void)
+{
+# ifdef TCP_FASTOPEN
+int sock;
+
+if (  (sock = socket(AF_INET, SOCK_STREAM, 0)) >= 0
+   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &on, sizeof(on) >= 0)
+   )
+  f.tcp_fastopen_ok = TRUE;
+close(sock);
+# endif
+}
+#endif
+
 
 /* End of os.c-Linux */

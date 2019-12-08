@@ -68,6 +68,7 @@ begin transports
 
 dummy:
   driver = smtp
+  hosts_try_fastopen =	:
 
 
 # End

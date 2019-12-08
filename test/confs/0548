@@ -44,6 +44,7 @@ smtp:
   hosts = HOSTIPV4 : thishost.test.ex
   allow_localhost
   port = PORT_D
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

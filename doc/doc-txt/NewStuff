@@ -6,6 +6,16 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the Git before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.94
+------------
+
+ 1. EXPERIMENTAL_SRS_NATIVE optional build feature.  See the experimental.spec
+    file.
+
+ 2. Channel-binding for authenticators is now supported under OpenSSL.
+    Previously it was GnuTLS-only.
+
+
 Version 4.93
 ------------
 

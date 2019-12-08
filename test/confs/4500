@@ -13,6 +13,7 @@ acl_smtp_dkim = check_dkim
 acl_smtp_data = check_data
 
 log_selector = +dkim_verbose
+dkim_verify_hashes = sha256 : sha512 : sha1
 
 queue_only
 queue_run_in_order

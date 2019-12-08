@@ -34,6 +34,7 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen = :
   max_rcpt = 2
   connection_max_messages = 3
 

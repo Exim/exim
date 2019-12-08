@@ -57,8 +57,9 @@ local_delivery:
 send_to_server:
   driver =	smtp
   allow_localhost
-  hosts_noproxy_tls = :
   port =	PORT_D
+  hosts_try_fastopen =	:
+  hosts_noproxy_tls = :
   tls_try_verify_hosts = :
   max_rcpt =	1
 

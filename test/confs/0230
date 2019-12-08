@@ -64,6 +64,7 @@ local_delivery:
 remote:
   driver = smtp
   port = PORT_D
+  hosts_try_fastopen = :
 
 # ----- Retry -----
 

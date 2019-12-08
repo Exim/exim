@@ -142,7 +142,7 @@ static struct {
   BOOL helo_verify			:1;
   BOOL helo_seen			:1;
   BOOL helo_accept_junk			:1;
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   BOOL pipe_connect_acceptable		:1;
 #endif
   BOOL rcpt_smtp_response_same		:1;
@@ -397,7 +397,7 @@ return TRUE;
 }
 
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 static BOOL
 pipeline_connect_sends(void)
 {
@@ -952,16 +952,13 @@ if (fl.rcpt_in_progress)
 
 /* Now write the string */
 
+if (
 #ifndef DISABLE_TLS
-if (tls_in.active.sock >= 0)
-  {
-  if (tls_write(NULL, gs.s, gs.ptr, more) < 0)
-    smtp_write_error = -1;
-  }
-else
+    tls_in.active.sock >= 0 ? (tls_write(NULL, gs.s, gs.ptr, more) < 0) :
 #endif
-
-if (fprintf(smtp_out, "%s", gs.s) < 0) smtp_write_error = -1;
+    (fwrite(gs.s, gs.ptr, 1, smtp_out) == 0)
+   )
+    smtp_write_error = -1;
 }
 
 
@@ -972,8 +969,7 @@ if (fprintf(smtp_out, "%s", gs.s) < 0) smtp_write_error = -1;
 
 /* This function isn't currently used within Exim (it detects errors when it
 tries to read the next SMTP input), but is available for use in local_scan().
-For non-TLS connections, it flushes the output and checks for errors. For
-TLS-connections, it checks for a previously-detected TLS write error.
+It flushes the output and checks for errors.
 
 Arguments:  none
 Returns:    0 for no error; -1 after an error
@@ -983,6 +979,15 @@ int
 smtp_fflush(void)
 {
 if (tls_in.active.sock < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
+
+if (
+#ifndef DISABLE_TLS
+    tls_in.active.sock >= 0 ? (tls_write(NULL, NULL, 0, FALSE) < 0) :
+#endif
+    (fflush(smtp_out) != 0)
+   )
+    smtp_write_error = -1;
+
 return smtp_write_error;
 }
 
@@ -2400,24 +2405,47 @@ return FALSE;
 static void
 tfo_in_check(void)
 {
-# ifdef TCP_INFO
+# ifdef __FreeBSD__
+int is_fastopen;
+socklen_t len = sizeof(is_fastopen);
+
+/* The tinfo TCPOPT_FAST_OPEN bit seems unreliable, and we don't see state
+TCP_SYN_RCV (as of 12.1) so no idea about data-use. */
+
+if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
+  {
+  if (is_fastopen) 
+    {
+    DEBUG(D_receive)
+      debug_printf("TFO mode connection (TCP_FASTOPEN getsockopt)\n");
+    f.tcp_in_fastopen = TRUE;
+    }
+  }
+else DEBUG(D_receive)
+  debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
+
+# elif defined(TCP_INFO)
 struct tcp_info tinfo;
 socklen_t len = sizeof(tinfo);
 
 if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0)
-#ifdef TCPI_OPT_SYN_DATA	/* FreeBSD 11 does not seem to have this yet */
+#  ifdef TCPI_OPT_SYN_DATA	/* FreeBSD 11,12 do not seem to have this yet */
   if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)
     {
-    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (ACKd data-on-SYN)\n");
+    DEBUG(D_receive)
+      debug_printf("TFO mode connection (ACKd data-on-SYN)\n");
     f.tcp_in_fastopen_data = f.tcp_in_fastopen = TRUE;
     }
   else
-#endif
-    if (tinfo.tcpi_state == TCP_SYN_RECV)
+#  endif
+    if (tinfo.tcpi_state == TCP_SYN_RECV)	/* Not seen on FreeBSD 12.1 */
     {
-    DEBUG(D_receive) debug_printf("TCP_FASTOPEN mode connection (state TCP_SYN_RECV)\n");
+    DEBUG(D_receive)
+      debug_printf("TFO mode connection (state TCP_SYN_RECV)\n");
     f.tcp_in_fastopen = TRUE;
     }
+else DEBUG(D_receive)
+  debug_printf("TCP_INFO getsockopt: %s\n", strerror(errno));
 # endif
 }
 #endif
@@ -2997,7 +3025,7 @@ while (*p);
 /* Before we write the banner, check that there is no input pending, unless
 this synchronisation check is disabled. */
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 fl.pipe_connect_acceptable =
   sender_host_address && verify_check_host(&pipe_connect_advertise_hosts) == OK;
 
@@ -3024,7 +3052,7 @@ if (!check_sync())
 /*XXX the ehlo-resp code does its own tls/nontls bit.  Maybe subroutine that? */
 
 smtp_printf("%s",
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   fl.pipe_connect_acceptable && pipeline_connect_sends(),
 #else
   FALSE,
@@ -3035,7 +3063,7 @@ smtp_printf("%s",
 handshake arrived.  If so we must have managed a TFO. */
 
 #ifdef TCP_FASTOPEN
-tfo_in_check();
+if (sender_host_address && !f.sender_host_notsocket) tfo_in_check();
 #endif
 
 return TRUE;
@@ -3719,60 +3747,60 @@ if (rc != OK)
 switch(rc)
   {
   case OK:
-  if (!au->set_id || set_id)    /* Complete success */
-    {
-    if (set_id) authenticated_id = string_copy_perm(set_id, TRUE);
-    sender_host_authenticated = au->name;
-    sender_host_auth_pubname  = au->public_name;
-    authentication_failed = FALSE;
-    authenticated_fail_id = NULL;   /* Impossible to already be set? */
+    if (!au->set_id || set_id)    /* Complete success */
+      {
+      if (set_id) authenticated_id = string_copy_perm(set_id, TRUE);
+      sender_host_authenticated = au->name;
+      sender_host_auth_pubname  = au->public_name;
+      authentication_failed = FALSE;
+      authenticated_fail_id = NULL;   /* Impossible to already be set? */
 
-    received_protocol =
-      (sender_host_address ? protocols : protocols_local)
-	[pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
-    *s = *ss = US"235 Authentication succeeded";
-    authenticated_by = au;
-    break;
-    }
+      received_protocol =
+	(sender_host_address ? protocols : protocols_local)
+	  [pextend + pauthed + (tls_in.active.sock >= 0 ? pcrpted:0)];
+      *s = *ss = US"235 Authentication succeeded";
+      authenticated_by = au;
+      break;
+      }
 
-  /* Authentication succeeded, but we failed to expand the set_id string.
-  Treat this as a temporary error. */
+    /* Authentication succeeded, but we failed to expand the set_id string.
+    Treat this as a temporary error. */
 
-  auth_defer_msg = expand_string_message;
-  /* Fall through */
+    auth_defer_msg = expand_string_message;
+    /* Fall through */
 
   case DEFER:
-  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-  *s = string_sprintf("435 Unable to authenticate at present%s",
-    auth_defer_user_msg);
-  *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
-    set_id, auth_defer_msg);
-  break;
+    if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
+    *s = string_sprintf("435 Unable to authenticate at present%s",
+      auth_defer_user_msg);
+    *ss = string_sprintf("435 Unable to authenticate at present%s: %s",
+      set_id, auth_defer_msg);
+    break;
 
   case BAD64:
-  *s = *ss = US"501 Invalid base64 data";
-  break;
+    *s = *ss = US"501 Invalid base64 data";
+    break;
 
   case CANCELLED:
-  *s = *ss = US"501 Authentication cancelled";
-  break;
+    *s = *ss = US"501 Authentication cancelled";
+    break;
 
   case UNEXPECTED:
-  *s = *ss = US"553 Initial data not expected";
-  break;
+    *s = *ss = US"553 Initial data not expected";
+    break;
 
   case FAIL:
-  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-  *s = US"535 Incorrect authentication data";
-  *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
-  break;
+    if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
+    *s = US"535 Incorrect authentication data";
+    *ss = string_sprintf("535 Incorrect authentication data%s", set_id);
+    break;
 
   default:
-  if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
-  *s = US"435 Internal error";
-  *ss = string_sprintf("435 Internal error%s: return %d from authentication "
-    "check", set_id, rc);
-  break;
+    if (set_id) authenticated_fail_id = string_copy_perm(set_id, TRUE);
+    *s = US"435 Internal error";
+    *ss = string_sprintf("435 Internal error%s: return %d from authentication "
+      "check", set_id, rc);
+    break;
   }
 
 return rc;
@@ -3975,7 +4003,7 @@ while (done <= 0)
 #endif
 
   switch(smtp_read_command(
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	  !fl.pipe_connect_acceptable,
 #else
 	  TRUE,
@@ -4211,7 +4239,7 @@ while (done <= 0)
 	  host_build_sender_fullhost();  /* Rebuild */
 	  break;
 	  }
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	else if (!fl.pipe_connect_acceptable && !check_sync())
 #else
 	else if (!check_sync())
@@ -4344,7 +4372,7 @@ while (done <= 0)
 	  sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
 	  f.smtp_in_pipelining_advertised = TRUE;
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	  if (fl.pipe_connect_acceptable)
 	    {
 	    f.smtp_in_early_pipe_advertised = TRUE;
@@ -4462,7 +4490,7 @@ while (done <= 0)
 #ifndef DISABLE_TLS
       if (tls_in.active.sock >= 0)
 	(void)tls_write(NULL, g->s, g->ptr,
-# ifdef SUPPORT_PIPE_CONNECT
+# ifndef DISABLE_PIPE_CONNECT
 			fl.pipe_connect_acceptable && pipeline_connect_sends());
 # else
 			FALSE);
@@ -5240,7 +5268,7 @@ while (done <= 0)
       f.dot_ends = TRUE;
 
     DATA_BDAT:		/* Common code for DATA and BDAT */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
       fl.pipe_connect_acceptable = FALSE;
 #endif
       if (!discarded && recipients_count <= 0)

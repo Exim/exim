@@ -550,11 +550,8 @@ table exim_errstrings[] in log.c */
 #define ERRNO_DATA4XX        (-46)   /* DATA gave 4xx error */
 #define ERRNO_PROXYFAIL      (-47)   /* Negotiation failed for proxy configured host */
 #define ERRNO_AUTHPROB       (-48)   /* Authenticator "other" failure */
-
-#ifdef SUPPORT_I18N
-# define ERRNO_UTF8_FWD      (-49)   /* target not supporting SMTPUTF8 */
-#endif
-				/* -50 free for re-use */
+#define ERRNO_UTF8_FWD       (-49)   /* target not supporting SMTPUTF8 */
+#define ERRNO_HOST_IS_LOCAL  (-50)   /* Transport refuses to talk to localhost */
 
 /* These must be last, so all retry deferments can easily be identified */
 

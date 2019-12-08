@@ -28,6 +28,7 @@ begin transports
 t1:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen = :
   transport_filter = /bin/cat
 
 

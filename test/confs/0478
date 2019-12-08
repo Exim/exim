@@ -27,6 +27,7 @@ begin transports
 t1:
   driver = smtp
   port = PORT_D
+  hosts_try_fastopen = :
   hosts = ${if !eq {$sender_host_address}{} {V4NET.0.0.2} \
 		{${if eq {127.0.0.1}{$local_part} {127.0.0.1} \
 		{${if eq {V4NET.0.0.1}{$local_part} {V4NET.0.0.1}}}}}}

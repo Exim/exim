@@ -4383,6 +4383,17 @@ written. When &%-oX%& is used with &%-bd%&, or when &%-q%& with a time is used
 without &%-bd%&, this is the only way of causing Exim to write a pid file,
 because in those cases, the normal pid file is not used.
 
+.new
+.vitem &%-oPX%&
+.oindex "&%-oPX%&"
+.cindex "pid (process id)" "of daemon"
+.cindex "daemon" "process id (pid)"
+This option is not intended for general use.
+The daemon uses it when terminating due to a SIGTEM, possibly in
+combination with &%-oP%&&~<&'path'&>.
+It causes the pid file to be removed.
+.wen
+
 .vitem &%-or%&&~<&'time'&>
 .oindex "&%-or%&"
 .cindex "timeout" "for non-SMTP input"
@@ -15111,15 +15122,22 @@ etc. are ignored. If IP literals are enabled, the &(ipliteral)& router declines
 to handle IPv6 literal addresses.
 
 
-.option dkim_verify_hashes main "string list" "sha256 : sha512 : sha1"
+.new
+.option dkim_verify_hashes main "string list" "sha256 : sha512"
 .cindex DKIM "selecting signature algorithms"
 This option gives a list of hash types which are acceptable in signatures,
+.wen
 and an order of processing.
 Signatures with algorithms not in the list will be ignored.
 
-Note that the presence of sha1 violates RFC 8301.
-Signatures using the rsa-sha1 are however (as of writing) still common.
-The default inclusion of sha1 may be dropped in a future release.
+Acceptable values include:
+.code
+sha1
+sha256
+sha512
+.endd
+
+Note that the acceptance of sha1 violates RFC 8301.
 
 .option dkim_verify_keytypes main "string list" "ed25519 : rsa"
 This option gives a list of key types which are acceptable in signatures,
@@ -24870,6 +24888,9 @@ unauthenticated. See also &%hosts_require_auth%&, and chapter
 .cindex "RFC 3030" "CHUNKING"
 This option provides a list of servers to which, provided they announce
 CHUNKING support, Exim will attempt to use BDAT commands rather than DATA.
+.new
+Unless DKIM signing is being done,
+.wen
 BDAT will not be used in conjunction with a transport filter.
 
 .option hosts_try_dane smtp "host list&!!" *
@@ -27415,9 +27436,11 @@ This should have meant that certificate identity and verification becomes a
 non-issue, as a man-in-the-middle attack will cause the correct client and
 server to see different identifiers and authentication will fail.
 
-This is currently only supported when using the GnuTLS library.  This is
+.new
+This is
 only usable by mechanisms which support "channel binding"; at time of
 writing, that's the SCRAM family.
+.wen
 
 This defaults off to ensure smooth upgrade across Exim releases, in case
 this option causes some clients to start failing.  Some future release

@@ -586,6 +586,10 @@ else
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
         "callout_random_local_part: %s", expand_string_message);
 
+  /* Compile regex' used by client-side smtp */
+
+  smtp_deliver_init();
+
   /* Default the connect and overall callout timeouts if not set, and record the
   time we are starting so that we can enforce it. */
 

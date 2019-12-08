@@ -49,6 +49,7 @@ send_to_server:
   allow_localhost
   hosts = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
 
   dkim_domain =		${if def:sender_address_local_part {test.ex}}
   dkim_selector =	sel

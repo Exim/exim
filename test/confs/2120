@@ -36,6 +36,7 @@ t1:
   hosts = thishost.test.ex
   allow_localhost
   port = PORT_D
+  hosts_try_fastopen = :
 
 
 # ----- Retry -----

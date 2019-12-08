@@ -26,6 +26,7 @@ t1:
   hosts = 127.0.0.1
   allow_localhost
   port = PORT_S
+  hosts_try_fastopen =	:
   transport_filter = /bin/sh -c 'cat; exit 99'
 
 

@@ -1221,7 +1221,7 @@ else
     {
     if (testflag(addr, af_pipelining))
       g = string_catn(g, US" L", 2);
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
     if (testflag(addr, af_early_pipe))
       g = string_catn(g, US"*", 1);
 #endif
@@ -3537,7 +3537,7 @@ while (!done)
     case 'L':
       switch (*subid)
 	{
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	case 2: setflag(addr, af_early_pipe);	/*FALLTHROUGH*/
 #endif
 	case 1: setflag(addr, af_pipelining); break;
@@ -4844,7 +4844,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #endif
 
       if (testflag(addr, af_pipelining))
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	if (testflag(addr, af_early_pipe))
 	  rmt_dlv_checked_write(fd, 'L', '2', NULL, 0);
 	else
@@ -7172,7 +7172,7 @@ if (addr_remote)
   /* Precompile some regex that are used to recognize parameters in response
   to an EHLO command, if they aren't already compiled. */
 
-  deliver_init();
+  smtp_deliver_init();
 
   /* Now sort the addresses if required, and do the deliveries. The yield of
   do_remote_deliveries is FALSE when mua_wrapper is set and all addresses
@@ -8495,51 +8495,12 @@ return final_yield;
 
 
 void
-deliver_init(void)
+tcp_init(void)
 {
 #ifdef EXIM_TFO_PROBE
 tfo_probe();
 #else
 f.tcp_fastopen_ok = TRUE;
-#endif
-
-
-if (!regex_PIPELINING) regex_PIPELINING =
-  regex_must_compile(US"\\n250[\\s\\-]PIPELINING(\\s|\\n|$)", FALSE, TRUE);
-
-if (!regex_SIZE) regex_SIZE =
-  regex_must_compile(US"\\n250[\\s\\-]SIZE(\\s|\\n|$)", FALSE, TRUE);
-
-if (!regex_AUTH) regex_AUTH =
-  regex_must_compile(AUTHS_REGEX, FALSE, TRUE);
-
-#ifndef DISABLE_TLS
-if (!regex_STARTTLS) regex_STARTTLS =
-  regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
-#endif
-
-if (!regex_CHUNKING) regex_CHUNKING =
-  regex_must_compile(US"\\n250[\\s\\-]CHUNKING(\\s|\\n|$)", FALSE, TRUE);
-
-#ifndef DISABLE_PRDR
-if (!regex_PRDR) regex_PRDR =
-  regex_must_compile(US"\\n250[\\s\\-]PRDR(\\s|\\n|$)", FALSE, TRUE);
-#endif
-
-#ifdef SUPPORT_I18N
-if (!regex_UTF8) regex_UTF8 =
-  regex_must_compile(US"\\n250[\\s\\-]SMTPUTF8(\\s|\\n|$)", FALSE, TRUE);
-#endif
-
-if (!regex_DSN) regex_DSN  =
-  regex_must_compile(US"\\n250[\\s\\-]DSN(\\s|\\n|$)", FALSE, TRUE);
-
-if (!regex_IGNOREQUOTA) regex_IGNOREQUOTA =
-  regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
-
-#ifdef SUPPORT_PIPE_CONNECT
-if (!regex_EARLY_PIPE) regex_EARLY_PIPE =
-  regex_must_compile(US"\\n250[\\s\\-]" EARLY_PIPE_FEATURE_NAME "(\\s|\\n|$)", FALSE, TRUE);
 #endif
 }
 

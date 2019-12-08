@@ -433,10 +433,10 @@ if (oncelog && *oncelog != 0 && to)
     if (cache_fd < 0 || fstat(cache_fd, &statbuf) != 0)
       {
       addr->transport_return = DEFER;
+      addr->basic_errno = errno;
       addr->message = string_sprintf("Failed to %s \"once\" file %s when "
         "sending message from %s transport: %s",
-        (cache_fd < 0)? "open" : "stat", oncelog, tblock->name,
-          strerror(errno));
+        cache_fd < 0 ? "open" : "stat", oncelog, tblock->name, strerror(errno));
       goto END_OFF;
       }
 
@@ -489,6 +489,7 @@ if (oncelog && *oncelog != 0 && to)
     if (!dbm_file)
       {
       addr->transport_return = DEFER;
+      addr->basic_errno = errno;
       addr->message = string_sprintf("Failed to open %s file %s when sending "
         "message from %s transport: %s", EXIM_DBTYPE, oncelog, tblock->name,
         strerror(errno));
@@ -544,16 +545,13 @@ if (oncelog && *oncelog != 0 && to)
 
 /* We are going to send a message. Ensure any requested file is available. */
 
-if (file)
+if (file && !(ff = Ufopen(file, "rb")) && !ob->file_optional)
   {
-  ff = Ufopen(file, "rb");
-  if (!ff && !ob->file_optional)
-    {
-    addr->transport_return = DEFER;
-    addr->message = string_sprintf("Failed to open file %s when sending "
-      "message from %s transport: %s", file, tblock->name, strerror(errno));
-    return FALSE;
-    }
+  addr->transport_return = DEFER;
+  addr->basic_errno = errno;
+  addr->message = string_sprintf("Failed to open file %s when sending "
+    "message from %s transport: %s", file, tblock->name, strerror(errno));
+  return FALSE;
   }
 
 /* Make a subprocess to send the message */
@@ -565,6 +563,7 @@ pid = child_open_exim(&fd);
 if (pid < 0)
   {
   addr->transport_return = DEFER;
+  addr->basic_errno = errno;
   addr->message = string_sprintf("Failed to create child process to send "
     "message from %s transport: %s", tblock->name, strerror(errno));
   DEBUG(D_transport) debug_printf("%s\n", addr->message);

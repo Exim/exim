@@ -2820,6 +2820,20 @@ DEBUG(D_tls)
   tls_in.ourcert = crt ? X509_dup(crt) : NULL;
   }
 
+/* Channel-binding info for authenticators
+See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/ */
+  {
+  uschar c, * s;
+  size_t len = SSL_get_peer_finished(server_ssl, &c, 0);
+  int old_pool = store_pool;
+  
+  SSL_get_peer_finished(server_ssl, s = store_get((int)len, FALSE), len);
+  store_pool = POOL_PERM;
+    tls_in.channelbinding = b64encode_taint(CUS s, (int)len, FALSE);
+  store_pool = old_pool;
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+  }
+
 /* Only used by the server-side tls (tls_in), including tls_getc.
    Client-side (tls_out) reads (seem to?) go via
    smtp_read_response()/ip_recv().
@@ -3382,6 +3396,20 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   tlsp->ourcert = crt ? X509_dup(crt) : NULL;
   }
 
+/*XXX will this work with continued-TLS? */
+/* Channel-binding info for authenticators */
+  {
+  uschar c, * s;
+  size_t len = SSL_get_finished(exim_client_ctx->ssl, &c, 0);
+  int old_pool = store_pool;
+  
+  SSL_get_finished(exim_client_ctx->ssl, s = store_get((int)len, TRUE), len);
+  store_pool = POOL_PERM;
+    tlsp->channelbinding = b64encode_taint(CUS s, (int)len, TRUE);
+  store_pool = old_pool;
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+  }
+
 tlsp->active.sock = cctx->sock;
 tlsp->active.tls_ctx = exim_client_ctx;
 cctx->tls_ctx = exim_client_ctx;
@@ -3582,11 +3610,12 @@ Arguments:
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
 
-Used by both server-side and client-side TLS.
+Used by both server-side and client-side TLS.  Calling with len zero and more unset
+will flush buffered writes; buff can be null for this case.
 */
 
 int
-tls_write(void * ct_ctx, const uschar *buff, size_t len, BOOL more)
+tls_write(void * ct_ctx, const uschar * buff, size_t len, BOOL more)
 {
 size_t olen = len;
 int outbytes, error;
@@ -3612,14 +3641,16 @@ a store reset there, so use POOL_PERM. */
 
 if ((more || corked))
   {
-#ifdef SUPPORT_PIPE_CONNECT
+  if (!len) buff = US &error;	/* dummy just so that string_catn is ok */
+
+#ifndef DISABLE_PIPE_CONNECT
   int save_pool = store_pool;
   store_pool = POOL_PERM;
 #endif
 
   corked = string_catn(corked, buff, len);
 
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   store_pool = save_pool;
 #endif
 
@@ -3641,15 +3672,15 @@ for (int left = len; left > 0;)
   DEBUG(D_tls) debug_printf("outbytes=%d error=%d\n", outbytes, error);
   switch (error)
     {
+    case SSL_ERROR_NONE:	/* the usual case */
+      left -= outbytes;
+      buff += outbytes;
+      break;
+
     case SSL_ERROR_SSL:
       ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
       log_write(0, LOG_MAIN, "TLS error (SSL_write): %s", ssl_errstring);
       return -1;
-
-    case SSL_ERROR_NONE:
-      left -= outbytes;
-      buff += outbytes;
-      break;
 
     case SSL_ERROR_ZERO_RETURN:
       log_write(0, LOG_MAIN, "SSL channel closed on write");

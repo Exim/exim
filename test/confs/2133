@@ -101,8 +101,9 @@ send_to_server_failcert:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
-  hosts_require_tls = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
+  hosts_require_tls = HOSTIPV4
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
@@ -113,8 +114,9 @@ send_to_server_retry:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
-  hosts_require_tls = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
+  hosts_require_tls = HOSTIPV4
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
@@ -126,8 +128,9 @@ send_to_server_crypt:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4
-  hosts_require_tls = HOSTIPV4
   port = PORT_D
+  hosts_try_fastopen =	:
+  hosts_require_tls = HOSTIPV4
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
@@ -141,6 +144,7 @@ send_to_server_req_fail:
   allow_localhost
   hosts = HOSTNAME
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
@@ -154,6 +158,7 @@ send_to_server_req_failname:
   allow_localhost
   hosts = HOSTNAME
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
@@ -168,6 +173,7 @@ send_to_server_req_passname:
   allow_localhost
   hosts = server1.example.com
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_certificate = CERT2
   tls_privatekey = CERT2
 
@@ -180,6 +186,7 @@ send_to_server_req_failcarryon:
   allow_localhost
   hosts = HOSTNAME
   port = PORT_D
+  hosts_try_fastopen =	:
   tls_certificate = CERT2
   tls_privatekey = CERT2
 

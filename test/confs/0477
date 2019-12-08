@@ -27,6 +27,7 @@ t1:
   driver = smtp
   port = PORT_S
   interface = 99.99.99.99
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

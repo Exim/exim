@@ -65,12 +65,14 @@ smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
+  hosts_try_fastopen =	:
   headers_add =  ${if def:h_X-hdr-rtr {X-hdr-tpt-new: new} {}}
 
 smtp2:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
+  hosts_try_fastopen =	:
 
 
 # End

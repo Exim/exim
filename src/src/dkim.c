@@ -95,6 +95,8 @@ return NULL;	/*XXX better error detail?  logging? */
 void
 dkim_exim_init(void)
 {
+if (f.dkim_init_done) return;
+f.dkim_init_done = TRUE;
 pdkim_init();
 }
 
@@ -103,6 +105,8 @@ pdkim_init();
 void
 dkim_exim_verify_init(BOOL dot_stuffing)
 {
+dkim_exim_init();
+
 /* There is a store-reset between header & body reception
 so cannot use the main pool. Any allocs done by Exim
 memory-handling must use the perm pool. */
@@ -569,6 +573,8 @@ void
 dkim_exim_sign_init(void)
 {
 int old_pool = store_pool;
+
+dkim_exim_init();
 store_pool = POOL_MAIN;
 pdkim_init_context(&dkim_sign_ctx, FALSE, &dkim_exim_query_dns_txt);
 store_pool = old_pool;

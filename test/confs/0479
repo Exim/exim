@@ -35,6 +35,7 @@ t1:
   driver = smtp
   port = PORT_S
   hosts = 127.0.0.1
+  hosts_try_fastopen =	:
   allow_localhost
   connect_timeout = 1s
 

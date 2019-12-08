@@ -37,8 +37,9 @@ begin transports
 
 smtp:
   driver = smtp
+  port = PORT_S
+  hosts_try_fastopen =	:
   headers_add = X-TAID: >$authenticated_id<
   hosts_try_auth = *
-  port = PORT_S
 
 # End

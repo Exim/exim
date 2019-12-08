@@ -8,3 +8,16 @@ killdaemon
 exim -d -DSERVER=server -bd -oX PORT_D -oP DIR/spool/exim-daemon.anotherpid
 ****
 killdaemon
+#
+# Check for a SIGTERM daemon kill removing the pid file
+exim -d -DSERVER=server -bd -oX PORT_D -oP DIR/spool/mypidfile
+****
+sleep 1
+ls DIR/spool
+sudo perl
+open(IN, "<", "DIR/spool/mypidfile");
+while (<IN>) { kill "TERM", $_; }
+****
+sleep 1
+ls DIR/spool
+#

@@ -34,11 +34,13 @@ begin transports
 remote_smtp:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen = :
   allow_localhost
 
 remote_smtp_hdrs:
   driver = smtp
   port = PORT_S
+  hosts_try_fastopen =	:
   allow_localhost
   headers_only
 

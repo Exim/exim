@@ -14,6 +14,12 @@ different places in the code where sockets are used. */
 #include "exim.h"
 
 
+#if defined(TCP_FASTOPEN)
+# if defined(MSG_FASTOPEN) || defined(EXIM_TFO_CONNECTX) || defined(EXIM_TFO_FREEBSD)
+#  define EXIM_SUPPORT_TFO
+# endif
+#endif
+
 /*************************************************
 *             Create a socket                    *
 *************************************************/
@@ -161,26 +167,6 @@ return bind(sock, (struct sockaddr *)&sin, s_len);
 
 
 /*************************************************
-*************************************************/
-
-#ifdef EXIM_TFO_PROBE
-void
-tfo_probe(void)
-{
-# ifdef TCP_FASTOPEN
-int sock, backlog = 5;
-
-if (  (sock = socket(SOCK_STREAM, AF_INET, 0)) < 0
-   && setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &backlog, sizeof(backlog))
-   )
-  f.tcp_fastopen_ok = TRUE;
-close(sock);
-# endif
-}
-#endif
-
-
-/*************************************************
 *        Connect socket to remote host           *
 *************************************************/
 
@@ -245,7 +231,7 @@ callout_address = string_sprintf("[%s]:%d", address, port);
 sigalrm_seen = FALSE;
 if (timeout > 0) ALARM(timeout);
 
-#ifdef TCP_FASTOPEN
+#ifdef EXIM_SUPPORT_TFO
 /* TCP Fast Open, if the system has a cookie from a previous call to
 this peer, can send data in the SYN packet.  The peer can send data
 before it gets our ACK of its SYN,ACK - the latter is useful for
@@ -255,8 +241,7 @@ possibly use the data-on-syn, so support that too. */
 if (fastopen_blob && f.tcp_fastopen_ok)
   {
 # ifdef MSG_FASTOPEN
-  /* This is a Linux implementation.  It might be useable on FreeBSD; I have
-  not checked. */
+  /* This is a Linux implementation. */
 
   if ((rc = sendto(sock, fastopen_blob->data, fastopen_blob->len,
 		    MSG_FASTOPEN | MSG_DONTWAIT, s_ptr, s_len)) >= 0)
@@ -292,8 +277,26 @@ if (fastopen_blob && f.tcp_fastopen_ok)
       debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
     goto legacy_connect;
     }
-# endif
-# ifdef EXIM_TFO_CONNECTX
+
+# elif defined(EXIM_TFO_FREEBSD)
+  /* Re: https://people.freebsd.org/~pkelsey/tfo-tools/tfo-client.c */
+
+  if (setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &on, sizeof(on)) < 0)
+    {
+    DEBUG(D_transport)
+      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
+    goto legacy_connect;
+    }
+  if ((rc = sendto(sock, fastopen_blob->data, fastopen_blob->len, 0,
+		    s_ptr, s_len)) >= 0)
+    {
+    DEBUG(D_transport|D_v)
+      debug_printf(" TFO mode connection attempt to %s, %lu data\n",
+	address, (unsigned long)fastopen_blob->len);
+    tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_ATTEMPTED_DATA : TFO_ATTEMPTED_NODATA;
+    }
+
+# elif defined(EXIM_TFO_CONNECTX)
   /* MacOS */
   sa_endpoints_t ends = {
     .sae_srcif = 0, .sae_srcaddr = NULL, .sae_srcaddrlen = 0,
@@ -329,9 +332,9 @@ if (fastopen_blob && f.tcp_fastopen_ok)
 # endif
   }
 else
-#endif	/*TCP_FASTOPEN*/
+#endif	/*EXIM_SUPPORT_TFO*/
   {
-#if defined(TCP_FASTOPEN) && defined(MSG_FASTOPEN)
+#if defined(EXIM_SUPPORT_TFO) && !defined(EXIM_TFO_CONNECTX)
 legacy_connect:
 #endif
 

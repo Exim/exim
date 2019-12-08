@@ -244,7 +244,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "pid_file_path",            opt_stringptr,   &pid_file_path },
   { "pipelining_advertise_hosts", opt_stringptr, &pipelining_advertise_hosts },
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   { "pipelining_connect_advertise_hosts", opt_stringptr,
 						 &pipe_connect_advertise_hosts },
 #endif
@@ -3075,80 +3075,6 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malformed ratelimit data: %s", s);
 
 
 /*************************************************
-*       Drop privs for checking TLS config      *
-*************************************************/
-
-/* We want to validate TLS options during readconf, but do not want to be
-root when we call into the TLS library, in case of library linkage errors
-which cause segfaults; before this check, those were always done as the Exim
-runtime user and it makes sense to continue with that.
-
-Assumes:  tls_require_ciphers has been set, if it will be
-          exim_user has been set, if it will be
-          exim_group has been set, if it will be
-
-Returns:  bool for "okay"; false will cause caller to immediately exit.
-*/
-
-#ifndef DISABLE_TLS
-static BOOL
-tls_dropprivs_validate_require_cipher(BOOL nowarn)
-{
-const uschar *errmsg;
-pid_t pid;
-int rc, status;
-void (*oldsignal)(int);
-
-/* If TLS will never be used, no point checking ciphers */
-
-if (  !tls_advertise_hosts
-   || !*tls_advertise_hosts
-   || Ustrcmp(tls_advertise_hosts, ":") == 0
-   )
-  return TRUE;
-else if (!nowarn && !tls_certificate)
-  log_write(0, LOG_MAIN,
-    "Warning: No server certificate defined; will use a selfsigned one.\n"
-    " Suggested action: either install a certificate or change tls_advertise_hosts option");
-
-oldsignal = signal(SIGCHLD, SIG_DFL);
-
-fflush(NULL);
-if ((pid = fork()) < 0)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork failed for TLS check");
-
-if (pid == 0)
-  {
-  /* in some modes, will have dropped privilege already */
-  if (!geteuid())
-    exim_setugid(exim_uid, exim_gid, FALSE,
-        US"calling tls_validate_require_cipher");
-
-  if ((errmsg = tls_validate_require_cipher()))
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-        "tls_require_ciphers invalid: %s", errmsg);
-  fflush(NULL);
-  exim_underbar_exit(0);
-  }
-
-do {
-  rc = waitpid(pid, &status, 0);
-} while (rc < 0 && errno == EINTR);
-
-DEBUG(D_tls)
-  debug_printf("tls_validate_require_cipher child %d ended: status=0x%x\n",
-      (int)pid, status);
-
-signal(SIGCHLD, oldsignal);
-
-return status == 0;
-}
-#endif /*DISABLE_TLS*/
-
-
-
-
-/*************************************************
 *         Read main configuration options        *
 *************************************************/
 
@@ -3644,11 +3570,6 @@ if ((tls_verify_hosts || tls_try_verify_hosts) && !tls_verify_certificates)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "tls_%sverify_hosts is set, but tls_verify_certificates is not set",
     tls_verify_hosts ? "" : "try_");
-
-/* This also checks that the library linkage is working and we can call
-routines in it, so call even if tls_require_ciphers is unset */
-if (!tls_dropprivs_validate_require_cipher(nowarn))
-  exit(1);
 
 /* Magic number: at time of writing, 1024 has been the long-standing value
 used by so many clients, and what Exim used to use always, that it makes
@@ -4222,7 +4143,7 @@ Returns:     nothing
 static void
 auths_init(void)
 {
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 int nauths = 0;
 #endif
 
@@ -4248,11 +4169,11 @@ for (auth_instance * au = auths; au; au = au->next)
           "(%s and %s) have the same public name (%s)",
           au->client ? US"client" : US"server", au->name, bu->name,
           au->public_name);
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   nauths++;
 #endif
   }
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 f.smtp_in_early_pipe_no_auth = nauths > 16;
 #endif
 }

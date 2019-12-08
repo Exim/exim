@@ -26,6 +26,7 @@ smtp:
   port = PORT_S
   hosts = 127.0.0.1
   allow_localhost
+  hosts_try_fastopen =	:
 
 
 # ----- Retry -----

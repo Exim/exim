@@ -41,6 +41,7 @@ begin transports
 smtp:
   driver = smtp
   port = PORT_N
+  hosts_try_fastopen =	:
   RETRY
 
 

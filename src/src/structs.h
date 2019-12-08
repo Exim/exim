@@ -626,7 +626,7 @@ typedef struct address_item {
     BOOL af_tcp_fastopen:1;		/* delivery usefully used TCP Fast Open */
     BOOL af_tcp_fastopen_data:1;	/* delivery sent SMTP commands on TCP Fast Open */
     BOOL af_pipelining:1;		/* delivery used (traditional) pipelining */
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
     BOOL af_early_pipe:1;		/* delivery used connect-time pipelining */
 #endif
 #ifndef DISABLE_PRDR
@@ -648,11 +648,11 @@ typedef struct address_item {
   unsigned int domain_cache[(MAX_NAMED_LIST * 2)/32];
   unsigned int localpart_cache[(MAX_NAMED_LIST * 2)/32];
   int     mode;                   /* mode for local transporting to a file */
+  int	  basic_errno;		  /* status after failure */
   int     more_errno;             /* additional error information */
                                   /* (may need to hold a timestamp) */
   unsigned int delivery_usec;	  /* subsecond part of delivery time */
 
-  short int basic_errno;          /* status after failure */
   unsigned short child_count;     /* number of child addresses */
   short int return_file;          /* fileno of return data file */
   short int special_action;       /* ( used when when deferred or failed */

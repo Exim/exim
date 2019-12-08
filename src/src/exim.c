@@ -202,7 +202,7 @@ va_end(ap);
 static void
 term_handler(int sig)
 {
-  exit(1);
+exit(1);
 }
 
 
@@ -901,7 +901,7 @@ fprintf(fp, "Support for:");
 #ifndef DISABLE_OCSP
   fprintf(fp, " OCSP");
 #endif
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
   fprintf(fp, " PIPE_CONNECT");
 #endif
 #ifndef DISABLE_PRDR
@@ -920,7 +920,7 @@ fprintf(fp, "Support for:");
   fprintf(fp, " DMARC");
 #endif
 #ifdef TCP_FASTOPEN
-  deliver_init();
+  tcp_init();
   if (f.tcp_fastopen_ok) fprintf(fp, " TCP_Fast_Open");
 #endif
 #ifdef EXPERIMENTAL_LMDB
@@ -929,7 +929,7 @@ fprintf(fp, "Support for:");
 #ifdef EXPERIMENTAL_QUEUEFILE
   fprintf(fp, " Experimental_QUEUEFILE");
 #endif
-#ifdef EXPERIMENTAL_SRS
+#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
   fprintf(fp, " Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_ARC
@@ -3072,10 +3072,14 @@ for (i = 1; i < argc; i++)
 
     else if (Ustrcmp(argrest, "o") == 0) {}
 
-    /* -oP <name>: set pid file path for daemon */
+    /* -oP <name>: set pid file path for daemon
+       -oPX:       delete pid file of daemon */
 
     else if (Ustrcmp(argrest, "P") == 0)
       override_pid_file_path = argv[++i];
+
+    else if (Ustrcmp(argrest, "PX") == 0)
+      delete_pid_file();
 
     /* -or <n>: set timeout for non-SMTP acceptance
        -os <n>: set timeout for SMTP acceptance */
@@ -4488,31 +4492,9 @@ if (list_config)
   }
 
 
-/* Initialise subsystems as required */
-#ifndef DISABLE_DKIM
-  {
-# ifdef MEASURE_TIMING
-  struct timeval t0;
-  gettimeofday(&t0, NULL);
-# endif
-  dkim_exim_init();
-# ifdef MEASURE_TIMING
-  report_time_since(&t0, US"dkim_exim_init (delta)");
-# endif
-  }
-#endif
+/* Initialise subsystems as required. */
 
-  {
-#ifdef MEASURE_TIMING
-  struct timeval t0;
-  gettimeofday(&t0, NULL);
-#endif
-  deliver_init();
-#ifdef MEASURE_TIMING
-  report_time_since(&t0, US"deliver_init (delta)");
-#endif
-  }
-
+tcp_init();
 
 /* Handle a request to deliver one or more messages that are already on the
 queue. Values of msg_action other than MSG_DELIVER and MSG_LOAD are dealt with
@@ -4707,6 +4689,23 @@ if (f.daemon_listen || f.inetd_wait_mode || queue_interval > 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Daemon cannot be run when "
       "mua_wrapper is set");
     }
+
+# ifndef DISABLE_TLS
+  /* This also checks that the library linkage is working and we can call
+  routines in it, so call even if tls_require_ciphers is unset */
+    {
+# ifdef MEASURE_TIMING
+    struct timeval t0, diff;
+    (void)gettimeofday(&t0, NULL);
+# endif
+    if (!tls_dropprivs_validate_require_cipher(FALSE))
+      exit(1);
+# ifdef MEASURE_TIMING
+    report_time_since(&t0, US"validate_ciphers (delta)");
+# endif
+    }
+#endif
+
   daemon_go();
   }
 
@@ -4822,8 +4821,9 @@ if (verify_address_mode || f.address_test_mode)
     {
     while (recipients_arg < argc)
       {
-      uschar *s = argv[recipients_arg++];
-      while (*s != 0)
+      /* Supplied addresses are tainted since they come from a user */
+      uschar * s = string_copy_taint(argv[recipients_arg++], TRUE);
+      while (*s)
         {
         BOOL finished = FALSE;
         uschar *ss = parse_find_address_end(s, FALSE);
@@ -4831,16 +4831,16 @@ if (verify_address_mode || f.address_test_mode)
         test_address(s, flags, &exit_value);
         s = ss;
         if (!finished)
-          while (*(++s) != 0 && (*s == ',' || isspace(*s)));
+          while (*++s == ',' || isspace(*s)) ;
         }
       }
     }
 
   else for (;;)
     {
-    uschar *s = get_stdinput(NULL, NULL);
-    if (s == NULL) break;
-    test_address(s, flags, &exit_value);
+    uschar * s = get_stdinput(NULL, NULL);
+    if (!s) break;
+    test_address(string_copy_taint(s, TRUE), flags, &exit_value);
     }
 
   route_tidyup();
@@ -5334,13 +5334,13 @@ while (more)
 
     raw_sender = string_copy(sender_address);
 
-    /* Loop for each argument */
+    /* Loop for each argument (supplied by user hence tainted) */
 
     for (int i = 0; i < count; i++)
       {
       int start, end, domain;
-      uschar *errmess;
-      uschar *s = list[i];
+      uschar * errmess;
+      uschar * s = string_copy_taint(list[i], TRUE);
 
       /* Loop for each comma-separated address */
 

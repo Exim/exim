@@ -167,7 +167,7 @@ Some of these correspond to variables in globals.c; those variables will
 be set to point to content in one of these instances, as appropriate for
 the stage of the process lifetime.
 
-Not handled here: global tls_channelbinding_b64.
+Not handled here: global tlsp->tls_channelbinding.
 */
 
 typedef struct exim_gnutls_state {
@@ -479,7 +479,7 @@ Sets:
   tls_active                fd
   tls_bits                  strength indicator
   tls_certificate_verified  bool indicator
-  tls_channelbinding_b64    for some SASL mechanisms
+  tls_channelbinding        for some SASL mechanisms
   tls_ver                   a string
   tls_cipher                a string
   tls_peercert              pointer to library internal
@@ -511,10 +511,10 @@ tlsp->certificate_verified = state->peer_cert_verified;
 tlsp->dane_verified = state->peer_dane_verified;
 #endif
 
-/* note that tls_channelbinding_b64 is not saved to the spool file, since it's
+/* note that tls_channelbinding is not saved to the spool file, since it's
 only available for use for authenticators while this TLS session is running. */
 
-tls_channelbinding_b64 = NULL;
+tlsp->channelbinding = NULL;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 channel.data = NULL;
 channel.size = 0;
@@ -522,11 +522,15 @@ if ((rc = gnutls_session_channel_binding(state->session, GNUTLS_CB_TLS_UNIQUE, &
   { DEBUG(D_tls) debug_printf("Channel binding error: %s\n", gnutls_strerror(rc)); }
 else
   {
+  /* Declare the taintedness of the binding info.  On server, untainted; on
+  client, tainted - being the Finish msg from the server. */
+
   old_pool = store_pool;
   store_pool = POOL_PERM;
-  tls_channelbinding_b64 = b64encode(CUS channel.data, (int)channel.size);
+  tlsp->channelbinding = b64encode_taint(CUS channel.data, (int)channel.size,
+					  !!state->host);
   store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage.\n");
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
   }
 #endif
 
@@ -2407,9 +2411,20 @@ and sent an SMTP response. */
 
 DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
 
-if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
-    NULL, tls_verify_certificates, tls_crl,
-    require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+#endif
+
+  if ((rc = tls_init(NULL, tls_certificate, tls_privatekey,
+      NULL, tls_verify_certificates, tls_crl,
+      require_ciphers, &state, &tls_in, errstr)) != OK) return rc;
+
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"server tls_init (delta)");
+#endif
+  }
 
 #ifdef EXPERIMENTAL_TLS_RESUME
 tls_server_resume_prehandshake(state);
@@ -2843,10 +2858,21 @@ if (conn_args->dane && ob->dane_require_tls_ciphers)
 if (!cipher_list)
   cipher_list = ob->tls_require_ciphers;
 
-if (tls_init(host, ob->tls_certificate, ob->tls_privatekey,
-    ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
-    cipher_list, &state, tlsp, errstr) != OK)
-  return FALSE;
+  {
+#ifdef MEASURE_TIMING
+  struct timeval t0;
+  gettimeofday(&t0, NULL);
+#endif
+
+  if (tls_init(host, ob->tls_certificate, ob->tls_privatekey,
+      ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
+      cipher_list, &state, tlsp, errstr) != OK)
+    return FALSE;
+
+#ifdef MEASURE_TIMING
+  report_time_since(&t0, US"client tls_init (delta)");
+#endif
+  }
 
   {
   int dh_min_bits = ob->tls_dh_min_bits;
@@ -3084,7 +3110,7 @@ gnutls_certificate_free_credentials(state->x509_cred);
 tlsp->active.sock = -1;
 tlsp->active.tls_ctx = NULL;
 /* Leave bits, peercert, cipher, peerdn, certificate_verified set, for logging */
-tls_channelbinding_b64 = NULL;
+tlsp->channelbinding = NULL;
 
 
 if (state->xfer_buffer) store_free(state->xfer_buffer);
@@ -3297,6 +3323,9 @@ Arguments:
   buff      buffer of data
   len       number of bytes
   more	    more data expected soon
+
+Calling with len zero and more unset will flush buffered writes.  The buff
+argument can be null for that case.
 
 Returns:    the number of bytes after a successful write,
             -1 after a failed write

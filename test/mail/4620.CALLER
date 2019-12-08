@@ -1,0 +1,56 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmaZ-0005vi-00
+	for SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: remote_user@remote.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@the.local.host.name>
+To: SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex
+References: <E10HmaX-0005vi-00@the.local.host.name>
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  remote_user@remote.ex
+    account disabled
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; the.local.host.name
+
+Action: failed
+Final-Recipient: rfc822;remote_user@remote.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex>
+Received: from localhost ([127.0.0.1] helo=the.local.host.name)
+	by the.local.host.name with esmtp (Exim x.yz)
+	(envelope-from <SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for remote_user@remote.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-0005vi-00
+	for redirect@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Message body
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+

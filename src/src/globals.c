@@ -238,6 +238,7 @@ struct global_flags f =
 	.disable_logging        = FALSE,
 #ifndef DISABLE_DKIM
 	.dkim_disable_verify      = FALSE,
+	.dkim_init_done           = FALSE,
 #endif
 #ifdef SUPPORT_DMARC
 	.dmarc_has_been_checked  = FALSE,
@@ -297,7 +298,7 @@ struct global_flags f =
 	.sender_name_forced     = FALSE,
 	.sender_set_untrusted   = FALSE,
 	.smtp_authenticated     = FALSE,
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 	.smtp_in_early_pipe_advertised = FALSE,
 	.smtp_in_early_pipe_no_auth = FALSE,
 	.smtp_in_early_pipe_used = FALSE,
@@ -830,7 +831,7 @@ void   *dkim_signatures		 = NULL;
 uschar *dkim_signers             = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
-uschar *dkim_verify_hashes       = US"sha256:sha512:sha1";
+uschar *dkim_verify_hashes       = US"sha256:sha512";
 uschar *dkim_verify_keytypes     = US"ed25519:rsa";
 BOOL	dkim_verify_minimal      = FALSE;
 uschar *dkim_verify_overall      = NULL;
@@ -1167,7 +1168,7 @@ uschar *override_pid_file_path = NULL;
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 uschar *pipe_connect_advertise_hosts = US"*";
 #endif
 uschar *pipelining_advertise_hosts = US"*";
@@ -1259,7 +1260,7 @@ const pcre *regex_From         = NULL;
 const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
-#ifdef SUPPORT_PIPE_CONNECT
+#ifndef DISABLE_PIPE_CONNECT
 const pcre *regex_EARLY_PIPE   = NULL;
 #endif
 const pcre *regex_ismsgid      = NULL;
@@ -1498,6 +1499,9 @@ uschar *srs_orig_sender        = NULL;
 uschar *srs_recipient          = NULL;
 uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
+#endif
+#ifdef EXPERIMENTAL_SRS_NATIVE
+uschar *srs_recipient          = NULL;
 #endif
 int     string_datestamp_offset= -1;
 int     string_datestamp_length= 0;

@@ -22,6 +22,11 @@
 # which might do the job.  But how to manipulate it?
 #
 #
+# FreeBSD: it looks like you have to compile a custom kernel, with
+# 'options TCP_RFC7413' in the config.  Also set
+# 'net.inet.tcp.fastopen.server_enable=1' in /etc/sysctl.conf
+# Seems to always claim TFO used by transport, if tried.
+#
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
 ****
@@ -49,11 +54,6 @@ system ("ip tcp_metrics delete 127.0.0.1");
 ****
 #
 #
-#
-# FreeBSD: it looks like you have to compile a custom kernel, with
-# 'options TCP_RFC7413' in the config.  Also set
-# 'net.inet.tcp.fastopen.enabled=1' in /etc/sysctl.conf
-# Untested.
 #
 exim -DSERVER=server -bd -oX PORT_D
 ****

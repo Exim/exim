@@ -67,8 +67,9 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = 127.0.0.1
-  hosts_try_auth = *
   port = PORT_D
+  hosts_try_fastopen =	:
+  hosts_try_auth = *
 
 
 # ----- Retry -----

@@ -106,6 +106,7 @@ remote_smtp:
   driver = smtp
   hosts =	127.0.0.1
   port =	PORT_S
+  hosts_try_fastopen = :
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s
@@ -114,6 +115,7 @@ remote_smtp_dkim:
   driver = smtp
   hosts =	127.0.0.1
   port =	PORT_S
+  hosts_try_fastopen = :
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s

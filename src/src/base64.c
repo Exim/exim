@@ -242,9 +242,9 @@ static uschar *enc64table =
   US"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 uschar *
-b64encode(const uschar * clear, int len)
+b64encode_taint(const uschar * clear, int len, BOOL tainted)
 {
-uschar *code = store_get(4*((len+2)/3) + 1, is_tainted(clear));
+uschar *code = store_get(4*((len+2)/3) + 1, tainted);
 uschar *p = code;
 
 while (len-- >0)
@@ -281,6 +281,12 @@ while (len-- >0)
 *p = 0;
 
 return code;
+}
+
+uschar *
+b64encode(const uschar * clear, int len)
+{
+return b64encode_taint(clear, len, is_tainted(clear));
 }
 
 

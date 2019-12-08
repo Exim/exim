@@ -46,6 +46,7 @@ send_to_server1:
   allow_localhost
   hosts = ${if eq {$local_part}{user4} {127.0.0.1} {<; ::1}}
   port = PORT_D
+  hosts_try_fastopen = :
   interface = <; ::1 ; HOSTIPV4
 
 send_to_server2:
@@ -53,6 +54,7 @@ send_to_server2:
   allow_localhost
   hosts = ${if eq {$local_part}{user4} {127.0.0.1} {<; ::1}}
   port = PORT_D
+  hosts_try_fastopen = :
   interface = <; HOSTIPV6 ; HOSTIPV4
 
 send_to_server3:
@@ -60,6 +62,7 @@ send_to_server3:
   allow_localhost
   hosts = ${if eq {$local_part}{user4} {127.0.0.1} {<; ::1}}
   port = PORT_D
+  hosts_try_fastopen = :
   interface = <; ${if eq{0}{1}{HOSTIPV6}fail}
 
 send_to_server4:
@@ -67,6 +70,7 @@ send_to_server4:
   allow_localhost
   hosts = ${if eq {$local_part}{user4} {127.0.0.1} {<; ::1}}
   port = PORT_D
+  hosts_try_fastopen = :
   interface = <; ${if eq{0}{1}{HOSTIPV6}{  }}
 
 send_to_server5:
@@ -74,6 +78,7 @@ send_to_server5:
   allow_localhost
   hosts = ${if eq {$local_part}{user4} {127.0.0.1} {<; ::1}}
   port = PORT_D
+  hosts_try_fastopen = :
   interface = <; ${if 
 
 send_to_server:
@@ -81,6 +86,7 @@ send_to_server:
   allow_localhost
   hosts = ${if eq {$local_part}{user4} {127.0.0.1} {<; ::1}}
   port = PORT_D
+  hosts_try_fastopen = :
   interface = ${expand:$h_interface:}
 
 

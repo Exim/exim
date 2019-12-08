@@ -686,8 +686,7 @@ else if (timezone_string != NULL && timezone_string[0] != 0)
 
 if (envlist)
   {
-  envlist = expand_cstring(envlist);
-  if (envlist == NULL)
+  if (!(envlist = expand_cstring(envlist)))
     {
     addr->transport_return = DEFER;
     addr->message = string_sprintf("failed to expand string \"%s\" "
@@ -702,6 +701,7 @@ while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size)))
    if (envcount > nelem(envp) - 2)
      {
      addr->transport_return = DEFER;
+     addr->basic_errno = E2BIG;
      addr->message = string_sprintf("too many environment settings for "
        "%s transport", tblock->name);
      return FALSE;

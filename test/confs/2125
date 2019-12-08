@@ -48,9 +48,10 @@ send_to_server:
   driver = smtp
   allow_localhost
   hosts = HOSTIPV4 : 127.0.0.1
+  port = PORT_D
   hosts_require_tls = HOSTIPV4
   tls_require_ciphers = AES128-SHA
-  port = PORT_D
+  hosts_try_fastopen = :
   tls_try_verify_hosts = :
 
 

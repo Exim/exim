@@ -35,6 +35,7 @@ my_smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_S
+  hosts_try_fastopen =	:
   debug_print = transport_name <$transport_name>
 
 

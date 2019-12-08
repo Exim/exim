@@ -67,6 +67,7 @@ begin transports
 
 t1:
   driver =	smtp
+  hosts_try_fastopen =	:
   tls_verify_certificates =	DIR/aux-fixed/exim-ca/example.com/CA/CA.pem
   tls_verify_cert_hostnames =	:
 
