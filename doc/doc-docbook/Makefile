@@ -1,4 +1,5 @@
 # Make file for Exim documentation from xfpt source.
+export LC_ALL=C
 
 notarget:;    @echo "** You must specify a target, in the form x.y, where x is 'filter', 'spec',"
 	      @echo "** or 'test', and y is 'xml', 'fo', 'ps', 'pdf', 'html', 'txt', or 'info'."
