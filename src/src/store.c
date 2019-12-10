@@ -41,8 +41,26 @@ The following different types of store are recognized:
   and tainted.  The latter is used for values derived from untrusted input, and
   the string-expansion mechanism refuses to operate on such values (obviously,
   it can expand an untainted value to return a tainted result).  The classes
-  are implemented by duplicating the three pool types. Pool resets are requested
+  are implemented by duplicating the three pool types.  Pool resets are requested
   against the nontainted sibling and apply to both siblings.
+
+  Only memory blocks requested for tainted use are regarded as tainted; anything
+  else (including stack auto variables) is untainted.  Care is needed when coding
+  to not copy untrusted data into untainted memory, as downstream taint-checks
+  would be avoided.
+
+  Intermediate layers (eg. the string functions) can test for taint, and use this
+  for ensuringn that results have proper state.  For example the
+  string_vformat_trc() routing supporting the string_sprintf() interface will
+  recopy a string being built into a tainted allocation if it meets a %s for a
+  tainted argument.
+
+  Internally we currently use malloc for nontainted pools, and mmap for tainted
+  pools.  The disparity is for speed of testing the taintedness of pointers;
+  because Linux appears to use distinct non-overlapping address allocations for
+  mmap vs. everything else, which means only two pointer-compares suffice for the
+  test.  Other OS' cannot use that optimisation, and a more lengthy test against
+  the limits of tainted-pool allcations has to be done.
 */
 
 
@@ -209,7 +227,8 @@ block, getting a new one if necessary. The address is saved in
 store_last_was_get.
 
 Arguments:
-  size        amount wanted
+  size        amount wanted, bytes
+  tainted     class: set to true for untrusted data (eg. from smtp input)
   func        function from which called
   linenumber  line number in source file
 

@@ -1252,8 +1252,8 @@ If the "extend" flag is false, the string passed in may not be NULL,
 will not be grown, and is usable in the original place after return.
 The return value can be NULL to signify overflow.
 
-Returns the possibly-new (if copy for growth was needed) string,
-not nul-terminated.
+Returns the possibly-new (if copy for growth or taint-handling was needed)
+string, not nul-terminated.
 */
 
 gstring *
