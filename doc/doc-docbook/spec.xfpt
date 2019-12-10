@@ -30437,6 +30437,13 @@ This control turns off DKIM verification processing entirely.  For details on
 the operation and configuration of DKIM, see section &<<SECDKIM>>&.
 
 
+.vitem &*control&~=&~dmarc_disable_verify*&
+.cindex "disable DMARC verify"
+.cindex "DMARC" "disable verify"
+This control turns off DMARC verification processing entirely.  For details on
+the operation and configuration of DMARC, see section &<<SECDMARC>>&.
+
+
 .vitem &*control&~=&~dscp/*&<&'value'&>
 .cindex "&ACL;" "setting DSCP value"
 .cindex "DSCP" "inbound"
