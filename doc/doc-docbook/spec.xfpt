@@ -34327,12 +34327,18 @@ dropping of a TCP/IP connection), you can call &'smtp_fflush()'&, which has no
 arguments. It flushes the output stream, and returns a non-zero value if there
 is an error.
 
-.vitem &*void&~*store_get(int)*&
+.new
+.vitem &*void&~*store_get(int,BOOL)*&
 This function accesses Exim's internal store (memory) manager. It gets a new
-chunk of memory whose size is given by the argument. Exim bombs out if it ever
+chunk of memory whose size is given by the first argument.
+The second argument should be given as TRUE if the memory will be used for
+data possibly coming from an attacker (eg. the message content),
+FALSE if it is locally-sourced.
+Exim bombs out if it ever
 runs out of memory. See the next section for a discussion of memory handling.
+.wen
 
-.vitem &*void&~*store_get_perm(int)*&
+.vitem &*void&~*store_get_perm(int,BOOL)*&
 This function is like &'store_get()'&, but it always gets memory from the
 permanent pool. See the next section for a discussion of memory handling.
 

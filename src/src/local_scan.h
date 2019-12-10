@@ -193,6 +193,14 @@ extern void    smtp_vprintf(const char *, BOOL, va_list);
 	string_sprintf_trc(fmt, US __FUNCTION__, __LINE__, __VA_ARGS__)
 extern uschar *string_sprintf_trc(const char *, const uschar *, unsigned, ...) ALMOST_PRINTF(1,4);
 
+#define store_get(size, tainted) \
+	store_get_3(size, tainted, __FUNCTION__, __LINE__)
+extern void   *store_get_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+#define store_get_perm(size, tainted) \
+	store_get_perm_3(size, tainted, __FUNCTION__, __LINE__)
+extern void   *store_get_perm_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+
+
 #if defined(LOCAL_SCAN) || defined(DLFUNC_IMPL)
 /* When compiling a local_scan() file we want to rename a published API, so that
 we can use an inlined implementation in the compiles of the main Exim files,
