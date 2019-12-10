@@ -49,18 +49,22 @@ The following different types of store are recognized:
   to not copy untrusted data into untainted memory, as downstream taint-checks
   would be avoided.
 
-  Intermediate layers (eg. the string functions) can test for taint, and use this
-  for ensuringn that results have proper state.  For example the
-  string_vformat_trc() routing supporting the string_sprintf() interface will
-  recopy a string being built into a tainted allocation if it meets a %s for a
-  tainted argument.
-
   Internally we currently use malloc for nontainted pools, and mmap for tainted
   pools.  The disparity is for speed of testing the taintedness of pointers;
   because Linux appears to use distinct non-overlapping address allocations for
   mmap vs. everything else, which means only two pointer-compares suffice for the
   test.  Other OS' cannot use that optimisation, and a more lengthy test against
   the limits of tainted-pool allcations has to be done.
+
+  Intermediate layers (eg. the string functions) can test for taint, and use this
+  for ensurinng that results have proper state.  For example the
+  string_vformat_trc() routing supporting the string_sprintf() interface will
+  recopy a string being built into a tainted allocation if it meets a %s for a
+  tainted argument.  Any intermediate-layer function that (can) return a new
+  allocation should behave this way; returning a tainted result if any tainted
+  content is used.  Users of functions that modify existing allocations should
+  check if a tainted source and an untainted destination is used, and fail instead
+  (sprintf() being the classic case).
 */
 
 
@@ -181,8 +185,14 @@ static void   internal_tainted_free(storeblock *, const char *, int linenumber);
 /******************************************************************************/
 
 #ifndef TAINT_CHECK_FAST
-/* Slower version check, for use when platform intermixes malloc and mmap area
-addresses. */
+/* Test if a pointer refers to tainted memory.
+
+Slower version check, for use when platform intermixes malloc and mmap area
+addresses. Test against the current-block of all tainted pools first, then all
+blocks of all tainted pools.
+
+Return: TRUE iff tainted
+*/
 
 BOOL
 is_tainted_fn(const void * p)
@@ -190,23 +200,20 @@ is_tainted_fn(const void * p)
 storeblock * b;
 int pool;
 
-for (pool = 0; pool < nelem(chainbase); pool++)
+for (pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   if ((b = current_block[pool]))
     {
     char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (CS p >= bc && CS p <= bc + b->length) goto hit;
+    if (CS p >= bc && CS p <= bc + b->length) return TRUE;
     }
 
-for (pool = 0; pool < nelem(chainbase); pool++)
+for (pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   for (b = chainbase[pool]; b; b = b->next)
     {
     char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (CS p >= bc && CS p <= bc + b->length) goto hit;
+    if (CS p >= bc && CS p <= bc + b->length) return TRUE;
     }
 return FALSE;
-
-hit:
-return pool >= POOL_TAINT_BASE;
 }
 #endif
 
