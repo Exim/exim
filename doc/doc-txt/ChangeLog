@@ -24,6 +24,10 @@ JH/05 Regard command-line receipients as tainted.
 
 JH/06 Bug 340: Remove the daemon pid file on exit, whe due to SIGTERM.
 
+JH/07 Bug 2489: Fix crash in the "pam" expansion condition.  It seems that the
+      PAM library frees one of the arguments given to it, despite the
+      documentation.  Therefore a plain malloc must be used.
+
 
 Exim version 4.93
 -----------------
