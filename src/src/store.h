@@ -34,10 +34,7 @@ tracing information for debugging. */
 
 #define store_free(addr) \
 	store_free_3(addr, __FUNCTION__, __LINE__)
-#define store_get(size, tainted) \
-	store_get_3(size, tainted, __FUNCTION__, __LINE__)
-#define store_get_perm(size, tainted) \
-	store_get_perm_3(size, tainted, __FUNCTION__, __LINE__)
+/* store_get & store_get_perm are in local_scan.h */
 #define store_malloc(size) \
 	store_malloc_3(size, __FUNCTION__, __LINE__)
 #define store_mark(void) \
@@ -55,8 +52,7 @@ typedef void ** rmark;
 
 extern BOOL    store_extend_3(void *, BOOL, int, int, const char *, int);
 extern void    store_free_3(void *, const char *, int);
-extern void   *store_get_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
-extern void   *store_get_perm_3(int, BOOL, const char *, int)	ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
+/* store_get_3 & store_get_perm_3 are in local_scan.h */
 extern void   *store_malloc_3(int, const char *, int)		ALLOC ALLOC_SIZE(1) WARN_UNUSED_RESULT;
 extern rmark   store_mark_3(const char *, int);
 extern void   *store_newblock_3(void *, BOOL, int, int, const char *, int);
