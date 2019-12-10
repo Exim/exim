@@ -48,7 +48,7 @@ sudo rm DIR/spool/db/misc
 #
 # Check that the cache is invalidated on SMTP errors from the server for the banner
 #
-server PORT_D 3
+server PORT_D
 >220 banner
 <EHLO
 >250-esmtp-resp
@@ -66,6 +66,11 @@ server PORT_D 3
 <QUIT
 >220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi nocache2@test.ex
+body 2
+****
+server PORT_D
 >220 banner
 <EHLO
 >250-esmtp-resp
@@ -83,6 +88,11 @@ server PORT_D 3
 <QUIT
 >220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi withcache2@test.ex
+body 2a
+****
+server PORT_D
 *sleep 2
 <EHLO
 <MAIL
@@ -97,13 +107,13 @@ server PORT_D 3
 >>220 bye
 *eof
 ****
-exim -DCONTROL=127.0.0.1 -odi nocache2@test.ex withcache2@test.ex badbanner@test.ex
-body 2
+exim -DCONTROL=127.0.0.1 -odi badbanner@test.ex
+body 2b
 ****
 #
 # Check that the cache is not invalidated on SMTP errors from the server after early-pipelining
 #
-server PORT_D 6
+server PORT_D
 >220 banner
 <EHLO
 >250-esmtp-resp
@@ -121,6 +131,11 @@ server PORT_D 6
 <QUIT
 >220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi nocache3@test.ex
+body
+****
+server PORT_D
 >220 banner
 <EHLO
 >250-esmtp-resp
@@ -138,6 +153,11 @@ server PORT_D 6
 <QUIT
 >220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi withcache3@test.ex
+body
+****
+server PORT_D
 *sleep 2
 <EHLO
 <MAIL
@@ -154,6 +174,11 @@ server PORT_D 6
 <QUIT
 >>220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi baddata3@test.ex
+body
+****
+server PORT_D
 *sleep 2
 <EHLO
 <MAIL
@@ -170,6 +195,11 @@ server PORT_D 6
 <QUIT
 >>220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi badrcpt3@test.ex
+body
+****
+server PORT_D
 *sleep 2
 <EHLO
 <MAIL
@@ -186,6 +216,11 @@ server PORT_D 6
 <QUIT
 >>220 bye
 *eof
+****
+exim -DCONTROL=127.0.0.1 -odi badmail3@test.ex
+body
+****
+server PORT_D
 *sleep 2
 >220 banner
 <EHLO
@@ -205,7 +240,7 @@ server PORT_D 6
 >220 bye
 *eof
 ****
-exim -DCONTROL=127.0.0.1 -odi nocache@test.ex withcache@test.ex baddata@test.ex badrcpt@test.ex badmail@test.ex withcache2@test.ex
+exim -DCONTROL=127.0.0.1 -odi withcache23@test.ex
 body
 ****
 #

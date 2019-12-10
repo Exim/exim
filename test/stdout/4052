@@ -5,41 +5,61 @@
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 >220 banner
-<EHLO
+<EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
 >250-X_PIPE_CONNECT
 >250 ok
-<MAIL
+<MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
-<RCPT
+<RCPT TO:<nocache2@test.ex>
 >250 rcpt-to accepted
 <DATA
 >354 data go-ahead
-R
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbD-0005vi-00
+	for nocache2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body 2
+.
 >250 message accepted
 <QUIT
 >220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 >220 banner
-<EHLO
+<EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
 >250-X_PIPE_CONNECT
 >250 ok
-<MAIL
+<MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
-<RCPT
+<RCPT TO:<withcache2@test.ex>
 >250 rcpt-to accepted
 <DATA
 >354 data go-ahead
-R
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbE-0005vi-00
+	for withcache2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body 2a
+.
 >250 message accepted
 <QUIT
 >220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 *sleep 2
@@ -59,41 +79,61 @@ End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 >220 banner
-<EHLO
+<EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
 >250-X_PIPE_CONNECT
 >250 ok
-<MAIL
+<MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
-<RCPT
+<RCPT TO:<nocache3@test.ex>
 >250 rcpt-to accepted
 <DATA
 >354 data go-ahead
-R
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbG-0005vi-00
+	for nocache3@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
 >250 message accepted
 <QUIT
 >220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 >220 banner
-<EHLO
+<EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
 >250-X_PIPE_CONNECT
 >250 ok
-<MAIL
+<MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
-<RCPT
+<RCPT TO:<withcache3@test.ex>
 >250 rcpt-to accepted
 <DATA
 >354 data go-ahead
-R
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbH-0005vi-00
+	for withcache3@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
 >250 message accepted
 <QUIT
 >220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 *sleep 2
@@ -112,6 +152,7 @@ Connection request from [127.0.0.1]
 <QUIT
 >>220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 *sleep 2
@@ -130,6 +171,7 @@ Connection request from [127.0.0.1]
 <QUIT
 >>220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 *sleep 2
@@ -148,22 +190,32 @@ Connection request from [127.0.0.1]
 <QUIT
 >>220 bye
 Expected EOF read from client
+End of script
 Listening on port 1225 ... 
 Connection request from [127.0.0.1]
 *sleep 2
 >220 banner
-<EHLO
+<EHLO the.local.host.name
 >250-esmtp-resp
 >250-PIPELINING
 >250-X_PIPE_CONNECT
 >250 ok
-<MAIL
+<MAIL FROM:<CALLER@the.local.host.name>
 >250 mail-from accepted
-<RCPT
+<RCPT TO:<withcache23@test.ex>
 >250 rcpt-to accepted
 <DATA
 >354 data go-ahead
-R
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbO-0005vi-00
+	for withcache23@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbO-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
 >250 message accepted
 <QUIT
 >220 bye
@@ -186,9 +238,9 @@ Connection request from [127.0.0.1]
 >354 data go-ahead
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@the.local.host.name>)
-	id 10HmbG-0005vi-00
+	id 10HmbP-0005vi-00
 	for extchange@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+Message-Id: <E10HmbP-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@the.local.host.name>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
