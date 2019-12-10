@@ -18,6 +18,9 @@ CC=cc
 CFLAGS ?= -O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 CFLAGS_DYNAMIC ?= -shared -rdynamic
 
+# We have mmap/malloc addr spaces separate
+CFLAGS += -DTAINT_CHECK_FAST
+
 DBMLIB = -ldb
 USE_DB = yes
 

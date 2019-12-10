@@ -1,7 +1,5 @@
 # Exim: OS-specific make file for SunOS5
 
-CFLAGS=-O -DTAINT_CHECK_SLOW
-
 HAVE_ICONV=yes
 
 BASENAME_COMMAND=look_for_it

@@ -180,6 +180,7 @@ static void   internal_tainted_free(storeblock *, const char *, int linenumber);
 
 /******************************************************************************/
 
+#ifndef TAINT_CHECK_FAST
 /* Slower version check, for use when platform intermixes malloc and mmap area
 addresses. */
 
@@ -207,6 +208,7 @@ return FALSE;
 hit:
 return pool >= POOL_TAINT_BASE;
 }
+#endif
 
 
 void

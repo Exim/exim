@@ -137,7 +137,7 @@ is_tainted(const void * p)
 #if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF)
 return FALSE;
 
-#elif defined(TAINT_CHECK_SLOW)
+#elif !defined(TAINT_CHECK_FAST)
 extern BOOL is_tainted_fn(const void *);
 return is_tainted_fn(p);
 
