@@ -48,6 +48,7 @@ send_to_server:
   driver =			smtp
   allow_localhost
   port =			PORT_D
+  hosts_try_fastopen =		:
   hosts_try_dane =		*
   tls_verify_certificates =	CDIR2/ca_chain.pem
 

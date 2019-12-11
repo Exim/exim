@@ -57,8 +57,9 @@ begin transports
 smtp:
   driver =		smtp
   hosts_pipe_connect =	*
-  protocol =		smtps
   port =		PORT_D
+  hosts_try_fastopen =	:
+  protocol =		smtps
   tls_verify_hosts =
   tls_try_verify_hosts =
   hosts_require_auth =	*
