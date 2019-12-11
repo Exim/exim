@@ -625,8 +625,8 @@ coding means skipping this whole loop and doing the append separately.  */
     {
     int host_af;
     int port = 25;
-    uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
-    smtp_context sx;
+    uschar * interface = NULL;  /* Outgoing interface to use; NULL => any */
+    smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted buffers */
 
     if (!host->address)
       {
@@ -666,14 +666,14 @@ coding means skipping this whole loop and doing the append separately.  */
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
 
-    sx.addrlist = addr;
-    sx.conn_args.host = host;
-    sx.conn_args.host_af = host_af,
-    sx.port = port;
-    sx.conn_args.interface = interface;
-    sx.helo_data = tf->helo_data;
-    sx.conn_args.tblock = addr->transport;
-    sx.verify = TRUE;
+    sx->addrlist = addr;
+    sx->conn_args.host = host;
+    sx->conn_args.host_af = host_af,
+    sx->port = port;
+    sx->conn_args.interface = interface;
+    sx->helo_data = tf->helo_data;
+    sx->conn_args.tblock = addr->transport;
+    sx->verify = TRUE;
 
 tls_retry_connection:
     /* Set the address state so that errors are recorded in it */
@@ -686,7 +686,7 @@ tls_retry_connection:
     SMTP command to send.  If we tried TLS but it failed, try again without
     if permitted */
 
-    yield = smtp_setup_conn(&sx, FALSE);
+    yield = smtp_setup_conn(sx, FALSE);
 #ifndef DISABLE_TLS
     if (  yield == DEFER
        && addr->basic_errno == ERRNO_TLSFAILURE
@@ -698,7 +698,7 @@ tls_retry_connection:
 	"%s: callout unencrypted to %s [%s] (not in hosts_require_tls)",
 	addr->message, host->name, host->address);
       addr->transport_return = PENDING_DEFER;
-      yield = smtp_setup_conn(&sx, TRUE);
+      yield = smtp_setup_conn(sx, TRUE);
       }
 #endif
     if (yield != OK)
@@ -728,11 +728,11 @@ tls_retry_connection:
     addr->authenticator = client_authenticator;
     addr->auth_id = client_authenticated_id;
 
-    sx.from_addr = from_address;
-    sx.first_addr = sx.sync_addr = addr;
-    sx.ok = FALSE;			/*XXX these 3 last might not be needed for verify? */
-    sx.send_rset = TRUE;
-    sx.completed_addr = FALSE;
+    sx->from_addr = from_address;
+    sx->first_addr = sx->sync_addr = addr;
+    sx->ok = FALSE;			/*XXX these 3 last might not be needed for verify? */
+    sx->send_rset = TRUE;
+    sx->completed_addr = FALSE;
 
     new_domain_record.result = old_domain_cache_result == ccache_reject_mfnull
       ? ccache_reject_mfnull : ccache_accept;
@@ -789,12 +789,12 @@ tls_retry_connection:
       Avoid using a SIZE option on the MAIL for all random-rcpt checks.
       */
 
-      sx.avoid_option = OPTION_SIZE;
+      sx->avoid_option = OPTION_SIZE;
 
       /* Remember when we last did a random test */
       new_domain_record.random_stamp = time(NULL);
 
-      if (smtp_write_mail_and_rcpt_cmds(&sx, &yield) == 0)
+      if (smtp_write_mail_and_rcpt_cmds(sx, &yield) == 0)
 	switch(addr->transport_return)
 	  {
 	  case PENDING_OK:	/* random was accepted, unfortunately */
@@ -805,36 +805,36 @@ tls_retry_connection:
 	    goto no_conn;
 	  case FAIL:		/* rejected: the preferred result */
 	    new_domain_record.random_result = ccache_reject;
-	    sx.avoid_option = 0;
+	    sx->avoid_option = 0;
 
 	    /* Between each check, issue RSET, because some servers accept only
 	    one recipient after MAIL FROM:<>.
 	    XXX We don't care about that for postmaster_full.  Should we? */
 
 	    if ((done =
-	      smtp_write_command(&sx, SCMD_FLUSH, "RSET\r\n") >= 0 &&
-	      smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', callout)))
+	      smtp_write_command(sx, SCMD_FLUSH, "RSET\r\n") >= 0 &&
+	      smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2', callout)))
 	      break;
 
 	    HDEBUG(D_acl|D_v)
 	      debug_printf_indent("problem after random/rset/mfrom; reopen conn\n");
 	    random_local_part = NULL;
 #ifndef DISABLE_TLS
-	    tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+	    tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
 #endif
 	    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
-	    (void)close(sx.cctx.sock);
-	    sx.cctx.sock = -1;
+	    (void)close(sx->cctx.sock);
+	    sx->cctx.sock = -1;
 #ifndef DISABLE_EVENT
 	    (void) event_raise(addr->transport->event_action,
 			      US"tcp:close", NULL);
 #endif
 	    addr->address = main_address;
 	    addr->transport_return = PENDING_DEFER;
-	    sx.first_addr = sx.sync_addr = addr;
-	    sx.ok = FALSE;
-	    sx.send_rset = TRUE;
-	    sx.completed_addr = FALSE;
+	    sx->first_addr = sx->sync_addr = addr;
+	    sx->ok = FALSE;
+	    sx->send_rset = TRUE;
+	    sx->completed_addr = FALSE;
 	    goto tls_retry_connection;
 	  case DEFER:		/* 4xx response to random */
 	    break;		/* Just to be clear. ccache_unknown, !done. */
@@ -843,10 +843,10 @@ tls_retry_connection:
       /* Re-setup for main verify, or for the error message when failing */
       addr->address = main_address;
       addr->transport_return = PENDING_DEFER;
-      sx.first_addr = sx.sync_addr = addr;
-      sx.ok = FALSE;
-      sx.send_rset = TRUE;
-      sx.completed_addr = FALSE;
+      sx->first_addr = sx->sync_addr = addr;
+      sx->ok = FALSE;
+      sx->send_rset = TRUE;
+      sx->completed_addr = FALSE;
       }
     else
       done = TRUE;
@@ -857,10 +857,10 @@ tls_retry_connection:
     if (done)
       {
       if (!(options & vopt_is_recipient  &&  options & vopt_callout_no_cache))
-	sx.avoid_option = OPTION_SIZE;
+	sx->avoid_option = OPTION_SIZE;
 
       done = FALSE;
-      switch(smtp_write_mail_and_rcpt_cmds(&sx, &yield))
+      switch(smtp_write_mail_and_rcpt_cmds(sx, &yield))
 	{
 	case 0:  switch(addr->transport_return)	/* ok so far */
 		    {
@@ -878,7 +878,7 @@ tls_retry_connection:
 
 	case -1:				/* MAIL response error */
 		  *failure_ptr = US"mail";
-		  if (errno == 0 && sx.buffer[0] == '5')
+		  if (errno == 0 && sx->buffer[0] == '5')
 		    {
 		    setflag(addr, af_verify_nsfail);
 		    if (from_address[0] == 0)
@@ -908,8 +908,8 @@ tls_retry_connection:
       cancel_cutthrough_connection(TRUE, US"postmaster verify");
       HDEBUG(D_acl|D_v) debug_printf_indent("Cutthrough cancelled by presence of postmaster verify\n");
 
-      done = smtp_write_command(&sx, SCMD_FLUSH, "RSET\r\n") >= 0
-          && smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', callout);
+      done = smtp_write_command(sx, SCMD_FLUSH, "RSET\r\n") >= 0
+          && smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2', callout);
 
       if (done)
 	{
@@ -919,23 +919,23 @@ tls_retry_connection:
 	addr->address = string_sprintf("postmaster@%.1000s", addr->domain);
 	addr->transport_return = PENDING_DEFER;
 
-	sx.from_addr = pm_mailfrom;
-	sx.first_addr = sx.sync_addr = addr;
-	sx.ok = FALSE;
-	sx.send_rset = TRUE;
-	sx.completed_addr = FALSE;
-	sx.avoid_option = OPTION_SIZE;
+	sx->from_addr = pm_mailfrom;
+	sx->first_addr = sx->sync_addr = addr;
+	sx->ok = FALSE;
+	sx->send_rset = TRUE;
+	sx->completed_addr = FALSE;
+	sx->avoid_option = OPTION_SIZE;
 
-	if(  smtp_write_mail_and_rcpt_cmds(&sx, &yield) == 0
+	if(  smtp_write_mail_and_rcpt_cmds(sx, &yield) == 0
 	  && addr->transport_return == PENDING_OK
 	  )
 	  done = TRUE;
 	else
 	  done = (options & vopt_callout_fullpm) != 0
-	      && smtp_write_command(&sx, SCMD_FLUSH,
+	      && smtp_write_command(sx, SCMD_FLUSH,
 			    "RCPT TO:<postmaster>\r\n") >= 0
-	      && smtp_read_response(&sx, sx.buffer,
-			    sizeof(sx.buffer), '2', callout);
+	      && smtp_read_response(sx, sx->buffer,
+			    sizeof(sx->buffer), '2', callout);
 
 	/* Sort out the cache record */
 
@@ -943,7 +943,7 @@ tls_retry_connection:
 
 	if (done)
 	  new_domain_record.postmaster_result = ccache_accept;
-	else if (errno == 0 && sx.buffer[0] == '5')
+	else if (errno == 0 && sx->buffer[0] == '5')
 	  {
 	  *failure_ptr = US"postmaster";
 	  setflag(addr, af_verify_pmfail);
@@ -968,7 +968,7 @@ no_conn:
       {
       case ETIMEDOUT:
 	HDEBUG(D_verify) debug_printf("SMTP timeout\n");
-	sx.send_quit = FALSE;
+	sx->send_quit = FALSE;
 	break;
 
 #ifdef SUPPORT_I18N
@@ -986,11 +986,11 @@ no_conn:
 	break;
 #endif
       case ECONNREFUSED:
-	sx.send_quit = FALSE;
+	sx->send_quit = FALSE;
 	break;
 
       case 0:
-	if (*sx.buffer == 0) Ustrcpy(sx.buffer, US"connection dropped");
+	if (*sx->buffer == 0) Ustrcpy(sx->buffer, US"connection dropped");
 
 	/*XXX test here is ugly; seem to have a split of responsibility for
 	building this message.  Need to rationalise.  Where is it done
@@ -999,7 +999,7 @@ no_conn:
 	*/
 	if (!addr->message) addr->message =
 	  string_sprintf("response to \"%s\" was: %s",
-			  big_buffer, string_printing(sx.buffer));
+			  big_buffer, string_printing(sx->buffer));
 
 	/* RFC 5321 section 4.2: the text portion of the response may have only
 	HT, SP, Printable US-ASCII.  Deal with awkward chars by cutting the
@@ -1007,14 +1007,14 @@ no_conn:
 	just become a multiline response (but wrapped in the error code we
 	produce). */
 
-	for (uschar * s = sx.buffer;
-	     *s && s < sx.buffer + sizeof(sx.buffer);
+	for (uschar * s = sx->buffer;
+	     *s && s < sx->buffer + sizeof(sx->buffer);
 	     s++)
 	  {
 	  uschar c = *s;
 	  if (c != '\t' && c != '\n' && (c < ' ' || c > '~'))
 	    {
-	    if (s - sx.buffer < sizeof(sx.buffer) - 12)
+	    if (s - sx->buffer < sizeof(sx->buffer) - 12)
 	      memcpy(s, "(truncated)", 12);
 	    else
 	      *s = '\0';
@@ -1022,13 +1022,13 @@ no_conn:
 	    }
 	  }
 	addr->user_message = options & vopt_is_recipient
-	  ? string_sprintf("Callout verification failed:\n%s", sx.buffer)
+	  ? string_sprintf("Callout verification failed:\n%s", sx->buffer)
 	  : string_sprintf("Called:   %s\nSent:     %s\nResponse: %s",
-	    host->address, big_buffer, sx.buffer);
+	    host->address, big_buffer, sx->buffer);
 
 	/* Hard rejection ends the process */
 
-	if (sx.buffer[0] == '5')   /* Address rejected */
+	if (sx->buffer[0] == '5')   /* Address rejected */
 	  {
 	  yield = FAIL;
 	  done = TRUE;
@@ -1075,7 +1075,7 @@ no_conn:
        && !random_local_part
        && !pm_mailfrom
        && cutthrough.cctx.sock < 0
-       && !sx.lmtp
+       && !sx->lmtp
        )
       {
       HDEBUG(D_acl|D_v) debug_printf_indent("holding verify callout open for %s\n",
@@ -1085,7 +1085,7 @@ no_conn:
       cutthrough.callout_hold_only = !cutthrough.delivery;
       cutthrough.is_tls =	tls_out.active.sock >= 0;
       /* We assume no buffer in use in the outblock */
-      cutthrough.cctx =		sx.cctx;
+      cutthrough.cctx =		sx->cctx;
       cutthrough.nrcpt =	1;
       cutthrough.transport =	addr->transport->name;
       cutthrough.interface =	interface;
@@ -1121,23 +1121,23 @@ no_conn:
       /* Ensure no cutthrough on multiple verifies that were incompatible */
       if (options & vopt_callout_recipsender)
         cancel_cutthrough_connection(TRUE, US"not usable for cutthrough");
-      if (sx.send_quit)
-	if (smtp_write_command(&sx, SCMD_FLUSH, "QUIT\r\n") != -1)
+      if (sx->send_quit)
+	if (smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n") != -1)
 	  /* Wait a short time for response, and discard it */
-	  smtp_read_response(&sx, sx.buffer, sizeof(sx.buffer), '2', 1);
+	  smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2', 1);
 
-      if (sx.cctx.sock >= 0)
+      if (sx->cctx.sock >= 0)
 	{
 #ifndef DISABLE_TLS
-	if (sx.cctx.tls_ctx)
+	if (sx->cctx.tls_ctx)
 	  {
-	  tls_close(sx.cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
-	  sx.cctx.tls_ctx = NULL;
+	  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+	  sx->cctx.tls_ctx = NULL;
 	  }
 #endif
 	HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
-	(void)close(sx.cctx.sock);
-	sx.cctx.sock = -1;
+	(void)close(sx->cctx.sock);
+	sx->cctx.sock = -1;
 #ifndef DISABLE_EVENT
 	(void) event_raise(addr->transport->event_action, US"tcp:close", NULL);
 #endif

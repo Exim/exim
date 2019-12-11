@@ -15,6 +15,10 @@ JH/07 Bug 2489: Fix crash in the "pam" expansion condition.  It seems that the
       PAM library frees one of the arguments given to it, despite the
       documentation.  Therefore a plain malloc must be used.
 
+JH/08 Bug 2491: Use tainted buffers for the transport smtp context.  Previously
+      on-stack buffers were used, resulting in a taint trap when DSN information
+      copied from a received message was written into the buffer.
+
 
 Exim version 4.93
 -----------------
