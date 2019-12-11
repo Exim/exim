@@ -62,9 +62,11 @@ The following different types of store are recognized:
   recopy a string being built into a tainted allocation if it meets a %s for a
   tainted argument.  Any intermediate-layer function that (can) return a new
   allocation should behave this way; returning a tainted result if any tainted
-  content is used.  Users of functions that modify existing allocations should
-  check if a tainted source and an untainted destination is used, and fail instead
-  (sprintf() being the classic case).
+  content is used.  Intermediate-layer functions (eg. Ustrncpy) that modify
+  existing allocations fail if tainted data is written into an untainted area.
+  Users of functions that modify existing allocations should check if a tainted
+  source and an untainted destination is used, and fail instead (sprintf() being
+  the classic case).
 */
 
 

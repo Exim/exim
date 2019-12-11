@@ -9,7 +9,10 @@
 source for the local_scan.c() function. It contains definitions that are made
 available for use in that function, and which are documented.
 
-This API is also used for functions called by the ${dlfunc expansion item. */
+This API is also used for functions called by the ${dlfunc expansion item.
+Coders of dlfunc routines should read the notes on tainting at the start of
+store.c
+*/
 
 
 /* Some basic types that make some things easier, the Exim configuration
