@@ -1200,6 +1200,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Platform-dependent error strings
     s/Operation timed out/Connection timed out/;
 
+    # Platform differences on disconnect
+    s/unexpected disconnection while reading SMTP command from \[127.0.0.1\] \K\(error: Connection reset by peer\) //;
+
     # Platform-dependent resolver option bits
     s/^ (?:writing|update) neg-cache entry for [^,]+-\K[0-9a-f]+, ttl/xxxx, ttl/;
 
