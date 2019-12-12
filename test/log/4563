@@ -1,0 +1,15 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-0005vi-00 arc_state:      <fail>
+1999-03-02 09:44:33 10HmaX-0005vi-00 domains:        <test.ex:test.ex>
+1999-03-02 09:44:33 10HmaX-0005vi-00 arc_oldest_pass <0>
+1999-03-02 09:44:33 10HmaX-0005vi-00 reason:         <AMS sig nonverify>
+1999-03-02 09:44:33 10HmaX-0005vi-00 lh_A-R:         < test.ex; arc=none>
+1999-03-02 09:44:33 10HmaX-0005vi-00 lh-ams:         < i=2; test.ex; arc=none: i=1; test.ex; arc=none>
+1999-03-02 09:44:33 10HmaX-0005vi-00 oldest-p-ams:   <>
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@bloggs.com H=(xxx) [127.0.0.1] P=smtp S=sss id=qwerty1234@disco-zombie.net for a@test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a <a@test.ex> R=d1 T=tfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
