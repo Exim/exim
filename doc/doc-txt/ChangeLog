@@ -32,6 +32,9 @@ JH/08 Bug 2491: Use tainted buffers for the transport smtp context.  Previously
       on-stack buffers were used, resulting in a taint trap when DSN information
       copied from a received message was written into the buffer.
 
+JH/09 Bug 2493: Harden ARC verify against Outlook, whick has been seen to mix
+      the ordering of its ARC headers.  This caused a crash.
+
 
 Exim version 4.93
 -----------------

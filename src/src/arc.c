@@ -381,7 +381,7 @@ adding instances as needed and checking for duplicate lines.
 
 static uschar *
 arc_insert_hdr(arc_ctx * ctx, header_line * h, unsigned off, unsigned hoff,
-  BOOL instance_only)
+  BOOL instance_only, arc_line ** alp_ret)
 {
 unsigned i;
 arc_set * as;
@@ -401,6 +401,7 @@ if (!(as = arc_find_set(ctx, i)))	return US"set find";
 if (*(alp = (arc_line **)(US as + hoff))) return US"dup hdr";
 
 *alp = al;
+if (alp_ret) *alp_ret = al;
 return NULL;
 }
 
@@ -424,7 +425,7 @@ if (strncmpic(ARC_HDR_AAR, h->text, ARC_HDRLEN_AAR) == 0)
     debug_printf("ARC: found AAR: %.*s\n", len, h->text);
     }
   if ((e = arc_insert_hdr(ctx, h, ARC_HDRLEN_AAR, offsetof(arc_set, hdr_aar),
-			  TRUE)))
+			  TRUE, NULL)))
     {
     DEBUG(D_acl) debug_printf("inserting AAR: %s\n", e);
     return US"inserting AAR";
@@ -443,15 +444,13 @@ else if (strncmpic(ARC_HDR_AMS, h->text, ARC_HDRLEN_AMS) == 0)
     debug_printf("ARC: found AMS: %.*s\n", len, h->text);
     }
   if ((e = arc_insert_hdr(ctx, h, ARC_HDRLEN_AMS, offsetof(arc_set, hdr_ams),
-			  instance_only)))
+			  instance_only, &ams)))
     {
     DEBUG(D_acl) debug_printf("inserting AMS: %s\n", e);
     return US"inserting AMS";
     }
 
   /* defaults */
-  /*XXX dubious selection of ams here */
-  ams = ctx->arcset_chain->hdr_ams;
   if (!ams->c.data)
     {
     ams->c_head.data = US"simple"; ams->c_head.len = 6;
@@ -469,7 +468,7 @@ else if (strncmpic(ARC_HDR_AS, h->text, ARC_HDRLEN_AS) == 0)
     debug_printf("ARC: found AS: %.*s\n", len, h->text);
     }
   if ((e = arc_insert_hdr(ctx, h, ARC_HDRLEN_AS, offsetof(arc_set, hdr_as),
-			  instance_only)))
+			  instance_only, NULL)))
     {
     DEBUG(D_acl) debug_printf("inserting AS: %s\n", e);
     return US"inserting AS";
