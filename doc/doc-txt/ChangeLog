@@ -35,6 +35,10 @@ JH/08 Bug 2491: Use tainted buffers for the transport smtp context.  Previously
 JH/09 Bug 2493: Harden ARC verify against Outlook, whick has been seen to mix
       the ordering of its ARC headers.  This caused a crash.
 
+JH/10 Bug 2492: Use tainted memory for retry record when needed.  Previously when
+      a new record was being constructed with information from the peer, a trap
+      was taken.
+
 
 Exim version 4.93
 -----------------
