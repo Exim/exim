@@ -33648,7 +33648,12 @@ directory, so you might set
 HAVE_LOCAL_SCAN=yes
 LOCAL_SCAN_SOURCE=Local/local_scan.c
 .endd
-for example. The function must be called &[local_scan()]&. It is called by
+for example. The function must be called &[local_scan()]&;
+.new
+the source file(s) for it should first #define LOCAL_SCAN
+and then #include "local_scan.h".
+.wen
+It is called by
 Exim after it has received a message, when the success return code is about to
 be sent. This is after all the ACLs have been run. The return code from your
 function controls whether the message is actually accepted or not. There is a

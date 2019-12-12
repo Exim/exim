@@ -2,14 +2,16 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) University of Cambridge 1995 - 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file is the header that is the only Exim header to be included in the
 source for the local_scan.c() function. It contains definitions that are made
-available for use in that function, and which are documented.
+available for use in that function, and which are documented.  That source
+should first #define LOCAL_SCAN
 
 This API is also used for functions called by the ${dlfunc expansion item.
+Source for those should first #define DLFUNC_IMPL and then include this file.
 Coders of dlfunc routines should read the notes on tainting at the start of
 store.c
 */
