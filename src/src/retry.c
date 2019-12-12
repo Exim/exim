@@ -659,7 +659,8 @@ for (int i = 0; i < 3; i++)
         /* Read a retry record from the database or construct a new one.
         Ignore an old one if it is too old since it was last updated. */
 
-        retry_record = dbfn_read(dbm_file, rti->key);
+        retry_record = dbfn_read_with_length(dbm_file, rti->key,
+					      &message_space);
         if (  retry_record
 	   && now - retry_record->time_stamp > retry_data_expire)
           retry_record = NULL;
@@ -675,7 +676,7 @@ for (int i = 0; i < 3; i++)
           retry_record->expired = FALSE;
           retry_record->text[0] = 0;      /* just in case */
           }
-        else message_space = Ustrlen(retry_record->text);
+	else message_space -= sizeof(dbdata_retry);
 
         /* Compute how long this destination has been failing */
 
@@ -806,15 +807,17 @@ for (int i = 0; i < 3; i++)
         if (next_try - now > retry_interval_max)
           next_try = now + retry_interval_max;
 
-        /* If the new message length is greater than the previous one, we
-        have to copy the record first. */
+        /* If the new message length is greater than the previous one, we have
+	to copy the record first.  If we're using an old one, the read used
+	tainted memory so we're ok to write into it. */
 
-        if (message_length > message_space)
-          {
-          dbdata_retry *newr = store_get(sizeof(dbdata_retry) + message_length, FALSE);
-          memcpy(newr, retry_record, sizeof(dbdata_retry));
-          retry_record = newr;
-          }
+	if (message_length > message_space)
+	  {
+	  dbdata_retry * newr =
+	    store_get(sizeof(dbdata_retry) + message_length, is_tainted(message));
+	  memcpy(newr, retry_record, sizeof(dbdata_retry));
+	  retry_record = newr;
+	  }
 
         /* Set up the retry record; message_length may be less than the string
         length for very long error strings. */
