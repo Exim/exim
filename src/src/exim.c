@@ -407,7 +407,7 @@ long int now_true_usec;
 now_true_usec = now_tv.tv_usec;
 now_tv.tv_usec = (now_true_usec/resolution) * resolution;
 
-if (exim_tvcmp(&now_tv, then_tv) <= 0)
+while (exim_tvcmp(&now_tv, then_tv) <= 0)
   {
   struct itimerval itval;
   itval.it_interval.tv_sec = 0;
@@ -439,6 +439,13 @@ if (exim_tvcmp(&now_tv, then_tv) <= 0)
     }
 
   milliwait(&itval);
+
+  /* Be prapared to go around if the kernel does not implement subtick
+  granularity (GNU Hurd) */
+
+  (void)gettimeofday(&now_tv, NULL);
+  now_true_usec = now_tv.tv_usec;
+  now_tv.tv_usec = (now_true_usec/resolution) * resolution;
   }
 }
 
