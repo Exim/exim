@@ -940,11 +940,13 @@ else
     sx->ehlo_resp = er->data;
     dbfn_close(dbm_file);
     DEBUG(D_transport) debug_printf(
-	"EHLO response bits from cache: cleartext 0x%04x crypted 0x%04x\n",
-	er->data.cleartext_features, er->data.crypted_features);
+	"EHLO response bits from cache: cleartext 0x%04x/0x%04x crypted 0x%04x/0x%04x\n",
+	er->data.cleartext_features, er->data.cleartext_auths,
+	er->data.crypted_features, er->data.crypted_auths);
     return TRUE;
     }
   dbfn_close(dbm_file);
+  memset(&sx->ehlo_resp, 0, sizeof(ehlo_resp_precis));
   }
 return FALSE;
 }
