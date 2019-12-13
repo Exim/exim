@@ -40626,7 +40626,10 @@ the most current version can be downloaded
 from a link at &url(https://publicsuffix.org/list/, currently pointing
 at https://publicsuffix.org/list/public_suffix_list.dat)
 See also util/renew-opendmarc-tlds.sh script.
-The default for the option is /etc/exim/opendmarc.tlds.
+.new
+The default for the option is unset.
+If not set, DMARC processing is disabled.
+.wen
 
 
 The &%dmarc_history_file%& option, if set
