@@ -292,7 +292,7 @@ will wait for ever, so we panic in this instance. (There was a case of this
 when a bug in a function that calls milliwait() caused it to pass invalid data.
 That's when I added the check. :-)
 
-We assume it to be not worth sleeping for under 100us; this value will
+We assume it to be not worth sleeping for under 50us; this value will
 require revisiting as hardware advances.  This avoids the issue of
 a zero-valued timer setting meaning "never fire".
 
@@ -306,7 +306,7 @@ milliwait(struct itimerval *itval)
 sigset_t sigmask;
 sigset_t old_sigmask;
 
-if (itval->it_value.tv_usec < 100 && itval->it_value.tv_sec == 0)
+if (itval->it_value.tv_usec < 50 && itval->it_value.tv_sec == 0)
   return;
 (void)sigemptyset(&sigmask);                           /* Empty mask */
 (void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
@@ -377,6 +377,25 @@ return 0;
 *          Clock tick wait function              *
 *************************************************/
 
+#ifdef _POSIX_MONOTONIC_CLOCK
+/* Amount CLOCK_MONOTONIC is behind realtime, at startup. */
+static struct timespec offset_ts;
+
+static void
+exim_clock_init(void)
+{
+struct timeval tv;
+if (clock_gettime(CLOCK_MONOTONIC, &offset_ts) != 0) return;
+(void)gettimeofday(&tv, NULL);
+offset_ts.tv_sec = tv.tv_sec - offset_ts.tv_sec;
+offset_ts.tv_nsec = tv.tv_usec * 1000 - offset_ts.tv_nsec;
+if (offset_ts.tv_nsec >= 0) return;
+offset_ts.tv_sec--;
+offset_ts.tv_nsec += 1000*1000*1000;
+}
+#endif
+
+
 /* Exim uses a time + a pid to generate a unique identifier in two places: its
 message IDs, and in file names for maildir deliveries. Because some OS now
 re-use pids within the same second, sub-second times are now being used.
@@ -388,7 +407,7 @@ function prepares for the time when things are faster - and it also copes with
 clocks that go backwards.
 
 Arguments:
-  then_tv      A timeval which was used to create uniqueness; its usec field
+  tgt_tv       A timeval which was used to create uniqueness; its usec field
                  has been rounded down to the value of the resolution.
                  We want to be sure the current time is greater than this.
   resolution   The resolution that was used to divide the microseconds
@@ -398,26 +417,45 @@ Returns:       nothing
 */
 
 void
-exim_wait_tick(struct timeval *then_tv, int resolution)
+exim_wait_tick(struct timeval * tgt_tv, int resolution)
 {
 struct timeval now_tv;
 long int now_true_usec;
 
-(void)gettimeofday(&now_tv, NULL);
-now_true_usec = now_tv.tv_usec;
-now_tv.tv_usec = (now_true_usec/resolution) * resolution;
+#ifdef _POSIX_MONOTONIC_CLOCK
+struct timespec now_ts;
 
-while (exim_tvcmp(&now_tv, then_tv) <= 0)
+if (clock_gettime(CLOCK_MONOTONIC, &now_ts) == 0)
+  {
+  now_ts.tv_sec += offset_ts.tv_sec;
+  if ((now_ts.tv_nsec += offset_ts.tv_nsec) >= 1000*1000*1000)
+    {
+    now_ts.tv_sec++;
+    now_ts.tv_nsec -= 1000*1000*1000;
+    }
+  now_tv.tv_sec = now_ts.tv_sec;
+  now_true_usec = (now_ts.tv_nsec / (resolution * 1000)) * resolution;
+  now_tv.tv_usec = now_true_usec;
+  }
+else
+#endif
+  {
+  (void)gettimeofday(&now_tv, NULL);
+  now_true_usec = now_tv.tv_usec;
+  now_tv.tv_usec = (now_true_usec/resolution) * resolution;
+  }
+
+while (exim_tvcmp(&now_tv, tgt_tv) <= 0)
   {
   struct itimerval itval;
   itval.it_interval.tv_sec = 0;
   itval.it_interval.tv_usec = 0;
-  itval.it_value.tv_sec = then_tv->tv_sec - now_tv.tv_sec;
-  itval.it_value.tv_usec = then_tv->tv_usec + resolution - now_true_usec;
+  itval.it_value.tv_sec = tgt_tv->tv_sec - now_tv.tv_sec;
+  itval.it_value.tv_usec = tgt_tv->tv_usec + resolution - now_true_usec;
 
   /* We know that, overall, "now" is less than or equal to "then". Therefore, a
   negative value for the microseconds is possible only in the case when "now"
-  is more than a second less than "then". That means that itval.it_value.tv_sec
+  is more than a second less than "tgt". That means that itval.it_value.tv_sec
   is greater than zero. The following correction is therefore safe. */
 
   if (itval.it_value.tv_usec < 0)
@@ -431,9 +469,9 @@ while (exim_tvcmp(&now_tv, then_tv) <= 0)
     if (!f.running_in_test_harness)
       {
       debug_printf("tick check: " TIME_T_FMT ".%06lu " TIME_T_FMT ".%06lu\n",
-        then_tv->tv_sec, (long) then_tv->tv_usec,
+        tgt_tv->tv_sec, (long) tgt_tv->tv_usec,
        	now_tv.tv_sec, (long) now_tv.tv_usec);
-      debug_printf("waiting " TIME_T_FMT ".%06lu\n",
+      debug_printf("waiting " TIME_T_FMT ".%06lu sec\n",
         itval.it_value.tv_sec, (long) itval.it_value.tv_usec);
       }
     }
@@ -1672,6 +1710,12 @@ follow this. A "strange" locale can affect the formatting of timestamps, so we
 make quite sure. */
 
 setlocale(LC_ALL, "C");
+
+/* Get the offset between CLOCK_MONOTONIC and wallclock */
+
+#ifdef _POSIX_MONOTONIC_CLOCK
+exim_clock_init();
+#endif
 
 /* Set up the default handler for timing using alarm(). */
 
