@@ -39,6 +39,12 @@ JH/10 Bug 2492: Use tainted memory for retry record when needed.  Previously whe
       a new record was being constructed with information from the peer, a trap
       was taken.
 
+JH/11 Bug 2494: Unset the default for dmarc_tld_file.  Previously a naiive
+      installation would get error messages from DMARC verify, when it hit the
+      nonexistent file indicated by the default.  Distros wanting DMARC enabled
+      should both provide the file and set the option.
+      Also enforce no DMARC verification for command-line sourced messages.
+
 
 Exim version 4.93
 -----------------
