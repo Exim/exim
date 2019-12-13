@@ -23,6 +23,10 @@ Also a few functions that don't naturally fit elsewhere. */
 # endif
 #endif
 
+#ifndef _TIME_H
+# include <time.h>
+#endif
+
 extern void init_lookup_list(void);
 
 
