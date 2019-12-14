@@ -1,4 +1,4 @@
-# starttls
+# early-pipe & starttls
 #
 # Not attempted without a cache entry
 exim -bd -DSERVER=server -oX PORT_D

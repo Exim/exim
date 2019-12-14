@@ -946,7 +946,6 @@ else
     return TRUE;
     }
   dbfn_close(dbm_file);
-  memset(&sx->ehlo_resp, 0, sizeof(ehlo_resp_precis));
   }
 return FALSE;
 }
@@ -1951,39 +1950,39 @@ sx->conn_args.ob = ob;
 
 sx->lmtp = strcmpic(ob->protocol, US"lmtp") == 0;
 sx->smtps = strcmpic(ob->protocol, US"smtps") == 0;
-sx->ok = FALSE;
+/* sx->ok = FALSE; */
 sx->send_rset = TRUE;
 sx->send_quit = TRUE;
 sx->setting_up = TRUE;
 sx->esmtp = TRUE;
-sx->esmtp_sent = FALSE;
+/* sx->esmtp_sent = FALSE; */
 #ifdef SUPPORT_I18N
-sx->utf8_needed = FALSE;
+/* sx->utf8_needed = FALSE; */
 #endif
 sx->dsn_all_lasthop = TRUE;
 #ifdef SUPPORT_DANE
-sx->conn_args.dane = FALSE;
+/* sx->conn_args.dane = FALSE; */
 sx->dane_required =
   verify_check_given_host(CUSS &ob->hosts_require_dane, sx->conn_args.host) == OK;
 #endif
 #ifndef DISABLE_PIPE_CONNECT
-sx->early_pipe_active = sx->early_pipe_ok = FALSE;
-sx->ehlo_resp.cleartext_features = sx->ehlo_resp.crypted_features = 0;
-sx->pending_BANNER = sx->pending_EHLO = FALSE;
+/* sx->early_pipe_active = sx->early_pipe_ok = FALSE; */
+/* sx->ehlo_resp.cleartext_features = sx->ehlo_resp.crypted_features = 0; */
+/* sx->pending_BANNER = sx->pending_EHLO = sx->pending_MAIL = FALSE; */
 #endif
 
 if ((sx->max_rcpt = sx->conn_args.tblock->max_addresses) == 0) sx->max_rcpt = 999999;
-sx->peer_offered = 0;
-sx->avoid_option = 0;
+/* sx->peer_offered = 0; */
+/* sx->avoid_option = 0; */
 sx->igquotstr = US"";
 if (!sx->helo_data) sx->helo_data = ob->helo_data;
 #ifdef EXPERIMENTAL_DSN_INFO
-sx->smtp_greeting = NULL;
-sx->helo_response = NULL;
+/* sx->smtp_greeting = NULL; */
+/* sx->helo_response = NULL; */
 #endif
 
 smtp_command = US"initial connection";
-sx->buffer[0] = '\0';
+/* sx->buffer[0] = '\0'; */
 
 /* Set up the buffer for reading SMTP response packets. */
 
@@ -1997,9 +1996,9 @@ sx->inblock.ptrend = sx->inbuffer;
 sx->outblock.buffer = sx->outbuffer;
 sx->outblock.buffersize = sizeof(sx->outbuffer);
 sx->outblock.ptr = sx->outbuffer;
-sx->outblock.cmd_count = 0;
-sx->outblock.authenticating = FALSE;
-sx->outblock.conn_args = NULL;
+/* sx->outblock.cmd_count = 0; */
+/* sx->outblock.authenticating = FALSE; */
+/* sx->outblock.conn_args = NULL; */
 
 /* Reset the parameters of a TLS session. */
 
@@ -3457,13 +3456,13 @@ struct timeval start_delivery_time;
 BOOL pass_message = FALSE;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
-
 smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
 
 gettimeofday(&start_delivery_time, NULL);
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 *message_defer = FALSE;
 
+memset(sx, 0, sizeof(*sx));
 sx->addrlist = addrlist;
 sx->conn_args.host = host;
 sx->conn_args.host_af = host_af,
@@ -3471,7 +3470,7 @@ sx->port = defport;
 sx->conn_args.interface = interface;
 sx->helo_data = NULL;
 sx->conn_args.tblock = tblock;
-sx->verify = FALSE;
+/* sx->verify = FALSE; */
 sx->sync_addr = sx->first_addr = addrlist;
 
 /* Get the channel set up ready for a message (MAIL FROM being the next
@@ -3540,9 +3539,9 @@ always has a sequence number greater than one. */
 if (continue_hostname && continue_sequence == 1)
   {
   sx->peer_offered = smtp_peer_options;
-  sx->pending_MAIL = FALSE;
+  /* sx->pending_MAIL = FALSE; */
   sx->ok = TRUE;
-  sx->next_addr = NULL;
+  /* sx->next_addr = NULL; */
 
   for (address_item * addr = addrlist; addr; addr = addr->next)
     addr->transport_return = PENDING_OK;
