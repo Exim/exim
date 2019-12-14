@@ -574,6 +574,7 @@ else
   {
   smtp_transport_options_block *ob =
     (smtp_transport_options_block *)addr->transport->options_block;
+  smtp_context * sx = NULL;
 
   /* The information wasn't available in the cache, so we have to do a real
   callout and save the result in the cache for next time, unless no_cache is set,
@@ -626,7 +627,6 @@ coding means skipping this whole loop and doing the append separately.  */
     int host_af;
     int port = 25;
     uschar * interface = NULL;  /* Outgoing interface to use; NULL => any */
-    smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted buffers */
 
     if (!host->address)
       {
@@ -665,6 +665,9 @@ coding means skipping this whole loop and doing the append separately.  */
        )
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
         addr->message);
+
+    if (!sx) sx = store_get(sizeof(*sx), TRUE);	/* tainted buffers */
+    memset(sx, 0, sizeof(*sx));
 
     sx->addrlist = addr;
     sx->conn_args.host = host;
