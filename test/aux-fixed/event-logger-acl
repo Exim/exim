@@ -54,6 +54,10 @@ ev_msg:
     accept condition = ${if eq {$event_name}{msg:delivery}}
 	   acl = ev_msg_log delivery "confirmation <$event_data>"
 
+    accept condition = ${if eq {$event_name}{msg:defer}}
+	   acl = ev_msg_log "message deferral" \
+			"errno <$event_defer_errno> errstr <$event_data>"
+
     accept condition = ${if eq {$event_name}{msg:host:defer}}
 	   acl = ev_msg_log "host deferral" \
 			"errno <$event_defer_errno> errstr <$event_data>"

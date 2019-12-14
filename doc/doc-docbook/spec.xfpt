@@ -41059,14 +41059,17 @@ Events have names which correspond to the point in process at which they fire.
 The name is placed in the variable &$event_name$& and the event action
 expansion must check this, as it will be called for every possible event type.
 
+.new
 The current list of events is:
+.wen
 .display
 &`dane:fail              after    transport  `& per connection
 &`msg:complete           after    main       `& per message
+&`msg:defer              after    transport  `& per message per delivery try
 &`msg:delivery           after    transport  `& per recipient
 &`msg:rcpt:host:defer    after    transport  `& per recipient per host
 &`msg:rcpt:defer         after    transport  `& per recipient
-&`msg:host:defer         after    transport  `& per attempt
+&`msg:host:defer         after    transport  `& per host per delivery try; host errors
 &`msg:fail:delivery      after    transport  `& per recipient
 &`msg:fail:internal      after    main       `& per recipient
 &`tcp:connect            before   transport  `& per connection
@@ -41092,12 +41095,13 @@ An additional variable, &$event_data$&, is filled with information varying
 with the event type:
 .display
 &`dane:fail            `& failure reason
+&`msg:defer            `& error string
 &`msg:delivery         `& smtp confirmation message
 &`msg:fail:internal    `& failure reason
 &`msg:fail:delivery    `& smtp error message
+&`msg:host:defer       `& error string
 &`msg:rcpt:host:defer  `& error string
 &`msg:rcpt:defer       `& error string
-&`msg:host:defer       `& error string
 &`tls:cert             `& verification chain depth
 &`smtp:connect         `& smtp banner
 &`smtp:ehlo            `& smtp ehlo response

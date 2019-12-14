@@ -766,12 +766,13 @@ deliver_msglog("%s H=%s [%s] %s\n", tod_stamp(tod_log),
 Arguments:
   addr                  the address item containing error information
   host                  the current host
+  evstr			the event
 
 Returns:   nothing
 */
 
 static void
-deferred_event_raise(address_item *addr, host_item *host)
+deferred_event_raise(address_item * addr, host_item * host, uschar * evstr)
 {
 uschar * action = addr->transport->event_action;
 const uschar * save_domain;
@@ -793,7 +794,7 @@ transport_name = addr->transport->name;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
 
-(void) event_raise(action, US"msg:host:defer",
+(void) event_raise(action, evstr,
     addr->message
       ? addr->basic_errno > 0
 	? string_sprintf("%s: %s", addr->message, strerror(addr->basic_errno))
@@ -5150,7 +5151,7 @@ retry_non_continued:
 
 #ifndef DISABLE_EVENT
       if (rc == DEFER)
-        deferred_event_raise(first_addr, host);
+	deferred_event_raise(first_addr, host, US"msg:host:defer");
 #endif
 
       /* If STARTTLS was accepted, but there was a failure in setting up the
@@ -5178,11 +5179,18 @@ retry_non_continued:
         if (rc == DEFER && first_addr->basic_errno != ERRNO_AUTHFAIL)
           write_logs(host, first_addr->message, first_addr->basic_errno);
 # ifndef DISABLE_EVENT
-        if (rc == DEFER)
-          deferred_event_raise(first_addr, host);
+	if (rc == DEFER)
+	  deferred_event_raise(first_addr, host, US"msg:host:defer");
 # endif
         }
 #endif	/*DISABLE_TLS*/
+
+#ifndef DISABLE_EVENT
+      /* If the last host gave a defer raise a per-message event */
+
+      if (!nexthost && (message_defer || rc == DEFER))
+	deferred_event_raise(first_addr, host, US"msg:defer");
+#endif
       }
 
     /* Delivery attempt finished */

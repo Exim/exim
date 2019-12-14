@@ -102,6 +102,28 @@ QUIT
 ****
 exim -qqf
 ****
+exim -odq userx@domain1
+A message which will get deferred after data
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+354
+.
+450 post-data problem
+QUIT
+220 OK
+****
+exim -qqf
+****
+#
 #
 #
 #
