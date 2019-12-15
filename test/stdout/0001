@@ -17,7 +17,7 @@ retry_interval_max = 1d
 receive_timeout = 0s
 sender_unqualified_hosts = localhost:some.host.name
 no_tcp_nodelay
-trusted_users = 1234:5678
+trusted_users = CALLER:5678
 unknown_login = unknownlogin
 warn_message_file = /home/exim/test/warnmsg_file
 no_syslog_pid
