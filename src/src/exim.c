@@ -3642,7 +3642,11 @@ since you have to be root to run it, even if throwing away groups. Not being
 root here happens only in some unusual configurations. We just ignore the
 error. */
 
-if (setgroups(0, NULL) != 0 && setgroups(1, group_list) != 0 && !unprivileged)
+if (
+#ifndef OS_SETGROUPS_ZERO_DROPS_ALL
+   setgroups(0, NULL) != 0 &&
+#endif
+   setgroups(1, group_list) != 0 && !unprivileged)
   exim_fail("exim: setgroups() failed: %s\n", strerror(errno));
 
 /* If the configuration file name has been altered by an argument on the
@@ -4289,8 +4293,8 @@ else
     if (!(unprivileged || removed_privilege))
       exim_fail("exim: changing group failed: %s\n", strerror(errno));
     else
-      DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
-          (long int)exim_gid, strerror(errno));
+      DEBUG(D_any) debug_printf("changing group to %ld failed: %d: %s\n",
+          (long int)exim_gid, errno, strerror(errno));
   }
 
 /* Handle a request to scan a file for malware */
