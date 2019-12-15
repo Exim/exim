@@ -48,6 +48,8 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP timeout after EHLO the.local.host.name: Connection timed out
 1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:host:defer
 1999-03-02 09:44:33 10HmaZ-0005vi-00 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> errno <EEE> errstr <SMTP timeout after EHLO the.local.host.name: Connection timed out> router <others> transport <smtp>
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:defer
+1999-03-02 09:44:33 10HmaZ-0005vi-00 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> errno <EEE> errstr <SMTP timeout after EHLO the.local.host.name: Connection timed out> router <others> transport <smtp>
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (dd): Connection timed out H=127.0.0.1 [127.0.0.1]: SMTP timeout after EHLO the.local.host.name
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** userx@domain1: retry timeout exceeded
 1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:fail:delivery
@@ -101,31 +103,55 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 . finished: 10HmbB-0005vi-00
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 cancelled by CALLER
-1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:fail:internal
-1999-03-02 09:44:33 10HmbC-0005vi-00 . local_part <userx> domain <domain1> reason <delivery cancelled by administrator>
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <CALLER@the.local.host.name> R=dump_bounces
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbD-0005vi-00 event msg:complete
-1999-03-02 09:44:33 10HmbD-0005vi-00 . finished: 10HmbD-0005vi-00
+1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
+1999-03-02 09:44:33 10HmbC-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmbC-0005vi-00 . [127.0.0.1]:1111
+1999-03-02 09:44:33 10HmbC-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmbC-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmbC-0005vi-00 . banner <220 ESMTP>
+1999-03-02 09:44:33 10HmbC-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmbC-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmbC-0005vi-00 . ehlo-resp <250-OK\n250 HELP>
+1999-03-02 09:44:33 10HmbC-0005vi-00 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 450 post-data problem
+1999-03-02 09:44:33 10HmbC-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmbC-0005vi-00 . [127.0.0.1] -> [127.0.0.1]:PORT_S
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:defer
+1999-03-02 09:44:33 10HmbC-0005vi-00 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <userx> domain <domain1> errno <-46> errstr <SMTP error from remote mail server after end of data: 450 post-data problem> router <others> transport <smtp>
+1999-03-02 09:44:33 10HmbC-0005vi-00 == userx@domain1 R=others T=smtp defer (-46) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after end of data: 450 post-data problem
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** userx@domain1: retry timeout exceeded
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:fail:delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 . refused by fdqn <127.0.0.1> local_part <userx> domain <domain1> errstr <SMTP error from remote mail server after end of data: 450 post-data problem: retry timeout exceeded>
+1999-03-02 09:44:33 10HmbC-0005vi-00 userx@domain1: error ignored
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:complete
 1999-03-02 09:44:33 10HmbC-0005vi-00 . finished: 10HmbC-0005vi-00
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbE-0005vi-00 event msg:fail:internal
-1999-03-02 09:44:33 10HmbE-0005vi-00 . local_part <userx> domain <domain1> reason <message removed by CALLER>
+1999-03-02 09:44:33 End queue run: pid=pppp -qqf
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 cancelled by CALLER
+1999-03-02 09:44:33 10HmbD-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbD-0005vi-00 . local_part <userx> domain <domain1> reason <delivery cancelled by administrator>
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@the.local.host.name> R=dump_bounces
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbE-0005vi-00 event msg:complete
 1999-03-02 09:44:33 10HmbE-0005vi-00 . finished: 10HmbE-0005vi-00
-1999-03-02 09:44:33 10HmbE-0005vi-00 removed by CALLER
-1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbD-0005vi-00 . finished: 10HmbD-0005vi-00
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 address <usery@domain1> marked delivered by CALLER
 1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:fail:internal
 1999-03-02 09:44:33 10HmbF-0005vi-00 . local_part <userx> domain <domain1> reason <message removed by CALLER>
-1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:fail:internal
-1999-03-02 09:44:33 10HmbF-0005vi-00 . local_part <userz> domain <domain1> reason <message removed by CALLER>
 1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:complete
 1999-03-02 09:44:33 10HmbF-0005vi-00 . finished: 10HmbF-0005vi-00
 1999-03-02 09:44:33 10HmbF-0005vi-00 removed by CALLER
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 address <usery@domain1> marked delivered by CALLER
+1999-03-02 09:44:33 10HmbG-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbG-0005vi-00 . local_part <userx> domain <domain1> reason <message removed by CALLER>
+1999-03-02 09:44:33 10HmbG-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbG-0005vi-00 . local_part <userz> domain <domain1> reason <message removed by CALLER>
+1999-03-02 09:44:33 10HmbG-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbG-0005vi-00 . finished: 10HmbG-0005vi-00
+1999-03-02 09:44:33 10HmbG-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed

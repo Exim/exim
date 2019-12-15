@@ -1,6 +1,6 @@
-Message 10HmbE-0005vi-00 has been removed
-Message 10HmbF-0005vi-00 has been modified
 Message 10HmbF-0005vi-00 has been removed
+Message 10HmbG-0005vi-00 has been modified
+Message 10HmbG-0005vi-00 has been removed
 
 ******** SERVER ********
 Listening on port 1224 ... 
@@ -84,6 +84,32 @@ MAIL FROM:<>
 250 OK
 RCPT TO:<userx@domain1>
 550 GO AWAY
+QUIT
+220 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<>
+250 OK
+RCPT TO:<userx@domain1>
+250 OK
+DATA
+354
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmbC-0005vi-00
+	for userx@domain1; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message which will get deferred after data
+.
+450 post-data problem
 QUIT
 220 OK
 End of script

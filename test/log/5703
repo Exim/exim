@@ -21,6 +21,8 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
 1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:host:defer
 1999-03-02 09:44:33 10HmaY-0005vi-00 . host deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:defer
+1999-03-02 09:44:33 10HmaY-0005vi-00 . message deferral ip <127.0.0.1> port <1224> fqdn <127.0.0.1> local_part <CALLER> domain <the.local.host.name> errno <-18> errstr <Remote host closed connection in response to initial connection> router <route_smtp> transport <smtp>
 1999-03-02 09:44:33 10HmaY-0005vi-00 == CALLER@the.local.host.name R=route_smtp T=smtp defer (-18) H=127.0.0.1 [127.0.0.1]: Remote host closed connection in response to initial connection
 1999-03-02 09:44:33 10HmaY-0005vi-00 ** CALLER@the.local.host.name: retry timeout exceeded
 1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:fail:delivery
