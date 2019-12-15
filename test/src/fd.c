@@ -65,28 +65,21 @@ for (fd = 0; fd <= mac_maxfd; fd++)
     p += sprintf(p, "%3d opt=%d status=%X ", fd, options, status);
     switch(status & 3)
       {
-      case 0: p += sprintf(p, "RDONLY");
-      break;
-      case 1: p += sprintf(p, "WRONLY");
-      break;
-      case 2: p += sprintf(p, "RDWR");
-      break;
+      case O_RDONLY: p += sprintf(p, "RDONLY"); break;
+      case O_WRONLY: p += sprintf(p, "WRONLY"); break;
+      case O_RDWR: p += sprintf(p, "RDWR"); break;
       }
     if (isatty(fd)) p += sprintf(p, " TTY");
     if ((status & 8) != 0) p += sprintf(p, " APPEND");
 
     if (use_stat && fstat(fd, &statbuf) >= 0)
-      {
       p += sprintf(p, " mode=%o uid=%d size=%d", (int)statbuf.st_mode,
         (int)statbuf.st_uid, (int)statbuf.st_size);
-      }
 
     p += sprintf(p, "\n");
     }
   else if (errno != EBADF)
-    {
     p += sprintf(p, "%3d errno=%d %s\n", fd, errno, strerror(errno));
-    }
   }
 
 if (qpgm)
