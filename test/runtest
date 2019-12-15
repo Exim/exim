@@ -943,9 +943,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # at least we'll still be checking the number of open fd's.
 
   s/max fd = \d+/max fd = dddd/;
-  s/status=0 RDONLY/STATUS/g;
-  s/status=1 WRONLY/STATUS/g;
-  s/status=2 RDWR/STATUS/g;
+  s/status=[0-9a-f]+ (?:RDONLY|WRONLY|RDWR)/STATUS/g;
 
 
   # ======== Contents of spool files ========
