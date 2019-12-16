@@ -250,13 +250,16 @@ body
 # but it's the DB dump that matters.  Unfortunately the dump doesn't show
 # us the (binary) record content, only the key.  So you need to look at the
 # debug output after all.
+# This server offers SIZE where the previous did not; we should see in
+# test-stderr a line "EHLO cleartext extensions changed" then another
+# "writing clr 0160/0000 cry 0000/0000"
 server PORT_D 1
 >220 banner
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
 >250-X_PIPE_CONNECT
->250-STARTTLS
+>250-SIZE
 >250 ok
 <MAIL
 >250 mail-from accepted

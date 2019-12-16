@@ -37,10 +37,10 @@ smtp_reap_early_pipe expect ehlo
   SMTP<< 250-esmtp-resp
          250-PIPELINING
          250-X_PIPE_CONNECT
-         250-STARTTLS
+         250-SIZE
          250 ok
-EHLO cleartext extensions changed, 0x0120/0x0000 -> 0x0121/0x0000
-writing clr 0121/0000 cry 0000/0000
+EHLO cleartext extensions changed, 0x0120/0x0000 -> 0x0160/0x0000
+writing clr 0160/0000 cry 0000/0000
 sync_responses expect mail
   SMTP<< 250 mail-from accepted
 sync_responses expect rcpt
