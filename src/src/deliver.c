@@ -4147,10 +4147,14 @@ if (PIPE_HEADER_SIZE != snprintf(CS pipe_header, PIPE_HEADER_SIZE+1, "%c%c%05ld"
 DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%ld,final:%s\n",
                                  id, subid, (long)size, pipe_header);
 
-if ((ret = writev(fd, iov, 2)) != total_len)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "Failed writing transport result to pipe (%ld of %ld bytes): %s",
-    (long)ret, (long)total_len, ret == -1 ? strerror(errno) : "short write");
+for (int retries = 10; retries > 0; retries--)
+  {
+  if ((ret = writev(fd, iov, 2)) == total_len) return;
+  if (ret != -1 || errno != EINTR) break;
+  }
+log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+  "Failed writing transport result to pipe (%ld of %ld bytes): %s",
+  (long)ret, (long)total_len, ret == -1 ? strerror(errno) : "short write");
 }
 
 /*************************************************
