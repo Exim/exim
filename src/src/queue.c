@@ -653,9 +653,10 @@ for (int i = queue_run_in_order ? -1 : 0;
     the mere fact that read() unblocks is enough. */
 
     set_process_info("running queue: waiting for children of %d", pid);
-    if ((status = read(pfd[pipe_read], buffer, sizeof(buffer))) != 0)
-      log_write(0, LOG_MAIN|LOG_PANIC, status > 0 ?
-	"queue run: unexpected data on pipe" : "queue run: error on pipe: %s",
+    if ((status = os_pipe_read(pfd[pipe_read], buffer, sizeof(buffer))) != 0)
+      log_write(0, LOG_MAIN|LOG_PANIC, status > 0
+	? "queue run: unexpected data on pipe"
+	: "queue run: error on pipe read: %s",
 	strerror(errno));
     (void)close(pfd[pipe_read]);
     set_process_info("running queue");

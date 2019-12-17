@@ -644,7 +644,8 @@ HDRS  =	blob.h \
 	mytypes.h \
 	sha_ver.h \
 	structs.h \
-	os.h
+	os.h \
+	osfunctions.h
 PHDRS = ../config.h \
 	../dbfunctions.h \
 	../dbstuff.h \
@@ -655,7 +656,8 @@ PHDRS = ../config.h \
 	../macros.h \
 	../mytypes.h \
 	../structs.h \
-	../os.h
+	../os.h \
+	../osfunctions.h
 
 .SUFFIXES: .o .c
 .c.o:;  @echo "$(CC) $*.c"

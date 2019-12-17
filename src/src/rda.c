@@ -439,9 +439,9 @@ Returns:     -1 on error, else 0
 static int
 rda_write_string(int fd, const uschar *s)
 {
-int len = (s == NULL)? 0 : Ustrlen(s) + 1;
-return (  write(fd, &len, sizeof(int)) != sizeof(int)
-       || (s != NULL  &&  write(fd, s, len) != len)
+int len = s ? Ustrlen(s) + 1 : 0;
+return (  os_pipe_write(fd, &len, sizeof(int)) != sizeof(int)
+       || s  &&  write(fd, s, len) != len
        )
        ? -1 : 0;
 }
@@ -466,14 +466,14 @@ rda_read_string(int fd, uschar **sp)
 {
 int len;
 
-if (read(fd, &len, sizeof(int)) != sizeof(int)) return FALSE;
+if (os_pipe_read(fd, &len, sizeof(int)) != sizeof(int)) return FALSE;
 if (len == 0)
   *sp = NULL;
 else
   /* We know we have enough memory so disable the error on "len" */
   /* coverity[tainted_data] */
   /* We trust the data source, so untainted */
-  if (read(fd, *sp = store_get(len, FALSE), len) != len) return FALSE;
+  if (os_pipe_read(fd, *sp = store_get(len, FALSE), len) != len) return FALSE;
 return TRUE;
 }
 
@@ -641,8 +641,8 @@ if ((pid = fork()) == 0)
   /* Pass back whether it was a filter, and the return code and any overall
   error text via the pipe. */
 
-  if (  write(fd, filtertype, sizeof(int)) != sizeof(int)
-     || write(fd, &yield, sizeof(int)) != sizeof(int)
+  if (  os_pipe_write(fd, filtertype, sizeof(int)) != sizeof(int)
+     || os_pipe_write(fd, &yield, sizeof(int)) != sizeof(int)
      || rda_write_string(fd, *error) != 0
      )
     goto bad;
@@ -669,12 +669,12 @@ if ((pid = fork()) == 0)
     int i = 0;
     for (header_line * h = header_list; h != waslast->next; i++, h = h->next)
       if (  h->type == htype_old
-         && write(fd, &i, sizeof(i)) != sizeof(i)
+         && os_pipe_write(fd, &i, sizeof(i)) != sizeof(i)
 	 )
 	goto bad;
 
     i = -1;
-    if (write(fd, &i, sizeof(i)) != sizeof(i))
+    if (os_pipe_write(fd, &i, sizeof(i)) != sizeof(i))
 	goto bad;
 
     while (waslast != header_last)
@@ -682,7 +682,7 @@ if ((pid = fork()) == 0)
       waslast = waslast->next;
       if (waslast->type != htype_old)
 	if (  rda_write_string(fd, waslast->text) != 0
-           || write(fd, &(waslast->type), sizeof(waslast->type))
+           || os_pipe_write(fd, &(waslast->type), sizeof(waslast->type))
 	      != sizeof(waslast->type)
 	   )
 	  goto bad;
@@ -693,7 +693,7 @@ if ((pid = fork()) == 0)
 
   /* Write the contents of the $n variables */
 
-  if (write(fd, filter_n, sizeof(filter_n)) != sizeof(filter_n))
+  if (os_pipe_write(fd, filter_n, sizeof(filter_n)) != sizeof(filter_n))
     goto bad;
 
   /* If the result was DELIVERED or NOTDELIVERED, we pass back the generated
@@ -711,10 +711,10 @@ if ((pid = fork()) == 0)
       int ig_err = addr->prop.ignore_error ? 1 : 0;
 
       if (  rda_write_string(fd, addr->address) != 0
-         || write(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
-         || write(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
+         || os_pipe_write(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
+         || os_pipe_write(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
          || rda_write_string(fd, addr->prop.errors_address) != 0
-         || write(fd, &ig_err, sizeof(ig_err)) != sizeof(ig_err)
+         || os_pipe_write(fd, &ig_err, sizeof(ig_err)) != sizeof(ig_err)
 	 )
 	goto bad;
 
@@ -727,7 +727,7 @@ if ((pid = fork()) == 0)
 
       if (!addr->reply)
 	{
-        if (write(fd, &reply_options, sizeof(int)) != sizeof(int))    /* 0 means no reply */
+        if (os_pipe_write(fd, &reply_options, sizeof(int)) != sizeof(int))    /* 0 means no reply */
 	  goto bad;
 	}
       else
@@ -735,10 +735,10 @@ if ((pid = fork()) == 0)
         reply_options |= REPLY_EXISTS;
         if (addr->reply->file_expand) reply_options |= REPLY_EXPAND;
         if (addr->reply->return_message) reply_options |= REPLY_RETURN;
-        if (  write(fd, &reply_options, sizeof(int)) != sizeof(int)
-           || write(fd, &(addr->reply->expand_forbid), sizeof(int))
+        if (  os_pipe_write(fd, &reply_options, sizeof(int)) != sizeof(int)
+           || os_pipe_write(fd, &(addr->reply->expand_forbid), sizeof(int))
 	      != sizeof(int)
-           || write(fd, &(addr->reply->once_repeat), sizeof(time_t))
+           || os_pipe_write(fd, &(addr->reply->once_repeat), sizeof(time_t))
 	      != sizeof(time_t)
            || rda_write_string(fd, addr->reply->to) != 0
            || rda_write_string(fd, addr->reply->cc) != 0
@@ -787,8 +787,8 @@ empty pipe. Afterwards, close the reading end. */
 /* Read initial data, including yield and contents of *error */
 
 fd = pfd[pipe_read];
-if (read(fd, filtertype, sizeof(int)) != sizeof(int) ||
-    read(fd, &yield, sizeof(int)) != sizeof(int) ||
+if (os_pipe_read(fd, filtertype, sizeof(int)) != sizeof(int) ||
+    os_pipe_read(fd, &yield, sizeof(int)) != sizeof(int) ||
     !rda_read_string(fd, error)) goto DISASTER;
 
 /* Read the contents of any syntax error blocks if we have a pointer */
@@ -821,7 +821,7 @@ if (f.system_filtering)
   for (;;)
     {
     int n;
-    if (read(fd, &n, sizeof(int)) != sizeof(int)) goto DISASTER;
+    if (os_pipe_read(fd, &n, sizeof(int)) != sizeof(int)) goto DISASTER;
     if (n < 0) break;
     while (hn < n)
       {
@@ -837,14 +837,14 @@ if (f.system_filtering)
     int type;
     if (!rda_read_string(fd, &s)) goto DISASTER;
     if (!s) break;
-    if (read(fd, &type, sizeof(type)) != sizeof(type)) goto DISASTER;
+    if (os_pipe_read(fd, &type, sizeof(type)) != sizeof(type)) goto DISASTER;
     header_add(type, "%s", s);
     }
   }
 
 /* Read the values of the $n variables */
 
-if (read(fd, filter_n, sizeof(filter_n)) != sizeof(filter_n)) goto DISASTER;
+if (os_pipe_read(fd, filter_n, sizeof(filter_n)) != sizeof(filter_n)) goto DISASTER;
 
 /* If the yield is DELIVERED, NOTDELIVERED, FAIL, or FREEZE there may follow
 addresses and data to go with them. Keep them in the same order in the
@@ -875,10 +875,10 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     /* Next comes the mode and the flags fields */
 
-    if (  read(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
-       || read(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
+    if (  os_pipe_read(fd, &addr->mode, sizeof(addr->mode)) != sizeof(addr->mode)
+       || os_pipe_read(fd, &addr->flags, sizeof(addr->flags)) != sizeof(addr->flags)
        || !rda_read_string(fd, &addr->prop.errors_address)
-       || read(fd, &i, sizeof(i)) != sizeof(i)
+       || os_pipe_read(fd, &i, sizeof(i)) != sizeof(i)
        )
       goto DISASTER;
     addr->prop.ignore_error = (i != 0);
@@ -907,7 +907,7 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
 
     /* Then an int containing reply options; zero => no reply data. */
 
-    if (read(fd, &reply_options, sizeof(int)) != sizeof(int)) goto DISASTER;
+    if (os_pipe_read(fd, &reply_options, sizeof(int)) != sizeof(int)) goto DISASTER;
     if ((reply_options & REPLY_EXISTS) != 0)
       {
       addr->reply = store_get(sizeof(reply_item), FALSE);
@@ -915,9 +915,9 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
       addr->reply->file_expand = (reply_options & REPLY_EXPAND) != 0;
       addr->reply->return_message = (reply_options & REPLY_RETURN) != 0;
 
-      if (read(fd,&(addr->reply->expand_forbid),sizeof(int)) !=
+      if (os_pipe_read(fd,&(addr->reply->expand_forbid),sizeof(int)) !=
             sizeof(int) ||
-          read(fd,&(addr->reply->once_repeat),sizeof(time_t)) !=
+          os_pipe_read(fd,&(addr->reply->once_repeat),sizeof(time_t)) !=
             sizeof(time_t) ||
           !rda_read_string(fd, &(addr->reply->to)) ||
           !rda_read_string(fd, &(addr->reply->cc)) ||

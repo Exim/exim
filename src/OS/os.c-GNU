@@ -52,4 +52,39 @@ return -1;
 }
 #endif  /* OS_LOAD_AVERAGE */
 
+
+ssize_t
+os_pipe_read(int fd, void * buf, size_t count)
+{
+for (int rc, retries = 10; retries > 0; retries--)
+  {
+  if ((rc = read(fd, buf, count) >= 0) break;
+  if (rc != -1 || errno != EINTR) break;
+  }
+return rc;
+}
+
+
+ssize_t
+os_pipe_write(int fd, void * buf, size_t count)
+{
+for (int rc, retries = 10; retries > 0; retries--)
+  {
+  if ((rc = write(fd, buf, count) >= 0) break;
+  if (rc != -1 || errno != EINTR) break;
+  }
+return rc;
+}
+
+ssize_t
+os_pipe_writev(int fd, const struct iovec * iov, int iovcnt
+{
+for (int rc, retries = 10; retries > 0; retries--)
+  {
+  if ((rc = writev(fd, iov, iovcnt) >= 0) break;
+  if (rc != -1 || errno != EINTR) break;
+  }
+return rc;
+}
+
 /* End of os.c-GNU */

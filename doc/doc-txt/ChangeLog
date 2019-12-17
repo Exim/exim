@@ -53,6 +53,9 @@ JH/13 Bug 2498: Reset a counter used for ARC verify before handling another
       the following one did not, a crash could result when adding an
       Authentication-Results: header.
 
+JH/14 On GNU/Hurd, retry EINTR returns from I/O on pipes, which seem to occur
+      frequently.
+
 
 Exim version 4.93
 -----------------
