@@ -638,11 +638,11 @@ for (int i = queue_run_in_order ? -1 : 0;
     /* A zero return means a delivery was attempted; turn off the force flag
     for any subsequent calls unless queue_force is set. */
 
-    if ((status & 0xffff) == 0) force_delivery = f.queue_run_force;
+    if (!(status & 0xffff)) force_delivery = f.queue_run_force;
 
     /* If the process crashed, tell somebody */
 
-    else if ((status & 0x00ff) != 0)
+    else if (status & 0x00ff)
       log_write(0, LOG_MAIN|LOG_PANIC,
         "queue run: process %d crashed with signal %d while delivering %s",
         (int)pid, status & 0x00ff, fq->text);
@@ -654,8 +654,9 @@ for (int i = queue_run_in_order ? -1 : 0;
 
     set_process_info("running queue: waiting for children of %d", pid);
     if ((status = read(pfd[pipe_read], buffer, sizeof(buffer))) != 0)
-      log_write(0, LOG_MAIN|LOG_PANIC, "queue run: %s on pipe",
-		status > 0 ? "unexpected data" : "error");
+      log_write(0, LOG_MAIN|LOG_PANIC, status > 0 ?
+	"queue run: unexpected data on pipe" : "queue run: error on pipe: %s",
+	strerror(errno));
     (void)close(pfd[pipe_read]);
     set_process_info("running queue");
 
