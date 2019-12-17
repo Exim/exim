@@ -48,6 +48,11 @@ JH/11 Bug 2494: Unset the default for dmarc_tld_file.  Previously a naiive
 JH/12 Fix an uninitialised flag in early-pipelining.  Previously connections
       could, depending on the platform, hang at the STARTTLS response.
 
+JH/13 Bug 2498: Reset a counter used for ARC verify before handling another
+      message on a connection.  Previously if one message had ARC headers and
+      the following one did not, a crash could result when adding an
+      Authentication-Results: header.
+
 
 Exim version 4.93
 -----------------

@@ -1,0 +1,44 @@
+From has_arc@bloggs.com Tue Mar 02 09:44:33 1999
+Authentication-Results: test.ex;
+	arc=pass (i=1) header.s=sel arc.oldest-pass=1 smtp.remote-ip=127.0.0.1
+Received: from [127.0.0.1] (helo=xxx)
+	by test.ex with smtp (Exim x.yz)
+	(envelope-from <has_arc@bloggs.com>)
+	id 10HmaX-0005vi-00
+	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=test.ex; s=sel; t=1521752658; b=
+        xcIN0OEpAc3s8riODm31Q6JgmIECch3iVd1LXWwsypGpCY2UFFuo5HhCEf4a043q
+        YZ+zn/MbFFkvwIqleeQkJ7S5UcvfM8dv/V4YnwAe+JD8r79glh/FRq6uKlc0ixLS
+        CllJMwj98J1P1K9+gwmO5TrD1eTZV68caZj77P+X2kw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=test.ex;
+         h=from:to:date:message-id:subject; s=sel; bh=3UbbJTudPxmejzh7U1
+        Zg33U3QT+16kfV2eOTvMeiEis=; b=WgE+YWSm48w/P448gPlBBNCKt2SJ4gosPx
+        0JQ98aZJhun2RaVcUO3INc+kZv8YOijofMzFqJxVn1cgMjoU8/QSHIyyt40FzkQB
+        oSGmSrCjtRnzS8pbp491NX3kGuetidaWE5muPSdOystg6mm1rBnl9sqVrwaynCmr
+        fu2jTuUfw=
+ARC-Authentication-Results: i=1; test.ex; arc=none
+Authentication-Results: test.ex; arc=none
+From: mrgus@text.ex
+To: bakawolf@yahoo.com
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-ID: <qwerty1234@disco-zombie.net>
+Subject: simple test
+
+This is a simple test.
+
+From no_arc@bloggs.com Tue Mar 02 09:44:33 1999
+Authentication-Results: test.ex;
+	arc=none
+Received: from [127.0.0.1] (helo=xxx)
+	by test.ex with smtp (Exim x.yz)
+	(envelope-from <no_arc@bloggs.com>)
+	id 10HmaY-0005vi-00
+	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: mrgus@text.ex
+To: bakawolf@yahoo.com
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-ID: <qwerty1234@disco-zombie.net>
+Subject: simple test
+
+This is a simple test.
+

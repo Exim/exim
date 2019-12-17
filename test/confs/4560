@@ -15,6 +15,7 @@ acl_smtp_data = check_data
 
 log_selector = +received_recipients +dkim_verbose
 queue_only
+queue_run_in_order
 
 # ----- ACL -----
 begin acl

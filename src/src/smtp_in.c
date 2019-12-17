@@ -2092,6 +2092,7 @@ dmarc_used_domain = NULL;
 #endif
 #ifdef EXPERIMENTAL_ARC
 arc_state = arc_state_reason = NULL;
+arc_received_instance = 0;
 #endif
 dsn_ret = 0;
 dsn_envid = NULL;
