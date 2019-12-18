@@ -79,7 +79,7 @@ return rc;
 }
 
 ssize_t
-os_pipe_writev(int fd, const struct iovec * iov, int iovcnt
+os_pipe_writev(int fd, const struct iovec * iov, int iovcnt)
 {
 int rc;
 for (int retries = 10; retries > 0; retries--)
