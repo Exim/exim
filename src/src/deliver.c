@@ -2402,14 +2402,14 @@ if ((pid = fork()) == 0)
     uschar *s;
     int ret;
 
-    if(  (ret = os_pipe_write(pfd[pipe_write], &addr2->transport_return, sizeof(int))) != sizeof(int)
-      || (ret = os_pipe_write(pfd[pipe_write], &transport_count, sizeof(transport_count))) != sizeof(transport_count)
-      || (ret = os_pipe_write(pfd[pipe_write], &addr2->flags, sizeof(addr2->flags))) != sizeof(addr2->flags)
-      || (ret = os_pipe_write(pfd[pipe_write], &addr2->basic_errno,    sizeof(int))) != sizeof(int)
-      || (ret = os_pipe_write(pfd[pipe_write], &addr2->more_errno,     sizeof(int))) != sizeof(int)
-      || (ret = os_pipe_write(pfd[pipe_write], &addr2->delivery_usec,  sizeof(int))) != sizeof(int)
-      || (ret = os_pipe_write(pfd[pipe_write], &addr2->special_action, sizeof(int))) != sizeof(int)
-      || (ret = os_pipe_write(pfd[pipe_write], &addr2->transport,
+    if(  (ret = write(pfd[pipe_write], &addr2->transport_return, sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &transport_count, sizeof(transport_count))) != sizeof(transport_count)
+      || (ret = write(pfd[pipe_write], &addr2->flags, sizeof(addr2->flags))) != sizeof(addr2->flags)
+      || (ret = write(pfd[pipe_write], &addr2->basic_errno,    sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &addr2->more_errno,     sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &addr2->delivery_usec,  sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &addr2->special_action, sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &addr2->transport,
         sizeof(transport_instance *))) != sizeof(transport_instance *)
 
     /* For a file delivery, pass back the local part, in case the original
@@ -2417,8 +2417,8 @@ if ((pid = fork()) == 0)
     logging. */
 
       || (testflag(addr2, af_file)
-          && (  (ret = os_pipe_write(pfd[pipe_write], &local_part_length, sizeof(int))) != sizeof(int)
-             || (ret = os_pipe_write(pfd[pipe_write], addr2->local_part, local_part_length)) != local_part_length
+          && (  (ret = write(pfd[pipe_write], &local_part_length, sizeof(int))) != sizeof(int)
+             || (ret = write(pfd[pipe_write], addr2->local_part, local_part_length)) != local_part_length
 	     )
 	 )
       )
@@ -2430,8 +2430,8 @@ if ((pid = fork()) == 0)
     for (i = 0, s = addr2->message; i < 2; i++, s = addr2->user_message)
       {
       int message_length = s ? Ustrlen(s) + 1 : 0;
-      if(  (ret = os_pipe_write(pfd[pipe_write], &message_length, sizeof(int))) != sizeof(int)
-        || message_length > 0  && (ret = os_pipe_write(pfd[pipe_write], s, message_length)) != message_length
+      if(  (ret = write(pfd[pipe_write], &message_length, sizeof(int))) != sizeof(int)
+        || message_length > 0  && (ret = write(pfd[pipe_write], s, message_length)) != message_length
 	)
         log_write(0, LOG_MAIN|LOG_PANIC, "Failed writing transport results to pipe: %s",
 	  ret == -1 ? strerror(errno) : "short write");
@@ -2464,26 +2464,26 @@ will remain. Afterwards, close the reading end. */
 
 for (addr2 = addr; addr2; addr2 = addr2->next)
   {
-  if ((len = os_pipe_read(pfd[pipe_read], &status, sizeof(int))) > 0)
+  if ((len = read(pfd[pipe_read], &status, sizeof(int))) > 0)
     {
     int i;
     uschar **sptr;
 
     addr2->transport_return = status;
-    len = os_pipe_read(pfd[pipe_read], &transport_count,
+    len = read(pfd[pipe_read], &transport_count,
       sizeof(transport_count));
-    len = os_pipe_read(pfd[pipe_read], &addr2->flags, sizeof(addr2->flags));
-    len = os_pipe_read(pfd[pipe_read], &addr2->basic_errno,    sizeof(int));
-    len = os_pipe_read(pfd[pipe_read], &addr2->more_errno,     sizeof(int));
-    len = os_pipe_read(pfd[pipe_read], &addr2->delivery_usec,  sizeof(int));
-    len = os_pipe_read(pfd[pipe_read], &addr2->special_action, sizeof(int));
-    len = os_pipe_read(pfd[pipe_read], &addr2->transport,
+    len = read(pfd[pipe_read], &addr2->flags, sizeof(addr2->flags));
+    len = read(pfd[pipe_read], &addr2->basic_errno,    sizeof(int));
+    len = read(pfd[pipe_read], &addr2->more_errno,     sizeof(int));
+    len = read(pfd[pipe_read], &addr2->delivery_usec,  sizeof(int));
+    len = read(pfd[pipe_read], &addr2->special_action, sizeof(int));
+    len = read(pfd[pipe_read], &addr2->transport,
       sizeof(transport_instance *));
 
     if (testflag(addr2, af_file))
       {
       int llen;
-      if (  os_pipe_read(pfd[pipe_read], &llen, sizeof(int)) != sizeof(int)
+      if (  read(pfd[pipe_read], &llen, sizeof(int)) != sizeof(int)
 	 || llen > 64*4	/* limit from rfc 5821, times I18N factor */
          )
 	{
@@ -2493,7 +2493,7 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
 	}
       /* sanity-checked llen so disable the Coverity error */
       /* coverity[tainted_data] */
-      if (os_pipe_read(pfd[pipe_read], big_buffer, llen) != llen)
+      if (read(pfd[pipe_read], big_buffer, llen) != llen)
 	{
 	log_write(0, LOG_MAIN|LOG_PANIC, "bad local_part read"
 	  " from delivery subprocess");
@@ -2506,10 +2506,10 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
     for (i = 0, sptr = &addr2->message; i < 2; i++, sptr = &addr2->user_message)
       {
       int message_length;
-      len = os_pipe_read(pfd[pipe_read], &message_length, sizeof(int));
+      len = read(pfd[pipe_read], &message_length, sizeof(int));
       if (message_length > 0)
         {
-        len = os_pipe_read(pfd[pipe_read], big_buffer, message_length);
+        len = read(pfd[pipe_read], big_buffer, message_length);
 	big_buffer[big_buffer_size-1] = '\0';		/* guard byte */
         if (len > 0) *sptr = string_copy(big_buffer);
         }
@@ -4147,7 +4147,7 @@ if (PIPE_HEADER_SIZE != snprintf(CS pipe_header, PIPE_HEADER_SIZE+1, "%c%c%05ld"
 DEBUG(D_deliver) debug_printf("header write id:%c,subid:%c,size:%ld,final:%s\n",
                                  id, subid, (long)size, pipe_header);
 
-if ((ret = os_pipe_writev(fd, iov, 2)) != total_len)
+if ((ret = writev(fd, iov, 2)) != total_len)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "Failed writing transport result to pipe (%ld of %ld bytes): %s",
     (long)ret, (long)total_len, ret == -1 ? strerror(errno) : "short write");

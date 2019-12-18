@@ -21,11 +21,7 @@ typedef struct flock flock_t;
 #define ICONV_ARG2_TYPE const char **
 
 /* setgroups(0, NULL) succeeds, and drops the gid group
-as well as any supplementary groups */
+as well as any supplementary groups*/
 #define OS_SETGROUPS_ZERO_DROPS_ALL
-
-/* reads and writes on pipes frequently return EINTR.  We provide
-a routine to retry that */
-#define OS_PIPE_RW_EINTR
 
 /* End */

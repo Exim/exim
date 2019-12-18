@@ -1254,24 +1254,16 @@ if ((write_pid = fork()) == 0)
   rc = internal_transport_write_message(tctx, size_limit);
 
   save_errno = errno;
-  errno = 0;
-  for (int retries = 10;;)
-    {
-    if (  os_pipe_write(pfd[pipe_write], (void *)&rc, sizeof(BOOL))
-	  != sizeof(BOOL)
-       || os_pipe_write(pfd[pipe_write], (void *)&save_errno, sizeof(int))
-	  != sizeof(int)
-       || os_pipe_write(pfd[pipe_write], (void *)&tctx->addr->more_errno, sizeof(int))
-	  != sizeof(int)
-       || os_pipe_write(pfd[pipe_write], (void *)&tctx->addr->delivery_usec, sizeof(int))
-	  != sizeof(int)
-       )
-      if (errno == EINTR && --retries > 0)
-	continue;
-      else
-	rc = FALSE;	/* compiler quietening */
-    break;
-    }
+  if (  write(pfd[pipe_write], (void *)&rc, sizeof(BOOL))
+        != sizeof(BOOL)
+     || write(pfd[pipe_write], (void *)&save_errno, sizeof(int))
+        != sizeof(int)
+     || write(pfd[pipe_write], (void *)&tctx->addr->more_errno, sizeof(int))
+        != sizeof(int)
+     || write(pfd[pipe_write], (void *)&tctx->addr->delivery_usec, sizeof(int))
+        != sizeof(int)
+     )
+    rc = FALSE;	/* compiler quietening */
   exim_underbar_exit(0);
   }
 save_errno = errno;
@@ -1384,7 +1376,7 @@ if (write_pid > 0)
     if (rc == 0)
       {
       BOOL ok;
-      if (os_pipe_read(pfd[pipe_read], (void *)&ok, sizeof(BOOL)) != sizeof(BOOL))
+      if (read(pfd[pipe_read], (void *)&ok, sizeof(BOOL)) != sizeof(BOOL))
 	{
 	DEBUG(D_transport)
 	  debug_printf("pipe read from writing process: %s\n", strerror(errno));
@@ -1393,9 +1385,9 @@ if (write_pid > 0)
 	}
       else if (!ok)
         {
-	int dummy = os_pipe_read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
-        dummy = os_pipe_read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
-        dummy = os_pipe_read(pfd[pipe_read], (void *)&tctx->addr->delivery_usec, sizeof(int));
+	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_usec, sizeof(int));
 	dummy = dummy;		/* compiler quietening */
         yield = FALSE;
         }
