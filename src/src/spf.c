@@ -43,17 +43,15 @@ dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 SPF_dns_rr_t * spfrr;
 
-DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup\n");
+DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", domain);
 
 if (dns_lookup(dnsa, US domain, rr_type, NULL) == DNS_SUCCEED)
   for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
        rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
     if (  rr->type == rr_type
-       && Ustrncmp(rr->data+1, "v=spf1", 6) == 0)
+       && (rr_type != T_TXT || Ustrncmp(rr->data+1, "v=spf1", 6) == 0))
       {
-      gstring * g = NULL;
-      uschar chunk_len;
-      uschar * s;
+      const uschar * s = rr->data;
       SPF_dns_rr_t srr = {
 	.domain = CS rr->name,			/* query information */
 	.domain_buf_len = DNS_MAXNAME,
@@ -71,19 +69,49 @@ if (dns_lookup(dnsa, US domain, rr_type, NULL) == DNS_SUCCEED)
 	.source = spf_dns_server
       };
 
-      for (int off = 0; off < rr->size; off += chunk_len)
+      switch(rr_type)
 	{
-	chunk_len = (rr->data)[off++];
-	g = string_catn(g, US ((rr->data)+off), chunk_len);
+        case T_MX:
+          s += 2;			/* skip the MX precedence field */
+        case T_PTR:
+	  {
+          uschar * buf = store_malloc(256);
+          (void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
+            (DN_EXPAND_ARG4_TYPE)buf, 256);
+          s = buf;
+          break;
+	  }
+
+        case T_TXT:
+	  {
+	  gstring * g = NULL;
+	  uschar chunk_len;
+          for (int off = 0; off < rr->size; off += chunk_len)
+            {
+            if (!(chunk_len = s[off++])) break;
+            g = string_catn(g, s+off, chunk_len);
+            }
+          if (!g)
+            {
+            HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
+              "empty name: treated as non-existent host name\n");
+            continue;
+            }
+          gstring_release_unused(g);
+          s = string_copy_malloc(string_from_gstring(g));
+          break;
+	  }
+
+        case T_A:
+        case T_AAAA:
+        default:
+	  {
+          uschar * buf = store_malloc(dnsa->answerlen + 1);
+	  s = memcpy(buf, s, dnsa->answerlen + 1);
+          break;
+	  }
 	}
-      if (!g)
-	{
-	HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
-	  "empty name: treated as non-existent host name\n");
-	continue;
-	}
-      gstring_release_unused(g);
-      s = string_copy_malloc(string_from_gstring(g));
+      DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", s);
       srr.rr = (void *) &s;
 
       /* spfrr->rr must have been malloc()d for this */
