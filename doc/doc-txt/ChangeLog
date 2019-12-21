@@ -40,6 +40,11 @@ JH/13 Bug 2498: Reset a counter used for ARC verify before handling another
       the following one did not, a crash could result when adding an
       Authentication-Results: header.
 
+JH/14 Bug 2500: Rewind some of the common-coding in string handling between the
+      Exim main code and Exim-related utities.  The introduction of taint
+      tracking also did many adjustments to string handling.  Since then, eximon
+      frequently terminated with an assert failure.
+
 
 Exim version 4.93
 -----------------

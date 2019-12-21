@@ -678,12 +678,20 @@ Returns:    pointer to fresh piece of store containing sprintf'ed string
 uschar *
 string_sprintf_trc(const char *format, const uschar * func, unsigned line, ...)
 {
-gstring * g;
-va_list ap;
+#ifdef COMPILE_UTILITY
+uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
+gstring gs = { .size = STRING_SPRINTF_BUFFER_SIZE, .ptr = 0, .s = buffer };
+gstring * g = &gs;
+unsigned flags = 0;
+#else
+gstring * g = NULL;
+unsigned flags = SVFMT_REBUFFER|SVFMT_EXTEND;
+#endif
 
+va_list ap;
 va_start(ap, line);
-g = string_vformat_trc(NULL, func, line, STRING_SPRINTF_BUFFER_SIZE,
-	SVFMT_REBUFFER|SVFMT_EXTEND, format, ap);
+g = string_vformat_trc(g, func, line, STRING_SPRINTF_BUFFER_SIZE,
+	flags, format, ap);
 va_end(ap);
 
 if (!g)
@@ -692,8 +700,12 @@ if (!g)
     " called from %s %d\n",
     STRING_SPRINTF_BUFFER_SIZE, format, func, line);
 
+#ifdef COMPILE_UTILITY
+return string_copyn(g->s, g->ptr);
+#else
 gstring_release_unused(g);
 return string_from_gstring(g);
+#endif
 }
 
 
