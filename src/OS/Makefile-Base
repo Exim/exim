@@ -870,9 +870,9 @@ em_text.o:       ../exim_monitor/em_text.c    ../exim_monitor/em_hdr.h
 em_xs.o:         ../exim_monitor/em_xs.c      ../exim_monitor/em_hdr.h
 em_version.o:    ../exim_monitor/em_version.c ../exim_monitor/em_hdr.h
 $(MONBIN): $(HDRS)
-		 @echo "$(CC) exim_monitor/`echo $@ | sed 's/o$$/c/'`"
-		 $(FE)$(CC) -o $@ -c $(CFLAGS) -I. -I../exim_monitor $(INCLUDE) $(XINCLUDE) \
-		   ../exim_monitor/`echo $@ | sed 's/o$$/c/'`
+		 @echo "$(CC) exim_monitor/$(@:.o=.c)"
+		 $(FE)$(CC) -o $@ -c $(CFLAGS) -DCOMPILE_UTILITY -I. -I../exim_monitor $(INCLUDE) $(XINCLUDE) \
+		   ../exim_monitor/$(@:.o=.c)
 
 
 # Targets for the various libraries that Exim uses.

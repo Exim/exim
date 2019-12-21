@@ -906,9 +906,18 @@ return string_sprintf("%s/%s/%s/%s/%s%s",
 
 static inline uschar *
 spool_fname(const uschar * purpose, const uschar * subdir, const uschar * fname,
-       	const uschar * suffix)
+	const uschar * suffix)
 {
+#ifdef COMPILE_UTILITY		/* version avoiding string-extension */
+int len = Ustrlen(spool_directory) + 1 + Ustrlen(queue_name) + 1 + Ustrlen(purpose) + 1
+	+ Ustrlen(subdir) + 1 + Ustrlen(fname) + Ustrlen(suffix) + 1;
+uschar * buf = store_get(len, FALSE);
+string_format(buf, len, "%s/%s/%s/%s/%s%s",
+	spool_directory, queue_name, purpose, subdir, fname, suffix);
+return buf;
+#else
 return spool_q_fname(purpose, queue_name, subdir, fname, suffix);
+#endif
 }
 
 static inline void
