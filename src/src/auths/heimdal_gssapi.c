@@ -415,7 +415,7 @@ while (step < 4)
 	  NULL,                 /* conf_state: no confidentiality applied */
 	  &gbufdesc_out         /* output buffer */
 	  );
-      if (GSS_ERROR(maj_stat)
+      if (GSS_ERROR(maj_stat))
         {
 	exim_gssapi_error_defer(NULL, maj_stat, min_stat,
 	    "gss_wrap(SASL state after auth)");
