@@ -42,85 +42,96 @@ const char *domain, ns_type rr_type, int should_cache)
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 SPF_dns_rr_t * spfrr;
+unsigned found = 0;
+
+SPF_dns_rr_t srr = {
+  .domain = CS domain,			/* query information */
+  .domain_buf_len = 0,
+  .rr_type = rr_type,
+
+  .rr_buf_len = 0,			/* answer information */
+  .rr_buf_num = 0, /* no free of s */
+  .utc_ttl = 0,
+
+  .hook = NULL,				/* misc information */
+  .source = spf_dns_server
+};
 
 DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", domain);
 
-if (dns_lookup(dnsa, US domain, rr_type, NULL) == DNS_SUCCEED)
-  for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
-       rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
-    if (  rr->type == rr_type
-       && (rr_type != T_TXT || Ustrncmp(rr->data+1, "v=spf1", 6) == 0))
+if (dns_lookup(dnsa, US domain, rr_type, NULL) == DNS_NOMATCH)
+  {
+  SPF_dns_rr_dup(&spfrr, spf_nxdomain);
+  return spfrr;
+}
+
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+     rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+  if (rr->type == rr_type) found++;
+
+srr.num_rr = found;
+srr.rr = store_malloc(sizeof(SPF_dns_rr_data_t) * found);
+srr.herrno = h_errno,
+
+found = 0;
+for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
+   rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
+  if (rr->type == rr_type)
+    {
+    const uschar * s = rr->data;
+
+    srr.ttl = rr->ttl;
+    switch(rr_type)
       {
-      const uschar * s = rr->data;
-      SPF_dns_rr_t srr = {
-	.domain = CS rr->name,			/* query information */
-	.domain_buf_len = DNS_MAXNAME,
-	.rr_type = rr->type,
-
-	.num_rr = 1,				/* answer information */
-	.rr = NULL,
-	.rr_buf_len = 0,
-	.rr_buf_num = 0,
-	.ttl = rr->ttl,
-	.utc_ttl = 0,
-	.herrno = NETDB_SUCCESS,
-
-	.hook = NULL,				/* misc information */
-	.source = spf_dns_server
-      };
-
-      switch(rr_type)
+      case T_MX:
+	s += 2;			/* skip the MX precedence field */
+      case T_PTR:
 	{
-        case T_MX:
-          s += 2;			/* skip the MX precedence field */
-        case T_PTR:
-	  {
-          uschar * buf = store_malloc(256);
-          (void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
-            (DN_EXPAND_ARG4_TYPE)buf, 256);
-          s = buf;
-          break;
-	  }
-
-        case T_TXT:
-	  {
-	  gstring * g = NULL;
-	  uschar chunk_len;
-          for (int off = 0; off < rr->size; off += chunk_len)
-            {
-            if (!(chunk_len = s[off++])) break;
-            g = string_catn(g, s+off, chunk_len);
-            }
-          if (!g)
-            {
-            HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an "
-              "empty name: treated as non-existent host name\n");
-            continue;
-            }
-          gstring_release_unused(g);
-          s = string_copy_malloc(string_from_gstring(g));
-          break;
-	  }
-
-        case T_A:
-        case T_AAAA:
-        default:
-	  {
-          uschar * buf = store_malloc(dnsa->answerlen + 1);
-	  s = memcpy(buf, s, dnsa->answerlen + 1);
-          break;
-	  }
+	uschar * buf = store_malloc(256);
+	(void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, s,
+	  (DN_EXPAND_ARG4_TYPE)buf, 256);
+	s = buf;
+	break;
 	}
-      DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", s);
-      srr.rr = (void *) &s;
 
-      /* spfrr->rr must have been malloc()d for this */
-      SPF_dns_rr_dup(&spfrr, &srr);
+      case T_TXT:
+	{
+	gstring * g = NULL;
+	uschar chunk_len;
 
-      return spfrr;
+	if (strncmpic(rr->data+1, US"v=spf1", 6) != 0)
+	  {
+	  HDEBUG(D_host_lookup) debug_printf("not an spf record\n");
+	  continue;
+	  }
+
+	for (int off = 0; off < rr->size; off += chunk_len)
+	  {
+	  if (!(chunk_len = s[off++])) break;
+	  g = string_catn(g, s+off, chunk_len);
+	  }
+	if (!g)
+	  continue;
+	gstring_release_unused(g);
+	s = string_copy_malloc(string_from_gstring(g));
+	break;
+	}
+
+      case T_A:
+      case T_AAAA:
+      default:
+	{
+	uschar * buf = store_malloc(dnsa->answerlen + 1);
+	s = memcpy(buf, s, dnsa->answerlen + 1);
+	break;
+	}
       }
+    DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", s);
+    srr.rr[found++] = (void *) s;
+    }
 
-SPF_dns_rr_dup(&spfrr, spf_nxdomain);
+/* spfrr->rr must have been malloc()d for this */
+SPF_dns_rr_dup(&spfrr, &srr);
 return spfrr;
 }
 
@@ -129,14 +140,11 @@ return spfrr;
 SPF_dns_server_t *
 SPF_dns_exim_new(int debug)
 {
-SPF_dns_server_t *spf_dns_server;
+SPF_dns_server_t * spf_dns_server = store_malloc(sizeof(SPF_dns_server_t));
 
 DEBUG(D_receive) debug_printf("SPF_dns_exim_new\n");
 
-if (!(spf_dns_server = malloc(sizeof(SPF_dns_server_t))))
-  return NULL;
 memset(spf_dns_server, 0, sizeof(SPF_dns_server_t));
-
 spf_dns_server->destroy      = NULL;
 spf_dns_server->lookup       = SPF_dns_exim_lookup;
 spf_dns_server->get_spf      = NULL;

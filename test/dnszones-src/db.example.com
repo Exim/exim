@@ -25,6 +25,11 @@ example.com.     NS      exim.example.com.
 
 example.com.	TXT     v=spf1 -all
 
+double		TXT	v=spf1 include:_spf.google.com ~all
+		TXT	v=spf1 +a +mx -all
+
+uppercase	TXT	v=sPf1 +all
+
 ; Alias A record for the local host, under the name "server1"
 
 server1     A       HOSTIPV4
