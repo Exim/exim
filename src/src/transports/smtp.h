@@ -144,6 +144,7 @@ typedef struct {
 #endif
   BOOL pending_MAIL:1;
   BOOL pending_BDAT:1;
+  BOOL RCPT_452:1;
   BOOL good_RCPT:1;
   BOOL completed_addr:1;
   BOOL send_rset:1;

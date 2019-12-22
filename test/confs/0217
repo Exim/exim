@@ -50,7 +50,7 @@ send_to_server:
 
 begin retry
 
-* * F,5d,10s
+* *		F,5d,10s
 
 
 # End

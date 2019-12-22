@@ -615,3 +615,357 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 .
 250 OK
 End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<y00@test.ex>
+250 OK 0
+RCPT TO:<y01@test.ex>
+250 OK 1
+RCPT TO:<y02@test.ex>
+250 OK
+RCPT TO:<y03@test.ex>
+250 OK
+RCPT TO:<y04@test.ex>
+250 OK
+RCPT TO:<y05@test.ex>
+250 OK
+RCPT TO:<y06@test.ex>
+250 OK
+RCPT TO:<y07@test.ex>
+250 OK
+RCPT TO:<y08@test.ex>
+250 OK
+RCPT TO:<y09@test.ex>
+250 OK
+RCPT TO:<y10@test.ex>
+250 OK
+RCPT TO:<y11@test.ex>
+250 OK
+RCPT TO:<y12@test.ex>
+250 OK
+RCPT TO:<y13@test.ex>
+250 OK
+RCPT TO:<y14@test.ex>
+250 OK
+RCPT TO:<y15@test.ex>
+250 OK
+RCPT TO:<y16@test.ex>
+250 OK
+RCPT TO:<y17@test.ex>
+250 OK
+RCPT TO:<y18@test.ex>
+250 OK
+RCPT TO:<y19@test.ex>
+250 OK
+RCPT TO:<y20@test.ex>
+250 OK
+RCPT TO:<y21@test.ex>
+250 OK
+RCPT TO:<y22@test.ex>
+250 OK
+RCPT TO:<y23@test.ex>
+250 OK
+RCPT TO:<y24@test.ex>
+250 OK
+RCPT TO:<y25@test.ex>
+250 OK
+RCPT TO:<y26@test.ex>
+250 OK
+RCPT TO:<y27@test.ex>
+250 OK
+RCPT TO:<y28@test.ex>
+250 OK
+RCPT TO:<y29@test.ex>
+250 OK
+RCPT TO:<y30@test.ex>
+250 OK
+RCPT TO:<y31@test.ex>
+250 OK
+RCPT TO:<y32@test.ex>
+250 OK
+RCPT TO:<y33@test.ex>
+250 OK
+RCPT TO:<y34@test.ex>
+250 OK
+RCPT TO:<y35@test.ex>
+250 OK
+RCPT TO:<y36@test.ex>
+250 OK
+RCPT TO:<y37@test.ex>
+250 OK
+RCPT TO:<y38@test.ex>
+250 OK
+RCPT TO:<y39@test.ex>
+250 OK
+RCPT TO:<y40@test.ex>
+250 OK
+RCPT TO:<y41@test.ex>
+250 OK
+RCPT TO:<y42@test.ex>
+250 OK
+RCPT TO:<y43@test.ex>
+250 OK
+RCPT TO:<y44@test.ex>
+250 OK
+RCPT TO:<y45@test.ex>
+250 OK
+RCPT TO:<y46@test.ex>
+250 OK
+RCPT TO:<y47@test.ex>
+250 OK
+RCPT TO:<y48@test.ex>
+250 OK
+RCPT TO:<y49@test.ex>
+250 OK 49
+RCPT TO:<n50@test.ex>
+452 excess 50
+RCPT TO:<n51@test.ex>
+452 excess
+RCPT TO:<n52@test.ex>
+452 excess
+RCPT TO:<n53@test.ex>
+452 excess
+RCPT TO:<n54@test.ex>
+452 excess
+RCPT TO:<n55@test.ex>
+452 excess
+RCPT TO:<n56@test.ex>
+452 excess
+RCPT TO:<n57@test.ex>
+452 excess
+RCPT TO:<n58@test.ex>
+452 excess
+RCPT TO:<n59@test.ex>
+452 excess
+RCPT TO:<n60@test.ex>
+452 excess
+RCPT TO:<n61@test.ex>
+452 excess
+RCPT TO:<n62@test.ex>
+452 excess
+RCPT TO:<n63@test.ex>
+452 excess
+RCPT TO:<n64@test.ex>
+452 excess
+RCPT TO:<n65@test.ex>
+452 excess
+RCPT TO:<n66@test.ex>
+452 excess
+RCPT TO:<n67@test.ex>
+452 excess
+RCPT TO:<n68@test.ex>
+452 excess
+RCPT TO:<n69@test.ex>
+452 excess
+RCPT TO:<n70@test.ex>
+452 excess
+RCPT TO:<n71@test.ex>
+452 excess
+RCPT TO:<n72@test.ex>
+452 excess
+RCPT TO:<n73@test.ex>
+452 excess
+RCPT TO:<n74@test.ex>
+452 excess
+RCPT TO:<n75@test.ex>
+452 excess
+RCPT TO:<n76@test.ex>
+452 excess
+RCPT TO:<n77@test.ex>
+452 excess
+RCPT TO:<n78@test.ex>
+452 excess
+RCPT TO:<n79@test.ex>
+452 excess
+RCPT TO:<n80@test.ex>
+452 excess
+RCPT TO:<n81@test.ex>
+452 excess
+RCPT TO:<n82@test.ex>
+452 excess
+RCPT TO:<n83@test.ex>
+452 excess
+RCPT TO:<n84@test.ex>
+452 excess
+RCPT TO:<n85@test.ex>
+452 excess
+RCPT TO:<n86@test.ex>
+452 excess
+RCPT TO:<n87@test.ex>
+452 excess
+RCPT TO:<n88@test.ex>
+452 excess
+RCPT TO:<n89@test.ex>
+452 excess
+RCPT TO:<n90@test.ex>
+452 excess
+RCPT TO:<n91@test.ex>
+452 excess
+RCPT TO:<n92@test.ex>
+452 excess
+RCPT TO:<n93@test.ex>
+452 excess
+RCPT TO:<n94@test.ex>
+452 excess
+RCPT TO:<n95@test.ex>
+452 excess
+RCPT TO:<n96@test.ex>
+452 excess
+RCPT TO:<n97@test.ex>
+452 excess
+RCPT TO:<n98@test.ex>
+452 excess
+RCPT TO:<n99@test.ex>
+452 excess 99
+RCPT TO:<n100@test.ex>
+452 excess 100
+DATA
+354 go
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbQ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbQ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 msg accepted
+MAIL FROM:<CALLER@test.ex>
+250 good mail
+RCPT TO:<n50@test.ex>
+250 OK 50
+RCPT TO:<n51@test.ex>
+250 OK
+RCPT TO:<n52@test.ex>
+250 OK
+RCPT TO:<n53@test.ex>
+250 OK
+RCPT TO:<n54@test.ex>
+250 OK
+RCPT TO:<n55@test.ex>
+250 OK
+RCPT TO:<n56@test.ex>
+250 OK
+RCPT TO:<n57@test.ex>
+250 OK
+RCPT TO:<n58@test.ex>
+250 OK
+RCPT TO:<n59@test.ex>
+250 OK
+RCPT TO:<n60@test.ex>
+250 OK
+RCPT TO:<n61@test.ex>
+250 OK
+RCPT TO:<n62@test.ex>
+250 OK
+RCPT TO:<n63@test.ex>
+250 OK
+RCPT TO:<n64@test.ex>
+250 OK
+RCPT TO:<n65@test.ex>
+250 OK
+RCPT TO:<n66@test.ex>
+250 OK
+RCPT TO:<n67@test.ex>
+250 OK
+RCPT TO:<n68@test.ex>
+250 OK
+RCPT TO:<n69@test.ex>
+250 OK
+RCPT TO:<n70@test.ex>
+250 OK
+RCPT TO:<n71@test.ex>
+250 OK
+RCPT TO:<n72@test.ex>
+250 OK
+RCPT TO:<n73@test.ex>
+250 OK
+RCPT TO:<n74@test.ex>
+250 OK
+RCPT TO:<n75@test.ex>
+250 OK
+RCPT TO:<n76@test.ex>
+250 OK
+RCPT TO:<n77@test.ex>
+250 OK
+RCPT TO:<n78@test.ex>
+250 OK
+RCPT TO:<n79@test.ex>
+250 OK
+RCPT TO:<n80@test.ex>
+250 OK
+RCPT TO:<n81@test.ex>
+250 OK
+RCPT TO:<n82@test.ex>
+250 OK
+RCPT TO:<n83@test.ex>
+250 OK
+RCPT TO:<n84@test.ex>
+250 OK
+RCPT TO:<n85@test.ex>
+250 OK
+RCPT TO:<n86@test.ex>
+250 OK
+RCPT TO:<n87@test.ex>
+250 OK
+RCPT TO:<n88@test.ex>
+250 OK
+RCPT TO:<n89@test.ex>
+250 OK
+RCPT TO:<n90@test.ex>
+250 OK
+RCPT TO:<n91@test.ex>
+250 OK
+RCPT TO:<n92@test.ex>
+250 OK
+RCPT TO:<n93@test.ex>
+250 OK
+RCPT TO:<n94@test.ex>
+250 OK
+RCPT TO:<n95@test.ex>
+250 OK
+RCPT TO:<n96@test.ex>
+250 OK
+RCPT TO:<n97@test.ex>
+250 OK
+RCPT TO:<n98@test.ex>
+250 OK
+RCPT TO:<n99@test.ex>
+250 OK 99-2
+RCPT TO:<n100@test.ex>
+452 excess 100
+DATA
+354 go
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbQ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbQ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 mesg 2 accepted
+MAIL FROM:<CALLER@test.ex>
+250 good mail
+RCPT TO:<n100@test.ex>
+250 OK 100
+DATA
+354 go
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbQ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbQ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 mesg 3 accepted
+QUIT
+250 OK
+End of script

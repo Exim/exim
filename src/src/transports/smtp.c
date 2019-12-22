@@ -1150,6 +1150,7 @@ if (sx->pending_MAIL)
   {
   DEBUG(D_transport) debug_printf("%s expect mail\n", __FUNCTION__);
   count--;
+  sx->pending_MAIL = FALSE;
   if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
@@ -1284,38 +1285,55 @@ while (count-- > 0)
 	event_defer_errno = addr->more_errno;
 	msg_event_raise(US"msg:rcpt:host:defer", addr);
 #endif
+	/* If a 452 and we've had at least one 2xx or 5xx, set next_addr to the
+	start point for another MAIL command. */
 
-	/* Log temporary errors if there are more hosts to be tried.
-	If not, log this last one in the == line. */
+	if (addr->more_errno >> 8 == 52  &&  yield & 3)
+	  {
+	  if (!sx->RCPT_452)
+	    {
+	    DEBUG(D_transport)
+	      debug_printf("%s: seen first 452 too-many-rcpts\n", __FUNCTION__);
+	    sx->RCPT_452 = TRUE;
+	    sx->next_addr = addr;
+	    }
+	  addr->transport_return = PENDING_DEFER;
+	  addr->basic_errno = 0;
+	  }
+	else
+	  {
+	  /* Log temporary errors if there are more hosts to be tried.
+	  If not, log this last one in the == line. */
 
-	if (sx->conn_args.host->next)
-	  if (LOGGING(outgoing_port))
-	    log_write(0, LOG_MAIN, "H=%s [%s]:%d %s", sx->conn_args.host->name,
-	      sx->conn_args.host->address,
-	      sx->port == PORT_NONE ? 25 : sx->port, addr->message);
-	  else
-	    log_write(0, LOG_MAIN, "H=%s [%s]: %s", sx->conn_args.host->name,
-	      sx->conn_args.host->address, addr->message);
+	  if (sx->conn_args.host->next)
+	    if (LOGGING(outgoing_port))
+	      log_write(0, LOG_MAIN, "H=%s [%s]:%d %s", sx->conn_args.host->name,
+		sx->conn_args.host->address,
+		sx->port == PORT_NONE ? 25 : sx->port, addr->message);
+	    else
+	      log_write(0, LOG_MAIN, "H=%s [%s]: %s", sx->conn_args.host->name,
+		sx->conn_args.host->address, addr->message);
 
 #ifndef DISABLE_EVENT
-	else
-	  msg_event_raise(US"msg:rcpt:defer", addr);
+	  else
+	    msg_event_raise(US"msg:rcpt:defer", addr);
 #endif
 
-	/* Do not put this message on the list of those waiting for specific
-	hosts, as otherwise it is likely to be tried too often. */
+	  /* Do not put this message on the list of those waiting for specific
+	  hosts, as otherwise it is likely to be tried too often. */
 
-	update_waiting = FALSE;
+	  update_waiting = FALSE;
 
-	/* Add a retry item for the address so that it doesn't get tried again
-	too soon. If address_retry_include_sender is true, add the sender address
-	to the retry key. */
+	  /* Add a retry item for the address so that it doesn't get tried again
+	  too soon. If address_retry_include_sender is true, add the sender address
+	  to the retry key. */
 
-	retry_add_item(addr,
-	  ob->address_retry_include_sender
-	    ? string_sprintf("%s:<%s>", addr->address_retry_key, sender_address)
-	    : addr->address_retry_key,
-	  0);
+	  retry_add_item(addr,
+	    ob->address_retry_include_sender
+	      ? string_sprintf("%s:<%s>", addr->address_retry_key, sender_address)
+	      : addr->address_retry_key,
+	    0);
+	  }
 	}
       }
     }
@@ -3128,7 +3146,7 @@ int
 smtp_write_mail_and_rcpt_cmds(smtp_context * sx, int * yield)
 {
 address_item * addr;
-int address_count;
+int address_count, pipe_limit;
 int rc;
 
 if (build_mailcmd_options(sx, sx->first_addr) != OK)
@@ -3211,11 +3229,11 @@ that max_rcpt will be large, so all addresses will be done at once.
 
 For verify we flush the pipeline after any (the only) rcpt address. */
 
-for (addr = sx->first_addr, address_count = 0;
+for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
      addr  &&  address_count < sx->max_rcpt;
      addr = addr->next) if (addr->transport_return == PENDING_DEFER)
   {
-  int count;
+  int cmds_sent;
   BOOL no_flush;
   uschar * rcpt_addr;
 
@@ -3223,7 +3241,10 @@ for (addr = sx->first_addr, address_count = 0;
     ? dsn_support_yes : dsn_support_no;
 
   address_count++;
-  no_flush = pipelining_active && !sx->verify
+  if (pipe_limit-- <= 0)
+    { no_flush = FALSE; pipe_limit = 100; }
+  else
+    no_flush = pipelining_active && !sx->verify
 	  && (!mua_wrapper || addr->next && address_count < sx->max_rcpt);
 
   build_rcptcmd_options(sx, addr);
@@ -3246,13 +3267,13 @@ for (addr = sx->first_addr, address_count = 0;
     }
 #endif
 
-  count = smtp_write_command(sx, no_flush ? SCMD_BUFFER : SCMD_FLUSH,
+  cmds_sent = smtp_write_command(sx, no_flush ? SCMD_BUFFER : SCMD_FLUSH,
     "RCPT TO:<%s>%s%s\r\n", rcpt_addr, sx->igquotstr, sx->buffer);
 
-  if (count < 0) return -5;
-  if (count > 0)
+  if (cmds_sent < 0) return -5;
+  if (cmds_sent > 0)
     {
-    switch(sync_responses(sx, count, 0))
+    switch(sync_responses(sx, cmds_sent, 0))
       {
       case 3: sx->ok = TRUE;			/* 2xx & 5xx => OK & progress made */
       case 2: sx->completed_addr = TRUE;	/* 5xx (only) => progress made */
@@ -3262,6 +3283,17 @@ for (addr = sx->first_addr, address_count = 0;
 	      if (!sx->lmtp)			/*  can't tell about progress yet */
 		sx->completed_addr = TRUE;
       case 0:					/* No 2xx or 5xx, but no probs */
+	      /* If any RCPT got a 452 response then next_addr has been updated
+	      for restarting with a new MAIL on the same connection.  Send no more
+	      RCPTs for this MAIL. */
+
+	      if (sx->RCPT_452)
+		{
+		DEBUG(D_transport) debug_printf("seen 452 too-many-rcpts\n");
+		sx->RCPT_452 = FALSE;
+		/* sx->next_addr has been reset for fast_retry */
+		return 0;
+		}
 	      break;
 
       case -1: return -3;			/* Timeout on RCPT */
@@ -3273,7 +3305,6 @@ for (addr = sx->first_addr, address_count = 0;
       case -5: return -1;			/* TLS first-read error */
 #endif
       }
-    sx->pending_MAIL = FALSE;            /* Dealt with MAIL */
     }
   }      /* Loop for next address */
 
@@ -3947,53 +3978,53 @@ else
       }
 
 #ifndef DISABLE_PRDR
-      if (sx->prdr_active)
-        {
-	const uschar * overall_message;
+    if (sx->prdr_active)
+      {
+      const uschar * overall_message;
 
-	/* PRDR - get the final, overall response.  For any non-success
-	upgrade all the address statuses. */
+      /* PRDR - get the final, overall response.  For any non-success
+      upgrade all the address statuses. */
 
-        sx->ok = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
-          ob->final_timeout);
-        if (!sx->ok)
+      sx->ok = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2',
+	ob->final_timeout);
+      if (!sx->ok)
+	{
+	if(errno == 0 && sx->buffer[0] == '4')
 	  {
-	  if(errno == 0 && sx->buffer[0] == '4')
-            {
-            errno = ERRNO_DATA4XX;
-            addrlist->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
-            }
-	  for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
-            if (sx->buffer[0] == '5' || addr->transport_return == OK)
-              addr->transport_return = PENDING_OK; /* allow set_errno action */
-	  goto RESPONSE_FAILED;
+	  errno = ERRNO_DATA4XX;
+	  addrlist->more_errno |= ((sx->buffer[1] - '0')*10 + sx->buffer[2] - '0') << 8;
 	  }
-
-	/* Append the overall response to the individual PRDR response for logging
-	and update the journal, or setup retry. */
-
-	overall_message = string_printing(sx->buffer);
-        for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
-	  if (addr->transport_return == OK)
-	    addr->message = string_sprintf("%s\\n%s", addr->message, overall_message);
-
-        for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
-	  if (addr->transport_return == OK)
-	    {
-	    if (testflag(addr, af_homonym))
-	      sprintf(CS sx->buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
-	    else
-	      sprintf(CS sx->buffer, "%.500s\n", addr->unique);
-
-	    DEBUG(D_deliver) debug_printf("journalling(PRDR) %s\n", sx->buffer);
-	    len = Ustrlen(CS sx->buffer);
-	    if (write(journal_fd, sx->buffer, len) != len)
-	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
-		"%s: %s", sx->buffer, strerror(errno));
-	    }
-	  else if (addr->transport_return == DEFER)
-	    retry_add_item(addr, addr->address_retry_key, -2);
+	for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
+	  if (sx->buffer[0] == '5' || addr->transport_return == OK)
+	    addr->transport_return = PENDING_OK; /* allow set_errno action */
+	goto RESPONSE_FAILED;
 	}
+
+      /* Append the overall response to the individual PRDR response for logging
+      and update the journal, or setup retry. */
+
+      overall_message = string_printing(sx->buffer);
+      for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
+	if (addr->transport_return == OK)
+	  addr->message = string_sprintf("%s\\n%s", addr->message, overall_message);
+
+      for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
+	if (addr->transport_return == OK)
+	  {
+	  if (testflag(addr, af_homonym))
+	    sprintf(CS sx->buffer, "%.500s/%s\n", addr->unique + 3, tblock->name);
+	  else
+	    sprintf(CS sx->buffer, "%.500s\n", addr->unique);
+
+	  DEBUG(D_deliver) debug_printf("journalling(PRDR) %s\n", sx->buffer);
+	  len = Ustrlen(CS sx->buffer);
+	  if (write(journal_fd, sx->buffer, len) != len)
+	    log_write(0, LOG_MAIN|LOG_PANIC, "failed to write journal for "
+	      "%s: %s", sx->buffer, strerror(errno));
+	  }
+	else if (addr->transport_return == DEFER)
+	  retry_add_item(addr, addr->address_retry_key, -2);
+      }
 #endif
 
     /* Ensure the journal file is pushed out to disk. */
@@ -4141,7 +4172,6 @@ if (!sx->ok)
 	    );
   }
 
-
 /* If all has gone well, send_quit will be set TRUE, implying we can end the
 SMTP session tidily. However, if there were too many addresses to send in one
 message (indicated by first_addr being non-NULL) we want to carry on with the
@@ -4230,9 +4260,10 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
       int socket_fd = sx->cctx.sock;
 
 
-      if (sx->first_addr != NULL)         /* More addresses still to be sent */
-        {                                /*   in this run of the transport */
-        continue_sequence++;             /* Causes * in logging */
+      if (sx->first_addr != NULL)	/* More addresses still to be sent */
+        {				/*   in this run of the transport */
+        continue_sequence++;		/* Causes * in logging */
+	pipelining_active = sx->pipelining_used;    /* was cleared at DATA */
         goto SEND_MESSAGE;
         }
 
