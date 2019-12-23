@@ -61,8 +61,7 @@ optionlist auth_dovecot_options[] = {
 /* Size of the options list. An extern variable has to be used so that its
 address can appear in the tables drtables.c. */
 
-int auth_dovecot_options_count =
-       sizeof(auth_dovecot_options) / sizeof(optionlist);
+int auth_dovecot_options_count = nelem(auth_dovecot_options);
 
 /* Default private options block for the authentication method. */
 
@@ -101,14 +100,12 @@ to be set up. */
 
 void auth_dovecot_init(auth_instance *ablock)
 {
-       auth_dovecot_options_block *ob =
-               (auth_dovecot_options_block *)(ablock->options_block);
+auth_dovecot_options_block *ob =
+       (auth_dovecot_options_block *)(ablock->options_block);
 
-       if (ablock->public_name == NULL)
-               ablock->public_name = ablock->name;
-       if (ob->server_socket != NULL)
-               ablock->server = TRUE;
-       ablock->client = FALSE;
+if (!ablock->public_name) ablock->public_name = ablock->name;
+if (ob->server_socket) ablock->server = TRUE;
+ablock->client = FALSE;
 }
 
 /*************************************************
@@ -139,30 +136,26 @@ for (n = 0; n < nptrs; n++)
 n = 1;
 
 while (*str)
-  {
-  if (*str == '\t')
-    {
-    if (n <= nptrs)
+  if (*str++ == '\t')
+    if (n++ <= nptrs)
       {
       *ptrs++ = last_sub_start;
-      last_sub_start = str + 1;
-      *str = '\0';
+      last_sub_start = str;
+      str[-1] = '\0';
       }
-      n++;
-    }
-    str++;
-  }
 
 /* It's acceptable for the string to end with a tab character.  We see
 this in AUTH PLAIN without an initial response from the client, which
 causing us to send "334 " and get the data from the client. */
 if (n <= nptrs)
- *ptrs = last_sub_start;
+  *ptrs = last_sub_start;
 else
- {
- HDEBUG(D_auth) debug_printf("dovecot: warning: too many results from tab-splitting; saw %d fields, room for %d\n", n, nptrs);
- n = nptrs;
- }
+  {
+  HDEBUG(D_auth)
+    debug_printf("dovecot: warning: too many results from tab-splitting;"
+		  " saw %d fields, room for %d\n", n, nptrs);
+  n = nptrs;
+  }
 
 return n <= nptrs ? n : nptrs;
 }
@@ -299,7 +292,7 @@ auth_defer_msg = US"authentication socket protocol error";
 socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
 while (cont)
   {
-  if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
+  if (!dc_gets(buffer, sizeof(buffer), fd))
     OUT("authentication socket read error or premature eof");
   p = buffer + Ustrlen(buffer) - 1;
   if (*p != '\n')
@@ -308,9 +301,9 @@ while (cont)
   *p = '\0';
   HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
 
-  nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
+  nargs = strcut(buffer, args, nelem(args));
 
-  /* HDEBUG(D_auth) debug_strcut(args, nargs, sizeof(args) / sizeof(args[0])); */
+  /* HDEBUG(D_auth) debug_strcut(args, nargs, nelem(args)); */
 
   /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
     Exim will need. Original code also failed if Dovecot server sent unknown
@@ -376,12 +369,12 @@ if (Ustrchr(data, '\t') != NULL)
 /* Added by PH: extra fields when TLS is in use or if the TCP/IP
 connection is local. */
 
-if (tls_in.cipher != NULL)
+if (tls_in.cipher)
   auth_extra_data = string_sprintf("secured\t%s%s",
-     tls_in.certificate_verified? "valid-client-cert" : "",
-     tls_in.certificate_verified? "\t" : "");
+     tls_in.certificate_verified ? "valid-client-cert" : "",
+     tls_in.certificate_verified ? "\t" : "");
 
-else if (  interface_address != NULL
+else if (  interface_address
         && Ustrcmp(sender_host_address, interface_address) == 0)
   auth_extra_data = US"secured\t";
 
@@ -418,9 +411,8 @@ while (1)
   {
   uschar *temp;
   uschar *auth_id_pre = NULL;
-  int i;
 
-  if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
+  if (!dc_gets(buffer, sizeof(buffer), fd))
     {
     auth_defer_msg = US"authentication socket read error or premature eof";
     goto out;
@@ -428,7 +420,7 @@ while (1)
 
   buffer[Ustrlen(buffer) - 1] = 0;
   HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
-  nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
+  nargs = strcut(buffer, args, nelem(args));
 
   if (Uatoi(args[1]) != crequid)
     OUT("authentication socket connection id mismatch");
@@ -461,17 +453,14 @@ while (1)
     case 'F':
       CHECK_COMMAND("FAIL", 1, -1);
 
-      for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
-	{
-	if ( Ustrncmp(args[i], US"user=", 5) == 0 )
+      for (int i = 2; i < nargs && !auth_id_pre; i++)
+	if (Ustrncmp(args[i], US"user=", 5) == 0)
 	  {
-	  auth_id_pre = args[i]+5;
+	  auth_id_pre = args[i] + 5;
 	  expand_nstring[1] = auth_vars[0] = string_copy(auth_id_pre); /* PH */
 	  expand_nlength[1] = Ustrlen(auth_id_pre);
 	  expand_nmax = 1;
 	  }
-	}
-
       ret = FAIL;
       goto out;
 
@@ -481,18 +470,16 @@ while (1)
       /* Search for the "user=$USER" string in the args array
       and return the proper value.  */
 
-      for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
-	{
-	if ( Ustrncmp(args[i], US"user=", 5) == 0 )
+      for (int i = 2; i < nargs && !auth_id_pre; i++)
+	if (Ustrncmp(args[i], US"user=", 5) == 0)
 	  {
-	  auth_id_pre = args[i]+5;
+	  auth_id_pre = args[i] + 5;
 	  expand_nstring[1] = auth_vars[0] = string_copy(auth_id_pre); /* PH */
 	  expand_nlength[1] = Ustrlen(auth_id_pre);
 	  expand_nmax = 1;
 	  }
-	}
 
-      if (auth_id_pre == NULL)
+      if (!auth_id_pre)
         OUT("authentication socket protocol error, username missing");
 
       ret = OK;

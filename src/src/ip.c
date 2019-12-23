@@ -531,6 +531,10 @@ if (connect(sock, (struct sockaddr *) &server, sizeof(server)) < 0)
 return sock;
 }
 
+/* spec is either an absolute path (with a leading /), or
+a host (name or IP) and port (whitespace-separated).
+The port can be a range, dash-separated, or a single number.
+*/
 int
 ip_streamsocket(const uschar * spec, uschar ** errstr, int tmo)
 {
