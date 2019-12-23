@@ -27363,7 +27363,7 @@ but it is present in many binary distributions.
 .scindex IIDdcotauth1 "&(dovecot)& authenticator"
 .scindex IIDdcotauth2 "authenticators" "&(dovecot)&"
 This authenticator is an interface to the authentication facility of the
-Dovecot POP/IMAP server, which can support a number of authentication methods.
+Dovecot 2 POP/IMAP server, which can support a number of authentication methods.
 Note that Dovecot must be configured to use auth-client not auth-userdb.
 If you are using Dovecot to authenticate POP/IMAP clients, it might be helpful
 to use the same mechanisms for SMTP authentication. This is a server
@@ -27394,6 +27394,29 @@ option is passed in the Dovecot authentication command. If, for a TLS
 connection, a client certificate has been verified, the &"valid-client-cert"&
 option is passed. When authentication succeeds, the identity of the user
 who authenticated is placed in &$auth1$&.
+
+.new
+The Dovecot configuration to match the above wil look
+something like:
+.code
+conf.d/10-master.conf :-
+
+service auth {
+...
+#SASL
+  unix_listener auth-client {
+    mode = 0660
+    user = mail
+  }
+...
+}
+
+conf.d/10-auth.conf :-
+
+auth_mechanisms = plain login ntlm
+.endd
+.wen
+
 .ecindex IIDdcotauth1
 .ecindex IIDdcotauth2
 
