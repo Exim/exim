@@ -1,0 +1,5 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 sasl2 authenticator (PLAIN):
+  GNU SASL permanent failure: GSASL_AUTHENTICATION_ERROR (Error authenticating user)
+1999-03-02 09:44:33 sasl2 authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data (set_id=ph10)

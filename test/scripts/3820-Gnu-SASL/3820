@@ -4,7 +4,7 @@
 # other SASL stuff, but inconsistent vs. cyrus-sasl.  It also wants the username
 # on the AUTH line, otherwise it GSASL_MECHANISM_PARSE_ERROR, and 435.
 #
-exim -d+all -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
 ??? 220
