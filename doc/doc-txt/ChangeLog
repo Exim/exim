@@ -66,6 +66,10 @@ JH/15 When PIPELINING, synch after every hundred or so RCPT commands sent and
       a fast-retry of all 452'd recipients using a new MAIL FROM on the same
       connection.  The new facility is not tunable at this time.
 
+JH/16 Fix the variables set by the gsasl authenticator.  Previously a pointer to
+      library live data was being used, so the results became garbage.  Make
+      copies while it is still usable.
+
 
 Exim version 4.93
 -----------------

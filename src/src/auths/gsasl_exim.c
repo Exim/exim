@@ -456,11 +456,11 @@ switch (prop)
   case GSASL_VALIDATE_SIMPLE:
     /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
+    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_PASSWORD);
-    auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
+    auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
     expand_nmax = 3;
     for (int i = 1; i <= 3; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
@@ -479,7 +479,7 @@ switch (prop)
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
 
     /* We always set $auth1, even if only to empty string. */
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
     expand_nmax = 1;
 
@@ -499,7 +499,7 @@ switch (prop)
 
     /* We always set $auth1, even if only to empty string. */
 
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
     expand_nmax = 1;
 
@@ -519,9 +519,9 @@ switch (prop)
     switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
 
     propval = US  gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
+    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     expand_nmax = 2;
     for (int i = 1; i <= 2; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
@@ -532,6 +532,24 @@ switch (prop)
     cbrc = condition_check(ablock,
 	US"server_condition (GSSAPI family)", ablock->server_condition);
     checked_server_condition = TRUE;
+    break;
+
+  case GSASL_SCRAM_ITER:
+    if (ob->server_scram_iter)
+      {
+      tmps = CS expand_string(ob->server_scram_iter);
+      gsasl_property_set(sctx, GSASL_SCRAM_ITER, tmps);
+      cbrc = GSASL_OK;
+      }
+    break;
+
+  case GSASL_SCRAM_SALT:
+    if (ob->server_scram_iter)
+      {
+      tmps = CS expand_string(ob->server_scram_salt);
+      gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
+      cbrc = GSASL_OK;
+      }
     break;
 
   case GSASL_PASSWORD:
@@ -559,11 +577,11 @@ switch (prop)
     point of SASL. */
 
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
+    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_REALM);
-    auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
+    auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
     expand_nmax = 3;
     for (int i = 1; i <= 3; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
