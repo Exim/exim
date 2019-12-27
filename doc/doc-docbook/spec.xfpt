@@ -27452,7 +27452,7 @@ If unset or (after expansion) empty it is not used,
 which is the common case.
 
 .option client_channelbinding gsasl boolean false
-See $%server_channelbinding%& below.
+See &%server_channelbinding%& below.
 
 .option client_password gsasl string&!! unset
 This option is exapanded before use, and should result in
