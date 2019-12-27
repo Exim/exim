@@ -1,0 +1,8 @@
+# GSASL SCRAM-SHA-1-PLUS
+#
+exim -DSERVER=server -DTRUSTED -bd -oX PORT_D
+****
+exim -odi -DTRUSTED scram_sha_1@test.ex
+****
+killdaemon
+no_msglog_check

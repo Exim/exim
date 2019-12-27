@@ -1,0 +1,16 @@
+# GSASL PLAIN authentication: gsasl driver vs. plaintext driver
+#
+# gsasl client against plaintext server
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -odi plain@test.ex
+****
+killdaemon
+#
+# plaintext client against gsasl server
+exim -DSERVER=server -DOPT=y -bd -oX PORT_D
+****
+exim -odi -DOPT=y plain@test.ex
+****
+killdaemon
+no_msglog_check

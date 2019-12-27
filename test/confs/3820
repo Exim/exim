@@ -2,17 +2,47 @@
 
 SERVER=
 
+.ifdef TRUSTED
+.include DIR/aux-var/tls_conf_prefix
+.else
 .include DIR/aux-var/std_conf_prefix
+.endif
 
 primary_hostname = myhost.test.ex
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 # ----- Main settings -----
 
+acl_smtp_rcpt = accept
+queue_only
+
+
+begin routers
+
+client_r:
+  driver =	accept
+  condition =	${if !eq {SERVER}{server}}
+  transport =	smtp
+
+begin transports
+
+smtp:
+  driver =	smtp
+  hosts =	127.0.0.1
+  allow_localhost
+  port =	PORT_D
+.ifdef TRUSTED
+  hosts_require_tls = *
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
+.endif
+  hosts_require_auth = *
 
 # ----- Authentication -----
 
 begin authenticators
 
+.ifndef TRUSTED
 sasl1:
   driver = gsasl
   public_name = ANONYMOUS
@@ -23,11 +53,22 @@ sasl2:
   driver = gsasl
   public_name = PLAIN
   server_set_id =	$auth1
-  server_condition =	false
+  server_condition =	${if eq {$auth3}{pencil}}
+
+  client_condition =	${if eq {plain}{$local_part}}
+  client_username =	ph10
+  client_password =	pencil
+.endif
 
 sasl3:
   driver = gsasl
+.ifdef TRUSTED
+  public_name = SCRAM-SHA-1-PLUS
+  server_advertise_condition =	${if def:tls_in_cipher}
+  server_channelbinding =	true
+.else
   public_name = SCRAM-SHA-1
+.endif
 
   # will need to give library salt, stored-key, server-key, itercount
   #
@@ -35,13 +76,18 @@ sasl3:
   # gsasl takes props: GSASL_SCRAM_ITER, GSASL_SCRAM_SALT.  It _might_ take
   # a GSASL_SCRAM_SALTED_PASSWORD - but that is only documented for client mode.
 
-  server_scram_iter =	4096
   # unclear if the salt is given in binary or base64 to the library
   server_scram_salt =	QSXCR+Q6sek8bf92
   server_password =	pencil
-
   server_condition =	true
   server_set_id =	$auth1
+
+  client_condition =	${if eq {scram_sha_1}{$local_part}}
+  client_username =	ph10
+  client_password =	pencil
+.ifdef TRUSTED
+  client_channelbinding = true
+.endif
 
 
 # End

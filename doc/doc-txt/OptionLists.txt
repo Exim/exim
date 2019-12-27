@@ -127,12 +127,15 @@ check_spool_space                    integer         0             main
 check_string                         string          "From "       appendfile        3.03
                                                      unset         pipe              3.03
 check_srv                            string*         unset         dnslookup         4.31
+client_authz                         string*         unset         gsasl             4.94
 client_condition                     string*         unset         authenticators    4.68
 client_ignore_invalid_base64         boolean         false         plaintext         4.61
 client_name                          string*         +             cram_md5          3.10
+client_password                      string*         unset         gsasl             4.94
 client_secret                        string*         unset         cram_md5          3.10
 client_send                          string*         unset         plaintext         3.10
-client_send                          string*         unset         external (auth)   4.93
+                                                     unset         external (auth)   4.93
+client_username                      string*         unset         gsasl             4.94
 command                              string*         unset         lmtp              3.20
                                                      unset         pipe
                                                      unset         queryprogram      4.00

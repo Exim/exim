@@ -193,7 +193,7 @@ else
 has succeeded. There may be more data to send, but is there any point
 in provoking an error here? */
 
-if (smtp_read_response(sx, US buffer, buffsize, '2', timeout))
+if (smtp_read_response(sx, buffer, buffsize, '2', timeout))
   {
   *inout = NULL;
   return OK;

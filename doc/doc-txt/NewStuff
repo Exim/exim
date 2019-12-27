@@ -17,6 +17,10 @@ Version 4.94
 
  3. A msg:defer event.
 
+ 4. Client-side support in the gsasl authenticator.  Tested against the plaintext
+    driver for PLAIN; only against itself for SCRAM-SHA-1 and SCRAM-SHA-1-PLUS
+    methods.
+
 
 Version 4.93
 ------------

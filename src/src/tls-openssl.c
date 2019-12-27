@@ -2831,7 +2831,7 @@ See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/ */
   store_pool = POOL_PERM;
     tls_in.channelbinding = b64encode_taint(CUS s, (int)len, FALSE);
   store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p\n", tls_in.channelbinding);
   }
 
 /* Only used by the server-side tls (tls_in), including tls_getc.
@@ -3407,7 +3407,7 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   store_pool = POOL_PERM;
     tlsp->channelbinding = b64encode_taint(CUS s, (int)len, TRUE);
   store_pool = old_pool;
-  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage\n");
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage %p %p\n", tlsp->channelbinding, tlsp);
   }
 
 tlsp->active.sock = cctx->sock;

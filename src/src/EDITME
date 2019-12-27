@@ -784,6 +784,9 @@ FIXED_NEVER_USERS=root
 # AUTH_LIBS=-lgsasl
 # AUTH_LIBS=-lgssapi -lheimntlm -lkrb5 -lhx509 -lcom_err -lhcrypto -lasn1 -lwind -lroken -lcrypt
 
+# If using AUTH_GSASL with SCRAM methods, you should also be defining
+# SUPPORT_I18N to get standards-conformant support of utf8 normalization.
+
 
 #------------------------------------------------------------------------------
 # When Exim is decoding MIME "words" in header lines, most commonly for use

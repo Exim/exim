@@ -2,6 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2019 */
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
@@ -26,6 +27,7 @@ sense in all contexts.  For some, we can do checks at init time.
 */
 
 #include "../exim.h"
+#define CHANNELBIND_HACK
 
 #ifndef AUTH_GSASL
 /* dummy function to satisfy compilers when we link in an "empty" file. */
@@ -37,12 +39,26 @@ static void dummy(int x) { dummy2(x-1); }
 #include <gsasl.h>
 #include "gsasl_exim.h"
 
+#ifdef SUPPORT_I18N
+# include <stringprep.h>
+#endif
+
+
 /* Authenticator-specific options. */
 /* I did have server_*_condition options for various mechanisms, but since
 we only ever handle one mechanism at a time, I didn't see the point in keeping
 that.  In case someone sees a point, I've left the condition_check() API
 alone. */
 optionlist auth_gsasl_options[] = {
+  { "client_authz",          opt_stringptr,
+      (void *)(offsetof(auth_gsasl_options_block, client_authz)) },
+  { "client_channelbinding", opt_bool,
+      (void *)(offsetof(auth_gsasl_options_block, client_channelbinding)) },
+  { "client_password",      opt_stringptr,
+      (void *)(offsetof(auth_gsasl_options_block, client_password)) },
+  { "client_username",      opt_stringptr,
+      (void *)(offsetof(auth_gsasl_options_block, client_username)) },
+
   { "server_channelbinding", opt_bool,
       (void *)(offsetof(auth_gsasl_options_block, server_channelbinding)) },
   { "server_hostname",      opt_stringptr,
@@ -68,14 +84,10 @@ int auth_gsasl_options_count =
 
 /* Defaults for the authenticator-specific options. */
 auth_gsasl_options_block auth_gsasl_option_defaults = {
-  US"smtp",                 /* server_service */
-  US"$primary_hostname",    /* server_hostname */
-  NULL,                     /* server_realm */
-  NULL,                     /* server_mech */
-  NULL,                     /* server_password */
-  NULL,                     /* server_scram_iter */
-  NULL,                     /* server_scram_salt */
-  FALSE                     /* server_channelbinding */
+  .server_service = US"smtp",
+  .server_hostname = US"$primary_hostname",
+  .server_scram_iter = US"4096",
+  /* all others zero/null */
 };
 
 
@@ -125,8 +137,8 @@ to be set up. */
 void
 auth_gsasl_init(auth_instance *ablock)
 {
-char *p;
-int rc, supported;
+static char * once = NULL;
+int rc;
 auth_gsasl_options_block *ob =
   (auth_gsasl_options_block *)(ablock->options_block);
 
@@ -152,18 +164,22 @@ if (!gsasl_ctx)
 
 /* We don't need this except to log it for debugging. */
 
-if ((rc = gsasl_server_mechlist(gsasl_ctx, &p)) != GSASL_OK)
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
-	    "failed to retrieve list of mechanisms: %s (%s)",
-	    ablock->name,  gsasl_strerror_name(rc), gsasl_strerror(rc));
+HDEBUG(D_auth) if (!once)
+  {
+  if ((rc = gsasl_server_mechlist(gsasl_ctx, &once)) != GSASL_OK)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
+	      "failed to retrieve list of mechanisms: %s (%s)",
+	      ablock->name,  gsasl_strerror_name(rc), gsasl_strerror(rc));
 
-HDEBUG(D_auth) debug_printf("GNU SASL supports: %s\n", p);
+  debug_printf("GNU SASL supports: %s\n", once);
+  }
 
-supported = gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech);
-if (!supported)
+if (!gsasl_client_support_p(gsasl_ctx, CCS ob->server_mech))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
 	    "GNU SASL does not support mechanism \"%s\"",
 	    ablock->name, ob->server_mech);
+
+ablock->server = TRUE;
 
 if (  !ablock->server_condition
    && (  streqic(ob->server_mech, US"EXTERNAL")
@@ -171,29 +187,32 @@ if (  !ablock->server_condition
       || streqic(ob->server_mech, US"PLAIN")
       || streqic(ob->server_mech, US"LOGIN")
    )  )
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
-	    "Need server_condition for %s mechanism",
+  {
+  ablock->server = FALSE;
+  HDEBUG(D_auth) debug_printf("%s authenticator:  "
+	    "Need server_condition for %s mechanism\n",
 	    ablock->name, ob->server_mech);
+  }
 
 /* This does *not* scale to new SASL mechanisms.  Need a better way to ask
 which properties will be needed. */
 
 if (  !ob->server_realm
    && streqic(ob->server_mech, US"DIGEST-MD5"))
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
-	    "Need server_realm for %s mechanism",
+  {
+  ablock->server = FALSE;
+  HDEBUG(D_auth) debug_printf("%s authenticator:  "
+	    "Need server_realm for %s mechanism\n",
 	    ablock->name, ob->server_mech);
+  }
 
 /* At present, for mechanisms we don't panic on absence of server_condition;
 need to figure out the most generically correct approach to deciding when
 it's critical and when it isn't.  Eg, for simple validation (PLAIN mechanism,
 etc) it clearly is critical.
-
-So don't activate without server_condition, this might be relaxed in the future.
 */
 
-if (ablock->server_condition) ablock->server = TRUE;
-ablock->client = FALSE;
+ablock->client = ob->client_username && ob->client_password;
 }
 
 
@@ -207,21 +226,38 @@ int rc = 0;
 struct callback_exim_state *cb_state =
   (struct callback_exim_state *)gsasl_session_hook_get(sctx);
 
+if (!cb_state)
+  {
+  HDEBUG(D_auth) debug_printf("gsasl callback (%d) not from our server/client processing\n", prop);
+#ifdef CHANNELBIND_HACK
+  if (prop == GSASL_CB_TLS_UNIQUE)
+    {
+    uschar * s;
+    if ((s = gsasl_callback_hook_get(ctx)))
+      {
+      HDEBUG(D_auth) debug_printf("GSASL_CB_TLS_UNIQUE from ctx hook\n");
+      gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CS s);
+      }
+    else
+      {
+      HDEBUG(D_auth) debug_printf("GSASL_CB_TLS_UNIQUE!  dummy for now\n");
+      gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, "");
+      }
+    return GSASL_OK;
+    }
+#endif
+  return GSASL_NO_CALLBACK;
+  }
+
 HDEBUG(D_auth)
   debug_printf("GNU SASL Callback entered, prop=%d (loop prop=%d)\n",
       prop, callback_loop);
 
-if (!cb_state)
-  {
-  HDEBUG(D_auth) debug_printf("  not from our server/client processing.\n");
-  return GSASL_NO_CALLBACK;
-  }
-
 if (callback_loop > 0)
   {
-  /* Most likely is that we were asked for property foo, and to
-  expand the string we asked for property bar to put into an auth
-  variable, but property bar is not supplied for this mechanism. */
+  /* Most likely is that we were asked for property FOO, and to
+  expand the string we asked for property BAR to put into an auth
+  variable, but property BAR is not supplied for this mechanism. */
   HDEBUG(D_auth)
     debug_printf("Loop, asked for property %d while handling property %d\n",
 	prop, callback_loop);
@@ -261,8 +297,19 @@ struct callback_exim_state cb_state;
 int rc, auth_result, exim_error, exim_error_override;
 
 HDEBUG(D_auth)
-  debug_printf("GNU SASL: initialising session for %s, mechanism %s.\n",
+  debug_printf("GNU SASL: initialising session for %s, mechanism %s\n",
       ablock->name, ob->server_mech);
+
+#ifndef DISABLE_TLS
+# ifdef CHANNELBIND_HACK
+/* This is a gross hack to get around the library a) requiring that
+c-b was already set, at the _start() call, and b) caching a b64'd
+version of the binding then which it never updates. */
+
+if (tls_in.channelbinding && ob->server_channelbinding)
+  gsasl_callback_hook_set(gsasl_ctx, tls_in.channelbinding);
+# endif
+#endif
 
 if ((rc = gsasl_server_start(gsasl_ctx, CCS ob->server_mech, &sctx)) != GSASL_OK)
   {
@@ -273,10 +320,9 @@ if ((rc = gsasl_server_start(gsasl_ctx, CCS ob->server_mech, &sctx)) != GSASL_OK
   }
 /* Hereafter: gsasl_finish(sctx) please */
 
-gsasl_session_hook_set(sctx, (void *)ablock);
 cb_state.ablock = ablock;
 cb_state.currently = CURRENTLY_SERVER;
-gsasl_session_hook_set(sctx, (void *)&cb_state);
+gsasl_session_hook_set(sctx, &cb_state);
 
 tmps = CS expand_string(ob->server_service);
 gsasl_property_set(sctx, GSASL_SERVICE, tmps);
@@ -316,8 +362,9 @@ if (tls_in.channelbinding)
     {
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
 	ablock->name);
-    gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE,
-	CCS  tls_in.channelbinding);
+# ifdef CHANNELBIND_HACK
+    gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_in.channelbinding);
+# endif
     }
   else
     HDEBUG(D_auth)
@@ -375,7 +422,7 @@ do {
     }
 
   if ((rc == GSASL_NEEDS_MORE) || (to_send && *to_send))
-    exim_error = auth_get_no64_data((uschar **)&received, US to_send);
+    exim_error = auth_get_no64_data(USS &received, US to_send);
 
   if (to_send)
     {
@@ -454,12 +501,13 @@ expand_nmax = 0;
 switch (prop)
   {
   case GSASL_VALIDATE_SIMPLE:
+    HDEBUG(D_auth) debug_printf(" VALIDATE_SIMPLE\n");
     /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
-    propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
+    propval = US gsasl_property_fast(sctx, GSASL_AUTHID);
     auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
+    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
     auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
-    propval = US  gsasl_property_fast(sctx, GSASL_PASSWORD);
+    propval = US gsasl_property_fast(sctx, GSASL_PASSWORD);
     auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
     expand_nmax = 3;
     for (int i = 1; i <= 3; ++i)
@@ -470,13 +518,14 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_EXTERNAL:
+    HDEBUG(D_auth) debug_printf(" VALIDATE_EXTERNAL\n");
     if (!ablock->server_condition)
       {
-      HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate EXTERNAL.\n");
+      HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate EXTERNAL\n");
       cbrc = GSASL_AUTHENTICATION_ERROR;
       break;
       }
-    propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
+    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
 
     /* We always set $auth1, even if only to empty string. */
     auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
@@ -489,13 +538,14 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_ANONYMOUS:
+    HDEBUG(D_auth) debug_printf(" VALIDATE_ANONYMOUS\n");
     if (!ablock->server_condition)
       {
-      HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate ANONYMOUS.\n");
+      HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate ANONYMOUS\n");
       cbrc = GSASL_AUTHENTICATION_ERROR;
       break;
       }
-    propval = US  gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
+    propval = US gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
 
     /* We always set $auth1, even if only to empty string. */
 
@@ -509,6 +559,7 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_GSSAPI:
+    HDEBUG(D_auth) debug_printf(" VALIDATE_GSSAPI\n");
     /* GSASL_AUTHZID and GSASL_GSSAPI_DISPLAY_NAME
     The display-name is authenticated as part of GSS, the authzid is claimed
     by the SASL integration after authentication; protected against tampering
@@ -518,9 +569,9 @@ switch (prop)
     to the first release of Exim with this authenticator, they've been
     switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
 
-    propval = US  gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
+    propval = US gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
     auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
+    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
     auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     expand_nmax = 2;
     for (int i = 1; i <= 2; ++i)
@@ -535,6 +586,7 @@ switch (prop)
     break;
 
   case GSASL_SCRAM_ITER:
+    HDEBUG(D_auth) debug_printf(" SCRAM_ITER\n");
     if (ob->server_scram_iter)
       {
       tmps = CS expand_string(ob->server_scram_iter);
@@ -544,6 +596,7 @@ switch (prop)
     break;
 
   case GSASL_SCRAM_SALT:
+    HDEBUG(D_auth) debug_printf(" SCRAM_SALT\n");
     if (ob->server_scram_iter)
       {
       tmps = CS expand_string(ob->server_scram_salt);
@@ -553,6 +606,7 @@ switch (prop)
     break;
 
   case GSASL_PASSWORD:
+    HDEBUG(D_auth) debug_printf(" PASSWORD\n");
     /* DIGEST-MD5: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
        CRAM-MD5: GSASL_AUTHID
        PLAIN: GSASL_AUTHID and GSASL_AUTHZID
@@ -576,11 +630,11 @@ switch (prop)
     needing to add more glue, since avoiding that is a large part of the
     point of SASL. */
 
-    propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
+    propval = US gsasl_property_fast(sctx, GSASL_AUTHID);
     auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
+    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
     auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
-    propval = US  gsasl_property_fast(sctx, GSASL_REALM);
+    propval = US gsasl_property_fast(sctx, GSASL_REALM);
     auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
     expand_nmax = 3;
     for (int i = 1; i <= 3; ++i)
@@ -604,7 +658,7 @@ switch (prop)
     break;
 
   default:
-    HDEBUG(D_auth) debug_printf("Unrecognised callback: %d\n", prop);
+    HDEBUG(D_auth) debug_printf(" Unrecognised callback: %d\n", prop);
     cbrc = GSASL_NO_CALLBACK;
   }
 
@@ -614,6 +668,48 @@ HDEBUG(D_auth) debug_printf("Returning %s (%s)\n",
 return cbrc;
 }
 
+
+/******************************************************************************/
+
+#define PROP_OPTIONAL	BIT(0)
+#define PROP_STRINGPREP	BIT(1)
+
+
+static BOOL
+client_prop(Gsasl_session * sctx, Gsasl_property propnum, uschar * val,
+  const uschar * why, unsigned flags, uschar * buffer, int buffsize)
+{
+uschar * s, * t;
+int rc;
+
+if (flags & PROP_OPTIONAL && !val) return TRUE;
+if (!(s = expand_string(val)) || !(flags & PROP_OPTIONAL) && !*s)
+  {
+  string_format(buffer, buffsize, "%s", expand_string_message);
+  return FALSE;
+  }
+if (!*s) return TRUE;
+
+#ifdef SUPPORT_I18N
+if (flags & PROP_STRINGPREP)
+  {
+  if (gsasl_saslprep(CCS s, 0, CSS &t, &rc) != GSASL_OK)
+    {
+    string_format(buffer, buffsize, "Bad result from saslprep(%s): %s\n",
+		  why, stringprep_strerror(rc));
+    HDEBUG(D_auth) debug_printf("%s\n", buffer);
+    return FALSE;
+    }
+  gsasl_property_set(sctx, propnum, CS t);
+
+  free(t);
+  }
+else
+#endif
+  gsasl_property_set(sctx, propnum, CS s);
+
+return TRUE;
+}
 
 /*************************************************
 *              Client entry point                *
@@ -629,24 +725,149 @@ auth_gsasl_client(
   uschar *buffer,			/* buffer for reading response */
   int buffsize)				/* size of buffer */
 {
+auth_gsasl_options_block *ob =
+  (auth_gsasl_options_block *)(ablock->options_block);
+Gsasl_session * sctx = NULL;
+struct callback_exim_state cb_state;
+uschar * s;
+BOOL initial = TRUE, do_stringprep;
+int rc, yield = FAIL, flags;
+
 HDEBUG(D_auth)
-  debug_printf("Client side NOT IMPLEMENTED: you should not see this!\n");
-/* NOT IMPLEMENTED */
-return FAIL;
+  debug_printf("GNU SASL: initialising session for %s, mechanism %s\n",
+      ablock->name, ob->server_mech);
+
+*buffer = 0;
+
+#ifndef DISABLE_TLS
+/* This is a gross hack to get around the library a) requiring that
+c-b was already set, at the _start() call, and b) caching a b64'd
+version of the binding then which it never updates. */
+
+if (tls_out.channelbinding)
+  if (ob->client_channelbinding)
+    gsasl_callback_hook_set(gsasl_ctx, tls_out.channelbinding);
+#endif
+
+if ((rc = gsasl_client_start(gsasl_ctx, CCS ob->server_mech, &sctx)) != GSASL_OK)
+  {
+  string_format(buffer, buffsize, "GNU SASL: session start failure: %s (%s)",
+      gsasl_strerror_name(rc), gsasl_strerror(rc));
+  HDEBUG(D_auth) debug_printf("%s\n", buffer);
+  return ERROR;
+  }
+
+cb_state.ablock = ablock;
+cb_state.currently = CURRENTLY_CLIENT;
+gsasl_session_hook_set(sctx, &cb_state);
+
+/* Set properties */
+
+flags = Ustrncmp(ob->server_mech, "SCRAM-", 5) == 0 ? PROP_STRINGPREP : 0;
+
+if (  !client_prop(sctx, GSASL_PASSWORD, ob->client_password, US"password",
+		  flags, buffer, buffsize)
+   || !client_prop(sctx, GSASL_AUTHID, ob->client_username, US"username",
+		  flags, buffer, buffsize)
+   || !client_prop(sctx, GSASL_AUTHZID, ob->client_authz, US"authz",
+		  flags | PROP_OPTIONAL, buffer, buffsize)
+   )
+  return ERROR;
+
+#ifndef DISABLE_TLS
+if (tls_out.channelbinding)
+  if (ob->client_channelbinding)
+    {
+    HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
+	ablock->name);
+# ifdef CHANNELBIND_HACK
+    gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
+# endif
+    }
+  else
+    HDEBUG(D_auth)
+      debug_printf("Auth %s: Not enabling channel-binding (data available)\n",
+	  ablock->name);
+#endif
+
+/* Run the SASL conversation with the server */
+
+for(s = NULL; ;)
+  {
+  uschar * outstr;
+  BOOL fail;
+
+  rc = gsasl_step64(sctx, CS s, CSS &outstr);
+
+  fail = initial
+    ? smtp_write_command(sx, SCMD_FLUSH,
+			outstr ? "AUTH %s %s\r\n" : "AUTH %s\r\n",
+			ablock->public_name, outstr) <= 0
+    : outstr
+    ? smtp_write_command(sx, SCMD_FLUSH, "%s\r\n", outstr) <= 0
+    : FALSE;
+  if (outstr && *outstr) free(outstr);
+  if (fail)
+    {
+    yield = FAIL_SEND;
+    goto done;
+    }
+  initial = FALSE;
+
+  if (rc != GSASL_NEEDS_MORE)
+    {
+    if (rc != GSASL_OK)
+      {
+      string_format(buffer, buffsize, "gsasl: %s", gsasl_strerror(rc));
+      break;
+      }
+
+    /* expecting a final 2xx from the server, accepting the AUTH */
+
+    if (smtp_read_response(sx, buffer, buffsize, '2', timeout))
+      yield = OK;
+    break;	/* from SASL sequence loop */
+    }
+
+  /* 2xx or 3xx response is acceptable.  If 2xx, no further input */
+
+  if (!smtp_read_response(sx, buffer, buffsize, '3', timeout))
+    if (errno == 0 && buffer[0] == '2')
+      buffer[4] = '\0';
+    else
+      {
+      yield = FAIL;
+      goto done;
+      }
+  s = buffer + 4;
+  }
+
+done:
+gsasl_finish(sctx);
+return yield;
 }
 
 static int
 client_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_instance *ablock)
 {
-int cbrc = GSASL_NO_CALLBACK;
-HDEBUG(D_auth)
-  debug_printf("GNU SASL callback %d for %s/%s as client\n",
-      prop, ablock->name, ablock->public_name);
-
-HDEBUG(D_auth)
-  debug_printf("Client side NOT IMPLEMENTED: you should not see this!\n");
-
-return cbrc;
+HDEBUG(D_auth) debug_printf("GNU SASL callback %d for %s/%s as client\n",
+		prop, ablock->name, ablock->public_name);
+switch (prop)
+  {
+  case GSASL_AUTHZID:
+    HDEBUG(D_auth) debug_printf(" inquired for AUTHZID; not providing one\n");
+    break;
+  case GSASL_SCRAM_SALTED_PASSWORD:
+    HDEBUG(D_auth)
+      debug_printf(" inquired for SCRAM_SALTED_PASSWORD; not providing one\n");
+    break;
+  case GSASL_CB_TLS_UNIQUE:
+    HDEBUG(D_auth)
+      debug_printf(" inquired for CB_TLS_UNIQUE, filling in\n");
+    gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
+    break;
+  }
+return GSASL_NO_CALLBACK;
 }
 
 /*************************************************

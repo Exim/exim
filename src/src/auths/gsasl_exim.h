@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2012 */
+/* Copyright (c) The Exim Maintainers 2019 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Copyright (c) Twitter Inc 2012 */
@@ -19,7 +20,13 @@ typedef struct {
   uschar *server_password;
   uschar *server_scram_iter;
   uschar *server_scram_salt;
+
+  uschar *client_username;
+  uschar *client_password;
+  uschar *client_authz;
+
   BOOL    server_channelbinding;
+  BOOL	  client_channelbinding;
 } auth_gsasl_options_block;
 
 /* Data for reading the authenticator-specific options. */

@@ -1,0 +1,2 @@
+authenticator gsasl
+feature _HAVE_TLS

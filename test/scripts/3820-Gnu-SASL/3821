@@ -1,0 +1,10 @@
+# GSASL PLAIN & SCRAM authentication - gsasl client versus gsasl server
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -odi plain@test.ex
+****
+exim -odi scram_sha_1@test.ex
+****
+killdaemon
+no_msglog_check

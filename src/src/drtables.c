@@ -128,7 +128,7 @@ auth_info auths_available[] = {
   .options_len =	sizeof(auth_gsasl_options_block),
   .init =		auth_gsasl_init,
   .servercode =		auth_gsasl_server,
-  .clientcode =		NULL,
+  .clientcode =		auth_gsasl_client,
   .version_report =	auth_gsasl_version_report
   },
 #endif

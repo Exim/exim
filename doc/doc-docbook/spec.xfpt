@@ -27435,19 +27435,37 @@ auth_mechanisms = plain login ntlm
 .cindex "authentication" "DIGEST-MD5"
 .cindex "authentication" "CRAM-MD5"
 .cindex "authentication" "SCRAM-SHA-1"
-The &(gsasl)& authenticator provides server integration for the GNU SASL
+The &(gsasl)& authenticator provides integration for the GNU SASL
 library and the mechanisms it provides.  This is new as of the 4.80 release
 and there are a few areas where the library does not let Exim smoothly
 scale to handle future authentication mechanisms, so no guarantee can be
 made that any particular new authentication mechanism will be supported
 without code changes in Exim.
 
-Exim's &(gsasl)& authenticator does not have client-side support at this
-time; only the server-side support is implemented.  Patches welcome.
 
+.new
+.option client_authz gsasl string&!! unset
+This option can be used to supply an &'authorization id'&
+which is different to the &'authentication_id'& provided
+by $%client_username%& option.
+If unset or (after expansion) empty it is not used,
+which is the common case.
+
+.option client_channelbinding gsasl boolean false
+See $%server_channelbinding%& below.
+
+.option client_password gsasl string&!! unset
+This option is exapanded before use, and should result in
+the password to be used, in clear.
+
+.option client_username gsasl string&!! unset
+This option is exapanded before use, and should result in
+the account name to be used.
+.wen
 
 .option server_channelbinding gsasl boolean false
-Do not set this true without consulting a cryptographic engineer.
+Do not set this true and rely on the properties
+without consulting a cryptographic engineer.
 
 Some authentication mechanisms are able to use external context at both ends
 of the session to bind the authentication to that context, and fail the
@@ -27469,7 +27487,7 @@ This defaults off to ensure smooth upgrade across Exim releases, in case
 this option causes some clients to start failing.  Some future release
 of Exim might have switched the default to be true.
 
-However, Channel Binding in TLS has proven to be broken in current versions.
+However, Channel Binding in TLS has proven to be vulnerable in current versions.
 Do not plan to rely upon this feature for security, ever, without consulting
 with a subject matter expert (a cryptographic engineer).
 
