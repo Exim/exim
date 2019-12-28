@@ -27447,7 +27447,7 @@ without code changes in Exim.
 .option client_authz gsasl string&!! unset
 This option can be used to supply an &'authorization id'&
 which is different to the &'authentication_id'& provided
-by $%client_username%& option.
+by &%client_username%& option.
 If unset or (after expansion) empty it is not used,
 which is the common case.
 

@@ -96,7 +96,7 @@ auth_gsasl_options_block auth_gsasl_option_defaults = {
 /* Dummy values */
 void auth_gsasl_init(auth_instance *ablock) {}
 int auth_gsasl_server(auth_instance *ablock, uschar *data) {return 0;}
-int auth_gsasl_client(auth_instance *ablock, smtp_inblock * sx,
+int auth_gsasl_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
 void auth_gsasl_version_report(FILE *f) {}
 
@@ -301,14 +301,24 @@ HDEBUG(D_auth)
       ablock->name, ob->server_mech);
 
 #ifndef DISABLE_TLS
+if (tls_in.channelbinding && ob->server_channelbinding)
+  {
+# ifdef EXPERIMENTAL_TLS_RESUME
+  if (!tls_in.ext_master_secret && tls_in.resumption == RESUME_USED)
+    {		/* per RFC 7677 section 4 */
+    HDEBUG(D_auth) debug_printf(
+      "channel binding not usable on resumed TLS without extended-master-secret");
+    return FAIL;
+    }
+# endif
 # ifdef CHANNELBIND_HACK
 /* This is a gross hack to get around the library a) requiring that
 c-b was already set, at the _start() call, and b) caching a b64'd
 version of the binding then which it never updates. */
 
-if (tls_in.channelbinding && ob->server_channelbinding)
   gsasl_callback_hook_set(gsasl_ctx, tls_in.channelbinding);
 # endif
+  }
 #endif
 
 if ((rc = gsasl_server_start(gsasl_ctx, CCS ob->server_mech, &sctx)) != GSASL_OK)
@@ -362,7 +372,7 @@ if (tls_in.channelbinding)
     {
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
 	ablock->name);
-# ifdef CHANNELBIND_HACK
+# ifndef CHANNELBIND_HACK
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_in.channelbinding);
 # endif
     }
@@ -720,7 +730,7 @@ return TRUE;
 int
 auth_gsasl_client(
   auth_instance *ablock,		/* authenticator block */
-  smtp_inblock * sx,			/* connection */
+  void * sx,				/* connection */
   int timeout,				/* command timeout */
   uschar *buffer,			/* buffer for reading response */
   int buffsize)				/* size of buffer */
@@ -740,13 +750,24 @@ HDEBUG(D_auth)
 *buffer = 0;
 
 #ifndef DISABLE_TLS
-/* This is a gross hack to get around the library a) requiring that
-c-b was already set, at the _start() call, and b) caching a b64'd
-version of the binding then which it never updates. */
+if (tls_out.channelbinding && ob->client_channelbinding)
+  {
+# ifdef EXPERIMENTAL_TLS_RESUME
+  if (!tls_out.ext_master_secret && tls_out.resumption == RESUME_USED)
+    {		/* per RFC 7677 section 4 */
+    string_format(buffer, buffsize, "%s",
+      "channel binding not usable on resumed TLS without extended-master-secret");
+    return FAIL;
+    }
+# endif
+# ifdef CHANNELBIND_HACK
+  /* This is a gross hack to get around the library a) requiring that
+  c-b was already set, at the _start() call, and b) caching a b64'd
+  version of the binding then which it never updates. */
 
-if (tls_out.channelbinding)
-  if (ob->client_channelbinding)
-    gsasl_callback_hook_set(gsasl_ctx, tls_out.channelbinding);
+  gsasl_callback_hook_set(gsasl_ctx, tls_out.channelbinding);
+# endif
+  }
 #endif
 
 if ((rc = gsasl_client_start(gsasl_ctx, CCS ob->server_mech, &sctx)) != GSASL_OK)
@@ -780,7 +801,7 @@ if (tls_out.channelbinding)
     {
     HDEBUG(D_auth) debug_printf("Auth %s: Enabling channel-binding\n",
 	ablock->name);
-# ifdef CHANNELBIND_HACK
+# ifndef CHANNELBIND_HACK
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
 # endif
     }
