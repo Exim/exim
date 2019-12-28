@@ -2784,7 +2784,9 @@ if (SSL_session_reused(server_ssl))
 /* TLS has been set up. Record data for the connection,
 adjust the input functions to read via TLS, and initialize things. */
 
+#ifdef SSL_get_extms_support
 tls_in.ext_master_secret = SSL_get_extms_support(server_ssl) == 1;
+#endif
 peer_cert(server_ssl, &tls_in, peerdn, sizeof(peerdn));
 
 tls_in.ver = tlsver_name(server_ssl);
@@ -3385,7 +3387,9 @@ DEBUG(D_tls)
 tls_client_resume_posthandshake(exim_client_ctx, tlsp);
 #endif
 
+#ifdef SSL_get_extms_support
 tlsp->ext_master_secret = SSL_get_extms_support(exim_client_ctx->ssl) == 1;
+#endif
 peer_cert(exim_client_ctx->ssl, tlsp, peerdn, sizeof(peerdn));
 
 tlsp->ver = tlsver_name(exim_client_ctx->ssl);

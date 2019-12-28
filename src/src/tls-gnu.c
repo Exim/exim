@@ -2529,8 +2529,10 @@ if (rc != GNUTLS_E_SUCCESS)
   return FAIL;
   }
 
+#ifdef GNUTLS_SFLAGS_EXT_MASTER_SECRET
 if (gnutls_session_get_flags(state->session) & GNUTLS_SFLAGS_EXT_MASTER_SECRET)
   tls_in.ext_master_secret = TRUE;
+#endif
 
 #ifdef EXPERIMENTAL_TLS_RESUME
 tls_server_resume_posthandshake(state);
@@ -3001,8 +3003,10 @@ if (!verify_certificate(state, errstr))
   return FALSE;
   }
 
+#ifdef GNUTLS_SFLAGS_EXT_MASTER_SECRET
 if (gnutls_session_get_flags(state->session) & GNUTLS_SFLAGS_EXT_MASTER_SECRET)
   tlsp->ext_master_secret = TRUE;
+#endif
 
 #ifndef DISABLE_OCSP
 if (request_ocsp)
