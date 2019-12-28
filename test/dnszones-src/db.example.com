@@ -28,6 +28,10 @@ example.com.	TXT     v=spf1 -all
 double		TXT	v=spf1 include:_spf.google.com ~all
 		TXT	v=spf1 +a +mx -all
 
+doubleplus	TXT	v=spf1 include:_spf.google.com ~all
+		TXT	google-site-verification=q-4MSVLjluQIsBztu5jzJBxAcJXzNcHAk0jHTZEamB8
+		TXT	v=spf1 +a +mx -all
+
 uppercase	TXT	v=sPf1 +all
 
 ; Alias A record for the local host, under the name "server1"
