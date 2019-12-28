@@ -1114,6 +1114,9 @@ show_db_version(fp);
 #ifdef SUPPORT_I18N
   utf8_version_report(fp);
 #endif
+#ifdef SUPPORT_SPF
+  spf_lib_version_report(fp);
+#endif
 
   for (auth_info * authi = auths_available; *authi->driver_name != '\0'; ++authi)
     if (authi->version_report)

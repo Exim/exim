@@ -25,6 +25,7 @@ typedef struct spf_result_id {
 } spf_result_id;
 
 /* prototypes */
+void spf_lib_version_report(FILE *);
 BOOL spf_init(void);
 BOOL spf_conn_init(uschar *, uschar *);
 int  spf_process(const uschar **, uschar *, int);
