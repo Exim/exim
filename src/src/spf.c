@@ -37,7 +37,7 @@ SPF_dns_rr_t  * spf_nxdomain = NULL;
 
 static SPF_dns_rr_t *
 SPF_dns_exim_lookup(SPF_dns_server_t *spf_dns_server,
-const char *domain, ns_type rr_type, int should_cache)
+  const char *domain, ns_type rr_type, int should_cache)
 {
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
@@ -56,22 +56,30 @@ SPF_dns_rr_t srr = {
   .hook = NULL,				/* misc information */
   .source = spf_dns_server
 };
+int dns_rc;
 
 DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", domain);
 
-if (dns_lookup(dnsa, US domain, rr_type, NULL) == DNS_NOMATCH)
+switch (dns_rc = dns_lookup(dnsa, US domain, rr_type, NULL))
   {
-  SPF_dns_rr_dup(&spfrr, spf_nxdomain);
-  return spfrr;
-}
+  case DNS_SUCCEED:	srr.herrno = NETDB_SUCCESS;	break;
+  case DNS_AGAIN:	srr.herrno = TRY_AGAIN;		break;
+  case DNS_NOMATCH:	srr.herrno = HOST_NOT_FOUND;	break;
+  case DNS_FAIL:
+  default:		srr.herrno = NO_RECOVERY;	break;
+  } 
 
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
      rr = dns_next_rr(dnsa, &dnss, RESET_NEXT))
   if (rr->type == rr_type) found++;
 
-srr.num_rr = found;
+if (found == 0)
+  {
+  SPF_dns_rr_dup(&spfrr, &srr);
+  return spfrr;
+  }
+
 srr.rr = store_malloc(sizeof(SPF_dns_rr_data_t) * found);
-srr.herrno = h_errno,
 
 found = 0;
 for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
@@ -84,7 +92,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     switch(rr_type)
       {
       case T_MX:
-	s += 2;			/* skip the MX precedence field */
+	s += 2;	/* skip the MX precedence field */
       case T_PTR:
 	{
 	uschar * buf = store_malloc(256);
@@ -130,6 +138,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     srr.rr[found++] = (void *) s;
     }
 
+srr.num_rr = found;
 /* spfrr->rr must have been malloc()d for this */
 SPF_dns_rr_dup(&spfrr, &srr);
 return spfrr;

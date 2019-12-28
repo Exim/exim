@@ -30,8 +30,8 @@ killdaemon
 # - and not crash with non-spf txt records
 # v=spf1 is casr-insensitive
 exim -be
-${lookup {fred@test.again.dns} spf {HOSTIPV4}}
-${lookup {fred@double.example.com} spf {8.8.8.8}}
-${lookup {fred@doubleplus.example.com} spf {8.8.8.8}}
-${lookup {fred@uppercase.example.com} spf {HOSTIPV4}}
+temperror ${lookup {fred@test.again.dns} spf {HOSTIPV4}}
+permerror ${lookup {fred@double.example.com} spf {8.8.8.8}}
+permerror ${lookup {fred@doubleplus.example.com} spf {8.8.8.8}}
+pass      ${lookup {fred@uppercase.example.com} spf {HOSTIPV4}}
 ****
