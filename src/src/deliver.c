@@ -429,7 +429,7 @@ for (address_item * addr2 = addr->next; addr2; addr2 = addr2->next)
   addr2->transport_return = addr->transport_return;
   addr2->basic_errno =	    addr->basic_errno;
   addr2->more_errno =	    addr->more_errno;
-  addr2->delivery_usec =    addr->delivery_usec;
+  addr2->delivery_time =    addr->delivery_time;
   addr2->special_action =   addr->special_action;
   addr2->message =	    addr->message;
   addr2->user_message =	    addr->user_message;
@@ -1264,10 +1264,7 @@ if (LOGGING(queue_time))
     string_timesince(&received_time));
 
 if (LOGGING(deliver_time))
-  {
-  struct timeval diff = {.tv_sec = addr->more_errno, .tv_usec = addr->delivery_usec};
-  g = string_append(g, 2, US" DT=", string_timediff(&diff));
-  }
+  g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));
 
 /* string_cat() always leaves room for the terminator. Release the
 store we used to build the line after writing it. */
@@ -1334,6 +1331,9 @@ if (addr->host_used)
     g = string_fmt_append(g, ":%d", port == PORT_NONE ? 25 : port);
     }
   }
+
+if (LOGGING(deliver_time))
+  g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));
 
 if (addr->message)
   g = string_append(g, 2, US": ", addr->message);
@@ -1413,6 +1413,9 @@ if (addr->basic_errno > 0)
 
 if (addr->message)
   g = string_append(g, 2, US": ", addr->message);
+
+if (LOGGING(deliver_time))
+  g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));
 
 (void) string_from_gstring(g);
 
@@ -2407,7 +2410,7 @@ if ((pid = fork()) == 0)
       || (ret = write(pfd[pipe_write], &addr2->flags, sizeof(addr2->flags))) != sizeof(addr2->flags)
       || (ret = write(pfd[pipe_write], &addr2->basic_errno,    sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->more_errno,     sizeof(int))) != sizeof(int)
-      || (ret = write(pfd[pipe_write], &addr2->delivery_usec,  sizeof(int))) != sizeof(int)
+      || (ret = write(pfd[pipe_write], &addr2->delivery_time,  sizeof(struct timeval))) != sizeof(struct timeval)
       || (ret = write(pfd[pipe_write], &addr2->special_action, sizeof(int))) != sizeof(int)
       || (ret = write(pfd[pipe_write], &addr2->transport,
         sizeof(transport_instance *))) != sizeof(transport_instance *)
@@ -2475,7 +2478,7 @@ for (addr2 = addr; addr2; addr2 = addr2->next)
     len = read(pfd[pipe_read], &addr2->flags, sizeof(addr2->flags));
     len = read(pfd[pipe_read], &addr2->basic_errno,    sizeof(int));
     len = read(pfd[pipe_read], &addr2->more_errno,     sizeof(int));
-    len = read(pfd[pipe_read], &addr2->delivery_usec,  sizeof(int));
+    len = read(pfd[pipe_read], &addr2->delivery_time,  sizeof(struct timeval));
     len = read(pfd[pipe_read], &addr2->special_action, sizeof(int));
     len = read(pfd[pipe_read], &addr2->transport,
       sizeof(transport_instance *));
@@ -3129,11 +3132,7 @@ while (addr_local)
 
     /* Done with this address */
 
-    if (result == OK)
-      {
-      addr2->more_errno = deliver_time.tv_sec;
-      addr2->delivery_usec = deliver_time.tv_usec;
-      }
+    addr2->delivery_time = deliver_time;
     post_process_one(addr2, result, logflags, EXIM_DTYPE_TRANSPORT, logchar);
 
     /* If a pipe delivery generated text to be sent back, the result may be
@@ -3607,8 +3606,8 @@ while (!done)
 	  ptr += sizeof(addr->basic_errno);
 	  memcpy(&addr->more_errno, ptr, sizeof(addr->more_errno));
 	  ptr += sizeof(addr->more_errno);
-	  memcpy(&addr->delivery_usec, ptr, sizeof(addr->delivery_usec));
-	  ptr += sizeof(addr->delivery_usec);
+	  memcpy(&addr->delivery_time, ptr, sizeof(addr->delivery_time));
+	  ptr += sizeof(addr->delivery_time);
 	  memcpy(&addr->flags, ptr, sizeof(addr->flags));
 	  ptr += sizeof(addr->flags);
 	  addr->message = *ptr ? string_copy(ptr) : NULL;
@@ -4924,8 +4923,8 @@ all pipes, so I do not see a reason to use non-blocking IO here
       ptr += sizeof(addr->basic_errno);
       memcpy(ptr, &addr->more_errno, sizeof(addr->more_errno));
       ptr += sizeof(addr->more_errno);
-      memcpy(ptr, &addr->delivery_usec, sizeof(addr->delivery_usec));
-      ptr += sizeof(addr->delivery_usec);
+      memcpy(ptr, &addr->delivery_time, sizeof(addr->delivery_time));
+      ptr += sizeof(addr->delivery_time);
       memcpy(ptr, &addr->flags, sizeof(addr->flags));
       ptr += sizeof(addr->flags);
 

@@ -165,6 +165,7 @@ typedef struct {
   ehlo_resp_precis	ehlo_resp;
 #endif
 
+  struct timeval	delivery_start;
   address_item *	first_addr;
   address_item *	next_addr;
   address_item *	sync_addr;

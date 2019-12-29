@@ -537,6 +537,7 @@ Arguments:
   host           if set, mark addrs as having used this host
   smtp_greeting  from peer
   helo_response  from peer
+  start		 points to timestamp of delivery start
 
 If errno_value has the special value ERRNO_CONNECTTIMEOUT, ETIMEDOUT is put in
 the errno field, and RTEF_CTOUT is ORed into the more_errno field, to indicate
@@ -547,23 +548,29 @@ Returns:       nothing
 
 static void
 set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
-  BOOL pass_message, host_item * host
+  BOOL pass_message, host_item * host,
 #ifdef EXPERIMENTAL_DSN_INFO
-  , const uschar * smtp_greeting, const uschar * helo_response
+  const uschar * smtp_greeting, const uschar * helo_response,
 #endif
+  struct timeval * start
   )
 {
 int orvalue = 0;
+struct timeval deliver_time;
+
 if (errno_value == ERRNO_CONNECTTIMEOUT)
   {
   errno_value = ETIMEDOUT;
   orvalue = RTEF_CTOUT;
   }
+timesince(&deliver_time, start);
+
 for (address_item * addr = addrlist; addr; addr = addr->next)
   if (addr->transport_return >= PENDING)
     {
     addr->basic_errno = errno_value;
     addr->more_errno |= orvalue;
+    addr->delivery_time = deliver_time;
     if (msg)
       {
       addr->message = msg;
@@ -587,14 +594,14 @@ for (address_item * addr = addrlist; addr; addr = addr->next)
 }
 
 static void
-set_errno_nohost(address_item *addrlist, int errno_value, uschar *msg, int rc,
-  BOOL pass_message)
+set_errno_nohost(address_item * addrlist, int errno_value, uschar * msg, int rc,
+  BOOL pass_message, struct timeval * start)
 {
-set_errno(addrlist, errno_value, msg, rc, pass_message, NULL
+set_errno(addrlist, errno_value, msg, rc, pass_message, NULL,
 #ifdef EXPERIMENTAL_DSN_INFO
-	  , NULL, NULL
+	  NULL, NULL,
 #endif
-	  );
+	  start);
 }
 
 
@@ -1227,7 +1234,7 @@ while (count-- > 0)
     {
     uschar *message = string_sprintf("SMTP timeout after RCPT TO:<%s>",
 		transport_rcpt_address(addr, sx->conn_args.tblock->rcpt_include_affixes));
-    set_errno_nohost(sx->first_addr, ETIMEDOUT, message, DEFER, FALSE);
+    set_errno_nohost(sx->first_addr, ETIMEDOUT, message, DEFER, FALSE, &sx->delivery_start);
     retry_add_item(addr, addr->address_retry_key, 0);
     update_waiting = FALSE;
     return -1;
@@ -1445,7 +1452,7 @@ switch(rc)
 
   case ERROR:
     set_errno_nohost(sx->addrlist, ERRNO_AUTHPROB, string_copy(sx->buffer),
-	      DEFER, FALSE);
+	      DEFER, FALSE, &sx->delivery_start);
     return ERROR;
   }
 return OK;
@@ -1614,7 +1621,7 @@ if (require_auth == OK && !f.smtp_authenticated)
   {
   set_errno_nohost(sx->addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
-    FALSE);
+    FALSE, &sx->delivery_start);
   return DEFER;
   }
 
@@ -1625,9 +1632,9 @@ return OK;
 /* Construct AUTH appendix string for MAIL TO */
 /*
 Arguments
-  buffer	to build string
+  sx		context for smtp connection
+  p		point in sx->buffer to build string
   addrlist      chain of potential addresses to deliver
-  ob		transport options
 
 Globals		f.smtp_authenticated
 		client_authenticated_sender
@@ -1635,29 +1642,31 @@ Return	True on error, otherwise buffer has (possibly empty) terminated string
 */
 
 static BOOL
-smtp_mail_auth_str(uschar *buffer, unsigned bufsize, address_item *addrlist,
-		    smtp_transport_options_block *ob)
+smtp_mail_auth_str(smtp_context * sx, uschar * p, address_item * addrlist)
 {
+smtp_transport_options_block * ob = sx->conn_args.ob;
 uschar * local_authenticated_sender = authenticated_sender;
 
 #ifdef notdef
-  debug_printf("smtp_mail_auth_str: as<%s> os<%s> SA<%s>\n", authenticated_sender, ob->authenticated_sender, f.smtp_authenticated?"Y":"N");
+  debug_printf("smtp_mail_auth_str: as<%s> os<%s> SA<%s>\n",
+    authenticated_sender, ob->authenticated_sender, f.smtp_authenticated?"Y":"N");
 #endif
 
 if (ob->authenticated_sender)
   {
-  uschar *new = expand_string(ob->authenticated_sender);
+  uschar * new = expand_string(ob->authenticated_sender);
   if (!new)
     {
     if (!f.expand_string_forcedfail)
       {
       uschar *message = string_sprintf("failed to expand "
         "authenticated_sender: %s", expand_string_message);
-      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
+      set_errno_nohost(addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
       return TRUE;
       }
     }
-  else if (*new) local_authenticated_sender = new;
+  else if (*new)
+    local_authenticated_sender = new;
   }
 
 /* Add the authenticated sender address if present */
@@ -1665,13 +1674,13 @@ if (ob->authenticated_sender)
 if (  (f.smtp_authenticated || ob->authenticated_sender_force)
    && local_authenticated_sender)
   {
-  string_format_nt(buffer, bufsize, " AUTH=%s",
+  string_format_nt(p, sizeof(sx->buffer) - (p-sx->buffer), " AUTH=%s",
     auth_xtextencode(local_authenticated_sender,
       Ustrlen(local_authenticated_sender)));
   client_authenticated_sender = string_copy(local_authenticated_sender);
   }
 else
-  *buffer= 0;
+  *p = 0;
 
 return FALSE;
 }
@@ -2046,7 +2055,7 @@ tls_modify_variables(&tls_out);
 if (sx->smtps)
   {
   set_errno_nohost(sx->addrlist, ERRNO_TLSFAILURE, US"TLS support not available",
-	    DEFER, FALSE);
+	    DEFER, FALSE, &sx->delivery_start);
   return ERROR;
   }
 #endif
@@ -2085,7 +2094,7 @@ if (!continue_hostname)
 	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
 				  string_sprintf("DANE error: tlsa lookup %s",
 				    rc_to_string(rc)),
-				  rc, FALSE);
+				  rc, FALSE, &sx->delivery_start);
 # ifndef DISABLE_EVENT
 				(void) event_raise(sx->conn_args.tblock->event_action,
 				  US"dane:fail", sx->dane_required
@@ -2098,7 +2107,7 @@ if (!continue_hostname)
       {
       set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
 	string_sprintf("DANE error: %s lookup not DNSSEC", sx->conn_args.host->name),
-	FAIL, FALSE);
+	FAIL, FALSE, &sx->delivery_start);
 # ifndef DISABLE_EVENT
       (void) event_raise(sx->conn_args.tblock->event_action,
 	US"dane:fail", US"dane-required");
@@ -2149,7 +2158,7 @@ if (!continue_hostname)
       set_errno_nohost(sx->addrlist,
 	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
 	sx->verify ? US strerror(errno) : NULL,
-	DEFER, FALSE);
+	DEFER, FALSE, &sx->delivery_start);
       sx->send_quit = FALSE;
       return DEFER;
       }
@@ -2216,7 +2225,7 @@ will be?  Somehow I doubt it. */
 	{
 	set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL,
 	  string_sprintf("deferred by smtp:connect event expansion: %s", s),
-	  DEFER, FALSE);
+	  DEFER, FALSE, &sx->delivery_start);
 	yield = DEFER;
 	goto SEND_QUIT;
 	}
@@ -2230,7 +2239,7 @@ will be?  Somehow I doubt it. */
       {
       message = string_sprintf("failed to expand helo_data: %s",
         expand_string_message);
-      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
+      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -2577,7 +2586,7 @@ if (tls_out.active.sock >= 0)
     {
     uschar *message = string_sprintf("failed to expand helo_data: %s",
       expand_string_message);
-    set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
+    set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
     yield = DEFER;
     goto SEND_QUIT;
     }
@@ -2819,7 +2828,7 @@ if (sx->addrlist->prop.utf8_msg)
       {
       message = string_sprintf("failed to expand utf8_downconvert: %s",
         expand_string_message);
-      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE);
+      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, message, DEFER, FALSE, &sx->delivery_start);
       yield = DEFER;
       goto SEND_QUIT;
       }
@@ -2879,7 +2888,7 @@ return OK;
       set_errno_nohost(sx->addrlist,
 	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,
 	sx->verify ? US strerror(errno) : NULL,
-	DEFER, FALSE);
+	DEFER, FALSE, &sx->delivery_start);
       sx->send_quit = FALSE;
       return DEFER;
       }
@@ -2943,11 +2952,11 @@ FAILED:
 #endif
 	    ? FAIL : DEFER,
 	    pass_message,
-	    errno == ECONNREFUSED ? NULL : sx->conn_args.host
+	    errno == ECONNREFUSED ? NULL : sx->conn_args.host,
 #ifdef EXPERIMENTAL_DSN_INFO
-	    , sx->smtp_greeting, sx->helo_response
+	    sx->smtp_greeting, sx->helo_response,
 #endif
-	    );
+	    &sx->delivery_start);
   }
 
 
@@ -3089,10 +3098,7 @@ Other expansion failures are serious. An empty result is ignored, but there is
 otherwise no check - this feature is expected to be used with LMTP and other
 cases where non-standard addresses (e.g. without domains) might be required. */
 
-if (smtp_mail_auth_str(p, sizeof(sx->buffer) - (p-sx->buffer), addrlist, sx->conn_args.ob))
-  return ERROR;
-
-return OK;
+return smtp_mail_auth_str(sx, p, addrlist) ? ERROR : OK;
 }
 
 
@@ -3178,7 +3184,7 @@ sx->pending_MAIL = TRUE;     /* The block starts with MAIL */
     {
     if (s = string_address_utf8_to_alabel(s, &errstr), errstr)
       {
-      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE);
+      set_errno_nohost(sx->addrlist, ERRNO_EXPANDFAIL, errstr, DEFER, FALSE, &sx->delivery_start);
       *yield = ERROR;
       return -4;
       }
@@ -3472,6 +3478,9 @@ Returns:          OK    - the connection was made and the delivery attempted;
                           and there was a problem setting it up; OR helo_data
                           or add_headers or authenticated_sender is specified
                           for this transport, and the string failed to expand
+
+		For all non-OK returns the first addr of the list carries the
+		time taken for the attempt.
 */
 
 static int
@@ -3483,14 +3492,12 @@ smtp_transport_options_block * ob = SOB tblock->options_block;
 int yield = OK;
 int save_errno;
 int rc;
-struct timeval start_delivery_time;
 
 BOOL pass_message = FALSE;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
 
-gettimeofday(&start_delivery_time, NULL);
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 *message_defer = FALSE;
 
@@ -3503,13 +3510,17 @@ sx->conn_args.interface = interface;
 sx->helo_data = NULL;
 sx->conn_args.tblock = tblock;
 /* sx->verify = FALSE; */
+gettimeofday(&sx->delivery_start, NULL);
 sx->sync_addr = sx->first_addr = addrlist;
 
 /* Get the channel set up ready for a message (MAIL FROM being the next
 SMTP command to send */
 
 if ((rc = smtp_setup_conn(sx, suppress_tls)) != OK)
+  {
+  timesince(&addrlist->delivery_time, &sx->delivery_start);
   return rc;
+  }
 
 /* If there is a filter command specified for this transport, we can now
 set it up. This cannot be done until the identify of the host is known. */
@@ -3526,7 +3537,7 @@ if (tblock->filter_command)
 	string_sprintf("%.50s transport", tblock->name), NULL))
     {
     set_errno_nohost(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
-      FALSE);
+      FALSE, &sx->delivery_start);
     yield = ERROR;
     goto SEND_QUIT;
     }
@@ -3605,7 +3616,7 @@ else
 	{
 	/*XXX could we find a better errno than 0 here? */
 	set_errno_nohost(addrlist, 0, a->message, FAIL,
-	  testflag(a, af_pass_message));
+	  testflag(a, af_pass_message), &sx->delivery_start);
 	sx->ok = FALSE;
 	break;
 	}
@@ -3858,7 +3869,7 @@ else
     int len;
     uschar * conf = NULL;
 
-    timesince(&delivery_time, &start_delivery_time);
+    timesince(&delivery_time, &sx->delivery_start);
     sx->send_rset = FALSE;
     pipelining_active = FALSE;
 
@@ -3933,9 +3944,8 @@ else
       actual host that was used. */
 
       addr->transport_return = OK;
-      addr->more_errno = delivery_time.tv_sec;
-      addr->delivery_usec = delivery_time.tv_usec;
       addr->host_used = host;
+      addr->delivery_time = delivery_time;
       addr->special_action = flag;
       addr->message = conf;
 
@@ -4165,11 +4175,11 @@ if (!sx->ok)
       }
     }
 
-  set_errno(addrlist, save_errno, set_message, set_rc, pass_message, host
+  set_errno(addrlist, save_errno, set_message, set_rc, pass_message, host,
 #ifdef EXPERIMENTAL_DSN_INFO
-	    , sx->smtp_greeting, sx->helo_response
+	    sx->smtp_greeting, sx->helo_response,
 #endif
-	    );
+	    &sx->delivery_start);
   }
 
 /* If all has gone well, send_quit will be set TRUE, implying we can end the
@@ -4304,11 +4314,11 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	    socket_fd = pfd[1];
 	  else
 	    set_errno(sx->first_addr, errno, US"internal allocation problem",
-		    DEFER, FALSE, host
+		    DEFER, FALSE, host,
 # ifdef EXPERIMENTAL_DSN_INFO
-		    , sx->smtp_greeting, sx->helo_response
+		    sx->smtp_greeting, sx->helo_response,
 # endif
-		    );
+		    &sx->delivery_start);
 	  }
       else
 #endif
@@ -4365,11 +4375,11 @@ propagate it from the initial
 
     /* If RSET failed and there are addresses left, they get deferred. */
     else
-      set_errno(sx->first_addr, errno, msg, DEFER, FALSE, host
+      set_errno(sx->first_addr, errno, msg, DEFER, FALSE, host,
 #ifdef EXPERIMENTAL_DSN_INFO
-		  , sx->smtp_greeting, sx->helo_response
+		  sx->smtp_greeting, sx->helo_response,
 #endif
-		  );
+		  &sx->delivery_start);
     }
   }
 
@@ -5094,7 +5104,9 @@ retry_non_continued:
 
     if (f.dont_deliver)
       {
-      set_errno_nohost(addrlist, 0, NULL, OK, FALSE);
+      struct timeval now;
+      gettimeofday(&now, NULL);
+      set_errno_nohost(addrlist, 0, NULL, OK, FALSE, &now);
       for (address_item * addr = addrlist; addr; addr = addr->next)
         {
         addr->host_used = host;

@@ -573,7 +573,7 @@ address_item address_defaults = {
   .localpart_cache =	{ 0 },                /* localpart_cache - ditto */
   .mode =		-1,
   .more_errno =		0,
-  .delivery_usec =	0,
+  .delivery_time =	{.tv_sec = 0, .tv_usec = 0},
   .basic_errno =	ERRNO_UNKNOWNERROR,
   .child_count =	0,
   .return_file =	-1,

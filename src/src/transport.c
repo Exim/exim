@@ -1260,8 +1260,8 @@ if ((write_pid = fork()) == 0)
         != sizeof(int)
      || write(pfd[pipe_write], (void *)&tctx->addr->more_errno, sizeof(int))
         != sizeof(int)
-     || write(pfd[pipe_write], (void *)&tctx->addr->delivery_usec, sizeof(int))
-        != sizeof(int)
+     || write(pfd[pipe_write], (void *)&tctx->addr->delivery_time, sizeof(struct timeval))
+        != sizeof(struct timeval)
      )
     rc = FALSE;	/* compiler quietening */
   exim_underbar_exit(0);
@@ -1387,7 +1387,7 @@ if (write_pid > 0)
         {
 	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
-        dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_usec, sizeof(int));
+        dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_time, sizeof(struct timeval));
 	dummy = dummy;		/* compiler quietening */
         yield = FALSE;
         }

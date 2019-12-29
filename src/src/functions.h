@@ -931,7 +931,7 @@ subdir_str[1] = '\0';
 
 /******************************************************************************/
 static inline void
-timesince(struct timeval * diff, struct timeval * then)
+timesince(struct timeval * diff, const struct timeval * then)
 {
 gettimeofday(diff, NULL);
 diff->tv_sec -= then->tv_sec;
@@ -943,7 +943,7 @@ if ((diff->tv_usec -= then->tv_usec) < 0)
 }
 
 static inline uschar *
-string_timediff(struct timeval * diff)
+string_timediff(const struct timeval * diff)
 {
 static uschar buf[sizeof("0.000s")];
 
@@ -956,7 +956,7 @@ return buf;
 
 
 static inline uschar *
-string_timesince(struct timeval * then)
+string_timesince(const struct timeval * then)
 {
 struct timeval diff;
 timesince(&diff, then);
@@ -964,7 +964,7 @@ return string_timediff(&diff);
 }
 
 static inline void
-report_time_since(struct timeval * t0, uschar * where)
+report_time_since(const struct timeval * t0, const uschar * where)
 {
 # ifdef MEASURE_TIMING
 struct timeval diff;

@@ -37355,7 +37355,7 @@ the following table:
 &`DKIM`&        domain verified in incoming message
 &`DN  `&        distinguished name from peer certificate
 &`DS  `&        DNSSEC secured lookups
-&`DT  `&        on &`=>`& lines: time taken for a delivery
+&`DT  `&        on &`=>`&, &'=='& and &'**'& lines: time taken for, or to attempt, a delivery
 &`F   `&        sender address (on delivery lines)
 &`H   `&        host name and IP address
 &`I   `&        local interface used
@@ -37453,7 +37453,7 @@ selection marked by asterisks:
 &` arguments                  `&  command line arguments
 &`*connection_reject          `&  connection rejections
 &`*delay_delivery             `&  immediate delivery delayed
-&` deliver_time               `&  time taken to perform delivery
+&` deliver_time               `&  time taken to attempt delivery
 &` delivery_size              `&  add &`S=`&&'nnn'& to => lines
 &`*dkim                       `&  DKIM verified domain on <= lines
 &` dkim_verbose               `&  separate full DKIM verification result line, per signature

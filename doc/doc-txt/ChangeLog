@@ -70,6 +70,10 @@ JH/16 Fix the variables set by the gsasl authenticator.  Previously a pointer to
       library live data was being used, so the results became garbage.  Make
       copies while it is still usable.
 
+JH/17 Logging: when the deliver_time selector ise set, include the DT= field
+      on delivery deferred (==) and failed (**) lines (if a delivery was
+      attemtped).  Previously it was only on completion (=>) lines.
+
 
 Exim version 4.93
 -----------------
