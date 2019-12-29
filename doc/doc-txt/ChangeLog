@@ -45,6 +45,10 @@ JH/14 Bug 2500: Rewind some of the common-coding in string handling between the
       tracking also did many adjustments to string handling.  Since then, eximon
       frequently terminated with an assert failure.
 
+JH/16 Fix the variables set by the gsasl authenticator.  Previously a pointer to
+      library live data was being used, so the results became garbage.  Make
+      copies while it is still usable.
+
 
 Exim version 4.93
 -----------------

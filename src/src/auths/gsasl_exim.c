@@ -461,11 +461,11 @@ switch (prop)
   case GSASL_VALIDATE_SIMPLE:
     /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
+    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_PASSWORD);
-    auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
+    auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
     expand_nmax = 3;
     for (int i = 1; i <= 3; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
@@ -483,7 +483,7 @@ switch (prop)
       }
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
     /* We always set $auth1, even if only to empty string. */
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
     expand_nmax = 1;
 
@@ -501,7 +501,7 @@ switch (prop)
       }
     propval = US  gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
     /* We always set $auth1, even if only to empty string. */
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
     expand_nmax = 1;
 
@@ -521,9 +521,9 @@ switch (prop)
     to the first release of Exim with this authenticator, they've been
     switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
     propval = US  gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
+    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     expand_nmax = 2;
     for (int i = 1; i <= 2; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
@@ -558,11 +558,11 @@ switch (prop)
     needing to add more glue, since avoiding that is a large part of the
     point of SASL. */
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHID);
-    auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
+    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
     propval = US  gsasl_property_fast(sctx, GSASL_REALM);
-    auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
+    auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
     expand_nmax = 3;
     for (int i = 1; i <= 3; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
