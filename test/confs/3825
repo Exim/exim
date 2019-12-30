@@ -1,0 +1,66 @@
+# Exim test configuration 3825
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+queue_only
+
+
+begin routers
+
+client_r:
+  driver =	accept
+  condition =	${if !eq {SERVER}{server}}
+  transport =	smtp
+
+begin transports
+
+smtp:
+  driver =	smtp
+  hosts =	127.0.0.1
+  allow_localhost
+  port =	PORT_D
+  hosts_require_auth = *
+
+# ----- Authentication -----
+
+begin authenticators
+
+.ifndef OPT
+sasl1:
+  driver =		plaintext
+  public_name =		PLAIN
+  server_prompts =	:
+  server_condition =	${if and {{eq{$auth2}{ph10}}{eq{$auth3}{mysecret}}}}
+  server_set_id =	$auth2
+
+sasl2:
+  driver =		gsasl
+  public_name =		PLAIN
+  client_condition =	${if eq {plain}{$local_part}}
+  client_username =	ph10
+  client_password =	mysecret
+
+.else
+sasl3:
+  driver =		gsasl
+  public_name =		PLAIN
+  server_condition =	${if and {{eq{$auth1}{ph10}}{eq{$auth3}{mysecret}}}}
+  server_set_id =	$auth1
+
+sasl4:
+  driver =		plaintext
+  public_name =		PLAIN
+  client_condition =	${if eq {plain}{$local_part}}
+  client_send =		^ph10^mysecret
+
+.endif
+
+
+# End

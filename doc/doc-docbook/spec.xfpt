@@ -27435,6 +27435,9 @@ auth_mechanisms = plain login ntlm
 .cindex "authentication" "DIGEST-MD5"
 .cindex "authentication" "CRAM-MD5"
 .cindex "authentication" "SCRAM-SHA-1"
+.cindex "authentication" "SCRAM-SHA-1-PLUS"
+.cindex "authentication" "SCRAM-SHA-256"
+.cindex "authentication" "SCRAM-SHA-256-PLUS"
 The &(gsasl)& authenticator provides integration for the GNU SASL
 library and the mechanisms it provides.  This is new as of the 4.80 release
 and there are a few areas where the library does not let Exim smoothly
@@ -27442,8 +27445,13 @@ scale to handle future authentication mechanisms, so no guarantee can be
 made that any particular new authentication mechanism will be supported
 without code changes in Exim.
 
-
 .new
+The library is expected to add support in an upcoming
+realease for the SCRAM-SHA-256 method.
+The macro _HAVE_AUTH_GSASL_SCRAM_SHA_256 will be defined
+when this happens.
+
+
 .option client_authz gsasl string&!! unset
 This option can be used to supply an &'authorization id'&
 which is different to the &'authentication_id'& provided
@@ -27481,6 +27489,7 @@ server to see different identifiers and authentication will fail.
 This is
 only usable by mechanisms which support "channel binding"; at time of
 writing, that's the SCRAM family.
+When using this feature the "-PLUS" variants of the method names need to be used.
 .wen
 
 This defaults off to ensure smooth upgrade across Exim releases, in case
@@ -40571,9 +40580,8 @@ defines the location of a text file of valid
 top level domains the opendmarc library uses
 during domain parsing. Maintained by Mozilla,
 the most current version can be downloaded
-from a link at &url(https://publicsuffix.org/list/, currently pointing
-at https://publicsuffix.org/list/public_suffix_list.dat)
-See also util/renew-opendmarc-tlds.sh script.
+from a link at &url(https://publicsuffix.org/list/public_suffix_list.dat).
+See also the util/renew-opendmarc-tlds.sh script.
 .new
 The default for the option is unset.
 If not set, DMARC processing is disabled.

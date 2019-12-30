@@ -1,0 +1,2 @@
+authenticator gsasl
+feature _HAVE_AUTH_GSASL_SCRAM_SHA_256

@@ -27,16 +27,16 @@ client_r:
 begin transports
 
 smtp:
-  driver =	smtp
-  hosts =	127.0.0.1
+  driver =		smtp
+  hosts =		127.0.0.1
   allow_localhost
-  port =	PORT_D
+  port =		PORT_D
 .ifdef TRUSTED
-  hosts_require_tls = *
+  hosts_require_tls =	*
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
 .endif
-  hosts_require_auth = *
+  hosts_require_auth =	*
 
 # ----- Authentication -----
 
@@ -44,14 +44,14 @@ begin authenticators
 
 .ifndef TRUSTED
 sasl1:
-  driver = gsasl
-  public_name = ANONYMOUS
+  driver =		gsasl
+  public_name =		ANONYMOUS
   server_set_id =	$auth1
   server_condition =	true
 
 sasl2:
-  driver = gsasl
-  public_name = PLAIN
+  driver =		gsasl
+  public_name =		PLAIN
   server_set_id =	$auth1
   server_condition =	${if eq {$auth3}{pencil}}
 
@@ -61,13 +61,13 @@ sasl2:
 .endif
 
 sasl3:
-  driver = gsasl
+  driver =		gsasl
 .ifdef TRUSTED
-  public_name = SCRAM-SHA-1-PLUS
+  public_name =		SCRAM-SHA-1-PLUS
   server_advertise_condition =	${if def:tls_in_cipher}
   server_channelbinding =	true
 .else
-  public_name = SCRAM-SHA-1
+  public_name =		SCRAM-SHA-1
 .endif
 
   # will need to give library salt, stored-key, server-key, itercount
@@ -87,6 +87,30 @@ sasl3:
   client_password =	pencil
 .ifdef TRUSTED
   client_channelbinding = true
+.endif
+
+.ifdef _HAVE_AUTH_GSASL_SCRAM_SHA_256
+sasl4:
+  driver =		gsasl
+.ifdef TRUSTED
+  public_name =		SCRAM-SHA-256-PLUS
+  server_advertise_condition =	${if def:tls_in_cipher}
+  server_channelbinding =	true
+.else
+  public_name =		SCRAM-SHA-256
+.endif
+
+  server_scram_salt =	QSXCR+Q6sek8bf92
+  server_password =	pencil
+  server_condition =	true
+  server_set_id =	$auth1
+
+  client_condition =	${if eq {scram_sha_256}{$local_part}}
+  client_username =	ph10
+  client_password =	pencil
+.ifdef TRUSTED
+  client_channelbinding = true
+.endif
 .endif
 
 
