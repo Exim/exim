@@ -433,6 +433,7 @@ typedef struct auth_info {
     int);                         /* sizeof buffer */
   void (*version_report)(         /* diagnostic version reporting */
     FILE *);                      /* I/O stream to print to */
+  void (*macros_create)(void);	  /* feature-macro creation */
 } auth_info;
 
 

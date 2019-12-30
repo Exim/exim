@@ -73,7 +73,8 @@ auth_info auths_available[] = {
   .init =		auth_cram_md5_init,
   .servercode =		auth_cram_md5_server,
   .clientcode =		auth_cram_md5_client,
-  .version_report =	NULL
+  .version_report =	NULL,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -87,7 +88,8 @@ auth_info auths_available[] = {
   .init =		auth_cyrus_sasl_init,
   .servercode =		auth_cyrus_sasl_server,
   .clientcode =		NULL,
-  .version_report =	auth_cyrus_sasl_version_report
+  .version_report =	auth_cyrus_sasl_version_report,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -101,7 +103,8 @@ auth_info auths_available[] = {
   .init =		auth_dovecot_init,
   .servercode =		auth_dovecot_server,
   .clientcode =		NULL,
-  .version_report =	NULL
+  .version_report =	NULL,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -115,7 +118,8 @@ auth_info auths_available[] = {
   .init =		auth_external_init,
   .servercode =		auth_external_server,
   .clientcode =		auth_external_client,
-  .version_report =	NULL
+  .version_report =	NULL,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -129,7 +133,8 @@ auth_info auths_available[] = {
   .init =		auth_gsasl_init,
   .servercode =		auth_gsasl_server,
   .clientcode =		auth_gsasl_client,
-  .version_report =	auth_gsasl_version_report
+  .version_report =	auth_gsasl_version_report,
+  .macros_create =	auth_gsasl_macros,
   },
 #endif
 
@@ -143,7 +148,8 @@ auth_info auths_available[] = {
   .init =		auth_heimdal_gssapi_init,
   .servercode =		auth_heimdal_gssapi_server,
   .clientcode =		NULL,
-  .version_report =	auth_heimdal_gssapi_version_report
+  .version_report =	auth_heimdal_gssapi_version_report,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -157,7 +163,8 @@ auth_info auths_available[] = {
   .init =		auth_plaintext_init,
   .servercode =		auth_plaintext_server,
   .clientcode =		auth_plaintext_client,
-  .version_report =	NULL
+  .version_report =	NULL,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -171,7 +178,8 @@ auth_info auths_available[] = {
   .init =		auth_spa_init,
   .servercode =		auth_spa_server,
   .clientcode =		auth_spa_client,
-  .version_report =	NULL
+  .version_report =	NULL,
+  .macros_create =	NULL,
   },
 #endif
 
@@ -185,7 +193,8 @@ auth_info auths_available[] = {
   .init =		auth_tls_init,
   .servercode =		auth_tls_server,
   .clientcode =		NULL,
-  .version_report =	NULL
+  .version_report =	NULL,
+  .macros_create =	NULL,
   },
 #endif
 

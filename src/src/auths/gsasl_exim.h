@@ -45,5 +45,6 @@ extern int auth_gsasl_server(auth_instance *, uschar *);
 extern int auth_gsasl_client(auth_instance *, void *,
 				int, uschar *, int);
 extern void auth_gsasl_version_report(FILE *f);
+extern void auth_gsasl_macros(void);
 
 /* End of gsasl_exim.h */

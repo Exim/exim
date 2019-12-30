@@ -44,6 +44,11 @@ static void dummy(int x) { dummy2(x-1); }
 #endif
 
 
+#if GSASL_VERSION_MINOR >= 9
+# define EXIM_GSASL_HAVE_SCRAM_SHA_256
+#endif
+
+
 /* Authenticator-specific options. */
 /* I did have server_*_condition options for various mechanisms, but since
 we only ever handle one mechanism at a time, I didn't see the point in keeping
@@ -99,6 +104,14 @@ int auth_gsasl_server(auth_instance *ablock, uschar *data) {return 0;}
 int auth_gsasl_client(auth_instance *ablock, void * sx,
   int timeout, uschar *buffer, int buffsize) {return 0;}
 void auth_gsasl_version_report(FILE *f) {}
+
+void
+auth_gsasl_macros(void)
+{
+# ifdef EXIM_GSASL_HAVE_SCRAM_SHA_256
+  builtin_macro_create(US"_HAVE_AUTH_GSASL_SCRAM_SHA_256");
+# endif
+}
 
 #else   /*!MACRO_PREDEF*/
 
@@ -904,6 +917,11 @@ fprintf(f, "Library version: GNU SASL: Compile: %s\n"
 	   "                           Runtime: %s\n",
 	GSASL_VERSION, runtime);
 }
+
+
+
+/* Dummy */
+void auth_gsasl_macros(void) {}
 
 #endif   /*!MACRO_PREDEF*/
 #endif  /* AUTH_GSASL */

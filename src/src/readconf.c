@@ -417,6 +417,8 @@ for (struct auth_info * ai = auths_available; ai->driver_name[0]; ai++)
   spf(buf, sizeof(buf), US"_DRIVER_AUTHENTICATOR_%T", ai->driver_name);
   builtin_macro_create(buf);
   options_from_list(ai->options, (unsigned)*ai->options_count, US"AUTHENTICATOR", ai->driver_name);
+
+  if (ai->macros_create) (ai->macros_create)();
   }
 }
 
