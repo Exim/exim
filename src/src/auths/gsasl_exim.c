@@ -39,10 +39,6 @@ static void dummy(int x) { dummy2(x-1); }
 #include <gsasl.h>
 #include "gsasl_exim.h"
 
-#ifdef SUPPORT_I18N
-# include <stringprep.h>
-#endif
-
 
 #if GSASL_VERSION_MINOR >= 9
 # define EXIM_GSASL_HAVE_SCRAM_SHA_256
@@ -663,6 +659,8 @@ switch (prop)
     for (int i = 1; i <= 3; ++i)
       expand_nlength[i] = Ustrlen(expand_nstring[i]);
 
+    if (!ob->server_password)
+      break;
     if (!(tmps = CS expand_string(ob->server_password)))
       {
       sasl_error_should_defer = f.expand_string_forcedfail ? FALSE : TRUE;
@@ -695,14 +693,12 @@ return cbrc;
 /******************************************************************************/
 
 #define PROP_OPTIONAL	BIT(0)
-#define PROP_STRINGPREP	BIT(1)
-
 
 static BOOL
 client_prop(Gsasl_session * sctx, Gsasl_property propnum, uschar * val,
   const uschar * why, unsigned flags, uschar * buffer, int buffsize)
 {
-uschar * s, * t;
+uschar * s;
 int rc;
 
 if (flags & PROP_OPTIONAL && !val) return TRUE;
@@ -711,26 +707,7 @@ if (!(s = expand_string(val)) || !(flags & PROP_OPTIONAL) && !*s)
   string_format(buffer, buffsize, "%s", expand_string_message);
   return FALSE;
   }
-if (!*s) return TRUE;
-
-#ifdef SUPPORT_I18N
-if (flags & PROP_STRINGPREP)
-  {
-  if (gsasl_saslprep(CCS s, 0, CSS &t, &rc) != GSASL_OK)
-    {
-    string_format(buffer, buffsize, "Bad result from saslprep(%s): %s\n",
-		  why, stringprep_strerror(rc));
-    HDEBUG(D_auth) debug_printf("%s\n", buffer);
-    return FALSE;
-    }
-  gsasl_property_set(sctx, propnum, CS t);
-
-  free(t);
-  }
-else
-#endif
-  gsasl_property_set(sctx, propnum, CS s);
-
+if (*s) gsasl_property_set(sctx, propnum, CS s);
 return TRUE;
 }
 
@@ -753,8 +730,8 @@ auth_gsasl_options_block *ob =
 Gsasl_session * sctx = NULL;
 struct callback_exim_state cb_state;
 uschar * s;
-BOOL initial = TRUE, do_stringprep;
-int rc, yield = FAIL, flags;
+BOOL initial = TRUE;
+int rc, yield = FAIL;
 
 HDEBUG(D_auth)
   debug_printf("GNU SASL: initialising session for %s, mechanism %s\n",
@@ -797,14 +774,12 @@ gsasl_session_hook_set(sctx, &cb_state);
 
 /* Set properties */
 
-flags = Ustrncmp(ob->server_mech, "SCRAM-", 5) == 0 ? PROP_STRINGPREP : 0;
-
 if (  !client_prop(sctx, GSASL_PASSWORD, ob->client_password, US"password",
-		  flags, buffer, buffsize)
+		  0, buffer, buffsize)
    || !client_prop(sctx, GSASL_AUTHID, ob->client_username, US"username",
-		  flags, buffer, buffsize)
+		  0, buffer, buffsize)
    || !client_prop(sctx, GSASL_AUTHZID, ob->client_authz, US"authz",
-		  flags | PROP_OPTIONAL, buffer, buffsize)
+		  PROP_OPTIONAL, buffer, buffsize)
    )
   return ERROR;
 
