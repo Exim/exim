@@ -77,8 +77,8 @@ sasl3:
   # a GSASL_SCRAM_SALTED_PASSWORD - but that is only documented for client mode.
 
   # unclear if the salt is given in binary or base64 to the library
-  server_scram_salt =	QSXCR+Q6sek8bf92
-  server_password =	pencil
+  server_scram_salt =	${if eq {$auth1}{ph10} {QSXCR+Q6sek8bf92}}
+  server_password =	${if eq {$auth1}{ph10} {pencil}{unset_password}}
   server_condition =	true
   server_set_id =	$auth1
 

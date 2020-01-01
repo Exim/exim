@@ -27544,16 +27544,28 @@ This specifies the SASL realm that the server claims to be in.
 Some mechanisms will use this data.
 
 
-.option server_scram_iter gsasl string&!! unset
+.option server_scram_iter gsasl string&!! 4096
 This option provides data for the SCRAM family of mechanisms.
-&$auth1$& is not available at evaluation time.
-(This may change, as we receive feedback on use)
+.new
+The &$auth1$&, &$auth2$& and &$auth3$& variables are available for expansion.
+
+The result of expansion should be a decimal number,
+and represents both a lower-bound on the security, and
+a compute cost factor imposed on the client
+(if it does not cache results, or the server changes
+either the iteration count or the salt).
+A minimum value of 4096 is required by the standards
+for all current CRAM mechanism variants.
+.wen
 
 
 .option server_scram_salt gsasl string&!! unset
 This option provides data for the SCRAM family of mechanisms.
-&$auth1$& is not available at evaluation time.
-(This may change, as we receive feedback on use)
+.new
+The &$auth1$&, &$auth2$& and &$auth3$& variables are available for expansion.
+If unset or empty after expansion the library will provides a value for the
+protocol conversation.
+.wen
 
 
 .option server_service gsasl string &`smtp`&

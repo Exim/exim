@@ -74,6 +74,9 @@ JH/17 Logging: when the deliver_time selector ise set, include the DT= field
       on delivery deferred (==) and failed (**) lines (if a delivery was
       attemtped).  Previously it was only on completion (=>) lines.
 
+JH/18 Authentication: the gsasl driver not provides the $authN variables in time
+      for the expansion of the server_scram_iter and server_scram_salt options.
+
 
 Exim version 4.93
 -----------------

@@ -500,6 +500,36 @@ switch (exim_rc)
 return GSASL_AUTHENTICATION_ERROR;
 }
 
+
+static void
+set_exim_authvar_from_prop(Gsasl_session * sctx, Gsasl_property prop)
+{
+uschar * propval = US gsasl_property_fast(sctx, prop);
+int i = expand_nmax, j = i + 1;
+propval = propval ? string_copy(propval) : US"";
+auth_vars[i] = expand_nstring[j] = propval;
+expand_nlength[j] = Ustrlen(propval);
+expand_nmax = j;
+}
+
+static void
+set_exim_authvars_from_a_az_r_props(Gsasl_session * sctx)
+{
+if (expand_nmax > 0 ) return;
+
+/* Asking for GSASL_AUTHZID calls back into us if we use
+gsasl_property_get(), thus the use of gsasl_property_fast().
+Do we really want to hardcode limits per mechanism?  What happens when
+a new mechanism is added to the library.  It *shouldn't* result in us
+needing to add more glue, since avoiding that is a large part of the
+point of SASL. */
+
+set_exim_authvar_from_prop(sctx, GSASL_AUTHID);
+set_exim_authvar_from_prop(sctx, GSASL_AUTHZID);
+set_exim_authvar_from_prop(sctx, GSASL_REALM);
+}
+
+
 static int
 server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop,
   auth_instance *ablock)
@@ -522,15 +552,9 @@ switch (prop)
   case GSASL_VALIDATE_SIMPLE:
     HDEBUG(D_auth) debug_printf(" VALIDATE_SIMPLE\n");
     /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
-    propval = US gsasl_property_fast(sctx, GSASL_AUTHID);
-    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
-    propval = US gsasl_property_fast(sctx, GSASL_PASSWORD);
-    auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
-    expand_nmax = 3;
-    for (int i = 1; i <= 3; ++i)
-      expand_nlength[i] = Ustrlen(expand_nstring[i]);
+    set_exim_authvar_from_prop(sctx, GSASL_AUTHID);
+    set_exim_authvar_from_prop(sctx, GSASL_AUTHZID);
+    set_exim_authvar_from_prop(sctx, GSASL_PASSWORD);
 
     cbrc = condition_check(ablock, US"server_condition", ablock->server_condition);
     checked_server_condition = TRUE;
@@ -544,12 +568,7 @@ switch (prop)
       cbrc = GSASL_AUTHENTICATION_ERROR;
       break;
       }
-    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
-
-    /* We always set $auth1, even if only to empty string. */
-    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    expand_nlength[1] = Ustrlen(expand_nstring[1]);
-    expand_nmax = 1;
+    set_exim_authvar_from_prop(sctx, GSASL_AUTHZID);
 
     cbrc = condition_check(ablock,
 	US"server_condition (EXTERNAL)", ablock->server_condition);
@@ -564,13 +583,7 @@ switch (prop)
       cbrc = GSASL_AUTHENTICATION_ERROR;
       break;
       }
-    propval = US gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
-
-    /* We always set $auth1, even if only to empty string. */
-
-    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    expand_nlength[1] = Ustrlen(expand_nstring[1]);
-    expand_nmax = 1;
+    set_exim_authvar_from_prop(sctx, GSASL_ANONYMOUS_TOKEN);
 
     cbrc = condition_check(ablock,
 	US"server_condition (ANONYMOUS)", ablock->server_condition);
@@ -588,13 +601,8 @@ switch (prop)
     to the first release of Exim with this authenticator, they've been
     switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
 
-    propval = US gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
-    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
-    expand_nmax = 2;
-    for (int i = 1; i <= 2; ++i)
-      expand_nlength[i] = Ustrlen(expand_nstring[i]);
+    set_exim_authvar_from_prop(sctx, GSASL_GSSAPI_DISPLAY_NAME);
+    set_exim_authvar_from_prop(sctx, GSASL_AUTHZID);
 
     /* In this one case, it perhaps makes sense to default back open?
     But for consistency, let's just mandate server_condition here too. */
@@ -608,66 +616,54 @@ switch (prop)
     HDEBUG(D_auth) debug_printf(" SCRAM_ITER\n");
     if (ob->server_scram_iter)
       {
+      set_exim_authvars_from_a_az_r_props(sctx);
       tmps = CS expand_string(ob->server_scram_iter);
+      HDEBUG(D_auth) debug_printf("  '%s'\n", tmps);
       gsasl_property_set(sctx, GSASL_SCRAM_ITER, tmps);
       cbrc = GSASL_OK;
       }
+    else
+      HDEBUG(D_auth) debug_printf("  option not set\n");
     break;
 
   case GSASL_SCRAM_SALT:
     HDEBUG(D_auth) debug_printf(" SCRAM_SALT\n");
-    if (ob->server_scram_iter)
+    if (ob->server_scram_salt)
       {
+      set_exim_authvars_from_a_az_r_props(sctx);
       tmps = CS expand_string(ob->server_scram_salt);
-      gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
+      HDEBUG(D_auth) debug_printf("  '%s'\n", tmps);
+      if (*tmps)
+	gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
       cbrc = GSASL_OK;
       }
+    else
+      HDEBUG(D_auth) debug_printf("  option not set\n");
     break;
 
   case GSASL_PASSWORD:
     HDEBUG(D_auth) debug_printf(" PASSWORD\n");
-    /* DIGEST-MD5: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
+    /* SCRAM-SHA-1: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
+       DIGEST-MD5: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
        CRAM-MD5: GSASL_AUTHID
        PLAIN: GSASL_AUTHID and GSASL_AUTHZID
        LOGIN: GSASL_AUTHID
      */
-    if (ob->server_scram_iter)
-      {
-      tmps = CS expand_string(ob->server_scram_iter);
-      gsasl_property_set(sctx, GSASL_SCRAM_ITER, tmps);
-      }
-    if (ob->server_scram_salt)
-      {
-      tmps = CS expand_string(ob->server_scram_salt);
-      gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
-      }
-
-    /* Asking for GSASL_AUTHZID calls back into us if we use
-    gsasl_property_get(), thus the use of gsasl_property_fast().
-    Do we really want to hardcode limits per mechanism?  What happens when
-    a new mechanism is added to the library.  It *shouldn't* result in us
-    needing to add more glue, since avoiding that is a large part of the
-    point of SASL. */
-
-    propval = US gsasl_property_fast(sctx, GSASL_AUTHID);
-    auth_vars[0] = expand_nstring[1] = propval ? string_copy(propval) : US"";
-    propval = US gsasl_property_fast(sctx, GSASL_AUTHZID);
-    auth_vars[1] = expand_nstring[2] = propval ? string_copy(propval) : US"";
-    propval = US gsasl_property_fast(sctx, GSASL_REALM);
-    auth_vars[2] = expand_nstring[3] = propval ? string_copy(propval) : US"";
-    expand_nmax = 3;
-    for (int i = 1; i <= 3; ++i)
-      expand_nlength[i] = Ustrlen(expand_nstring[i]);
+    set_exim_authvars_from_a_az_r_props(sctx);
 
     if (!ob->server_password)
+      {
+      HDEBUG(D_auth) debug_printf("option not set\n");
       break;
+      }
     if (!(tmps = CS expand_string(ob->server_password)))
       {
-      sasl_error_should_defer = f.expand_string_forcedfail ? FALSE : TRUE;
+      sasl_error_should_defer = !f.expand_string_forcedfail;
       HDEBUG(D_auth) debug_printf("server_password expansion failed, so "
 	  "can't tell GNU SASL library the password for %s\n", auth_vars[0]);
       return GSASL_AUTHENTICATION_ERROR;
       }
+    HDEBUG(D_auth) debug_printf("  set\n");
     gsasl_property_set(sctx, GSASL_PASSWORD, tmps);
 
     /* This is inadequate; don't think Exim's store stacks are geared
