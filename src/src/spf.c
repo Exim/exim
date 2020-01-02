@@ -77,6 +77,7 @@ switch (dns_rc = dns_lookup(dnsa, US domain, rr_type, NULL))
   case DNS_SUCCEED:	srr.herrno = NETDB_SUCCESS;	break;
   case DNS_AGAIN:	srr.herrno = TRY_AGAIN;		break;
   case DNS_NOMATCH:	srr.herrno = HOST_NOT_FOUND;	break;
+  case DNS_NODATA:	srr.herrno = NO_DATA;		break;
   case DNS_FAIL:
   default:		srr.herrno = NO_RECOVERY;	break;
   } 
