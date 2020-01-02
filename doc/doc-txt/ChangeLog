@@ -77,6 +77,12 @@ JH/17 Logging: when the deliver_time selector ise set, include the DT= field
 JH/18 Authentication: the gsasl driver not provides the $authN variables in time
       for the expansion of the server_scram_iter and server_scram_salt options.
 
+WB/01 SPF: DNS lookups for the obsolete SPF RR type done by the libspf2 library
+      are now specifically given a HOST_NOT_FOUND response without hitting the
+      system resolver.  The library goes on to do the now-standard TXT lookup.
+      Use of dnsdb lookups is not affected.
+      
+
 
 Exim version 4.93
 -----------------
