@@ -5,7 +5,7 @@
 /* SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 - 2014
    License: GPL
-   Copyright (c) The Exim Maintainers 2015 - 2019
+   Copyright (c) The Exim Maintainers 2015 - 2020
 */
 
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
@@ -122,7 +122,8 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 
 	if (strncmpic(rr->data+1, US SPF_VER_STR, 6) != 0)
 	  {
-	  HDEBUG(D_host_lookup) debug_printf("not an spf record\n");
+	  HDEBUG(D_host_lookup) debug_printf("not an spf record: %.*s\n",
+	    (int) s[0], s+1);
 	  continue;
 	  }
 
@@ -135,6 +136,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	  continue;
 	gstring_release_unused(g);
 	s = string_copy_malloc(string_from_gstring(g));
+	DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", s);
 	break;
 	}
 
@@ -147,7 +149,6 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 	break;
 	}
       }
-    DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", s);
     srr.rr[found++] = (void *) s;
     }
 
@@ -283,6 +284,22 @@ return TRUE;
 }
 
 
+void
+spf_response_debug(SPF_response_t * spf_response)
+{
+if (SPF_response_messages(spf_response) == 0)
+  debug_printf(" (no errors)\n");
+else for (int i = 0; i < SPF_response_messages(spf_response); i++)
+  {
+  SPF_error_t * err = SPF_response_message(spf_response, i);
+  debug_printf( "%s_msg = (%d) %s\n",
+		  (SPF_error_errorp(err) ? "warn" : "err"),
+		  SPF_error_code(err),
+		  SPF_error_message(err));
+  }
+}
+
+
 /* spf_process adds the envelope sender address to the existing
    context (if any), retrieves the result, sets up expansion
    strings and evaluates the condition outcome.
@@ -325,6 +342,8 @@ else
   spf_smtp_comment       = US SPF_response_get_smtp_comment(spf_response);
 
   rc = SPF_response_result(spf_response);
+
+  DEBUG(D_acl) spf_response_debug(spf_response);
   }
 
 /* We got a result. Now see if we should return OK or FAIL for it */

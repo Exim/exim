@@ -29,6 +29,7 @@ void spf_lib_version_report(FILE *);
 BOOL spf_init(void);
 BOOL spf_conn_init(uschar *, uschar *);
 int  spf_process(const uschar **, uschar *, int);
+void spf_response_debug(SPF_response_t *);
 
 #define SPF_PROCESS_NORMAL  0
 #define SPF_PROCESS_GUESS   1

@@ -2,19 +2,18 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/*
- * Exim - SPF lookup module using libspf2
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * Copyright (c) 2005 Chris Webb, Arachsys Internet Services Ltd
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Copyright (c) The Exim Maintainers 2016
- */
+/* Exim - SPF lookup module using libspf2
+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Copyright (c) 2005 Chris Webb, Arachsys Internet Services Ltd
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+Copyright (c) The Exim Maintainers 2020
+*/
 
 #include "../exim.h"
 
@@ -111,6 +110,9 @@ if (SPF_request_set_env_from(spf_request, CS keystring))
 
 SPF_request_query_mailfrom(spf_request, &spf_response);
 *result = string_copy(US SPF_strresult(SPF_response_result(spf_response)));
+
+DEBUG(D_lookup) spf_response_debug(spf_response);
+
 SPF_response_free(spf_response);
 SPF_request_free(spf_request);
 return OK;
