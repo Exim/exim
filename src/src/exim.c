@@ -3641,15 +3641,15 @@ an error return. The following code should cope with both types of system.
  in the call to exim_setugid().
 
 However, if this process isn't running as root, setgroups() can't be used
-since you have to be root to run it, even if throwing away groups. Not being
-root here happens only in some unusual configurations. We just ignore the
-error. */
+since you have to be root to run it, even if throwing away groups.
+Except, sigh, for Hurd - where you can.
+Not being root here happens only in some unusual configurations. */
 
-if (
+if (  !unprivileged
 #ifndef OS_SETGROUPS_ZERO_DROPS_ALL
-   setgroups(0, NULL) != 0 &&
+   && setgroups(0, NULL) != 0
 #endif
-   setgroups(1, group_list) != 0 && !unprivileged)
+   && setgroups(1, group_list) != 0)
   exim_fail("exim: setgroups() failed: %s\n", strerror(errno));
 
 /* If the configuration file name has been altered by an argument on the
