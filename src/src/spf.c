@@ -72,14 +72,13 @@ int dns_rc;
 
 DEBUG(D_receive) debug_printf("SPF_dns_exim_lookup '%s'\n", domain);
 
-/* Shortcircuit SPF RR lookups by returning HOST_NOT_FOUND (shortest code path
-in libspf2).  They were obsoleted by RFC 6686/7208 years ago. see bug #1294
-*/
+/* Shortcircuit SPF RR lookups by returning NO_DATA.  They were obsoleted by
+RFC 6686/7208 years ago. see bug #1294 */
 
 if (rr_type == T_SPF)
   {
-  HDEBUG(D_host_lookup) debug_printf("faking HOST_NOT_FOUND for SPF RR(99) lookup\n");
-  srr.herrno = HOST_NOT_FOUND;
+  HDEBUG(D_host_lookup) debug_printf("faking NO_DATA for SPF RR(99) lookup\n");
+  srr.herrno = NO_DATA;
   SPF_dns_rr_dup(&spfrr, &srr);
   return spfrr;
   }
