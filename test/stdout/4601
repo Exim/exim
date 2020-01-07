@@ -26,9 +26,10 @@ Connecting to 127.0.0.1 port 1224 ... connected
 <<< 250 Accepted
 >>> quit
 End of script
-> none      none
-> temperror temperror
-> permerror permerror
-> permerror permerror
-> pass      pass
+> eDNS_NOMATCH       none      none
+> eDNS_AGAIN         temperror temperror
+> multiple rr        permerror permerror
+> multi + non-spf    permerror permerror
+> uppercase in v=    pass      pass
+> only non-spf txt   none      none
 > 

@@ -139,7 +139,12 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
     srr.rr[found++] = (void *) s;
     }
 
-srr.num_rr = found;
+/* Did we filter out all TXT RRs? Return NO_DATA instead of SUCCESS with
+empty ANSWER section. */
+
+if (!(srr.num_rr = found))
+  srr.herrno = NO_DATA;
+
 /* spfrr->rr must have been malloc()d for this */
 SPF_dns_rr_dup(&spfrr, &srr);
 return spfrr;

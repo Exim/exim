@@ -25,14 +25,13 @@ quit
 #
 killdaemon
 #
-# SERVFAIL -> temperror
-# A multiple spf-RR return should get permerror
-# - and not crash with non-spf txt records
-# v=spf1 is casr-insensitive
+#
+#
 exim -be
-none      ${lookup {fred@v6.test.ex} spf {HOSTIPV4}}
-temperror ${lookup {fred@test.again.dns} spf {HOSTIPV4}}
-permerror ${lookup {fred@double.example.com} spf {8.8.8.8}}
-permerror ${lookup {fred@doubleplus.example.com} spf {8.8.8.8}}
-pass      ${lookup {fred@uppercase.example.com} spf {HOSTIPV4}}
+eDNS_NOMATCH       none      ${lookup {fred@v6.test.ex} spf {HOSTIPV4}}
+eDNS_AGAIN         temperror ${lookup {fred@test.again.dns} spf {HOSTIPV4}}
+multiple rr        permerror ${lookup {fred@double.example.com} spf {8.8.8.8}}
+multi + non-spf    permerror ${lookup {fred@doubleplus.example.com} spf {8.8.8.8}}
+uppercase in v=    pass      ${lookup {fred@uppercase.example.com} spf {HOSTIPV4}}
+only non-spf txt   none      ${lookup {fred@test.ex} spf {HOSTIPV4}}
 ****
