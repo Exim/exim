@@ -184,40 +184,35 @@ However, if the ignore_enotdir option is set (to ignore "something on the
 path is not a directory" errors), the right behaviour seems to be not to do the
 directory test. */
 
-fwd = Ufopen(filename, "rb");
-if (fwd == NULL)
+if (!(fwd = Ufopen(filename, "rb"))) switch(errno)
   {
-  switch(errno)
-    {
-    case ENOENT:          /* File does not exist */
+  case ENOENT:          /* File does not exist */
     DEBUG(D_route) debug_printf("%s does not exist\n%schecking parent directory\n",
-      filename,
-      ((options & RDO_ENOTDIR) != 0)? "ignore_enotdir set => skip " : "");
-    *yield = (((options & RDO_ENOTDIR) != 0) ||
-              rda_exists(filename, error) == FILE_NOT_EXIST)?
-      FF_NONEXIST : FF_ERROR;
+      filename, options & RDO_ENOTDIR ? "ignore_enotdir set => skip " : "");
+    *yield =
+	options & RDO_ENOTDIR || rda_exists(filename, error) == FILE_NOT_EXIST
+	? FF_NONEXIST : FF_ERROR;
     return NULL;
 
-    case ENOTDIR:         /* Something on the path isn't a directory */
+  case ENOTDIR:         /* Something on the path isn't a directory */
     if ((options & RDO_ENOTDIR) == 0) goto DEFAULT_ERROR;
     DEBUG(D_route) debug_printf("non-directory on path %s: file assumed not to "
       "exist\n", filename);
     *yield = FF_NONEXIST;
     return NULL;
 
-    case EACCES:           /* Permission denied */
+  case EACCES:           /* Permission denied */
     if ((options & RDO_EACCES) == 0) goto DEFAULT_ERROR;
     DEBUG(D_route) debug_printf("permission denied for %s: file assumed not to "
       "exist\n", filename);
     *yield = FF_NONEXIST;
     return NULL;
 
-    DEFAULT_ERROR:
-    default:
+  DEFAULT_ERROR:
+  default:
     *error = string_open_failed(errno, "%s", filename);
     *yield = FF_ERROR;
     return NULL;
-    }
   }
 
 /* Check that we have a regular file. */
@@ -246,22 +241,18 @@ if ((statbuf.st_mode & rdata->modemask) != 0)
 /* Check the file owner and file group if required to do so. */
 
 if (!uid_ok)
-  {
-  if (rdata->pw != NULL && statbuf.st_uid == rdata->pw->pw_uid)
+  if (rdata->pw && statbuf.st_uid == rdata->pw->pw_uid)
     uid_ok = TRUE;
-  else if (rdata->owners != NULL)
+  else if (rdata->owners)
     for (int i = 1; i <= (int)(rdata->owners[0]); i++)
       if (rdata->owners[i] == statbuf.st_uid) { uid_ok = TRUE; break; }
-  }
 
 if (!gid_ok)
-  {
-  if (rdata->pw != NULL && statbuf.st_gid == rdata->pw->pw_gid)
+  if (rdata->pw && statbuf.st_gid == rdata->pw->pw_gid)
     gid_ok = TRUE;
-  else if (rdata->owngroups != NULL)
+  else if (rdata->owngroups)
     for (int i = 1; i <= (int)(rdata->owngroups[0]); i++)
       if (rdata->owngroups[i] == statbuf.st_gid) { gid_ok = TRUE; break; }
-  }
 
 if (!uid_ok || !gid_ok)
   {
@@ -291,8 +282,8 @@ if (fread(filebuf, 1, statbuf.st_size, fwd) != statbuf.st_size)
   }
 filebuf[statbuf.st_size] = 0;
 
-DEBUG(D_route)
-  debug_printf(OFF_T_FMT " bytes read from %s\n", statbuf.st_size, filename);
+DEBUG(D_route) debug_printf(OFF_T_FMT " %sbytes read from %s\n",
+  statbuf.st_size, is_tainted(filename) ? "(tainted) " : "", filename);
 
 (void)fclose(fwd);
 return filebuf;
@@ -347,8 +338,8 @@ uschar *data;
 if (rdata->isfile)
   {
   int yield = 0;
-  data = rda_get_file_contents(rdata, options, error, &yield);
-  if (data == NULL) return yield;
+  if (!(data = rda_get_file_contents(rdata, options, error, &yield)))
+    return yield;
   }
 else data = rdata->string;
 

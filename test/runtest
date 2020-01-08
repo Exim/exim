@@ -893,7 +893,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # The sizes of filter files may vary because of the substitution of local
   # filenames, logins, etc.
 
-  s/^\d+(?= bytes read from )/ssss/;
+  s/^\d+(?= (\(tainted\) )?bytes read from )/ssss/;
 
 
   # ======== OpenSSL error messages ========
