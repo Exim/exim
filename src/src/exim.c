@@ -1265,9 +1265,9 @@ void *dlhandle;
 void *dlhandle_curses = dlopen("libcurses." DYNLIB_FN_EXT, RTLD_GLOBAL|RTLD_LAZY);
 
 dlhandle = dlopen("libreadline." DYNLIB_FN_EXT, RTLD_GLOBAL|RTLD_NOW);
-if (dlhandle_curses != NULL) dlclose(dlhandle_curses);
+if (dlhandle_curses) dlclose(dlhandle_curses);
 
-if (dlhandle != NULL)
+if (dlhandle)
   {
   /* Checked manual pages; at least in GNU Readline 6.1, the prototypes are:
    *   char * readline (const char *prompt);
@@ -1277,9 +1277,7 @@ if (dlhandle != NULL)
   *fn_addhist_ptr = (void(*)(const char*))dlsym(dlhandle, "add_history");
   }
 else
-  {
   DEBUG(D_any) debug_printf("failed to load readline: %s\n", dlerror());
-  }
 
 return dlhandle;
 }

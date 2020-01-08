@@ -753,9 +753,10 @@ else
 
       if (!(dl = dlopen(CS big_buffer, RTLD_NOW)))
 	{
-	fprintf(stderr, "Error loading %s: %s\n", name, dlerror());
+	errormessage = dlerror();
+	fprintf(stderr, "Error loading %s: %s\n", name, errormessage);
 	moduleerrors++;
-	log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, dlerror());
+	log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, errormessage);
 	continue;
 	}
 

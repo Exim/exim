@@ -81,7 +81,11 @@ WB/01 SPF: DNS lookups for the obsolete SPF RR type done by the libspf2 library
       are now specifically given a NO_DATA response without hitting the system
       resolver.  The library goes on to do the now-standard TXT lookup.
       Use of dnsdb lookups is not affected.
-      
+
+JH/19 Bug 2507: Modules: on handling a dynamic-module (lookups) open failure,
+      only retrieve the errormessage once.  Previously two calls to dlerror()
+      were used, and the second one (for mainlog/paniclog) retrieved null
+      information.
 
 
 Exim version 4.93
