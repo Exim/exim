@@ -753,10 +753,10 @@ else
 
       if (!(dl = dlopen(CS big_buffer, RTLD_NOW)))
 	{
-	errormessage = dlerror();
-	fprintf(stderr, "Error loading %s: %s\n", name, errormessage);
+	errormsg = dlerror();
+	fprintf(stderr, "Error loading %s: %s\n", name, errormsg);
+	log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, errormsg);
 	moduleerrors++;
-	log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, errormessage);
 	continue;
 	}
 
@@ -771,17 +771,17 @@ else
       if ((errormsg = dlerror()))
 	{
 	fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+	log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
 	dlclose(dl);
 	moduleerrors++;
-	log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
 	continue;
 	}
       if (info->magic != LOOKUP_MODULE_INFO_MAGIC)
 	{
 	fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
+	log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
 	dlclose(dl);
 	moduleerrors++;
-	log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
 	continue;
 	}
 
