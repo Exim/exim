@@ -624,184 +624,190 @@ void
 init_lookup_list(void)
 {
 #ifdef LOOKUP_MODULE_DIR
-  DIR *dd;
-  struct dirent *ent;
-  int countmodules = 0;
-  int moduleerrors = 0;
+DIR *dd;
+struct dirent *ent;
+int countmodules = 0;
+int moduleerrors = 0;
 #endif
-  static BOOL lookup_list_init_done = FALSE;
-  rmark reset_point;
+static BOOL lookup_list_init_done = FALSE;
+rmark reset_point;
 
-  if (lookup_list_init_done)
-    return;
-  reset_point = store_mark();
-  lookup_list_init_done = TRUE;
+if (lookup_list_init_done)
+  return;
+reset_point = store_mark();
+lookup_list_init_done = TRUE;
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-  addlookupmodule(NULL, &cdb_lookup_module_info);
+addlookupmodule(NULL, &cdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-  addlookupmodule(NULL, &dbmdb_lookup_module_info);
+addlookupmodule(NULL, &dbmdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-  addlookupmodule(NULL, &dnsdb_lookup_module_info);
+addlookupmodule(NULL, &dnsdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-  addlookupmodule(NULL, &dsearch_lookup_module_info);
+addlookupmodule(NULL, &dsearch_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-  addlookupmodule(NULL, &ibase_lookup_module_info);
+addlookupmodule(NULL, &ibase_lookup_module_info);
 #endif
 
 #ifdef LOOKUP_LDAP
-  addlookupmodule(NULL, &ldap_lookup_module_info);
+addlookupmodule(NULL, &ldap_lookup_module_info);
 #endif
 
 #ifdef LOOKUP_JSON
-  addlookupmodule(NULL, &json_lookup_module_info);
+addlookupmodule(NULL, &json_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-  addlookupmodule(NULL, &lsearch_lookup_module_info);
+addlookupmodule(NULL, &lsearch_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-  addlookupmodule(NULL, &mysql_lookup_module_info);
+addlookupmodule(NULL, &mysql_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-  addlookupmodule(NULL, &nis_lookup_module_info);
+addlookupmodule(NULL, &nis_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-  addlookupmodule(NULL, &nisplus_lookup_module_info);
+addlookupmodule(NULL, &nisplus_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-  addlookupmodule(NULL, &oracle_lookup_module_info);
+addlookupmodule(NULL, &oracle_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-  addlookupmodule(NULL, &passwd_lookup_module_info);
+addlookupmodule(NULL, &passwd_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-  addlookupmodule(NULL, &pgsql_lookup_module_info);
+addlookupmodule(NULL, &pgsql_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-  addlookupmodule(NULL, &redis_lookup_module_info);
+addlookupmodule(NULL, &redis_lookup_module_info);
 #endif
 
 #ifdef EXPERIMENTAL_LMDB
-  addlookupmodule(NULL, &lmdb_lookup_module_info);
+addlookupmodule(NULL, &lmdb_lookup_module_info);
 #endif
 
 #ifdef SUPPORT_SPF
-  addlookupmodule(NULL, &spf_lookup_module_info);
+addlookupmodule(NULL, &spf_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-  addlookupmodule(NULL, &sqlite_lookup_module_info);
+addlookupmodule(NULL, &sqlite_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-  addlookupmodule(NULL, &testdb_lookup_module_info);
+addlookupmodule(NULL, &testdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-  addlookupmodule(NULL, &whoson_lookup_module_info);
+addlookupmodule(NULL, &whoson_lookup_module_info);
 #endif
 
 #ifdef LOOKUP_MODULE_DIR
-  dd = opendir(LOOKUP_MODULE_DIR);
-  if (dd == NULL) {
-    DEBUG(D_lookup) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
-    log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+if (!(dd = opendir(LOOKUP_MODULE_DIR)))
+  {
+  DEBUG(D_lookup) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+  log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   }
-  else {
-    const pcre *regex_islookupmod = regex_must_compile(
-      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
+else
+  {
+  const pcre *regex_islookupmod = regex_must_compile(
+    US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
 
-    DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
-    while ((ent = readdir(dd)) != NULL) {
-      char *name = ent->d_name;
-      int len = (int)strlen(name);
-      if (pcre_exec(regex_islookupmod, NULL, name, len, 0, PCRE_EOPT, NULL, 0) >= 0) {
-        int pathnamelen = len + (int)strlen(LOOKUP_MODULE_DIR) + 2;
-        void *dl;
-        struct lookup_module_info *info;
-        const char *errormsg;
+  DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
+  while ((ent = readdir(dd)))
+    {
+    char *name = ent->d_name;
+    int len = (int)strlen(name);
+    if (pcre_exec(regex_islookupmod, NULL, name, len, 0, PCRE_EOPT, NULL, 0) >= 0)
+      {
+      int pathnamelen = len + (int)strlen(LOOKUP_MODULE_DIR) + 2;
+      void *dl;
+      struct lookup_module_info *info;
+      const char *errormsg;
 
-        /* SRH: am I being paranoid here or what? */
-        if (pathnamelen > big_buffer_size) {
-          fprintf(stderr, "Loading lookup modules: %s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
-          log_write(0, LOG_MAIN|LOG_PANIC, "%s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
-          continue;
-        }
+      /* SRH: am I being paranoid here or what? */
+      if (pathnamelen > big_buffer_size)
+	{
+	fprintf(stderr, "Loading lookup modules: %s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
+	log_write(0, LOG_MAIN|LOG_PANIC, "%s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
+	continue;
+	}
 
-        /* SRH: snprintf here? */
-        sprintf(CS big_buffer, "%s/%s", LOOKUP_MODULE_DIR, name);
+      /* SRH: snprintf here? */
+      sprintf(CS big_buffer, "%s/%s", LOOKUP_MODULE_DIR, name);
 
-        dl = dlopen(CS big_buffer, RTLD_NOW);// TJ was LAZY
-        if (dl == NULL) {
-          fprintf(stderr, "Error loading %s: %s\n", name, dlerror());
-          moduleerrors++;
-          log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, dlerror());
-          continue;
-        }
+      if (!(dl = dlopen(CS big_buffer, RTLD_NOW)))
+	{
+	fprintf(stderr, "Error loading %s: %s\n", name, dlerror());
+	moduleerrors++;
+	log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, dlerror());
+	continue;
+	}
 
-        /* FreeBSD nsdispatch() can trigger dlerror() errors about
-         * _nss_cache_cycle_prevention_function; we need to clear the dlerror()
-         * state before calling dlsym(), so that any error afterwards only
-         * comes from dlsym().
-         */
-        errormsg = dlerror();
+      /* FreeBSD nsdispatch() can trigger dlerror() errors about
+       * _nss_cache_cycle_prevention_function; we need to clear the dlerror()
+       * state before calling dlsym(), so that any error afterwards only
+       * comes from dlsym().
+       */
+      errormsg = dlerror();
 
-        info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");
-        if ((errormsg = dlerror()) != NULL) {
-          fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
-          dlclose(dl);
-          moduleerrors++;
-          log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
-          continue;
-        }
-        if (info->magic != LOOKUP_MODULE_INFO_MAGIC) {
-          fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
-          dlclose(dl);
-          moduleerrors++;
-          log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
-          continue;
-        }
+      info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");
+      if ((errormsg = dlerror()))
+	{
+	fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+	dlclose(dl);
+	moduleerrors++;
+	log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+	continue;
+	}
+      if (info->magic != LOOKUP_MODULE_INFO_MAGIC)
+	{
+	fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
+	dlclose(dl);
+	moduleerrors++;
+	log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
+	continue;
+	}
 
-        addlookupmodule(dl, info);
-        DEBUG(D_lookup) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
-        countmodules++;
+      addlookupmodule(dl, info);
+      DEBUG(D_lookup) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
+      countmodules++;
       }
     }
-    store_free((void*)regex_islookupmod);
-    closedir(dd);
+  store_free((void*)regex_islookupmod);
+  closedir(dd);
   }
 
-  DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
+DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 #endif
 
-  DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
+DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
 
-  lookup_list = store_malloc(sizeof(lookup_info *) * lookup_list_count);
-  memset(lookup_list, 0, sizeof(lookup_info *) * lookup_list_count);
+lookup_list = store_malloc(sizeof(lookup_info *) * lookup_list_count);
+memset(lookup_list, 0, sizeof(lookup_info *) * lookup_list_count);
 
-  /* now add all lookups to the real list */
-  for (struct lookupmodulestr * p = lookupmodules; p; p = p->next)
-    for (int j = 0; j < p->info->lookupcount; j++)
-      add_lookup_to_list(p->info->lookups[j]);
-  store_reset(reset_point);
-  /* just to be sure */
-  lookupmodules = NULL;
+/* now add all lookups to the real list */
+for (struct lookupmodulestr * p = lookupmodules; p; p = p->next)
+  for (int j = 0; j < p->info->lookupcount; j++)
+    add_lookup_to_list(p->info->lookups[j]);
+store_reset(reset_point);
+/* just to be sure */
+lookupmodules = NULL;
 }
 
 #endif	/*!MACRO_PREDEF*/
