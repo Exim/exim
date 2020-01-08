@@ -6362,7 +6362,7 @@ All other options are defaulted.
 .code
 local_delivery:
   driver = appendfile
-  file = /var/mail/$local_part
+  file = /var/mail/$home
   delivery_date_add
   envelope_to_add
   return_path_add
@@ -12384,6 +12384,18 @@ Global address rewriting happens when a message is received, so the value of
 &$local_part$& is set during user filtering, but not during system filtering,
 because a message may have many recipients and the system filter is called just
 once.
+
+.new
+&*Warning*&: the content of this variable is provided by a potential attacker.
+Consider carefully the implications of using it unvalidated as a name
+for file access.
+This presents issues for users' &_.forward_& and filter files.
+For traditional full user accounts, use &%check_local_users%& and the &$home$&
+variable rather than this one.
+For virtual users, store a suitable pathname component in the database
+which is used for account name validation, and use that retrieved value
+rather than this variable.
+.wen
 
 .vindex "&$local_part_prefix$&"
 .vindex "&$local_part_suffix$&"
@@ -20527,6 +20539,15 @@ empty or consists only of comments), the router declines. &*Warning*&: This
 is not the case when the file contains syntactically valid items that happen to
 yield empty addresses, for example, items containing only RFC 2822 address
 comments.
+
+.new
+&*Warning*&: It is unwise to use &$local_part$& or &$domain$&
+directly for redirection,
+as they are provided by a potential attacker.
+In the examples above, &$local_part$& is used for looking up data held locally
+on the system, and not used directly (the second example derives &$home$& via
+the passsword file or database, using &$local_part$&).
+.wen
 
 
 
