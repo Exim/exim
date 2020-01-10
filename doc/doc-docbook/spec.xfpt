@@ -9815,6 +9815,12 @@ newline at the very end. For the &%header%& and &%bheader%& expansion, for
 those headers that contain lists of addresses, a comma is also inserted at the
 junctions between headers. This does not happen for the &%rheader%& expansion.
 
+.new
+.cindex "tainted data"
+When the headers are from an incoming message,
+the result of expanding any of these variables is tainted.
+.wen
+
 
 .vitem &*${hmac{*&<&'hashname'&>&*}{*&<&'secret'&>&*}{*&<&'string'&>&*}}*&
 .cindex "expansion" "hmac hashing"
@@ -12192,6 +12198,12 @@ When the &%smtp_etrn_command%& option is being expanded, &$domain$& contains
 the complete argument of the ETRN command (see section &<<SECTETRN>>&).
 .endlist
 
+.new
+.cindex "tainted data"
+If the origin of the data is an incoming message,
+the result of expanding this variable is tainted.
+.wen
+
 
 .vitem &$domain_data$&
 .vindex "&$domain_data$&"
@@ -12386,7 +12398,11 @@ because a message may have many recipients and the system filter is called just
 once.
 
 .new
-&*Warning*&: the content of this variable is provided by a potential attacker.
+.cindex "tainted data"
+If the origin of the data is an incoming message,
+the result of expanding this variable is tainted.
+
+&*Warning*&: the content of this variable is usually provided by a potential attacker.
 Consider carefully the implications of using it unvalidated as a name
 for file access.
 This presents issues for users' &_.forward_& and filter files.
