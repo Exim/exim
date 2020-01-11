@@ -866,11 +866,10 @@ while ((s = (*func)()) != NULL)
     {
     uschar *endptr;
 
-    if (Ustrncmp(s, "acl_c", 5) != 0 &&
-        Ustrncmp(s, "acl_m", 5) != 0)
+    if (Ustrncmp(s, "acl_c", 5) != 0 && Ustrncmp(s, "acl_m", 5) != 0)
       {
       *error = string_sprintf("invalid variable name after \"set\" in ACL "
-        "modifier \"set %s\" (must start \"acl_c\" or \"acl_m\")", s);
+	"modifier \"set %s\" (must start \"acl_c\" or \"acl_m\")", s);
       return NULL;
       }
 
@@ -878,19 +877,19 @@ while ((s = (*func)()) != NULL)
     if (!isdigit(*endptr) && *endptr != '_')
       {
       *error = string_sprintf("invalid variable name after \"set\" in ACL "
-        "modifier \"set %s\" (digit or underscore must follow acl_c or acl_m)",
-        s);
+	"modifier \"set %s\" (digit or underscore must follow acl_c or acl_m)",
+	s);
       return NULL;
       }
 
-    while (*endptr != 0 && *endptr != '=' && !isspace(*endptr))
+    while (*endptr && *endptr != '=' && !isspace(*endptr))
       {
       if (!isalnum(*endptr) && *endptr != '_')
-        {
-        *error = string_sprintf("invalid character \"%c\" in variable name "
-          "in ACL modifier \"set %s\"", *endptr, s);
-        return NULL;
-        }
+	{
+	*error = string_sprintf("invalid character \"%c\" in variable name "
+	  "in ACL modifier \"set %s\"", *endptr, s);
+	return NULL;
+	}
       endptr++;
       }
 
@@ -3634,15 +3633,12 @@ for (; cb; cb = cb->next)
       sender_address_cache, -1, 0, CUSS &sender_data);
     break;
 
-    /* Connection variables must persist forever */
+    /* Connection variables must persist forever; message variables not */
 
     case ACLC_SET:
       {
       int old_pool = store_pool;
-      if (  cb->u.varname[0] == 'c'
-#ifndef DISABLE_DKIM
-         || cb->u.varname[0] == 'd'
-#endif
+      if (  cb->u.varname[0] != 'm'
 #ifndef DISABLE_EVENT
 	 || event_name		/* An event is being delivered */
 #endif

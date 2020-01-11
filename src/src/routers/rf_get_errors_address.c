@@ -88,13 +88,13 @@ else
   const uschar *address_expansions_save[ADDRESS_EXPANSIONS_COUNT];
   address_item *snew = deliver_make_addr(s, FALSE);
 
-  if (sender_address != NULL)
+  if (sender_address)
     {
     save1 = sender_address[0];
     sender_address[0] = 0;
     }
 
-  for (i = 0, p = address_expansions; *p != NULL;)
+  for (i = 0, p = address_expansions; *p;)
     address_expansions_save[i++] = **p++;
   f.address_test_mode = FALSE;
 
@@ -119,10 +119,10 @@ else
     debug_printf("------ End verifying errors address %s ------\n", s);
 
   f.address_test_mode = save_address_test_mode;
-  for (i = 0, p = address_expansions; *p != NULL;)
+  for (i = 0, p = address_expansions; *p; )
     **p++ = address_expansions_save[i++];
 
-  if (sender_address != NULL) sender_address[0] = save1;
+  if (sender_address) sender_address[0] = save1;
   }
 
 return OK;

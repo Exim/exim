@@ -488,6 +488,7 @@ extern uschar *deliver_localpart_orig; /* The original local part for delivery *
 extern uschar *deliver_localpart_parent; /* The parent local part for delivery */
 extern uschar *deliver_localpart_prefix; /* The stripped prefix, if any */
 extern uschar *deliver_localpart_suffix; /* The stripped suffix, if any */
+extern uschar *deliver_localpart_verified; /* de-tainted by check_local_part */
 extern uschar *deliver_out_buffer;     /* Buffer for copying file */
 extern int     deliver_queue_load_max; /* Different value for queue running */
 extern address_item *deliver_recipients; /* Current set of addresses */

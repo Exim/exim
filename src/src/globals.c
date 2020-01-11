@@ -817,6 +817,7 @@ uschar *deliver_localpart_orig = NULL;
 uschar *deliver_localpart_parent = NULL;
 uschar *deliver_localpart_prefix = NULL;
 uschar *deliver_localpart_suffix = NULL;
+uschar *deliver_localpart_verified = NULL;
 uschar *deliver_out_buffer     = NULL;
 int     deliver_queue_load_max = -1;
 address_item  *deliver_recipients = NULL;

@@ -6362,7 +6362,7 @@ All other options are defaulted.
 .code
 local_delivery:
   driver = appendfile
-  file = /var/mail/$home
+  file = /var/mail/$local_part_verified
   delivery_date_add
   envelope_to_add
   return_path_add
@@ -6370,7 +6370,17 @@ local_delivery:
 # mode = 0660
 .endd
 This &(appendfile)& transport is used for local delivery to user mailboxes in
-traditional BSD mailbox format. By default it runs under the uid and gid of the
+traditional BSD mailbox format.
+
+.new
+We prefer to avoid using &$local_part$& directly to define the mailbox filename,
+as it is provided by a potential bad actor.
+Instead we use &$local_part_verified$&,
+the result of looking up &$local_part$& in the user database
+(done by using &%check_local_user%& in the the router).
+.wen
+
+By default &(appendfile)& runs under the uid and gid of the
 local user, which requires the sticky bit to be set on the &_/var/mail_&
 directory. Some systems use the alternative approach of running mail deliveries
 under a particular group instead of using the sticky bit. The commented options
@@ -12202,6 +12212,7 @@ the complete argument of the ETRN command (see section &<<SECTETRN>>&).
 .cindex "tainted data"
 If the origin of the data is an incoming message,
 the result of expanding this variable is tainted.
+See also &$domain_verified$&.
 .wen
 
 
@@ -12402,15 +12413,18 @@ once.
 If the origin of the data is an incoming message,
 the result of expanding this variable is tainted.
 
-&*Warning*&: the content of this variable is usually provided by a potential attacker.
+&*Warning*&: the content of this variable is usually provided by a potential
+attacker.
 Consider carefully the implications of using it unvalidated as a name
 for file access.
 This presents issues for users' &_.forward_& and filter files.
-For traditional full user accounts, use &%check_local_users%& and the &$home$&
-variable rather than this one.
+For traditional full user accounts, use &%check_local_users%& and the
+&$local_part_verified$& variable rather than this one.
 For virtual users, store a suitable pathname component in the database
 which is used for account name validation, and use that retrieved value
 rather than this variable.
+If needed, use a router &%address_data%& or &%set%& option for
+the retrieved data.
 .wen
 
 .vindex "&$local_part_prefix$&"
@@ -12478,6 +12492,14 @@ variable, having been removed from &$local_part$&.
 When an address is being routed or delivered, and a
 specific suffix for the local part was recognized, it is available in this
 variable, having been removed from &$local_part$&.
+
+.new
+.vitem &$local_part_verified$&
+.vindex "&$local_part_verified$&"
+If the router generic option &%check_local_part%& has run successfully,
+this variable has the user database version of &$local_part$&.
+Such values are not tainted and hence usable for building file names.
+.wen
 
 .vitem &$local_scan_data$&
 .vindex "&$local_scan_data$&"
