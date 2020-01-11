@@ -930,6 +930,8 @@ subdir_str[1] = '\0';
 }
 
 /******************************************************************************/
+/* Time calculations */
+
 static inline void
 timesince(struct timeval * diff, const struct timeval * then)
 {
@@ -981,6 +983,51 @@ testharness_pause_ms(int millisec)
 #ifndef MEASURE_TIMING
 if (f.running_in_test_harness) millisleep(millisec);
 #endif
+}
+
+/******************************************************************************/
+/* Taint-checked file opens */
+
+static inline int
+exim_open2(const char *pathname, int flags)
+{
+if (!is_tainted(pathname)) return open(pathname, flags);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+errno = EACCES;
+return -1;
+}
+static inline int
+exim_open(const char *pathname, int flags, mode_t mode)
+{
+if (!is_tainted(pathname)) return open(pathname, flags, mode);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+errno = EACCES;
+return -1;
+}
+static inline int
+exim_openat(int dirfd, const char *pathname, int flags)
+{
+if (!is_tainted(pathname)) return openat(dirfd, pathname, flags);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+errno = EACCES;
+return -1;
+}
+static inline int
+exim_openat4(int dirfd, const char *pathname, int flags, mode_t mode)
+{
+if (!is_tainted(pathname)) return openat(dirfd, pathname, flags, mode);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+errno = EACCES;
+return -1;
+}
+
+static inline FILE *
+exim_fopen(const char *pathname, const char *mode)
+{
+if (!is_tainted(pathname)) return fopen(pathname, mode);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+errno = EACCES;
+return NULL;
 }
 
 #endif	/* !MACRO_PREDEF */

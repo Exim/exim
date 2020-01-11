@@ -8550,7 +8550,7 @@ expand_file_big_buffer(const uschar * filename)
 {
 int fd, off = 0, len;
 
-if ((fd = open(CS filename, O_RDONLY)) < 0)
+if ((fd = exim_open2(CS filename, O_RDONLY)) < 0)
   {
   log_write(0, LOG_MAIN | LOG_PANIC, "unable to open file for reading: %s",
 	     filename);

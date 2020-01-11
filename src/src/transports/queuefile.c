@@ -134,11 +134,11 @@ else					/* use data copy */
     tb->name, srcpath, dstpath);
 
   if (  (s = dstpath,
-	 (dstfd = openat(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE))
+	 (dstfd = exim_openat4(ddfd, CCS filename, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE))
 	 < 0
 	)
      ||    is_hdr_file
-	&& (s = srcpath, (srcfd = openat(sdfd, CCS filename, O_RDONLY)) < 0)
+	&& (s = srcpath, (srcfd = exim_openat(sdfd, CCS filename, O_RDONLY)) < 0)
      )
     op = US"opening";
 

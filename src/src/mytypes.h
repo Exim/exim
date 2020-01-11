@@ -89,15 +89,17 @@ functions that are called quite often; for other calls to external libraries
 #define Uchdir(s)          chdir(CCS(s))
 #define Uchmod(s,n)        chmod(CCS(s),n)
 #define Ufgets(b,n,f)      fgets(CS(b),n,f)
-#define Ufopen(s,t)        fopen(CCS(s),CCS(t))
+#define Ufopen(s,t)        exim_fopen(CCS(s),CCS(t))
 #define Ulink(s,t)         link(CCS(s),CCS(t))
 #define Ulstat(s,t)        lstat(CCS(s),t)
 
-#ifdef O_BINARY                                        /* This is for Cygwin,  */
-#define Uopen(s,n,m)       open(CCS(s),(n)|O_BINARY,m) /* where all files must */
-#else                                                  /* be opened as binary  */
-#define Uopen(s,n,m)       open(CCS(s),n,m)            /* to avoid problems    */
-#endif                                                 /* with CRLF endings.   */
+#ifdef O_BINARY							/* This is for Cygwin,  */
+#define Uopen(s,n,m)       exim_open(CCS(s),(n)|O_BINARY,m)	/* where all files must */
+#define Uopen2(s,n)        exim_open2(CCS(s),(n)|O_BINARY)
+#else								/* be opened as binary  */
+#define Uopen(s,n,m)       exim_open(CCS(s),n,m)		/* to avoid problems    */
+#define Uopen2(s,n)        exim_open2(CCS(s),n)	
+#endif								/* with CRLF endings.   */
 #define Uread(f,b,l)       read(f,CS(b),l)
 #define Urename(s,t)       rename(CCS(s),CCS(t))
 #define Ustat(s,t)         stat(CCS(s),t)
