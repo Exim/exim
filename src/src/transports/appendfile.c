@@ -1319,10 +1319,9 @@ if (!fdname)
     }
   if (!fdname)
     {
-    addr->transport_return = PANIC;
     addr->message = string_sprintf("Mandatory file or directory option "
       "missing from %s transport", tblock->name);
-    return FALSE;
+    goto ret_panic;
     }
   }
 
@@ -1330,20 +1329,18 @@ if (!fdname)
 
 if ((ob->maildir_format || ob->mailstore_format) && !isdirectory)
   {
-  addr->transport_return = PANIC;
   addr->message = string_sprintf("mail%s_format requires \"directory\" "
     "to be specified for the %s transport",
     ob->maildir_format ? "dir" : "store", tblock->name);
-  return FALSE;
+  goto ret_panic;
   }
 
 if (!(path = expand_string(fdname)))
   {
-  addr->transport_return = PANIC;
   addr->message = string_sprintf("Expansion of \"%s\" (file or directory "
     "name for %s transport) failed: %s", fdname, tblock->name,
     expand_string_message);
-  return FALSE;
+  goto ret_panic;
   }
 
 if (path[0] != '/')
@@ -1358,7 +1355,7 @@ if (path[0] != '/')
 to the true local part. */
 
 if (testflag(addr, af_file))
-  for (address_item * addr2 = addr; addr2 != NULL; addr2 = addr2->next)
+  for (address_item * addr2 = addr; addr2; addr2 = addr2->next)
     addr2->local_part = string_copy(path);
 
 /* The available mailbox formats depend on whether it is a directory or a file
@@ -2311,11 +2308,10 @@ else
       {
       if (!(check_path = expand_string(ob->quota_directory)))
         {
-        addr->transport_return = PANIC;
         addr->message = string_sprintf("Expansion of \"%s\" (quota_directory "
          "name for %s transport) failed: %s", ob->quota_directory,
           tblock->name, expand_string_message);
-        return FALSE;
+        goto ret_panic;
         }
 
       if (check_path[0] != '/')
@@ -2519,11 +2515,10 @@ else
 
     if (nametag && !expand_string(nametag) && !f.expand_string_forcedfail)
       {
-      addr->transport_return = PANIC;
       addr->message = string_sprintf("Expansion of \"%s\" (maildir_tag "
         "for %s transport) failed: %s", nametag, tblock->name,
         expand_string_message);
-      return FALSE;
+      goto ret_panic;
       }
 
     /* We ensured the existence of all the relevant directories above. Attempt
@@ -2638,12 +2633,11 @@ else
     if (!(env_file = fdopen(fd, "wb")))
       {
       addr->basic_errno = errno;
-      addr->transport_return = PANIC;
       addr->message = string_sprintf("fdopen of %s ("
         "for %s transport) failed", filename, tblock->name);
       (void)close(fd);
       Uunlink(filename);
-      return FALSE;
+      goto ret_panic;
       }
 
     /* Write the envelope file, then close it. */
@@ -2655,13 +2649,12 @@ else
         {
         if (!f.expand_string_forcedfail)
           {
-          addr->transport_return = PANIC;
           addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
             "prefix for %s transport) failed: %s", ob->mailstore_prefix,
             tblock->name, expand_string_message);
           (void)fclose(env_file);
           Uunlink(filename);
-          return FALSE;
+          goto ret_panic;
           }
         }
       else
@@ -2684,13 +2677,12 @@ else
         {
         if (!f.expand_string_forcedfail)
           {
-          addr->transport_return = PANIC;
           addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
             "suffix for %s transport) failed: %s", ob->mailstore_suffix,
             tblock->name, expand_string_message);
           (void)fclose(env_file);
           Uunlink(filename);
-          return FALSE;
+          goto ret_panic;
           }
         }
       else
@@ -3366,6 +3358,10 @@ if (wait_for_tick) exim_wait_tick(&msg_tv, 1);
 put in the first address of a batch. */
 
 return FALSE;
+
+ret_panic:
+  addr->transport_return = PANIC;
+  return FALSE;
 }
 
 #endif	/*!MACRO_PREDEF*/
