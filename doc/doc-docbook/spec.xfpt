@@ -23816,6 +23816,12 @@ directories are also controllable. See chapter &<<CHAPenvironment>>& for
 details of the local delivery environment and chapter &<<CHAPbatching>>&
 for a discussion of local delivery batching.
 
+.new
+.cindex "tainted data" "in pipe command"
+.cindex pipe "tainted data"
+Tainted data may not be used for the command name.
+.wen
+
 
 .section "Concurrent delivery" "SECID140"
 If two messages arrive at almost the same time, and both are routed to a pipe

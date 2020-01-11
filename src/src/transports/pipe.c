@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) The Exim maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -586,7 +587,6 @@ symbol. In other cases, the command is supplied as one of the pipe transport's
 options. */
 
 if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
-  {
   if (ob->force_command)
     {
     /* Enables expansion of $address_pipe into separate arguments */
@@ -602,7 +602,6 @@ if (testflag(addr, af_pfr) && addr->local_part[0] == '|')
     expand_arguments = testflag(addr, af_expand_pipe);
     expand_fail = FAIL;
     }
-  }
 else
   {
   cmd = ob->cmd;
@@ -615,11 +614,18 @@ else
  * coming from addr->local_part[0] == '|'
  */
 
-if (cmd == NULL || *cmd == '\0')
+if (!cmd || !*cmd)
   {
   addr->transport_return = DEFER;
   addr->message = string_sprintf("no command specified for %s transport",
     tblock->name);
+  return FALSE;
+  }
+if (is_tainted(cmd))
+  {
+  addr->message = string_sprintf("Tainted '%s' (command "
+    "for %s transport) not permitted", cmd, tblock->name);
+  addr->transport_return = PANIC;
   return FALSE;
   }
 
@@ -631,8 +637,8 @@ if (expand_arguments && addr->pipe_expandn)
   {
   uschar **ss = addr->pipe_expandn;
   expand_nmax = -1;
-  if (*ss != NULL) filter_thisaddress = *ss++;
-  while (*ss != NULL)
+  if (*ss) filter_thisaddress = *ss++;
+  while (*ss)
     {
     expand_nstring[++expand_nmax] = *ss;
     expand_nlength[expand_nmax] = Ustrlen(*ss++);
@@ -685,7 +691,6 @@ else if (timezone_string != NULL && timezone_string[0] != 0)
 /* Add any requested items */
 
 if (envlist)
-  {
   if (!(envlist = expand_cstring(envlist)))
     {
     addr->transport_return = DEFER;
@@ -694,7 +699,6 @@ if (envlist)
       expand_string_message);
     return FALSE;
     }
-  }
 
 while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size)))
    {
@@ -831,10 +835,10 @@ transport_count = 0;
 
 /* First write any configured prefix information */
 
-if (ob->message_prefix != NULL)
+if (ob->message_prefix)
   {
   uschar *prefix = expand_string(ob->message_prefix);
-  if (prefix == NULL)
+  if (!prefix)
     {
     addr->transport_return = f.search_find_defer? DEFER : PANIC;
     addr->message = string_sprintf("Expansion of \"%s\" (prefix for %s "
@@ -951,8 +955,8 @@ above timed out. */
 
 if ((rc = child_close(pid, timeout)) != 0)
   {
-  uschar *tmsg = (addr->message == NULL)? US"" :
-    string_sprintf(" (preceded by %s)", addr->message);
+  uschar * tmsg = addr->message
+    ? string_sprintf(" (preceded by %s)", addr->message) : US"";
 
   /* The process did not complete in time; kill its process group and fail
   the delivery. It appears to be necessary to kill the output process too, as
@@ -1058,7 +1062,7 @@ if ((rc = child_close(pid, timeout)) != 0)
     {
     /* Always handle execve() failure specially if requested to */
 
-    if (ob->freeze_exec_fail && (rc == EX_EXECFAILED))
+    if (ob->freeze_exec_fail  &&  rc == EX_EXECFAILED)
       {
       addr->transport_return = DEFER;
       addr->special_action = SPECIAL_FREEZE;
@@ -1106,7 +1110,7 @@ if ((rc = child_close(pid, timeout)) != 0)
           rc-128, os_strsignal(rc-128)) :
         US os_strexit(rc);
 
-      if (*ss != 0)
+      if (*ss)
         {
         g = string_catn(g, US" ", 1);
         g = string_cat (g, ss);

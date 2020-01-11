@@ -1,0 +1,4 @@
+# tainted data for pipe transport command
+exim -odi pipe-userx=DIR/bin/iefbr14@test.ex
+A test message.
+****

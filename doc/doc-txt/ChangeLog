@@ -88,7 +88,8 @@ JH/19 Bug 2507: Modules: on handling a dynamic-module (lookups) open failure,
       information.
 
 JH/20 Taint checking: disallow use of tainted data for the appendfile transport
-      file and directory options.  Previously this was permitted.
+      file and directory options, and for the pipe transport command.
+      Previously this was permitted.
 
 
 Exim version 4.93

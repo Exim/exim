@@ -1,4 +1,4 @@
-# Exim test configuration 0533
+# Exim test configuration 0585
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -12,31 +12,18 @@ primary_hostname = myhost.test.ex
 
 begin routers
 
-r1:
-  driver = redirect
-  local_part_prefix = file-
-  local_part_suffix = =*
-  data = DIR/test-mail/${bless:${substr_1:$local_part_suffix}}
-  file_transport = t1
-
 r2:
   driver = redirect
   local_part_prefix = pipe-
   local_part_suffix = =*
   caseful_local_part = true
-  data = |${bless:${substr_1:$local_part_suffix}}
+  data = |${substr_1:$local_part_suffix}
   pipe_transport = t2
 
 
 # ----- Transports -----
 
 begin transports
-
-t1:
-  driver = appendfile
-  envelope_to_add
-  user = CALLER
-  batch_max = 10
 
 t2:
   driver = pipe
