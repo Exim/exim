@@ -147,10 +147,8 @@ if (maildirfolder_create_regex != NULL)
 
   DEBUG(D_transport) debug_printf("checking for maildirfolder requirement\n");
 
-  regex = pcre_compile(CS maildirfolder_create_regex, PCRE_COPT,
-    (const char **)&error, &offset, NULL);
-
-  if (regex == NULL)
+  if (!(regex = pcre_compile(CS maildirfolder_create_regex, PCRE_COPT,
+    CCSS &error, &offset, NULL)))
     {
     addr->message = string_sprintf("appendfile: regular expression "
       "error: %s at offset %d while compiling %s", error, offset,

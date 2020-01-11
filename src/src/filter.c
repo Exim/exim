@@ -1595,11 +1595,9 @@ switch (c->type)
       debug_printf_indent("  Pattern = %s\n", exp[1]);
       }
 
-    re = pcre_compile(CS exp[1],
+    if (!(re = pcre_compile(CS exp[1],
       PCRE_COPT | ((c->type == cond_matches)? PCRE_CASELESS : 0),
-      (const char **)&regcomp_error, &regcomp_error_offset, NULL);
-
-    if (re == NULL)
+      CCSS &regcomp_error, &regcomp_error_offset, NULL)))
       {
       *error_pointer = string_sprintf("error while compiling "
         "regular expression \"%s\": %s at offset %d",

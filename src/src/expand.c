@@ -2893,7 +2893,7 @@ switch(cond_type = identify_operator(&s, &opname))
     break;
 
     case ECOND_MATCH:   /* Regular expression match */
-    if (!(re = pcre_compile(CS sub[1], PCRE_COPT, (const char **)&rerror,
+    if (!(re = pcre_compile(CS sub[1], PCRE_COPT, CCSS &rerror,
 			    &roffset, NULL)))
       {
       expand_string_message = string_sprintf("regular expression error in "
@@ -5834,7 +5834,7 @@ while (*s != 0)
 
       /* Compile the regular expression */
 
-      if (!(re = pcre_compile(CS sub[1], PCRE_COPT, (const char **)&rerror,
+      if (!(re = pcre_compile(CS sub[1], PCRE_COPT, CCSS &rerror,
 			      &roffset, NULL)))
         {
         expand_string_message = string_sprintf("regular expression error in "

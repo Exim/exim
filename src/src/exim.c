@@ -110,7 +110,7 @@ if (use_malloc)
   pcre_free = function_store_free;
   }
 if (caseless) options |= PCRE_CASELESS;
-yield = pcre_compile(CCS pattern, options, (const char **)&error, &offset, NULL);
+yield = pcre_compile(CCS pattern, options, CCSS &error, &offset, NULL);
 pcre_malloc = function_store_get;
 pcre_free = function_dummy_free;
 if (yield == NULL)

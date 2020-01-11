@@ -227,8 +227,7 @@ if(sdata[1])
   /* Run the command. We use the argv form rather than plain as that parses
   into args by whitespace yet has no escaping mechanism. */
 
-  redis_reply = redisCommandArgv(redis_handle, i, (const char **) argv, NULL);
-  if (!redis_reply)
+  if (!(redis_reply = redisCommandArgv(redis_handle, i, CCSS argv, NULL)))
     {
     *errmsg = string_sprintf("REDIS: query failed: %s\n", redis_handle->errstr);
     *defer_break = FALSE;

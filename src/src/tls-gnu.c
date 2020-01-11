@@ -1939,7 +1939,7 @@ else
       const char ** dd;
       int * ddl;
 
-      for(nrec = 0; state->dane_data_len[nrec]; ) nrec++;
+      for (nrec = 0; state->dane_data_len[nrec]; ) nrec++;
       nrec++;
 
       dd = store_get(nrec * sizeof(uschar *), FALSE);

@@ -49,7 +49,7 @@ if (pw == NULL)
 DEBUG(D_auth)
   debug_printf("Running pwcheck authentication for user \"%s\"\n", s);
 
-switch (pwcheck_verify_password(CS s, CS pw, (const char **)(&reply)))
+switch (pwcheck_verify_password(CS s, CS pw, CCSS &reply))
   {
   case PWCHECK_OK:
   DEBUG(D_auth) debug_printf("pwcheck: success (%s)\n", reply);

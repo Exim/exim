@@ -70,9 +70,8 @@ for (i = 0; i <= 1; i++)
         {
         int offset;
         const uschar *error;
-        stripchart_regex[indx] = pcre_compile(CS buffer, PCRE_COPT,
-          (const char **)&error, &offset, NULL);
-        if (stripchart_regex[indx] == NULL)
+        if (!(stripchart_regex[indx] = pcre_compile(CS buffer, PCRE_COPT,
+          CCSS &error, &offset, NULL)))
           {
           printf("regular expression error: %s at offset %d "
             "while compiling %s\n", error, offset, buffer);
@@ -231,7 +230,7 @@ queue_stripchart_name = (s != NULL)? string_copy(s) : US"queue";
 /* Compile the regex for matching yyyy-mm-dd at the start of a string. */
 
 yyyymmdd_regex = pcre_compile("^\\d{4}-\\d\\d-\\d\\d\\s", PCRE_COPT,
-  (const char **)&error, &erroroffset, NULL);
+  CCSS &error, &erroroffset, NULL);
 }
 
 /* End of em_init.c */

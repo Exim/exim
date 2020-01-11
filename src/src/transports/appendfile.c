@@ -2395,9 +2395,8 @@ else
       {
       int check_path_len = Ustrlen(check_path);
 
-      dir_regex = pcre_compile(CS ob->maildir_dir_regex, PCRE_COPT,
-        (const char **)&error, &offset, NULL);
-      if (dir_regex == NULL)
+      if (!(dir_regex = pcre_compile(CS ob->maildir_dir_regex, PCRE_COPT,
+        CCSS &error, &offset, NULL)))
         {
         addr->message = string_sprintf("appendfile: regular expression "
           "error: %s at offset %d while compiling %s", error, offset,

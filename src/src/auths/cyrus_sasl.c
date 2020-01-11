@@ -151,7 +151,7 @@ if ((rc = sasl_server_new(CS ob->server_service, CS expanded_hostname,
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL server connection.", ablock->name);
 
-if ((rc = sasl_listmech(conn, NULL, "", ":", "", (const char **)&list, &len, &i)) != SASL_OK)
+if ((rc = sasl_listmech(conn, NULL, "", ":", "", CCSS &list, &len, &i)) != SASL_OK)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't get Cyrus SASL mechanism list.", ablock->name);
 
@@ -326,8 +326,8 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
     {
     firsttime = 0;
     HDEBUG(D_auth) debug_printf("Calling sasl_server_start(%s,\"%s\")\n", ob->server_mech, debug);
-    rc = sasl_server_start(conn, CS ob->server_mech, inlen?CS input:NULL, inlen,
-           (const char **)(&output), &outlen);
+    rc = sasl_server_start(conn, CS ob->server_mech, inlen ? CS input : NULL, inlen,
+           CCSS &output, &outlen);
     }
   else
     {
@@ -358,7 +358,7 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
       }
 
     HDEBUG(D_auth) debug_printf("Calling sasl_server_step(\"%s\")\n", debug);
-    rc = sasl_server_step(conn, CS input, inlen, (const char **)(&output), &outlen);
+    rc = sasl_server_step(conn, CS input, inlen, CCSS &output, &outlen);
     }
 
   if (rc == SASL_BADPROT)
