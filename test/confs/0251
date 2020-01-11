@@ -32,7 +32,7 @@ exeter_listr:
   no_check_local_user
   domains = listr.test.ex
   errors_to = ${local_part}-request@test.ex
-  file = DIR/aux-fixed/TESTNUM.list.${local_part}
+  file = DIR/aux-fixed/TESTNUM.list.${bless:$local_part}
   forbid_file
   forbid_pipe
   one_time

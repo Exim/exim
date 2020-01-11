@@ -1277,10 +1277,10 @@ for (;;)
   However, if the list is empty only because syntax errors were skipped, we
   return FF_DELIVERED. */
 
-  if (*s == 0)
+  if (!*s)
     {
-    return (count > 0 || (syntax_errors != NULL && *syntax_errors != NULL))?
-      FF_DELIVERED : FF_NOTDELIVERED;
+    return (count > 0 || (syntax_errors && *syntax_errors))
+      ?  FF_DELIVERED : FF_NOTDELIVERED;
 
     /* This previous code returns FF_ERROR if nothing is generated but a
     syntax error has been skipped. I now think it is the wrong approach, but
@@ -1411,7 +1411,7 @@ for (;;)
 
     /* Insist on absolute path */
 
-    if (filename[0]!= '/')
+    if (filename[0] != '/')
       {
       *error = string_sprintf("included file \"%s\" is not an absolute path",
         filename);
@@ -1420,9 +1420,16 @@ for (;;)
 
     /* Check if include is permitted */
 
-    if ((options & RDO_INCLUDE) != 0)
+    if (options & RDO_INCLUDE)
       {
       *error = US"included files not permitted";
+      return FF_ERROR;
+      }
+
+    if (is_tainted(filename))
+      {
+      *error = string_sprintf("Tainted name '%s' for included file  not permitted\n",
+       filename);
       return FF_ERROR;
       }
 

@@ -20579,6 +20579,10 @@ yield empty addresses, for example, items containing only RFC 2822 address
 comments.
 
 .new
+.cindex "tainted data" "in filenames"
+.cindex redirect "tainted data"
+Tainted data may not be used for a filename.
+
 &*Warning*&: It is unwise to use &$local_part$& or &$domain$&
 directly for redirection,
 as they are provided by a potential attacker.
@@ -20812,6 +20816,11 @@ It must be given as
 .code
 list1:   :include:/opt/lists/list1
 .endd
+.new
+.cindex "tainted data" "in filenames"
+.cindex redirect "tainted data"
+Tainted data may not be used for a filename.
+.wen
 .next
 .cindex "address redirection" "to black hole"
 .cindex "delivery" "discard"

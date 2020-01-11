@@ -1,0 +1,17 @@
+# Exim test configuration 0586
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+list:
+  driver = redirect
+  file = DIR/aux-fixed/TESTNUM.list.$local_part
+
+# End

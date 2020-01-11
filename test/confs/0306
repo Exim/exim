@@ -27,7 +27,7 @@ r1:
   driver = redirect
   domains = lists.test.ex
   local_part_suffix = -request
-  file = DIR/aux-fixed/TESTNUM/${bless:$local_part}$local_part_suffix
+  file = DIR/aux-fixed/TESTNUM/${bless:$local_part$local_part_suffix}
 
 r2:
   driver = redirect

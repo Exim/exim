@@ -87,8 +87,10 @@ JH/19 Bug 2507: Modules: on handling a dynamic-module (lookups) open failure,
       were used, and the second one (for mainlog/paniclog) retrieved null
       information.
 
-JH/20 Taint checking: disallow use of tainted data for the appendfile transport
-      file and directory options, and for the pipe transport command.
+JH/20 Taint checking: disallow use of tainted data for
+      - the appendfile transport file and directory options
+      - the pipe transport command
+      - file names used by the redirect router (including filter files)
       Previously this was permitted.
 
 

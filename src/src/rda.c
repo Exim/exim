@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) The Exim maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for extracting addresses from a forwarding list
@@ -175,6 +176,17 @@ BOOL uid_ok = !rdata->check_owner;
 BOOL gid_ok = !rdata->check_group;
 struct stat statbuf;
 
+/* Reading a file is a form of expansion; we wish to deny attackers the
+capability to specify the file name. */
+
+if (is_tainted(filename))
+  {
+  *error = string_sprintf("Tainted name '%s' for file read not permitted\n",
+			filename);
+  *yield = FF_ERROR;
+  return NULL;
+  }
+
 /* Attempt to open the file. If it appears not to exist, check up on the
 containing directory by statting it. If the directory does not exist, we treat
 this situation as an error (which will cause delivery to defer); otherwise we
@@ -195,20 +207,20 @@ if (!(fwd = Ufopen(filename, "rb"))) switch(errno)
     return NULL;
 
   case ENOTDIR:         /* Something on the path isn't a directory */
-    if ((options & RDO_ENOTDIR) == 0) goto DEFAULT_ERROR;
+    if (!(options & RDO_ENOTDIR)) goto DEFAULT_ERROR;
     DEBUG(D_route) debug_printf("non-directory on path %s: file assumed not to "
       "exist\n", filename);
     *yield = FF_NONEXIST;
     return NULL;
 
   case EACCES:           /* Permission denied */
-    if ((options & RDO_EACCES) == 0) goto DEFAULT_ERROR;
+    if (!(options & RDO_EACCES)) goto DEFAULT_ERROR;
     DEBUG(D_route) debug_printf("permission denied for %s: file assumed not to "
       "exist\n", filename);
     *yield = FF_NONEXIST;
     return NULL;
 
-  DEFAULT_ERROR:
+DEFAULT_ERROR:
   default:
     *error = string_open_failed(errno, "%s", filename);
     *yield = FF_ERROR;
@@ -361,7 +373,7 @@ if (*filtertype != FILTER_FORWARD)
 
   /* RDO_FILTER is an "allow" bit */
 
-  if ((options & RDO_FILTER) == 0)
+  if (!(options & RDO_FILTER))
     {
     *error = US"filtering not enabled";
     return FF_ERROR;
@@ -383,7 +395,7 @@ if (*filtertype != FILTER_FORWARD)
     }
   else
     {
-    if ((options & RDO_SIEVE_FILTER) != 0)
+    if (options & RDO_SIEVE_FILTER)
       {
       *error = US"Sieve filtering not enabled";
       return FF_ERROR;
@@ -575,11 +587,9 @@ if (!ugid->uid_set ||                         /* Either there's no uid, or */
     (!rdata->isfile &&                        /* We've got the data, and */
      rda_is_filter(data) == FILTER_FORWARD && /* It's not a filter script, */
      Ustrstr(data, ":include:") == NULL))     /* and there's no :include: */
-  {
   return rda_extract(rdata, options, include_directory,
     sieve_vacation_directory, sieve_enotify_mailto_owner, sieve_useraddress,
     sieve_subaddress, generated, error, eblockp, filtertype);
-  }
 
 /* We need to run the processing code in a sub-process. However, if we can
 determine the non-existence of a file first, we can decline without having to
@@ -911,17 +921,17 @@ if (yield == FF_DELIVERED || yield == FF_NOTDELIVERED ||
             sizeof(int) ||
           read(fd,&(addr->reply->once_repeat),sizeof(time_t)) !=
             sizeof(time_t) ||
-          !rda_read_string(fd, &(addr->reply->to)) ||
-          !rda_read_string(fd, &(addr->reply->cc)) ||
-          !rda_read_string(fd, &(addr->reply->bcc)) ||
-          !rda_read_string(fd, &(addr->reply->from)) ||
-          !rda_read_string(fd, &(addr->reply->reply_to)) ||
-          !rda_read_string(fd, &(addr->reply->subject)) ||
-          !rda_read_string(fd, &(addr->reply->headers)) ||
-          !rda_read_string(fd, &(addr->reply->text)) ||
-          !rda_read_string(fd, &(addr->reply->file)) ||
-          !rda_read_string(fd, &(addr->reply->logfile)) ||
-          !rda_read_string(fd, &(addr->reply->oncelog)))
+          !rda_read_string(fd, &addr->reply->to) ||
+          !rda_read_string(fd, &addr->reply->cc) ||
+          !rda_read_string(fd, &addr->reply->bcc) ||
+          !rda_read_string(fd, &addr->reply->from) ||
+          !rda_read_string(fd, &addr->reply->reply_to) ||
+          !rda_read_string(fd, &addr->reply->subject) ||
+          !rda_read_string(fd, &addr->reply->headers) ||
+          !rda_read_string(fd, &addr->reply->text) ||
+          !rda_read_string(fd, &addr->reply->file) ||
+          !rda_read_string(fd, &addr->reply->logfile) ||
+          !rda_read_string(fd, &addr->reply->oncelog))
         goto DISASTER;
       }
     }
@@ -932,13 +942,11 @@ reading end of the pipe, and we are done. */
 
 WAIT_EXIT:
 while ((rc = wait(&status)) != pid)
-  {
   if (rc < 0 && errno == ECHILD)      /* Process has vanished */
     {
     log_write(0, LOG_MAIN, "redirection process %d vanished unexpectedly", pid);
     goto FINAL_EXIT;
     }
-  }
 
 DEBUG(D_route)
   debug_printf("rda_interpret: subprocess yield=%d error=%s\n", yield, *error);
