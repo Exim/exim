@@ -92,6 +92,7 @@ JH/20 Taint checking: disallow use of tainted data for
       - the pipe transport command
       - the autoreply transport file, log and once options
       - file names used by the redirect router (including filter files)
+      - named-queue names
       Previously this was permitted.
 
 

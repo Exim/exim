@@ -16,7 +16,7 @@ begin acl
 
 rcpt:
   accept
-    queue = ${if eq {normal}{$local_part} {} {$local_part}}
+    queue = ${if eq {normal}{$local_part} {} {${bless:$local_part}}}
     logwrite = using queue '$queue_name'
 
 #---------------

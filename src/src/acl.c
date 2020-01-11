@@ -3590,6 +3590,12 @@ for (; cb; cb = cb->next)
     #endif
 
     case ACLC_QUEUE:
+    if (is_tainted(arg))
+      {
+      *log_msgptr = string_sprintf("Tainted name '%s' for queue not permitted",
+				    arg);
+      return ERROR;
+      }
     if (Ustrchr(arg, '/'))
       {
       *log_msgptr = string_sprintf(
