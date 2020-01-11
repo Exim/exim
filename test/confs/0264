@@ -15,7 +15,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
   quota = ${if eq{$local_part}{userx}{3}{10000}}
@@ -24,7 +24,7 @@ local_delivery:
 local_delivery2:
   driver = appendfile
   retry_use_local_part = false
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
   quota = 3
   current_directory = /

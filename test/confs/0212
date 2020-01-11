@@ -58,7 +58,7 @@ alias:
 forward:
   driver = redirect
   no_check_local_user
-  file = DIR/aux-fixed/TESTNUM.$local_part.forward
+  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}.forward
   retry_use_local_part
 
 all:
@@ -73,7 +73,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
   user = CALLER
 

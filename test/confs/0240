@@ -90,7 +90,7 @@ begin transports
 local:
   driver = appendfile
   directory_mode = 3777
-  file = DIR/test-mail/subdir/$local_part
+  file = DIR/test-mail/subdir/${bless:$local_part}
   user = CALLER
 
 

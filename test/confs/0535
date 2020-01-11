@@ -36,7 +36,7 @@ begin transports
 t1:
   driver = appendfile
   user = CALLER
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
 
 
 # End

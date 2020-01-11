@@ -27,14 +27,14 @@ r1:
   driver = redirect
   domains = lists.test.ex
   local_part_suffix = -request
-  file = DIR/aux-fixed/TESTNUM/$local_part$local_part_suffix
+  file = DIR/aux-fixed/TESTNUM/${bless:$local_part}$local_part_suffix
 
 r2:
   driver = redirect
   domains = lists.test.ex
   senders = ${if exists {DIR/aux-fixed/TESTNUM/$local_part}\
              {lsearch;DIR/aux-fixed/TESTNUM/$local_part}{*}}
-  file = DIR/aux-fixed/TESTNUM/$local_part
+  file = DIR/aux-fixed/TESTNUM/${bless:$local_part}
   forbid_pipe
   forbid_file
   one_time
@@ -64,7 +64,7 @@ begin transports
 
 t1:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 t2:

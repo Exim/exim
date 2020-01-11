@@ -29,7 +29,7 @@ maildir:
   create_file = belowhome
   directory = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.filelist}\
               {${if match{$value}{^/}{}{DIR/}}$value}\
-              {DIR/test-mail/$local_part}}
+              {DIR/test-mail/${bless:$local_part}}}
   user = CALLER
 
 

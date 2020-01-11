@@ -96,7 +96,7 @@ remote_delivery:
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
   user = CALLER
 

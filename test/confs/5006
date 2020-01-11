@@ -24,7 +24,7 @@ begin transports
 
 t1:
   driver = appendfile
-  directory = DIR/test-mail/$local_part
+  directory = DIR/test-mail/${bless:$local_part}
   user = CALLER
   maildir_format
   maildir_use_size_file

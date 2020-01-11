@@ -26,7 +26,7 @@ begin transports
 t1:
   driver = appendfile
   user = CALLER
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   headers_add = "\n\
                 FROM: $h_from:\n\
                 --------------------------------\n\

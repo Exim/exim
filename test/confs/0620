@@ -60,7 +60,7 @@ begin transports
 local_delivery:
   driver = appendfile
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
   headers_add =	X-r1: <$r_r1>\nX-r2: <$r_r2>\nX-r3: <$r_r3>
 

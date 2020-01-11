@@ -3,6 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
+/* Copyright (c) The Exim maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -1340,6 +1341,12 @@ if (!(path = expand_string(fdname)))
   addr->message = string_sprintf("Expansion of \"%s\" (file or directory "
     "name for %s transport) failed: %s", fdname, tblock->name,
     expand_string_message);
+  goto ret_panic;
+  }
+if (is_tainted(path))
+  {
+  addr->message = string_sprintf("Tainted '%s' (file or directory "
+    "name for %s transport) not permitted", path, tblock->name);
   goto ret_panic;
   }
 

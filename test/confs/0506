@@ -20,7 +20,7 @@ r1:
   user = EXIMUSER
   ALLOW
   FORBID
-  file = DIR/aux-fixed/TESTNUM.$local_part
+  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
 
 
 # ----- Retry -----

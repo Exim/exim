@@ -557,7 +557,8 @@ if (!(data = expand_string(rdata->string)))
   }
 rdata->string = data;
 
-DEBUG(D_route) debug_printf("expanded: '%s'\n", data);
+DEBUG(D_route)
+  debug_printf("expanded: '%s'%s\n", data, is_tainted(data) ? " (tainted)":"");
 
 if (rdata->isfile && data[0] != '/')
   {

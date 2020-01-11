@@ -43,12 +43,12 @@ pipe:
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 filtered_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   transport_filter = DIR/bin/fd -f
   user = CALLER
 

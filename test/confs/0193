@@ -34,7 +34,7 @@ local_delivery:
   driver = appendfile
   batch_max = 100
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   message_size_limit = 50
   user = CALLER
 

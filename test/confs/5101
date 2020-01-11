@@ -35,7 +35,7 @@ local_delivery:
   envelope_to_add
   headers_add = X-Recipient: local_part=$local_part domain=$domain\n\
                 X-Home: $home
-  file = DIR/test-mail/${if eq{$sender_address}{}{copied}{$h_mailbox:}}
+  file = DIR/test-mail/${if eq{$sender_address}{}{copied}{${bless:$h_mailbox:}}}
   user = CALLER
 
 lmtp:

@@ -34,7 +34,7 @@ allowed:
   driver = redirect
   allow_defer
   caseful_local_part
-  data = $local_part
+  data = ${bless:$local_part}
   file_transport = address_file
   pipe_transport = address_pipe
   retry_use_local_part
@@ -47,7 +47,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 address_file:

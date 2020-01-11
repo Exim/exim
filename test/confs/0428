@@ -151,7 +151,7 @@ begin transports
 t1:
   driver = appendfile
   file = ${if eq{$address_file}{inbox} \
-              {DIR/test-mail/$local_part} \
+              {DIR/test-mail/${bless:$local_part}} \
               {${if eq{${substr_0_1:$address_file}}{/} \
                     {$address_file} \
                     {DIR/test-mail/$address_file} \
@@ -164,7 +164,7 @@ t1:
 
 t2:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   delivery_date_add
   envelope_to_add
   return_path_add

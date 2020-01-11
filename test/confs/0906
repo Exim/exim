@@ -74,7 +74,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   headers_add = "X-body-linecount: $body_linecount\n\
                  X-message-linecount: $message_linecount\n\
                  X-received-count: $received_count"

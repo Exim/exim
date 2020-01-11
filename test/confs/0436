@@ -23,7 +23,7 @@ t1:
   driver = appendfile
   envelope_to_add
   use_bsmtp
-  file = DIR/test-mail/$sender_address_local_part
+  file = DIR/test-mail/${bless:$sender_address_local_part}
   user = CALLER
   batch_max = 20000
 

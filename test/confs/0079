@@ -69,7 +69,7 @@ local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
   user = CALLER
 

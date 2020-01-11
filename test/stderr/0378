@@ -40,7 +40,7 @@ deliver defer_aaaa@myhost.test.ex
 save TESTSUITE/test-mail/file
 pipe "/bin/sh -c exit"
 mail subject autoreply
-text "This is an autoreply"'
+text "This is an autoreply"' (tainted)
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
@@ -193,7 +193,7 @@ checking local_parts
 checking "condition" "${if first_delivery{no}{yes}}"...
 calling aaaa_2nd_time router
 rda_interpret (string): 'aaaa@$domain'
-expanded: 'aaaa@myhost.test.ex'
+expanded: 'aaaa@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: aaaa@myhost.test.ex
 extract item: aaaa@myhost.test.ex
@@ -230,7 +230,7 @@ deliver defer_aaaa@myhost.test.ex
 save TESTSUITE/test-mail/file
 pipe "/bin/sh -c exit"
 mail subject autoreply
-text "This is an autoreply"'
+text "This is an autoreply"' (tainted)
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing

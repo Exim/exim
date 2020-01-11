@@ -15,7 +15,7 @@ begin transports
 
 t1:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
   envelope_to_add
   return_path_add
@@ -29,14 +29,14 @@ r1:
   skip_syntax_errors
   local_parts = ^list
   syntax_errors_to = postmaster@test.ex
-  file = DIR/aux-fixed/TESTNUM.$local_part
+  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
 
 r1a:
   driver = redirect
   skip_syntax_errors
   local_parts = ^nmlist
   syntax_errors_to = postmaster@test.ex
-  file = DIR/aux-fixed/TESTNUM.$local_part
+  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
   no_more
 
 r2:
@@ -46,7 +46,7 @@ r2:
   syntax_errors_to = postmaster@test.ex
   syntax_errors_text = "There's an error in your filter file.\n\
                         The file has been ignored."
-  file = DIR/aux-fixed/TESTNUM.$local_part
+  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
   allow_filter
   router_home_directory = DIR/
   user = CALLER

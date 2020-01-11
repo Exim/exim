@@ -30,7 +30,7 @@ local_part=aaaa domain=myhost.test.ex
 checking local_parts
 calling aaaa_redirect router
 rda_interpret (string): 'bbbb@$domain, cccc@$domain'
-expanded: 'bbbb@myhost.test.ex, cccc@myhost.test.ex'
+expanded: 'bbbb@myhost.test.ex, cccc@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: bbbb@myhost.test.ex, cccc@myhost.test.ex
 extract item: bbbb@myhost.test.ex

@@ -27,7 +27,7 @@ begin transports
 
 userx_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   message_suffix = "$address_data\n"
   user = CALLER
 

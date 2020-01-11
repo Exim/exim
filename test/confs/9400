@@ -42,7 +42,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
   headers_add = ${if eq {$local_scan_data}{}{}{LSD: $local_scan_data}}
 

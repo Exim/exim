@@ -213,6 +213,7 @@ static uschar *op_table_main[] = {
   US"base62d",
   US"base64",
   US"base64d",
+  US"bless",
   US"domain",
   US"escape",
   US"escape8bit",
@@ -260,6 +261,7 @@ enum {
   EOP_BASE62D,
   EOP_BASE64,
   EOP_BASE64D,
+  EOP_BLESS,
   EOP_DOMAIN,
   EOP_ESCAPE,
   EOP_ESCAPE8BIT,
@@ -7058,6 +7060,20 @@ while (*s != 0)
         yield = string_fmt_append(yield, "%ld", n);
         continue;
         }
+
+      case EOP_BLESS:
+	/* This is purely for the convenience of the test harness.  Do not enable
+	it otherwise as it defeats the taint-checking security. */
+
+	if (f.running_in_test_harness)
+	  yield = string_cat(yield, is_tainted(sub)
+				    ? string_copy_taint(sub, FALSE) : sub);
+	else
+	  {
+	  DEBUG(D_expand) debug_printf_indent("bless operator not supported\n");
+	  yield = string_cat(yield, sub);
+	  }
+	continue;
 
       case EOP_EXPAND:
         {

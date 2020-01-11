@@ -33,7 +33,7 @@ userforward:
   allow_filter
   local_parts = userx
   user = CALLER
-  file = DIR/aux-fixed/0015.filter.$local_part
+  file = DIR/aux-fixed/0015.filter.${bless:$local_part}
   local_part_prefix = *+
   local_part_prefix_optional
   pipe_transport = address_pipe
@@ -80,7 +80,7 @@ local_delivery:
   user = CALLER
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
   headers_add = X-local_part: $local_part\n\
                 X-local_part_prefix: $local_part_prefix
@@ -90,7 +90,7 @@ local_delivery_b:
   user = CALLER
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
   use_bsmtp
   headers_add = X-local_part: $local_part\n\

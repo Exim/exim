@@ -25,7 +25,7 @@ forward:
   driver = redirect
   allow_filter
   no_check_local_user
-  file = DIR/aux-fixed/TESTNUM.$local_part
+  file = DIR/aux-fixed/TESTNUM.${bless:$local_part}
   retry_use_local_part
   user = CALLER
   address_data = $address_data-forward
@@ -43,7 +43,7 @@ begin transports
 
 appendfile:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
   headers_add = Address-Data: >$address_data<
 

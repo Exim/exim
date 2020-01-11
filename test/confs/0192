@@ -23,7 +23,7 @@ begin transports
 
 appendfile:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   quota = 500
   no_quota_is_inclusive
   user = CALLER

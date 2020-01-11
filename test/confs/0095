@@ -39,7 +39,7 @@ begin transports
 
 appendfile:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   quota = $h_quota
   quota_warn_threshold = $h_threshold
   QWM
@@ -47,14 +47,14 @@ appendfile:
 
 appendfile2:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   quota = $h_quota
   quota_warn_threshold = $h_threshold
   user = CALLER
 
 appendfile3:
   driver = appendfile
-  file = DIR/test-mail/$local_part${if eq{$sender_address}{}{.bounce}}
+  file = DIR/test-mail/${bless:$local_part}${if eq{$sender_address}{}{.bounce}}
   quota_warn_threshold = $h_threshold
   user = CALLER
   headers_add = X:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

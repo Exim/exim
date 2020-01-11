@@ -95,7 +95,7 @@ t2:
 
 file:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 # End

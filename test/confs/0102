@@ -38,7 +38,7 @@ local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   file_format = "From       : local_delivery :\
                  MAIL       : bsmtp_local_delivery :\
                  \1\1\1\1\n : mmdf_local_delivery :\
@@ -52,7 +52,7 @@ bsmtp_local_delivery:
   use_bsmtp
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
   user = CALLER
 
@@ -60,7 +60,7 @@ mmdf_local_delivery:
   driver = appendfile
   check_string = "\1\1\1\1\n"
   escape_string = "\1\1\1\1 \n"
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   message_prefix = "\1\1\1\1\n"
   message_suffix = "\1\1\1\1\n"
   user = CALLER

@@ -30,14 +30,14 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   lock_interval = 1s
   lock_retries = 2
   user = CALLER
 
 local_delivery_fcntl:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   lock_interval = 1s
   lock_retries = 2
   no_use_lockfile
@@ -45,7 +45,7 @@ local_delivery_fcntl:
 
 local_delivery_fcntl_blocking:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   lock_fcntl_timeout = 2s
   lock_interval = 1s
   lock_retries = 2

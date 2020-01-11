@@ -1,0 +1,8 @@
+# tainted data for appendfile file option
+exim -bs -odi
+mail from:someone@some.domain
+rcpt to:CALLER@HOSTNAME
+data
+.
+quit
+****

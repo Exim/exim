@@ -25,13 +25,13 @@ r0:
 r1:
   driver = redirect
   local_parts = aaaa
-  file = DIR/non-exist/$local_part
+  file = DIR/non-exist/${bless:$local_part}
 
 r2:
   driver = redirect
   local_parts = bbbb
   ignore_enotdir
-  file = DIR/non-exist/$local_part
+  file = DIR/non-exist/${bless:$local_part}
 
 r3:
   driver = accept
@@ -43,7 +43,7 @@ begin transports
 
 t1:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 

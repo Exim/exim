@@ -17,7 +17,7 @@ userforward:
   allow_filter
   user = CALLER
   local_parts = userx : CALLER
-  file = DIR/aux-fixed/0016.filter.$local_part
+  file = DIR/aux-fixed/0016.filter.${bless:$local_part}
   local_part_suffix = +*
   local_part_suffix_optional
   reply_transport = address_reply
@@ -39,7 +39,7 @@ local_delivery:
   user = CALLER
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
 
 address_reply:

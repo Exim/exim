@@ -22371,6 +22371,14 @@ If &%file%& or &%directory%& is set for a delivery from a redirection, it is
 used to determine the file or directory name for the delivery. Normally, the
 contents of &$address_file$& are used in some way in the string expansion.
 .endlist
+.new
+.cindex "tainted data" "in filenames"
+.cindex appendfile "tainted data"
+Tainted data may not be used for a file or directory name.
+This means that, for instance, &$local_part$& cannot be used directly
+as a component of a path.  It can however be used as the key for a lookup
+which returns a path (or component).
+.wen
 
 
 .cindex "Sieve filter" "configuring &(appendfile)&"

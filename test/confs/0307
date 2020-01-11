@@ -24,7 +24,7 @@ r1:
             ${if exists {DIR/aux-fixed/TESTNUM/$local_part}\
              {lsearch;DIR/aux-fixed/TESTNUM/$local_part}{*}}\
             }}
-  file = DIR/aux-fixed/TESTNUM/$local_part$local_part_suffix
+  file = DIR/aux-fixed/TESTNUM/${bless:$local_part}$local_part_suffix
   forbid_pipe
   forbid_file
   one_time
@@ -54,7 +54,7 @@ begin transports
 
 t1:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 t2:

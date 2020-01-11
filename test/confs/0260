@@ -14,7 +14,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 bad_return:
@@ -30,7 +30,7 @@ bad_uid:
 
 exp_fail:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
   home_directory = ${if rhubarb
 

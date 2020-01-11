@@ -55,7 +55,7 @@ local_part=cccc domain=myhost.test.ex
 checking local_parts
 calling cccc_redirect router
 rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
-expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex'
+expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -89,7 +89,7 @@ checking local_parts
 checking "condition" "${if first_delivery{yes}{no}}"...
 calling bbbb router
 rda_interpret (string): 'bbbb@$domain, defer_bbbb@$domain'
-expanded: 'bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex'
+expanded: 'bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex
 extract item: bbbb@myhost.test.ex
@@ -115,7 +115,7 @@ checking local_parts
 checking "condition" "${if first_delivery{yes}{no}}"...
 calling unseen_aaaa router
 rda_interpret (string): 'defer_aaaa@$domain'
-expanded: 'defer_aaaa@myhost.test.ex'
+expanded: 'defer_aaaa@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: defer_aaaa@myhost.test.ex
 extract item: defer_aaaa@myhost.test.ex
@@ -357,7 +357,7 @@ checking local_parts
 checking "condition" "${if first_delivery{no}{yes}}"...
 calling cccc_2nd_time router
 rda_interpret (string): '$local_part@$domain'
-expanded: 'cccc@myhost.test.ex'
+expanded: 'cccc@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -459,7 +459,7 @@ local_part=cccc domain=myhost.test.ex
 checking local_parts
 calling cccc_redirect router
 rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
-expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex'
+expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -601,7 +601,7 @@ checking local_parts
 checking "condition" "${if first_delivery{no}{yes}}"...
 calling cccc_2nd_time router
 rda_interpret (string): '$local_part@$domain'
-expanded: 'cccc@myhost.test.ex'
+expanded: 'cccc@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex
@@ -703,7 +703,7 @@ local_part=cccc domain=myhost.test.ex
 checking local_parts
 calling cccc_redirect router
 rda_interpret (string): 'cccc@$domain, defer_cccc@$domain'
-expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex'
+expanded: 'cccc@myhost.test.ex, defer_cccc@myhost.test.ex' (tainted)
 file is not a filter file
 parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
 extract item: cccc@myhost.test.ex

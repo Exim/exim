@@ -35,14 +35,14 @@ t1:
 t2:
   driver = appendfile
   batch_max = 100
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   envelope_to_add
   user = CALLER
 
 t3:
   driver = appendfile
   batch_max = 100
-  file = DIR/test-mail/$domain
+  file = DIR/test-mail/${bless:$domain}
   envelope_to_add
   user = CALLER
 

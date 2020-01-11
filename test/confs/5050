@@ -32,7 +32,7 @@ local_delivery:
   driver = appendfile
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   file_format = "From       : local_delivery :\
                  *mbx*\r\n  : mbx_local_delivery :\
                  tpmissing  : tpmissing"
@@ -45,7 +45,7 @@ bsmtp_local_delivery:
   use_bsmtp
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   return_path_add
   user = CALLER
 
@@ -54,7 +54,7 @@ mbx_local_delivery:
   check_string =
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   mbx_format
   message_prefix =
   return_path_add

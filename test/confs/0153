@@ -22,7 +22,7 @@ virtual:
 list:
   driver = redirect
   domains = list.test.ex
-  file = ${if exists{DIR/aux-fixed/TESTNUM.list.$local_part} \
+  file = ${if exists{DIR/aux-fixed/TESTNUM.list.${bless:$local_part}} \
             {DIR/aux-fixed/TESTNUM.list.$local_part}fail}
   no_more
 

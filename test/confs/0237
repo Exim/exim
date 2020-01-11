@@ -35,7 +35,7 @@ allowed:
   driver = redirect
   allow_defer
   caseful_local_part
-  data = $local_part
+  data = ${bless:$local_part}
   file_transport = address_file
   hide_child_in_errmsg
   pipe_transport = address_pipe
@@ -49,7 +49,7 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part
+  file = DIR/test-mail/${bless:$local_part}
   user = CALLER
 
 address_file:

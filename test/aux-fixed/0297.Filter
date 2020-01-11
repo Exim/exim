@@ -2,4 +2,4 @@
 
 if $sender_address is not fil@ter then finish endif
 
-save ${local_part:$recipients}
+save ${bless:${local_part:$recipients}}

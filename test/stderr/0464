@@ -50,7 +50,7 @@ cached lookup data = data for domain1
 domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
 calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
-expanded: 'abc@xxx.domain1'
+expanded: 'abc@xxx.domain1' (tainted)
 file is not a filter file
 parse_forward_list: abc@xxx.domain1
 extract item: abc@xxx.domain1
@@ -117,7 +117,7 @@ cached lookup data = data for domain1
 domain1 in "+special_domains"? yes (matched "+special_domains" - cached)
 calling r1 router
 rda_interpret (string): '$local_part@xxx.$domain'
-expanded: 'abc@xxx.domain1'
+expanded: 'abc@xxx.domain1' (tainted)
 file is not a filter file
 parse_forward_list: abc@xxx.domain1
 extract item: abc@xxx.domain1
