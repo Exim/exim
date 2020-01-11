@@ -156,7 +156,7 @@ checkexpand(uschar *s, address_item *addr, uschar *name, int type)
 {
 uschar *ss = expand_string(s);
 
-if (ss == NULL)
+if (!ss)
   {
   addr->transport_return = FAIL;
   addr->message = string_sprintf("Expansion of \"%s\" failed in %s transport: "
@@ -307,7 +307,7 @@ from that block. It has typically been set up by a mail filter processing
 router. Otherwise, the data must be supplied by this transport, and
 it has to be expanded here. */
 
-if (addr->reply != NULL)
+if (addr->reply)
   {
   DEBUG(D_transport) debug_printf("taking data from address\n");
   from = addr->reply->from;
@@ -418,9 +418,18 @@ recipient, the effect might not be quite as envisaged. If once_file_size is
 set, instead of a dbm file, we use a regular file containing a circular buffer
 recipient cache. */
 
-if (oncelog && *oncelog != 0 && to)
+if (oncelog && *oncelog && to)
   {
   time_t then = 0;
+
+  if (is_tainted(oncelog))
+    {
+    addr->transport_return = DEFER;
+    addr->basic_errno = EACCES;
+    addr->message = string_sprintf("Tainted '%s' (once file for %s transport)"
+      " not permitted", oncelog, tblock->name);
+    goto END_OFF;
+    }
 
   /* Handle fixed-size cache file. */
 
@@ -428,8 +437,8 @@ if (oncelog && *oncelog != 0 && to)
     {
     uschar * nextp;
     struct stat statbuf;
-    cache_fd = Uopen(oncelog, O_CREAT|O_RDWR, ob->mode);
 
+    cache_fd = Uopen(oncelog, O_CREAT|O_RDWR, ob->mode);
     if (cache_fd < 0 || fstat(cache_fd, &statbuf) != 0)
       {
       addr->transport_return = DEFER;
@@ -523,6 +532,15 @@ if (oncelog && *oncelog != 0 && to)
   if (then != 0 && (once_repeat_sec <= 0 || now - then < once_repeat_sec))
     {
     int log_fd;
+    if (is_tainted(logfile))
+      {
+      addr->transport_return = DEFER;
+      addr->basic_errno = EACCES;
+      addr->message = string_sprintf("Tainted '%s' (logfile for %s transport)"
+	" not permitted", logfile, tblock->name);
+      goto END_OFF;
+      }
+
     DEBUG(D_transport) debug_printf("message previously sent to %s%s\n", to,
       (once_repeat_sec > 0)? " and repeat time not reached" : "");
     log_fd = logfile ? Uopen(logfile, O_WRONLY|O_APPEND|O_CREAT, ob->mode) : -1;
@@ -544,14 +562,24 @@ if (oncelog && *oncelog != 0 && to)
   }
 
 /* We are going to send a message. Ensure any requested file is available. */
-
-if (file && !(ff = Ufopen(file, "rb")) && !ob->file_optional)
+if (file)
   {
-  addr->transport_return = DEFER;
-  addr->basic_errno = errno;
-  addr->message = string_sprintf("Failed to open file %s when sending "
-    "message from %s transport: %s", file, tblock->name, strerror(errno));
-  return FALSE;
+  if (is_tainted(file))
+    {
+    addr->transport_return = DEFER;
+    addr->basic_errno = EACCES;
+    addr->message = string_sprintf("Tainted '%s' (file for %s transport)"
+      " not permitted", file, tblock->name);
+    return FALSE;
+    }
+  if (!(ff = Ufopen(file, "rb")) && !ob->file_optional)
+    {
+    addr->transport_return = DEFER;
+    addr->basic_errno = errno;
+    addr->message = string_sprintf("Failed to open file %s when sending "
+      "message from %s transport: %s", file, tblock->name, strerror(errno));
+    return FALSE;
+    }
   }
 
 /* Make a subprocess to send the message */

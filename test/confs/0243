@@ -71,7 +71,7 @@ address_pipe:
 
 stuur_auto_antwoord:
   driver = autoreply
-  file = DIR/aux-fixed/TESTNUM.antwoord-${local_part}
+  file = DIR/aux-fixed/TESTNUM.antwoord-${bless:$local_part}
   file_expand
   from = "${lookup{$local_part} lsearch \
            {DIR/aux-fixed/TESTNUM.beantwoorders} {$value}}"
