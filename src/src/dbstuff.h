@@ -642,7 +642,13 @@ after reading data. */
       : (flags) == O_RDWR ? "O_RDWR"	\
       : (flags) == (O_RDWR|O_CREAT) ? "O_RDWR|O_CREAT"	\
       : "??");	\
-  EXIM_DBOPEN__(name, dirname, flags, mode, dbpp); \
+  if (is_tainted(name) || is_tainted(dirname)) \
+    { \
+    log_write(0, LOG_MAIN|LOG_PANIC, "Tainted name for DB file not permitted"); \
+    *dbpp = NULL; \
+    } \
+  else \
+    { EXIM_DBOPEN__(name, dirname, flags, mode, dbpp); } \
   DEBUG(D_hints_lookup) debug_printf_indent("returned from EXIM_DBOPEN: %p\n", *dbpp); \
   } while(0)
 #  define EXIM_DBCLOSE(db) \
