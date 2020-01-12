@@ -1192,7 +1192,7 @@ static gstring *
 arc_sign_append_aar(gstring * g, arc_ctx * ctx,
   const uschar * identity, int instance, blob * ar)
 {
-int aar_off = g ? g->ptr : 0;
+int aar_off = gstring_length(g);
 arc_set * as =
   store_get(sizeof(arc_set) + sizeof(arc_line) + sizeof(header_line), FALSE);
 arc_line * al = (arc_line *)(as+1);

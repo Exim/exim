@@ -1022,8 +1022,8 @@ for (p = q; *p; p = q)
   if (!*hptr)
     {
     /* The header_line struct itself is not tainted, though it points to
-    tainted data. */
-    header_line *h = store_get(sizeof(header_line), FALSE);
+    possibly tainted data. */
+    header_line * h = store_get(sizeof(header_line), FALSE);
     h->text = hdr;
     h->next = NULL;
     h->type = newtype;

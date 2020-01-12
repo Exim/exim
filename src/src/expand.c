@@ -1630,8 +1630,8 @@ for (header_line * h = header_list; h; h = h->next)
 
       /* Trim the header roughly if we're approaching limits */
       inc = t - s;
-      if ((g ? g->ptr : 0) + inc > header_insert_maxlen)
-	inc = header_insert_maxlen - (g ? g->ptr : 0);
+      if (gstring_length(g) + inc > header_insert_maxlen)
+	inc = header_insert_maxlen - gstring_length(g);
 
       /* For raw just copy the data; for a list, add the data as a colon-sep
       list-element; for comma-list add as an unchecked comma,newline sep
@@ -1643,17 +1643,12 @@ for (header_line * h = header_list; h; h = h->next)
       if (flags & FH_WANT_LIST)
         g = string_append_listele_n(g, ':', s, (unsigned)inc);
       else if (flags & FH_WANT_RAW)
-	{
 	g = string_catn(g, s, (unsigned)inc);
-	(void) string_from_gstring(g);
-	}
       else if (inc > 0)
-	if (comma)
-	  g = string_append2_listele_n(g, US",\n", s, (unsigned)inc);
-	else
-	  g = string_append2_listele_n(g, US"\n", s, (unsigned)inc);
+	g = string_append2_listele_n(g, comma ? US",\n" : US"\n",
+	  s, (unsigned)inc);
 
-      if (g && g->ptr >= header_insert_maxlen) break;
+      if (gstring_length(g) >= header_insert_maxlen) break;
       }
 
 if (!found) return NULL;	/* No header found */
@@ -1663,7 +1658,7 @@ if (!g) return US"";
 
 *newsize = g->size;
 if (flags & FH_WANT_RAW)
-  return g->s;
+  return string_from_gstring(g);
 
 /* Otherwise do RFC 2047 decoding, translating the charset if requested.
 The rfc2047_decode2() function can return an error with decoded data if the
@@ -1671,16 +1666,12 @@ charset translation fails. If decoding fails, it returns NULL. */
 
 else
   {
-  uschar *decoded, *error;
-
-  decoded = rfc2047_decode2(g->s, check_rfc2047_length, charset, '?', NULL,
-    newsize, &error);
+  uschar * error, * decoded = rfc2047_decode2(string_from_gstring(g),
+    check_rfc2047_length, charset, '?', NULL, newsize, &error);
   if (error)
-    {
     DEBUG(D_any) debug_printf("*** error in RFC 2047 decoding: %s\n"
       "    input was: %s\n", error, g->s);
-    }
-  return decoded ? decoded : g->s;
+  return decoded ? decoded : string_from_gstring(g);
   }
 }
 

@@ -820,6 +820,12 @@ g->s[g->ptr] = '\0';
 return g->s;
 }
 
+static inline unsigned
+gstring_length(const gstring * g)
+{
+return g ? (unsigned)g->ptr : 0;
+}
+
 
 #define gstring_release_unused(g) \
 	gstring_release_unused_trc(g, __FUNCTION__, __LINE__)
