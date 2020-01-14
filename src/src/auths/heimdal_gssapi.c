@@ -200,16 +200,6 @@ if (krc)
 
 krb5_free_context(context);
 
-/* RFC 4121 section 5.2, SHOULD support 64K input buffers */
-if (big_buffer_size < (64 * 1024))
-  {
-  uschar *newbuf;
-  big_buffer_size = 64 * 1024;
-  newbuf = store_malloc(big_buffer_size);
-  store_free(big_buffer);
-  big_buffer = newbuf;
-  }
-
 ablock->server = TRUE;
 }
 

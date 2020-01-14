@@ -3788,6 +3788,7 @@ while ((buffer = get_config_line()) != NULL)
       if (!d->driver_name)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
           "no driver defined for %s \"%s\"", class, d->name);
+      /* s is using big_buffer, so this call had better not */
       (d->info->init)(d);
       d = NULL;
       }

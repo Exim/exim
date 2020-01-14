@@ -9,7 +9,7 @@ This is not an official release. It is just a branch, collecting
 proposed bugfixes. Depending on your environment the fixes may be
 necessary to build and/or run Exim successfully.
 
-JH/05 Regard command-line receipients as tainted.
+JH/05 Regard command-line recipients as tainted.
 
 JH/07 Bug 2489: Fix crash in the "pam" expansion condition.  It seems that the
       PAM library frees one of the arguments given to it, despite the
@@ -53,6 +53,11 @@ JH/19 Bug 2507: Modules: on handling a dynamic-module (lookups) open failure,
       only retrieve the errormessage once.  Previously two calls to dlerror()
       were used, and the second one (for mainlog/paniclog) retrieved null
       information.
+
+JH/21 Bug 2501: Fix init call in the heimdal authenticator.  Previously it
+      adjusted the size of a major service buffer; this failed because the
+      buffer was in use at the time.  Change to a compile-time increase in the
+      buffer size, when this authenticator is compiled into exim.
 
 
 Exim version 4.93
