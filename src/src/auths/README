@@ -34,7 +34,7 @@ instance block for this configured mechanism. It must set the flags called
 the server and/or client functions are available for this authenticator.
 Typically this depends on whether server or client configuration options have
 been set, but it is also possible to have an authenticator that has only one of
-the server or client functions.
+the server or client functions.  The function may not touch big_buffer.
 
 SERVER AUTHENTICATION
 

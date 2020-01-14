@@ -152,12 +152,19 @@ enough to hold all the headers from a normal kind of message. */
 into big_buffer_size and in some circumstances increased. It should be at least
 as long as the maximum path length. */
 
-#if defined PATH_MAX && PATH_MAX > 16384
+#ifdef AUTH_HEIMDAL_GSSAPI
+		/* RFC 4121 section 5.2, SHOULD support 64K input buffers */
+# define __BIG_BUFFER_SIZE 65536
+#else
+# define __BIG_BUFFER_SIZE 16384
+#endif
+
+#if defined PATH_MAX && PATH_MAX > __BIG_BUFFER_SIZE
 # define BIG_BUFFER_SIZE PATH_MAX
-#elif defined MAXPATHLEN && MAXPATHLEN > 16384
+#elif defined MAXPATHLEN && MAXPATHLEN > __BIG_BUFFER_SIZE
 # define BIG_BUFFER_SIZE MAXPATHLEN
 #else
-# define BIG_BUFFER_SIZE 16384
+# define BIG_BUFFER_SIZE __BIG_BUFFER_SIZE
 #endif
 
 /* header size of pipe content

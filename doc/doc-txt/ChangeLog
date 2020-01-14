@@ -95,6 +95,11 @@ JH/20 Taint checking: disallow use of tainted data for
       - named-queue names
       Previously this was permitted.
 
+JH/21 Bug 2501: Fix init call in the heimdal authenticator.  Previously it
+      adjusted the size of a major service buffer; this failed because the
+      buffer was in use at the time.  Change to a compile-time increase in the
+      buffer size, when this authenticator is compiled into exim.
+
 
 Exim version 4.93
 -----------------
