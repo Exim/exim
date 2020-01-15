@@ -1,8 +1,8 @@
 # GSASL SCRAM-SHA-256
 #
-exim -DSERVER=server -DTRUSTED -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
 ****
-exim -odi -DTRUSTED scram_sha_256@test.ex
+exim -odi scram_sha_256@test.ex
 ****
 killdaemon
 no_msglog_check

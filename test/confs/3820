@@ -23,6 +23,7 @@ client_r:
   driver =	accept
   condition =	${if !eq {SERVER}{server}}
   transport =	smtp
+  errors_to =
 
 begin transports
 
@@ -35,6 +36,8 @@ smtp:
   hosts_require_tls =	*
   tls_verify_certificates = DIR/aux-fixed/cert1
   tls_verify_cert_hostnames = :
+.else
+  hosts_avoid_tls =	*
 .endif
   hosts_require_auth =	*
 
@@ -70,14 +73,11 @@ sasl3:
   public_name =		SCRAM-SHA-1
 .endif
 
-  # will need to give library salt, stored-key, server-key, itercount
-  #
-  # sigh
-  # gsasl takes props: GSASL_SCRAM_ITER, GSASL_SCRAM_SALT.  It _might_ take
-  # a GSASL_SCRAM_SALTED_PASSWORD - but that is only documented for client mode.
-
-  # unclear if the salt is given in binary or base64 to the library
   server_scram_salt =	${if eq {$auth1}{ph10} {QSXCR+Q6sek8bf92}}
+.ifdef _HAVE_AUTH_GSASL_SCRAM_S_KEY
+  server_key =		D+CSWLOshSulAsxiupA+qs2/fTE=
+  server_skey =		6dlGYMOdZcOPutkcNY8U2g7vK9Y=
+.endif
   server_password =	${if eq {$auth1}{ph10} {pencil}{unset_password}}
   server_condition =	true
   server_set_id =	$auth1
@@ -85,6 +85,9 @@ sasl3:
   client_condition =	${if eq {scram_sha_1}{$local_part}}
   client_username =	ph10
   client_password =	pencil
+.ifdef _HAVE_AUTH_GSASL_SCRAM_S_KEY
+  client_spassword =	1d96ee3a529b5a5f9e47c01f229a2cb8a6e15f7d
+.endif
 .ifdef TRUSTED
   client_channelbinding = true
 .endif

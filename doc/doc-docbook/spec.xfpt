@@ -27553,6 +27553,19 @@ This option is exapanded before use, and should result in
 the account name to be used.
 .wen
 
+.new
+.option client_spassword gsasl string&!! unset
+If a SCRAM mechanism is being used and this option is set
+it is used in preference to $%client_password%&.
+The value after expansion should be
+a 40 (for SHA-1) or 64 (for SHA-256) character string
+with the PBKDF2-prepared password, hex-encoded.
+Note that this value will depend on the salt and iteration-count
+supplied by the server.
+.wen
+
+
+
 .option server_channelbinding gsasl boolean false
 Do not set this true and rely on the properties
 without consulting a cryptographic engineer.
@@ -27629,7 +27642,8 @@ Some mechanisms will use this data.
 .option server_scram_iter gsasl string&!! 4096
 This option provides data for the SCRAM family of mechanisms.
 .new
-The &$auth1$&, &$auth2$& and &$auth3$& variables are available for expansion.
+The &$auth1$&, &$auth2$& and &$auth3$& variables are available
+when this option is expanded.
 
 The result of expansion should be a decimal number,
 and represents both a lower-bound on the security, and
@@ -27637,16 +27651,47 @@ a compute cost factor imposed on the client
 (if it does not cache results, or the server changes
 either the iteration count or the salt).
 A minimum value of 4096 is required by the standards
-for all current CRAM mechanism variants.
+for all current SCRAM mechanism variants.
 .wen
-
 
 .option server_scram_salt gsasl string&!! unset
 This option provides data for the SCRAM family of mechanisms.
 .new
-The &$auth1$&, &$auth2$& and &$auth3$& variables are available for expansion.
+The &$auth1$&, &$auth2$& and &$auth3$& variables are available
+when this option is expanded.
+The value should be a base64-encoded string,
+of random data typically 4-to-16 bytes long.
 If unset or empty after expansion the library will provides a value for the
 protocol conversation.
+.wen
+
+
+.new
+.option server_key gsasl string&!! unset
+.option server_skey gsasl string&!! unset
+These options can be used for the SCRAM family of mechanisms
+to provide stored information related to a password,
+the storage of which is preferable to plaintext.
+
+&%server_key%& is the value defined in the SCRAM standards as ServerKey;
+&%server_skey%& is StoredKey.
+
+They are only available for version 1.9.0 (or later) of the gsasl library.
+When this is so, the macros
+_OPT_AUTHENTICATOR_GSASL_SERVER_KEY
+and _HAVE_AUTH_GSASL_SCRAM_S_KEY
+will be defined.
+
+The &$authN$& variables are available when these options are expanded.
+
+If set, the results of expansion should for each
+should be a 28 (for SHA-1) or 44 (for SHA-256) character string
+of base64-coded data, and will be used in preference to the
+&%server_password%& option.
+If unset or not of the right length, &%server_password%& will be used.
+
+The libgsasl library release includes a utility &'gsasl'& which can be used
+to generate these values.
 .wen
 
 

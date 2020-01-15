@@ -42,6 +42,10 @@ static void dummy(int x) { dummy2(x-1); }
 
 #if GSASL_VERSION_MINOR >= 9
 # define EXIM_GSASL_HAVE_SCRAM_SHA_256
+
+# if GSASL_VERSION_PATCH >= 1
+#  define EXIM_GSASL_SCRAM_S_KEY
+# endif
 #endif
 
 
@@ -51,34 +55,42 @@ we only ever handle one mechanism at a time, I didn't see the point in keeping
 that.  In case someone sees a point, I've left the condition_check() API
 alone. */
 optionlist auth_gsasl_options[] = {
-  { "client_authz",          opt_stringptr,
+  { "client_authz",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, client_authz)) },
-  { "client_channelbinding", opt_bool,
+  { "client_channelbinding",	opt_bool,
       (void *)(offsetof(auth_gsasl_options_block, client_channelbinding)) },
-  { "client_password",      opt_stringptr,
+  { "client_password",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, client_password)) },
-  { "client_username",      opt_stringptr,
+  { "client_spassword",		opt_stringptr,
+      (void *)(offsetof(auth_gsasl_options_block, client_spassword)) },
+  { "client_username",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, client_username)) },
 
-  { "server_channelbinding", opt_bool,
+  { "server_channelbinding",	opt_bool,
       (void *)(offsetof(auth_gsasl_options_block, server_channelbinding)) },
-  { "server_hostname",      opt_stringptr,
+  { "server_hostname",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_hostname)) },
-  { "server_mech",          opt_stringptr,
+#ifdef EXIM_GSASL_SCRAM_S_KEY
+  { "server_key",		opt_stringptr,
+      (void *)(offsetof(auth_gsasl_options_block, server_key)) },
+#endif
+  { "server_mech",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_mech)) },
-  { "server_password",      opt_stringptr,
+  { "server_password",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_password)) },
-  { "server_realm",         opt_stringptr,
+  { "server_realm",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_realm)) },
-  { "server_scram_iter",    opt_stringptr,
+  { "server_scram_iter",	opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_scram_iter)) },
-  { "server_scram_salt",    opt_stringptr,
+  { "server_scram_salt",	opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_scram_salt)) },
-  { "server_service",       opt_stringptr,
+#ifdef EXIM_GSASL_SCRAM_S_KEY
+  { "server_skey",		opt_stringptr,
+      (void *)(offsetof(auth_gsasl_options_block, server_s_key)) },
+#endif
+  { "server_service",		opt_stringptr,
       (void *)(offsetof(auth_gsasl_options_block, server_service)) }
 };
-/* GSASL_SCRAM_SALTED_PASSWORD documented only for client, so not implementing
-hooks to avoid cleartext passwords in the Exim server. */
 
 int auth_gsasl_options_count =
   sizeof(auth_gsasl_options)/sizeof(optionlist);
@@ -93,6 +105,7 @@ auth_gsasl_options_block auth_gsasl_option_defaults = {
 
 
 #ifdef MACRO_PREDEF
+# include "../macro_predef.h"
 
 /* Dummy values */
 void auth_gsasl_init(auth_instance *ablock) {}
@@ -106,6 +119,9 @@ auth_gsasl_macros(void)
 {
 # ifdef EXIM_GSASL_HAVE_SCRAM_SHA_256
   builtin_macro_create(US"_HAVE_AUTH_GSASL_SCRAM_SHA_256");
+# endif
+# ifdef EXIM_GSASL_SCRAM_S_KEY
+  builtin_macro_create(US"_HAVE_AUTH_GSASL_SCRAM_S_KEY");
 # endif
 }
 
@@ -289,6 +305,56 @@ return rc;
 
 
 /*************************************************
+*             Debug service function             *
+*************************************************/
+static const uschar * 
+gsasl_prop_code_to_name(Gsasl_property prop)
+{
+switch (prop)
+  {
+  case GSASL_AUTHID: return US"AUTHID";
+  case GSASL_AUTHZID: return US"AUTHZID";
+  case GSASL_PASSWORD: return US"PASSWORD";
+  case GSASL_ANONYMOUS_TOKEN: return US"ANONYMOUS_TOKEN";
+  case GSASL_SERVICE: return US"SERVICE";
+  case GSASL_HOSTNAME: return US"HOSTNAME";
+  case GSASL_GSSAPI_DISPLAY_NAME: return US"GSSAPI_DISPLAY_NAME";
+  case GSASL_PASSCODE: return US"PASSCODE";
+  case GSASL_SUGGESTED_PIN: return US"SUGGESTED_PIN";
+  case GSASL_PIN: return US"PIN";
+  case GSASL_REALM: return US"REALM";
+  case GSASL_DIGEST_MD5_HASHED_PASSWORD: return US"DIGEST_MD5_HASHED_PASSWORD";
+  case GSASL_QOPS: return US"QOPS";
+  case GSASL_QOP: return US"QOP";
+  case GSASL_SCRAM_ITER: return US"SCRAM_ITER";
+  case GSASL_SCRAM_SALT: return US"SCRAM_SALT";
+  case GSASL_SCRAM_SALTED_PASSWORD: return US"SCRAM_SALTED_PASSWORD";
+#ifdef EXIM_GSASL_SCRAM_S_KEY
+  case GSASL_SCRAM_STOREDKEY: return US"SCRAM_STOREDKEY";
+  case GSASL_SCRAM_SERVERKEY: return US"SCRAM_SERVERKEY";
+#endif
+  case GSASL_CB_TLS_UNIQUE: return US"CB_TLS_UNIQUE";
+  case GSASL_SAML20_IDP_IDENTIFIER: return US"SAML20_IDP_IDENTIFIER";
+  case GSASL_SAML20_REDIRECT_URL: return US"SAML20_REDIRECT_URL";
+  case GSASL_OPENID20_REDIRECT_URL: return US"OPENID20_REDIRECT_URL";
+  case GSASL_OPENID20_OUTCOME_DATA: return US"OPENID20_OUTCOME_DATA";
+  case GSASL_SAML20_AUTHENTICATE_IN_BROWSER: return US"SAML20_AUTHENTICATE_IN_BROWSER";
+  case GSASL_OPENID20_AUTHENTICATE_IN_BROWSER: return US"OPENID20_AUTHENTICATE_IN_BROWSER";
+#ifdef EXIM_GSASL_SCRAM_S_KEY
+  case GSASL_SCRAM_CLIENTKEY: return US"SCRAM_CLIENTKEY";
+#endif
+  case GSASL_VALIDATE_SIMPLE: return US"VALIDATE_SIMPLE";
+  case GSASL_VALIDATE_EXTERNAL: return US"VALIDATE_EXTERNAL";
+  case GSASL_VALIDATE_ANONYMOUS: return US"VALIDATE_ANONYMOUS";
+  case GSASL_VALIDATE_GSSAPI: return US"VALIDATE_GSSAPI";
+  case GSASL_VALIDATE_SECURID: return US"VALIDATE_SECURID";
+  case GSASL_VALIDATE_SAML20: return US"VALIDATE_SAML20";
+  case GSASL_VALIDATE_OPENID20: return US"VALIDATE_OPENID20";
+  }
+return CUS string_sprintf("(unknown prop: %d)", (int)prop);
+}
+
+/*************************************************
 *             Server entry point                 *
 *************************************************/
 
@@ -440,6 +506,7 @@ do {
       goto STOP_INTERACTION;
     }
 
+  /*XXX having our caller send the final smtp "235" is unfortunate; wastes a roundtrip */
   if ((rc == GSASL_NEEDS_MORE) || (to_send && *to_send))
     exim_error = auth_get_no64_data(USS &received, US to_send);
 
@@ -456,6 +523,21 @@ do {
 
 STOP_INTERACTION:
 auth_result = rc;
+
+HDEBUG(D_auth)
+  {
+  const uschar * s;
+  if ((s = CUS gsasl_property_fast(sctx, GSASL_SCRAM_ITER)))
+    debug_printf(" - itercnt:   '%s'\n", s);
+  if ((s = CUS gsasl_property_fast(sctx, GSASL_SCRAM_SALT)))
+    debug_printf(" - salt:      '%s'\n", s);
+#ifdef EXIM_GSASL_SCRAM_S_KEY
+  if ((s = CUS gsasl_property_fast(sctx, GSASL_SCRAM_SERVERKEY)))
+    debug_printf(" - ServerKey: '%s'\n", s);
+  if ((s = CUS gsasl_property_fast(sctx, GSASL_SCRAM_STOREDKEY)))
+    debug_printf(" - StoredKey: '%s'\n", s);
+#endif
+  }
 
 gsasl_finish(sctx);
 
@@ -531,18 +613,35 @@ set_exim_authvar_from_prop(sctx, GSASL_REALM);
 
 
 static int
+prop_from_option(Gsasl_session * sctx, Gsasl_property prop,
+  const uschar * option)
+{
+HDEBUG(D_auth) debug_printf(" %s\n", gsasl_prop_code_to_name(prop));
+if (option)
+  {
+  set_exim_authvars_from_a_az_r_props(sctx);
+  option = expand_cstring(option);
+  HDEBUG(D_auth) debug_printf("  '%s'\n", option);
+  if (*option)
+    gsasl_property_set(sctx, prop, CCS option);
+  return GSASL_OK;
+  }
+HDEBUG(D_auth) debug_printf("  option not set\n");
+return GSASL_NO_CALLBACK;
+}
+
+static int
 server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop,
   auth_instance *ablock)
 {
 char *tmps;
-uschar *propval;
+uschar *s, *propval;
 int cbrc = GSASL_NO_CALLBACK;
 auth_gsasl_options_block *ob =
   (auth_gsasl_options_block *)(ablock->options_block);
 
-HDEBUG(D_auth)
-  debug_printf("GNU SASL callback %d for %s/%s as server\n",
-      prop, ablock->name, ablock->public_name);
+HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as server\n",
+	    gsasl_prop_code_to_name(prop), ablock->name, ablock->public_name);
 
 for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
 expand_nmax = 0;
@@ -550,7 +649,6 @@ expand_nmax = 0;
 switch (prop)
   {
   case GSASL_VALIDATE_SIMPLE:
-    HDEBUG(D_auth) debug_printf(" VALIDATE_SIMPLE\n");
     /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
     set_exim_authvar_from_prop(sctx, GSASL_AUTHID);
     set_exim_authvar_from_prop(sctx, GSASL_AUTHZID);
@@ -561,7 +659,6 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_EXTERNAL:
-    HDEBUG(D_auth) debug_printf(" VALIDATE_EXTERNAL\n");
     if (!ablock->server_condition)
       {
       HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate EXTERNAL\n");
@@ -576,7 +673,6 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_ANONYMOUS:
-    HDEBUG(D_auth) debug_printf(" VALIDATE_ANONYMOUS\n");
     if (!ablock->server_condition)
       {
       HDEBUG(D_auth) debug_printf("No server_condition supplied, to validate ANONYMOUS\n");
@@ -591,7 +687,6 @@ switch (prop)
     break;
 
   case GSASL_VALIDATE_GSSAPI:
-    HDEBUG(D_auth) debug_printf(" VALIDATE_GSSAPI\n");
     /* GSASL_AUTHZID and GSASL_GSSAPI_DISPLAY_NAME
     The display-name is authenticated as part of GSS, the authzid is claimed
     by the SASL integration after authentication; protected against tampering
@@ -613,37 +708,25 @@ switch (prop)
     break;
 
   case GSASL_SCRAM_ITER:
-    HDEBUG(D_auth) debug_printf(" SCRAM_ITER\n");
-    if (ob->server_scram_iter)
-      {
-      set_exim_authvars_from_a_az_r_props(sctx);
-      tmps = CS expand_string(ob->server_scram_iter);
-      HDEBUG(D_auth) debug_printf("  '%s'\n", tmps);
-      gsasl_property_set(sctx, GSASL_SCRAM_ITER, tmps);
-      cbrc = GSASL_OK;
-      }
-    else
-      HDEBUG(D_auth) debug_printf("  option not set\n");
+    cbrc = prop_from_option(sctx, prop, ob->server_scram_iter);
     break;
 
   case GSASL_SCRAM_SALT:
-    HDEBUG(D_auth) debug_printf(" SCRAM_SALT\n");
-    if (ob->server_scram_salt)
-      {
-      set_exim_authvars_from_a_az_r_props(sctx);
-      tmps = CS expand_string(ob->server_scram_salt);
-      HDEBUG(D_auth) debug_printf("  '%s'\n", tmps);
-      if (*tmps)
-	gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
-      cbrc = GSASL_OK;
-      }
-    else
-      HDEBUG(D_auth) debug_printf("  option not set\n");
+    cbrc = prop_from_option(sctx, prop, ob->server_scram_salt);
     break;
 
+#ifdef EXIM_GSASL_SCRAM_S_KEY
+  case GSASL_SCRAM_STOREDKEY:
+    cbrc = prop_from_option(sctx, prop, ob->server_s_key);
+    break;
+
+  case GSASL_SCRAM_SERVERKEY:
+    cbrc = prop_from_option(sctx, prop, ob->server_key);
+    break;
+#endif
+
   case GSASL_PASSWORD:
-    HDEBUG(D_auth) debug_printf(" PASSWORD\n");
-    /* SCRAM-SHA-1: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
+    /* SCRAM-*: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
        DIGEST-MD5: GSASL_AUTHID, GSASL_AUTHZID and GSASL_REALM
        CRAM-MD5: GSASL_AUTHID
        PLAIN: GSASL_AUTHID and GSASL_AUTHZID
@@ -651,12 +734,12 @@ switch (prop)
      */
     set_exim_authvars_from_a_az_r_props(sctx);
 
-    if (!ob->server_password)
+    if (!(s = ob->server_password))
       {
       HDEBUG(D_auth) debug_printf("option not set\n");
       break;
       }
-    if (!(tmps = CS expand_string(ob->server_password)))
+    if (!(tmps = CS expand_string(s)))
       {
       sasl_error_should_defer = !f.expand_string_forcedfail;
       HDEBUG(D_auth) debug_printf("server_password expansion failed, so "
@@ -691,19 +774,25 @@ return cbrc;
 #define PROP_OPTIONAL	BIT(0)
 
 static BOOL
-client_prop(Gsasl_session * sctx, Gsasl_property propnum, uschar * val,
-  const uschar * why, unsigned flags, uschar * buffer, int buffsize)
+set_client_prop(Gsasl_session * sctx, Gsasl_property prop, uschar * val,
+  unsigned flags, uschar * buffer, int buffsize)
 {
 uschar * s;
 int rc;
 
-if (flags & PROP_OPTIONAL && !val) return TRUE;
+if (!val) return !!(flags & PROP_OPTIONAL);
 if (!(s = expand_string(val)) || !(flags & PROP_OPTIONAL) && !*s)
   {
   string_format(buffer, buffsize, "%s", expand_string_message);
   return FALSE;
   }
-if (*s) gsasl_property_set(sctx, propnum, CS s);
+if (*s)
+  {
+  HDEBUG(D_auth) debug_printf("%s: set %s = '%s'\n", __FUNCTION__,
+    gsasl_prop_code_to_name(prop), s);
+  gsasl_property_set(sctx, prop, CS s);
+  }
+
 return TRUE;
 }
 
@@ -770,11 +859,14 @@ gsasl_session_hook_set(sctx, &cb_state);
 
 /* Set properties */
 
-if (  !client_prop(sctx, GSASL_PASSWORD, ob->client_password, US"password",
+if (  !set_client_prop(sctx, GSASL_SCRAM_SALTED_PASSWORD, ob->client_spassword,
 		  0, buffer, buffsize)
-   || !client_prop(sctx, GSASL_AUTHID, ob->client_username, US"username",
+      &&
+      !set_client_prop(sctx, GSASL_PASSWORD, ob->client_password,
 		  0, buffer, buffsize)
-   || !client_prop(sctx, GSASL_AUTHZID, ob->client_authz, US"authz",
+   || !set_client_prop(sctx, GSASL_AUTHID, ob->client_username,
+		  0, buffer, buffsize)
+   || !set_client_prop(sctx, GSASL_AUTHZID, ob->client_authz,
 		  PROP_OPTIONAL, buffer, buffsize)
    )
   return ERROR;
@@ -848,6 +940,12 @@ for(s = NULL; ;)
   }
 
 done:
+HDEBUG(D_auth)
+  {
+  const uschar * s = CUS gsasl_property_fast(sctx, GSASL_SCRAM_SALTED_PASSWORD);
+  if (s) debug_printf(" - SaltedPassword: '%s'\n", s);
+  }
+
 gsasl_finish(sctx);
 return yield;
 }
@@ -855,21 +953,18 @@ return yield;
 static int
 client_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_instance *ablock)
 {
-HDEBUG(D_auth) debug_printf("GNU SASL callback %d for %s/%s as client\n",
-		prop, ablock->name, ablock->public_name);
+HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as client\n",
+	    gsasl_prop_code_to_name(prop), ablock->name, ablock->public_name);
 switch (prop)
   {
-  case GSASL_AUTHZID:
-    HDEBUG(D_auth) debug_printf(" inquired for AUTHZID; not providing one\n");
-    break;
-  case GSASL_SCRAM_SALTED_PASSWORD:
-    HDEBUG(D_auth)
-      debug_printf(" inquired for SCRAM_SALTED_PASSWORD; not providing one\n");
-    break;
   case GSASL_CB_TLS_UNIQUE:
     HDEBUG(D_auth)
-      debug_printf(" inquired for CB_TLS_UNIQUE, filling in\n");
+      debug_printf(" filling in\n");
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
+    break;
+  default:
+    HDEBUG(D_auth)
+      debug_printf(" not providing one\n");
     break;
   }
 return GSASL_NO_CALLBACK;

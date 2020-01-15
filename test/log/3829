@@ -4,4 +4,4 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=sasl3:ph10 S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpsa X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no A=sasl3:ph10 S=sss id=E10HmaX-0005vi-00@myhost.test.ex

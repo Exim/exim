@@ -18,12 +18,15 @@ typedef struct {
   uschar *server_realm;
   uschar *server_mech;
   uschar *server_password;
+  uschar *server_key;
+  uschar *server_s_key;
   uschar *server_scram_iter;
   uschar *server_scram_salt;
 
   uschar *client_username;
   uschar *client_password;
   uschar *client_authz;
+  uschar *client_spassword;
 
   BOOL    server_channelbinding;
   BOOL	  client_channelbinding;

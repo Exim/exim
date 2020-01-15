@@ -21,7 +21,10 @@ Version 4.94
     driver for PLAIN; only against itself for SCRAM-SHA-1 and SCRAM-SHA-1-PLUS
     methods.
 
- 5. Variable $local_part_verified, set by the router check_local_part condition
+ 5. Server-side support in the gsasl authenticator for encrypted passwords, as an
+    alternate for the existing plaintext.
+
+ 6. Variable $local_part_verified, set by the router check_local_part condition
     with untainted data.
 
 
