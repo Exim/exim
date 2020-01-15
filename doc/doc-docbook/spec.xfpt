@@ -27556,7 +27556,7 @@ the account name to be used.
 .new
 .option client_spassword gsasl string&!! unset
 If a SCRAM mechanism is being used and this option is set
-it is used in preference to $%client_password%&.
+it is used in preference to &%client_password%&.
 The value after expansion should be
 a 40 (for SHA-1) or 64 (for SHA-256) character string
 with the PBKDF2-prepared password, hex-encoded.
