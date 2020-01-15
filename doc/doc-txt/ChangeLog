@@ -49,6 +49,11 @@ JH/16 Fix the variables set by the gsasl authenticator.  Previously a pointer to
       library live data was being used, so the results became garbage.  Make
       copies while it is still usable.
 
+JH/19 Bug 2507: Modules: on handling a dynamic-module (lookups) open failure,
+      only retrieve the errormessage once.  Previously two calls to dlerror()
+      were used, and the second one (for mainlog/paniclog) retrieved null
+      information.
+
 
 Exim version 4.93
 -----------------

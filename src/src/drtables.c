@@ -740,10 +740,11 @@ init_lookup_list(void)
 
         dl = dlopen(CS big_buffer, RTLD_NOW);// TJ was LAZY
         if (dl == NULL) {
-          fprintf(stderr, "Error loading %s: %s\n", name, dlerror());
-          moduleerrors++;
-          log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, dlerror());
-          continue;
+	  errormessage = dlerror();
+	  fprintf(stderr, "Error loading %s: %s\n", name, errormessage);
+	  log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, errormessage);
+	  moduleerrors++;
+	  continue;
         }
 
         /* FreeBSD nsdispatch() can trigger dlerror() errors about
@@ -756,16 +757,16 @@ init_lookup_list(void)
         info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");
         if ((errormsg = dlerror()) != NULL) {
           fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+          log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
           dlclose(dl);
           moduleerrors++;
-          log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
           continue;
         }
         if (info->magic != LOOKUP_MODULE_INFO_MAGIC) {
           fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
+          log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
           dlclose(dl);
           moduleerrors++;
-          log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
           continue;
         }
 
