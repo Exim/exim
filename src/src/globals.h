@@ -272,6 +272,7 @@ extern struct global_flags {
  BOOL   synchronous_delivery		:1; /* TRUE if -odi is set */
  BOOL   system_filtering		:1; /* TRUE when running system filter */
 
+ BOOL   taint_check_slow		:1; /* malloc/mmap are not returning distinct ranges */
  BOOL   tcp_fastopen_ok			:1; /* appears to be supported by kernel */
  BOOL   tcp_in_fastopen			:1; /* conn usefully used fastopen */
  BOOL   tcp_in_fastopen_data		:1; /* fastopen carried data */

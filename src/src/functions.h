@@ -187,6 +187,7 @@ extern void    deliver_succeeded(address_item *);
 extern uschar *deliver_get_sender_address (uschar *id);
 extern void    delivery_re_exec(int);
 
+extern void    die_tainted(const uschar *, const uschar *, int);
 extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
 extern uschar *dkim_exim_query_dns_txt(const uschar *);
@@ -602,6 +603,61 @@ extern BOOL    write_chunk(transport_ctx *, uschar *, int);
 extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
 
+/******************************************************************************/
+/* Predicate: if an address is in a tainted pool.
+By extension, a variable pointing to this address is tainted.
+*/
+
+static inline BOOL
+is_tainted(const void * p)
+{
+#if defined(COMPILE_UTILITY) || defined(MACRO_PREDEF) || defined(EM_VERSION_C)
+return FALSE;
+
+#else
+extern BOOL is_tainted_fn(const void *);
+extern void * tainted_base, * tainted_top;
+
+return f.taint_check_slow
+  ? is_tainted_fn(p) : p >= tainted_base && p < tainted_top;
+#endif
+}
+
+/******************************************************************************/
+/* String functions */
+static inline uschar * __Ustrcat(uschar * dst, const uschar * src, const char * func, int line)
+{
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrcat", CUS func, line);
+#endif
+return US strcat(CS dst, CCS src);
+}
+static inline uschar * __Ustrcpy(uschar * dst, const uschar * src, const char * func, int line)
+{
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrcpy", CUS func, line);
+#endif
+return US strcpy(CS dst, CCS src);
+}
+static inline uschar * __Ustrncat(uschar * dst, const uschar * src, size_t n, const char * func, int line)
+{
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncat", CUS func, line);
+#endif
+return US strncat(CS dst, CCS src, n);
+}
+static inline uschar * __Ustrncpy(uschar * dst, const uschar * src, size_t n, const char * func, int line)
+{
+#if !defined(COMPILE_UTILITY) && !defined(MACRO_PREDEF)
+if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncpy", CUS func, line);
+#endif
+return US strncpy(CS dst, CCS src, n);
+}
+/*XXX will likely need unchecked copy also */
+
+
+/******************************************************************************/
+
 #if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 /* exim_chown - in some NFSv4 setups *seemes* to be an issue with
 chown(<exim-uid>, <exim-gid>).
@@ -634,8 +690,8 @@ exim_chown(const uschar *name, uid_t owner, gid_t group)
 return chown(CCS name, owner, group)
   ? exim_chown_failure(-1, name, owner, group) : 0;
 }
-
 #endif	/* !MACRO_PREDEF && !COMPILE_UTILITY */
+
 /******************************************************************************/
 /* String functions */
 

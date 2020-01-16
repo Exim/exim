@@ -162,8 +162,14 @@ static void   internal_tainted_free(storeblock *, const char *, int linenumber);
 
 /******************************************************************************/
 
-/* Slower version check, for use when platform intermixes malloc and mmap area
-addresses. */
+/* Test if a pointer refers to tainted memory.
+
+Slower version check, for use when platform intermixes malloc and mmap area
+addresses. Test against the current-block of all tainted pools first, then all
+blocks of all tainted pools.
+
+Return: TRUE iff tainted
+*/
 
 BOOL
 is_tainted_fn(const void * p)
@@ -171,23 +177,20 @@ is_tainted_fn(const void * p)
 storeblock * b;
 int pool;
 
-for (pool = 0; pool < nelem(chainbase); pool++)
+for (pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   if ((b = current_block[pool]))
     {
-    char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (CS p >= bc && CS p <= bc + b->length) goto hit;
+    uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
+    if (US p >= bc && US p <= bc + b->length) return TRUE;
     }
 
-for (pool = 0; pool < nelem(chainbase); pool++)
+for (pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   for (b = chainbase[pool]; b; b = b->next)
     {
-    char * bc = CS b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (CS p >= bc && CS p <= bc + b->length) goto hit;
+    uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
+    if (US p >= bc && US p <= bc + b->length) return TRUE;
     }
 return FALSE;
-
-hit:
-return pool >= POOL_TAINT_BASE;
 }
 
 
@@ -196,6 +199,13 @@ die_tainted(const uschar * msg, const uschar * func, int line)
 {
 log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 	msg, func, line);
+}
+
+static void
+use_slow_taint_check(void)
+{
+DEBUG(D_any) debug_printf("switching to slow-mode taint checking\n");
+f.taint_check_slow = TRUE;
 }
 
 
@@ -819,6 +829,14 @@ if (size < 16) size = 16;
 if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
     "called from line %d in %s", size, linenumber, func);
+
+/* If malloc ever returns apparently tainted memory, which glibc
+malloc will as it uses mmap for larger requests, we must switch to
+the slower checking for tainting (checking an address against all
+the tainted pool block spans, rather than just the mmap span) */
+
+if (!f.taint_check_slow && is_tainted(yield))
+  use_slow_taint_check();
 
 return store_alloc_tail(yield, size, func, linenumber, US"Malloc");
 }
