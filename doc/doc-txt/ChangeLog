@@ -100,6 +100,14 @@ JH/21 Bug 2501: Fix init call in the heimdal authenticator.  Previously it
       buffer was in use at the time.  Change to a compile-time increase in the
       buffer size, when this authenticator is compiled into exim.
 
+JH/22 Taint checking: move to a hybrid approach for checking.  Previously, one
+      of two ways was used, depending on a build-time flag.  The fast method
+      relied on assumptions about the OS and libc malloc, which were known to
+      not hold for the BSD-derived platforms, and discovered to not hold for
+      32-bit Linux either.  In fact the glibc documentation describes cases
+      where these assumptions do not hold.  The new implementation tests for
+      the situation arising and actively switches over from fast to safe mode.
+
 
 Exim version 4.93
 -----------------

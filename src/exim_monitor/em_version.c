@@ -5,6 +5,8 @@
 /* Copyright (c) University of Cambridge 1995 - 2018 */
 /* See the file NOTICE for conditions of use and distribution. */
 
+#define EM_VERSION_C
+
 #include "mytypes.h"
 #include "store.h"
 #include "macros.h"

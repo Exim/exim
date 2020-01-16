@@ -312,6 +312,7 @@ struct global_flags f =
 	.synchronous_delivery   = FALSE,
 	.system_filtering       = FALSE,
 
+	.taint_check_slow       = FALSE,
 	.tcp_fastopen_ok        = FALSE,
 	.tcp_in_fastopen        = FALSE,
 	.tcp_in_fastopen_data   = FALSE,
