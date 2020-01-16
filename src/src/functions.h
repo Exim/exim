@@ -720,10 +720,13 @@ return ss;
 	string_copy_taint_trc((s), tainted, __FUNCTION__, __LINE__)
 
 static inline uschar *
-string_copy(const uschar * s)
+string_copy_trc(const uschar * s, const char * func, int line)
 {
-return string_copy_taint((s), is_tainted(s));
+return string_copy_taint_trc((s), is_tainted(s), func, line);
 }
+
+#define string_copy(s) \
+	string_copy_trc((s), __FUNCTION__, __LINE__)
 
 
 /*************************************************
