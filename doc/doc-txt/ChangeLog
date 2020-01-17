@@ -108,6 +108,11 @@ JH/22 Taint checking: move to a hybrid approach for checking.  Previously, one
       where these assumptions do not hold.  The new implementation tests for
       the situation arising and actively switches over from fast to safe mode.
 
+PP/01 Update the openssl_options possible values through OpenSSL 1.1.1c.
+      New values supported, if defined on system where compiled:
+      allow_no_dhe_kex, cryptopro_tlsext_bug, enable_middlebox_compat,
+      no_anti_replay, no_encrypt_then_mac, prioritize_chacha, tlsext_padding
+
 
 Exim version 4.93
 -----------------

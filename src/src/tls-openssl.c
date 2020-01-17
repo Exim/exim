@@ -148,13 +148,10 @@ all options unless explicitly for DTLS, let the administrator choose which
 to apply.
 
 This list is current as of:
-  ==>  1.0.1b  <==
-Plus SSL_OP_SAFARI_ECDHE_ECDSA_BUG from 2013-June patch/discussion on openssl-dev
-Plus SSL_OP_NO_TLSv1_3 for 1.1.2-dev
-Plus SSL_OP_NO_RENEGOTIATION for 1.1.1
+  ==>  1.1.1c  <==
 
 XXX could we autobuild this list, as with predefined-macros?
-Seems just parsing ssl.h for SSL_OP_.* would be enough.
+Seems just parsing ssl.h for SSL_OP_.* would be enough (except to exclude DTLS).
 Also allow a numeric literal?
 */
 static exim_openssl_option exim_openssl_options[] = {
@@ -162,14 +159,23 @@ static exim_openssl_option exim_openssl_options[] = {
 #ifdef SSL_OP_ALL
   { US"all", (long) SSL_OP_ALL },
 #endif
+#ifdef SSL_OP_ALLOW_NO_DHE_KEX
+  { US"allow_no_dhe_kex", SSL_OP_ALLOW_NO_DHE_KEX },
+#endif
 #ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
   { US"allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },
 #endif
 #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
   { US"cipher_server_preference", SSL_OP_CIPHER_SERVER_PREFERENCE },
 #endif
+#ifdef SSL_OP_CRYPTOPRO_TLSEXT_BUG
+  { US"cryptopro_tlsext_bug", SSL_OP_CRYPTOPRO_TLSEXT_BUG },
+#endif
 #ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
   { US"dont_insert_empty_fragments", SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS },
+#endif
+#ifdef SSL_OP_ENABLE_MIDDLEBOX_COMPAT
+  { US"enable_middlebox_compat", SSL_OP_ENABLE_MIDDLEBOX_COMPAT },
 #endif
 #ifdef SSL_OP_EPHEMERAL_RSA
   { US"ephemeral_rsa", SSL_OP_EPHEMERAL_RSA },
@@ -192,8 +198,14 @@ static exim_openssl_option exim_openssl_options[] = {
 #ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
   { US"netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
 #endif
+#ifdef SSL_OP_NO_ANTI_REPLAY
+  { US"no_anti_replay", SSL_OP_NO_ANTI_REPLAY },
+#endif
 #ifdef SSL_OP_NO_COMPRESSION
   { US"no_compression", SSL_OP_NO_COMPRESSION },
+#endif
+#ifdef SSL_OP_NO_ENCRYPT_THEN_MAC
+  { US"no_encrypt_then_mac", SSL_OP_NO_ENCRYPT_THEN_MAC },
 #endif
 #ifdef SSL_OP_NO_RENEGOTIATION
   { US"no_renegotiation", SSL_OP_NO_RENEGOTIATION },
@@ -227,6 +239,9 @@ static exim_openssl_option exim_openssl_options[] = {
 #ifdef SSL_OP_NO_TLSv1_3
   { US"no_tlsv1_3", SSL_OP_NO_TLSv1_3 },
 #endif
+#ifdef SSL_OP_PRIORITIZE_CHACHA
+  { US"prioritize_chacha", SSL_OP_PRIORITIZE_CHACHA },
+#endif
 #ifdef SSL_OP_SAFARI_ECDHE_ECDSA_BUG
   { US"safari_ecdhe_ecdsa_bug", SSL_OP_SAFARI_ECDHE_ECDSA_BUG },
 #endif
@@ -250,6 +265,9 @@ static exim_openssl_option exim_openssl_options[] = {
 #endif
 #ifdef SSL_OP_TLS_ROLLBACK_BUG
   { US"tls_rollback_bug", SSL_OP_TLS_ROLLBACK_BUG },
+#endif
+#ifdef SSL_OP_TLSEXT_PADDING
+  { US"tlsext_padding", SSL_OP_TLSEXT_PADDING },
 #endif
 };
 
@@ -2829,7 +2847,7 @@ See description in https://paquier.xyz/postgresql-2/channel-binding-openssl/ */
   uschar c, * s;
   size_t len = SSL_get_peer_finished(server_ssl, &c, 0);
   int old_pool = store_pool;
-  
+
   SSL_get_peer_finished(server_ssl, s = store_get((int)len, FALSE), len);
   store_pool = POOL_PERM;
     tls_in.channelbinding = b64encode_taint(CUS s, (int)len, FALSE);
@@ -3408,7 +3426,7 @@ tlsp->cipher_stdname = cipher_stdname_ssl(exim_client_ctx->ssl);
   uschar c, * s;
   size_t len = SSL_get_finished(exim_client_ctx->ssl, &c, 0);
   int old_pool = store_pool;
-  
+
   SSL_get_finished(exim_client_ctx->ssl, s = store_get((int)len, TRUE), len);
   store_pool = POOL_PERM;
     tlsp->channelbinding = b64encode_taint(CUS s, (int)len, TRUE);
