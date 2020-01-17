@@ -175,16 +175,15 @@ BOOL
 is_tainted_fn(const void * p)
 {
 storeblock * b;
-int pool;
 
-for (pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
+for (int pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   if ((b = current_block[pool]))
     {
     uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
     if (US p >= bc && US p <= bc + b->length) return TRUE;
     }
 
-for (pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
+for (int pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   for (b = chainbase[pool]; b; b = b->next)
     {
     uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
@@ -204,9 +203,27 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 static void
 use_slow_taint_check(void)
 {
+#ifndef COMPILE_UTILITY
 DEBUG(D_any) debug_printf("switching to slow-mode taint checking\n");
+#endif
 f.taint_check_slow = TRUE;
 }
+
+static void
+verify_all_untainted(void)
+{
+for (int pool = 0; pool < POOL_TAINT_BASE; pool++)
+  for (storeblock * b = chainbase[pool]; b; b = b->next)
+    {
+    uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
+    if (is_tainted(bc))
+      {
+      use_slow_taint_check();
+      return;
+      }
+    }
+}
+
 
 
 /*************************************************
@@ -740,7 +757,7 @@ int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 BOOL release_ok = !tainted && store_last_get[pool] == block;
 uschar * newtext;
 
-#ifndef MACRO_PREDEF
+#if !defined(MACRO_PREDEF) && !defined(COMPILE_UTILITY)
 if (is_tainted(block) != tainted)
   die_tainted(US"store_newblock", CUS func, linenumber);
 #endif
@@ -799,6 +816,7 @@ if (!(yield = mmap(NULL, (size_t)size,
 
 if (yield < tainted_base) tainted_base = yield;
 if ((top = US yield + size) > tainted_top) tainted_top = top;
+if (!f.taint_check_slow) use_slow_taint_check();
 
 return store_alloc_tail(yield, size, func, line, US"Mmap");
 }
