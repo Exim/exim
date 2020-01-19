@@ -17,15 +17,18 @@ Version 4.94
 
  3. A msg:defer event.
 
- 4. Client-side support in the gsasl authenticator.  Tested against the plaintext
-    driver for PLAIN; only against itself for SCRAM-SHA-1 and SCRAM-SHA-1-PLUS
-    methods.
+ 4. Client-side support in the gsasl authenticator.  Tested against the 
+    plaintext driver for PLAIN; only against itself for SCRAM-SHA-1 and
+    SCRAM-SHA-1-PLUS methods.
 
- 5. Server-side support in the gsasl authenticator for encrypted passwords, as an
-    alternate for the existing plaintext.
+ 5. Server-side support in the gsasl authenticator for encrypted passwords, as
+    an alternate for the existing plaintext.
 
  6. Variable $local_part_verified, set by the router check_local_part condition
     with untainted data.
+
+ 7. Named-list definitions can now be prefixed "hide" so that "-bP" commands do
+    not output the content.  Previously this could only be done on options.
 
 
 Version 4.93

@@ -93,6 +93,7 @@ chunking_advertise_hosts =
 primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
+hide domainlist hidden_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
 
 begin routers
@@ -135,6 +136,7 @@ chunking_advertise_hosts =
 primary_hostname = myhost.test.ex
 log_selector = +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
+hide domainlist hidden_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
 begin routers
 my_main_router:

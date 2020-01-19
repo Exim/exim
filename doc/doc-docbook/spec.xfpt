@@ -8300,6 +8300,19 @@ domainlist  dom2 = !a.b : *.b
 where &'x.y'& does not match. It's best to avoid negation altogether in
 referenced lists if you can.
 
+.new
+.cindex "hiding named list values"
+.cindex "named lists" "hiding value of"
+Some named list definitions may contain sensitive data, for example, passwords for
+accessing databases. To stop non-admin users from using the &%-bP%& command
+line option to read these values, you can precede the definition with the
+word &"hide"&. For example:
+.code
+hide domainlist filter_for_domains = ldap;PASS=secret ldap::/// ...
+.endd
+.wen
+
+
 Named lists may have a performance advantage. When Exim is routing an
 address or checking an incoming message, it caches the result of tests on named
 lists. So, if you have a setting such as

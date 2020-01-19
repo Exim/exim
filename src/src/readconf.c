@@ -2753,12 +2753,13 @@ if (!type)
     for (int i = 0; i < 4; i++)
       if ((t = tree_search(*(anchors[i]), name+1)))
         {
+	namedlist_block * nb = t->data.ptr;
+	const uschar * s = nb->hide ? hidden : nb->string;
         found = TRUE;
         if (no_labels)
-          printf("%s\n", ((namedlist_block *)(t->data.ptr))->string);
+          printf("%s\n", s);
         else
-          printf("%slist %s = %s\n", types[i], name+1,
-            ((namedlist_block *)(t->data.ptr))->string);
+          printf("%slist %s = %s\n", types[i], name+1, s);
         }
 
     if (!found)
@@ -2979,18 +2980,19 @@ Arguments:
   s           the text of the option line, starting immediately after the name
                 of the list type
   tname       the name of the list type, for messages
+  hide	      do not output value on "-bP"
 
 Returns:      nothing
 */
 
 static void
 read_named_list(tree_node **anchorp, int *numberp, int max, uschar *s,
-  uschar *tname)
+  uschar *tname, BOOL hide)
 {
 BOOL forcecache = FALSE;
 uschar *ss;
 tree_node *t;
-namedlist_block *nb = store_get(sizeof(namedlist_block), FALSE);
+namedlist_block * nb = store_get(sizeof(namedlist_block), FALSE);
 
 if (Ustrncmp(s, "_cache", 6) == 0)
   {
@@ -3020,6 +3022,7 @@ if (!tree_insertnode(anchorp, t))
 t->data.ptr = nb;
 nb->number = *numberp;
 *numberp += 1;
+nb->hide = hide;
 
 if (*s++ != '=') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
   "missing '=' after \"%s\"", t->name);
@@ -3278,28 +3281,36 @@ a macro definition. */
 
 while ((s = get_config_line()))
   {
+  BOOL hide;
+  uschar * t;
+
   if (config_lineno == 1 && Ustrstr(s, "\xef\xbb\xbf") == s)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "found unexpected BOM (Byte Order Mark)");
 
-  if (isupper(s[0]))
-    { if (!macro_read_assignment(s)) exim_exit(EXIT_FAILURE, US""); }
+  if (isupper(*s))
+    {
+    if (!macro_read_assignment(s)) exim_exit(EXIT_FAILURE, US"");
+    continue;
+    }
 
-  else if (Ustrncmp(s, "domainlist", 10) == 0)
+  t = (hide = Ustrncmp(s, "hide", 4) == 0 && isspace(s[4])) ? s + 5 : s;
+
+  if (Ustrncmp(t, "domainlist", 10) == 0)
     read_named_list(&domainlist_anchor, &domainlist_count,
-      MAX_NAMED_LIST, s+10, US"domain list");
+      MAX_NAMED_LIST, t+10, US"domain list", hide);
 
-  else if (Ustrncmp(s, "hostlist", 8) == 0)
+  else if (Ustrncmp(t, "hostlist", 8) == 0)
     read_named_list(&hostlist_anchor, &hostlist_count,
-      MAX_NAMED_LIST, s+8, US"host list");
+      MAX_NAMED_LIST, t+8, US"host list", hide);
 
-  else if (Ustrncmp(s, US"addresslist", 11) == 0)
+  else if (Ustrncmp(t, US"addresslist", 11) == 0)
     read_named_list(&addresslist_anchor, &addresslist_count,
-      MAX_NAMED_LIST, s+11, US"address list");
+      MAX_NAMED_LIST, t+11, US"address list", hide);
 
-  else if (Ustrncmp(s, US"localpartlist", 13) == 0)
+  else if (Ustrncmp(t, US"localpartlist", 13) == 0)
     read_named_list(&localpartlist_anchor, &localpartlist_count,
-      MAX_NAMED_LIST, s+13, US"local part list");
+      MAX_NAMED_LIST, t+13, US"local part list", hide);
 
   else
     (void) readconf_handle_option(s, optionlist_config, optionlist_config_size,
@@ -4275,10 +4286,8 @@ log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "local_scan() options not supported: "
 
 uschar *p;
 while ((p = get_config_line()))
-  {
   (void) readconf_handle_option(p, local_scan_options, local_scan_options_count,
     NULL, US"local_scan option \"%s\" unknown");
-  }
 #endif
 }
 
