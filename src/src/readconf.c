@@ -486,7 +486,7 @@ typedef struct syslog_fac_item {
 } syslog_fac_item;
 
 /* constants */
-static const char * const hidden = "<value not displayable>";
+static const uschar * const hidden = US"<value not displayable>";
 
 /* Static variables */
 
@@ -2443,9 +2443,9 @@ if (!ol)
 if (!f.admin_user && ol->type & opt_secure)
   {
   if (no_labels)
-    printf("%s\n", hidden);
+    printf("%s\n", CCS hidden);
   else
-    printf("%s = %s\n", name, hidden);
+    printf("%s = %s\n", name, CCS hidden);
   return TRUE;
   }
 
@@ -2757,9 +2757,9 @@ if (!type)
 	const uschar * s = nb->hide ? hidden : nb->string;
         found = TRUE;
         if (no_labels)
-          printf("%s\n", s);
+          printf("%s\n", CCS s);
         else
-          printf("%slist %s = %s\n", types[i], name+1, s);
+          printf("%slist %s = %s\n", types[i], name+1, CCS s);
         }
 
     if (!found)
@@ -4472,11 +4472,11 @@ for (config_line_item * i = config_lines; i; i = i->next)
     if ((p = Ustrchr(current, '=')))
       {
       *p = '\0';
-      printf("%*s%s= %s\n", indent, "", current, hidden);
+      printf("%*s%s= %s\n", indent, "", current, CCS hidden);
       }
     /* e.g.: hide split_spool_directory */
     else
-      printf("%*s\n", indent, hidden);
+      printf("%*s\n", indent, CCS hidden);
     }
 
   else
