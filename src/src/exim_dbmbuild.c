@@ -60,6 +60,9 @@ BOOL
 string_format_trc(uschar * buf, int len, const uschar * func, unsigned line,
   const char * fmt, ...)
 { return FALSE; }
+void
+log_write(unsigned int selector, int flags, const char *format, ...)
+{ }
 
 
 struct global_flags	f;
