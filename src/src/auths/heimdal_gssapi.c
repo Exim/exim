@@ -59,11 +59,11 @@ static void dummy(int x) { dummy2(x-1); }
 /* Authenticator-specific options. */
 optionlist auth_heimdal_gssapi_options[] = {
   { "server_hostname",      opt_stringptr,
-      (void *)(offsetof(auth_heimdal_gssapi_options_block, server_hostname)) },
+      OPT_OFF(auth_heimdal_gssapi_options_block, server_hostname) },
   { "server_keytab",        opt_stringptr,
-      (void *)(offsetof(auth_heimdal_gssapi_options_block, server_keytab)) },
+      OPT_OFF(auth_heimdal_gssapi_options_block, server_keytab) },
   { "server_service",       opt_stringptr,
-      (void *)(offsetof(auth_heimdal_gssapi_options_block, server_service)) }
+      OPT_OFF(auth_heimdal_gssapi_options_block, server_service) }
 };
 
 int auth_heimdal_gssapi_options_count =

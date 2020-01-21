@@ -18,7 +18,7 @@ opt_public flag. */
 
 optionlist queuefile_transport_options[] = {
   { "directory", opt_stringptr,
-    (void *)offsetof(queuefile_transport_options_block, dirname) },
+    OPT_OFF(queuefile_transport_options_block, dirname) },
 };
 
 

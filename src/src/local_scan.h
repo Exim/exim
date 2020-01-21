@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2019 */
+/* Copyright (c) University of Cambridge 1995 - 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file is the header that is the only Exim header to be included in the
@@ -103,8 +103,8 @@ ABI is changed in a non backward compatible way. The minor number is increased
 each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
-#define LOCAL_SCAN_ABI_VERSION_MAJOR 3
-#define LOCAL_SCAN_ABI_VERSION_MINOR 1
+#define LOCAL_SCAN_ABI_VERSION_MAJOR 4
+#define LOCAL_SCAN_ABI_VERSION_MINOR 0
 #define LOCAL_SCAN_ABI_VERSION \
   LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 
@@ -124,9 +124,11 @@ typedef struct {
   int		type;
   union {
     void *	value;
+    long	offset;
     void (*	fn)();
   } v;
 } optionlist;
+#define OPT_OFF(s, field) {.offset = offsetof(s, field)}
 
 /* Structure for holding information about an envelope address. The errors_to
 field is always NULL except for one_time aliases that had errors_to on the

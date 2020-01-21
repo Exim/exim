@@ -38,13 +38,13 @@ static void dummy(int x) { dummy2(x-1); }
 
 optionlist auth_cyrus_sasl_options[] = {
   { "server_hostname",      opt_stringptr,
-      (void *)(offsetof(auth_cyrus_sasl_options_block, server_hostname)) },
+      OPT_OFF(auth_cyrus_sasl_options_block, server_hostname) },
   { "server_mech",          opt_stringptr,
-      (void *)(offsetof(auth_cyrus_sasl_options_block, server_mech)) },
+      OPT_OFF(auth_cyrus_sasl_options_block, server_mech) },
   { "server_realm",         opt_stringptr,
-      (void *)(offsetof(auth_cyrus_sasl_options_block, server_realm)) },
+      OPT_OFF(auth_cyrus_sasl_options_block, server_realm) },
   { "server_service",       opt_stringptr,
-      (void *)(offsetof(auth_cyrus_sasl_options_block, server_service)) }
+      OPT_OFF(auth_cyrus_sasl_options_block, server_service) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

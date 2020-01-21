@@ -54,42 +54,29 @@ static void dummy(int x) { dummy2(x-1); }
 we only ever handle one mechanism at a time, I didn't see the point in keeping
 that.  In case someone sees a point, I've left the condition_check() API
 alone. */
-optionlist auth_gsasl_options[] = {
-  { "client_authz",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, client_authz)) },
-  { "client_channelbinding",	opt_bool,
-      (void *)(offsetof(auth_gsasl_options_block, client_channelbinding)) },
-  { "client_password",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, client_password)) },
-  { "client_spassword",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, client_spassword)) },
-  { "client_username",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, client_username)) },
+#define LOFF(field) OPT_OFF(auth_gsasl_options_block, field)
 
-  { "server_channelbinding",	opt_bool,
-      (void *)(offsetof(auth_gsasl_options_block, server_channelbinding)) },
-  { "server_hostname",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_hostname)) },
+optionlist auth_gsasl_options[] = {
+  { "client_authz",		opt_stringptr,	LOFF(client_authz) },
+  { "client_channelbinding",	opt_bool,	LOFF(client_channelbinding) },
+  { "client_password",		opt_stringptr,	LOFF(client_password) },
+  { "client_spassword",		opt_stringptr,	LOFF(client_spassword) },
+  { "client_username",		opt_stringptr,	LOFF(client_username) },
+
+  { "server_channelbinding",	opt_bool,	LOFF(server_channelbinding) },
+  { "server_hostname",		opt_stringptr,	LOFF(server_hostname) },
 #ifdef EXIM_GSASL_SCRAM_S_KEY
-  { "server_key",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_key)) },
+  { "server_key",		opt_stringptr,	LOFF(server_key) },
 #endif
-  { "server_mech",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_mech)) },
-  { "server_password",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_password)) },
-  { "server_realm",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_realm)) },
-  { "server_scram_iter",	opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_scram_iter)) },
-  { "server_scram_salt",	opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_scram_salt)) },
+  { "server_mech",		opt_stringptr,	LOFF(server_mech) },
+  { "server_password",		opt_stringptr,	LOFF(server_password) },
+  { "server_realm",		opt_stringptr,	LOFF(server_realm) },
+  { "server_scram_iter",	opt_stringptr,	LOFF(server_scram_iter) },
+  { "server_scram_salt",	opt_stringptr,	LOFF(server_scram_salt) },
 #ifdef EXIM_GSASL_SCRAM_S_KEY
-  { "server_skey",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_s_key)) },
+  { "server_skey",		opt_stringptr,	LOFF(server_s_key) },
 #endif
-  { "server_service",		opt_stringptr,
-      (void *)(offsetof(auth_gsasl_options_block, server_service)) }
+  { "server_service",		opt_stringptr,	LOFF(server_service) }
 };
 
 int auth_gsasl_options_count =

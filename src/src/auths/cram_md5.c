@@ -25,11 +25,11 @@ program. */
 
 optionlist auth_cram_md5_options[] = {
   { "client_name",        opt_stringptr,
-      (void *)(offsetof(auth_cram_md5_options_block, client_name)) },
+      OPT_OFF(auth_cram_md5_options_block, client_name) },
   { "client_secret",      opt_stringptr,
-      (void *)(offsetof(auth_cram_md5_options_block, client_secret)) },
+      OPT_OFF(auth_cram_md5_options_block, client_secret) },
   { "server_secret",      opt_stringptr,
-      (void *)(offsetof(auth_cram_md5_options_block, server_secret)) }
+      OPT_OFF(auth_cram_md5_options_block, server_secret) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

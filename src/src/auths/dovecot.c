@@ -51,10 +51,8 @@ The cost is the length of an array of pointers on the stack.
 
 /* Options specific to the authentication mechanism. */
 optionlist auth_dovecot_options[] = {
-       {
-       "server_socket",
-       opt_stringptr,
-       (void *)(offsetof(auth_dovecot_options_block, server_socket))
+       { "server_socket", opt_stringptr,
+	 OPT_OFF(auth_dovecot_options_block, server_socket)
        },
 };
 

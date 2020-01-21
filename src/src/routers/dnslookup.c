@@ -12,34 +12,22 @@
 
 
 /* Options specific to the dnslookup router. */
+#define LOFF(field) OPT_OFF(dnslookup_router_options_block, field)
 
 optionlist dnslookup_router_options[] = {
-  { "check_secondary_mx", opt_bool,
-      (void *)(offsetof(dnslookup_router_options_block, check_secondary_mx)) },
-  { "check_srv",          opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, check_srv)) },
-  { "fail_defer_domains", opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, fail_defer_domains)) },
-  { "ipv4_only",          opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, ipv4_only)) },
-  { "ipv4_prefer",        opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, ipv4_prefer)) },
-  { "mx_domains",         opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, mx_domains)) },
-  { "mx_fail_domains",    opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, mx_fail_domains)) },
-  { "qualify_single",     opt_bool,
-      (void *)(offsetof(dnslookup_router_options_block, qualify_single)) },
-  { "rewrite_headers",    opt_bool,
-      (void *)(offsetof(dnslookup_router_options_block, rewrite_headers)) },
-  { "same_domain_copy_routing", opt_bool|opt_public,
-      (void *)(offsetof(router_instance, same_domain_copy_routing)) },
-  { "search_parents",     opt_bool,
-      (void *)(offsetof(dnslookup_router_options_block, search_parents)) },
-  { "srv_fail_domains",   opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, srv_fail_domains)) },
-  { "widen_domains",      opt_stringptr,
-      (void *)(offsetof(dnslookup_router_options_block, widen_domains)) }
+  { "check_secondary_mx", opt_bool,		LOFF(check_secondary_mx) },
+  { "check_srv",          opt_stringptr,	LOFF(check_srv) },
+  { "fail_defer_domains", opt_stringptr,	LOFF(fail_defer_domains) },
+  { "ipv4_only",          opt_stringptr,	LOFF(ipv4_only) },
+  { "ipv4_prefer",        opt_stringptr,	LOFF(ipv4_prefer) },
+  { "mx_domains",         opt_stringptr,	LOFF(mx_domains) },
+  { "mx_fail_domains",    opt_stringptr,	LOFF(mx_fail_domains) },
+  { "qualify_single",     opt_bool,		LOFF(qualify_single) },
+  { "rewrite_headers",    opt_bool,		LOFF(rewrite_headers) },
+  { "same_domain_copy_routing", opt_bool|opt_public, OPT_OFF(router_instance, same_domain_copy_routing) },
+  { "search_parents",     opt_bool,		LOFF(search_parents) },
+  { "srv_fail_domains",   opt_stringptr,	LOFF(srv_fail_domains) },
+  { "widen_domains",      opt_stringptr,	LOFF(widen_domains) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

@@ -21,17 +21,17 @@ instance block so as to be publicly visible; these are flagged with opt_public.
 
 optionlist lmtp_transport_options[] = {
   { "batch_id",          opt_stringptr | opt_public,
-      (void *)offsetof(transport_instance, batch_id) },
+      OPT_OFF(transport_instance, batch_id) },
   { "batch_max",         opt_int | opt_public,
-      (void *)offsetof(transport_instance, batch_max) },
+      OPT_OFF(transport_instance, batch_max) },
   { "command",           opt_stringptr,
-      (void *)offsetof(lmtp_transport_options_block, cmd) },
+      OPT_OFF(lmtp_transport_options_block, cmd) },
   { "ignore_quota",      opt_bool,
-      (void *)offsetof(lmtp_transport_options_block, ignore_quota) },
+      OPT_OFF(lmtp_transport_options_block, ignore_quota) },
   { "socket",            opt_stringptr,
-      (void *)offsetof(lmtp_transport_options_block, skt) },
+      OPT_OFF(lmtp_transport_options_block, skt) },
   { "timeout",           opt_time,
-      (void *)offsetof(lmtp_transport_options_block, timeout) }
+      OPT_OFF(lmtp_transport_options_block, timeout) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

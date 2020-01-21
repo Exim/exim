@@ -17,13 +17,13 @@ a server to verify a client SSL certificate
 
 optionlist auth_tls_options[] = {
   { "server_param",     opt_stringptr,
-      (void *)(offsetof(auth_tls_options_block, server_param1)) },
+      OPT_OFF(auth_tls_options_block, server_param1) },
   { "server_param1",    opt_stringptr,
-      (void *)(offsetof(auth_tls_options_block, server_param1)) },
+      OPT_OFF(auth_tls_options_block, server_param1) },
   { "server_param2",    opt_stringptr,
-      (void *)(offsetof(auth_tls_options_block, server_param2)) },
+      OPT_OFF(auth_tls_options_block, server_param2) },
   { "server_param3",    opt_stringptr,
-      (void *)(offsetof(auth_tls_options_block, server_param3)) },
+      OPT_OFF(auth_tls_options_block, server_param3) },
 };
 
 /* Size of the options list. An extern variable has to be used so that its

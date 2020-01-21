@@ -13,11 +13,11 @@
 
 optionlist auth_plaintext_options[] = {
   { "client_ignore_invalid_base64", opt_bool,
-      (void *)(offsetof(auth_plaintext_options_block, client_ignore_invalid_base64)) },
+      OPT_OFF(auth_plaintext_options_block, client_ignore_invalid_base64) },
   { "client_send",        opt_stringptr,
-      (void *)(offsetof(auth_plaintext_options_block, client_send)) },
+      OPT_OFF(auth_plaintext_options_block, client_send) },
   { "server_prompts",     opt_stringptr,
-      (void *)(offsetof(auth_plaintext_options_block, server_prompts)) }
+      OPT_OFF(auth_plaintext_options_block, server_prompts) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

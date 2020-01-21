@@ -15,17 +15,17 @@
 
 optionlist manualroute_router_options[] = {
   { "host_all_ignored", opt_stringptr,
-      (void *)(offsetof(manualroute_router_options_block, host_all_ignored)) },
+      OPT_OFF(manualroute_router_options_block, host_all_ignored) },
   { "host_find_failed", opt_stringptr,
-      (void *)(offsetof(manualroute_router_options_block, host_find_failed)) },
+      OPT_OFF(manualroute_router_options_block, host_find_failed) },
   { "hosts_randomize",  opt_bool,
-      (void *)(offsetof(manualroute_router_options_block, hosts_randomize)) },
+      OPT_OFF(manualroute_router_options_block, hosts_randomize) },
   { "route_data",       opt_stringptr,
-      (void *)(offsetof(manualroute_router_options_block, route_data)) },
+      OPT_OFF(manualroute_router_options_block, route_data) },
   { "route_list",       opt_stringptr,
-      (void *)(offsetof(manualroute_router_options_block, route_list)) },
+      OPT_OFF(manualroute_router_options_block, route_list) },
   { "same_domain_copy_routing", opt_bool|opt_public,
-      (void *)(offsetof(router_instance, same_domain_copy_routing)) }
+      OPT_OFF(router_instance, same_domain_copy_routing) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

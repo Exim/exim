@@ -21,21 +21,21 @@
 
 optionlist iplookup_router_options[] = {
   { "hosts",    opt_stringptr,
-      (void *)(offsetof(iplookup_router_options_block, hosts)) },
+      OPT_OFF(iplookup_router_options_block, hosts) },
   { "optional", opt_bool,
-      (void *)(offsetof(iplookup_router_options_block, optional)) },
+      OPT_OFF(iplookup_router_options_block, optional) },
   { "port",     opt_int,
-      (void *)(offsetof(iplookup_router_options_block, port)) },
+      OPT_OFF(iplookup_router_options_block, port) },
   { "protocol", opt_stringptr,
-      (void *)(offsetof(iplookup_router_options_block, protocol_name)) },
+      OPT_OFF(iplookup_router_options_block, protocol_name) },
   { "query",    opt_stringptr,
-      (void *)(offsetof(iplookup_router_options_block, query)) },
+      OPT_OFF(iplookup_router_options_block, query) },
   { "reroute",  opt_stringptr,
-      (void *)(offsetof(iplookup_router_options_block, reroute)) },
+      OPT_OFF(iplookup_router_options_block, reroute) },
   { "response_pattern", opt_stringptr,
-      (void *)(offsetof(iplookup_router_options_block, response_pattern)) },
+      OPT_OFF(iplookup_router_options_block, response_pattern) },
   { "timeout",  opt_time,
-      (void *)(offsetof(iplookup_router_options_block, timeout)) }
+      OPT_OFF(iplookup_router_options_block, timeout) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

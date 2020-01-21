@@ -309,7 +309,7 @@ static optionlist optionlist_config[] = {
   { "smtp_ratelimit_hosts",     opt_stringptr,   &smtp_ratelimit_hosts },
   { "smtp_ratelimit_mail",      opt_stringptr,   &smtp_ratelimit_mail },
   { "smtp_ratelimit_rcpt",      opt_stringptr,   &smtp_ratelimit_rcpt },
-  { "smtp_receive_timeout",     opt_func,        (void *) &fn_smtp_receive_timeout },
+  { "smtp_receive_timeout",     opt_func,        {.fn = &fn_smtp_receive_timeout} },
   { "smtp_reserve_hosts",       opt_stringptr,   &smtp_reserve_hosts },
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
 #ifdef SUPPORT_I18N
@@ -594,7 +594,7 @@ for (router_instance * r = routers; r; r = r->next)
   for (int i = 0; i < *ri->options_count; i++)
     {
     if ((ri->options[i].type & opt_mask) != opt_stringptr) continue;
-    if (p == CS (r->options_block) + (long int)(ri->options[i].v.value))
+    if (p == CS (r->options_block) + ri->options[i].v.offset)
       return US ri->options[i].name;
     }
   }
@@ -610,7 +610,7 @@ for (transport_instance * t = transports; t; t = t->next)
 	     ? CS t
 	     : CS t->options_block
 	     )
-	     + (long int)op->v.value)
+	     + op->v.offset)
 	return US op->name;
     }
   }
@@ -1347,7 +1347,7 @@ if (!(ol = find_option(name2, oltop, last)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "Exim internal error: missing set flag for %s", name);
 return data_block
-  ? (BOOL *)(US data_block + (long int)ol->v.value) : (BOOL *)ol->v.value;
+  ? (BOOL *)(US data_block + ol->v.offset) : (BOOL *)ol->v.value;
 }
 
 
@@ -1748,7 +1748,7 @@ switch (type)
     control block and flags word. */
 
     case opt_stringptr:
-    str_target = data_block ? USS (US data_block + (long int)ol->v.value)
+    str_target = data_block ? USS (US data_block + ol->v.offset)
 			    : USS ol->v.value;
     if (ol->type & opt_rep_con)
       {
@@ -1807,7 +1807,7 @@ switch (type)
 
     case opt_rewrite:
     if (data_block)
-      *USS (US data_block + (long int)ol->v.value) = sptr;
+      *USS (US data_block + ol->v.offset) = sptr;
     else
       *USS ol->v.value = sptr;
     freesptr = FALSE;
@@ -1830,8 +1830,8 @@ switch (type)
 
       if (data_block)
         {
-        chain = (rewrite_rule **)(US data_block + (long int)ol2->v.value);
-        flagptr = (int *)(US data_block + (long int)ol3->v.value);
+        chain = (rewrite_rule **)(US data_block + ol2->v.offset);
+        flagptr = (int *)(US data_block + ol3->v.offset);
         }
       else
         {
@@ -1865,7 +1865,7 @@ switch (type)
       uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
 
       if (data_block)
-        *(USS(US data_block + (long int)ol2->v.value)) = ss;
+        *(USS(US data_block + ol2->v.offset)) = ss;
       else
         *(USS ol2->v.value) = ss;
 
@@ -1884,7 +1884,7 @@ switch (type)
     if (!route_finduser(sptr, &pw, &uid))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found", sptr);
     if (data_block)
-      *(uid_t *)(US data_block + (long int)(ol->v.value)) = uid;
+      *(uid_t *)(US data_block + ol->v.offset) = uid;
     else
       *(uid_t *)ol->v.value = uid;
 
@@ -1906,7 +1906,7 @@ switch (type)
       if (!*set_flag)
         {
         if (data_block)
-          *((gid_t *)(US data_block + (long int)ol2->v.value)) = pw->pw_gid;
+          *((gid_t *)(US data_block + ol2->v.offset)) = pw->pw_gid;
         else
           *((gid_t *)ol2->v.value) = pw->pw_gid;
         *set_flag = TRUE;
@@ -1927,7 +1927,7 @@ switch (type)
       uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
 
       if (data_block)
-        *(USS(US data_block + (long int)ol2->v.value)) = ss;
+        *(USS(US data_block + ol2->v.offset)) = ss;
       else
         *(USS ol2->v.value) = ss;
 
@@ -1945,7 +1945,7 @@ switch (type)
     if (!route_findgroup(sptr, &gid))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found", sptr);
     if (data_block)
-      *((gid_t *)(US data_block + (long int)ol->v.value)) = gid;
+      *((gid_t *)(US data_block + ol->v.offset)) = gid;
     else
       *((gid_t *)ol->v.value) = gid;
     *(get_set_flag(name, oltop, last, data_block)) = TRUE;
@@ -1975,7 +1975,7 @@ switch (type)
       list[ptr++] = (uid_t)(count - 1);
 
       if (data_block)
-        *((uid_t **)(US data_block + (long int)ol->v.value)) = list;
+        *((uid_t **)(US data_block + ol->v.offset)) = list;
       else
         *((uid_t **)ol->v.value) = list;
 
@@ -2016,7 +2016,7 @@ switch (type)
       list[ptr++] = (gid_t)(count - 1);
 
       if (data_block)
-        *((gid_t **)(US data_block + (long int)ol->v.value)) = list;
+        *((gid_t **)(US data_block + ol->v.offset)) = list;
       else
         *((gid_t **)ol->v.value) = list;
 
@@ -2052,7 +2052,7 @@ switch (type)
       reset_point = store_mark();
       sptr = read_string(s, name);
       if (data_block)
-        *(USS(US data_block + (long int)ol2->v.value)) = sptr;
+        *(USS(US data_block + ol2->v.offset)) = sptr;
       else
         *(USS ol2->v.value) = sptr;
       freesptr = FALSE;
@@ -2091,7 +2091,7 @@ switch (type)
     {
     int bit = 1 << ((ol->type >> 16) & 31);
     int * ptr = data_block
-      ? (int *)(US data_block + (long int)ol->v.value)
+      ? (int *)(US data_block + ol->v.offset)
       : (int *)ol->v.value;
     if (boolvalue) *ptr |= bit; else *ptr &= ~bit;
     break;
@@ -2100,7 +2100,7 @@ switch (type)
   /* Handle full BOOL types */
 
   if (data_block)
-    *((BOOL *)(US data_block + (long int)ol->v.value)) = boolvalue;
+    *((BOOL *)(US data_block + ol->v.offset)) = boolvalue;
   else
     *((BOOL *)ol->v.value) = boolvalue;
 
@@ -2111,7 +2111,7 @@ switch (type)
     sprintf(CS name2, "%.50s_recipient", name + offset);
     if ((ol2 = find_option(name2, oltop, last)))
       if (data_block)
-        *((BOOL *)(US data_block + (long int)ol2->v.value)) = boolvalue;
+        *((BOOL *)(US data_block + ol2->v.offset)) = boolvalue;
       else
         *((BOOL *)ol2->v.value) = boolvalue;
     }
@@ -2123,7 +2123,7 @@ switch (type)
     sprintf(CS name2, "*set_%.50s", name + offset);
     if ((ol2 = find_option(name2, oltop, last)))
       if (data_block)
-        *((BOOL *)(US data_block + (long int)ol2->v.value)) = TRUE;
+        *((BOOL *)(US data_block + ol2->v.offset)) = TRUE;
       else
         *((BOOL *)ol2->v.value) = TRUE;
     }
@@ -2183,7 +2183,7 @@ switch (type)
     }
 
   if (data_block)
-    *(int *)(US data_block + (long int)ol->v.value) = value;
+    *(int *)(US data_block + ol->v.offset) = value;
   else
     *(int *)ol->v.value = value;
   break;
@@ -2229,7 +2229,7 @@ switch (type)
       extra_chars_error(endptr, inttype, US"integer value for ", name);
 
     if (data_block)
-      *(int_eximarith_t *)(US data_block + (long int)ol->v.value) = lvalue;
+      *(int_eximarith_t *)(US data_block + ol->v.offset) = lvalue;
     else
       *(int_eximarith_t *)ol->v.value = lvalue;
     break;
@@ -2271,7 +2271,7 @@ switch (type)
     extra_chars_error(s+count, US"fixed-point value for ", name, US"");
 
   if (data_block)
-    *((int *)(US data_block + (long int)ol->v.value)) = value;
+    *((int *)(US data_block + ol->v.offset)) = value;
   else
     *((int *)ol->v.value) = value;
   break;
@@ -2284,7 +2284,7 @@ switch (type)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "invalid time value for %s",
       name);
   if (data_block)
-    *((int *)(US data_block + (long int)ol->v.value)) = value;
+    *((int *)(US data_block + ol->v.offset)) = value;
   else
     *((int *)ol->v.value) = value;
   break;
@@ -2297,7 +2297,7 @@ switch (type)
     {
     int count = 0;
     int * list = data_block
-      ? (int *)(US data_block + (long int)ol->v.value)
+      ? (int *)(US data_block + ol->v.offset)
       : (int *)ol->v.value;
 
     if (*s != 0) for (count = 1; count <= list[0] - 2; count++)
@@ -2536,10 +2536,10 @@ switch(ol->type & opt_mask)
       sprintf(CS name2, "*expand_%.50s", name);
       if ((ol2 = find_option(name2, oltop, last)))
 	{
-	void * value2 = ol2->v.value;
 	if (options_block)
-	  value2 = (void *)(US options_block + (long int)value2);
-	s = *(USS value2);
+	  s = *USS (US options_block + ol2->v.offset);
+	else
+	  s = *USS ol2->v.value;
 	if (!no_labels) printf("%s = ", name);
 	printf("%s\n", s ? string_printing(s) : US"");
 	break;
@@ -2568,10 +2568,10 @@ switch(ol->type & opt_mask)
       if (  (ol2 = find_option(name2, oltop, last))
 	 && (ol2->type & opt_mask) == opt_stringptr)
 	{
-	void * value2 = ol2->v.value;
 	if (options_block)
-	  value2 = (void *)(US options_block + (long int)value2);
-	s = *(USS value2);
+	  s = *USS (US options_block + ol2->v.offset);
+	else
+	  s = *USS ol2->v.value;
 	if (!no_labels) printf("%s = ", name);
 	printf("%s\n", s ? string_printing(s) : US"");
 	break;
@@ -2653,10 +2653,11 @@ switch(ol->type & opt_mask)
     sprintf(CS name2, "*expand_%.50s", name);
     if ((ol2 = find_option(name2, oltop, last)) && ol2->v.value)
       {
-      void * value2 = ol2->v.value;
       if (options_block)
-	value2 = (void *)(US options_block + (long int)value2);
-      if ((s = *(USS value2)))
+	s = *USS (US options_block + ol2->v.offset);
+      else
+	s = *USS ol2->v.value;
+      if (s)
 	{
 	if (!no_labels) printf("%s = ", name);
 	printf("%s\n", string_printing(s));
@@ -2674,11 +2675,8 @@ switch(ol->type & opt_mask)
     break;
 
   case opt_func:
-    {
-    void (*fn)() = ol->v.fn;
-    fn(name, NULL, no_labels ? opt_fn_print : opt_fn_print|opt_fn_print_label);
+    ol->v.fn(name, NULL, no_labels ? opt_fn_print : opt_fn_print|opt_fn_print_label);
     break;
-    }
   }
 return TRUE;
 }
@@ -3834,7 +3832,7 @@ for (optionlist * ol = d->info->options; ol < d->info->options + count; ol++)
   if ((ol->type & opt_mask) == opt_stringptr)
     {
     void * options_block = ol->type & opt_public ? (void *)d : d->options_block;
-    uschar * value = *USS(US options_block + (long int)ol->v.value);
+    uschar * value = *USS(US options_block + ol->v.offset);
 
     if (value && (ss = Ustrstr(value, s)) != NULL)
       {

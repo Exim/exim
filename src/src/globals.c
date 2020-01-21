@@ -16,23 +16,23 @@ data blocks and hence have the opt_public flag set. */
 
 optionlist optionlist_auths[] = {
   { "client_condition", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, client_condition)) },
+                 OPT_OFF(auth_instance, client_condition) },
   { "client_set_id", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, set_client_id)) },
+                 OPT_OFF(auth_instance, set_client_id) },
   { "driver",        opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, driver_name)) },
+                 OPT_OFF(auth_instance, driver_name) },
   { "public_name",   opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, public_name)) },
+                 OPT_OFF(auth_instance, public_name) },
   { "server_advertise_condition", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, advertise_condition))},
+                 OPT_OFF(auth_instance, advertise_condition)},
   { "server_condition", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, server_condition)) },
+                 OPT_OFF(auth_instance, server_condition) },
   { "server_debug_print", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, server_debug_string)) },
+                 OPT_OFF(auth_instance, server_debug_string) },
   { "server_mail_auth_condition", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, mail_auth_condition)) },
+                 OPT_OFF(auth_instance, mail_auth_condition) },
   { "server_set_id", opt_stringptr | opt_public,
-                 (void *)(offsetof(auth_instance, set_id)) }
+                 OPT_OFF(auth_instance, set_id) }
 };
 
 int     optionlist_auths_size = nelem(optionlist_auths);

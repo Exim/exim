@@ -15,23 +15,23 @@
 
 optionlist queryprogram_router_options[] = {
   { "*expand_command_group", opt_bool | opt_hidden,
-      (void *)(offsetof(queryprogram_router_options_block, expand_cmd_gid)) },
+      OPT_OFF(queryprogram_router_options_block, expand_cmd_gid) },
   { "*expand_command_user", opt_bool | opt_hidden,
-      (void *)(offsetof(queryprogram_router_options_block, expand_cmd_uid)) },
+      OPT_OFF(queryprogram_router_options_block, expand_cmd_uid) },
   { "*set_command_group",   opt_bool | opt_hidden,
-      (void *)(offsetof(queryprogram_router_options_block, cmd_gid_set)) },
+      OPT_OFF(queryprogram_router_options_block, cmd_gid_set) },
   { "*set_command_user",    opt_bool | opt_hidden,
-      (void *)(offsetof(queryprogram_router_options_block, cmd_uid_set)) },
+      OPT_OFF(queryprogram_router_options_block, cmd_uid_set) },
   { "command",      opt_stringptr,
-      (void *)(offsetof(queryprogram_router_options_block, command)) },
+      OPT_OFF(queryprogram_router_options_block, command) },
   { "command_group",opt_expand_gid,
-      (void *)(offsetof(queryprogram_router_options_block, cmd_gid)) },
+      OPT_OFF(queryprogram_router_options_block, cmd_gid) },
   { "command_user", opt_expand_uid,
-      (void *)(offsetof(queryprogram_router_options_block, cmd_uid)) },
+      OPT_OFF(queryprogram_router_options_block, cmd_uid) },
   { "current_directory", opt_stringptr,
-      (void *)(offsetof(queryprogram_router_options_block, current_directory)) },
+      OPT_OFF(queryprogram_router_options_block, current_directory) },
   { "timeout",      opt_time,
-      (void *)(offsetof(queryprogram_router_options_block, timeout)) }
+      OPT_OFF(queryprogram_router_options_block, timeout) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its

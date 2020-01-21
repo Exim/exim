@@ -46,13 +46,13 @@ References:
 
 optionlist auth_spa_options[] = {
   { "client_domain",             opt_stringptr,
-      (void *)(offsetof(auth_spa_options_block, spa_domain)) },
+      OPT_OFF(auth_spa_options_block, spa_domain) },
   { "client_password",           opt_stringptr,
-      (void *)(offsetof(auth_spa_options_block, spa_password)) },
+      OPT_OFF(auth_spa_options_block, spa_password) },
   { "client_username",           opt_stringptr,
-      (void *)(offsetof(auth_spa_options_block, spa_username)) },
+      OPT_OFF(auth_spa_options_block, spa_username) },
   { "server_password",           opt_stringptr,
-      (void *)(offsetof(auth_spa_options_block, spa_serverpassword)) }
+      OPT_OFF(auth_spa_options_block, spa_serverpassword) }
 };
 
 /* Size of the options list. An extern variable has to be used so that its
