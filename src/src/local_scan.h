@@ -120,9 +120,12 @@ typedef struct header_line {
 /* Entries in lists options are in this form. */
 
 typedef struct {
-  const char   *name; /* should have been uschar but too late now */
-  int           type;
-  void         *value;
+  const char *	name; /* should have been uschar but too late now */
+  int		type;
+  union {
+    void *	value;
+    void (*	fn)();
+  } v;
 } optionlist;
 
 /* Structure for holding information about an envelope address. The errors_to

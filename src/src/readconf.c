@@ -586,7 +586,7 @@ uschar *
 readconf_find_option(void *p)
 {
 for (int i = 0; i < nelem(optionlist_config); i++)
-  if (p == optionlist_config[i].value) return US optionlist_config[i].name;
+  if (p == optionlist_config[i].v.value) return US optionlist_config[i].name;
 
 for (router_instance * r = routers; r; r = r->next)
   {
@@ -594,7 +594,7 @@ for (router_instance * r = routers; r; r = r->next)
   for (int i = 0; i < *ri->options_count; i++)
     {
     if ((ri->options[i].type & opt_mask) != opt_stringptr) continue;
-    if (p == CS (r->options_block) + (long int)(ri->options[i].value))
+    if (p == CS (r->options_block) + (long int)(ri->options[i].v.value))
       return US ri->options[i].name;
     }
   }
@@ -610,7 +610,7 @@ for (transport_instance * t = transports; t; t = t->next)
 	     ? CS t
 	     : CS t->options_block
 	     )
-	     + (long int)op->value)
+	     + (long int)op->v.value)
 	return US op->name;
     }
   }
@@ -1343,11 +1343,11 @@ get_set_flag(uschar *name, optionlist *oltop, int last, void *data_block)
 optionlist *ol;
 uschar name2[64];
 sprintf(CS name2, "*set_%.50s", name);
-ol = find_option(name2, oltop, last);
-if (ol == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-  "Exim internal error: missing set flag for %s", name);
-return (data_block == NULL)? (BOOL *)(ol->value) :
-  (BOOL *)(US data_block + (long int)(ol->value));
+if (!(ol = find_option(name2, oltop, last)))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "Exim internal error: missing set flag for %s", name);
+return data_block
+  ? (BOOL *)(US data_block + (long int)ol->v.value) : (BOOL *)ol->v.value;
 }
 
 
@@ -1661,7 +1661,7 @@ is set twice, is a disaster. */
 
 if (!(ol = find_option(name + offset, oltop, last)))
   {
-  if (unknown_txt == NULL) return FALSE;
+  if (!unknown_txt) return FALSE;
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, CS unknown_txt, name);
   }
 
@@ -1680,7 +1680,7 @@ if (type < opt_bool || type > opt_bool_last)
   if (offset != 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "negation prefix applied to a non-boolean option");
-  if (*s == 0)
+  if (!*s)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "unexpected end of line (data missing) after %s", name);
   if (*s != '=')
@@ -1691,7 +1691,7 @@ if (type < opt_bool || type > opt_bool_last)
 true/false/yes/no, or, in the case of opt_expand_bool, a general string that
 ultimately expands to one of those values. */
 
-else if (*s != 0 && (offset != 0 || *s != '='))
+else if (*s && (offset != 0 || *s != '='))
   extra_chars_error(s, US"boolean option ", name, US"");
 
 /* Skip white space after = */
@@ -1701,7 +1701,7 @@ if (*s == '=') while (isspace((*(++s))));
 /* If there is a data block and the opt_public flag is not set, change
 the data block pointer to the private options block. */
 
-if (data_block != NULL && (ol->type & opt_public) == 0)
+if (data_block && !(ol->type & opt_public))
   data_block = (void *)(((driver_instance *)data_block)->options_block);
 
 /* Now get the data according to the type. */
@@ -1748,8 +1748,8 @@ switch (type)
     control block and flags word. */
 
     case opt_stringptr:
-    str_target = data_block ? USS (US data_block + (long int)(ol->value))
-			    : USS (ol->value);
+    str_target = data_block ? USS (US data_block + (long int)ol->v.value)
+			    : USS ol->v.value;
     if (ol->type & opt_rep_con)
       {
       uschar * saved_condition;
@@ -1807,9 +1807,9 @@ switch (type)
 
     case opt_rewrite:
     if (data_block)
-      *USS (US data_block + (long int)(ol->value)) = sptr;
+      *USS (US data_block + (long int)ol->v.value) = sptr;
     else
-      *USS (ol->value) = sptr;
+      *USS ol->v.value = sptr;
     freesptr = FALSE;
     if (type == opt_rewrite)
       {
@@ -1824,19 +1824,19 @@ switch (type)
       sprintf(CS name2, "*%.50s_flags", name);
       ol3 = find_option(name2, oltop, last);
 
-      if (ol2 == NULL || ol3 == NULL)
+      if (!ol2 || !ol3)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
           "rewrite rules not available for driver");
 
-      if (data_block == NULL)
+      if (data_block)
         {
-        chain = (rewrite_rule **)(ol2->value);
-        flagptr = (int *)(ol3->value);
+        chain = (rewrite_rule **)(US data_block + (long int)ol2->v.value);
+        flagptr = (int *)(US data_block + (long int)ol3->v.value);
         }
       else
         {
-        chain = (rewrite_rule **)(US data_block + (long int)(ol2->value));
-        flagptr = (int *)(US data_block + (long int)(ol3->value));
+        chain = (rewrite_rule **)ol2->v.value;
+        flagptr = (int *)ol3->v.value;
         }
 
       while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
@@ -1860,17 +1860,16 @@ switch (type)
 
     case opt_expand_uid:
     sprintf(CS name2, "*expand_%.50s", name);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL)
+    if ((ol2 = find_option(name2, oltop, last)))
       {
-      uschar *ss = (Ustrchr(sptr, '$') != NULL)? sptr : NULL;
+      uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
 
-      if (data_block == NULL)
-        *((uschar **)(ol2->value)) = ss;
+      if (data_block)
+        *(USS(US data_block + (long int)ol2->v.value)) = ss;
       else
-        *((uschar **)(US data_block + (long int)(ol2->value))) = ss;
+        *(USS ol2->v.value) = ss;
 
-      if (ss != NULL)
+      if (ss)
         {
         *(get_set_flag(name, oltop, last, data_block)) = FALSE;
         freesptr = FALSE;
@@ -1884,10 +1883,10 @@ switch (type)
     case opt_uid:
     if (!route_finduser(sptr, &pw, &uid))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found", sptr);
-    if (data_block == NULL)
-      *((uid_t *)(ol->value)) = uid;
+    if (data_block)
+      *(uid_t *)(US data_block + (long int)(ol->v.value)) = uid;
     else
-      *((uid_t *)(US data_block + (long int)(ol->value))) = uid;
+      *(uid_t *)ol->v.value = uid;
 
     /* Set the flag indicating a fixed value is set */
 
@@ -1900,16 +1899,16 @@ switch (type)
     if (pw == NULL) break;
     Ustrcpy(name+Ustrlen(name)-4, US"group");
     ol2 = find_option(name, oltop, last);
-    if (ol2 != NULL && ((ol2->type & opt_mask) == opt_gid ||
+    if (ol2 && ((ol2->type & opt_mask) == opt_gid ||
         (ol2->type & opt_mask) == opt_expand_gid))
       {
       BOOL *set_flag = get_set_flag(name, oltop, last, data_block);
-      if (! *set_flag)
+      if (!*set_flag)
         {
-        if (data_block == NULL)
-          *((gid_t *)(ol2->value)) = pw->pw_gid;
+        if (data_block)
+          *((gid_t *)(US data_block + (long int)ol2->v.value)) = pw->pw_gid;
         else
-          *((gid_t *)(US data_block + (long int)(ol2->value))) = pw->pw_gid;
+          *((gid_t *)ol2->v.value) = pw->pw_gid;
         *set_flag = TRUE;
         }
       }
@@ -1923,17 +1922,16 @@ switch (type)
 
     case opt_expand_gid:
     sprintf(CS name2, "*expand_%.50s", name);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL)
+    if ((ol2 = find_option(name2, oltop, last)))
       {
-      uschar *ss = (Ustrchr(sptr, '$') != NULL)? sptr : NULL;
+      uschar *ss = (Ustrchr(sptr, '$') != NULL) ? sptr : NULL;
 
-      if (data_block == NULL)
-        *((uschar **)(ol2->value)) = ss;
+      if (data_block)
+        *(USS(US data_block + (long int)ol2->v.value)) = ss;
       else
-        *((uschar **)(US data_block + (long int)(ol2->value))) = ss;
+        *(USS ol2->v.value) = ss;
 
-      if (ss != NULL)
+      if (ss)
         {
         *(get_set_flag(name, oltop, last, data_block)) = FALSE;
         freesptr = FALSE;
@@ -1946,10 +1944,10 @@ switch (type)
     case opt_gid:
     if (!route_findgroup(sptr, &gid))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found", sptr);
-    if (data_block == NULL)
-      *((gid_t *)(ol->value)) = gid;
+    if (data_block)
+      *((gid_t *)(US data_block + (long int)ol->v.value)) = gid;
     else
-      *((gid_t *)(US data_block + (long int)(ol->value))) = gid;
+      *((gid_t *)ol->v.value) = gid;
     *(get_set_flag(name, oltop, last, data_block)) = TRUE;
     break;
 
@@ -1976,10 +1974,10 @@ switch (type)
       list = store_malloc(count*sizeof(uid_t));
       list[ptr++] = (uid_t)(count - 1);
 
-      if (data_block == NULL)
-        *((uid_t **)(ol->value)) = list;
+      if (data_block)
+        *((uid_t **)(US data_block + (long int)ol->v.value)) = list;
       else
-        *((uid_t **)(US data_block + (long int)(ol->value))) = list;
+        *((uid_t **)ol->v.value) = list;
 
       p = op;
       while (count-- > 1)
@@ -2007,7 +2005,7 @@ switch (type)
       const uschar *p;
       const uschar *op = expand_string (sptr);
 
-      if (op == NULL)
+      if (!op)
         log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
           name, expand_string_message);
 
@@ -2017,10 +2015,10 @@ switch (type)
       list = store_malloc(count*sizeof(gid_t));
       list[ptr++] = (gid_t)(count - 1);
 
-      if (data_block == NULL)
-        *((gid_t **)(ol->value)) = list;
+      if (data_block)
+        *((gid_t **)(US data_block + (long int)ol->v.value)) = list;
       else
-        *((gid_t **)(US data_block + (long int)(ol->value))) = list;
+        *((gid_t **)ol->v.value) = list;
 
       p = op;
       while (count-- > 1)
@@ -2046,17 +2044,17 @@ switch (type)
   save the string for later expansion in the alternate place. */
 
   case opt_expand_bool:
-  if (*s != 0 && Ustrchr(s, '$') != 0)
+  if (*s && Ustrchr(s, '$') != 0)
     {
     sprintf(CS name2, "*expand_%.50s", name);
     if ((ol2 = find_option(name2, oltop, last)))
       {
       reset_point = store_mark();
       sptr = read_string(s, name);
-      if (data_block == NULL)
-        *((uschar **)(ol2->value)) = sptr;
+      if (data_block)
+        *(USS(US data_block + (long int)ol2->v.value)) = sptr;
       else
-        *((uschar **)(US data_block + (long int)(ol2->value))) = sptr;
+        *(USS ol2->v.value) = sptr;
       freesptr = FALSE;
       break;
       }
@@ -2092,33 +2090,30 @@ switch (type)
   if (type == opt_bit)
     {
     int bit = 1 << ((ol->type >> 16) & 31);
-    int *ptr = (data_block == NULL)?
-      (int *)(ol->value) :
-      (int *)(US data_block + (long int)ol->value);
+    int * ptr = data_block
+      ? (int *)(US data_block + (long int)ol->v.value)
+      : (int *)ol->v.value;
     if (boolvalue) *ptr |= bit; else *ptr &= ~bit;
     break;
     }
 
   /* Handle full BOOL types */
 
-  if (data_block == NULL)
-    *((BOOL *)(ol->value)) = boolvalue;
+  if (data_block)
+    *((BOOL *)(US data_block + (long int)ol->v.value)) = boolvalue;
   else
-    *((BOOL *)(US data_block + (long int)(ol->value))) = boolvalue;
+    *((BOOL *)ol->v.value) = boolvalue;
 
   /* Verify fudge */
 
   if (type == opt_bool_verify)
     {
     sprintf(CS name2, "%.50s_recipient", name + offset);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL)
-      {
-      if (data_block == NULL)
-        *((BOOL *)(ol2->value)) = boolvalue;
+    if ((ol2 = find_option(name2, oltop, last)))
+      if (data_block)
+        *((BOOL *)(US data_block + (long int)ol2->v.value)) = boolvalue;
       else
-        *((BOOL *)(US data_block + (long int)(ol2->value))) = boolvalue;
-      }
+        *((BOOL *)ol2->v.value) = boolvalue;
     }
 
   /* Note that opt_bool_set type is set, if there is somewhere to do so */
@@ -2126,14 +2121,11 @@ switch (type)
   else if (type == opt_bool_set)
     {
     sprintf(CS name2, "*set_%.50s", name + offset);
-    ol2 = find_option(name2, oltop, last);
-    if (ol2 != NULL)
-      {
-      if (data_block == NULL)
-        *((BOOL *)(ol2->value)) = TRUE;
+    if ((ol2 = find_option(name2, oltop, last)))
+      if (data_block)
+        *((BOOL *)(US data_block + (long int)ol2->v.value)) = TRUE;
       else
-        *((BOOL *)(US data_block + (long int)(ol2->value))) = TRUE;
-      }
+        *((BOOL *)ol2->v.value) = TRUE;
     }
   break;
 
@@ -2191,9 +2183,9 @@ switch (type)
     }
 
   if (data_block)
-    *(int *)(US data_block + (long int)ol->value) = value;
+    *(int *)(US data_block + (long int)ol->v.value) = value;
   else
-    *(int *)ol->value = value;
+    *(int *)ol->v.value = value;
   break;
 
   /*  Integer held in K: again, allow formats and suffixes as above. */
@@ -2237,9 +2229,9 @@ switch (type)
       extra_chars_error(endptr, inttype, US"integer value for ", name);
 
     if (data_block)
-      *(int_eximarith_t *)(US data_block + (long int)ol->value) = lvalue;
+      *(int_eximarith_t *)(US data_block + (long int)ol->v.value) = lvalue;
     else
-      *(int_eximarith_t *)ol->value = lvalue;
+      *(int_eximarith_t *)ol->v.value = lvalue;
     break;
     }
 
@@ -2278,10 +2270,10 @@ switch (type)
   if (s[count] != 0)
     extra_chars_error(s+count, US"fixed-point value for ", name, US"");
 
-  if (data_block == NULL)
-    *((int *)(ol->value)) = value;
+  if (data_block)
+    *((int *)(US data_block + (long int)ol->v.value)) = value;
   else
-    *((int *)(US data_block + (long int)(ol->value))) = value;
+    *((int *)ol->v.value) = value;
   break;
 
   /* There's a special routine to read time values. */
@@ -2291,10 +2283,10 @@ switch (type)
   if (value < 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "invalid time value for %s",
       name);
-  if (data_block == NULL)
-    *((int *)(ol->value)) = value;
+  if (data_block)
+    *((int *)(US data_block + (long int)ol->v.value)) = value;
   else
-    *((int *)(US data_block + (long int)(ol->value))) = value;
+    *((int *)ol->v.value) = value;
   break;
 
   /* A time list is a list of colon-separated times, with the first
@@ -2304,9 +2296,9 @@ switch (type)
   case opt_timelist:
     {
     int count = 0;
-    int *list = (data_block == NULL)?
-      (int *)(ol->value) :
-      (int *)(US data_block + (long int)(ol->value));
+    int * list = data_block
+      ? (int *)(US data_block + (long int)ol->v.value)
+      : (int *)ol->v.value;
 
     if (*s != 0) for (count = 1; count <= list[0] - 2; count++)
       {
@@ -2341,7 +2333,7 @@ switch (type)
 
   case opt_func:
     {
-    void (*fn)() = ol->value;
+    void (*fn)() = ol->v.fn;
     fn(name, s, 0);
     break;
     }
@@ -2451,7 +2443,7 @@ if (!f.admin_user && ol->type & opt_secure)
 
 /* Else show the value of the option */
 
-value = ol->value;
+value = ol->v.value;
 if (options_block)
   {
   if (!(ol->type & opt_public))
@@ -2544,7 +2536,7 @@ switch(ol->type & opt_mask)
       sprintf(CS name2, "*expand_%.50s", name);
       if ((ol2 = find_option(name2, oltop, last)))
 	{
-	void *value2 = ol2->value;
+	void * value2 = ol2->v.value;
 	if (options_block)
 	  value2 = (void *)(US options_block + (long int)value2);
 	s = *(USS value2);
@@ -2576,7 +2568,7 @@ switch(ol->type & opt_mask)
       if (  (ol2 = find_option(name2, oltop, last))
 	 && (ol2->type & opt_mask) == opt_stringptr)
 	{
-	void *value2 = ol2->value;
+	void * value2 = ol2->v.value;
 	if (options_block)
 	  value2 = (void *)(US options_block + (long int)value2);
 	s = *(USS value2);
@@ -2659,13 +2651,12 @@ switch(ol->type & opt_mask)
 
   case opt_expand_bool:
     sprintf(CS name2, "*expand_%.50s", name);
-    if ((ol2 = find_option(name2, oltop, last)) && ol2->value)
+    if ((ol2 = find_option(name2, oltop, last)) && ol2->v.value)
       {
-      void *value2 = ol2->value;
+      void * value2 = ol2->v.value;
       if (options_block)
 	value2 = (void *)(US options_block + (long int)value2);
-      s = *(USS value2);
-      if (s)
+      if ((s = *(USS value2)))
 	{
 	if (!no_labels) printf("%s = ", name);
 	printf("%s\n", string_printing(s));
@@ -2684,7 +2675,7 @@ switch(ol->type & opt_mask)
 
   case opt_func:
     {
-    void (*fn)() = ol->value;
+    void (*fn)() = ol->v.fn;
     fn(name, NULL, no_labels ? opt_fn_print : opt_fn_print|opt_fn_print_label);
     break;
     }
@@ -3770,7 +3761,7 @@ while ((buffer = get_config_line()))
     /* Check nothing more on this line, then do the next loop iteration. */
 
     while (isspace(*s)) s++;
-    if (*s != 0) extra_chars_error(s, US"driver name ", name, US"");
+    if (*s) extra_chars_error(s, US"driver name ", name, US"");
     continue;
     }
 
@@ -3840,22 +3831,20 @@ int count = *(d->info->options_count);
 uschar *ss;
 
 for (optionlist * ol = d->info->options; ol < d->info->options + count; ol++)
-  {
-  void *options_block;
-  uschar *value;
-  int type = ol->type & opt_mask;
-  if (type != opt_stringptr) continue;
-  options_block = ((ol->type & opt_public) == 0)? d->options_block : (void *)d;
-  value = *(uschar **)(US options_block + (long int)(ol->value));
-  if (value != NULL && (ss = Ustrstr(value, s)) != NULL)
+  if ((ol->type & opt_mask) == opt_stringptr)
     {
-    if (ss <= value || (ss[-1] != '$' && ss[-1] != '{') ||
-      isalnum(ss[Ustrlen(s)])) continue;
-    DEBUG(D_transport) debug_printf("driver %s: \"%s\" option depends on %s\n",
-      d->name, ol->name, s);
-    return TRUE;
+    void * options_block = ol->type & opt_public ? (void *)d : d->options_block;
+    uschar * value = *USS(US options_block + (long int)ol->v.value);
+
+    if (value && (ss = Ustrstr(value, s)) != NULL)
+      {
+      if (ss <= value || (ss[-1] != '$' && ss[-1] != '{') ||
+	isalnum(ss[Ustrlen(s)])) continue;
+      DEBUG(D_transport) debug_printf("driver %s: \"%s\" option depends on %s\n",
+	d->name, ol->name, s);
+      return TRUE;
+      }
     }
-  }
 
 DEBUG(D_transport) debug_printf("driver %s does not depend on %s\n", d->name, s);
 return FALSE;
