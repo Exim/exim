@@ -1320,7 +1320,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Platform differences in errno strings
     s/  SMTP\(Operation timed out\)<</  SMTP(Connection timed out)<</;
-    s/Arg list too long/Argument list too long/;
 
     # Platform differences for errno values (eg. Hurd)
     s/^errno = \d+$/errno = EEE/;
@@ -1422,6 +1421,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Platform differences for errno values (eg. Hurd).  Leave 0 and negative numbers alone.
     s/R=\w+ T=\w+ defer\K \([1-9]\d*\): / (EEE): /;
+
+    # Platform differences in errno strings
+    s/Arg list too long/Argument list too long/;
     }
 
   # ======== mail ========
