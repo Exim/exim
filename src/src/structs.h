@@ -888,8 +888,8 @@ typedef struct namedlist_cacheblock {
 typedef struct namedlist_block {
   const uschar *string;			/* the list string */
   namedlist_cacheblock *cache_data;	/* cached domain_data or localpart_data */
-  int		number:31;		/* the number of the list for caching */
-  BOOL		hide:1;			/* -bP does not display value */
+  short		number;			/* the number of the list for caching */
+  BOOL		hide;			/* -bP does not display value */
 } namedlist_block;
 
 /* Structures for Access Control Lists */
