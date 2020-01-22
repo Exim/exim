@@ -17,12 +17,9 @@ method defined in RFC 4422 Appendix A.
 /* Options specific to the external authentication mechanism. */
 
 optionlist auth_external_options[] = {
-  { "client_send",	opt_stringptr,
-      (void *)(offsetof(auth_external_options_block, client_send)) },
-  { "server_param2",	opt_stringptr,
-      (void *)(offsetof(auth_external_options_block, server_param2)) },
-  { "server_param3",	    opt_stringptr,
-      (void *)(offsetof(auth_external_options_block, server_param3)) },
+  { "client_send",	opt_stringptr, OPT_OFF(auth_external_options_block, client_send) },
+  { "server_param2",	opt_stringptr, OPT_OFF(auth_external_options_block, server_param2) },
+  { "server_param3",	opt_stringptr, OPT_OFF(auth_external_options_block, server_param3) },
 };
 
 /* Size of the options list. An extern variable has to be used so that its

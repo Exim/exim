@@ -15,7 +15,7 @@
 empty declarations ("undefined" in the Standard) we put in a dummy value. */
 
 optionlist accept_router_options[] = {
-  { "", opt_hidden, NULL }
+  { "", opt_hidden, {NULL} }
 };
 
 /* Size of the options list. An extern variable has to be used so that its
