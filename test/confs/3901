@@ -1,4 +1,4 @@
-# Exim test configuration 9350
+# Exim test configuration 9351
 
 SERVER=
 
@@ -10,13 +10,13 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = check_recipient
 
-tls_advertise_hosts = *
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 tls_verify_hosts = HOSTIPV4
 tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
 
+queue_only
 
 # ----- ACL -----
 
@@ -28,6 +28,24 @@ check_recipient:
   accept
 
 
+# ----- Route -----
+
+begin routers
+
+all:
+  driver = accept
+  transport = server
+  errors_to =
+
+begin transports
+
+server:
+  driver =		smtp
+  hosts =		127.0.0.1
+  allow_localhost
+  port =		PORT_D
+  hosts_require_auth =	*
+
 # ----- Authentication -----
 
 begin authenticators
@@ -35,7 +53,15 @@ begin authenticators
 dovecot:
   driver = dovecot
   public_name = PLAIN
-  server_socket = /var/run/dovecot/auth-client
+  server_socket = 127.0.0.1 PORT_S
+.ifdef TRUSTED
+  server_tls =	true
+.endif
   server_set_id = $auth1
+
+client:
+  driver = plaintext
+  public_name = PLAIN
+  client_send = ^username^mysecret
 
 # End

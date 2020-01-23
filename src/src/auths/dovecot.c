@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
- * Copyright (c) 2006-2017 The Exim Maintainers
+ * Copyright (c) 2006-2019 The Exim Maintainers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -51,9 +51,8 @@ The cost is the length of an array of pointers on the stack.
 
 /* Options specific to the authentication mechanism. */
 optionlist auth_dovecot_options[] = {
-       { "server_socket", opt_stringptr,
-	 OPT_OFF(auth_dovecot_options_block, server_socket)
-       },
+  { "server_socket", opt_stringptr, OPT_OFF(auth_dovecot_options_block, server_socket) },
+/*{ "server_tls", opt_bool, OPT_OFF(auth_dovecot_options_block, server_tls) },*/
 };
 
 /* Size of the options list. An extern variable has to be used so that its
@@ -64,7 +63,8 @@ int auth_dovecot_options_count = nelem(auth_dovecot_options);
 /* Default private options block for the authentication method. */
 
 auth_dovecot_options_block auth_dovecot_option_defaults = {
-       NULL,                           /* server_socket */
+	.server_socket = NULL,
+/*	.server_tls =	FALSE,*/
 };
 
 
@@ -197,7 +197,7 @@ else
 C-style buffered I/O gave trouble. */
 
 static uschar *
-dc_gets(uschar *s, int n, int fd)
+dc_gets(uschar *s, int n, client_conn_ctx * cctx)
 {
 int p = 0;
 int count = 0;
@@ -206,8 +206,15 @@ for (;;)
   {
   if (socket_buffer_left == 0)
     {
-    if ((socket_buffer_left = read(fd, sbuffer, sizeof(sbuffer))) <= 0)
-      if (count == 0) return NULL; else break;
+    if ((socket_buffer_left =
+#ifndef DISABLE_TLS
+	cctx->tls_ctx ? tls_read(cctx->tls_ctx, sbuffer, sizeof(sbuffer)) :
+#endif
+	read(cctx->sock, sbuffer, sizeof(sbuffer))) <= 0)
+      if (count == 0)
+	return NULL;
+      else
+	break;
     p = 0;
     }
 
@@ -240,14 +247,15 @@ auth_dovecot_server(auth_instance * ablock, uschar * data)
 {
 auth_dovecot_options_block *ob =
        (auth_dovecot_options_block *) ablock->options_block;
-struct sockaddr_un sa;
 uschar buffer[DOVECOT_AUTH_MAXLINELEN];
 uschar *args[DOVECOT_AUTH_MAXFIELDCOUNT];
 uschar *auth_command;
 uschar *auth_extra_data = US"";
 uschar *p;
 int nargs, tmp;
-int crequid = 1, cont = 1, fd = -1, ret = DEFER;
+int crequid = 1, ret = DEFER;
+host_item host;
+client_conn_ctx cctx = {.sock = -1, .tls_ctx = NULL};
 BOOL found = FALSE, have_mech_line = FALSE;
 
 HDEBUG(D_auth) debug_printf("dovecot authentication\n");
@@ -258,50 +266,48 @@ if (!data)
   goto out;
   }
 
-memset(&sa, 0, sizeof(sa));
-sa.sun_family = AF_UNIX;
+/*XXX timeout? */
+cctx.sock = ip_streamsocket(ob->server_socket, &auth_defer_msg, 5, &host);
+if (cctx.sock < 0)
+ goto out;
 
-/* This was the original code here: it is nonsense because strncpy()
-does not return an integer. I have converted this to use the function
-that formats and checks length. PH */
-
-/*
-if (strncpy(sa.sun_path, ob->server_socket, sizeof(sa.sun_path)) < 0) {
-}
-*/
-
-if (!string_format(US sa.sun_path, sizeof(sa.sun_path), "%s",
-		  ob->server_socket))
+#ifdef notdef
+# ifndef DISABLE_TLS
+if (ob->server_tls)
   {
-  auth_defer_msg = US"authentication socket path too long";
-  return DEFER;
+  uschar * s;
+  smtp_connect_args conn_args = { .host = &host };
+  tls_support tls_dummy = {.sni=NULL};
+  uschar * errstr;
+
+  if (!tls_client_start(&cctx, &conn_args, NULL, &tls_dummy, &errstr))
+    {
+    auth_defer_msg = string_sprintf("TLS connect failed: %s", errstr);
+    goto out;
+    }
   }
-
-auth_defer_msg = US"authentication socket connection error";
-
-if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
-  return DEFER;
-
-if (connect(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0)
-  goto out;
+# endif
+#endif
 
 auth_defer_msg = US"authentication socket protocol error";
 
 socket_buffer_left = 0;  /* Global, used to read more than a line but return by line */
-while (cont)
+for (;;)
   {
-  if (!dc_gets(buffer, sizeof(buffer), fd))
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
+  if (!dc_gets(buffer, sizeof(buffer), &cctx))
     OUT("authentication socket read error or premature eof");
+debug_printf("%s %d\n", __FUNCTION__, __LINE__);
   p = buffer + Ustrlen(buffer) - 1;
   if (*p != '\n')
     OUT("authentication socket protocol line too long");
 
   *p = '\0';
-  HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
+  HDEBUG(D_auth) debug_printf("received: '%s'\n", buffer);
 
   nargs = strcut(buffer, args, nelem(args));
 
-  /* HDEBUG(D_auth) debug_strcut(args, nargs, nelem(args)); */
+  HDEBUG(D_auth) debug_strcut(args, nargs, nelem(args));
 
   /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
     Exim will need. Original code also failed if Dovecot server sent unknown
@@ -344,7 +350,7 @@ while (cont)
   else if (Ustrcmp(args[0], US"DONE") == 0)
     {
     CHECK_COMMAND("DONE", 0, 0);
-    cont = 0;
+    break;
     }
   }
 
@@ -399,26 +405,31 @@ auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
        ablock->public_name, auth_extra_data, sender_host_address,
        interface_address, data);
 
-if (write(fd, auth_command, Ustrlen(auth_command)) < 0)
+if ((
+#ifndef DISABLE_TLS
+    cctx.tls_ctx ? tls_write(cctx.tls_ctx, auth_command, Ustrlen(auth_command), FALSE) :
+#endif
+    write(cctx.sock, auth_command, Ustrlen(auth_command))) < 0)
   HDEBUG(D_auth) debug_printf("error sending auth_command: %s\n",
     strerror(errno));
 
-HDEBUG(D_auth) debug_printf("sent: %s", auth_command);
+HDEBUG(D_auth) debug_printf("sent: '%s'\n", auth_command);
 
 while (1)
   {
   uschar *temp;
   uschar *auth_id_pre = NULL;
 
-  if (!dc_gets(buffer, sizeof(buffer), fd))
+  if (!dc_gets(buffer, sizeof(buffer), &cctx))
     {
     auth_defer_msg = US"authentication socket read error or premature eof";
     goto out;
     }
 
   buffer[Ustrlen(buffer) - 1] = 0;
-  HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
+  HDEBUG(D_auth) debug_printf("received: '%s'\n", buffer);
   nargs = strcut(buffer, args, nelem(args));
+  HDEBUG(D_auth) debug_strcut(args, nargs, nelem(args));
 
   if (Uatoi(args[1]) != crequid)
     OUT("authentication socket connection id mismatch");
@@ -444,7 +455,11 @@ while (1)
 	}
 
       temp = string_sprintf("CONT\t%d\t%s\n", crequid, data);
-      if (write(fd, temp, Ustrlen(temp)) < 0)
+      if ((
+#ifndef DISABLE_TLS
+	  cctx.tls_ctx ? tls_write(cctx.tls_ctx, temp, Ustrlen(temp), FALSE) :
+#endif
+	  write(cctx.sock, temp, Ustrlen(temp))) < 0)
 	OUT("authentication socket write error");
       break;
 
@@ -480,6 +495,7 @@ while (1)
       if (!auth_id_pre)
         OUT("authentication socket protocol error, username missing");
 
+      auth_defer_msg = NULL;
       ret = OK;
       /* fallthrough */
 
@@ -490,8 +506,12 @@ while (1)
 
 out:
 /* close the socket used by dovecot */
-if (fd >= 0)
-  close(fd);
+#ifndef DISABLE_TLS
+if (cctx.tls_ctx)
+  tls_close(cctx.tls_ctx, TRUE);
+#endif
+if (cctx.sock >= 0)
+  close(cctx.sock);
 
 /* Expand server_condition as an authorization check */
 return ret == OK ? auth_check_serv_cond(ablock) : ret;

@@ -287,9 +287,9 @@ extern void    ip_keepalive(int, const uschar *, BOOL);
 extern int     ip_recv(client_conn_ctx *, uschar *, int, time_t);
 extern int     ip_socket(int, int);
 
-extern int     ip_tcpsocket(const uschar *, uschar **, int);
+extern int     ip_tcpsocket(const uschar *, uschar **, int, host_item *);
 extern int     ip_unixsocket(const uschar *, uschar **);
-extern int     ip_streamsocket(const uschar *, uschar **, int);
+extern int     ip_streamsocket(const uschar *, uschar **, int, host_item *);
 
 extern int     ipv6_nmtoa(int *, uschar *);
 

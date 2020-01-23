@@ -344,7 +344,7 @@ start = time(NULL);
     for (;;)
       {
       /*XXX could potentially use TFO early-data here */
-      if (  (spamd_cctx.sock = ip_streamsocket(sd->hostspec, &errstr, 5)) >= 0
+      if (  (spamd_cctx.sock = ip_streamsocket(sd->hostspec, &errstr, 5, NULL)) >= 0
          || sd->retry <= 0
 	 )
 	break;

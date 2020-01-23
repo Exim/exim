@@ -808,6 +808,36 @@ Issues:
    hosts_require_ocsp will fail
 
 
+
+Dovecot authenticator via inet socket
+------------------------------------
+If Dovecot is configured similar to :-
+
+service auth {
+...
+#SASL
+  inet_listener {
+    name = exim
+    port = 12345
+    ssl = yes
+  }
+...
+}
+
+then an Exim authenticator can be configured :-
+
+  dovecot-plain:
+    driver =		dovecot
+    public_name =	PLAIN
+    server_socket =	dovecot_server_name 12345
+    server_tls =	true
+    server_set_id =	$auth1
+
+If the server_socket does not start with a / it is taken as a hostname (or IP);
+and a whitespace-separated port number must be given.
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

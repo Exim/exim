@@ -482,7 +482,8 @@ bad:
 
 /*XXX TFO? */
 int
-ip_tcpsocket(const uschar * hostport, uschar ** errstr, int tmo)
+ip_tcpsocket(const uschar * hostport, uschar ** errstr, int tmo,
+  host_item * connhost)
 {
 int scan;
 uschar hostname[256];
@@ -501,7 +502,7 @@ if (scan != 3)
   }
 
 return ip_connectedsocket(SOCK_STREAM, hostname, portlow, porthigh,
-			  tmo, NULL, errstr, NULL);
+			  tmo, connhost, errstr, NULL);
 }
 
 int
@@ -534,12 +535,15 @@ return sock;
 /* spec is either an absolute path (with a leading /), or
 a host (name or IP) and port (whitespace-separated).
 The port can be a range, dash-separated, or a single number.
+
+For a TCP socket, optionally fill in a  host_item.
 */
 int
-ip_streamsocket(const uschar * spec, uschar ** errstr, int tmo)
+ip_streamsocket(const uschar * spec, uschar ** errstr, int tmo,
+  host_item * connhost)
 {
 return *spec == '/'
-  ? ip_unixsocket(spec, errstr) : ip_tcpsocket(spec, errstr, tmo);
+  ? ip_unixsocket(spec, errstr) : ip_tcpsocket(spec, errstr, tmo, connhost);
 }
 
 /*************************************************

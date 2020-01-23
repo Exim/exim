@@ -1,0 +1,38 @@
+# dovecot server, inet, PLAIN method
+#
+# This uses a script emulating dovecot so has potential to be wrong.
+# We could do with an independent testcase against a real Dovecot,
+# but that needs to be conditioned on finding that on the test
+# platform and configuring it to match the testcase.
+# See 9350 for a start.
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+server PORT_S
+>LF>VERSION\x091\x090
+>LF>MECH\x09PLAIN
+>LF>DONE
+<<VERSION\x091\x090
+<CPID
+<AUTH\x091\x09PLAIN\x09service=smtp
+>LF>OK\x091\x09user=goodman
+*eof
+****
+#
+exim -odi a@test.ex
+****
+#
+killdaemon
+#
+#exim -d+all -bd -DSERVER=server -DTRUSTED -oX PORT_D
+#****
+#background
+#perl -e "system('socat OPENSSL-LISTEN:PORT_S,reuseaddr,fork,cert=DIR/aux-fixed/cert1,verify=0 EXEC:\'/bin/echo VERSION\\t1\\t0\\nAUTH\\t1\\tPLAIN\\tservice=smtp\'');"
+#****
+##
+#exim -odi a@test.ex
+#****
+##
+#killdaemon
+no_stdout_check
+no_msglog_check
