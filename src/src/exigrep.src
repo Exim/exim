@@ -159,7 +159,8 @@ my $compressors = {
   gz   => { cmd => 'zcat',  args => '' },
   bz2  => { cmd => 'bzcat', args => '' },
   xz   => { cmd => 'xzcat', args => '' },
-  lzma => { cmd => 'lzma',  args => '-dc' }
+  lzma => { cmd => 'lzma',  args => '-dc' },
+  zst  => { cmd => 'zstdcat', args => '' },
 };
 my $csearch = 0;
 
@@ -313,8 +314,8 @@ given host, for example.
 
 If no file names are given on the command line, the standard input is read.
 
-For known file extensions indicating compression (F<.gz>, F<.bz2>, F<.xz>, and F<.lzma>)
-a suitable de-compressor is used, if available.
+For known file extensions indicating compression (F<.gz>, F<.bz2>, F<.xz>,
+F<.lzma>, and F<.zst>) a suitable de-compressor is used, if available.
 
 The output is sent through a pager if a terminal is connected to STDOUT. As
 pager are considered: C<$ENV{PAGER}>, C<less>, C<more>.
