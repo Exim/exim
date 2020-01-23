@@ -727,16 +727,17 @@ for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
       {
       int sep = ':';         /* This is specified as a colon-separated list */
       uschar *s, *ss;
+      /* expand the list first, so we can include expandos that return lists too */
+      if (i == 0)
+	if (!(list = expand_string(list)) && !f.expand_string_forcedfail)
+	  {
+	  errno = ERRNO_CHHEADER_FAIL;
+	  return FALSE;
+	  }
       while ((s = string_nextinlist(&list, &sep, NULL, 0)))
 	{
 	int len;
 
-	if (i == 0)
-	  if (!(s = expand_string(s)) && !f.expand_string_forcedfail)
-	    {
-	    errno = ERRNO_CHHEADER_FAIL;
-	    return FALSE;
-	    }
 	len = s ? Ustrlen(s) : 0;
 	if (strncmpic(h->text, s, len) != 0) continue;
 	ss = h->text + len;
