@@ -9732,7 +9732,7 @@ letters appear. For example:
        "&*$bheader_*&<&'header&~name'&>&*:*&&~or&~&&&
         &*$bh_*&<&'header&~name'&>&*:*&" &&&
        "&*$lheader_*&<&'header&~name'&>&*:*&&~or&~&&&
-        &*$lh_*&<&'header&~name'&>&*:*&"
+        &*$lh_*&<&'header&~name'&>&*:*&" &&&
        "&*$rheader_*&<&'header&~name'&>&*:*&&~or&~&&&
         &*$rh_*&<&'header&~name'&>&*:*&"
 .cindex "expansion" "header insertion"
