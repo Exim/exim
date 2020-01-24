@@ -5027,9 +5027,9 @@ if (host_checking)
   if (!sender_ident_set)
     {
     sender_ident = NULL;
-    if (f.running_in_test_harness && sender_host_port != 0 &&
-        interface_address != NULL && interface_port != 0)
-      verify_get_ident(1413);
+    if (f.running_in_test_harness && sender_host_port
+       && interface_address && interface_port)
+      verify_get_ident(1223);		/* note hardwired port number */
     }
 
   /* In case the given address is a non-canonical IPv6 address, canonicalize
