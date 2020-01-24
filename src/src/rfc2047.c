@@ -233,17 +233,11 @@ while (mimeword)
 
   #if HAVE_ICONV
   *q1 = 0;
-  if (target != NULL && strcmpic(target, mimeword+2) != 0)
-    {
-    icd = iconv_open(CS target, CS(mimeword+2));
-
-    if (icd == (iconv_t)(-1))
-      {
+  if (target && strcmpic(target, mimeword+2) != 0)
+    if ((icd = iconv_open(CS target, CS(mimeword+2))) == (iconv_t)-1)
       *error = string_sprintf("iconv_open(\"%s\", \"%s\") failed: %s%s",
         target, mimeword+2, strerror(errno),
         (errno == EINVAL)? " (maybe unsupported conversion)" : "");
-      }
-    }
   *q1 = '?';
   #endif
 

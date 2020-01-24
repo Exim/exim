@@ -3018,193 +3018,187 @@ for (; cb; cb = cb->next)
       switch(control_type)
 	{
 	case CONTROL_AUTH_UNADVERTISED:
-	f.allow_auth_unadvertised = TRUE;
-	break;
+	  f.allow_auth_unadvertised = TRUE;
+	  break;
 
-	#ifdef EXPERIMENTAL_BRIGHTMAIL
+#ifdef EXPERIMENTAL_BRIGHTMAIL
 	case CONTROL_BMI_RUN:
-	bmi_run = 1;
-	break;
-	#endif
+	  bmi_run = 1;
+	  break;
+#endif
 
 #ifndef DISABLE_DKIM
 	case CONTROL_DKIM_VERIFY:
-	f.dkim_disable_verify = TRUE;
+	  f.dkim_disable_verify = TRUE;
 # ifdef SUPPORT_DMARC
-	/* Since DKIM was blocked, skip DMARC too */
-	f.dmarc_disable_verify = TRUE;
-	f.dmarc_enable_forensic = FALSE;
+	  /* Since DKIM was blocked, skip DMARC too */
+	  f.dmarc_disable_verify = TRUE;
+	  f.dmarc_enable_forensic = FALSE;
 # endif
 	break;
 #endif
 
 #ifdef SUPPORT_DMARC
 	case CONTROL_DMARC_VERIFY:
-	f.dmarc_disable_verify = TRUE;
-	break;
+	  f.dmarc_disable_verify = TRUE;
+	  break;
 
 	case CONTROL_DMARC_FORENSIC:
-	f.dmarc_enable_forensic = TRUE;
-	break;
+	  f.dmarc_enable_forensic = TRUE;
+	  break;
 #endif
 
 	case CONTROL_DSCP:
-	if (*p == '/')
-	  {
-	  int fd, af, level, optname, value;
-	  /* If we are acting on stdin, the setsockopt may fail if stdin is not
-	  a socket; we can accept that, we'll just debug-log failures anyway. */
-	  fd = fileno(smtp_in);
-	  af = ip_get_address_family(fd);
-	  if (af < 0)
+	  if (*p == '/')
 	    {
-	    HDEBUG(D_acl)
-	      debug_printf_indent("smtp input is probably not a socket [%s], not setting DSCP\n",
-		  strerror(errno));
-	    break;
-	    }
-	  if (dscp_lookup(p+1, af, &level, &optname, &value))
-	    {
-	    if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
+	    int fd, af, level, optname, value;
+	    /* If we are acting on stdin, the setsockopt may fail if stdin is not
+	    a socket; we can accept that, we'll just debug-log failures anyway. */
+	    fd = fileno(smtp_in);
+	    if ((af = ip_get_address_family(fd)) < 0)
 	      {
-	      HDEBUG(D_acl) debug_printf_indent("failed to set input DSCP[%s]: %s\n",
-		  p+1, strerror(errno));
+	      HDEBUG(D_acl)
+		debug_printf_indent("smtp input is probably not a socket [%s], not setting DSCP\n",
+		    strerror(errno));
+	      break;
 	      }
+	    if (dscp_lookup(p+1, af, &level, &optname, &value))
+	      if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
+		{
+		HDEBUG(D_acl) debug_printf_indent("failed to set input DSCP[%s]: %s\n",
+		    p+1, strerror(errno));
+		}
+	      else
+		{
+		HDEBUG(D_acl) debug_printf_indent("set input DSCP to \"%s\"\n", p+1);
+		}
 	    else
 	      {
-	      HDEBUG(D_acl) debug_printf_indent("set input DSCP to \"%s\"\n", p+1);
+	      *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
+	      return ERROR;
 	      }
 	    }
 	  else
 	    {
-	    *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
+	    *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
 	    return ERROR;
 	    }
-	  }
-	else
-	  {
-	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-	  return ERROR;
-	  }
-	break;
+	  break;
 
 	case CONTROL_ERROR:
-	return ERROR;
+	  return ERROR;
 
 	case CONTROL_CASEFUL_LOCAL_PART:
-	deliver_localpart = addr->cc_local_part;
-	break;
+	  deliver_localpart = addr->cc_local_part;
+	  break;
 
 	case CONTROL_CASELOWER_LOCAL_PART:
-	deliver_localpart = addr->lc_local_part;
-	break;
+	  deliver_localpart = addr->lc_local_part;
+	  break;
 
 	case CONTROL_ENFORCE_SYNC:
-	smtp_enforce_sync = TRUE;
-	break;
+	  smtp_enforce_sync = TRUE;
+	  break;
 
 	case CONTROL_NO_ENFORCE_SYNC:
-	smtp_enforce_sync = FALSE;
-	break;
+	  smtp_enforce_sync = FALSE;
+	  break;
 
-	#ifdef WITH_CONTENT_SCAN
+#ifdef WITH_CONTENT_SCAN
 	case CONTROL_NO_MBOX_UNSPOOL:
-	f.no_mbox_unspool = TRUE;
-	break;
-	#endif
+	  f.no_mbox_unspool = TRUE;
+	  break;
+#endif
 
 	case CONTROL_NO_MULTILINE:
-	f.no_multiline_responses = TRUE;
-	break;
+	  f.no_multiline_responses = TRUE;
+	  break;
 
 	case CONTROL_NO_PIPELINING:
-	f.pipelining_enable = FALSE;
-	break;
+	  f.pipelining_enable = FALSE;
+	  break;
 
 	case CONTROL_NO_DELAY_FLUSH:
-	f.disable_delay_flush = TRUE;
-	break;
+	  f.disable_delay_flush = TRUE;
+	  break;
 
 	case CONTROL_NO_CALLOUT_FLUSH:
-	f.disable_callout_flush = TRUE;
-	break;
+	  f.disable_callout_flush = TRUE;
+	  break;
 
 	case CONTROL_FAKEREJECT:
-	cancel_cutthrough_connection(TRUE, US"fakereject");
-	case CONTROL_FAKEDEFER:
-	fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
-	if (*p == '/')
-	  {
-	  const uschar *pp = p + 1;
-	  while (*pp) pp++;
-	  fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
-	  p = pp;
-	  }
-	 else
-	  {
-	  /* Explicitly reset to default string */
-	  fake_response_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
-	  }
-	break;
+	  cancel_cutthrough_connection(TRUE, US"fakereject");
+	  case CONTROL_FAKEDEFER:
+	  fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
+	  if (*p == '/')
+	    {
+	    const uschar *pp = p + 1;
+	    while (*pp) pp++;
+	    fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
+	    p = pp;
+	    }
+	   else /* Explicitly reset to default string */
+	    fake_response_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
+	  break;
 
 	case CONTROL_FREEZE:
-	f.deliver_freeze = TRUE;
-	deliver_frozen_at = time(NULL);
-	freeze_tell = freeze_tell_config;       /* Reset to configured value */
-	if (Ustrncmp(p, "/no_tell", 8) == 0)
-	  {
-	  p += 8;
-	  freeze_tell = NULL;
-	  }
-	if (*p != 0)
-	  {
-	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-	  return ERROR;
-	  }
-	cancel_cutthrough_connection(TRUE, US"item frozen");
-	break;
+	  f.deliver_freeze = TRUE;
+	  deliver_frozen_at = time(NULL);
+	  freeze_tell = freeze_tell_config;       /* Reset to configured value */
+	  if (Ustrncmp(p, "/no_tell", 8) == 0)
+	    {
+	    p += 8;
+	    freeze_tell = NULL;
+	    }
+	  if (*p)
+	    {
+	    *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+	    return ERROR;
+	    }
+	  cancel_cutthrough_connection(TRUE, US"item frozen");
+	  break;
 
 	case CONTROL_QUEUE_ONLY:
-	f.queue_only_policy = TRUE;
-	cancel_cutthrough_connection(TRUE, US"queueing forced");
-	break;
+	  f.queue_only_policy = TRUE;
+	  cancel_cutthrough_connection(TRUE, US"queueing forced");
+	  break;
 
 	case CONTROL_SUBMISSION:
-	originator_name = US"";
-	f.submission_mode = TRUE;
-	while (*p == '/')
-	  {
-	  if (Ustrncmp(p, "/sender_retain", 14) == 0)
+	  originator_name = US"";
+	  f.submission_mode = TRUE;
+	  while (*p == '/')
 	    {
-	    p += 14;
-	    f.active_local_sender_retain = TRUE;
-	    f.active_local_from_check = FALSE;
+	    if (Ustrncmp(p, "/sender_retain", 14) == 0)
+	      {
+	      p += 14;
+	      f.active_local_sender_retain = TRUE;
+	      f.active_local_from_check = FALSE;
+	      }
+	    else if (Ustrncmp(p, "/domain=", 8) == 0)
+	      {
+	      const uschar *pp = p + 8;
+	      while (*pp && *pp != '/') pp++;
+	      submission_domain = string_copyn(p+8, pp-p-8);
+	      p = pp;
+	      }
+	    /* The name= option must be last, because it swallows the rest of
+	    the string. */
+	    else if (Ustrncmp(p, "/name=", 6) == 0)
+	      {
+	      const uschar *pp = p + 6;
+	      while (*pp) pp++;
+	      submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
+		big_buffer, big_buffer_size));
+	      p = pp;
+	      }
+	    else break;
 	    }
-	  else if (Ustrncmp(p, "/domain=", 8) == 0)
+	  if (*p)
 	    {
-	    const uschar *pp = p + 8;
-	    while (*pp && *pp != '/') pp++;
-	    submission_domain = string_copyn(p+8, pp-p-8);
-	    p = pp;
+	    *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+	    return ERROR;
 	    }
-	  /* The name= option must be last, because it swallows the rest of
-	  the string. */
-	  else if (Ustrncmp(p, "/name=", 6) == 0)
-	    {
-	    const uschar *pp = p + 6;
-	    while (*pp) pp++;
-	    submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
-	      big_buffer, big_buffer_size));
-	    p = pp;
-	    }
-	  else break;
-	  }
-	if (*p != 0)
-	  {
-	  *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
-	  return ERROR;
-	  }
-	break;
+	  break;
 
 	case CONTROL_DEBUG:
 	  {
@@ -3239,99 +3233,99 @@ for (; cb; cb = cb->next)
 	      debug_logging_stop();
 	    else
 	      debug_logging_activate(debug_tag, debug_opts);
+	  break;
 	  }
-	break;
 
 	case CONTROL_SUPPRESS_LOCAL_FIXUPS:
-	f.suppress_local_fixups = TRUE;
-	break;
+	  f.suppress_local_fixups = TRUE;
+	  break;
 
 	case CONTROL_CUTTHROUGH_DELIVERY:
-	{
-	uschar * ignored = NULL;
-#ifndef DISABLE_PRDR
-	if (prdr_requested)
-#else
-	if (0)
-#endif
-	  /* Too hard to think about for now.  We might in future cutthrough
-	  the case where both sides handle prdr and this-node prdr acl
-	  is "accept" */
-	  ignored = US"PRDR active";
-	else
 	  {
-	  if (f.deliver_freeze)
-	    ignored = US"frozen";
-	  else if (f.queue_only_policy)
-	    ignored = US"queue-only";
-	  else if (fake_response == FAIL)
-	    ignored = US"fakereject";
+	  uschar * ignored = NULL;
+#ifndef DISABLE_PRDR
+	  if (prdr_requested)
+#else
+	  if (0)
+#endif
+	    /* Too hard to think about for now.  We might in future cutthrough
+	    the case where both sides handle prdr and this-node prdr acl
+	    is "accept" */
+	    ignored = US"PRDR active";
 	  else
 	    {
-	    if (rcpt_count == 1)
-	      {
-	      cutthrough.delivery = TRUE;	/* control accepted */
-	      while (*p == '/')
-		{
-		const uschar * pp = p+1;
-		if (Ustrncmp(pp, "defer=", 6) == 0)
-		  {
-		  pp += 6;
-		  if (Ustrncmp(pp, "pass", 4) == 0) cutthrough.defer_pass = TRUE;
-		  /* else if (Ustrncmp(pp, "spool") == 0) ;	default */
-		  }
-		else
-		  while (*pp && *pp != '/') pp++;
-		p = pp;
-		}
-	      }
+	    if (f.deliver_freeze)
+	      ignored = US"frozen";
+	    else if (f.queue_only_policy)
+	      ignored = US"queue-only";
+	    else if (fake_response == FAIL)
+	      ignored = US"fakereject";
 	    else
-	      ignored = US"nonfirst rcpt";
+	      {
+	      if (rcpt_count == 1)
+		{
+		cutthrough.delivery = TRUE;	/* control accepted */
+		while (*p == '/')
+		  {
+		  const uschar * pp = p+1;
+		  if (Ustrncmp(pp, "defer=", 6) == 0)
+		    {
+		    pp += 6;
+		    if (Ustrncmp(pp, "pass", 4) == 0) cutthrough.defer_pass = TRUE;
+		    /* else if (Ustrncmp(pp, "spool") == 0) ;	default */
+		    }
+		  else
+		    while (*pp && *pp != '/') pp++;
+		  p = pp;
+		  }
+		}
+	      else
+		ignored = US"nonfirst rcpt";
+	      }
 	    }
+	  DEBUG(D_acl) if (ignored)
+	    debug_printf(" cutthrough request ignored on %s item\n", ignored);
 	  }
-	DEBUG(D_acl) if (ignored)
-	  debug_printf(" cutthrough request ignored on %s item\n", ignored);
-	}
 	break;
 
 #ifdef SUPPORT_I18N
 	case CONTROL_UTF8_DOWNCONVERT:
-	if (*p == '/')
-	  {
-	  if (p[1] == '1')
+	  if (*p == '/')
+	    {
+	    if (p[1] == '1')
+	      {
+	      message_utf8_downconvert = 1;
+	      addr->prop.utf8_downcvt = TRUE;
+	      addr->prop.utf8_downcvt_maybe = FALSE;
+	      p += 2;
+	      break;
+	      }
+	    if (p[1] == '0')
+	      {
+	      message_utf8_downconvert = 0;
+	      addr->prop.utf8_downcvt = FALSE;
+	      addr->prop.utf8_downcvt_maybe = FALSE;
+	      p += 2;
+	      break;
+	      }
+	    if (p[1] == '-' && p[2] == '1')
+	      {
+	      message_utf8_downconvert = -1;
+	      addr->prop.utf8_downcvt = FALSE;
+	      addr->prop.utf8_downcvt_maybe = TRUE;
+	      p += 3;
+	      break;
+	      }
+	    *log_msgptr = US"bad option value for control=utf8_downconvert";
+	    }
+	  else
 	    {
 	    message_utf8_downconvert = 1;
 	    addr->prop.utf8_downcvt = TRUE;
 	    addr->prop.utf8_downcvt_maybe = FALSE;
-	    p += 2;
 	    break;
 	    }
-	  if (p[1] == '0')
-	    {
-	    message_utf8_downconvert = 0;
-	    addr->prop.utf8_downcvt = FALSE;
-	    addr->prop.utf8_downcvt_maybe = FALSE;
-	    p += 2;
-	    break;
-	    }
-	  if (p[1] == '-' && p[2] == '1')
-	    {
-	    message_utf8_downconvert = -1;
-	    addr->prop.utf8_downcvt = FALSE;
-	    addr->prop.utf8_downcvt_maybe = TRUE;
-	    p += 3;
-	    break;
-	    }
-	  *log_msgptr = US"bad option value for control=utf8_downconvert";
-	  }
-	else
-	  {
-	  message_utf8_downconvert = 1;
-	  addr->prop.utf8_downcvt = TRUE;
-	  addr->prop.utf8_downcvt_maybe = FALSE;
-	  break;
-	  }
-	return ERROR;
+	  return ERROR;
 #endif
 
 	}

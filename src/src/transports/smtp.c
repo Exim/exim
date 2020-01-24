@@ -4866,10 +4866,12 @@ retry_non_continued:
     were not in it. We don't want to hold up all SMTP deliveries! Except when
     doing a two-stage queue run, don't do this if forcing. */
 
-    if ((!f.deliver_force || f.queue_2stage) && (f.queue_smtp ||
-        match_isinlist(addrlist->domain,
-	  (const uschar **)&queue_smtp_domains, 0,
-          &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK))
+    if (  (!f.deliver_force || f.queue_2stage)
+       && (  f.queue_smtp
+	  || match_isinlist(addrlist->domain,
+	      CUSS &queue_smtp_domains, 0,
+	      &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK)
+       )
       {
       expired = FALSE;
       for (address_item * addr = addrlist; addr; addr = addr->next)
