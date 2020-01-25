@@ -254,28 +254,34 @@ if (fastopen_blob && f.tcp_fastopen_ok)
     /*XXX also seen on successful TFO, sigh */
     tcp_out_fastopen = fastopen_blob->len > 0 ?  TFO_ATTEMPTED_DATA : TFO_ATTEMPTED_NODATA;
     }
-  else if (errno == EINPROGRESS)	/* expected if we had no cookie for peer */
+  else switch (errno)
+    {
+    case EINPROGRESS:	/* expected if we had no cookie for peer */
 	/* seen for no-data, proper TFO option, both cookie-request and with-cookie cases */
 	/*  apparently no visibility of the diffference at this point */
 	/* seen for with-data, proper TFO opt, cookie-req */
 	/*   with netwk delay, post-conn tcp_info sees unacked 1 for R, 2 for C; code in smtp_out.c */
 	/* ? older Experimental TFO option behaviour ? */
-    {					/* queue unsent data */
-    DEBUG(D_transport|D_v) debug_printf(" TFO mode sendto, %s data: EINPROGRESS\n",
-      fastopen_blob->len > 0 ? "with"  : "no");
-    if (!fastopen_blob->data)
-      {
-      tcp_out_fastopen = TFO_ATTEMPTED_NODATA;		/* we tried; unknown if useful yet */
-      rc = 0;
-      }
-    else
-      rc = send(sock, fastopen_blob->data, fastopen_blob->len, 0);
-    }
-  else if(errno == EOPNOTSUPP)
-    {
-    DEBUG(D_transport)
-      debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
-    goto legacy_connect;
+      DEBUG(D_transport|D_v) debug_printf(" TFO mode sendto, %s data: EINPROGRESS\n",
+	fastopen_blob->len > 0 ? "with"  : "no");
+      if (!fastopen_blob->data)
+	{
+	tcp_out_fastopen = TFO_ATTEMPTED_NODATA;		/* we tried; unknown if useful yet */
+	rc = 0;
+	}
+      else					/* queue unsent data */
+	rc = send(sock, fastopen_blob->data, fastopen_blob->len, 0);
+      break;
+
+    case EOPNOTSUPP:
+      DEBUG(D_transport)
+	debug_printf("Tried TCP Fast Open but apparently not enabled by sysctl\n");
+      goto legacy_connect;
+
+    case EPIPE:
+      DEBUG(D_transport)
+	debug_printf("Tried TCP Fast Open but kernel too old to support it\n");
+      goto legacy_connect;
     }
 
 # elif defined(EXIM_TFO_FREEBSD)
