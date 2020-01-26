@@ -3966,7 +3966,7 @@ user.
 .vitem &%-MG%&&~<&'queue&~name'&>&~<&'message&~id'&>&~<&'message&~id'&>&~...
 .oindex "&%-MG%&"
 .cindex queue named
-.cindex "named queues"
+.cindex "named queues" "moving messages"
 .cindex "queue" "moving messages"
 This option requests that each listed message be moved from its current
 queue to the given named queue.
@@ -4555,7 +4555,7 @@ for later delivery.
 .vitem &%-q[q][i][f[f]][l][G<name>[/<time>]]]%&
 .oindex "&%-qG%&"
 .cindex queue named
-.cindex "named queues"
+.cindex "named queues"	"deliver from"
 .cindex "queue" "delivering specific messages"
 If the &'G'& flag and a name is present, the queue runner operates on the
 queue with the given name rather than the default queue.
@@ -12846,7 +12846,7 @@ or if not set, the value of &$qualify_domain$&.
 
 .vitem &$queue_name$&
 .vindex &$queue_name$&
-.cindex "named queues"
+.cindex "named queues" variable
 .cindex queues named
 The name of the spool queue in use; empty for the default queue.
 
@@ -16761,7 +16761,7 @@ run. If you do not want queue runs to occur, omit the &%-q%&&'xx'& setting on
 the daemon's command line.
 
 .cindex queues named
-.cindex "named queues"
+.cindex "named queues" "resource limit"
 To set limits for different named queues use
 an expansion depending on the &$queue_name$& variable.
 
