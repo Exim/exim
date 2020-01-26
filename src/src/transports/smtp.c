@@ -4873,10 +4873,12 @@ retry_non_continued:
 	      &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK)
        )
       {
+      DEBUG(D_transport) debug_printf("first-pass routing only\n");
       expired = FALSE;
       for (address_item * addr = addrlist; addr; addr = addr->next)
         if (addr->transport_return == DEFER)
-	  addr->message = US"domain matches queue_smtp_domains, or -odqs set";
+	  addr->message = US"first-pass only routing due to -odqs, "
+			    "queue_smtp_domains or control=queue";
       continue;      /* With next host */
       }
 

@@ -130,9 +130,9 @@ dropping to exim gid; retaining priv uid
  ╰─────result: domain1.ex
             ╰──(tainted)
 LOG: MAIN
-  == userx@domain1.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+  == userx@domain1.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: MAIN
-  == userx@domain2.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+  == userx@domain2.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
  ╭considering: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
   ╭considering: $h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
   ├──expanding: $h_list-id:$h_list-post:$h_list-subscribe:

@@ -33,6 +33,9 @@ Version 4.94
  8. As an exerimental feature, the dovecot authenticatino driver supports inet
     sockets.  Previously it was unix-domain sockets only.
 
+ 9. The ACL control "queue_only" can also be spelled "queue", and now takes an
+    option "first_pass_route" to do the same as a "-odqs" on the command line.
+
 
 Version 4.93
 ------------

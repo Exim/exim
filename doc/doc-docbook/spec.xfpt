@@ -4185,6 +4185,7 @@ forces queueing.
 .vitem &%-odqs%&
 .oindex "&%-odqs%&"
 .cindex "SMTP" "delaying delivery"
+.cindex "first pass routing"
 This option is a hybrid between &%-odb%&/&%-odi%& and &%-odq%&.
 However, like &%-odb%& and &%-odi%&, this option has no effect if
 &%queue_only_override%& is false and one of the queueing options in the
@@ -4503,6 +4504,7 @@ appear in the correct order. Each flag is described in a separate item below.
 .cindex "queue" "double scanning"
 .cindex "queue" "routing"
 .cindex "routing" "whole queue before delivery"
+.cindex "first pass routing"
 An option starting with &%-qq%& requests a two-stage queue run. In the first
 stage, the queue is scanned as if the &%queue_smtp_domains%& option matched
 every domain. Addresses are routed, local deliveries happen, but no remote
@@ -16766,6 +16768,7 @@ an expansion depending on the &$queue_name$& variable.
 .option queue_smtp_domains main "domain list&!!" unset
 .cindex "queueing incoming messages"
 .cindex "message" "queueing remote deliveries"
+.cindex "first pass routing"
 When this option is set, a delivery process is started whenever a message is
 received, routing is performed, and local deliveries take place.
 However, if any SMTP deliveries are required for domains that match
@@ -30717,16 +30720,32 @@ response to an EHLO command. Therefore, it should normally appear in an ACL
 controlled by &%acl_smtp_connect%& or &%acl_smtp_helo%&. See also
 &%pipelining_advertise_hosts%&.
 
+.new
+.vitem &*control&~=&~queue/*&<&'options'&>*
 .vitem &*control&~=&~queue_only*&
+.oindex "&%queue%&"
 .oindex "&%queue_only%&"
 .cindex "queueing incoming messages"
+.cindex queueing "forcing in ACL"
+.cindex "first pass routing"
 This control is permitted only for the MAIL, RCPT, DATA, and non-SMTP ACLs, in
 other words, only when a message is being received. If the message is accepted,
 it is placed on Exim's queue and left there for delivery by a subsequent queue
-runner. No immediate delivery process is started. In other words, it has the
-effect as the &%queue_only%& global option. However, the control applies only
-to the current message, not to any subsequent ones that may be received in the
-same SMTP connection.
+runner.
+If used with no options set,
+no immediate delivery process is started. In other words, it has the
+effect as the &%queue_only%& global option or &'-odq'& command-line option.
+
+If the &'first_pass_route'& option is given then
+the behaviour is like the command-line &'-oqds'& option;
+a delivery process is started which stops short of making
+any SMTP delivery.  The benefit is that the hints database will be updated for
+the message being waiting for a specific host, and a later queue run will be
+able to send all such messages on a single connection.
+
+The control only applies to the current message, not to any subsequent ones that
+ may be received in the same SMTP connection.
+.wen
 
 .vitem &*control&~=&~submission/*&<&'options'&>
 .cindex "message" "submission"
@@ -36859,6 +36878,7 @@ delivered immediately.
 .cindex "SMTP" "passed connection"
 .cindex "SMTP" "multiple deliveries"
 .cindex "multiple SMTP deliveries"
+.cindex "first pass routing"
 Mail waiting to be sent from an intermittently connected host will probably
 not have been routed, because without a connection DNS lookups are not
 possible. This means that if a normal queue run is done at connection time,

@@ -366,6 +366,7 @@ enum {
   CONTROL_NO_MULTILINE,
   CONTROL_NO_PIPELINING,
 
+  CONTROL_QUEUE,
   CONTROL_QUEUE_ONLY,
   CONTROL_SUBMISSION,
   CONTROL_SUPPRESS_LOCAL_FIXUPS,
@@ -502,8 +503,16 @@ static control_def controls_list[] = {
 	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
 
+[CONTROL_QUEUE] =
+  { US"queue",			TRUE,
+	  (unsigned)
+	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
+	    ACL_BIT_PREDATA | ACL_BIT_DATA |
+	    // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
+	    ACL_BIT_NOTSMTP | ACL_BIT_MIME)
+  },
 [CONTROL_QUEUE_ONLY] =
-  { US"queue_only",              FALSE,
+  { US"queue_only",		TRUE,
 	  (unsigned)
 	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
 	    ACL_BIT_PREDATA | ACL_BIT_DATA |
@@ -3158,9 +3167,16 @@ for (; cb; cb = cb->next)
 	  cancel_cutthrough_connection(TRUE, US"item frozen");
 	  break;
 
+	case CONTROL_QUEUE:
 	case CONTROL_QUEUE_ONLY:
 	  f.queue_only_policy = TRUE;
 	  cancel_cutthrough_connection(TRUE, US"queueing forced");
+	  while (*p == '/')
+	    if (Ustrncmp(p, "/first_pass_route", 17) == 0)
+	      {
+	      p += 17;
+	      f.queue_smtp = TRUE;
+	      }
 	  break;
 
 	case CONTROL_SUBMISSION:

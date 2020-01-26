@@ -19,7 +19,7 @@
 1999-03-02 09:44:33 10HmbB-0005vi-00 *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbC-0005vi-00 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+1999-03-02 09:44:33 10HmbC-0005vi-00 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmbC-0005vi-00 *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
@@ -33,7 +33,7 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qq
 1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+1999-03-02 09:44:33 10HmbF-0005vi-00 == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 1999-03-02 09:44:33 10HmbF-0005vi-00 *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss

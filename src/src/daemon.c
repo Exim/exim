@@ -640,7 +640,8 @@ if (pid == 0)
     If we are not root, we have to re-exec exim unless deliveries are being
     done unprivileged. */
 
-    else if (!f.queue_only_policy && !f.deliver_freeze)
+    else if (  (!f.queue_only_policy || f.queue_smtp)
+            && !f.deliver_freeze)
       {
       pid_t dpid;
 

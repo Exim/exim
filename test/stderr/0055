@@ -28,7 +28,7 @@ LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmbC-0005vi-00
 LOG: MAIN
-  == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+  == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: queue_run MAIN
   Start queue run: pid=pppp
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
@@ -58,7 +58,7 @@ LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmbF-0005vi-00
 LOG: MAIN
-  == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+  == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 delivering 10HmbF-0005vi-00
 LOG: MAIN
   *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"

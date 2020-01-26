@@ -1,0 +1,76 @@
+# control = queue/first_pass_route
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+#
+# First, control=queue_only - we expact the queue run to make separate connections
+client 127.0.0.1 PORT_D
+??? 220
+HELO me
+??? 250
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<queue_only_1@test.ex>
+??? 250
+DATA
+??? 354
+Subject: 1
+.
+??? 250
+RSET
+??? 250
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<queue_only_2@test.ex>
+??? 250
+DATA
+??? 354
+Subject: 2
+.
+??? 250
+QUIT
+****
+exim -q
+****
+exim -q
+****
+#
+# Second, control=queue/first_pass_route - we expect the queue run to make only one
+# connection, and put both messages over it
+client 127.0.0.1 PORT_D
+??? 220
+HELO me
+??? 250
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<first_pass_route_1@test.ex>
+??? 250
+DATA
+??? 354
+Subject: 1
+.
+??? 250
+RSET
+??? 250
+MAIL FROM:<CALLER@test.ex>
+??? 250
+RCPT TO:<first_pass_route_2@test.ex>
+??? 250
+DATA
+??? 354
+Subject: 2
+.
+??? 250
+QUIT
+****
+# give time for the background routing in the exim daemon to complete
+sleep 1
+# then run the queue
+exim -q
+****
+exim -q
+****
+#
+#
+killdaemon
+no_msglog_check
