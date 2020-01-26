@@ -50,5 +50,6 @@ smtp:
   hosts =	HOSTIPV4
   port =	PORT_D
   allow_localhost
+  hosts_try_fastopen = :
 
 # End

@@ -225,13 +225,19 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 }
 
 static void
-use_slow_taint_check(void)
+use_slow_taint_check(const uschar * why)
 {
 #ifndef COMPILE_UTILITY
-DEBUG(D_any) debug_printf("switching to slow-mode taint checking\n");
+DEBUG(D_any)
+  debug_printf("switching to slow-mode taint checking (after %s) "
+	      "taint bounds %p %p\n", why, tainted_base, tainted_top);
 #endif
 f.taint_check_slow = TRUE;
 }
+
+/* If the creation of a new tainted region results in any of the
+untainted regions appearing to be tainted, using the fast-mode test,
+we need to switch to safe-but-slow mode. */
 
 static void
 verify_all_untainted(void)
@@ -242,7 +248,7 @@ for (int pool = 0; pool < POOL_TAINT_BASE; pool++)
     uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
     if (is_tainted(bc))
       {
-      use_slow_taint_check();
+      use_slow_taint_check(US"mmap");
       return;
       }
     }
@@ -841,7 +847,7 @@ if (!(yield = mmap(NULL, (size_t)size,
 
 if (yield < tainted_base) tainted_base = yield;
 if ((top = US yield + size) > tainted_top) tainted_top = top;
-if (!f.taint_check_slow) use_slow_taint_check();
+if (!f.taint_check_slow) verify_all_untainted();
 
 return store_alloc_tail(yield, size, func, line, US"Mmap");
 }
@@ -879,7 +885,7 @@ the slower checking for tainting (checking an address against all
 the tainted pool block spans, rather than just the mmap span) */
 
 if (!f.taint_check_slow && is_tainted(yield))
-  use_slow_taint_check();
+  use_slow_taint_check(US"malloc");
 
 return store_alloc_tail(yield, size, func, linenumber, US"Malloc");
 }
