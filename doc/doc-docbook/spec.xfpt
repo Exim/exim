@@ -27040,7 +27040,7 @@ There are good and bad examples at the end of the next section.
 
 .section "The PLAIN authentication mechanism" "SECID172"
 .cindex "PLAIN authentication mechanism"
-.cindex "authentication" "PLAIN mechanism"
+.cindex authentication PLAIN
 .cindex "binary zero" "in &(plaintext)& authenticator"
 The PLAIN authentication mechanism (RFC 2595) specifies that three strings be
 sent as one item of data (that is, one combined string containing two NUL
@@ -27122,7 +27122,7 @@ writing the test makes the logic clearer.
 
 .section "The LOGIN authentication mechanism" "SECID173"
 .cindex "LOGIN authentication mechanism"
-.cindex "authentication" "LOGIN mechanism"
+.cindex authentication LOGIN
 The LOGIN authentication mechanism is not documented in any RFC, but is in use
 in a number of programs. No data is sent with the AUTH command. Instead, a
 user name and password are supplied separately, in response to prompts. The
@@ -27243,7 +27243,7 @@ prompts.
 .scindex IIDcramauth1 "&(cram_md5)& authenticator"
 .scindex IIDcramauth2 "authenticators" "&(cram_md5)&"
 .cindex "CRAM-MD5 authentication mechanism"
-.cindex "authentication" "CRAM-MD5 mechanism"
+.cindex authentication CRAM-MD5
 The CRAM-MD5 authentication mechanism is described in RFC 2195. The server
 sends a challenge string to the client, and the response consists of a user
 name and the CRAM-MD5 digest of the challenge string combined with a secret
@@ -27532,10 +27532,7 @@ auth_mechanisms = plain login ntlm
 .cindex "authentication" "LOGIN"
 .cindex "authentication" "DIGEST-MD5"
 .cindex "authentication" "CRAM-MD5"
-.cindex "authentication" "SCRAM-SHA-1"
-.cindex "authentication" "SCRAM-SHA-1-PLUS"
-.cindex "authentication" "SCRAM-SHA-256"
-.cindex "authentication" "SCRAM-SHA-256-PLUS"
+.cindex "authentication" "SCRAM family"
 The &(gsasl)& authenticator provides integration for the GNU SASL
 library and the mechanisms it provides.  This is new as of the 4.80 release
 and there are a few areas where the library does not let Exim smoothly
