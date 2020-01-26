@@ -30721,8 +30721,8 @@ controlled by &%acl_smtp_connect%& or &%acl_smtp_helo%&. See also
 &%pipelining_advertise_hosts%&.
 
 .new
-.vitem &*control&~=&~queue/*&<&'options'&>*
-.vitem &*control&~=&~queue_only*&
+.vitem &*control&~=&~queue/*&<&'options'&>* &&&
+       &*control&~=&~queue_only*&
 .oindex "&%queue%&"
 .oindex "&%queue_only%&"
 .cindex "queueing incoming messages"
