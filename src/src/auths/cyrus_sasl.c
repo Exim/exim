@@ -290,7 +290,6 @@ for (int i = 0; i < 2; ++i)
   const uschar * label;
   uschar * address_port;
   const char *s_err;
-  socklen_t sslen;
 
   if (i)
     {

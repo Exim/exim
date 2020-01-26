@@ -4366,7 +4366,7 @@ if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
         yield = EXIT_FAILURE;
     switch (msg_action)
       {
-      case MSG_REMOVE: MSG_DELETE: case MSG_FREEZE: case MSG_THAW: break;
+      case MSG_REMOVE: case MSG_FREEZE: case MSG_THAW: break;
       default: printf("\n"); break;
       }
     }
