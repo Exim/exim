@@ -8121,9 +8121,6 @@ domain, host, address and local part lists.
 .cindex "expansion" "of lists"
 Each list is expanded as a single string before it is used.
 
-&'Exception: the router headers_remove option, where list-item
-splitting is done before string-expansion.'&
-
 The result of
 expansion must be a list, possibly containing empty items, which is split up
 into separate items for matching. By default, colon is the separator character,
@@ -18650,7 +18647,8 @@ avoided. The &%repeat_use%& option of the &%redirect%& router may be of help.
 This option specifies a list of text headers,
 colon-separated (by default, changeable in the usual way &<<SECTlistsepchange>>&),
 that is associated with any addresses that are accepted by the router.
-Each item is separately expanded, at routing time.  However, this
+The whole list is expanded before splitting, at routing time. If an item
+ends in *, it will match any header with the same prefix. However, this
 option has no effect when an address is just being verified. The way in which
 the text is used to remove header lines at transport time is described in
 section &<<SECTheadersaddrem>>&. Header lines are not actually removed until
