@@ -49,13 +49,6 @@ The following different types of store are recognized:
   to not copy untrusted data into untainted memory, as downstream taint-checks
   would be avoided.
 
-  Internally we currently use malloc for nontainted pools, and mmap for tainted
-  pools.  The disparity is for speed of testing the taintedness of pointers;
-  because Linux appears to use distinct non-overlapping address allocations for
-  mmap vs. everything else, which means only two pointer-compares suffice for the
-  test.  Other OS' cannot use that optimisation, and a more lengthy test against
-  the limits of tainted-pool allcations has to be done.
-
   Intermediate layers (eg. the string functions) can test for taint, and use this
   for ensurinng that results have proper state.  For example the
   string_vformat_trc() routing supporting the string_sprintf() interface will
@@ -172,10 +165,8 @@ static const uschar * poolclass[NPOOLS] = {
 #endif
 
 
-static void * store_mmap(int, const char *, int);
 static void * internal_store_malloc(int, const char *, int);
-static void   internal_untainted_free(void *, const char *, int linenumber);
-static void   internal_tainted_free(storeblock *, const char *, int linenumber);
+static void   internal_store_free(void *, const char *, int linenumber);
 
 /******************************************************************************/
 
@@ -269,10 +260,7 @@ if (size > yield_length[pool])
     {
     /* Give up on this block, because it's too small */
     nblocks[pool]--;
-    if (pool < POOL_TAINT_BASE)
-      internal_untainted_free(newblock, func, linenumber);
-    else
-      internal_tainted_free(newblock, func, linenumber);
+    internal_store_free(newblock, func, linenumber);
     newblock = NULL;
     }
 
@@ -288,9 +276,7 @@ if (size > yield_length[pool])
     if (++nblocks[pool] > maxblocks[pool])
       maxblocks[pool] = nblocks[pool];
 
-    newblock = tainted
-      ? store_mmap(mlength, func, linenumber)
-      : internal_store_malloc(mlength, func, linenumber);
+    newblock = internal_store_malloc(mlength, func, linenumber);
     newblock->next = NULL;
     newblock->length = length;
 
@@ -530,10 +516,7 @@ while ((b = bb))
   nbytes[pool] -= siz;
   pool_malloc -= siz;
   nblocks[pool]--;
-  if (pool < POOL_TAINT_BASE)
-    internal_untainted_free(b, func, linenumber);
-  else
-    internal_tainted_free(b, func, linenumber);
+  internal_store_free(b, func, linenumber);
   }
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
@@ -765,52 +748,6 @@ return (void *)newtext;
 
 
 
-/******************************************************************************/
-static void *
-store_alloc_tail(void * yield, int size, const char * func, int line,
-  const uschar * type)
-{
-if ((nonpool_malloc += size) > max_nonpool_malloc)
-  max_nonpool_malloc = nonpool_malloc;
-
-/* Cut out the debugging stuff for utilities, but stop picky compilers from
-giving warnings. */
-
-#ifdef COMPILE_UTILITY
-func = func; line = line; type = type;
-#else
-
-/* If running in test harness, spend time making sure all the new store
-is not filled with zeros so as to catch problems. */
-
-if (f.running_in_test_harness)
-  memset(yield, 0xF0, (size_t)size);
-DEBUG(D_memory) debug_printf("--%6s %6p %5d bytes\t%-14s %4d\tpool %5d  nonpool %5d\n",
-  type, yield, size, func, line, pool_malloc, nonpool_malloc);
-#endif  /* COMPILE_UTILITY */
-
-return yield;
-}
-
-/*************************************************
-*                Mmap store                      *
-*************************************************/
-
-static void *
-store_mmap(int size, const char * func, int line)
-{
-void * yield, * top;
-
-if (size < 16) size = 16;
-
-if (!(yield = mmap(NULL, (size_t)size,
-		  PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)))
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to mmap %d bytes of memory: "
-    "called from line %d of %s", size, line, func);
-
-return store_alloc_tail(yield, size, func, line, US"Mmap");
-}
-
 /*************************************************
 *                Malloc store                    *
 *************************************************/
@@ -822,13 +759,13 @@ function is called via the macro store_malloc().
 Arguments:
   size        amount of store wanted
   func        function from which called
-  linenumber  line number in source file
+  line	      line number in source file
 
 Returns:      pointer to gotten store (panic on failure)
 */
 
 static void *
-internal_store_malloc(int size, const char *func, int linenumber)
+internal_store_malloc(int size, const char *func, int line)
 {
 void * yield;
 
@@ -836,9 +773,28 @@ if (size < 16) size = 16;
 
 if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
-    "called from line %d in %s", size, linenumber, func);
+    "called from line %d in %s", size, line, func);
 
-return store_alloc_tail(yield, size, func, linenumber, US"Malloc");
+if ((nonpool_malloc += size) > max_nonpool_malloc)
+  max_nonpool_malloc = nonpool_malloc;
+
+/* Cut out the debugging stuff for utilities, but stop picky compilers from
+giving warnings. */
+
+#ifdef COMPILE_UTILITY
+func = func; line = line;
+#else
+
+/* If running in test harness, spend time making sure all the new store
+is not filled with zeros so as to catch problems. */
+
+if (f.running_in_test_harness)
+  memset(yield, 0xF0, (size_t)size);
+DEBUG(D_memory) debug_printf("--Malloc %6p %5d bytes\t%-14s %4d\tpool %5d  nonpool %5d\n",
+  yield, size, func, line, pool_malloc, nonpool_malloc);
+#endif  /* COMPILE_UTILITY */
+
+return yield;
 }
 
 void *
@@ -865,7 +821,7 @@ Returns:      nothing
 */
 
 static void
-internal_untainted_free(void * block, const char * func, int linenumber)
+internal_store_free(void * block, const char * func, int linenumber)
 {
 #ifdef COMPILE_UTILITY
 func = func;
@@ -881,21 +837,7 @@ void
 store_free_3(void * block, const char * func, int linenumber)
 {
 n_nonpool_blocks--;
-internal_untainted_free(block, func, linenumber);
-}
-
-/******************************************************************************/
-static void
-internal_tainted_free(storeblock * block, const char * func, int linenumber)
-{
-#ifdef COMPILE_UTILITY
-func = func;
-linenumber = linenumber;
-#else
-DEBUG(D_memory)
-  debug_printf("---Unmap %6p %-20s %4d\n", block, func, linenumber);
-#endif
-munmap((void *)block, block->length + ALIGNED_SIZEOF_STOREBLOCK);
+internal_store_free(block, func, linenumber);
 }
 
 /******************************************************************************/
