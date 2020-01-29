@@ -109,6 +109,12 @@ PP/01 Update the openssl_options possible values through OpenSSL 1.1.1c.
       allow_no_dhe_kex, cryptopro_tlsext_bug, enable_middlebox_compat,
       no_anti_replay, no_encrypt_then_mac, prioritize_chacha, tlsext_padding
 
+JH/23 Performance improvement in the initial phase of a two-pass queue run.  By
+      running a limited number of proceses in parallel, a benefit is gained. The
+      amount varies with the platform hardware and load.  The use of the option
+      queue_run_in_order means we cannot do this, as ordering becomes
+      indeterminate.
+
 
 Exim version 4.93
 -----------------

@@ -9,7 +9,7 @@ SERVER =
 .include DIR/aux-var/std_conf_prefix
 
 rfc1413_query_timeout = 0s
-log_selector = +sender_on_delivery
+log_selector = +sender_on_delivery +millisec
 
 # ----- Main settings -----
 

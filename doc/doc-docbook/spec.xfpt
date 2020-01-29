@@ -4510,6 +4510,10 @@ stage, the queue is scanned as if the &%queue_smtp_domains%& option matched
 every domain. Addresses are routed, local deliveries happen, but no remote
 transports are run.
 
+.new
+Performance will be best if the &%queue_run_in_order%& option is false.
+.wen
+
 .cindex "hints database" "remembering routing"
 The hints database that remembers which messages are waiting for specific hosts
 is updated, as if delivery to those hosts had been deferred. After this is
