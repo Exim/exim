@@ -616,10 +616,7 @@ return FALSE;
 
 #else
 extern BOOL is_tainted_fn(const void *);
-extern void * tainted_base, * tainted_top;
-
-return f.taint_check_slow
-  ? is_tainted_fn(p) : p >= tainted_base && p < tainted_top;
+return is_tainted_fn(p);
 #endif
 }
 

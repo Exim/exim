@@ -102,13 +102,6 @@ static storeblock *current_block[NPOOLS];
 static void *next_yield[NPOOLS];
 static int yield_length[NPOOLS] = { -1, -1, -1,  -1, -1, -1 };
 
-/* The limits of the tainted pools.  Tracking these on new allocations enables
-a fast is_tainted implementation. We assume the kernel only allocates mmaps using
-one side or the other of data+heap, not both. */
-
-void * tainted_base = (void *)-1;
-void * tainted_top = (void *)0;
-
 /* pool_malloc holds the amount of memory used by the store pools; this goes up
 and down as store is reset or released. nonpool_malloc is the total got by
 malloc from other calls; this doesn't go down because it is just freed by
@@ -198,30 +191,6 @@ die_tainted(const uschar * msg, const uschar * func, int line)
 {
 log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Taint mismatch, %s: %s %d\n",
 	msg, func, line);
-}
-
-static void
-use_slow_taint_check(void)
-{
-#ifndef COMPILE_UTILITY
-DEBUG(D_any) debug_printf("switching to slow-mode taint checking\n");
-#endif
-f.taint_check_slow = TRUE;
-}
-
-static void
-verify_all_untainted(void)
-{
-for (int pool = 0; pool < POOL_TAINT_BASE; pool++)
-  for (storeblock * b = chainbase[pool]; b; b = b->next)
-    {
-    uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (is_tainted(bc))
-      {
-      use_slow_taint_check();
-      return;
-      }
-    }
 }
 
 
@@ -814,10 +783,6 @@ if (!(yield = mmap(NULL, (size_t)size,
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to mmap %d bytes of memory: "
     "called from line %d of %s", size, line, func);
 
-if (yield < tainted_base) tainted_base = yield;
-if ((top = US yield + size) > tainted_top) tainted_top = top;
-if (!f.taint_check_slow) use_slow_taint_check();
-
 return store_alloc_tail(yield, size, func, line, US"Mmap");
 }
 
@@ -847,14 +812,6 @@ if (size < 16) size = 16;
 if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
     "called from line %d in %s", size, linenumber, func);
-
-/* If malloc ever returns apparently tainted memory, which glibc
-malloc will as it uses mmap for larger requests, we must switch to
-the slower checking for tainting (checking an address against all
-the tainted pool block spans, rather than just the mmap span) */
-
-if (!f.taint_check_slow && is_tainted(yield))
-  use_slow_taint_check();
 
 return store_alloc_tail(yield, size, func, linenumber, US"Malloc");
 }
