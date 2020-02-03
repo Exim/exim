@@ -738,10 +738,17 @@ for (header_line * h = header_list; h; h = h->next) if (h->type != htype_old)
 	    return FALSE;
 	    }
 	len = s ? Ustrlen(s) : 0;
-	if (strncmpic(h->text, s, len) != 0) continue;
-	ss = h->text + len;
-	while (*ss == ' ' || *ss == '\t') ss++;
-	if (*ss == ':') break;
+	if (len && s[len-1] == '*')	/* trailing glob */
+	  {
+	  if (strncmpic(h->text, s, len-1) == 0) break;
+	  }
+	else
+	  {
+	  if (strncmpic(h->text, s, len) != 0) continue;
+	  ss = h->text + len;
+	  while (*ss == ' ' || *ss == '\t') ss++;
+	  if (*ss == ':') break;
+	  }
 	}
       if (s) { include_header = FALSE; break; }
       }
