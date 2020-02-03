@@ -1971,7 +1971,7 @@ for (;;)
             if (f.deliver_force_thaw) *p++ = 'f';
             if (f.queue_run_local) *p++ = 'l';
             *p = 0;
-	    extra[0] = queue_name
+	    extra[0] = *queue_name
 	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
 
             /* If -R or -S were on the original command line, ensure they get
