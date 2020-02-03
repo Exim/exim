@@ -35,6 +35,10 @@ Version 4.94
 
  9. The ACL control "queue_only" can also be spelled "queue", and now takes an
     option "first_pass_route" to do the same as a "-odqs" on the command line.
+ 9. Items specified for the router and transport headers_remove option can use
+    a trailing asterisk to specify globbing.
+
+
 
 
 Version 4.93

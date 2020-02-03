@@ -25,7 +25,7 @@ r2:
 
 r3:
   driver = accept
-  headers_remove = Remove-Me:
+  headers_remove = Remove-Me:X-Rem*
   headers_add = X-Was-Remove-Me: >$h_remove-me:<
   headers_add = ${if def:h_remove-me-also {X-Was-Remove-Me-Also: >$h_remove-me-also:<}}
   transport = t1
