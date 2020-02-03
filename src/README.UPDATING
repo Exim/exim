@@ -31,10 +31,15 @@ Exim version 4.94
 
 Some Transports now refuse to use tainted data in constructing their delivery
 location; this WILL BREAK configurations which are not updated accordingly.
-
 In particular: any Transport use of $local_user which has been relying upon
 check_local_user far away in the Router to make it safe, should be updated to
 replace $local_user with $local_part_verified.
+
+Attempting to remove, in router or transport, a header name that ends with
+an asterisk (which is a standards-legal name) will now result in all headers
+named starting with the string before the asterisk being removed.  We recommend
+staying away from such names, if they are private ones (and in case of future
+enhancements, alao header names that look like REs).
 
 
 Exim version 4.93
