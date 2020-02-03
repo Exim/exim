@@ -124,7 +124,7 @@ functions that are called quite often; for other calls to external libraries
 #define Ustrtoul(s,t,b)    strtoul(CCS(s),CSS(t),b)
 #define Uunlink(s)         unlink(CCS(s))
 
-#ifdef EM_VERSION_C
+#if defined(EM_VERSION_C) || defined(LOCAL_SCAN) || defined(DLFUNC_IMPL)
 # define Ustrcat(s,t)       strcat(CS(s), CCS(t))
 # define Ustrcpy(s,t)       strcpy(CS(s), CCS(t))
 # define Ustrncat(s,t,n)    strncat(CS(s), CCS(t), n)

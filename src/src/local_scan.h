@@ -10,6 +10,10 @@ source for the local_scan.c() function. It contains definitions that are made
 available for use in that function, and which are documented.  That source
 should first #define LOCAL_SCAN
 
+Not every definition that becomes available to the compiler by the inclusion
+of this file is part of the local_scan API.  The "Adding a local scan function
+to Exim" chapter in the documentation is definitive.
+
 This API is also used for functions called by the ${dlfunc expansion item.
 Source for those should first #define DLFUNC_IMPL and then include this file.
 Coders of dlfunc routines should read the notes on tainting at the start of
