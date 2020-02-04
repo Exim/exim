@@ -112,7 +112,8 @@ enum { ACLC_ACL,
 /* ACL conditions/modifiers: "delay", "control", "continue", "endpass",
 "message", "log_message", "log_reject_target", "logwrite", "queue" and "set" are
 modifiers that look like conditions but always return TRUE. They are used for
-their side effects. */
+their side effects.  Do not invent new modifier names that result in one name
+being the prefix of another; the binary-search in the list will go wrong. */
 
 typedef struct condition_def {
   uschar	*name;
@@ -367,7 +368,6 @@ enum {
   CONTROL_NO_PIPELINING,
 
   CONTROL_QUEUE,
-  CONTROL_QUEUE_ONLY,
   CONTROL_SUBMISSION,
   CONTROL_SUPPRESS_LOCAL_FIXUPS,
 #ifdef SUPPORT_I18N
@@ -511,15 +511,6 @@ static control_def controls_list[] = {
 	    // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
 	    ACL_BIT_NOTSMTP | ACL_BIT_MIME)
   },
-[CONTROL_QUEUE_ONLY] =
-  { US"queue_only",		TRUE,
-	  (unsigned)
-	  ~(ACL_BIT_MAIL | ACL_BIT_RCPT |
-	    ACL_BIT_PREDATA | ACL_BIT_DATA |
-	    // ACL_BIT_PRDR|    /* Not allow one user to freeze for all */
-	    ACL_BIT_NOTSMTP | ACL_BIT_MIME)
-  },
-
 
 [CONTROL_SUBMISSION] =
   { US"submission",              TRUE,
@@ -2122,7 +2113,9 @@ return ERROR;
 *        Check argument for control= modifier    *
 *************************************************/
 
-/* Called from acl_check_condition() below
+/* Called from acl_check_condition() below.
+To handle the case "queue_only" we accept an _ in the
+initial / option-switch position.
 
 Arguments:
   arg         the argument string for control=
@@ -2138,10 +2131,11 @@ decode_control(const uschar *arg, const uschar **pptr, int where, uschar **log_m
 {
 int idx, len;
 control_def * d;
+uschar c;
 
 if (  (idx = find_control(arg, controls_list, nelem(controls_list))) < 0
-   || (  arg[len = Ustrlen((d = controls_list+idx)->name)] != 0
-      && (!d->has_option || arg[len] != '/')
+   || (  (c = arg[len = Ustrlen((d = controls_list+idx)->name)]) != 0
+      && (!d->has_option || c != '/' && c != '_')
    )  )
   {
   *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
@@ -3168,15 +3162,17 @@ for (; cb; cb = cb->next)
 	  break;
 
 	case CONTROL_QUEUE:
-	case CONTROL_QUEUE_ONLY:
 	  f.queue_only_policy = TRUE;
+	  if (Ustrcmp(p, "_only") == 0)
+	    p += 5;
+	  else while (*p == '/')
+	    if (Ustrncmp(p, "/only", 5) == 0)
+	      { p += 5; f.queue_smtp = FALSE; }
+	    else if (Ustrncmp(p, "/first_pass_route", 17) == 0)
+	      { p += 17; f.queue_smtp = TRUE; }
+	    else
+	      break;
 	  cancel_cutthrough_connection(TRUE, US"queueing forced");
-	  while (*p == '/')
-	    if (Ustrncmp(p, "/first_pass_route", 17) == 0)
-	      {
-	      p += 17;
-	      f.queue_smtp = TRUE;
-	      }
 	  break;
 
 	case CONTROL_SUBMISSION:

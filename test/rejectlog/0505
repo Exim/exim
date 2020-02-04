@@ -19,4 +19,4 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: CALLER_NAME <CALLER@myhost.test.ex>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
-1999-03-02 09:44:33 U=CALLER temporarily rejected connection in "connect" ACL: cannot use "control=queue_only" in connection ACL
+1999-03-02 09:44:33 U=CALLER temporarily rejected connection in "connect" ACL: cannot use "control=queue" in connection ACL

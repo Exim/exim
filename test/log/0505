@@ -3,4 +3,4 @@
 1999-03-02 09:44:33 U=CALLER temporarily rejected EHLO or HELO xxx: cannot use "control=submission" in EHLO or HELO ACL
 1999-03-02 09:44:33 ACL for QUIT returned ERROR: cannot use "control=freeze" in QUIT ACL
 1999-03-02 09:44:33 10HmaY-0005vi-00 F=<CALLER@myhost.test.ex> rejected by non-SMTP ACL: cannot use "control=enforce_sync" in non-SMTP ACL
-1999-03-02 09:44:33 U=CALLER temporarily rejected connection in "connect" ACL: cannot use "control=queue_only" in connection ACL
+1999-03-02 09:44:33 U=CALLER temporarily rejected connection in "connect" ACL: cannot use "control=queue" in connection ACL

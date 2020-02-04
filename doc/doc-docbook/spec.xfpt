@@ -30151,7 +30151,7 @@ in several different ways. For example:
 It can be at the end of an &%accept%& statement:
 .code
     accept  ...some conditions
-            control = queue_only
+            control = queue
 .endd
 In this case, the control is applied when this statement yields &"accept"&, in
 other words, when the conditions are all true.
@@ -30160,7 +30160,7 @@ other words, when the conditions are all true.
 It can be in the middle of an &%accept%& statement:
 .code
     accept  ...some conditions...
-            control = queue_only
+            control = queue
             ...some more conditions...
 .endd
 If the first set of conditions are true, the control is applied, even if the
