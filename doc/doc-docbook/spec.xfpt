@@ -33907,13 +33907,14 @@ in &_Local/Makefile_& (see section &<<SECTconoptloc>>& below).
 .cindex &%dlfunc%& "API description"
 You must include this line near the start of your code:
 .code
+#define LOCAL_SCAN
 #include "local_scan.h"
 .endd
 This header file defines a number of variables and other values, and the
 prototype for the function itself. Exim is coded to use unsigned char values
 almost exclusively, and one of the things this header defines is a shorthand
 for &`unsigned char`& called &`uschar`&.
-It also contains the following macro definitions, to simplify casting character
+It also makes available the following macro definitions, to simplify casting character
 strings and pointers to character strings:
 .code
 #define CS   (char *)
