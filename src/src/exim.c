@@ -2039,7 +2039,7 @@ for (i = 1; i < argc; i++)
             ignore = TRUE;
           break;
         }
-      if (!ignore) { badarg = TRUE; break; }
+      if (!ignore) badarg = TRUE;
       }
     break;
 
@@ -2047,282 +2047,290 @@ for (i = 1; i < argc; i++)
     so has no need of it. */
 
     case 'B':
-    if (*argrest == 0) i++;       /* Skip over the type */
+    if (!*argrest) i++;       /* Skip over the type */
     break;
 
 
     case 'b':
-    receiving_message = FALSE;    /* Reset TRUE for -bm, -bS, -bs below */
-
-    /* -bd:  Run in daemon mode, awaiting SMTP connections.
-       -bdf: Ditto, but in the foreground.
-    */
-
-    if (*argrest == 'd')
       {
-      f.daemon_listen = TRUE;
-      if (*(++argrest) == 'f') f.background_daemon = FALSE;
-        else if (*argrest != 0) { badarg = TRUE; break; }
+      receiving_message = FALSE;    /* Reset TRUE for -bm, -bS, -bs below */
+
+      switch (*argrest++)
+	{
+	/* -bd:  Run in daemon mode, awaiting SMTP connections.
+	   -bdf: Ditto, but in the foreground.
+	*/
+	case 'd':
+	  f.daemon_listen = TRUE;
+	  if (*argrest == 'f') f.background_daemon = FALSE;
+	  else if (*argrest) badarg = TRUE;
+	  break;
+
+	/* -be:  Run in expansion test mode
+	   -bem: Ditto, but read a message from a file first
+	*/
+	case 'e':
+	  expansion_test = checking = TRUE;
+	  if (*argrest == 'm')
+	    {
+	    if (++i >= argc) { badarg = TRUE; break; }
+	    expansion_test_message = argv[i];
+	    argrest++;
+	    }
+	  if (*argrest) badarg = TRUE;
+	  break;
+
+	/* -bF:  Run system filter test */
+	case 'F':
+	  filter_test |= checking = FTEST_SYSTEM;
+	  if (*argrest) { badarg = TRUE; break; }
+	  if (++i < argc) filter_test_sfile = argv[i]; else
+	    exim_fail("exim: file name expected after %s\n", argv[i-1]);
+	  break;
+
+	/* -bf:  Run user filter test
+	   -bfd: Set domain for filter testing
+	   -bfl: Set local part for filter testing
+	   -bfp: Set prefix for filter testing
+	   -bfs: Set suffix for filter testing
+	*/
+	case 'f':
+	  if (!*argrest)
+	    {
+	    filter_test |= checking = FTEST_USER;
+	    if (++i < argc) filter_test_ufile = argv[i];
+	    else exim_fail("exim: file name expected after %s\n", argv[i-1]);
+	    }
+	  else
+	    {
+	    if (++i >= argc)
+	      exim_fail("exim: string expected after %s\n", arg);
+	    if (Ustrcmp(argrest, "d") == 0) ftest_domain = argv[i];
+	    else if (Ustrcmp(argrest, "l") == 0) ftest_localpart = argv[i];
+	    else if (Ustrcmp(argrest, "p") == 0) ftest_prefix = argv[i];
+	    else if (Ustrcmp(argrest, "s") == 0) ftest_suffix = argv[i];
+	    else badarg = TRUE;
+	    }
+	  break;
+
+	/* -bh: Host checking - an IP address must follow. */
+	case 'h':
+	  if (!*argrest || Ustrcmp(argrest, "c") == 0)
+	    {
+	    if (++i >= argc) { badarg = TRUE; break; }
+	    sender_host_address = argv[i];
+	    host_checking = checking = f.log_testing_mode = TRUE;
+	    f.host_checking_callout = *argrest == 'c';
+	    message_logs = FALSE;
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bi: This option is used by sendmail to initialize *the* alias file,
+	though it has the -oA option to specify a different file. Exim has no
+	concept of *the* alias file, but since Sun's YP make script calls
+	sendmail this way, some support must be provided. */
+	case 'i':
+	  if (!*++argrest) bi_option = TRUE;
+	  else badarg = TRUE;
+	  break;
+
+	/* -bI: provide information, of the type to follow after a colon.
+	This is an Exim flag. */
+	case 'I':
+	  if (Ustrlen(argrest) >= 1 && *argrest == ':')
+	    {
+	    uschar *p = argrest+1;
+	    info_flag = CMDINFO_HELP;
+	    if (Ustrlen(p))
+	      if (strcmpic(p, CUS"sieve") == 0)
+		{
+		info_flag = CMDINFO_SIEVE;
+		info_stdout = TRUE;
+		}
+	      else if (strcmpic(p, CUS"dscp") == 0)
+		{
+		info_flag = CMDINFO_DSCP;
+		info_stdout = TRUE;
+		}
+	      else if (strcmpic(p, CUS"help") == 0)
+		info_stdout = TRUE;
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bm: Accept and deliver message - the default option. Reinstate
+	receiving_message, which got turned off for all -b options.
+	   -bmalware: test the filename given for malware */
+	case 'm':
+	  if (!*argrest) receiving_message = TRUE;
+	  else if (Ustrcmp(argrest, "alware") == 0)
+	    {
+	    if (++i >= argc) { badarg = TRUE; break; }
+	    checking = TRUE;
+	    malware_test_file = argv[i];
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bnq: For locally originating messages, do not qualify unqualified
+	addresses. In the envelope, this causes errors; in header lines they
+	just get left. */
+	case 'n':
+	  if (Ustrcmp(argrest, "q") == 0)
+	    {
+	    f.allow_unqualified_sender = FALSE;
+	    f.allow_unqualified_recipient = FALSE;
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bpxx: List the contents of the mail queue, in various forms. If
+	the option is -bpc, just a queue count is needed. Otherwise, if the
+	first letter after p is r, then order is random. */
+	case 'p':
+	  if (*argrest == 'c')
+	    {
+	    count_queue = TRUE;
+	    if (*++argrest) badarg = TRUE;
+	    break;
+	    }
+
+	  if (*argrest == 'r')
+	    {
+	    list_queue_option = 8;
+	    argrest++;
+	    }
+	  else list_queue_option = 0;
+
+	  list_queue = TRUE;
+
+	  /* -bp: List the contents of the mail queue, top-level only */
+
+	  if (!*argrest) {}
+
+	  /* -bpu: List the contents of the mail queue, top-level undelivered */
+
+	  else if (Ustrcmp(argrest, "u") == 0) list_queue_option += 1;
+
+	  /* -bpa: List the contents of the mail queue, including all delivered */
+
+	  else if (Ustrcmp(argrest, "a") == 0) list_queue_option += 2;
+
+	  /* Unknown after -bp[r] */
+
+	  else badarg = TRUE;
+	  break;
+
+
+	/* -bP: List the configuration variables given as the address list.
+	Force -v, so configuration errors get displayed. */
+	case 'P':
+
+	  /* -bP config: we need to setup here, because later,
+	   * when list_options is checked, the config is read already */
+	  if (*argrest)
+	    badarg = TRUE;
+	  else if (argv[i+1] && Ustrcmp(argv[i+1], "config") == 0)
+	    {
+	    list_config = TRUE;
+	    readconf_save_config(version_string);
+	    }
+	  else
+	    {
+	    list_options = TRUE;
+	    debug_selector |= D_v;
+	    debug_file = stderr;
+	    }
+	  break;
+
+	/* -brt: Test retry configuration lookup */
+	case 'r':
+	  if (Ustrcmp(argrest, "t") == 0)
+	    {
+	    checking = TRUE;
+	    test_retry_arg = i + 1;
+	    goto END_ARG;
+	    }
+
+	  /* -brw: Test rewrite configuration */
+
+	  else if (Ustrcmp(argrest, "w") == 0)
+	    {
+	    checking = TRUE;
+	    test_rewrite_arg = i + 1;
+	    goto END_ARG;
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bS: Read SMTP commands on standard input, but produce no replies -
+	all errors are reported by sending messages. */
+	case 'S':
+	  if (!*argrest)
+	    smtp_input = smtp_batched_input = receiving_message = TRUE;
+	  else badarg = TRUE;
+	  break;
+
+	/* -bs: Read SMTP commands on standard input and produce SMTP replies
+	on standard output. */
+	case 's':
+	  if (!*argrest) smtp_input = receiving_message = TRUE;
+	  else badarg = TRUE;
+	  break;
+
+	/* -bt: address testing mode */
+	case 't':
+	  if (!*argrest)
+	    f.address_test_mode = checking = f.log_testing_mode = TRUE;
+	  else badarg = TRUE;
+	  break;
+
+	/* -bv: verify addresses */
+	case 'v':
+	  if (!*argrest)
+	    verify_address_mode = checking = f.log_testing_mode = TRUE;
+
+	/* -bvs: verify sender addresses */
+
+	  else if (Ustrcmp(argrest, "s") == 0)
+	    {
+	    verify_address_mode = checking = f.log_testing_mode = TRUE;
+	    verify_as_sender = TRUE;
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bV: Print version string and support details */
+	case 'V':
+	  if (!*argrest)
+	    {
+	    printf("Exim version %s #%s built %s\n", version_string,
+	      version_cnumber, version_date);
+	    printf("%s\n", CS version_copyright);
+	    version_printed = TRUE;
+	    show_whats_supported(stdout);
+	    f.log_testing_mode = TRUE;
+	    }
+	  else badarg = TRUE;
+	  break;
+
+	/* -bw: inetd wait mode, accept a listening socket as stdin */
+	case 'w':
+	  f.inetd_wait_mode = TRUE;
+	  f.background_daemon = FALSE;
+	  f.daemon_listen = TRUE;
+	  if (*argrest)
+	    if ((inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE)) <= 0)
+	      exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+	  break;
+
+	default:
+	  badarg = TRUE;
+	  break;
+	}
+      break;
       }
-
-    /* -be:  Run in expansion test mode
-       -bem: Ditto, but read a message from a file first
-    */
-
-    else if (*argrest == 'e')
-      {
-      expansion_test = checking = TRUE;
-      if (argrest[1] == 'm')
-        {
-        if (++i >= argc) { badarg = TRUE; break; }
-        expansion_test_message = argv[i];
-        argrest++;
-        }
-      if (argrest[1] != 0) { badarg = TRUE; break; }
-      }
-
-    /* -bF:  Run system filter test */
-
-    else if (*argrest == 'F')
-      {
-      filter_test |= checking = FTEST_SYSTEM;
-      if (*(++argrest) != 0) { badarg = TRUE; break; }
-      if (++i < argc) filter_test_sfile = argv[i]; else
-        exim_fail("exim: file name expected after %s\n", argv[i-1]);
-      }
-
-    /* -bf:  Run user filter test
-       -bfd: Set domain for filter testing
-       -bfl: Set local part for filter testing
-       -bfp: Set prefix for filter testing
-       -bfs: Set suffix for filter testing
-    */
-
-    else if (*argrest == 'f')
-      {
-      if (*(++argrest) == 0)
-        {
-        filter_test |= checking = FTEST_USER;
-        if (++i < argc) filter_test_ufile = argv[i]; else
-          exim_fail("exim: file name expected after %s\n", argv[i-1]);
-        }
-      else
-        {
-        if (++i >= argc)
-          exim_fail("exim: string expected after %s\n", arg);
-        if (Ustrcmp(argrest, "d") == 0) ftest_domain = argv[i];
-        else if (Ustrcmp(argrest, "l") == 0) ftest_localpart = argv[i];
-        else if (Ustrcmp(argrest, "p") == 0) ftest_prefix = argv[i];
-        else if (Ustrcmp(argrest, "s") == 0) ftest_suffix = argv[i];
-        else { badarg = TRUE; break; }
-        }
-      }
-
-    /* -bh: Host checking - an IP address must follow. */
-
-    else if (Ustrcmp(argrest, "h") == 0 || Ustrcmp(argrest, "hc") == 0)
-      {
-      if (++i >= argc) { badarg = TRUE; break; }
-      sender_host_address = argv[i];
-      host_checking = checking = f.log_testing_mode = TRUE;
-      f.host_checking_callout = argrest[1] == 'c';
-      message_logs = FALSE;
-      }
-
-    /* -bi: This option is used by sendmail to initialize *the* alias file,
-    though it has the -oA option to specify a different file. Exim has no
-    concept of *the* alias file, but since Sun's YP make script calls
-    sendmail this way, some support must be provided. */
-
-    else if (Ustrcmp(argrest, "i") == 0) bi_option = TRUE;
-
-    /* -bI: provide information, of the type to follow after a colon.
-    This is an Exim flag. */
-
-    else if (argrest[0] == 'I' && Ustrlen(argrest) >= 2 && argrest[1] == ':')
-      {
-      uschar *p = &argrest[2];
-      info_flag = CMDINFO_HELP;
-      if (Ustrlen(p))
-        {
-        if (strcmpic(p, CUS"sieve") == 0)
-          {
-          info_flag = CMDINFO_SIEVE;
-          info_stdout = TRUE;
-          }
-        else if (strcmpic(p, CUS"dscp") == 0)
-          {
-          info_flag = CMDINFO_DSCP;
-          info_stdout = TRUE;
-          }
-        else if (strcmpic(p, CUS"help") == 0)
-          {
-          info_stdout = TRUE;
-          }
-        }
-      }
-
-    /* -bm: Accept and deliver message - the default option. Reinstate
-    receiving_message, which got turned off for all -b options. */
-
-    else if (Ustrcmp(argrest, "m") == 0) receiving_message = TRUE;
-
-    /* -bmalware: test the filename given for malware */
-
-    else if (Ustrcmp(argrest, "malware") == 0)
-      {
-      if (++i >= argc) { badarg = TRUE; break; }
-      checking = TRUE;
-      malware_test_file = argv[i];
-      }
-
-    /* -bnq: For locally originating messages, do not qualify unqualified
-    addresses. In the envelope, this causes errors; in header lines they
-    just get left. */
-
-    else if (Ustrcmp(argrest, "nq") == 0)
-      {
-      f.allow_unqualified_sender = FALSE;
-      f.allow_unqualified_recipient = FALSE;
-      }
-
-    /* -bpxx: List the contents of the mail queue, in various forms. If
-    the option is -bpc, just a queue count is needed. Otherwise, if the
-    first letter after p is r, then order is random. */
-
-    else if (*argrest == 'p')
-      {
-      if (*(++argrest) == 'c')
-        {
-        count_queue = TRUE;
-        if (*(++argrest) != 0) badarg = TRUE;
-        break;
-        }
-
-      if (*argrest == 'r')
-        {
-        list_queue_option = 8;
-        argrest++;
-        }
-      else list_queue_option = 0;
-
-      list_queue = TRUE;
-
-      /* -bp: List the contents of the mail queue, top-level only */
-
-      if (*argrest == 0) {}
-
-      /* -bpu: List the contents of the mail queue, top-level undelivered */
-
-      else if (Ustrcmp(argrest, "u") == 0) list_queue_option += 1;
-
-      /* -bpa: List the contents of the mail queue, including all delivered */
-
-      else if (Ustrcmp(argrest, "a") == 0) list_queue_option += 2;
-
-      /* Unknown after -bp[r] */
-
-      else
-        {
-        badarg = TRUE;
-        break;
-        }
-      }
-
-
-    /* -bP: List the configuration variables given as the address list.
-    Force -v, so configuration errors get displayed. */
-
-    else if (Ustrcmp(argrest, "P") == 0)
-      {
-      /* -bP config: we need to setup here, because later,
-       * when list_options is checked, the config is read already */
-      if (argv[i+1] && Ustrcmp(argv[i+1], "config") == 0)
-        {
-        list_config = TRUE;
-        readconf_save_config(version_string);
-        }
-      else
-        {
-        list_options = TRUE;
-        debug_selector |= D_v;
-        debug_file = stderr;
-        }
-      }
-
-    /* -brt: Test retry configuration lookup */
-
-    else if (Ustrcmp(argrest, "rt") == 0)
-      {
-      checking = TRUE;
-      test_retry_arg = i + 1;
-      goto END_ARG;
-      }
-
-    /* -brw: Test rewrite configuration */
-
-    else if (Ustrcmp(argrest, "rw") == 0)
-      {
-      checking = TRUE;
-      test_rewrite_arg = i + 1;
-      goto END_ARG;
-      }
-
-    /* -bS: Read SMTP commands on standard input, but produce no replies -
-    all errors are reported by sending messages. */
-
-    else if (Ustrcmp(argrest, "S") == 0)
-      smtp_input = smtp_batched_input = receiving_message = TRUE;
-
-    /* -bs: Read SMTP commands on standard input and produce SMTP replies
-    on standard output. */
-
-    else if (Ustrcmp(argrest, "s") == 0) smtp_input = receiving_message = TRUE;
-
-    /* -bt: address testing mode */
-
-    else if (Ustrcmp(argrest, "t") == 0)
-      f.address_test_mode = checking = f.log_testing_mode = TRUE;
-
-    /* -bv: verify addresses */
-
-    else if (Ustrcmp(argrest, "v") == 0)
-      verify_address_mode = checking = f.log_testing_mode = TRUE;
-
-    /* -bvs: verify sender addresses */
-
-    else if (Ustrcmp(argrest, "vs") == 0)
-      {
-      verify_address_mode = checking = f.log_testing_mode = TRUE;
-      verify_as_sender = TRUE;
-      }
-
-    /* -bV: Print version string and support details */
-
-    else if (Ustrcmp(argrest, "V") == 0)
-      {
-      printf("Exim version %s #%s built %s\n", version_string,
-        version_cnumber, version_date);
-      printf("%s\n", CS version_copyright);
-      version_printed = TRUE;
-      show_whats_supported(stdout);
-      f.log_testing_mode = TRUE;
-      }
-
-    /* -bw: inetd wait mode, accept a listening socket as stdin */
-
-    else if (*argrest == 'w')
-      {
-      f.inetd_wait_mode = TRUE;
-      f.background_daemon = FALSE;
-      f.daemon_listen = TRUE;
-      if (*(++argrest) != '\0')
-        if ((inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE)) <= 0)
-          exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
-      }
-
-    else badarg = TRUE;
-    break;
 
 
     /* -C: change configuration file list; ignore if it isn't really
