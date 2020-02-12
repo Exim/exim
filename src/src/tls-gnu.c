@@ -3358,8 +3358,8 @@ DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
 
 while (left > 0)
   {
-  DEBUG(D_tls) debug_printf("gnutls_record_send(SSL, %p, " SIZE_T_FMT ")\n",
-      buff, left);
+  DEBUG(D_tls) debug_printf("gnutls_record_send(%p, %p, " SIZE_T_FMT ")\n",
+      state->session, buff, left);
 
   do
     outbytes = gnutls_record_send(state->session, buff, left);
