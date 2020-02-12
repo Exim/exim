@@ -3142,7 +3142,7 @@ tls_refill(unsigned lim)
 exim_gnutls_state_st * state = &state_server;
 ssize_t inbytes;
 
-DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(%p, %p, %u)\n",
+DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, buffersize=%u)\n",
   state->session, state->xfer_buffer, ssl_xfer_buffer_size);
 
 sigalrm_seen = FALSE;
@@ -3305,7 +3305,7 @@ if (state->xfer_buffer_lwm < state->xfer_buffer_hwm)
         state->xfer_buffer_hwm - state->xfer_buffer_lwm);
 
 DEBUG(D_tls)
-  debug_printf("Calling gnutls_record_recv(%p, %p, " SIZE_T_FMT ")\n",
+  debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, len=" SIZE_T_FMT ")\n",
       state->session, buff, len);
 
 do
@@ -3363,7 +3363,7 @@ DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
 
 while (left > 0)
   {
-  DEBUG(D_tls) debug_printf("gnutls_record_send(%p, %p, " SIZE_T_FMT ")\n",
+  DEBUG(D_tls) debug_printf("gnutls_record_send(session=%p, buffer=%p, left=" SIZE_T_FMT ")\n",
       state->session, buff, left);
 
   do
