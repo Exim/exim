@@ -2307,11 +2307,12 @@ if (TRUE)
   }
 else
   debug_printf("To get keying info for TLS1.3 is hard:\n"
-    " set environment variable SSLKEYLOGFILE to a filename writable by uid exim\n"
-    " add SSLKEYLOGFILE to keep_environment in the exim config\n"
-    " run exim as root\n"
-    " if using sudo, add SSLKEYLOGFILE to env_keep in /etc/sudoers\n"
-    " (works for TLS1.2 also, and saves cut-paste into file)"
+    " Set environment variable SSLKEYLOGFILE to a filename relative to the spool directory,\n"
+    " and make sure it is writable by the Exim runtime user.\n"
+    " Add SSLKEYLOGFILE to keep_environment in the exim config.\n"
+    " Start Exim as root.\n"
+    " If using sudo, add SSLKEYLOGFILE to env_keep in /etc/sudoers\n"
+    " (works for TLS1.2 also, and saves cut-paste into file).\n"
     " Trying to use add_environment for this will not work\n");
 #endif
 }
