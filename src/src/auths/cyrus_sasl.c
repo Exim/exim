@@ -347,10 +347,10 @@ for (rc = SASL_CONTINUE; rc == SASL_CONTINUE; )
     }
   else
     {
-    /* make sure that we have a null-terminated string */
-    out2 = string_copyn(output, outlen);
+    /* auth_get_data() takes a length-specfied block of binary
+    which can include zeroes; no terminating NUL is needed */
 
-    if ((rc = auth_get_data(&input, out2, outlen)) != OK)
+    if ((rc = auth_get_data(&input, output, outlen)) != OK)
       {
       /* we couldn't get the data, so free up the library before
        * returning whatever error we get */

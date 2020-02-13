@@ -63,6 +63,12 @@ JH/22 Taint-checking: move to safe-mode taint checking on all platforms.  The
       previous fast-mode was untenable in the face of glibs using mmap to
       support larger malloc requests.
 
+JH/24 Bug 2524: fix the cyrus_sasl auth driver gssapi usage.  A previous fix
+      had introduced a string-copy (for ensuring NUL-termination) which was not
+      appropriate for that case, which can include embedded NUL bytes in the
+      block of data.  Investigation showed the copy to actually be needless, the
+      data being length-specified.
+
 
 Exim version 4.93
 -----------------
