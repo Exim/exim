@@ -181,6 +181,10 @@ typedef struct exim_gnutls_state {
   BOOL			peer_dane_verified;
   BOOL			trigger_sni_changes;
   BOOL			have_set_peerdn;
+#ifdef SUPPORT_CORK
+  BOOL			corked:1;
+#endif
+
   const struct host_item *host;		/* NULL if server */
   gnutls_x509_crt_t	peercert;
   uschar		*peerdn;
@@ -3309,9 +3313,8 @@ ssize_t outbytes;
 size_t left = len;
 exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
 #ifdef SUPPORT_CORK
-static BOOL corked = FALSE;
 
-if (more && !corked) gnutls_record_cork(state->session);
+if (more && !state->corked) gnutls_record_cork(state->session);
 #endif
 
 DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
@@ -3352,10 +3355,10 @@ if (len > INT_MAX)
   }
 
 #ifdef SUPPORT_CORK
-if (more != corked)
+if (more != state->corked)
   {
   if (!more) (void) gnutls_record_uncork(state->session, 0);
-  corked = more;
+  state->corked = more;
   }
 #endif
 
