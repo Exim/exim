@@ -179,7 +179,7 @@ if (f.running_in_test_harness)
 
 /* No data should have been sent with the AUTH command */
 
-if (*data != 0) return UNEXPECTED;
+if (*data) return UNEXPECTED;
 
 /* Send the challenge, read the return */
 
@@ -192,7 +192,7 @@ The former is now the preferred variable; the latter is the original one. Then
 check that the remaining length is 32. */
 
 auth_vars[0] = expand_nstring[1] = clear;
-while (*clear != 0 && !isspace(*clear)) clear++;
+while (*clear && !isspace(*clear)) clear++;
 if (!isspace(*clear)) return FAIL;
 *clear++ = 0;
 

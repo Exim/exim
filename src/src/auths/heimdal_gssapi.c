@@ -321,8 +321,7 @@ while (step < 4)
 	  }
 
 	HDEBUG(D_auth) debug_printf("gssapi: missing initial response, nudging.\n");
-	error_out = auth_get_data(&from_client, US"", 0);
-	if (error_out != OK)
+	if ((error_out = auth_get_data(&from_client, US"", 0)) != OK)
 	  goto ERROR_OUT;
 	handled_empty_ir = TRUE;
 	continue;

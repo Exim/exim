@@ -53,13 +53,13 @@ return OK;
 *      Issue a challenge and get a response      *
 *************************************************/
 
-/* This function is used by authentication drivers to output a challenge
-to the SMTP client and read the response line.
+/* This function is used by authentication drivers to b64-encode and
+output a challenge to the SMTP client, and read the response line.
 
 Arguments:
    aptr       set to point to the response (which is in big_buffer)
-   challenge  the challenge text (unencoded, may be binary)
-   challen    the length of the challenge text
+   challenge  the challenge data (unencoded, may be binary)
+   challen    the length of the challenge data, in bytes
 
 Returns:      OK on success
               BAD64 if response too large for buffer

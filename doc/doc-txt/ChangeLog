@@ -115,6 +115,12 @@ JH/23 Performance improvement in the initial phase of a two-pass queue run.  By
       queue_run_in_order means we cannot do this, as ordering becomes
       indeterminate.
 
+JH/24 Bug 2524: fix the cyrus_sasl auth driver gssapi usage.  A previous fix
+      had introduced a string-copy (for ensuring NUL-termination) which was not
+      appropriate for that case, which can include embedded NUL bytes in the
+      block of data.  Investigation showed the copy to actually be needless, the
+      data being length-specified.
+
 
 Exim version 4.93
 -----------------
