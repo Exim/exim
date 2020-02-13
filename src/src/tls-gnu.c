@@ -177,10 +177,17 @@ typedef struct exim_gnutls_state {
   enum peer_verify_requirement verify_requirement;
   int			fd_in;
   int			fd_out;
-  BOOL			peer_cert_verified;
-  BOOL			peer_dane_verified;
-  BOOL			trigger_sni_changes;
-  BOOL			have_set_peerdn;
+
+  BOOL			peer_cert_verified:1;
+  BOOL			peer_dane_verified:1;
+  BOOL			trigger_sni_changes:1;
+  BOOL			have_set_peerdn:1;
+  BOOL			xfer_eof:1;	/*XXX never gets set! */
+  BOOL			xfer_error:1;
+#ifdef SUPPORT_CORK
+  BOOL			corked:1;
+#endif
+
   const struct host_item *host;		/* NULL if server */
   gnutls_x509_crt_t	peercert;
   uschar		*peerdn;
@@ -213,8 +220,6 @@ typedef struct exim_gnutls_state {
   uschar *xfer_buffer;
   int xfer_buffer_lwm;
   int xfer_buffer_hwm;
-  BOOL xfer_eof;	/*XXX never gets set! */
-  BOOL xfer_error;
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
@@ -3348,9 +3353,8 @@ ssize_t outbytes;
 size_t left = len;
 exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
 #ifdef SUPPORT_CORK
-static BOOL corked = FALSE;
 
-if (more && !corked) gnutls_record_cork(state->session);
+if (more && !state->corked) gnutls_record_cork(state->session);
 #endif
 
 DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
@@ -3391,10 +3395,10 @@ if (len > INT_MAX)
   }
 
 #ifdef SUPPORT_CORK
-if (more != corked)
+if (more != state->corked)
   {
   if (!more) (void) gnutls_record_uncork(state->session, 0);
-  corked = more;
+  state->corked = more;
   }
 #endif
 
