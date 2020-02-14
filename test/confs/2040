@@ -1,0 +1,46 @@
+# Exim test configuration 2040
+# The test uses the same config for two Exim processes
+#
+#              ,------ callout -------.
+#              |                      |
+#              |      .----------.    |
+#              `--> PORT_S       |    |
+# client-gnutls --> PORT_D  Exim |----'
+#                     `----------'
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+acl_smtp_rcpt = acl_check_rcpt
+
+begin acl
+acl_check_rcpt:
+
+    accept condition = ${if eq{$received_port}{PORT_S}}
+           message   = Accepted (rcpt on backend)
+
+    accept verify  = recipient/callout=no_cache
+	   message = Accepted (rcpt via callout)
+
+begin routers
+catchall:
+    driver = accept
+    transport = local_smtp
+
+begin transports
+local_smtp:
+    driver = smtp
+    port = PORT_S
+    hosts = 127.0.0.1
+    hosts_require_tls = *
+    allow_localhost
+
+# End

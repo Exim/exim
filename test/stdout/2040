@@ -1,0 +1,21 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO rhu.barb
+????250
+>>> STARTTLS
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> EHLO rhu.barb
+????250
+>>> MAIL FROM:<>\r\nRCPT TO:test@example.com\r\n
+??? 250 OK
+<<< 250 OK
+??? 250 Accepted (rcpt via callout)
+<<< 250 Accepted (rcpt via callout)
+>>> QUIT
+??? 2
+<<< 221 myhost.test.ex closing connection
+End of script

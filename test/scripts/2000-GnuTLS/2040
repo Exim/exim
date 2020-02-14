@@ -1,0 +1,19 @@
+# TLS server: uncork in pipelining mode
+gnutls
+exim -DSERVER=server -bd -oX PORT_D:PORT_S
+****
+client-gnutls 127.0.0.1 PORT_D
+??? 220
+EHLO rhu.barb
+????250
+STARTTLS
+??? 220
+EHLO rhu.barb
+????250
+>>> MAIL FROM:<>\r\nRCPT TO:test@example.com\r\n
+??? 250 OK
+??? 250 Accepted (rcpt via callout)
+QUIT
+??? 2
+****
+killdaemon
