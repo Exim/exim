@@ -17274,6 +17274,13 @@ example:
 smtp_etrn_command = /etc/etrn_command $domain \
                     $sender_host_address
 .endd
+.new
+If the option is not set, the argument for the ETRN command must
+be a &'#'& followed by an address string.
+In this case an &'exim -R <string>'& command is used;
+if the ETRN ACL has set up a named-queue then &'-MCG <queue>'& is appended.
+.wen
+
 A new process is created to run the command, but Exim does not wait for it to
 complete. Consequently, its status cannot be checked. If the command cannot be
 run, a line is written to the panic log, but the ETRN caller still receives
