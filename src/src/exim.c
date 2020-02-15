@@ -2959,216 +2959,224 @@ for (i = 1; i < argc; i++)
 
     case 'O':
     if (*argrest == 0)
-      {
       if (++i >= argc)
         exim_fail("exim: string expected after -O\n");
-      }
     break;
 
     case 'o':
-
-    /* -oA: Set an argument for the bi command (sendmail's "alternate alias
-    file" option). */
-
-    if (*argrest == 'A')
+    switch (*argrest++)
       {
-      alias_arg = argrest + 1;
-      if (alias_arg[0] == 0)
-        {
-        if (i+1 < argc) alias_arg = argv[++i]; else
-          exim_fail("exim: string expected after -oA\n");
-        }
-      }
+      /* -oA: Set an argument for the bi command (sendmail's "alternate alias
+      file" option). */
+      case 'A':
+	if (!*(alias_arg = argrest))
+	  if (i+1 < argc) alias_arg = argv[++i];
+	  else exim_fail("exim: string expected after -oA\n");
+	break;
 
-    /* -oB: Set a connection message max value for remote deliveries */
+      /* -oB: Set a connection message max value for remote deliveries */
+      case 'B':
+	{
+	uschar * p = argrest;
+	if (!*p)
+	  if (i+1 < argc && isdigit((argv[i+1][0])))
+	    p = argv[++i];
+	  else
+	    {
+	    connection_max_messages = 1;
+	    p = NULL;
+	    }
 
-    else if (*argrest == 'B')
-      {
-      uschar *p = argrest + 1;
-      if (p[0] == 0)
-        {
-        if (i+1 < argc && isdigit((argv[i+1][0]))) p = argv[++i]; else
-          {
-          connection_max_messages = 1;
-          p = NULL;
-          }
-        }
+	if (p)
+	  {
+	  if (!isdigit(*p))
+	    exim_fail("exim: number expected after -oB\n");
+	  connection_max_messages = Uatoi(p);
+	  }
+	}
+	break;
 
-      if (p != NULL)
-        {
-        if (!isdigit(*p))
-          exim_fail("exim: number expected after -oB\n");
-        connection_max_messages = Uatoi(p);
-        }
-      }
+      /* -odb: background delivery */
 
-    /* -odb: background delivery */
+      case 'd':
+	if (Ustrcmp(argrest, "b") == 0)
+	  {
+	  f.synchronous_delivery = FALSE;
+	  arg_queue_only = FALSE;
+	  queue_only_set = TRUE;
+	  }
 
-    else if (Ustrcmp(argrest, "db") == 0)
-      {
-      f.synchronous_delivery = FALSE;
-      arg_queue_only = FALSE;
-      queue_only_set = TRUE;
-      }
+      /* -odf: foreground delivery (smail-compatible option); same effect as
+	 -odi: interactive (synchronous) delivery (sendmail-compatible option)
+      */
 
-    /* -odf: foreground delivery (smail-compatible option); same effect as
-       -odi: interactive (synchronous) delivery (sendmail-compatible option)
-    */
+	else if (Ustrcmp(argrest, "f") == 0 || Ustrcmp(argrest, "i") == 0)
+	  {
+	  f.synchronous_delivery = TRUE;
+	  arg_queue_only = FALSE;
+	  queue_only_set = TRUE;
+	  }
 
-    else if (Ustrcmp(argrest, "df") == 0 || Ustrcmp(argrest, "di") == 0)
-      {
-      f.synchronous_delivery = TRUE;
-      arg_queue_only = FALSE;
-      queue_only_set = TRUE;
-      }
+      /* -odq: queue only */
 
-    /* -odq: queue only */
+	else if (Ustrcmp(argrest, "q") == 0)
+	  {
+	  f.synchronous_delivery = FALSE;
+	  arg_queue_only = TRUE;
+	  queue_only_set = TRUE;
+	  }
 
-    else if (Ustrcmp(argrest, "dq") == 0)
-      {
-      f.synchronous_delivery = FALSE;
-      arg_queue_only = TRUE;
-      queue_only_set = TRUE;
-      }
+      /* -odqs: queue SMTP only - do local deliveries and remote routing,
+      but no remote delivery */
 
-    /* -odqs: queue SMTP only - do local deliveries and remote routing,
-    but no remote delivery */
+	else if (Ustrcmp(argrest, "qs") == 0)
+	  {
+	  f.queue_smtp = TRUE;
+	  arg_queue_only = FALSE;
+	  queue_only_set = TRUE;
+	  }
+	else badarg = TRUE;
+	break;
 
-    else if (Ustrcmp(argrest, "dqs") == 0)
-      {
-      f.queue_smtp = TRUE;
-      arg_queue_only = FALSE;
-      queue_only_set = TRUE;
-      }
+      /* -oex: Sendmail error flags. As these are also accepted without the
+      leading -o prefix, for compatibility with vacation and other callers,
+      they are handled with -e above. */
 
-    /* -oex: Sendmail error flags. As these are also accepted without the
-    leading -o prefix, for compatibility with vacation and other callers,
-    they are handled with -e above. */
+      /* -oi:     Set flag so dot doesn't end non-SMTP input (same as -i)
+	 -oitrue: Another sendmail syntax for the same */
 
-    /* -oi:     Set flag so dot doesn't end non-SMTP input (same as -i)
-       -oitrue: Another sendmail syntax for the same */
-
-    else if (Ustrcmp(argrest, "i") == 0 ||
-             Ustrcmp(argrest, "itrue") == 0)
-      f.dot_ends = FALSE;
+      case 'i':
+	if (!*argrest || Ustrcmp(argrest, "true") == 0)
+	  f.dot_ends = FALSE;
+	else badarg = TRUE;
+	break;
 
     /* -oM*: Set various characteristics for an incoming message; actually
     acted on for trusted callers only. */
 
-    else if (*argrest == 'M')
-      {
-      if (i+1 >= argc)
-        exim_fail("exim: data expected after -o%s\n", argrest);
+      case 'M':
+	{
+	if (i+1 >= argc)
+	  exim_fail("exim: data expected after -oM%s\n", argrest);
 
-      /* -oMa: Set sender host address */
+	/* -oMa: Set sender host address */
 
-      if (Ustrcmp(argrest, "Ma") == 0) sender_host_address = argv[++i];
+	if (Ustrcmp(argrest, "a") == 0) sender_host_address = argv[++i];
 
-      /* -oMaa: Set authenticator name */
+	/* -oMaa: Set authenticator name */
 
-      else if (Ustrcmp(argrest, "Maa") == 0)
-        sender_host_authenticated = argv[++i];
+	else if (Ustrcmp(argrest, "aa") == 0)
+	  sender_host_authenticated = argv[++i];
 
-      /* -oMas: setting authenticated sender */
+	/* -oMas: setting authenticated sender */
 
-      else if (Ustrcmp(argrest, "Mas") == 0)
-	authenticated_sender = string_copy_taint(argv[++i], TRUE);
+	else if (Ustrcmp(argrest, "as") == 0)
+	  authenticated_sender = string_copy_taint(argv[++i], TRUE);
 
-      /* -oMai: setting authenticated id */
+	/* -oMai: setting authenticated id */
 
-      else if (Ustrcmp(argrest, "Mai") == 0)
-	authenticated_id = string_copy_taint(argv[++i], TRUE);
+	else if (Ustrcmp(argrest, "ai") == 0)
+	  authenticated_id = string_copy_taint(argv[++i], TRUE);
 
-      /* -oMi: Set incoming interface address */
+	/* -oMi: Set incoming interface address */
 
-      else if (Ustrcmp(argrest, "Mi") == 0) interface_address = argv[++i];
+	else if (Ustrcmp(argrest, "i") == 0) interface_address = argv[++i];
 
-      /* -oMm: Message reference */
+	/* -oMm: Message reference */
 
-      else if (Ustrcmp(argrest, "Mm") == 0)
-        {
-        if (!mac_ismsgid(argv[i+1]))
-            exim_fail("-oMm must be a valid message ID\n");
-        if (!f.trusted_config)
-            exim_fail("-oMm must be called by a trusted user/config\n");
-          message_reference = argv[++i];
-        }
+	else if (Ustrcmp(argrest, "m") == 0)
+	  {
+	  if (!mac_ismsgid(argv[i+1]))
+	      exim_fail("-oMm must be a valid message ID\n");
+	  if (!f.trusted_config)
+	      exim_fail("-oMm must be called by a trusted user/config\n");
+	    message_reference = argv[++i];
+	  }
 
-      /* -oMr: Received protocol */
+	/* -oMr: Received protocol */
 
-      else if (Ustrcmp(argrest, "Mr") == 0)
+	else if (Ustrcmp(argrest, "r") == 0)
 
-        if (received_protocol)
-          exim_fail("received_protocol is set already\n");
-        else
-	  received_protocol = argv[++i];
+	  if (received_protocol)
+	    exim_fail("received_protocol is set already\n");
+	  else
+	    received_protocol = argv[++i];
 
-      /* -oMs: Set sender host name */
+	/* -oMs: Set sender host name */
 
-      else if (Ustrcmp(argrest, "Ms") == 0)
-	sender_host_name = string_copy_taint(argv[++i], TRUE);
+	else if (Ustrcmp(argrest, "s") == 0)
+	  sender_host_name = string_copy_taint(argv[++i], TRUE);
 
-      /* -oMt: Set sender ident */
+	/* -oMt: Set sender ident */
 
-      else if (Ustrcmp(argrest, "Mt") == 0)
-        {
-        sender_ident_set = TRUE;
-        sender_ident = argv[++i];
-        }
+	else if (Ustrcmp(argrest, "t") == 0)
+	  {
+	  sender_ident_set = TRUE;
+	  sender_ident = argv[++i];
+	  }
 
-      /* Else a bad argument */
+	/* Else a bad argument */
 
-      else
-        {
-        badarg = TRUE;
-        break;
-        }
+	else
+	  badarg = TRUE;
+	}
+	break;
+
+      /* -om: Me-too flag for aliases. Exim always does this. Some programs
+      seem to call this as -m (undocumented), so that is also accepted (see
+      above). */
+      /* -oo: An ancient flag for old-style addresses which still seems to
+      crop up in some calls (see in SCO). */
+
+      case 'm':
+      case 'o':
+	if (!*argrest) {}
+	else badarg = TRUE;
+	break;
+
+      /* -oP <name>: set pid file path for daemon
+	 -oPX:       delete pid file of daemon */
+
+      case 'P':
+	if (!*argrest) override_pid_file_path = argv[++i];
+	else if (Ustrcmp(argrest, "X") == 0) delete_pid_file();
+	else badarg = TRUE;
+	break;
+
+
+      /* -or <n>: set timeout for non-SMTP acceptance
+	 -os <n>: set timeout for SMTP acceptance */
+
+      case 'r':
+      case 's':
+	if (!*argrest)
+	  {
+	  int *tp = (*argrest == 'r')?
+	    &arg_receive_timeout : &arg_smtp_receive_timeout;
+	  if (argrest[1] == 0)
+	    {
+	    if (i+1 < argc) *tp= readconf_readtime(argv[++i], 0, FALSE);
+	    }
+	  else *tp = readconf_readtime(argrest + 1, 0, FALSE);
+	  if (*tp < 0)
+	    exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+	  }
+	else badarg = TRUE;
+	break;
+
+      /* -oX <list>: Override local_interfaces and/or default daemon ports */
+
+      case 'X':
+	if (!*argrest)
+	  override_local_interfaces = argv[++i];
+	else badarg = TRUE;
+	break;
+
+      /* Unknown -o argument */
+
+      default:
+	badarg = TRUE;
       }
-
-    /* -om: Me-too flag for aliases. Exim always does this. Some programs
-    seem to call this as -m (undocumented), so that is also accepted (see
-    above). */
-
-    else if (Ustrcmp(argrest, "m") == 0) {}
-
-    /* -oo: An ancient flag for old-style addresses which still seems to
-    crop up in some calls (see in SCO). */
-
-    else if (Ustrcmp(argrest, "o") == 0) {}
-
-    /* -oP <name>: set pid file path for daemon
-       -oPX:       delete pid file of daemon */
-
-    else if (Ustrcmp(argrest, "P") == 0)
-      override_pid_file_path = argv[++i];
-
-    else if (Ustrcmp(argrest, "PX") == 0)
-      delete_pid_file();
-
-    /* -or <n>: set timeout for non-SMTP acceptance
-       -os <n>: set timeout for SMTP acceptance */
-
-    else if (*argrest == 'r' || *argrest == 's')
-      {
-      int *tp = (*argrest == 'r')?
-        &arg_receive_timeout : &arg_smtp_receive_timeout;
-      if (argrest[1] == 0)
-        {
-        if (i+1 < argc) *tp= readconf_readtime(argv[++i], 0, FALSE);
-        }
-      else *tp = readconf_readtime(argrest + 1, 0, FALSE);
-      if (*tp < 0)
-        exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
-      }
-
-    /* -oX <list>: Override local_interfaces and/or default daemon ports */
-
-    else if (Ustrcmp(argrest, "X") == 0)
-      override_local_interfaces = argv[++i];
-
-    /* Unknown -o argument */
-
-    else badarg = TRUE;
     break;
 
 

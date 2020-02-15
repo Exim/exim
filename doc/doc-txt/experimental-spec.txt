@@ -819,7 +819,6 @@ service auth {
   inet_listener {
     name = exim
     port = 12345
-    ssl = yes
   }
 ...
 }
