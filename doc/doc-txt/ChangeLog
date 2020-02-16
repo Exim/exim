@@ -126,6 +126,11 @@ JH/25 Fix use of concurrent TLS connections under GnuTLS.  When a callout was
       used rather than per-connection info for tracking the state of data
       queued for transmission.  This could result in a connection hang.
 
+JH/26 Fix use of the SIZE parameter on MAIL commands, on continued connections.
+      Previously, when delivering serveral messages down a single connection
+      only the first would provide a SIZE.  This was due to the size information
+      not being properly tracked.
+
 
 Exim version 4.93
 -----------------

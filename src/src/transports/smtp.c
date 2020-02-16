@@ -2377,6 +2377,7 @@ else
     }
   sx->inblock.cctx = sx->outblock.cctx = &sx->cctx;
   smtp_command = big_buffer;
+  sx->peer_offered = smtp_peer_options;
   sx->helo_data = NULL;		/* ensure we re-expand ob->helo_data */
 
   /* For a continued connection with TLS being proxied for us, or a
@@ -2387,7 +2388,6 @@ else
          && cutthrough.is_tls)
      )
     {
-    sx->peer_offered = smtp_peer_options;
     sx->pipelining_used = pipelining_active = !!(smtp_peer_options & OPTION_PIPE);
     HDEBUG(D_transport) debug_printf("continued connection, %s TLS\n",
       continue_proxy_cipher ? "proxied" : "verify conn with");
@@ -3512,7 +3512,6 @@ always has a sequence number greater than one. */
 
 if (continue_hostname && continue_sequence == 1)
   {
-  sx->peer_offered = smtp_peer_options;
   /* sx->pending_MAIL = FALSE; */
   sx->ok = TRUE;
   /* sx->next_addr = NULL; */
