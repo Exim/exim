@@ -447,9 +447,7 @@ typedef struct {
 } cut_t;
 extern cut_t cutthrough;               /* Deliver-concurrently */
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
 extern int     daemon_notifier_fd;     /* Unix socket for notifications */
-#endif
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
 extern int     daemon_startup_retries; /* Number of times to retry */
 extern int     daemon_startup_sleep;   /* Sleep between retries */

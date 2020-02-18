@@ -973,7 +973,6 @@ exim_exit(EXIT_SUCCESS, US"daemon");
 }
 
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
 /*************************************************
 *	Listener socket for local work prompts	 *
 *************************************************/
@@ -1057,16 +1056,17 @@ for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
 buf[sz] = 0;
 switch (buf[0])
   {
+#ifdef EXPERIMENTAL_QUEUE_RAMP
   case NOTIFY_MSG_QRUN:
     /* this should be a message_id */
     DEBUG(D_queue_run)
       debug_printf("%s: qrunner trigger: %s\n", __FUNCTION__, buf+1);
     memcpy(queuerun_msgid, buf+1, MESSAGE_ID_LENGTH+1);
     return TRUE;
+#endif	/*EXPERIMENTAL_QUEUE_RAMP*/
   }
 return FALSE;
 }
-#endif	/*EXPERIMENTAL_QUEUE_RAMP*/
 
 
 /*************************************************
@@ -1514,10 +1514,7 @@ if (f.background_daemon)
 /* We are now in the disconnected, daemon process (unless debugging). Set up
 the listening sockets if required. */
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
-if (queue_fast_ramp)
-  daemon_notifier_socket();
-#endif
+daemon_notifier_socket();
 
 if (f.daemon_listen && !f.inetd_wait_mode)
   {
@@ -2048,10 +2045,8 @@ for (;;)
 
           /* Close any open listening sockets in the child */
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
 	  if (daemon_notifier_fd >= 0)
 	    (void) close(daemon_notifier_fd);
-#endif
           for (int sk = 0; sk < listen_socket_count; sk++)
             (void) close(listen_sockets[sk]);
 
@@ -2184,10 +2179,8 @@ for (;;)
     fd_set select_listen;
 
     FD_ZERO(&select_listen);
-#ifdef EXPERIMENTAL_QUEUE_RAMP
     if (daemon_notifier_fd >= 0)
       FD_SET(daemon_notifier_fd, &select_listen);
-#endif
     for (int sk = 0; sk < listen_socket_count; sk++)
       {
       FD_SET(listen_sockets[sk], &select_listen);
@@ -2244,7 +2237,6 @@ for (;;)
 
       if (!select_failed)
 	{
-#ifdef EXPERIMENTAL_QUEUE_RAMP
 	if (  daemon_notifier_fd >= 0
 	   && FD_ISSET(daemon_notifier_fd, &select_listen))
 	  {
@@ -2252,7 +2244,6 @@ for (;;)
 	  sigalrm_seen = daemon_notification();
 	  break;	/* to top of daemon loop */
 	  }
-#endif
         for (int sk = 0; sk < listen_socket_count; sk++)
           if (FD_ISSET(listen_sockets[sk], &select_listen))
             {

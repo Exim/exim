@@ -346,7 +346,7 @@ const pcre *selectstring_regex_sender = NULL;
 uschar *log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
-pid_t qpid[1] = {0};	/* Parallelism factor for q2stage 1st phase */
+pid_t qpid[4] = {0};	/* Parallelism factor for q2stage 1st phase */
 
 #ifdef MEASURE_TIMING
 report_time_since(&timestamp_startup, US"queue_run start");

@@ -740,9 +740,7 @@ cut_t   cutthrough = {
   .nrcpt =		0,				/* number of addresses */
 };
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
 int	daemon_notifier_fd     = -1;
-#endif
 uschar *daemon_smtp_port       = US"smtp";
 int     daemon_startup_retries = 9;
 int     daemon_startup_sleep   = 30;
