@@ -3353,9 +3353,14 @@ tls_write(void * ct_ctx, const uschar * buff, size_t len, BOOL more)
 ssize_t outbytes;
 size_t left = len;
 exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
-#ifdef SUPPORT_CORK
 
-if (more && !state->corked) gnutls_record_cork(state->session);
+#ifdef SUPPORT_CORK
+if (more && !state->corked)
+  {
+  DEBUG(D_tls) debug_printf("gnutls_record_cork(session=%p)\n", state->session);
+  gnutls_record_cork(state->session);
+  state->corked = TRUE;
+  }
 #endif
 
 DEBUG(D_tls) debug_printf("%s(%p, " SIZE_T_FMT "%s)\n", __FUNCTION__,
@@ -3371,6 +3376,7 @@ while (left > 0)
   while (outbytes == GNUTLS_E_AGAIN);
 
   DEBUG(D_tls) debug_printf("outbytes=" SSIZE_T_FMT "\n", outbytes);
+
   if (outbytes < 0)
     {
     DEBUG(D_tls) debug_printf("%s: gnutls_record_send err\n", __FUNCTION__);
@@ -3396,10 +3402,26 @@ if (len > INT_MAX)
   }
 
 #ifdef SUPPORT_CORK
-if (more != state->corked)
+if (!more && state->corked)
   {
-  if (!more) (void) gnutls_record_uncork(state->session, 0);
-  state->corked = more;
+  DEBUG(D_tls) debug_printf("gnutls_record_uncork(session=%p)\n", state->session);
+  do {
+    do
+      /* We can't use GNUTLS_RECORD_WAIT here, as it retries on
+      GNUTLS_E_AGAIN || GNUTLS_E_INTR, which would break our timeout set by alarm().
+      The GNUTLS_E_AGAIN should not happen ever, as our sockets are blocking anyway.
+      But who knows. (That all relies on the fact that GNUTLS_E_INTR and GNUTLS_E_AGAIN
+      match the EINTR and EAGAIN errno values.) */
+      outbytes = gnutls_record_uncork(state->session, 0);
+    while (outbytes == GNUTLS_E_AGAIN);
+
+     if (outbytes < 0)
+       {
+       record_io_error(state, len, US"uncork", NULL);
+       return -1;
+       }
+  } while (gnutls_record_check_corked(state->session) > 0);
+  state->corked = FALSE;
   }
 #endif
 
