@@ -837,6 +837,30 @@ and a whitespace-separated port number must be given.
 
 
 
+Twophase queue run fast ramp
+----------------------------
+To include this feature, add to Local/Makefile:
+  EXPERIMENTAL_QUEUE_RAMP=yes
+
+If the (added for this feature) main-section option "queue_fast_ramp" (boolean)
+is set, and a two-phase ("-qq") queue run finds, during the first phase, a
+suitably large number of message routed for a given host - then (subject to
+the usual queue-runner resource limits) delivery for that host is initiated
+immediately, overlapping with the remainder of the first phase.
+
+This is incompatible with queue_run_in_order.
+
+The result should be a faster startup of deliveries when a large queue is
+present and reasonable numbers of messages are routed to common hosts; this
+could be a smarthost case, or delivery onto the Internet where a large proportion
+of recipients hapen to be on a Gorilla-sized provider.
+
+As usual, the presence of a configuration option is associated with a
+predefined macro, making it possible to write portable configurations.
+For this one, the macro is _OPT_MAIN_QUEUE_FAST_RAMP.
+
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------

@@ -313,6 +313,7 @@ struct global_flags f =
 	.system_filtering       = FALSE,
 
 	.taint_check_slow       = FALSE,
+	.testsuite_delays	= TRUE,
 	.tcp_fastopen_ok        = FALSE,
 	.tcp_in_fastopen        = FALSE,
 	.tcp_in_fastopen_data   = FALSE,
@@ -379,6 +380,9 @@ BOOL    prod_requires_admin    = TRUE;
 BOOL    proxy_session          = FALSE;
 #endif
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+BOOL    queue_fast_ramp		= FALSE;
+#endif
 BOOL    queue_list_requires_admin = TRUE;
 BOOL    queue_only             = FALSE;
 BOOL    queue_only_load_latch  = TRUE;
@@ -736,6 +740,9 @@ cut_t   cutthrough = {
   .nrcpt =		0,				/* number of addresses */
 };
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+int	daemon_notifier_fd     = -1;
+#endif
 uschar *daemon_smtp_port       = US"smtp";
 int     daemon_startup_retries = 9;
 int     daemon_startup_sleep   = 30;

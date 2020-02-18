@@ -1,0 +1,6 @@
+2017-07-30 18:51:05.712 Start queue run: pid=pppp -qq
+2017-07-30 18:51:05.712 End queue run: pid=pppp -qq
+406 TESTSUITE/test-stdout
+daemon did make at least one delivery
+
+******** SERVER ********

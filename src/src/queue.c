@@ -346,7 +346,7 @@ const pcre *selectstring_regex_sender = NULL;
 uschar *log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
-pid_t qpid[4] = {0};	/* Parallelism factor for q2stage 1st phase */
+pid_t qpid[1] = {0};	/* Parallelism factor for q2stage 1st phase */
 
 #ifdef MEASURE_TIMING
 report_time_since(&timestamp_startup, US"queue_run start");
@@ -1490,6 +1490,39 @@ if (s)
 	DEBUG(D_receive) debug_printf("queue_only set because %s exists\n", ss);
 	}
 }
+
+
+
+/******************************************************************************/
+/******************************************************************************/
+
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+void
+queue_notify_daemon(const uschar * msgid)
+{
+uschar buf[MESSAGE_ID_LENGTH + 2];
+int fd;
+
+DEBUG(D_queue_run) debug_printf("%s: %s\n", __FUNCTION__, msgid);
+
+buf[0] = NOTIFY_MSG_QRUN;
+memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
+
+if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
+  {
+  struct sockaddr_un sun = {.sun_family = AF_UNIX};
+
+  snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
+    spool_directory, NOTIFIER_SOCKET_NAME);
+
+  if (sendto(fd, buf, sizeof(buf), 0, &sun, sizeof(sun)) < 0)
+    DEBUG(D_queue_run)
+      debug_printf("%s: sendto %s\n", __FUNCTION__, strerror(errno));
+  close(fd);
+  }
+else DEBUG(D_queue_run) debug_printf(" socket: %s\n", strerror(errno));
+}
+#endif
 
 #endif /*!COMPILE_UTILITY*/
 

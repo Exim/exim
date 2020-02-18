@@ -75,7 +75,7 @@ int n = 0;
 int extra = pcount ? *pcount : 0;
 uschar **argv;
 
-argv = store_get((extra + acount + MAX_CLMACROS + 18) * sizeof(char *), FALSE);
+argv = store_get((extra + acount + MAX_CLMACROS + 19) * sizeof(char *), FALSE);
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
@@ -109,6 +109,7 @@ if (!minimal)
     if (debug_selector != 0)
       argv[n++] = string_sprintf("-d=0x%x", debug_selector);
     }
+  if (!f.testsuite_delays) argv[n++] = US"-odd";
   if (f.dont_deliver) argv[n++] = US"-N";
   if (f.queue_smtp) argv[n++] = US"-odqs";
   if (f.synchronous_delivery) argv[n++] = US"-odi";

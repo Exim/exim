@@ -275,6 +275,7 @@ extern struct global_flags {
  BOOL   system_filtering		:1; /* TRUE when running system filter */
 
  BOOL   taint_check_slow		:1; /* malloc/mmap are not returning distinct ranges */
+ BOOL	testsuite_delays		:1; /* interprocess sequencing delays, under testsuite */
  BOOL   tcp_fastopen_ok			:1; /* appears to be supported by kernel */
  BOOL   tcp_in_fastopen			:1; /* conn usefully used fastopen */
  BOOL   tcp_in_fastopen_data		:1; /* fastopen carried data */
@@ -446,6 +447,9 @@ typedef struct {
 } cut_t;
 extern cut_t cutthrough;               /* Deliver-concurrently */
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+extern int     daemon_notifier_fd;     /* Unix socket for notifications */
+#endif
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
 extern int     daemon_startup_retries; /* Number of times to retry */
 extern int     daemon_startup_sleep;   /* Sleep between retries */
@@ -786,6 +790,9 @@ extern uschar *prvscheck_result;       /* Set during prvscheck expansion item */
 extern const uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
 extern uschar *qualify_domain_sender;  /* Domain to qualify senders with */
 extern uschar *queue_domains;          /* Queue these domains */
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+extern BOOL    queue_fast_ramp;        /* 2-phase queue-run overlap */
+#endif
 extern BOOL    queue_list_requires_admin; /* TRUE if -bp requires admin */
                                        /*   immediate children */
 extern pid_t   queue_run_pid;          /* PID of the queue running process or 0 */

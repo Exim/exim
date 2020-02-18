@@ -363,8 +363,11 @@ extern int     vaguely_random_number_fallback(int);
 
 extern BOOL    queue_action(uschar *, int, uschar **, int, int);
 extern void    queue_check_only(void);
-extern void    queue_list(int, uschar **, int);
 extern void    queue_count(void);
+extern void    queue_list(int, uschar **, int);
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+extern void    queue_notify_daemon(const uschar * hostname);
+#endif
 extern void    queue_run(uschar *, uschar *, BOOL);
 
 extern int     random_number(int);
@@ -1043,7 +1046,7 @@ static inline void
 testharness_pause_ms(int millisec)
 {
 #ifndef MEASURE_TIMING
-if (f.running_in_test_harness) millisleep(millisec);
+if (f.running_in_test_harness && f.testsuite_delays) millisleep(millisec);
 #endif
 }
 

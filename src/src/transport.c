@@ -1560,12 +1560,17 @@ for (host_item * host = hostlist; host; host = host->next)
 
   /* If this record is full, write it out with a new name constructed
   from the sequence number, increase the sequence number, and empty
-  the record. */
+  the record.  If we're doing a two-phase queue run initial phase, ping the
+  daemon to consider running a delivery on this host. */
 
   if (host_record->count >= WAIT_NAME_MAX)
     {
     sprintf(CS buffer, "%.200s:%d", host->name, host_record->sequence);
     dbfn_write(dbm_file, buffer, host_record, sizeof(dbdata_wait) + host_length);
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+    if (f.queue_2stage && queue_fast_ramp && !queue_run_in_order)
+      queue_notify_daemon(message_id);
+#endif
     host_record->sequence++;
     host_record->count = 0;
     host_length = 0;

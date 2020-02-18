@@ -500,7 +500,7 @@ else
     rc = n;
     }
   else
-
+    {
     rc = send(outblock->cctx->sock, outblock->buffer, n,
 #ifdef MSG_MORE
 	      more ? MSG_MORE : 0
@@ -508,6 +508,7 @@ else
 	      0
 #endif
 	     );
+    }
   }
 
 if (rc <= 0)

@@ -4642,6 +4642,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   search_tidyup();
 
+  DEBUG(D_deliver) debug_printf("forking transport process\n");
   if ((pid = fork()) == 0)
     {
     int fd = pfd[pipe_write];
@@ -4972,6 +4973,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
     (void)close(fd);
     exit(EXIT_SUCCESS);
     }
+  DEBUG(D_deliver) debug_printf("forked transport process (%d)\n", pid);
 
   /* Back in the mainline: close the unwanted half of the pipe. */
 

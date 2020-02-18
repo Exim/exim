@@ -1100,4 +1100,9 @@ should not be one active. */
 #define SVFMT_TAINT_NOCHK	BIT(2)
 
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+# define NOTIFIER_SOCKET_NAME	"exim_daemon_notify"
+# define NOTIFY_MSG_QRUN	1	/* Notify message types */
+#endif
+
 /* End of macros.h */

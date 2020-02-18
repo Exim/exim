@@ -972,15 +972,6 @@ fprintf(fp, "Support for:");
   tcp_init();
   if (f.tcp_fastopen_ok) fprintf(fp, " TCP_Fast_Open");
 #endif
-#ifdef EXPERIMENTAL_LMDB
-  fprintf(fp, " Experimental_LMDB");
-#endif
-#ifdef EXPERIMENTAL_QUEUEFILE
-  fprintf(fp, " Experimental_QUEUEFILE");
-#endif
-#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
-  fprintf(fp, " Experimental_SRS");
-#endif
 #ifdef EXPERIMENTAL_ARC
   fprintf(fp, " Experimental_ARC");
 #endif
@@ -992,6 +983,18 @@ fprintf(fp, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
   fprintf(fp, " Experimental_DSN_info");
+#endif
+#ifdef EXPERIMENTAL_LMDB
+  fprintf(fp, " Experimental_LMDB");
+#endif
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+  fprintf(fp, " Experimental_Queue_Ramp");
+#endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  fprintf(fp, " Experimental_QUEUEFILE");
+#endif
+#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
+  fprintf(fp, " Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_TLS_RESUME
   fprintf(fp, " Experimental_TLS_resume");
@@ -3005,6 +3008,11 @@ for (i = 1; i < argc; i++)
 	  arg_queue_only = FALSE;
 	  queue_only_set = TRUE;
 	  }
+
+      /* -odd: testsuite-only: add no inter-process delays */
+
+	else if (Ustrcmp(argrest, "d") == 0)
+	  f.testsuite_delays = FALSE;
 
       /* -odf: foreground delivery (smail-compatible option); same effect as
 	 -odi: interactive (synchronous) delivery (sendmail-compatible option)

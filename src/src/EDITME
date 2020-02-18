@@ -632,6 +632,9 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following line to include support for TLS Resumption
 # EXPERIMENTAL_TLS_RESUME=yes
 
+# Uncomment the following to include the fast-ramp two-phase-queue-run support
+# EXPERIMENTAL_QUEUE_RAMP=yes
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################

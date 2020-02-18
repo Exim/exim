@@ -105,9 +105,9 @@ lock_data.l_len = SPOOL_DATA_START_OFFSET;
 
 if (fcntl(fd, F_SETLK, &lock_data) < 0)
   {
-  log_write(L_skip_delivery,
-            LOG_MAIN,
-            "Spool file is locked (another process is handling this message)");
+  log_write(L_skip_delivery, LOG_MAIN,
+      "Spool file for %s is locked (another process is handling this message)",
+      id);
   (void)close(fd);
   errno = 0;
   return -1;

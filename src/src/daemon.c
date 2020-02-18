@@ -973,6 +973,102 @@ exim_exit(EXIT_SUCCESS, US"daemon");
 }
 
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+/*************************************************
+*	Listener socket for local work prompts	 *
+*************************************************/
+
+static void
+daemon_notifier_socket(void)
+{
+int fd;
+const uschar * where;
+struct sockaddr_un sun = {.sun_family = AF_UNIX};
+
+DEBUG(D_any) debug_printf("creating notifier socket\n");
+
+where = US"socket";
+#ifdef SOCK_CLOEXEC
+if ((fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0)) < 0)
+  goto bad;
+#else
+if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0))) < 0)
+  goto bad;
+(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+#endif
+
+snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
+  spool_directory, NOTIFIER_SOCKET_NAME);
+where = US"bind";
+if (bind(fd, (const struct sockaddr *)&sun, sizeof(sun)) < 0)
+  goto bad;
+
+where = US"SO_PASSCRED";
+if (setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on)) < 0)
+  goto bad;
+
+/* debug_printf("%s: fd %d\n", __FUNCTION__, fd); */
+daemon_notifier_fd = fd;
+return;
+
+bad:
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s: %s: %s",
+    __FUNCTION__, where, strerror(errno));
+}
+
+
+static uschar queuerun_msgid[MESSAGE_ID_LENGTH+1];
+
+/* Return TRUE if a sigalrm should be emulated */
+static BOOL
+daemon_notification(void)
+{
+uschar buf[256], cbuf[256];
+struct iovec iov = {.iov_base = buf, .iov_len = sizeof(buf)-1};
+struct msghdr msg = { .msg_name = NULL,
+		      .msg_namelen = 0,
+		      .msg_iov = &iov,
+		      .msg_iovlen = 1,
+		      .msg_control = cbuf,
+		      .msg_controllen = sizeof(cbuf)
+		    };
+ssize_t sz;
+struct cmsghdr * cp;
+
+buf[sizeof(buf)-1] = 0;
+if ((sz = recvmsg(daemon_notifier_fd, &msg, 0)) <= 0) return FALSE;
+if (sz >= sizeof(buf)) return FALSE;
+
+for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
+     cp;
+     cp = CMSG_NXTHDR(&msg, cp))
+  if (cp->cmsg_level == SOL_SOCKET && cp->cmsg_type == SCM_CREDENTIALS)
+  {
+  struct ucred * cr = (struct ucred *) CMSG_DATA(cp);
+  if (cr->uid && cr->uid != exim_uid)
+    {
+    DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
+      __FUNCTION__, (int)cr->pid, (int)cr->uid, (int)cr->gid);
+    return FALSE;
+    }
+  break;
+  }
+
+buf[sz] = 0;
+switch (buf[0])
+  {
+  case NOTIFY_MSG_QRUN:
+    /* this should be a message_id */
+    DEBUG(D_queue_run)
+      debug_printf("%s: qrunner trigger: %s\n", __FUNCTION__, buf+1);
+    memcpy(queuerun_msgid, buf+1, MESSAGE_ID_LENGTH+1);
+    return TRUE;
+  }
+return FALSE;
+}
+#endif	/*EXPERIMENTAL_QUEUE_RAMP*/
+
+
 /*************************************************
 *              Exim Daemon Mainline              *
 *************************************************/
@@ -1418,6 +1514,11 @@ if (f.background_daemon)
 /* We are now in the disconnected, daemon process (unless debugging). Set up
 the listening sockets if required. */
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+if (queue_fast_ramp)
+  daemon_notifier_socket();
+#endif
+
 if (f.daemon_listen && !f.inetd_wait_mode)
   {
   int sk;
@@ -1693,7 +1794,7 @@ if (f.inetd_wait_mode)
   set_process_info("daemon(%s): pre-listening socket", version_string);
 
   /* set up the timeout logic */
-  sigalrm_seen = 1;
+  sigalrm_seen = TRUE;
   }
 
 else if (f.daemon_listen)
@@ -1921,7 +2022,11 @@ for (;;)
 
     else
       {
-      DEBUG(D_any) debug_printf("SIGALRM received\n");
+      DEBUG(D_any) debug_printf("%s received\n",
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+	*queuerun_msgid ? "qrun notification" :
+#endif
+	"SIGALRM");
 
       /* Do a full queue run in a child process, if required, unless we already
       have enough queue runners on the go. If we are not running as root, a
@@ -1943,8 +2048,12 @@ for (;;)
 
           /* Close any open listening sockets in the child */
 
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+	  if (daemon_notifier_fd >= 0)
+	    (void) close(daemon_notifier_fd);
+#endif
           for (int sk = 0; sk < listen_socket_count; sk++)
-            (void)close(listen_sockets[sk]);
+            (void) close(listen_sockets[sk]);
 
           /* Reset SIGHUP and SIGCHLD in the child in both cases. */
 
@@ -1959,13 +2068,17 @@ for (;;)
             {
             uschar opt[8];
             uschar *p = opt;
-            uschar *extra[5];
+            uschar *extra[7];
             int extracount = 1;
 
             signal(SIGALRM, SIG_DFL);
             *p++ = '-';
             *p++ = 'q';
-            if (f.queue_2stage) *p++ = 'q';
+            if (  f.queue_2stage
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+	       && !*queuerun_msgid
+#endif
+	       ) *p++ = 'q';
             if (f.queue_run_first_delivery) *p++ = 'i';
             if (f.queue_run_force) *p++ = 'f';
             if (f.deliver_force_thaw) *p++ = 'f';
@@ -1973,6 +2086,14 @@ for (;;)
             *p = 0;
 	    extra[0] = *queue_name
 	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
+
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+	    if (*queuerun_msgid)
+	      {
+	      extra[extracount++] = queuerun_msgid;	/* Trigger only the */
+	      extra[extracount++] = queuerun_msgid;	/* one message      */
+	      }
+#endif
 
             /* If -R or -S were on the original command line, ensure they get
             passed on. */
@@ -1992,15 +2113,23 @@ for (;;)
 
             /* Overlay this process with a new execution. */
 
-            (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, TRUE, extracount,
-              extra[0], extra[1], extra[2], extra[3], extra[4]);
+            (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, extracount,
+              extra[0], extra[1], extra[2], extra[3], extra[4], extra[5], extra[6]);
 
             /* Control never returns here. */
             }
 
           /* No need to re-exec; SIGALRM remains set to the default handler */
 
-          queue_run(NULL, NULL, FALSE);
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+	  if (*queuerun_msgid)
+	    {
+	    f.queue_2stage = FALSE;
+	    queue_run(queuerun_msgid, queuerun_msgid, FALSE);
+	    }
+	  else
+#endif
+	    queue_run(NULL, NULL, FALSE);
           exim_underbar_exit(EXIT_SUCCESS);
           }
 
@@ -2027,7 +2156,12 @@ for (;;)
       /* Reset the alarm clock */
 
       sigalrm_seen = FALSE;
-      ALARM(queue_interval);
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+      if (*queuerun_msgid)
+	*queuerun_msgid = 0;
+      else
+#endif
+	ALARM(queue_interval);
       }
 
     } /* sigalrm_seen */
@@ -2050,6 +2184,10 @@ for (;;)
     fd_set select_listen;
 
     FD_ZERO(&select_listen);
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+    if (daemon_notifier_fd >= 0)
+      FD_SET(daemon_notifier_fd, &select_listen);
+#endif
     for (int sk = 0; sk < listen_socket_count; sk++)
       {
       FD_SET(listen_sockets[sk], &select_listen);
@@ -2105,6 +2243,16 @@ for (;;)
       int accept_socket = -1;
 
       if (!select_failed)
+	{
+#ifdef EXPERIMENTAL_QUEUE_RAMP
+	if (  daemon_notifier_fd >= 0
+	   && FD_ISSET(daemon_notifier_fd, &select_listen))
+	  {
+	  FD_CLR(daemon_notifier_fd, &select_listen);
+	  sigalrm_seen = daemon_notification();
+	  break;	/* to top of daemon loop */
+	  }
+#endif
         for (int sk = 0; sk < listen_socket_count; sk++)
           if (FD_ISSET(listen_sockets[sk], &select_listen))
             {
@@ -2114,6 +2262,7 @@ for (;;)
             FD_CLR(listen_sockets[sk], &select_listen);
             break;
             }
+	}
 
       /* If select or accept has failed and this was not caused by an
       interruption, log the incident and try again. With asymmetric TCP/IP
