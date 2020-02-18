@@ -40175,6 +40175,8 @@ To generate keys under OpenSSL:
 openssl genrsa -out dkim_rsa.private 2048
 openssl rsa -in dkim_rsa.private -out /dev/stdout -pubout -outform PEM
 .endd
+The result file from the first command should be retained, and
+this option set to use it.
 Take the base-64 lines from the output of the second command, concatenated,
 for the DNS TXT record.
 See section 3.6 of RFC6376 for the record specification.
