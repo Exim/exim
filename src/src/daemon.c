@@ -992,7 +992,7 @@ where = US"socket";
 if ((fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0)) < 0)
   goto bad;
 #else
-if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0))) < 0)
+if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
   goto bad;
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
@@ -1049,18 +1049,34 @@ DEBUG(D_queue_run) debug_printf("%s from addr%s '%s'\n", __FUNCTION__,
   *sun.sun_path ? "" : " abstract", sun.sun_path+ (*sun.sun_path ? 0 : 1));
 
 /* Refuse to handle the item unless the peer has good credentials */
+#ifdef SCM_CREDENTIALS
+# define EXIM_SCM_CR_TYPE SCM_CREDENTIALS
+#elif defined(SCM_CREDS)
+# define EXIM_SCM_CR_TYPE SCM_CREDS
+#else
+# error no SCM creds knowlege
+#endif
 
 for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
      cp;
      cp = CMSG_NXTHDR(&msg, cp))
-  if (cp->cmsg_level == SOL_SOCKET && cp->cmsg_type == SCM_CREDENTIALS)
+  if (cp->cmsg_level == SOL_SOCKET && cp->cmsg_type == EXIM_SCM_CR_TYPE)
   {
+#ifdef SCM_CREDENTIALS
   struct ucred * cr = (struct ucred *) CMSG_DATA(cp);
   if (cr->uid && cr->uid != exim_uid)
     {
     DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
       __FUNCTION__, (int)cr->pid, (int)cr->uid, (int)cr->gid);
     return FALSE;
+#elif defined(SCM_CREDS)
+  struct cmsgcred * cr = (struct cmsgcred *) CMSG_DATA(cp);
+  if (cr->cmcred_uid && cr->cmcred_uid != exim_uid)
+    {
+    DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
+      __FUNCTION__, (int)cr->cmcred_pid, (int)cr->cmcred_uid, (int)cr->cmcred_gid);
+    return FALSE;
+#endif
     }
   break;
   }
@@ -1085,7 +1101,8 @@ switch (buf[0])
     DEBUG(D_queue_run)
       debug_printf("%s: queue size request: %s\n", __FUNCTION__, buf);
 
-    if (sendto(daemon_notifier_fd, buf, len, 0, &sun, msg.msg_namelen) < 0)
+    if (sendto(daemon_notifier_fd, buf, len, 0,
+		(const struct sockaddr *)&sun, msg.msg_namelen) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC,
 	"%s: sendto: %s\n", __FUNCTION__, strerror(errno));
     return FALSE;
