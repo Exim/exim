@@ -1773,7 +1773,8 @@ len = offsetof(struct sockaddr_un, sun_path)
       spool_directory, getpid());
 #endif
 
-if (bind(fd, &sun, len) < 0) { where = US"bind"; goto bad; }
+if (bind(fd, (const struct sockaddr *)&sun, len) < 0)
+  { where = US"bind"; goto bad; }
 
 #ifdef notdef
 debug_printf("local%s '%s'\n", *sun.sun_path ? "" : " abstract",
@@ -1784,7 +1785,8 @@ sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
 len = offsetof(struct sockaddr_un, sun_path) + 1
   + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
 
-if (connect(fd, &sun, len) < 0) { where = US"connect"; goto bad; }
+if (connect(fd, (const struct sockaddr *)&sun, len) < 0)
+  { where = US"connect"; goto bad; }
 
 buf[0] = NOTIFY_QUEUE_SIZE_REQ;
 if (send(fd, buf, 1, 0) < 0) { where = US"send"; goto bad; }

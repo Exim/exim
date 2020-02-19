@@ -1006,7 +1006,15 @@ if (bind(fd, (const struct sockaddr *)&sun, len) < 0)
   goto bad;
 
 where = US"SO_PASSCRED";
-if (setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on)) < 0)
+if (setsockopt(fd, SOL_SOCKET,
+#ifdef SO_PASSCRED		/* Linux */
+	SO_PASSCRED,
+#elif defined(LOCAL_CREDS)	/* BSD-ish */
+	LOCAL_CREDS,
+#else
+# error no SO_PASSCRED
+#endif
+	&on, sizeof(on)) < 0)
   goto bad;
 
 /* debug_printf("%s: fd %d\n", __FUNCTION__, fd); */
@@ -1051,7 +1059,7 @@ DEBUG(D_queue_run) debug_printf("%s from addr%s '%s'\n", __FUNCTION__,
 /* Refuse to handle the item unless the peer has good credentials */
 #ifdef SCM_CREDENTIALS
 # define EXIM_SCM_CR_TYPE SCM_CREDENTIALS
-#elif defined(SCM_CREDS)
+#elif defined(LOCAL_CREDS) && defined(SCM_CREDS)
 # define EXIM_SCM_CR_TYPE SCM_CREDS
 #else
 # error no SCM creds knowlege
@@ -1062,19 +1070,19 @@ for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
      cp = CMSG_NXTHDR(&msg, cp))
   if (cp->cmsg_level == SOL_SOCKET && cp->cmsg_type == EXIM_SCM_CR_TYPE)
   {
-#ifdef SCM_CREDENTIALS
+#ifdef SCM_CREDENTIALS					/* Linux */
   struct ucred * cr = (struct ucred *) CMSG_DATA(cp);
   if (cr->uid && cr->uid != exim_uid)
     {
     DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
       __FUNCTION__, (int)cr->pid, (int)cr->uid, (int)cr->gid);
     return FALSE;
-#elif defined(SCM_CREDS)
-  struct cmsgcred * cr = (struct cmsgcred *) CMSG_DATA(cp);
-  if (cr->cmcred_uid && cr->cmcred_uid != exim_uid)
+#elif defined(LOCAL_CREDS)				/* BSD-ish */
+  struct sockcred * cr = (struct sockcred *) CMSG_DATA(cp);
+  if (cr->sc_uid && cr->sc_uid != exim_uid)
     {
-    DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
-      __FUNCTION__, (int)cr->cmcred_pid, (int)cr->cmcred_uid, (int)cr->cmcred_gid);
+    DEBUG(D_queue_run) debug_printf("%s: sender creds pid ??? uid %d gid %d\n",
+      __FUNCTION__, (int)cr->sc_uid, (int)cr->sc_gid);
     return FALSE;
 #endif
     }
