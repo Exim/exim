@@ -20155,8 +20155,10 @@ semicolon is the default route list separator.
 
 
 .section "Format of one host item" "SECTformatonehostitem"
-Each item in the list of hosts is either a host name or an IP address,
-optionally with an attached port number. When no port is given, an IP address
+Each item in the list of hosts can be either a host name or an IP address,
+optionally with an attached port number, or it can be a single "+"
+(see &%hosts_randomize%&).
+When no port is given, an IP address
 is not enclosed in brackets. When a port is specified, it overrides the port
 specification on the transport. The port is separated from the name or address
 by a colon. This leads to some complications:

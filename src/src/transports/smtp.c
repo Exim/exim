@@ -3372,8 +3372,9 @@ done:
 
 /* If continue_hostname is not null, we get here only when continuing to
 deliver down an existing channel. The channel was passed as the standard
-input. TLS is never active on a passed channel; the previous process always
-closes it down before passing the connection on.
+input. TLS is never active on a passed channel; the previous process either
+closes it down before passing the connection on, or inserts a TLS-proxy
+process and passes on a cleartext conection.
 
 Otherwise, we have to make a connection to the remote host, and do the
 initial protocol exchange.
