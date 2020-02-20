@@ -13,8 +13,9 @@ killdaemon
 exim -d -DSERVER=server -bd -oX PORT_D -oP DIR/spool/mypidfile
 ****
 sleep 1
-ls DIR/spool
 sudo perl
+system "ls DIR/spool | grep pid";
+print "\n";
 open(IN, "<", "DIR/spool/mypidfile");
 while (<IN>) { kill "TERM", $_; }
 ****

@@ -475,7 +475,7 @@ for (int i = queue_run_in_order ? -1 : 0;
     if (f.queue_2stage && !queue_run_in_order)
       {
       int i;
-      if (qpid[nelem(qpid) - 1])
+      if (qpid[f.running_in_test_harness ? 0 : nelem(qpid) - 1])
 	{
 	DEBUG(D_queue_run) debug_printf("q2stage waiting for child\n");
 	waitpid(qpid[0], NULL, 0);
@@ -1524,12 +1524,20 @@ memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
   {
   struct sockaddr_un sun = {.sun_family = AF_UNIX};
+  int slen;
+
+#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
   int len = offsetof(struct sockaddr_un, sun_path) + 1
     + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s",
        NOTIFIER_SOCKET_NAME);
   sun.sun_path[0] = 0;
+#else
+  int len = offsetof(struct sockaddr_un, sun_path)
+    + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
+       spool_directory, NOTIFIER_SOCKET_NAME);
+#endif
 
-  if (sendto(fd, buf, sizeof(buf), 0, &sun, len) < 0)
+  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sun, len) < 0)
     DEBUG(D_queue_run)
       debug_printf("%s: sendto %s\n", __FUNCTION__, strerror(errno));
   close(fd);

@@ -18,6 +18,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -38,6 +41,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -59,6 +65,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -80,6 +89,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv6 and IPv4) [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <;  0.0.0.0; 127.0.0.1.1228 ; ::0 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -98,6 +110,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]:{1225,1226}
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <;  ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -119,6 +134,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1227 (IPv6 and IPv4) [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -141,6 +159,9 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on [127.0.0.1]:{1227,1225}
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -DPORT=daemon_smtp_port=1225:1226 -DIFACE=local_interfaces = <; ::0 ; 127.0.0.1.1228 ; 0.0.0.0 -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -162,3 +183,6 @@ LOG: MAIN
 set_process_info: pppp daemon(x.yz): no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4) port 1226 (IPv4)
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
+pppp exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -DSERVER=server -C TESTSUITE/test-config -d=0xf7795cfd -oP TESTSUITE/spool/exim-daemon.pid -oPX
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

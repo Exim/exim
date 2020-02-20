@@ -87,5 +87,8 @@ then change the 0 to 1 in the next block. */
 # define TCPI_OPT_SYN_DATA 32
 #endif
 
+/* "Abstract" Unix-socket names */
+#define EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+
 
 /* End */

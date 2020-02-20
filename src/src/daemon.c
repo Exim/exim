@@ -954,6 +954,19 @@ daemon_die(void)
 {
 int pid;
 
+if (daemon_notifier_fd >= 0)
+  {
+  close(daemon_notifier_fd);
+  daemon_notifier_fd = -1;
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+    {
+    uschar * s = string_sprintf("%s/%s", spool_directory, NOTIFIER_SOCKET_NAME);
+    DEBUG(D_any) debug_printf("unlinking notifier socket %s\n", s);
+    Uunlink(s);
+    }
+#endif
+  }
+
 if (f.running_in_test_harness || write_pid)
   {
   if ((pid = fork()) == 0)
@@ -985,11 +998,11 @@ const uschar * where;
 struct sockaddr_un sun = {.sun_family = AF_UNIX};
 int len;
 
-DEBUG(D_any) debug_printf("creating notifier socket\n");
+DEBUG(D_any) debug_printf("creating notifier socket ");
 
 where = US"socket";
 #ifdef SOCK_CLOEXEC
-if ((fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0)) < 0)
+if ((fd = socket(PF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0)) < 0)
   goto bad;
 #else
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
@@ -997,25 +1010,31 @@ if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
 
+#ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
 len = offsetof(struct sockaddr_un, sun_path) + 1
   + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
+DEBUG(D_any) debug_printf("@%s\n", sun.sun_path+1);
+#else			/* filesystem-visible and persistent; will neeed removal */
+len = offsetof(struct sockaddr_un, sun_path)
+  + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s", 
+		spool_directory, NOTIFIER_SOCKET_NAME);
+DEBUG(D_any) debug_printf("%s\n", sun.sun_path);
+#endif
 
 where = US"bind";
 if (bind(fd, (const struct sockaddr *)&sun, len) < 0)
   goto bad;
 
-where = US"SO_PASSCRED";
-if (setsockopt(fd, SOL_SOCKET,
 #ifdef SO_PASSCRED		/* Linux */
-	SO_PASSCRED,
-#elif defined(LOCAL_CREDS)	/* BSD-ish */
-	LOCAL_CREDS,
-#else
-# error no SO_PASSCRED
-#endif
-	&on, sizeof(on)) < 0)
+where = US"SO_PASSCRED";
+if (setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on)) < 0)
   goto bad;
+#elif defined(LOCAL_CREDS)	/* FreeBSD-ish */
+where = US"LOCAL_CREDS";
+if (setsockopt(fd, SOL_SOCKET, LOCAL_CREDS, &on, sizeof(on)) < 0)
+  goto bad;
+#endif
 
 /* debug_printf("%s: fd %d\n", __FUNCTION__, fd); */
 daemon_notifier_fd = fd;
@@ -1053,8 +1072,10 @@ if (sz >= sizeof(buf)) return FALSE;
 #ifdef notdef
 debug_printf("addrlen %d\n", msg.msg_namelen);
 #endif
-DEBUG(D_queue_run) debug_printf("%s from addr%s '%s'\n", __FUNCTION__,
-  *sun.sun_path ? "" : " abstract", sun.sun_path+ (*sun.sun_path ? 0 : 1));
+DEBUG(D_queue_run) debug_printf("%s from addr '%s%.*s'\n", __FUNCTION__,
+  *sun.sun_path ? "" : "@",
+  (int)msg.msg_namelen - (*sun.sun_path ? 0 : 1),
+  sun.sun_path + (*sun.sun_path ? 0 : 1));
 
 /* Refuse to handle the item unless the peer has good credentials */
 #ifdef SCM_CREDENTIALS
@@ -1062,32 +1083,36 @@ DEBUG(D_queue_run) debug_printf("%s from addr%s '%s'\n", __FUNCTION__,
 #elif defined(LOCAL_CREDS) && defined(SCM_CREDS)
 # define EXIM_SCM_CR_TYPE SCM_CREDS
 #else
-# error no SCM creds knowlege
+	/* The OS has no way to get the creds of the caller (for a unix/datagram socket.
+	Punt; don't try to check. */
 #endif
 
+#ifdef EXIM_SCM_CR_TYPE
 for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
      cp;
      cp = CMSG_NXTHDR(&msg, cp))
   if (cp->cmsg_level == SOL_SOCKET && cp->cmsg_type == EXIM_SCM_CR_TYPE)
   {
-#ifdef SCM_CREDENTIALS					/* Linux */
+# ifdef SCM_CREDENTIALS					/* Linux */
   struct ucred * cr = (struct ucred *) CMSG_DATA(cp);
   if (cr->uid && cr->uid != exim_uid)
     {
     DEBUG(D_queue_run) debug_printf("%s: sender creds pid %d uid %d gid %d\n",
       __FUNCTION__, (int)cr->pid, (int)cr->uid, (int)cr->gid);
     return FALSE;
-#elif defined(LOCAL_CREDS)				/* BSD-ish */
+    }
+# elif defined(LOCAL_CREDS)				/* BSD-ish */
   struct sockcred * cr = (struct sockcred *) CMSG_DATA(cp);
   if (cr->sc_uid && cr->sc_uid != exim_uid)
     {
     DEBUG(D_queue_run) debug_printf("%s: sender creds pid ??? uid %d gid %d\n",
       __FUNCTION__, (int)cr->sc_uid, (int)cr->sc_gid);
     return FALSE;
-#endif
     }
+# endif
   break;
   }
+#endif
 
 buf[sz] = 0;
 switch (buf[0])

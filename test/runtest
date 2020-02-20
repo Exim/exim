@@ -1212,7 +1212,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;
 
     # daemon notifier socket
-    s/^\d+ creating notifier socket$/ppppp creating notifier socket/;
+    s/^(creating notifier socket) .*$/$1/;
+    s/^(\s*\d+|ppppp) (creating notifier socket) .+$/ppppp $2/;
+    next if /unlinking notifier socket/;
 
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
@@ -2330,8 +2332,7 @@ if (/^gnutls/)
 
 
 # The "killdaemon" command should ultimately follow the starting of any Exim
-# daemon with the -bd option. We kill with SIGINT rather than SIGTERM to stop
-# it outputting "Terminated" to the terminal when not in the background.
+# daemon with the -bd option.
 
 if (/^killdaemon/)
   {
@@ -2343,14 +2344,14 @@ if (/^killdaemon/)
     print ">> killdaemon: recovered pid $pid\n" if $debug;
     if ($pid)
       {
-      run_system("sudo /bin/kill -INT $pid");
+      run_system("sudo /bin/kill -TERM $pid");
       wait;
       }
     } else {
     $pid = `cat $parm_cwd/spool/exim-daemon.*`;
     if ($pid)
       {
-      run_system("sudo /bin/kill -INT $pid");
+      run_system("sudo /bin/kill -TERM $pid");
       close DAEMONCMD;                                   # Waits for process
       }
     }
