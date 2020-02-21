@@ -381,6 +381,7 @@ if (pid == 0)
 
   store_pool = POOL_PERM;
   interface_address = string_copy(interface_address);
+  connection_in_id = create_connection_id();
   store_pool = old_pool;
 
   /* Check for a tls-on-connect port */

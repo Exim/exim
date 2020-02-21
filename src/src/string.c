@@ -181,6 +181,47 @@ else
 return buffer;
 }
 
+/*************************************************
+*   Create connection_(in|out)_id uint64         *
+*************************************************/
+
+/*
+  Format is based on message_exim_id:
+    * 30 bits epoch with msb stripped, making it
+      impossible to represent dated before 2004
+    * 22 bits pid
+    * 12 bits localhost_number & usec
+
+  total is uint64
+*/
+
+unsigned long
+create_connection_id()
+{
+struct timeval tv;
+(void)gettimeofday(&tv, NULL);
+exim_wait_tick(&tv, 5000);
+
+return (unsigned long)(tv.tv_sec & 0x3fffffff) << (22 + 12) |
+  (host_number * 200 + tv.tv_usec / 5000) << 22 | getpid();
+}
+
+uschar *
+string_format_connection_id(unsigned long connection_id)
+{
+static uschar yield[12];
+
+uschar *p = yield + sizeof(yield) - 1;
+*p = 0;
+
+for (int i=10;i>=0;i--)
+  {
+  *(--p) = base62_alpha[connection_id % 62];
+  connection_id /= 62;
+  }
+
+  return string_copy(yield);
+}
 
 
 #ifndef COMPILE_UTILITY

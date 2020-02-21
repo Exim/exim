@@ -367,6 +367,7 @@ extern int     av_failed;              /* TRUE if the AV process failed */
 extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */
 #endif
 
+extern uschar *base62_alpha;           /* Table of 62 base-62 characters */
 extern uschar *base62_chars;           /* Table of base-62 characters */
 extern uschar *bi_command;             /* Command for -bi option */
 extern uschar *big_buffer;             /* Used for various temp things */
@@ -427,6 +428,9 @@ extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
+
+extern unsigned long connection_in_id; /* Incoming connection ID */
+extern unsigned long connection_out_id;/* Outgoing connection ID */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */
 

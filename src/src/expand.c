@@ -442,7 +442,8 @@ enum vtypes {
   vtype_load_avg,       /* value not used; result is int from os_getloadavg */
   vtype_pspace,         /* partition space; value is T/F for spool/log */
   vtype_pinodes,        /* partition inodes; value is T/F for spool/log */
-  vtype_cert		/* SSL certificate */
+  vtype_cert,		/* SSL certificate */
+  vtype_connid		/* valid: uint64 connection id encoding */
   #ifndef DISABLE_DKIM
   ,vtype_dkim           /* Lookup of value in DKIM signature */
   #endif
@@ -517,6 +518,8 @@ static var_entry var_table[] = {
   { "compile_number",      vtype_stringptr,   &version_cnumber },
   { "config_dir",          vtype_stringptr,   &config_main_directory },
   { "config_file",         vtype_stringptr,   &config_main_filename },
+  { "connection_in_id",    vtype_connid,      &connection_in_id },
+  { "connection_out_id",   vtype_connid,      &connection_out_id },
   { "csa_status",          vtype_stringptr,   &csa_status },
 #ifdef EXPERIMENTAL_DCC
   { "dcc_header",          vtype_stringptr,   &dcc_header },
@@ -2075,6 +2078,8 @@ switch (vp->type)
     return dkim_exim_expand_query((int)(long)val);
 #endif
 
+  case vtype_connid:
+    return string_format_connection_id(*(unsigned long *)val);
   }
 
 return NULL;  /* Unknown variable. Silences static checkers. */

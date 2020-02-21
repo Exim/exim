@@ -1872,7 +1872,7 @@ void
 transport_do_pass_socket(const uschar *transport_name, const uschar *hostname,
   const uschar *hostaddress, uschar *id, int socket_fd)
 {
-int i = 20;
+int i = 21;
 const uschar **argv;
 
 /* Set up the calling arguments; use the standard function for the basics,
@@ -1910,6 +1910,7 @@ argv[i++] = US transport_name;
 argv[i++] = US hostname;
 argv[i++] = US hostaddress;
 argv[i++] = string_sprintf("%d", continue_sequence + 1);
+argv[i++] = string_sprintf("%ld", connection_out_id);
 argv[i++] = id;
 argv[i++] = NULL;
 

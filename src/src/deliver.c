@@ -433,6 +433,7 @@ for (address_item * addr2 = addr->next; addr2; addr2 = addr2->next)
   addr2->special_action =   addr->special_action;
   addr2->message =	    addr->message;
   addr2->user_message =	    addr->user_message;
+  addr2->connection_out_id = addr->connection_out_id; /* todo: is this needed? */
   }
 }
 
@@ -880,12 +881,14 @@ const uschar * save_domain = deliver_domain;
 uschar * save_local =  deliver_localpart;
 const uschar * save_host = deliver_host;
 const uschar * save_address = deliver_host_address;
+unsigned long save_connection_out_id = connection_out_id;
 const int      save_port =   deliver_host_port;
 
 router_name =    addr->router ? addr->router->name : NULL;
 deliver_domain = addr->domain;
 deliver_localpart = addr->local_part;
 deliver_host =   addr->host_used ? addr->host_used->name : NULL;
+connection_out_id = addr->connection_out_id;
 
 if (!addr->transport)
   {
@@ -916,6 +919,7 @@ deliver_host =      save_host;
 deliver_localpart = save_local;
 deliver_domain =    save_domain;
 router_name = transport_name = NULL;
+connection_out_id = save_connection_out_id;
 }
 #endif	/*DISABLE_EVENT*/
 
@@ -3610,6 +3614,8 @@ while (!done)
 	  ptr += sizeof(addr->delivery_time);
 	  memcpy(&addr->flags, ptr, sizeof(addr->flags));
 	  ptr += sizeof(addr->flags);
+	  memcpy(&addr->connection_out_id, ptr, sizeof(addr->connection_out_id));
+	  ptr += sizeof(addr->connection_out_id);
 	  addr->message = *ptr ? string_copy(ptr) : NULL;
 	  while(*ptr++);
 	  addr->user_message = *ptr ? string_copy(ptr) : NULL;
@@ -4928,6 +4934,8 @@ all pipes, so I do not see a reason to use non-blocking IO here
       ptr += sizeof(addr->delivery_time);
       memcpy(ptr, &addr->flags, sizeof(addr->flags));
       ptr += sizeof(addr->flags);
+      memcpy(ptr, &addr->connection_out_id, sizeof(addr->connection_out_id));
+      ptr += sizeof(addr->connection_out_id);
 
       if (!addr->message) *ptr++ = 0; else
         ptr += sprintf(CS ptr, "%.1024s", addr->message) + 1;
