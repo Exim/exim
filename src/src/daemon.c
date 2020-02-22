@@ -1000,13 +1000,12 @@ int len;
 
 DEBUG(D_any) debug_printf("creating notifier socket ");
 
-where = US"socket";
 #ifdef SOCK_CLOEXEC
 if ((fd = socket(PF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0)) < 0)
-  goto bad;
+  { where = US"socket"; goto bad; }
 #else
-if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
-  goto bad;
+if ((fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0)
+  { where = US"socket"; goto bad; }
 (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 #endif
 
@@ -1022,27 +1021,30 @@ len = offsetof(struct sockaddr_un, sun_path)
 DEBUG(D_any) debug_printf("%s\n", sa_un.sun_path);
 #endif
 
-where = US"bind";
 if (bind(fd, (const struct sockaddr *)&sa_un, len) < 0)
-  goto bad;
+  { where = US"bind"; goto bad; }
 
 #ifdef SO_PASSCRED		/* Linux */
-where = US"SO_PASSCRED";
 if (setsockopt(fd, SOL_SOCKET, SO_PASSCRED, &on, sizeof(on)) < 0)
-  goto bad;
+  { where = US"SO_PASSCRED"; goto bad2; }
 #elif defined(LOCAL_CREDS)	/* FreeBSD-ish */
-where = US"LOCAL_CREDS";
-if (setsockopt(fd, SOL_SOCKET, LOCAL_CREDS, &on, sizeof(on)) < 0)
-  goto bad;
+if (setsockopt(fd, 0, LOCAL_CREDS, &on, sizeof(on)) < 0)
+  { where = US"LOCAL_CREDS"; goto bad2; }
 #endif
 
 /* debug_printf("%s: fd %d\n", __FUNCTION__, fd); */
 daemon_notifier_fd = fd;
 return;
 
+bad2:
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+  Uunlink(sa_un.sun_path);
+#endif
 bad:
-  log_write(0, LOG_MAIN|LOG_PANIC, "%s: %s: %s",
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s %s: %s",
     __FUNCTION__, where, strerror(errno));
+  close(fd);
+  return;
 }
 
 
