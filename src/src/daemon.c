@@ -995,7 +995,7 @@ daemon_notifier_socket(void)
 {
 int fd;
 const uschar * where;
-struct sockaddr_un sun = {.sun_family = AF_UNIX};
+struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
 int len;
 
 DEBUG(D_any) debug_printf("creating notifier socket ");
@@ -1011,19 +1011,19 @@ if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
 #endif
 
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
+sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
 len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
-DEBUG(D_any) debug_printf("@%s\n", sun.sun_path+1);
+  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
+DEBUG(D_any) debug_printf("@%s\n", sa_un.sun_path+1);
 #else			/* filesystem-visible and persistent; will neeed removal */
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s", 
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s/%s", 
 		spool_directory, NOTIFIER_SOCKET_NAME);
-DEBUG(D_any) debug_printf("%s\n", sun.sun_path);
+DEBUG(D_any) debug_printf("%s\n", sa_un.sun_path);
 #endif
 
 where = US"bind";
-if (bind(fd, (const struct sockaddr *)&sun, len) < 0)
+if (bind(fd, (const struct sockaddr *)&sa_un, len) < 0)
   goto bad;
 
 #ifdef SO_PASSCRED		/* Linux */
@@ -1053,10 +1053,10 @@ static BOOL
 daemon_notification(void)
 {
 uschar buf[256], cbuf[256];
-struct sockaddr_un sun;
+struct sockaddr_un sa_un;
 struct iovec iov = {.iov_base = buf, .iov_len = sizeof(buf)-1};
-struct msghdr msg = { .msg_name = &sun,
-		      .msg_namelen = sizeof(sun),
+struct msghdr msg = { .msg_name = &sa_un,
+		      .msg_namelen = sizeof(sa_un),
 		      .msg_iov = &iov,
 		      .msg_iovlen = 1,
 		      .msg_control = cbuf,
@@ -1073,9 +1073,9 @@ if (sz >= sizeof(buf)) return FALSE;
 debug_printf("addrlen %d\n", msg.msg_namelen);
 #endif
 DEBUG(D_queue_run) debug_printf("%s from addr '%s%.*s'\n", __FUNCTION__,
-  *sun.sun_path ? "" : "@",
-  (int)msg.msg_namelen - (*sun.sun_path ? 0 : 1),
-  sun.sun_path + (*sun.sun_path ? 0 : 1));
+  *sa_un.sun_path ? "" : "@",
+  (int)msg.msg_namelen - (*sa_un.sun_path ? 0 : 1),
+  sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
 
 /* Refuse to handle the item unless the peer has good credentials */
 #ifdef SCM_CREDENTIALS
@@ -1135,7 +1135,7 @@ switch (buf[0])
       debug_printf("%s: queue size request: %s\n", __FUNCTION__, buf);
 
     if (sendto(daemon_notifier_fd, buf, len, 0,
-		(const struct sockaddr *)&sun, msg.msg_namelen) < 0)
+		(const struct sockaddr *)&sa_un, msg.msg_namelen) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC,
 	"%s: sendto: %s\n", __FUNCTION__, strerror(errno));
     return FALSE;

@@ -1523,21 +1523,21 @@ memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
   {
-  struct sockaddr_un sun = {.sun_family = AF_UNIX};
+  struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
   int slen;
 
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
   int len = offsetof(struct sockaddr_un, sun_path) + 1
-    + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s",
+    + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
        NOTIFIER_SOCKET_NAME);
-  sun.sun_path[0] = 0;
+  sa_un.sun_path[0] = 0;
 #else
   int len = offsetof(struct sockaddr_un, sun_path)
-    + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
+    + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s/%s",
        spool_directory, NOTIFIER_SOCKET_NAME);
 #endif
 
-  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sun, len) < 0)
+  if (sendto(fd, buf, sizeof(buf), 0, (struct sockaddr *)&sa_un, len) < 0)
     DEBUG(D_queue_run)
       debug_printf("%s: sendto %s\n", __FUNCTION__, strerror(errno));
   close(fd);

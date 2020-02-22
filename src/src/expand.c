@@ -1750,7 +1750,7 @@ return g ? g->s : NULL;
 static uschar *
 fn_queue_size(void)
 {
-struct sockaddr_un sun = {.sun_family = AF_UNIX};
+struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
 uschar buf[16];
 int fd;
 ssize_t len;
@@ -1766,35 +1766,35 @@ if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
   }
 
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
+sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
 len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "exim_%d", getpid());
+  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "exim_%d", getpid());
 #else
 sname = string_sprintf("%s/p_%d", spool_directory, getpid());
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s", sname);
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s", sname);
 #endif
 
-if (bind(fd, (const struct sockaddr *)&sun, len) < 0)
+if (bind(fd, (const struct sockaddr *)&sa_un, len) < 0)
   { where = US"bind"; goto bad; }
 
 #ifdef notdef
 debug_printf("local addr '%s%s'\n",
-  *sun.sun_path ? "" : "@",
-  sun.sun_path + (*sun.sun_path ? 0 : 1));
+  *sa_un.sun_path ? "" : "@",
+  sa_un.sun_path + (*sa_un.sun_path ? 0 : 1));
 #endif
 
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-sun.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
+sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
 len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sun.sun_path+1, sizeof(sun.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
+  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
 #else
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sun.sun_path, sizeof(sun.sun_path), "%s/%s",
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s/%s",
 		spool_directory, NOTIFIER_SOCKET_NAME);
 #endif
 
-if (connect(fd, (const struct sockaddr *)&sun, len) < 0)
+if (connect(fd, (const struct sockaddr *)&sa_un, len) < 0)
   { where = US"connect"; goto bad; }
 
 buf[0] = NOTIFY_QUEUE_SIZE_REQ;
