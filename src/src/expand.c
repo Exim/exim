@@ -1758,6 +1758,8 @@ const uschar * where;
 #ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 uschar * sname;
 #endif
+fd_set fds;
+struct timeval tv;
 
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0)
   {
@@ -1795,12 +1797,20 @@ len = offsetof(struct sockaddr_un, sun_path)
 #endif
 
 if (connect(fd, (const struct sockaddr *)&sa_un, len) < 0)
-  { where = US"connect"; goto bad; }
+  { where = US"connect"; goto bad2; }
 
 buf[0] = NOTIFY_QUEUE_SIZE_REQ;
 if (send(fd, buf, 1, 0) < 0) { where = US"send"; goto bad; }
 
-if ((len = recv(fd, buf, sizeof(buf), 0)) < 0) { where = US"recv"; goto bad; }
+FD_ZERO(&fds); FD_SET(fd, &fds);
+tv.tv_sec = 2; tv.tv_usec = 0;
+if (select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tv) != 1)
+  {
+  DEBUG(D_expand) debug_printf("no daemon response; using local evaluation\n");
+  len = snprintf(CS buf, sizeof(buf), "%u", queue_count_cached());
+  }
+else if ((len = recv(fd, buf, sizeof(buf), 0)) < 0)
+  { where = US"recv"; goto bad2; }
 
 close(fd);
 #ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
@@ -1808,6 +1818,10 @@ Uunlink(sname);
 #endif
 return string_copyn(buf, len);
 
+bad2:
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+  Uunlink(sname);
+#endif
 bad:
   close(fd);
   DEBUG(D_expand) debug_printf(" %s: %s\n", where, strerror(errno));
