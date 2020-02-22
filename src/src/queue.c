@@ -110,13 +110,14 @@ Arguments:
   subdirs        vector to store list of subdirchars
   subcount       pointer to int in which to store count of subdirs
   randomize      TRUE if the order of the list is to be unpredictable
+  pcount	 If not NULL, fill in with count of files and do not return list
 
 Returns:         pointer to a chain of queue name items
 */
 
 static queue_filename *
 queue_get_spool_list(int subdiroffset, uschar *subdirs, int *subcount,
-  BOOL randomize)
+  BOOL randomize, unsigned * pcount)
 {
 int i;
 int flags = 0;
@@ -134,7 +135,9 @@ according to the bits of the flags variable. Get a collection of bits from the
 current time. Use the bottom 16 and just keep re-using them if necessary. When
 not randomizing, initialize the sublists for the bottom-up merge sort. */
 
-if (randomize)
+if (pcount)
+  *pcount = 0;
+else if (randomize)
   resetflags = time(NULL) & 0xFFFF;
 else
    for (i = 0; i < LOG2_MAXNODES; i++)
@@ -204,60 +207,63 @@ for (; i <= *subcount; i++)
 
     if (len == SPOOL_NAME_LENGTH &&
         Ustrcmp(name + SPOOL_NAME_LENGTH - 2, "-H") == 0)
-      {
-      queue_filename *next =
-        store_get(sizeof(queue_filename) + Ustrlen(name), is_tainted(name));
-      Ustrcpy(next->text, name);
-      next->dir_uschar = subdirchar;
-
-      /* Handle the creation of a randomized list. The first item becomes both
-      the top and bottom of the list. Subsequent items are inserted either at
-      the top or the bottom, randomly. This is, I argue, faster than doing a
-      sort by allocating a random number to each item, and it also saves having
-      to store the number with each item. */
-
-      if (randomize)
-        if (!yield)
-          {
-          next->next = NULL;
-          yield = last = next;
-          }
-        else
-          {
-          if (flags == 0)
-	    flags = resetflags;
-          if ((flags & 1) == 0)
-            {
-            next->next = yield;
-            yield = next;
-            }
-          else
-            {
-            next->next = NULL;
-            last->next = next;
-            last = next;
-            }
-          flags = flags >> 1;
-          }
-
-      /* Otherwise do a bottom-up merge sort based on the name. */
-
+      if (pcount)
+	(*pcount)++;
       else
-        {
-        next->next = NULL;
-        for (int j = 0; j < LOG2_MAXNODES; j++)
-          if (root[j])
-            {
-            next = merge_queue_lists(next, root[j]);
-            root[j] = j == LOG2_MAXNODES - 1 ? next : NULL;
-            }
-          else
-            {
-            root[j] = next;
-            break;
-            }
-        }
-      }
+	{
+	queue_filename *next =
+	  store_get(sizeof(queue_filename) + Ustrlen(name), is_tainted(name));
+	Ustrcpy(next->text, name);
+	next->dir_uschar = subdirchar;
+
+	/* Handle the creation of a randomized list. The first item becomes both
+	the top and bottom of the list. Subsequent items are inserted either at
+	the top or the bottom, randomly. This is, I argue, faster than doing a
+	sort by allocating a random number to each item, and it also saves having
+	to store the number with each item. */
+
+	if (randomize)
+	  if (!yield)
+	    {
+	    next->next = NULL;
+	    yield = last = next;
+	    }
+	  else
+	    {
+	    if (flags == 0)
+	      flags = resetflags;
+	    if ((flags & 1) == 0)
+	      {
+	      next->next = yield;
+	      yield = next;
+	      }
+	    else
+	      {
+	      next->next = NULL;
+	      last->next = next;
+	      last = next;
+	      }
+	    flags = flags >> 1;
+	    }
+
+	/* Otherwise do a bottom-up merge sort based on the name. */
+
+	else
+	  {
+	  next->next = NULL;
+	  for (int j = 0; j < LOG2_MAXNODES; j++)
+	    if (root[j])
+	      {
+	      next = merge_queue_lists(next, root[j]);
+	      root[j] = j == LOG2_MAXNODES - 1 ? next : NULL;
+	      }
+	    else
+	      {
+	      root[j] = next;
+	      break;
+	      }
+	  }
+	}
     }
 
   /* Finished with this directory */
@@ -294,7 +300,7 @@ for (; i <= *subcount; i++)
 /* When using a bottom-up merge sort, do the final merging of the sublists.
 Then pass back the final list of file items. */
 
-if (!randomize)
+if (!pcount && !randomize)
   for (i = 0; i < LOG2_MAXNODES; ++i)
     yield = merge_queue_lists(yield, root[i]);
 
@@ -442,7 +448,7 @@ for (int i = queue_run_in_order ? -1 : 0;
     }
 
   for (queue_filename * fq = queue_get_spool_list(i, subdirs, &subcount,
-					       !queue_run_in_order);
+					     !queue_run_in_order, NULL);
        fq; fq = fq->next)
     {
     pid_t pid;
@@ -777,12 +783,11 @@ int subcount;
 unsigned count = 0;
 uschar subdirs[64];
 
-for (queue_filename * f = queue_get_spool_list(
-				-1,             /* entire queue */
-				subdirs,        /* for holding sub list */
-				&subcount,      /* for subcount */
-				FALSE);         /* not random */
-    f; f = f->next) count++;
+(void) queue_get_spool_list(-1,		/* entire queue */
+			subdirs,        /* for holding sub list */
+			&subcount,      /* for subcount */
+			FALSE,		/* not random */
+			&count);	/* just get the count */
 return count;
 }
 
@@ -881,7 +886,8 @@ else
           -1,             /* entire queue */
           subdirs,        /* for holding sub list */
           &subcount,      /* for subcount */
-          option >= 8);   /* randomize if required */
+          option >= 8,	  /* randomize if required */
+	  NULL);	  /* don't just count */
 
 if (option >= 8) option -= 8;
 
