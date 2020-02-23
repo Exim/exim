@@ -1056,17 +1056,13 @@ daemon_notification(void)
 {
 uschar buf[256], cbuf[256];
 struct sockaddr_un sa_un;
-struct iovec iov = {.iov_base = (void *)buf,	/* ? cast needed for Solaris compiler */
-		    .iov_len = sizeof(buf)-1
-		   };
+struct iovec iov = {.iov_base = buf, .iov_len = sizeof(buf)-1};
 struct msghdr msg = { .msg_name = &sa_un,
 		      .msg_namelen = sizeof(sa_un),
 		      .msg_iov = &iov,
 		      .msg_iovlen = 1,
-#if !defined(__sun)
 		      .msg_control = cbuf,
 		      .msg_controllen = sizeof(cbuf)
-#endif
 		    };
 ssize_t sz;
 struct cmsghdr * cp;
