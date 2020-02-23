@@ -53,6 +53,9 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # warning "GnuTLS library version too old; tls:cert event unsupported"
 # define DISABLE_EVENT
 #endif
+#if GNUTLS_VERSION_NUMBER >= 0x030000
+# define SUPPORT_SELFSIGN	/* Uncertain what version is first usable but 2.12.23 is not */
+#endif
 #if GNUTLS_VERSION_NUMBER >= 0x030306
 # define SUPPORT_CA_DIR
 #else
@@ -824,13 +827,19 @@ gnutls_x509_privkey_t pkey = NULL;
 const uschar * where;
 int rc;
 
+#ifndef SUPPORT_SELFSIGN
+where = US"library too old";
+rc = GNUTLS_E_NO_CERTIFICATE_FOUND;
+if (TRUE) goto err;
+#endif
+
 where = US"initialising pkey";
 if ((rc = gnutls_x509_privkey_init(&pkey))) goto err;
 
 where = US"initialising cert";
 if ((rc = gnutls_x509_crt_init(&cert))) goto err;
 
-where = US"generating pkey";
+where = US"generating pkey";	/* Hangs on 2.12.23 */
 if ((rc = gnutls_x509_privkey_generate(pkey, GNUTLS_PK_RSA,
 #ifdef SUPPORT_PARAM_TO_PK_BITS
 # ifndef GNUTLS_SEC_PARAM_MEDIUM
