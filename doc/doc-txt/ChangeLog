@@ -131,6 +131,11 @@ JH/26 Fix use of the SIZE parameter on MAIL commands, on continued connections.
       only the first would provide a SIZE.  This was due to the size information
       not being properly tracked.
 
+JH/27 Bug 2530: When operating in a timezone with sub-minute offset, such as
+      TAI (at 37 seconds currently), pretend to be in UTC for time-related
+      expansion and logging.  Previously, spurious values such as a future
+      minute could be seen.
+
 
 Exim version 4.93
 -----------------

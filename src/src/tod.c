@@ -148,7 +148,8 @@ switch(type)
       {
       int diff_hour, diff_min;
       struct tm local;
-      memcpy(&local, t, sizeof(struct tm));
+      struct tm * lp = &local;
+      memcpy(lp, t, sizeof(struct tm));
 
       if (f.timestamps_utc)
 	diff_hour = diff_min = 0;
@@ -156,13 +157,22 @@ switch(type)
 	{
 	struct tm * gmt = gmtime(&now.tv_sec);
 
-	diff_min = 60*(local.tm_hour - gmt->tm_hour) + local.tm_min - gmt->tm_min;
-	if (local.tm_year != gmt->tm_year)
-	  diff_min += (local.tm_year > gmt->tm_year)? 1440 : -1440;
-	else if (local.tm_yday != gmt->tm_yday)
-	  diff_min += (local.tm_yday > gmt->tm_yday)? 1440 : -1440;
-	diff_hour = diff_min/60;
-	diff_min  = abs(diff_min - diff_hour*60);
+	if (local.tm_sec == gmt->tm_sec)	/* usual case */
+	  {
+	  diff_min = 60 * (local.tm_hour - gmt->tm_hour)
+		    + local.tm_min - gmt->tm_min;
+	  if (local.tm_year != gmt->tm_year)
+	    diff_min += (local.tm_year > gmt->tm_year) ? 1440 : -1440;
+	  else if (local.tm_yday != gmt->tm_yday)
+	    diff_min += (local.tm_yday > gmt->tm_yday) ? 1440 : -1440;
+	  diff_hour = diff_min/60;
+	  diff_min  = abs(diff_min - diff_hour*60);
+	  }
+	else					/* subminute offset, eg. TAI */
+	  {
+	  lp = gmt;				/* pretend we're in UTC */
+	  diff_min = diff_hour = 0;
+	  }
 	}
 
       switch(type)
@@ -172,15 +182,15 @@ switch(type)
 	  if (LOGGING(millisec))
 	    (void) snprintf(CS timebuf, sizeof(timebuf),
 	      "%04u-%02u-%02u %02u:%02u:%02u.%03u %+03d%02d",
-	      1900 + (uint)local.tm_year, 1 + (uint)local.tm_mon, (uint)local.tm_mday,
-	      (uint)local.tm_hour, (uint)local.tm_min, (uint)local.tm_sec, (uint)(now.tv_usec/1000),
+	      1900 + (uint)lp->tm_year, 1 + (uint)lp->tm_mon, (uint)lp->tm_mday,
+	      (uint)lp->tm_hour, (uint)lp->tm_min, (uint)lp->tm_sec, (uint)(now.tv_usec/1000),
 	      diff_hour, diff_min);
 	  else
 #endif
 	    (void) snprintf(CS timebuf, sizeof(timebuf),
 	      "%04u-%02u-%02u %02u:%02u:%02u %+03d%02d",
-	      1900 + (uint)local.tm_year, 1 + (uint)local.tm_mon, (uint)local.tm_mday,
-	      (uint)local.tm_hour, (uint)local.tm_min, (uint)local.tm_sec,
+	      1900 + (uint)lp->tm_year, 1 + (uint)lp->tm_mon, (uint)lp->tm_mday,
+	      (uint)lp->tm_hour, (uint)lp->tm_min, (uint)lp->tm_sec,
 	      diff_hour, diff_min);
 	  break;
 
@@ -190,31 +200,32 @@ switch(type)
 
 	/* tod_mbx: format used in MBX mailboxes - subtly different to tod_full */
 
-	  #ifdef SUPPORT_MBX
+#ifdef SUPPORT_MBX
 	case tod_mbx:
-	    {
-	    int len;
-	    (void) snprintf(CS timebuf, sizeof(timebuf), "%02u-", (uint)local.tm_mday);
-	    len = Ustrlen(timebuf);
-	    len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b-%Y %H:%M:%S",
-	      &local);
-	    (void) snprintf(CS timebuf + len, sizeof(timebuf)-len, " %+03d%02d", diff_hour, diff_min);
-	    }
+	  {
+	  int len = snprintf(CS timebuf, sizeof(timebuf),
+	    "%02u-", (uint)lp->tm_mday);
+	  len += Ustrftime(timebuf + len, sizeof(timebuf) - len,
+	    "%b-%Y %H:%M:%S", lp);
+	  (void) snprintf(CS timebuf + len, sizeof(timebuf)-len,
+	    " %+03d%02d", diff_hour, diff_min);
+	  }
 	  break;
-	  #endif
+#endif
 
 	/* tod_full: format used in Received: headers (use as default just in case
 	called with a junk type value) */
 
 	default:
-	    {
-	    int len = Ustrftime(timebuf, sizeof(timebuf), "%a, ", &local);
-	    (void) snprintf(CS timebuf + len, sizeof(timebuf)-len, "%02u ", (uint)local.tm_mday);
-	    len += Ustrlen(timebuf + len);
-	    len += Ustrftime(timebuf + len, sizeof(timebuf) - len, "%b %Y %H:%M:%S",
-	      &local);
-	    (void) snprintf(CS timebuf + len, sizeof(timebuf)-len, " %+03d%02d", diff_hour, diff_min);
-	    }
+	  {
+	  int len = Ustrftime(timebuf, sizeof(timebuf), "%a, ", lp);
+	  len += snprintf(CS timebuf + len, sizeof(timebuf)-len,
+	    "%02u ", (uint)lp->tm_mday);
+	  len += Ustrftime(timebuf + len, sizeof(timebuf) - len,
+	    "%b %Y %H:%M:%S", lp);
+	  (void) snprintf(CS timebuf + len, sizeof(timebuf)-len,
+	    " %+03d%02d", diff_hour, diff_min);
+	  }
 	  break;
 	}
       }
