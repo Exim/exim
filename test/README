@@ -517,6 +517,9 @@ bin/client-ssl     A script-driven SMTP client simulation with OpenSSL support.
                    This is built only if OpenSSL support is detected on the
                    host.
 
+bin/client-anytls  A symlink to either client-ssl or client-gnutls, if
+                   any is built.
+
 bin/fakens         A fake "nameserver" for DNS tests (see below for details).
 
 bin/fd             A program that outputs details of open file descriptors.

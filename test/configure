@@ -625,8 +625,9 @@ LIBOBJS
 LOADED_OPT
 LOADED
 B64_GNUTLS
+CLIENT_ANYTLS
 CLIENT_GNUTLS
-CLIENT_SSL
+CLIENT_OPENSSL
 BIND_8_COMPAT
 EGREP
 GREP
@@ -3295,7 +3296,8 @@ if test "x$ac_cv_header_openssl_crypto_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_OPENSSL_CRYPTO_H 1
 _ACEOF
- CLIENT_SSL=bin/client-ssl
+ CLIENT_OPENSSL=bin/client-ssl
+ CLIENT_ANYTLS=bin/client-anytls
 fi
 
 done
@@ -3308,6 +3310,7 @@ if test "x$ac_cv_header_gnutls_gnutls_h" = xyes; then :
 #define HAVE_GNUTLS_GNUTLS_H 1
 _ACEOF
  CLIENT_GNUTLS=bin/client-gnutls
+ CLIENT_ANYTLS=bin/client-anytls
 fi
 
 done

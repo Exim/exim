@@ -6,8 +6,9 @@
 CC=@CC@
 CFLAGS=@CFLAGS@ @CPPFLAGS@ @BIND_8_COMPAT@ @DEFS@
 LDFLAGS=@LDFLAGS@
-CLIENT_SSL=@CLIENT_SSL@
+CLIENT_OPENSSL=@CLIENT_OPENSSL@
 CLIENT_GNUTLS=@CLIENT_GNUTLS@
+CLIENT_ANYTLS=@CLIENT_ANYTLS@
 LOADED=@LOADED@
 LOADED_OPT=@LOADED_OPT@
 LIBS=@LIBS@
@@ -16,9 +17,9 @@ SRC = @srcdir@/src
 
 ##############################################################################
 
-BINARIES =	bin/cf bin/client $(CLIENT_SSL) $(CLIENT_GNUTLS) \
+BINARIES =	bin/cf bin/client $(CLIENT_OPENSSL) $(CLIENT_GNUTLS) $(CLIENT_ANYTLS) \
                 bin/checkaccess bin/fakens bin/fd bin/iefbr14 $(LOADED) \
-                bin/mtpscript bin/server bin/showids bin/locate
+                bin/mtpscript bin/server bin/showids bin/locate \
 
 # List of targets
 
@@ -56,6 +57,9 @@ bin/client-gnutls: $(SRC)/client.c Makefile
 
 bin/client-ssl: $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl $(SRC)/client.c -lssl -lcrypto $(LIBS)
+
+$(CLIENT_ANYTLS): $(CLIENT_GNUTLS) $(CLIENT_OPENSSL)
+		ln -sf `basename $<` $@
 
 bin/checkaccess:$(SRC)/checkaccess.c Makefile
 		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess $(SRC)/checkaccess.c
