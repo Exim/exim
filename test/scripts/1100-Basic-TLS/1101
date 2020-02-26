@@ -1,8 +1,7 @@
-# TLS server: uncork in pipelining mode
-gnutls
+# TLS server: uncork in pipelining mode, fixed in bd95ffc2ba87fbd3c752df17bc8fd9c01586d45a
 exim -DSERVER=server -bd -oX PORT_D:PORT_S
 ****
-client-gnutls 127.0.0.1 PORT_D
+client-anytls 127.0.0.1 PORT_D
 ??? 220
 EHLO rhu.barb
 ????250
