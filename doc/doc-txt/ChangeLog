@@ -136,6 +136,10 @@ JH/27 Bug 2530: When operating in a timezone with sub-minute offset, such as
       expansion and logging.  Previously, spurious values such as a future
       minute could be seen.
 
+JH/28 Bug 2533: Fix expansion of ${tr } item.  When called in some situations
+      it could crash from a null-deref.  This could also affect the
+      ${addresses: } operator and ${readsock } item.
+
 
 Exim version 4.93
 -----------------
