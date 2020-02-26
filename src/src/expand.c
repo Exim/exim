@@ -5029,7 +5029,7 @@ while (*s != 0)
       {
       client_conn_ctx cctx;
       int timeout = 5;
-      int save_ptr = yield->ptr;
+      int save_ptr = yield ? yield->ptr : 0;
       FILE * fp = NULL;
       uschar * arg;
       uschar * sub_arg[4];
@@ -5262,7 +5262,7 @@ while (*s != 0)
 
         if (sigalrm_seen)
           {
-          yield->ptr = save_ptr;
+          if (yield) yield->ptr = save_ptr;
           expand_string_message = US "socket read timed out";
           goto SOCK_FAIL;
           }
@@ -5429,7 +5429,7 @@ while (*s != 0)
 
     case EITEM_TR:
       {
-      int oldptr = yield->ptr;
+      int oldptr = yield ? yield->ptr : 0;
       int o2m;
       uschar *sub[3];
 
@@ -6170,7 +6170,7 @@ while (*s != 0)
     case EITEM_REDUCE:
       {
       int sep = 0;
-      int save_ptr = yield->ptr;
+      int save_ptr = yield ? yield->ptr : 0;
       uschar outsep[2] = { '\0', '\0' };
       const uschar *list, *expr, *temp;
       uschar *save_iterate_item = iterate_item;
@@ -6317,7 +6317,8 @@ while (*s != 0)
         item of the output list, add in a space if the new item begins with the
         separator character, or is an empty string. */
 
-        if (yield->ptr != save_ptr && (temp[0] == *outsep || temp[0] == 0))
+        if (  yield && yield->ptr != save_ptr
+	   && (temp[0] == *outsep || temp[0] == 0))
           yield = string_catn(yield, US" ", 1);
 
         /* Add the string in "temp" to the output list that we are building,
@@ -6357,7 +6358,7 @@ while (*s != 0)
       the redundant final separator. Even though an empty item at the end of a
       list does not count, this is tidier. */
 
-      else if (yield->ptr != save_ptr) yield->ptr--;
+      else if (yield && yield->ptr != save_ptr) yield->ptr--;
 
       /* Restore preserved $item */
 
@@ -7222,7 +7223,7 @@ while (*s != 0)
         {
         uschar outsep[2] = { ':', '\0' };
         uschar *address, *error;
-        int save_ptr = yield->ptr;
+        int save_ptr = yield ? yield->ptr : 0;
         int start, end, domain;  /* Not really used */
 
         while (isspace(*sub)) sub++;
@@ -7253,7 +7254,7 @@ while (*s != 0)
 
           if (address)
             {
-            if (yield->ptr != save_ptr && address[0] == *outsep)
+            if (yield && yield->ptr != save_ptr && address[0] == *outsep)
               yield = string_catn(yield, US" ", 1);
 
             for (;;)
@@ -7282,7 +7283,7 @@ while (*s != 0)
         /* If we have generated anything, remove the redundant final
         separator. */
 
-        if (yield->ptr != save_ptr) yield->ptr--;
+        if (yield && yield->ptr != save_ptr) yield->ptr--;
         f.parse_allow_group = FALSE;
         continue;
         }

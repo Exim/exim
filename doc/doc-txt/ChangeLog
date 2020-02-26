@@ -74,6 +74,10 @@ JH/25 Fix use of concurrent TLS connections under GnuTLS.  When a callout was
       used rather than per-connection info for tracking the state of data
       queued for transmission.  This could result in a connection hang.
 
+JH/28 Bug 2533: Fix expansion of ${tr } item.  When called in some situations
+      it could crash from a null-deref.  This could also affect the
+      ${addresses: } operator and ${readsock } item.
+
 
 Exim version 4.93
 -----------------
