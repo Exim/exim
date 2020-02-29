@@ -1029,6 +1029,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # TLS resumption is not always supported by the build
     next if /^tls_resumption_hosts =/;
     next if /^-tls_resumption/;
+
+    # gsasl library version may not support some methods
+    s/250-AUTH ANONYMOUS PLAIN SCRAM-SHA-1\K SCRAM-SHA-256//;
     }
 
   # ======== stderr ========
