@@ -591,14 +591,14 @@ if (include_affixes)
   return addr->address;
   }
 
-if (addr->suffix == NULL)
+if (!addr->suffix)
   {
-  if (addr->prefix == NULL) return addr->address;
+  if (!addr->prefix) return addr->address;
   return addr->address + Ustrlen(addr->prefix);
   }
 
 at = Ustrrchr(addr->address, '@');
-plen = (addr->prefix == NULL)? 0 : Ustrlen(addr->prefix);
+plen = addr->prefix ? Ustrlen(addr->prefix) : 0;
 slen = Ustrlen(addr->suffix);
 
 return string_sprintf("%.*s@%s", (int)(at - addr->address - plen - slen),

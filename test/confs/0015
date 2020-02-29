@@ -83,7 +83,8 @@ local_delivery:
   file = DIR/test-mail/${bless:$local_part}
   return_path_add
   headers_add = X-local_part: $local_part\n\
-                X-local_part_prefix: $local_part_prefix
+                X-local_part_prefix: $local_part_prefix\n\
+                X-local_part_prefix_v: $local_part_prefix_v
 
 local_delivery_b:
   driver = appendfile
@@ -94,7 +95,8 @@ local_delivery_b:
   return_path_add
   use_bsmtp
   headers_add = X-local_part: $local_part\n\
-                X-local_part_prefix: $local_part_prefix
+                X-local_part_prefix: $local_part_prefix\n\
+                X-local_part_prefix_v: $local_part_prefix_v
 
 delivery_s:
   driver = smtp

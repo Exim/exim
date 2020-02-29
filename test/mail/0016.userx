@@ -9,6 +9,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_suffix: +page
+X-local_part_suffix_v: page
 
 Some message text.
 
@@ -26,6 +29,9 @@ Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_suffix: 
+X-local_part_suffix_v: 
 
 callpager -r 108 PAGE:Some message text. 
 

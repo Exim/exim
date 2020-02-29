@@ -2907,9 +2907,8 @@ if (  from_header
     uschar *at = domain ? from_address + domain - 1 : NULL;
 
     if (at) *at = 0;
-    from_address += route_check_prefix(from_address, local_from_prefix);
-    slen = route_check_suffix(from_address, local_from_suffix);
-    if (slen > 0)
+    from_address += route_check_prefix(from_address, local_from_prefix, NULL);
+    if ((slen = route_check_suffix(from_address, local_from_suffix, NULL)) > 0)
       {
       memmove(from_address+slen, from_address, Ustrlen(from_address)-slen);
       from_address += slen;

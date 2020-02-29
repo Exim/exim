@@ -39,7 +39,9 @@ Version 4.94
  9. Items specified for the router and transport headers_remove option can use
     a trailing asterisk to specify globbing.
 
-10. New "queue_size" variable.
+10. New $queue_size variable.
+
+11. New variables $local_part_{pre,suf}fix_v.
 
 
 

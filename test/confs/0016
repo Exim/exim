@@ -39,8 +39,11 @@ local_delivery:
   user = CALLER
   delivery_date_add
   envelope_to_add
-  file = DIR/test-mail/${bless:$local_part}
+  headers_add = X-local_part: $local_part\n\
+		X-local_part_suffix: $local_part_suffix\n\
+		X-local_part_suffix_v: $local_part_suffix_v
   return_path_add
+  file = DIR/test-mail/${bless:$local_part}
 
 address_reply:
   driver = autoreply

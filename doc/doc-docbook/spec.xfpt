@@ -1399,16 +1399,21 @@ If the &%domains%& option is set, the domain of the address must be in the set
 of domains that it defines.
 .next
 .vindex "&$local_part_prefix$&"
+.vindex "&$local_part_prefix_v$&"
 .vindex "&$local_part$&"
 .vindex "&$local_part_suffix$&"
+.vindex "&$local_part_suffix_v$&"
 .cindex affix "router precondition"
 If the &%local_parts%& option is set, the local part of the address must be in
 the set of local parts that it defines. If &%local_part_prefix%& or
 &%local_part_suffix%& is in use, the prefix or suffix is removed from the local
 part before this check. If you want to do precondition tests on local parts
 that include affixes, you can do so by using a &%condition%& option (see below)
-that uses the variables &$local_part$&, &$local_part_prefix$&, and
-&$local_part_suffix$& as necessary.
+.new
+that uses the variables &$local_part$&, &$local_part_prefix$&,
+&$local_part_prefix_v$&, &$local_part_suffix$&
+and &$local_part_suffix_v$& as necessary.
+.wen
 .next
 .vindex "&$local_user_uid$&"
 .vindex "&$local_user_gid$&"
@@ -12447,12 +12452,19 @@ the retrieved data.
 .wen
 
 .vindex "&$local_part_prefix$&"
+.vindex "&$local_part_prefix_v$&"
 .vindex "&$local_part_suffix$&"
+.vindex "&$local_part_suffix_v$&"
 .cindex affix variables
 If a local part prefix or suffix has been recognized, it is not included in the
 value of &$local_part$& during routing and subsequent delivery. The values of
 any prefix or suffix are in &$local_part_prefix$& and
 &$local_part_suffix$&, respectively.
+.new
+If the affix specification included a wildcard then the portion of
+the affix matched by the wildcard is in
+&$local_part_prefix_v$& or &$local_part_suffix_v$& as appropriate.
+.wen
 
 When a message is being delivered to a file, pipe, or autoreply transport as a
 result of aliasing or forwarding, &$local_part$& is set to the local part of
@@ -12506,11 +12518,25 @@ When an address is being routed or delivered, and a
 specific prefix for the local part was recognized, it is available in this
 variable, having been removed from &$local_part$&.
 
+.new
+.vitem &$local_part_prefix_v$&
+.vindex "&$local_part_prefix_v$&"
+When &$local_part_prefix$& is valid and the prefix match used a wildcard,
+the portion matching the wildcard is available in this variable.
+.wen
+
 .vitem &$local_part_suffix$&
 .vindex "&$local_part_suffix$&"
 When an address is being routed or delivered, and a
 specific suffix for the local part was recognized, it is available in this
 variable, having been removed from &$local_part$&.
+
+.new
+.vitem &$local_part_suffix_v$&
+.vindex "&$local_part_suffix_v$&"
+When &$local_part_suffix$& is valid and the suffix match used a wildcard,
+the portion matching the wildcard is available in this variable.
+.wen
 
 .new
 .vitem &$local_part_verified$&
@@ -18784,6 +18810,12 @@ a transport. In particular, the local part that is transmitted in the RCPT
 command for LMTP, SMTP, and BSMTP deliveries has the prefix removed by default.
 This behaviour can be overridden by setting &%rcpt_include_affixes%& true on
 the relevant transport.
+
+.new
+.vindex &$local_part_prefix_v$&
+If wildcarding (above) was used then the part of the prefix matching the
+wildcard is available in &$local_part_prefix_v$&.
+.wen
 
 When an address is being verified, &%local_part_prefix%& affects only the
 behaviour of the router. If the callout feature of verification is in use, this

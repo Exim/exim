@@ -335,19 +335,20 @@ wildcard.
 Arguments:
   local_part    the local part to check
   prefixes      the list of prefixes
+  vp		if set, pointer to place for size of wildcard portion
 
 Returns:        length of matching prefix or zero
 */
 
 int
-route_check_prefix(const uschar *local_part, const uschar *prefixes)
+route_check_prefix(const uschar * local_part, const uschar * prefixes,
+  unsigned * vp)
 {
 int sep = 0;
 uschar *prefix;
 const uschar *listptr = prefixes;
-uschar prebuf[64];
 
-while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf))))
+while ((prefix = string_nextinlist(&listptr, &sep, NULL, 0)))
   {
   int plen = Ustrlen(prefix);
   if (prefix[0] == '*')
@@ -355,10 +356,19 @@ while ((prefix = string_nextinlist(&listptr, &sep, prebuf, sizeof(prebuf))))
     prefix++;
     for (const uschar * p = local_part + Ustrlen(local_part) - (--plen);
          p >= local_part; p--)
-      if (strncmpic(prefix, p, plen) == 0) return plen + p - local_part;
+      if (strncmpic(prefix, p, plen) == 0)
+	{
+	unsigned vlen = p - local_part;
+	if (vp) *vp = vlen;
+	return plen + vlen;
+	}
     }
   else
-    if (strncmpic(prefix, local_part, plen) == 0) return plen;
+    if (strncmpic(prefix, local_part, plen) == 0)
+      {
+      if (vp) *vp = 0;
+      return plen;
+      }
   }
 
 return 0;
@@ -377,31 +387,40 @@ is a wildcard.
 Arguments:
   local_part    the local part to check
   suffixes      the list of suffixes
+  vp		if set, pointer to place for size of wildcard portion
 
 Returns:        length of matching suffix or zero
 */
 
 int
-route_check_suffix(const uschar *local_part, const uschar *suffixes)
+route_check_suffix(const uschar * local_part, const uschar * suffixes,
+  unsigned * vp)
 {
 int sep = 0;
 int alen = Ustrlen(local_part);
 uschar *suffix;
 const uschar *listptr = suffixes;
-uschar sufbuf[64];
 
-while ((suffix = string_nextinlist(&listptr, &sep, sufbuf, sizeof(sufbuf))))
+while ((suffix = string_nextinlist(&listptr, &sep, NULL, 0)))
   {
   int slen = Ustrlen(suffix);
   if (suffix[slen-1] == '*')
     {
-    const uschar *pend = local_part + alen - (--slen) + 1;
+    const uschar * pend = local_part + alen - (--slen) + 1;
     for (const uschar * p = local_part; p < pend; p++)
-      if (strncmpic(suffix, p, slen) == 0) return alen - (p - local_part);
+      if (strncmpic(suffix, p, slen) == 0)
+	{
+	int tlen = alen - (p - local_part);
+	if (vp) *vp = tlen - slen;
+	return tlen;
+	}
     }
   else
     if (alen > slen && strncmpic(suffix, local_part + alen - slen, slen) == 0)
+      {
+      if (vp) *vp = 0;
       return slen;
+      }
   }
 
 return 0;
@@ -1620,9 +1639,9 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   /* Default no affixes and select whether to use a caseful or caseless local
   part in this router. */
 
-  addr->prefix = addr->suffix = NULL;
-  addr->local_part = r->caseful_local_part?
-    addr->cc_local_part : addr->lc_local_part;
+  addr->prefix = addr->prefix_v = addr->suffix = addr->suffix_v = NULL;
+  addr->local_part = r->caseful_local_part
+    ? addr->cc_local_part : addr->lc_local_part;
 
   DEBUG(D_route) debug_printf("local_part=%s domain=%s\n", addr->local_part,
     addr->domain);
@@ -1633,10 +1652,12 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   if (r->prefix)
     {
-    int plen = route_check_prefix(addr->local_part, r->prefix);
+    unsigned vlen;
+    int plen = route_check_prefix(addr->local_part, r->prefix, &vlen);
     if (plen > 0)
       {
       addr->prefix = string_copyn(addr->local_part, plen);
+      if (vlen) addr->prefix_v = string_copyn(addr->local_part, vlen);
       addr->local_part += plen;
       DEBUG(D_route) debug_printf("stripped prefix %s\n", addr->prefix);
       }
@@ -1652,11 +1673,13 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
 
   if (r->suffix)
     {
-    int slen = route_check_suffix(addr->local_part, r->suffix);
+    unsigned vlen;
+    int slen = route_check_suffix(addr->local_part, r->suffix, &vlen);
     if (slen > 0)
       {
       int lplen = Ustrlen(addr->local_part) - slen;
       addr->suffix = addr->local_part + lplen;
+      addr->suffix_v = addr->suffix + Ustrlen(addr->suffix) - vlen;
       addr->local_part = string_copyn(addr->local_part, lplen);
       DEBUG(D_route) debug_printf("stripped suffix %s\n", addr->suffix);
       }

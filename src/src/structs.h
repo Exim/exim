@@ -553,7 +553,9 @@ typedef struct address_item {
   uschar *lc_local_part;          /* lowercased local part */
   uschar *local_part;             /* points to cc or lc version */
   uschar *prefix;                 /* stripped prefix of local part */
+  uschar *prefix_v;		  /*  variable part of above */
   uschar *suffix;                 /* stripped suffix of local part */
+  uschar *suffix_v;		  /*  variable part of above */
   const uschar *domain;           /* working domain (lower cased) */
 
   uschar *address_retry_key;      /* retry key including full address */

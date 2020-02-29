@@ -421,8 +421,8 @@ extern uschar *rfc2047_decode2(uschar *, BOOL, uschar *, int, int *, int *,
                  uschar **);
 extern int     route_address(address_item *, address_item **, address_item **,
                  address_item **, address_item **, int);
-extern int     route_check_prefix(const uschar *, const uschar *);
-extern int     route_check_suffix(const uschar *, const uschar *);
+extern int     route_check_prefix(const uschar *, const uschar *, unsigned *);
+extern int     route_check_suffix(const uschar *, const uschar *, unsigned *);
 extern BOOL    route_findgroup(uschar *, gid_t *);
 extern BOOL    route_finduser(const uschar *, struct passwd **, uid_t *);
 extern BOOL    route_find_expanded_group(uschar *, uschar *, uschar *, gid_t *,

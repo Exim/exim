@@ -220,7 +220,9 @@ if (!addr->next)
 
   deliver_localpart = addr->local_part;
   deliver_localpart_prefix = addr->prefix;
+  deliver_localpart_prefix_v = addr->prefix_v;
   deliver_localpart_suffix = addr->suffix;
+  deliver_localpart_suffix_v = addr->suffix_v;
 
   for (addr_orig = addr; addr_orig->parent; addr_orig = addr_orig->parent) ;
   deliver_domain_orig = addr_orig->domain;
@@ -260,7 +262,9 @@ if (!addr->next)
       else if (deliver_localpart[0] == '|') address_pipe = addr->local_part;
       deliver_localpart = addr->parent->local_part;
       deliver_localpart_prefix = addr->parent->prefix;
+      deliver_localpart_prefix_v = addr->parent->prefix_v;
       deliver_localpart_suffix = addr->parent->suffix;
+      deliver_localpart_suffix_v = addr->parent->suffix_v;
       }
     }
 

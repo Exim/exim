@@ -589,7 +589,9 @@ static var_entry var_table[] = {
   { "local_part",          vtype_stringptr,   &deliver_localpart },
   { "local_part_data",     vtype_stringptr,   &deliver_localpart_data },
   { "local_part_prefix",   vtype_stringptr,   &deliver_localpart_prefix },
+  { "local_part_prefix_v", vtype_stringptr,   &deliver_localpart_prefix_v },
   { "local_part_suffix",   vtype_stringptr,   &deliver_localpart_suffix },
+  { "local_part_suffix_v", vtype_stringptr,   &deliver_localpart_suffix_v },
   { "local_part_verified", vtype_stringptr,   &deliver_localpart_verified },
 #ifdef HAVE_LOCAL_SCAN
   { "local_scan_data",     vtype_stringptr,   &local_scan_data },
