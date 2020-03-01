@@ -1,0 +1,116 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> mailserver.test in helo_lookup_domains? no (end of list)
+>>> host in dsn_advertise_hosts? no (option unset)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in chunking_advertise_hosts? no (end of list)
+>>> processing "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "accept" (TESTSUITE/test-config 23)
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count -1
+LOG: 10HmaX-0005vi-00 mime_acl: mime_part_count -1
+>>> accept: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": ACCEPT
+LOG: 10HmaX-0005vi-00 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss
+>>> processing "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_mime"
+>>> processing "accept" (TESTSUITE/test-config 19)
+>>> check decode = default
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 0
+LOG: 10HmaY-0005vi-00 mime_acl: mime_part_count 0
+>>> accept: condition test succeeded in ACL "check_mime"
+>>> end of ACL "check_mime": ACCEPT
+>>> using ACL "check_mime"
+>>> processing "accept" (TESTSUITE/test-config 19)
+>>> check decode = default
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 1
+LOG: 10HmaY-0005vi-00 mime_acl: mime_part_count 1
+>>> accept: condition test succeeded in ACL "check_mime"
+>>> end of ACL "check_mime": ACCEPT
+>>> using ACL "check_mime"
+>>> processing "accept" (TESTSUITE/test-config 19)
+>>> check decode = default
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 2
+LOG: 10HmaY-0005vi-00 mime_acl: mime_part_count 2
+>>> accept: condition test succeeded in ACL "check_mime"
+>>> end of ACL "check_mime": ACCEPT
+>>> using ACL "check_data"
+>>> processing "accept" (TESTSUITE/test-config 23)
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 2
+LOG: 10HmaY-0005vi-00 mime_acl: mime_part_count 2
+>>> accept: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": ACCEPT
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-0005vi-00/FFFFFFFFF'
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-0005vi-00/FFFFFFFFF'
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-0005vi-00/FFFFFFFFF'
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaY-0005vi-00/FFFFFFFFF'
+LOG: 10HmaY-0005vi-00 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss
+>>> processing "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_mime"
+>>> processing "accept" (TESTSUITE/test-config 19)
+>>> check decode = default
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 0
+LOG: 10HmaZ-0005vi-00 mime_acl: mime_part_count 0
+>>> accept: condition test succeeded in ACL "check_mime"
+>>> end of ACL "check_mime": ACCEPT
+>>> using ACL "check_mime"
+>>> processing "accept" (TESTSUITE/test-config 19)
+>>> check decode = default
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 1
+LOG: 10HmaZ-0005vi-00 mime_acl: mime_part_count 1
+>>> accept: condition test succeeded in ACL "check_mime"
+>>> end of ACL "check_mime": ACCEPT
+>>> using ACL "check_mime"
+>>> processing "accept" (TESTSUITE/test-config 19)
+>>> check decode = default
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 2
+LOG: 10HmaZ-0005vi-00 mime_acl: mime_part_count 2
+>>> accept: condition test succeeded in ACL "check_mime"
+>>> end of ACL "check_mime": ACCEPT
+>>> using ACL "check_data"
+>>> processing "accept" (TESTSUITE/test-config 23)
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count 2
+LOG: 10HmaZ-0005vi-00 mime_acl: mime_part_count 2
+>>> accept: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": ACCEPT
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-0005vi-00/FFFFFFFFF'
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-0005vi-00/FFFFFFFFF'
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-0005vi-00/FFFFFFFFF'
+>>> unspool_mbox(): unlinking 'TESTSUITE/spool/scan/10HmaZ-0005vi-00/FFFFFFFFF'
+LOG: 10HmaZ-0005vi-00 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss
+>>> processing "accept" (TESTSUITE/test-config 25)
+>>> accept: condition test succeeded in inline ACL
+>>> end of inline ACL: ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "accept" (TESTSUITE/test-config 23)
+>>> check logwrite = mime_acl: mime_part_count $mime_part_count
+>>>                = mime_acl: mime_part_count -1
+LOG: 10HmbA-0005vi-00 mime_acl: mime_part_count -1
+>>> accept: condition test succeeded in ACL "check_data"
+>>> end of ACL "check_data": ACCEPT
+LOG: 10HmbA-0005vi-00 <= sender@test.ex H=(mailserver.test) [127.0.0.1] P=esmtp S=sss

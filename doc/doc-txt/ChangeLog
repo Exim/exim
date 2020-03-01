@@ -140,6 +140,9 @@ JH/28 Bug 2533: Fix expansion of ${tr } item.  When called in some situations
       it could crash from a null-deref.  This could also affect the
       ${addresses: } operator and ${readsock } item.
 
+JH/29 Bug 2537: Fix $mime_part_count.  When a single connection had a non-mime
+      message following a mime one, the variable was not reset.
+
 
 Exim version 4.93
 -----------------

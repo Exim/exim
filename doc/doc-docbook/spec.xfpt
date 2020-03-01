@@ -33704,13 +33704,22 @@ The following list describes all expansion variables that are
 available in the MIME ACL:
 
 .vlist
+.vitem &$mime_anomaly_level$& &&&
+       &$mime_anomaly_text$&
+.vindex &$mime_anomaly_level$&
+.vindex &$mime_anomaly_text$&
+If there are problems decoding, these variables contain information on
+the detected issue.
+
 .vitem &$mime_boundary$&
-If the current part is a multipart (see &$mime_is_multipart$&) below, it should
+.vindex &$mime_boundary$&
+If the current part is a multipart (see &$mime_is_multipart$& below), it should
 have a boundary string, which is stored in this variable. If the current part
 has no boundary parameter in the &'Content-Type:'& header, this variable
 contains the empty string.
 
 .vitem &$mime_charset$&
+.vindex &$mime_charset$&
 This variable contains the character set identifier, if one was found in the
 &'Content-Type:'& header. Examples for charset identifiers are:
 .code
@@ -33722,31 +33731,37 @@ Please note that this value is not normalized, so you should do matches
 case-insensitively.
 
 .vitem &$mime_content_description$&
+.vindex &$mime_content_description$&
 This variable contains the normalized content of the &'Content-Description:'&
 header. It can contain a human-readable description of the parts content. Some
 implementations repeat the filename for attachments here, but they are usually
 only used for display purposes.
 
 .vitem &$mime_content_disposition$&
+.vindex &$mime_content_disposition$&
 This variable contains the normalized content of the &'Content-Disposition:'&
 header. You can expect strings like &"attachment"& or &"inline"& here.
 
 .vitem &$mime_content_id$&
+.vindex &$mime_content_id$&
 This variable contains the normalized content of the &'Content-ID:'& header.
 This is a unique ID that can be used to reference a part from another part.
 
 .vitem &$mime_content_size$&
+.vindex &$mime_content_size$&
 This variable is set only after the &%decode%& modifier (see above) has been
 successfully run. It contains the size of the decoded part in kilobytes. The
 size is always rounded up to full kilobytes, so only a completely empty part
 has a &$mime_content_size$& of zero.
 
 .vitem &$mime_content_transfer_encoding$&
+.vindex &$mime_content_transfer_encoding$&
 This variable contains the normalized content of the
 &'Content-transfer-encoding:'& header. This is a symbolic name for an encoding
 type. Typical values are &"base64"& and &"quoted-printable"&.
 
 .vitem &$mime_content_type$&
+.vindex &$mime_content_type$&
 If the MIME part has a &'Content-Type:'& header, this variable contains its
 value, lowercased, and without any options (like &"name"& or &"charset"&). Here
 are some examples of popular MIME types, as they may appear in this variable:
@@ -33761,6 +33776,7 @@ If the MIME part has no &'Content-Type:'& header, this variable contains the
 empty string.
 
 .vitem &$mime_decoded_filename$&
+.vindex &$mime_decoded_filename$&
 This variable is set only after the &%decode%& modifier (see above) has been
 successfully run. It contains the full path and filename of the file
 containing the decoded data.
@@ -33769,6 +33785,7 @@ containing the decoded data.
 .cindex "RFC 2047"
 .vlist
 .vitem &$mime_filename$&
+.vindex &$mime_filename$&
 This is perhaps the most important of the MIME variables. It contains a
 proposed filename for an attachment, if one was found in either the
 &'Content-Type:'& or &'Content-Disposition:'& headers. The filename will be
@@ -33779,6 +33796,7 @@ decoded, but no additional sanity checks are done.
 found, this variable contains the empty string.
 
 .vitem &$mime_is_coverletter$&
+.vindex &$mime_is_coverletter$&
 This variable attempts to differentiate the &"cover letter"& of an e-mail from
 attached data. It can be used to clamp down on flashy or unnecessarily encoded
 content in the cover letter, while not restricting attachments at all.
@@ -33811,18 +33829,22 @@ deny message = HTML mail is not accepted here
 condition = $mime_is_coverletter
 condition = ${if eq{$mime_content_type}{text/html}{1}{0}}
 .endd
+
 .vitem &$mime_is_multipart$&
+.vindex &$mime_is_multipart$&
 This variable has the value 1 (true) when the current part has the main type
 &"multipart"&, for example, &"multipart/alternative"& or &"multipart/mixed"&.
 Since multipart entities only serve as containers for other parts, you may not
 want to carry out specific actions on them.
 
 .vitem &$mime_is_rfc822$&
+.vindex &$mime_is_rfc822$&
 This variable has the value 1 (true) if the current part is not a part of the
 checked message itself, but part of an attached message. Attached message
 decoding is fully recursive.
 
 .vitem &$mime_part_count$&
+.vindex &$mime_part_count$&
 This variable is a counter that is raised for each processed MIME part. It
 starts at zero for the very first part (which is usually a multipart). The
 counter is per-message, so it is reset when processing RFC822 attachments (see

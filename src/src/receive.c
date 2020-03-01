@@ -1399,6 +1399,7 @@ for (header_line * my_headerlist = header_list; my_headerlist;
     goto DO_MIME_ACL;
     }
 
+mime_part_count = -1;
 DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
 return TRUE;
 
@@ -1755,6 +1756,13 @@ if (thismessage_size_limit <= 0) thismessage_size_limit = INT_MAX;
 
 message_linecount = body_linecount = body_zerocount =
   max_received_linelength = 0;
+
+#ifdef WITH_CONTENT_SCAN
+/* reset non-per-part mime variables */
+mime_is_coverletter    = 0;
+mime_is_rfc822         = 0;
+mime_part_count        = -1;
+#endif
 
 #ifndef DISABLE_DKIM
 /* Call into DKIM to set up the context.  In CHUNKING mode

@@ -107,23 +107,23 @@ return initial_pos;
 static ssize_t
 mime_decode_asis(FILE* in, FILE* out, uschar* boundary)
 {
-  ssize_t len, size = 0;
-  uschar buffer[MIME_MAX_LINE_LENGTH];
+ssize_t len, size = 0;
+uschar buffer[MIME_MAX_LINE_LENGTH];
 
-  while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL)
-    {
-    if (boundary != NULL
-       && Ustrncmp(buffer, "--", 2) == 0
-       && Ustrncmp((buffer+2), boundary, Ustrlen(boundary)) == 0
-       )
-      break;
+while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL)
+  {
+  if (boundary != NULL
+     && Ustrncmp(buffer, "--", 2) == 0
+     && Ustrncmp((buffer+2), boundary, Ustrlen(boundary)) == 0
+     )
+    break;
 
-    len = Ustrlen(buffer);
-    if (fwrite(buffer, 1, (size_t)len, out) < len)
-      return -1;
-    size += len;
-    } /* while */
-  return size;
+  len = Ustrlen(buffer);
+  if (fwrite(buffer, 1, (size_t)len, out) < len)
+    return -1;
+  size += len;
+  } /* while */
+return size;
 }
 
 
@@ -399,6 +399,7 @@ return c == EOF || num_copied == 1 ? 0 : 1;
 }
 
 
+/* reset all per-part mime variables */
 static void
 mime_vars_reset(void)
 {
@@ -725,9 +726,8 @@ while(1)
   if (rc != OK) break;
 
   /* If we have a multipart entity and a boundary, go recursive */
-  if ( (mime_content_type != NULL) &&
-       (nested_context.boundary != NULL) &&
-       (Ustrncmp(mime_content_type,"multipart",9) == 0) )
+  if (  mime_content_type && nested_context.boundary 
+     && Ustrncmp(mime_content_type,"multipart",9) == 0)
     {
     DEBUG(D_acl)
       debug_printf_indent("MIME: Entering multipart recursion, boundary '%s'\n",
@@ -744,25 +744,25 @@ while(1)
     rc = mime_acl_check(acl, f, &nested_context, user_msgptr, log_msgptr);
     if (rc != OK) break;
     }
-  else if ( (mime_content_type != NULL) &&
-	  (Ustrncmp(mime_content_type,"message/rfc822",14) == 0) )
+  else if (  mime_content_type
+	  && Ustrncmp(mime_content_type,"message/rfc822",14) == 0)
     {
-    const uschar *rfc822name = NULL;
-    uschar filename[2048];
+    const uschar * rfc822name = NULL;
+    uschar * filename;
     int file_nr = 0;
     int result = 0;
 
     /* must find first free sequential filename */
-    do
+    for (gstring * g = string_get(64); result != -1; g->ptr = 0)
       {
       struct stat mystat;
-      (void)string_format(filename, 2048,
+      g = string_fmt_append(g,
 	"%s/scan/%s/__rfc822_%05u", spool_directory, message_id, file_nr++);
       /* security break */
       if (file_nr >= 128)
 	goto NO_RFC822;
-      result = stat(CS filename,&mystat);
-      } while (result != -1);
+      result = stat(CS (filename = string_from_gstring(g)), &mystat);
+      }
 
     rfc822name = filename;
 

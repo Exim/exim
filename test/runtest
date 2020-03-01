@@ -1210,6 +1210,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     # timing variance, run-to-run
     s/^time on queue = \K1s/0s/;
 
+    # content-scan: file order can vary in directory
+    s%unspool_mbox\(\): unlinking 'TESTSUITE/spool/scan/[^/]*/\K[^\']*%FFFFFFFFF%;
+
     # Skip hosts_require_dane checks when the options
     # are unset, because dane ain't always there.
     next if /in\shosts_require_dane\?\sno\s\(option\sunset\)/x;

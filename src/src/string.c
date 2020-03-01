@@ -1256,9 +1256,23 @@ g->s = s;
 
 /* Build or append to a growing-string, sprintf-style.
 
+Arguments:
+	g	a growable-string
+	func	called-from function name, for debug
+	line	called-from file line number, for debug
+	limit	maximum string size
+	flags	see below
+	format	printf-like format string
+	ap	variable-args pointer
+
+Flags:
+	SVFMT_EXTEND            buffer can be created or exteded as needed
+	SVFMT_REBUFFER          buffer can be recopied to tainted mem as needed
+	SVFMT_TAINT_NOCHK       do not check inputs for taint
+
 If the "extend" flag is true, the string passed in can be NULL,
 empty, or non-empty.  Growing is subject to an overall limit given
-by the size_limit argument.
+by the limit argument.
 
 If the "extend" flag is false, the string passed in may not be NULL,
 will not be grown, and is usable in the original place after return.
