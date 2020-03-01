@@ -1404,7 +1404,6 @@ for (header_line * my_headerlist = header_list; my_headerlist;
     goto DO_MIME_ACL;
     }
 
-mime_part_count = -1;
 DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
 return TRUE;
 

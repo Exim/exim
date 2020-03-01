@@ -4627,10 +4627,10 @@ turn into a queue runner, with an optional starting message id. */
 if (queue_interval == 0 && !f.daemon_listen)
   {
   DEBUG(D_queue_run) debug_printf("Single queue run%s%s%s%s\n",
-    (start_queue_run_id == NULL)? US"" : US" starting at ",
-    (start_queue_run_id == NULL)? US"" : start_queue_run_id,
-    (stop_queue_run_id == NULL)?  US"" : US" stopping at ",
-    (stop_queue_run_id == NULL)?  US"" : stop_queue_run_id);
+    start_queue_run_id ? US" starting at " : US"",
+    start_queue_run_id ? start_queue_run_id: US"",
+    stop_queue_run_id ?  US" stopping at " : US"",
+    stop_queue_run_id ?  stop_queue_run_id : US"");
   if (*queue_name)
     set_process_info("running the '%s' queue (single queue run)", queue_name);
   else
