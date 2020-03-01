@@ -1,242 +1,38 @@
-# content scan interface: spamassassin
+# ACL regex= test
 #
-# The spooled file for scanning includes the test-runner's user name
-# hence size varies.  Munge that.
-munge scanfile_size
+# These tests are copies from testcase 4000;
+# they should be removed from there but I don't
+# run spamassassin so can't verify the change.
 #
-#
-# A good-comms test, returning not-spam.
-# (we could use a second one that returns is-spam...)
-server 7833
-<REPORT SPAMC
-<User:
-<Content-length:
-<
-<From
-<X-Envelope-From
-<X-Envelope-To
-<Received:
-<	by
-<	(envelope
-<	id
-<	for
-<Content-type: text/plain
-<Message-Id:
-<From:
-<Date:
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
-*eof
-****
-exim -odi -oMt fromuser -bs
+exim -odi -bs
 ehlo test.ex
-mail from:<fromuser@myhost.test.ex>
+mail from:<>
 rcpt to:<userx@test.ex>
 data
-Content-type: text/plain
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
 
-test
+OK, this should look like a genuine message.
 .
 quit
 ****
-#
-#
-#
-#
-# Server spec line with timeout option, not exercised
-# (could we cut down the massive content?)
-server 7833
-<REPORT SPAMC
-<User:
-<Content-length:
-<
-<From
-<X-Envelope-From
-<X-Envelope-To
-<Received:
-<	by
-<	(envelope
-<	id
-<	for
-<Content-type: text/plain
-<Message-Id:
-<From:
-<Date:
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
-*eof
-****
-exim -odi -oMt fromuser -bs -DOPT='127.0.0.1 7833 retry=10s'
+exim -odi -bs
 ehlo test.ex
-mail from:<fromuser@myhost.test.ex>
+mail from:<>
 rcpt to:<userx@test.ex>
 data
-Content-type: text/plain
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Fri, 17 Dec 2004 16:13:04 +0100
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+FakeReject: test fakereject
 
-test
+OK, this should look like a genuine message, but
+it will trip on THIS gazornenplaz REGEX.
 .
 quit
 ****
-#
-#
-#
-# Server spec line with timeout option, exercised
-server -i 2 7833
-<REPORT SPAMC
-<User:
-<Content-length:
-<
-<From
-<X-Envelope-From
-<X-Envelope-To
-<Received:
-<	by
-<	(envelope
-<	id
-<	for
-<Content-type: text/plain
-<Message-Id:
-<From:
-<Date:
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
-*eof
-****
-exim -odi -oMt fromuser -bs -DOPT='127.0.0.1 7833 retry=4s'
-ehlo test.ex
-mail from:<fromuser@myhost.test.ex>
-rcpt to:<userx@test.ex>
-data
-Content-type: text/plain
-
-test
-.
-quit
-****
-#
-#
-#
-# Multiple servers, prioritised, with timeout spec; first one fails
-# List separator changed
-server 7833
-<REPORT SPAMC
-<User:
-<Content-length:
-<
-<From
-<X-Envelope-From
-<X-Envelope-To
-<Received:
-<	by
-<	(envelope
-<	id
-<	for
-<Content-type: text/plain
-<Message-Id:
-<From:
-<Date:
-<
-<test
->SPAMD/1.1 0 EX_OK
->Spam: False ; 4.5 / 5.0
->
->Spam detection software, running on the system "demo",
->has NOT identified this incoming email as spam.  The original
->message has been attached to this so you can view it or label
->similar future email.  If you have any questions, see
->@@CONTACT_ADDRESS@@ for details.
->
->Content preview:  test [...]
->
->Content analysis details:   (4.5 points, 5.0 required)
->
-> pts rule name              description
->---- ---------------------- --------------------------------------------------
->-1.0 ALL_TRUSTED            Passed through trusted hosts only via SMTP
-> 1.2 MISSING_HEADERS        Missing To: header
-> 1.0 MISSING_FROM           Missing From: header
-> 1.8 MISSING_SUBJECT        Missing Subject: header
-> 1.4 MISSING_DATE           Missing Date: header
-> 0.1 MISSING_MID            Missing Message-Id: header
->
-*eof
-****
-exim -odi -oMt fromuser -bs -DOPT='<; 127.0.0.1 7833 ; HOSTIPV4 7834 pri=2 tmo=2s'
-ehlo test.ex
-mail from:<fromuser@myhost.test.ex>
-rcpt to:<userx@test.ex>
-data
-Content-type: text/plain
-
-test
-.
-quit
-****
-#
-#
