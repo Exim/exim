@@ -326,7 +326,7 @@ timeout_frozen_after = 7d
 
 
 # By default, messages that are waiting on Exim's queue are all held in a
-# single directory called "input" which it itself within Exim's spool
+# single directory called "input" which is itself within Exim's spool
 # directory. (The default spool directory is specified when Exim is built, and
 # is often /var/spool/exim/.) Exim works best when its queue is kept short, but
 # there are circumstances where this is not always possible. If you uncomment
