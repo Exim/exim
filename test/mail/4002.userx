@@ -1,0 +1,33 @@
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER (helo=test.ex)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+
+OK, this should look like a genuine message.
+
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER (helo=test.ex)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: Test person <tp@cam.ac.uk>
+To: Me <userx@test.ex>
+Subject: A real test message
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-ID: <41C2F849.3060203@projectile.test.ex>
+FakeReject: test fakereject
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+X-Regex: Regex matched <THIS gazornenplaz REGEX> <gazornenplaz>
+
+OK, this should look like a genuine message, but
+it will trip on THIS gazornenplaz REGEX.
+
