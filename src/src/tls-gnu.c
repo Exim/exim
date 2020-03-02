@@ -2513,7 +2513,7 @@ sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 do
   rc = gnutls_handshake(state->session);
-while (rc == GNUTLS_E_AGAIN ||  rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
+while (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
 ALARM_CLR(0);
 
 if (rc != GNUTLS_E_SUCCESS)
@@ -2993,7 +2993,7 @@ sigalrm_seen = FALSE;
 ALARM(ob->command_timeout);
 do
   rc = gnutls_handshake(state->session);
-while (rc == GNUTLS_E_AGAIN || rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
+while (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen);
 ALARM_CLR(0);
 
 if (rc != GNUTLS_E_SUCCESS)
@@ -3157,10 +3157,7 @@ DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, buf
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 
-do
-  inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
-    MIN(ssl_xfer_buffer_size, lim));
-while (inbytes == GNUTLS_E_AGAIN);
+inbytes = gnutls_record_recv(state->session, state->xfer_buffer, MIN(ssl_xfer_buffer_size, lim));
 
 if (smtp_receive_timeout > 0) ALARM_CLR(0);
 
@@ -3317,9 +3314,7 @@ DEBUG(D_tls)
   debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, len=" SIZE_T_FMT ")\n",
       state->session, buff, len);
 
-do
-  inbytes = gnutls_record_recv(state->session, buff, len);
-while (inbytes == GNUTLS_E_AGAIN);
+inbytes = gnutls_record_recv(state->session, buff, len);
 
 if (inbytes > 0) return inbytes;
 if (inbytes == 0)
@@ -3380,9 +3375,7 @@ while (left > 0)
   DEBUG(D_tls) debug_printf("gnutls_record_send(session=%p, buffer=%p, left=" SIZE_T_FMT ")\n",
       state->session, buff, left);
 
-  do
-    outbytes = gnutls_record_send(state->session, buff, left);
-  while (outbytes == GNUTLS_E_AGAIN);
+  outbytes = gnutls_record_send(state->session, buff, left);
 
   DEBUG(D_tls) debug_printf("outbytes=" SSIZE_T_FMT "\n", outbytes);
 
@@ -3415,15 +3408,7 @@ if (!more && state->corked)
   {
   DEBUG(D_tls) debug_printf("gnutls_record_uncork(session=%p)\n", state->session);
   do {
-    do
-      /* We can't use GNUTLS_RECORD_WAIT here, as it retries on
-      GNUTLS_E_AGAIN || GNUTLS_E_INTR, which would break our timeout set by alarm().
-      The GNUTLS_E_AGAIN should not happen ever, as our sockets are blocking anyway.
-      But who knows. (That all relies on the fact that GNUTLS_E_INTR and GNUTLS_E_AGAIN
-      match the EINTR and EAGAIN errno values.) */
       outbytes = gnutls_record_uncork(state->session, 0);
-    while (outbytes == GNUTLS_E_AGAIN);
-
      if (outbytes < 0)
        {
        record_io_error(state, len, US"uncork", NULL);
