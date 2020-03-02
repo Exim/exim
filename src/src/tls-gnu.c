@@ -3407,14 +3407,12 @@ if (len > INT_MAX)
 if (!more && state->corked)
   {
   DEBUG(D_tls) debug_printf("gnutls_record_uncork(session=%p)\n", state->session);
-  do {
-      outbytes = gnutls_record_uncork(state->session, 0);
-     if (outbytes < 0)
-       {
-       record_io_error(state, len, US"uncork", NULL);
-       return -1;
-       }
-  } while (gnutls_record_check_corked(state->session) > 0);
+  outbytes = gnutls_record_uncork(state->session, 0);
+  if (outbytes < 0)
+    {
+    record_io_error(state, len, US"uncork", NULL);
+    return -1;
+    }
   state->corked = FALSE;
   }
 #endif
