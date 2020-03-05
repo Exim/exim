@@ -2415,7 +2415,7 @@ TCP_SYN_RCV (as of 12.1) so no idea about data-use. */
 
 if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
   {
-  if (is_fastopen) 
+  if (is_fastopen)
     {
     DEBUG(D_receive)
       debug_printf("TFO mode connection (TCP_FASTOPEN getsockopt)\n");
@@ -4900,6 +4900,9 @@ while (done <= 0)
       /* Apply an ACL check if one is defined, before responding. Afterwards,
       when pipelining is not advertised, do another sync check in case the ACL
       delayed and the client started sending in the meantime. */
+      #ifdef EXPERIMENTAL_MAILFROM_MSGID
+      generate_message_id();
+      #endif
 
       if (acl_smtp_mail)
 	{

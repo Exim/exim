@@ -220,6 +220,7 @@ extern uschar *event_raise(uschar *, const uschar *, uschar *);
 extern void    msg_event_raise(const uschar *, const address_item *);
 #endif
 
+extern void    generate_message_id(void);
 extern int     exim_chown_failure(int, const uschar*, uid_t, gid_t);
 extern const uschar * exim_errstr(int);
 extern void    exim_exit(int, const uschar *) NORETURN;
