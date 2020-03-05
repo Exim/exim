@@ -902,6 +902,18 @@ va_end(ap);
 return g;
 }
 
+
+/* Copy the content of a string to tainted memory */
+
+static inline void
+gstring_rebuffer(gstring * g)
+{
+uschar * s = store_get(g->size, TRUE);
+memcpy(s, g->s, g->ptr);
+g->s = s;
+}
+
+
 /******************************************************************************/
 
 #define store_get_dns_answer() store_get_dns_answer_trc(CUS __FUNCTION__, __LINE__)

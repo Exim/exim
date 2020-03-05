@@ -12,7 +12,6 @@ utilities and tests, and are cut out by the COMPILE_UTILITY macro. */
 #include "exim.h"
 #include <assert.h>
 
-static void gstring_rebuffer(gstring * g);
 
 #ifndef COMPILE_UTILITY
 /*************************************************
@@ -1241,16 +1240,6 @@ g.s[g.ptr] = '\0';
 return !!gp;
 }
 
-
-
-/* Copy the content of a string to tainted memory */
-static void
-gstring_rebuffer(gstring * g)
-{
-uschar * s = store_get(g->size, TRUE);
-memcpy(s, g->s, g->ptr);
-g->s = s;
-}
 
 
 

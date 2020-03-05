@@ -7422,10 +7422,10 @@ while (*s != 0)
 
       case EOP_FROM_UTF8:
         {
-        while (*sub != 0)
+	uschar * buff = store_get(4, is_tainted(sub));
+        while (*sub)
           {
           int c;
-          uschar buff[4];
           GETUTF8INC(c, sub);
           if (c > 255) c = '_';
           buff[0] = c;
@@ -7446,7 +7446,17 @@ while (*s != 0)
         int complete;
         uschar seq_buff[4];			/* accumulate utf-8 here */
 
-        while (*sub != 0)
+	/* Manually track tainting, as we deal in individual chars below */
+
+	if (is_tainted(sub))
+	  if (yield->s && yield->ptr)
+	    gstring_rebuffer(yield);
+	  else
+	    yield->s = store_get(yield->size = Ustrlen(sub), TRUE);
+
+	/* Check the UTF-8, byte-by-byte */
+
+        while (*sub)
 	  {
 	  complete = 0;
 	  uschar c = *sub++;
