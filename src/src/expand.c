@@ -7631,7 +7631,7 @@ while (*s != 0)
       case EOP_QUOTE_LOCAL_PART:
       if (!arg)
         {
-        BOOL needs_quote = (*sub == 0);      /* TRUE for empty string */
+        BOOL needs_quote = (!*sub);      /* TRUE for empty string */
         uschar *t = sub - 1;
 
         if (c == EOP_QUOTE)
@@ -7751,10 +7751,10 @@ while (*s != 0)
 
       case EOP_FROM_UTF8:
         {
-        while (*sub != 0)
+	uschar * buff = store_get(4, is_tainted(sub));
+        while (*sub)
           {
           int c;
-          uschar buff[4];
           GETUTF8INC(c, sub);
           if (c > 255) c = '_';
           buff[0] = c;
@@ -7763,7 +7763,7 @@ while (*s != 0)
         continue;
         }
 
-	  /* replace illegal UTF-8 sequences by replacement character  */
+      /* replace illegal UTF-8 sequences by replacement character  */
 
       #define UTF8_REPLACEMENT_CHAR US"?"
 
@@ -7775,7 +7775,17 @@ while (*s != 0)
         int complete;
         uschar seq_buff[4];			/* accumulate utf-8 here */
 
-        while (*sub != 0)
+	/* Manually track tainting, as we deal in individual chars below */
+
+	if (is_tainted(sub))
+	  if (yield->s && yield->ptr)
+	    gstring_rebuffer(yield);
+	  else
+	    yield->s = store_get(yield->size = Ustrlen(sub), TRUE);
+
+	/* Check the UTF-8, byte-by-byte */
+
+        while (*sub)
 	  {
 	  complete = 0;
 	  uschar c = *sub++;
@@ -7801,7 +7811,7 @@ while (*s != 0)
 	    }
 	  else	/* no bytes left: new sequence */
 	    {
-	    if((c & 0x80) == 0)	/* 1-byte sequence, US-ASCII, keep it */
+	    if(!(c & 0x80))	/* 1-byte sequence, US-ASCII, keep it */
 	      {
 	      yield = string_catn(yield, &c, 1);
 	      continue;
@@ -7846,9 +7856,8 @@ while (*s != 0)
         * Eg, ${length_1:フィル} is one byte, not one character, so we expect
         * ${utf8clean:${length_1:フィル}} to yield '?' */
         if (bytes_left != 0)
-          {
           yield = string_catn(yield, UTF8_REPLACEMENT_CHAR, 1);
-          }
+
         continue;
         }
 
