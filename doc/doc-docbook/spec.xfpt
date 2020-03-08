@@ -14309,6 +14309,7 @@ listed in more than one group.
 .row &%daemon_startup_sleep%&        "time to sleep between tries"
 .row &%extra_local_interfaces%&      "not necessarily listened on"
 .row &%local_interfaces%&            "on which to listen, with optional ports"
+.row &%notifier_socket%&             "override compiled-in value"
 .row &%pid_file_path%&               "override compiled-in value"
 .row &%queue_run_max%&               "maximum simultaneous queue runners"
 .endtable
@@ -16380,6 +16381,24 @@ never_users = root:daemon:bin
 Including root is redundant if it is also on the fixed list, but it does no
 harm. This option overrides the &%pipe_as_creator%& option of the &(pipe)&
 transport driver.
+
+
+.new
+.option notifier_socket main string "$spool_directory/exim_daemon_notify"
+This option gives the name for a unix-domain socket on which the daemon
+listens for work and information-requests.
+Only installations running multiple daemons sharing a spool directory
+should need to modify the default.
+
+The option is expanded before use.
+If the platform supports Linux-style abstract socket names, the result
+is used with a nul byte prefixed.
+Otherwise, it should be a full path name and use a directory accessible
+to Exim.
+
+If the Exim command line uses a &%-oX%& option and does not use &%-oP%&
+then a notifier socket is not created.
+.wen
 
 
 .option openssl_options main "string list" "+no_sslv2 +no_sslv3 +single_dh_use +no_ticket +no_renegotiation"

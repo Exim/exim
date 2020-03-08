@@ -1164,6 +1164,7 @@ int     mime_part_count        = -1;
 #endif
 
 uid_t  *never_users            = NULL;
+uschar *notifier_socket        = US"$spool_directory/" NOTIFIER_SOCKET_NAME ;
 
 const int on                   = 1;	/* for setsockopt */
 const int off                  = 0;

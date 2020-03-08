@@ -8,6 +8,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 ppppp creating notifier socket
+ppppp  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 pid written to TESTSUITE/spool/exim-daemon.pid
@@ -29,6 +30,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 ppppp creating notifier socket
+ppppp  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv6) port 1226
@@ -52,6 +54,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 ppppp creating notifier socket
+ppppp  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv6) port 1226
@@ -76,6 +79,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 ppppp creating notifier socket
+ppppp  TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv6) port 1226
@@ -100,6 +104,7 @@ admin user
 dropping to exim gid; retaining priv uid
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 ppppp creating notifier socket
+ppppp  TESTSUITE/spool/exim_daemon_notify
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225
 listening on ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1226
 pid written to TESTSUITE/spool/exim-daemon.pid
@@ -123,6 +128,7 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
   <: 1227
 creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1227
 listening on all interfaces (IPv4) port 1227
 listening on 127.0.0.1 port 1228
@@ -149,6 +155,7 @@ daemon_smtp_port overridden by -oX:
 local_interfaces overridden by -oX:
   <; 127.0.0.1
 creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
 listening on 127.0.0.1 port 1227
 listening on 127.0.0.1 port 1225
 pid written to TESTSUITE/spool/exim-daemon.pid
@@ -172,6 +179,7 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 local_interfaces overridden by -oX:
   <; ::0.1225; 0.0.0.0.1225; 0.0.0.0.1226
 creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv6) port 1225
 listening on all interfaces (IPv4) port 1225
 listening on all interfaces (IPv4) port 1226

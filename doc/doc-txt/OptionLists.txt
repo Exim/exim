@@ -399,6 +399,8 @@ mx_domains                           domain list     unset         dnslookup    
 mx_fail_domains                      domain list     unset         dnslookup         4.43
 mysql_servers                        string list     unset         main              3.03
 never_users                          string list     unset         main
+notifier_socket			     string	     "$spool_directory/exim_daemon_notify"
+								   main		     4.94
 notify_comsat                        boolean         false         appendfile
 once                                 string*         unset         autoreply
 once_file_size                       integer         0             autoreply         3.20

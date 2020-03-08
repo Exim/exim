@@ -227,6 +227,7 @@ static optionlist optionlist_config[] = {
   { "mysql_servers",            opt_stringptr,   {&mysql_servers} },
 #endif
   { "never_users",              opt_uidlist,     {&never_users} },
+  { "notifier_socket",          opt_stringptr,   {&notifier_socket} },
 #ifndef DISABLE_TLS
   { "openssl_options",          opt_stringptr,   {&openssl_options} },
 #endif

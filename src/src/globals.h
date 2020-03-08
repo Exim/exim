@@ -735,8 +735,7 @@ extern int     mime_part_count;
 extern BOOL    mua_wrapper;            /* TRUE when Exim is wrapping an MUA */
 
 extern uid_t  *never_users;            /* List of uids never to be used */
-#ifdef WITH_CONTENT_SCAN
-#endif
+extern uschar *notifier_socket;        /* Name for daemon notifier unix-socket */
 
 extern const int on;                   /* For setsockopt */
 extern const int off;

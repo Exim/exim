@@ -8,6 +8,7 @@
 domainlist local_domains = test.ex
 qualify_domain = test.ex
 queue_only
+notifier_socket = DIR/spool/this_my_notify_socket
 
 log_selector = +millisec
 

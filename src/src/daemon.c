@@ -972,7 +972,7 @@ if (daemon_notifier_fd >= 0)
   daemon_notifier_fd = -1;
 #ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
     {
-    uschar * s = string_sprintf("%s/%s", spool_directory, NOTIFIER_SOCKET_NAME);
+    uschar * s = expand_string(notifier_socket);
     DEBUG(D_any) debug_printf("unlinking notifier socket %s\n", s);
     Uunlink(s);
     }
@@ -1010,7 +1010,14 @@ const uschar * where;
 struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
 int len;
 
-DEBUG(D_any) debug_printf("creating notifier socket ");
+if (override_local_interfaces && !override_pid_file_path)
+  {
+  DEBUG(D_any)
+    debug_printf("-oX used without -oP so not creating notifier socket\n");
+  return;
+  }
+
+DEBUG(D_any) debug_printf("creating notifier socket\n");
 
 #ifdef SOCK_CLOEXEC
 if ((fd = socket(PF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0)) < 0)
@@ -1024,13 +1031,14 @@ if ((fd = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0)
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 sa_un.sun_path[0] = 0;	/* Abstract local socket addr - Linux-specific? */
 len = offsetof(struct sockaddr_un, sun_path) + 1
-  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s", NOTIFIER_SOCKET_NAME);
-DEBUG(D_any) debug_printf("@%s\n", sa_un.sun_path+1);
+  + snprintf(sa_un.sun_path+1, sizeof(sa_un.sun_path)-1, "%s",
+	      expand_string(notifier_socket));
+DEBUG(D_any) debug_printf(" @%s\n", sa_un.sun_path+1);
 #else			/* filesystem-visible and persistent; will neeed removal */
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s/%s", 
-		spool_directory, NOTIFIER_SOCKET_NAME);
-DEBUG(D_any) debug_printf("%s\n", sa_un.sun_path);
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s", 
+	      expand_string(notifier_socket));
+DEBUG(D_any) debug_printf(" %s\n", sa_un.sun_path);
 #endif
 
 if (bind(fd, (const struct sockaddr *)&sa_un, len) < 0)

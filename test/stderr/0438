@@ -10,6 +10,7 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port 1225
 pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
@@ -32,6 +33,7 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port 1225
 pid written to TESTSUITE/spool/exim-daemon.anotherpid
 changed uid/gid: running as a daemon
@@ -54,6 +56,7 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 daemon_smtp_port overridden by -oX:
   <: 1225
 creating notifier socket
+ TESTSUITE/spool/exim_daemon_notify
 listening on all interfaces (IPv4) port 1225
 pid written to TESTSUITE/spool/mypidfile
 changed uid/gid: running as a daemon
