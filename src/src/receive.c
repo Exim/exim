@@ -645,6 +645,11 @@ if (!f.dot_ends)
   {
   int last_ch = '\n';
 
+/*XXX we do a gettimeofday before checking for every received char,
+which is hardly clever.  The function-indirection doesn't help, but
+an additional function to check for nonempty read buffer would help.
+See stdin_getc() / smtp_getc() / tls_getc() / bdat_getc(). */
+
   for ( ;
        log_close_chk(), (ch = (receive_getc)(GETC_BUFFER_UNLIMITED)) != EOF;
        last_ch = ch)

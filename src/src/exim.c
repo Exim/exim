@@ -3138,8 +3138,7 @@ for (i = 1; i < argc; i++)
 
       case 'm':
       case 'o':
-	if (!*argrest) {}
-	else badarg = TRUE;
+	if (*argrest) badarg = TRUE;
 	break;
 
       /* -oP <name>: set pid file path for daemon
@@ -3157,27 +3156,24 @@ for (i = 1; i < argc; i++)
 
       case 'r':
       case 's':
-	if (!*argrest)
-	  {
-	  int *tp = (*argrest == 'r')?
-	    &arg_receive_timeout : &arg_smtp_receive_timeout;
-	  if (argrest[1] == 0)
-	    {
-	    if (i+1 < argc) *tp= readconf_readtime(argv[++i], 0, FALSE);
-	    }
-	  else *tp = readconf_readtime(argrest + 1, 0, FALSE);
-	  if (*tp < 0)
-	    exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
-	  }
-	else badarg = TRUE;
+	{
+	int * tp = argrest[-1] == 'r'
+	  ? &arg_receive_timeout : &arg_smtp_receive_timeout;
+	if (*argrest)
+	  *tp = readconf_readtime(argrest, 0, FALSE);
+	else if (i+1 < argc)
+	  *tp = readconf_readtime(argv[++i], 0, FALSE);
+
+	if (*tp < 0)
+	  exim_fail("exim: bad time value %s: abandoned\n", argv[i]);
+	}
 	break;
 
       /* -oX <list>: Override local_interfaces and/or default daemon ports */
 
       case 'X':
-	if (!*argrest)
-	  override_local_interfaces = argv[++i];
-	else badarg = TRUE;
+	if (*argrest) badarg = TRUE;
+	else override_local_interfaces = argv[++i];
 	break;
 
       /* Unknown -o argument */
