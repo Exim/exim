@@ -483,10 +483,11 @@ for (int i = queue_run_in_order ? -1 : 0;
       int i;
       if (qpid[f.running_in_test_harness ? 0 : nelem(qpid) - 1])
 	{
-	DEBUG(D_queue_run) debug_printf("q2stage waiting for child\n");
+	DEBUG(D_queue_run) debug_printf("q2stage waiting for child %d\n", (int)qpid[0]);
 	waitpid(qpid[0], NULL, 0);
 	DEBUG(D_queue_run) debug_printf("q2stage reaped child %d\n", (int)qpid[0]);
-	for (i = 0; i < nelem(qpid) - 1; i++) qpid[i] = qpid[i+1];
+	if (f.running_in_test_harness) i = 0;
+	else for (i = 0; i < nelem(qpid) - 1; i++) qpid[i] = qpid[i+1];
 	qpid[i] = 0;
 	}
       else

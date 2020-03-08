@@ -675,7 +675,7 @@ killdaemon
 # Only check that we logged the right number of messages; don't care
 # about ordering or mistakes in wrong message-id
 sudo perl
-system "egrep -v '(Completed|<=|=>)' DIR/spool/log/mainlog 1>&2";
+system "egrep -v '(Completed|<=|=>|is locked)' DIR/spool/log/mainlog 1>&2";
 system "wc -l DIR/test-stdout 1>&2";
 system "grep -q '=>' DIR/spool/log/servermainlog && echo 'daemon did make at least one delivery' 1>&2";
 ****
