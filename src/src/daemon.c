@@ -127,6 +127,18 @@ if (smtp_out) smtp_printf("421 %s\r\n", FALSE, smtp_msg);
 
 
 /*************************************************
+*************************************************/
+
+static void
+close_daemon_sockets(int daemon_notifier_fd,
+  int * listen_sockets, int listen_socket_count)
+{
+if (daemon_notifier_fd >= 0) (void) close(daemon_notifier_fd);
+for (int i = 0; i < listen_socket_count; i++) (void) close(listen_sockets[i]);
+}
+
+
+/*************************************************
 *            Handle a connected SMTP call        *
 *************************************************/
 
@@ -424,7 +436,7 @@ if (pid == 0)
   extensive comment before the reception loop in exim.c for a fuller
   explanation of this logic. */
 
-  for (i = 0; i < listen_socket_count; i++) (void)close(listen_sockets[i]);
+  close_daemon_sockets(daemon_notifier_fd, listen_sockets, listen_socket_count);
 
   /* Set FD_CLOEXEC on the SMTP socket. We don't want any rogue child processes
   to be able to communicate with them, under any circumstances. */
@@ -2123,10 +2135,8 @@ for (;;)
 
           /* Close any open listening sockets in the child */
 
-	  if (daemon_notifier_fd >= 0)
-	    (void) close(daemon_notifier_fd);
-          for (int sk = 0; sk < listen_socket_count; sk++)
-            (void) close(listen_sockets[sk]);
+	  close_daemon_sockets(daemon_notifier_fd,
+	    listen_sockets, listen_socket_count);
 
           /* Reset SIGHUP and SIGCHLD in the child in both cases. */
 
@@ -2434,8 +2444,8 @@ for (;;)
     {
     log_write(0, LOG_MAIN, "pid %d: SIGHUP received: re-exec daemon",
       getpid());
-    for (int sk = 0; sk < listen_socket_count; sk++)
-      (void)close(listen_sockets[sk]);
+    close_daemon_sockets(daemon_notifier_fd,
+      listen_sockets, listen_socket_count);
     ALARM_CLR(0);
     signal(SIGHUP, SIG_IGN);
     sighup_argv[0] = exim_path;
