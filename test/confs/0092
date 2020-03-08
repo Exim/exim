@@ -14,8 +14,11 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 OPT = 2s
+
+.ifndef COM
 smtp_receive_timeout = OPT
 receive_timeout = 2s
+.endif
 
 
 begin acl

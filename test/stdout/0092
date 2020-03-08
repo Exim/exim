@@ -47,3 +47,7 @@ Error detected in line 0
 421 SMTP incoming data timeout - message abandoned
 Transaction started in line 0
 Error detected in line 3
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+421 myhost.test.ex: SMTP command timeout - closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+421 myhost.test.ex: SMTP command timeout - closing connection
