@@ -34,7 +34,7 @@ tls_require_ciphers = NORMAL:-KX-ALL:+RSA
 tls_require_ciphers = DEFAULT:!kECDHE
 .endif
 
-pipelining_connect_advertise_hosts = *
+pipelining_connect_advertise_hosts = CONTROL
 log_selector = +received_recipients +millisec +pipelining
 queue_only
 

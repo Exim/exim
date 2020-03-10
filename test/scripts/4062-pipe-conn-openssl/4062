@@ -4,7 +4,7 @@
 exim -bd -DSERVER=server -oX PORT_D
 ****
 #
-exim a@test.ex
+exim nocache@test.ex
 Subject test 1
 
 ****
@@ -16,7 +16,7 @@ exim -DNOTDAEMON -DSERVER=server -q
 #
 #
 # Go for it.  This one should do early-pipelinng.
-exim b@test.ex
+exim hascache@test.ex
 Subject test 2
 
 ****
@@ -28,7 +28,7 @@ exim -DNOTDAEMON -DSERVER=server -q
 #
 # Check that client doesn't try when not told to, even now there is
 # a cache entry
-exim c@test.ex
+exim client_no@test.ex
 Subject test 3
 
 ****
@@ -38,6 +38,20 @@ exim -DNOTDAEMON -DSERVER=server -q
 ****
 #
 #
+killdaemon
+#
+# Check what happens when the server suddenly does not support it
+# and we have cached info saying it does
+exim -bd -DSERVER=server -DCONTROL=: -oX PORT_D
+****
+exim server_oops@test.ex
+Subject test 3_2
+
+****
+exim -q
+****
+exim -DNOTDAEMON -DSERVER=server -q
+****
 killdaemon
 #
 #

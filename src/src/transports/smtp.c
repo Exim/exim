@@ -2079,6 +2079,7 @@ if (!continue_hostname)
     else DEBUG(D_transport)
       debug_printf("helo needs $sending_ip_address\n");
 
+PIPE_CONNECT_RETRY:
   if (sx->early_pipe_active)
     sx->outblock.conn_args = &sx->conn_args;
   else
@@ -2425,7 +2426,10 @@ if (  smtp_peer_options & OPTION_TLS
     {
     HDEBUG(D_transport)
       debug_printf("failed reaping pipelined cmd responses\n");
-    goto RESPONSE_FAILED;
+    close(sx->cctx.sock);
+    sx->cctx.sock = -1;
+    sx->early_pipe_active = FALSE;
+    goto PIPE_CONNECT_RETRY;
     }
 #endif
 
