@@ -59,7 +59,7 @@ bin/client-ssl: $(SRC)/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -o bin/client-ssl $(SRC)/client.c -lssl -lcrypto $(LIBS)
 
 $(CLIENT_ANYTLS): $(CLIENT_GNUTLS) $(CLIENT_OPENSSL)
-		[ -n "$(CLIENT_GNUTLS)" ] && ln -sf $(CLIENT_GNUTLS) $@ || ln -sf $(CLIENT_OPENSSL) $@
+		[ -n "$(CLIENT_GNUTLS)" ] && ln -sf `basename $(CLIENT_GNUTLS)` $@ || ln -sf `basename $(CLIENT_OPENSSL)` $@
 
 bin/checkaccess:$(SRC)/checkaccess.c Makefile
 		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess $(SRC)/checkaccess.c
