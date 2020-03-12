@@ -418,7 +418,7 @@ if (pid == 0)
           "please try again later.\r\n", FALSE);
         mac_smtp_fflush();
         search_tidyup();
-        exim_underbar_exit(EXIT_FAILURE);
+        exim_underbar_exit(EXIT_FAILURE, US"conn-accept");
         }
       }
     else if (*nah) smtp_active_hostname = nah;
@@ -505,7 +505,7 @@ if (pid == 0)
     {
     mac_smtp_fflush();
     search_tidyup();
-    exim_underbar_exit(EXIT_SUCCESS);
+    exim_underbar_exit(EXIT_SUCCESS, US"conn-smtp");
     }
 
   for (;;)
@@ -533,7 +533,7 @@ if (pid == 0)
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
         mac_smtp_fflush();
         smtp_log_no_mail();               /* Log no mail if configured */
-        exim_underbar_exit(EXIT_SUCCESS);
+        exim_underbar_exit(EXIT_SUCCESS, US"conn-receive");
         }
       if (message_id[0] == 0) continue;   /* No message was accepted */
       }
@@ -556,7 +556,7 @@ if (pid == 0)
       /*XXX should we pause briefly, hoping that the client will be the
       active TCP closer hence get the TCP_WAIT endpoint? */
       DEBUG(D_receive) debug_printf("SMTP>>(close on process exit)\n");
-      exim_underbar_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
+      exim_underbar_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS, US"conn-setup");
       }
 
     /* Show the recipients when debugging */
@@ -692,7 +692,7 @@ if (pid == 0)
 
         (void) deliver_message(message_id, FALSE, FALSE);
         search_tidyup();
-        exim_underbar_exit(EXIT_SUCCESS);
+        exim_underbar_exit(EXIT_SUCCESS, US"deliver_msg");
         }
 
       if (dpid > 0)
@@ -2221,7 +2221,7 @@ for (;;)
 	  else
 #endif
 	    queue_run(NULL, NULL, FALSE);
-          exim_underbar_exit(EXIT_SUCCESS);
+          exim_underbar_exit(EXIT_SUCCESS, US"queue-runner");
           }
 
         if (pid < 0)

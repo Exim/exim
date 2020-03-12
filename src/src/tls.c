@@ -455,7 +455,7 @@ if (pid == 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
         "tls_require_ciphers invalid: %s", errmsg);
   fflush(NULL);
-  exim_underbar_exit(0);
+  exim_underbar_exit(0, NULL);
   }
 
 do {

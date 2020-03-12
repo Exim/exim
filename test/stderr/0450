@@ -57,6 +57,7 @@ already listed for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

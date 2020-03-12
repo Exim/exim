@@ -5799,7 +5799,7 @@ while (done <= 0)
 	  }
 
 	enq_end(etrn_serialize_key);
-	exim_underbar_exit(EXIT_SUCCESS);
+	exim_underbar_exit(EXIT_SUCCESS, US"etrn-serialize-interproc");
 	}
 
       /* Back in the top level SMTP process. Check that we started a subprocess

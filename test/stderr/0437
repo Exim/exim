@@ -46,6 +46,7 @@ LOG: MAIN
 LOG: MAIN
   Completed
 search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
@@ -77,6 +78,7 @@ LOG: MAIN
 LOG: MAIN
   Completed
 search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 search_tidyup called

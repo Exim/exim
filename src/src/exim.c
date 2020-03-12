@@ -727,9 +727,13 @@ exit(rc);
 
 
 void
-exim_underbar_exit(int rc)
+exim_underbar_exit(int rc, const uschar * process)
 {
 store_exit();
+DEBUG(D_any)
+  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d %s%s%sterminating with rc=%d "
+    ">>>>>>>>>>>>>>>>\n", (int)getpid(),
+    process ? "(" : "", process, process ? ") " : "", rc);
 _exit(rc);
 }
 
@@ -4607,7 +4611,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     else if ((pid = fork()) == 0)
       {
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
-      exim_underbar_exit(EXIT_SUCCESS);
+      exim_underbar_exit(EXIT_SUCCESS, US"cmdline-delivery");
       }
     else if (pid < 0)
       {
@@ -5710,7 +5714,7 @@ while (more)
       rc = deliver_message(message_id, FALSE, FALSE);
       search_tidyup();
       exim_underbar_exit(!mua_wrapper || rc == DELIVER_MUA_SUCCEEDED
-        ? EXIT_SUCCESS : EXIT_FAILURE);
+        ? EXIT_SUCCESS : EXIT_FAILURE, US"cmdline-delivery");
       }
 
     if (pid < 0)

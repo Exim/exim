@@ -45,6 +45,7 @@ ssss bytes read from TESTSUITE/aux-var/0037.f-user
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
 userfilter router generated userx@test.ex
   errors_to=NULL transport=NULL

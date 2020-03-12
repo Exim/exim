@@ -58,3 +58,4 @@ LOG: smtp_connection MAIN
   SMTP connection from (test.ex) [127.0.0.1] closed by QUIT
 search_tidyup called
 SMTP>>(close on process exit)
+>>>>>>>>>>>>>>>> Exim pid=pppp (conn-setup) terminating with rc=0 >>>>>>>>>>>>>>>>

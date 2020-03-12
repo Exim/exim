@@ -768,7 +768,7 @@ if ((pid = fork()) == 0)
 out:
   (void)close(fd);
   search_tidyup();
-  exim_underbar_exit(0);
+  exim_underbar_exit(0, US"rda");
 
 bad:
   DEBUG(D_rewrite) debug_printf("rda_interpret: failed write to pipe\n");

@@ -759,9 +759,9 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
       exim_setugid(uid, gid, TRUE,
         string_sprintf("require_files check, file=%s", ss));
       if (route_check_access(ss, uid, gid, 4))
-	exim_underbar_exit(0);
+	exim_underbar_exit(0, US"route-check-access");
       DEBUG(D_route) debug_printf("route_check_access() failed\n");
-      exim_underbar_exit(1);
+      exim_underbar_exit(1, US"route-check-access");
       }
 
     /* In the parent, wait for the child to finish */

@@ -29,6 +29,7 @@ ppppp accept: condition test succeeded in ACL "delay4_accept"
 ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: smtp_connection MAIN
 ppppp   SMTP connection from [127.0.0.1] closed by QUIT
+ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (conn-setup) terminating with rc=0 >>>>>>>>>>>>>>>>
 ppppp child ppppp ended: status=0x0
 ppppp   normal exit, 0
 ppppp 0 SMTP accept processes now running
@@ -49,6 +50,7 @@ ppppp accept: condition test succeeded in ACL "delay4_accept"
 ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: lost_incoming_connection MAIN
 ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
+ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (conn-setup) terminating with rc=1 >>>>>>>>>>>>>>>>
 ppppp child ppppp ended: status=0x100
 ppppp   normal exit, 1
 ppppp 0 SMTP accept processes now running

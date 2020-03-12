@@ -102,6 +102,7 @@ set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-0005vi-00-H
@@ -127,6 +128,7 @@ set_process_info: pppp delivering 10HmaY-0005vi-00
 LOG: retry_defer MAIN
   == usery@test.ex R=r1 T=t1 defer (-53): retry time not reached for any host for 'test.ex'
 set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 LOG: queue_run MAIN

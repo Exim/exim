@@ -1272,7 +1272,7 @@ if ((write_pid = fork()) == 0)
         != sizeof(struct timeval)
      )
     rc = FALSE;	/* compiler quietening */
-  exim_underbar_exit(0);
+  exim_underbar_exit(0, US"tpt-filter");
   }
 save_errno = errno;
 

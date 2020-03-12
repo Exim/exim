@@ -205,6 +205,7 @@ data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
 search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
 set transport t1
 r2 router generated >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...

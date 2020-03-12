@@ -37,6 +37,7 @@ LOG: MAIN
   => userx@domain1 R=smarthost T=smtp H=thisloop.test.ex [127.0.0.1] C="250 OK"
 LOG: MAIN
   Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: usery@domain1
@@ -50,6 +51,7 @@ After routing:
   Failed addresses:
   Deferred addresses:
     usery@domain1
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

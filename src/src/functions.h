@@ -225,7 +225,7 @@ extern const uschar * exim_errstr(int);
 extern void    exim_exit(int, const uschar *) NORETURN;
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
-extern void    exim_underbar_exit(int);
+extern void    exim_underbar_exit(int, const uschar *);
 extern void    exim_wait_tick(struct timeval *, int);
 extern int     exp_bool(address_item *addr,
   uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,

@@ -97,6 +97,7 @@ Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -153,6 +154,7 @@ Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+4 expired=0
   errno=-44 more_errno=dd,A H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 451 Temporary error
 end of retry processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -185,6 +187,7 @@ Failed addresses:
 Deferred addresses:
  userx@test.ex: no retry items
 end of retry processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

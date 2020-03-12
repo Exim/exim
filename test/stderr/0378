@@ -44,6 +44,7 @@ text "This is an autoreply"' (tainted)
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
 set transport t3
 aaaa router generated >CALLER@myhost.test.ex
@@ -234,6 +235,7 @@ text "This is an autoreply"' (tainted)
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
 rda_interpret: subprocess yield=0 error=NULL
 set transport t3
 aaaa router generated >CALLER@myhost.test.ex
@@ -300,6 +302,7 @@ After routing:
   Deferred addresses:
     defer_aaaa@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

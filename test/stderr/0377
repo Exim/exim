@@ -551,6 +551,7 @@ cccc@myhost.test.ex was previously delivered (t1 transport): discarded
 aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
 locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -795,6 +796,7 @@ cccc@myhost.test.ex was previously delivered (t1 transport): discarded
 aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
 locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

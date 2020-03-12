@@ -84,6 +84,7 @@ Deferred addresses:
  TESTSUITE/test-mail/rmbox: no retry items
  x@test.ex: no retry items
 end of retry processing
+>>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
