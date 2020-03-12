@@ -353,6 +353,7 @@ uschar *log_detail = NULL;
 int subcount = 0;
 uschar subdirs[64];
 pid_t qpid[4] = {0};	/* Parallelism factor for q2stage 1st phase */
+BOOL single_id = FALSE;
 
 #ifdef MEASURE_TIMING
 report_time_since(&timestamp_startup, US"queue_run start");
@@ -405,6 +406,9 @@ if (!recurse)
       queue_name, log_detail);
   else
     log_write(L_queue_run, LOG_MAIN, "Start queue run: %s", log_detail);
+
+  single_id = start_id && stop_id && !f.queue_2stage
+	      && Ustrcmp(start_id, stop_id) == 0;
   }
 
 /* If deliver_selectstring is a regex, compile it. */
@@ -646,6 +650,7 @@ for (int i = queue_run_in_order ? -1 : 0;
     report_time_since(&timestamp_startup, US"queue msg selected");
 #endif
 
+single_item_retry:
     if ((pid = fork()) == 0)
       {
       int rc;
@@ -676,6 +681,18 @@ for (int i = queue_run_in_order ? -1 : 0;
       log_write(0, LOG_MAIN|LOG_PANIC,
         "queue run: process %d crashed with signal %d while delivering %s",
         (int)pid, status & 0x00ff, fq->text);
+
+    /* If single-item delivery was untried (likely due to locking)
+    retry once after a delay */
+
+    if (status & 0xff00 && single_id)
+      {
+      single_id = FALSE;
+      DEBUG(D_queue_run) debug_printf("qrun single-item pause before retry\n");
+      millisleep(500);
+      DEBUG(D_queue_run) debug_printf("qrun single-item retry after pause\n");
+      goto single_item_retry;
+      }
 
     /* Before continuing, wait till the pipe gets closed at the far end. This
     tells us that any children created by the delivery to re-use any SMTP
