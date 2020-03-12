@@ -1,11 +1,11 @@
-# Exim test configuration 2040
+# Exim test configuration 1101
 # The test uses the same config for two Exim processes
 #
 #              ,------ callout -------.
 #              |                      |
 #              |      .----------.    |
 #              `--> PORT_S       |    |
-# client-gnutls --> PORT_D  Exim |----'
+# client-anytls --> PORT_D  Exim |----'
 #                     `----------'
 
 .include DIR/aux-var/tls_conf_prefix
@@ -37,10 +37,12 @@ catchall:
 
 begin transports
 local_smtp:
-    driver = smtp
-    port = PORT_S
-    hosts = 127.0.0.1
-    hosts_require_tls = *
+    driver =		smtp
+    port =		PORT_S
+    hosts =		127.0.0.1
     allow_localhost
+    hosts_require_tls = *
+    tls_verify_certificates =	DIR/aux-fixed/cert1
+    tls_verify_cert_hostnames =	:
 
 # End
