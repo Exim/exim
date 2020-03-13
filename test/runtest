@@ -1220,7 +1220,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     # daemon notifier socket
     s/^(\s*\d+|ppppp) (creating notifier socket)$/ppppp $2/;
     s/^ \@(.*exim_daemon_notify)$/ $1/;
-    s/^(\s*\d+|ppppp)  \@(.*exim_daemon_notify)$/ppppp  $2/;
+    s/^(\s*\d+|ppppp)  \@?(.*exim_daemon_notify)$/ppppp  $2/;
     next if /unlinking notifier socket/;
 
     # DISABLE_OCSP
