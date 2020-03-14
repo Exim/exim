@@ -1,0 +1,3 @@
+
+******** SERVER ********
+2017-07-30 18:51:05.712 SMTP protocol synchronization error (input sent without waiting for greeting): rejected connection from H=[127.0.0.1] input="EHLO the.local.host.name\r\nSTARTTLS\r\n"
