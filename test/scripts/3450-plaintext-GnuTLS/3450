@@ -2,7 +2,7 @@
 gnutls
 exim -DSERVER=server -bd -oX PORT_D
 ****
-client-ssl HOSTIPV4 PORT_D
+client-gnutls HOSTIPV4 PORT_D
 ??? 220
 ehlo foobar
 ??? 250-
@@ -17,7 +17,7 @@ auth plain AHVzZXJ4AHNlY3JldA==
 quit
 ??? 221
 ****
-client-ssl 127.0.0.1 PORT_D
+client-gnutls 127.0.0.1 PORT_D
 ??? 220
 ehlo foobar
 ??? 250-
