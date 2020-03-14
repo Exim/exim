@@ -22,14 +22,14 @@ queue_fast_ramp
 
 begin routers
 
-client:
-  driver = accept
-  condition = ${if eq {SERVER}{server}{no}{yes}}
-  transport = send_to_server
+drain_q:
+  driver =	accept
+  condition =	${if !def:sender_host_address}
+  transport =	send_to_server
 
-server:
-  driver = accept
-  transport = send_to_server
+targetsys:
+  driver =	redirect
+  data =	:blackhole:
 
 
 # ----- Transports -----
