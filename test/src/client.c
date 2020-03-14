@@ -297,7 +297,7 @@ if (rc <= 0)
   return 0;
   }
 
-printf("SSL connection using %s\n", SSL_get_cipher (*ssl));
+/* printf("SSL connection using %s\n", SSL_get_cipher (*ssl)); */
 return 1;
 }
 

@@ -19,7 +19,6 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> noop
 ????554 Security failure
@@ -55,7 +54,6 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> helo rhu.barb
 ??? 250
@@ -93,7 +91,6 @@ Key file = aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
@@ -128,7 +125,6 @@ Key file = aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
@@ -163,7 +159,6 @@ Key file = aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> noop
 ????554 Security failure
@@ -196,7 +191,6 @@ Key file = aux-fixed/exim-ca/example.net/server1.example.net/server1.example.net
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
@@ -231,7 +225,6 @@ Key file = aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.c
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> noop
 ????554 Security failure
@@ -264,7 +257,6 @@ Key file = aux-fixed/exim-ca/example.com/revoked1.example.com/revoked1.example.c
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
@@ -299,7 +291,6 @@ Key file = aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com
 ??? 220
 <<< 220 TLS go ahead
 Attempting to start TLS
-SSL connection using ke-RSA-AES256-SHAnnn
 Succeeded in starting TLS
 >>> mail from:<userx@test.ex>
 ??? 250
