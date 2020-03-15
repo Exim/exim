@@ -1548,7 +1548,6 @@ memcpy(buf+1, msgid, MESSAGE_ID_LENGTH+1);
 if ((fd = socket(AF_UNIX, SOCK_DGRAM, 0)) >= 0)
   {
   struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
-  int slen;
 
 #ifdef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
   int len = offsetof(struct sockaddr_un, sun_path) + 1
