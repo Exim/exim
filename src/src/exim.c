@@ -4608,7 +4608,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     pid_t pid;
     if (i == argc - 1)
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
-    else if ((pid = fork()) == 0)
+    else if ((pid = exim_fork(US"cmdline-delivery")) == 0)
       {
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
       exim_underbar_exit(EXIT_SUCCESS, US"cmdline-delivery");
@@ -5694,7 +5694,7 @@ while (more)
     pid_t pid;
     search_tidyup();
 
-    if ((pid = fork()) == 0)
+    if ((pid = exim_fork(US"local-accept delivery")) == 0)
       {
       int rc;
       close_unwanted();      /* Close unwanted file descriptors and TLS */

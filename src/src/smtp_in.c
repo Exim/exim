@@ -5759,7 +5759,7 @@ while (done <= 0)
 
       oldsignal = signal(SIGCHLD, SIG_IGN);
 
-      if ((pid = fork()) == 0)
+      if ((pid = exim_fork(US"etrn command")) == 0)
 	{
 	smtp_input = FALSE;       /* This process is not associated with the */
 	(void)fclose(smtp_in);    /* SMTP call any more. */
@@ -5770,7 +5770,8 @@ while (done <= 0)
 	/* If not serializing, do the exec right away. Otherwise, fork down
 	into another process. */
 
-	if (!smtp_etrn_serialize || (pid = fork()) == 0)
+	if (  !smtp_etrn_serialize 
+	   || (pid = exim_fork(US"etrn serialised command")) == 0)
 	  {
 	  DEBUG(D_exec) debug_print_argv(argv);
 	  exim_nullstd();                   /* Ensure std{in,out,err} exist */

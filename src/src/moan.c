@@ -160,15 +160,16 @@ if (  ident == ERRMESS_DMARC_FORENSIC
    && (s2 = expand_string(string_sprintf("${address:%s}", s)))
    && *s2
    )
-  pid = child_open_exim2(&fd, s2, bounce_sender_authentication);
+  pid = child_open_exim2(&fd, s2, bounce_sender_authentication,
+		US"moan_send_message");
 else
   {
   s = NULL;
-  pid = child_open_exim(&fd);
+  pid = child_open_exim(&fd, US"moan_send_message");
   }
 
 #else
-pid = child_open_exim(&fd);
+pid = child_open_exim(&fd, US"moan_send_message");
 #endif
 
 if (pid < 0)
@@ -584,7 +585,7 @@ moan_tell_someone(uschar *who, address_item *addr,
 FILE *f;
 va_list ap;
 int fd;
-int pid = child_open_exim(&fd);
+int pid = child_open_exim(&fd, US"moan_tell_someone");
 
 if (pid < 0)
   {
@@ -820,7 +821,7 @@ if (!(s = expand_string(syntax_errors_to)))
 /* If we can't create a process to send the message, just forget about
 it. */
 
-pid = child_open_exim(&fd);
+pid = child_open_exim(&fd, US"moan_skipped_syntax_errors");
 
 if (pid < 0)
   {

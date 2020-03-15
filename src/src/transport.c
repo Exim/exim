@@ -1248,7 +1248,7 @@ via a(nother) pipe. While writing to the filter, we do not do the CRLF,
 smtp dots, or check string processing. */
 
 if (pipe(pfd) != 0) goto TIDY_UP;      /* errno set */
-if ((write_pid = fork()) == 0)
+if ((write_pid = exim_fork(US"transport filter")) == 0)
   {
   BOOL rc;
   (void)close(fd_read);
@@ -1954,14 +1954,14 @@ int status;
 
 DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
-if ((pid = fork()) == 0)
+if ((pid = exim_fork(US"continued-transport interproc")) == 0)
   {
   /* Disconnect entirely from the parent process. If we are running in the
   test harness, wait for a bit to allow the previous process time to finish,
   write the log, etc., so that the output is always in the same order for
   automatic comparison. */
 
-  if ((pid = fork()) != 0)
+  if ((pid = exim_fork(US"continued-transport")) != 0)
     {
     DEBUG(D_transport) debug_printf("transport_pass_socket succeeded (final-pid %d)\n", pid);
     _exit(EXIT_SUCCESS);

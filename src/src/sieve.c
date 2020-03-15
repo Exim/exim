@@ -3084,7 +3084,8 @@ while (*filter->pc)
             {
             int pid, fd;
 
-            if ((pid = child_open_exim2(&fd,envelope_from,envelope_from))>=1)
+            if ((pid = child_open_exim2(&fd, envelope_from, envelope_from,
+			US"sieve-notify")) >= 1)
               {
               FILE *f;
               uschar *buffer;
@@ -3092,7 +3093,8 @@ while (*filter->pc)
 
               f = fdopen(fd, "wb");
               fprintf(f,"From: %s\n", from.length == -1
-		? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
+		? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain")
+		: from.character);
               for (string_item * p = recipient; p; p=p->next)
 	       	fprintf(f,"To: %s\n",p->text);
               fprintf(f,"Auto-Submitted: auto-notified; %s\n",filter->enotify_mailto_owner);
@@ -3103,9 +3105,11 @@ while (*filter->pc)
                 message.length=Ustrlen(message.character);
                 }
               /* Allocation is larger than necessary, but enough even for split MIME words */
-              buffer_capacity=32+4*message.length;
+              buffer_capacity = 32 + 4*message.length;
               buffer=store_get(buffer_capacity, TRUE);
-              if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
+              if (message.length != -1)
+		fprintf(f, "Subject: %s\n", parse_quote_2047(message.character,
+		  message.length, US"utf-8", buffer, buffer_capacity, TRUE));
               fprintf(f,"\n");
               if (body.length>0) fprintf(f,"%s\n",body.character);
               fflush(f);
@@ -3113,27 +3117,17 @@ while (*filter->pc)
               (void)child_close(pid, 0);
               }
             }
-          if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-            {
+          if ((filter_test != FTEST_NONE && debug_selector != 0) || debug_selector & D_filter)
             debug_printf("Notification to `%s': '%s'.\n",method.character,message.length!=-1 ? message.character : CUS "");
-            }
 #endif
           }
         else
-          {
-          if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-            {
+          if ((filter_test != FTEST_NONE && debug_selector != 0) || debug_selector & D_filter)
             debug_printf("Repeated notification to `%s' ignored.\n",method.character);
-            }
-          }
         }
       else
-        {
-        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          {
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || debug_selector & D_filter)
           debug_printf("Ignoring notification, triggering message contains Auto-submitted: field.\n");
-          }
-        }
       }
     }
 #endif

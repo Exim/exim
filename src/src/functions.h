@@ -150,6 +150,9 @@ extern void    bits_set(unsigned int *, size_t, int *);
 extern void    cancel_cutthrough_connection(BOOL, const uschar *);
 extern int     check_host(void *, const uschar *, const uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
+extern pid_t   child_open_exim_function(int *, const uschar *);
+extern pid_t   child_open_exim2_function(int *, uschar *, uschar *,
+		 const uschar *);
 extern pid_t   child_open_uid(const uschar **, const uschar **, int,
 		 uid_t *, gid_t *, int *, int *, uschar *, BOOL);
 extern BOOL    cleanup_environment(void);
@@ -1108,6 +1111,21 @@ errno = EACCES;
 return NULL;
 }
 
+/******************************************************************************/
+/* Process manipulation */
+
+static inline pid_t
+exim_fork(const unsigned char * purpose)
+{
+pid_t pid = fork();
+if (pid == 0) process_purpose = purpose;
+return pid;
+}
+
+#define child_open_exim(p, r)        child_open_exim_function((p), (r))
+#define child_open_exim2(p, s, a, r) child_open_exim2_function((p), (s), (a), (r))
+
+/******************************************************************************/
 #endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */

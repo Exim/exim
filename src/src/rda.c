@@ -615,7 +615,7 @@ with the parent process. */
 oldsignal = signal(SIGCHLD, SIG_DFL);
 search_tidyup();
 
-if ((pid = fork()) == 0)
+if ((pid = exim_fork(US"router interpret")) == 0)
   {
   header_line *waslast = header_last;   /* Save last header */
 

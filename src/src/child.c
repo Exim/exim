@@ -185,13 +185,15 @@ to exist, even if all calls from within Exim are changed, because it is
 documented for use from local_scan().
 
 Argument: fdptr   pointer to int for the stdin fd
+	  purpose of the child process, for debug
 Returns:          pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open_exim(int *fdptr)
+child_open_exim_function(int * fdptr, const uschar * purpose)
 {
-return child_open_exim2(fdptr, US"<>", bounce_sender_authentication);
+return child_open_exim2_function(fdptr, US"<>", bounce_sender_authentication,
+  purpose);
 }
 
 
@@ -202,12 +204,14 @@ Arguments:
   fdptr                   pointer to int for the stdin fd
   sender                  for a sender address (data for -f)
   sender_authentication   authenticated sender address or NULL
+  purpose		  of the child process, for debug
 
 Returns:          pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open_exim2(int *fdptr, uschar *sender, uschar *sender_authentication)
+child_open_exim2_function(int * fdptr, uschar * sender,
+  uschar * sender_authentication, const uschar * purpose)
 {
 int pfd[2];
 int save_errno;
@@ -220,7 +224,7 @@ on the wait. */
 
 if (pipe(pfd) != 0) return (pid_t)(-1);
 oldsignal = signal(SIGCHLD, SIG_DFL);
-pid = fork();
+pid = exim_fork(purpose);
 
 /* Child process: make the reading end of the pipe into the standard input and
 close the writing end. If debugging, pass debug_fd as stderr. Then re-exec
@@ -337,7 +341,7 @@ that the child process can be waited for. We sometimes get here with it set
 otherwise. Save the old state for resetting on the wait. */
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
-pid = fork();
+pid = exim_fork(US"queryprogram");	/* queryprogram tpt is sole caller */
 
 /* Handle the child process. First, set the required environment. We must do
 this before messing with the pipes, in order to be able to write debugging

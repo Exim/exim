@@ -497,7 +497,7 @@ for (int i = queue_run_in_order ? -1 : 0;
       else
 	for (i = 0; qpid[i]; ) i++;
       DEBUG(D_queue_run) debug_printf("q2stage forking\n");
-      if ((qpid[i] = fork()))
+      if ((qpid[i] = exim_fork(US"qrun phase one")))
 	continue;	/* parent loops around */
       DEBUG(D_queue_run) debug_printf("q2stage child\n");
       }
@@ -651,7 +651,7 @@ for (int i = queue_run_in_order ? -1 : 0;
 #endif
 
 single_item_retry:
-    if ((pid = fork()) == 0)
+    if ((pid = exim_fork(US"qrun delivery")) == 0)
       {
       int rc;
       testharness_pause_ms(100);

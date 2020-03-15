@@ -2268,7 +2268,7 @@ a clean slate and doesn't interfere with the parent process. */
 
 search_tidyup();
 
-if ((pid = fork()) == 0)
+if ((pid = exim_fork(US"delivery (local)")) == 0)
   {
   BOOL replicate = TRUE;
 
@@ -2615,7 +2615,7 @@ if (addr->special_action == SPECIAL_WARN && addr->transport->warn_message)
       "message for %s transport): %s", addr->transport->warn_message,
       addr->transport->name, expand_string_message);
 
-  else if ((pid = child_open_exim(&fd)) > 0)
+  else if ((pid = child_open_exim(&fd, US"warning message")) > 0)
     {
     FILE *f = fdopen(fd, "wb");
     if (errors_reply_to && !contains_header(US"Reply-To", warn_message))
@@ -4647,7 +4647,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
   search_tidyup();
 
   DEBUG(D_deliver) debug_printf("forking transport process\n");
-  if ((pid = fork()) == 0)
+  if ((pid = exim_fork(US"transport")) == 0)
     {
     int fd = pfd[pipe_write];
     host_item *h;
@@ -7336,7 +7336,7 @@ if (addr_senddsn)
   int fd;
 
   /* create exim process to send message */
-  pid = child_open_exim(&fd);
+  pid = child_open_exim(&fd, US"DSN");
 
   DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
 
@@ -7537,7 +7537,7 @@ while (addr_failed)
 
     /* Make a subprocess to send a message */
 
-    if ((pid = child_open_exim(&fd)) < 0)
+    if ((pid = child_open_exim(&fd, US"bounce message")) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
         "create child process to send failure message: %s", getpid(),
         getppid(), strerror(errno));
@@ -8195,7 +8195,7 @@ else if (addr_defer != (address_item *)(+1))
       {
       header_line *h;
       int fd;
-      pid_t pid = child_open_exim(&fd);
+      pid_t pid = child_open_exim(&fd, US"delay-warning message");
 
       if (pid > 0)
         {
@@ -8583,7 +8583,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
       goto fail;
 
     where = US"fork";
-    if ((pid = fork()) < 0)
+    if ((pid = exim_fork(US"tls-proxy interproc")) < 0)
       goto fail;
 
     else if (pid == 0)		/* child: fork again to totally disconnect */

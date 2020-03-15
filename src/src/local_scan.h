@@ -31,6 +31,21 @@ settings, and the store functions. */
 #include "store.h"
 
 
+/* Some people (Marc Merlin et al) are maintaining a patch that allows for
+dynamic local_scan() libraries. This code is not yet in Exim proper, but it
+helps the maintainers if we keep their ABI version numbers here. This may
+mutate into more general support later. The major number is increased when the
+ABI is changed in a non backward compatible way. The minor number is increased
+each time a new feature is added (in a way that doesn't break backward
+compatibility). */
+
+#define LOCAL_SCAN_ABI_VERSION_MAJOR 4
+#define LOCAL_SCAN_ABI_VERSION_MINOR 1
+#define LOCAL_SCAN_ABI_VERSION \
+  LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
+
+
+
 /* The function and its return codes. */
 
 extern int local_scan(int, uschar **);
@@ -98,19 +113,6 @@ added to ensure it starts with a letter. */
 the name of the data file to be present in the first line. */
 
 #define SPOOL_DATA_START_OFFSET (MESSAGE_ID_LENGTH+3)
-
-/* Some people (Marc Merlin et al) are maintaining a patch that allows for
-dynamic local_scan() libraries. This code is not yet in Exim proper, but it
-helps the maintainers if we keep their ABI version numbers here. This may
-mutate into more general support later. The major number is increased when the
-ABI is changed in a non backward compatible way. The minor number is increased
-each time a new feature is added (in a way that doesn't break backward
-compatibility). */
-
-#define LOCAL_SCAN_ABI_VERSION_MAJOR 4
-#define LOCAL_SCAN_ABI_VERSION_MINOR 0
-#define LOCAL_SCAN_ABI_VERSION \
-  LOCAL_SCAN_ABI_VERSION_MAJOR.LOCAL_SCAN_ABI_VERSION_MINOR
 
 /* Structure definitions that are documented as visible in the function. */
 
@@ -180,8 +182,6 @@ extern BOOL    smtp_input;             /* TRUE if input is via SMTP */
 
 extern int     child_close(pid_t, int);
 extern pid_t   child_open(uschar **, uschar **, int, int *, int *, BOOL);
-extern pid_t   child_open_exim(int *);
-extern pid_t   child_open_exim2(int *, uschar *, uschar *);
 extern void    debug_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern uschar *expand_string(uschar *);
 extern void    header_add(int, const char *, ...);
@@ -223,10 +223,14 @@ with the original name. */
 # define string_copy(s) string_copy_function(s)
 # define string_copyn(s, n) string_copyn_function((s), (n))
 # define string_copy_taint(s, t) string_copy_taint_function((s), (t))
+# define child_open_exim(p)        child_open_exim_function((p), US"from local_scan")
+# define child_open_exim2(p, s, a) child_open_exim2_function((p), (s), (a), US"from local_scan")
 
 extern uschar * string_copy_function(const uschar *);
 extern uschar * string_copyn_function(const uschar *, int n);
 extern uschar * string_copy_taint_function(const uschar *, BOOL tainted);
+extern pid_t    child_open_exim_function(int *, const uschar *);
+extern pid_t    child_open_exim2_function(int *, uschar *, uschar *, const uschar *);
 #endif
 
 /* End of local_scan.h */

@@ -367,7 +367,7 @@ if (LOGGING(smtp_connection))
 expansion above did a lookup. */
 
 search_tidyup();
-pid = fork();
+pid = exim_fork(US"daemon accept");
 
 /* Handle the child process */
 
@@ -663,7 +663,7 @@ if (pid == 0)
 
       mac_smtp_fflush();
 
-      if ((dpid = fork()) == 0)
+      if ((dpid = exim_fork(US"daemon-accept delivery")) == 0)
         {
         (void)fclose(smtp_in);
         (void)fclose(smtp_out);
@@ -981,7 +981,7 @@ if (daemon_notifier_fd >= 0)
 
 if (f.running_in_test_harness || write_pid)
   {
-  if ((pid = fork()) == 0)
+  if ((pid = exim_fork(US"daemon del pidfile")) == 0)
     {
     if (override_pid_file_path)
       (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 3,
@@ -1601,7 +1601,7 @@ if (f.background_daemon)
 
   if (getppid() != 1)
     {
-    pid_t pid = fork();
+    pid_t pid = exim_fork(US"daemon");
     if (pid < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "fork() failed when starting daemon: %s", strerror(errno));
     if (pid > 0) exit(EXIT_SUCCESS);      /* in parent process, just exit */
@@ -2130,7 +2130,7 @@ for (;;)
       if (queue_interval > 0 &&
          (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
         {
-        if ((pid = fork()) == 0)
+        if ((pid = exim_fork(US"queue runner")) == 0)
           {
           DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
             (int)getpid());

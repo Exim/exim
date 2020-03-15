@@ -313,7 +313,7 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 int
 log_create_as_exim(uschar *name)
 {
-pid_t pid = fork();
+pid_t pid = exim_fork(US"logfile create");
 int status = 1;
 int fd = -1;
 
