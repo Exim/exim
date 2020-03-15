@@ -265,6 +265,7 @@ for (int i = 0; i < 100; i++)
       }
     else				/* Timeout wanted. */
       {
+      sigalrm_seen = FALSE;
       ALARM(local_timeout);
 	rc = tpt_write(fd, block, len, more, tctx->options);
 	save_errno = errno;
