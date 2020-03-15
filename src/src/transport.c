@@ -253,6 +253,7 @@ for (int i = 0; i < 100; i++)
 
   else
     {
+    sigalrm_seen = FALSE;
     ALARM(local_timeout);
 
     rc =

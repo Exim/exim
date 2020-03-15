@@ -81,6 +81,8 @@ JH/28 Bug 2533: Fix expansion of ${tr } item.  When called in some situations
 JH/29 Bug 2537: Fix $mime_part_count.  When a single connection had a non-mime
       message following a mime one, the variable was not reset.
 
+JH/31 Fix spurious detection of timeout while writing to transport filter.
+
 
 Exim version 4.93
 -----------------
