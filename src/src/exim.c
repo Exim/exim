@@ -309,6 +309,7 @@ milliwait(struct itimerval *itval)
 {
 sigset_t sigmask;
 sigset_t old_sigmask;
+int save_errno = errno;
 
 if (itval->it_value.tv_usec < 50 && itval->it_value.tv_sec == 0)
   return;
@@ -322,6 +323,8 @@ if (setitimer(ITIMER_REAL, itval, NULL) < 0)           /* Start timer */
 (void)sigdelset(&sigmask, SIGALRM);                    /* Remove SIGALRM */
 (void)sigsuspend(&sigmask);                            /* Until SIGALRM */
 (void)sigprocmask(SIG_SETMASK, &old_sigmask, NULL);    /* Restore mask */
+errno = save_errno;
+sigalrm_seen = FALSE;
 }
 
 
