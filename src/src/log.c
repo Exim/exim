@@ -510,7 +510,7 @@ non-setuid binary with log_arguments set, called in certain ways.) Rather than
 just bombing out, force the log to stderr and carry on if stderr is available.
 */
 
-if (euid != root_uid && euid != exim_uid && log_stderr != NULL)
+if (euid != root_uid && euid != exim_uid && log_stderr)
   {
   *fd = fileno(log_stderr);
   return;
@@ -519,7 +519,9 @@ if (euid != root_uid && euid != exim_uid && log_stderr != NULL)
 /* Otherwise this is a disaster. This call is deliberately ONLY to the panic
 log. If possible, save a copy of the original line that was being logged. If we
 are recursing (can't open the panic log either), the pointer will already be
-set. */
+set.  Also, when we had to use a subprocess for the create we didn't retrieve
+errno from it, so get the error from the open attempt above (which is often
+meaningful enough, so leave it). */
 
 if (!panic_save_buffer)
   if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))

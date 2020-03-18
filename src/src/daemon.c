@@ -2127,8 +2127,8 @@ for (;;)
       have enough queue runners on the go. If we are not running as root, a
       re-exec is required. */
 
-      if (queue_interval > 0 &&
-         (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
+      if (  queue_interval > 0
+         && (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
         {
         if ((pid = exim_fork(US"queue runner")) == 0)
           {

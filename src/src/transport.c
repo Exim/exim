@@ -1188,7 +1188,8 @@ transport_write_message(transport_ctx * tctx, int size_limit)
 {
 BOOL last_filter_was_NL = TRUE;
 BOOL save_spool_file_wireformat = f.spool_file_wireformat;
-int rc, len, yield, fd_read, fd_write, save_errno;
+BOOL yield;
+int rc, len, fd_read, fd_write, save_errno;
 int pfd[2] = {-1, -1};
 pid_t filter_pid, write_pid;
 
@@ -1248,7 +1249,7 @@ via a(nother) pipe. While writing to the filter, we do not do the CRLF,
 smtp dots, or check string processing. */
 
 if (pipe(pfd) != 0) goto TIDY_UP;      /* errno set */
-if ((write_pid = exim_fork(US"transport filter")) == 0)
+if ((write_pid = exim_fork(US"transport filter writer")) == 0)
   {
   BOOL rc;
   (void)close(fd_read);
@@ -1272,7 +1273,7 @@ if ((write_pid = exim_fork(US"transport filter")) == 0)
         != sizeof(struct timeval)
      )
     rc = FALSE;	/* compiler quietening */
-  exim_underbar_exit(0, US"tpt-filter");
+  exim_underbar_exit(0, US"tpt-filter writer");
   }
 save_errno = errno;
 
@@ -1320,6 +1321,7 @@ for (;;)
   ALARM_CLR(0);
   if (sigalrm_seen)
     {
+    DEBUG(D_transport) debug_printf("timed out reading from filter\n");
     errno = ETIMEDOUT;
     f.transport_filter_timed_out = TRUE;
     goto TIDY_UP;
@@ -1438,7 +1440,7 @@ DEBUG(D_transport)
   {
   debug_printf("end of filtering transport writing: yield=%d\n", yield);
   if (!yield)
-    debug_printf("errno=%d more_errno=%d\n", errno, tctx->addr->more_errno);
+    debug_printf(" errno=%d more_errno=%d\n", errno, tctx->addr->more_errno);
   }
 
 return yield;
@@ -1731,6 +1733,7 @@ while (1)
     }
 
   /* first thing remove current message id if it exists */
+  /*XXX but what if it has un-sent addrs? */
 
   for (i = 0; i < msgq_count; ++i)
     if (Ustrcmp(msgq[i].message_id, message_id) == 0)

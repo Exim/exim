@@ -1685,7 +1685,7 @@ current_local_identity =
   smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
 
 if (!(new_sender_address = deliver_get_sender_address(message_id)))
-    return 0;
+    return FALSE;
 
 message_local_identity =
   smtp_local_identity(new_sender_address, s_compare->tblock);
@@ -3459,7 +3459,7 @@ if ((rc = smtp_setup_conn(sx, suppress_tls)) != OK)
   }
 
 /* If there is a filter command specified for this transport, we can now
-set it up. This cannot be done until the identify of the host is known. */
+set it up. This cannot be done until the identity of the host is known. */
 
 if (tblock->filter_command)
   {

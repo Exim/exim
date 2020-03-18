@@ -240,7 +240,7 @@ if (pid == 0)
   if (debug_fd > 0) force_fd(debug_fd, 2);
   if (f.running_in_test_harness && !queue_only)
     {
-    if (sender_authentication != NULL)
+    if (sender_authentication)
       child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 9,
         US "-odi", US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
         sender_authentication, message_id_option);
@@ -252,7 +252,7 @@ if (pid == 0)
     }
   else   /* Not test harness */
     {
-    if (sender_authentication != NULL)
+    if (sender_authentication)
       child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 8,
         US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
         sender_authentication, message_id_option);
@@ -341,7 +341,7 @@ that the child process can be waited for. We sometimes get here with it set
 otherwise. Save the old state for resetting on the wait. */
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
-pid = exim_fork(US"queryprogram");	/* queryprogram tpt is sole caller */
+pid = exim_fork(US"child-open");
 
 /* Handle the child process. First, set the required environment. We must do
 this before messing with the pipes, in order to be able to write debugging
@@ -352,14 +352,14 @@ if (pid == 0)
   signal(SIGUSR1, SIG_IGN);
   signal(SIGPIPE, SIG_DFL);
 
-  if (newgid != NULL && setgid(*newgid) < 0)
+  if (newgid && setgid(*newgid) < 0)
     {
     DEBUG(D_any) debug_printf("failed to set gid=%ld in subprocess: %s\n",
       (long int)(*newgid), strerror(errno));
     goto CHILD_FAILED;
     }
 
-  if (newuid != NULL && setuid(*newuid) < 0)
+  if (newuid && setuid(*newuid) < 0)
     {
     DEBUG(D_any) debug_printf("failed to set uid=%ld in subprocess: %s\n",
       (long int)(*newuid), strerror(errno));
@@ -368,7 +368,7 @@ if (pid == 0)
 
   (void)umask(newumask);
 
-  if (wd != NULL && Uchdir(wd) < 0)
+  if (wd && Uchdir(wd) < 0)
     {
     DEBUG(D_any) debug_printf("failed to chdir to %s: %s\n", wd,
       strerror(errno));
@@ -398,8 +398,8 @@ if (pid == 0)
 
   /* Now do the exec */
 
-  if (envp == NULL) execv(CS argv[0], (char *const *)argv);
-  else execve(CS argv[0], (char *const *)argv, (char *const *)envp);
+  if (envp) execve(CS argv[0], (char *const *)argv, (char *const *)envp);
+  else execv(CS argv[0], (char *const *)argv);
 
   /* Failed to execv. Signal this failure using EX_EXECFAILED. We are
   losing the actual errno we got back, because there is no way to return
