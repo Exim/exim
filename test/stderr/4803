@@ -3,8 +3,17 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 DNS lookup of mx-sec-a-aa.test.ex (MX) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of mx-sec-a-aa.test.ex (MX) succeeded
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of a-aa.test.ex (A) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of a-aa.test.ex (A) succeeded
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
@@ -15,10 +24,19 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 DNS lookup of mx-aa-a-sec.test.ex (MX) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of mx-aa-a-sec.test.ex (MX) succeeded
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
 DNS faked the AD bit (got AA and matched with dns_trust_aa (test.ex in *))
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of a-sec.test.ex (A) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of a-sec.test.ex (A) succeeded
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

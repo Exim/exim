@@ -17,14 +17,17 @@ ppppp Listening...
 ppppp Connection request from 127.0.0.1 port sssss
 ppppp LOG: smtp_connection MAIN
 ppppp   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
-ppppp 1 SMTP accept process running
-ppppp Listening...
+ppppp fresh-exec forking for daemon accept
+ppppp postfork: daemon accept
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
 ppppp using ACL "delay4_accept"
 ppppp processing "accept" (TESTSUITE/test-config 24)
 ppppp check delay = 4s
 ppppp delay modifier requests 4-second delay
+ppppp fresh-exec forked for daemon accept: npppp
+ppppp 1 SMTP accept process running
+ppppp Listening...
 ppppp accept: condition test succeeded in ACL "delay4_accept"
 ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: smtp_connection MAIN
@@ -37,8 +40,8 @@ ppppp Listening...
 ppppp Connection request from 127.0.0.1 port sssss
 ppppp LOG: smtp_connection MAIN
 ppppp   SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
-ppppp 1 SMTP accept process running
-ppppp Listening...
+ppppp fresh-exec forking for daemon accept
+ppppp postfork: daemon accept
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
 ppppp using ACL "delay4_accept"
@@ -51,8 +54,9 @@ ppppp end of ACL "delay4_accept": ACCEPT
 ppppp LOG: lost_incoming_connection MAIN
 ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1] D=qqs
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (conn-setup) terminating with rc=1 >>>>>>>>>>>>>>>>
-ppppp child ppppp ended: status=0x100
-ppppp   normal exit, 1
-ppppp 0 SMTP accept processes now running
-ppppp Listening...
+ppppp fresh-exec forked for daemon accept: npppp
+ppppp 1 SMTP accept process running
+ppppp fresh-exec forking for daemon del pidfile
+ppppp postfork: daemon del pidfile
+ppppp fresh-exec forked for daemon del pidfile: npppp
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

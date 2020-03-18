@@ -3290,7 +3290,6 @@ if ((rc = exim_fork(US"tls proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
   }
 
-testharness_pause_ms(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active.sock, &rfds);
@@ -4282,7 +4281,6 @@ propagate it from the initial
 	  int pid = exim_fork(US"tls proxy interproc");
 	  if (pid == 0)		/* child; fork again to disconnect totally */
 	    {
-	    testharness_pause_ms(100); /* let parent debug out */
 	    /* does not return */
 	    smtp_proxy_tls(sx->cctx.tls_ctx, sx->buffer, sizeof(sx->buffer), pfd,
 			    ob->command_timeout);

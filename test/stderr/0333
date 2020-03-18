@@ -30,8 +30,17 @@ After routing:
     ok@no.delay
   Failed addresses:
   Deferred addresses:
+fresh-exec forking for transport
+postfork: transport
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
+transport forking for continued-transport interproc
+postfork: continued-transport interproc
+continued-transport interproc forking for continued-transport
+postfork: continued-transport
+fresh-exec forked for transport: npppp
+transport forked for continued-transport interproc: npppp
+continued-transport interproc forked for continued-transport: npppp
 LOG: MAIN
   => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 LOG: MAIN
@@ -76,7 +85,10 @@ After routing:
   Failed addresses:
   Deferred addresses:
     delay@test.again.dns
+fresh-exec forking for transport
+postfork: transport
 locking TESTSUITE/spool/db/retry.lockfile
+fresh-exec forked for transport: npppp
 locking TESTSUITE/spool/db/wait-t1.lockfile
 LOG: MAIN
   => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]* C="250 OK"

@@ -16,6 +16,9 @@ checking domains
 calling q router
 q router called for "DECLINE cannot route this one (DECLINE)"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: DECLINE cannot route this one (DECLINE)
 q router declined for "DECLINE cannot route this one (DECLINE)"@some.host
 "more" is false: skipping remaining routers
@@ -37,6 +40,9 @@ checking domains
 calling q router
 q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: FAIL cannot route this one (FAIL)
 q router forced address failure
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>
@@ -56,6 +62,9 @@ checking domains
 calling q router
 q router called for "ERROR cannot route this one (ERROR)"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: ERROR cannot route this one (ERROR)
 LOG: PANIC
   q router: bad command yield: ERROR cannot route this one (ERROR)
@@ -78,6 +87,9 @@ checking domains
 calling q router
 q router called for "DEFER cannot route this one (DEFER)"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: DEFER cannot route this one (DEFER)
 q router: defer for "DEFER cannot route this one (DEFER)"@some.host
   message: cannot route this one (DEFER)
@@ -98,9 +110,18 @@ checking domains
 calling q router
 q router called for "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: ACCEPT transport = other_smtp hosts=ten-1.test.ex
 finding IP address for ten-1.test.ex
 doing DNS lookup
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 queued for other_smtp transport: local_part = ACCEPT transport = other_smtp hosts=ten-1.test.ex
 domain = some.host
   errors_to=NULL
@@ -126,6 +147,9 @@ checking domains
 calling q router
 q router called for PASS@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: PASS
 q router passed for PASS@some.host
 --------> s router <--------
@@ -166,6 +190,9 @@ checking domains
 calling q router
 q router called for "FREEZE cannot route this one (FREEZE)"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: FREEZE cannot route this one (FREEZE)
 q router: defer for "FREEZE cannot route this one (FREEZE)"@some.host
   message: cannot route this one (FREEZE)
@@ -186,6 +213,9 @@ checking domains
 calling q router
 q router called for "REDIRECT postmaster@test.ex"@some.host: domain = some.host
 requires uid=EXIM_UID gid=EXIM_GID current_directory=/
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: REDIRECT postmaster@test.ex
 rda_interpret (string): 'postmaster@test.ex'
 expanded: 'postmaster@test.ex'
@@ -262,6 +292,9 @@ q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some
 requires uid=CALLER_UID gid=CALLER_GID current_directory=/
 not running as root: cannot change uid/gid
 subprocess will run with uid=EXIM_UID gid=EXIM_GID
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 command wrote: FAIL cannot route this one (FAIL)
 q router forced address failure
 ----------- end verify ------------

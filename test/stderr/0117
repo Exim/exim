@@ -8,6 +8,27 @@ local_part=xxx domain=mxt9.test.ex
 calling lookuphost router
 lookuphost router called for xxx@mxt9.test.ex
   domain = mxt9.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9.test.ex
   errors_to=NULL
@@ -29,6 +50,27 @@ local_part=xxx domain=mxt9a.test.ex
 calling lookuphost router
 lookuphost router called for xxx@mxt9a.test.ex
   domain = mxt9a.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9a.test.ex
   errors_to=NULL
@@ -50,6 +92,27 @@ local_part=xxx domain=mxt9b.test.ex
 calling lookuphost router
 lookuphost router called for xxx@mxt9b.test.ex
   domain = mxt9b.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9b.test.ex
   errors_to=NULL

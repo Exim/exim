@@ -1117,13 +1117,31 @@ return NULL;
 static inline pid_t
 exim_fork(const unsigned char * purpose)
 {
-pid_t pid = fork();
-if (pid == 0) process_purpose = purpose;
+pid_t pid;
+DEBUG(D_any) debug_printf("%s forking for %s\n", process_purpose, purpose);
+if ((pid = fork()) == 0)
+  {
+  process_purpose = purpose;
+  DEBUG(D_any) debug_printf("postfork: %s\n", purpose);
+  }
+else
+  {
+  testharness_pause_ms(100); /* let child work */
+  DEBUG(D_any) debug_printf("%s forked for %s: %d\n", process_purpose, purpose, (int)pid);
+  }
 return pid;
 }
 
-#define child_open_exim(p, r)        child_open_exim_function((p), (r))
-#define child_open_exim2(p, s, a, r) child_open_exim2_function((p), (s), (a), (r))
+
+static inline pid_t
+child_open_exim(int * fdptr, const uschar * purpose)
+{ return child_open_exim_function(fdptr, purpose); }
+
+static inline pid_t
+child_open_exim2(int * fdptr, uschar * sender,
+  uschar * sender_auth, const uschar * purpose)
+{ return child_open_exim2_function(fdptr, sender, sender_auth, purpose); }
+
 
 /******************************************************************************/
 #endif	/* !MACRO_PREDEF */

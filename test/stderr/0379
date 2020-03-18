@@ -4,6 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+fresh-exec forking for local-accept delivery
+postfork: local-accept delivery
+fresh-exec forked for local-accept delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -126,9 +129,15 @@ After routing:
   Deferred addresses:
     defer@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
+fresh-exec forking for delivery (local)
+postfork: delivery (local)
+fresh-exec forked for delivery (local): npppp
 LOG: MAIN
   => bbbb <aaaa@myhost.test.ex> R=bc T=t1
 locking TESTSUITE/spool/db/retry.lockfile
+fresh-exec forking for delivery (local)
+postfork: delivery (local)
+fresh-exec forked for delivery (local): npppp
 LOG: MAIN
   => cccc <aaaa@myhost.test.ex> R=bc T=t1
 locking TESTSUITE/spool/db/retry.lockfile
@@ -140,6 +149,8 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
+fresh-exec forking for qrun delivery
+postfork: qrun delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: defer@myhost.test.ex
@@ -169,6 +180,7 @@ After routing:
     defer@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>

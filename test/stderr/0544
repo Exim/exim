@@ -119,16 +119,22 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+fresh-exec forking for local-accept delivery
+postfork: local-accept delivery
+fresh-exec forked for local-accept delivery: npppp
 Exim version x.yz ....
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+fresh-exec forking for transport
+postfork: transport
  ╭considering: $domain
  ├──expanding: $domain
  ╰─────result: domain1.ex
             ╰──(tainted)
+fresh-exec forked for transport: npppp
 LOG: MAIN
   == userx@domain1.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: MAIN

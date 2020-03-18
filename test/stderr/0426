@@ -4,6 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+fresh-exec forking for local-accept delivery
+postfork: local-accept delivery
+fresh-exec forked for local-accept delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -26,7 +29,16 @@ local_part=x domain=uppercase.test.ex
 calling r1 router
 r1 router called for x@uppercase.test.ex
   domain = uppercase.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 uppercase.test.ex (MX resp) DNSSEC
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 local host found for non-MX address
 fully qualified name = UpperCase.test.ex
 uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
@@ -47,16 +59,25 @@ After routing:
     x@UpperCase.test.ex
   Failed addresses:
   Deferred addresses:
+fresh-exec forking for transport
+postfork: transport
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
+fresh-exec forked for transport: npppp
 LOG: MAIN
   ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
+fresh-exec forking for bounce message
+postfork: bounce message
+fresh-exec forked for bounce message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+fresh-exec forking for local-accept delivery
+postfork: local-accept delivery
+fresh-exec forked for local-accept delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

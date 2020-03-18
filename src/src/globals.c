@@ -1188,7 +1188,7 @@ uschar *primary_hostname       = NULL;
 uschar *process_info;
 int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
-const uschar *process_purpose  = US"fresh exec";
+const uschar *process_purpose  = US"fresh-exec";
 
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
 uschar *hosts_proxy            = NULL;

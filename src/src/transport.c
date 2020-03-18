@@ -1970,7 +1970,7 @@ if ((pid = exim_fork(US"continued-transport interproc")) == 0)
     DEBUG(D_transport) debug_printf("transport_pass_socket succeeded (final-pid %d)\n", pid);
     _exit(EXIT_SUCCESS);
     }
-  testharness_pause_ms(1000);
+  testharness_pause_ms(1000); /*TTT*/
 
   transport_do_pass_socket(transport_name, hostname, hostaddress,
     id, socket_fd);

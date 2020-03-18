@@ -38,16 +38,31 @@ check hosts = *.gov.uk.test.ex
 sender host name required, to match against *.gov.uk.test.ex
 looking up host name for V4NET.99.99.97
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "x.gov.uk.test.ex"
   alias "x.co.uk.test.ex"
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of x.gov.uk.test.ex (A) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of x.gov.uk.test.ex (A) succeeded
 x.gov.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
 checking addresses for x.gov.uk.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.97 OK
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of x.co.uk.test.ex (A) using fakens
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 DNS lookup of x.co.uk.test.ex (A) succeeded
 x.co.uk.test.ex V4NET.99.99.97 mx=-1 sort=xx 
 checking addresses for x.co.uk.test.ex

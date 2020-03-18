@@ -46,7 +46,10 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 search_tidyup called
+fresh-exec forking for local-accept delivery
+postfork: local-accept delivery
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -odi -Mc 10HmaX-0005vi-00
+fresh-exec forked for local-accept delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -95,6 +98,8 @@ rda_interpret (string): '# Exim filter\nsave TESTSUITE/test-mail'
 expanded: '# Exim filter
 save TESTSUITE/test-mail'
 search_tidyup called
+fresh-exec forking for router interpret
+postfork: router interpret
 changed uid/gid: r1 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 turned off address rewrite logging (not root or exim in this process)
@@ -103,6 +108,7 @@ Filter: start of processing
 Filter: end of processing
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for router interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t1
 r1 router generated TESTSUITE/test-mail
@@ -139,6 +145,8 @@ search_tidyup called
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
+fresh-exec forking for delivery (local)
+postfork: delivery (local)
 changed uid/gid: local delivery to TESTSUITE/test-mail <TESTSUITE/test-mail> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -161,6 +169,7 @@ renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
+fresh-exec forked for delivery (local): npppp
 journalling TESTSUITE/test-mail:userx@test.ex
 t1 transport returned OK for TESTSUITE/test-mail
 post-process TESTSUITE/test-mail (0)

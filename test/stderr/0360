@@ -4,6 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+fresh-exec forking for local-accept delivery
+postfork: local-accept delivery
+fresh-exec forked for local-accept delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -103,7 +106,19 @@ checking domains
 calling r1 router
 r1 router called for unknown@recurse.test.ex
   domain = recurse.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 re-routed to unknown@recurse.test.ex.test.ex
@@ -124,6 +139,9 @@ checking domains
 calling r1 router
 r1 router called for unknown@recurse.test.ex.test.ex
   domain = recurse.test.ex.test.ex
+fresh-exec forking for child-open
+postfork: child-open
+fresh-exec forked for child-open: npppp
 set transport t1
 queued for t1 transport: local_part = unknown
 domain = recurse.test.ex.test.ex
@@ -142,7 +160,10 @@ After routing:
   Failed addresses:
   Deferred addresses:
     defer@test.ex
+fresh-exec forking for transport
+postfork: transport
 locking TESTSUITE/spool/db/retry.lockfile
+fresh-exec forked for transport: npppp
 LOG: MAIN
   *> unknown@recurse.test.ex.test.ex <cms@test.ex> R=r1 T=t1 H=recurse.test.ex.test.ex [V4NET.99.0.2] C="delivery bypassed by -N option"
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -153,6 +174,8 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
+fresh-exec forking for qrun delivery
+postfork: qrun delivery
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -243,6 +266,7 @@ After routing:
   Deferred addresses:
     defer@test.ex
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
