@@ -1510,7 +1510,7 @@ switch (c->type)
       parse_extract_address(pp, &error, &start, &end, &domain, FALSE);
     *p = saveend;
 
-    if (filter_thisaddress != NULL)
+    if (filter_thisaddress)
       {
       if ((filter_test != FTEST_NONE && debug_selector != 0) ||
           (debug_selector & D_filter) != 0)
@@ -1747,11 +1747,11 @@ while (commands)
 	  uschar *error;
 	  uschar *ss = parse_extract_address(s, &error, &start, &end, &domain,
 	    FALSE);
-	  if (ss != NULL)
-	    expargs[i] = ((filter_options & RDO_REWRITE) != 0)?
-	      rewrite_address(ss, TRUE, FALSE, global_rewrite_rules,
-		rewrite_existflags) :
-	      rewrite_address_qualify(ss, TRUE);
+	  if (ss)
+	    expargs[i] = filter_options & RDO_REWRITE
+	      ? rewrite_address(ss, TRUE, FALSE, global_rewrite_rules,
+				rewrite_existflags)
+	      : rewrite_address_qualify(ss, TRUE);
 	  else
 	    {
 	    *error_pointer = string_sprintf("malformed address \"%s\" in "

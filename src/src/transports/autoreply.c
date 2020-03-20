@@ -202,7 +202,7 @@ while (*s != 0)
   /* If there is some kind of syntax error, just give up on this header
   line. */
 
-  if (next == NULL) break;
+  if (!next) break;
 
   /* See if the address is on the never_mail list */
 

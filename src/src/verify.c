@@ -2294,7 +2294,7 @@ for (header_line * h = header_list; h && yield == OK; h = h->next)
         {
         if (!f.allow_unqualified_recipient) recipient = NULL;
         }
-      if (recipient == NULL) errmess = US"unqualified address not permitted";
+      if (!recipient) errmess = US"unqualified address not permitted";
       }
 
     /* It's an error if no address could be extracted, except for the special
@@ -2608,7 +2608,7 @@ for (int i = 0; i < 3 && !done; i++)
         /* If we found an empty address, just carry on with the next one, but
         kill the message. */
 
-        if (address == NULL && Ustrcmp(*log_msgptr, "empty address") == 0)
+        if (!address && Ustrcmp(*log_msgptr, "empty address") == 0)
           {
           *log_msgptr = NULL;
           s = ss;
@@ -2619,7 +2619,7 @@ for (int i = 0; i < 3 && !done; i++)
         function, and ensure that the failing address gets added to the error
         message. */
 
-        if (address == NULL)
+        if (!address)
           {
           new_ok = FAIL;
           while (ss > s && isspace(ss[-1])) ss--;

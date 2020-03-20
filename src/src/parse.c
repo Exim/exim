@@ -1614,14 +1614,14 @@ for (;;)
       {
       recipient =
         parse_extract_address(s+1, error, &start, &end, &domain, FALSE);
-      if (recipient != NULL)
-        recipient = (domain != 0)? NULL :
+      if (recipient)
+        recipient = domain != 0 ? NULL :
           string_sprintf("%s@%s", recipient, incoming_domain);
       }
 
     /* Try parsing the item as an address. */
 
-    if (recipient == NULL) recipient =
+    if (!recipient) recipient =
       parse_extract_address(s, error, &start, &end, &domain, FALSE);
 
     /* If item starts with / or | and is not a valid address, or there
@@ -2127,7 +2127,9 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
   buffer[Ustrlen(buffer) - 1] = 0;
   if (buffer[0] == 0) break;
   out = parse_extract_address(buffer, &errmess, &start, &end, &domain, FALSE);
-  if (out == NULL) printf("*** bad address: %s\n", errmess); else
+  if (!out)
+    printf("*** bad address: %s\n", errmess);
+  else
     {
     uschar extract[1024];
     Ustrncpy(extract, buffer+start, end-start);
@@ -2146,7 +2148,9 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
   buffer[Ustrlen(buffer) - 1] = 0;
   if (buffer[0] == 0) break;
   out = parse_extract_address(buffer, &errmess, &start, &end, &domain, FALSE);
-  if (out == NULL) printf("*** bad address: %s\n", errmess); else
+  if (!out)
+    printf("*** bad address: %s\n", errmess);
+  else
     {
     uschar extract[1024];
     Ustrncpy(extract, buffer+start, end-start);
@@ -2167,7 +2171,7 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
   buffer[Ustrlen(buffer) - 1] = 0;
   if (buffer[0] == 0) break;
   s = buffer;
-  while (*s != 0)
+  while (*s)
     {
     uschar *ss = parse_find_address_end(s, FALSE);
     int terminator = *ss;
@@ -2175,7 +2179,9 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
     out = parse_extract_address(buffer, &errmess, &start, &end, &domain, FALSE);
     *ss = terminator;
 
-    if (out == NULL) printf("*** bad address: %s\n", errmess); else
+    if (!out)
+      printf("*** bad address: %s\n", errmess);
+    else
       {
       uschar extract[1024];
       Ustrncpy(extract, buffer+start, end-start);

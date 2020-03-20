@@ -833,7 +833,7 @@ int start, end, domain;
 uschar *parse_error = NULL;
 uschar *address = parse_extract_address(s, &parse_error, &start, &end, &domain,
   FALSE);
-if (address == NULL)
+if (!address)
   {
   fprintf(stdout, "syntax error: %s\n", parse_error);
   *exit_value = 2;
@@ -2628,8 +2628,10 @@ for (i = 1; i < argc; i++)
 #ifdef SUPPORT_I18N
 	allow_utf8_domains = TRUE;
 #endif
-        sender_address = parse_extract_address(argrest, &errmess,
-          &dummy_start, &dummy_end, &sender_address_domain, TRUE);
+        if (!(sender_address = parse_extract_address(argrest, &errmess,
+		  &dummy_start, &dummy_end, &sender_address_domain, TRUE)))
+          exim_fail("exim: bad -f address \"%s\": %s\n", argrest, errmess);
+
 	sender_address = string_copy_taint(sender_address, TRUE);
 #ifdef SUPPORT_I18N
 	message_smtputf8 =  string_is_utf8(sender_address);
@@ -2637,8 +2639,6 @@ for (i = 1; i < argc; i++)
 #endif
         allow_domain_literals = FALSE;
         strip_trailing_dot = FALSE;
-        if (!sender_address)
-          exim_fail("exim: bad -f address \"%s\": %s\n", argrest, errmess);
         }
       f.sender_address_forced = TRUE;
       }
@@ -5474,8 +5474,7 @@ while (more)
           errmess = US"unqualified recipient address not allowed";
           }
 
-        if (recipient == NULL)
-          {
+        if (!recipient)
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: bad recipient address \"%s\": %s\n",
@@ -5492,7 +5491,6 @@ while (more)
               moan_to_sender(ERRMESS_BADARGADDRESS, &eblock, NULL, stdin, TRUE)?
                 errors_sender_rc : EXIT_FAILURE;
             }
-          }
 
         receive_add_recipient(string_copy_taint(recipient, TRUE), -1);
         s = ss;

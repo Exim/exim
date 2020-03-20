@@ -412,14 +412,13 @@ for (header_line * h = header_list; !yield && h; h = h->next)
       /* If there is some kind of syntax error, just give up on this header
       line. */
 
-      if (next == NULL) break;
+      if (!next) break;
 
       /* Otherwise, test for the pattern; a non-regex must be an exact match */
 
-      yield = (re == NULL)?
-        (strcmpic(next, pattern) == 0)
-        :
-        (pcre_exec(re, NULL, CS next, Ustrlen(next), 0, PCRE_EOPT, NULL, 0)
+      yield = !re
+        ? (strcmpic(next, pattern) == 0)
+        : (pcre_exec(re, NULL, CS next, Ustrlen(next), 0, PCRE_EOPT, NULL, 0)
           >= 0);
       }
     }

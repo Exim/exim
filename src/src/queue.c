@@ -1412,13 +1412,13 @@ switch(action)
       parse_extract_address(argv[recipients_arg], &errmess, &start, &end,
         &domain, (action == MSG_EDIT_SENDER));
 
-    if (recipient == NULL)
+    if (!recipient)
       {
       yield = FALSE;
       printf("- error while %s:\n  bad address %s: %s\n",
         doing, argv[recipients_arg], errmess);
       }
-    else if (recipient[0] != 0 && domain == 0)
+    else if (*recipient && domain == 0)
       {
       yield = FALSE;
       printf("- error while %s:\n  bad address %s: "

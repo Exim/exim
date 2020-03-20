@@ -2568,7 +2568,7 @@ if (extract_recip)
 
         If there are no recipients at all, an error will occur later. */
 
-        if (recipient == NULL && Ustrcmp(errmess, "empty address") != 0)
+        if (!recipient && Ustrcmp(errmess, "empty address") != 0)
           {
           int len = Ustrlen(s);
           error_block *b = store_get(sizeof(error_block), FALSE);

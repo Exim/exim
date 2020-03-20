@@ -328,7 +328,7 @@ if (address->length>0)
   {
   ss = parse_extract_address(address->character, &error, &start, &end, &domain,
     FALSE);
-  if (ss == NULL)
+  if (!ss)
     {
     filter->errmsg=string_sprintf("malformed address \"%s\" (%s)",
       address->character, error);

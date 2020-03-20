@@ -149,6 +149,9 @@ JH/30 When an pipelined-connect fails at the first response, assume incorrect
 
 JH/31 Fix spurious detection of timeout while writing to transport filter.
 
+JH/32 Bug 2541: Fix segfault on bad cmdline -f (sender) argument.  Previously
+      an attempt to copy the string was made before checking it.
+
 
 Exim version 4.93
 -----------------
