@@ -663,7 +663,7 @@ if (pid == 0)
 
       mac_smtp_fflush();
 
-      if ((dpid = exim_fork(US"daemon-accept delivery")) == 0)
+      if ((dpid = exim_fork(US"daemon-accept-delivery")) == 0)
         {
         (void)fclose(smtp_in);
         (void)fclose(smtp_out);
@@ -981,7 +981,7 @@ if (daemon_notifier_fd >= 0)
 
 if (f.running_in_test_harness || write_pid)
   {
-  if ((pid = exim_fork(US"daemon del pidfile")) == 0)
+  if ((pid = exim_fork(US"daemon-del-pidfile")) == 0)
     {
     if (override_pid_file_path)
       (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 3,
@@ -2130,11 +2130,8 @@ for (;;)
       if (  queue_interval > 0
          && (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
         {
-        if ((pid = exim_fork(US"queue runner")) == 0)
+        if ((pid = exim_fork(US"queue-runner")) == 0)
           {
-          DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
-            (int)getpid());
-
           /* Disable debugging if it's required only for the daemon process. We
           leave the above message, because it ties up with the "child ended"
           debugging messages. */

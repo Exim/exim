@@ -738,7 +738,7 @@ tctx.u.fd = fd_in;
 
 /* Now fork a process to handle the output that comes down the pipe. */
 
-if ((outpid = exim_fork(US"pipe-transport output")) < 0)
+if ((outpid = exim_fork(US"pipe-tpt-output")) < 0)
   {
   addr->basic_errno = errno;
   addr->transport_return = DEFER;

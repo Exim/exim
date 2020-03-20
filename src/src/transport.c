@@ -1250,7 +1250,7 @@ via a(nother) pipe. While writing to the filter, we do not do the CRLF,
 smtp dots, or check string processing. */
 
 if (pipe(pfd) != 0) goto TIDY_UP;      /* errno set */
-if ((write_pid = exim_fork(US"transport filter writer")) == 0)
+if ((write_pid = exim_fork(US"tpt-filter-writer")) == 0)
   {
   BOOL rc;
   (void)close(fd_read);
@@ -1958,7 +1958,7 @@ int status;
 
 DEBUG(D_transport) debug_printf("transport_pass_socket entered\n");
 
-if ((pid = exim_fork(US"continued-transport interproc")) == 0)
+if ((pid = exim_fork(US"continued-transport-interproc")) == 0)
   {
   /* Disconnect entirely from the parent process. If we are running in the
   test harness, wait for a bit to allow the previous process time to finish,
@@ -1966,11 +1966,8 @@ if ((pid = exim_fork(US"continued-transport interproc")) == 0)
   automatic comparison. */
 
   if ((pid = exim_fork(US"continued-transport")) != 0)
-    {
-    DEBUG(D_transport) debug_printf("transport_pass_socket succeeded (final-pid %d)\n", pid);
     _exit(EXIT_SUCCESS);
-    }
-  testharness_pause_ms(1000); /*TTT*/
+  testharness_pause_ms(1000);
 
   transport_do_pass_socket(transport_name, hostname, hostaddress,
     id, socket_fd);
@@ -1984,7 +1981,6 @@ if (pid > 0)
   {
   int rc;
   while ((rc = wait(&status)) != pid && (rc >= 0 || errno != ECHILD));
-  DEBUG(D_transport) debug_printf("transport_pass_socket succeeded (inter-pid %d)\n", pid);
   return TRUE;
   }
 else

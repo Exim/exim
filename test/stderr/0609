@@ -56,7 +56,7 @@ ppppp   unexpected disconnection while reading SMTP command from [127.0.0.1] D=q
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (conn-setup) terminating with rc=1 >>>>>>>>>>>>>>>>
 ppppp fresh-exec forked for daemon accept: npppp
 ppppp 1 SMTP accept process running
-ppppp fresh-exec forking for daemon del pidfile
-ppppp postfork: daemon del pidfile
-ppppp fresh-exec forked for daemon del pidfile: npppp
+ppppp fresh-exec forking for daemon-del-pidfile
+ppppp postfork: daemon-del-pidfile
+ppppp fresh-exec forked for daemon-del-pidfile: npppp
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

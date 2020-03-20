@@ -496,10 +496,8 @@ for (int i = queue_run_in_order ? -1 : 0;
 	}
       else
 	for (i = 0; qpid[i]; ) i++;
-      DEBUG(D_queue_run) debug_printf("q2stage forking\n");
-      if ((qpid[i] = exim_fork(US"qrun phase one")))
+      if ((qpid[i] = exim_fork(US"qrun-phase-one")))
 	continue;	/* parent loops around */
-      DEBUG(D_queue_run) debug_printf("q2stage child\n");
       }
 
     /* Skip this message unless it's within the ID limits */

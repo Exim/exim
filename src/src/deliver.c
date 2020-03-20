@@ -4646,7 +4646,6 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   search_tidyup();
 
-  DEBUG(D_deliver) debug_printf("forking transport process\n");
   if ((pid = exim_fork(US"transport")) == 0)
     {
     int fd = pfd[pipe_write];
@@ -4661,10 +4660,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
     /* Show pids on debug output if parallelism possible */
 
     if (parmax > 1 && (parcount > 0 || addr_remote))
-      {
       DEBUG(D_any|D_v) debug_selector |= D_pid;
-      DEBUG(D_deliver) debug_printf("Remote delivery process started\n");
-      }
 
     /* Reset the random number generator, so different processes don't all
     have the same sequence. In the test harness we want different, but
@@ -4977,7 +4973,6 @@ all pipes, so I do not see a reason to use non-blocking IO here
     (void)close(fd);
     exit(EXIT_SUCCESS);
     }
-  DEBUG(D_deliver) debug_printf("forked transport process (%d)\n", pid);
 
   /* Back in the mainline: close the unwanted half of the pipe. */
 
@@ -8580,7 +8575,7 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
 
     where = US"fork";
     testharness_pause_ms(150);
-    if ((pid = exim_fork(US"tls-proxy interproc")) < 0)
+    if ((pid = exim_fork(US"tls-proxy-interproc")) < 0)
       goto fail;
 
     if (pid == 0)	/* child: will fork again to totally disconnect */
@@ -8590,7 +8585,6 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
       /* does not return */
       }
 
-    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
     close(pfd[0]);
     waitpid(pid, NULL, 0);
     (void) close(channel_fd);	/* release the client socket */

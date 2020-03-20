@@ -59,18 +59,18 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbA-0005vi-00
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
-transport forking for tls proxy interproc
-postfork: tls proxy interproc
-tls proxy interproc forking for tls proxy
-postfork: tls proxy
-transport forked for tls proxy interproc: npppp
-tls proxy interproc forked for tls proxy: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
+transport forking for tls-proxy-interproc
+postfork: tls-proxy-interproc
+tls-proxy-interproc forking for tls-proxy
+postfork: tls-proxy
+transport forked for tls-proxy-interproc: npppp
+tls-proxy-interproc forked for tls-proxy: npppp
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
@@ -91,13 +91,13 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbB-0005vi-00
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
 continued-transport forked for transport: npppp
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbB-0005vi-00"
@@ -193,18 +193,18 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbG-0005vi-00
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
-transport forking for tls proxy interproc
-postfork: tls proxy interproc
-tls proxy interproc forking for tls proxy
-postfork: tls proxy
-transport forked for tls proxy interproc: npppp
-tls proxy interproc forked for tls proxy: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
+transport forking for tls-proxy-interproc
+postfork: tls-proxy-interproc
+tls-proxy-interproc forking for tls-proxy
+postfork: tls-proxy
+transport forked for tls-proxy-interproc: npppp
+tls-proxy-interproc forked for tls-proxy: npppp
 LOG: MAIN
   => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
 LOG: MAIN
@@ -225,13 +225,13 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbH-0005vi-00
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
 continued-transport forked for transport: npppp
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-0005vi-00"
@@ -335,12 +335,12 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbM-0005vi-00"
@@ -381,12 +381,12 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock" C="250 OK id=10HmbN-0005vi-00"

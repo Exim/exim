@@ -49,14 +49,14 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 351 Send more
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
 fresh-exec forked for qrun delivery: npppp
 qrun delivery forked for transport: npppp
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK"
@@ -147,9 +147,9 @@ fresh-exec forked for qrun delivery: npppp
 qrun delivery forked for transport: npppp
 LOG: MAIN
   ** a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 550 NO
-qrun delivery forking for bounce message
-postfork: bounce message
-qrun delivery forked for bounce message: npppp
+qrun delivery forking for bounce-message
+postfork: bounce-message
+qrun delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -236,20 +236,20 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 503 Unexpected DATA
   SMTP>> RSET
   SMTP<< 250 OK
-transport forking for continued-transport interproc
-postfork: continued-transport interproc
-continued-transport interproc forking for continued-transport
+transport forking for continued-transport-interproc
+postfork: continued-transport-interproc
+continued-transport-interproc forking for continued-transport
 postfork: continued-transport
 fresh-exec forked for qrun delivery: npppp
 qrun delivery forked for transport: npppp
-transport forked for continued-transport interproc: npppp
-continued-transport interproc forked for continued-transport: npppp
+transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   ** b@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 550 Unknown
-qrun delivery forking for bounce message
-postfork: bounce message
-qrun delivery forked for bounce message: npppp
+qrun delivery forking for bounce-message
+postfork: bounce-message
+qrun delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

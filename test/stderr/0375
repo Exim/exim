@@ -833,9 +833,9 @@ delivery-local forking for pipe-tpt-cmd
 postfork: pipe-tpt-cmd
 local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
-delivery-local forking for pipe-transport output
-postfork: pipe-transport output
-delivery-local forked for pipe-transport output: npppp
+delivery-local forking for pipe-tpt-output
+postfork: pipe-tpt-output
+delivery-local forked for pipe-tpt-output: npppp
 transport error EPIPE ignored
 LOG: MAIN
   ** b1@myhost.test.ex P=<> R=ut2 T=ut2: Child process of ut2 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
@@ -847,9 +847,9 @@ delivery-local forking for pipe-tpt-cmd
 postfork: pipe-tpt-cmd
 local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
-delivery-local forking for pipe-transport output
-postfork: pipe-transport output
-delivery-local forked for pipe-transport output: npppp
+delivery-local forking for pipe-tpt-output
+postfork: pipe-tpt-output
+delivery-local forked for pipe-tpt-output: npppp
 transport error EPIPE ignored
 LOG: MAIN
   == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
@@ -912,18 +912,18 @@ locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   f3@myhost.test.ex <f3@myhost.test.ex>: error ignored
 log writing disabled
-local-accept-delivery forking for bounce message
-postfork: bounce message
-local-accept-delivery forked for bounce message: npppp
+local-accept-delivery forking for bounce-message
+postfork: bounce-message
+local-accept-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-bounce message forking for local-accept-delivery
+bounce-message forking for local-accept-delivery
 postfork: local-accept-delivery
-bounce message forked for local-accept-delivery: npppp
+bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

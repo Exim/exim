@@ -266,7 +266,7 @@ ppppp child ppppp ended: status=0x0
 ppppp   normal exit, 0
 ppppp 0 SMTP accept processes now running
 ppppp Listening...
-ppppp fresh-exec forking for daemon del pidfile
-ppppp postfork: daemon del pidfile
-ppppp fresh-exec forked for daemon del pidfile: npppp
+ppppp fresh-exec forking for daemon-del-pidfile
+ppppp postfork: daemon-del-pidfile
+ppppp fresh-exec forked for daemon-del-pidfile: npppp
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

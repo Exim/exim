@@ -145,7 +145,7 @@ if (acount > 0)
 argv[n] = NULL;
 if (exec_type == CEE_RETURN_ARGV)
   {
-  if (pcount != NULL) *pcount = n;
+  if (pcount) *pcount = n;
   return argv;
   }
 

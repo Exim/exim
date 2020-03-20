@@ -179,9 +179,9 @@ delivery-local forking for pipe-tpt-cmd
 postfork: pipe-tpt-cmd
 local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
-delivery-local forking for pipe-transport output
-postfork: pipe-transport output
-delivery-local forked for pipe-transport output: npppp
+delivery-local forking for pipe-tpt-output
+postfork: pipe-tpt-output
+delivery-local forked for pipe-tpt-output: npppp
 transport error EPIPE ignored
 LOG: MAIN
   => |/bin/sh -c exit <aaaa@myhost.test.ex> R=aaaa T=t2

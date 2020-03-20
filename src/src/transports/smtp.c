@@ -3284,11 +3284,8 @@ int max_fd = MAX(pfd[0], tls_out.active.sock) + 1;
 int rc, i;
 
 close(pfd[1]);
-if ((rc = exim_fork(US"tls proxy")))
-  {
-  DEBUG(D_transport) debug_printf("proxy-proc final-pid %d\n", rc);
+if ((rc = exim_fork(US"tls-proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
-  }
 
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
@@ -4278,7 +4275,7 @@ propagate it from the initial
 #ifndef DISABLE_TLS
 	if (tls_out.active.sock >= 0)
 	  {
-	  int pid = exim_fork(US"tls proxy interproc");
+	  int pid = exim_fork(US"tls-proxy-interproc");
 	  if (pid == 0)		/* child; fork again to disconnect totally */
 	    {
 	    /* does not return */
@@ -4288,7 +4285,6 @@ propagate it from the initial
 
 	  if (pid > 0)		/* parent */
 	    {
-	    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
 	    close(pfd[0]);
 	    /* tidy the inter-proc to disconn the proxy proc */
 	    waitpid(pid, NULL, 0);

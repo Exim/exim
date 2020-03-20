@@ -2762,7 +2762,8 @@ for (i = 1; i < argc; i++)
 
     /* -MCd: for debug, set a process-purpose string */
 
-	case 'd': if (++i < argc) process_purpose = argv[i];
+	case 'd': if (++i < argc)
+		    process_purpose = string_copy_taint(argv[i], TRUE);
 		  else badarg = TRUE;
 		  break;
 

@@ -41,14 +41,12 @@ fresh-exec forked for local-accept-delivery: npppp
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
-local-accept-delivery forking for tls-proxy interproc
-postfork: tls-proxy interproc
-tls-proxy interproc forking for tls proxy
-postfork: tls proxy
-local-accept-delivery forked for tls-proxy interproc: npppp
-proxy-proc inter-pid pppp
-tls-proxy interproc forked for tls proxy: npppp
-proxy-proc final-pid pppp
+local-accept-delivery forking for tls-proxy-interproc
+postfork: tls-proxy-interproc
+tls-proxy-interproc forking for tls-proxy
+postfork: tls-proxy
+local-accept-delivery forked for tls-proxy-interproc: npppp
+tls-proxy-interproc forked for tls-proxy: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

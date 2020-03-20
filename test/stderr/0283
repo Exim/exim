@@ -38,17 +38,17 @@ delivery-local forking for pipe-tpt-cmd
 postfork: pipe-tpt-cmd
 local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
-delivery-local forking for pipe-transport output
-postfork: pipe-transport output
-delivery-local forked for pipe-transport output: npppp
+delivery-local forking for pipe-tpt-output
+postfork: pipe-tpt-output
+delivery-local forked for pipe-tpt-output: npppp
 transport error EPIPE ignored
 LOG: MAIN
   ** somebody@myhost.test.ex R=rest T=t1: return message generated
 changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=pppp
-local-accept-delivery forking for bounce message
-postfork: bounce message
-local-accept-delivery forked for bounce message: npppp
+local-accept-delivery forking for bounce-message
+postfork: bounce-message
+local-accept-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -65,9 +65,9 @@ seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN
   <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
-bounce message forking for local-accept-delivery
+bounce-message forking for local-accept-delivery
 postfork: local-accept-delivery
-bounce message forked for local-accept-delivery: npppp
+bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -131,9 +131,9 @@ seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN PANIC
   User 0 set for t3 transport is on the never_users list
-local-accept-delivery forking for logfile create
-postfork: logfile create
-local-accept-delivery forked for logfile create: npppp
+local-accept-delivery forking for logfile-create
+postfork: logfile-create
+local-accept-delivery forked for logfile-create: npppp
 LOG: MAIN
   == never@myhost.test.ex R=never T=t3 defer (-29): User 0 set for t3 transport is on the never_users list
 changed uid/gid: post-delivery tidying
