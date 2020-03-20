@@ -36,9 +36,9 @@ internal_search_find: file="NULL"
 database lookup required for test.ex
 dnsdb key: test.ex
 DNS lookup of test.ex (TXT) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (TXT) succeeded
 lookup yielded: A TXT record for test.ex.
 test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
@@ -100,9 +100,9 @@ internal_search_find: file="NULL"
 database lookup required for unknown
 dnsdb key: unknown
 DNS lookup of unknown (TXT) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 faking res_search(TXT) response length as 65535
@@ -135,9 +135,9 @@ internal_search_find: file="NULL"
 database lookup required for A=myhost.test.ex
 dnsdb key: myhost.test.ex
 DNS lookup of myhost.test.ex (A) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of myhost.test.ex (A) succeeded
 lookup yielded: V4NET.10.10.10
 CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"? yes (matched "dnsdb;A=myhost.test.ex")
@@ -168,9 +168,9 @@ internal_search_find: file="NULL"
   type=dnsdb key="a=shorthost.test.ex"
 database lookup required for a=shorthost.test.ex
 dnsdb key: shorthost.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 lookup yielded: 127.0.0.1
 search_open: dnsdb "NULL"
   cached open
@@ -190,9 +190,9 @@ internal_search_find: file="NULL"
   type=dnsdb key="a=shorthost.test.ex"
 cached data found but past valid time; database lookup required for a=shorthost.test.ex
 dnsdb key: shorthost.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 lookup yielded: 127.0.0.1
 LOG: MAIN
   <= a@shorthost.test.ex U=CALLER P=local S=sss
@@ -221,25 +221,25 @@ ppppp fresh-exec forking for daemon accept
 ppppp postfork: daemon accept
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
-ppppp daemon accept forking for child-open
-ppppp postfork: child-open
+ppppp daemon accept forking for fakens-search
+ppppp postfork: fakens-search
 ppppp fresh-exec forked for daemon accept: npppp
 ppppp 1 SMTP accept process running
 ppppp Listening...
-ppppp daemon accept forked for child-open: npppp
-ppppp daemon accept forking for child-open
-ppppp postfork: child-open
-ppppp daemon accept forked for child-open: npppp
+ppppp daemon accept forked for fakens-search: npppp
+ppppp daemon accept forking for fakens-search
+ppppp postfork: fakens-search
+ppppp daemon accept forked for fakens-search: npppp
 ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
 ppppp new DNS lookup for 14.12.11.V4NET.rbl.test.ex
-ppppp daemon accept forking for child-open
-ppppp postfork: child-open
-ppppp daemon accept forked for child-open: npppp
+ppppp daemon accept forking for fakens-search
+ppppp postfork: fakens-search
+ppppp daemon accept forked for fakens-search: npppp
 ppppp dnslists: wrote cache entry, ttl=2
 ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
-ppppp daemon accept forking for child-open
-ppppp postfork: child-open
-ppppp daemon accept forked for child-open: npppp
+ppppp daemon accept forking for fakens-search
+ppppp postfork: fakens-search
+ppppp daemon accept forked for fakens-search: npppp
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
 ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
 ppppp dnslists: using result of previous lookup
@@ -247,14 +247,14 @@ ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
 ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
 ppppp cached data found but past valid time; new DNS lookup for 14.12.11.V4NET.rbl.test.ex
-ppppp daemon accept forking for child-open
-ppppp postfork: child-open
-ppppp daemon accept forked for child-open: npppp
+ppppp daemon accept forking for fakens-search
+ppppp postfork: fakens-search
+ppppp daemon accept forked for fakens-search: npppp
 ppppp dnslists: wrote cache entry, ttl=2
 ppppp DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
-ppppp daemon accept forking for child-open
-ppppp postfork: child-open
-ppppp daemon accept forked for child-open: npppp
+ppppp daemon accept forking for fakens-search
+ppppp postfork: fakens-search
+ppppp daemon accept forked for fakens-search: npppp
 ppppp => that means V4NET.11.12.14 is listed at rbl.test.ex
 ppppp LOG: MAIN
 ppppp   <= a@shorthost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex

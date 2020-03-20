@@ -39,7 +39,7 @@ smtp:
 
 begin retry
 
-^[^@]+@ten-      *  F,3s,1s
-*                *  F,3s,1s
+^[^@]+@ten-      *  F,4s,1s
+*                *  F,4s,1s
 
 # End

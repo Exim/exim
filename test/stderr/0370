@@ -27,10 +27,10 @@ changed uid/gid: local delivery to |TESTSUITE/bin/iefbr14 <|TESTSUITE/bin/iefbr1
 t1 transport entered
 direct command:
   argv[0] = 'TESTSUITE/bin/iefbr14'
-delivery (local) forking for child-open
-postfork: child-open
+delivery (local) forking for pipe-tpt-cmd
+postfork: pipe-tpt-cmd
 fresh-exec forked for delivery (local): npppp
-delivery (local) forked for child-open: npppp
+delivery (local) forked for pipe-tpt-cmd: npppp
 delivery (local) forking for pipe-transport output
 postfork: pipe-transport output
 delivery (local) forked for pipe-transport output: npppp

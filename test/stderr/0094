@@ -80,31 +80,31 @@ LOG: smtp_connection MAIN
 host in host_lookup? yes (matched "0.0.0.0/0")
 looking up host name for V4NET.99.99.90
 DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "oneback.test.ex"
   alias "host1.masq.test.ex"
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of oneback.test.ex (A) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of oneback.test.ex (A) succeeded
 oneback.test.ex V4NET.99.99.90 mx=-1 sort=xx 
 checking addresses for oneback.test.ex
 Forward DNS security status: unverified
   V4NET.99.99.90 OK
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of host1.masq.test.ex (A) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of host1.masq.test.ex (A) succeeded
 host1.masq.test.ex V4NET.90.90.90 mx=-1 sort=xx 
 checking addresses for host1.masq.test.ex

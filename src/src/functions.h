@@ -153,8 +153,11 @@ extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_exim_function(int *, const uschar *);
 extern pid_t   child_open_exim2_function(int *, uschar *, uschar *,
 		 const uschar *);
+extern pid_t   child_open_function(uschar **argv, uschar **envp, int newumask,
+		 int *infdptr, int *outfdptr, BOOL make_leader,
+		 const uschar * purpose);
 extern pid_t   child_open_uid(const uschar **, const uschar **, int,
-		 uid_t *, gid_t *, int *, int *, uschar *, BOOL);
+		 uid_t *, gid_t *, int *, int *, uschar *, BOOL, const uschar *);
 extern BOOL    cleanup_environment(void);
 extern void    cutthrough_data_puts(uschar *, int);
 extern void    cutthrough_data_put_nl(void);
@@ -1141,6 +1144,13 @@ static inline pid_t
 child_open_exim2(int * fdptr, uschar * sender,
   uschar * sender_auth, const uschar * purpose)
 { return child_open_exim2_function(fdptr, sender, sender_auth, purpose); }
+
+static inline pid_t
+child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
+  int *outfdptr, BOOL make_leader, const uschar * purpose)
+{ return child_open_function(argv, envp, newumask, infdptr,
+  outfdptr, make_leader, purpose);
+}
 
 
 /******************************************************************************/

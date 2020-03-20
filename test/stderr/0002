@@ -255,16 +255,16 @@ dropping to exim gid; retaining priv uid
  ╰─────result: ----> No lookup yet: No
  ╭considering: -oMs  sender_host_name = $sender_host_name
 looking up host name for V4NET.0.0.1
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 IP address lookup yielded "ten-1.test.ex"
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 checking addresses for ten-1.test.ex
   V4NET.0.0.1 OK
@@ -305,18 +305,18 @@ check hosts = <\n partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch \n 1.2.3.4
 sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "ten-1.test.ex"
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) using fakens
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 checking addresses for ten-1.test.ex

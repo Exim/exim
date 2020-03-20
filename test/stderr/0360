@@ -106,19 +106,19 @@ checking domains
 calling r1 router
 r1 router called for unknown@recurse.test.ex
   domain = recurse.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 re-routed to unknown@recurse.test.ex.test.ex
@@ -139,9 +139,9 @@ checking domains
 calling r1 router
 r1 router called for unknown@recurse.test.ex.test.ex
   domain = recurse.test.ex.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = unknown
 domain = recurse.test.ex.test.ex

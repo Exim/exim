@@ -35,14 +35,14 @@ After routing:
   Deferred addresses:
 qrun delivery forking for transport
 postfork: transport
-transport forking for child-open
-postfork: child-open
+transport forking for fakens-search
+postfork: fakens-search
 fresh-exec forked for qrun delivery: npppp
 qrun delivery forked for transport: npppp
-transport forked for child-open: npppp
-transport forking for child-open
-postfork: child-open
-transport forked for child-open: npppp
+transport forked for fakens-search: npppp
+transport forking for fakens-search
+postfork: fakens-search
+transport forked for fakens-search: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-smtp.lockfile
 LOG: MAIN

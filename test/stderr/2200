@@ -10,9 +10,9 @@ dropping to exim gid; retaining priv uid
    type=dnsdb key="a=localhost.test.ex"
  database lookup required for a=localhost.test.ex
  dnsdb key: localhost.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
  lookup yielded: 127.0.0.1
  search_open: dnsdb "NULL"
    cached open
@@ -38,9 +38,9 @@ search_tidyup called
     type=dnsdb key="a=shorthost.test.ex"
   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
   lookup yielded: 127.0.0.1
   search_open: dnsdb "NULL"
     cached open
@@ -51,9 +51,9 @@ fresh-exec forked for child-open: npppp
     type=dnsdb key="a=shorthost.test.ex"
   cached data found but past valid time;   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
   lookup yielded: 127.0.0.1
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss

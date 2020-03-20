@@ -725,7 +725,8 @@ reading of the output pipe. */
 uid/gid and current directory. Request that the new process be a process group
 leader, so we can kill it and all its children on a timeout. */
 
-if ((pid = child_open(USS argv, envp, ob->umask, &fd_in, &fd_out, TRUE)) < 0)
+if ((pid = child_open(USS argv, envp, ob->umask, &fd_in, &fd_out, TRUE,
+			US"pipe-tpt-cmd")) < 0)
   {
   addr->transport_return = DEFER;
   addr->message = string_sprintf(

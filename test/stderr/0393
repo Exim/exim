@@ -33,10 +33,10 @@ lock file created
 mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
 writing data block fd=dddd size=sss timeout=0
-delivery (local) forking for child-open
-postfork: child-open
+delivery (local) forking for transport-filter
+postfork: transport-filter
 fresh-exec forked for delivery (local): npppp
-delivery (local) forked for child-open: npppp
+delivery (local) forked for transport-filter: npppp
 process pppp running as transport filter: fd_write=dddd fd_read=dddd
 delivery (local) forking for transport filter writer
 postfork: transport filter writer

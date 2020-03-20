@@ -181,7 +181,6 @@ extern BOOL    smtp_input;             /* TRUE if input is via SMTP */
 /* Functions that are documented as visible in local_scan(). */
 
 extern int     child_close(pid_t, int);
-extern pid_t   child_open(uschar **, uschar **, int, int *, int *, BOOL);
 extern void    debug_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern uschar *expand_string(uschar *);
 extern void    header_add(int, const char *, ...);
@@ -225,12 +224,14 @@ with the original name. */
 # define string_copy_taint(s, t) string_copy_taint_function((s), (t))
 # define child_open_exim(p)        child_open_exim_function((p), US"from local_scan")
 # define child_open_exim2(p, s, a) child_open_exim2_function((p), (s), (a), US"from local_scan")
+# define child_open(a,e,u,i,o,l) child_open_function((a),(e),(u),(i),(o),(l),US"from local_scan")
 
 extern uschar * string_copy_function(const uschar *);
 extern uschar * string_copyn_function(const uschar *, int n);
 extern uschar * string_copy_taint_function(const uschar *, BOOL tainted);
 extern pid_t    child_open_exim_function(int *, const uschar *);
 extern pid_t    child_open_exim2_function(int *, uschar *, uschar *, const uschar *);
+extern pid_t    child_open_function(uschar **, uschar **, int, int *, int *, BOOL, const uschar *);
 #endif
 
 /* End of local_scan.h */

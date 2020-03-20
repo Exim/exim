@@ -29,16 +29,16 @@ local_part=x domain=uppercase.test.ex
 calling r1 router
 r1 router called for x@uppercase.test.ex
   domain = uppercase.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 uppercase.test.ex (MX resp) DNSSEC
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 local host found for non-MX address
 fully qualified name = UpperCase.test.ex
 uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 

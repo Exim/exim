@@ -34,10 +34,10 @@ fresh-exec forking for delivery (local)
 postfork: delivery (local)
 changed uid/gid: local delivery to somebody <somebody@myhost.test.ex> transport=t1
   uid=EXIM_UID gid=EXIM_GID pid=pppp
-delivery (local) forking for child-open
-postfork: child-open
+delivery (local) forking for pipe-tpt-cmd
+postfork: pipe-tpt-cmd
 fresh-exec forked for delivery (local): npppp
-delivery (local) forked for child-open: npppp
+delivery (local) forked for pipe-tpt-cmd: npppp
 delivery (local) forking for pipe-transport output
 postfork: pipe-transport output
 delivery (local) forked for pipe-transport output: npppp

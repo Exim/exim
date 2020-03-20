@@ -1234,10 +1234,10 @@ write_pid = (pid_t)(-1);
 
   {
   int bits = fcntl(tctx->u.fd, F_GETFD);
-  (void)fcntl(tctx->u.fd, F_SETFD, bits | FD_CLOEXEC);
+  (void) fcntl(tctx->u.fd, F_SETFD, bits | FD_CLOEXEC);
   filter_pid = child_open(USS transport_filter_argv, NULL, 077,
-   &fd_write, &fd_read, FALSE);
-  (void)fcntl(tctx->u.fd, F_SETFD, bits & ~FD_CLOEXEC);
+			  &fd_write, &fd_read, FALSE, US"transport-filter");
+  (void) fcntl(tctx->u.fd, F_SETFD, bits & ~FD_CLOEXEC);
   }
 if (filter_pid < 0) goto TIDY_UP;      /* errno set */
 

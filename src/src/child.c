@@ -75,7 +75,7 @@ int n = 0;
 int extra = pcount ? *pcount : 0;
 uschar **argv;
 
-argv = store_get((extra + acount + MAX_CLMACROS + 19) * sizeof(char *), FALSE);
+argv = store_get((extra + acount + MAX_CLMACROS + 21) * sizeof(char *), FALSE);
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
@@ -313,6 +313,7 @@ Arguments:
                 process is placed
   wd          if not NULL, a path to be handed to chdir() in the new process
   make_leader if TRUE, make the new process a process group leader
+  purpose     for debug: reason for running the task
 
 Returns:      the pid of the created process or -1 if anything has gone wrong
 */
@@ -320,7 +321,7 @@ Returns:      the pid of the created process or -1 if anything has gone wrong
 pid_t
 child_open_uid(const uschar **argv, const uschar **envp, int newumask,
   uid_t *newuid, gid_t *newgid, int *infdptr, int *outfdptr, uschar *wd,
-  BOOL make_leader)
+  BOOL make_leader, const uschar * purpose)
 {
 int save_errno;
 int inpfd[2], outpfd[2];
@@ -341,7 +342,7 @@ that the child process can be waited for. We sometimes get here with it set
 otherwise. Save the old state for resetting on the wait. */
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
-pid = exim_fork(US"child-open");
+pid = exim_fork(purpose);
 
 /* Handle the child process. First, set the required environment. We must do
 this before messing with the pipes, in order to be able to write debugging
@@ -454,16 +455,17 @@ Arguments:
   outfdptr    pointer to int into which the fd of the stdout/stderr of the new
                 process is placed
   make_leader if TRUE, make the new process a process group leader
+  purpose     for debug: reason for running the task
 
 Returns:      the pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
-  int *outfdptr, BOOL make_leader)
+child_open_function(uschar **argv, uschar **envp, int newumask, int *infdptr,
+  int *outfdptr, BOOL make_leader, const uschar * purpose)
 {
 return child_open_uid(CUSS argv, CUSS envp, newumask, NULL, NULL,
-  infdptr, outfdptr, NULL, make_leader);
+  infdptr, outfdptr, NULL, make_leader, purpose);
 }
 
 

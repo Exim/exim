@@ -37,14 +37,14 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 fresh-exec forking for local-accept delivery
 postfork: local-accept delivery
-local-accept delivery forking for tls-proxy interproc
-postfork: tls-proxy interproc
-tls-proxy interproc forking for tls proxy
-postfork: tls proxy
 fresh-exec forked for local-accept delivery: npppp
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept delivery forking for tls-proxy interproc
+postfork: tls-proxy interproc
+tls-proxy interproc forking for tls proxy
+postfork: tls proxy
 local-accept delivery forked for tls-proxy interproc: npppp
 proxy-proc inter-pid pppp
 tls-proxy interproc forked for tls proxy: npppp

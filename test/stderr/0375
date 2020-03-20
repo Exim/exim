@@ -829,10 +829,10 @@ log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 fresh-exec forking for delivery (local)
 postfork: delivery (local)
-delivery (local) forking for child-open
-postfork: child-open
+delivery (local) forking for pipe-tpt-cmd
+postfork: pipe-tpt-cmd
 fresh-exec forked for delivery (local): npppp
-delivery (local) forked for child-open: npppp
+delivery (local) forked for pipe-tpt-cmd: npppp
 delivery (local) forking for pipe-transport output
 postfork: pipe-transport output
 delivery (local) forked for pipe-transport output: npppp
@@ -843,10 +843,10 @@ log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
 fresh-exec forking for delivery (local)
 postfork: delivery (local)
-delivery (local) forking for child-open
-postfork: child-open
+delivery (local) forking for pipe-tpt-cmd
+postfork: pipe-tpt-cmd
 fresh-exec forked for delivery (local): npppp
-delivery (local) forked for child-open: npppp
+delivery (local) forked for pipe-tpt-cmd: npppp
 delivery (local) forking for pipe-transport output
 postfork: pipe-transport output
 delivery (local) forked for pipe-transport output: npppp

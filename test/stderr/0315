@@ -31,15 +31,15 @@ checking domains
 calling r1 router
 r1 router called for y@ten-1.test.ex
   domain = ten-1.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = y
 domain = ten-1.test.ex
@@ -107,15 +107,15 @@ local_part=y domain=ten-2.test.ex
 calling r2 router
 r2 router called for y@ten-2.test.ex
   domain = ten-2.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = y
 domain = ten-2.test.ex
@@ -136,9 +136,9 @@ local_part=x domain=ten-2.test.ex
 calling r2 router
 r2 router called for x@ten-2.test.ex
   domain = ten-2.test.ex
-fresh-exec forking for child-open
-postfork: child-open
-fresh-exec forked for child-open: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 queued for t1 transport: local_part = x
 domain = ten-2.test.ex
   errors_to=NULL
