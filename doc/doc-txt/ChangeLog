@@ -83,6 +83,9 @@ JH/29 Bug 2537: Fix $mime_part_count.  When a single connection had a non-mime
 
 JH/31 Fix spurious detection of timeout while writing to transport filter.
 
+JH/32 Bug 2541: Fix segfault on bad cmdline -f (sender) argument.  Previously
+      an attempt to copy the string was made before checking it.
+
 
 Exim version 4.93
 -----------------

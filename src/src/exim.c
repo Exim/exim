@@ -2554,8 +2554,10 @@ for (i = 1; i < argc; i++)
 #ifdef SUPPORT_I18N
 	allow_utf8_domains = TRUE;
 #endif
-        sender_address = parse_extract_address(argrest, &errmess,
-          &dummy_start, &dummy_end, &sender_address_domain, TRUE);
+        if (!(sender_address = parse_extract_address(argrest, &errmess,
+		  &dummy_start, &dummy_end, &sender_address_domain, TRUE)))
+          exim_fail("exim: bad -f address \"%s\": %s\n", argrest, errmess);
+
 	sender_address = string_copy_taint(sender_address, TRUE);
 #ifdef SUPPORT_I18N
 	message_smtputf8 =  string_is_utf8(sender_address);
@@ -2563,8 +2565,6 @@ for (i = 1; i < argc; i++)
 #endif
         allow_domain_literals = FALSE;
         strip_trailing_dot = FALSE;
-        if (!sender_address)
-          exim_fail("exim: bad -f address \"%s\": %s\n", argrest, errmess);
         }
       f.sender_address_forced = TRUE;
       }
