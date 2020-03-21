@@ -1957,8 +1957,8 @@ on the second character (the one after '-'), to save some effort. */
 for (i = 1; i < argc; i++)
   {
   BOOL badarg = FALSE;
-  uschar *arg = argv[i];
-  uschar *argrest;
+  uschar * arg = argv[i];
+  uschar * argrest;
   int switchchar;
 
   /* An argument not starting with '-' is the start of a recipients list;
@@ -2037,7 +2037,7 @@ for (i = 1; i < argc; i++)
     /* sendmail uses -Ac and -Am to control which .cf file is used;
     we ignore them. */
     case 'A':
-    if (*argrest == '\0') { badarg = TRUE; break; }
+    if (!*argrest) { badarg = TRUE; break; }
     else
       {
       BOOL ignore = FALSE;
@@ -2093,9 +2093,9 @@ for (i = 1; i < argc; i++)
 	/* -bF:  Run system filter test */
 	case 'F':
 	  filter_test |= checking = FTEST_SYSTEM;
-	  if (*argrest) { badarg = TRUE; break; }
-	  if (++i < argc) filter_test_sfile = argv[i]; else
-	    exim_fail("exim: file name expected after %s\n", argv[i-1]);
+	  if (*argrest) badarg = TRUE;
+	  else if (++i < argc) filter_test_sfile = argv[i];
+	  else exim_fail("exim: file name expected after %s\n", argv[i-1]);
 	  break;
 
 	/* -bf:  Run user filter test
@@ -2128,7 +2128,7 @@ for (i = 1; i < argc; i++)
 	  if (!*argrest || Ustrcmp(argrest, "c") == 0)
 	    {
 	    if (++i >= argc) { badarg = TRUE; break; }
-	    sender_host_address = argv[i];
+	    sender_host_address = string_copy_taint(argv[i], TRUE);
 	    host_checking = checking = f.log_testing_mode = TRUE;
 	    f.host_checking_callout = *argrest == 'c';
 	    message_logs = FALSE;
@@ -2347,11 +2347,8 @@ for (i = 1; i < argc; i++)
     a change! Enforce a prefix check if required. */
 
     case 'C':
-    if (*argrest == 0)
-      {
-      if(++i < argc) argrest = argv[i]; else
-        { badarg = TRUE; break; }
-      }
+    if (!*argrest)
+      if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
     if (Ustrcmp(config_main_filelist, argrest) != 0)
       {
       #ifdef ALT_CONFIG_PREFIX
@@ -2360,14 +2357,14 @@ for (i = 1; i < argc; i++)
       const uschar *list = argrest;
       uschar *filename;
       while((filename = string_nextinlist(&list, &sep, big_buffer,
-             big_buffer_size)) != NULL)
-        {
-        if ((Ustrlen(filename) < len ||
-             Ustrncmp(filename, ALT_CONFIG_PREFIX, len) != 0 ||
-             Ustrstr(filename, "/../") != NULL) &&
-             (Ustrcmp(filename, "/dev/null") != 0 || real_uid != root_uid))
+             big_buffer_size)))
+        if (  (  Ustrlen(filename) < len
+	      || Ustrncmp(filename, ALT_CONFIG_PREFIX, len) != 0
+	      || Ustrstr(filename, "/../") != NULL
+	      )
+	   && (Ustrcmp(filename, "/dev/null") != 0 || real_uid != root_uid)
+	   )
           exim_fail("-C Permission denied\n");
-        }
       #endif
       if (real_uid != root_uid)
         {
@@ -2422,7 +2419,7 @@ for (i = 1; i < argc; i++)
                 if (nl)
                   *nl = 0;
                 trusted_configs[nr_configs++] = string_copy(start);
-                if (nr_configs == 32)
+                if (nr_configs == nelem(trusted_configs))
                   break;
                 }
               fclose(trust_list);
@@ -2433,7 +2430,7 @@ for (i = 1; i < argc; i++)
                 const uschar *list = argrest;
                 uschar *filename;
                 while (f.trusted_config && (filename = string_nextinlist(&list,
-                        &sep, big_buffer, big_buffer_size)) != NULL)
+                        &sep, big_buffer, big_buffer_size)))
                   {
                   for (i=0; i < nr_configs; i++)
                     if (Ustrcmp(filename, trusted_configs[i]) == 0)
@@ -2535,7 +2532,7 @@ for (i = 1; i < argc; i++)
         f.debug_daemon = TRUE;
         argrest++;
         }
-      if (*argrest != 0)
+      if (*argrest)
         decode_bits(&selector, 1, debug_notall, argrest,
           debug_options, debug_options_count, US"debug", 0);
       debug_selector = selector;
@@ -2582,12 +2579,9 @@ for (i = 1; i < argc; i++)
     the -F or be in the next argument. */
 
     case 'F':
-    if (*argrest == 0)
-      {
-      if(++i < argc) argrest = argv[i]; else
-        { badarg = TRUE; break; }
-      }
-    originator_name = argrest;
+    if (!*argrest)
+      if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
+    originator_name = string_copy_taint(argrest, TRUE);
     f.sender_name_forced = TRUE;
     break;
 
@@ -2611,16 +2605,13 @@ for (i = 1; i < argc; i++)
       {
       int dummy_start, dummy_end;
       uschar *errmess;
-      if (*argrest == 0)
-        {
-        if (i+1 < argc) argrest = argv[++i]; else
-          { badarg = TRUE; break; }
-        }
-      if (*argrest == 0)
+      if (!*argrest)
+        if (i+1 < argc) argrest = argv[++i]; else { badarg = TRUE; break; }
+      if (!*argrest)
         *(sender_address = store_get(1, FALSE)) = '\0';  /* Ensure writeable memory */
       else
         {
-        uschar *temp = argrest + Ustrlen(argrest) - 1;
+        uschar * temp = argrest + Ustrlen(argrest) - 1;
         while (temp >= argrest && isspace(*temp)) temp--;
         if (temp >= argrest && *temp == '.') f_end_dot = TRUE;
         allow_domain_literals = TRUE;
@@ -2658,11 +2649,8 @@ for (i = 1; i < argc; i++)
     To put it in will require a change to the spool header file format. */
 
     case 'h':
-    if (*argrest == 0)
-      {
-      if(++i < argc) argrest = argv[i]; else
-        { badarg = TRUE; break; }
-      }
+    if (!*argrest)
+      if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
     if (!isdigit(*argrest)) badarg = TRUE;
     break;
 
@@ -2671,7 +2659,7 @@ for (i = 1; i < argc; i++)
     not to be documented for sendmail but mailx (at least) uses it) */
 
     case 'i':
-    if (*argrest == 0) f.dot_ends = FALSE; else badarg = TRUE;
+    if (!*argrest) f.dot_ends = FALSE; else badarg = TRUE;
     break;
 
 
@@ -2679,16 +2667,13 @@ for (i = 1; i < argc; i++)
     syslog_processname in the config file, but needs to be an admin option. */
 
     case 'L':
-    if (*argrest == '\0')
-      {
-      if(++i < argc) argrest = argv[i]; else
-        { badarg = TRUE; break; }
-      }
+    if (!*argrest)
+      if (++i < argc) argrest = argv[i]; else { badarg = TRUE; break; }
     if ((sz = Ustrlen(argrest)) > 32)
       exim_fail("exim: the -L syslog name is too long: \"%s\"\n", argrest);
     if (sz < 1)
       exim_fail("exim: the -L syslog name is too short\n");
-    cmdline_syslog_name = argrest;
+    cmdline_syslog_name = string_copy_taint(argrest, TRUE);
     break;
 
     case 'M':
@@ -2718,9 +2703,9 @@ for (i = 1; i < argc; i++)
       if (msg_action_arg >= 0)
         exim_fail("exim: incompatible arguments\n");
 
-      continue_transport = argv[++i];
-      continue_hostname = argv[++i];
-      continue_host_address = argv[++i];
+      continue_transport = string_copy_taint(argv[++i], TRUE);
+      continue_hostname = string_copy_taint(argv[++i], TRUE);
+      continue_host_address = string_copy_taint(argv[++i], TRUE);
       continue_sequence = Uatoi(argv[++i]);
       msg_action = MSG_DELIVER;
       msg_action_arg = ++i;
@@ -2764,7 +2749,7 @@ for (i = 1; i < argc; i++)
 
     /* -MCG: set the queue name, to a non-default value */
 
-	case 'G': if (++i < argc) queue_name = string_copy(argv[i]);
+	case 'G': if (++i < argc) queue_name = string_copy_taint(argv[i], TRUE);
 		  else badarg = TRUE;
 		  break;
 
@@ -2798,11 +2783,14 @@ for (i = 1; i < argc; i++)
     Require three arguments for the proxied local address and port,
     and the TLS cipher.  */
 
-	case 't': if (++i < argc) sending_ip_address = argv[i];
+	case 't': if (++i < argc)
+		    sending_ip_address = string_copy_taint(argv[i], TRUE);
 		  else badarg = TRUE;
-		  if (++i < argc) sending_port = (int)(Uatol(argv[i]));
+		  if (++i < argc)
+		    sending_port = (int)(Uatol(argv[i]));
 		  else badarg = TRUE;
-		  if (++i < argc) continue_proxy_cipher = argv[i];
+		  if (++i < argc)
+		    continue_proxy_cipher = string_copy_taint(argv[i], TRUE);
 		  else badarg = TRUE;
 		  /*FALLTHROUGH*/
 
@@ -2839,7 +2827,7 @@ for (i = 1; i < argc; i++)
        -Mvl  show log
     */
 
-    else if (*argrest == 0)
+    else if (!*argrest)
       {
       msg_action = MSG_DELIVER;
       forced_delivery = f.deliver_force_thaw = TRUE;
@@ -2864,7 +2852,7 @@ for (i = 1; i < argc; i++)
    else if (Ustrcmp(argrest, "G") == 0)
       {
       msg_action = MSG_SETQUEUE;
-      queue_name_dest = argv[++i];
+      queue_name_dest = string_copy_taint(argv[++i], TRUE);
       }
     else if (Ustrcmp(argrest, "mad") == 0)
       {
@@ -2937,7 +2925,7 @@ for (i = 1; i < argc; i++)
     for sendmail it askes for "me too". Exim always does this. */
 
     case 'm':
-    if (*argrest != 0) badarg = TRUE;
+    if (*argrest) badarg = TRUE;
     break;
 
 
@@ -2945,7 +2933,7 @@ for (i = 1; i < argc; i++)
     their thing. It implies debugging at the D_v level. */
 
     case 'N':
-    if (*argrest == 0)
+    if (!*argrest)
       {
       f.dont_deliver = TRUE;
       debug_selector |= D_v;
@@ -2968,7 +2956,7 @@ for (i = 1; i < argc; i++)
     -O option=value and -Ooption=value. */
 
     case 'O':
-    if (*argrest == 0)
+    if (!*argrest)
       if (++i >= argc)
         exim_fail("exim: string expected after -O\n");
     break;
@@ -3076,12 +3064,13 @@ for (i = 1; i < argc; i++)
 
 	/* -oMa: Set sender host address */
 
-	if (Ustrcmp(argrest, "a") == 0) sender_host_address = argv[++i];
+	if (Ustrcmp(argrest, "a") == 0)
+	  sender_host_address = string_copy_taint(argv[++i], TRUE);
 
 	/* -oMaa: Set authenticator name */
 
 	else if (Ustrcmp(argrest, "aa") == 0)
-	  sender_host_authenticated = argv[++i];
+	  sender_host_authenticated = string_copy_taint(argv[++i], TRUE);
 
 	/* -oMas: setting authenticated sender */
 
@@ -3095,7 +3084,8 @@ for (i = 1; i < argc; i++)
 
 	/* -oMi: Set incoming interface address */
 
-	else if (Ustrcmp(argrest, "i") == 0) interface_address = argv[++i];
+	else if (Ustrcmp(argrest, "i") == 0)
+	  interface_address = string_copy_taint(argv[++i], TRUE);
 
 	/* -oMm: Message reference */
 
@@ -3115,7 +3105,7 @@ for (i = 1; i < argc; i++)
 	  if (received_protocol)
 	    exim_fail("received_protocol is set already\n");
 	  else
-	    received_protocol = argv[++i];
+	    received_protocol = string_copy_taint(argv[++i], TRUE);
 
 	/* -oMs: Set sender host name */
 
@@ -3127,7 +3117,7 @@ for (i = 1; i < argc; i++)
 	else if (Ustrcmp(argrest, "t") == 0)
 	  {
 	  sender_ident_set = TRUE;
-	  sender_ident = argv[++i];
+	  sender_ident = string_copy_taint(argv[++i], TRUE);
 	  }
 
 	/* Else a bad argument */
@@ -3180,7 +3170,7 @@ for (i = 1; i < argc; i++)
 
       case 'X':
 	if (*argrest) badarg = TRUE;
-	else override_local_interfaces = argv[++i];
+	else override_local_interfaces = string_copy_taint(argv[++i], TRUE);
 	break;
 
       /* Unknown -o argument */
@@ -3210,13 +3200,10 @@ for (i = 1; i < argc; i++)
     /* -panythingelse is taken as the Sendmail-compatible argument -prval:sval,
     which sets the host protocol and host name */
 
-    if (*argrest == 0)
-      if (i+1 < argc)
-	argrest = argv[++i];
-      else
-        { badarg = TRUE; break; }
+    if (!*argrest)
+      if (i+1 < argc) argrest = argv[++i]; else { badarg = TRUE; break; }
 
-    if (*argrest != 0)
+    if (*argrest)
       {
       uschar *hn;
 
@@ -3224,15 +3211,15 @@ for (i = 1; i < argc; i++)
         exim_fail("received_protocol is set already\n");
 
       hn = Ustrchr(argrest, ':');
-      if (hn == NULL)
-        received_protocol = argrest;
+      if (!hn)
+        received_protocol = string_copy_taint(argrest, TRUE);
       else
         {
 	int old_pool = store_pool;
 	store_pool = POOL_PERM;
-        received_protocol = string_copyn(argrest, hn - argrest);
+        received_protocol = string_copyn_taint(argrest, hn - argrest, TRUE);
 	store_pool = old_pool;
-        sender_host_name = hn + 1;
+        sender_host_name = string_copy_taint(hn + 1, TRUE);
         }
       }
     break;
@@ -3295,14 +3282,14 @@ for (i = 1; i < argc; i++)
     only, optionally named, optionally starting from a given message id. */
 
     if (!(list_queue || count_queue))
-      if (*argrest == 0
+      if (  !*argrest
 	 && (i + 1 >= argc || argv[i+1][0] == '-' || mac_ismsgid(argv[i+1])))
 	{
 	queue_interval = 0;
 	if (i+1 < argc && mac_ismsgid(argv[i+1]))
-	  start_queue_run_id = argv[++i];
+	  start_queue_run_id = string_copy_taint(argv[++i], TRUE);
 	if (i+1 < argc && mac_ismsgid(argv[i+1]))
-	  stop_queue_run_id = argv[++i];
+	  stop_queue_run_id = string_copy_taint(argv[++i], TRUE);
 	}
 
     /* -q[f][f][l][G<name>/]<n>: Run the queue at regular intervals, optionally
@@ -3326,7 +3313,7 @@ for (i = 1; i < argc; i++)
     in all cases provided there are no further characters in this
     argument. */
 
-    if (*argrest != 0)
+    if (*argrest)
       for (int i = 0; i < nelem(rsopts); i++)
         if (Ustrcmp(argrest, rsopts[i]) == 0)
           {
@@ -3340,9 +3327,9 @@ for (i = 1; i < argc; i++)
     pick out particular messages. */
 
     if (*argrest)
-      deliver_selectstring = argrest;
+      deliver_selectstring = string_copy_taint(argrest, TRUE);
     else if (i+1 < argc)
-      deliver_selectstring = argv[++i];
+      deliver_selectstring = string_copy_taint(argv[++i], TRUE);
     else
       exim_fail("exim: string expected after -R\n");
     break;
@@ -3379,9 +3366,9 @@ for (i = 1; i < argc; i++)
     pick out particular messages. */
 
     if (*argrest)
-      deliver_selectstring_sender = argrest;
+      deliver_selectstring_sender = string_copy_taint(argrest, TRUE);
     else if (i+1 < argc)
-      deliver_selectstring_sender = argv[++i];
+      deliver_selectstring_sender = string_copy_taint(argv[++i], TRUE);
     else
       exim_fail("exim: string expected after -S\n");
     break;
@@ -3393,7 +3380,7 @@ for (i = 1; i < argc; i++)
 
     case 'T':
     if (f.running_in_test_harness && Ustrcmp(argrest, "qt") == 0)
-      fudged_queue_times = argv[++i];
+      fudged_queue_times = string_copy_taint(argv[++i], TRUE);
     else badarg = TRUE;
     break;
 
@@ -3401,7 +3388,7 @@ for (i = 1; i < argc; i++)
     /* -t: Set flag to extract recipients from body of message. */
 
     case 't':
-    if (*argrest == 0) extract_recipients = TRUE;
+    if (!*argrest) extract_recipients = TRUE;
 
     /* -ti: Set flag to extract recipients from body of message, and also
     specify that dot does not end the message. */
@@ -3433,7 +3420,7 @@ for (i = 1; i < argc; i++)
     /* -v: verify things - this is a very low-level debugging */
 
     case 'v':
-    if (*argrest == 0)
+    if (!*argrest)
       {
       debug_selector |= D_v;
       debug_file = stderr;
@@ -3453,22 +3440,22 @@ for (i = 1; i < argc; i++)
     As Exim is 8-bit clean, it just ignores this flag. */
 
     case 'x':
-    if (*argrest != 0) badarg = TRUE;
+    if (*argrest) badarg = TRUE;
     break;
 
     /* -X: in sendmail: takes one parameter, logfile, and sends debugging
     logs to that file.  We swallow the parameter and otherwise ignore it. */
 
     case 'X':
-    if (*argrest == '\0')
+    if (!*argrest)
       if (++i >= argc)
         exim_fail("exim: string expected after -X\n");
     break;
 
     case 'z':
-    if (*argrest == '\0')
+    if (!*argrest)
       if (++i < argc)
-	log_oneline = argv[i];
+	log_oneline = string_copy_taint(argv[i], TRUE);
       else
         exim_fail("exim: file name expected after %s\n", argv[i-1]);
     break;
@@ -4078,11 +4065,12 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
       p = big_buffer + 3;
       }
     printing = string_printing(argv[i]);
-    if (printing[0] == 0) quote = US"\""; else
+    if (!*printing) quote = US"\"";
+    else
       {
       const uschar *pp = printing;
       quote = US"";
-      while (*pp != 0) if (isspace(*pp++)) { quote = US"\""; break; }
+      while (*pp) if (isspace(*pp++)) { quote = US"\""; break; }
       }
     p += sprintf(CS p, " %s%.*s%s", quote, (int)(big_buffer_size -
       (p - big_buffer) - 4), printing, quote);
@@ -4118,19 +4106,19 @@ script. */
 if (bi_option)
   {
   (void)fclose(config_file);
-  if (bi_command != NULL)
+  if (bi_command)
     {
     int i = 0;
     uschar *argv[3];
     argv[i++] = bi_command;
-    if (alias_arg != NULL) argv[i++] = alias_arg;
+    if (alias_arg) argv[i++] = alias_arg;
     argv[i++] = NULL;
 
     setgroups(group_count, group_list);
     exim_setugid(real_uid, real_gid, FALSE, US"running bi_command");
 
     DEBUG(D_exec) debug_printf("exec %.256s %.256s\n", argv[0],
-      (argv[1] == NULL)? US"" : argv[1]);
+      argv[1] ? argv[1] : US"");
 
     execv(CS argv[0], (char *const *)argv);
     exim_fail("exim: exec failed: %s\n", strerror(errno));
@@ -4609,6 +4597,8 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     {
     int status;
     pid_t pid;
+    /*XXX This use of argv[i] for msg_id should really be tainted, but doing
+    that runs into a later copy into the untainted global message_id[] */
     if (i == argc - 1)
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
     else if ((pid = fork()) == 0)
@@ -5503,8 +5493,8 @@ while (more)
 
     DEBUG(D_receive)
       {
-      if (sender_address != NULL) debug_printf("Sender: %s\n", sender_address);
-      if (recipients_list != NULL)
+      if (sender_address) debug_printf("Sender: %s\n", sender_address);
+      if (recipients_list)
         {
         debug_printf("Recipients:\n");
         for (int i = 0; i < recipients_count; i++)

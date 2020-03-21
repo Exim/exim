@@ -177,12 +177,14 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMa  sender_host_address = $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  ╰─────result: -oMa  sender_host_address = V4NET.0.0.1
+            ╰──(tainted)
  ╭considering:       sender_host_port = $sender_host_port
  ├──expanding:       sender_host_port = $sender_host_port
  ╰─────result:       sender_host_port = 1234
  ╭considering: -oMaa sender_host_authenticated = $sender_host_authenticated
  ├──expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
  ╰─────result: -oMaa sender_host_authenticated = AAA
+            ╰──(tainted)
  ╭considering: -oMai authenticated_id = $authenticated_id
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
@@ -194,15 +196,18 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMi  interface_address = $interface_address
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
+            ╰──(tainted)
  ╭considering:       interface_port = $interface_port
  ├──expanding:       interface_port = $interface_port
  ╰─────result:       interface_port = 99
  ╭considering: -oMr  received_protocol = $received_protocol
  ├──expanding: -oMr  received_protocol = $received_protocol
  ╰─────result: -oMr  received_protocol = special
+            ╰──(tainted)
  ╭considering: -oMt  sender_ident = $sender_ident
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
+            ╰──(tainted)
 >>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
@@ -212,12 +217,14 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMa  sender_host_address = $sender_host_address
  ├──expanding: -oMa  sender_host_address = $sender_host_address
  ╰─────result: -oMa  sender_host_address = V4NET.0.0.1
+            ╰──(tainted)
  ╭considering:       sender_host_port = $sender_host_port
  ├──expanding:       sender_host_port = $sender_host_port
  ╰─────result:       sender_host_port = 1234
  ╭considering: -oMaa sender_host_authenticated = $sender_host_authenticated
  ├──expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
  ╰─────result: -oMaa sender_host_authenticated = AAA
+            ╰──(tainted)
  ╭considering: -oMai authenticated_id = $authenticated_id
  ├──expanding: -oMai authenticated_id = $authenticated_id
  ╰─────result: -oMai authenticated_id = philip
@@ -229,12 +236,14 @@ dropping to exim gid; retaining priv uid
  ╭considering: -oMi  interface_address = $interface_address
  ├──expanding: -oMi  interface_address = $interface_address
  ╰─────result: -oMi  interface_address = 1.1.1.1
+            ╰──(tainted)
  ╭considering:       interface_port = $interface_port
  ├──expanding:       interface_port = $interface_port
  ╰─────result:       interface_port = 99
  ╭considering: -oMr  received_protocol = $received_protocol
  ├──expanding: -oMr  received_protocol = $received_protocol
  ╰─────result: -oMr  received_protocol = special
+            ╰──(tainted)
  ╭considering: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
   ╭considering: black}{white}{$sender_host_name}{No}}
   ├──expanding: black
@@ -267,6 +276,7 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ╭considering: -oMt  sender_ident = $sender_ident
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
+            ╰──(tainted)
 >>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective

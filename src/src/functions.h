@@ -706,28 +706,44 @@ return chown(CCS name, owner, group)
 *************************************************/
 
 /* This function assumes that memcpy() is faster than strcpy().
+The result is explicitly nul-terminated.
 */
 
 static inline uschar *
-string_copy_taint_trc(const uschar *s, BOOL tainted, const char * func, int line)
+string_copyn_taint_trc(const uschar * s, unsigned len,
+	BOOL tainted, const char * func, int line)
 {
-int len = Ustrlen(s) + 1;
-uschar *ss = store_get_3(len, tainted, func, line);
+uschar * ss = store_get_3(len + 1, tainted, func, line);
 memcpy(ss, s, len);
+ss[len] = '\0';
 return ss;
 }
 
-#define string_copy_taint(s, tainted) \
-	string_copy_taint_trc((s), tainted, __FUNCTION__, __LINE__)
+static inline uschar *
+string_copy_taint_trc(const uschar * s, BOOL tainted, const char * func, int line)
+{ return string_copyn_taint_trc(s, Ustrlen(s), tainted, func, line); }
 
 static inline uschar *
+string_copyn_trc(const uschar * s, unsigned len, const char * func, int line)
+{ return string_copyn_taint_trc(s, len, is_tainted(s), func, line); }
+static inline uschar *
 string_copy_trc(const uschar * s, const char * func, int line)
-{
-return string_copy_taint_trc((s), is_tainted(s), func, line);
-}
+{ return string_copy_taint_trc(s, is_tainted(s), func, line); }
 
+
+/* String-copy functions explicitly setting the taint status */
+
+#define string_copyn_taint(s, len, tainted) \
+	string_copyn_taint_trc((s), (len), (tainted), __FUNCTION__, __LINE__)
+#define string_copy_taint(s, tainted) \
+	string_copy_taint_trc((s), (tainted), __FUNCTION__, __LINE__)
+
+/* Simple string-copy functions maintaining the taint */
+
+#define string_copyn(s, len) \
+	string_copyn_taint_trc((s), (len), is_tainted(s), __FUNCTION__, __LINE__)
 #define string_copy(s) \
-	string_copy_trc((s), __FUNCTION__, __LINE__)
+	string_copy_taint_trc((s), is_tainted(s), __FUNCTION__, __LINE__)
 
 
 /*************************************************
@@ -750,31 +766,6 @@ return ss;
 }
 
 
-
-/*************************************************
-*       Copy and save string, given length       *
-*************************************************/
-
-/* It is assumed the data contains no zeros. A zero is added
-onto the end.
-
-Arguments:
-  s         string to copy
-  n         number of characters
-
-Returns:    copy of string in new store
-
-This is an API for local_scan hence not static.
-*/
-
-static inline uschar *
-string_copyn(const uschar *s, int n)
-{
-uschar *ss = store_get(n + 1, is_tainted(s));
-Ustrncpy(ss, s, n);
-ss[n] = 0;
-return ss;
-}
 
 /*************************************************
 * Copy, lowercase, and save string, given length *
