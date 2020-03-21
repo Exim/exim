@@ -2268,7 +2268,7 @@ a clean slate and doesn't interfere with the parent process. */
 
 search_tidyup();
 
-if ((pid = exim_fork(US"delivery (local)")) == 0)
+if ((pid = exim_fork(US"delivery-local")) == 0)
   {
   BOOL replicate = TRUE;
 
@@ -2615,7 +2615,7 @@ if (addr->special_action == SPECIAL_WARN && addr->transport->warn_message)
       "message for %s transport): %s", addr->transport->warn_message,
       addr->transport->name, expand_string_message);
 
-  else if ((pid = child_open_exim(&fd, US"warning message")) > 0)
+  else if ((pid = child_open_exim(&fd, US"tpt-warning-message")) > 0)
     {
     FILE *f = fdopen(fd, "wb");
     if (errors_reply_to && !contains_header(US"Reply-To", warn_message))
@@ -7537,7 +7537,7 @@ while (addr_failed)
 
     /* Make a subprocess to send a message */
 
-    if ((pid = child_open_exim(&fd, US"bounce message")) < 0)
+    if ((pid = child_open_exim(&fd, US"bounce-message")) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
         "create child process to send failure message: %s", getpid(),
         getppid(), strerror(errno));
@@ -8191,7 +8191,7 @@ else if (addr_defer != (address_item *)(+1))
       {
       header_line *h;
       int fd;
-      pid_t pid = child_open_exim(&fd, US"delay-warning message");
+      pid_t pid = child_open_exim(&fd, US"delay-warning-message");
 
       if (pid > 0)
         {

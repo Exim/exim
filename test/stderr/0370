@@ -8,9 +8,9 @@ changed uid/gid: privilege not needed
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -20,20 +20,20 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> |TESTSUITE/bin/iefbr14 <--------
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to |TESTSUITE/bin/iefbr14 <|TESTSUITE/bin/iefbr14> transport=t1
   uid=EXIM_UID gid=CALLER_GID pid=pppp
 t1 transport entered
 direct command:
   argv[0] = 'TESTSUITE/bin/iefbr14'
-delivery (local) forking for pipe-tpt-cmd
+delivery-local forking for pipe-tpt-cmd
 postfork: pipe-tpt-cmd
-fresh-exec forked for delivery (local): npppp
-delivery (local) forked for pipe-tpt-cmd: npppp
-delivery (local) forking for pipe-transport output
+local-accept-delivery forked for delivery-local: npppp
+delivery-local forked for pipe-tpt-cmd: npppp
+delivery-local forking for pipe-transport output
 postfork: pipe-transport output
-delivery (local) forked for pipe-transport output: npppp
+delivery-local forked for pipe-transport output: npppp
 Writing message to pipe
 writing data block fd=dddd size=sss timeout=3600
 writing error EEE: Broken pipe

@@ -174,7 +174,7 @@ LOG: MAIN
 end of retry processing
 fresh-exec forking for bounce message
 postfork: bounce message
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd bounce message -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 fresh-exec forked for bounce message: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -230,10 +230,10 @@ Size of headers = sss
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 search_tidyup called
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -odi -Mc 10HmaY-0005vi-00
-fresh-exec forked for local-accept delivery: npppp
+bounce message forking for local-accept-delivery
+postfork: local-accept-delivery
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
+bounce message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp

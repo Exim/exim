@@ -4,9 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -302,21 +302,21 @@ After routing:
     defer_bbbb@myhost.test.ex
     defer_cccc@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => aaaa <aaaa@myhost.test.ex> R=seen_aaaa T=t1
 locking TESTSUITE/spool/db/retry.lockfile
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => bbbb <bbbb@myhost.test.ex> R=bbbb_0 T=t1
 locking TESTSUITE/spool/db/retry.lockfile
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => cccc <cccc@myhost.test.ex> R=cccc_accept T=t1
 locking TESTSUITE/spool/db/retry.lockfile

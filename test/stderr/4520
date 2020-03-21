@@ -3,21 +3,21 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+local-accept-delivery forking for transport
 postfork: transport
 Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1225 ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-fresh-exec forked for transport: npppp
+local-accept-delivery forked for transport: npppp
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
          250-SIZE 52428800
          250-8BITMIME

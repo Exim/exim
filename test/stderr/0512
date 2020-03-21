@@ -78,9 +78,9 @@ trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+bounce message forking for local-accept-delivery
+postfork: local-accept-delivery
+bounce message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -158,9 +158,9 @@ trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+bounce message forking for local-accept-delivery
+postfork: local-accept-delivery
+bounce message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

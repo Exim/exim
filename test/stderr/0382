@@ -4,9 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -18,18 +18,18 @@ running system filter
 system filter returned 1
 LOG: MAIN
   ** userx@test.ex R=r1: forced fail
-fresh-exec forking for bounce message
+local-accept-delivery forking for bounce message
 postfork: bounce message
-fresh-exec forked for bounce message: npppp
+local-accept-delivery forked for bounce message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+bounce message forking for local-accept-delivery
+postfork: local-accept-delivery
+bounce message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

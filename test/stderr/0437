@@ -31,8 +31,8 @@ postfork: qrun delivery
  lookup yielded: t1
 search_tidyup called
 search_tidyup called
-qrun delivery forking for delivery (local)
-postfork: delivery (local)
+qrun delivery forking for delivery-local
+postfork: delivery-local
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="file" partial=-1 affix=NULL starflags=0
@@ -46,7 +46,7 @@ postfork: delivery (local)
  lookup yielded: file
 search_tidyup called
 fresh-exec forked for qrun delivery: npppp
-qrun delivery forked for delivery (local): npppp
+qrun delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=r1 T=t1
 LOG: MAIN
@@ -69,8 +69,8 @@ postfork: qrun delivery
  lookup yielded: t1
 search_tidyup called
 search_tidyup called
-qrun delivery forking for delivery (local)
-postfork: delivery (local)
+qrun delivery forking for delivery-local
+postfork: delivery-local
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="file" partial=-1 affix=NULL starflags=0
@@ -84,7 +84,7 @@ postfork: delivery (local)
  lookup yielded: file
 search_tidyup called
 fresh-exec forked for qrun delivery: npppp
-qrun delivery forked for delivery (local): npppp
+qrun delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=r1 T=t1
 LOG: MAIN

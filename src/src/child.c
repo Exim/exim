@@ -109,6 +109,11 @@ if (!minimal)
     if (debug_selector != 0)
       argv[n++] = string_sprintf("-d=0x%x", debug_selector);
     }
+  DEBUG(D_any)
+    {
+    argv[n++] = US"-MCd";
+    argv[n++] = US process_purpose;
+    }
   if (!f.testsuite_delays) argv[n++] = US"-odd";
   if (f.dont_deliver) argv[n++] = US"-N";
   if (f.queue_smtp) argv[n++] = US"-odqs";

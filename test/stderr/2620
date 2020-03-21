@@ -342,10 +342,10 @@ LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 search_tidyup called
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -odi -Mc 10HmaX-0005vi-00
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -427,8 +427,8 @@ close PGSQL connection: localhost:1223/test/CALLER
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to CALLER <CALLER@myhost.test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -462,7 +462,7 @@ writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
 close PGSQL connection: localhost:1223/test/CALLER
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 journalling CALLER@myhost.test.ex
 t1 transport returned OK for CALLER@myhost.test.ex
 post-process CALLER@myhost.test.ex (0)

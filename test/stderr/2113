@@ -81,7 +81,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userz@test.ex>
@@ -95,7 +95,7 @@ transport forking for continued-transport interproc
 postfork: continued-transport interproc
 continued-transport interproc forking for continued-transport
 postfork: continued-transport
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
 transport forked for continued-transport interproc: npppp
 continued-transport interproc forked for continued-transport: npppp
   SMTP(close)>>
@@ -109,7 +109,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<usery@test.ex>
@@ -122,7 +122,7 @@ cmd buf flush ddd bytes
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
@@ -215,7 +215,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userc@test.ex>
@@ -229,7 +229,7 @@ transport forking for continued-transport interproc
 postfork: continued-transport interproc
 continued-transport interproc forking for continued-transport
 postfork: continued-transport
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
 transport forked for continued-transport interproc: npppp
 continued-transport interproc forked for continued-transport: npppp
   SMTP(close)>>
@@ -243,7 +243,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userb@test.ex>
@@ -256,7 +256,7 @@ cmd buf flush ddd bytes
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
@@ -352,11 +352,11 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
   SMTP<< 220 TLS go ahead
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -398,11 +398,11 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
   SMTP<< 220 TLS go ahead
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes

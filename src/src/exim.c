@@ -2760,6 +2760,12 @@ for (i = 1; i < argc; i++)
 
 	case 'D': smtp_peer_options |= OPTION_DSN; break;
 
+    /* -MCd: for debug, set a process-purpose string */
+
+	case 'd': if (++i < argc) process_purpose = argv[i];
+		  else badarg = TRUE;
+		  break;
+
     /* -MCG: set the queue name, to a non-default value */
 
 	case 'G': if (++i < argc) queue_name = string_copy(argv[i]);
@@ -5695,7 +5701,7 @@ while (more)
     pid_t pid;
     search_tidyup();
 
-    if ((pid = exim_fork(US"local-accept delivery")) == 0)
+    if ((pid = exim_fork(US"local-accept-delivery")) == 0)
       {
       int rc;
       close_unwanted();      /* Close unwanted file descriptors and TLS */

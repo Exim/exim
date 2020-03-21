@@ -174,10 +174,10 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 search_tidyup called
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715dfd -odi -Mc 10HmaX-0005vi-00
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715dfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -459,8 +459,8 @@ no retry data available
  ╰─────result: /non-exist/usery
             ╰──(tainted)
 search_tidyup called
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=/non-exist/usery current=/
@@ -505,7 +505,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 journalling TESTSUITE/test-mail/junk:rd+usery@test.ex
 ft1 transport returned OK for TESTSUITE/test-mail/junk
 post-process TESTSUITE/test-mail/junk (0)
@@ -521,8 +521,8 @@ LOG: MAIN
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to TESTSUITE/test-mail/junk <TESTSUITE/test-mail/junk> transport=ft1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=/non-exist/CALLER current=/
@@ -567,7 +567,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 journalling TESTSUITE/test-mail/junk:rd+CALLER@test.ex
 ft1 transport returned OK for TESTSUITE/test-mail/junk
 post-process TESTSUITE/test-mail/junk (0)
@@ -583,8 +583,8 @@ LOG: MAIN
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=/non-exist/CALLER current=/
@@ -597,7 +597,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   maildir_use_size_file=no
   locking by lockfile fcntl 
 search_tidyup called
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 journalling CALLER@test.ex
 t1 transport returned OK for CALLER@test.ex
 post-process CALLER@test.ex (0)
@@ -616,8 +616,8 @@ no retry data available
  ╰─────result: /non-exist/usery
             ╰──(tainted)
 search_tidyup called
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to usery <usery@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=/non-exist/usery current=/
@@ -630,7 +630,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   maildir_use_size_file=no
   locking by lockfile fcntl 
 search_tidyup called
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 journalling usery@test.ex
 t1 transport returned OK for usery@test.ex
 post-process usery@test.ex (0)
@@ -649,8 +649,8 @@ no retry data available
  ╰─────result: /userz
             ╰──(tainted)
 search_tidyup called
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 changed uid/gid: local delivery to userz <userz@test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=/userz current=/
@@ -663,7 +663,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   maildir_use_size_file=no
   locking by lockfile fcntl 
 search_tidyup called
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 journalling userz@test.ex
 t2 transport returned OK for userz@test.ex
 post-process userz@test.ex (0)

@@ -4,9 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -14,8 +14,8 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=1048576 warning=0
   directory=TESTSUITE/test-mail/userx format=maildir
@@ -36,7 +36,7 @@ writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
@@ -49,9 +49,9 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -59,8 +59,8 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-fresh-exec forking for delivery (local)
-postfork: delivery (local)
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=1048576 warning=0
   directory=TESTSUITE/test-mail/userx format=maildir
@@ -83,7 +83,7 @@ writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
-fresh-exec forked for delivery (local): npppp
+local-accept-delivery forked for delivery-local: npppp
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1

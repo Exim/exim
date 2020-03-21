@@ -70,13 +70,13 @@ admin user
 dropping to exim gid; retaining priv uid
 delivering 10HmaY-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
 T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP>> RCPT TO:<b@test.ex>
   SMTP>> DATA
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
   SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP<< 351 Send more
@@ -267,13 +267,13 @@ admin user
 dropping to exim gid; retaining priv uid
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
-fresh-exec forking for transport
+continued-transport forking for transport
 postfork: transport
 T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP>> RCPT TO:<c@test.ex>
   SMTP>> DATA
-fresh-exec forked for transport: npppp
+continued-transport forked for transport: npppp
   SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP<< 351 OK

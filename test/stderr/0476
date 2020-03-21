@@ -74,9 +74,9 @@ admin user
 set_process_info: pppp accepting a local non-SMTP message from <>
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
-fresh-exec forking for local-accept delivery
-postfork: local-accept delivery
-fresh-exec forked for local-accept delivery: npppp
+bounce message forking for local-accept-delivery
+postfork: local-accept-delivery
+bounce message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -86,7 +86,7 @@ set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaZ-0005vi-00
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> CALLER@the.local.host.name <--------
-fresh-exec forking for transport
+local-accept-delivery forking for transport
 postfork: transport
 set_process_info: pppp delivering 10HmaZ-0005vi-00 using t1
 t1 transport entered
@@ -102,7 +102,7 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
-fresh-exec forked for transport: npppp
+local-accept-delivery forked for transport: npppp
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 added to list for 127.0.0.1
