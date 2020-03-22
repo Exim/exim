@@ -14,10 +14,17 @@ domainlist local_domains = dsearch;DIR/aux-fixed/TESTNUM.domains
 begin routers
 
 r1:
-  driver = accept
-  domains = +local_domains
-  transport = t1
+  driver =	accept
+  domains =	+local_domains
+  transport =	t1
 
+virtual:
+  driver =	redirect
+  domains =	*.virt.test.ex
+  address_data = ${lookup {TESTNUM.alias.${extract {1}{.}{$domain}}} \
+			dsearch{DIR/aux-fixed} {$value}fail}
+  data =	${lookup{$local_part}lsearch{DIR/aux-fixed/$address_data}}
+  no_more
 
 # ------ Transports ------
 

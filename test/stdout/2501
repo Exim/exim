@@ -2,3 +2,6 @@ xxx@okdomain
   router = r1, transport = t1
 yyy@notokdomain is undeliverable: Unrouteable address
 syntax error: malformed address: /mod may not follow zzz@dom
+yes@exists.virt.test.ex verified
+no@exists.virt.test.ex failed to verify: Unrouteable address
+xx@notexists.virt.test.ex failed to verify: Unrouteable address
