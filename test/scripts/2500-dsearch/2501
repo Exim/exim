@@ -2,3 +2,6 @@
 2
 exim -bt xxx@okdomain yyy@notokdomain zzz@dom/mod
 ****
+2
+exim -bv yes@exists.virt.test.ex no@exists.virt.test.ex xx@notexists.virt.test.ex
+****

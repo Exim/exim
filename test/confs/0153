@@ -13,9 +13,10 @@ begin routers
 virtual:
   driver = redirect
   domains = *.virt.test.ex
-  address_data = ${lookup {TESTNUM.alias.${extract {1}{.}{$domain}}} \
-			dsearch{DIR/aux-fixed} {$value}fail}
-  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/$address_data}}
+  address_data = ${if match{$domain}{^(.*)\\.virt\\.test\\.ex\$}{${bless:$1}}}
+  data = ${if exists{DIR/aux-fixed/TESTNUM.alias.$address_data} \
+           {${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.alias.$address_data}}} \
+          fail}
   no_more
 
 list:
