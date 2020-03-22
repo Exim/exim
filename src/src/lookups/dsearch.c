@@ -28,7 +28,7 @@ static void *
 dsearch_open(uschar *dirname, uschar **errmsg)
 {
 DIR *dp = opendir(CS dirname);
-if (dp == NULL)
+if (!dp)
   {
   int save_errno = errno;
   *errmsg = string_open_failed(errno, "%s for directory search", dirname);
@@ -47,8 +47,8 @@ return (void *)(-1);
 /* The handle will always be (void *)(-1), but don't try casting it to an
 integer as this gives warnings on 64-bit systems. */
 
-BOOL
-static dsearch_check(void *handle, uschar *filename, int modemask, uid_t *owners,
+static BOOL
+dsearch_check(void *handle, uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
 handle = handle;
@@ -87,7 +87,9 @@ if (Ustrchr(keystring, '/') != 0)
 filename = string_sprintf("%s/%s", dirname, keystring);
 if (Ulstat(filename, &statbuf) >= 0)
   {
-  *result = string_copy(keystring);
+  /* Since the filename exists in the filesystem, we can return a
+  non-tainted result. */
+  *result = string_copy_taint(keystring, FALSE);
   return OK;
   }
 

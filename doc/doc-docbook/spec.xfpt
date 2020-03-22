@@ -6762,7 +6762,12 @@ by default, but has an option to omit them (see section &<<SECTdbmbuild>>&).
 whose name is the key by calling the &[lstat()]& function. The key may not
 contain any forward slash characters. If &[lstat()]& succeeds, the result of
 the lookup is the name of the entry, which may be a file, directory,
-symbolic link, or any other kind of directory entry. An example of how this
+symbolic link, or any other kind of directory entry.
+.new
+.cindex "tainted data" "dsearch result"
+It is regarded as untainted.
+.wen
+An example of how this
 lookup can be used to support virtual domains is given in section
 &<<SECTvirtualdomains>>&.
 .next
@@ -36771,12 +36776,18 @@ to a router of this form:
 virtual:
   driver = redirect
   domains = dsearch;/etc/mail/virtual
-  data = ${lookup{$local_part}lsearch{/etc/mail/virtual/$domain}}
+  data = ${lookup{$local_part}lsearch{/etc/mail/virtual/$domain_data}}
   no_more
 .endd
+.new
 The &%domains%& option specifies that the router is to be skipped, unless there
 is a file in the &_/etc/mail/virtual_& directory whose name is the same as the
-domain that is being processed. When the router runs, it looks up the local
+domain that is being processed.
+The &(dsearch)& lookup used results in an untainted version of &$domain$&
+being placed into the &$domain_data$& variable.
+.wen
+
+When the router runs, it looks up the local
 part in the file to find a new address (or list of addresses). The &%no_more%&
 setting ensures that if the lookup fails (leading to &%data%& being an empty
 string), Exim gives up on the address without trying any subsequent routers.
