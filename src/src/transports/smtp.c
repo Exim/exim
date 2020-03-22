@@ -3361,7 +3361,7 @@ for (int fd_bits = 3; fd_bits; )
 
 done:
   testharness_pause_ms(100);	/* let logging complete */
-  exim_exit(0, US"TLS proxy");
+  exim_exit(EXIT_SUCCESS);
 }
 #endif
 

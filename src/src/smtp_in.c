@@ -457,7 +457,7 @@ if (smtp_batched_input)
 smtp_notquit_exit(US"command-timeout", US"421",
   US"%s: SMTP command timeout - closing connection",
   smtp_active_hostname);
-exim_exit(EXIT_FAILURE, US"receiving");
+exim_exit(EXIT_FAILURE);
 }
 
 void
@@ -468,7 +468,7 @@ if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
 smtp_notquit_exit(US"signal-exit", US"421",
   US"%s: Service not available - closing connection", smtp_active_hostname);
-exim_exit(EXIT_FAILURE, US"receiving");
+exim_exit(EXIT_FAILURE);
 }
 
 void
@@ -931,7 +931,7 @@ if (!yield)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_printf()");
   smtp_closedown(US"Unexpected error");
-  exim_exit(EXIT_FAILURE, NULL);
+  exim_exit(EXIT_FAILURE);
   }
 
 /* If this is the first output for a (non-batch) RCPT command, see if all RCPTs
@@ -5800,7 +5800,7 @@ while (done <= 0)
 	  }
 
 	enq_end(etrn_serialize_key);
-	exim_underbar_exit(EXIT_SUCCESS, US"etrn-serialize-interproc");
+	exim_underbar_exit(EXIT_SUCCESS);
 	}
 
       /* Back in the top level SMTP process. Check that we started a subprocess

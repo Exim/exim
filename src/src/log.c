@@ -242,7 +242,7 @@ if (s1)
   }
 if (f.receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
 if (smtp_input) smtp_closedown(s2);
-exim_exit(EXIT_FAILURE, NULL);
+exim_exit(EXIT_FAILURE);
 }
 
 
@@ -767,7 +767,7 @@ if (!log_buffer)
   if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
     {
     fprintf(stderr, "exim: failed to get store for log buffer\n");
-    exim_exit(EXIT_FAILURE, NULL);
+    exim_exit(EXIT_FAILURE);
     }
 
 /* If we haven't already done so, inspect the setting of log_file_path to
@@ -983,7 +983,7 @@ if (!f.really_exim || f.log_testing_mode)
     else
       fprintf(log_stderr, "%s", CS log_buffer);
 
-  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE, US"");
+  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE);
   return;
   }
 

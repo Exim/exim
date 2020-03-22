@@ -2,6 +2,11 @@ LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
+delivering 10HmaX-0005vi-00
+LOG: MAIN
+  => one <one@z> R=r1 T=t1
+LOG: MAIN
+  Completed
 LOG: MAIN
   <= x@y U=CALLER P=local-smtp S=sss
 LOG: delay_delivery MAIN

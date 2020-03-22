@@ -149,7 +149,7 @@ SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (exim.test.ex) [V4NET.11.12.13] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -284,4 +284,4 @@ SMTP>> 421 the.local.host.name lost input connection
 LOG: lost_incoming_connection MAIN
   unexpected disconnection while reading SMTP command from (exim.test.ex) [V4NET.99.99.99] D=qqs
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

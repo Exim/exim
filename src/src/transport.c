@@ -1274,7 +1274,7 @@ if ((write_pid = exim_fork(US"tpt-filter-writer")) == 0)
         != sizeof(struct timeval)
      )
     rc = FALSE;	/* compiler quietening */
-  exim_underbar_exit(0, US"tpt-filter writer");
+  exim_underbar_exit(EXIT_SUCCESS);
   }
 save_errno = errno;
 

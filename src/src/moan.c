@@ -692,7 +692,7 @@ fprintf(stderr, "%d previous message%s successfully processed.\n",
 
 fprintf(stderr, "The rest of the batch was abandoned.\n");
 
-exim_exit(yield, US"batch");
+exim_exit(yield);
 }
 
 

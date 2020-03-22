@@ -715,26 +715,26 @@ Returns:     does not return
 */
 
 void
-exim_exit(int rc, const uschar * process)
+exim_exit(int rc)
 {
 search_tidyup();
 store_exit();
 DEBUG(D_any)
-  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d %s%s%sterminating with rc=%d "
-    ">>>>>>>>>>>>>>>>\n", (int)getpid(),
-    process ? "(" : "", process, process ? ") " : "", rc);
+  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d (%s) terminating with rc=%d "
+    ">>>>>>>>>>>>>>>>\n",
+    (int)getpid(), process_purpose, rc);
 exit(rc);
 }
 
 
 void
-exim_underbar_exit(int rc, const uschar * process)
+exim_underbar_exit(int rc)
 {
 store_exit();
 DEBUG(D_any)
-  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d %s%s%sterminating with rc=%d "
-    ">>>>>>>>>>>>>>>>\n", (int)getpid(),
-    process ? "(" : "", process, process ? ") " : "", rc);
+  debug_printf(">>>>>>>>>>>>>>>> Exim pid=%d (%s) terminating with rc=%d "
+    ">>>>>>>>>>>>>>>>\n",
+    (int)getpid(), process_purpose, rc);
 _exit(rc);
 }
 
@@ -4441,7 +4441,7 @@ if (test_retry_arg >= 0)
   if (test_retry_arg >= argc)
     {
     printf("-brt needs a domain or address argument\n");
-    exim_exit(EXIT_FAILURE, US"main");
+    exim_exit(EXIT_FAILURE);
     }
   s1 = argv[test_retry_arg++];
   s2 = NULL;
@@ -4546,7 +4546,7 @@ if (test_retry_arg >= 0)
 
     printf("\n");
     }
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(EXIT_SUCCESS);
   }
 
 /* Handle a request to list one or more configuration options */
@@ -4573,14 +4573,14 @@ if (list_options)
     else
       fail = !readconf_print(argv[i], NULL, flag_n);
     }
-  exim_exit(fail ? EXIT_FAILURE : EXIT_SUCCESS, US"main");
+  exim_exit(fail ? EXIT_FAILURE : EXIT_SUCCESS);
   }
 
 if (list_config)
   {
   set_process_info("listing config");
   exim_exit(readconf_print(US"config", NULL, flag_n)
-		? EXIT_SUCCESS : EXIT_FAILURE, US"main");
+		? EXIT_SUCCESS : EXIT_FAILURE);
   }
 
 
@@ -4606,7 +4606,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
   if (prod_requires_admin && !f.admin_user)
     {
     fprintf(stderr, "exim: Permission denied\n");
-    exim_exit(EXIT_FAILURE, US"main");
+    exim_exit(EXIT_FAILURE);
     }
   set_process_info("delivering specified messages");
   if (deliver_give_up) forced_delivery = f.deliver_force_thaw = TRUE;
@@ -4619,17 +4619,17 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     else if ((pid = exim_fork(US"cmdline-delivery")) == 0)
       {
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
-      exim_underbar_exit(EXIT_SUCCESS, US"cmdline-delivery");
+      exim_underbar_exit(EXIT_SUCCESS);
       }
     else if (pid < 0)
       {
       fprintf(stderr, "failed to fork delivery process for %s: %s\n", argv[i],
         strerror(errno));
-      exim_exit(EXIT_FAILURE, US"main");
+      exim_exit(EXIT_FAILURE);
       }
     else wait(&status);
     }
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(EXIT_SUCCESS);
   }
 
 
@@ -4648,7 +4648,7 @@ if (queue_interval == 0 && !f.daemon_listen)
   else
     set_process_info("running the queue (single queue run)");
   queue_run(start_queue_run_id, stop_queue_run_id, FALSE);
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(EXIT_SUCCESS);
   }
 
 
@@ -4818,10 +4818,10 @@ if (test_rewrite_arg >= 0)
   if (test_rewrite_arg >= argc)
     {
     printf("-brw needs an address argument\n");
-    exim_exit(EXIT_FAILURE, US"main");
+    exim_exit(EXIT_FAILURE);
     }
   rewrite_test(argv[test_rewrite_arg]);
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(EXIT_SUCCESS);
   }
 
 /* A locally-supplied message is considered to be coming from a local user
@@ -4936,7 +4936,7 @@ if (verify_address_mode || f.address_test_mode)
     }
 
   route_tidyup();
-  exim_exit(exit_value, US"main");
+  exim_exit(exit_value);
   }
 
 /* Handle expansion checking. Either expand items on the command line, or read
@@ -5022,7 +5022,7 @@ if (expansion_test)
     deliver_datafile = -1;
     }
 
-  exim_exit(EXIT_SUCCESS, US"main: expansion test");
+  exim_exit(EXIT_SUCCESS);
   }
 
 
@@ -5116,7 +5116,7 @@ if (host_checking)
       }
     smtp_log_no_mail();
     }
-  exim_exit(EXIT_SUCCESS, US"main");
+  exim_exit(EXIT_SUCCESS);
   }
 
 
@@ -5279,7 +5279,7 @@ if (smtp_input)
   if (!smtp_start_session())
     {
     mac_smtp_fflush();
-    exim_exit(EXIT_SUCCESS, US"smtp_start toplevel");
+    exim_exit(EXIT_SUCCESS);
     }
   }
 
@@ -5394,14 +5394,14 @@ while (more)
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
         if (more) goto moreloop;
         smtp_log_no_mail();               /* Log no mail if configured */
-        exim_exit(EXIT_FAILURE, US"receive toplevel");
+        exim_exit(EXIT_FAILURE);
         }
       }
     else
       {
       cancel_cutthrough_connection(TRUE, US"message setup dropped");
       smtp_log_no_mail();               /* Log no mail if configured */
-      exim_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS, US"msg setup toplevel");
+      exim_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
       }
     }
 
@@ -5451,7 +5451,7 @@ while (more)
           if (error_handling == ERRORS_STDERR)
             {
             fprintf(stderr, "exim: too many recipients\n");
-            exim_exit(EXIT_FAILURE, US"main");
+            exim_exit(EXIT_FAILURE);
             }
           else
             return
@@ -5485,7 +5485,7 @@ while (more)
             {
             fprintf(stderr, "exim: bad recipient address \"%s\": %s\n",
               string_printing(list[i]), errmess);
-            exim_exit(EXIT_FAILURE, US"main");
+            exim_exit(EXIT_FAILURE);
             }
           else
             {
@@ -5557,7 +5557,7 @@ while (more)
     for real; when reading the headers of a message for filter testing,
     it is TRUE if the headers were terminated by '.' and FALSE otherwise. */
 
-    if (message_id[0] == 0) exim_exit(EXIT_FAILURE, US"main");
+    if (message_id[0] == 0) exim_exit(EXIT_FAILURE);
     }  /* Non-SMTP message reception */
 
   /* If this is a filter testing run, there are headers in store, but
@@ -5602,7 +5602,7 @@ while (more)
     if (chdir("/"))   /* Get away from wherever the user is running this from */
       {
       DEBUG(D_receive) debug_printf("chdir(\"/\") failed\n");
-      exim_exit(EXIT_FAILURE, US"main");
+      exim_exit(EXIT_FAILURE);
       }
 
     /* Now we run either a system filter test, or a user filter test, or both.
@@ -5612,15 +5612,15 @@ while (more)
 
     if ((filter_test & FTEST_SYSTEM) != 0)
       if (!filter_runtest(filter_sfd, filter_test_sfile, TRUE, more))
-        exim_exit(EXIT_FAILURE, US"main");
+        exim_exit(EXIT_FAILURE);
 
     memcpy(filter_sn, filter_n, sizeof(filter_sn));
 
     if ((filter_test & FTEST_USER) != 0)
       if (!filter_runtest(filter_ufd, filter_test_ufile, FALSE, more))
-        exim_exit(EXIT_FAILURE, US"main");
+        exim_exit(EXIT_FAILURE);
 
-    exim_exit(EXIT_SUCCESS, US"main");
+    exim_exit(EXIT_SUCCESS);
     }
 
   /* Else act on the result of message reception. We should not get here unless
@@ -5722,7 +5722,7 @@ while (more)
       rc = deliver_message(message_id, FALSE, FALSE);
       search_tidyup();
       exim_underbar_exit(!mua_wrapper || rc == DELIVER_MUA_SUCCEEDED
-        ? EXIT_SUCCESS : EXIT_FAILURE, US"cmdline-delivery");
+        ? EXIT_SUCCESS : EXIT_FAILURE);
       }
 
     if (pid < 0)
@@ -5746,7 +5746,7 @@ while (more)
 	  log_write(0, LOG_MAIN|LOG_PANIC,
 	    "process %d crashed with signal %d while delivering %s",
 	    (int)pid, status & 0x00ff, message_id);
-	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE, US"main");
+	if (mua_wrapper && (status & 0xffff) != 0) exim_exit(EXIT_FAILURE);
 	}
       }
     }
@@ -5778,7 +5778,7 @@ moreloop:
   store_reset(reset_point);
   }
 
-exim_exit(EXIT_SUCCESS, US"main");   /* Never returns */
+exim_exit(EXIT_SUCCESS);   /* Never returns */
 return 0;                  /* To stop compiler warning */
 }
 

@@ -4,11 +4,11 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
-fresh-exec forking for qrun delivery
-postfork: qrun delivery
+fresh-exec forking for qrun-delivery
+postfork: qrun-delivery
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
-qrun delivery forking for transport
+qrun-delivery forking for transport
 postfork: transport
 t1 transport entered
   userx@myhost.test.ex
@@ -24,8 +24,8 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
-fresh-exec forked for qrun delivery: npppp
-qrun delivery forked for transport: npppp
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for transport: npppp
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record
@@ -67,9 +67,9 @@ LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
   ** userx@myhost.test.ex: retry timeout exceeded
-qrun delivery forking for bounce-message
+qrun-delivery forking for bounce-message
 postfork: bounce-message
-qrun delivery forked for bounce-message: npppp
+qrun-delivery forked for bounce-message: npppp
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 Exim version x.yz ....
@@ -90,25 +90,25 @@ LOG: MAIN
   => :blackhole: <CALLER@myhost.test.ex> R=r0
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
-fresh-exec forking for qrun delivery
-postfork: qrun delivery
+fresh-exec forking for qrun-delivery
+postfork: qrun-delivery
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
-qrun delivery forking for transport
+qrun-delivery forking for transport
 postfork: transport
 t1 transport entered
   userx@myhost.test.ex
@@ -124,8 +124,8 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
-fresh-exec forked for qrun delivery: npppp
-qrun delivery forked for transport: npppp
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for transport: npppp
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record
@@ -147,9 +147,9 @@ LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
 LOG: MAIN
   ** userx@myhost.test.ex: retry timeout exceeded
-qrun delivery forking for bounce-message
+qrun-delivery forking for bounce-message
 postfork: bounce-message
-qrun delivery forked for bounce-message: npppp
+qrun-delivery forked for bounce-message: npppp
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 Exim version x.yz ....
@@ -170,11 +170,11 @@ LOG: MAIN
   => :blackhole: <CALLER@myhost.test.ex> R=r0
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

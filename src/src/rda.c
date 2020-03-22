@@ -768,7 +768,7 @@ if ((pid = exim_fork(US"router-interpret")) == 0)
 out:
   (void)close(fd);
   search_tidyup();
-  exim_underbar_exit(0, US"rda");
+  exim_underbar_exit(EXIT_SUCCESS);
 
 bad:
   DEBUG(D_rewrite) debug_printf("rda_interpret: failed write to pipe\n");

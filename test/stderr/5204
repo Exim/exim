@@ -23,7 +23,7 @@ command wrote: DECLINE cannot route this one (DECLINE)
 q router declined for "DECLINE cannot route this one (DECLINE)"@some.host
 "more" is false: skipping remaining routers
 no more routers
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -45,7 +45,7 @@ postfork: queryprogram-cmd
 fresh-exec forked for queryprogram-cmd: npppp
 command wrote: FAIL cannot route this one (FAIL)
 q router forced address failure
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -70,7 +70,7 @@ LOG: PANIC
   q router: bad command yield: ERROR cannot route this one (ERROR)
 q router: defer for "ERROR cannot route this one (ERROR)"@some.host
   message: bad command yield: ERROR cannot route this one (ERROR)
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -93,7 +93,7 @@ fresh-exec forked for queryprogram-cmd: npppp
 command wrote: DEFER cannot route this one (DEFER)
 q router: defer for "DEFER cannot route this one (DEFER)"@some.host
   message: cannot route this one (DEFER)
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -130,7 +130,7 @@ routed by q router
   envelope to: "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
   transport: other_smtp
   host ten-1.test.ex [V4NET.0.0.1]
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -173,7 +173,7 @@ routed by s router
   envelope to: PASS@some.host
   transport: smtp
   host 127.0.0.1 [127.0.0.1]
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -196,7 +196,7 @@ fresh-exec forked for queryprogram-cmd: npppp
 command wrote: FREEZE cannot route this one (FREEZE)
 q router: defer for "FREEZE cannot route this one (FREEZE)"@some.host
   message: cannot route this one (FREEZE)
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=1 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=1 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -254,7 +254,7 @@ domain = test.ex
 routed by pm router
   envelope to: postmaster@test.ex
   transport: null
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -304,4 +304,4 @@ LOG: MAIN REJECT
   H=(some.name) [V4NET.2.3.4] F=<x@y> rejected RCPT <"FAIL cannot route this one (FAIL)"@some.host>: cannot route this one (FAIL)
 LOG: smtp_connection MAIN
   SMTP connection from (some.name) [V4NET.2.3.4] closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
