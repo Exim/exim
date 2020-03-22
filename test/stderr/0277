@@ -16,6 +16,9 @@ host in "V4NET.2.3.4"? yes (matched "V4NET.2.3.4")
 host in host_lookup? yes (matched "+lookup_hosts")
 looking up host name for V4NET.2.3.4
 DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
@@ -39,7 +42,7 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.2.3.4] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -74,7 +77,7 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.6.7.8] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -94,6 +97,9 @@ host in "V4NET.6.7.8"? no (end of list)
 host in host_lookup? yes (end of list)
 looking up host name for V4NET.10.11.12
 DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
@@ -119,7 +125,7 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.10.11.12] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -139,6 +145,9 @@ host in "V4NET.6.7.8"? no (end of list)
 host in host_lookup? yes (end of list)
 looking up host name for V4NET.1.1.1
 DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
@@ -164,7 +173,7 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.1.1.1] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -184,6 +193,9 @@ host in "V4NET.6.7.8"? no (end of list)
 host in host_lookup? yes (end of list)
 looking up host name for V4NET.2.2.2
 DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
@@ -208,4 +220,4 @@ SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
   SMTP connection from [V4NET.2.2.2] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

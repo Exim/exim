@@ -242,7 +242,7 @@ if (s1)
   }
 if (f.receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
 if (smtp_input) smtp_closedown(s2);
-exim_exit(EXIT_FAILURE, NULL);
+exim_exit(EXIT_FAILURE);
 }
 
 
@@ -313,7 +313,7 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 int
 log_create_as_exim(uschar *name)
 {
-pid_t pid = fork();
+pid_t pid = exim_fork(US"logfile-create");
 int status = 1;
 int fd = -1;
 
@@ -510,7 +510,7 @@ non-setuid binary with log_arguments set, called in certain ways.) Rather than
 just bombing out, force the log to stderr and carry on if stderr is available.
 */
 
-if (euid != root_uid && euid != exim_uid && log_stderr != NULL)
+if (euid != root_uid && euid != exim_uid && log_stderr)
   {
   *fd = fileno(log_stderr);
   return;
@@ -519,7 +519,9 @@ if (euid != root_uid && euid != exim_uid && log_stderr != NULL)
 /* Otherwise this is a disaster. This call is deliberately ONLY to the panic
 log. If possible, save a copy of the original line that was being logged. If we
 are recursing (can't open the panic log either), the pointer will already be
-set. */
+set.  Also, when we had to use a subprocess for the create we didn't retrieve
+errno from it, so get the error from the open attempt above (which is often
+meaningful enough, so leave it). */
 
 if (!panic_save_buffer)
   if ((panic_save_buffer = US malloc(LOG_BUFFER_SIZE)))
@@ -765,7 +767,7 @@ if (!log_buffer)
   if (!(log_buffer = US malloc(LOG_BUFFER_SIZE)))
     {
     fprintf(stderr, "exim: failed to get store for log buffer\n");
-    exim_exit(EXIT_FAILURE, NULL);
+    exim_exit(EXIT_FAILURE);
     }
 
 /* If we haven't already done so, inspect the setting of log_file_path to
@@ -981,7 +983,7 @@ if (!f.really_exim || f.log_testing_mode)
     else
       fprintf(log_stderr, "%s", CS log_buffer);
 
-  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE, US"");
+  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE);
   return;
   }
 

@@ -496,10 +496,8 @@ for (int i = queue_run_in_order ? -1 : 0;
 	}
       else
 	for (i = 0; qpid[i]; ) i++;
-      DEBUG(D_queue_run) debug_printf("q2stage forking\n");
-      if ((qpid[i] = fork()))
+      if ((qpid[i] = exim_fork(US"qrun-phase-one")))
 	continue;	/* parent loops around */
-      DEBUG(D_queue_run) debug_printf("q2stage child\n");
       }
 
     /* Skip this message unless it's within the ID limits */
@@ -651,13 +649,13 @@ for (int i = queue_run_in_order ? -1 : 0;
 #endif
 
 single_item_retry:
-    if ((pid = fork()) == 0)
+    if ((pid = exim_fork(US"qrun-delivery")) == 0)
       {
       int rc;
-      testharness_pause_ms(100);
       (void)close(pfd[pipe_read]);
       rc = deliver_message(fq->text, force_delivery, FALSE);
-      exim_underbar_exit(rc == DELIVER_NOT_ATTEMPTED, US"qrun-delivery");
+      exim_underbar_exit(rc == DELIVER_NOT_ATTEMPTED
+		? EXIT_FAILURE : EXIT_SUCCESS);
       }
     if (pid < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork of delivery process from "
@@ -709,7 +707,7 @@ single_item_retry:
 
     /* If initial of a 2-phase run, we are a child - so just exit */
     if (f.queue_2stage && !queue_run_in_order)
-      exim_exit(EXIT_SUCCESS, US"2-phase child");
+      exim_exit(EXIT_SUCCESS);
 
     /* If we are in the test harness, and this is not the first of a 2-stage
     queue run, update fudged queue times. */
@@ -726,7 +724,7 @@ single_item_retry:
   go_around:
     /* If initial of a 2-phase run, we are a child - so just exit */
     if (f.queue_2stage && !queue_run_in_order)
-      exim_exit(EXIT_SUCCESS, US"2-phase child");
+      exim_exit(EXIT_SUCCESS);
     }                                  /* End loop for list of messages */
 
   tree_nonrecipients = NULL;

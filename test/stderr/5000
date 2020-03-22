@@ -4,6 +4,9 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -11,6 +14,8 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=20480 warning=0
   directory=TESTSUITE/test-mail format=maildir
@@ -43,9 +48,10 @@ mailbox quota exceeded
 maildir: time since "new" directory modified = 10s
 Exim quota exceeded for tmp/dddddddddd.HddddddPddddd.myhost.test.ex
 appendfile yields 1 with errno=-22 more_errno=dd
+local-accept-delivery forked for delivery-local: npppp
 maildir_taggedX_appendfile transport returned DEFER for userx@myhost.test.ex
 added retry item for T:userx@myhost.test.ex: errno=-22 more_errno=dd flags=0
 LOG: MAIN
   == userx@myhost.test.ex R=localuser T=maildir_taggedX_appendfile defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

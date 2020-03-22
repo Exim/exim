@@ -1685,7 +1685,7 @@ current_local_identity =
   smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
 
 if (!(new_sender_address = deliver_get_sender_address(message_id)))
-    return 0;
+    return FALSE;
 
 message_local_identity =
   smtp_local_identity(new_sender_address, s_compare->tblock);
@@ -3284,13 +3284,9 @@ int max_fd = MAX(pfd[0], tls_out.active.sock) + 1;
 int rc, i;
 
 close(pfd[1]);
-if ((rc = fork()))
-  {
-  DEBUG(D_transport) debug_printf("proxy-proc final-pid %d\n", rc);
+if ((rc = exim_fork(US"tls-proxy")))
   _exit(rc < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
-  }
 
-testharness_pause_ms(100); /* let parent debug out */
 set_process_info("proxying TLS connection for continued transport");
 FD_ZERO(&rfds);
 FD_SET(tls_out.active.sock, &rfds);
@@ -3365,7 +3361,7 @@ for (int fd_bits = 3; fd_bits; )
 
 done:
   testharness_pause_ms(100);	/* let logging complete */
-  exim_exit(0, US"TLS proxy");
+  exim_exit(EXIT_SUCCESS);
 }
 #endif
 
@@ -3459,7 +3455,7 @@ if ((rc = smtp_setup_conn(sx, suppress_tls)) != OK)
   }
 
 /* If there is a filter command specified for this transport, we can now
-set it up. This cannot be done until the identify of the host is known. */
+set it up. This cannot be done until the identity of the host is known. */
 
 if (tblock->filter_command)
   {
@@ -4279,10 +4275,9 @@ propagate it from the initial
 #ifndef DISABLE_TLS
 	if (tls_out.active.sock >= 0)
 	  {
-	  int pid = fork();
+	  int pid = exim_fork(US"tls-proxy-interproc");
 	  if (pid == 0)		/* child; fork again to disconnect totally */
 	    {
-	    testharness_pause_ms(100); /* let parent debug out */
 	    /* does not return */
 	    smtp_proxy_tls(sx->cctx.tls_ctx, sx->buffer, sizeof(sx->buffer), pfd,
 			    ob->command_timeout);
@@ -4290,7 +4285,6 @@ propagate it from the initial
 
 	  if (pid > 0)		/* parent */
 	    {
-	    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
 	    close(pfd[0]);
 	    /* tidy the inter-proc to disconn the proxy proc */
 	    waitpid(pid, NULL, 0);

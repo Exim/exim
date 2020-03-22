@@ -441,7 +441,7 @@ else if (!nowarn && !tls_certificate)
 oldsignal = signal(SIGCHLD, SIG_DFL);
 
 fflush(NULL);
-if ((pid = fork()) < 0)
+if ((pid = exim_fork(US"cipher-validate")) < 0)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork failed for TLS check");
 
 if (pid == 0)
@@ -455,7 +455,7 @@ if (pid == 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
         "tls_require_ciphers invalid: %s", errmsg);
   fflush(NULL);
-  exim_underbar_exit(0, NULL);
+  exim_underbar_exit(EXIT_SUCCESS);
   }
 
 do {

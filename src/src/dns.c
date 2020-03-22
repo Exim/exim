@@ -60,7 +60,8 @@ if (stat(CS utilname, &statbuf) >= 0)
   int infd, outfd, rc;
   uschar *argv[5];
 
-  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n", name, dns_text_type(type));
+  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n",
+		name, dns_text_type(type));
 
   argv[0] = utilname;
   argv[1] = config_main_directory;
@@ -68,7 +69,7 @@ if (stat(CS utilname, &statbuf) >= 0)
   argv[3] = dns_text_type(type);
   argv[4] = NULL;
 
-  pid = child_open(argv, NULL, 0000, &infd, &outfd, FALSE);
+  pid = child_open(argv, NULL, 0000, &infd, &outfd, FALSE, US"fakens-search");
   if (pid < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to run fakens: %s",
       strerror(errno));

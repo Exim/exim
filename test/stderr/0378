@@ -4,6 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -41,10 +44,13 @@ save TESTSUITE/test-mail/file
 pipe "/bin/sh -c exit"
 mail subject autoreply
 text "This is an autoreply"' (tainted)
+local-accept-delivery forking for router-interpret
+postfork: router-interpret
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
->>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t3
 aaaa router generated >CALLER@myhost.test.ex
@@ -115,11 +121,20 @@ After routing:
   Deferred addresses:
     defer_aaaa@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+delivery-local forking for autoreply
+postfork: autoreply
+local-accept-delivery forked for delivery-local: npppp
+delivery-local forked for autoreply: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
+autoreply forking for local-accept-delivery
+postfork: local-accept-delivery
+autoreply forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -153,26 +168,40 @@ After routing:
   Deferred addresses:
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (autoreply) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => >CALLER@myhost.test.ex <aaaa@myhost.test.ex> R=aaaa T=t3
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+delivery-local forking for pipe-tpt-cmd
+postfork: pipe-tpt-cmd
+local-accept-delivery forked for delivery-local: npppp
+delivery-local forked for pipe-tpt-cmd: npppp
+delivery-local forking for pipe-tpt-output
+postfork: pipe-tpt-output
+delivery-local forked for pipe-tpt-output: npppp
 transport error EPIPE ignored
 LOG: MAIN
   => |/bin/sh -c exit <aaaa@myhost.test.ex> R=aaaa T=t2
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => TESTSUITE/test-mail/file <aaaa@myhost.test.ex> R=aaaa T=t1
 locking TESTSUITE/spool/db/retry.lockfile
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
+fresh-exec forking for qrun-delivery
+postfork: qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -232,10 +261,14 @@ save TESTSUITE/test-mail/file
 pipe "/bin/sh -c exit"
 mail subject autoreply
 text "This is an autoreply"' (tainted)
+qrun-delivery forking for router-interpret
+postfork: router-interpret
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
->>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t3
 aaaa router generated >CALLER@myhost.test.ex
@@ -305,4 +338,4 @@ locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

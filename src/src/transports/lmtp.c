@@ -500,7 +500,8 @@ if (ob->cmd)
 uid/gid and current directory. Request that the new process be a process group
 leader, so we can kill it and all its children on an error. */
 
-  if ((pid = child_open(USS argv, NULL, 0, &fd_in, &fd_out, TRUE)) < 0)
+  if ((pid = child_open(USS argv, NULL, 0, &fd_in, &fd_out, TRUE,
+			US"lmtp-tpt-cmd")) < 0)
     {
     addrlist->message = string_sprintf(
       "Failed to create child process for %s transport: %s", tblock->name,
@@ -514,8 +515,7 @@ leader, so we can kill it and all its children on an error. */
 else
   {
   DEBUG(D_transport) debug_printf("using socket %s\n", ob->skt);
-  sockname = expand_string(ob->skt);
-  if (sockname == NULL)
+  if (!(sockname = expand_string(ob->skt)))
     {
     addrlist->message = string_sprintf("Expansion of \"%s\" (socket setting "
       "for %s transport) failed: %s", ob->skt, tblock->name,

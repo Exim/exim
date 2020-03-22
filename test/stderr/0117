@@ -8,6 +8,27 @@ local_part=xxx domain=mxt9.test.ex
 calling lookuphost router
 lookuphost router called for xxx@mxt9.test.ex
   domain = mxt9.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9.test.ex
   errors_to=NULL
@@ -18,7 +39,7 @@ routed by lookuphost router
   host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
   host ten-2.test.ex [V4NET.0.0.2] MX=6 dnssec=no
   host ten-3.test.ex [V4NET.0.0.3] MX=7 dnssec=no
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -29,6 +50,27 @@ local_part=xxx domain=mxt9a.test.ex
 calling lookuphost router
 lookuphost router called for xxx@mxt9a.test.ex
   domain = mxt9a.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9a.test.ex
   errors_to=NULL
@@ -39,7 +81,7 @@ routed by lookuphost router
   host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
   host ten-2.test.ex [V4NET.0.0.2] MX=6 dnssec=no
   host ten-3.test.ex [V4NET.0.0.3] MX=7 dnssec=no
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -50,6 +92,27 @@ local_part=xxx domain=mxt9b.test.ex
 calling lookuphost router
 lookuphost router called for xxx@mxt9b.test.ex
   domain = mxt9b.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9b.test.ex
   errors_to=NULL
@@ -60,4 +123,4 @@ routed by lookuphost router
   host ten-1.test.ex [V4NET.0.0.1] MX=5 dnssec=no
   host ten-2.test.ex [V4NET.0.0.2] MX=6 dnssec=no
   host ten-3.test.ex [V4NET.0.0.3] MX=7 dnssec=no
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

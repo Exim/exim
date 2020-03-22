@@ -17,6 +17,9 @@ routing x@ten-1
 local_part=x domain=ten-1
 checking domains
 DNS lookup of ten-1 (MX) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
@@ -28,12 +31,21 @@ all router called for x@ten-1
   domain = ten-1
 ten-1 in "*"? yes (matched "*")
 DNS lookup of ten-1 (MX) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1 (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
  writing neg-cache entry for ten-1-MX-xxxx, ttl 3000
 ten-1 (MX resp) DNSSEC
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1 (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1 (A) succeeded
 fully qualified name = ten-1.test.ex
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
@@ -48,6 +60,9 @@ routing x@ten-1.test.ex
 local_part=x domain=ten-1.test.ex
 checking domains
 DNS lookup of ten-1.test.ex (MX) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
@@ -59,12 +74,21 @@ all router called for x@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
  writing neg-cache entry for ten-1.test.ex-MX-xxxx, ttl 3000
 ten-1.test.ex (MX resp) DNSSEC
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
@@ -78,4 +102,4 @@ routed by all router
   transport: smtp
   host ten-1.test.ex [V4NET.0.0.1]
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

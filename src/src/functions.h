@@ -150,8 +150,13 @@ extern void    bits_set(unsigned int *, size_t, int *);
 extern void    cancel_cutthrough_connection(BOOL, const uschar *);
 extern int     check_host(void *, const uschar *, const uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
+extern pid_t   child_open_exim_function(int *, const uschar *);
+extern pid_t   child_open_exim2_function(int *, uschar *, uschar *,
+		 const uschar *);
+extern pid_t   child_open_function(uschar **, uschar **, int,
+		 int *, int *, BOOL, const uschar *);
 extern pid_t   child_open_uid(const uschar **, const uschar **, int,
-		 uid_t *, gid_t *, int *, int *, uschar *, BOOL);
+		 uid_t *, gid_t *, int *, int *, uschar *, BOOL, const uschar *);
 extern BOOL    cleanup_environment(void);
 extern void    cutthrough_data_puts(uschar *, int);
 extern void    cutthrough_data_put_nl(void);
@@ -222,10 +227,10 @@ extern void    msg_event_raise(const uschar *, const address_item *);
 
 extern int     exim_chown_failure(int, const uschar*, uid_t, gid_t);
 extern const uschar * exim_errstr(int);
-extern void    exim_exit(int, const uschar *) NORETURN;
+extern void    exim_exit(int) NORETURN;
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
-extern void    exim_underbar_exit(int, const uschar *);
+extern void    exim_underbar_exit(int) NORETURN;
 extern void    exim_wait_tick(struct timeval *, int);
 extern int     exp_bool(address_item *addr,
   uschar *mtype, uschar *mname, unsigned dgb_opt, uschar *oname, BOOL bvalue,
@@ -1099,6 +1104,46 @@ errno = EACCES;
 return NULL;
 }
 
+/******************************************************************************/
+/* Process manipulation */
+
+static inline pid_t
+exim_fork(const unsigned char * purpose)
+{
+pid_t pid;
+DEBUG(D_any) debug_printf("%s forking for %s\n", process_purpose, purpose);
+if ((pid = fork()) == 0)
+  {
+  process_purpose = purpose;
+  DEBUG(D_any) debug_printf("postfork: %s\n", purpose);
+  }
+else
+  {
+  testharness_pause_ms(100); /* let child work */
+  DEBUG(D_any) debug_printf("%s forked for %s: %d\n", process_purpose, purpose, (int)pid);
+  }
+return pid;
+}
+
+
+static inline pid_t
+child_open_exim(int * fdptr, const uschar * purpose)
+{ return child_open_exim_function(fdptr, purpose); }
+
+static inline pid_t
+child_open_exim2(int * fdptr, uschar * sender,
+  uschar * sender_auth, const uschar * purpose)
+{ return child_open_exim2_function(fdptr, sender, sender_auth, purpose); }
+
+static inline pid_t
+child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
+  int *outfdptr, BOOL make_leader, const uschar * purpose)
+{ return child_open_function(argv, envp, newumask, infdptr,
+  outfdptr, make_leader, purpose);
+}
+
+
+/******************************************************************************/
 #endif	/* !MACRO_PREDEF */
 
 #endif  /* _FUNCTIONS_H_ */

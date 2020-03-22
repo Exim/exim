@@ -78,10 +78,16 @@ check dnslists = rbl.test.ex
 dnslists check: rbl.test.ex
 new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) succeeded
 dnslists: wrote cache entry, ttl=3
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 => that means V4NET.11.12.13 is listed at rbl.test.ex
 deny: condition test succeeded in ACL "check_recipient"
@@ -143,7 +149,7 @@ SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN
   SMTP connection from (exim.test.ex) [V4NET.11.12.13] closed by QUIT
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -238,6 +244,9 @@ check dnslists = rbl.test.ex
 dnslists check: rbl.test.ex
 new DNS lookup for 99.99.99.V4NET.rbl.test.ex
 DNS lookup of 99.99.99.V4NET.rbl.test.ex (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 99.99.99.V4NET.rbl.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 faking res_search(A) response length as 65535
@@ -275,4 +284,4 @@ SMTP>> 421 the.local.host.name lost input connection
 LOG: lost_incoming_connection MAIN
   unexpected disconnection while reading SMTP command from (exim.test.ex) [V4NET.99.99.99] D=qqs
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

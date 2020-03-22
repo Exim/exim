@@ -4,6 +4,9 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -26,7 +29,16 @@ local_part=x domain=uppercase.test.ex
 calling r1 router
 r1 router called for x@uppercase.test.ex
   domain = uppercase.test.ex
+local-accept-delivery forking for fakens-search
+postfork: fakens-search
+local-accept-delivery forked for fakens-search: npppp
 uppercase.test.ex (MX resp) DNSSEC
+local-accept-delivery forking for fakens-search
+postfork: fakens-search
+local-accept-delivery forked for fakens-search: npppp
+local-accept-delivery forking for fakens-search
+postfork: fakens-search
+local-accept-delivery forked for fakens-search: npppp
 local host found for non-MX address
 fully qualified name = UpperCase.test.ex
 uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
@@ -47,16 +59,25 @@ After routing:
     x@UpperCase.test.ex
   Failed addresses:
   Deferred addresses:
+local-accept-delivery forking for transport
+postfork: transport
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
+local-accept-delivery forking for bounce-message
+postfork: bounce-message
+local-accept-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+bounce-message forking for local-accept-delivery
+postfork: local-accept-delivery
+bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -90,9 +111,9 @@ After routing:
   Deferred addresses:
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (bounce-message) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

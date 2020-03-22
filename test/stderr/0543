@@ -4,6 +4,8 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
+fresh-exec forking for qrun-delivery
+postfork: qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@domain1
@@ -31,6 +33,16 @@ After routing:
     userx@domain1
   Failed addresses:
   Deferred addresses:
+qrun-delivery forking for transport
+postfork: transport
+transport forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for transport: npppp
+transport forked for fakens-search: npppp
+transport forking for fakens-search
+postfork: fakens-search
+transport forked for fakens-search: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-smtp.lockfile
 LOG: MAIN
@@ -38,6 +50,8 @@ LOG: MAIN
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forking for qrun-delivery
+postfork: qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: usery@domain1
@@ -52,6 +66,7 @@ After routing:
   Deferred addresses:
     usery@domain1
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

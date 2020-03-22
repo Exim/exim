@@ -17,8 +17,14 @@ routing ph@mxt1.test.ex
 local_part=ph domain=mxt1.test.ex
 checking domains
 DNS lookup of mxt1.test.ex (MX) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of mxt1.test.ex (MX) succeeded
 DNS lookup of eximtesthost.test.ex (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
@@ -27,8 +33,14 @@ mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
 mxt1.test.ex in "+anymx"? yes (matched "+anymx")
 checking "condition" "${if match_domain{$domain}{+anymx}{yes}}"...
 DNS lookup of mxt1.test.ex (MX) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of mxt1.test.ex (MX) succeeded
 DNS lookup of eximtesthost.test.ex (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (4); returned hosts:
@@ -47,4 +59,4 @@ routed by r1 router
   envelope to: ph@mxt1.test.ex
   transport: t1
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

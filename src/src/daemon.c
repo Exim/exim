@@ -367,7 +367,7 @@ if (LOGGING(smtp_connection))
 expansion above did a lookup. */
 
 search_tidyup();
-pid = fork();
+pid = exim_fork(US"daemon-accept");
 
 /* Handle the child process */
 
@@ -418,7 +418,7 @@ if (pid == 0)
           "please try again later.\r\n", FALSE);
         mac_smtp_fflush();
         search_tidyup();
-        exim_underbar_exit(EXIT_FAILURE, US"conn-accept");
+        exim_underbar_exit(EXIT_FAILURE);
         }
       }
     else if (*nah) smtp_active_hostname = nah;
@@ -505,7 +505,7 @@ if (pid == 0)
     {
     mac_smtp_fflush();
     search_tidyup();
-    exim_underbar_exit(EXIT_SUCCESS, US"conn-smtp");
+    exim_underbar_exit(EXIT_SUCCESS);
     }
 
   for (;;)
@@ -533,7 +533,7 @@ if (pid == 0)
 	cancel_cutthrough_connection(TRUE, US"receive dropped");
         mac_smtp_fflush();
         smtp_log_no_mail();               /* Log no mail if configured */
-        exim_underbar_exit(EXIT_SUCCESS, US"conn-receive");
+        exim_underbar_exit(EXIT_SUCCESS);
         }
       if (message_id[0] == 0) continue;   /* No message was accepted */
       }
@@ -556,7 +556,7 @@ if (pid == 0)
       /*XXX should we pause briefly, hoping that the client will be the
       active TCP closer hence get the TCP_WAIT endpoint? */
       DEBUG(D_receive) debug_printf("SMTP>>(close on process exit)\n");
-      exim_underbar_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS, US"conn-setup");
+      exim_underbar_exit(rc ? EXIT_FAILURE : EXIT_SUCCESS);
       }
 
     /* Show the recipients when debugging */
@@ -663,7 +663,7 @@ if (pid == 0)
 
       mac_smtp_fflush();
 
-      if ((dpid = fork()) == 0)
+      if ((dpid = exim_fork(US"daemon-accept-delivery")) == 0)
         {
         (void)fclose(smtp_in);
         (void)fclose(smtp_out);
@@ -692,7 +692,7 @@ if (pid == 0)
 
         (void) deliver_message(message_id, FALSE, FALSE);
         search_tidyup();
-        exim_underbar_exit(EXIT_SUCCESS, US"deliver_msg");
+        exim_underbar_exit(EXIT_SUCCESS);
         }
 
       if (dpid > 0)
@@ -954,7 +954,7 @@ else
   DEBUG(D_any)
     debug_printf("%s\n", string_open_failed(errno, "pid file %s",
       pid_file_path));
-exim_exit(EXIT_SUCCESS, US"pid file remover");
+exim_exit(EXIT_SUCCESS);
 }
 
 
@@ -981,7 +981,7 @@ if (daemon_notifier_fd >= 0)
 
 if (f.running_in_test_harness || write_pid)
   {
-  if ((pid = fork()) == 0)
+  if ((pid = exim_fork(US"daemon-del-pidfile")) == 0)
     {
     if (override_pid_file_path)
       (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, FALSE, 3,
@@ -994,7 +994,7 @@ if (f.running_in_test_harness || write_pid)
   if (pid > 0)
     child_close(pid, 1);
   }
-exim_exit(EXIT_SUCCESS, US"daemon");
+exim_exit(EXIT_SUCCESS);
 }
 
 
@@ -1199,6 +1199,8 @@ int listen_socket_count = 0;
 ip_address_item *addresses = NULL;
 time_t last_connection_time = (time_t)0;
 int local_queue_run_max = atoi(CS expand_string(queue_run_max));
+
+process_purpose = US"daemon";
 
 /* If any debugging options are set, turn on the D_pid bit so that all
 debugging lines get the pid added. */
@@ -1601,7 +1603,7 @@ if (f.background_daemon)
 
   if (getppid() != 1)
     {
-    pid_t pid = fork();
+    pid_t pid = exim_fork(US"daemon");
     if (pid < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "fork() failed when starting daemon: %s", strerror(errno));
     if (pid > 0) exit(EXIT_SUCCESS);      /* in parent process, just exit */
@@ -2127,14 +2129,11 @@ for (;;)
       have enough queue runners on the go. If we are not running as root, a
       re-exec is required. */
 
-      if (queue_interval > 0 &&
-         (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
+      if (  queue_interval > 0
+         && (local_queue_run_max <= 0 || queue_run_count < local_queue_run_max))
         {
-        if ((pid = fork()) == 0)
+        if ((pid = exim_fork(US"queue-runner")) == 0)
           {
-          DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
-            (int)getpid());
-
           /* Disable debugging if it's required only for the daemon process. We
           leave the above message, because it ties up with the "child ended"
           debugging messages. */
@@ -2221,7 +2220,7 @@ for (;;)
 	  else
 #endif
 	    queue_run(NULL, NULL, FALSE);
-          exim_underbar_exit(EXIT_SUCCESS, US"queue-runner");
+          exim_underbar_exit(EXIT_SUCCESS);
           }
 
         if (pid < 0)

@@ -75,7 +75,7 @@ int n = 0;
 int extra = pcount ? *pcount : 0;
 uschar **argv;
 
-argv = store_get((extra + acount + MAX_CLMACROS + 19) * sizeof(char *), FALSE);
+argv = store_get((extra + acount + MAX_CLMACROS + 21) * sizeof(char *), FALSE);
 
 /* In all case, the list starts out with the path, any macros, and a changed
 config file. */
@@ -109,6 +109,11 @@ if (!minimal)
     if (debug_selector != 0)
       argv[n++] = string_sprintf("-d=0x%x", debug_selector);
     }
+  DEBUG(D_any)
+    {
+    argv[n++] = US"-MCd";
+    argv[n++] = US process_purpose;
+    }
   if (!f.testsuite_delays) argv[n++] = US"-odd";
   if (f.dont_deliver) argv[n++] = US"-N";
   if (f.queue_smtp) argv[n++] = US"-odqs";
@@ -140,7 +145,7 @@ if (acount > 0)
 argv[n] = NULL;
 if (exec_type == CEE_RETURN_ARGV)
   {
-  if (pcount != NULL) *pcount = n;
+  if (pcount) *pcount = n;
   return argv;
   }
 
@@ -185,13 +190,15 @@ to exist, even if all calls from within Exim are changed, because it is
 documented for use from local_scan().
 
 Argument: fdptr   pointer to int for the stdin fd
+	  purpose of the child process, for debug
 Returns:          pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open_exim(int *fdptr)
+child_open_exim_function(int * fdptr, const uschar * purpose)
 {
-return child_open_exim2(fdptr, US"<>", bounce_sender_authentication);
+return child_open_exim2_function(fdptr, US"<>", bounce_sender_authentication,
+  purpose);
 }
 
 
@@ -202,12 +209,14 @@ Arguments:
   fdptr                   pointer to int for the stdin fd
   sender                  for a sender address (data for -f)
   sender_authentication   authenticated sender address or NULL
+  purpose		  of the child process, for debug
 
 Returns:          pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open_exim2(int *fdptr, uschar *sender, uschar *sender_authentication)
+child_open_exim2_function(int * fdptr, uschar * sender,
+  uschar * sender_authentication, const uschar * purpose)
 {
 int pfd[2];
 int save_errno;
@@ -220,7 +229,7 @@ on the wait. */
 
 if (pipe(pfd) != 0) return (pid_t)(-1);
 oldsignal = signal(SIGCHLD, SIG_DFL);
-pid = fork();
+pid = exim_fork(purpose);
 
 /* Child process: make the reading end of the pipe into the standard input and
 close the writing end. If debugging, pass debug_fd as stderr. Then re-exec
@@ -236,7 +245,7 @@ if (pid == 0)
   if (debug_fd > 0) force_fd(debug_fd, 2);
   if (f.running_in_test_harness && !queue_only)
     {
-    if (sender_authentication != NULL)
+    if (sender_authentication)
       child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 9,
         US "-odi", US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
         sender_authentication, message_id_option);
@@ -248,7 +257,7 @@ if (pid == 0)
     }
   else   /* Not test harness */
     {
-    if (sender_authentication != NULL)
+    if (sender_authentication)
       child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 8,
         US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
         sender_authentication, message_id_option);
@@ -309,6 +318,7 @@ Arguments:
                 process is placed
   wd          if not NULL, a path to be handed to chdir() in the new process
   make_leader if TRUE, make the new process a process group leader
+  purpose     for debug: reason for running the task
 
 Returns:      the pid of the created process or -1 if anything has gone wrong
 */
@@ -316,7 +326,7 @@ Returns:      the pid of the created process or -1 if anything has gone wrong
 pid_t
 child_open_uid(const uschar **argv, const uschar **envp, int newumask,
   uid_t *newuid, gid_t *newgid, int *infdptr, int *outfdptr, uschar *wd,
-  BOOL make_leader)
+  BOOL make_leader, const uschar * purpose)
 {
 int save_errno;
 int inpfd[2], outpfd[2];
@@ -337,7 +347,7 @@ that the child process can be waited for. We sometimes get here with it set
 otherwise. Save the old state for resetting on the wait. */
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
-pid = fork();
+pid = exim_fork(purpose);
 
 /* Handle the child process. First, set the required environment. We must do
 this before messing with the pipes, in order to be able to write debugging
@@ -348,14 +358,14 @@ if (pid == 0)
   signal(SIGUSR1, SIG_IGN);
   signal(SIGPIPE, SIG_DFL);
 
-  if (newgid != NULL && setgid(*newgid) < 0)
+  if (newgid && setgid(*newgid) < 0)
     {
     DEBUG(D_any) debug_printf("failed to set gid=%ld in subprocess: %s\n",
       (long int)(*newgid), strerror(errno));
     goto CHILD_FAILED;
     }
 
-  if (newuid != NULL && setuid(*newuid) < 0)
+  if (newuid && setuid(*newuid) < 0)
     {
     DEBUG(D_any) debug_printf("failed to set uid=%ld in subprocess: %s\n",
       (long int)(*newuid), strerror(errno));
@@ -364,7 +374,7 @@ if (pid == 0)
 
   (void)umask(newumask);
 
-  if (wd != NULL && Uchdir(wd) < 0)
+  if (wd && Uchdir(wd) < 0)
     {
     DEBUG(D_any) debug_printf("failed to chdir to %s: %s\n", wd,
       strerror(errno));
@@ -394,8 +404,8 @@ if (pid == 0)
 
   /* Now do the exec */
 
-  if (envp == NULL) execv(CS argv[0], (char *const *)argv);
-  else execve(CS argv[0], (char *const *)argv, (char *const *)envp);
+  if (envp) execve(CS argv[0], (char *const *)argv, (char *const *)envp);
+  else execv(CS argv[0], (char *const *)argv);
 
   /* Failed to execv. Signal this failure using EX_EXECFAILED. We are
   losing the actual errno we got back, because there is no way to return
@@ -450,16 +460,17 @@ Arguments:
   outfdptr    pointer to int into which the fd of the stdout/stderr of the new
                 process is placed
   make_leader if TRUE, make the new process a process group leader
+  purpose     for debug: reason for running the task
 
 Returns:      the pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
-child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
-  int *outfdptr, BOOL make_leader)
+child_open_function(uschar **argv, uschar **envp, int newumask, int *infdptr,
+  int *outfdptr, BOOL make_leader, const uschar * purpose)
 {
 return child_open_uid(CUSS argv, CUSS envp, newumask, NULL, NULL,
-  infdptr, outfdptr, NULL, make_leader);
+  infdptr, outfdptr, NULL, make_leader, purpose);
 }
 
 

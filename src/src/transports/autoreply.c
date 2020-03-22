@@ -567,12 +567,10 @@ if (file)
 
 /* Make a subprocess to send the message */
 
-pid = child_open_exim(&fd);
-
-/* Creation of child failed; defer this delivery. */
-
-if (pid < 0)
+if ((pid = child_open_exim(&fd, US"autoreply")) < 0)
   {
+  /* Creation of child failed; defer this delivery. */
+
   addr->transport_return = DEFER;
   addr->basic_errno = errno;
   addr->message = string_sprintf("Failed to create child process to send "

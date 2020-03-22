@@ -771,6 +771,7 @@ extern BOOL    print_topbitchars;      /* Topbit chars are printing chars */
 extern uschar *process_info;           /* For SIGUSR1 output */
 extern int     process_info_len;
 extern uschar *process_log_path;       /* Alternate path */
+extern const uschar *process_purpose;  /* for debug output */
 extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
 
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)

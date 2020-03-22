@@ -736,7 +736,7 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
     otherwise. Save the old state for resetting on the wait. */
 
     oldsignal = signal(SIGCHLD, SIG_DFL);
-    pid = fork();
+    pid = exim_fork(US"require-files");
 
     /* If fork() fails, reinstate the original error and behave as if
     this block of code were not present. This is the same behaviour as happens
@@ -759,9 +759,9 @@ while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
       exim_setugid(uid, gid, TRUE,
         string_sprintf("require_files check, file=%s", ss));
       if (route_check_access(ss, uid, gid, 4))
-	exim_underbar_exit(0, US"route-check-access");
+	exim_underbar_exit(EXIT_SUCCESS);
       DEBUG(D_route) debug_printf("route_check_access() failed\n");
-      exim_underbar_exit(1, US"route-check-access");
+      exim_underbar_exit(EXIT_FAILURE);
       }
 
     /* In the parent, wait for the child to finish */

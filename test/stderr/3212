@@ -134,4 +134,4 @@ sender address = CALLER@myhost.test.ex
    in TESTSUITE/aux-fixed/3212.aliases
  lookup yielded: userx
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

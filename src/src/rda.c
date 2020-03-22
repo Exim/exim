@@ -615,7 +615,7 @@ with the parent process. */
 oldsignal = signal(SIGCHLD, SIG_DFL);
 search_tidyup();
 
-if ((pid = fork()) == 0)
+if ((pid = exim_fork(US"router-interpret")) == 0)
   {
   header_line *waslast = header_last;   /* Save last header */
 
@@ -768,7 +768,7 @@ if ((pid = fork()) == 0)
 out:
   (void)close(fd);
   search_tidyup();
-  exim_underbar_exit(0, US"rda");
+  exim_underbar_exit(EXIT_SUCCESS);
 
 bad:
   DEBUG(D_rewrite) debug_printf("rda_interpret: failed write to pipe\n");

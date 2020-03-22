@@ -308,10 +308,8 @@ if (!transport_set_up_command(&argvptr, /* anchor for arg list */
 
 /* Create the child process, making it a group leader. */
 
-pid = child_open_uid(argvptr, NULL, 0077, puid, pgid, &fd_in, &fd_out,
-  current_directory, TRUE);
-
-if (pid < 0)
+if ((pid = child_open_uid(argvptr, NULL, 0077, puid, pgid, &fd_in, &fd_out,
+			  current_directory, TRUE, US"queryprogram-cmd")) < 0)
   {
   addr->message = string_sprintf("%s router couldn't create child process: %s",
     rblock->name, strerror(errno));

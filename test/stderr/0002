@@ -85,7 +85,7 @@ LOG: MAIN PANIC
   ╰─────result: no
  ├──expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  ╰─────result: match_address:   no
->>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -169,7 +169,7 @@ LOG: MAIN PANIC
   \_____result: no
  |--expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
  \_____result: match_address:   no
->>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -208,7 +208,7 @@ dropping to exim gid; retaining priv uid
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -264,7 +264,16 @@ dropping to exim gid; retaining priv uid
  ╰─────result: ----> No lookup yet: No
  ╭considering: -oMs  sender_host_name = $sender_host_name
 looking up host name for V4NET.0.0.1
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 IP address lookup yielded "ten-1.test.ex"
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 checking addresses for ten-1.test.ex
   V4NET.0.0.1 OK
@@ -277,7 +286,7 @@ sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
  ├──expanding: -oMt  sender_ident = $sender_ident
  ╰─────result: -oMt  sender_ident = me
             ╰──(tainted)
->>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -306,9 +315,18 @@ check hosts = <\n partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch \n 1.2.3.4
 sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "ten-1.test.ex"
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) using fakens
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
 checking addresses for ten-1.test.ex
@@ -336,7 +354,7 @@ SMTP>> 550 Administrative prohibition
 LOG: connection_reject MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -380,7 +398,7 @@ SMTP>> 550 Administrative prohibition
 LOG: connection_reject MAIN REJECT
   H=[V4NET.0.0.2] rejected connection in "connect" ACL
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -532,4 +550,4 @@ sender address = CALLER@myhost.test.ex
 1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
 1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
 search_tidyup called
->>>>>>>>>>>>>>>> Exim pid=pppp (main: expansion test) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

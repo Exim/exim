@@ -5624,7 +5624,8 @@ while (*s != 0)
 
         /* Create the child process, making it a group leader. */
 
-        if ((pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE)) < 0)
+        if ((pid = child_open(USS argv, NULL, 0077, &fd_in, &fd_out, TRUE,
+			      US"expand-run")) < 0)
           {
           expand_string_message =
             string_sprintf("couldn't create child process: %s", strerror(errno));

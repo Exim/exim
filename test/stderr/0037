@@ -4,6 +4,9 @@ trusted user
 admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -41,11 +44,14 @@ $home = >/usr<
 calling userfilter router
 rda_interpret (file): 'TESTSUITE/aux-var/0037.f-user'
 expanded: 'TESTSUITE/aux-var/0037.f-user'
+local-accept-delivery forking for router-interpret
+postfork: router-interpret
 ssss bytes read from TESTSUITE/aux-var/0037.f-user
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
->>>>>>>>>>>>>>>> Exim pid=pppp (rda) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 userfilter router generated userx@test.ex
   errors_to=NULL transport=NULL
@@ -102,9 +108,12 @@ After routing:
   Failed addresses:
   Deferred addresses:
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forking for delivery-local
+postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <filter-userx@test.ex> R=user_accept2 T=appendfile
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -3283,7 +3283,7 @@ while ((s = get_config_line()))
 
   if (isupper(*s))
     {
-    if (!macro_read_assignment(s)) exim_exit(EXIT_FAILURE, US"");
+    if (!macro_read_assignment(s)) exim_exit(EXIT_FAILURE);
     continue;
     }
 
@@ -3719,7 +3719,7 @@ while ((buffer = get_config_line()))
       (d->info->init)(d);
       d = NULL;
       }
-    if (!macro_read_assignment(buffer)) exim_exit(EXIT_FAILURE, US"");
+    if (!macro_read_assignment(buffer)) exim_exit(EXIT_FAILURE);
     continue;
     }
 
@@ -4232,7 +4232,7 @@ while(acl_line)
   p = readconf_readname(name, sizeof(name), acl_line);
   if (isupper(*name) && *p == '=')
     {
-    if (!macro_read_assignment(acl_line)) exim_exit(EXIT_FAILURE, US"");
+    if (!macro_read_assignment(acl_line)) exim_exit(EXIT_FAILURE);
     acl_line = get_config_line();
     continue;
     }

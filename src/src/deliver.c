@@ -2268,7 +2268,7 @@ a clean slate and doesn't interfere with the parent process. */
 
 search_tidyup();
 
-if ((pid = fork()) == 0)
+if ((pid = exim_fork(US"delivery-local")) == 0)
   {
   BOOL replicate = TRUE;
 
@@ -2615,7 +2615,7 @@ if (addr->special_action == SPECIAL_WARN && addr->transport->warn_message)
       "message for %s transport): %s", addr->transport->warn_message,
       addr->transport->name, expand_string_message);
 
-  else if ((pid = child_open_exim(&fd)) > 0)
+  else if ((pid = child_open_exim(&fd, US"tpt-warning-message")) > 0)
     {
     FILE *f = fdopen(fd, "wb");
     if (errors_reply_to && !contains_header(US"Reply-To", warn_message))
@@ -4646,8 +4646,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 
   search_tidyup();
 
-  DEBUG(D_deliver) debug_printf("forking transport process\n");
-  if ((pid = fork()) == 0)
+  if ((pid = exim_fork(US"transport")) == 0)
     {
     int fd = pfd[pipe_write];
     host_item *h;
@@ -4661,10 +4660,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
     /* Show pids on debug output if parallelism possible */
 
     if (parmax > 1 && (parcount > 0 || addr_remote))
-      {
       DEBUG(D_any|D_v) debug_selector |= D_pid;
-      DEBUG(D_deliver) debug_printf("Remote delivery process started\n");
-      }
 
     /* Reset the random number generator, so different processes don't all
     have the same sequence. In the test harness we want different, but
@@ -4977,7 +4973,6 @@ all pipes, so I do not see a reason to use non-blocking IO here
     (void)close(fd);
     exit(EXIT_SUCCESS);
     }
-  DEBUG(D_deliver) debug_printf("forked transport process (%d)\n", pid);
 
   /* Back in the mainline: close the unwanted half of the pipe. */
 
@@ -7336,7 +7331,7 @@ if (addr_senddsn)
   int fd;
 
   /* create exim process to send message */
-  pid = child_open_exim(&fd);
+  pid = child_open_exim(&fd, US"DSN");
 
   DEBUG(D_deliver) debug_printf("DSN: child_open_exim returns: %d\n", pid);
 
@@ -7537,7 +7532,7 @@ while (addr_failed)
 
     /* Make a subprocess to send a message */
 
-    if ((pid = child_open_exim(&fd)) < 0)
+    if ((pid = child_open_exim(&fd, US"bounce-message")) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Process %d (parent %d) failed to "
         "create child process to send failure message: %s", getpid(),
         getppid(), strerror(errno));
@@ -7918,10 +7913,6 @@ wording. */
       (void)fclose(fp);
       rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
 
-      /* In the test harness, let the child do it's thing first. */
-
-      testharness_pause_ms(500);
-
       /* If the process failed, there was some disaster in setting up the
       error message. Unless the message is very old, ensure that addr_defer
       is non-null, which will have the effect of leaving the message on the
@@ -8195,7 +8186,7 @@ else if (addr_defer != (address_item *)(+1))
       {
       header_line *h;
       int fd;
-      pid_t pid = child_open_exim(&fd);
+      pid_t pid = child_open_exim(&fd, US"delay-warning-message");
 
       if (pid > 0)
         {
@@ -8583,18 +8574,17 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
       goto fail;
 
     where = US"fork";
-    if ((pid = fork()) < 0)
+    testharness_pause_ms(150);
+    if ((pid = exim_fork(US"tls-proxy-interproc")) < 0)
       goto fail;
 
-    else if (pid == 0)		/* child: fork again to totally disconnect */
+    if (pid == 0)	/* child: will fork again to totally disconnect */
       {
-      testharness_pause_ms(100); /* let parent debug out */
-      /* does not return */
       smtp_proxy_tls(cutthrough.cctx.tls_ctx, big_buffer, big_buffer_size,
 		      pfd, 5*60);
+      /* does not return */
       }
 
-    DEBUG(D_transport) debug_printf("proxy-proc inter-pid %d\n", pid);
     close(pfd[0]);
     waitpid(pid, NULL, 0);
     (void) close(channel_fd);	/* release the client socket */

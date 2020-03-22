@@ -35,11 +35,18 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+fresh-exec forking for local-accept-delivery
+postfork: local-accept-delivery
+fresh-exec forked for local-accept-delivery: npppp
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
->>>>>>>>>>>>>>>> Exim pid=pppp (msg setup toplevel) terminating with rc=0 >>>>>>>>>>>>>>>>
-proxy-proc inter-pid pppp
-proxy-proc final-pid pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forking for tls-proxy-interproc
+postfork: tls-proxy-interproc
+tls-proxy-interproc forking for tls-proxy
+postfork: tls-proxy
+local-accept-delivery forked for tls-proxy-interproc: npppp
+tls-proxy-interproc forked for tls-proxy: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -47,6 +54,8 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userb@test.ex <--------
+local-accept-delivery forking for transport
+postfork: transport
 t1 transport entered
   userb@test.ex
 hostlist:
@@ -69,12 +78,13 @@ ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
->>>>>>>>>>>>>>>> Exim pid=pppp (TLS proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forked for transport: npppp
+>>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 Leaving t1 transport
 LOG: MAIN
   => userb@test.ex R=client T=t1 H=127.0.0.1 [127.0.0.1]:1225 X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmaY-0005vi-00"
 LOG: MAIN
   Completed
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (local-accept-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 
 ******** SERVER ********

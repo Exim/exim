@@ -216,7 +216,7 @@ if (STATVFS(CS path, &statbuf) != 0)
     log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
       "%s directory %s: %s", name, path, strerror(errno));
     smtp_closedown(US"spool or log directory problem");
-    exim_exit(EXIT_FAILURE, NULL);
+    exim_exit(EXIT_FAILURE);
     }
 
 *inodeptr = (statbuf.F_FILES > 0)? statbuf.F_FAVAIL : -1;
@@ -372,7 +372,7 @@ if (!already_bombing_out)
 
 /* Exit from the program (non-BSMTP cases) */
 
-exim_exit(EXIT_FAILURE, NULL);
+exim_exit(EXIT_FAILURE);
 }
 
 
@@ -1172,7 +1172,7 @@ if (error_handling == ERRORS_SENDER)
 else
   fprintf(stderr, "exim: %s%s\n", text2, text1);  /* Sic */
 (void)fclose(f);
-exim_exit(error_rc, US"");
+exim_exit(error_rc);
 }
 
 
@@ -3340,7 +3340,7 @@ if (extract_recip && (bad_addresses || recipients_count == 0))
     {
     Uunlink(spool_name);
     (void)fclose(spool_data_file);
-    exim_exit(error_rc, US"receiving");
+    exim_exit(error_rc);
     }
   }
 

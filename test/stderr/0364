@@ -73,6 +73,9 @@ checking domains
 calling r2 router
 r2 router called for solik@otherhost.test.ex
   domain = otherhost.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 r2 router declined for solik@otherhost.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.test.ex
@@ -99,6 +102,9 @@ checking domains
 calling r2 router
 r2 router called for solik@otherhost.sub.test.ex
   domain = otherhost.sub.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 r2 router declined for solik@otherhost.sub.test.ex
 --------> r3 router <--------
 local_part=solik domain=otherhost.sub.test.ex
@@ -141,6 +147,15 @@ checking domains
 calling r2 router
 r2 router called for xxx@ten-1.test.ex
   domain = ten-1.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = xxx
 domain = ten-1.test.ex
@@ -176,6 +191,9 @@ checking domains
 calling r2 router
 r2 router called for xxx@testsub.test.ex
   domain = testsub.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 r2 router declined for xxx@testsub.test.ex
 --------> r3 router <--------
 local_part=xxx domain=testsub.test.ex
@@ -202,6 +220,15 @@ checking domains
 calling r2 router
 r2 router called for xxx@testsub.sub.test.ex
   domain = testsub.sub.test.ex
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
+fresh-exec forking for fakens-search
+postfork: fakens-search
+fresh-exec forked for fakens-search: npppp
 queued for t1 transport: local_part = xxx
 domain = testsub.sub.test.ex
   errors_to=NULL
@@ -210,4 +237,4 @@ routed by r2 router
   envelope to: xxx@testsub.sub.test.ex
   transport: t1
   host testsub.sub.test.ex [V4NET.99.0.3]
->>>>>>>>>>>>>>>> Exim pid=pppp (main) terminating with rc=2 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>
