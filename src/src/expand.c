@@ -5335,8 +5335,9 @@ while (*s != 0)
 	uschar * item;
 	int sep = 0;
 
-	item = string_nextinlist(&list, &sep, NULL, 0);
-        if ((timeout = readconf_readtime(item, 0, FALSE)) < 0)
+	if (  !(item = string_nextinlist(&list, &sep, NULL, 0))
+	   || !*item
+	   || (timeout = readconf_readtime(item, 0, FALSE)) < 0)
           {
           expand_string_message = string_sprintf("bad time value %s", item);
           goto EXPAND_FAILED;

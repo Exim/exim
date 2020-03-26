@@ -156,6 +156,9 @@ JH/33 Fix the dsearch lookup to return an untainted result.  Previously the
       taint of the lookup key was maintained; we now regard the presence in the
       filesystem as sufficient validation.
 
+JH/34 Fix the readsocket expansion to not segfault when an empty "options"
+      argument is supplied.
+
 
 Exim version 4.93
 -----------------

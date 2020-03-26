@@ -102,3 +102,7 @@ exim -be
 10 >>${readsocket{inet:badloop:PORT_S}{QUERY-10\n}}<<
 11 >>${readsocket{inet:thisloop:PORT_S}{QUERY-11\n}{2s:shutdown=no}}<<
 ****
+#
+exim -be
+crash-regression-check >>${readsocket{inet:127.0.0.1:PORT_N}{}{}}<<
+****
