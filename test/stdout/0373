@@ -28,6 +28,8 @@
 > 11 >>ANSWER-11
 <<
 > 
+> Failed: bad time value NULL
+> 
 
 ******** SERVER ********
 Listening on TESTSUITE/test-socket ... 
