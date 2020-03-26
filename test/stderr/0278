@@ -104,9 +104,8 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -204,7 +203,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=CALLER_HOME current=CALLER_HOME
@@ -217,7 +216,6 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   maildir_use_size_file=no
   locking by lockfile fcntl 
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling CALLER@test.ex
 t1 transport returned OK for CALLER@test.ex
 post-process CALLER@test.ex (0)
@@ -297,7 +295,6 @@ r2 router called for unknown@test.ex
 test.ex in "*"? yes (matched "*")
 DNS lookup of test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -305,11 +302,9 @@ faking res_search(MX) response length as 65535
  writing neg-cache entry for test.ex-MX-xxxx, ttl 3000
 test.ex (MX resp) DNSSEC
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (A) gave NO_DATA
 returning DNS_NODATA

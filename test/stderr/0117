@@ -9,25 +9,18 @@ calling lookuphost router
 lookuphost router called for xxx@mxt9.test.ex
   domain = mxt9.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9.test.ex
@@ -51,25 +44,18 @@ calling lookuphost router
 lookuphost router called for xxx@mxt9a.test.ex
   domain = mxt9a.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9a.test.ex
@@ -93,25 +79,18 @@ calling lookuphost router
 lookuphost router called for xxx@mxt9b.test.ex
   domain = mxt9b.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 queued for <unset> transport: local_part = xxx
 domain = mxt9b.test.ex

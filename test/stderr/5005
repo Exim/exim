@@ -45,9 +45,8 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -118,7 +117,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to nofile <nofile@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -160,7 +159,6 @@ renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling nofile@test.ex
 t1 transport returned OK for nofile@test.ex
 post-process nofile@test.ex (0)
@@ -239,9 +237,8 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -311,7 +308,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -355,7 +352,6 @@ renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling userx@test.ex
 t1 transport returned OK for userx@test.ex
 post-process userx@test.ex (0)
@@ -434,9 +430,8 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaZ-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaZ-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -506,7 +501,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -545,7 +540,6 @@ maildir: time since "new" directory modified = 10s
 Exim quota exceeded for tmp/dddddddddd.HddddddPddddd.myhost.test.ex
 appendfile yields 1 with errno=-22 more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 t1 transport returned DEFER for userx@test.ex
 added retry item for T:userx@test.ex: errno=-22 more_errno=dd flags=0
 post-process userx@test.ex (1)
@@ -638,9 +632,8 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmbA-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmbA-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -718,7 +711,7 @@ retry record exists: age=ttt (max 1w)
  closed hints database and lockfile
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -744,7 +737,6 @@ maildir: time since "new" directory modified = 10s
 Exim quota exceeded for tmp/dddddddddd.HddddddPddddd.myhost.test.ex
 appendfile yields 1 with errno=-22 more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 t1 transport returned DEFER for userx@test.ex
 added retry item for T:userx@test.ex: errno=-22 more_errno=dd flags=0
 post-process userx@test.ex (1)

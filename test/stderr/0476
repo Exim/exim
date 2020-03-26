@@ -7,12 +7,13 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp
 set_process_info: pppp running queue: 10HmaX-0005vi-00-H
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
+set_process_info: pppp running queue: waiting for 10HmaX-0005vi-00 (pppp)
 set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid ppppp)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 qrun-delivery forking for transport
-postfork: transport
+qrun-delivery forked for transport: npppp
 set_process_info: pppp delivering 10HmaX-0005vi-00 using t1
 t1 transport entered
   userx@test.ex
@@ -54,16 +55,12 @@ H=127.0.0.1 [127.0.0.1] Remote host closed connection in response to RSET
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for userx@test.ex: result OK
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run t1 for userx@test.ex in subprocess)
-fresh-exec forked for qrun-delivery: npppp
-set_process_info: pppp running queue: waiting for 10HmaX-0005vi-00 (pppp)
-qrun-delivery forked for transport: npppp
 set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaX-0005vi-00
 LOG: MAIN
   ** userx@test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: 550 NO
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
 qrun-delivery forking for bounce-message
-postfork: bounce-message
 qrun-delivery forked for bounce-message: npppp
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
@@ -75,7 +72,6 @@ set_process_info: pppp accepting a local non-SMTP message from <>
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 bounce-message forking for local-accept-delivery
-postfork: local-accept-delivery
 bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -87,7 +83,7 @@ set_process_info: pppp delivering 10HmaZ-0005vi-00
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> CALLER@the.local.host.name <--------
 local-accept-delivery forking for transport
-postfork: transport
+local-accept-delivery forked for transport: npppp
 set_process_info: pppp delivering 10HmaZ-0005vi-00 using t1
 t1 transport entered
   CALLER@the.local.host.name
@@ -102,7 +98,6 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for CALLER@the.local.host.name: result DEFER
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
-local-accept-delivery forked for transport: npppp
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 added to list for 127.0.0.1
@@ -122,12 +117,13 @@ set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-0005vi-00-H
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
+set_process_info: pppp running queue: waiting for 10HmaY-0005vi-00 (pppp)
 set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid ppppp)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> usery@test.ex <--------
 qrun-delivery forking for transport
-postfork: transport
+qrun-delivery forked for transport: npppp
 set_process_info: pppp delivering 10HmaY-0005vi-00 using t1
 t1 transport entered
   usery@test.ex
@@ -141,9 +137,6 @@ updating wait-t1 database
 added to list for 127.0.0.1
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaY-0005vi-00 (just run t1 for usery@test.ex in subprocess)
-fresh-exec forked for qrun-delivery: npppp
-set_process_info: pppp running queue: waiting for 10HmaY-0005vi-00 (pppp)
-qrun-delivery forked for transport: npppp
 set_process_info: pppp delivering 10HmaY-0005vi-00: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaY-0005vi-00
 LOG: retry_defer MAIN

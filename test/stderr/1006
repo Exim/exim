@@ -4,42 +4,34 @@ admin user
 dropping to exim gid; retaining priv uid
 DNS lookup of mx46.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of mx46.test.ex (MX) succeeded
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 46.test.ex (AAAA) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 46.test.ex (A) succeeded
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 46.test.ex (AAAA) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 46.test.ex (A) succeeded
 DNS lookup of v6.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of v6.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
  writing neg-cache entry for v6.test.ex-MX-xxxx, ttl 3000
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of v6.test.ex (AAAA) succeeded
 DNS lookup of v6.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of v6.test.ex (A) gave NO_DATA
 returning DNS_NODATA
@@ -52,22 +44,18 @@ admin user
 dropping to exim gid; retaining priv uid
 DNS lookup of mx46.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of mx46.test.ex (MX) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 46.test.ex (A) succeeded
 DNS lookup of 46.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 46.test.ex (A) succeeded
 DNS lookup of v6.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of v6.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -75,7 +63,6 @@ faking res_search(MX) response length as 65535
  writing neg-cache entry for v6.test.ex-MX-xxxx, ttl 3000
 DNS lookup of v6.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of v6.test.ex (A) gave NO_DATA
 returning DNS_NODATA

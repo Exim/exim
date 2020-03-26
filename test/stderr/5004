@@ -47,9 +47,8 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -99,7 +98,7 @@ expanded: '# Exim filter
 save TESTSUITE/test-mail'
 search_tidyup called
 local-accept-delivery forking for router-interpret
-postfork: router-interpret
+local-accept-delivery forked for router-interpret: npppp
 changed uid/gid: r1 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 turned off address rewrite logging (not root or exim in this process)
@@ -108,7 +107,6 @@ Filter: start of processing
 Filter: end of processing
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
-local-accept-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t1
 r1 router generated TESTSUITE/test-mail
@@ -146,7 +144,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to TESTSUITE/test-mail <TESTSUITE/test-mail> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -169,7 +167,6 @@ renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling TESTSUITE/test-mail:userx@test.ex
 t1 transport returned OK for TESTSUITE/test-mail
 post-process TESTSUITE/test-mail (0)

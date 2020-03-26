@@ -1118,10 +1118,7 @@ if ((pid = fork()) == 0)
   DEBUG(D_any) debug_printf("postfork: %s\n", purpose);
   }
 else
-  {
-  testharness_pause_ms(100); /* let child work */
   DEBUG(D_any) debug_printf("%s forked for %s: %d\n", process_purpose, purpose, (int)pid);
-  }
 return pid;
 }
 

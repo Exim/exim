@@ -11,7 +11,6 @@ dropping to exim gid; retaining priv uid
  database lookup required for a=localhost.test.ex
  dnsdb key: localhost.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
  lookup yielded: 127.0.0.1
  search_open: dnsdb "NULL"
@@ -39,7 +38,6 @@ search_tidyup called
   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
   lookup yielded: 127.0.0.1
   search_open: dnsdb "NULL"
@@ -52,7 +50,6 @@ fresh-exec forked for fakens-search: npppp
   cached data found but past valid time;   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
   lookup yielded: 127.0.0.1
 LOG: MAIN

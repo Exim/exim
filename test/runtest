@@ -1049,6 +1049,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^(?:\s*\d+ )(exec .* -oPX)$/pppp $1/;
     s/^(?:\s*\d+ )(postfork: )/pppp $1/;
     s/ forked for [^:]+: \K\d+/npppp/;
+    next if /postfork: /;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.

@@ -17,7 +17,7 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp
 search_tidyup called
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="transport" partial=-1 affix=NULL starflags=0
@@ -32,7 +32,7 @@ postfork: qrun-delivery
 search_tidyup called
 search_tidyup called
 qrun-delivery forking for delivery-local
-postfork: delivery-local
+qrun-delivery forked for delivery-local: npppp
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="file" partial=-1 affix=NULL starflags=0
@@ -45,8 +45,6 @@ postfork: delivery-local
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: file
 search_tidyup called
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=r1 T=t1
 LOG: MAIN
@@ -55,7 +53,7 @@ search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="transport" partial=-1 affix=NULL starflags=0
@@ -70,7 +68,7 @@ postfork: qrun-delivery
 search_tidyup called
 search_tidyup called
 qrun-delivery forking for delivery-local
-postfork: delivery-local
+qrun-delivery forked for delivery-local: npppp
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="file" partial=-1 affix=NULL starflags=0
@@ -83,8 +81,6 @@ postfork: delivery-local
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: file
 search_tidyup called
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=r1 T=t1
 LOG: MAIN

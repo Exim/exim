@@ -33,7 +33,6 @@ lookuphost router called for userx@test.again.dns
 test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.again.dns (MX) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
@@ -94,7 +93,6 @@ lookuphost router called for abcd@ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -103,7 +101,6 @@ faking res_search(MX) response length as 65535
 ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -145,7 +142,6 @@ doing DNS lookup
 test.again.dns in "*"? yes (matched "*")
 DNS lookup of test.again.dns (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.again.dns (A) gave TRY_AGAIN
 test.again.dns in dns_again_means_nonexist? no (option unset)
@@ -208,7 +204,6 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
 DNS lookup of ten-1.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -258,7 +253,6 @@ lookuphost router called for userx@test.fail.dns
 test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
@@ -318,7 +312,6 @@ lookuphost router called for abcd@ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -327,7 +320,6 @@ faking res_search(MX) response length as 65535
 ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -369,7 +361,6 @@ doing DNS lookup
 test.fail.dns in "*"? yes (matched "*")
 DNS lookup of test.fail.dns (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
@@ -431,7 +422,6 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
 DNS lookup of ten-1.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -481,7 +471,6 @@ lookuphost router called for userx@nonexist.test.ex
 nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of nonexist.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -544,7 +533,6 @@ lookuphost router called for abcd@ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -553,7 +541,6 @@ faking res_search(MX) response length as 65535
 ten-1.test.ex (MX resp) DNSSEC
 DNS lookup of ten-1.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -595,7 +582,6 @@ doing DNS lookup
 nonexist.test.ex in "*"? yes (matched "*")
 DNS lookup of nonexist.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of nonexist.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -658,7 +644,6 @@ ten-1.test.ex in "*"? yes (matched "*")
 DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
 DNS lookup of ten-1.test.ex (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -698,7 +683,6 @@ srv router called for srv@test.again.dns
 test.again.dns in "*"? yes (matched "*")
 DNS lookup of _smtp._tcp.test.again.dns (SRV) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of _smtp._tcp.test.again.dns (SRV) gave TRY_AGAIN
 _smtp._tcp.test.again.dns in dns_again_means_nonexist? no (option unset)
@@ -723,7 +707,6 @@ srv router called for srv@test.fail.dns
 test.fail.dns in "*"? yes (matched "*")
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of _smtp._tcp.test.fail.dns (SRV) gave NO_RECOVERY
 returning DNS_FAIL
@@ -732,7 +715,6 @@ test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in srv_fail_domains)
 DNS lookup of test.fail.dns (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.fail.dns (MX) gave NO_RECOVERY
 returning DNS_FAIL
@@ -741,7 +723,6 @@ test.fail.dns in "test.fail.dns"? yes (matched "test.fail.dns")
 DNS_FAIL treated as DNS_NODATA (domain in mx_fail_domains)
 DNS lookup of test.fail.dns (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of test.fail.dns (A) gave NO_RECOVERY
 returning DNS_FAIL
@@ -785,7 +766,6 @@ lookuphost router called for userx@nonexist.example.com
 nonexist.example.com in "*"? yes (matched "*")
 DNS lookup of nonexist.example.com (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -832,7 +812,6 @@ nonexist.example.com in "*"? yes (matched "*")
 DNS lookup of nonexist.example.com-MX: cached value DNS_NOMATCH past valid time
 DNS lookup of nonexist.example.com (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH

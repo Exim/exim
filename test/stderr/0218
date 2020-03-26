@@ -8,33 +8,29 @@ LOG: queue_run MAIN
 queue running combined directories
 looking in TESTSUITE/spool//input
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
-T: send_to_server  (ACL)
-fresh-exec forked for qrun-delivery: npppp
 qrun-delivery forked for transport: npppp
+T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmaY-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
-T: send_to_server  (ACL)
-fresh-exec forked for qrun-delivery: npppp
 qrun-delivery forked for transport: npppp
+T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmaX-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
+qrun-delivery forked for transport: npppp
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 220 Server ready
@@ -50,12 +46,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK
 transport forking for continued-transport-interproc
-postfork: continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-postfork: continued-transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forking for continued-transport
 continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
@@ -71,12 +63,11 @@ dropping to exim gid; retaining priv uid
 delivering 10HmaY-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 continued-transport forking for transport
-postfork: transport
+continued-transport forked for transport: npppp
 T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP>> RCPT TO:<b@test.ex>
   SMTP>> DATA
-continued-transport forked for transport: npppp
   SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP<< 351 Send more
@@ -102,33 +93,29 @@ LOG: queue_run MAIN
 queue running combined directories
 looking in TESTSUITE/spool//input
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
-T: send_to_server  (ACL)
-fresh-exec forked for qrun-delivery: npppp
 qrun-delivery forked for transport: npppp
+T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
-T: send_to_server  (ACL)
-fresh-exec forked for qrun-delivery: npppp
 qrun-delivery forked for transport: npppp
+T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
+qrun-delivery forked for transport: npppp
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 220 Server ready
@@ -143,12 +130,9 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 503 Unexpected DATA
   SMTP>> QUIT
   SMTP(close)>>
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 LOG: MAIN
   ** a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 550 NO
 qrun-delivery forking for bounce-message
-postfork: bounce-message
 qrun-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -161,17 +145,15 @@ LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
+qrun-delivery forked for transport: npppp
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 LOG: MAIN
   == b@test.ex R=client T=send_to_server defer (dd): Connection refused
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -185,17 +167,15 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
-T: send_to_server  (ACL)
-fresh-exec forked for qrun-delivery: npppp
 qrun-delivery forked for transport: npppp
+T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmbB-0005vi-00 (queue run pid ppppp)
 R: bounce  (ACL)
 LOG: MAIN
@@ -205,23 +185,20 @@ LOG: MAIN
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forked for qrun-delivery: npppp
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
-T: send_to_server  (ACL)
-fresh-exec forked for qrun-delivery: npppp
 qrun-delivery forked for transport: npppp
+T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 delivering 10HmbA-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 qrun-delivery forking for transport
-postfork: transport
+qrun-delivery forked for transport: npppp
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP<< 220 Server ready
@@ -237,18 +214,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> RSET
   SMTP<< 250 OK
 transport forking for continued-transport-interproc
-postfork: continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-postfork: continued-transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 transport forked for continued-transport-interproc: npppp
+continued-transport-interproc forking for continued-transport
 continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   ** b@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<b@test.ex>: 550 Unknown
 qrun-delivery forking for bounce-message
-postfork: bounce-message
 qrun-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -268,12 +240,11 @@ dropping to exim gid; retaining priv uid
 delivering 10HmbC-0005vi-00 (queue run pid ppppp)
 R: client  (ACL)
 continued-transport forking for transport
-postfork: transport
+continued-transport forked for transport: npppp
 T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
   SMTP>> RCPT TO:<c@test.ex>
   SMTP>> DATA
-continued-transport forked for transport: npppp
   SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP<< 351 OK

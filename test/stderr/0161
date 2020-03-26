@@ -16,25 +16,18 @@ calling lookuphost router
 lookuphost router called for xx@mxt6.test.ex
   domain = mxt6.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 set transport remote_smtp
 queued for remote_smtp transport: local_part = xx
@@ -64,13 +57,10 @@ calling lookuphost router
 lookuphost router called for myhost.test.ex@mxt1.test.ex
   domain = mxt1.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for myhost.test.ex@mxt1.test.ex
@@ -93,10 +83,8 @@ set transport remote_smtp
 finding IP address for myhost.test.ex
 calling host_find_byname
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 queued for remote_smtp transport: local_part = myhost.test.ex
 domain = mxt1.test.ex
@@ -125,13 +113,10 @@ calling lookuphost router
 lookuphost router called for xx@mxt1.test.ex
   domain = mxt1.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for xx@mxt1.test.ex
@@ -154,10 +139,8 @@ set transport remote_smtp
 finding IP address for xx
 calling host_find_byname
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 self router passed for xx@mxt1.test.ex
 --------> self2 router <--------
@@ -174,10 +157,8 @@ set transport remote_smtp
 finding IP address for myhost.test.ex
 calling host_find_byname
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 queued for remote_smtp transport: local_part = xx
 domain = mxt1.test.ex
@@ -206,7 +187,6 @@ calling lookuphost router
 lookuphost router called for xx@not.exist
   domain = not.exist
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 lookuphost router declined for xx@not.exist
 "more" is false: skipping remaining routers
@@ -226,13 +206,10 @@ calling failuphost router
 failuphost router called for ff@mxt1.test.ex
   domain = mxt1.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 lowest numbered MX record points to local host: mxt1.test.ex: address failed (self = fail)
 failuphost router forced address failure
@@ -255,13 +232,10 @@ calling lookuphost router
 lookuphost router called for fff@mxt1.test.ex
   domain = mxt1.test.ex
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
 lookuphost router passed for fff@mxt1.test.ex
@@ -280,10 +254,8 @@ set transport remote_smtp
 finding IP address for fff
 calling host_find_byname
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 fail router forced address failure
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=2 >>>>>>>>>>>>>>>>

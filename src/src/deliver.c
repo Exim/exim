@@ -7913,6 +7913,10 @@ wording. */
       (void)fclose(fp);
       rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
 
+      /* In the test harness, let the child do it's thing first */
+
+      testharness_pause_ms(500);
+
       /* If the process failed, there was some disaster in setting up the
       error message. Unless the message is very old, ensure that addr_defer
       is non-null, which will have the effect of leaving the message on the
@@ -8574,12 +8578,12 @@ if (cutthrough.cctx.sock >= 0 && cutthrough.callout_hold_only)
       goto fail;
 
     where = US"fork";
-    testharness_pause_ms(150);
     if ((pid = exim_fork(US"tls-proxy-interproc")) < 0)
       goto fail;
 
     if (pid == 0)	/* child: will fork again to totally disconnect */
       {
+      testharness_pause_ms(100); /* let parent debug out */
       smtp_proxy_tls(cutthrough.cctx.tls_ctx, big_buffer, big_buffer_size,
 		      pfd, 5*60);
       /* does not return */

@@ -5,7 +5,6 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
 fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -19,7 +18,6 @@ system filter returned 1
 LOG: MAIN
   ** userx@test.ex R=r1: forced fail
 local-accept-delivery forking for bounce-message
-postfork: bounce-message
 local-accept-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -28,7 +26,6 @@ admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 bounce-message forking for local-accept-delivery
-postfork: local-accept-delivery
 bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -56,13 +53,12 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 fresh-exec forking for qrun-delivery
-postfork: qrun-delivery
+fresh-exec forked for qrun-delivery: npppp
 LOG: MAIN
   cancelled by timeout_frozen_after
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

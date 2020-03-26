@@ -17,7 +17,6 @@ host in host_lookup? yes (matched "+lookup_hosts")
 looking up host name for V4NET.2.3.4
 DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -98,7 +97,6 @@ host in host_lookup? yes (end of list)
 looking up host name for V4NET.10.11.12
 DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -146,7 +144,6 @@ host in host_lookup? yes (end of list)
 looking up host name for V4NET.1.1.1
 DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -194,7 +191,6 @@ host in host_lookup? yes (end of list)
 looking up host name for V4NET.2.2.2
 DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
 returning DNS_NOMATCH

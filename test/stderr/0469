@@ -21,12 +21,10 @@ r1 router called for x@mxt1c.test.ex
 mxt1c.test.ex in "*"? yes (matched "*")
 DNS lookup of mxt1c.test.ex (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of mxt1c.test.ex (MX) succeeded
 DNS lookup of dontqualify (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of dontqualify (A) gave NO_DATA
 returning DNS_NODATA

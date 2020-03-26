@@ -40,7 +40,6 @@ check hosts = +ignore_unknown : *.$sender_address_domain : $sender_address_domai
  dnsdb key: cioce.test.again.dns
 DNS lookup of cioce.test.again.dns (MX) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of cioce.test.again.dns (MX) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
@@ -52,13 +51,11 @@ sender host name required, to match against *.cioce.test.again.dns
 looking up host name for ip4.ip4.ip4.ip4
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of ip4-reverse.in-addr.arpa (PTR) succeeded
 IP address lookup yielded "the.local.host.name"
 DNS lookup of the.local.host.name (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of the.local.host.name (A) succeeded
 local host found for non-MX address
@@ -71,7 +68,6 @@ sender_rcvhost = the.local.host.name ([ip4.ip4.ip4.ip4])
 using host_fake_gethostbyname for cioce.test.again.dns (IPv4)
 DNS lookup of cioce.test.again.dns (A) using fakens
 fresh-exec forking for fakens-search
-postfork: fakens-search
 fresh-exec forked for fakens-search: npppp
 DNS lookup of cioce.test.again.dns (A) gave TRY_AGAIN
 cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")

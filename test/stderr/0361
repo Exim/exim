@@ -51,9 +51,8 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -N -odi -Mc 10HmaY-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -N -odi -Mc 10HmaY-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -102,7 +101,6 @@ r1 router called for kilos@recurse.test.ex
 recurse.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex (MX) using fakens
 local-accept-delivery forking for fakens-search
-postfork: fakens-search
 local-accept-delivery forked for fakens-search: npppp
 DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
@@ -112,7 +110,6 @@ r1 router widened recurse.test.ex to recurse.test.ex.test.ex
 recurse.test.ex.test.ex in "*"? yes (matched "*")
 DNS lookup of recurse.test.ex.test.ex (MX) using fakens
 local-accept-delivery forking for fakens-search
-postfork: fakens-search
 local-accept-delivery forked for fakens-search: npppp
 DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
@@ -120,11 +117,9 @@ faking res_search(MX) response length as 65535
  writing neg-cache entry for recurse.test.ex.test.ex-MX-xxxx, ttl 3000
 recurse.test.ex.test.ex (MX resp) DNSSEC
 local-accept-delivery forking for fakens-search
-postfork: fakens-search
 local-accept-delivery forked for fakens-search: npppp
 DNS lookup of recurse.test.ex.test.ex (A) using fakens
 local-accept-delivery forking for fakens-search
-postfork: fakens-search
 local-accept-delivery forked for fakens-search: npppp
 DNS lookup of recurse.test.ex.test.ex (A) succeeded
 fully qualified name = recurse.test.ex.test.ex
@@ -231,7 +226,7 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
+local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to kilos <kilos@recurse.test.ex.test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -245,7 +240,6 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   locking by lockfile fcntl 
 *** delivery by t2 transport bypassed by -N option
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling kilos@recurse.test.ex.test.ex/t2
 t2 transport returned OK for kilos@recurse.test.ex.test.ex
 post-process kilos@recurse.test.ex.test.ex (0)

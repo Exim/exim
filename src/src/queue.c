@@ -652,6 +652,7 @@ single_item_retry:
     if ((pid = exim_fork(US"qrun-delivery")) == 0)
       {
       int rc;
+      testharness_pause_ms(100);
       (void)close(pfd[pipe_read]);
       rc = deliver_message(fq->text, force_delivery, FALSE);
       exim_underbar_exit(rc == DELIVER_NOT_ATTEMPTED
