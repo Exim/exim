@@ -2480,7 +2480,7 @@ This is inconsistent with the need to verify the OCSP proof of the server cert.
 #endif
 	}
 
-      /* If a certificate file is empty, the next function fails with an
+      /* If a certificate file is empty, the load function fails with an
       unhelpful error message. If we skip it, we get the correct behaviour (no
       certificates are recognized, but the error message is still misleading (it
       says no certificate was supplied).  But this is better. */
@@ -2489,9 +2489,9 @@ This is inconsistent with the need to verify the OCSP proof of the server cert.
          && !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
 	return tls_error(US"SSL_CTX_load_verify_locations", host, NULL, errstr);
 
-      /* Load the list of CAs for which we will accept certs, for sending
-      to the client.  This is only for the one-file tls_verify_certificates
-      variant.
+      /* On the server load the list of CAs for which we will accept certs, for
+      sending to the client.  This is only for the one-file
+      tls_verify_certificates variant.
       If a list isn't loaded into the server, but some verify locations are set,
       the server end appears to make a wildcard request for client certs.
       Meanwhile, the client library as default behaviour *ignores* the list
@@ -2503,7 +2503,7 @@ This is inconsistent with the need to verify the OCSP proof of the server cert.
 	{
 	STACK_OF(X509_NAME) * names = SSL_load_client_CA_file(CS file);
 
-	SSL_CTX_set_client_CA_list(sctx, names);
+	if (!host) SSL_CTX_set_client_CA_list(sctx, names);
 	DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n",
 				    sk_X509_NAME_num(names));
 	}
