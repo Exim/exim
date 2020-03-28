@@ -1105,6 +1105,7 @@ return NULL;
 }
 
 /******************************************************************************/
+# if !defined(COMPILE_UTILITY)
 /* Process manipulation */
 
 static inline pid_t
@@ -1142,6 +1143,7 @@ child_open(uschar **argv, uschar **envp, int newumask, int *infdptr,
   outfdptr, make_leader, purpose);
 }
 
+# endif	/* !COMPILE_UTILITY */
 
 /******************************************************************************/
 #endif	/* !MACRO_PREDEF */
