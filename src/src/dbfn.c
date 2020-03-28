@@ -194,27 +194,29 @@ but creation of the database file failed. */
 
 if (created && geteuid() == root_uid)
   {
-  DIR *dd;
-  struct dirent *ent;
+  DIR * dd;
   uschar *lastname = Ustrrchr(filename, '/') + 1;
   int namelen = Ustrlen(name);
 
   *lastname = 0;
-  dd = opendir(CS filename);
 
-  while ((ent = readdir(dd)))
-    if (Ustrncmp(ent->d_name, name, namelen) == 0)
-      {
-      struct stat statbuf;
-      /* Filenames from readdir() are trusted, so use a taint-nonchecking copy */
-      strcpy(CS lastname, CCS ent->d_name);
-      if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
-        {
-        DEBUG(D_hints_lookup) debug_printf_indent("ensuring %s is owned by exim\n", filename);
-        if (exim_chown(filename, exim_uid, exim_gid))
-          DEBUG(D_hints_lookup) debug_printf_indent("failed setting %s to owned by exim\n", filename);
-        }
-      }
+  if ((dd = exim_opendir(filename)))
+    for (struct dirent *ent; ent = readdir(dd); )
+      if (Ustrncmp(ent->d_name, name, namelen) == 0)
+	{
+	struct stat statbuf;
+	/* Filenames from readdir() are trusted,
+	so use a taint-nonchecking copy */
+	strcpy(CS lastname, CCS ent->d_name);
+	if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
+	  {
+	  DEBUG(D_hints_lookup)
+	    debug_printf_indent("ensuring %s is owned by exim\n", filename);
+	  if (exim_chown(filename, exim_uid, exim_gid))
+	    DEBUG(D_hints_lookup)
+	      debug_printf_indent("failed setting %s to owned by exim\n", filename);
+	  }
+	}
 
   closedir(dd);
   }

@@ -6,4 +6,6 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
+acl_not_smtp = 		accept set acl_m0 =	${lookup {key} dsearch {DIR/$recipients}}
+
 # End

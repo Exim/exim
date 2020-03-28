@@ -3445,27 +3445,24 @@ if (exec && filter->vacation_directory != NULL && filter_test == FTEST_NONE)
 
   /* clean up old vacation log databases */
 
-  oncelogdir=opendir(CS filter->vacation_directory);
-
-  if (oncelogdir ==(DIR*)0 && errno != ENOENT)
+  if (  !(oncelogdir = exim_opendir(filter->vacation_directory))
+     && errno != ENOENT)
     {
-    filter->errmsg=CUS "unable to open vacation directory";
+    filter->errmsg = CUS "unable to open vacation directory";
     return -1;
     }
 
-  if (oncelogdir != NULL)
+  if (oncelogdir)
     {
     time(&now);
 
-    while ((oncelog=readdir(oncelogdir))!=(struct dirent*)0)
-      {
+    while ((oncelog = readdir(oncelogdir)))
       if (strlen(oncelog->d_name)==32)
         {
-        uschar *s=string_sprintf("%s/%s",filter->vacation_directory,oncelog->d_name);
+        uschar *s = string_sprintf("%s/%s",filter->vacation_directory,oncelog->d_name);
         if (Ustat(s,&properties)==0 && (properties.st_mtime+VACATION_MAX_DAYS*86400)<now)
           Uunlink(s);
         }
-      }
     closedir(oncelogdir);
     }
   }

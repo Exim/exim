@@ -463,7 +463,8 @@ code knows to look for them. We count the entries to set the value for the
 queue stripchart, and set up data for the queue display window if the "full"
 option is given. */
 
-void scan_spool_input(int full)
+void
+scan_spool_input(int full)
 {
 int i;
 int subptr;
@@ -471,8 +472,6 @@ int subdir_max = 1;
 int count = 0;
 int indexptr = 1;
 queue_item *p;
-struct dirent *ent;
-DIR *dd;
 uschar input_dir[256];
 uschar subdirs[64];
 
@@ -490,16 +489,18 @@ there is progress, output a dot for each one to the standard output. */
 for (i = 0; i < subdir_max; i++)
   {
   int subdirchar = subdirs[i];      /* 0 for main directory */
+  DIR *dd;
+  struct dirent *ent;
+
   if (subdirchar != 0)
     {
     input_dir[subptr] = '/';
     input_dir[subptr+1] = subdirchar;
     }
 
-  dd = opendir(CS input_dir);
-  if (dd == NULL) continue;
+  if (!(dd = exim_opendir(input_dir))) continue;
 
-  while ((ent = readdir(dd)) != NULL)
+  while ((ent = readdir(dd)))
     {
     uschar *name = US ent->d_name;
     int len = Ustrlen(name);
@@ -543,22 +544,23 @@ removing items, the total that we are comparing against isn't actually correct,
 but in a long queue it won't make much difference, and in a short queue it
 doesn't matter anyway!*/
 
-p = queue_index[0];
-while (p != NULL)
-  {
+for (p = queue_index[0]; p; )
   if (!p->seen)
     {
-    queue_item *next = p->next;
-    if (p->prev == NULL) queue_index[0] = next;
-      else p->prev->next = next;
-    if (next == NULL)
+    queue_item * next = p->next;
+    if (p->prev)
+      p->prev->next = next;
+    else
+      queue_index[0] = next;
+    if (next)
+      next->prev = p->prev;
+    else
       {
       int i;
-      queue_item *q = queue_index[queue_index_size-1];
+      queue_item * q = queue_index[queue_index_size-1];
       for (i = queue_index_size - 1; i >= 0; i--)
         if (queue_index[i] == q) queue_index[i] = p->prev;
       }
-    else next->prev = p->prev;
     clean_up(p);
     queue_total--;
     p = next;
@@ -566,22 +568,17 @@ while (p != NULL)
   else
     {
     if (++count > (queue_total * indexptr)/(queue_index_size-1))
-      {
       queue_index[indexptr++] = p;
-      }
     p->seen = FALSE;  /* for next time */
     p = p->next;
     }
-  }
 
 /* If a lot of messages have been removed at the bottom, we may not
 have got the index all filled in yet. Make sure all the pointers
 are legal. */
 
 while (indexptr < queue_index_size - 1)
-  {
   queue_index[indexptr++] = queue_index[queue_index_size-1];
-  }
 }
 
 

@@ -253,15 +253,14 @@ maildir_compute_size(uschar *path, int *filecount, time_t *latest,
 {
 DIR *dir;
 off_t sum = 0;
-struct dirent *ent;
-struct stat statbuf;
 
-if (!(dir = opendir(CS path)))
+if (!(dir = exim_opendir(path)))
   return 0;
 
-while ((ent = readdir(dir)))
+for (struct dirent *ent; ent = readdir(dir); )
   {
   uschar * s, * name = US ent->d_name;
+  struct stat statbuf;
 
   if (Ustrcmp(name, ".") == 0 || Ustrcmp(name, "..") == 0) continue;
 

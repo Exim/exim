@@ -1,0 +1,23 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 F=<CALLER@myhost.test.ex> rejected by non-SMTP ACL: failed to expand ACL string "accept set acl_m0 =	${lookup {key} dsearch {TESTSUITE/$recipients}}": NULL
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <tainted@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for tainted@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmaY-0005vi-00 F=<> rejected by non-SMTP ACL: failed to expand ACL string "accept set acl_m0 =	${lookup {key} dsearch {TESTSUITE/$recipients}}": NULL
+Envelope-from: <>
+Envelope-to: <CALLER@myhost.test.ex>
+P Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  Auto-Submitted: auto-replied
+F From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+T To: CALLER@myhost.test.ex
+  References: <E10HmaX-0005vi-00@myhost.test.ex>
+  Subject: Mail failure - rejected by local scanning code
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000

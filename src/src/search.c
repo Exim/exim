@@ -335,6 +335,13 @@ lookup_info *lk = lookup_list[search_type];
 uschar keybuffer[256];
 int old_pool = store_pool;
 
+if (filename && is_tainted(filename))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Tainted filename for search: '%s'", filename);
+  return NULL;
+  }
+
 /* Change to the search store pool and remember our reset point */
 
 store_pool = POOL_SEARCH;
@@ -353,8 +360,7 @@ sprintf(CS keybuffer, "%c%.254s", search_type + '0',
 
 if ((t = tree_search(search_tree, keybuffer)))
   {
-  c = (search_cache *)(t->data.ptr);
-  if (c->handle)
+  if ((c = (search_cache *)t->data.ptr)->handle)
     {
     DEBUG(D_lookup) debug_printf_indent("  cached open\n");
     store_pool = old_pool;
@@ -370,7 +376,6 @@ we are holding open in the cache. If the limit is reached, close the least
 recently used one. */
 
 if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
-  {
   if (!open_bot)
     log_write(0, LOG_MAIN|LOG_PANIC, "too many lookups open, but can't find "
       "one to close");
@@ -387,7 +392,6 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
     c->handle = NULL;
     open_filecount--;
     }
-  }
 
 /* If opening is successful, call the file-checking function if there is one,
 and if all is still well, enter the open database into the tree. */

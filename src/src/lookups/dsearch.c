@@ -27,7 +27,7 @@ actually scanning through the list of files. */
 static void *
 dsearch_open(uschar *dirname, uschar **errmsg)
 {
-DIR *dp = opendir(CS dirname);
+DIR * dp = exim_opendir(dirname);
 if (!dp)
   {
   int save_errno = errno;

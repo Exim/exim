@@ -1453,7 +1453,7 @@ if (rc == OK)
   struct dirent * entry;
   DIR * tempdir;
 
-  for (tempdir = opendir(CS scandir); entry = readdir(tempdir); )
+  for (tempdir = exim_opendir(scandir); entry = readdir(tempdir); )
     if (strncmpic(US entry->d_name, US"__rfc822_", 9) == 0)
       {
       rfc822_file_path = string_sprintf("%s/%s", scandir, entry->d_name);

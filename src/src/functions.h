@@ -1066,7 +1066,7 @@ static inline int
 exim_open2(const char *pathname, int flags)
 {
 if (!is_tainted(pathname)) return open(pathname, flags);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
 errno = EACCES;
 return -1;
 }
@@ -1074,7 +1074,7 @@ static inline int
 exim_open(const char *pathname, int flags, mode_t mode)
 {
 if (!is_tainted(pathname)) return open(pathname, flags, mode);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
 errno = EACCES;
 return -1;
 }
@@ -1082,7 +1082,7 @@ static inline int
 exim_openat(int dirfd, const char *pathname, int flags)
 {
 if (!is_tainted(pathname)) return openat(dirfd, pathname, flags);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
 errno = EACCES;
 return -1;
 }
@@ -1090,7 +1090,7 @@ static inline int
 exim_openat4(int dirfd, const char *pathname, int flags, mode_t mode)
 {
 if (!is_tainted(pathname)) return openat(dirfd, pathname, flags, mode);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
 errno = EACCES;
 return -1;
 }
@@ -1099,7 +1099,16 @@ static inline FILE *
 exim_fopen(const char *pathname, const char *mode)
 {
 if (!is_tainted(pathname)) return fopen(pathname, mode);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'\n", pathname);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
+errno = EACCES;
+return NULL;
+}
+
+static inline DIR *
+exim_opendir(const uschar * name)
+{
+if (!is_tainted(name)) return opendir(CCS name);
+log_write(0, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", name);
 errno = EACCES;
 return NULL;
 }

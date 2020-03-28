@@ -211,12 +211,11 @@ malware_ok = 0;
 if (spool_mbox_ok && !f.no_mbox_unspool)
   {
   uschar *file_path;
-  struct dirent *entry;
   DIR *tempdir;
   rmark reset_point = store_mark();
   uschar * mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
 
-  if (!(tempdir = opendir(CS mbox_path)))
+  if (!(tempdir = exim_opendir(mbox_path)))
     {
     debug_printf("Unable to opendir(%s): %s\n", mbox_path, strerror(errno));
     /* Just in case we still can: */
@@ -224,7 +223,7 @@ if (spool_mbox_ok && !f.no_mbox_unspool)
     return;
     }
   /* loop thru dir & delete entries */
-  while((entry = readdir(tempdir)))
+  for (struct dirent *entry; entry = readdir(tempdir); )
     {
     uschar *name = US entry->d_name;
     int dummy;

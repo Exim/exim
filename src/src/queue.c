@@ -125,8 +125,6 @@ int resetflags = -1;
 int subptr;
 queue_filename *yield = NULL;
 queue_filename *last = NULL;
-struct dirent *ent;
-DIR *dd;
 uschar buffer[256];
 queue_filename *root[LOG2_MAXNODES];
 
@@ -171,6 +169,7 @@ for (; i <= *subcount; i++)
   {
   int count = 0;
   int subdirchar = subdirs[i];      /* 0 for main directory */
+  DIR *dd;
 
   if (subdirchar != 0)
     {
@@ -179,12 +178,12 @@ for (; i <= *subcount; i++)
     }
 
   DEBUG(D_queue_run) debug_printf("looking in %s\n", buffer);
-  if (!(dd = opendir(CS buffer)))
+  if (!(dd = exim_opendir(buffer)))
     continue;
 
   /* Now scan the directory. */
 
-  while ((ent = readdir(dd)))
+  for (struct dirent *ent; ent = readdir(dd); )
     {
     uschar *name = US ent->d_name;
     int len = Ustrlen(name);

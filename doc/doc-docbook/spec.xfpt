@@ -6675,6 +6675,10 @@ Two different types of data lookup are implemented:
 The &'single-key'& type requires the specification of a file in which to look,
 and a single key to search for. The key must be a non-empty string for the
 lookup to succeed. The lookup type determines how the file is searched.
+.new
+.cindex "tainted data" "single-key lookups"
+The file string may not be tainted
+.wen
 .next
 .cindex "query-style lookup" "definition of"
 The &'query-style'& type accepts a generalized database query. No particular

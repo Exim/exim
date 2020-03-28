@@ -714,14 +714,13 @@ check_dir_size(const uschar * dirname, int *countptr, const pcre *regex)
 DIR *dir;
 off_t sum = 0;
 int count = *countptr;
-struct dirent *ent;
-struct stat statbuf;
 
-if (!(dir = opendir(CS dirname))) return 0;
+if (!(dir = exim_opendir(dirname))) return 0;
 
-while ((ent = readdir(dir)))
+for (struct dirent *ent; ent = readdir(dir); )
   {
   uschar * path, * name = US ent->d_name;
+  struct stat statbuf;
 
   if (Ustrcmp(name, ".") == 0 || Ustrcmp(name, "..") == 0) continue;
 
