@@ -5,7 +5,6 @@ LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
 fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -31,15 +30,6 @@ checking domains
 calling r1 router
 r1 router called for y@ten-1.test.ex
   domain = ten-1.test.ex
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = y
 domain = ten-1.test.ex
@@ -61,9 +51,8 @@ After routing:
   Failed addresses:
   Deferred addresses:
 local-accept-delivery forking for transport
-postfork: transport
-locking TESTSUITE/spool/db/retry.lockfile
 local-accept-delivery forked for transport: npppp
+locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   *> x@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
@@ -78,7 +67,6 @@ admin user
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
 fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -107,15 +95,6 @@ local_part=y domain=ten-2.test.ex
 calling r2 router
 r2 router called for y@ten-2.test.ex
   domain = ten-2.test.ex
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = y
 domain = ten-2.test.ex
@@ -136,9 +115,6 @@ local_part=x domain=ten-2.test.ex
 calling r2 router
 r2 router called for x@ten-2.test.ex
   domain = ten-2.test.ex
-local-accept-delivery forking for fakens-search
-postfork: fakens-search
-local-accept-delivery forked for fakens-search: npppp
 queued for t1 transport: local_part = x
 domain = ten-2.test.ex
   errors_to=NULL
@@ -156,9 +132,8 @@ After routing:
   Failed addresses:
   Deferred addresses:
 local-accept-delivery forking for transport
-postfork: transport
-locking TESTSUITE/spool/db/retry.lockfile
 local-accept-delivery forked for transport: npppp
+locking TESTSUITE/spool/db/retry.lockfile
 LOG: MAIN
   *> x@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN

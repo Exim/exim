@@ -325,7 +325,6 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
@@ -410,7 +409,6 @@ close MYSQL connection: 127.0.0.1:1223/test/root
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
 changed uid/gid: local delivery to ph10 <ph10@myhost.test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/

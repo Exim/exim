@@ -20,30 +20,18 @@ dns router called for userx@alias-eximtesthost
   domain = alias-eximtesthost
 alias-eximtesthost in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost (MX) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of alias-eximtesthost (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (MX) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
 alias-eximtesthost (MX resp) DNSSEC
 DNS lookup of alias-eximtesthost (A) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of alias-eximtesthost (A) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (A) succeeded
 local host found for non-MX address
 fully qualified name = alias-eximtesthost.test.ex
@@ -62,22 +50,13 @@ dns router called for userx@alias-eximtesthost.test.ex
   domain = alias-eximtesthost.test.ex
 alias-eximtesthost.test.ex in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex-MX: using cached value DNS_NODATA
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (A) succeeded
 local host found for non-MX address
 fully qualified name = alias-eximtesthost.test.ex
@@ -116,30 +95,18 @@ dns router called for userx@alias-eximtesthost.test.ex
   domain = alias-eximtesthost.test.ex
 alias-eximtesthost.test.ex in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (MX) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
  writing neg-cache entry for eximtesthost.test.ex-MX-xxxx, ttl 3000
 alias-eximtesthost.test.ex (MX resp) DNSSEC
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-postfork: fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of eximtesthost.test.ex (A) succeeded
 local host found for non-MX address
 fully qualified name = alias-eximtesthost.test.ex

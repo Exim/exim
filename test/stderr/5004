@@ -47,7 +47,6 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-postfork: local-accept-delivery
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
@@ -99,7 +98,6 @@ expanded: '# Exim filter
 save TESTSUITE/test-mail'
 search_tidyup called
 local-accept-delivery forking for router-interpret
-postfork: router-interpret
 changed uid/gid: r1 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 turned off address rewrite logging (not root or exim in this process)
@@ -146,7 +144,6 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-postfork: delivery-local
 changed uid/gid: local delivery to TESTSUITE/test-mail <TESTSUITE/test-mail> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
