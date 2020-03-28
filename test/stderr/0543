@@ -35,10 +35,6 @@ After routing:
   Deferred addresses:
 qrun-delivery forking for transport
 qrun-delivery forked for transport: npppp
-transport forking for fakens-search
-transport forked for fakens-search: npppp
-transport forking for fakens-search
-transport forked for fakens-search: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-smtp.lockfile
 LOG: MAIN

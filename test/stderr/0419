@@ -24,20 +24,10 @@ dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
 mxt13.test.ex in "*"? yes (matched "*")
 DNS lookup of mxt13.test.ex (MX) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of mxt13.test.ex (MX) succeeded
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of other1.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of other1.test.ex (A) succeeded
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of other2.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of other2.test.ex (A) succeeded
 other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
 other1.test.ex in hosts_treat_as_local? no (end of list)

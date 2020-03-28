@@ -294,18 +294,12 @@ r2 router called for unknown@test.ex
   domain = test.ex
 test.ex in "*"? yes (matched "*")
 DNS lookup of test.ex (MX) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (MX) gave NO_DATA
 returning DNS_NODATA
 faking res_search(MX) response length as 65535
  writing neg-cache entry for test.ex-MX-xxxx, ttl 3000
 test.ex (MX resp) DNSSEC
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (A) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of test.ex (A) gave NO_DATA
 returning DNS_NODATA
 faking res_search(A) response length as 65535

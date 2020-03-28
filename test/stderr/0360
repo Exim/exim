@@ -105,15 +105,7 @@ checking domains
 calling r1 router
 r1 router called for unknown@recurse.test.ex
   domain = recurse.test.ex
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
 r1 router widened recurse.test.ex to recurse.test.ex.test.ex
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
 domain changed to recurse.test.ex.test.ex
 rewriting header lines
 re-routed to unknown@recurse.test.ex.test.ex
@@ -134,8 +126,6 @@ checking domains
 calling r1 router
 r1 router called for unknown@recurse.test.ex.test.ex
   domain = recurse.test.ex.test.ex
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = unknown
 domain = recurse.test.ex.test.ex

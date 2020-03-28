@@ -78,14 +78,10 @@ check dnslists = rbl.test.ex
 dnslists check: rbl.test.ex
 new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) succeeded
 dnslists: wrote cache entry, ttl=3
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 => that means V4NET.11.12.13 is listed at rbl.test.ex
 deny: condition test succeeded in ACL "check_recipient"
@@ -242,8 +238,6 @@ check dnslists = rbl.test.ex
 dnslists check: rbl.test.ex
 new DNS lookup for 99.99.99.V4NET.rbl.test.ex
 DNS lookup of 99.99.99.V4NET.rbl.test.ex (A) using fakens
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 DNS lookup of 99.99.99.V4NET.rbl.test.ex (A) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 faking res_search(A) response length as 65535

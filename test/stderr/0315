@@ -30,12 +30,6 @@ checking domains
 calling r1 router
 r1 router called for y@ten-1.test.ex
   domain = ten-1.test.ex
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = y
 domain = ten-1.test.ex
@@ -101,12 +95,6 @@ local_part=y domain=ten-2.test.ex
 calling r2 router
 r2 router called for y@ten-2.test.ex
   domain = ten-2.test.ex
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
 set transport t1
 queued for t1 transport: local_part = y
 domain = ten-2.test.ex
@@ -127,8 +115,6 @@ local_part=x domain=ten-2.test.ex
 calling r2 router
 r2 router called for x@ten-2.test.ex
   domain = ten-2.test.ex
-local-accept-delivery forking for fakens-search
-local-accept-delivery forked for fakens-search: npppp
 queued for t1 transport: local_part = x
 domain = ten-2.test.ex
   errors_to=NULL

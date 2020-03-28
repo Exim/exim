@@ -111,10 +111,6 @@ fresh-exec forked for queryprogram-cmd: npppp
 command wrote: ACCEPT transport = other_smtp hosts=ten-1.test.ex
 finding IP address for ten-1.test.ex
 doing DNS lookup
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
-fresh-exec forking for fakens-search
-fresh-exec forked for fakens-search: npppp
 queued for other_smtp transport: local_part = ACCEPT transport = other_smtp hosts=ten-1.test.ex
 domain = some.host
   errors_to=NULL
