@@ -5,11 +5,9 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
 qrun-delivery forking for transport
-qrun-delivery forked for transport: npppp
 t1 transport entered
   userx@myhost.test.ex
 using the transport's hosts: 127.0.0.1 : 127.0.0.1 : 127.0.0.1 : 127.0.0.1
@@ -24,6 +22,8 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for transport: npppp
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record
@@ -101,11 +101,9 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
 qrun-delivery forking for transport
-qrun-delivery forked for transport: npppp
 t1 transport entered
   userx@myhost.test.ex
 using the transport's hosts: 127.0.0.1 : 127.0.0.1 : 127.0.0.1 : 127.0.0.1
@@ -120,6 +118,8 @@ LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for transport: npppp
 getting address for 127.0.0.1
 checking status of 127.0.0.1
 no message retry record

@@ -44,12 +44,12 @@ calling userfilter router
 rda_interpret (file): 'TESTSUITE/aux-var/0037.f-user'
 expanded: 'TESTSUITE/aux-var/0037.f-user'
 local-accept-delivery forking for router-interpret
-local-accept-delivery forked for router-interpret: npppp
 ssss bytes read from TESTSUITE/aux-var/0037.f-user
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
 >>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 userfilter router generated userx@test.ex
   errors_to=NULL transport=NULL

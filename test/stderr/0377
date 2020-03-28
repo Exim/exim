@@ -325,7 +325,6 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -562,6 +561,7 @@ aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -572,7 +572,6 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -809,6 +808,7 @@ aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -51,8 +51,8 @@ After routing:
   Failed addresses:
   Deferred addresses:
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   *> x@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
@@ -132,8 +132,8 @@ After routing:
   Failed addresses:
   Deferred addresses:
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   *> x@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN

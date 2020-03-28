@@ -71,7 +71,6 @@ After routing:
 search_tidyup called
 search_tidyup called
 fresh-exec forking for transport
-fresh-exec forked for transport: npppp
 changed uid/gid: remote delivery to x@y with transport=smtp
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
@@ -103,6 +102,7 @@ added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
+fresh-exec forked for transport: npppp
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1]:PORT_S for x@y: result OK
 address match test: subject=*@127.0.0.1 pattern=*
 127.0.0.1 in "*"? yes (matched "*")
@@ -172,8 +172,8 @@ LOG: MAIN
  closed hints database and lockfile
 end of retry processing
 fresh-exec forking for bounce-message
-fresh-exec forked for bounce-message: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd bounce-message -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
+fresh-exec forked for bounce-message: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -229,8 +229,8 @@ LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 search_tidyup called
 bounce-message forking for local-accept-delivery
-bounce-message forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
+bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp

@@ -16,11 +16,11 @@ After routing:
   Failed addresses:
   Deferred addresses:
 fresh-exec forking for transport
-fresh-exec forked for transport: npppp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=-44 more_errno=dd,A flags=0
+fresh-exec forked for transport: npppp
 reading retry information for R:x@y:<CALLER@myhost.test.ex> from subprocess
   added retry item
 LOG: MAIN
@@ -58,7 +58,6 @@ After routing:
   Failed addresses:
   Deferred addresses:
 fresh-exec forking for transport
-fresh-exec forked for transport: npppp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
@@ -66,6 +65,7 @@ no message retry record
 added retry item for R:x@y:<CALLER@myhost.test.ex>: errno=dd more_errno=dd,A flags=1
 added retry item for R:x@y: errno=dd more_errno=dd,A flags=1
 locking TESTSUITE/spool/db/wait-smtp.lockfile
+fresh-exec forked for transport: npppp
 reading retry information for R:x@y from subprocess
   existing delete item dropped
   added delete item

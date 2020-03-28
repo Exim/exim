@@ -13,7 +13,6 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@myhost.test.ex <--------
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 appendfile transport entered
 appendfile: mode=600 notify_comsat=0 quota=52428800 warning=41%
   file=TESTSUITE/test-mail/userx format=unix
@@ -34,6 +33,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 quota = 52428800 threshold = 21495808 old size = sssss message size = sss
 appendfile yields 0 with errno=dd more_errno=dd
+local-accept-delivery forked for delivery-local: npppp
 appendfile transport returned OK for userx@myhost.test.ex
 added retry item for T:userx@myhost.test.ex: errno=dd more_errno=dd flags=1
 LOG: MAIN

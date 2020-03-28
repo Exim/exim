@@ -144,8 +144,8 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -201,7 +201,6 @@ mail text rhubarb
 seen finish'
 search_tidyup called
 local-accept-delivery forking for router-interpret
-local-accept-delivery forked for router-interpret: npppp
 changed uid/gid: r2 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 turned off address rewrite logging (not root or exim in this process)
@@ -210,6 +209,7 @@ Filter: start of processing
 Filter: end of processing
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t1
 r2 router generated >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...
@@ -247,7 +247,6 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ... <>sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -255,8 +254,9 @@ set_process_info: pppp **** string overflowed buffer ****
 t1 transport entered
 taking data from address
 delivery-local forking for autoreply
-delivery-local forked for autoreply: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd autoreply -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
+local-accept-delivery forked for delivery-local: npppp
+delivery-local forked for autoreply: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -1528,8 +1528,8 @@ LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
 search_tidyup called
 autoreply forking for local-accept-delivery
-autoreply forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
+autoreply forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -17992,7 +17992,6 @@ sender@test.ex is a duplicate address: discarded
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to sender <sender@test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -18017,6 +18016,7 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
+local-accept-delivery forked for delivery-local: npppp
 journalling sender@test.ex
 t2 transport returned OK for sender@test.ex
 post-process sender@test.ex (0)

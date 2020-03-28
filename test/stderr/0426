@@ -50,9 +50,9 @@ After routing:
   Failed addresses:
   Deferred addresses:
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   ** x@uppercase.test.ex R=r1 T=t1 H=uppercase.test.ex [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: 550 Unknown
 local-accept-delivery forking for bounce-message

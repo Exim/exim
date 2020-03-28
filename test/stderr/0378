@@ -44,11 +44,11 @@ pipe "/bin/sh -c exit"
 mail subject autoreply
 text "This is an autoreply"' (tainted)
 local-accept-delivery forking for router-interpret
-local-accept-delivery forked for router-interpret: npppp
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
 >>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+local-accept-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t3
 aaaa router generated >CALLER@myhost.test.ex
@@ -120,8 +120,8 @@ After routing:
     defer_aaaa@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 delivery-local forking for autoreply
+local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for autoreply: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
@@ -169,8 +169,8 @@ LOG: MAIN
   => >CALLER@myhost.test.ex <aaaa@myhost.test.ex> R=aaaa T=t3
 locking TESTSUITE/spool/db/retry.lockfile
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 delivery-local forking for pipe-tpt-cmd
+local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
 delivery-local forking for pipe-tpt-output
 delivery-local forked for pipe-tpt-output: npppp
@@ -192,7 +192,6 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
 fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -253,11 +252,12 @@ pipe "/bin/sh -c exit"
 mail subject autoreply
 text "This is an autoreply"' (tainted)
 qrun-delivery forking for router-interpret
-qrun-delivery forked for router-interpret: npppp
 data is an Exim filter program
 Filter: start of processing
 Filter: end of processing
 >>>>>>>>>>>>>>>> Exim pid=pppp (router-interpret) terminating with rc=0 >>>>>>>>>>>>>>>>
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for router-interpret: npppp
 rda_interpret: subprocess yield=0 error=NULL
 set transport t3
 aaaa router generated >CALLER@myhost.test.ex

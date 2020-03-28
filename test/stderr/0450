@@ -14,7 +14,6 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 t1 transport entered
   userx@test.ex
 using the transport's hosts: 127.0.0.1
@@ -26,6 +25,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1225: errno=dd more_errno=dd,A flags=2
+local-accept-delivery forked for transport: npppp
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 added to list for 127.0.0.1
@@ -41,11 +41,9 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
 fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 qrun-delivery forking for transport
-qrun-delivery forked for transport: npppp
 t1 transport entered
   userx@test.ex
 using the transport's hosts: 127.0.0.1
@@ -59,6 +57,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1226 ...  failed: Connection refused
 LOG: MAIN
   H=127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1226: errno=dd more_errno=dd,A flags=2
+fresh-exec forked for qrun-delivery: npppp
+qrun-delivery forked for transport: npppp
 all IP addresses skipped or deferred at least one address
 updating wait-t1 database
 already listed for 127.0.0.1

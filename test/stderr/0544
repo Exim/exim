@@ -128,11 +128,11 @@ trusted user
 admin user
 dropping to exim gid; retaining priv uid
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
  ╭considering: $domain
  ├──expanding: $domain
  ╰─────result: domain1.ex
             ╰──(tainted)
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   == userx@domain1.ex R=smarthost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: MAIN

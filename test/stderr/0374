@@ -375,8 +375,8 @@ LOG: MAIN
   => a1 <a1@myhost.test.ex> R=u1 T=ut1
 locking TESTSUITE/spool/db/retry.lockfile
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 delivery-local forking for pipe-tpt-cmd
+local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
 delivery-local forking for pipe-tpt-output
 delivery-local forked for pipe-tpt-output: npppp
@@ -385,8 +385,8 @@ LOG: MAIN
   ** b1@myhost.test.ex R=ut2 T=ut2: Child process of ut2 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
 locking TESTSUITE/spool/db/retry.lockfile
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 delivery-local forking for pipe-tpt-cmd
+local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
 delivery-local forking for pipe-tpt-output
 delivery-local forked for pipe-tpt-output: npppp
@@ -394,20 +394,20 @@ transport error EPIPE ignored
 LOG: MAIN
   == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-ut4.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   => d1@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1] C="250 OK"
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 locking TESTSUITE/spool/db/retry.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   == d2@myhost.test.ex R=ut4 T=ut4 defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: 450 soft error
 local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-ut4.lockfile
+local-accept-delivery forked for transport: npppp
 LOG: MAIN
   ** d3@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: 550 hard error
 locking TESTSUITE/spool/db/retry.lockfile

@@ -20,13 +20,13 @@ dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> |TESTSUITE/bin/iefbr14 <--------
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to |TESTSUITE/bin/iefbr14 <|TESTSUITE/bin/iefbr14> transport=t1
   uid=EXIM_UID gid=CALLER_GID pid=pppp
 t1 transport entered
 direct command:
   argv[0] = 'TESTSUITE/bin/iefbr14'
 delivery-local forking for pipe-tpt-cmd
+local-accept-delivery forked for delivery-local: npppp
 delivery-local forked for pipe-tpt-cmd: npppp
 delivery-local forking for pipe-tpt-output
 delivery-local forked for pipe-tpt-output: npppp

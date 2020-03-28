@@ -145,8 +145,8 @@ LOG: MAIN
 created log directory TESTSUITE/spool/log
 search_tidyup called
 fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
+fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -289,7 +289,6 @@ search_tidyup called
 no retry data available
 search_tidyup called
 local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -302,6 +301,7 @@ appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   maildir_use_size_file=no
   locking by lockfile fcntl 
 search_tidyup called
+local-accept-delivery forked for delivery-local: npppp
 journalling userx@test.ex
 t1 transport returned OK for userx@test.ex
 post-process userx@test.ex (0)
