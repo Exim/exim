@@ -546,8 +546,7 @@ if (lookup_list[pos])
   /* need to insert it, so move all the other items up
   (last slot is still empty, of course) */
 
-  memmove(&lookup_list[pos+1],
-	  &lookup_list[pos],
+  memmove(&lookup_list[pos+1], &lookup_list[pos],
 	  sizeof(lookup_info *) * (lookup_list_count-pos-1));
   }
 lookup_list[pos] = info;

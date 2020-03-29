@@ -40,7 +40,7 @@ json_free(void * p)
 /* See local README for interface description */
 
 static void *
-json_open(uschar *filename, uschar **errmsg)
+json_open(const uschar * filename, uschar ** errmsg)
 {
 FILE * f;
 
@@ -63,7 +63,7 @@ return f;
 *************************************************/
 
 static BOOL
-json_check(void *handle, uschar *filename, int modemask, uid_t *owners,
+json_check(void *handle, const uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
 return lf_check_file(fileno((FILE *)handle), filename, S_IFREG, modemask,
@@ -79,8 +79,8 @@ return lf_check_file(fileno((FILE *)handle), filename, S_IFREG, modemask,
 /* See local README for interface description */
 
 static int
-json_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+json_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 FILE * f = handle;
 json_t * j, * j0;

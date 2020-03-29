@@ -23,7 +23,7 @@ MDB_dbi db_dbi;
 *************************************************/
 
 static void *
-lmdb_open(uschar * filename, uschar ** errmsg)
+lmdb_open(const uschar * filename, uschar ** errmsg)
 {
 MDB_env * db_env = NULL;
 Lmdbstrct * lmdb_p;
@@ -74,7 +74,7 @@ bad:
 *************************************************/
 
 static int
-lmdb_find(void * handle, uschar * filename,
+lmdb_find(void * handle, const uschar * filename,
     const uschar * keystring, int length, uschar ** result, uschar ** errmsg,
     uint * do_cache)
 {

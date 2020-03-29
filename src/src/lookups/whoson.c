@@ -20,7 +20,7 @@
 /* See local README for interface description. */
 
 static void *
-whoson_open(uschar *filename, uschar **errmsg)
+whoson_open(const uschar * filename, uschar ** errmsg)
 {
 filename = filename;   /* Keep picky compilers happy */
 errmsg = errmsg;
@@ -35,8 +35,8 @@ return (void *)(1);    /* Just return something non-null */
 /* See local README for interface description. */
 
 static int
-whoson_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+whoson_find(void * handle, const uschar * filename, uschar * query, int length,
+  uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 uschar buffer[80];
 handle = handle;          /* Keep picky compilers happy */

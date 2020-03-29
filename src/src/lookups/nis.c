@@ -19,7 +19,7 @@
 the "nis" and "nis0" lookup types. */
 
 static void *
-nis_open(uschar *filename, uschar **errmsg)
+nis_open(const uschar * filename, uschar ** errmsg)
 {
 char *nis_domain;
 if (yp_get_default_domain(&nis_domain) != 0)
@@ -41,8 +41,8 @@ for nis0 because they are so short it isn't worth trying to use any common
 code. */
 
 static int
-nis_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+nis_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 int rc;
 uschar *nis_data;
@@ -67,8 +67,8 @@ return (rc == YPERR_KEY || rc == YPERR_MAP)? FAIL : DEFER;
 /* See local README for interface description. */
 
 static int
-nis0_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+nis0_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 int rc;
 uschar *nis_data;

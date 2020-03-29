@@ -438,12 +438,12 @@ extern void    route_init(void);
 extern void    route_show_supported(FILE *);
 extern void    route_tidyup(void);
 
-extern uschar *search_find(void *, uschar *, uschar *, int, const uschar *, int,
-                 int, int *);
+extern uschar *search_find(void *, const uschar *, uschar *, int,
+		 const uschar *, int, int, int *);
 extern int     search_findtype(const uschar *, int);
 extern int     search_findtype_partial(const uschar *, int *, const uschar **, int *,
                  int *);
-extern void   *search_open(uschar *, int, int, uid_t *, gid_t *);
+extern void   *search_open(const uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(hctx *, const uschar *, int, uschar *);

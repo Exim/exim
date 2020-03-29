@@ -28,7 +28,7 @@ static redis_connection *redis_connections = NULL;
 
 
 static void *
-redis_open(uschar *filename, uschar **errmsg)
+redis_open(const uschar * filename, uschar ** errmsg)
 {
 return (void *)(1);
 }
@@ -374,10 +374,10 @@ else
  */
 
 static int
-redis_find(void *handle __attribute__((unused)),
-  uschar *filename __attribute__((unused)),
-  const uschar *command, int length, uschar **result, uschar **errmsg,
-  uint *do_cache)
+redis_find(void * handle __attribute__((unused)),
+  const uschar * filename __attribute__((unused)),
+  const uschar * command, int length, uschar ** result, uschar ** errmsg,
+  uint * do_cache)
 {
 return lf_sqlperform(US"Redis", US"redis_servers", redis_servers, command,
   result, errmsg, do_cache, perform_redis_search);

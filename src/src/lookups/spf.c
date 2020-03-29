@@ -35,7 +35,7 @@ extern SPF_dns_server_t * SPF_dns_exim_new(int);
 
 
 static void *
-spf_open(uschar *filename, uschar **errmsg)
+spf_open(const uschar * filename, uschar ** errmsg)
 {
 SPF_dns_server_t * dc;
 SPF_server_t *spf_server = NULL;
@@ -64,8 +64,8 @@ if (spf_server) SPF_server_free(spf_server);
 }
 
 static int
-spf_find(void *handle, uschar *filename, const uschar *keystring, int key_len,
-             uschar **result, uschar **errmsg, uint *do_cache)
+spf_find(void * handle, const uschar * filename, const uschar * keystring,
+  int key_len, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 SPF_server_t *spf_server = handle;
 SPF_request_t *spf_request;

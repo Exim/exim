@@ -16,7 +16,7 @@
 /* See local README for interface description */
 
 static void *
-passwd_open(uschar *filename, uschar **errmsg)
+passwd_open(const uschar * filename, uschar ** errmsg)
 {
 filename = filename;     /* Keep picky compilers happy */
 errmsg = errmsg;
@@ -33,8 +33,8 @@ return (void *)(-1);     /* Just return something non-null */
 /* See local README for interface description */
 
 static int
-passwd_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+passwd_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 struct passwd *pw;
 

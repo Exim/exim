@@ -196,7 +196,7 @@ return col;
 /* See local README for interface description. */
 
 static void *
-oracle_open(uschar *filename, uschar **errmsg)
+oracle_open(const uschar * filename, uschar ** errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
 }
@@ -503,8 +503,8 @@ arguments are not used. Loop through a list of servers while the query is
 deferred with a retryable error. */
 
 static int
-oracle_find(void *handle, uschar *filename, uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+oracle_find(void * handle, const uschar * filename, uschar * query, int length,
+  uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 int sep = 0;
 uschar *server;

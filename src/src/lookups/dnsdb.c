@@ -77,7 +77,7 @@ static int type_values[] = {
 /* See local README for interface description. */
 
 static void *
-dnsdb_open(uschar *filename, uschar **errmsg)
+dnsdb_open(const uschar * filename, uschar **errmsg)
 {
 filename = filename;   /* Keep picky compilers happy */
 errmsg = errmsg;       /* Ditto */
@@ -130,8 +130,8 @@ which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
 static int
-dnsdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+dnsdb_find(void * handle, const uschar * filename, const uschar * keystring,
+ int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 int rc;
 int sep = 0;

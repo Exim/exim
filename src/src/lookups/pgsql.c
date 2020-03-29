@@ -33,7 +33,7 @@ static pgsql_connection *pgsql_connections = NULL;
 /* See local README for interface description. */
 
 static void *
-pgsql_open(uschar *filename, uschar **errmsg)
+pgsql_open(const uschar * filename, uschar ** errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
 }
@@ -381,8 +381,8 @@ query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
 static int
-pgsql_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+pgsql_find(void * handle, const uschar * filename, const uschar * query,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
   result, errmsg, do_cache, perform_pgsql_search);

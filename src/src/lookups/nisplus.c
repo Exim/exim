@@ -18,7 +18,7 @@
 /* See local README for interface description. */
 
 static void *
-nisplus_open(uschar *filename, uschar **errmsg)
+nisplus_open(const uschar * filename, uschar ** errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
 }
@@ -42,8 +42,8 @@ yield is the concatenation of all the fields, preceded by their names and an
 equals sign. */
 
 static int
-nisplus_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+nisplus_find(void * handle, const uschar * filename, const uschar * query,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 int error_error = FAIL;
 const uschar * field_name = NULL;

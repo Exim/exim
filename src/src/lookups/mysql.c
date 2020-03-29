@@ -81,7 +81,7 @@ static mysql_connection *mysql_connections = NULL;
 /* See local README for interface description. */
 
 static void *
-mysql_open(uschar *filename, uschar **errmsg)
+mysql_open(const uschar * filename, uschar ** errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
 }
@@ -389,8 +389,8 @@ query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
 static int
-mysql_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+mysql_find(void * handle, const uschar * filename, const uschar * query,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,
   result, errmsg, do_cache, perform_mysql_search);

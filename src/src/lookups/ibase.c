@@ -31,9 +31,9 @@ static ibase_connection *ibase_connections = NULL;
 
 /* See local README for interface description. */
 
-static void *ibase_open(uschar * filename, uschar ** errmsg)
+static void *ibase_open(const uschar * filename, uschar ** errmsg)
 {
-    return (void *) (1);        /* Just return something non-null */
+return (void *) (1);        /* Just return something non-null */
 }
 
 
@@ -450,33 +450,32 @@ arguments are not used. Loop through a list of servers while the query is
 deferred with a retryable error. */
 
 static int
-ibase_find(void *handle, uschar * filename, uschar * query, int length,
+ibase_find(void * handle, const uschar * filename, uschar * query, int length,
            uschar ** result, uschar ** errmsg, uint *do_cache)
 {
-    int sep = 0;
-    uschar *server;
-    uschar *list = ibase_servers;
-    uschar buffer[512];
+int sep = 0;
+uschar *server;
+uschar *list = ibase_servers;
+uschar buffer[512];
 
-    /* Keep picky compilers happy */
-    do_cache = do_cache;
+/* Keep picky compilers happy */
+do_cache = do_cache;
 
-    DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
+DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
 
-    while ((server =
-            string_nextinlist(&list, &sep, buffer,
-                              sizeof(buffer))) != NULL) {
-        BOOL defer_break = FALSE;
-        int rc = perform_ibase_search(query, server, result, errmsg,
-                                      &defer_break);
-        if (rc != DEFER || defer_break)
-            return rc;
-    }
+while ((server = string_nextinlist(&list, &sep, buffer,
+			  sizeof(buffer))))
+  {
+  BOOL defer_break = FALSE;
+  int rc = perform_ibase_search(query, server, result, errmsg, &defer_break);
+  if (rc != DEFER || defer_break)
+    return rc;
+  }
 
-    if (ibase_servers == NULL)
-        *errmsg = US "no Interbase servers defined (ibase_servers option)";
+if (!ibase_servers)
+  *errmsg = US "no Interbase servers defined (ibase_servers option)";
 
-    return DEFER;
+return DEFER;
 }
 
 

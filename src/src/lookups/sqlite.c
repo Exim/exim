@@ -18,13 +18,12 @@
 /* See local README for interface description. */
 
 static void *
-sqlite_open(uschar *filename, uschar **errmsg)
+sqlite_open(const uschar * filename, uschar ** errmsg)
 {
 sqlite3 *db = NULL;
 int ret;
 
-ret = sqlite3_open(CS filename, &db);
-if (ret != 0)
+if ((ret = sqlite3_open(CCS filename, &db)) != 0)
   {
   *errmsg = (void *)sqlite3_errmsg(db);
   debug_printf_indent("Error opening database: %s\n", *errmsg);
@@ -70,8 +69,8 @@ return 0;
 
 
 static int
-sqlite_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+sqlite_find(void * handle, const uschar * filename, const uschar * query,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 int ret;
 gstring * res = NULL;

@@ -21,7 +21,7 @@ the find function. */
 /* See local README for interface description. */
 
 static void *
-testdb_open(uschar *filename, uschar **errmsg)
+testdb_open(const uschar * filename, uschar ** errmsg)
 {
 filename = filename;   /* Keep picky compilers happy */
 errmsg = errmsg;
@@ -37,8 +37,8 @@ return (void *)(1);    /* Just return something non-null */
 /* See local README for interface description. */
 
 static int
-testdb_find(void *handle, uschar *filename, const uschar *query, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+testdb_find(void * handle, const uschar * filename, const uschar * query,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 handle = handle;          /* Keep picky compilers happy */
 filename = filename;

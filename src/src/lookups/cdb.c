@@ -136,108 +136,109 @@ cdb_bread(int fd,
 static uint32
 cdb_unpack(uschar *buf)
 {
-  uint32 num;
-  num =  buf[3]; num <<= 8;
-  num += buf[2]; num <<= 8;
-  num += buf[1]; num <<= 8;
-  num += buf[0];
-  return num;
+uint32 num;
+num =  buf[3]; num <<= 8;
+num += buf[2]; num <<= 8;
+num += buf[1]; num <<= 8;
+num += buf[0];
+return num;
 }
 
 static void cdb_close(void *handle);
 
 static void *
-cdb_open(uschar *filename,
-         uschar **errmsg)
+cdb_open(const uschar * filename, uschar ** errmsg)
 {
-  int fileno;
-  struct cdb_state *cdbp;
-  struct stat statbuf;
-  void * mapbuf;
+int fileno;
+struct cdb_state *cdbp;
+struct stat statbuf;
+void * mapbuf;
 
-  fileno = Uopen(filename, O_RDONLY, 0);
-  if (fileno == -1) {
-    int save_errno = errno;
-    *errmsg = string_open_failed(errno, "%s for cdb lookup", filename);
-    errno = save_errno;
-    return NULL;
+if ((fileno = Uopen(filename, O_RDONLY, 0)) < 0)
+  {
+  int save_errno = errno;
+  *errmsg = string_open_failed(errno, "%s for cdb lookup", filename);
+  errno = save_errno;
+  return NULL;
   }
 
-  if (fstat(fileno, &statbuf) == 0) {
-    /* If this is a valid file, then it *must* be at least
-     * CDB_HASH_TABLE bytes long */
-    if (statbuf.st_size < CDB_HASH_TABLE) {
-      int save_errno = errno;
-      *errmsg = string_open_failed(errno,
-                                  "%s too short for cdb lookup",
-                                  filename);
-      errno = save_errno;
-      return NULL;
-    }
-  } else {
-    int save_errno = errno;
-    *errmsg = string_open_failed(errno,
-                                "fstat(%s) failed - cannot do cdb lookup",
-                                filename);
-    errno = save_errno;
-    return NULL;
+if (fstat(fileno, &statbuf) != 0)
+  {
+  int save_errno = errno;
+  *errmsg = string_open_failed(errno,
+			      "fstat(%s) failed - cannot do cdb lookup",
+			      filename);
+  errno = save_errno;
+  return NULL;
   }
 
-  /* Having got a file open we need the structure to put things in */
-  cdbp = store_get(sizeof(struct cdb_state), FALSE);
-  /* store_get() does not return if memory was not available... */
-  /* preload the structure.... */
-  cdbp->fileno = fileno;
-  cdbp->filelen = statbuf.st_size;
-  cdbp->cdb_map = NULL;
-  cdbp->cdb_offsets = NULL;
+/* If this is a valid file, then it *must* be at least
+CDB_HASH_TABLE bytes long */
 
-  /* if we are allowed to we use mmap here.... */
+if (statbuf.st_size < CDB_HASH_TABLE)
+  {
+  int save_errno = errno;
+  *errmsg = string_open_failed(errno,
+			      "%s too short for cdb lookup",
+			      filename);
+  errno = save_errno;
+  return NULL;
+  }
+
+/* Having got a file open we need the structure to put things in */
+cdbp = store_get(sizeof(struct cdb_state), FALSE);
+/* store_get() does not return if memory was not available... */
+/* preload the structure.... */
+cdbp->fileno = fileno;
+cdbp->filelen = statbuf.st_size;
+cdbp->cdb_map = NULL;
+cdbp->cdb_offsets = NULL;
+
+/* if we are allowed to we use mmap here.... */
 #ifdef HAVE_MMAP
-  mapbuf = mmap(NULL,
-               statbuf.st_size,
-               PROT_READ,
-               MAP_SHARED,
-               fileno,
-               0);
-  if (mapbuf != MAP_FAILED) {
-    /* We have an mmap-ed section.  Now we can just use it */
-    cdbp->cdb_map = mapbuf;
-    /* The offsets can be set to the same value since they should
-     * effectively be cached as well
-     */
-    cdbp->cdb_offsets = mapbuf;
+if ((mapbuf = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fileno, 0))
+    != MAP_FAILED)
+  {
+  /* We have an mmap-ed section.  Now we can just use it */
+  cdbp->cdb_map = mapbuf;
+  /* The offsets can be set to the same value since they should
+   * effectively be cached as well
+   */
+  cdbp->cdb_offsets = mapbuf;
 
-    /* Now return the state struct */
-    return(cdbp);
-  } else
-    /* If we got here the map failed.  Basically we can ignore
-     * this since we fall back to slower methods....
-     * However lets debug log it...
-     */
-    DEBUG(D_lookup) debug_printf_indent("cdb mmap failed - %d\n", errno);
+  /* Now return the state struct */
+  return(cdbp);
+  }
+
+/* If we got here the map failed.  Basically we can ignore this since we fall
+back to slower methods....  However lets debug log it...  */
+
+DEBUG(D_lookup) debug_printf_indent("cdb mmap failed - %d\n", errno);
 #endif /* HAVE_MMAP */
 
-  /* In this case we have either not got MMAP allowed, or it failed */
+/* In this case we have either not got MMAP allowed, or it failed */
 
-  /* get a buffer to stash the basic offsets in - this should speed
-   * things up a lot - especially on multiple lookups */
-  cdbp->cdb_offsets = store_get(CDB_HASH_TABLE, FALSE);
+/* get a buffer to stash the basic offsets in - this should speed
+things up a lot - especially on multiple lookups */
 
-  /* now fill the buffer up... */
-  if (cdb_bread(fileno, cdbp->cdb_offsets, CDB_HASH_TABLE) == -1) {
-    /* read of hash table failed, oh dear, oh.....
-     * time to give up I think....
-     * call the close routine (deallocs the memory), and return NULL */
-    *errmsg = string_open_failed(errno,
-                                "cannot read header from %s for cdb lookup",
-                                filename);
-    cdb_close(cdbp);
-    return NULL;
+cdbp->cdb_offsets = store_get(CDB_HASH_TABLE, FALSE);
+
+/* now fill the buffer up... */
+
+if (cdb_bread(fileno, cdbp->cdb_offsets, CDB_HASH_TABLE) == -1)
+  {
+  /* read of hash table failed, oh dear, oh.....  time to give up I think....
+  call the close routine (deallocs the memory), and return NULL */
+
+  *errmsg = string_open_failed(errno,
+			      "cannot read header from %s for cdb lookup",
+			      filename);
+  cdb_close(cdbp);
+  return NULL;
   }
 
-  /* Everything else done - return the cache structure */
-  return cdbp;
+/* Everything else done - return the cache structure */
+return cdbp;
 }
 
 
@@ -247,22 +248,12 @@ cdb_open(uschar *filename,
 *************************************************/
 
 static BOOL
-cdb_check(void *handle,
-         uschar *filename,
-         int modemask,
-         uid_t *owners,
-         gid_t *owngroups,
-         uschar **errmsg)
+cdb_check(void * handle, const uschar * filename, int modemask,
+  uid_t * owners, gid_t * owngroups, uschar ** errmsg)
 {
-  struct cdb_state * cdbp = handle;
-  return lf_check_file(cdbp->fileno,
-                       filename,
-                       S_IFREG,
-                       modemask,
-                       owners,
-                       owngroups,
-                       "cdb",
-                       errmsg) == 0;
+struct cdb_state * cdbp = handle;
+return lf_check_file(cdbp->fileno, filename, S_IFREG, modemask,
+		     owners, owngroups, "cdb", errmsg) == 0;
 }
 
 
@@ -272,13 +263,8 @@ cdb_check(void *handle,
 *************************************************/
 
 static int
-cdb_find(void *handle,
-        uschar *filename,
-        const uschar *keystring,
-        int  key_len,
-        uschar **result,
-        uschar **errmsg,
-        uint *do_cache)
+cdb_find(void * handle, const uschar * filename, const uschar * keystring,
+  int key_len, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 struct cdb_state * cdbp = handle;
 uint32 item_key_len,

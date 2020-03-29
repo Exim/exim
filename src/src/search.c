@@ -325,8 +325,8 @@ Returns:         an identifying handle for the open database;
 */
 
 void *
-search_open(uschar *filename, int search_type, int modemask, uid_t *owners,
-  gid_t *owngroups)
+search_open(const uschar * filename, int search_type, int modemask,
+  uid_t * owners, gid_t * owngroups)
 {
 void *handle;
 tree_node *t;
@@ -462,7 +462,7 @@ Returns:       a pointer to a dynamic string containing the answer,
 */
 
 static uschar *
-internal_search_find(void *handle, uschar *filename, uschar *keystring)
+internal_search_find(void * handle, const uschar * filename, uschar * keystring)
 {
 tree_node * t = (tree_node *)handle;
 search_cache * c = (search_cache *)(t->data.ptr);
@@ -605,8 +605,9 @@ Returns:         a pointer to a dynamic string containing the answer,
 */
 
 uschar *
-search_find(void *handle, uschar *filename, uschar *keystring, int partial,
-  const uschar *affix, int affixlen, int starflags, int *expand_setup)
+search_find(void * handle, const uschar * filename, uschar * keystring,
+  int partial, const uschar * affix, int affixlen, int starflags,
+  int * expand_setup)
 {
 tree_node *t = (tree_node *)handle;
 BOOL set_null_wild = FALSE;

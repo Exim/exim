@@ -1283,8 +1283,8 @@ are handled by a common function, with a flag to differentiate between them.
 The handle and filename arguments are not used. */
 
 static int
-eldap_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+eldap_find(void * handle, const uschar * filename, const uschar * ldap_url,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1292,8 +1292,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_SINGLE, result, errmsg));
 }
 
 static int
-eldapm_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+eldapm_find(void * handle, const uschar * filename, const uschar * ldap_url,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1301,8 +1301,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_MULTIPLE, result, errmsg));
 }
 
 static int
-eldapdn_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+eldapdn_find(void * handle, const uschar * filename, const uschar * ldap_url,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1310,8 +1310,8 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_DN, result, errmsg));
 }
 
 int
-eldapauth_find(void *handle, uschar *filename, const uschar *ldap_url, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+eldapauth_find(void * handle, const uschar * filename, const uschar * ldap_url,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 /* Keep picky compilers happy */
 do_cache = do_cache;
@@ -1327,7 +1327,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_AUTH, result, errmsg));
 /* See local README for interface description. */
 
 static void *
-eldap_open(uschar *filename, uschar **errmsg)
+eldap_open(const uschar * filename, uschar ** errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
 }

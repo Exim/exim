@@ -26,7 +26,7 @@ enum {
 /* See local README for interface description */
 
 static void *
-lsearch_open(uschar *filename, uschar **errmsg)
+lsearch_open(const uschar * filename, uschar ** errmsg)
 {
 FILE *f = Ufopen(filename, "rb");
 if (f == NULL)
@@ -46,7 +46,7 @@ return f;
 *************************************************/
 
 static BOOL
-lsearch_check(void *handle, uschar *filename, int modemask, uid_t *owners,
+lsearch_check(void *handle, const uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
 return lf_check_file(fileno((FILE *)handle), filename, S_IFREG, modemask,
@@ -71,8 +71,9 @@ fit into the fixed sized buffer. Most of the time this will never be exercised,
 but people do occasionally do weird things. */
 
 static int
-internal_lsearch_find(void *handle, uschar *filename, const uschar *keystring,
-  int length, uschar **result, uschar **errmsg, int type)
+internal_lsearch_find(void * handle, const uschar * filename,
+  const uschar * keystring, int length, uschar ** result, uschar ** errmsg,
+ int type)
 {
 FILE *f = (FILE *)handle;
 BOOL last_was_eol = TRUE;
@@ -318,8 +319,8 @@ return FAIL;
 /* See local README for interface description */
 
 static int
-lsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+lsearch_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -335,8 +336,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-wildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+wildlsearch_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -352,8 +353,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-nwildlsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+nwildlsearch_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -370,23 +371,20 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 /* See local README for interface description */
 
 static int
-iplsearch_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+iplsearch_find(void * handle, uschar const * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
+
 if ((length == 1 && keystring[0] == '*') ||
     string_is_ip_address(keystring, NULL) != 0)
-  {
   return internal_lsearch_find(handle, filename, keystring, length, result,
     errmsg, LSEARCH_IP);
-  }
-else
-  {
-  *errmsg = string_sprintf("\"%s\" is not a valid iplsearch key (an IP "
-    "address, with optional CIDR mask, is wanted): "
-    "in a host list, use net-iplsearch as the search type", keystring);
-  return DEFER;
-  }
+
+*errmsg = string_sprintf("\"%s\" is not a valid iplsearch key (an IP "
+"address, with optional CIDR mask, is wanted): "
+"in a host list, use net-iplsearch as the search type", keystring);
+return DEFER;
 }
 
 

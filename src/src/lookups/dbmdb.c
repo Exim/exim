@@ -16,7 +16,7 @@
 /* See local README for interface description */
 
 static void *
-dbmdb_open(uschar *filename, uschar **errmsg)
+dbmdb_open(const uschar * filename, uschar ** errmsg)
 {
 uschar * dirname = string_copy(filename);
 uschar * s;
@@ -24,7 +24,7 @@ EXIM_DB *yield = NULL;
 
 if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
 EXIM_DBOPEN(filename, dirname, O_RDONLY, 0, &yield);
-if (yield == NULL)
+if (!yield)
   {
   int save_errno = errno;
   *errmsg = string_open_failed(errno, "%s as a %s file", filename, EXIM_DBTYPE);
@@ -47,7 +47,7 @@ the same. Otherwise, for safety, we have to check for x.db or x.dir and x.pag.
 */
 
 static BOOL
-dbmdb_check(void *handle, uschar *filename, int modemask, uid_t *owners,
+dbmdb_check(void *handle, const uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
 int rc;
@@ -90,8 +90,8 @@ return rc == 0;
 the keylength in order to include the terminating zero. */
 
 static int
-dbmdb_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+dbmdb_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 EXIM_DB *d = (EXIM_DB *)handle;
 EXIM_DATUM key, data;
@@ -122,9 +122,9 @@ return FAIL;
 
 /* See local README for interface description */
 
-int
-static dbmnz_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+static int
+dbmnz_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
   do_cache);
@@ -143,8 +143,8 @@ return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
  */
 
 static int
-dbmjz_find(void *handle, uschar *filename, const uschar *keystring, int length,
-  uschar **result, uschar **errmsg, uint *do_cache)
+dbmjz_find(void * handle, const uschar * filename, const uschar * keystring,
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
 uschar *key_item, *key_buffer, *key_p;
 const uschar *key_elems = keystring;
@@ -203,8 +203,8 @@ DEBUG(D_lookup) debug_printf_indent("NUL-joined key length: %d\n", key_item_len)
 
 /* beware that dbmdb_find() adds 1 to length to get back terminating NUL, so
 because we've calculated the real length, we need to subtract one more here */
-return dbmdb_find(handle, filename,
-    key_buffer, key_item_len - 1,
+
+return dbmdb_find(handle, filename, key_buffer, key_item_len - 1,
     result, errmsg, do_cache);
 }
 
