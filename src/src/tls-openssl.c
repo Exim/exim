@@ -2994,7 +2994,7 @@ if (tlsp->host_resumable)
 
   tlsp->resumption |= RESUME_CLIENT_REQUESTED;
   DEBUG(D_tls) debug_printf("checking for resumable session for %s\n", key);
-  if ((dbm_file = dbfn_open(US"tls", O_RDONLY, &dbblock, FALSE, FALSE)))
+  if ((dbm_file = dbfn_open(US"tls", O_RDWR, &dbblock, FALSE, FALSE)))
     {
     /* key for the db is the IP */
     if ((dt = dbfn_read_with_length(dbm_file, key, &len)))
