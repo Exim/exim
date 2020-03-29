@@ -6770,8 +6770,13 @@ by default, but has an option to omit them (see section &<<SECTdbmbuild>>&).
 .next
 .cindex "lookup" "dsearch"
 .cindex "dsearch lookup type"
-&(dsearch)&: The given file must be a directory; this is searched for an entry
-whose name is the key by calling the &[lstat()]& function. The key may not
+&(dsearch)&: The given file must be an
+.new
+absolute
+.wen
+directory path; this is searched for an entry
+whose name is the key by calling the &[lstat()]& function.
+The key may not
 contain any forward slash characters. If &[lstat()]& succeeds, the result of
 the lookup is the name of the entry, which may be a file, directory,
 symbolic link, or any other kind of directory entry.

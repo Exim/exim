@@ -93,6 +93,7 @@ JH/20 Taint checking: disallow use of tainted data for
       - the autoreply transport file, log and once options
       - file names used by the redirect router (including filter files)
       - named-queue names
+      - paths used by single-key lookups
       Previously this was permitted.
 
 JH/21 Bug 2501: Fix init call in the heimdal authenticator.  Previously it
@@ -158,6 +159,10 @@ JH/33 Fix the dsearch lookup to return an untainted result.  Previously the
 
 JH/34 Fix the readsocket expansion to not segfault when an empty "options"
       argument is supplied.
+
+JH/35 The dsearch lookup now requires that the directory is an absolute path.
+      Previously this was not checked, and nonempty relative paths made an
+      access under Exim's current working directory.
 
 
 Exim version 4.93

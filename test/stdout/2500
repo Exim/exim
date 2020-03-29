@@ -3,4 +3,5 @@
 > Failed: failed to open TESTSUITE/dir_not_here for directory search: No such file or directory
 > fail(case): FAIL
 > Failed: failed to open TESTSUITE/AUX-fixed for directory search: No such file or directory
+> Failed: dirname '.' for dsearch is not absolute
 > 
