@@ -14,8 +14,6 @@ getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -29,21 +27,13 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to somebody <somebody@myhost.test.ex> transport=t1
   uid=EXIM_UID gid=EXIM_GID pid=pppp
-delivery-local forking for pipe-tpt-cmd
-delivery-local forked for pipe-tpt-cmd: npppp
-delivery-local forking for pipe-tpt-output
-delivery-local forked for pipe-tpt-output: npppp
 transport error EPIPE ignored
 LOG: MAIN
   ** somebody@myhost.test.ex R=rest T=t1: return message generated
 changed uid/gid: post-delivery tidying
   uid=EXIM_UID gid=EXIM_GID pid=pppp
-local-accept-delivery forking for bounce-message
-local-accept-delivery forked for bounce-message: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -60,8 +50,6 @@ seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN
   <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
-bounce-message forking for local-accept-delivery
-bounce-message forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -75,8 +63,6 @@ seeking password data for user "CALLER": cache not available
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to CALLER <CALLER@myhost.test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 LOG: MAIN
@@ -106,8 +92,6 @@ seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -123,8 +107,6 @@ seeking password data for user "root": cache not available
 getpwnam() succeeded uid=uuuu gid=gggg
 LOG: MAIN PANIC
   User 0 set for t3 transport is on the never_users list
-local-accept-delivery forking for logfile-create
-local-accept-delivery forked for logfile-create: npppp
 LOG: MAIN
   == never@myhost.test.ex R=never T=t3 defer (-29): User 0 set for t3 transport is on the never_users list
 changed uid/gid: post-delivery tidying

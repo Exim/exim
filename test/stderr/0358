@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -29,8 +27,6 @@ After routing:
     usery@test.ex
   Failed addresses:
   Deferred addresses:
-local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
@@ -70,8 +66,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
-fresh-exec forking for qrun-delivery
-fresh-exec forked for qrun-delivery: npppp
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -95,8 +89,6 @@ After routing:
     usery@test.ex
   Failed addresses:
   Deferred addresses:
-qrun-delivery forking for transport
-qrun-delivery forked for transport: npppp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record

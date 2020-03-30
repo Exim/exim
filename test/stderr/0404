@@ -143,8 +143,6 @@ LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
 search_tidyup called
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -200,8 +198,6 @@ expanded: '#Exim filter
 mail text rhubarb
 seen finish'
 search_tidyup called
-local-accept-delivery forking for router-interpret
-local-accept-delivery forked for router-interpret: npppp
 changed uid/gid: r2 router (recipient is userx@test.ex)
   uid=CALLER_UID gid=CALLER_GID pid=pppp
 turned off address rewrite logging (not root or exim in this process)
@@ -246,16 +242,12 @@ search_tidyup called
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to >sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ... <>sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex,sender@test.ex, ...> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
 set_process_info: pppp **** string overflowed buffer ****
 t1 transport entered
 taking data from address
-delivery-local forking for autoreply
-delivery-local forked for autoreply: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd autoreply -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -1527,8 +1519,6 @@ Size of headers = sss
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
 search_tidyup called
-autoreply forking for local-accept-delivery
-autoreply forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -17991,8 +17981,6 @@ sender@test.ex is a duplicate address: discarded
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 changed uid/gid: local delivery to sender <sender@test.ex> transport=t2
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/

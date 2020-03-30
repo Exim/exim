@@ -1047,10 +1047,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/(?<=^>>>>>>>>>>>>>>>> Exim pid=)\d+(?= terminating)/pppp/;
     s/^(proxy-proc \w{5}-pid) \d+$/$1 pppp/;
     s/^(?:\s*\d+ )(exec .* -oPX)$/pppp $1/;
-    next if /postfork: /;
-    # ipv6-enabled platforms do more loookup, for AAAAs - so ignore the forking
-    next if / fork(?:ing|ed) for fakens-search/;
-    s/ forked for [^:]+: \K\d+/npppp/;
+    next if /(?:postfork: | fork(?:ing|ed) for )/;
 
     # IP address lookups use gethostbyname() when IPv6 is not supported,
     # and gethostbyname2() or getipnodebyname() when it is.

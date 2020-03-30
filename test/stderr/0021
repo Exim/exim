@@ -186,16 +186,12 @@ end of ACL "rcpt": ACCEPT
 >>
 LOG: MAIN
   <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
 x in "!bad"? yes (end of list)
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => x <x@y> R=accept T=appendfile
 LOG: MAIN

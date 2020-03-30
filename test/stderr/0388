@@ -70,8 +70,6 @@ After routing:
   Deferred addresses:
 search_tidyup called
 search_tidyup called
-fresh-exec forking for transport
-fresh-exec forked for transport: npppp
 changed uid/gid: remote delivery to x@y with transport=smtp
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
@@ -171,8 +169,6 @@ LOG: MAIN
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 end of retry processing
-fresh-exec forking for bounce-message
-fresh-exec forked for bounce-message: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd bounce-message -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -228,8 +224,6 @@ Size of headers = sss
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 search_tidyup called
-bounce-message forking for local-accept-delivery
-bounce-message forked for local-accept-delivery: npppp
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xd7715ced -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective

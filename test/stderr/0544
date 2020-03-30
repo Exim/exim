@@ -119,16 +119,12 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-local-accept-delivery forking for transport
-local-accept-delivery forked for transport: npppp
  ╭considering: $domain
  ├──expanding: $domain
  ╰─────result: domain1.ex

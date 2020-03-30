@@ -15,8 +15,6 @@ After routing:
     x@y
   Failed addresses:
   Deferred addresses:
-fresh-exec forking for transport
-fresh-exec forked for transport: npppp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
@@ -57,8 +55,6 @@ After routing:
     x@y
   Failed addresses:
   Deferred addresses:
-fresh-exec forking for transport
-fresh-exec forked for transport: npppp
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
