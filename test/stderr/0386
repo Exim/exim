@@ -243,9 +243,7 @@ LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
 SMTP>> 250 OK id=10HmaX-0005vi-00
 search_tidyup called
-fresh-exec forking for local-accept-delivery
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaX-0005vi-00
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -319,7 +317,6 @@ search_tidyup called
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-local-accept-delivery forking for delivery-local
 changed uid/gid: local delivery to 2 <2@b> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -342,7 +339,6 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling 2@b
 t1 transport returned OK for 2@b
 post-process 2@b (0)
@@ -440,9 +436,7 @@ LOG: MAIN
   <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
 SMTP>> 250 OK id=10HmaY-0005vi-00
 search_tidyup called
-fresh-exec forking for local-accept-delivery
 exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xf7715cfd -MCd local-accept-delivery -odi -Mc 10HmaY-0005vi-00
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=EXIM_GID pid=pppp
@@ -515,7 +509,6 @@ search_tidyup called
  failed to open DB file TESTSUITE/spool/db/retry: No such file or directory
 no retry data available
 search_tidyup called
-local-accept-delivery forking for delivery-local
 changed uid/gid: local delivery to 2 <2@b> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
   home=NULL current=/
@@ -538,7 +531,6 @@ writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
-local-accept-delivery forked for delivery-local: npppp
 journalling 2@b
 t1 transport returned OK for 2@b
 post-process 2@b (0)

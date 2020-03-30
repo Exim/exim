@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -24,12 +22,10 @@ After routing:
     userx@test.ex
   Failed addresses:
   Deferred addresses:
-local-accept-delivery forking for transport
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
-local-accept-delivery forked for transport: npppp
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 LOG: MAIN
@@ -54,7 +50,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -70,14 +65,11 @@ After routing:
     userx@test.ex
   Failed addresses:
   Deferred addresses:
-qrun-delivery forking for transport
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   existing delete item dropped
   added retry item
@@ -115,7 +107,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -131,14 +122,11 @@ After routing:
     userx@test.ex
   Failed addresses:
   Deferred addresses:
-qrun-delivery forking for transport
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   existing delete item dropped
   added retry item
@@ -176,7 +164,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
@@ -201,7 +188,6 @@ Deferred addresses:
  userx@test.ex: no retry items
 end of retry processing
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

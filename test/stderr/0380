@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -81,8 +79,6 @@ After routing:
   Deferred addresses:
     aaaa@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => bbbb <bbbb@myhost.test.ex> R=r3 T=t1
 locking TESTSUITE/spool/db/retry.lockfile

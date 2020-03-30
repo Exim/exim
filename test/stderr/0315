@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -50,9 +48,7 @@ After routing:
     y@ten-1.test.ex
   Failed addresses:
   Deferred addresses:
-local-accept-delivery forking for transport
 locking TESTSUITE/spool/db/retry.lockfile
-local-accept-delivery forked for transport: npppp
 LOG: MAIN
   *> x@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
@@ -66,8 +62,6 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -131,9 +125,7 @@ After routing:
     y@ten-2.test.ex
   Failed addresses:
   Deferred addresses:
-local-accept-delivery forking for transport
 locking TESTSUITE/spool/db/retry.lockfile
-local-accept-delivery forked for transport: npppp
 LOG: MAIN
   *> x@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN

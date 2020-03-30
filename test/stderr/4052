@@ -3,8 +3,6 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@the.local.host.name U=CALLER P=local S=sss
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -12,7 +10,6 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> extchange@test.ex <--------
-local-accept-delivery forking for transport
 smtp transport entered
   extchange@test.ex
 hostlist:
@@ -61,7 +58,6 @@ no messages waiting for 127.0.0.1
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-local-accept-delivery forked for transport: npppp
 Leaving smtp transport
 LOG: MAIN
   => extchange@test.ex R=client T=smtp H=127.0.0.1 [127.0.0.1] L* C="250 message accepted"

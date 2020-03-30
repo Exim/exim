@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -14,7 +12,6 @@ dropping to exim gid; retaining priv uid
 router_name <my_main_router>
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@domain.com <--------
-local-accept-delivery forking for transport
 transport_name <my_smtp>
 my_smtp transport entered
   userx@domain.com
@@ -54,7 +51,6 @@ no messages waiting for 127.0.0.1
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-local-accept-delivery forked for transport: npppp
 Leaving my_smtp transport
 LOG: MAIN
   => userx@domain.com R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1] C="250 OK"

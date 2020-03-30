@@ -4,7 +4,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: ok@no.delay
@@ -33,15 +32,8 @@ After routing:
     ok@no.delay
   Failed addresses:
   Deferred addresses:
-qrun-delivery forking for transport
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
 LOG: MAIN
   => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1] C="250 OK"
 LOG: MAIN
@@ -86,14 +78,11 @@ After routing:
   Failed addresses:
   Deferred addresses:
     delay@test.again.dns
-continued-transport forking for transport
 locking TESTSUITE/spool/db/retry.lockfile
-continued-transport forked for transport: npppp
 locking TESTSUITE/spool/db/wait-t1.lockfile
 LOG: MAIN
   => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]* C="250 OK"
 >>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: delay@test.again.dns
@@ -108,7 +97,6 @@ After routing:
   Deferred addresses:
     delay@test.again.dns
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

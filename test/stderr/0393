@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -13,7 +11,6 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-local-accept-delivery forking for delivery-local
 direct command:
   argv[0] = '/bin/cat'
 direct command after expansion:
@@ -31,15 +28,10 @@ lock file created
 mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
 writing data block fd=dddd size=sss timeout=0
-delivery-local forking for transport-filter
-local-accept-delivery forked for delivery-local: npppp
-delivery-local forked for transport-filter: npppp
 process pppp running as transport filter: fd_write=dddd fd_read=dddd
-delivery-local forking for tpt-filter-writer
 cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 >>>>>>>>>>>>>>>> Exim pid=pppp (tpt-filter-writer) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivery-local forked for tpt-filter-writer: npppp
 process pppp writing to transport filter
 copying from the filter
 waiting for filter process
@@ -60,8 +52,6 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -69,7 +59,6 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-local-accept-delivery forking for delivery-local
 direct command:
 direct command after expansion:
 appendfile transport entered
@@ -89,7 +78,6 @@ cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
-local-accept-delivery forked for delivery-local: npppp
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1
@@ -102,8 +90,6 @@ configuration file is TESTSUITE/test-config
 admin user
 LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local S=sss
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -111,7 +97,6 @@ admin user
 dropping to exim gid; retaining priv uid
 >>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
-local-accept-delivery forking for delivery-local
 direct command:
   argv[0] = '${if={1}{1}{}{}}'
 direct command after expansion:
@@ -133,7 +118,6 @@ cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=0
 writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
-local-accept-delivery forked for delivery-local: npppp
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
   => userx <userx@test.ex> R=r1 T=t1

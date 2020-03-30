@@ -202,10 +202,8 @@ ppppp   exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on
 ppppp daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 ppppp Listening...
 ppppp Connection request from 127.0.0.1 port sssss
-ppppp daemon forking for daemon-accept
 ppppp Process ppppp is handling incoming connection from [127.0.0.1]
 ppppp Process ppppp is ready for new message
-ppppp daemon forked for daemon-accept: npppp
 ppppp 1 SMTP accept process running
 ppppp Listening...
 ppppp dnslists check: rbl.test.ex/V4NET.11.12.14
@@ -232,6 +230,4 @@ ppppp child ppppp ended: status=0x0
 ppppp   normal exit, 0
 ppppp 0 SMTP accept processes now running
 ppppp Listening...
-ppppp daemon forking for daemon-del-pidfile
-ppppp daemon forked for daemon-del-pidfile: npppp
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>

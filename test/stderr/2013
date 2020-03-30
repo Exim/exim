@@ -4,29 +4,13 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-8BITMIME
@@ -51,14 +35,6 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbA-0005vi-00
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
-transport forking for tls-proxy-interproc
-tls-proxy-interproc forking for tls-proxy
-transport forked for tls-proxy-interproc: npppp
-tls-proxy-interproc forked for tls-proxy: npppp
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbA-0005vi-00"
 LOG: MAIN
@@ -69,7 +45,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-continued-transport forking for transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userz@test.ex>
   SMTP>> DATA
@@ -78,11 +53,6 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbB-0005vi-00
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-continued-transport forked for transport: npppp
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbB-0005vi-00"
@@ -94,7 +64,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-continued-transport forking for transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<usery@test.ex>
   SMTP>> DATA
@@ -106,7 +75,6 @@ cmd buf flush ddd bytes
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-continued-transport forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
@@ -122,29 +90,13 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-8BITMIME
@@ -169,14 +121,6 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbG-0005vi-00
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
-transport forking for tls-proxy-interproc
-tls-proxy-interproc forking for tls-proxy
-transport forked for tls-proxy-interproc: npppp
-tls-proxy-interproc forked for tls-proxy: npppp
 LOG: MAIN
   => usera@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbG-0005vi-00"
 LOG: MAIN
@@ -187,7 +131,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-continued-transport forking for transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userc@test.ex>
   SMTP>> DATA
@@ -196,11 +139,6 @@ cmd buf flush ddd bytes
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbH-0005vi-00
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-continued-transport forked for transport: npppp
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userc@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbH-0005vi-00"
@@ -212,7 +150,6 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-continued-transport forking for transport
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userb@test.ex>
   SMTP>> DATA
@@ -224,7 +161,6 @@ cmd buf flush ddd bytes
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>
-continued-transport forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
@@ -240,29 +176,13 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forking for qrun-delivery
-qrun-delivery forking for transport
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
   SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for transport: npppp
   SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
          250-SIZE 52428800
          250-8BITMIME
@@ -295,10 +215,6 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbM-0005vi-00"
@@ -310,10 +226,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-continued-transport forking for transport
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
-continued-transport forked for transport: npppp
   SMTP<< 220 TLS go ahead
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
@@ -338,10 +252,6 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250-STARTTLS
          250 HELP
-transport forking for continued-transport-interproc
-continued-transport-interproc forking for continued-transport
-transport forked for continued-transport-interproc: npppp
-continued-transport-interproc forked for continued-transport: npppp
   SMTP(close)>>
 LOG: MAIN
   => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" C="250 OK id=10HmbN-0005vi-00"
@@ -353,10 +263,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-continued-transport forking for transport
   SMTP>> STARTTLS
 cmd buf flush ddd bytes
-continued-transport forked for transport: npppp
   SMTP<< 220 TLS go ahead
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes

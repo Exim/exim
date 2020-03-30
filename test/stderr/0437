@@ -16,7 +16,6 @@ dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp
 search_tidyup called
-fresh-exec forking for qrun-delivery
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="transport" partial=-1 affix=NULL starflags=0
@@ -30,7 +29,6 @@ fresh-exec forking for qrun-delivery
  lookup yielded: t1
 search_tidyup called
 search_tidyup called
-qrun-delivery forking for delivery-local
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="file" partial=-1 affix=NULL starflags=0
@@ -43,8 +41,6 @@ qrun-delivery forking for delivery-local
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: file
 search_tidyup called
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=r1 T=t1
 LOG: MAIN
@@ -52,7 +48,6 @@ LOG: MAIN
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 search_tidyup called
-fresh-exec forking for qrun-delivery
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="transport" partial=-1 affix=NULL starflags=0
@@ -66,7 +61,6 @@ fresh-exec forking for qrun-delivery
  lookup yielded: t1
 search_tidyup called
 search_tidyup called
-qrun-delivery forking for delivery-local
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
    key="file" partial=-1 affix=NULL starflags=0
@@ -79,8 +73,6 @@ qrun-delivery forking for delivery-local
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: file
 search_tidyup called
-fresh-exec forked for qrun-delivery: npppp
-qrun-delivery forked for delivery-local: npppp
 LOG: MAIN
   => userx <userx@myhost.test.ex> R=r1 T=t1
 LOG: MAIN

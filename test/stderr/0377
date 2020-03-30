@@ -4,8 +4,6 @@ admin user
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
-fresh-exec forking for local-accept-delivery
-fresh-exec forked for local-accept-delivery: npppp
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -301,18 +299,12 @@ After routing:
     defer_bbbb@myhost.test.ex
     defer_cccc@myhost.test.ex
 locking TESTSUITE/spool/db/retry.lockfile
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => aaaa <aaaa@myhost.test.ex> R=seen_aaaa T=t1
 locking TESTSUITE/spool/db/retry.lockfile
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => bbbb <bbbb@myhost.test.ex> R=bbbb_0 T=t1
 locking TESTSUITE/spool/db/retry.lockfile
-local-accept-delivery forking for delivery-local
-local-accept-delivery forked for delivery-local: npppp
 LOG: MAIN
   => cccc <cccc@myhost.test.ex> R=cccc_accept T=t1
 locking TESTSUITE/spool/db/retry.lockfile
@@ -324,7 +316,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -561,7 +552,6 @@ aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -571,7 +561,6 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qf
-fresh-exec forking for qrun-delivery
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: aaaa@myhost.test.ex
@@ -808,7 +797,6 @@ aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
 bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-fresh-exec forked for qrun-delivery: npppp
 LOG: queue_run MAIN
   End queue run: pid=pppp -qf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
