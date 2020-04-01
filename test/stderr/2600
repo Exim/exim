@@ -137,12 +137,12 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 23)
+processing "accept" (TESTSUITE/test-config 26)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 24)
+processing "accept" (TESTSUITE/test-config 27)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -157,7 +157,7 @@ lookup failed
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 25)
+processing "deny" (TESTSUITE/test-config 28)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
@@ -166,12 +166,12 @@ LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 23)
+processing "accept" (TESTSUITE/test-config 26)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 24)
+processing "accept" (TESTSUITE/test-config 27)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
   cached open
@@ -187,7 +187,7 @@ lookup failed
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "deny" (TESTSUITE/test-config 25)
+processing "deny" (TESTSUITE/test-config 28)
   message: relay not permitted
 deny: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": DENY
@@ -232,12 +232,12 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 23)
+processing "accept" (TESTSUITE/test-config 26)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 24)
+processing "accept" (TESTSUITE/test-config 27)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
@@ -256,12 +256,12 @@ SMTP>> 250 Accepted
 DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 23)
+processing "accept" (TESTSUITE/test-config 26)
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
 accept: condition test failed in ACL "check_recipient"
-processing "accept" (TESTSUITE/test-config 24)
+processing "accept" (TESTSUITE/test-config 27)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
   cached open
@@ -486,6 +486,20 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='userx';"
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
+ lookup yielded: Ayen Other
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+ search_open: sqlite "NULL"
+ search_find: file="NULL"
+   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+ LRU list:
+ internal_search_find: file="NULL"
+   type=sqlite key="select name from them where id='userx';"
+ database lookup required for select name from them where id='userx';
  lookup yielded: Ayen Other
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

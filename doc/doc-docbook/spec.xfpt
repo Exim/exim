@@ -7029,7 +7029,11 @@ passed to a Redis database. See section &<<SECTsql>>&.
 .next
 .cindex "sqlite lookup type"
 .cindex "lookup" "sqlite"
-&(sqlite)&: The format of the query is a filename followed by an SQL statement
+&(sqlite)&: The format of the query is
+new
+an optional filename
+.wen
+followed by an SQL statement
 that is passed to an SQLite database. See section &<<SECTsqlite>>&.
 
 .next
@@ -7936,6 +7940,11 @@ If any MySQL, PostgreSQL, Oracle, InterBase or Redis lookups are used, the
 or &%redis_servers%&
 option (as appropriate) must be set to a colon-separated list of server
 information.
+.oindex &%mysql_servers%&
+.oindex &%pgsql_servers%&
+.oindex &%oracle_servers%&
+.oindex &%ibase_servers%&
+.oindex &%redis_servers%&
 (For MySQL and PostgreSQL, the global option need not be set if all
 queries contain their own server information &-- see section
 &<<SECTspeserque>>&.)
@@ -8073,17 +8082,31 @@ affected.
 .cindex "sqlite lookup type"
 SQLite is different to the other SQL lookups because a filename is required in
 addition to the SQL query. An SQLite database is a single file, and there is no
-daemon as in the other SQL databases. The interface to Exim requires the name
-of the file, as an absolute path, to be given at the start of the query. It is
-separated from the query by white space. This means that the path name cannot
-contain white space. Here is a lookup expansion example:
+daemon as in the other SQL databases.
+
+.new
+.oindex &%sqlite_dbfile%&
+The preferred way of specifying the file is by using the 
+&%sqlite_dbfile%& option, set to
+.wen
+an absolute path.
+A deprecated method is available, prefixing the query with the filename
+separated by white space.
+This means that the path name cannot contain white space.
+.cindex "tainted data" "sqlite file"
+It also means that the query cannot use any tainted values, as that taints
+the entire query including the filename - resulting in a refusal to open
+the file.
+
+Here is a lookup expansion example:
 .code
-${lookup sqlite {/some/thing/sqlitedb \
-  select name from aliases where id='userx';}}
+sqlite_dbfile = /some/thing/sqlitedb
+...
+${lookup sqlite {select name from aliases where id='userx';}}
 .endd
 In a list, the syntax is similar. For example:
 .code
-domainlist relay_to_domains = sqlite;/some/thing/sqlitedb \
+domainlist relay_to_domains = sqlite;\
    select * from relays where ip='$sender_host_address';
 .endd
 The only character affected by the &%quote_sqlite%& operator is a single

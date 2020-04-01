@@ -14,6 +14,9 @@ hostlist   relay_hosts = sqlite;DIR/aux-fixed/sqlitedb \
 acl_smtp_rcpt = check_recipient
 sqlite_lock_timeout = 2
 
+.ifdef DATA
+sqlite_dbfile = DATA
+.endif
 
 # ----- ACL -----
 

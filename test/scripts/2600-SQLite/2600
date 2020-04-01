@@ -30,3 +30,8 @@ Test message
 exim -d-all+lookup -be
 ${lookup sqlite{DIR/aux-fixed/sqlitedb select name from them where id='userx';}}
 ****
+#
+#
+exim -DDATA=DIR/aux-fixed/sqlitedb -d-all+lookup -be
+${lookup sqlite{select name from them where id='userx';}}
+****

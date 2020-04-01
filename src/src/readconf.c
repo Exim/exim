@@ -329,6 +329,7 @@ static optionlist optionlist_config[] = {
   { "spool_directory",          opt_stringptr,   {&spool_directory} },
   { "spool_wireformat",         opt_bool,        {&spool_wireformat} },
 #ifdef LOOKUP_SQLITE
+  { "sqlite_dbfile",            opt_stringptr,   {&sqlite_dbfile} },
   { "sqlite_lock_timeout",      opt_int,         {&sqlite_lock_timeout} },
 #endif
 #ifdef EXPERIMENTAL_SRS

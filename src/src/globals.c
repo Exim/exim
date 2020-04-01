@@ -89,6 +89,7 @@ uschar *redis_servers          = NULL;
 #endif
 
 #ifdef LOOKUP_SQLITE
+uschar *sqlite_dbfile	       = NULL;
 int     sqlite_lock_timeout    = 5;
 #endif
 

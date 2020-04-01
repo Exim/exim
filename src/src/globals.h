@@ -68,6 +68,7 @@ extern uschar *redis_servers;          /* List of servers and connect info */
 #endif
 
 #ifdef LOOKUP_SQLITE
+extern uschar *sqlite_dbfile;	       /* Filname for database */
 extern int     sqlite_lock_timeout;    /* Internal lock waiting timeout */
 #endif
 

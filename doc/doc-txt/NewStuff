@@ -43,6 +43,11 @@ Version 4.94
 
 11. New variables $local_part_{pre,suf}fix_v.
 
+12. New main option "sqlite_dbfile", for use in preference to prefixing the
+    lookup string.  The older method fails when tainted variables are used
+    in the lookup, as the filename becomes tainted.  The new method keeps the
+    filename separate.
+
 
 
 Version 4.93

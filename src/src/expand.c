@@ -4892,16 +4892,13 @@ while (*s != 0)
         if (mac_islookup(stype, lookup_querystyle))
           filename = NULL;
         else
-          {
-          if (*filename != '/')
-            {
-            expand_string_message = string_sprintf(
-              "absolute file name expected for \"%s\" lookup", name);
-            goto EXPAND_FAILED;
-            }
-          while (*key != 0 && !isspace(*key)) key++;
-          if (*key != 0) *key++ = 0;
-          }
+          if (*filename == '/')
+	    {
+	    while (*key && !isspace(*key)) key++;
+	    if (*key) *key++ = '\0';
+	    }
+	  else
+	    filename = NULL;
         }
 
       /* If skipping, don't do the next bit - just lookup_value == NULL, as if
