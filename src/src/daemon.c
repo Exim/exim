@@ -2180,6 +2180,7 @@ for (;;)
 #ifdef EXPERIMENTAL_QUEUE_RAMP
 	    if (*queuerun_msgid)
 	      {
+	      log_write(0, LOG_MAIN, "notify triggered queue run");
 	      extra[extracount++] = queuerun_msgid;	/* Trigger only the */
 	      extra[extracount++] = queuerun_msgid;	/* one message      */
 	      }
@@ -2214,6 +2215,7 @@ for (;;)
 #ifdef EXPERIMENTAL_QUEUE_RAMP
 	  if (*queuerun_msgid)
 	    {
+	    log_write(0, LOG_MAIN, "notify triggered queue run");
 	    f.queue_2stage = FALSE;
 	    queue_run(queuerun_msgid, queuerun_msgid, FALSE);
 	    }

@@ -13,10 +13,17 @@ log_selector = +sender_on_delivery +millisec
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
+acl_smtp_rcpt = chk_rcpt
 
-queue_only
+smtp_accept_queue_per_connection = 0
 queue_fast_ramp
+
+begin acl
+
+chk_rcpt:
+  warn	condition =	${if eq {local-smtp}{$received_protocol}}
+	control =	queue_only
+  accept
 
 # ----- Routers -----
 

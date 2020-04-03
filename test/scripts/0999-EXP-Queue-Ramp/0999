@@ -671,14 +671,17 @@ exim -odd -qq
 #
 #
 killdaemon
+sleep 1
 #
 # Only check that we logged the right number of messages; don't care
 # about ordering or mistakes in wrong message-id
 sudo perl
 system "egrep -v '(Completed|<=|=>|is locked)' DIR/spool/log/mainlog 1>&2";
 system "awk '/OK id=/{i++} END{print i, \"messages in\"}' DIR/test-stdout 1>&2";
-system "grep -q '=>' DIR/spool/log/servermainlog && echo 'daemon did make at least one delivery' 1>&2";
+system "grep 'notify' DIR/spool/log/servermainlog 1>&2";
+system "grep -q '=> bob' DIR/spool/log/servermainlog && echo 'daemon did make at least one delivery' 1>&2";
 system "awk '/<=/{i++} END{print i, \"messages received by dest\"}' DIR/spool/log/servermainlog 1>&2";
+system "ls DIR/spool/input 1>&2";
 ****
 sudo rm DIR/spool/log/mainlog DIR/spool/log/servermainlog
 no_stdout_check
