@@ -70,7 +70,8 @@ for us. */
 
 static int
 dsearch_find(void * handle, const uschar * dirname, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 struct stat statbuf;
 int save_errno;

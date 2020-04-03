@@ -439,10 +439,10 @@ extern void    route_show_supported(FILE *);
 extern void    route_tidyup(void);
 
 extern uschar *search_find(void *, const uschar *, uschar *, int,
-		 const uschar *, int, int, int *);
+		 const uschar *, int, int, int *, const uschar *);
 extern int     search_findtype(const uschar *, int);
 extern int     search_findtype_partial(const uschar *, int *, const uschar **, int *,
-                 int *);
+                 int *, const uschar **);
 extern void   *search_open(const uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
 extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);

@@ -4,30 +4,30 @@ admin user
 dropping to exim gid; retaining priv uid
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='userx';"
+   type=sqlite key="select name from them where id='userx';" opts=NULL
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: Ayen Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='userx';"
+   type=sqlite key="select name from them where id='userx';" opts=NULL
  cached data used for lookup of select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: Ayen Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='xxxx';"
+   type=sqlite key="select name from them where id='xxxx';" opts=NULL
  file lookup required for select name from them where id='xxxx';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup forced cache cleanup
@@ -35,40 +35,40 @@ dropping to exim gid; retaining priv uid
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='nothing';"
+   type=sqlite key="select name from them where id='nothing';" opts=NULL
  file lookup required for select name from them where id='nothing';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+   key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select id,name from them where id='nothing';"
+   type=sqlite key="select id,name from them where id='nothing';" opts=NULL
  file lookup required for select id,name from them where id='nothing';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: id=nothing name="" 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select * from them where id='quote2';"
+   type=sqlite key="select * from them where id='quote2';" opts=NULL
  file lookup required for select * from them where id='quote2';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: name="\"stquot" id=quote2 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select * from them where id='newline';"
+   type=sqlite key="select * from them where id='newline';" opts=NULL
  file lookup required for select * from them where id='newline';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: name="before
@@ -76,30 +76,30 @@ dropping to exim gid; retaining priv uid
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select * from them where id='tab';"
+   type=sqlite key="select * from them where id='tab';" opts=NULL
  file lookup required for select * from them where id='tab';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: name="x	x" id=tab 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select * from them where id='its';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='its';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select * from them where id='its';"
+   type=sqlite key="select * from them where id='its';" opts=NULL
  file lookup required for select * from them where id='its';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: name=it's id=its 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select * from them where name='it''s';" partial=-1 affix=NULL starflags=0
+   key="select * from them where name='it''s';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select * from them where name='it''s';"
+   type=sqlite key="select * from them where name='it''s';" opts=NULL
  file lookup required for select * from them where name='it''s';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: name=it's id=its 
@@ -146,10 +146,10 @@ processing "accept" (TESTSUITE/test-config 27)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.0.0.0'"
+  type=sqlite key="select * from them where id='10.0.0.0'" opts=NULL
 file lookup required for select * from them where id='10.0.0.0'
   in TESTSUITE/aux-fixed/sqlitedb
 lookup forced cache cleanup
@@ -176,10 +176,10 @@ check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
   cached open
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.0.0.0'"
+  type=sqlite key="select * from them where id='10.0.0.0'" opts=NULL
 file lookup required for select * from them where id='10.0.0.0'
   in TESTSUITE/aux-fixed/sqlitedb
 lookup forced cache cleanup
@@ -241,10 +241,10 @@ processing "accept" (TESTSUITE/test-config 27)
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.10.10.10'"
+  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
 file lookup required for select * from them where id='10.10.10.10'
   in TESTSUITE/aux-fixed/sqlitedb
 lookup yielded: name=ok id=10.10.10.10 
@@ -266,10 +266,10 @@ check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
   cached open
 search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-  type=sqlite key="select * from them where id='10.10.10.10'"
+  type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
 cached data used for lookup of select * from them where id='10.10.10.10'
   in TESTSUITE/aux-fixed/sqlitedb
 lookup yielded: name=ok id=10.10.10.10 
@@ -376,10 +376,10 @@ local_part=userx domain=myhost.test.ex
 processing address_data
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='userx'" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='userx'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='userx'"
+   type=sqlite key="select name from them where id='userx'" opts=NULL
  file lookup required for select name from them where id='userx'
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: Ayen Other
@@ -418,10 +418,10 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 to userx using t1
 appendfile transport entered
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select id from them where id='userx'" partial=-1 affix=NULL starflags=0
+   key="select id from them where id='userx'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select id from them where id='userx'"
+   type=sqlite key="select id from them where id='userx'" opts=NULL
  file lookup required for select id from them where id='userx'
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: userx
@@ -480,10 +480,10 @@ admin user
 dropping to exim gid; retaining priv uid
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
  search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
-   type=sqlite key="select name from them where id='userx';"
+   type=sqlite key="select name from them where id='userx';" opts=NULL
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
  lookup yielded: Ayen Other

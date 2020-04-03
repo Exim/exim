@@ -20,10 +20,10 @@ local_part=userx domain=test.ex
 checking domains
 search_open: testdb "NULL"
 search_find: file="NULL"
-  key="defer" partial=-1 affix=NULL starflags=0
+  key="defer" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=testdb key="defer"
+  type=testdb key="defer" opts=NULL
 database lookup required for defer
 testdb lookup forced DEFER
 lookup deferred: testdb lookup forced DEFER

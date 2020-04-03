@@ -504,7 +504,7 @@ deferred with a retryable error. */
 
 static int
 oracle_find(void * handle, const uschar * filename, uschar * query, int length,
-  uschar ** result, uschar ** errmsg, uint * do_cache)
+  uschar ** result, uschar ** errmsg, uint * do_cache, const uschar * opts)
 {
 int sep = 0;
 uschar *server;
@@ -515,14 +515,14 @@ do_cache = do_cache;   /* Placate picky compilers */
 
 DEBUG(D_lookup) debug_printf_indent("ORACLE query: %s\n", query);
 
-while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
+while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
   {
   BOOL defer_break;
   int rc = perform_oracle_search(query, server, result, errmsg, &defer_break);
   if (rc != DEFER || defer_break) return rc;
   }
 
-if (oracle_servers == NULL)
+if (!oracle_servers)
   *errmsg = "no ORACLE servers defined (oracle_servers option)";
 
 return DEFER;

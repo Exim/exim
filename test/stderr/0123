@@ -19,12 +19,12 @@ calling l1 router
 rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases1}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
  search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
-   key="x" partial=-1 affix=NULL starflags=0
+   key="x" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases1
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
-   type=lsearch key="x"
+   type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases1
  lookup failed
@@ -38,13 +38,13 @@ calling l2 router
 rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases2}}'
  search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
  search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
-   key="x" partial=-1 affix=NULL starflags=0
+   key="x" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases2
    0TESTSUITE/aux-fixed/0123.aliases1
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
-   type=lsearch key="x"
+   type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases2
  lookup failed
@@ -60,13 +60,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases1
  search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
-   key="x" partial=-1 affix=NULL starflags=0
+   key="x" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases3
    0TESTSUITE/aux-fixed/0123.aliases2
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
-   type=lsearch key="x"
+   type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases3
  lookup failed
@@ -82,13 +82,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases2
  search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
-   key="x" partial=-1 affix=NULL starflags=0
+   key="x" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases4
    0TESTSUITE/aux-fixed/0123.aliases3
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
-   type=lsearch key="x"
+   type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases4
  lookup failed
@@ -104,13 +104,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases3
  search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
-   key="x" partial=-1 affix=NULL starflags=0
+   key="x" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases5
    0TESTSUITE/aux-fixed/0123.aliases4
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
-   type=lsearch key="x"
+   type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases5
  lookup failed
@@ -126,13 +126,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases4
  search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
-   key="x" partial=-1 affix=NULL starflags=0
+   key="x" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases6
    0TESTSUITE/aux-fixed/0123.aliases5
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
-   type=lsearch key="x"
+   type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases6
  lookup failed
@@ -156,13 +156,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases5
  search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
-   key="y" partial=-1 affix=NULL starflags=0
+   key="y" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases1
    0TESTSUITE/aux-fixed/0123.aliases6
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
-   type=lsearch key="y"
+   type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases1
  lookup failed
@@ -179,13 +179,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases6
  search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
-   key="y" partial=-1 affix=NULL starflags=0
+   key="y" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases2
    0TESTSUITE/aux-fixed/0123.aliases1
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
-   type=lsearch key="y"
+   type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases2
  lookup failed
@@ -202,13 +202,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases1
  search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
-   key="y" partial=-1 affix=NULL starflags=0
+   key="y" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases3
    0TESTSUITE/aux-fixed/0123.aliases2
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
-   type=lsearch key="y"
+   type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases3
  lookup failed
@@ -225,13 +225,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases2
  search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
-   key="y" partial=-1 affix=NULL starflags=0
+   key="y" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases4
    0TESTSUITE/aux-fixed/0123.aliases3
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
-   type=lsearch key="y"
+   type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases4
  lookup failed
@@ -248,13 +248,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases3
  search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
-   key="y" partial=-1 affix=NULL starflags=0
+   key="y" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases5
    0TESTSUITE/aux-fixed/0123.aliases4
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
-   type=lsearch key="y"
+   type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases5
  lookup failed
@@ -271,13 +271,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases4
  search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
-   key="y" partial=-1 affix=NULL starflags=0
+   key="y" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases6
    0TESTSUITE/aux-fixed/0123.aliases5
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
-   type=lsearch key="y"
+   type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases6
  lookup failed
@@ -301,13 +301,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases5
  search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
-   key="z" partial=-1 affix=NULL starflags=0
+   key="z" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases1
    0TESTSUITE/aux-fixed/0123.aliases6
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
-   type=lsearch key="z"
+   type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases1
  lookup failed
@@ -324,13 +324,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases6
  search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
-   key="z" partial=-1 affix=NULL starflags=0
+   key="z" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases2
    0TESTSUITE/aux-fixed/0123.aliases1
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
-   type=lsearch key="z"
+   type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases2
  lookup failed
@@ -347,13 +347,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases1
  search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
-   key="z" partial=-1 affix=NULL starflags=0
+   key="z" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases3
    0TESTSUITE/aux-fixed/0123.aliases2
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
-   type=lsearch key="z"
+   type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases3
  lookup failed
@@ -370,13 +370,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases2
  search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
-   key="z" partial=-1 affix=NULL starflags=0
+   key="z" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases4
    0TESTSUITE/aux-fixed/0123.aliases3
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
-   type=lsearch key="z"
+   type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases4
  lookup failed
@@ -393,13 +393,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases3
  search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
-   key="z" partial=-1 affix=NULL starflags=0
+   key="z" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases5
    0TESTSUITE/aux-fixed/0123.aliases4
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
-   type=lsearch key="z"
+   type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases5
  lookup failed
@@ -416,13 +416,13 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
  Too many lookup files open
    closing 0TESTSUITE/aux-fixed/0123.aliases4
  search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
-   key="z" partial=-1 affix=NULL starflags=0
+   key="z" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0123.aliases6
    0TESTSUITE/aux-fixed/0123.aliases5
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
-   type=lsearch key="z"
+   type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases6
  lookup failed

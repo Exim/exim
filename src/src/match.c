@@ -97,7 +97,7 @@ check_string(void *arg, const uschar *pattern, const uschar **valueptr, uschar *
 const check_string_block *cb = arg;
 int search_type, partial, affixlen, starflags;
 int expand_setup = cb->expand_setup;
-const uschar *affix;
+const uschar * affix, * opts;
 uschar *s;
 uschar *filename = NULL;
 uschar *keyquery, *result, *semicolon;
@@ -263,7 +263,7 @@ the part of the string preceding the semicolon. */
 
 *semicolon = 0;
 search_type = search_findtype_partial(pattern, &partial, &affix, &affixlen,
-  &starflags);
+  &starflags, &opts);
 *semicolon = ';';
 if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
   search_error_message);
@@ -299,7 +299,7 @@ no search_close() because of the caching arrangements. */
 if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 result = search_find(handle, filename, keyquery, partial, affix, affixlen,
-  starflags, &expand_setup);
+  starflags, &expand_setup, opts);
 
 if (!result) return f.search_find_defer? DEFER : FAIL;
 if (valueptr) *valueptr = result;

@@ -103,18 +103,18 @@ test.ex in "*"? yes (matched "*")
 r1@test.ex in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.ex" partial=2 affix=*. starflags=0
+   key="test.ex" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.ex"
+   type=lsearch key="test.ex" opts=NULL
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
  trying partial match *.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="*.test.ex"
+   type=lsearch key="*.test.ex" opts=NULL
  file lookup required for *.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
@@ -124,24 +124,24 @@ CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="myhost.test.ex" partial=2 affix=*. starflags=0
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="myhost.test.ex"
+   type=lsearch key="myhost.test.ex" opts=NULL
  file lookup required for myhost.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
  trying partial match *.myhost.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="*.myhost.test.ex"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
  file lookup required for *.myhost.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
  trying partial match *.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="*.test.ex"
+   type=lsearch key="*.test.ex" opts=NULL
  cached data used for lookup of *.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
@@ -233,12 +233,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  file lookup required for test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -412,12 +412,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -591,12 +591,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -770,12 +770,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -949,12 +949,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -1128,12 +1128,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -1307,12 +1307,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -1486,12 +1486,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -1665,12 +1665,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -1844,12 +1844,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -2022,12 +2022,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -2200,12 +2200,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -2378,12 +2378,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -2556,12 +2556,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -2734,12 +2734,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -2912,12 +2912,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -3090,12 +3090,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -3268,12 +3268,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -3446,12 +3446,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -3624,12 +3624,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -3802,12 +3802,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -3980,12 +3980,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -4158,12 +4158,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -4335,12 +4335,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -4512,12 +4512,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -4689,12 +4689,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -4866,12 +4866,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -5043,12 +5043,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -5220,12 +5220,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -5397,12 +5397,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -5574,12 +5574,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -5751,12 +5751,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -5928,12 +5928,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -6105,12 +6105,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -6282,12 +6282,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -6458,12 +6458,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -6634,12 +6634,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -6810,12 +6810,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -6986,12 +6986,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -7162,12 +7162,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -7338,12 +7338,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -7514,12 +7514,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -7690,12 +7690,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -7866,12 +7866,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -8042,12 +8042,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -8218,12 +8218,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -8394,12 +8394,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -8570,12 +8570,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -8745,12 +8745,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -8920,12 +8920,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -9095,12 +9095,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -9270,12 +9270,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -9445,12 +9445,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -9620,12 +9620,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -9795,12 +9795,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -9970,12 +9970,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -10145,12 +10145,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -10320,12 +10320,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -10495,12 +10495,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -10670,12 +10670,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -10844,12 +10844,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -11018,12 +11018,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -11192,12 +11192,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -11366,12 +11366,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -11540,12 +11540,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -11714,12 +11714,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -11888,12 +11888,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -12062,12 +12062,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -12236,12 +12236,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -12410,12 +12410,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -12584,12 +12584,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -12758,12 +12758,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -12932,12 +12932,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -13105,12 +13105,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -13278,12 +13278,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -13451,12 +13451,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -13624,12 +13624,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -13797,12 +13797,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -13970,12 +13970,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -14143,12 +14143,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -14316,12 +14316,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -14489,12 +14489,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -14661,12 +14661,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -14832,12 +14832,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -15002,12 +15002,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -15171,12 +15171,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -15339,12 +15339,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -15506,12 +15506,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -15672,12 +15672,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -15837,12 +15837,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16001,12 +16001,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16164,12 +16164,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16326,12 +16326,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16487,12 +16487,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16647,12 +16647,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16806,12 +16806,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -16964,12 +16964,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -17121,12 +17121,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -17277,12 +17277,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -17432,12 +17432,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -17586,12 +17586,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -17739,12 +17739,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -17891,12 +17891,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18042,12 +18042,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18192,12 +18192,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18341,12 +18341,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18489,12 +18489,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18636,12 +18636,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18782,12 +18782,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -18927,12 +18927,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19071,12 +19071,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19214,12 +19214,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19356,12 +19356,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19497,12 +19497,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19637,12 +19637,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19776,12 +19776,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -19914,12 +19914,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20051,12 +20051,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20187,12 +20187,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20322,12 +20322,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20456,12 +20456,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20589,12 +20589,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20721,12 +20721,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20852,12 +20852,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -20982,12 +20982,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21111,12 +21111,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21239,12 +21239,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21366,12 +21366,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21492,12 +21492,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21617,12 +21617,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21741,12 +21741,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21864,12 +21864,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -21986,12 +21986,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22107,12 +22107,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22227,12 +22227,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22346,12 +22346,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22464,12 +22464,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22581,12 +22581,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22697,12 +22697,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22812,12 +22812,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -22926,12 +22926,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23039,12 +23039,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23151,12 +23151,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23262,12 +23262,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23372,12 +23372,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23481,12 +23481,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23589,12 +23589,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23696,12 +23696,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23802,12 +23802,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -23907,12 +23907,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24011,12 +24011,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24114,12 +24114,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24216,12 +24216,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24317,12 +24317,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24417,12 +24417,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24516,12 +24516,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24614,12 +24614,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24711,12 +24711,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24807,12 +24807,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24902,12 +24902,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -24996,12 +24996,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -25089,12 +25089,12 @@ random@test.example in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="test.example" partial=2 affix=*. starflags=0
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="test.example"
+   type=lsearch key="test.example" opts=NULL
  cached data used for lookup of test.example
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
@@ -25184,24 +25184,24 @@ CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
  search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   key="myhost.test.ex" partial=2 affix=*. starflags=0
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0471.rw
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="myhost.test.ex"
+   type=lsearch key="myhost.test.ex" opts=NULL
  cached data used for lookup of myhost.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
  trying partial match *.myhost.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="*.myhost.test.ex"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
  cached data used for lookup of *.myhost.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed
  trying partial match *.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
-   type=lsearch key="*.test.ex"
+   type=lsearch key="*.test.ex" opts=NULL
  cached data used for lookup of *.test.ex
    in TESTSUITE/aux-fixed/0471.rw
  lookup failed

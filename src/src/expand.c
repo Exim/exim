@@ -4779,7 +4779,7 @@ while (*s != 0)
       int expand_setup = 0;
       int nameptr = 0;
       uschar *key, *filename;
-      const uschar *affix;
+      const uschar * affix, * opts;
       uschar *save_lookup_value = lookup_value;
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
@@ -4830,9 +4830,8 @@ while (*s != 0)
       /* Now check for the individual search type and any partial or default
       options. Only those types that are actually in the binary are valid. */
 
-      stype = search_findtype_partial(name, &partial, &affix, &affixlen,
-        &starflags);
-      if (stype < 0)
+      if ((stype = search_findtype_partial(name, &partial, &affix, &affixlen,
+	  &starflags, &opts)) < 0)
         {
         expand_string_message = search_error_message;
         goto EXPAND_FAILED;
@@ -4925,7 +4924,7 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
         lookup_value = search_find(handle, filename, key, partial, affix,
-          affixlen, starflags, &expand_setup);
+          affixlen, starflags, &expand_setup, opts);
         if (f.search_find_defer)
           {
           expand_string_message =

@@ -46,12 +46,12 @@ smart.domain in "smart.domain"? yes (matched "smart.domain")
 checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0
+   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain"
+   type=lsearch key="smart.domain" opts=NULL
  file lookup required for smart.domain
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -60,12 +60,12 @@ checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0
+   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain"
+   type=lsearch key="smart.domain" opts=NULL
  cached data used for lookup of smart.domain
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -115,12 +115,12 @@ checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex"
+   type=lsearch key="test.ex" opts=NULL
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -129,12 +129,12 @@ checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex"
+   type=lsearch key="test.ex" opts=NULL
  cached data used for lookup of test.ex
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -149,12 +149,12 @@ checking require_files
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex.files" partial=-1 affix=NULL starflags=0
+   key="test.ex.files" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex.files"
+   type=lsearch key="test.ex.files" opts=NULL
  file lookup required for test.ex.files
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: /etc/passwd
@@ -245,12 +245,12 @@ smart.domain in "smart.domain"? yes (matched "smart.domain")
 checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0
+   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain"
+   type=lsearch key="smart.domain" opts=NULL
  file lookup required for smart.domain
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -259,12 +259,12 @@ checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="smart.domain" partial=-1 affix=NULL starflags=0
+   key="smart.domain" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="smart.domain"
+   type=lsearch key="smart.domain" opts=NULL
  cached data used for lookup of smart.domain
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -312,12 +312,12 @@ checking local_parts
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex"
+   type=lsearch key="test.ex" opts=NULL
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f
@@ -326,12 +326,12 @@ checking senders
  search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0085.data"
-   key="test.ex" partial=-1 affix=NULL starflags=0
+   key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0085.data
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
-   type=lsearch key="test.ex"
+   type=lsearch key="test.ex" opts=NULL
  cached data used for lookup of test.ex
    in TESTSUITE/aux-fixed/0085.data
  lookup yielded: x : y : abc@d.e.f

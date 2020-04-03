@@ -115,6 +115,7 @@ Arguments:
                  otherwise it's a literal string
   afflen       the length of the affix
   starflags    where to put the SEARCH_STAR and SEARCH_STARAT flags
+  opts	       where to put the options
 
 Returns:     +ve => valid lookup name; value is offset in lookup_list
              -ve => invalid name; message in search_error_message.
@@ -122,11 +123,12 @@ Returns:     +ve => valid lookup name; value is offset in lookup_list
 
 int
 search_findtype_partial(const uschar *name, int *ptypeptr, const uschar **ptypeaff,
-  int *afflen, int *starflags)
+  int *afflen, int *starflags, const uschar ** opts)
 {
 int len, stype;
 int pv = -1;
 const uschar *ss = name;
+const uschar * t;
 
 *starflags = 0;
 *ptypeaff = NULL;
@@ -167,8 +169,10 @@ if (Ustrncmp(name, "partial", 7) == 0)
     }
   }
 
-/* Now we are left with a lookup name, possibly followed by * or *@. */
+/* Now we are left with a lookup name, possibly followed by * or *@,
+and then by options starting with a "," */
 
+#ifdef old
 len = Ustrlen(ss);
 if (len >= 2 && Ustrncmp(ss + len - 2, "*@", 2) == 0)
   {
@@ -180,6 +184,18 @@ else if (len >= 1 && ss[len-1]  == '*')
   *starflags |= SEARCH_STAR;
   len--;
   }
+#endif
+
+len = Ustrlen(ss);
+if ((t = Ustrchr(ss, '*')))
+  {
+  len = t - ss;
+  *starflags |= (t[1] == '@' ? SEARCH_STARAT : SEARCH_STAR);
+  }
+else
+  t = ss;
+
+* USS opts = (t = Ustrchr(t, ',')) ? string_copy(t+1) : NULL;
 
 /* Check for the individual search type. Only those that are actually in the
 binary are valid. For query-style types, "partial" and default types are
@@ -454,6 +470,7 @@ Arguments:
                NULL for query-style searches
   keystring    the keystring for single-key+file lookups, or
                the querystring for query-style lookups
+  opts	       type-specific options
 
 Returns:       a pointer to a dynamic string containing the answer,
                or NULL if the query failed or was deferred; in the
@@ -462,7 +479,8 @@ Returns:       a pointer to a dynamic string containing the answer,
 */
 
 static uschar *
-internal_search_find(void * handle, const uschar * filename, uschar * keystring)
+internal_search_find(void * handle, const uschar * filename, uschar * keystring,
+  const uschar * opts)
 {
 tree_node * t = (tree_node *)handle;
 search_cache * c = (search_cache *)(t->data.ptr);
@@ -478,8 +496,9 @@ search_error_message = US"";
 f.search_find_defer = FALSE;
 
 DEBUG(D_lookup) debug_printf_indent("internal_search_find: file=\"%s\"\n  "
-  "type=%s key=\"%s\"\n", filename,
-  lookup_list[search_type]->name, keystring);
+  "type=%s key=\"%s\" opts=%s%s%s\n", filename,
+  lookup_list[search_type]->name, keystring,
+  opts ? "\"" : "", opts, opts ? "\"" : "");
 
 /* Insurance. If the keystring is empty, just fail. */
 
@@ -520,7 +539,7 @@ else
   distinguish if necessary. */
 
   if (lookup_list[search_type]->find(c->handle, filename, keystring, keylength,
-      &data, &search_error_message, &do_cache) == DEFER)
+      &data, &search_error_message, &do_cache, opts) == DEFER)
     f.search_find_defer = TRUE;
 
   /* A record that has been found is now in data, which is either NULL
@@ -598,6 +617,7 @@ Arguments:
   starflags      SEARCH_STAR and SEARCH_STARAT flags
   expand_setup   pointer to offset for setting up expansion strings;
                  don't do any if < 0
+  opts		 type-specific options
 
 Returns:         a pointer to a dynamic string containing the answer,
                  or NULL if the query failed or was deferred; in the
@@ -607,7 +627,7 @@ Returns:         a pointer to a dynamic string containing the answer,
 uschar *
 search_find(void * handle, const uschar * filename, uschar * keystring,
   int partial, const uschar * affix, int affixlen, int starflags,
-  int * expand_setup)
+  int * expand_setup, const uschar * opts)
 {
 tree_node *t = (tree_node *)handle;
 BOOL set_null_wild = FALSE;
@@ -617,9 +637,11 @@ DEBUG(D_lookup)
   {
   if (partial < 0) affixlen = 99;   /* So that "NULL" prints */
   debug_printf_indent("search_find: file=\"%s\"\n  key=\"%s\" "
-    "partial=%d affix=%.*s starflags=%x\n",
-    (filename == NULL)? US"NULL" : filename,
-    keystring, partial, affixlen, affix, starflags);
+    "partial=%d affix=%.*s starflags=%x opts=%s%s%s\n",
+    filename ? filename : US"NULL",
+    keystring, partial, affixlen, affix, starflags,
+    opts ? "\"" : "", opts, opts ? "\"" : "");
+
   }
 
 /* Arrange to put this database at the top of the LRU chain if it is a type
@@ -669,7 +691,7 @@ DEBUG(D_lookup)
 /* First of all, try to match the key string verbatim. If matched a complete
 entry but could have been partial, flag to set up variables. */
 
-yield = internal_search_find(handle, filename, keystring);
+yield = internal_search_find(handle, filename, keystring, opts);
 if (f.search_find_defer) return NULL;
 
 if (yield) { if (partial >= 0) set_null_wild = TRUE; }
@@ -694,7 +716,7 @@ else if (partial >= 0)
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);
-    yield = internal_search_find(handle, filename, keystring2);
+    yield = internal_search_find(handle, filename, keystring2, opts);
     if (f.search_find_defer) return NULL;
     }
 
@@ -732,7 +754,7 @@ else if (partial >= 0)
         }
 
       DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring3);
-      yield = internal_search_find(handle, filename, keystring3);
+      yield = internal_search_find(handle, filename, keystring3, opts);
       if (f.search_find_defer) return NULL;
       if (yield)
         {
@@ -773,7 +795,7 @@ if (!yield  &&  starflags & SEARCH_STARAT)
     *atat = '*';
 
     DEBUG(D_lookup) debug_printf_indent("trying default match %s\n", atat);
-    yield = internal_search_find(handle, filename, atat);
+    yield = internal_search_find(handle, filename, atat, opts);
     *atat = savechar;
     if (f.search_find_defer) return NULL;
 
@@ -796,7 +818,7 @@ and the second is empty. */
 if (!yield  &&  starflags & (SEARCH_STAR|SEARCH_STARAT))
   {
   DEBUG(D_lookup) debug_printf_indent("trying to match *\n");
-  yield = internal_search_find(handle, filename, US"*");
+  yield = internal_search_find(handle, filename, US"*", opts);
   if (yield && expand_setup && *expand_setup >= 0)
     {
     *expand_setup += 1;

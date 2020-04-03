@@ -42,7 +42,8 @@ code. */
 
 static int
 nis_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 int rc;
 uschar *nis_data;
@@ -68,7 +69,8 @@ return (rc == YPERR_KEY || rc == YPERR_MAP)? FAIL : DEFER;
 
 static int
 nis0_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 int rc;
 uschar *nis_data;

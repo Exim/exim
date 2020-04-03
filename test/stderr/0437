@@ -1,12 +1,12 @@
 Exim version x.yz ....
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   key="spool" partial=-1 affix=NULL starflags=0
+   key="spool" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0437.ls
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   type=lsearch key="spool"
+   type=lsearch key="spool" opts=NULL
  file lookup required for spool
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: spool
@@ -18,12 +18,12 @@ LOG: queue_run MAIN
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   key="transport" partial=-1 affix=NULL starflags=0
+   key="transport" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0437.ls
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   type=lsearch key="transport"
+   type=lsearch key="transport" opts=NULL
  file lookup required for transport
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: t1
@@ -31,12 +31,12 @@ search_tidyup called
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   key="file" partial=-1 affix=NULL starflags=0
+   key="file" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0437.ls
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   type=lsearch key="file"
+   type=lsearch key="file" opts=NULL
  file lookup required for file
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: file
@@ -50,12 +50,12 @@ search_tidyup called
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   key="transport" partial=-1 affix=NULL starflags=0
+   key="transport" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0437.ls
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   type=lsearch key="transport"
+   type=lsearch key="transport" opts=NULL
  file lookup required for transport
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: t1
@@ -63,12 +63,12 @@ search_tidyup called
 search_tidyup called
  search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
  search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   key="file" partial=-1 affix=NULL starflags=0
+   key="file" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0437.ls
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
-   type=lsearch key="file"
+   type=lsearch key="file" opts=NULL
  file lookup required for file
    in TESTSUITE/aux-fixed/0437.ls
  lookup yielded: file

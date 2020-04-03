@@ -73,7 +73,8 @@ return 0;
 
 static int
 sqlite_find(void * handle, const uschar * filename, const uschar * query,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 int ret;
 gstring * res = NULL;

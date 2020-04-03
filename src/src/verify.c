@@ -2890,7 +2890,7 @@ BOOL iplookup = FALSE;
 BOOL isquery = FALSE;
 BOOL isiponly = cb->host_name != NULL && cb->host_name[0] == 0;
 const uschar *t;
-uschar *semicolon;
+uschar * semicolon, * endname, * opts;
 uschar **aliases;
 
 /* Optimize for the special case when the pattern is "*". */
@@ -2949,15 +2949,14 @@ if (*t == 0 || (*t == '/' && t != ss))
 
 /* See if there is a semicolon in the pattern */
 
-semicolon = Ustrchr(ss, ';');
+if ((semicolon = Ustrchr(ss, ';')))
+  endname = (opts = Ustrchr(ss, ',')) ? opts : semicolon;
 
 /* If we are doing an IP address only match, then all lookups must be IP
 address lookups, even if there is no "net-". */
 
 if (isiponly)
-  {
   iplookup = semicolon != NULL;
-  }
 
 /* Otherwise, if the item is of the form net[n]-lookup;<file|query> then it is
 a lookup on a masked IP network, in textual form. We obey this code even if we
@@ -2967,12 +2966,12 @@ key is implicit. For query-style lookups the key is specified in the query.
 From release 4.30, the use of net- for query style is no longer needed, but we
 retain it for backward compatibility. */
 
-if (Ustrncmp(ss, "net", 3) == 0 && semicolon != NULL)
+if (Ustrncmp(ss, "net", 3) == 0 && semicolon)
   {
   mlen = 0;
   for (t = ss + 3; isdigit(*t); t++) mlen = mlen * 10 + *t - '0';
   if (mlen == 0 && t == ss+3) mlen = -1;  /* No mask supplied */
-  iplookup = (*t++ == '-');
+  iplookup = *t++ == '-';
   }
 else
   t = ss;
@@ -2990,7 +2989,7 @@ if (iplookup)
 
   /* Find the search type */
 
-  search_type = search_findtype(t, semicolon - t);
+  search_type = search_findtype(t, endname - t);
 
   if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
     search_error_message);
@@ -3033,7 +3032,7 @@ if (iplookup)
   if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", search_error_message);
 
-  result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL);
+  result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL, opts);
   if (valueptr) *valueptr = result;
   return result ? OK : f.search_find_defer ? DEFER: FAIL;
   }
@@ -3091,7 +3090,7 @@ using the general string matching function. When this function is called for
 outgoing hosts, the name is always given explicitly. If it is NULL, it means we
 must use sender_host_name and its aliases, looking them up if necessary. */
 
-if (cb->host_name != NULL)   /* Explicit host name given */
+if (cb->host_name)   /* Explicit host name given */
   return match_check_string(cb->host_name, ss, -1, TRUE, TRUE, TRUE,
     valueptr);
 
@@ -3101,13 +3100,14 @@ query does not contain $sender_host_name. From release 4.23, a reference to
 $sender_host_name causes it to be looked up, so we don't need to do the lookup
 on spec. */
 
-if ((semicolon = Ustrchr(ss, ';')) != NULL)
+if ((semicolon = Ustrchr(ss, ';')))
   {
-  const uschar *affix;
+  const uschar * affix, * opts;
   int partial, affixlen, starflags, id;
 
   *semicolon = 0;
-  id = search_findtype_partial(ss, &partial, &affix, &affixlen, &starflags);
+  id = search_findtype_partial(ss, &partial, &affix, &affixlen, &starflags,
+	  &opts);
   *semicolon=';';
 
   if (id < 0)                           /* Unknown lookup type */

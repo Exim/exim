@@ -451,7 +451,7 @@ deferred with a retryable error. */
 
 static int
 ibase_find(void * handle, const uschar * filename, uschar * query, int length,
-           uschar ** result, uschar ** errmsg, uint *do_cache)
+  uschar ** result, uschar ** errmsg, uint * do_cache, const uschar * opts)
 {
 int sep = 0;
 uschar *server;
@@ -463,8 +463,7 @@ do_cache = do_cache;
 
 DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
 
-while ((server = string_nextinlist(&list, &sep, buffer,
-			  sizeof(buffer))))
+while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
   {
   BOOL defer_break = FALSE;
   int rc = perform_ibase_search(query, server, result, errmsg, &defer_break);

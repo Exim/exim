@@ -320,7 +320,8 @@ return FAIL;
 
 static int
 lsearch_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -337,7 +338,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 static int
 wildlsearch_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -354,7 +356,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 static int
 nwildlsearch_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
@@ -372,7 +375,8 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 static int
 iplsearch_find(void * handle, uschar const * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 

@@ -36,7 +36,7 @@ return (void *)(1);    /* Just return something non-null */
 
 static int
 whoson_find(void * handle, const uschar * filename, uschar * query, int length,
-  uschar ** result, uschar ** errmsg, uint * do_cache)
+  uschar ** result, uschar ** errmsg, uint * do_cache, const uschar * opts)
 {
 uschar buffer[80];
 handle = handle;          /* Keep picky compilers happy */

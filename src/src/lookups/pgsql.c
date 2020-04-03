@@ -382,7 +382,8 @@ shared with other SQL lookups. */
 
 static int
 pgsql_find(void * handle, const uschar * filename, const uschar * query,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
   result, errmsg, do_cache, perform_pgsql_search);

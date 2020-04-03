@@ -8,124 +8,124 @@ originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="list" partial=-1 affix=NULL starflags=0
+   key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="list"
+   type=lsearch key="list" opts=NULL
  file lookup required for list
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx, usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="list" partial=-1 affix=NULL starflags=0
+   key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="list"
+   type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx, usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="root" partial=-1 affix=NULL starflags=0
+   key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="root"
+   type=lsearch key="root" opts=NULL
  file lookup required for root
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="root" partial=-1 affix=NULL starflags=0
+   key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="root"
+   type=lsearch key="root" opts=NULL
  cached data used for lookup of root
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="list" partial=-1 affix=NULL starflags=0
+   key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="list"
+   type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx, usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
  search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
-   key="list" partial=-1 affix=NULL starflags=0
+   key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases2
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
-   type=lsearch key="list"
+   type=lsearch key="list" opts=NULL
  file lookup required for list
    in TESTSUITE/aux-fixed/0484.aliases2
  lookup yielded: userx2, usery2
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
-   key="root" partial=-1 affix=NULL starflags=0
+   key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases2
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
-   type=lsearch key="root"
+   type=lsearch key="root" opts=NULL
  file lookup required for root
    in TESTSUITE/aux-fixed/0484.aliases2
  lookup failed
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
-   key="list" partial=-1 affix=NULL starflags=0
+   key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases2
    0TESTSUITE/aux-fixed/0484.aliases
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
-   type=lsearch key="list"
+   type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases2
  lookup yielded: userx2, usery2
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="list" partial=-1 affix=NULL starflags=0
+   key="list" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    0TESTSUITE/aux-fixed/0484.aliases2
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="list"
+   type=lsearch key="list" opts=NULL
  cached data used for lookup of list
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx, usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
  search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   key="root" partial=-1 affix=NULL starflags=0
+   key="root" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
    0TESTSUITE/aux-fixed/0484.aliases
    0TESTSUITE/aux-fixed/0484.aliases2
    End
  internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
-   type=lsearch key="root"
+   type=lsearch key="root" opts=NULL
  cached data used for lookup of root
    in TESTSUITE/aux-fixed/0484.aliases
  lookup yielded: userx

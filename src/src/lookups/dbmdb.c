@@ -91,7 +91,8 @@ the keylength in order to include the terminating zero. */
 
 static int
 dbmdb_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 EXIM_DB *d = (EXIM_DB *)handle;
 EXIM_DATUM key, data;
@@ -124,10 +125,11 @@ return FAIL;
 
 static int
 dbmnz_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
-  do_cache);
+  do_cache, opts);
 }
 
 
@@ -144,7 +146,8 @@ return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
 
 static int
 dbmjz_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 uschar *key_item, *key_buffer, *key_p;
 const uschar *key_elems = keystring;
@@ -205,7 +208,7 @@ DEBUG(D_lookup) debug_printf_indent("NUL-joined key length: %d\n", key_item_len)
 because we've calculated the real length, we need to subtract one more here */
 
 return dbmdb_find(handle, filename, key_buffer, key_item_len - 1,
-    result, errmsg, do_cache);
+    result, errmsg, do_cache, opts);
 }
 
 

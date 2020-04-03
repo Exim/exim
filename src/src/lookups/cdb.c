@@ -264,7 +264,8 @@ return lf_check_file(cdbp->fileno, filename, S_IFREG, modemask,
 
 static int
 cdb_find(void * handle, const uschar * filename, const uschar * keystring,
-  int key_len, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int key_len, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 struct cdb_state * cdbp = handle;
 uint32 item_key_len,

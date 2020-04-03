@@ -80,7 +80,8 @@ return lf_check_file(fileno((FILE *)handle), filename, S_IFREG, modemask,
 
 static int
 json_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 FILE * f = handle;
 json_t * j, * j0;

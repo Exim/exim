@@ -4,10 +4,10 @@ admin user
 dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
  search_find: file="NULL"
-   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='ph10';"
+   type=mysql key="select name from them where id='ph10';" opts=NULL
  database lookup required for select name from them where id='ph10';
  MySQL query: select name from them where id='ph10';
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
@@ -15,19 +15,19 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='ph10';"
+   type=mysql key="select name from them where id='ph10';" opts=NULL
  cached data used for lookup of select name from them where id='ph10';
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='xxxx';"
+   type=mysql key="select name from them where id='xxxx';" opts=NULL
  database lookup required for select name from them where id='xxxx';
  MySQL query: select name from them where id='xxxx';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -36,10 +36,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='nothing';"
+   type=mysql key="select name from them where id='nothing';" opts=NULL
  database lookup required for select name from them where id='nothing';
  MySQL query: select name from them where id='nothing';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -47,10 +47,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+   key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select id,name from them where id='nothing';"
+   type=mysql key="select id,name from them where id='nothing';" opts=NULL
  database lookup required for select id,name from them where id='nothing';
  MySQL query: select id,name from them where id='nothing';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -58,10 +58,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0
+   key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="delete from them where id='nonexist';"
+   type=mysql key="delete from them where id='nonexist';" opts=NULL
  database lookup required for delete from them where id='nonexist';
  MySQL query: delete from them where id='nonexist';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -71,10 +71,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='quote';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='quote';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select * from them where id='quote';"
+   type=mysql key="select * from them where id='quote';" opts=NULL
  database lookup required for select * from them where id='quote';
  MySQL query: select * from them where id='quote';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -83,10 +83,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='filter';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='filter';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select * from them where id='filter';"
+   type=mysql key="select * from them where id='filter';" opts=NULL
  database lookup required for select * from them where id='filter';
  MySQL query: select * from them where id='filter';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -95,10 +95,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select * from them where id='quote2';"
+   type=mysql key="select * from them where id='quote2';" opts=NULL
  database lookup required for select * from them where id='quote2';
  MySQL query: select * from them where id='quote2';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -106,10 +106,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='nlonly';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='nlonly';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select * from them where id='nlonly';"
+   type=mysql key="select * from them where id='nlonly';" opts=NULL
  database lookup required for select * from them where id='nlonly';
  MySQL query: select * from them where id='nlonly';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -118,20 +118,20 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=x:127.0.0.1::1223; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=x:127.0.0.1::1223; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=x:127.0.0.1::1223; select name from them where id='ph10';"
+   type=mysql key="servers=x:127.0.0.1::1223; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=x:127.0.0.1::1223; select name from them where id='ph10';
  MySQL query: servers=x:127.0.0.1::1223; select name from them where id='ph10';
  lookup deferred: MySQL server "x" not found in mysql_servers
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=127.0.0.1::1223:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=127.0.0.1::1223:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=127.0.0.1::1223:x; select name from them where id='ph10';"
+   type=mysql key="servers=127.0.0.1::1223:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=127.0.0.1::1223:x; select name from them where id='ph10';
  MySQL query: servers=127.0.0.1::1223:x; select name from them where id='ph10';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -139,10 +139,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';"
+   type=mysql key="servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';
  MySQL query: servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -150,10 +150,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';"
+   type=mysql key="servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';
  MySQL query: servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';
  MYSQL new connection: host=ip4.ip4.ip4.ip4 port=1223 socket=NULL database=test user=root
@@ -161,10 +161,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';"
+   type=mysql key="servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';
  MySQL query: servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';
  MYSQL new connection: host=localhost port=0 socket=TESTSUITE/mysql/sock database=test user=root
@@ -172,10 +172,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+   key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');"
+   type=mysql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  MySQL query: SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -184,10 +184,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+   key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');"
+   type=mysql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  MySQL query: SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -196,10 +196,10 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0
+   key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="delete from them where id='aaaa'"
+   type=mysql key="delete from them where id='aaaa'" opts=NULL
  database lookup required for delete from them where id='aaaa'
  MySQL query: delete from them where id='aaaa'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
@@ -252,10 +252,10 @@ processing "accept" (TESTSUITE/test-config 23)
 check hosts = +relay_hosts
 search_open: mysql "NULL"
 search_find: file="NULL"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=mysql key="select * from them where id='10.0.0.0'"
+  type=mysql key="select * from them where id='10.0.0.0'" opts=NULL
 database lookup required for select * from them where id='10.0.0.0'
 MySQL query: select * from them where id='10.0.0.0'
 MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
@@ -369,10 +369,10 @@ local_part=ph10 domain=myhost.test.ex
 processing address_data
  search_open: mysql "NULL"
  search_find: file="NULL"
-   key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id='ph10'"
+   type=mysql key="select name from them where id='ph10'" opts=NULL
  database lookup required for select name from them where id='ph10'
  MySQL query: select name from them where id='ph10'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
@@ -413,10 +413,10 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 to ph10 using t1
 appendfile transport entered
  search_open: mysql "NULL"
  search_find: file="NULL"
-   key="select id from them where id='ph10'" partial=-1 affix=NULL starflags=0
+   key="select id from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select id from them where id='ph10'"
+   type=mysql key="select id from them where id='ph10'" opts=NULL
  database lookup required for select id from them where id='ph10'
  MySQL query: select id from them where id='ph10'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root

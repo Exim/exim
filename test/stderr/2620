@@ -8,10 +8,10 @@ admin user
 dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
  search_find: file="NULL"
-   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='ph10';"
+   type=pgsql key="select name from them where id='ph10';" opts=NULL
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: select name from them where id='ph10';
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
@@ -19,19 +19,19 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='ph10';"
+   type=pgsql key="select name from them where id='ph10';" opts=NULL
  cached data used for lookup of select name from them where id='ph10';
  lookup yielded: Philip Hazel
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='xxxx';"
+   type=pgsql key="select name from them where id='xxxx';" opts=NULL
  database lookup required for select name from them where id='xxxx';
  PostgreSQL query: select name from them where id='xxxx';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -40,10 +40,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='nothing';"
+   type=pgsql key="select name from them where id='nothing';" opts=NULL
  database lookup required for select name from them where id='nothing';
  PostgreSQL query: select name from them where id='nothing';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -51,10 +51,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+   key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select id,name from them where id='nothing';"
+   type=pgsql key="select id,name from them where id='nothing';" opts=NULL
  database lookup required for select id,name from them where id='nothing';
  PostgreSQL query: select id,name from them where id='nothing';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -62,10 +62,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0
+   key="delete from them where id='nonexist';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="delete from them where id='nonexist';"
+   type=pgsql key="delete from them where id='nonexist';" opts=NULL
  database lookup required for delete from them where id='nonexist';
  PostgreSQL query: delete from them where id='nonexist';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -75,10 +75,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select * from them where id='quote2';"
+   type=pgsql key="select * from them where id='quote2';" opts=NULL
  database lookup required for select * from them where id='quote2';
  PostgreSQL query: select * from them where id='quote2';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -86,10 +86,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select * from them where id='newline';"
+   type=pgsql key="select * from them where id='newline';" opts=NULL
  database lookup required for select * from them where id='newline';
  PostgreSQL query: select * from them where id='newline';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -98,10 +98,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0
+   key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select * from them where id='tab';"
+   type=pgsql key="select * from them where id='tab';" opts=NULL
  database lookup required for select * from them where id='tab';
  PostgreSQL query: select * from them where id='tab';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -109,10 +109,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="select * from them where name='''stquot';" partial=-1 affix=NULL starflags=0
+   key="select * from them where name='''stquot';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select * from them where name='''stquot';"
+   type=pgsql key="select * from them where name='''stquot';" opts=NULL
  database lookup required for select * from them where name='''stquot';
  PostgreSQL query: select * from them where name='''stquot';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -120,20 +120,20 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=x:localhost; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=x:localhost; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="servers=x:localhost; select name from them where id='ph10';"
+   type=pgsql key="servers=x:localhost; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=x:localhost; select name from them where id='ph10';
  PostgreSQL query: servers=x:localhost; select name from them where id='ph10';
  lookup deferred: PostgreSQL server "x" not found in pgsql_servers
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=localhost::1223:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=localhost::1223:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="servers=localhost::1223:x; select name from them where id='ph10';"
+   type=pgsql key="servers=localhost::1223:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost::1223:x; select name from them where id='ph10';
  PostgreSQL query: servers=localhost::1223:x; select name from them where id='ph10';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -141,10 +141,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';"
+   type=pgsql key="servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -152,10 +152,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';"
+   type=pgsql key="servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" opts=NULL
  database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
@@ -163,10 +163,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+   key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');"
+   type=pgsql key="SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  PostgreSQL query: SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -175,10 +175,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0
+   key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');"
+   type=pgsql key="SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts=NULL
  database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  PostgreSQL query: SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -187,10 +187,10 @@ dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
    cached open
  search_find: file="NULL"
-   key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0
+   key="delete from them where id='aaaa'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="delete from them where id='aaaa'"
+   type=pgsql key="delete from them where id='aaaa'" opts=NULL
  database lookup required for delete from them where id='aaaa'
  PostgreSQL query: delete from them where id='aaaa'
  PGSQL using cached connection for localhost:1223/test/CALLER
@@ -242,10 +242,10 @@ processing "accept" (TESTSUITE/test-config 26)
 check hosts = +relay_hosts
 search_open: pgsql "NULL"
 search_find: file="NULL"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select * from them where id='10.0.0.0'"
+  type=pgsql key="select * from them where id='10.0.0.0'" opts=NULL
 database lookup required for select * from them where id='10.0.0.0'
 PostgreSQL query: select * from them where id='10.0.0.0'
 PGSQL new connection: host=localhost port=1223 database=test user=CALLER
@@ -273,10 +273,10 @@ check hosts = +relay_hosts
 search_open: pgsql "NULL"
   cached open
 search_find: file="NULL"
-  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=pgsql key="select * from them where id='10.0.0.0'"
+  type=pgsql key="select * from them where id='10.0.0.0'" opts=NULL
 cached data used for lookup of select * from them where id='10.0.0.0'
 lookup failed
 host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
@@ -387,10 +387,10 @@ local_part=CALLER domain=myhost.test.ex
 processing address_data
  search_open: pgsql "NULL"
  search_find: file="NULL"
-   key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='ph10'"
+   type=pgsql key="select name from them where id='ph10'" opts=NULL
  database lookup required for select name from them where id='ph10'
  PostgreSQL query: select name from them where id='ph10'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
@@ -431,10 +431,10 @@ set_process_info: pppp delivering 10HmaX-0005vi-00 to CALLER using t1
 appendfile transport entered
  search_open: pgsql "NULL"
  search_find: file="NULL"
-   key="select id from them where id='ph10'" partial=-1 affix=NULL starflags=0
+   key="select id from them where id='ph10'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select id from them where id='ph10'"
+   type=pgsql key="select id from them where id='ph10'" opts=NULL
  database lookup required for select id from them where id='ph10'
  PostgreSQL query: select id from them where id='ph10'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
@@ -495,10 +495,10 @@ admin user
 dropping to exim gid; retaining priv uid
  search_open: pgsql "NULL"
  search_find: file="NULL"
-   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0
+   key="select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=pgsql key="select name from them where id='ph10';"
+   type=pgsql key="select name from them where id='ph10';" opts=NULL
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: select name from them where id='ph10';
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER

@@ -377,7 +377,7 @@ static int
 redis_find(void * handle __attribute__((unused)),
   const uschar * filename __attribute__((unused)),
   const uschar * command, int length, uschar ** result, uschar ** errmsg,
-  uint * do_cache)
+  uint * do_cache, const uschar * opts)
 {
 return lf_sqlperform(US"Redis", US"redis_servers", redis_servers, command,
   result, errmsg, do_cache, perform_redis_search);

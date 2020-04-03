@@ -131,7 +131,8 @@ separator, as always, is colon. */
 
 static int
 dnsdb_find(void * handle, const uschar * filename, const uschar * keystring,
- int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+ int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+ const uschar * opts)
 {
 int rc;
 int sep = 0;

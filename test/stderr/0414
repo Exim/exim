@@ -20,25 +20,25 @@ local_part=x domain=b.domain
 checking domains
 search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
 search_find: file="TESTSUITE/aux-fixed/0414.list1"
-  key="b.domain" partial=-1 affix=NULL starflags=0
+  key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
   0TESTSUITE/aux-fixed/0414.list1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
-  type=lsearch key="b.domain"
+  type=lsearch key="b.domain" opts=NULL
 file lookup required for b.domain
   in TESTSUITE/aux-fixed/0414.list1
 lookup failed
 b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? no (end of list)
 search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
 search_find: file="TESTSUITE/aux-fixed/0414.list2"
-  key="b.domain" partial=-1 affix=NULL starflags=0
+  key="b.domain" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
   0TESTSUITE/aux-fixed/0414.list2
   0TESTSUITE/aux-fixed/0414.list1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
-  type=lsearch key="b.domain"
+  type=lsearch key="b.domain" opts=NULL
 file lookup required for b.domain
   in TESTSUITE/aux-fixed/0414.list2
 lookup yielded: b.domain-data
@@ -78,13 +78,13 @@ checking domains
 search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
   cached open
 search_find: file="TESTSUITE/aux-fixed/0414.list1"
-  key="a.domain" partial=-1 affix=NULL starflags=0
+  key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
   0TESTSUITE/aux-fixed/0414.list1
   0TESTSUITE/aux-fixed/0414.list2
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
-  type=lsearch key="a.domain"
+  type=lsearch key="a.domain" opts=NULL
 file lookup required for a.domain
   in TESTSUITE/aux-fixed/0414.list1
 lookup yielded: a.domain-data
@@ -100,13 +100,13 @@ checking domains
 search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
   cached open
 search_find: file="TESTSUITE/aux-fixed/0414.list2"
-  key="a.domain" partial=-1 affix=NULL starflags=0
+  key="a.domain" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
   0TESTSUITE/aux-fixed/0414.list2
   0TESTSUITE/aux-fixed/0414.list1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
-  type=lsearch key="a.domain"
+  type=lsearch key="a.domain" opts=NULL
 file lookup required for a.domain
   in TESTSUITE/aux-fixed/0414.list2
 lookup failed

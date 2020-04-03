@@ -390,7 +390,8 @@ shared with other SQL lookups. */
 
 static int
 mysql_find(void * handle, const uschar * filename, const uschar * query,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,
   result, errmsg, do_cache, perform_mysql_search);

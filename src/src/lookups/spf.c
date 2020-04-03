@@ -65,7 +65,8 @@ if (spf_server) SPF_server_free(spf_server);
 
 static int
 spf_find(void * handle, const uschar * filename, const uschar * keystring,
-  int key_len, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int key_len, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 SPF_server_t *spf_server = handle;
 SPF_request_t *spf_request;

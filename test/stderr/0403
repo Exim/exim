@@ -89,12 +89,12 @@ local_part=userx domain=test.ex
 checking domains
 search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
 search_find: file="TESTSUITE/aux-fixed/0403.data"
-  key="test.ex" partial=-1 affix=NULL starflags=0
+  key="test.ex" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
   0TESTSUITE/aux-fixed/0403.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
-  type=lsearch key="test.ex"
+  type=lsearch key="test.ex" opts=NULL
 file lookup required for test.ex
   in TESTSUITE/aux-fixed/0403.data
 lookup yielded: [DOMAINDATA_test.ex]
@@ -103,12 +103,12 @@ checking local_parts
 search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
   cached open
 search_find: file="TESTSUITE/aux-fixed/0403.data"
-  key="userx" partial=-1 affix=NULL starflags=0
+  key="userx" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
   0TESTSUITE/aux-fixed/0403.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
-  type=lsearch key="userx"
+  type=lsearch key="userx" opts=NULL
 file lookup required for userx
   in TESTSUITE/aux-fixed/0403.data
 lookup yielded: [LOCALPARTDATA_userx]

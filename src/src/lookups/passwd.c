@@ -34,7 +34,8 @@ return (void *)(-1);     /* Just return something non-null */
 
 static int
 passwd_find(void * handle, const uschar * filename, const uschar * keystring,
-  int length, uschar ** result, uschar ** errmsg, uint * do_cache)
+  int length, uschar ** result, uschar ** errmsg, uint * do_cache,
+  const uschar * opts)
 {
 struct passwd *pw;
 

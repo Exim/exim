@@ -76,7 +76,7 @@ bad:
 static int
 lmdb_find(void * handle, const uschar * filename,
     const uschar * keystring, int length, uschar ** result, uschar ** errmsg,
-    uint * do_cache)
+    uint * do_cache, const uschar * opts)
 {
 int ret;
 MDB_val dbkey, data;
