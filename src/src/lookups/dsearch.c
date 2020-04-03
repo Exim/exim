@@ -64,6 +64,8 @@ return FALSE;
 *              Find entry point                  *
 *************************************************/
 
+#define RET_FULL	BIT(0)
+
 /* See local README for interface description. We use lstat() instead of
 scanning the directory, as it is hopefully faster to let the OS do the scanning
 for us. */
@@ -76,6 +78,7 @@ dsearch_find(void * handle, const uschar * dirname, const uschar * keystring,
 struct stat statbuf;
 int save_errno;
 uschar * filename;
+unsigned flags = 0;
 
 handle = handle;  /* Keep picky compilers happy */
 length = length;
@@ -88,12 +91,22 @@ if (Ustrchr(keystring, '/') != 0)
   return DEFER;
   }
 
+if (opts)
+  {
+  int sep = ',';
+  uschar * ele;
+
+  while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
+    if (Ustrcmp(ele, "ret=full") == 0)
+      flags |= RET_FULL;
+  }
+
 filename = string_sprintf("%s/%s", dirname, keystring);
 if (Ulstat(filename, &statbuf) >= 0)
   {
   /* Since the filename exists in the filesystem, we can return a
   non-tainted result. */
-  *result = string_copy_taint(keystring, FALSE);
+  *result = string_copy_taint(flags & RET_FULL ? filename : keystring, FALSE);
   return OK;
   }
 

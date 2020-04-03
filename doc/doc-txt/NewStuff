@@ -47,6 +47,7 @@ Version 4.94
     lookup string.  The older method fails when tainted variables are used
     in the lookup, as the filename becomes tainted.  The new method keeps the
     filename separate.
+12. An option on the dsearch lookup, to return the full path.
 
 
 

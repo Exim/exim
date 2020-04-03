@@ -172,20 +172,6 @@ if (Ustrncmp(name, "partial", 7) == 0)
 /* Now we are left with a lookup name, possibly followed by * or *@,
 and then by options starting with a "," */
 
-#ifdef old
-len = Ustrlen(ss);
-if (len >= 2 && Ustrncmp(ss + len - 2, "*@", 2) == 0)
-  {
-  *starflags |= SEARCH_STARAT;
-  len -= 2;
-  }
-else if (len >= 1 && ss[len-1]  == '*')
-  {
-  *starflags |= SEARCH_STAR;
-  len--;
-  }
-#endif
-
 len = Ustrlen(ss);
 if ((t = Ustrchr(ss, '*')))
   {
@@ -195,7 +181,14 @@ if ((t = Ustrchr(ss, '*')))
 else
   t = ss;
 
-* USS opts = (t = Ustrchr(t, ',')) ? string_copy(t+1) : NULL;
+if ((t = Ustrchr(t, ',')))
+  {
+  int l = t - ss;
+  if (l < len) len = l;
+  *opts = string_copy(t+1);
+  }
+else
+  * opts = NULL;
 
 /* Check for the individual search type. Only those that are actually in the
 binary are valid. For query-style types, "partial" and default types are
@@ -513,6 +506,7 @@ file. No need to check c->item_cache for NULL, tree_search will do so. */
 
 if (  (t = tree_search(c->item_cache, keystring))
    && (!(e = t->data.ptr)->expiry || e->expiry > time(NULL))
+   && (!opts && !e->opts  ||  opts && e->opts && Ustrcmp(opts, e->opts) == 0)
    )
   { /* Data was in the cache already; set the pointer from the tree node */
   data = e->data.ptr;
@@ -527,7 +521,8 @@ else
 
   DEBUG(D_lookup)
     {
-    if (t) debug_printf_indent("cached data found but past valid time; ");
+    if (t)
+      debug_printf_indent("cached data found but either wrong opts or dated; ");
     debug_printf_indent("%s lookup required for %s%s%s\n",
       filename ? US"file" : US"database",
       keystring,
@@ -555,12 +550,14 @@ else
     if (t)	/* Previous, out-of-date cache entry.  Update with the */
       { 	/* new result and forget the old one */
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
+      e->opts = opts;
       e->data.ptr = data;
       }
     else
       {
       e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, is_tainted(keystring));
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
+      e->opts = opts;
       e->data.ptr = data;
       t = (tree_node *)(e+1);
       memcpy(t->name, keystring, len);

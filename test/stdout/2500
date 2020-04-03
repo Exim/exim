@@ -4,4 +4,5 @@
 > fail(case): FAIL
 > Failed: failed to open TESTSUITE/AUX-fixed for directory search: No such file or directory
 > Failed: dirname '.' for dsearch is not absolute
+> ok,full:    TESTSUITE/aux-fixed/2500.tst
 > 

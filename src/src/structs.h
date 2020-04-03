@@ -727,14 +727,16 @@ typedef struct tree_node {
 /* Structure for holding time-limited data such as DNS returns.
 We use this rather than extending tree_node to avoid wasting
 space for most tree use (variables...) at the cost of complexity
-for the lookups cache */
+for the lookups cache.
+We also store any options used for the lookup. */
 
 typedef struct expiring_data {
-  time_t expiry;		  /* if nonzero, data invalid after this time */
+  time_t	expiry;		/* if nonzero, data invalid after this time */
+  const uschar * opts;		/* options, or NULL */
   union
     {
-    void  *ptr;                   /* pointer to data */
-    int val;                      /* or integer data */
+    void  *	ptr;		/* pointer to data */
+    int		val;		/* or integer data */
     } data;
 } expiring_data;
 

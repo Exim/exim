@@ -7,6 +7,7 @@ fail:       ${lookup{TESTNUM.tst}		dsearch{DIR/dir_not_here}{$value}{FAIL}}
 fail(case): ${lookup{TESTNUM.TST}		dsearch{DIR/aux-fixed}{$value}{FAIL}}
 fail(case): ${lookup{TESTNUM.TST}		dsearch{DIR/AUX-fixed}{$value}{FAIL}}
 fail(path): ${lookup{TESTNUM.tst}		dsearch{.}{$value}{OTHER}}
+ok,full:    ${lookup{TESTNUM.tst} dsearch,ret=full {DIR/aux-fixed}{$value}{FAIL}}
 ****
 #
 1

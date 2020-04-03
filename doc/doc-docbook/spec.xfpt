@@ -6777,12 +6777,24 @@ absolute
 directory path; this is searched for an entry
 whose name is the key by calling the &[lstat()]& function.
 The key may not
-contain any forward slash characters. If &[lstat()]& succeeds, the result of
-the lookup is the name of the entry, which may be a file, directory,
-symbolic link, or any other kind of directory entry.
+contain any forward slash characters.
+If &[lstat()]& succeeds then so does the lookup.
 .new
+Options for the lookup can be given by appending them after the word "dsearch",
+separated by a comma.  Options, if present, are a comma-separated list with
+each element starting with a tag name and an equals.
+
+The only option currently supported requests an alternate output value of
+the entire path for the entry. Example:
+.code
+${lookup {passwd} dsearch,ret=full {/etc}}
+.endd
+The default result is just the requested entry.
+
+The matching entry may be a file, directory,
+symbolic link, or any other kind of directory entry.
 .cindex "tainted data" "dsearch result"
-It is regarded as untainted.
+The result is regarded as untainted.
 .wen
 An example of how this
 lookup can be used to support virtual domains is given in section
