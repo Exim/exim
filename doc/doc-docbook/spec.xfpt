@@ -6780,22 +6780,31 @@ The key may not
 contain any forward slash characters.
 If &[lstat()]& succeeds then so does the lookup.
 .new
+.cindex "tainted data" "dsearch result"
+The result is regarded as untainted.
+
 Options for the lookup can be given by appending them after the word "dsearch",
-separated by a comma.  Options, if present, are a comma-separated list with
+separated by a comma.  Options, if present, are a comma-separated list having
 each element starting with a tag name and an equals.
 
-The only option currently supported requests an alternate output value of
+Two options are supported, for the return value and for filtering match
+candidates.
+The "ret" option requests an alternate result value of
 the entire path for the entry. Example:
 .code
 ${lookup {passwd} dsearch,ret=full {/etc}}
 .endd
 The default result is just the requested entry.
-
-The matching entry may be a file, directory,
-symbolic link, or any other kind of directory entry.
-.cindex "tainted data" "dsearch result"
-The result is regarded as untainted.
+The "filter" option requests that only directory entries of a given type
+are matched. The match value is one of "file", "dir" or "subdir" (the latter
+not matching "." or ".."). Example:
+.code
+${lookup {passwd} dsearch,filter=file {/etc}}
+.endd
+The default matching is for any entry type, including directories
+and symlinks.
 .wen
+
 An example of how this
 lookup can be used to support virtual domains is given in section
 &<<SECTvirtualdomains>>&.
@@ -8100,8 +8109,8 @@ daemon as in the other SQL databases.
 .oindex &%sqlite_dbfile%&
 The preferred way of specifying the file is by using the 
 &%sqlite_dbfile%& option, set to
-.wen
 an absolute path.
+.wen
 A deprecated method is available, prefixing the query with the filename
 separated by white space.
 This means that the path name cannot contain white space.
@@ -8110,6 +8119,7 @@ It also means that the query cannot use any tainted values, as that taints
 the entire query including the filename - resulting in a refusal to open
 the file.
 
+.new
 Here is a lookup expansion example:
 .code
 sqlite_dbfile = /some/thing/sqlitedb
@@ -8121,6 +8131,7 @@ In a list, the syntax is similar. For example:
 domainlist relay_to_domains = sqlite;\
    select * from relays where ip='$sender_host_address';
 .endd
+.wen
 The only character affected by the &%quote_sqlite%& operator is a single
 quote, which it doubles.
 

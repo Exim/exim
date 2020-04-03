@@ -65,6 +65,11 @@ return FALSE;
 *************************************************/
 
 #define RET_FULL	BIT(0)
+#define FILTER_TYPE	BIT(1)
+#define FILTER_ALL	BIT(1)
+#define FILTER_FILE	BIT(2)
+#define FILTER_DIR	BIT(3)
+#define FILTER_SUBDIR	BIT(4)
 
 /* See local README for interface description. We use lstat() instead of
 scanning the directory, as it is hopefully faster to let the OS do the scanning
@@ -99,10 +104,29 @@ if (opts)
   while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
     if (Ustrcmp(ele, "ret=full") == 0)
       flags |= RET_FULL;
+    else if (Ustrncmp(ele, "filter=", 7) == 0)
+      {
+      ele += 7;
+      if (Ustrcmp(ele, "file") == 0)
+	flags |= FILTER_TYPE | FILTER_FILE;
+      else if (Ustrcmp(ele, "dir") == 0)
+	flags |= FILTER_TYPE | FILTER_DIR;
+      else if (Ustrcmp(ele, "subdir") == 0)
+	flags |= FILTER_TYPE | FILTER_SUBDIR;	/* like dir but not "." or ".." */
+      }
   }
 
 filename = string_sprintf("%s/%s", dirname, keystring);
-if (Ulstat(filename, &statbuf) >= 0)
+if (  Ulstat(filename, &statbuf) >= 0
+   && (  !(flags & FILTER_TYPE)
+      || (flags & FILTER_FILE && S_ISREG(statbuf.st_mode))
+      || (  flags & (FILTER_DIR | FILTER_SUBDIR)
+       	 && S_ISDIR(statbuf.st_mode)
+	 && (  flags & FILTER_DIR
+	    || keystring[0] != '.'
+	    || keystring[1] != '.'
+	    || keystring[1] && keystring[2]
+   )  )  )  )
   {
   /* Since the filename exists in the filesystem, we can return a
   non-tainted result. */
