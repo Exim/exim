@@ -895,195 +895,198 @@ Returns:    nothing
 static void
 show_whats_supported(FILE * fp)
 {
+rmark reset_point = store_mark();
+gstring * g;
 DEBUG(D_any) {} else show_db_version(fp);
 
-fprintf(fp, "Support for:");
+g = string_cat(NULL, US"Support for:");
 #ifdef SUPPORT_CRYPTEQ
-  fprintf(fp, " crypteq");
+  g = string_cat(g, US" crypteq");
 #endif
 #if HAVE_ICONV
-  fprintf(fp, " iconv()");
+  g = string_cat(g, US" iconv()");
 #endif
 #if HAVE_IPV6
-  fprintf(fp, " IPv6");
+  g = string_cat(g, US" IPv6");
 #endif
 #ifdef HAVE_SETCLASSRESOURCES
-  fprintf(fp, " use_setclassresources");
+  g = string_cat(g, US" use_setclassresources");
 #endif
 #ifdef SUPPORT_PAM
-  fprintf(fp, " PAM");
+  g = string_cat(g, US" PAM");
 #endif
 #ifdef EXIM_PERL
-  fprintf(fp, " Perl");
+  g = string_cat(g, US" Perl");
 #endif
 #ifdef EXPAND_DLFUNC
-  fprintf(fp, " Expand_dlfunc");
+  g = string_cat(g, US" Expand_dlfunc");
 #endif
 #ifdef USE_TCP_WRAPPERS
-  fprintf(fp, " TCPwrappers");
+  g = string_cat(g, US" TCPwrappers");
 #endif
 #ifdef USE_GNUTLS
-  fprintf(fp, " GnuTLS");
+  g = string_cat(g, US" GnuTLS");
 #endif
 #ifdef USE_OPENSSL
-  fprintf(fp, " OpenSSL");
+  g = string_cat(g, US" OpenSSL");
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
-  fprintf(fp, " translate_ip_address");
+  g = string_cat(g, US" translate_ip_address");
 #endif
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES
-  fprintf(fp, " move_frozen_messages");
+  g = string_cat(g, US" move_frozen_messages");
 #endif
 #ifdef WITH_CONTENT_SCAN
-  fprintf(fp, " Content_Scanning");
+  g = string_cat(g, US" Content_Scanning");
 #endif
 #ifdef SUPPORT_DANE
-  fprintf(fp, " DANE");
+  g = string_cat(g, US" DANE");
 #endif
 #ifndef DISABLE_DKIM
-  fprintf(fp, " DKIM");
+  g = string_cat(g, US" DKIM");
 #endif
 #ifndef DISABLE_DNSSEC
-  fprintf(fp, " DNSSEC");
+  g = string_cat(g, US" DNSSEC");
 #endif
 #ifndef DISABLE_EVENT
-  fprintf(fp, " Event");
+  g = string_cat(g, US" Event");
 #endif
 #ifdef SUPPORT_I18N
-  fprintf(fp, " I18N");
+  g = string_cat(g, US" I18N");
 #endif
 #ifndef DISABLE_OCSP
-  fprintf(fp, " OCSP");
+  g = string_cat(g, US" OCSP");
 #endif
 #ifndef DISABLE_PIPE_CONNECT
-  fprintf(fp, " PIPE_CONNECT");
+  g = string_cat(g, US" PIPE_CONNECT");
 #endif
 #ifndef DISABLE_PRDR
-  fprintf(fp, " PRDR");
+  g = string_cat(g, US" PRDR");
 #endif
 #ifdef SUPPORT_PROXY
-  fprintf(fp, " PROXY");
+  g = string_cat(g, US" PROXY");
 #endif
 #ifdef SUPPORT_SOCKS
-  fprintf(fp, " SOCKS");
+  g = string_cat(g, US" SOCKS");
 #endif
 #ifdef SUPPORT_SPF
-  fprintf(fp, " SPF");
+  g = string_cat(g, US" SPF");
 #endif
 #ifdef SUPPORT_DMARC
-  fprintf(fp, " DMARC");
+  g = string_cat(g, US" DMARC");
 #endif
 #ifdef TCP_FASTOPEN
   tcp_init();
-  if (f.tcp_fastopen_ok) fprintf(fp, " TCP_Fast_Open");
+  if (f.tcp_fastopen_ok) g = string_cat(g, US" TCP_Fast_Open");
 #endif
 #ifdef EXPERIMENTAL_ARC
-  fprintf(fp, " Experimental_ARC");
+  g = string_cat(g, US" Experimental_ARC");
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  fprintf(fp, " Experimental_Brightmail");
+  g = string_cat(g, US" Experimental_Brightmail");
 #endif
 #ifdef EXPERIMENTAL_DCC
-  fprintf(fp, " Experimental_DCC");
+  g = string_cat(g, US" Experimental_DCC");
 #endif
 #ifdef EXPERIMENTAL_DSN_INFO
-  fprintf(fp, " Experimental_DSN_info");
+  g = string_cat(g, US" Experimental_DSN_info");
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  fprintf(fp, " Experimental_LMDB");
+  g = string_cat(g, US" Experimental_LMDB");
 #endif
 #ifdef EXPERIMENTAL_QUEUE_RAMP
-  fprintf(fp, " Experimental_Queue_Ramp");
+  g = string_cat(g, US" Experimental_Queue_Ramp");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
-  fprintf(fp, " Experimental_QUEUEFILE");
+  g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
 #if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
-  fprintf(fp, " Experimental_SRS");
+  g = string_cat(g, US" Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_TLS_RESUME
-  fprintf(fp, " Experimental_TLS_resume");
+  g = string_cat(g, US" Experimental_TLS_resume");
 #endif
-fprintf(fp, "\n");
+g = string_cat(g, US"\n");
 
-fprintf(fp, "Lookups (built-in):");
+g = string_cat(g, US"Lookups (built-in):");
 #if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-  fprintf(fp, " lsearch wildlsearch nwildlsearch iplsearch");
+  g = string_cat(g, US" lsearch wildlsearch nwildlsearch iplsearch");
 #endif
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-  fprintf(fp, " cdb");
+  g = string_cat(g, US" cdb");
 #endif
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-  fprintf(fp, " dbm dbmjz dbmnz");
+  g = string_cat(g, US" dbm dbmjz dbmnz");
 #endif
 #if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-  fprintf(fp, " dnsdb");
+  g = string_cat(g, US" dnsdb");
 #endif
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-  fprintf(fp, " dsearch");
+  g = string_cat(g, US" dsearch");
 #endif
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-  fprintf(fp, " ibase");
+  g = string_cat(g, US" ibase");
 #endif
 #if defined(LOOKUP_JSON) && LOOKUP_JSON!=2
-  fprintf(fp, " json");
+  g = string_cat(g, US" json");
 #endif
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
-  fprintf(fp, " ldap ldapdn ldapm");
+  g = string_cat(g, US" ldap ldapdn ldapm");
 #endif
 #ifdef EXPERIMENTAL_LMDB
-  fprintf(fp, " lmdb");
+  g = string_cat(g, US" lmdb");
 #endif
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-  fprintf(fp, " mysql");
+  g = string_cat(g, US" mysql");
 #endif
 #if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-  fprintf(fp, " nis nis0");
+  g = string_cat(g, US" nis nis0");
 #endif
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-  fprintf(fp, " nisplus");
+  g = string_cat(g, US" nisplus");
 #endif
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-  fprintf(fp, " oracle");
+  g = string_cat(g, US" oracle");
 #endif
 #if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-  fprintf(fp, " passwd");
+  g = string_cat(g, US" passwd");
 #endif
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-  fprintf(fp, " pgsql");
+  g = string_cat(g, US" pgsql");
 #endif
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
-  fprintf(fp, " redis");
+  g = string_cat(g, US" redis");
 #endif
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-  fprintf(fp, " sqlite");
+  g = string_cat(g, US" sqlite");
 #endif
 #if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-  fprintf(fp, " testdb");
+  g = string_cat(g, US" testdb");
 #endif
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-  fprintf(fp, " whoson");
+  g = string_cat(g, US" whoson");
 #endif
-fprintf(fp, "\n");
+g = string_cat(g, US"\n");
 
-auth_show_supported(fp);
-route_show_supported(fp);
-transport_show_supported(fp);
+g = auth_show_supported(g);
+g = route_show_supported(g);
+g = transport_show_supported(g);
 
 #ifdef WITH_CONTENT_SCAN
-malware_show_supported(fp);
+g = malware_show_supported(g);
 #endif
 
 if (fixed_never_users[0] > 0)
   {
   int i;
-  fprintf(fp, "Fixed never_users: ");
+  g = string_cat(g, US"Fixed never_users: ");
   for (i = 1; i <= (int)fixed_never_users[0] - 1; i++)
-    fprintf(fp, "%d:", (unsigned int)fixed_never_users[i]);
-  fprintf(fp, "%d\n", (unsigned int)fixed_never_users[i]);
+    string_fmt_append(g, "%u:", (unsigned)fixed_never_users[i]);
+  g = string_fmt_append(g, "%u\n", (unsigned)fixed_never_users[i]);
   }
 
-fprintf(fp, "Configure owner: %d:%d\n", config_uid, config_gid);
+g = string_fmt_append(g, "Configure owner: %d:%d\n", config_uid, config_gid);
+fputs(CS string_from_gstring(g), fp);
 
 fprintf(fp, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 
@@ -1163,6 +1166,7 @@ show_db_version(fp);
 #endif
 
 } while (0);
+store_reset(reset_point);
 }
 
 

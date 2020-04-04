@@ -119,7 +119,7 @@ extern int     auth_get_data(uschar **, const uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
 extern int     auth_prompt(const uschar *);
 extern int     auth_read_input(const uschar *);
-extern void    auth_show_supported(FILE *);
+extern gstring * auth_show_supported(gstring *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
@@ -312,7 +312,7 @@ extern void    mainlog_close(void);
 extern int     malware(const uschar *, int);
 extern int     malware_in_file(uschar *);
 extern void    malware_init(void);
-extern void    malware_show_supported(FILE *);
+extern gstring * malware_show_supported(gstring *);
 #endif
 extern int     match_address_list(const uschar *, BOOL, BOOL, const uschar **,
                  unsigned int *, int, int, const uschar **);
@@ -436,7 +436,7 @@ extern BOOL    route_find_expanded_group(uschar *, uschar *, uschar *, gid_t *,
 extern BOOL    route_find_expanded_user(uschar *, uschar *, uschar *,
                  struct passwd **, uid_t *, uschar **);
 extern void    route_init(void);
-extern void    route_show_supported(FILE *);
+extern gstring * route_show_supported(gstring *);
 extern void    route_tidyup(void);
 
 extern uschar *search_find(void *, const uschar *, uschar *, int,
@@ -577,7 +577,7 @@ extern void    transport_write_reset(int);
 extern BOOL    transport_write_string(int, const char *, ...);
 extern BOOL    transport_headers_send(transport_ctx *,
                  BOOL (*)(transport_ctx *, uschar *, int));
-extern void    transport_show_supported(FILE *);
+extern gstring * transport_show_supported(gstring *);
 extern BOOL    transport_write_message(transport_ctx *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);
 extern void    tree_add_nonrecipient(uschar *);

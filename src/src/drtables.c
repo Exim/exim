@@ -201,15 +201,6 @@ auth_info auths_available[] = {
   { .driver_name = US"" }		/* end marker */
 };
 
-void
-auth_show_supported(FILE * f)
-{
-fprintf(f, "Authenticators:");
-for (auth_info * ai = auths_available; ai->driver_name[0]; ai++)
-       	fprintf(f, " %s", ai->driver_name);
-fprintf(f, "\n");
-}
-
 
 /* Tables of information about which routers and transports are included in the
 exim binary. */
@@ -369,17 +360,6 @@ router_info routers_available[] = {
 };
 
 
-void
-route_show_supported(FILE * f)
-{
-fprintf(f, "Routers:");
-for (router_info * rr = routers_available; rr->driver_name[0]; rr++)
-       	fprintf(f, " %s", rr->driver_name);
-fprintf(f, "\n");
-}
-
-
-
 
 transport_info transports_available[] = {
 #ifdef TRANSPORT_APPENDFILE
@@ -469,42 +449,61 @@ transport_info transports_available[] = {
   { US"" }
 };
 
-void
-transport_show_supported(FILE * f)
+#ifndef MACRO_PREDEF
+
+gstring *
+auth_show_supported(gstring * g)
 {
-fprintf(f, "Transports:");
+g = string_cat(g, US"Authenticators:");
+for (auth_info * ai = auths_available; ai->driver_name[0]; ai++)
+       	g = string_fmt_append(g, " %s", ai->driver_name);
+return string_cat(g, US"\n");
+}
+
+gstring *
+route_show_supported(gstring * g)
+{
+g = string_cat(g, US"Routers:");
+for (router_info * rr = routers_available; rr->driver_name[0]; rr++)
+       	g = string_fmt_append(g, " %s", rr->driver_name);
+return string_cat(g, US"\n");
+}
+
+gstring *
+transport_show_supported(gstring * g)
+{
+g = string_cat(g, US"Transports:");
 #ifdef TRANSPORT_APPENDFILE
-  fprintf(f, " appendfile");
+  g = string_cat(g, US" appendfile");
   #ifdef SUPPORT_MAILDIR
-    fprintf(f, "/maildir");	/* damn these subclasses */
+    g = string_cat(g, US"/maildir");	/* damn these subclasses */
   #endif
   #ifdef SUPPORT_MAILSTORE
-    fprintf(f, "/mailstore");
+    g = string_cat(g, US"/mailstore");
   #endif
   #ifdef SUPPORT_MBX
-    fprintf(f, "/mbx");
+    g = string_cat(g, US"/mbx");
   #endif
 #endif
 #ifdef TRANSPORT_AUTOREPLY
-  fprintf(f, " autoreply");
+  g = string_cat(g, US" autoreply");
 #endif
 #ifdef TRANSPORT_LMTP
-  fprintf(f, " lmtp");
+  g = string_cat(g, US" lmtp");
 #endif
 #ifdef TRANSPORT_PIPE
-  fprintf(f, " pipe");
+  g = string_cat(g, US" pipe");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
-  fprintf(f, " queuefile");
+  g = string_cat(g, US" queuefile");
 #endif
 #ifdef TRANSPORT_SMTP
-  fprintf(f, " smtp");
+  g = string_cat(g, US" smtp");
 #endif
-fprintf(f, "\n");
+return string_cat(g, US"\n");
 }
 
 
-#ifndef MACRO_PREDEF
 
 struct lookupmodulestr
 {
