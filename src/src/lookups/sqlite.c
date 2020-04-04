@@ -79,7 +79,7 @@ sqlite_find(void * handle, const uschar * filename, const uschar * query,
 int ret;
 gstring * res = NULL;
 
-ret = sqlite3_exec(handle, CS query, sqlite_callback, &res, (char **)errmsg);
+ret = sqlite3_exec(handle, CS query, sqlite_callback, &res, CSS errmsg);
 if (ret != SQLITE_OK)
   {
   debug_printf_indent("sqlite3_exec failed: %s\n", *errmsg);

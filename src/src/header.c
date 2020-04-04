@@ -321,9 +321,8 @@ while (bot < top)
 
   if (c == 0)
     {
-    uschar *s = text + mid->len;
-    while (isspace(*s)) s++;
-    if (*s == ':')
+    uschar * s = text + mid->len;
+    if (Uskip_whitespace(&s) == ':')
       return (!is_resent || mid->allow_resent)? mid->htype : htype_other;
     c = 1;
     }

@@ -1298,14 +1298,14 @@ decode_bits(unsigned int *selector, size_t selsize, int *notall,
   uschar *string, bit_table *options, int count, uschar *which, int flags)
 {
 uschar *errmsg;
-if (string == NULL) return;
+if (!string) return;
 
 if (*string == '=')
   {
   char *end;    /* Not uschar */
   memset(selector, 0, sizeof(*selector)*selsize);
   *selector = strtoul(CS string+1, &end, 0);
-  if (*end == 0) return;
+  if (!*end) return;
   errmsg = string_sprintf("malformed numeric %s_selector setting: %s", which,
     string);
   goto ERROR_RETURN;
@@ -1320,8 +1320,8 @@ else for(;;)
   int len;
   bit_table *start, *end;
 
-  while (isspace(*string)) string++;
-  if (*string == 0) return;
+  Uskip_whitespace(&string);
+  if (!*string) return;
 
   if (*string != '+' && *string != '-')
     {
@@ -1343,7 +1343,6 @@ else for(;;)
     bit_table *middle = start + (end - start)/2;
     int c = Ustrncmp(s, middle->name, len);
     if (c == 0)
-      {
       if (middle->name[len] != 0) c = -1; else
         {
         unsigned int bit = middle->bit;
@@ -1365,7 +1364,6 @@ else for(;;)
 
         break;  /* Out of loop to match selector name */
         }
-      }
     if (c < 0) end = middle; else start = middle + 1;
     }  /* Loop to match selector name */
 

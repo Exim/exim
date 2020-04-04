@@ -2417,7 +2417,7 @@ for (int i = 0; i < recipients_count; i++)
 
     colon = Ustrchr(h->text, ':');
     s = colon + 1;
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
 
     /* Loop for multiple addresses in the header, enabling group syntax. Note
     that we have to reset this after the header has been scanned. */
@@ -2455,7 +2455,7 @@ for (int i = 0; i < recipients_count; i++)
       /* Advance to the next address */
 
       s = ss + (terminator ? 1:0);
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       }   /* Next address */
 
     f.parse_allow_group = FALSE;

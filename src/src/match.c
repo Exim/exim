@@ -276,14 +276,14 @@ if (!cb->use_partial) partial = -1;
 /* Set the parameters for the three different kinds of lookup. */
 
 keyquery = semicolon + 1;
-while (isspace(*keyquery)) keyquery++;
+Uskip_whitespace(&keyquery);
 
 if (mac_islookup(search_type, lookup_absfilequery))
   {
   filename = keyquery;
-  while (*keyquery != 0 && !isspace(*keyquery)) keyquery++;
+  while (*keyquery && !isspace(*keyquery)) keyquery++;
   filename = string_copyn(filename, keyquery - filename);
-  while (isspace(*keyquery)) keyquery++;
+  Uskip_whitespace(&keyquery);
   }
 
 else if (!mac_islookup(search_type, lookup_querystyle))
@@ -301,7 +301,7 @@ if (!(handle = search_open(filename, search_type, 0, NULL, NULL)))
 result = search_find(handle, filename, keyquery, partial, affix, affixlen,
   starflags, &expand_setup, opts);
 
-if (!result) return f.search_find_defer? DEFER : FAIL;
+if (!result) return f.search_find_defer ? DEFER : FAIL;
 if (valueptr) *valueptr = result;
 
 expand_nmax = expand_setup;

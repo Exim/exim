@@ -63,7 +63,7 @@ if (!message_id)
     if (h->type == htype_id)
       {
       message_id = Ustrchr(h->text, ':') + 1;
-      while (isspace(*message_id)) message_id++;
+      Uskip_whitespace(&message_id);
       }
 
 for (h = header_list; h; h = h->next)

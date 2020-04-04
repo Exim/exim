@@ -289,9 +289,9 @@ for (int i = 0; i < 5; i++)
        rest += sizeof("/no_check") - 1;
       }
 
-    while (isspace(*rest)) rest++;
+    Uskip_whitespace(&rest);
 
-    if (*rest != 0)
+    if (*rest)
       {
       *errmsg = string_sprintf("Malformed value \"%s\" (expansion of \"%s\") "
         "in %s transport", s, q, tblock->name);

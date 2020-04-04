@@ -692,7 +692,7 @@ while (isalnum(*s) || *s == '_')
   }
 name[namelen] = 0;
 
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 if (*s++ != '=')
   {
   log_write(0, LOG_PANIC|LOG_CONFIG_IN, "malformed macro definition");
@@ -704,7 +704,7 @@ if (*s == '=')
   redef = TRUE;
   s++;
   }
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 
 /* If an existing macro of the same name was defined on the command line, we
 just skip this definition. It's an error to attempt to redefine a macro without
@@ -796,7 +796,7 @@ uschar * s;
 /* Find the true start of the physical line - leading spaces are always
 ignored. */
 
-while (isspace(*ss)) ss++;
+Uskip_whitespace(&ss);
 
 /* Process the physical line for macros. If this is the start of the logical
 line, skip over initial text at the start of the line if it starts with an
@@ -808,8 +808,7 @@ s = ss;
 if (len == 0 && isupper(*s))
   {
   while (isalnum(*s) || *s == '_') s++;
-  while (isspace(*s)) s++;
-  if (*s != '=') s = ss;          /* Not a macro definition */
+  if (Uskip_whitespace(&s) != '=') s = ss;          /* Not a macro definition */
   }
 
 /* Skip leading chars which cannot start a macro name, to avoid multiple
@@ -872,7 +871,7 @@ if (*s) for (macro_item * m = *s == '_' ? macros : macros_user; m; m = m->next)
 /* An empty macro replacement at the start of a line could mean that ss no
 longer points to the first non-blank character. */
 
-while (isspace(*ss)) ss++;
+Uskip_whitespace(&ss);
 return ss;
 }
 
@@ -1045,7 +1044,7 @@ for (;;)
     struct stat statbuf;
 
     ss += 9 + include_if_exists;
-    while (isspace(*ss)) ss++;
+    Uskip_whitespace(&ss);
     t = ss + Ustrlen(ss);
     while (t > ss && isspace(t[-1])) t--;
     if (*ss == '\"' && t[-1] == '\"')
@@ -1136,7 +1135,7 @@ if (config_lines)
 if (strncmpic(s, US"begin ", 6) == 0)
   {
   s += 6;
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
   if (big_buffer + len - s > sizeof(next_section) - 2)
     s[sizeof(next_section) - 2] = 0;
   Ustrcpy(next_section, s);
@@ -1170,17 +1169,16 @@ uschar *
 readconf_readname(uschar *name, int len, uschar *s)
 {
 int p = 0;
-while (isspace(*s)) s++;
-if (isalpha(*s))
-  {
+
+if (isalpha(Uskip_whitespace(&s)))
   while (isalnum(*s) || *s == '_')
     {
     if (p < len-1) name[p++] = *s;
     s++;
     }
-  }
+
 name[p] = 0;
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 return s;
 }
 
@@ -1416,15 +1414,15 @@ rewrite_rule *next = store_get(sizeof(rewrite_rule), FALSE);
 next->next = NULL;
 next->key = string_dequote(&p);
 
-while (isspace(*p)) p++;
-if (*p == 0)
+Uskip_whitespace(&p);
+if (!*p)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
     "missing rewrite replacement string");
 
 next->flags = 0;
 next->replacement = string_dequote(&p);
 
-while (*p != 0) switch (*p++)
+while (*p) switch (*p++)
   {
   case ' ': case '\t': break;
 
@@ -3001,13 +2999,13 @@ if (*numberp >= max)
  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "too many named %ss (max is %d)\n",
    tname, max);
 
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 ss = s;
 while (isalnum(*s) || *s == '_') s++;
 t = store_get(sizeof(tree_node) + s-ss, is_tainted(ss));
 Ustrncpy(t->name, ss, s-ss);
 t->name[s-ss] = 0;
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 
 if (!tree_insertnode(anchorp, t))
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
@@ -3020,7 +3018,7 @@ nb->hide = hide;
 
 if (*s++ != '=') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
   "missing '=' after \"%s\"", t->name);
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 nb->string = read_string(s, t->name);
 nb->cache_data = NULL;
 
@@ -3763,7 +3761,7 @@ while ((buffer = get_config_line()))
 
     /* Check nothing more on this line, then do the next loop iteration. */
 
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     if (*s) extra_chars_error(s, US"driver name ", name, US"");
     continue;
     }
@@ -4016,7 +4014,7 @@ const uschar *pp;
 
 if (*p++ != ',') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "comma expected");
 
-while (isspace(*p)) p++;
+Uskip_whitespace(&p);
 pp = p;
 while (isalnum(*p) || (type == 1 && *p == '.')) p++;
 
@@ -4057,7 +4055,7 @@ while ((p = get_config_line()))
   rchain = &(next->rules);
 
   next->pattern = string_dequote(&p);
-  while (isspace(*p)) p++;
+  Uskip_whitespace(&p);
   pp = p;
   while (mac_isgraph(*p)) p++;
   if (p - pp <= 0) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
@@ -4074,22 +4072,22 @@ while ((p = get_config_line()))
   fudge. Anything that is not a retry rule starting "F," or "G," is treated as
   an address list. */
 
-  while (isspace(*p)) p++;
+  Uskip_whitespace(&p);
   if (Ustrncmp(p, "senders", 7) == 0)
     {
     p += 7;
-    while (isspace(*p)) p++;
+    Uskip_whitespace(&p);
     if (*p++ != '=') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
       "\"=\" expected after \"senders\" in retry rule");
-    while (isspace(*p)) p++;
+    Uskip_whitespace(&p);
     next->senders = string_dequote(&p);
     }
 
   /* Now the retry rules. Keep the maximum timeout encountered. */
 
-  while (isspace(*p)) p++;
+  Uskip_whitespace(&p);
 
-  while (*p != 0)
+  while (*p)
     {
     retry_rule *rule = store_get(sizeof(retry_rule), FALSE);
     *rchain = rule;
@@ -4122,13 +4120,12 @@ while ((p = get_config_line()))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
         "bad parameters for retry rule");
 
-    while (isspace(*p)) p++;
-    if (*p == ';')
+    if (Uskip_whitespace(&p) == ';')
       {
       p++;
-      while (isspace(*p)) p++;
+      Uskip_whitespace(&p);
       }
-    else if (*p != 0)
+    else if (*p)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "semicolon expected");
     }
   }

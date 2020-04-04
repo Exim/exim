@@ -197,10 +197,10 @@ last_comment_position = s;
 while (*s)
   {
   int c, level;
-  while (isspace(*s)) s++;
-  if (*s != '(') break;
+
+  if (Uskip_whitespace(&s) != '(') break;
   level = 1;
-  while((c = *(++s)) != 0)
+  while((c = *(++s)))
     {
     if (c == '(') level++;
     else if (c == ')') { if (--level <= 0) { s++; break; } }
@@ -2190,7 +2190,7 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
       }
 
     s = ss + (terminator? 1:0);
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     }
   }
 

@@ -1629,7 +1629,6 @@ uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
 size_t sz;
-rmark reset_point;
 
 struct passwd *pw;
 struct stat statbuf;
@@ -1948,11 +1947,16 @@ running in an unprivileged state. */
 
 unprivileged = (real_uid != root_uid && original_euid != root_uid);
 
+/* For most of the args-parsing we need to use permanent pool memory */
+ {
+ int old_pool = store_pool;
+ store_pool = POOL_PERM;
+
 /* Scan the program's arguments. Some can be dealt with right away; others are
 simply recorded for checking and handling afterwards. Do a high-level switch
 on the second character (the one after '-'), to save some effort. */
 
-for (i = 1; i < argc; i++)
+ for (i = 1; i < argc; i++)
   {
   BOOL badarg = FALSE;
   uschar * arg = argv[i];
@@ -2401,11 +2405,14 @@ for (i = 1; i < argc; i++)
 	    else
               {
               /* Well, the trust list at least is up to scratch... */
-              rmark reset_point = store_mark();
+              rmark reset_point;
               uschar *trusted_configs[32];
               int nr_configs = 0;
               int i = 0;
+	      int old_pool = store_pool;
+	      store_pool = POOL_MAIN;
 
+              reset_point = store_mark();
               while (Ufgets(big_buffer, big_buffer_size, trust_list))
                 {
                 uschar *start = big_buffer, *nl;
@@ -2443,6 +2450,7 @@ for (i = 1; i < argc; i++)
               else	/* No valid prefixes found in trust_list file. */
                 f.trusted_config = FALSE;
               store_reset(reset_point);
+	      store_pool = old_pool;
               }
 	    }
           else		/* Could not open trust_list file. */
@@ -3210,20 +3218,16 @@ for (i = 1; i < argc; i++)
 
     if (*argrest)
       {
-      uschar *hn;
+      uschar * hn = Ustrchr(argrest, ':');
 
       if (received_protocol)
         exim_fail("received_protocol is set already\n");
 
-      hn = Ustrchr(argrest, ':');
       if (!hn)
         received_protocol = string_copy_taint(argrest, TRUE);
       else
         {
-	int old_pool = store_pool;
-	store_pool = POOL_PERM;
         received_protocol = string_copyn_taint(argrest, hn - argrest, TRUE);
-	store_pool = old_pool;
         sender_host_name = string_copy_taint(hn + 1, TRUE);
         }
       }
@@ -3482,12 +3486,15 @@ for (i = 1; i < argc; i++)
 
 /* If -R or -S have been specified without -q, assume a single queue run. */
 
-if (  (deliver_selectstring || deliver_selectstring_sender)
-   && queue_interval < 0)
-    queue_interval = 0;
+ if (  (deliver_selectstring || deliver_selectstring_sender)
+    && queue_interval < 0)
+  queue_interval = 0;
 
 
 END_ARG:
+ store_pool = old_pool;
+ }
+
 /* If usage_wanted is set we call the usage function - which never returns */
 if (usage_wanted) exim_usage(called_as);
 
@@ -5088,6 +5095,7 @@ if (host_checking)
 
   if (smtp_start_session())
     {
+    rmark reset_point;
     for (; (reset_point = store_mark()); store_reset(reset_point))
       {
       if (smtp_setup_msg() <= 0) break;
@@ -5339,7 +5347,7 @@ collapsed). */
 
 while (more)
   {
-  reset_point = store_mark();
+  rmark reset_point = store_mark();
   message_id[0] = 0;
 
   /* Handle the SMTP case; call smtp_setup_mst() to deal with the initial SMTP

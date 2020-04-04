@@ -3194,7 +3194,7 @@ for (;;)
     {
     smtp_printf("%.3s-%.*s%.*s\r\n", TRUE, code, esclen, esc, (int)(nl - msg), msg);
     msg = nl + 1;
-    while (isspace(*msg)) msg++;
+    Uskip_whitespace(&msg);
     }
   }
 }

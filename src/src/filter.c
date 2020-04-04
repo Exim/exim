@@ -2386,12 +2386,11 @@ Previously the test was for "auto-". */
 
 for (h = header_list; h; h = h->next)
   {
-  uschar *s;
   if (h->type == htype_old) continue;
 
   if (strncmpic(h->text, US"List-", 5) == 0)
     {
-    s = h->text + 5;
+    uschar * s = h->text + 5;
     if (strncmpic(s, US"Id:", 3) == 0 ||
         strncmpic(s, US"Help:", 5) == 0 ||
         strncmpic(s, US"Subscribe:", 10) == 0 ||
@@ -2404,12 +2403,12 @@ for (h = header_list; h; h = h->next)
 
   else if (strncmpic(h->text, US"Auto-submitted:", 15) == 0)
     {
-    s = h->text + 15;
-    while (isspace(*s)) s++;
+    uschar * s = h->text + 15;
+    Uskip_whitespace(&s);
     if (strncmpic(s, US"no", 2) != 0) return FALSE;
     s += 2;
-    while (isspace(*s)) s++;
-    if (*s != 0) return FALSE;
+    Uskip_whitespace(&s);
+    if (*s) return FALSE;
     }
   }
 
@@ -2422,13 +2421,13 @@ self_to   = rewrite_one(self, rewrite_to, NULL, FALSE, US"",
   global_rewrite_rules);
 
 
-if (self_from == NULL) self_from = self;
-if (self_to == NULL) self_to = self;
+if (!self_from) self_from = self;
+if (self_to) self_to = self;
 
 /* If there's a prefix or suffix set, we must include the prefixed/
 suffixed version of the local part in the tests. */
 
-if (deliver_localpart_prefix != NULL || deliver_localpart_suffix != NULL)
+if (deliver_localpart_prefix || deliver_localpart_suffix)
   {
   psself = string_sprintf("%s%s%s@%s",
     (deliver_localpart_prefix == NULL)? US"" : deliver_localpart_prefix,

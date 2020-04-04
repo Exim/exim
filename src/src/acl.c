@@ -732,7 +732,7 @@ uschar * s;
 
 *error = NULL;
 
-while ((s = (*func)()) != NULL)
+while ((s = (*func)()))
   {
   int v, c;
   BOOL negated = FALSE;
@@ -742,8 +742,7 @@ while ((s = (*func)()) != NULL)
   /* Conditions (but not verbs) are allowed to be negated by an initial
   exclamation mark. */
 
-  while (isspace(*s)) s++;
-  if (*s == '!')
+  if (Uskip_whitespace(&s) == '!')
     {
     negated = TRUE;
     s++;
@@ -859,7 +858,7 @@ while ((s = (*func)()) != NULL)
 	}
       cond->u.varname = string_copyn(s, 18);
       s = endptr;
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       }
     else
 #endif
@@ -895,7 +894,7 @@ while ((s = (*func)()) != NULL)
 
     cond->u.varname = string_copyn(s + 4, endptr - s - 4);
     s = endptr;
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     }
 
   /* For "set", we are now positioned for the data. For the others, only
@@ -909,7 +908,7 @@ while ((s = (*func)()) != NULL)
         conditions[c].is_modifier ? US"modifier" : US"condition");
       return NULL;
       }
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     cond->arg = string_copy(s);
     }
   }
@@ -3843,16 +3842,16 @@ uschar *yield;
 
 for(;;)
   {
-  while (isspace(*acl_text)) acl_text++;   /* Leading spaces/empty lines */
-  if (*acl_text == 0) return NULL;         /* No more data */
-  yield = acl_text;                        /* Potential data line */
+  Uskip_whitespace(&acl_text);   	/* Leading spaces/empty lines */
+  if (!*acl_text) return NULL;		/* No more data */
+  yield = acl_text;			/* Potential data line */
 
   while (*acl_text && *acl_text != '\n') acl_text++;
 
   /* If we hit the end before a newline, we have the whole logical line. If
   it's a comment, there's no more data to be given. Otherwise, yield it. */
 
-  if (*acl_text == 0) return (*yield == '#')? NULL : yield;
+  if (!*acl_text) return *yield == '#' ? NULL : yield;
 
   /* After reaching a newline, end this loop if the physical line does not
   start with '#'. If it does, it's a comment, and the loop continues. */

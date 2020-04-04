@@ -1174,7 +1174,7 @@ static uschar *
 expand_getkeyed(uschar * key, const uschar * s)
 {
 int length = Ustrlen(key);
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 
 /* Loop to search for the key */
 
@@ -1186,14 +1186,13 @@ while (*s)
 
   while (*s && *s != '=' && !isspace(*s)) s++;
   dkeylength = s - dkey;
-  while (isspace(*s)) s++;
-  if (*s == '=') while (isspace((*(++s))));
+  if (Uskip_whitespace(&s) == '=') while (isspace((*(++s))));
 
   data = string_dequote(&s);
   if (length == dkeylength && strncmpic(key, dkey, length) == 0)
     return data;
 
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
   }
 
 return NULL;
@@ -2044,7 +2043,7 @@ switch (vp->type)
     s = find_header(US"reply-to:", newsize,
 		exists_only ? FH_EXISTS_ONLY|FH_WANT_RAW : FH_WANT_RAW,
 		headers_charset);
-    if (s) while (isspace(*s)) s++;
+    if (s) Uskip_whitespace(&s);
     if (!s || !*s)
       {
       *newsize = 0;                            /* For the *s==0 case */
@@ -2055,8 +2054,8 @@ switch (vp->type)
     if (s)
       {
       uschar *t;
-      while (isspace(*s)) s++;
-      for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
+      Uskip_whitespace(&s);
+      for (t = s; *t; t++) if (*t == '\n') *t = ' ';
       while (t > s && isspace(t[-1])) t--;
       *t = 0;
       }
@@ -2144,7 +2143,7 @@ read_subs(uschar **sub, int n, int m, const uschar **sptr, BOOL skipping,
 {
 const uschar *s = *sptr;
 
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 for (int i = 0; i < n; i++)
   {
   if (*s != '{')
@@ -2161,7 +2160,7 @@ for (int i = 0; i < n; i++)
   if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, resetok)))
     return 3;
   if (*s++ != '}') return 1;
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
   }
 if (check_end && *s++ != '}')
   {
@@ -2284,9 +2283,7 @@ uschar * p = s;
 unsigned depth = 0;
 BOOL quotesmode = wrap[0] == wrap[1];
 
-while (isspace(*p)) p++;
-
-if (*p == *wrap)
+if (Uskip_whitespace(&p) == *wrap)
   {
   s = ++p;
   wrap++;
@@ -4026,8 +4023,7 @@ int c;
 int_eximarith_t n;
 uschar *s = *sptr;
 
-while (isspace(*s)) s++;
-if (isdigit((c = *s)))
+if (isdigit((c = Uskip_whitespace(&s))))
   {
   int count;
   (void)sscanf(CS s, (decimal? SC_EXIM_DEC "%n" : SC_EXIM_ARITH "%n"), &n, &count);
@@ -4039,7 +4035,7 @@ if (isdigit((c = *s)))
     case 'm': n *= 1024*1024; s++; break;
     case 'g': n *= 1024*1024*1024; s++; break;
     }
-  while (isspace (*s)) s++;
+  Uskip_whitespace(&s);
   }
 else if (c == '(')
   {
@@ -4061,7 +4057,7 @@ eval_op_unary(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
 int_eximarith_t x;
-while (isspace(*s)) s++;
+Uskip_whitespace(&s);
 if (*s == '+' || *s == '-' || *s == '~')
   {
   int op = *s++;
@@ -4819,12 +4815,12 @@ while (*s != 0)
       kinds. Allow everything except space or { to appear; the actual content
       is checked by search_findtype_partial. */		/*}*/
 
-      while (*s != 0 && *s != '{' && !isspace(*s))	/*}*/
+      while (*s && *s != '{' && !isspace(*s))		/*}*/
         {
         if (nameptr < sizeof(name) - 1) name[nameptr++] = *s;
         s++;
         }
-      name[nameptr] = 0;
+      name[nameptr] = '\0';
       while (isspace(*s)) s++;
 
       /* Now check for the individual search type and any partial or default

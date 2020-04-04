@@ -63,8 +63,8 @@ if (is_tainted(expint))
   return FALSE;
   }
 
-while (isspace(*expint)) expint++;
-if (*expint == 0) return TRUE;
+Uskip_whitespace(&expint);
+if (!*expint) return TRUE;
 
 while ((iface = string_nextinlist(&expint, &sep, big_buffer,
           big_buffer_size)))

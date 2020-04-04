@@ -13,6 +13,7 @@ are in in fact in separate headers. */
 #ifndef _FUNCTIONS_H_
 #define _FUNCTIONS_H_
 
+#include <ctype.h>
 #include <sys/time.h>
 
 
@@ -664,6 +665,15 @@ if (!is_tainted(dst) && is_tainted(src)) die_tainted(US"Ustrncpy", CUS func, lin
 return US strncpy(CS dst, CCS src, n);
 }
 /*XXX will likely need unchecked copy also */
+
+
+/* Advance the string pointer given over any whitespace.
+Return the next char as there's enought places using it to be useful. */
+
+#define Uskip_whitespace(sp) skip_whitespace(CUSS sp)
+
+static inline uschar skip_whitespace(const uschar ** sp)
+{ while (isspace(**sp)) (*sp)++; return **sp; }
 
 
 /******************************************************************************/

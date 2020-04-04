@@ -42,7 +42,7 @@ Returns:   FILTER_EXIM    if it starts with "# Exim filter"
 static BOOL
 match_tag(const uschar *s, const uschar *tag)
 {
-for (; *tag != 0; s++, tag++)
+for (; *tag; s++, tag++)
   if (*tag == ' ')
     {
     while (*s == ' ' || *s == '\t') s++;
@@ -60,10 +60,10 @@ tags for other types of filter. */
 int
 rda_is_filter(const uschar *s)
 {
-while (isspace(*s)) s++;     /* Skips initial blank lines */
-if (match_tag(s, CUS"# exim filter")) return FILTER_EXIM;
-  else if (match_tag(s, CUS"# sieve filter")) return FILTER_SIEVE;
-    else return FILTER_FORWARD;
+Uskip_whitespace(&s);			/* Skips initial blank lines */
+if (match_tag(s, CUS"# exim filter"))		return FILTER_EXIM;
+else if (match_tag(s, CUS"# sieve filter"))	return FILTER_SIEVE;
+else						return FILTER_FORWARD;
 }
 
 
