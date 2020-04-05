@@ -8016,12 +8016,14 @@ The &%quote_redis%& expansion operator
 escapes whitespace and backslash characters with a backslash.
 
 .section "Specifying the server in the query" "SECTspeserque"
+.new
 For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle and InterBase),
 it is possible to specify a list of servers with an individual query. This is
-done by starting the query with
+done by appending a comma-separated option to the query type:
 .display
-&`servers=`&&'server1:server2:server3:...'&&`;`&
 .endd
+&`,servers=`&&'server1:server2:server3:...'&
+.wen
 Each item in the list may take one of two forms:
 .olist
 If it contains no slashes it is assumed to be just a host name. The appropriate
@@ -8046,14 +8048,25 @@ mysql_servers = slave1/db/name/pw:\
 .endd
 In an updating lookup, you could then write:
 .code
-${lookup mysql{servers=master; UPDATE ...} }
+${lookup mysql,servers=master {UPDATE ...} }
 .endd
 That query would then be sent only to the master server. If, on the other hand,
 the master is not to be used for reading, and so is not present in the global
 option, you can still update it by a query of this form:
 .code
-${lookup pgsql{servers=master/db/name/pw; UPDATE ...} }
+${lookup pgsql,servers=master/db/name/pw {UPDATE ...} }
 .endd
+
+.new
+An older syntax places the servers speciification before the qury,
+semicolon separated:
+.code
+${lookup mysql{servers=master; UPDATE ...} }
+.endd
+The new version avoids potential issues with tainted
+arguments in the query, for explicit expansion.
+&*Note*&: server specifications in list-style lookups are still problematic.
+.wen
 
 
 .section "Special MySQL features" "SECID73"
@@ -8618,6 +8631,14 @@ example, it doesn't matter what field you select). Exim is interested only in
 whether or not the query succeeds. However, when a lookup is used for the
 &%domains%& option on a router, the data is preserved in the &$domain_data$&
 variable and can be referred to in other options.
+.next
+.new
+If the pattern starts with the name of a lookup type
+of either kind (single-key or query-style) it may be
+followed by a command and options,
+The options are lookup-type specific and consist of a comma-separated list.
+Each item starts with a tag and and equals "=".
+.wen
 .next
 .cindex "domain list" "matching literal domain name"
 If none of the above cases apply, a caseless textual comparison is made

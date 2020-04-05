@@ -3477,13 +3477,13 @@ for (; cb; cb = cb->next)
       {
       uschar *endcipher = NULL;
       uschar *cipher = Ustrchr(tls_in.cipher, ':');
-      if (cipher == NULL) cipher = tls_in.cipher; else
+      if (!cipher) cipher = tls_in.cipher; else
         {
         endcipher = Ustrchr(++cipher, ':');
-        if (endcipher != NULL) *endcipher = 0;
+        if (endcipher) *endcipher = 0;
         }
       rc = match_isinlist(cipher, &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
-      if (endcipher != NULL) *endcipher = ':';
+      if (endcipher) *endcipher = ':';
       }
     break;
 
@@ -3496,8 +3496,7 @@ for (; cb; cb = cb->next)
 
     case ACLC_HOSTS:
     rc = verify_check_this_host(&arg, sender_host_cache, NULL,
-      (sender_host_address == NULL)? US"" : sender_host_address,
-      CUSS &host_data);
+      sender_host_address ? sender_host_address : US"", CUSS &host_data);
     if (rc == DEFER) *log_msgptr = search_error_message;
     if (host_data) host_data = string_copy_perm(host_data, TRUE);
     break;

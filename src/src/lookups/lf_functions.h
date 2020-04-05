@@ -12,7 +12,8 @@ extern int     lf_check_file(int, const uschar *, int, int, uid_t *, gid_t *,
 extern gstring *lf_quote(uschar *, uschar *, int, gstring *);
 extern int     lf_sqlperform(const uschar *, const uschar *, const uschar *,
 		 const uschar *, uschar **,
-                 uschar **, uint *, int(*)(const uschar *, uschar *, uschar **,
-                 uschar **, BOOL *, uint *));
+                 uschar **, uint *, const uschar *,
+		 int(*)(const uschar *, uschar *, uschar **,
+                 uschar **, BOOL *, uint *, const uschar *));
 
 /* End of lf_functions.h */

@@ -63,6 +63,7 @@ single server.
       errmsg       where to point an error message
       defer_break  TRUE if no more servers are to be tried after DEFER
       do_cache     set false if data is changed
+      opts	   options
 
     The server string is of the form "host/dbnumber/password". The host can be
     host:port. This string is in a nextinlist temporary buffer, so can be
@@ -73,7 +74,7 @@ single server.
 
 static int
 perform_redis_search(const uschar *command, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, uint *do_cache)
+  uschar **errmsg, BOOL *defer_break, uint *do_cache, const uschar * opts)
 {
 redisContext *redis_handle = NULL;        /* Keep compilers happy */
 redisReply *redis_reply = NULL;
@@ -380,7 +381,7 @@ redis_find(void * handle __attribute__((unused)),
   uint * do_cache, const uschar * opts)
 {
 return lf_sqlperform(US"Redis", US"redis_servers", redis_servers, command,
-  result, errmsg, do_cache, perform_redis_search);
+  result, errmsg, do_cache, opts, perform_redis_search);
 }
 
 

@@ -11,7 +11,9 @@ hostlist   relay_hosts = net-mysql;select * from them where id='$sender_host_add
 
 acl_smtp_rcpt = check_recipient
 
-mysql_servers = 127.0.0.1::PORT_N/test/root/
+PARTIAL = 127.0.0.1::PORT_N
+SSPEC = PARTIAL/test/root/
+mysql_servers = SSPEC
 
 
 # ----- ACL -----
@@ -19,6 +21,29 @@ mysql_servers = 127.0.0.1::PORT_N/test/root/
 begin acl
 
 check_recipient:
+	  # Tainted-data checks
+  warn
+	  # taint only in lookup string
+	  set acl_m0 =	ok:   ${lookup mysql                    {select name from them where id = '$local_part'}}
+	  # option on lookup type unaffected
+	  set acl_m0 =	ok:   ${lookup mysql,servers=SSPEC      {select name from them where id = '$local_part'}}
+	  # partial server-spec, indexing main-option, works
+	  set acl_m0 =	ok:   ${lookup mysql,servers=PARTIAL    {select name from them where id = '$local_part'}}
+	  # oldstyle server spec, prepended to lookup string, fails with taint
+	  set acl_m0 =	FAIL: ${lookup mysql     {servers=SSPEC; select name from them where id = '$local_part'}}
+
+	  # In list-stle lookup, tainted lookup string is ok if server spec comes from main-option
+  warn	  set acl_m0 =	ok:   hostlist
+	  hosts =	net-mysql;select * from them where id='$local_part'
+	  # ... but setting a per-query servers spec fails due to the taint
+  warn	  set acl_m0 =	FAIL: hostlist
+	  hosts =	<& net-mysql;servers=SSPEC; select * from them where id='$local_part'
+
+	  # The newer server-list-as-option-to-lookup-type is not a solution to tainted data in the lookup, because
+	  # string-expansion is done before list-expansion so the taint contaminates the entire list.
+  warn	  set acl_m0 =	FAIL: hostlist
+	  hosts =	<& net-mysql,servers=SSPEC; select * from them where id='$local_part'
+
   accept  domains = +local_domains
   accept  hosts = +relay_hosts
   deny    message = relay not permitted

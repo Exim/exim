@@ -2909,7 +2909,6 @@ provided that host name matching is permitted; if it's "@[]" match against the
 local host's IP addresses. */
 
 if (*ss == '@')
-  {
   if (ss[1] == 0)
     {
     if (isiponly) return ERROR;
@@ -2921,7 +2920,6 @@ if (*ss == '@')
       if (Ustrcmp(ip->address, cb->host_address) == 0) return OK;
     return FAIL;
     }
-  }
 
 /* If the pattern is an IP address, optionally followed by a bitmask count, do
 a (possibly masked) comparison with the current IP address. */
@@ -2951,6 +2949,11 @@ if (*t == 0 || (*t == '/' && t != ss))
 
 if ((semicolon = Ustrchr(ss, ';')))
   endname = (opts = Ustrchr(ss, ',')) ? opts : semicolon;
+if (opts)
+  {
+  opts++;
+  opts = string_copyn(opts, semicolon - opts);
+  }
 
 /* If we are doing an IP address only match, then all lookups must be IP
 address lookups, even if there is no "net-". */

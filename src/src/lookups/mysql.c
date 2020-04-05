@@ -122,6 +122,7 @@ Arguments:
   errmsg       where to point an error message
   defer_break  TRUE if no more servers are to be tried after DEFER
   do_cache     set zero if data is changed
+  opts	       options
 
 The server string is of the form "host/dbname/user/password". The host can be
 host:port. This string is in a nextinlist temporary buffer, so can be
@@ -132,7 +133,7 @@ Returns:       OK, FAIL, or DEFER
 
 static int
 perform_mysql_search(const uschar *query, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, uint *do_cache)
+  uschar **errmsg, BOOL *defer_break, uint *do_cache, const uschar * opts)
 {
 MYSQL *mysql_handle = NULL;        /* Keep compilers happy */
 MYSQL_RES *mysql_result = NULL;
@@ -155,7 +156,7 @@ has the password removed. This copy is also used for debugging output. */
 for (int i = 3; i > 0; i--)
   {
   uschar *pp = Ustrrchr(server, '/');
-  if (pp == NULL)
+  if (!pp)
     {
     *errmsg = string_sprintf("incomplete MySQL server data: %s",
       (i == 3)? server : server_copy);
@@ -172,10 +173,7 @@ sdata[0] = server;   /* What's left at the start */
 
 for (cn = mysql_connections; cn; cn = cn->next)
   if (Ustrcmp(cn->server, server_copy) == 0)
-    {
-    mysql_handle = cn->handle;
-    break;
-    }
+    { mysql_handle = cn->handle; break; }
 
 /* If no cached connection, we must set one up. Mysql allows for a host name
 and port to be specified. It also allows the name of a Unix socket to be used.
@@ -283,7 +281,7 @@ up. Setting do_cache zero requests this. */
 
 if (!(mysql_result = mysql_use_result(mysql_handle)))
   {
-  if ( mysql_field_count(mysql_handle) == 0 )
+  if (mysql_field_count(mysql_handle) == 0)
     {
     DEBUG(D_lookup) debug_printf_indent("MYSQL: query was not one that returns data\n");
     result = string_cat(result,
@@ -328,18 +326,15 @@ while ((mysql_row_data = mysql_fetch_row(mysql_result)))
    we don't expect any more results. */
 
 while((i = mysql_next_result(mysql_handle)) >= 0)
-  {
-  if(i == 0)	/* Just ignore more results */
+  if(i != 0)
     {
-    DEBUG(D_lookup) debug_printf_indent("MYSQL: got unexpected more results\n");
-    continue;
+    *errmsg = string_sprintf(
+	  "MYSQL: lookup result error when checking for more results: %s\n",
+	  mysql_error(mysql_handle));
+    goto MYSQL_EXIT;
     }
-
-  *errmsg = string_sprintf(
-	"MYSQL: lookup result error when checking for more results: %s\n",
-	mysql_error(mysql_handle));
-  goto MYSQL_EXIT;
-  }
+  else	/* just ignore more results */
+    DEBUG(D_lookup) debug_printf_indent("MYSQL: got unexpected more results\n");
 
 /* If result is NULL then no data has been found and so we return FAIL.
 Otherwise, we must terminate the string which has been built; string_cat()
@@ -394,7 +389,7 @@ mysql_find(void * handle, const uschar * filename, const uschar * query,
   const uschar * opts)
 {
 return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,
-  result, errmsg, do_cache, perform_mysql_search);
+  result, errmsg, do_cache, opts, perform_mysql_search);
 }
 
 

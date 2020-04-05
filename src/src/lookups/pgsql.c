@@ -113,13 +113,14 @@ Arguments:
   errmsg       where to point an error message
   defer_break  set TRUE if no more servers are to be tried after DEFER
   do_cache     set FALSE if data is changed
+  opts	       options list
 
 Returns:       OK, FAIL, or DEFER
 */
 
 static int
 perform_pgsql_search(const uschar *query, uschar *server, uschar **resultptr,
-  uschar **errmsg, BOOL *defer_break, uint *do_cache)
+  uschar **errmsg, BOOL *defer_break, uint *do_cache, const uschar * opts)
 {
 PGconn *pg_conn = NULL;
 PGresult *pg_result = NULL;
@@ -386,7 +387,7 @@ pgsql_find(void * handle, const uschar * filename, const uschar * query,
   const uschar * opts)
 {
 return lf_sqlperform(US"PostgreSQL", US"pgsql_servers", pgsql_servers, query,
-  result, errmsg, do_cache, perform_pgsql_search);
+  result, errmsg, do_cache, opts, perform_pgsql_search);
 }
 
 
