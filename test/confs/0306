@@ -33,7 +33,7 @@ r2:
   driver = redirect
   domains = lists.test.ex
   senders = ${if exists {DIR/aux-fixed/TESTNUM/$local_part}\
-             {lsearch;DIR/aux-fixed/TESTNUM/$local_part}{*}}
+             {lsearch;${bless:DIR/aux-fixed/TESTNUM/$local_part}}{*}}
   file = DIR/aux-fixed/TESTNUM/${bless:$local_part}
   forbid_pipe
   forbid_file

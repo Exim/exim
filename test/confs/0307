@@ -22,7 +22,7 @@ r1:
   senders = ${if eq {$local_part_suffix}{-request}{*}\
             {\
             ${if exists {DIR/aux-fixed/TESTNUM/$local_part}\
-             {lsearch;DIR/aux-fixed/TESTNUM/$local_part}{*}}\
+             {lsearch;${bless:DIR/aux-fixed/TESTNUM/$local_part}}{*}}\
             }}
   file = DIR/aux-fixed/TESTNUM/${bless:$local_part$local_part_suffix}
   forbid_pipe

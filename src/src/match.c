@@ -446,7 +446,6 @@ BOOL ignore_defer = FALSE;
 const uschar *list;
 uschar *sss;
 uschar *ot = NULL;
-uschar buffer[1024];
 
 /* Save time by not scanning for the option name when we don't need it. */
 
@@ -506,12 +505,12 @@ else
 
 /* For an unnamed list, use the expanded version in comments */
 
-HDEBUG(D_any) if (ot == NULL) ot = string_sprintf("%s in \"%s\"?", name, list);
+HDEBUG(D_any) if (!ot) ot = string_sprintf("%s in \"%s\"?", name, list);
 
 /* Now scan the list and process each item in turn, until one of them matches,
 or we hit an error. */
 
-while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
   {
   uschar * ss = sss;
 

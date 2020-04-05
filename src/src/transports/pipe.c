@@ -678,7 +678,7 @@ if (envlist)
     return FALSE;
     }
 
-while ((ss = string_nextinlist(&envlist, &envsep, big_buffer, big_buffer_size)))
+while ((ss = string_nextinlist(&envlist, &envsep, NULL, 0)))
    {
    if (envcount > nelem(envp) - 2)
      {

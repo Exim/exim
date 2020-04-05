@@ -863,7 +863,8 @@ Returns:     pointer to buffer, containing the next substring,
 */
 
 uschar *
-string_nextinlist(const uschar **listptr, int *separator, uschar *buffer, int buflen)
+string_nextinlist_trc(const uschar **listptr, int *separator, uschar *buffer, int buflen,
+ const uschar * func, int line)
 {
 int sep = *separator;
 const uschar *s = *listptr;
@@ -906,6 +907,8 @@ sep_is_special = iscntrl(sep);
 if (buffer)
   {
   int p = 0;
+  if (is_tainted(s) && !is_tainted(buffer))
+    die_tainted(US"string_nextinlist", func, line);
   for (; *s; s++)
     {
     if (*s == sep && (*(++s) != sep || sep_is_special)) break;
@@ -1638,7 +1641,7 @@ doesn't seem much we can do about that. */
 
 va_start(ap, format);
 (void) string_vformat_trc(g, func, line, STRING_SPRINTF_BUFFER_SIZE,
-	0, format, ap);
+	SVFMT_REBUFFER, format, ap);
 string_from_gstring(g);
 gstring_release_unused(g);
 va_end(ap);

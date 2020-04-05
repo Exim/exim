@@ -39,7 +39,7 @@ exeter_listr:
   require_files = DIR/aux-fixed/TESTNUM.restrict.${local_part}
   retry_use_local_part
   senders = ${if exists{DIR/aux-fixed/TESTNUM.restrict.${local_part}} \
-    {DIR/aux-fixed/TESTNUM.restrict.${local_part}}{zzzz}}
+    {${bless:DIR/aux-fixed/TESTNUM.restrict.${local_part}}}{zzzz}}
   syntax_errors_to = ${local_part}-request@test.ex
 
 exeter_listf:

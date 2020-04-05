@@ -16,8 +16,8 @@ begin acl
 check_rcpt:
   require  verify = sender
            verify = sender=\
-                    ${if eq {${domain:$sender_address}}{test.ex}\
-                    {${local_part:$sender_address}@abc.test.ex}\
+                    ${if eq {$sender_address_domain}{test.ex}\
+                    {$sender_address_local_part@abc.test.ex}\
                     {$sender_address}}
   accept
 

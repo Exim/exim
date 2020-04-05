@@ -911,11 +911,9 @@ names = string_copyn(expand_nstring[1], expand_nlength[1]);
 for (au = auths, authnum = 0; au; au = au->next, authnum++) if (au->client)
   {
   const uschar * list = names;
-  int sep = ' ';
-  uschar name[32];
-
-  while (string_nextinlist(&list, &sep, name, sizeof(name)))
-    if (strcmpic(au->public_name, name) == 0)
+  uschar * s;
+  for (int sep = ' '; s = string_nextinlist(&list, &sep, NULL, 0); )
+    if (strcmpic(au->public_name, s) == 0)
       { authbits |= BIT(authnum); break; }
   }
 

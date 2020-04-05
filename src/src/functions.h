@@ -521,7 +521,6 @@ extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
 extern BOOL    string_is_utf8(const uschar *);
 #endif
-extern uschar *string_nextinlist(const uschar **, int *, uschar *, int);
 extern const uschar *string_printing2(const uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
@@ -548,6 +547,11 @@ extern gstring *string_vformat_trc(gstring *, const uschar *, unsigned,
 	string_open_failed_trc(eno, US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
 extern uschar *string_open_failed_trc(int, const uschar *, unsigned,
 			const char *, ...) PRINTF_FUNCTION(4,5);
+
+#define string_nextinlist(lp, sp, b, l) \
+	string_nextinlist_trc((lp), (sp), (b), (l), US __FUNCTION__, __LINE__)
+extern uschar *string_nextinlist_trc(const uschar **listptr, int *separator, uschar *buffer, int buflen,
+			const uschar * func, int line);
 
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);

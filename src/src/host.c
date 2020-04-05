@@ -729,6 +729,7 @@ host_build_ifacelist(const uschar *list, uschar *name)
 int sep = 0;
 uschar *s;
 ip_address_item * yield = NULL, * last = NULL, * next;
+BOOL taint = is_tainted(list);
 
 while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   {
@@ -747,7 +748,7 @@ while ((s = string_nextinlist(&list, &sep, NULL, 0)))
   address above. The field in the ip_address_item is large enough to hold an
   IPv6 address. */
 
-  next = store_get(sizeof(ip_address_item), FALSE);
+  next = store_get(sizeof(ip_address_item), taint);
   next->next = NULL;
   Ustrcpy(next->address, s);
   next->port = port;

@@ -1353,7 +1353,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
     list = override_local_interfaces;
     sep = 0;
-    while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+    while ((s = string_nextinlist(&list, &sep, NULL, 0)))
       {
       uschar joinstr[4];
       gstring ** gp = Ustrpbrk(s, ".:") ? &new_local_interfaces : &new_smtp_port;
@@ -1391,13 +1391,13 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
   list = daemon_smtp_port;
   sep = 0;
-  while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+  while ((s = string_nextinlist(&list, &sep, NULL, 0)))
     pct++;
   default_smtp_port = store_get((pct+1) * sizeof(int), FALSE);
   list = daemon_smtp_port;
   sep = 0;
   for (pct = 0;
-       (s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size));
+       (s = string_nextinlist(&list, &sep, NULL, 0));
        pct++)
     {
     if (isdigit(*s))

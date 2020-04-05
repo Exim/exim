@@ -1600,7 +1600,7 @@ an error if options are given for items that don't expect them.
 
 uschar *slash = Ustrchr(arg, '/');
 const uschar *list = arg;
-uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
+uschar *ss = string_nextinlist(&list, &sep, NULL, 0);
 verify_type_t * vp;
 
 if (!ss) goto BAD_VERIFY;

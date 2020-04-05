@@ -2260,7 +2260,7 @@ for (header_line * h = header_list; h && yield == OK; h = h->next)
 
   colon = Ustrchr(h->text, ':');
   s = colon + 1;
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
 
   /* Loop for multiple addresses in the header, enabling group syntax. Note
   that we have to reset this after the header has been scanned. */
@@ -2339,7 +2339,7 @@ for (header_line * h = header_list; h && yield == OK; h = h->next)
     /* Advance to the next address */
 
     s = ss + (terminator ? 1 : 0);
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     }   /* Next address */
 
   f.parse_allow_group = FALSE;
@@ -3383,11 +3383,13 @@ dns_scan dnss;
 tree_node *t;
 dnsbl_cache_block *cb;
 int old_pool = store_pool;
-uschar query[256];         /* DNS domain max length */
+uschar * query;
+int qlen;
 
 /* Construct the specific query domainname */
 
-if (!string_format(query, sizeof(query), "%s.%s", prepend, domain))
+query = string_sprintf("%s.%s", prepend, domain);
+if ((qlen = Ustrlen(query)) >= 256)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
     "(ignored): %s...", query);
@@ -3422,7 +3424,7 @@ else
 
   else
     {	/* Set up a tree entry to cache the lookup */
-    t = store_get(sizeof(tree_node) + Ustrlen(query), is_tainted(query));
+    t = store_get(sizeof(tree_node) + qlen + 1 + 1, is_tainted(query));
     Ustrcpy(t->name, query);
     t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block), FALSE);
     (void)tree_insertnode(&dnsbl_cache, t);
@@ -3529,7 +3531,6 @@ if (cb->rc == DNS_SUCCEED)
     for (da = cb->rhs; da; da = da->next)
       {
       int ipsep = ',';
-      uschar ip[46];
       const uschar *ptr = iplist;
       uschar *res;
 
@@ -3537,8 +3538,8 @@ if (cb->rc == DNS_SUCCEED)
 
       if (!bitmask)
 	{
-        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))))
-          if (Ustrcmp(CS da->address, ip) == 0)
+        while ((res = string_nextinlist(&ptr, &ipsep, NULL, 0)))
+          if (Ustrcmp(CS da->address, res) == 0)
 	    break;
 	}
 
@@ -3560,9 +3561,9 @@ if (cb->rc == DNS_SUCCEED)
 
         /* Scan the returned addresses, skipping any that are IPv6 */
 
-        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))))
+        while ((res = string_nextinlist(&ptr, &ipsep, NULL, 0)))
           {
-          if (host_aton(ip, address) != 1) continue;
+          if (host_aton(res, address) != 1) continue;
           if ((address[0] & mask) == address[0]) break;
           }
         }
@@ -3732,7 +3733,6 @@ int sep = 0;
 int defer_return = FAIL;
 const uschar *list = *listptr;
 uschar *domain;
-uschar buffer[1024];
 uschar revadd[128];        /* Long enough for IPv6 address */
 
 /* Indicate that the inverted IP address is not yet set up */
@@ -3745,7 +3745,7 @@ dns_init(FALSE, FALSE, FALSE);	/*XXX dnssec? */
 
 /* Loop through all the domains supplied, until something matches */
 
-while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
   {
   int rc;
   BOOL bitmask = FALSE;
