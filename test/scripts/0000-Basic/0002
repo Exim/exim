@@ -126,6 +126,14 @@ listextract: ${listextract{-5}{a:b:c:d}}
 listextract: ${listextract{ 5}{a:b:c:d}{}{fail}}
 listextract: ${listextract{ 5}{a:b:c:d}{}fail}
 
+listquote: ${listquote{:}{abcd}}
+listquote: ${listquote{:}{ab:cd}}
+listquote: ${listquote{:}{:a:b:c:d:}}
+listquote: ${listquote{:}{ab::cd}}
+listquote: ${listquote{;}{ab:cd}}
+listquote: ${listquote{;}{ab;cd}}
+listquote: ${listquote{ }{ ab cd}}
+
 sort: ${sort{3:2:1:4}{<}{$item}}
 sort: ${sort {<, 3,2,1,4}{>}{$item}}
 sort: ${sort{c:B:a:aa}{lti}{$item}}

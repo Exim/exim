@@ -115,6 +115,14 @@
 > listextract: fail
 > Failed: "listextract" failed and "fail" requested
 > 
+> listquote: abcd
+> listquote: ab::cd
+> listquote: ::a::b::c::d::
+> listquote: ab::::cd
+> listquote: ab:cd
+> listquote: ab;;cd
+> listquote:   ab  cd
+> 
 > sort: 1:2:3:4
 > sort: 4,3,2,1
 > sort: a:aa:B:c

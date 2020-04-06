@@ -54,6 +54,8 @@ Version 4.94
 14. Options on pgsql and mysql lookups, to specify server separate from the
     lookup string.
 
+15. Expansion item ${listquote {<char} {<item>}}
+
 
 
 Version 4.93

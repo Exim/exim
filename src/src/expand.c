@@ -117,6 +117,7 @@ static uschar *item_table[] = {
 #endif
   US"length",
   US"listextract",
+  US"listquote",
   US"lookup",
   US"map",
   US"nhash",
@@ -151,6 +152,7 @@ enum {
 #endif
   EITEM_LENGTH,
   EITEM_LISTEXTRACT,
+  EITEM_LISTQUOTE,
   EITEM_LOOKUP,
   EITEM_MAP,
   EITEM_NHASH,
@@ -2744,7 +2746,7 @@ switch(cond_type = identify_operator(&s, &opname))
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
     switch(read_subs(sub, nelem(sub), 1,
-      &s, yield == NULL, TRUE, US"acl", resetok))
+      &s, yield == NULL, TRUE, name, resetok))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
         "error for acl";
@@ -2795,7 +2797,7 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar *sub[4];
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
-    switch(read_subs(sub, nelem(sub), 2, &s, yield == NULL, TRUE, US"saslauthd",
+    switch(read_subs(sub, nelem(sub), 2, &s, yield == NULL, TRUE, name,
 		    resetok))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
@@ -3457,7 +3459,7 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar cksum[4];
     BOOL boolvalue = FALSE;
 
-    switch(read_subs(sub, 2, 2, CUSS &s, yield == NULL, FALSE, US"inbound_srs", resetok))
+    switch(read_subs(sub, 2, 2, CUSS &s, yield == NULL, FALSE, name, resetok))
       {
       case 1: expand_string_message = US"too few arguments or bracketing "
 	"error for inbound_srs";
@@ -4599,7 +4601,7 @@ while (*s != 0)
       uschar *user_msg;
       int rc;
 
-      switch(read_subs(sub, nelem(sub), 1, &s, skipping, TRUE, US"acl",
+      switch(read_subs(sub, nelem(sub), 1, &s, skipping, TRUE, name,
 		      &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
@@ -4980,7 +4982,7 @@ while (*s != 0)
         }
 
       switch(read_subs(sub_arg, EXIM_PERL_MAX_ARGS + 1, 1, &s, skipping, TRUE,
-           US"perl", &resetok))
+           name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5051,7 +5053,7 @@ while (*s != 0)
       uschar *sub_arg[3];
       uschar *p,*domain;
 
-      switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, US"prvs", &resetok))
+      switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5125,7 +5127,7 @@ while (*s != 0)
       prvscheck_address = NULL;
       prvscheck_keynum = NULL;
 
-      switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs", &resetok))
+      switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5157,7 +5159,7 @@ while (*s != 0)
         prvscheck_keynum = string_copy(key_num);
 
         /* Now expand the second argument */
-        switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs", &resetok))
+        switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, name, &resetok))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -5211,7 +5213,7 @@ while (*s != 0)
         /* Now expand the final argument. We leave this till now so that
         it can include $prvscheck_result. */
 
-        switch(read_subs(sub_arg, 1, 0, &s, skipping, TRUE, US"prvs", &resetok))
+        switch(read_subs(sub_arg, 1, 0, &s, skipping, TRUE, name, &resetok))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -5232,7 +5234,7 @@ while (*s != 0)
            We need to make sure all subs are expanded first, so as to skip over
            the entire item. */
 
-        switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"prvs", &resetok))
+        switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, name, &resetok))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
@@ -5255,7 +5257,7 @@ while (*s != 0)
         goto EXPAND_FAILED;
         }
 
-      switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"readfile", &resetok))
+      switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5305,7 +5307,7 @@ while (*s != 0)
       /* Read up to 4 arguments, but don't do the end of item check afterwards,
       because there may be a string for expansion on failure. */
 
-      switch(read_subs(sub_arg, 4, 2, &s, skipping, FALSE, US"readsocket", &resetok))
+      switch(read_subs(sub_arg, 4, 2, &s, skipping, FALSE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:                             /* Won't occur: no end check */
@@ -5692,7 +5694,7 @@ while (*s != 0)
       int o2m;
       uschar *sub[3];
 
-      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, US"tr", &resetok))
+      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -5904,7 +5906,7 @@ while (*s != 0)
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
-      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, US"sg", &resetok))
+      switch(read_subs(sub, 3, 3, &s, skipping, TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -6253,7 +6255,7 @@ while (*s != 0)
 
       for (int i = 0; i < 2; i++)
         {
-        while (isspace(*s)) s++;
+        skip_whitespace(&s);
         if (*s != '{')					/*'}'*/
 	  {
 	  expand_string_message = string_sprintf(
@@ -6338,6 +6340,23 @@ while (*s != 0)
       continue;
       }
 
+    case EITEM_LISTQUOTE:
+      {
+      uschar * sub[2];
+      switch(read_subs(sub, 2, 2, &s, skipping, TRUE, name, &resetok))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+      for (uschar sep = *sub[0], c; c = *sub[1]; sub[1]++)
+	{
+	if (c == sep) yield = string_catn(yield, sub[1], 1);
+	yield = string_catn(yield, sub[1], 1);
+	}
+      continue;
+      }
+
 #ifndef DISABLE_TLS
     case EITEM_CERTEXTRACT:
       {
@@ -6347,7 +6366,7 @@ while (*s != 0)
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
       /* Read the field argument */
-      while (isspace(*s)) s++;
+      skip_whitespace(&s);
       if (*s != '{')					/*}*/
 	{
 	expand_string_message = US"missing '{' for field arg of certextract";
@@ -6825,7 +6844,7 @@ while (*s != 0)
         }
 
       switch(read_subs(argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, skipping,
-           TRUE, US"dlfunc", &resetok))
+           TRUE, name, &resetok))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -7444,6 +7463,8 @@ while (*s != 0)
 	  }
         continue;
 	}
+
+      /* quote a list-item for the given list-separator */
 
       /* mask applies a mask to an IP address; for example the result of
       ${mask:131.111.10.206/28} is 131.111.10.192/28. */
