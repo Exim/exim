@@ -2948,11 +2948,13 @@ if (*t == 0 || (*t == '/' && t != ss))
 /* See if there is a semicolon in the pattern */
 
 if ((semicolon = Ustrchr(ss, ';')))
-  endname = (opts = Ustrchr(ss, ',')) ? opts : semicolon;
-if (opts)
   {
-  opts++;
-  opts = string_copyn(opts, semicolon - opts);
+  endname = (opts = Ustrchr(ss, ',')) ? opts : semicolon;
+  if (opts)
+    {
+    opts++;
+    opts = string_copyn(opts, semicolon - opts);
+    }
   }
 
 /* If we are doing an IP address only match, then all lookups must be IP
