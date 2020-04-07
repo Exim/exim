@@ -1188,7 +1188,7 @@ while (*s)
 
   while (*s && *s != '=' && !isspace(*s)) s++;
   dkeylength = s - dkey;
-  if (Uskip_whitespace(&s) == '=') while (isspace((*(++s))));
+  if (Uskip_whitespace(&s) == '=') while (isspace(*++s));
 
   data = string_dequote(&s);
   if (length == dkeylength && strncmpic(key, dkey, length) == 0)
@@ -1614,7 +1614,7 @@ for (header_line * h = header_list; h; h = h->next)
       found = TRUE;
       s = h->text + len;		/* text to insert */
       if (!(flags & FH_WANT_RAW))	/* unless wanted raw, */
-	while (isspace(*s)) s++;	/* remove leading white space */
+	Uskip_whitespace(&s);		/* remove leading white space */
       t = h->text + h->slen;		/* end-point */
 
       /* Unless wanted raw, remove trailing whitespace, including the
@@ -2322,7 +2322,7 @@ json_nextinlist(const uschar ** list)
 unsigned array_depth = 0, object_depth = 0;
 const uschar * s = *list, * item;
 
-while (isspace(*s)) s++;
+skip_whitespace(&s);
 
 for (item = s;
      *s && (*s != ',' || array_depth != 0 || object_depth != 0);
@@ -2552,10 +2552,7 @@ const pcre *re;
 const uschar *rerror;
 
 for (;;)
-  {
-  while (isspace(*s)) s++;
-  if (*s == '!') { testfor = !testfor; s++; } else break;
-  }
+  if (Uskip_whitespace(&s) == '!') { testfor = !testfor; s++; } else break;
 
 switch(cond_type = identify_operator(&s, &opname))
   {
@@ -2644,8 +2641,7 @@ switch(cond_type = identify_operator(&s, &opname))
   case ECOND_LDAPAUTH:
   case ECOND_PWCHECK:
 
-  while (isspace(*s)) s++;
-  if (*s != '{') goto COND_FAILED_CURLY_START;		/* }-for-text-editors */
+  if (Uskip_whitespace(&s) != '{') goto COND_FAILED_CURLY_START; /* }-for-text-editors */
 
   sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE, resetok);
   if (!sub[0]) return NULL;
@@ -2742,7 +2738,7 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar *user_msg;
     BOOL cond = FALSE;
 
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/*}*/
 
     switch(read_subs(sub, nelem(sub), 1,
@@ -2795,7 +2791,7 @@ switch(cond_type = identify_operator(&s, &opname))
 #else
     {
     uschar *sub[4];
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     switch(read_subs(sub, nelem(sub), 2, &s, yield == NULL, TRUE, name,
 		    resetok))
@@ -2873,8 +2869,7 @@ switch(cond_type = identify_operator(&s, &opname))
     if ((i > 0) && !sub2_honour_dollar)
       honour_dollar = FALSE;
 
-    while (isspace(*s)) s++;
-    if (*s != '{')
+    if (Uskip_whitespace(&s) != '{')
       {
       if (i == 0) goto COND_FAILED_CURLY_START;
       expand_string_message = string_sprintf("missing 2nd string in {} "
@@ -3235,14 +3230,13 @@ switch(cond_type = identify_operator(&s, &opname))
   subcondptr = (yield == NULL) ? NULL : &tempcond;
   combined_cond = (cond_type == ECOND_AND);
 
-  while (isspace(*s)) s++;
+  Uskip_whitespace(&s);
   if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
 
   for (;;)
     {
-    while (isspace(*s)) s++;
     /* {-for-text-editors */
-    if (*s == '}') break;
+    if (Uskip_whitespace(&s) == '}') break;
     if (*s != '{')					/* }-for-text-editors */
       {
       expand_string_message = string_sprintf("each subcondition "
@@ -3256,7 +3250,7 @@ switch(cond_type = identify_operator(&s, &opname))
         expand_string_message, opname);
       return NULL;
       }
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
 
     /* {-for-text-editors */
     if (*s++ != '}')
@@ -3301,14 +3295,14 @@ switch(cond_type = identify_operator(&s, &opname))
 
     DEBUG(D_expand) debug_printf_indent("condition: %s\n", opname);
 
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     if (!(sub[0] = expand_string_internal(s, TRUE, &s, yield == NULL, TRUE, resetok)))
       return NULL;
     /* {-for-text-editors */
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
     if (*s++ != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
 
     sub[1] = s;
@@ -3323,7 +3317,7 @@ switch(cond_type = identify_operator(&s, &opname))
         expand_string_message, opname);
       return NULL;
       }
-    while (isspace(*s)) s++;
+    Uskip_whitespace(&s);
 
     /* {-for-text-editors */
     if (*s++ != '}')
@@ -3388,8 +3382,8 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar *ourname;
     size_t len;
     BOOL boolvalue = FALSE;
-    while (isspace(*s)) s++;
-    if (*s != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
+
+    if (Uskip_whitespace(&s) != '{') goto COND_FAILED_CURLY_START;	/* }-for-text-editors */
     ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
     switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname, resetok))
       {
@@ -3401,9 +3395,8 @@ switch(cond_type = identify_operator(&s, &opname))
       case 3: return NULL;
       }
     t = sub_arg[0];
-    while (isspace(*t)) t++;
-    len = Ustrlen(t);
-    if (len)
+    Uskip_whitespace(&t);
+    if ((len = Ustrlen(t)))
       {
       /* trailing whitespace: seems like a good idea to ignore it too */
       t2 = t + len - 1;
@@ -3673,8 +3666,7 @@ lookups and for extractions in the success case. For the ${if item, the string
 "true" is substituted. In the fail case, nothing is substituted for all three
 items. */
 
-while (isspace(*s)) s++;
-if (*s == '}')
+if (skip_whitespace(&s) == '}')
   {
   if (type[0] == 'i')
     {
@@ -3730,8 +3722,7 @@ time, forced failures are noticed only if we want the second string. We must
 set skipping in the nested call if we don't want this string, or if we were
 already skipping. */
 
-while (isspace(*s)) s++;
-if (*s == '{')
+if (skip_whitespace(&s) == '{')
   {
   sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE, resetok);
   if (sub2 == NULL && (!yes || !f.expand_string_forcedfail)) goto FAILED;
@@ -3762,7 +3753,7 @@ else if (*s != '}')
     {
     if (!yes && !skipping)
       {
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '}')
         {
 	errwhere = US"did not close with '}' after forcedfail";
@@ -3784,7 +3775,7 @@ else if (*s != '}')
 
 /* All we have to do now is to check on the final closing brace. */
 
-while (isspace(*s)) s++;
+skip_whitespace(&s);
 if (*s++ != '}')
   {
   errwhere = US"did not close with '}'";
@@ -4010,7 +4001,7 @@ if (!*error)
     if (*s != ')')
       *error = US"expecting closing parenthesis";
     else
-      while (isspace(*(++s)));
+      while (isspace(*++s));
   else if (*s)
     *error = US"expecting operator";
 *sptr = s;
@@ -4678,7 +4669,7 @@ while (*s != 0)
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (!(next_s = eval_condition(s, &resetok, skipping ? NULL : &cond)))
 	goto EXPAND_FAILED;  /* message already set */
 
@@ -4791,8 +4782,7 @@ while (*s != 0)
       /* Get the key we are to look up for single-key+file style lookups.
       Otherwise set the key NULL pro-tem. */
 
-      while (isspace(*s)) s++;
-      if (*s == '{')					/*}*/
+      if (Uskip_whitespace(&s) == '{')					/*}*/
         {
         key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
         if (!key) goto EXPAND_FAILED;			/*{{*/
@@ -4801,7 +4791,7 @@ while (*s != 0)
 	  expand_string_message = US"missing '}' after lookup key";
 	  goto EXPAND_FAILED_CURLY;
 	  }
-        while (isspace(*s)) s++;
+        Uskip_whitespace(&s);
         }
       else key = NULL;
 
@@ -4823,7 +4813,7 @@ while (*s != 0)
         s++;
         }
       name[nameptr] = '\0';
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
 
       /* Now check for the individual search type and any partial or default
       options. Only those types that are actually in the binary are valid. */
@@ -4874,7 +4864,7 @@ while (*s != 0)
 	expand_string_message = US"missing '}' closing lookup file-or-query arg";
 	goto EXPAND_FAILED_CURLY;
 	}
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
 
       /* If this isn't a single-key+file lookup, re-arrange the variables
       to be appropriate for the search_ functions. For query-style lookups,
@@ -4883,7 +4873,7 @@ while (*s != 0)
 
       if (!key)
         {
-        while (isspace(*filename)) filename++;
+	Uskip_whitespace(&filename);
         key = filename;
 
         if (mac_islookup(stype, lookup_querystyle))
@@ -5321,7 +5311,7 @@ while (*s != 0)
 
       /* Sort out timeout, if given.  The second arg is a list with the first element
       being a time value.  Any more are options of form "name=value".  Currently the
-      only option recognised is "shutdown". */
+      only options recognised are "shutdown" and "tls". */
 
       if (sub_arg[2])
         {
@@ -5540,7 +5530,7 @@ while (*s != 0)
 	  expand_string_message = US"missing '}' closing failstring for readsocket";
 	  goto EXPAND_FAILED_CURLY;
 	  }
-        while (isspace(*s)) s++;
+        Uskip_whitespace(&s);
         }
 
     READSOCK_DONE:
@@ -5566,7 +5556,7 @@ while (*s != 0)
 	expand_string_message = US"missing '}' closing failstring for readsocket";
 	goto EXPAND_FAILED_CURLY;
 	}
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       goto READSOCK_DONE;
       }
 
@@ -5586,7 +5576,7 @@ while (*s != 0)
         goto EXPAND_FAILED;
         }
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s != '{')
         {
 	expand_string_message = US"missing '{' for command arg of run";
@@ -5594,7 +5584,7 @@ while (*s != 0)
 	}
       if (!(arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
 	goto EXPAND_FAILED;
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '}')
         {
 	expand_string_message = US"missing '}' closing command arg of run";
@@ -6020,11 +6010,9 @@ while (*s != 0)
 
       enum {extract_basic, extract_json, extract_jsons} fmt = extract_basic;
 
-      while (isspace(*s)) s++;
-
       /* Check for a format-variant specifier */
 
-      if (*s != '{')					/*}*/
+      if (Uskip_whitespace(&s) != '{')					/*}*/
 	if (Ustrncmp(s, "json", 4) == 0)
 	  if (*(s += 4) == 's')
 	    {fmt = extract_jsons; s++;}
@@ -6046,14 +6034,14 @@ while (*s != 0)
 	    expand_string_message = US"missing '{' for arg of extract";
 	    goto EXPAND_FAILED_CURLY;
 	    }
-	  while (isspace(*s)) s++;
+	  Uskip_whitespace(&s);
 	  }
 	if (  Ustrncmp(s, "fail", 4) == 0			/*'{'*/
 	   && (s[4] == '}' || s[4] == ' ' || s[4] == '\t' || !s[4])
 	   )
 	  {
 	  s += 4;
-	  while (isspace(*s)) s++;
+	  Uskip_whitespace(&s);
 	  }							/*'{'*/
 	if (*s != '}')
 	  {
@@ -6064,8 +6052,7 @@ while (*s != 0)
 
       else for (int i = 0, j = 2; i < j; i++) /* Read the proper number of arguments */
         {
-	while (isspace(*s)) s++;
-        if (*s == '{') 						/*'}'*/
+	if (Uskip_whitespace(&s) == '{') 						/*'}'*/
           {
           if (!(sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok)))
 	    goto EXPAND_FAILED;					/*'{'*/
@@ -6087,7 +6074,7 @@ while (*s != 0)
             int x = 0;
             uschar *p = sub[0];
 
-            while (isspace(*p)) p++;
+            Uskip_whitespace(&p);
             sub[0] = p;
 
             len = Ustrlen(p);
@@ -6189,15 +6176,14 @@ while (*s != 0)
 	      if (Ustrcmp(item, sub[0]) == 0)	/*XXX should be a UTF8-compare */
 		{
 		s = item + Ustrlen(item) + 1;
-		while (isspace(*s)) s++;
-		if (*s != ':')
+		if (Uskip_whitespace(&s) != ':')
 		  {
 		  expand_string_message =
 		    US"missing object value-separator for extract json";
 		  goto EXPAND_FAILED_CURLY;
 		  }
 		s++;
-		while (isspace(*s)) s++;
+		Uskip_whitespace(&s);
 		lookup_value = s;
 		break;
 		}
@@ -6255,8 +6241,7 @@ while (*s != 0)
 
       for (int i = 0; i < 2; i++)
         {
-        skip_whitespace(&s);
-        if (*s != '{')					/*'}'*/
+        if (Uskip_whitespace(&s) != '{')					/*'}'*/
 	  {
 	  expand_string_message = string_sprintf(
 	    "missing '{' for arg %d of listextract", i+1);
@@ -6281,7 +6266,7 @@ while (*s != 0)
 	  int x = 0;
 	  uschar *p = sub[0];
 
-	  while (isspace(*p)) p++;
+	  Uskip_whitespace(&p);
 	  sub[0] = p;
 
 	  len = Ustrlen(p);
@@ -6366,8 +6351,7 @@ while (*s != 0)
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
       /* Read the field argument */
-      skip_whitespace(&s);
-      if (*s != '{')					/*}*/
+      if (Uskip_whitespace(&s) != '{')					/*}*/
 	{
 	expand_string_message = US"missing '{' for field arg of certextract";
 	goto EXPAND_FAILED_CURLY;
@@ -6384,7 +6368,7 @@ while (*s != 0)
       int len;
       uschar *p = sub[0];
 
-      while (isspace(*p)) p++;
+      Uskip_whitespace(&p);
       sub[0] = p;
 
       len = Ustrlen(p);
@@ -6393,8 +6377,7 @@ while (*s != 0)
       }
 
       /* inspect the cert argument */
-      while (isspace(*s)) s++;
-      if (*s != '{')					/*}*/
+      if (Uskip_whitespace(&s) != '{')					/*}*/
 	{
 	expand_string_message = US"missing '{' for cert variable arg of certextract";
 	goto EXPAND_FAILED_CURLY;
@@ -6452,7 +6435,7 @@ while (*s != 0)
       uschar *save_iterate_item = iterate_item;
       uschar *save_lookup_value = lookup_value;
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '{')
         {
 	expand_string_message =
@@ -6472,7 +6455,7 @@ while (*s != 0)
       if (item_type == EITEM_REDUCE)
         {
 	uschar * t;
-        while (isspace(*s)) s++;
+        Uskip_whitespace(&s);
         if (*s++ != '{')
 	  {
 	  expand_string_message = US"missing '{' for second arg of reduce";
@@ -6488,7 +6471,7 @@ while (*s != 0)
 	  }
         }
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '{')
         {
 	expand_string_message =
@@ -6519,7 +6502,7 @@ while (*s != 0)
         goto EXPAND_FAILED;
         }
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '}')
         {						/*{*/
         expand_string_message = string_sprintf("missing } at end of condition "
@@ -6528,7 +6511,7 @@ while (*s != 0)
         goto EXPAND_FAILED;
         }
 
-      while (isspace(*s)) s++;				/*{*/
+      Uskip_whitespace(&s);				/*{*/
       if (*s++ != '}')
         {						/*{*/
         expand_string_message = string_sprintf("missing } at end of \"%s\"",
@@ -6652,7 +6635,7 @@ while (*s != 0)
       uschar * tmp;
       uschar *save_iterate_item = iterate_item;
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '{')
         {
         expand_string_message = US"missing '{' for list arg of sort";
@@ -6667,7 +6650,7 @@ while (*s != 0)
 	goto EXPAND_FAILED_CURLY;
 	}
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '{')
         {
         expand_string_message = US"missing '{' for comparator arg of sort";
@@ -6701,7 +6684,7 @@ while (*s != 0)
 	  goto EXPAND_FAILED;
 	}
 
-      while (isspace(*s)) s++;
+      Uskip_whitespace(&s);
       if (*s++ != '{')
         {
         expand_string_message = US"missing '{' for extractor arg of sort";
@@ -6920,8 +6903,7 @@ while (*s != 0)
       uschar * key;
       uschar *save_lookup_value = lookup_value;
 
-      while (isspace(*s)) s++;
-      if (*s != '{')					/*}*/
+      if (Uskip_whitespace(&s) != '{')					/*}*/
 	goto EXPAND_FAILED;
 
       key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE, &resetok);
@@ -7571,8 +7553,7 @@ while (*s != 0)
         int save_ptr = gstring_length(yield);
         int start, end, domain;  /* Not really used */
 
-        while (isspace(*sub)) sub++;
-        if (*sub == '>')
+	if (Uskip_whitespace(&sub) == '>')
           if (*outsep = *++sub) ++sub;
           else
 	    {
@@ -8507,26 +8488,19 @@ the behaviour explicitly.  Stripping leading whitespace is a harmless
 noop change since strtol skips it anyway (provided that there is a number
 to find at all). */
 if (isspace(*s))
-  {
-  while (isspace(*s)) ++s;
-  if (*s == '\0')
+  if (Uskip_whitespace(&s) == '\0')
     {
       DEBUG(D_expand)
        debug_printf_indent("treating blank string as number 0\n");
       return 0;
     }
-  }
 
 value = strtoll(CS s, CSS &endptr, 10);
 
 if (endptr == s)
-  {
   msg = US"integer expected but \"%s\" found";
-  }
 else if (value < 0 && isplus)
-  {
   msg = US"non-negative integer expected but \"%s\" found";
-  }
 else
   {
   switch (tolower(*endptr))
@@ -8552,10 +8526,7 @@ else
   if (errno == ERANGE)
     msg = US"absolute value of integer \"%s\" is too large (overflow)";
   else
-    {
-    while (isspace(*endptr)) endptr++;
-    if (*endptr == 0) return value;
-    }
+    if (Uskip_whitespace(&endptr) == 0) return value;
   }
 
 expand_string_message = string_sprintf(CS msg, s);
