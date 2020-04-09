@@ -545,16 +545,9 @@ else
 
   else if (do_cache)
     {
-    int len = keylength + 1;
-
-    if (t)	/* Previous, out-of-date cache entry.  Update with the */
-      { 	/* new result and forget the old one */
-      e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
-      e->opts = opts;
-      e->data.ptr = data;
-      }
-    else
+    if (!t) /* No existing entry.  Create new one. */
       {
+      int len = keylength + 1;
       e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, is_tainted(keystring));
       e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
       e->opts = opts;
@@ -564,6 +557,11 @@ else
       t->data.ptr = e;
       tree_insertnode(&c->item_cache, t);
       }
+      /* Else previous, out-of-date cache entry.  Update with the */
+      /* new result and forget the old one */
+    e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
+    e->opts = opts;
+    e->data.ptr = data;
     }
 
   /* If caching was disabled, empty the cache tree. We just set the cache
