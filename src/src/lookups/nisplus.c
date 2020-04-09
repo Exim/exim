@@ -272,15 +272,15 @@ fprintf(f, "Library version: NIS+: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info _lookup_info = {
-  US"nisplus",                   /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  nisplus_open,                  /* open function */
-  NULL,                          /* check function */
-  nisplus_find,                  /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  nisplus_quote,                 /* quoting function */
-  nisplus_version_report         /* version reporting */
+  .name = US"nisplus",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = nisplus_open,			/* open function */
+  .check = NULL,			/* check function */
+  .find = nisplus_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = nisplus_quote,		/* quoting function */
+  .version_report = nisplus_version_report         /* version reporting */
 };
 
 #ifdef DYNLOOKUP

@@ -426,51 +426,51 @@ fprintf(f, "Library version: lsearch: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info iplsearch_lookup_info = {
-  US"iplsearch",                 /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  iplsearch_find,                /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"iplsearch",		/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = lsearch_open,			/* open function */
+  .check = lsearch_check,		/* check function */
+  .find = iplsearch_find,		/* find function */
+  .close = lsearch_close,		/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 static lookup_info lsearch_lookup_info = {
-  US"lsearch",                   /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  lsearch_find,                  /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  lsearch_version_report         /* version reporting */
+  .name = US"lsearch",			/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = lsearch_open,			/* open function */
+  .check = lsearch_check,		/* check function */
+  .find = lsearch_find,			/* find function */
+  .close = lsearch_close,		/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = lsearch_version_report         /* version reporting */
 };
 
 static lookup_info nwildlsearch_lookup_info = {
-  US"nwildlsearch",              /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  nwildlsearch_find,             /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"nwildlsearch",		/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = lsearch_open,			/* open function */
+  .check = lsearch_check,		/* check function */
+  .find = nwildlsearch_find,		/* find function */
+  .close = lsearch_close,		/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 static lookup_info wildlsearch_lookup_info = {
-  US"wildlsearch",               /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  wildlsearch_find,              /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"wildlsearch",		/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = lsearch_open,			/* open function */
+  .check = lsearch_check,		/* check function */
+  .find = wildlsearch_find,		/* find function */
+  .close = lsearch_close,		/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

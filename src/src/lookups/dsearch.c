@@ -174,15 +174,15 @@ fprintf(f, "Library version: dsearch: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info _lookup_info = {
-  US"dsearch",                   /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  dsearch_open,                  /* open function */
-  dsearch_check,                 /* check function */
-  dsearch_find,                  /* find function */
-  dsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  dsearch_version_report         /* version reporting */
+  .name = US"dsearch",			/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = dsearch_open,			/* open function */
+  .check = dsearch_check,		/* check function */
+  .find = dsearch_find,			/* find function */
+  .close = dsearch_close,		/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = dsearch_version_report         /* version reporting */
 };
 
 #ifdef DYNLOOKUP

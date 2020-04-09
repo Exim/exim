@@ -173,15 +173,15 @@ fprintf(f, "Library version: json: Jansonn version %s\n", JANSSON_VERSION);
 
 
 static lookup_info json_lookup_info = {
-  US"json",                      /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  json_open,                  /* open function */
-  json_check,                 /* check function */
-  json_find,                  /* find function */
-  json_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  json_version_report         /* version reporting */
+  .name = US"json",			/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = json_open,			/* open function */
+  .check = json_check,			/* check function */
+  .find = json_find,			/* find function */
+  .close = json_close,			/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = json_version_report         /* version reporting */
 };
 
 

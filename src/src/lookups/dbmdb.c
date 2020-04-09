@@ -245,39 +245,39 @@ fprintf(f, "Library version: DBM: Exim version %s\n", EXIM_VERSION_STR);
 
 
 lookup_info dbm_lookup_info = {
-  US"dbm",                       /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  dbmdb_open,                    /* open function */
-  dbmdb_check,                   /* check function */
-  dbmdb_find,                    /* find function */
-  dbmdb_close,                   /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  dbm_version_report             /* version reporting */
+  .name = US"dbm",			/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = dbmdb_open,			/* open function */
+  .check = dbmdb_check,			/* check function */
+  .find = dbmdb_find,			/* find function */
+  .close = dbmdb_close,			/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = dbm_version_report             /* version reporting */
 };
 
 lookup_info dbmz_lookup_info = {
-  US"dbmnz",                     /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  dbmdb_open,      /* sic */     /* open function */
-  dbmdb_check,     /* sic */     /* check function */
-  dbmnz_find,                    /* find function */
-  dbmdb_close,     /* sic */     /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"dbmnz",			/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = dbmdb_open,			/* sic */     /* open function */
+  .check = dbmdb_check,			/* sic */     /* check function */
+  .find = dbmnz_find,			/* find function */
+  .close = dbmdb_close,			/* sic */     /* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 lookup_info dbmjz_lookup_info = {
-  US"dbmjz",                     /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  dbmdb_open,      /* sic */     /* open function */
-  dbmdb_check,     /* sic */     /* check function */
-  dbmjz_find,                    /* find function */
-  dbmdb_close,     /* sic */     /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"dbmjz",			/* lookup name */
+  .type = lookup_absfile,		/* uses absolute file name */
+  .open = dbmdb_open,			/* sic */     /* open function */
+  .check = dbmdb_check,			/* sic */     /* check function */
+  .find = dbmjz_find,			/* find function */
+  .close = dbmdb_close,			/* sic */     /* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

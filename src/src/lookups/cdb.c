@@ -480,15 +480,15 @@ fprintf(f, "Library version: CDB: Exim version %s\n", EXIM_VERSION_STR);
 
 
 lookup_info cdb_lookup_info = {
-  US"cdb",                       /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-  cdb_open,                      /* open function */
-  cdb_check,                     /* check function */
-  cdb_find,                      /* find function */
-  cdb_close,                     /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  cdb_version_report             /* version reporting */
+  .name = US"cdb",			/* lookup name */
+  .type = lookup_absfile,		/* absolute file name */
+  .open = cdb_open,			/* open function */
+  .check = cdb_check,			/* check function */
+  .find = cdb_find,			/* find function */
+  .close = cdb_close,			/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = cdb_version_report             /* version reporting */
 };
 
 #ifdef DYNLOOKUP

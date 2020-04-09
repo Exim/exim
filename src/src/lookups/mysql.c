@@ -480,15 +480,15 @@ fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
 /* These are the lookup_info blocks for this driver */
 
 static lookup_info mysql_lookup_info = {
-  US"mysql",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  mysql_open,                    /* open function */
-  NULL,                          /* no check function */
-  mysql_find,                    /* find function */
-  NULL,                          /* no close function */
-  mysql_tidy,                    /* tidy function */
-  mysql_quote,                   /* quoting function */
-  mysql_version_report           /* version reporting */
+  .name = US"mysql",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = mysql_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = mysql_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = mysql_tidy,			/* tidy function */
+  .quote = mysql_quote,			/* quoting function */
+  .version_report = mysql_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

@@ -139,15 +139,15 @@ fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
 }
 
 static lookup_info lmdb_lookup_info = {
-  US"lmdb",                     /* lookup name */
-  lookup_absfile,               /* query-style lookup */
-  lmdb_open,                    /* open function */
-  NULL,                         /* no check function */
-  lmdb_find,                    /* find function */
-  lmdb_close,                   /* close function */
-  NULL,                         /* tidy function */
-  NULL,                         /* quoting function */
-  lmdb_version_report           /* version reporting */
+  .name = US"lmdb",			/* lookup name */
+  .type = lookup_absfile,		/* query-style lookup */
+  .open = lmdb_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = lmdb_find,			/* find function */
+  .close = lmdb_close,			/* close function */
+  .tidy = NULL,				/* tidy function */
+  .quote = NULL,			/* quoting function */
+  .version_report = lmdb_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

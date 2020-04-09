@@ -138,15 +138,15 @@ fprintf(f, "Library version: SPF: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info _lookup_info = {
-  US"spf",                       /* lookup name */
-  0,                             /* not absfile, not query style */
-  spf_open,                      /* open function */
-  NULL,                          /* no check function */
-  spf_find,                      /* find function */
-  spf_close,                     /* close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  spf_version_report             /* version reporting */
+  .name = US"spf",			/* lookup name */
+  .type = 0,				/* not absfile, not query style */
+  .open = spf_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = spf_find,			/* find function */
+  .close = spf_close,			/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = spf_version_report             /* version reporting */
 };
 
 #ifdef DYNLOOKUP

@@ -448,15 +448,15 @@ fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
 
 /* These are the lookup_info blocks for this driver */
 static lookup_info redis_lookup_info = {
-  US"redis",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  redis_open,                    /* open function */
-  NULL,                          /* no check function */
-  redis_find,                    /* find function */
-  NULL,                          /* no close function */
-  redis_tidy,                    /* tidy function */
-  redis_quote,                   /* quoting function */
-  redis_version_report           /* version reporting */
+  .name = US"redis",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = redis_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = redis_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = redis_tidy,			/* tidy function */
+  .quote = redis_quote,			/* quoting function */
+  .version_report = redis_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

@@ -1580,39 +1580,39 @@ fprintf(f, "Library version: LDAP: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info ldap_lookup_info = {
-  US"ldap",                      /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  eldap_open,                    /* open function */
-  NULL,                          /* check function */
-  eldap_find,                    /* find function */
-  NULL,                          /* no close function */
-  eldap_tidy,                    /* tidy function */
-  eldap_quote,                   /* quoting function */
-  ldap_version_report            /* version reporting */
+  .name = US"ldap",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = eldap_open,			/* open function */
+  .check = NULL,			/* check function */
+  .find = eldap_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = eldap_tidy,			/* tidy function */
+  .quote = eldap_quote,			/* quoting function */
+  .version_report = ldap_version_report            /* version reporting */
 };
 
 static lookup_info ldapdn_lookup_info = {
-  US"ldapdn",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  eldap_open,       /* sic */    /* open function */
-  NULL,                          /* check function */
-  eldapdn_find,                  /* find function */
-  NULL,                          /* no close function */
-  eldap_tidy,       /* sic */    /* tidy function */
-  eldap_quote,      /* sic */    /* quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"ldapdn",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = eldap_open,			/* sic */    /* open function */
+  .check = NULL,			/* check function */
+  .find = eldapdn_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = eldap_tidy,			/* sic */    /* tidy function */
+  .quote = eldap_quote,			/* sic */    /* quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 static lookup_info ldapm_lookup_info = {
-  US"ldapm",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  eldap_open,       /* sic */    /* open function */
-  NULL,                          /* check function */
-  eldapm_find,                   /* find function */
-  NULL,                          /* no close function */
-  eldap_tidy,       /* sic */    /* tidy function */
-  eldap_quote,      /* sic */    /* quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"ldapm",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = eldap_open,			/* sic */    /* open function */
+  .check = NULL,			/* check function */
+  .find = eldapm_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = eldap_tidy,			/* sic */    /* tidy function */
+  .quote = eldap_quote,			/* sic */    /* quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

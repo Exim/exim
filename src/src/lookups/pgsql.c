@@ -488,15 +488,15 @@ when the connection is established though? */
 
 
 static lookup_info _lookup_info = {
-  US"pgsql",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  pgsql_open,                    /* open function */
-  NULL,                          /* no check function */
-  pgsql_find,                    /* find function */
-  NULL,                          /* no close function */
-  pgsql_tidy,                    /* tidy function */
-  pgsql_quote,                   /* quoting function */
-  pgsql_version_report           /* version reporting */
+  .name = US"pgsql",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = pgsql_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = pgsql_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = pgsql_tidy,			/* tidy function */
+  .quote = pgsql_quote,			/* quoting function */
+  .version_report = pgsql_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

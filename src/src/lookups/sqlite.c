@@ -168,15 +168,15 @@ fprintf(f, "                         Exim version %s\n", EXIM_VERSION_STR);
 }
 
 static lookup_info _lookup_info = {
-  US"sqlite",                    /* lookup name */
-  lookup_absfilequery,           /* query-style lookup, starts with file name */
-  sqlite_open,                   /* open function */
-  NULL,                          /* no check function */
-  sqlite_find,                   /* find function */
-  sqlite_close,                  /* close function */
-  NULL,                          /* no tidy function */
-  sqlite_quote,                  /* quoting function */
-  sqlite_version_report          /* version reporting */
+  .name = US"sqlite",			/* lookup name */
+  .type = lookup_absfilequery,		/* query-style lookup, starts with file name */
+  .open = sqlite_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = sqlite_find,			/* find function */
+  .close = sqlite_close,		/* close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = sqlite_quote,		/* quoting function */
+  .version_report = sqlite_version_report          /* version reporting */
 };
 
 #ifdef DYNLOOKUP

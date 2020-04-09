@@ -106,27 +106,27 @@ fprintf(f, "Library version: NIS: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info nis_lookup_info = {
-  US"nis",                       /* lookup name */
-  0,                             /* not abs file, not query style*/
-  nis_open,                      /* open function */
-  NULL,                          /* check function */
-  nis_find,                      /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  nis_version_report             /* version reporting */
+  .name = US"nis",			/* lookup name */
+  .type = 0,				/* not abs file, not query style*/
+  .open = nis_open,			/* open function */
+  .check = NULL,			/* check function */
+  .find = nis_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = nis_version_report             /* version reporting */
 };
 
 static lookup_info nis0_lookup_info = {
-  US"nis0",                      /* lookup name */
-  0,                             /* not absfile, not query style */
-  nis_open,    /* sic */         /* open function */
-  NULL,                          /* check function */
-  nis0_find,                     /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  NULL                           /* no version reporting (redundant) */
+  .name = US"nis0",			/* lookup name */
+  .type = 0,				/* not absfile, not query style */
+  .open = nis_open,			/* sic */         /* open function */
+  .check = NULL,			/* check function */
+  .find = nis0_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

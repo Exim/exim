@@ -70,15 +70,15 @@ fprintf(f, "Library version: passwd: Exim version %s\n", EXIM_VERSION_STR);
 }
 
 static lookup_info _lookup_info = {
-  US"passwd",                    /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  passwd_open,                   /* open function */
-  NULL,                          /* no check function */
-  passwd_find,                   /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL,                          /* no quoting function */
-  passwd_version_report          /* version reporting */
+  .name = US"passwd",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = passwd_open,			/* open function */
+  .check = NULL,			/* no check function */
+  .find = passwd_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = NULL,				/* no tidy function */
+  .quote = NULL,			/* no quoting function */
+  .version_report = passwd_version_report          /* version reporting */
 };
 
 #ifdef DYNLOOKUP

@@ -608,15 +608,15 @@ fprintf(f, "Library version: Oracle: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info _lookup_info = {
-  US"oracle",                    /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  oracle_open,                   /* open function */
-  NULL,                          /* check function */
-  oracle_find,                   /* find function */
-  NULL,                          /* no close function */
-  oracle_tidy,                   /* tidy function */
-  oracle_quote,                  /* quoting function */
-  oracle_version_report          /* version reporting */
+  .name = US"oracle",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = oracle_open,			/* open function */
+  .check = NULL,			/* check function */
+  .find = oracle_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = oracle_tidy,			/* tidy function */
+  .quote = oracle_quote,		/* quoting function */
+  .version_report = oracle_version_report          /* version reporting */
 };
 
 #ifdef DYNLOOKUP

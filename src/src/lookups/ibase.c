@@ -561,15 +561,15 @@ fprintf(f, "Library version: ibase: Exim version %s\n", EXIM_VERSION_STR);
 
 
 static lookup_info _lookup_info = {
-  US"ibase",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  ibase_open,                    /* open function */
-  NULL,                          /* no check function */
-  ibase_find,                    /* find function */
-  NULL,                          /* no close function */
-  ibase_tidy,                    /* tidy function */
-  ibase_quote,                   /* quoting function */
-  ibase_version_report           /* version reporting */
+  .name = US"ibase",			/* lookup name */
+  .type = lookup_querystyle,		/* query-style lookup */
+  .open = ibase_open,			/* open function */
+  .check NULL,				/* no check function */
+  .find = ibase_find,			/* find function */
+  .close = NULL,			/* no close function */
+  .tidy = ibase_tidy,			/* tidy function */
+  .quote = ibase_quote,			/* quoting function */
+  .version_report = ibase_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP
