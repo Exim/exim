@@ -40426,7 +40426,7 @@ only supports signing with the same canonicalization method for both headers and
 .option dkim_strict smtp string&!! unset
 This  option  defines  how  Exim  behaves  when  signing a message that
 should be signed fails for some reason.  When the expansion evaluates to
-either "1" or "true", Exim will defer. Otherwise Exim will send the message
+either &"1"& or &"true"&, Exim will defer. Otherwise Exim will send the message
 unsigned. You can use the &%$dkim_domain%& and &%$dkim_selector%& expansion
 variables here.
 
@@ -40438,16 +40438,19 @@ in the message signature.
 When unspecified, the header names listed in RFC4871 will be used,
 whether or not each header is present in the message.
 The default list is available for the expansion in the macro
-"_DKIM_SIGN_HEADERS".
+&"_DKIM_SIGN_HEADERS"&
+.new
+and an oversigning variant is in &"_DKIM_OVERSIGN_HEADERS"&.
+.wen
 
 If a name is repeated, multiple headers by that name (or the absence thereof)
 will be signed.  The textually later headers in the headers part of the
 message are signed first, if there are multiples.
 
-A name can be prefixed with either an '=' or a '+' character.
-If an '=' prefix is used, all headers that are present with this name
+A name can be prefixed with either an &"="& or a &"+"& character.
+If an &"="& prefix is used, all headers that are present with this name
 will be signed.
-If a '+' prefix if used, all headers that are present with this name
+If a &"+"& prefix if used, all headers that are present with this name
 will be signed, and one signature added for a missing header with the
 name will be appended.
 

@@ -35,6 +35,15 @@
                              "List-Id:List-Help:List-Unsubscribe:"\
                              "List-Subscribe:List-Post:List-Owner:List-Archive"
 
+#define PDKIM_OVERSIGN_HEADERS "+From:+Sender:+Reply-To:+Subject:+Date:"\
+                             "+Message-ID:+To:+Cc:+MIME-Version:+Content-Type:"\
+                             "+Content-Transfer-Encoding:+Content-ID:"\
+                             "+Content-Description:+Resent-Date:+Resent-From:"\
+                             "+Resent-Sender:+Resent-To:+Resent-Cc:"\
+                             "+Resent-Message-ID:+In-Reply-To:+References:"\
+                             "+List-Id:+List-Help:+List-Unsubscribe:"\
+                             "+List-Subscribe:+List-Post:+List-Owner:+List-Archive"
+
 /* -------------------------------------------------------------------------- */
 /* Length of the preallocated buffer for the "answer" from the dns/txt
    callback function. This should match the maximum RDLENGTH from DNS. */

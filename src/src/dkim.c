@@ -21,6 +21,7 @@ void
 params_dkim(void)
 {
 builtin_macro_create_var(US"_DKIM_SIGN_HEADERS", US PDKIM_DEFAULT_SIGN_HEADERS);
+builtin_macro_create_var(US"_DKIM_OVERSIGN_HEADERS", US PDKIM_OVERSIGN_HEADERS);
 }
 # else	/*!MACRO_PREDEF*/
 
