@@ -2945,17 +2945,20 @@ if (*t == 0 || (*t == '/' && t != ss))
   return ERROR;
   }
 
-/* See if there is a semicolon in the pattern */
+/* See if there is a semicolon in the pattern, separating a searchtype
+prefix.  If there is one then check for comma-sep options. */
 
 if ((semicolon = Ustrchr(ss, ';')))
-  {
-  endname = (opts = Ustrchr(ss, ',')) ? opts : semicolon;
-  if (opts)
+  if ((opts = Ustrchr(ss, ',')) && opts < semicolon)
     {
-    opts++;
+    endname = opts++;
     opts = string_copyn(opts, semicolon - opts);
     }
-  }
+  else
+    {
+    endname = semicolon;
+    opts = NULL;
+    }
 
 /* If we are doing an IP address only match, then all lookups must be IP
 address lookups, even if there is no "net-". */
