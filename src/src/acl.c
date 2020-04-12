@@ -2259,7 +2259,7 @@ count = 1.0;
 
 /* Parse the other options. */
 
-while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size)))
+while ((ss = string_nextinlist(&arg, &sep, NULL, 0)))
   {
   if (strcmpic(ss, US"leaky") == 0) leaky = TRUE;
   else if (strcmpic(ss, US"strict") == 0) strict = TRUE;
