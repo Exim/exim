@@ -2764,8 +2764,9 @@ if (rc <= 0)
     case SSL_ERROR_SSL:
       {
       uschar * s = US"SSL_accept";
-      unsigned long e = ERR_peek_error();
-      if (ERR_GET_REASON(e) == SSL_R_WRONG_VERSION_NUMBER)
+      int r = ERR_GET_REASON(ERR_peek_error());
+      if (  r == SSL_R_WRONG_VERSION_NUMBER
+         || r == SSL_R_UNKNOWN_PROTOCOL || r == SSL_R_UNSUPPORTED_PROTOCOL)
 	s = string_sprintf("%s (%s)", s, SSL_get_version(server_ssl));
       (void) tls_error(s, NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
       return FAIL;
