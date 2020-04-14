@@ -1548,6 +1548,7 @@ if (  sx->esmtp
 
 if (require_auth == OK && !f.smtp_authenticated)
   {
+  invalidate_ehlo_cache_entry(sx);
   set_errno_nohost(sx->addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
     FALSE, &sx->delivery_start);

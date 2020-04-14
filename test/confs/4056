@@ -1,6 +1,8 @@
 # test config 4056
 # Early-pipe, AUTH (no TLS!)
 
+AA = yes
+
 keep_environment = PATH
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -59,9 +61,17 @@ plain:
   driver = plaintext
   public_name = PLAIN
 
+  server_advertise_condition =	AA
   server_condition = "\
     ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
   server_set_id = $auth2
 
   client_send =	^userx^secret
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
 

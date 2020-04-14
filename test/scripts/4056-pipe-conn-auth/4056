@@ -5,27 +5,59 @@ exim -bd -DSERVER=server -oX PORT_D
 ****
 #
 exim a@test.ex
-Subject test 1
+Subject: test 1
 
 ****
 exim -q
 ****
-exim -DNOTDAEMON -DSERVER=server -q
+exim -Mrm $msg1
 ****
 #
 #
 #
 # Go for it.  This one should do (limited) early-pipelinng.
 exim b@test.ex
-Subject test 2
+Subject: test 2
 
 ****
 exim -q
 ****
+# that should have gone to the server; deliver it there to blackhole
 exim -DNOTDAEMON -DSERVER=server -q
 ****
 #
 #
+killdaemon
+#
+#
+#
+#
+# Now have the server stop advertising AUTH
+# Trying to use it will be attempted, fail, and should result in the cache being invalidated
+# The message should be deferred; so still queued
+exim -bd -DSERVER=server -DAA=no -oX PORT_D
+****
+exim -odi c@test.ex
+Subject: test 3
+
+****
+killdaemon
+#
+exim -Mrm $msg1
+****
+#
+# Tidy the retry db, for test purposes
+sudo rm DIR/spool/db/retry
+#
+#
+# Then, advertising again, initial attempt should not get early-pipe
+# but should go through
+exim -bd -DSERVER=server -oX PORT_D
+****
+exim -odi d@test.ex
+Subject: test 4
+
+****
 killdaemon
 #
 no_msglog_check
