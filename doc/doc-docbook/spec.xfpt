@@ -12214,6 +12214,17 @@ contain the trailing slash. If &$config_file$& does not contain a slash,
 .vindex "&$config_file$&"
 The name of the main configuration file Exim is using.
 
+.vitem &$connection_in_id$&
+.vindex "&$connection_in_id$&"
+When a incoming connecting in received, this variable contains a unique
+id representing epoch+pid+localhost_number. See also &$message_exim_id$&
+
+.vitem &$connection_out_id$&
+.vindex "&$connection_out_id$&"
+Like &$connection_in_id$&, this variable creates a unique id for the
+outgoing connection. This id is preserved when multiple deliveries
+use the same connection.
+
 .vitem &$dmarc_domain_policy$& &&&
        &$dmarc_status$& &&&
        &$dmarc_status_text$& &&&

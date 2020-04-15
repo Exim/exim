@@ -516,6 +516,8 @@ extern uschar *string_copy_dnsdomain(uschar *);
 extern uschar *string_copy_malloc(const uschar *);
 extern uschar *string_dequote(const uschar **);
 extern uschar *string_format_size(int, uschar *);
+extern unsigned long create_connection_id();
+extern uschar *string_format_connection_id(unsigned long connection_id);
 extern int     string_interpret_escape(const uschar **);
 extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N

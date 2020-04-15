@@ -257,6 +257,7 @@ const blob * fastopen_blob = NULL;
 #ifndef DISABLE_EVENT
 deliver_host_address = host->address;
 deliver_host_port = port;
+connection_out_id = create_connection_id();
 if (event_raise(tb->event_action, US"tcp:connect", NULL)) return -1;
 #endif
 

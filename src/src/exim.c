@@ -2707,7 +2707,7 @@ on the second character (the one after '-'), to save some effort. */
       union sockaddr_46 interface_sock;
       EXIM_SOCKLEN_T size = sizeof(interface_sock);
 
-      if (argc != i + 6)
+      if (argc != 6 && argc != 7)
         exim_fail("exim: too many or too few arguments after -MC\n");
 
       if (msg_action_arg >= 0)
@@ -2722,6 +2722,9 @@ on the second character (the one after '-'), to save some effort. */
       forced_delivery = TRUE;
       queue_run_pid = passed_qr_pid;
       queue_run_pipe = passed_qr_pipe;
+
+      if (argc == 7)
+        connection_out_id = Uatol(argv[++i]);
 
       if (!mac_ismsgid(argv[i]))
         exim_fail("exim: malformed message id %s after -MC option\n",

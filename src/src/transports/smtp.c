@@ -1131,6 +1131,7 @@ while (count-- > 0)
 
   /* The address was accepted */
   addr->host_used = sx->conn_args.host;
+  addr->connection_out_id = connection_out_id;
 
   DEBUG(D_transport) debug_printf("%s expect rcpt\n", __FUNCTION__);
   if (smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),

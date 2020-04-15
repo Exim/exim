@@ -654,6 +654,9 @@ int     av_failed              = FALSE;	/* boolean but accessed as vtype_int*/
 uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */
 #endif
 
+uschar *base62_alpha =
+    US"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
 #if BASE_62 == 62
 uschar *base62_chars=
     US"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -726,6 +729,8 @@ uid_t   config_uid             = CONFIGURE_OWNER;
 uid_t   config_uid             = 0;
 #endif
 
+unsigned long connection_in_id = 0;
+unsigned long connection_out_id= 0;
 int     connection_max_messages= -1;
 uschar *continue_proxy_cipher  = NULL;
 uschar *continue_hostname      = NULL;

@@ -566,6 +566,7 @@ typedef struct address_item {
   uschar *message;                /* error message */
   uschar *user_message;           /* error message that can be sent over SMTP
                                      or quoted in bounce message */
+  unsigned long connection_out_id;/* connection_id returned from forked child */
   uschar *onetime_parent;         /* saved original parent for onetime */
   uschar **pipe_expandn;          /* numeric expansions for pipe from filter */
   uschar *return_filename;        /* name of return file */
