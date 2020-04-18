@@ -43,6 +43,7 @@ nisplus.o:       $(PHDRS) nisplus.c
 oracle.o:        $(PHDRS) oracle.c
 passwd.o:        $(PHDRS) passwd.c
 pgsql.o:         $(PHDRS) pgsql.c
+readsock.o:      $(PHDRS) readsock.c
 redis.o:         $(PHDRS) redis.c
 spf.o:           $(PHDRS) spf.c
 sqlite.o:        $(PHDRS) sqlite.c

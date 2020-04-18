@@ -10285,21 +10285,37 @@ ${readsocket{/socket/name}{request string}{3s}}
 .endd
 
 The third argument is a list of options, of which the first element is the timeout
-and must be present if the argument is given.
+and must be present if any options are given.
 Further elements are options of form &'name=value'&.
-Two option types is currently recognised: shutdown and tls.
-The first defines whether (the default)
-or not a shutdown is done on the connection after sending the request.
-Example, to not do so (preferred, eg. by some webservers):
+Example:
 .code
 ${readsocket{/socket/name}{request string}{3s:shutdown=no}}
 .endd
-The second, tls, controls the use of TLS on the connection.  Example:
-.code
-${readsocket{/socket/name}{request string}{3s:tls=yes}}
-.endd
-The default is to not use TLS.
+
+.new
+The following option names are recognised:
+.ilist
+&*cache*&
+Defines if the result data can be cached for use by a later identical
+request in the same process.
+Values are &"yes"& or &"no"& (the default).
+If not, all cached results for this connection specification
+will be invalidated.
+
+.next
+&*shutdown*&
+Defines whether or not a write-shutdown is done on the connection after
+sending the request. Values are &"yes"& (the default) or &"no"&
+(preferred, eg. by some webservers).
+
+.next
+&*tls*&
+Controls the use of TLS on the connection.
+Values are &"yes"& or &"no"& (the default).
 If it is enabled, a shutdown as descripbed above is never done.
+.endlist
+.wen
+
 
 A fourth argument allows you to change any newlines that are in the data
 that is read, in the same way as for &%readfile%& (see above). This example

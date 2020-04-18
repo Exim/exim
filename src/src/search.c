@@ -239,12 +239,10 @@ Returns:     nothing
 static void
 tidyup_subtree(tree_node *t)
 {
-search_cache *c = (search_cache *)(t->data.ptr);
-if (t->left != NULL) tidyup_subtree(t->left);
-if (t->right != NULL) tidyup_subtree(t->right);
-if (c != NULL &&
-    c->handle != NULL &&
-    lookup_list[c->search_type]->close != NULL)
+search_cache * c = (search_cache *)(t->data.ptr);
+if (t->left)  tidyup_subtree(t->left);
+if (t->right) tidyup_subtree(t->right);
+if (c && c->handle && lookup_list[c->search_type]->close)
   lookup_list[c->search_type]->close(c->handle);
 }
 
@@ -522,7 +520,8 @@ else
   DEBUG(D_lookup)
     {
     if (t)
-      debug_printf_indent("cached data found but either wrong opts or dated; ");
+      debug_printf_indent("cached data found but %s; ",
+	e->expiry && e->expiry <= time(NULL) ? "out-of-date" : "wrong opts");
     debug_printf_indent("%s lookup required for %s%s%s\n",
       filename ? US"file" : US"database",
       keystring,
@@ -545,13 +544,10 @@ else
 
   else if (do_cache)
     {
-    if (!t) /* No existing entry.  Create new one. */
+    if (!t)	/* No existing entry.  Create new one. */
       {
       int len = keylength + 1;
       e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, is_tainted(keystring));
-      e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
-      e->opts = opts;
-      e->data.ptr = data;
       t = (tree_node *)(e+1);
       memcpy(t->name, keystring, len);
       t->data.ptr = e;
@@ -560,7 +556,7 @@ else
       /* Else previous, out-of-date cache entry.  Update with the */
       /* new result and forget the old one */
     e->expiry = do_cache == UINT_MAX ? 0 : time(NULL)+do_cache;
-    e->opts = opts;
+    e->opts = opts ? string_copy(opts) : NULL;
     e->data.ptr = data;
     }
 
@@ -570,7 +566,7 @@ else
   else
     {
     DEBUG(D_lookup) debug_printf_indent("lookup forced cache cleanup\n");
-    c->item_cache = NULL;
+    c->item_cache = NULL; 	/* forget all lookups on this connection */
     }
   }
 

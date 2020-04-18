@@ -54,7 +54,10 @@ Version 4.94
 14. Options on pgsql and mysql lookups, to specify server separate from the
     lookup string.
 
-15. Expansion item ${listquote {<char} {<item>}}
+15. Expansion item ${listquote {<char} {<item>}}.
+
+16. An option for the ${readsocket {}{}{}} expansion to make the result data
+    cacheable.
 
 
 

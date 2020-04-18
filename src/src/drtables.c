@@ -617,6 +617,8 @@ extern lookup_module_info testdb_lookup_module_info;
 extern lookup_module_info whoson_lookup_module_info;
 #endif
 
+extern lookup_module_info readsock_lookup_module_info;
+
 
 void
 init_lookup_list(void)
@@ -714,6 +716,8 @@ addlookupmodule(NULL, &testdb_lookup_module_info);
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
 addlookupmodule(NULL, &whoson_lookup_module_info);
 #endif
+
+addlookupmodule(NULL, &readsock_lookup_module_info);
 
 #ifdef LOOKUP_MODULE_DIR
 if (!(dd = exim_opendir(LOOKUP_MODULE_DIR)))

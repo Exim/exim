@@ -182,6 +182,9 @@ then
   OBJ="${OBJ} lmdb.o"
 fi
 
+# readsock is always wanted as it implements the ${readsock } expansion
+OBJ="${OBJ} readsock.o"
+
 echo "MODS = $MODS"
 echo "OBJ = $OBJ"
 

@@ -43,7 +43,7 @@ search_tidyup called
   LRU list:
   internal_search_find: file="NULL"
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
-  cached data found but either wrong opts or dated;   database lookup required for a=shorthost.test.ex
+  cached data found but out-of-date;   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
   lookup yielded: 127.0.0.1
 LOG: MAIN

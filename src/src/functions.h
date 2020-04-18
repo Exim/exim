@@ -149,6 +149,8 @@ extern void    bits_clear(unsigned int *, size_t, int *);
 extern void    bits_set(unsigned int *, size_t, int *);
 
 extern void    cancel_cutthrough_connection(BOOL, const uschar *);
+extern gstring *cat_file(FILE *, gstring *, uschar *);
+extern gstring *cat_file_tls(void *, gstring *, uschar *);
 extern int     check_host(void *, const uschar *, const uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_exim_function(int *, const uschar *);

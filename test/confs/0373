@@ -10,6 +10,8 @@ domainlist local_domains = test.ex : *.test.ex
 acl_smtp_connect = connect
 trusted_users = CALLER
 
+log_selector = +millisec
+
 
 # ----- ACL -----
 

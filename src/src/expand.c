@@ -3927,7 +3927,7 @@ Arguments:
 Returns:       new pointer for expandable string, terminated if non-null
 */
 
-static gstring *
+gstring *
 cat_file(FILE *f, gstring *yield, uschar *eol)
 {
 uschar buffer[1024];
@@ -3947,7 +3947,7 @@ return yield;
 
 
 #ifndef DISABLE_TLS
-static gstring *
+gstring *
 cat_file_tls(void * tls_ctx, gstring * yield, uschar * eol)
 {
 int rc;
@@ -5286,7 +5286,6 @@ while (*s != 0)
       host_item host;
       BOOL do_shutdown = TRUE;
       BOOL do_tls = FALSE;	/* Only set under ! DISABLE_TLS */
-      blob reqstr;
 
       if (expand_forbid & RDO_READSOCK)
         {
@@ -5304,218 +5303,77 @@ while (*s != 0)
         case 3: goto EXPAND_FAILED;
         }
 
-      /* Grab the request string, if any */
-
-      reqstr.data = sub_arg[1];
-      reqstr.len = Ustrlen(sub_arg[1]);
-
-      /* Sort out timeout, if given.  The second arg is a list with the first element
-      being a time value.  Any more are options of form "name=value".  Currently the
-      only options recognised are "shutdown" and "tls". */
-
-      if (sub_arg[2])
-        {
-	const uschar * list = sub_arg[2];
-	uschar * item;
-	int sep = 0;
-
-	if (  !(item = string_nextinlist(&list, &sep, NULL, 0))
-	   || !*item
-	   || (timeout = readconf_readtime(item, 0, FALSE)) < 0)
-          {
-          expand_string_message = string_sprintf("bad time value %s", item);
-          goto EXPAND_FAILED;
-          }
-
-	while ((item = string_nextinlist(&list, &sep, NULL, 0)))
-	  if (Ustrncmp(item, US"shutdown=", 9) == 0)
-	    { if (Ustrcmp(item + 9, US"no") == 0) do_shutdown = FALSE; }
-#ifndef DISABLE_TLS
-	  else if (Ustrncmp(item, US"tls=", 4) == 0)
-	    { if (Ustrcmp(item + 9, US"no") != 0) do_tls = TRUE; }
-#endif
-        }
-      else
-	sub_arg[3] = NULL;                     /* No eol if no timeout */
-
       /* If skipping, we don't actually do anything. Otherwise, arrange to
       connect to either an IP or a Unix socket. */
 
       if (!skipping)
         {
-        /* Handle an IP (internet) domain */
+	int stype = search_findtype(US"readsock", 8);
+	gstring * g = NULL;
+	void * handle;
+	int expand_setup = -1;
+	uschar * s;
 
-        if (Ustrncmp(sub_arg[0], "inet:", 5) == 0)
-          {
-          int port;
-          uschar * port_name;
+	/* If the reqstr is empty, flag that and set a dummy */
 
-          server_name = sub_arg[0] + 5;
-          port_name = Ustrrchr(server_name, ':');
-
-          /* Sort out the port */
-
-          if (!port_name)
-            {
-            expand_string_message =
-              string_sprintf("missing port for readsocket %s", sub_arg[0]);
-            goto EXPAND_FAILED;
-            }
-          *port_name++ = 0;           /* Terminate server name */
-
-          if (isdigit(*port_name))
-            {
-            uschar *end;
-            port = Ustrtol(port_name, &end, 0);
-            if (end != port_name + Ustrlen(port_name))
-              {
-              expand_string_message =
-                string_sprintf("invalid port number %s", port_name);
-              goto EXPAND_FAILED;
-              }
-            }
-          else
-            {
-            struct servent *service_info = getservbyname(CS port_name, "tcp");
-            if (!service_info)
-              {
-              expand_string_message = string_sprintf("unknown port \"%s\"",
-                port_name);
-              goto EXPAND_FAILED;
-              }
-            port = ntohs(service_info->s_port);
-            }
-
-	  /*XXX we trust that the request is idempotent for TFO.  Hmm. */
-	  cctx.sock = ip_connectedsocket(SOCK_STREAM, server_name, port, port,
-		  timeout, &host, &expand_string_message,
-		  do_tls ? NULL : &reqstr);
-	  callout_address = NULL;
-	  if (cctx.sock < 0)
-	    goto SOCK_FAIL;
-	  if (!do_tls)
-	    reqstr.len = 0;
-          }
-
-        /* Handle a Unix domain socket */
-
-        else
-          {
-	  struct sockaddr_un sockun;         /* don't call this "sun" ! */
-          int rc;
-
-          if ((cctx.sock = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
-            {
-            expand_string_message = string_sprintf("failed to create socket: %s",
-              strerror(errno));
-            goto SOCK_FAIL;
-            }
-
-          sockun.sun_family = AF_UNIX;
-          sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1),
-            sub_arg[0]);
-	  server_name = US sockun.sun_path;
-
-          sigalrm_seen = FALSE;
-          ALARM(timeout);
-          rc = connect(cctx.sock, (struct sockaddr *)(&sockun), sizeof(sockun));
-          ALARM_CLR(0);
-          if (sigalrm_seen)
-            {
-            expand_string_message = US "socket connect timed out";
-            goto SOCK_FAIL;
-            }
-          if (rc < 0)
-            {
-            expand_string_message = string_sprintf("failed to connect to socket "
-              "%s: %s", sub_arg[0], strerror(errno));
-            goto SOCK_FAIL;
-            }
-	  host.name = server_name;
-	  host.address = US"";
-          }
-
-        DEBUG(D_expand) debug_printf_indent("connected to socket %s\n", sub_arg[0]);
-
-#ifndef DISABLE_TLS
-	if (do_tls)
+	if (!sub_arg[1][0])
 	  {
-	  smtp_connect_args conn_args = {.host = &host };
-	  tls_support tls_dummy = {.sni=NULL};
-	  uschar * errstr;
-
-	  if (!tls_client_start(&cctx, &conn_args, NULL, &tls_dummy, &errstr))
-	    {
-	    expand_string_message = string_sprintf("TLS connect failed: %s", errstr);
-	    goto SOCK_FAIL;
-	    }
+	  g = string_append_listele(g, ',', US"send=no");
+	  sub_arg[1] = US"DUMMY";
 	  }
-#endif
 
-	/* Allow sequencing of test actions */
-	testharness_pause_ms(100);
+	/* Re-marshall the options */
 
-        /* Write the request string, if not empty or already done */
-
-        if (reqstr.len)
-          {
-          DEBUG(D_expand) debug_printf_indent("writing \"%s\" to socket\n",
-            reqstr.data);
-          if ( (
-#ifndef DISABLE_TLS
-	      do_tls ? tls_write(cctx.tls_ctx, reqstr.data, reqstr.len, FALSE) :
-#endif
-			write(cctx.sock, reqstr.data, reqstr.len)) != reqstr.len)
-            {
-            expand_string_message = string_sprintf("request write to socket "
-              "failed: %s", strerror(errno));
-            goto SOCK_FAIL;
-            }
-          }
-
-        /* Shut down the sending side of the socket. This helps some servers to
-        recognise that it is their turn to do some work. Just in case some
-        system doesn't have this function, make it conditional. */
-
-#ifdef SHUT_WR
-	if (!do_tls && do_shutdown) shutdown(cctx.sock, SHUT_WR);
-#endif
-
-	testharness_pause_ms(100);
-
-        /* Now we need to read from the socket, under a timeout. The function
-        that reads a file can be used. */
-
-	if (!do_tls)
-	  fp = fdopen(cctx.sock, "rb");
-        sigalrm_seen = FALSE;
-        ALARM(timeout);
-        yield =
-#ifndef DISABLE_TLS
-	  do_tls ? cat_file_tls(cctx.tls_ctx, yield, sub_arg[3]) :
-#endif
-		    cat_file(fp, yield, sub_arg[3]);
-        ALARM_CLR(0);
-
-#ifndef DISABLE_TLS
-	if (do_tls)
+	if (sub_arg[2])
 	  {
-	  tls_close(cctx.tls_ctx, TRUE);
-	  close(cctx.sock);
+	  const uschar * list = sub_arg[2];
+	  uschar * item;
+	  int sep = 0;
+
+	  /* First option has no tag and is timeout */
+	  if ((item = string_nextinlist(&list, &sep, NULL, 0)))
+	    g = string_append_listele(g, ',',
+		  string_sprintf("timeout=%s", item));
+
+	  /* The rest of the options from the expansion */
+	  while ((item = string_nextinlist(&list, &sep, NULL, 0)))
+	    g = string_append_listele(g, ',', item);
+
+	  /* possibly plus an EOL string */
+	  if (sub_arg[3] && *sub_arg[3])
+	    g = string_append_listele(g, ',',
+		  string_sprintf("eol=%s", sub_arg[3]));
+
+	  }
+
+	/* Gat a (possibly cached) handle for the connection */
+
+	if (!(handle = search_open(sub_arg[0], stype, 0, NULL, NULL)))
+	  {
+	  if (*expand_string_message) goto EXPAND_FAILED;
+	  expand_string_message = search_error_message;
+	  search_error_message = NULL;
+	  goto SOCK_FAIL;
+	  }
+
+	/* Get (possibly cached) results for the lookup */
+	/* sspec: sub_arg[0]  req: sub_arg[1]  opts: g */
+
+	if ((s = search_find(handle, sub_arg[0], sub_arg[1], -1, NULL, 0, 0,
+				    &expand_setup, string_from_gstring(g))))
+	  yield = string_cat(yield, s);
+	else if (f.search_find_defer)
+	  {
+	  expand_string_message = search_error_message;
+	  search_error_message = NULL;
+	  goto SOCK_FAIL;
 	  }
 	else
-#endif
-	  (void)fclose(fp);
-
-        /* After a timeout, we restore the pointer in the result, that is,
-        make sure we add nothing from the socket. */
-
-        if (sigalrm_seen)
-          {
-          if (yield) yield->ptr = save_ptr;
-          expand_string_message = US "socket read timed out";
-          goto SOCK_FAIL;
-          }
+	  {	/* should not happen, at present */
+	  expand_string_message = search_error_message;
+	  search_error_message = NULL;
+	  goto SOCK_FAIL;
+	  }
         }
 
       /* The whole thing has worked (or we were skipping). If there is a

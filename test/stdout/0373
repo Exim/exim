@@ -1,6 +1,8 @@
+> connfail cases (no server)
 > Failed: failed to connect to socket TESTSUITE/test-socket: No such file or directory
 > 2 ++ no socket ++
 > 
+> unix-socket cases
 > 1 >>ANSWER-1
 <<
 > 2 >>ANSWER-2<<
@@ -13,22 +15,36 @@
 > 9 >>sock error<<
 > 
 451 Temporary local problem - please try later
-> 1 >>ANSWER-1
+> ipv4 cases
+> 1  ANSWER-1      >>ANSWER-1
 <<
-> 2 >>ANSWER-2<<
-> 3 >>ANSWER-3*EOL*<<
-> 4 >>ANSWER-4*EOL*<<
-> 5 >>ANSWER-5<<
-> 6 >><<
-> 7 >><<
+> 2  ANSWER-2      >>ANSWER-2<<
+> 3  ANSWER-3*EOL* >>ANSWER-3*EOL*<<
+> 4  ANSWER-4*EOL* >>ANSWER-4*EOL*<<
+> 5  ANSWER-5      >>ANSWER-5<<
+> 6                >><<
+> 7                >><<
 > Failed: socket read timed out
-> 9 >>sock error<<
-> 10 >>ANSWER-10
+> 9  sock error    >>sock error<<
+> 10 ANSWER-10\n     >>ANSWER-10
 <<
-> 11 >>ANSWER-11
-<<
+> 11 ANSWER-11     >><<
 > 
-> Failed: bad time value NULL
+> Failed: failed to connect to any address for 127.0.0.1: Connection refused
+> 
+> caching of response value
+> 1  >>ANSWER-1
+<<
+> 1+ >>ANSWER-1
+<<
+> 2  >>ANSWER-2
+<<
+> 2- >>expected failure<<
+> 1- >>expected failure<<
+> 1+ >>ANSWER-1
+<<
+> 1- >>ANSWER-1
+<<
 > 
 
 ******** SERVER ********
@@ -127,5 +143,21 @@ QUERY-10
 Listening on port 1224 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 >LF>ANSWER-11
+>*eof
+End of script
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-1
+>LF>ANSWER-1
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-2
+>LF>ANSWER-2
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-1
+>LF>ANSWER-1
 >*eof
 End of script
