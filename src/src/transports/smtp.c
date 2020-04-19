@@ -5163,7 +5163,12 @@ retry_non_continued:
 #ifndef DISABLE_EVENT
       /* If the last host gave a defer raise a per-message event */
 
-      if (!nexthost && (message_defer || rc == DEFER))
+      if (  !(  nexthost
+	     && unexpired_hosts_tried < ob->hosts_max_try
+	     && total_hosts_tried < ob->hosts_max_try_hardlimit
+	     )
+         && (message_defer || rc == DEFER)
+	 )
 	deferred_event_raise(first_addr, host, US"msg:defer");
 #endif
       }

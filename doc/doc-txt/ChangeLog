@@ -164,6 +164,9 @@ JH/35 The dsearch lookup now requires that the directory is an absolute path.
       Previously this was not checked, and nonempty relative paths made an
       access under Exim's current working directory.
 
+JH/36 Bug 2554: Fix msg:defer event for the hosts_max_try_hardlimit case.
+      Previously no event was raised.
+
 
 Exim version 4.93
 -----------------
