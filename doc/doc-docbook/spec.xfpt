@@ -16955,7 +16955,7 @@ received_header_text = Received: \
         ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
   by $primary_hostname \
   ${if def:received_protocol {with $received_protocol }}\
-  ${if def:tls_ver           { ($tls_ver)}}\
+  ${if def:tls_in_ver        { ($tls_in_ver)}}\
   ${if def:tls_in_cipher_std { tls $tls_in_cipher_std\n\t}}\
   (Exim $version_number)\n\t\
   ${if def:sender_address \
@@ -16964,7 +16964,8 @@ received_header_text = Received: \
   ${if def:received_for {\n\tfor $received_for}}
 .endd
 
-The reference to the TLS cipher is omitted when Exim is built without TLS
+The references to the TLS version and cipher are
+omitted when Exim is built without TLS
 support. The use of conditional expansions ensures that this works for both
 locally generated messages and messages received from remote hosts, giving
 header lines such as the following:
