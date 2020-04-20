@@ -2765,7 +2765,10 @@ if (rc <= 0)
       {
       uschar * s = US"SSL_accept";
       int r = ERR_GET_REASON(ERR_peek_error());
-      if (  r == SSL_R_WRONG_VERSION_NUMBER || r == SSL_R_VERSION_TOO_LOW
+      if (  r == SSL_R_WRONG_VERSION_NUMBER
+#ifdef SSL_R_VERSION_TOO_LOW
+         || r == SSL_R_VERSION_TOO_LOW
+#endif
          || r == SSL_R_UNKNOWN_PROTOCOL || r == SSL_R_UNSUPPORTED_PROTOCOL)
 	s = string_sprintf("%s (%s)", s, SSL_get_version(server_ssl));
       (void) tls_error(s, NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
