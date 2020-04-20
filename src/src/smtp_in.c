@@ -4861,8 +4861,8 @@ while (done <= 0)
       and EXPN etc. to be used when space is short. */
 
       if (!receive_check_fs(
-	   (smtp_check_spool_space && message_size >= 0)?
-	      message_size + 5000 : 0))
+	   smtp_check_spool_space && message_size >= 0
+	      ? message_size + 5000 : 0))
 	{
 	smtp_printf("452 Space shortage, please try later\r\n", FALSE);
 	sender_address = NULL;

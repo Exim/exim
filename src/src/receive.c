@@ -270,8 +270,8 @@ if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
       "check_space = " PR_EXIM_ARITH "K inodes = %d msg_size = %d\n",
       space, inodes, check_spool_space, check_spool_inodes, msg_size);
 
-  if ((space >= 0 && space < check_spool_space) ||
-      (inodes >= 0 && inodes < check_spool_inodes))
+  if (  space >= 0 && space + msg_size / 1024 < check_spool_space
+     || inodes >= 0 && inodes < check_spool_inodes)
     {
     log_write(0, LOG_MAIN, "spool directory space check failed: space="
       PR_EXIM_ARITH " inodes=%d", space, inodes);
