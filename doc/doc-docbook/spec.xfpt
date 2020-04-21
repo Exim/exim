@@ -8120,7 +8120,7 @@ daemon as in the other SQL databases.
 
 .new
 .oindex &%sqlite_dbfile%&
-The preferred way of specifying the file is by using the 
+The preferred way of specifying the file is by using the
 &%sqlite_dbfile%& option, set to
 an absolute path.
 .wen
@@ -13290,6 +13290,18 @@ library, by setting:
 dns_dnssec_ok = 1
 .endd
 
+.new
+In addition, on Linux with glibc 2.31 or newer the resolver library will
+default to stripping out a successful validation status.
+This will break a previously working Exim installation.
+Provided that you do trust the resolver (ie, is on localhost) you can tell
+glibc to pass through any successful validation with a new option in
+&_/etc/resolv.conf_&:
+.code
+options trust-ad
+.endd
+.wen
+
 Exim does not perform DNSSEC validation itself, instead leaving that to a
 validating resolver (e.g. unbound, or bind with suitable configuration).
 
@@ -15417,6 +15429,18 @@ DNS resolver library to either use or not use DNSSEC, overriding the system
 default. A value of 0 coerces DNSSEC off, a value of 1 coerces DNSSEC on.
 
 If the resolver library does not support DNSSEC then this option has no effect.
+
+.new
+On Linux with glibc 2.31 or newer this is insufficient, the resolver library
+will default to stripping out a successful validation status.
+This will break a previously working Exim installation.
+Provided that you do trust the resolver (ie, is on localhost) you can tell
+glibc to pass through any successful validation with a new option in
+&_/etc/resolv.conf_&:
+.code
+options trust-ad
+.endd
+.wen
 
 
 .option dns_ipv4_lookup main "domain list&!!" unset

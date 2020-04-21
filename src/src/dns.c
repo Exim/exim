@@ -501,6 +501,8 @@ const uschar * auth_name;
 const uschar * trusted;
 
 if (dnsa->answerlen < 0) return FALSE;
+/* Beware that newer versions of glibc on Linux will filter out the ad bit
+unless their shiny new RES_TRUSTAD bit is set for the resolver.  */
 if (h->ad) return TRUE;
 
 /* If the resolver we ask is authoritative for the domain in question, it may
