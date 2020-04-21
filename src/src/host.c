@@ -182,19 +182,18 @@ dns_scan dnss;
 
 DEBUG(D_host_lookup)
   debug_printf("using host_fake_gethostbyname for %s (%s)\n", name,
-    (af == AF_INET)? "IPv4" : "IPv6");
+    af == AF_INET ? "IPv4" : "IPv6");
 
 /* Handle unqualified "localhost" */
 
 if (Ustrcmp(name, "localhost") == 0)
-  lname = (af == AF_INET)? US"127.0.0.1" : US"::1";
+  lname = af == AF_INET ? US"127.0.0.1" : US"::1";
 
 /* Handle a literal IP address */
 
 if ((ipa = string_is_ip_address(lname, NULL)) != 0)
-  {
-  if ((ipa == 4 && af == AF_INET) ||
-      (ipa == 6 && af == AF_INET6))
+  if (   ipa == 4 && af == AF_INET
+     ||  ipa == 6 && af == AF_INET6)
     {
     int x[4];
     yield = store_get(sizeof(struct hostent), FALSE);
@@ -224,13 +223,12 @@ if ((ipa = string_is_ip_address(lname, NULL)) != 0)
     *error_num = HOST_NOT_FOUND;
     return NULL;
     }
-  }
 
 /* Handle a host name */
 
 else
   {
-  int type = (af == AF_INET)? T_A:T_AAAA;
+  int type = af == AF_INET ? T_A:T_AAAA;
   int rc = dns_lookup_timerwrap(dnsa, lname, type, NULL);
   int count = 0;
 
@@ -2035,7 +2033,7 @@ for (int i = 1; i <= times;
       && (time_msec = get_time_in_ms() - time_msec) > slow_lookup_log)
     log_long_lookup(US"gethostbyname", host->name, time_msec);
 
-  if (hostdata == NULL)
+  if (!hostdata)
     {
     uschar *error;
     switch (error_num)
@@ -2044,18 +2042,19 @@ for (int i = 1; i <= times;
       case TRY_AGAIN:      error = US"TRY_AGAIN"; break;
       case NO_RECOVERY:    error = US"NO_RECOVERY"; break;
       case NO_DATA:        error = US"NO_DATA"; break;
-      #if NO_DATA != NO_ADDRESS
+    #if NO_DATA != NO_ADDRESS
       case NO_ADDRESS:     error = US"NO_ADDRESS"; break;
-      #endif
+    #endif
       default: error = US"?"; break;
       }
 
     DEBUG(D_host_lookup) debug_printf("%s returned %d (%s)\n",
+      f.running_in_test_harness ? "host_fake_gethostbyname" :
       #if HAVE_IPV6
         #if HAVE_GETIPNODEBYNAME
-        (af == AF_INET6)? "getipnodebyname(af=inet6)" : "getipnodebyname(af=inet)",
+        af == AF_INET6 ? "getipnodebyname(af=inet6)" : "getipnodebyname(af=inet)",
         #else
-        (af == AF_INET6)? "gethostbyname2(af=inet6)" : "gethostbyname2(af=inet)",
+        af == AF_INET6 ? "gethostbyname2(af=inet6)" : "gethostbyname2(af=inet)",
         #endif
       #else
       "gethostbyname",
