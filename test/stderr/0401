@@ -16,9 +16,9 @@
 >>> using ACL "mail"
 >>> processing "accept" (TESTSUITE/test-config 24)
 >>> check hosts = TESTSUITE/aux-var/0401.hosts2
->>> no IP address found for host a2.2.2 (during SMTP connection from (xxx) [V4NET.9.8.7])
-LOG: no IP address found for host a2.2.2 (during SMTP connection from (xxx) [V4NET.9.8.7])
->>> host in "TESTSUITE/aux-var/0401.hosts2"? no (failed to find IP address for a2.2.2)
+>>> no IP address found for host not-exist.test.ex (during SMTP connection from (xxx) [V4NET.9.8.7])
+LOG: no IP address found for host not-exist.test.ex (during SMTP connection from (xxx) [V4NET.9.8.7])
+>>> host in "TESTSUITE/aux-var/0401.hosts2"? no (failed to find IP address for not-exist.test.ex)
 >>> accept: condition test failed in ACL "mail"
 >>> end of ACL "mail": implicit DENY
 LOG: H=(xxx) [V4NET.9.8.7] rejected MAIL <x@y>

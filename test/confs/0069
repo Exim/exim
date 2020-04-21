@@ -27,11 +27,11 @@ check_recipientx:
   deny    message = relay not permitted
 
 check_recipienty:
-  accept  hosts = non.existent.invalid : V4NET.0.0.13
+  accept  hosts = not-exist.test.ex : V4NET.0.0.13
   deny    message = "Denied"
 
 check_recipientz:
-  accept  hosts = +ignore_unknown : non.existent.invalid : V4NET.0.0.13
+  accept  hosts = +ignore_unknown : not-exist.test.ex : V4NET.0.0.13
   deny    message = "Denied"
 
 check_recipienta:
