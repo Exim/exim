@@ -8,7 +8,7 @@ exim -d-all+route -bt myhost.test.ex@mxt1.test.ex
 exim -d-all+route -bt xx@mxt1.test.ex
 ****
 2
-exim -d-all+route -bt xx@not.exist
+exim -d-all+route -bt xx@not-exist.test.ex
 ****
 2
 exim -d-all+route -bt ff@mxt1.test.ex

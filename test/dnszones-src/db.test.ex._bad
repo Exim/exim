@@ -1,0 +1,8 @@
+# A really denuded zone, just to give the testsuite something to hit so the fakens
+# program returns not-found rather than pass-on.
+
+test.ex._bad.     NS      exim.test.ex._bad.
+test.ex._bad.     SOA     exim.test.ex._bad. hostmaster.exim.test.ex_bad 1430683638 1200 120 604800 3000
+
+
+; End

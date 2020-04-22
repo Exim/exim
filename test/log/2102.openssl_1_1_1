@@ -13,7 +13,7 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example.com>
 1999-03-02 09:44:33 Peer did not present a cert
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= "name with spaces"@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss
@@ -42,8 +42,8 @@
 1999-03-02 09:44:33 cipher: TLS1.x:ke-RSA-AES256-SHAnnn:xxx
 1999-03-02 09:44:33 cipher_ TLS1.x:ke_RSA_WITH_ci_mac
 1999-03-02 09:44:33 ver:    TLS1.x
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server2.example.com" S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= b@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes DN="/CN=server2.example.com" S=sss
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 Our cert SN: <CN=server1.example_ec.com>
 1999-03-02 09:44:33 Peer did not present a cert
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx CV=no S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= c@test.ex H=[127.0.0.1] P=smtps X=TLS1.x:ke-ECDSA-AES256-SHAnnn:xxx CV=no S=sss

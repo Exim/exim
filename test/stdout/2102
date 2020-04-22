@@ -19,7 +19,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
->>> mail from:<CALLER@test.ex>
+>>> mail from:<a@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<CALLER@test.ex>
@@ -124,7 +124,7 @@ Key file = TESTSUITE/aux-fixed/exim-ca/example.com/server2.example.com/server2.e
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
->>> mail from:<CALLER@test.ex>
+>>> mail from:<b@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<CALLER@test.ex>
@@ -162,7 +162,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 220 TLS go ahead
 Attempting to start TLS
 Succeeded in starting TLS
->>> mail from:<CALLER@test.ex>
+>>> mail from:<c@test.ex>
 ??? 250
 <<< 250 OK
 >>> rcpt to:<CALLER@test.ex>

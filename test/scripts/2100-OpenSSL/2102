@@ -22,7 +22,7 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
-mail from:<CALLER@test.ex>
+mail from:<a@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
 ??? 250
@@ -84,7 +84,7 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
-mail from:<CALLER@test.ex>
+mail from:<b@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
 ??? 250
@@ -115,7 +115,7 @@ ehlo rhu.barb
 ??? 250
 starttls
 ??? 220
-mail from:<CALLER@test.ex>
+mail from:<c@test.ex>
 ??? 250
 rcpt to:<CALLER@test.ex>
 ??? 250
