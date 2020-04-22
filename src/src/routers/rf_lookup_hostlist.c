@@ -148,7 +148,9 @@ for (host_item * prev = NULL, * h = addr->host_list, *next_h; h; h = next_h)
 	if (lookup_type & LK_DEFAULT)
 	  {
 	  DEBUG(D_route|D_host_lookup)
-	    debug_printf("DNS lookup failed: trying getipnodebyname\n");
+	    debug_printf("DNS lookup failed: trying %s\n",
+	      f.running_in_test_harness
+	      ? "host_fake_gethostbyname" : "getipnodebyname");
 	  rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
 	    &canonical_name, TRUE);
 	  }
