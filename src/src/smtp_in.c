@@ -3039,7 +3039,7 @@ if (!check_sync())
 #endif
     {
     unsigned n = smtp_inend - smtp_inptr;
-    if (n > 32) n = 32;
+    if (n > 128) n = 128;
 
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
       "synchronization error (input sent without waiting for greeting): "
