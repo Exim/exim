@@ -155,7 +155,8 @@ return NULL;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
+exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
+  unsigned * bits)
 {
 gnutls_datum_t k;
 int rc;
@@ -182,6 +183,7 @@ switch(fmt)
     ret = US"pubkey format not handled";
     break;
   }
+if (!ret && bits) gnutls_pubkey_get_pk_algorithm(verify_ctx->key, bits);
 return ret;
 }
 
@@ -552,7 +554,8 @@ return NULL;
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
+exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
+  unsigned * bits)
 {
 /*
 in code sequence per b81207d2bfa92 rsa_parse_public_key() and asn1_get_mpi()
@@ -560,6 +563,7 @@ in code sequence per b81207d2bfa92 rsa_parse_public_key() and asn1_get_mpi()
 uschar tag_class;
 int taglen;
 long alen;
+unsigned nbits;
 int rc;
 uschar * errstr;
 gcry_error_t gerr;
@@ -608,10 +612,10 @@ if ((rc = as_tag(pubkey, ASN1_CLASS_STRUCTURED, ASN1_TAG_SEQUENCE, NULL))
 
 /* read two integers */
 DEBUG(D_acl) stage = US"MPI";
-if (  (errstr = as_mpi(pubkey, &verify_ctx->n))
-   || (errstr = as_mpi(pubkey, &verify_ctx->e))
-   )
-  return errstr;
+nbits = pubkey->len;
+if ((errstr = as_mpi(pubkey, &verify_ctx->n))) return errstr;
+nbits = (nbits - pubkey->len) * 8;
+if ((errstr = as_mpi(pubkey, &verify_ctx->e))) return errstr;
 
 #ifdef extreme_debug
 DEBUG(D_acl) debug_printf_indent("rsa_verify_init:\n");
@@ -624,6 +628,7 @@ DEBUG(D_acl) debug_printf_indent("rsa_verify_init:\n");
 	}
 
 #endif
+if (bits) *bits = nbits;
 return NULL;
 
 asn_err:
@@ -794,7 +799,8 @@ return US ERR_error_string(ERR_get_error(), NULL);
 Return: NULL for success, or an error string */
 
 const uschar *
-exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx)
+exim_dkim_verify_init(blob * pubkey, keyformat fmt, ev_ctx * verify_ctx,
+  unsigned * bits)
 {
 const uschar * s = pubkey->data;
 uschar * ret = NULL;
@@ -818,6 +824,7 @@ switch(fmt)
     break;
   }
 
+if (!ret && bits) *bits = EVP_PKEY_bits(verify_ctx->key);
 return ret;
 }
 

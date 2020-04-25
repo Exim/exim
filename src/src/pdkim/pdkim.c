@@ -1430,7 +1430,7 @@ if (sig->keytype == KEYTYPE_ED25519)
 
 if ((*errstr = exim_dkim_verify_init(&p->key,
 	    sig->keytype == KEYTYPE_ED25519 ? KEYFMT_ED25519_BARE : KEYFMT_DER,
-	    vctx)))
+	    vctx, &sig->keybits)))
   {
   DEBUG(D_acl) debug_printf("verify_init: %s\n", *errstr);
   sig->verify_status =      PDKIM_VERIFY_INVALID;

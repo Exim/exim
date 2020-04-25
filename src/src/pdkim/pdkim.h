@@ -140,8 +140,9 @@ typedef struct pdkim_signature {
   int version;
 
   /* (a=) The signature algorithm. */
-  int keytype;	/* pdkim_keytypes index */
-  int hashtype;	/* pdkim_hashes index */
+  int		keytype;	/* pdkim_keytypes index */
+  unsigned	keybits;	/* size of the key */
+  int		hashtype;	/* pdkim_hashes index */
 
   /* (c=x/) Header canonicalization method. Either PDKIM_CANON_SIMPLE
      or PDKIM_CANON_RELAXED */

@@ -401,7 +401,7 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
     dkim_cur_sig = sig;
     dkim_signing_domain = US sig->domain;
     dkim_signing_selector = US sig->selector;
-    dkim_key_length = sig->sighash.len * 8;
+    dkim_key_length = sig->keybits;
 
     /* These two return static strings, so we can compare the addr
     later to see if the ACL overwrote them.  Check that when logging */
