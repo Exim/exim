@@ -268,6 +268,11 @@ else
 		"(headers probably modified in transit)]");
 	  break;
 
+	case PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE:
+	  logmsg = string_cat(logmsg,
+		US"signature invalid (key too short)]");
+	  break;
+
 	default:
 	  logmsg = string_cat(logmsg, US"unspecified reason]");
 	}
@@ -560,6 +565,7 @@ switch (what)
 						return US"pubkey_unavailable";
       case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD:return US"pubkey_dns_syntax";
       case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT:	return US"pubkey_der_syntax";
+      case PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE:	return US"pubkey_too_short";
       case PDKIM_VERIFY_FAIL_BODY:		return US"bodyhash_mismatch";
       case PDKIM_VERIFY_FAIL_MESSAGE:		return US"signature_incorrect";
       }
@@ -854,6 +860,9 @@ for (pdkim_signature * sig = dkim_signatures; sig; sig = sig->next)
           g = string_cat(g,
 	    US"fail (signature did not verify; headers probably modified in transit)\n\t\t");
 	  break;
+        case PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE:	/* should this really be "polcy"? */
+          g = string_fmt_append(g, "fail (public key too short: %u bits)\n\t\t", sig->keybits);
+          break;
         default:
           g = string_cat(g, US"fail (unspecified reason)\n\t\t");
 	  break;

@@ -242,6 +242,8 @@ extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
 extern uschar *expand_file_big_buffer(const uschar *);
 extern uschar *expand_string(uschar *);	/* public, cannot make const */
 extern const uschar *expand_cstring(const uschar *); /* ... so use this one */
+extern uschar *expand_getkeyed(const uschar *, const uschar *);
+
 extern uschar *expand_hide_passwords(uschar * );
 extern uschar *expand_string_copy(const uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);

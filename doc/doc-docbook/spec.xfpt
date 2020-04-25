@@ -14590,6 +14590,7 @@ See also the &'Policy controls'& section above.
 .table2
 .row &%dkim_verify_hashes%&          "DKIM hash methods accepted for signatures"
 .row &%dkim_verify_keytypes%&        "DKIM key types accepted for signatures"
+.row &%dkim_verify_min_keysizes%&    "DKIM key sizes accepted for signatures"
 .row &%dkim_verify_signers%&         "DKIM domains for which DKIM ACL is run"
 .row &%host_lookup%&                 "host name looked up for these hosts"
 .row &%host_lookup_order%&           "order of DNS and local name lookups"
@@ -15363,6 +15364,16 @@ Note that the acceptance of sha1 violates RFC 8301.
 This option gives a list of key types which are acceptable in signatures,
 and an order of processing.
 Signatures with algorithms not in the list will be ignored.
+
+
+.new
+.option dkim_verify_min_keysizes main "string list" "rsa=1024 ed25519=250"
+This option gives a list of key sizes which are acceptable in signatures.
+The list is keyed by the algorithm type for the key; the values are in bits.
+Signatures with keys smaller than given by this option will fail verification.
+
+The default enforces the RFC 8301 minimum key size for RSA signatures.
+.wen
 
 .option dkim_verify_minimal main boolean false
 If set to true, verification of signatures will terminate after the
@@ -40733,6 +40744,10 @@ Notes from the key record (tag n=).
 
 .vitem &%$dkim_key_length%&
 Number of bits in the key.
+.new
+Valid only once the key is loaded, which is at the time the header signature
+is verified, which is after the body hash is.
+.wen
 
 Note that RFC 8301 says:
 .code
@@ -40740,9 +40755,8 @@ Verifiers MUST NOT consider signatures using RSA keys of
 less than 1024 bits as valid signatures.
 .endd
 
-To enforce this you must have a DKIM ACL which checks this variable
-and overwrites the &$dkim_verify_status$& variable as discussed above.
-As EC keys are much smaller, the check should only do this for RSA keys.
+This is enforced by the default setting for the &%dkim_verify_min_keysizes%&
+option.
 
 .endlist
 

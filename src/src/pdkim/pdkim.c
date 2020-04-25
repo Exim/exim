@@ -181,6 +181,7 @@ switch(ext_status)
   case PDKIM_VERIFY_INVALID_BUFFER_SIZE: return "PDKIM_VERIFY_INVALID_BUFFER_SIZE";
   case PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD: return "PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD";
   case PDKIM_VERIFY_INVALID_PUBKEY_IMPORT: return "PDKIM_VERIFY_INVALID_PUBKEY_IMPORT";
+  case PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE: return "PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE";
   case PDKIM_VERIFY_INVALID_SIGNATURE_ERROR: return "PDKIM_VERIFY_INVALID_SIGNATURE_ERROR";
   case PDKIM_VERIFY_INVALID_DKIM_VERSION: return "PDKIM_VERIFY_INVALID_DKIM_VERSION";
   default: return "PDKIM_VERIFY_UNKNOWN";
@@ -1885,6 +1886,19 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
       sig->verify_status =      PDKIM_VERIFY_FAIL;
       sig->verify_ext_status =  PDKIM_VERIFY_FAIL_MESSAGE;
       goto NEXT_VERIFY;
+      }
+    if (*dkim_verify_min_keysizes)
+      {
+      unsigned minbits;
+      uschar * ss = expand_getkeyed(US pdkim_keytypes[sig->keytype],
+				    dkim_verify_min_keysizes);
+      if (ss &&  (minbits = atoi(CS ss)) > sig->keybits)
+	{
+	DEBUG(D_acl) debug_printf("Key too short: Actual: %s %u  Minima '%s'\n",
+	  pdkim_keytypes[sig->keytype], sig->keybits, dkim_verify_min_keysizes);
+	sig->verify_status =      PDKIM_VERIFY_FAIL;
+	sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE;
+	}
       }
 
 

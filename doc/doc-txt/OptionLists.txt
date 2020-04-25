@@ -176,6 +176,7 @@ dkim_strict                          string*         unset         smtp         
 dkim_timestamps                      integer*        unset         smtp              4.92
 dkim_verify_hashes                   string          sha256:sha512:sha1 main         4.93
 dkim_verify_keytypes                 string          ed25519:rsa        main         4.93
+dkim_verify_min_keysizes             string list     "rsa=1024 ed25519=250"  main    4.94
 dkim_verify_minimal                  boolean         false              main         4.93
 dkim_verify_signers                  string*         $dkim_signers main              4.70
 directory                            string*         unset         appendfile

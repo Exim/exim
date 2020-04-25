@@ -1172,8 +1172,8 @@ Returns:    NULL if the subfield was not found, or
             a pointer to the subfield's data
 */
 
-static uschar *
-expand_getkeyed(uschar * key, const uschar * s)
+uschar *
+expand_getkeyed(const uschar * key, const uschar * s)
 {
 int length = Ustrlen(key);
 Uskip_whitespace(&s);

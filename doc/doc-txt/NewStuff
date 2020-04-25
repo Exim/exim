@@ -36,28 +36,30 @@ Version 4.94
  9. The ACL control "queue_only" can also be spelled "queue", and now takes an
     option "first_pass_route" to do the same as a "-odqs" on the command line.
 
- 9. Items specified for the router and transport headers_remove option can use
+10. Items specified for the router and transport headers_remove option can use
     a trailing asterisk to specify globbing.
 
-10. New $queue_size variable.
+11. New $queue_size variable.
 
-11. New variables $local_part_{pre,suf}fix_v.
+12. New variables $local_part_{pre,suf}fix_v.
 
-12. New main option "sqlite_dbfile", for use in preference to prefixing the
+13. New main option "sqlite_dbfile", for use in preference to prefixing the
     lookup string.  The older method fails when tainted variables are used
     in the lookup, as the filename becomes tainted.  The new method keeps the
     filename separate.
 
-13. Options on the dsearch lookup, to return the full path and to filter
+14. Options on the dsearch lookup, to return the full path and to filter
     filetypes for matching.
 
-14. Options on pgsql and mysql lookups, to specify server separate from the
+15. Options on pgsql and mysql lookups, to specify server separate from the
     lookup string.
 
-15. Expansion item ${listquote {<char} {<item>}}.
+16. Expansion item ${listquote {<char} {<item>}}.
 
-16. An option for the ${readsocket {}{}{}} expansion to make the result data
+17. An option for the ${readsocket {}{}{}} expansion to make the result data
     cacheable.
+
+18. dkim_verify_min_keysizes, a list of minimum acceptable public-key sizes.
 
 
 

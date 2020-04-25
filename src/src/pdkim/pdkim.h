@@ -76,8 +76,9 @@
 #define PDKIM_VERIFY_INVALID_BUFFER_SIZE          5
 #define PDKIM_VERIFY_INVALID_PUBKEY_DNSRECORD     6
 #define PDKIM_VERIFY_INVALID_PUBKEY_IMPORT        7
-#define PDKIM_VERIFY_INVALID_SIGNATURE_ERROR      8
-#define PDKIM_VERIFY_INVALID_DKIM_VERSION         9
+#define PDKIM_VERIFY_INVALID_PUBKEY_KEYSIZE       8
+#define PDKIM_VERIFY_INVALID_SIGNATURE_ERROR      9
+#define PDKIM_VERIFY_INVALID_DKIM_VERSION         10
 
 /* -------------------------------------------------------------------------- */
 /* Some parameter values */

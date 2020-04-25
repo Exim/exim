@@ -119,6 +119,7 @@ static optionlist optionlist_config[] = {
 #ifndef DISABLE_DKIM
   { "dkim_verify_hashes",       opt_stringptr,   {&dkim_verify_hashes} },
   { "dkim_verify_keytypes",     opt_stringptr,   {&dkim_verify_keytypes} },
+  { "dkim_verify_min_keysizes", opt_stringptr,   {&dkim_verify_min_keysizes} },
   { "dkim_verify_minimal",      opt_bool,        {&dkim_verify_minimal} },
   { "dkim_verify_signers",      opt_stringptr,   {&dkim_verify_signers} },
 #endif

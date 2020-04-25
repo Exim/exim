@@ -176,6 +176,9 @@ JH/38 Fix $dkim_key_length.  This should, after a DKIM verification, present
       the size of the signing public-key.  Previously it was instead giving
       the size of the signature hash.
 
+JH/39 DKIM verification: the RFC 8301 restriction on sizes of RSA keys is now
+      the default.  See the (new) dkim_verify_min_keysizes option.
+
 
 Exim version 4.93
 -----------------

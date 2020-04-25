@@ -15,6 +15,7 @@ acl_smtp_dkim = accept logwrite = dkim_acl: signer: $dkim_cur_signer bits: $dkim
 acl_smtp_data = accept logwrite = data acl: dkim status $dkim_verify_status
 
 dkim_verify_signers = $dkim_signers
+dkim_verify_min_keysizes = rsa=512 ed25519=250
 .ifdef FILTER
 dkim_verify_minimal = true
 .endif

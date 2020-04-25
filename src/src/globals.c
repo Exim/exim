@@ -845,6 +845,7 @@ uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
 uschar *dkim_verify_hashes       = US"sha256:sha512";
 uschar *dkim_verify_keytypes     = US"ed25519:rsa";
+uschar *dkim_verify_min_keysizes = US"rsa=1024 ed25519=250";
 BOOL	dkim_verify_minimal      = FALSE;
 uschar *dkim_verify_overall      = NULL;
 uschar *dkim_verify_signers      = US"$dkim_signers";
