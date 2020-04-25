@@ -90,7 +90,7 @@ extern gstring * exim_dkim_data_append(gstring *, uschar *);
 
 extern const uschar * exim_dkim_signing_init(const uschar *, es_ctx *);
 extern const uschar * exim_dkim_sign(es_ctx *, hashmethod, blob *, blob *);
-extern const uschar * exim_dkim_verify_init(blob *, keyformat, ev_ctx *);
+extern const uschar * exim_dkim_verify_init(blob *, keyformat, ev_ctx *, unsigned *);
 extern const uschar * exim_dkim_verify(ev_ctx *, hashmethod, blob *, blob *);
 
 #endif	/*DISABLE_DKIM*/

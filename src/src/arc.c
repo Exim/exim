@@ -735,7 +735,7 @@ arc_get_verify_hhash(ctx, ams, &hhash);
 
 /* Setup the interface to the signing library */
 
-if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx)))
+if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx, NULL)))
   {
   DEBUG(D_acl) debug_printf("ARC verify init: %s\n", errstr);
   as->ams_verify_done = arc_state_reason = US"internal sigverify init error";
@@ -964,7 +964,7 @@ if (!(p = arc_line_to_pubkey(hdr_as)))
 /* We know the b-tag blob is of a nul-term string, so safe as a string */
 pdkim_decode_base64(hdr_as->b.data, &sighash);
 
-if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx)))
+if ((errstr = exim_dkim_verify_init(&p->key, KEYFMT_DER, &vctx, NULL)))
   {
   DEBUG(D_acl) debug_printf("ARC verify init: %s\n", errstr);
   return US"fail";

@@ -172,6 +172,10 @@ JH/37 Bug 2552: Fix the check on spool space during reception to use the SIZE
       ignored, and only the check_spool_space option value for the required
       leeway checked.
 
+JH/38 Fix $dkim_key_length.  This should, after a DKIM verification, present
+      the size of the signing public-key.  Previously it was instead giving
+      the size of the signature hash.
+
 
 Exim version 4.93
 -----------------
