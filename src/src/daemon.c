@@ -1901,7 +1901,8 @@ else if (f.daemon_listen)
   ip_address_item * ipa;
   uschar * p;
   uschar * qinfo = queue_interval > 0
-    ? string_sprintf("-q%s", readconf_printtime(queue_interval))
+    ? string_sprintf("-q%s%s",
+	f.queue_2stage ? "q" : "", readconf_printtime(queue_interval))
     : US"no queue runs";
 
   /* Build a list of listening addresses in big_buffer, but limit it to 10
