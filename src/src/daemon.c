@@ -373,7 +373,6 @@ pid = exim_fork(US"daemon-accept");
 
 if (pid == 0)
   {
-  int i;
   int queue_only_reason = 0;
   int old_pool = store_pool;
   int save_debug_selector = debug_selector;
@@ -1085,7 +1084,6 @@ struct msghdr msg = { .msg_name = &sa_un,
 		      .msg_controllen = sizeof(cbuf)
 		    };
 ssize_t sz;
-struct cmsghdr * cp;
 
 buf[sizeof(buf)-1] = 0;
 if ((sz = recvmsg(daemon_notifier_fd, &msg, 0)) <= 0) return FALSE;

@@ -2438,6 +2438,7 @@ else
 
 
 
+#ifdef EXPERIMENTAL_SRS_NATIVE
 /* Do an hmac_md5.  The result is _not_ nul-terminated, and is sized as
 the smaller of a full hmac_md5 result (16 bytes) or the supplied output buffer.
 
@@ -2512,6 +2513,7 @@ for (int i = 0, j = len; i < MD5_HASHLEN; i++)
   }
 return;
 }
+#endif /*EXPERIMENTAL_SRS_NATIVE*/
 
 
 /*************************************************
@@ -5276,16 +5278,8 @@ while (*s != 0)
 
     case EITEM_READSOCK:
       {
-      client_conn_ctx cctx;
-      int timeout = 5;
-      int save_ptr = gstring_length(yield);
-      FILE * fp = NULL;
       uschar * arg;
       uschar * sub_arg[4];
-      uschar * server_name = NULL;
-      host_item host;
-      BOOL do_shutdown = TRUE;
-      BOOL do_tls = FALSE;	/* Only set under ! DISABLE_TLS */
 
       if (expand_forbid & RDO_READSOCK)
         {
