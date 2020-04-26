@@ -137,7 +137,7 @@ changed, then the tables in expand.c for accessing them must be changed too. */
 
 /* The size of the buffer holding the processing information string. */
 
-#define PROCESS_INFO_SIZE 256
+#define PROCESS_INFO_SIZE 384
 
 /* The size of buffer to get for constructing log entries. Make it big
 enough to hold all the headers from a normal kind of message. */
