@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for GNU and variants.
+# Copyright (c) The Exim Maintainers 2020
 
 HAVE_ICONV=yes
 

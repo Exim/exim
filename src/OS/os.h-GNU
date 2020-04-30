@@ -1,4 +1,5 @@
 /* Exim: OS-specific C header file for GNU/Hurd */
+/* Copyright (c) The Exim Maintainers 2020 */
 
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS

@@ -5,7 +5,7 @@
 /* Experimental SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL
-   Copyright (c) The Exim Maintainers 2016
+   Copyright (c) The Exim Maintainers 2016 - 2020
 */
 
 #ifdef SUPPORT_SPF

@@ -6,6 +6,7 @@
 # build directory.
 #
 # Copyright (c) The Exim Maintainers 1995 - 2018
+# Copyright (c) The Exim Maintainers 2020
 
 SHELL      = $(MAKE_SHELL)
 SCRIPTS    = ../scripts

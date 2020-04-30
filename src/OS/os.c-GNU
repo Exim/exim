@@ -2,6 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* GNU-specific code. This is concatenated onto the generic src/os.c file.

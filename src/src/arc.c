@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 /* Experimental ARC support for Exim
-   Copyright (c) Jeremy Harris 2018
+   Copyright (c) Jeremy Harris 2018 - 2020
    License: GPL
 */
 

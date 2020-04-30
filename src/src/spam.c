@@ -4,7 +4,7 @@
 
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003 - 2015
  * License: GPL
- * Copyright (c) The Exim Maintainers 2016 - 2018
+ * Copyright (c) The Exim Maintainers 2016 - 2020
  */
 
 /* Code for calling spamassassin's spamd. Called from acl.c. */

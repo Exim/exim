@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
- * Copyright (c) 2006-2019 The Exim Maintainers
+ * Copyright (c) 2006-2020 The Exim Maintainers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published

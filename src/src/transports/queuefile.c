@@ -4,7 +4,7 @@
 
 /* Copyright (c) Andrew Colin Kissa <andrew@topdog.za.net> 2016 */
 /* Copyright (c) University of Cambridge 2016 */
-/* Copyright (c) The Exim Maintainers 1995 - 2018 */
+/* Copyright (c) The Exim Maintainers 1995 - 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

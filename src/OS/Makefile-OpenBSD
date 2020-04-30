@@ -1,4 +1,5 @@
 # Exim: OS-specific make file for OpenBSD
+# Copyright (c) The Exim Maintainers 2020
 
 CHOWN_COMMAND=/usr/sbin/chown
 CHGRP_COMMAND=/usr/sbin/chgrp

@@ -3,7 +3,7 @@
 *************************************************/
 
 /* Copyright (c) University of Cambridge 1995 - 2018 */
-/* Copyright (c) The Exim maintainers 2019 */
+/* Copyright (c) The Exim maintainers 2019 - 2020 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Exim gets and frees all its store through these functions. In the original
