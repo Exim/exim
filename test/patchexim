@@ -20,7 +20,7 @@ while(<IN>)
   {
   s/>>>running<<</<<<testing>>>/;
   s{
-    (\d+\.\d+                         # major.minor
+    (\d+[_.]\d+                       # major.minor
     (?:[_.]\d+)?                      # optional security-patchlevel
     (?:[_.]\d+)?                      # optional patchlevel
     (?:[_-]RC\d+|[_-]?dev(?:start)?)? # optional RC or dev(start)
