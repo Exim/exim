@@ -19182,7 +19182,7 @@ but the user is specified symbolically, the gid associated with the uid is
 used. For example:
 .code
 require_files = mail:/some/file
-require_files = $local_part:$home/.procmailrc
+require_files = $local_part_verified:$home/.procmailrc
 .endd
 If a user or group name in a &%require_files%& list does not exist, the
 &%require_files%& condition fails.
