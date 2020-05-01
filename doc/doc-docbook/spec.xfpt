@@ -21813,7 +21813,7 @@ local_users:
 # This transport overrides the group
 group_delivery:
   driver = appendfile
-  file = /var/spool/mail/$local_part
+  file = /var/spool/mail/$local_part_verified
   group = mail
 .endd
 If &%user%& is set for a transport, its value overrides what is set in the
@@ -22648,7 +22648,7 @@ is used as a result of a &"keep"& action in the filter. This example shows one
 way of handling this requirement:
 .code
 file = ${if eq{$address_file}{inbox} \
-            {/var/mail/$local_part} \
+            {/var/mail/$local_part_verified} \
             {${if eq{${substr_0_1:$address_file}}{/} \
                   {$address_file} \
                   {$home/mail/$address_file} \
@@ -22829,8 +22829,8 @@ The string value is expanded for each delivery, and must yield an absolute
 path. The most common settings of this option are variations on one of these
 examples:
 .code
-file = /var/spool/mail/$local_part
-file = /home/$local_part/inbox
+file = /var/spool/mail/$local_part_verified
+file = /home/$local_part_verified/inbox
 file = $home/inbox
 .endd
 .cindex "&""sticky""& bit"
@@ -23586,7 +23586,7 @@ and directories in a maildir mailbox, including subdirectories for maildir++
 folders. Consider this example:
 .code
 maildir_format = true
-directory = /var/mail/$local_part\
+directory = /var/mail/$local_part_verified\
            ${if eq{$local_part_suffix}{}{}\
            {/.${substr_1:$local_part_suffix}}}
 maildirfolder_create_regex = /\.[^/]+$
@@ -35138,7 +35138,7 @@ central_filter:
   check_local_user
   driver = redirect
   domains = +local_domains
-  file = /central/filters/$local_part
+  file = /central/filters/$local_part_verified
   no_verify
   allow_filter
   allow_freeze
@@ -36653,10 +36653,10 @@ lists in a separate domain from normal mail. For example:
 lists:
   driver = redirect
   domains = lists.example
-  file = /usr/lists/$local_part
+  file = ${lookup {$local_part} dsearch,ret=full {/usr/lists}}
   forbid_pipe
   forbid_file
-  errors_to = $local_part-request@lists.example
+  errors_to = ${quote_local_part:$local_part-request}@lists.example
   no_more
 .endd
 This router is skipped for domains other than &'lists.example'&. For addresses
@@ -36744,7 +36744,8 @@ lists_request:
   driver = redirect
   domains = lists.example
   local_part_suffix = -request
-  file = /usr/lists/$local_part$local_part_suffix
+  local_parts = ${lookup {$local_part} dsearch,filter=file {/usr/lists}}
+  file = /usr/lists/${local_part_data}-request
   no_more
 
 lists_post:
@@ -36752,10 +36753,10 @@ lists_post:
   domains = lists.example
   senders = ${if exists {/usr/lists/$local_part}\
              {lsearch;/usr/lists/$local_part}{*}}
-  file = /usr/lists/$local_part
+  file = ${lookup {$local_part} dsearch,ret=full {/usr/lists}}
   forbid_pipe
   forbid_file
-  errors_to = $local_part-request@lists.example
+  errors_to = ${quote_local_part:$local_part-request}@lists.example
   no_more
 
 lists_closed:
@@ -36813,7 +36814,7 @@ verp_smtp:
   max_rcpt = 1
   return_path = \
     ${if match {$return_path}{^(.+?)-request@your.dom.example\$}\
-      {$1-request+$local_part=$domain@your.dom.example}fail}
+      {${quote_local_part:$1-request+$local_part=$domain}@your.dom.example}fail}
 .endd
 This has the effect of rewriting the return path (envelope sender) on outgoing
 SMTP messages, if the local part of the original return path ends in
@@ -36864,7 +36865,7 @@ verp_dnslookup:
   transport = remote_smtp
   errors_to = \
     ${if match {$return_path}{^(.+?)-request@your.dom.example\$}}
-     {$1-request+$local_part=$domain@your.dom.example}fail}
+     {${quote_local_part:$1-request+$local_part=$domain}@your.dom.example}fail}
   no_more
 .endd
 Before you start sending out messages with VERPed return paths, you must also
@@ -36952,7 +36953,7 @@ follows:
 .code
 my_mailboxes:
   driver = appendfile
-  file = /var/mail/$domain/$local_part
+  file = /var/mail/$domain/$local_part_data
   user = mail
 .endd
 This uses a directory of mailboxes for each domain. The &%user%& setting is
