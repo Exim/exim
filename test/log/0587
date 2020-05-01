@@ -1,0 +1,8 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.domain U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <b@remote> R=dump_remote_domains
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= someone@some.domain U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <a@remote> R=dump_remote_domains
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

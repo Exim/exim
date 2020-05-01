@@ -959,7 +959,8 @@ if (r->check_local_user)
       r->name, addr->local_part);
     return SKIP;
     }
-  deliver_localpart_verified = string_copy(US (*pw)->pw_name);
+  addr->local_part_verified =
+    deliver_localpart_verified = string_copy(US (*pw)->pw_name);
   deliver_home = string_copy(US (*pw)->pw_dir);
   local_user_gid = (*pw)->pw_gid;
   local_user_uid = (*pw)->pw_uid;
@@ -973,21 +974,18 @@ confusing. */
 
 if (r->router_home_directory)
   {
-  uschar *router_home = expand_string(r->router_home_directory);
-  if (!router_home)
-    {
-    if (!f.expand_string_forcedfail)
-      {
-      *perror = string_sprintf("failed to expand \"%s\" for "
-        "router_home_directory: %s", r->router_home_directory,
-        expand_string_message);
-      return DEFER;
-      }
-    }
-  else
+  uschar * router_home = expand_string(r->router_home_directory);
+  if (router_home)
     {
     setflag(addr, af_home_expanded); /* Note set from router_home_directory */
     deliver_home = router_home;
+    }
+  else if (!f.expand_string_forcedfail)
+    {
+    *perror = string_sprintf("failed to expand \"%s\" for "
+      "router_home_directory: %s", r->router_home_directory,
+      expand_string_message);
+    return DEFER;
     }
   }
 
@@ -1696,7 +1694,6 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
   the local part sorted. */
 
   router_name = r->name;
-  deliver_localpart_verified = NULL;
   deliver_set_expansions(addr);
 
   /* For convenience, the pre-router checks are in a separate function, which

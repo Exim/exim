@@ -187,6 +187,7 @@ const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
   CUSS &deliver_domain_orig,
   CUSS &deliver_domain_parent,
   CUSS &deliver_localpart,
+  CUSS &deliver_localpart_verified,
   CUSS &deliver_localpart_data,
   CUSS &deliver_localpart_orig,
   CUSS &deliver_localpart_parent,

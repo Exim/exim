@@ -1,0 +1,18 @@
+# $local_part_verified, multi-rcpt message
+#
+exim -bs -odi
+mail from:<someone@some.domain>
+rcpt to:<CALLER@HOSTNAME>
+rcpt to:<b@remote>
+data
+.
+quit
+****
+exim -bs -odi
+mail from:<someone@some.domain>
+rcpt to:<a@remote>
+rcpt to:<CALLER@HOSTNAME>
+data
+.
+quit
+****

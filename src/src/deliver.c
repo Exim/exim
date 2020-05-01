@@ -220,6 +220,7 @@ if (!addr->next)
   address_item *addr_orig;
 
   deliver_localpart = addr->local_part;
+  deliver_localpart_verified = addr->local_part_verified;
   deliver_localpart_prefix = addr->prefix;
   deliver_localpart_prefix_v = addr->prefix_v;
   deliver_localpart_suffix = addr->suffix;

@@ -1,0 +1,37 @@
+# Exim test configuration 0587
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = @
+
+acl_smtp_rcpt = accept
+trusted_users = CALLER
+
+
+# ----- Routers -----
+
+begin routers
+
+dump_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :blackhole:
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part_verified
+
+# End
