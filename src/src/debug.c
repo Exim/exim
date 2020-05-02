@@ -315,4 +315,82 @@ if (debug_ptr[-1] == '\n')
 errno = save_errno;
 }
 
+
+
+/* Output the details of a socket */
+
+void
+debug_print_socket(int fd)
+{
+struct stat s;
+if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
+  {
+  gstring * g = NULL;
+  int val;
+  socklen_t vlen = sizeof(val);
+  struct sockaddr a;
+  socklen_t alen = sizeof(a);
+  struct sockaddr_in * sinp = (struct sockaddr_in *)&a;
+  struct sockaddr_in6 * sin6p = (struct sockaddr_in6 *)&a;
+  struct sockaddr_un * sa_unp ; (struct sockaddr_un *)&a;
+
+  if (getsockname(fd, &a, &alen) == 0)
+    switch (sinp->sin_family)
+      {
+      case AF_INET:
+	g = string_cat(g, US" domain AF_INET");
+	g = string_fmt_append(g, " lcl [%s]:%u",
+	  inet_ntoa(sinp->sin_addr), ntohs(sinp->sin_port));
+	if (getpeername(fd, &a, &alen) == 0)
+	  g = string_fmt_append(g, " rmt [%s]:%u",
+	    inet_ntoa(sinp->sin_addr), ntohs(sinp->sin_port));
+	break;
+      case AF_INET6:
+	{
+	uschar buf[46];
+	g = string_cat(g, US" domain AF_INET6");
+	g = string_fmt_append(g, " lcl [%s]:%u",
+	  inet_ntop(AF_INET6, &sin6p->sin6_addr, CS buf, sizeof(buf)),
+	  ntohs(sin6p->sin6_port));
+	if (getpeername(fd, &a, &alen) == 0)
+	  g = string_fmt_append(g, " rmt [%s]:%u",
+	    inet_ntop(AF_INET6, &sin6p->sin6_addr, CS buf, sizeof(buf)),
+	    ntohs(sin6p->sin6_port));
+	break;
+	}
+      case AF_UNIX:
+	g = string_cat(g, US" domain AF_UNIX");
+	g = string_fmt_append(g, " lcl %s%s",
+	  sa_unp->sun_path[0] ? US"" : US"@",
+	  sa_unp->sun_path[0] ? sa_unp->sun_path : sa_unp->sun_path+1);
+	if (getpeername(fd, &a, &alen) == 0)
+	  g = string_fmt_append(g, " rmt %s%s",
+	    sa_unp->sun_path[0] ? US"" : US"@",
+	    sa_unp->sun_path[0] ? sa_unp->sun_path : sa_unp->sun_path+1);
+	break;
+      default:
+	g = string_fmt_append(g, " domain %u", sinp->sin_family);
+	break;
+      }
+  if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &val, &vlen) == 0)
+    switch (val)
+      {
+      case SOCK_STREAM:	g = string_cat(g, US" type SOCK_STREAM"); break;
+      case SOCK_DGRAM:	g = string_cat(g, US" type SOCK_DGRAM"); break;
+      default:	g = string_fmt_append(g, " type %d", val); break;
+      }
+  if (getsockopt(fd, SOL_SOCKET, SO_PROTOCOL, &val, &vlen) == 0)
+    {
+    struct protoent * p = getprotobynumber(val);
+    g = p
+      ? string_fmt_append(g, " proto %s\n", p->p_name)
+      : string_fmt_append(g, " proto %d", val);
+    }
+  debug_printf_indent(" socket: %s\n", string_from_gstring(g));
+  }
+else
+  debug_printf_indent(" fd st_mode 0%o\n", s.st_mode);
+}
+
+
 /* End of debug.c */
