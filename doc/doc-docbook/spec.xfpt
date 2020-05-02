@@ -12341,7 +12341,9 @@ the complete argument of the ETRN command (see section &<<SECTETRN>>&).
 .cindex "tainted data"
 If the origin of the data is an incoming message,
 the result of expanding this variable is tainted.
-See also &$domain_verified$&.
+When un untainted version is needed, one should be obtained from
+looking up the value in a local (therefore trusted) database.
+See also &$domain_data$&.
 .wen
 
 
