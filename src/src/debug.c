@@ -379,6 +379,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
       case SOCK_DGRAM:	g = string_cat(g, US" type SOCK_DGRAM"); break;
       default:	g = string_fmt_append(g, " type %d", val); break;
       }
+#ifdef SO_PROTOCOL
   if (getsockopt(fd, SOL_SOCKET, SO_PROTOCOL, &val, &vlen) == 0)
     {
     struct protoent * p = getprotobynumber(val);
@@ -386,6 +387,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
       ? string_fmt_append(g, " proto %s\n", p->p_name)
       : string_fmt_append(g, " proto %d", val);
     }
+#endif
   debug_printf_indent(" socket: %s\n", string_from_gstring(g));
   }
 else
