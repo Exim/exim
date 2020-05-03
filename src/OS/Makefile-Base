@@ -662,10 +662,13 @@ PHDRS = ../config.h \
 .c.o:;  @echo "$(CC) $*.c"
 	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $*.c
 
-# Update Exim's version information and build the version object.
+# Update Exim's version information and build the version object.  The dependency
+# chain here avoids problems under parallel-make.
 
-version.h version.sh::
+version.sh:
 	@../scripts/reversion
+
+version.h: version.sh
 
 cnumber.h: version.h
 
