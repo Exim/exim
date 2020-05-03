@@ -340,7 +340,7 @@ extern gid_t  *admin_groups;           /* List of admin groups */
 extern BOOL    allow_domain_literals;  /* As it says */
 extern BOOL    allow_mx_to_ip;         /* Allow MX records to -> ip address */
 #ifdef EXPERIMENTAL_ARC
-struct arc_set *arc_received;	       /* highest ARC instance evaluation struct */
+extern struct arc_set *arc_received;   /* highest ARC instance evaluation struct */
 extern int     arc_received_instance;  /* highest ARC instance number in headers */
 extern int     arc_oldest_pass;        /* lowest passing instance number in headers */
 extern const uschar *arc_state;	       /* verification state */
