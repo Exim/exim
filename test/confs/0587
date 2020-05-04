@@ -32,6 +32,6 @@ begin transports
 
 local_delivery:
   driver = appendfile
-  file = DIR/test-mail/$local_part_verified
+  file = DIR/test-mail/$local_part_data
 
 # End

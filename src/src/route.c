@@ -948,7 +948,7 @@ if ((rc = route_check_dls(r->name, US"local_parts", r->local_parts,
 login of a local user. Note: the third argument to route_finduser() must be
 NULL here, to prevent a numeric string being taken as a numeric uid. If the
 user is found, set deliver_home to the home directory, and also set
-local_user_{uid,gid} and local_part_verified.  */
+local_user_{uid,gid} and local_part_data.  */
 
 if (r->check_local_user)
   {
@@ -959,8 +959,8 @@ if (r->check_local_user)
       r->name, addr->local_part);
     return SKIP;
     }
-  addr->local_part_verified =
-    deliver_localpart_verified = string_copy(US (*pw)->pw_name);
+  addr->prop.localpart_data =
+    deliver_localpart_data = string_copy(US (*pw)->pw_name);
   deliver_home = string_copy(US (*pw)->pw_dir);
   local_user_gid = (*pw)->pw_gid;
   local_user_uid = (*pw)->pw_uid;

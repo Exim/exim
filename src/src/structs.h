@@ -553,7 +553,6 @@ typedef struct address_item {
   uschar *cc_local_part;          /* caseful local part */
   uschar *lc_local_part;          /* lowercased local part */
   uschar *local_part;             /* points to cc or lc version */
-  uschar *local_part_verified;    /* result from check_local_user */
   uschar *prefix;                 /* stripped prefix of local part */
   uschar *prefix_v;		  /*  variable part of above */
   uschar *suffix;                 /* stripped suffix of local part */

@@ -6381,7 +6381,7 @@ All other options are defaulted.
 .code
 local_delivery:
   driver = appendfile
-  file = /var/mail/$local_part_verified
+  file = /var/mail/$local_part_data
   delivery_date_add
   envelope_to_add
   return_path_add
@@ -6394,7 +6394,7 @@ traditional BSD mailbox format.
 .new
 We prefer to avoid using &$local_part$& directly to define the mailbox filename,
 as it is provided by a potential bad actor.
-Instead we use &$local_part_verified$&,
+Instead we use &$local_part_data$&,
 the result of looking up &$local_part$& in the user database
 (done by using &%check_local_user%& in the the router).
 .wen
@@ -12550,7 +12550,7 @@ Consider carefully the implications of using it unvalidated as a name
 for file access.
 This presents issues for users' &_.forward_& and filter files.
 For traditional full user accounts, use &%check_local_users%& and the
-&$local_part_verified$& variable rather than this one.
+&$local_part_data$& variable rather than this one.
 For virtual users, store a suitable pathname component in the database
 which is used for account name validation, and use that retrieved value
 rather than this variable.
@@ -12598,6 +12598,10 @@ lookup, the data read by the lookup is available during the running of the
 router as &$local_part_data$&. In addition, if the driver routes the address
 to a transport, the value is available in that transport. If the transport is
 handling multiple addresses, the value from the first address is used.
+
+.new
+The &%check_local_user%& router option also sets this variable.
+.wen
 
 &$local_part_data$& is also set when the &%local_parts%& condition in an ACL
 matches a local part by means of a lookup. The data read by the lookup is
@@ -19167,7 +19171,7 @@ but the user is specified symbolically, the gid associated with the uid is
 used. For example:
 .code
 require_files = mail:/some/file
-require_files = $local_part_verified:$home/.procmailrc
+require_files = $local_part_data:$home/.procmailrc
 .endd
 If a user or group name in a &%require_files%& list does not exist, the
 &%require_files%& condition fails.
@@ -21798,7 +21802,7 @@ local_users:
 # This transport overrides the group
 group_delivery:
   driver = appendfile
-  file = /var/spool/mail/$local_part_verified
+  file = /var/spool/mail/$local_part_data
   group = mail
 .endd
 If &%user%& is set for a transport, its value overrides what is set in the
@@ -22633,7 +22637,7 @@ is used as a result of a &"keep"& action in the filter. This example shows one
 way of handling this requirement:
 .code
 file = ${if eq{$address_file}{inbox} \
-            {/var/mail/$local_part_verified} \
+            {/var/mail/$local_part_data} \
             {${if eq{${substr_0_1:$address_file}}{/} \
                   {$address_file} \
                   {$home/mail/$address_file} \
@@ -22814,8 +22818,8 @@ The string value is expanded for each delivery, and must yield an absolute
 path. The most common settings of this option are variations on one of these
 examples:
 .code
-file = /var/spool/mail/$local_part_verified
-file = /home/$local_part_verified/inbox
+file = /var/spool/mail/$local_part_data
+file = /home/$local_part_data/inbox
 file = $home/inbox
 .endd
 .cindex "&""sticky""& bit"
@@ -23571,7 +23575,7 @@ and directories in a maildir mailbox, including subdirectories for maildir++
 folders. Consider this example:
 .code
 maildir_format = true
-directory = /var/mail/$local_part_verified\
+directory = /var/mail/$local_part_data\
            ${if eq{$local_part_suffix}{}{}\
            {/.${substr_1:$local_part_suffix}}}
 maildirfolder_create_regex = /\.[^/]+$
@@ -24561,14 +24565,14 @@ configuration for &%procmail%&:
 # transport
 procmail_pipe:
   driver = pipe
-  command = /usr/local/bin/procmail -d $local_part
+  command = /usr/local/bin/procmail -d $local_part_data
   return_path_add
   delivery_date_add
   envelope_to_add
   check_string = "From "
   escape_string = ">From "
   umask = 077
-  user = $local_part
+  user = $local_part_data
   group = mail
 
 # router
@@ -35123,7 +35127,7 @@ central_filter:
   check_local_user
   driver = redirect
   domains = +local_domains
-  file = /central/filters/$local_part_verified
+  file = /central/filters/$local_part_data
   no_verify
   allow_filter
   allow_freeze
@@ -36993,9 +36997,9 @@ another MTA:
 userforward:
   driver = redirect
   check_local_user
-  file = $home/.forward$local_part_suffix
   local_part_suffix = -*
   local_part_suffix_optional
+  file = ${lookup {.forward$local_part_suffix} dsearch,ret=full {$home} {$value}fail}
   allow_filter
 .endd
 If there is no suffix, &_.forward_& is used; if the suffix is &'-special'&, for

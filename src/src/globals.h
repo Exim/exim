@@ -488,14 +488,13 @@ extern int     deliver_host_port;      /* Address for remote delivery filter */
 extern uschar *deliver_in_buffer;      /* Buffer for copying file */
 extern ino_t   deliver_inode;          /* Inode for appendfile */
 extern uschar *deliver_localpart;      /* The local part for delivery */
-extern uschar *deliver_localpart_data; /* From local part lookup */
+extern uschar *deliver_localpart_data; /* From local part lookup (de-tainted) */
 extern uschar *deliver_localpart_orig; /* The original local part for delivery */
 extern uschar *deliver_localpart_parent; /* The parent local part for delivery */
 extern uschar *deliver_localpart_prefix; /* The stripped prefix, if any */
 extern uschar *deliver_localpart_prefix_v; /* The stripped-prefix variable portion, if any */
 extern uschar *deliver_localpart_suffix; /* The stripped suffix, if any */
 extern uschar *deliver_localpart_suffix_v; /* The stripped-suffix variable portion, if any */
-extern uschar *deliver_localpart_verified; /* de-tainted by check_local_part */
 extern uschar *deliver_out_buffer;     /* Buffer for copying file */
 extern int     deliver_queue_load_max; /* Different value for queue running */
 extern address_item *deliver_recipients; /* Current set of addresses */

@@ -1,4 +1,4 @@
-# $local_part_verified, multi-rcpt message
+# $local_part_data, multi-rcpt message
 #
 exim -bs -odi
 mail from:<someone@some.domain>

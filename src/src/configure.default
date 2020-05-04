@@ -863,7 +863,7 @@ smarthost_smtp:
 
 local_delivery:
   driver = appendfile
-  file = /var/mail/$local_part_verified
+  file = /var/mail/$local_part_data
   delivery_date_add
   envelope_to_add
   return_path_add

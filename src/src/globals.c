@@ -187,7 +187,6 @@ const uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT] = {
   CUSS &deliver_domain_orig,
   CUSS &deliver_domain_parent,
   CUSS &deliver_localpart,
-  CUSS &deliver_localpart_verified,
   CUSS &deliver_localpart_data,
   CUSS &deliver_localpart_orig,
   CUSS &deliver_localpart_parent,
@@ -830,7 +829,6 @@ uschar *deliver_localpart_prefix = NULL;
 uschar *deliver_localpart_prefix_v = NULL;
 uschar *deliver_localpart_suffix = NULL;
 uschar *deliver_localpart_suffix_v = NULL;
-uschar *deliver_localpart_verified = NULL;
 uschar *deliver_out_buffer     = NULL;
 int     deliver_queue_load_max = -1;
 address_item  *deliver_recipients = NULL;
