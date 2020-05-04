@@ -12559,26 +12559,6 @@ If needed, use a router &%address_data%& or &%set%& option for
 the retrieved data.
 .wen
 
-.vindex "&$local_part_prefix$&"
-.vindex "&$local_part_prefix_v$&"
-.vindex "&$local_part_suffix$&"
-.vindex "&$local_part_suffix_v$&"
-.cindex affix variables
-If a local part prefix or suffix has been recognized, it is not included in the
-value of &$local_part$& during routing and subsequent delivery. The values of
-any prefix or suffix are in &$local_part_prefix$& and
-&$local_part_suffix$&, respectively.
-.new
-.cindex "tainted data"
-If the affix specification included a wildcard then the portion of
-the affix matched by the wildcard is in
-&$local_part_prefix_v$& or &$local_part_suffix_v$& as appropriate,
-and both the whole and variable values are tainted.
-
-If the specification did not include a wildcard then
-the affix variable value is not tainted.
-.wen
-
 When a message is being delivered to a file, pipe, or autoreply transport as a
 result of aliasing or forwarding, &$local_part$& is set to the local part of
 the parent address, not to the filename or command (see &$address_file$& and
@@ -12624,39 +12604,24 @@ matches a local part by means of a lookup. The data read by the lookup is
 available during the rest of the ACL statement. In all other situations, this
 variable expands to nothing.
 
-.vitem &$local_part_prefix$&
-.vindex "&$local_part_prefix$&"
+.vindex &$local_part_prefix$& &&&
+	&$local_part_prefix_v$& &&&
+	&$local_part_suffix$& &&&
+	&$local_part_suffix_v$&
 .cindex affix variables
-When an address is being routed or delivered, and a
-specific prefix for the local part was recognized, it is available in this
-variable, having been removed from &$local_part$&.
-
+If a local part prefix or suffix has been recognized, it is not included in the
+value of &$local_part$& during routing and subsequent delivery. The values of
+any prefix or suffix are in &$local_part_prefix$& and
+&$local_part_suffix$&, respectively.
 .new
-.vitem &$local_part_prefix_v$&
-.vindex "&$local_part_prefix_v$&"
-When &$local_part_prefix$& is valid and the prefix match used a wildcard,
-the portion matching the wildcard is available in this variable.
-.wen
+.cindex "tainted data"
+If the specification did not include a wildcard then
+the affix variable value is not tainted.
 
-.vitem &$local_part_suffix$&
-.vindex "&$local_part_suffix$&"
-When an address is being routed or delivered, and a
-specific suffix for the local part was recognized, it is available in this
-variable, having been removed from &$local_part$&.
-
-.new
-.vitem &$local_part_suffix_v$&
-.vindex "&$local_part_suffix_v$&"
-When &$local_part_suffix$& is valid and the suffix match used a wildcard,
-the portion matching the wildcard is available in this variable.
-.wen
-
-.new
-.vitem &$local_part_verified$&
-.vindex "&$local_part_verified$&"
-If the router generic option &%check_local_part%& has run successfully,
-this variable has the user database version of &$local_part$&.
-Such values are not tainted and hence usable for building file names.
+If the affix specification included a wildcard then the portion of
+the affix matched by the wildcard is in
+&$local_part_prefix_v$& or &$local_part_suffix_v$& as appropriate,
+and both the whole and varying values are tainted.
 .wen
 
 .vitem &$local_scan_data$&
