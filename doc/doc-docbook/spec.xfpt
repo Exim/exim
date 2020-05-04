@@ -15015,12 +15015,18 @@ just the command name, it is not a complete command line. If an argument is
 required, it must come from the &%-oA%& command line option.
 
 
-.option bounce_message_file main string unset
+.option bounce_message_file main string&!! unset
 .cindex "bounce message" "customizing"
 .cindex "customizing" "bounce message"
 This option defines a template file containing paragraphs of text to be used
 for constructing bounce messages.  Details of the file's contents are given in
-chapter &<<CHAPemsgcust>>&. See also &%warn_message_file%&.
+chapter &<<CHAPemsgcust>>&.
+.new
+.cindex bounce_message_file "tainted data"
+The option is expanded to give the file path, which must be
+absolute and untainted.
+.wen
+See also &%warn_message_file%&.
 
 
 .option bounce_message_text main string unset
@@ -18366,14 +18372,20 @@ regular expression by a parenthesized subpattern. The default value for
 See &%uucp_from_pattern%& above.
 
 
-.option warn_message_file main string unset
+.option warn_message_file main string&!! unset
 .cindex "warning of delay" "customizing the message"
 .cindex "customizing" "warning message"
 This option defines a template file containing paragraphs of text to be used
 for constructing the warning message which is sent by Exim when a message has
 been in the queue for a specified amount of time, as specified by
 &%delay_warning%&. Details of the file's contents are given in chapter
-&<<CHAPemsgcust>>&. See also &%bounce_message_file%&.
+&<<CHAPemsgcust>>&.
+.new
+.cindex warn_message_file "tainted data"
+The option is expanded to give the file path, which must be
+absolute and untainted.
+.wen
+See also &%bounce_message_file%&.
 
 
 .option write_rejectlog main boolean true

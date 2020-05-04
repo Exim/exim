@@ -61,6 +61,8 @@ Version 4.94
 
 18. dkim_verify_min_keysizes, a list of minimum acceptable public-key sizes.
 
+19. bounce_message_file and warn_message_file are now expanded before use.
+
 
 
 Version 4.93

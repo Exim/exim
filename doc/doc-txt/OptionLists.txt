@@ -98,7 +98,7 @@ batch_max                            integer         100           appendfile
 bcc                                  string*         unset         autoreply
 bi_command                           string          unset         main
 body_only                            boolean         false         transports        2.05
-bounce_message_file                  string          unset         main              4.00
+bounce_message_file                  string*         unset         main              4.00 expanded from 4.94
 bounce_message_text                  string          unset         main              4.00
 bounce_return_body                   boolean         true          main              4.23
 bounce_return_message                boolean         true          main              4.00
@@ -640,7 +640,7 @@ verify                               boolean         true          routers      
 verify_only                          boolean         false         routers           4.00
 verify_recipient                     boolean         true          routers           4.00
 verify_sender                        boolean         true          routers           4.00
-warn_message_file                    string          unset         main              4.00
+warn_message_file                    string*         unset         main              4.00 expanded from 4.94
 widen_domains                        string list     unset         dnslookup         4.00
 write_rejectlog                      boolean         true          main              4.31
 

@@ -5500,6 +5500,28 @@ if (  f.running_in_test_harness && *fudged_queue_times
 return actual_time;
 }
 
+/************************************************/
+
+static FILE *
+expand_open(const uschar * filename,
+  const uschar * varname, const uschar * reason)
+{
+const uschar * s = expand_cstring(filename);
+FILE * fp = NULL;
+
+if (!s || !*s)
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Failed to expand %s: '%s'\n", varname, filename);
+else if (*s != '/' || is_tainted(s))
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "%s is not %s after expansion: '%s'\n",
+    varname, *s == '/' ? "untainted" : "absolute", s);
+else if (!(fp = Ufopen(s, "rb")))
+  log_write(0, LOG_MAIN|LOG_PANIC, "Failed to open %s for %s "
+    "message texts: %s", s, reason, strerror(errno));
+return fp;
+}
+
 /*************************************************
 *              Deliver one message               *
 *************************************************/
@@ -7620,9 +7642,8 @@ while (addr_failed)
       carry on - default texts will be used. */
 
       if (bounce_message_file)
-        if (!(emf = Ufopen(bounce_message_file, "rb")))
-          log_write(0, LOG_MAIN|LOG_PANIC, "Failed to open %s for error "
-            "message texts: %s", bounce_message_file, strerror(errno));
+	emf = expand_open(bounce_message_file,
+		US"bounce_message_file", US"error");
 
       /* Quietly copy to configured additional addresses if required. */
 
@@ -8192,16 +8213,15 @@ else if (addr_defer != (address_item *)(+1))
 
       if (pid > 0)
         {
-        uschar *wmf_text;
-        FILE *wmf = NULL;
-        FILE *f = fdopen(fd, "wb");
+        uschar * wmf_text;
+        FILE * wmf = NULL;
+        FILE * f = fdopen(fd, "wb");
 	uschar * bound;
 	transport_ctx tctx = {{0}};
 
         if (warn_message_file)
-          if (!(wmf = Ufopen(warn_message_file, "rb")))
-            log_write(0, LOG_MAIN|LOG_PANIC, "Failed to open %s for warning "
-              "message texts: %s", warn_message_file, strerror(errno));
+	  wmf = expand_open(warn_message_file,
+		  US"warn_message_file", US"warning");
 
         warnmsg_recipients = recipients;
         warnmsg_delay = queue_time < 120*60

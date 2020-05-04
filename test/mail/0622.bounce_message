@@ -1,16 +1,16 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbA-0005vi-00
+	id 10HmbD-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: a@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
-References: <E10HmaZ-0005vi-00@myhost.test.ex>
+References: <E10HmbC-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -39,10 +39,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaZ-0005vi-00
+	id 10HmbC-0005vi-00
 	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.1 - Default deny message
-Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -51,17 +51,17 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbC-0005vi-00
+	id 10HmbF-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: b@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
-References: <E10HmbB-0005vi-00@myhost.test.ex>
+References: <E10HmbE-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: this is a customised bounce message
-Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -91,10 +91,10 @@ Content-type: message/rfc822
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbB-0005vi-00
+	id 10HmbE-0005vi-00
 	for b@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 1.2 - Specified deny message file
-Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -103,7 +103,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbD-0005vi-00
+	id 10HmbG-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: c@test.ex
 Auto-Submitted: auto-replied
@@ -113,7 +113,7 @@ References: <E10HmaX-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -154,16 +154,221 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbG-0005vi-00
+	id 10HmbH-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: d@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+References: <E10HmaY-0005vi-00@myhost.test.ex>
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  d@test.ex
+    Unrouteable address
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;d@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for d@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test 1.4 - Specified, non-absolute
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbI-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: e@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+References: <E10HmaZ-0005vi-00@myhost.test.ex>
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  e@test.ex
+    Unrouteable address
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;e@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for e@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test 1.5 - Specified, expansion empty
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbJ-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: f@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+References: <E10HmbA-0005vi-00@myhost.test.ex>
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  f@test.ex
+    Unrouteable address
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;f@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbA-0005vi-00
+	for f@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test 1.6 - Specified, expansion tainted
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbL-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: g@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+References: <E10HmbK-0005vi-00@myhost.test.ex>
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: this is a customised bounce message
+Message-Id: <E10HmbL-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+Second item.  Forms the start of the error message.
+Expansions:
+ $sender_address <CALLER@myhost.test.ex>
+ $bounce_recipient <CALLER@myhost.test.ex>
+ $warn_message_delay ""
+
+  g@test.ex
+    Unrouteable address
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: failed
+Final-Recipient: rfc822;g@test.ex
+Status: 5.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/rfc822
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbK-0005vi-00
+	for g@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test 1.7 - Specified, expansion good
+Message-Id: <E10HmbK-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbP-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
-References: <E10HmbE-0005vi-00@myhost.test.ex>
+References: <E10HmbM-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
-Subject: Warning: message 10HmbE-0005vi-00 delayed 0 minutes
-Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
+Subject: Warning: message 10HmbM-0005vi-00 delayed 0 minutes
+Message-Id: <E10HmbP-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -173,7 +378,7 @@ This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
 recipients after more than 0 minutes on the queue on myhost.test.ex.
 
-The message identifier is:     10HmbE-0005vi-00
+The message identifier is:     10HmbM-0005vi-00
 The subject of the message is: test 2.1 - Default delay message
 The date of the message is:    Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -202,10 +407,10 @@ Content-type: text/rfc822-headers
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbE-0005vi-00
+	id 10HmbM-0005vi-00
 	for delay_p@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.1 - Default delay message
-Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbM-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -214,16 +419,16 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbH-0005vi-00
+	id 10HmbQ-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
-References: <E10HmbF-0005vi-00@myhost.test.ex>
+References: <E10HmbN-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
 Subject: this is a customised bounce message
-Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbQ-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -255,10 +460,10 @@ Content-type: text/rfc822-headers
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmbF-0005vi-00
+	id 10HmbN-0005vi-00
 	for delay_q@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.2 - Specified delay message file
-Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbN-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -267,16 +472,16 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbI-0005vi-00
+	id 10HmbR-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
-References: <E10HmaY-0005vi-00@myhost.test.ex>
+References: <E10HmbB-0005vi-00@myhost.test.ex>
 Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
 MIME-Version: 1.0
-Subject: Warning: message 10HmaY-0005vi-00 delayed 0 minutes
-Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
+Subject: Warning: message 10HmbB-0005vi-00 delayed 0 minutes
+Message-Id: <E10HmbR-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 --NNNNNNNNNN-eximdsn-MMMMMMMMMM
@@ -286,7 +491,7 @@ This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
 recipients after more than 0 minutes on the queue on myhost.test.ex.
 
-The message identifier is:     10HmaY-0005vi-00
+The message identifier is:     10HmbB-0005vi-00
 The subject of the message is: test 2.3 - Specified, missing delay message file
 The date of the message is:    Tue, 2 Mar 1999 09:44:33 +0000
 
@@ -315,10 +520,63 @@ Content-type: text/rfc822-headers
 Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
-	id 10HmaY-0005vi-00
+	id 10HmbB-0005vi-00
 	for delay_r@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Subject: test 2.3 - Specified, missing delay message file
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM--
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbS-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+References: <E10HmbO-0005vi-00@myhost.test.ex>
+Content-Type: multipart/report; report-type=delivery-status; boundary=NNNNNNNNNN-eximdsn-MMMMMMMMMM
+MIME-Version: 1.0
+Subject: this is a customised bounce message
+Message-Id: <E10HmbS-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/plain; charset=us-ascii
+
+Second item.  Forms the start of the error message.
+Expansions:
+ $sender_address <CALLER@myhost.test.ex>
+ $bounce_recipient <>
+ $warn_message_delay "0 minutes"
+
+  delay_s@test.ex
+    Delay reason: deliberate for test purposes
+
+Third item.
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; myhost.test.ex
+
+Action: delayed
+Final-Recipient: rfc822;delay_s@test.ex
+Status: 4.0.0
+
+--NNNNNNNNNN-eximdsn-MMMMMMMMMM
+Content-type: text/rfc822-headers
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbO-0005vi-00
+	for delay_s@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test 2.7 - Specified, expansion good
+Message-Id: <E10HmbO-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
