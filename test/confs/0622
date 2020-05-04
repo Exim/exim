@@ -1,0 +1,49 @@
+# Exim test configuration 0622
+# Bounces
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+log_selector = +received_recipients +millisec
+
+.ifdef OPT
+bounce_message_file = OPT
+warn_message_file = OPT
+.endif
+
+delay_warning =	1s
+
+# ----- Routers -----
+
+begin routers
+
+delay:
+  driver =	redirect
+  local_parts =	^delay
+  allow_defer
+  data =	:defer: deliberate for test purposes
+
+bounces:
+  driver =	accept
+  condition =	${if !def:sender_address}
+  transport =	savebounce
+
+begin transports
+
+savebounce:
+  driver =	appendfile
+  file =	DIR/test-mail/bounce_message
+  user =	CALLER
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,100s
+
+
+# End
