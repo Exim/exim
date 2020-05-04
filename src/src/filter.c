@@ -2431,9 +2431,9 @@ suffixed version of the local part in the tests. */
 if (deliver_localpart_prefix || deliver_localpart_suffix)
   {
   psself = string_sprintf("%s%s%s@%s",
-    (deliver_localpart_prefix == NULL)? US"" : deliver_localpart_prefix,
+    deliver_localpart_prefix ? deliver_localpart_prefix : US"",
     deliver_localpart,
-    (deliver_localpart_suffix == NULL)? US"" : deliver_localpart_suffix,
+    deliver_localpart_suffix ? deliver_localpart_suffix : US"",
     deliver_domain);
   psself_from = rewrite_one(psself, rewrite_from, NULL, FALSE, US"",
     global_rewrite_rules);

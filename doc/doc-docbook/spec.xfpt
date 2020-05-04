@@ -12343,7 +12343,7 @@ If the origin of the data is an incoming message,
 the result of expanding this variable is tainted.
 When un untainted version is needed, one should be obtained from
 looking up the value in a local (therefore trusted) database.
-See also &$domain_data$&.
+Often &$domain_data$& is usable in this role.
 .wen
 
 
@@ -12554,6 +12554,7 @@ For traditional full user accounts, use &%check_local_users%& and the
 For virtual users, store a suitable pathname component in the database
 which is used for account name validation, and use that retrieved value
 rather than this variable.
+Often &$local_part_data$& is usable in this role.
 If needed, use a router &%address_data%& or &%set%& option for
 the retrieved data.
 .wen
@@ -12568,9 +12569,14 @@ value of &$local_part$& during routing and subsequent delivery. The values of
 any prefix or suffix are in &$local_part_prefix$& and
 &$local_part_suffix$&, respectively.
 .new
+.cindex "tainted data"
 If the affix specification included a wildcard then the portion of
 the affix matched by the wildcard is in
-&$local_part_prefix_v$& or &$local_part_suffix_v$& as appropriate.
+&$local_part_prefix_v$& or &$local_part_suffix_v$& as appropriate,
+and both the whole and variable values are tainted.
+
+If the specification did not include a wildcard then
+the affix variable value is not tainted.
 .wen
 
 When a message is being delivered to a file, pipe, or autoreply transport as a

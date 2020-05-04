@@ -1655,8 +1655,18 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     int plen = route_check_prefix(addr->local_part, r->prefix, &vlen);
     if (plen > 0)
       {
-      addr->prefix = string_copyn(addr->local_part, plen);
-      if (vlen) addr->prefix_v = string_copyn(addr->local_part, vlen);
+      /* If the variable-part is zero-length then the prefix was not
+      wildcarded and we can detaint-copy it since it matches the
+      (non-expandable) router option.  Otherwise copy the (likely) tainted match
+      and the variable-part of the match from the local_part. */
+
+      if (vlen)
+	{
+	addr->prefix = string_copyn(addr->local_part, plen);
+	addr->prefix_v = string_copyn(addr->local_part, vlen);
+	}
+      else
+	addr->prefix = string_copyn_taint(addr->local_part, plen, FALSE);
       addr->local_part += plen;
       DEBUG(D_route) debug_printf("stripped prefix %s\n", addr->prefix);
       }
@@ -1677,7 +1687,9 @@ for (r = addr->start_router ? addr->start_router : routers; r; r = nextr)
     if (slen > 0)
       {
       int lplen = Ustrlen(addr->local_part) - slen;
-      addr->suffix = addr->local_part + lplen;
+      addr->suffix = vlen
+	? addr->local_part + lplen
+	: string_copy_taint(addr->local_part + lplen, slen);
       addr->suffix_v = addr->suffix + Ustrlen(addr->suffix) - vlen;
       addr->local_part = string_copyn(addr->local_part, lplen);
       DEBUG(D_route) debug_printf("stripped suffix %s\n", addr->suffix);

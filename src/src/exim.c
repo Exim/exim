@@ -5570,17 +5570,15 @@ while (more)
 
   if (filter_test != FTEST_NONE)
     {
-    deliver_domain = (ftest_domain != NULL)?
-      ftest_domain : qualify_domain_recipient;
+    deliver_domain = ftest_domain ? ftest_domain : qualify_domain_recipient;
     deliver_domain_orig = deliver_domain;
-    deliver_localpart = (ftest_localpart != NULL)?
-      ftest_localpart : originator_login;
+    deliver_localpart = ftest_localpart ? ftest_localpart : originator_login;
     deliver_localpart_orig = deliver_localpart;
     deliver_localpart_prefix = ftest_prefix;
     deliver_localpart_suffix = ftest_suffix;
     deliver_home = originator_home;
 
-    if (return_path == NULL)
+    if (!return_path)
       {
       printf("Return-path copied from sender\n");
       return_path = string_copy(sender_address);
@@ -5591,14 +5589,14 @@ while (more)
 
     receive_add_recipient(
       string_sprintf("%s%s%s@%s",
-        (ftest_prefix == NULL)? US"" : ftest_prefix,
+        ftest_prefix ? ftest_prefix : US"",
         deliver_localpart,
-        (ftest_suffix == NULL)? US"" : ftest_suffix,
+        ftest_suffix ? ftest_suffix : US"",
         deliver_domain), -1);
 
     printf("Recipient   = %s\n", recipients_list[0].address);
-    if (ftest_prefix != NULL) printf("Prefix    = %s\n", ftest_prefix);
-    if (ftest_suffix != NULL) printf("Suffix    = %s\n", ftest_suffix);
+    if (ftest_prefix) printf("Prefix    = %s\n", ftest_prefix);
+    if (ftest_suffix) printf("Suffix    = %s\n", ftest_suffix);
 
     if (chdir("/"))   /* Get away from wherever the user is running this from */
       {
@@ -5611,13 +5609,13 @@ while (more)
     available to the user filter. We need to copy the filter variables
     explicitly. */
 
-    if ((filter_test & FTEST_SYSTEM) != 0)
+    if (filter_test & FTEST_SYSTEM)
       if (!filter_runtest(filter_sfd, filter_test_sfile, TRUE, more))
         exim_exit(EXIT_FAILURE);
 
     memcpy(filter_sn, filter_n, sizeof(filter_sn));
 
-    if ((filter_test & FTEST_USER) != 0)
+    if (filter_test & FTEST_USER)
       if (!filter_runtest(filter_ufd, filter_test_ufile, FALSE, more))
         exim_exit(EXIT_FAILURE);
 
@@ -5629,9 +5627,9 @@ while (more)
   will be TRUE. If it is not, check on the number of messages received in this
   connection. */
 
-  if (!session_local_queue_only &&
-      smtp_accept_queue_per_connection > 0 &&
-      receive_messagecount > smtp_accept_queue_per_connection)
+  if (  !session_local_queue_only
+     && smtp_accept_queue_per_connection > 0
+     && receive_messagecount > smtp_accept_queue_per_connection)
     {
     session_local_queue_only = TRUE;
     queue_only_reason = 2;
@@ -5647,16 +5645,12 @@ while (more)
   ones. However, there are odd cases where this is not wanted, so this can be
   changed by setting queue_only_load_latch false. */
 
-  local_queue_only = session_local_queue_only;
-  if (!local_queue_only && queue_only_load >= 0)
-    {
-    local_queue_only = (load_average = OS_GETLOADAVG()) > queue_only_load;
-    if (local_queue_only)
+  if (!(local_queue_only = session_local_queue_only) && queue_only_load >= 0)
+    if ((local_queue_only = (load_average = OS_GETLOADAVG()) > queue_only_load))
       {
       queue_only_reason = 3;
       if (queue_only_load_latch) session_local_queue_only = TRUE;
       }
-    }
 
   /* If running as an MUA wrapper, all queueing options and freezing options
   are ignored. */
