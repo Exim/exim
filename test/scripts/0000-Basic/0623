@@ -1,0 +1,57 @@
+# free of local_part_data, domain_data, sender_data
+#
+exim -bh 99.99.99.99
+HELO tester
+MAIL FROM:<a@test.ex>
+RCPT TO:<fred@good1.ex>
+DATA
+.
+RSET
+MAIL FROM:<b@test.ex>
+RCPT TO:<jim@good2.ex>
+DATA
+.
+QUIT
+****
+#
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+HELO tester
+??? 250
+MAIL FROM:<a@test.ex>
+??? 250
+RCPT TO:<fred@good1.ex>
+??? 250
+DATA
+??? 354
+.
+??? 250
+RSET
+??? 250
+MAIL FROM:<b@test.ex>
+??? 250
+RCPT TO:<jim@good2.ex>
+??? 250
+DATA
+??? 354
+.
+??? 250
+QUIT
+****
+killdaemon
+#
+#
+exim -bs
+HELO tester
+MAIL FROM:<a@test.ex>
+RCPT TO:<fred@good1.ex>
+DATA
+.
+QUIT
+****
+#
+#
+no_msglog_check

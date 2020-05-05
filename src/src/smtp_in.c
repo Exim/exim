@@ -2050,7 +2050,8 @@ f.active_local_from_check = local_from_check;          /* Can be set by ACL */
 f.active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sending_ip_address = NULL;
 return_path = sender_address = NULL;
-sender_data = NULL;				     /* Can be set by ACL */
+deliver_localpart_data = deliver_domain_data =
+recipient_data = sender_data = NULL;			/* Can be set by ACL */
 deliver_localpart_parent = deliver_localpart_orig = NULL;
 deliver_domain_parent = deliver_domain_orig = NULL;
 callout_address = NULL;

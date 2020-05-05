@@ -5021,6 +5021,8 @@ if (host_checking)
       deliver_localpart_orig = NULL;
       deliver_domain_orig = NULL;
       callout_address = sending_ip_address = NULL;
+      deliver_localpart_data = deliver_domain_data =
+      recipient_data = sender_data = NULL;
       sender_rate = sender_rate_limit = sender_rate_period = NULL;
       }
     smtp_log_no_mail();
@@ -5681,6 +5683,8 @@ moreloop:
 #endif
   callout_address = NULL;
   sending_ip_address = NULL;
+  deliver_localpart_data = deliver_domain_data =
+  recipient_data = sender_data = NULL;
   acl_var_m = NULL;
   for(int i = 0; i < REGEX_VARS; i++) regex_vars[i] = NULL;
 

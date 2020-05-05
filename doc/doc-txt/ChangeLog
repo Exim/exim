@@ -102,6 +102,11 @@ JH/38 Fix $dkim_key_length.  This should, after a DKIM verification, present
       the size of the signing public-key.  Previously it was instead giving
       the size of the signature hash.
 
+JH/40 Fix a memory-handling bug: when a connection carried multiple messages
+      and an ACL use a lookup for checking either the local_part or domain,
+      stale data could be accessed.  Ensure that variable references are
+      dropped between messages.
+
 
 Exim version 4.93
 -----------------

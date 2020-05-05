@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-smtp S=sss
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= a@test.ex H=(tester) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= b@test.ex H=(tester) [127.0.0.1] P=smtp S=sss
