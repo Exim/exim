@@ -6853,7 +6853,7 @@ If a selector is numeric, it must apply to a JSON array; the (zero-based)
 nunbered array element is selected.
 Otherwise it must apply to a JSON object; the named element is selected.
 The final resulting element can be a simple JSON type or a JSON object
-or array; for the latter two a string-representation os the JSON
+or array; for the latter two a string-representation of the JSON
 is returned.
 For elements of type string, the returned value is de-quoted.
 .next
@@ -6977,9 +6977,10 @@ be followed by optional colons.
 lookup types support only literal keys.
 
 .next
+.cindex "spf lookup type"
 .cindex "lookup" "spf"
-If Exim is built with SPF support, manual lookups can be done
-(as opposed to the standard ACL condition method.
+&(spf)&: If Exim is built with SPF support, manual lookups can be done
+(as opposed to the standard ACL condition method).
 For details see section &<<SECSPF>>&.
 .endlist ilist
 
