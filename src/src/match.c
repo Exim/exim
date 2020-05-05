@@ -130,35 +130,35 @@ required. */
 
 if (pattern[0] == '^')
   {
-  const pcre *re = regex_must_compile(pattern, cb->caseless, FALSE);
-  return ((expand_setup < 0)?
-           pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
-           :
-           regex_match_and_setup(re, s, 0, expand_setup)
-         )?
-         OK : FAIL;
+  const pcre * re = regex_must_compile(pattern, cb->caseless, FALSE);
+  return (expand_setup < 0
+	  ? pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
+          : regex_match_and_setup(re, s, 0, expand_setup)
+         )
+	 ? OK : FAIL;
   }
 
 /* Tail match */
 
 if (pattern[0] == '*')
   {
-  BOOL yield;
   int slen = Ustrlen(s);
   int patlen;    /* Sun compiler doesn't like non-constant initializer */
 
   patlen = Ustrlen(++pattern);
   if (patlen > slen) return FAIL;
-  yield = cb->caseless?
-    (strncmpic(s + slen - patlen, pattern, patlen) == 0) :
-    (Ustrncmp(s + slen - patlen, pattern, patlen) == 0);
-  if (yield && expand_setup >= 0)
+  if (cb->caseless
+      ? strncmpic(s + slen - patlen, pattern, patlen) != 0
+      : Ustrncmp(s + slen - patlen, pattern, patlen) != 0)
+    return FAIL;
+  if (expand_setup >= 0)
     {
     expand_nstring[++expand_setup] = s;
     expand_nlength[expand_setup] = slen - patlen;
     expand_nmax = expand_setup;
     }
-  return yield? OK : FAIL;
+  if (valueptr) *valueptr = pattern;
+  return OK;
   }
 
 /* Match a special item starting with @ if so enabled. On its own, "@" matches
@@ -181,7 +181,10 @@ if (cb->at_is_special && pattern[0] == '@')
     for (ip_address_item * ip = host_find_interfaces(); ip; ip = ip->next)
       if (Ustrncmp(ip->address, s+1, slen - 2) == 0
             && ip->address[slen - 2] == 0)
+	{
+	if (valueptr) *valueptr = pattern;
         return OK;
+	}
     return FAIL;
     }
 
@@ -209,7 +212,7 @@ if (cb->at_is_special && pattern[0] == '@')
     else goto NOT_AT_SPECIAL;
 
     if (strncmpic(ss, US"/ignore=", 8) == 0) ignore_target_hosts = ss + 8;
-      else if (*ss != 0) goto NOT_AT_SPECIAL;
+    else if (*ss) goto NOT_AT_SPECIAL;
 
     h.next = NULL;
     h.name = s;
@@ -231,9 +234,10 @@ if (cb->at_is_special && pattern[0] == '@')
       return DEFER;
       }
 
-    if (rc == HOST_FOUND_LOCAL && !secy) return OK;
-    if (prim) return FAIL;
-    return removed? OK : FAIL;
+    if (rc != HOST_FOUND_LOCAL || secy)
+      if (prim || !removed) return FAIL;
+    if (valueptr) *valueptr = pattern;
+    return OK;
 
     /*** The above line used to be the following line, but this is incorrect,
     because host_find_bydns() may return HOST_NOT_FOUND if it removed some MX
@@ -253,10 +257,23 @@ NOT_AT_SPECIAL:
 
 if ((semicolon = Ustrchr(pattern, ';')) == NULL)
   {
-  BOOL yield = cb->caseless?
-    (strcmpic(s, pattern) == 0) : (Ustrcmp(s, pattern) == 0);
-  if (yield && expand_setup >= 0) expand_nmax = expand_setup;
-  return yield? OK : FAIL;
+  if (cb->caseless ? strcmpic(s, pattern) != 0 : Ustrcmp(s, pattern) != 0)
+    return FAIL;
+  if (expand_setup >= 0) expand_nmax = expand_setup;
+  if (valueptr) *valueptr = pattern;
+  return OK;
+
+/*
+XXX  looks like $0 may be usable
+XXX  could add setting of *valueptr to all the OK returns; seems doable here, the Q
+     is: what effect would it have at config-file level.  domain_data & local_part_data
+     would get filled in... might anyone be checking it for emptiness?  I think the docs
+     do not say "will be empty otherwise", so that seems ok.
+XXX WORRY: we get new caching of named-list match results.  Is that cache checked
+     for the key being matched?
+XXX  could also add $0 fill-in with the matching text for pattern?  RE already has it,
+     tailmatch already has it, @[] => dotted.quad.etc, @mx => h->address ?
+*/
   }
 
 /* Otherwise we have a lookup item. The lookup type, including partial, etc. is
@@ -1168,16 +1185,10 @@ if (pdomain != NULL)
     {
     int cllen = pllen - 1;
     if (sllen < cllen) return FAIL;
-    if (cb->caseless)
-      {
-      if (strncmpic(subject+sllen-cllen, pattern + 1, cllen) != 0)
+    if (cb->caseless
+        ? strncmpic(subject+sllen-cllen, pattern + 1, cllen) != 0
+        : Ustrncmp(subject+sllen-cllen, pattern + 1, cllen) != 0)
         return FAIL;
-      }
-    else
-      {
-      if (Ustrncmp(subject+sllen-cllen, pattern + 1, cllen) != 0)
-        return FAIL;
-      }
     if (cb->expand_setup > 0)
       {
       expand_nstring[cb->expand_setup] = subject;
@@ -1188,14 +1199,9 @@ if (pdomain != NULL)
   else
     {
     if (sllen != pllen) return FAIL;
-    if (cb->caseless)
-      {
-      if (strncmpic(subject, pattern, sllen) != 0) return FAIL;
-      }
-    else
-      {
-      if (Ustrncmp(subject, pattern, sllen) != 0) return FAIL;
-      }
+    if (cb->caseless
+        ? strncmpic(subject, pattern, sllen) != 0
+	: Ustrncmp(subject, pattern, sllen) != 0) return FAIL;
     }
   }
 
@@ -1204,7 +1210,7 @@ the generalized function, which supports file lookups (which may defer). The
 original code read as follows:
 
   return match_check_string(sdomain + 1,
-      (pdomain == NULL)? pattern : pdomain + 1,
+      pdomain ? pdomain + 1 : pattern,
       cb->expand_setup + expand_inc, TRUE, cb->caseless, TRUE, NULL);
 
 This supported only literal domains and *.x.y patterns. In order to allow for
@@ -1212,14 +1218,14 @@ named domain lists (so that you can right, for example, "senders=+xxxx"), it
 was changed to use the list scanning function. */
 
 csb.origsubject = sdomain + 1;
-csb.subject = (cb->caseless)? string_copylc(sdomain+1) : string_copy(sdomain+1);
+csb.subject = cb->caseless ? string_copylc(sdomain+1) : string_copy(sdomain+1);
 csb.expand_setup = cb->expand_setup + expand_inc;
 csb.use_partial = TRUE;
 csb.caseless = cb->caseless;
 csb.at_is_special = TRUE;
 
-listptr = (pdomain == NULL)? pattern : pdomain + 1;
-if (valueptr != NULL) *valueptr = NULL;
+listptr = pdomain ? pdomain + 1 : pattern;
+if (valueptr) *valueptr = NULL;
 
 return match_check_list(
   &listptr,                  /* list of one item */
