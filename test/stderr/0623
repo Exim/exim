@@ -1,0 +1,29 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> tester in helo_lookup_domains? no (end of list)
+>>> using ACL "chk_rcpt"
+>>> processing "accept" (TESTSUITE/test-config 20)
+>>> check local_parts = lsearch;TESTSUITE/aux-fixed/0623.list
+>>> fred in "lsearch;TESTSUITE/aux-fixed/0623.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0623.list")
+>>> check domains = lsearch;TESTSUITE/aux-fixed/0623.list
+>>> good1.ex in "lsearch;TESTSUITE/aux-fixed/0623.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0623.list")
+>>> accept: condition test succeeded in ACL "chk_rcpt"
+>>> end of ACL "chk_rcpt": ACCEPT
+LOG: 10HmbA-0005vi-00 <= a@test.ex H=(tester) [99.99.99.99] P=smtp S=sss
+>>> using ACL "chk_rcpt"
+>>> processing "accept" (TESTSUITE/test-config 20)
+>>> check local_parts = lsearch;TESTSUITE/aux-fixed/0623.list
+>>> jim in "lsearch;TESTSUITE/aux-fixed/0623.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0623.list")
+>>> check domains = lsearch;TESTSUITE/aux-fixed/0623.list
+>>> good2.ex in "lsearch;TESTSUITE/aux-fixed/0623.list"? yes (matched "lsearch;TESTSUITE/aux-fixed/0623.list")
+>>> accept: condition test succeeded in ACL "chk_rcpt"
+>>> end of ACL "chk_rcpt": ACCEPT
+LOG: 10HmbB-0005vi-00 <= b@test.ex H=(tester) [99.99.99.99] P=smtp S=sss
+
+******** SERVER ********

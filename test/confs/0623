@@ -1,0 +1,23 @@
+# Exim test configuration 0623
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = @
+
+acl_smtp_rcpt = chk_rcpt
+
+queue_only
+
+
+# ----- ACL -----
+
+begin acl
+
+chk_rcpt:
+  accept	local_parts =	lsearch;DIR/aux-fixed/TESTNUM.list
+		domains =	lsearch;DIR/aux-fixed/TESTNUM.list
+
+# End

@@ -1,0 +1,65 @@
+
+**** SMTP testing session as if from host 99.99.99.99
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello tester [99.99.99.99]
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbA-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+250 Reset OK
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbB-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+221 the.local.host.name closing connection
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> HELO tester
+??? 250
+<<< 250 the.local.host.name Hello tester [127.0.0.1]
+>>> MAIL FROM:<a@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<fred@good1.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> RSET
+??? 250
+<<< 250 Reset OK
+>>> MAIL FROM:<b@test.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<jim@good2.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-0005vi-00
+>>> QUIT
+End of script
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello CALLER at tester
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 the.local.host.name closing connection
