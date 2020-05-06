@@ -19,7 +19,7 @@ set transport t1
 queued for t1 transport: local_part = ok
 domain = no.delay
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=no.delay localpart_data=NULL
 routed by r1 router
   envelope to: ok@no.delay
   transport: t1
@@ -64,7 +64,7 @@ set transport t1
 queued for t1 transport: local_part = ok
 domain = no.delay
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=no.delay localpart_data=NULL
 routed by r1 router
   envelope to: ok@no.delay
   transport: t1

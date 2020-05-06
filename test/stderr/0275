@@ -63,6 +63,7 @@ checking domains
 test.ex in "never.ex"? no (end of list)
 test.ex in "never1.ex"? no (end of list)
 test.ex in "test.ex"? yes (matched "test.ex")
+data from lookup saved for cache for +local_domains: test.ex
 test.ex in "+never_domains : +n1_domains : ! +local_domains"? no (matched "! +local_domains")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
@@ -74,14 +75,14 @@ cached no match for +n1_domains
 cached lookup data = NULL
 test.ex in "<; never2.ex ; +n1_domains"? no (end of list)
 cached yes match for +local_domains
-cached lookup data = NULL
+cached lookup data = test.ex
 test.ex in "+never_domains : +n2_domains : !+local_domains"? no (matched "!+local_domains" - cached)
 r2 router skipped: domains mismatch
 --------> r3 router <--------
 local_part=userx domain=test.ex
 checking domains
 cached yes match for +local_domains
-cached lookup data = NULL
+cached lookup data = test.ex
 test.ex in "+local_domains"? yes (matched "+local_domains" - cached)
 checking local_parts
 userx in "userx"? yes (matched "userx")
@@ -92,7 +93,7 @@ set transport t1
 queued for t1 transport: local_part = userx
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=test.ex localpart_data=userx
 routed by r3 router
   envelope to: userx@test.ex
   transport: t1
@@ -236,6 +237,7 @@ checking domains
 test.ex in "never.ex"? no (end of list)
 test.ex in "never1.ex"? no (end of list)
 test.ex in "test.ex"? yes (matched "test.ex")
+data from lookup saved for cache for +local_domains: test.ex
 test.ex in "+never_domains : +n1_domains : ! +local_domains"? no (matched "! +local_domains")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
@@ -247,14 +249,14 @@ cached no match for +n1_domains
 cached lookup data = NULL
 test.ex in "<; never2.ex ; +n1_domains"? no (end of list)
 cached yes match for +local_domains
-cached lookup data = NULL
+cached lookup data = test.ex
 test.ex in "+never_domains : +n2_domains : !+local_domains"? no (matched "!+local_domains" - cached)
 r2 router skipped: domains mismatch
 --------> r3 router <--------
 local_part=userx domain=test.ex
 checking domains
 cached yes match for +local_domains
-cached lookup data = NULL
+cached lookup data = test.ex
 test.ex in "+local_domains"? yes (matched "+local_domains" - cached)
 checking local_parts
 userx in "userx"? yes (matched "userx")
@@ -265,7 +267,7 @@ set transport t1
 queued for t1 transport: local_part = userx
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=test.ex localpart_data=userx
 routed by r3 router
   envelope to: userx@test.ex
   transport: t1

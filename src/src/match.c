@@ -120,7 +120,7 @@ expand_nmax until the match is assured. */
 expand_nmax = -1;
 if (expand_setup == 0)
   {
-  expand_nstring[0] = s;
+  expand_nstring[0] = s;	/* $0 (might be) the matched subject in full */
   expand_nlength[0] = Ustrlen(s);
   }
 else if (expand_setup > 0) expand_setup--;
@@ -131,11 +131,14 @@ required. */
 if (pattern[0] == '^')
   {
   const pcre * re = regex_must_compile(pattern, cb->caseless, FALSE);
-  return (expand_setup < 0
-	  ? pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) >= 0
-          : regex_match_and_setup(re, s, 0, expand_setup)
-         )
-	 ? OK : FAIL;
+  if (expand_setup < 0
+      ? pcre_exec(re, NULL, CCS s, Ustrlen(s), 0, PCRE_EOPT, NULL, 0) < 0
+      : !regex_match_and_setup(re, s, 0, expand_setup)
+     )
+    return FAIL;
+  /* assume the above wrote $0, $n... TODO: CHECK THAT !! */
+  if (valueptr) *valueptr = pattern;	/* "value" gets the RE */
+  return OK;
   }
 
 /* Tail match */
@@ -153,11 +156,11 @@ if (pattern[0] == '*')
     return FAIL;
   if (expand_setup >= 0)
     {
-    expand_nstring[++expand_setup] = s;
+    expand_nstring[++expand_setup] = s;		/* write a $n, the matched subject variable-part */
     expand_nlength[expand_setup] = slen - patlen;
     expand_nmax = expand_setup;
     }
-  if (valueptr) *valueptr = pattern;
+  if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
   return OK;
   }
 
@@ -177,12 +180,13 @@ if (cb->at_is_special && pattern[0] == '@')
   if (Ustrcmp(pattern, "@[]") == 0)
     {
     int slen = Ustrlen(s);
-    if (s[0] != '[' && s[slen-1] != ']') return FAIL;
+    if (s[0] != '[' && s[slen-1] != ']') return FAIL;		/*XXX should this be || ? */
     for (ip_address_item * ip = host_find_interfaces(); ip; ip = ip->next)
       if (Ustrncmp(ip->address, s+1, slen - 2) == 0
             && ip->address[slen - 2] == 0)
 	{
-	if (valueptr) *valueptr = pattern;
+/* I see no reason not to return $0, the matchd IP.  if (expand_setup >= 0) expand_nmax = expand_setup; */
+	if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
         return OK;
 	}
     return FAIL;
@@ -236,7 +240,9 @@ if (cb->at_is_special && pattern[0] == '@')
 
     if (rc != HOST_FOUND_LOCAL || secy)
       if (prim || !removed) return FAIL;
-    if (valueptr) *valueptr = pattern;
+
+/* again, $0 getting the subject, the matched IP.  if (expand_setup >= 0) expand_nmax = expand_setup; */
+    if (valueptr) *valueptr = pattern;	/* "vaulue" gets the patterm */
     return OK;
 
     /*** The above line used to be the following line, but this is incorrect,
@@ -259,8 +265,8 @@ if ((semicolon = Ustrchr(pattern, ';')) == NULL)
   {
   if (cb->caseless ? strcmpic(s, pattern) != 0 : Ustrcmp(s, pattern) != 0)
     return FAIL;
-  if (expand_setup >= 0) expand_nmax = expand_setup;
-  if (valueptr) *valueptr = pattern;
+  if (expand_setup >= 0) expand_nmax = expand_setup;	/* Original code!   $0 gets the matched subject */
+  if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
   return OK;
 
 /*
@@ -271,8 +277,6 @@ XXX  could add setting of *valueptr to all the OK returns; seems doable here, th
      do not say "will be empty otherwise", so that seems ok.
 XXX WORRY: we get new caching of named-list match results.  Is that cache checked
      for the key being matched?
-XXX  could also add $0 fill-in with the matching text for pattern?  RE already has it,
-     tailmatch already has it, @[] => dotted.quad.etc, @mx => h->address ?
 */
   }
 
@@ -389,13 +393,13 @@ switch(type)
   case MCL_STRING:
   case MCL_DOMAIN:
   case MCL_LOCALPART:
-  return ((check_string_block *)arg)->subject;
+    return ((check_string_block *)arg)->subject;
 
   case MCL_HOST:
-  return ((check_host_block *)arg)->host_address;
+    return ((check_host_block *)arg)->host_address;
 
   case MCL_ADDRESS:
-  return ((check_address_block *)arg)->address;
+    return ((check_address_block *)arg)->address;
   }
 return US"";  /* In practice, should never happen */
 }

@@ -86,7 +86,7 @@ expanded list of hosts = '' options = ''
 queued for <unset> transport: local_part = x
 domain = smart.domain
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=smart.domain localpart_data=x
 routed by smart1 router
   envelope to: x@smart.domain
   transport: <none>
@@ -105,6 +105,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=test.ex
 checking domains
 test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+data from lookup saved for cache for +local_domains: test.ex
 test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
@@ -168,7 +169,7 @@ set transport dummy
 queued for dummy transport: local_part = x
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=test.ex localpart_data=x
 routed by smart2 router
   envelope to: x@test.ex
   transport: dummy
@@ -187,6 +188,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=myhost.test.ex
 checking domains
 myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
+data from lookup saved for cache for +local_domains: myhost.test.ex
 myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
@@ -302,6 +304,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=test.ex
 checking domains
 test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
+data from lookup saved for cache for +local_domains: test.ex
 test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
@@ -358,6 +361,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=myhost.test.ex
 checking domains
 myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
+data from lookup saved for cache for +local_domains: myhost.test.ex
 myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------

@@ -46,7 +46,7 @@ v0 router called for postmaster@test.ex
 queued for <unset> transport: local_part = postmaster
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL localpart_data=postmaster
 routed by v0 router
   envelope to: postmaster@test.ex
   transport: <none>
@@ -189,7 +189,7 @@ v0 router called for postmaster@test.ex
 queued for <unset> transport: local_part = postmaster
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL localpart_data=postmaster
 routed by v0 router
   envelope to: postmaster@test.ex
   transport: <none>

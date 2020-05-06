@@ -38,6 +38,7 @@ accept: condition test failed in ACL "check_rcpt"
 processing "accept" (TESTSUITE/test-config 23)
 check domains = +relay_domains
 a.b.c in "a.b.c"? yes (matched "a.b.c")
+data from lookup saved for cache for +relay_domains: a.b.c
 a.b.c in "+relay_domains"? yes (matched "+relay_domains")
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -61,6 +62,7 @@ r1 router skipped: domains mismatch
 local_part=x domain=x.test.ex
 checking domains
 x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
+data from lookup saved for cache for +local_domains: .test.ex
 x.test.ex in "+local_domains"? yes (matched "+local_domains")
 calling r2 router
 r2 router called for x@x.test.ex
@@ -69,7 +71,7 @@ set transport t2
 queued for t2 transport: local_part = x
 domain = x.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=.test.ex localpart_data=NULL
 routed by r2 router
   envelope to: x@x.test.ex
   transport: t2

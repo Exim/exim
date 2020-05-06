@@ -97,6 +97,7 @@ deny: condition test failed in ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 31)
 check domains = +local_domains
 test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+data from lookup saved for cache for +local_domains: test.ex
 test.ex in "+local_domains"? yes (matched "+local_domains")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT

@@ -63,7 +63,7 @@ remote host address is the local host: remote: configured to try delivery anyway
 queued for t2 transport: local_part = qq
 domain = remote
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=remote localpart_data=NULL
 routed by r2 router
   envelope to: qq@remote
   transport: t2
@@ -112,7 +112,7 @@ remote host address is the local host: remote: configured to try delivery anyway
 queued for t2 transport: local_part = qq
 domain = remote
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=remote localpart_data=NULL
 routed by r2 router
   envelope to: qq@remote
   transport: t2
@@ -227,7 +227,7 @@ remote host address is the local host: remote: configured to try delivery anyway
 queued for t2 transport: local_part = qq
 domain = remote
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=remote localpart_data=NULL
 routed by r2 router
   envelope to: qq@remote
   transport: t2

@@ -33,7 +33,7 @@ set transport local_delivery
 queued for local_delivery transport: local_part = joe
 domain = testexim.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL localpart_data=joe
 routed by router2 router
   envelope to: joe-real@testexim.test.ex
   transport: local_delivery

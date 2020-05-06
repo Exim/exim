@@ -110,7 +110,7 @@ set transport t1
 queued for t1 transport: local_part = usery
 domain = test.ex
   errors_to=usery
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL localpart_data=usery
 routed by r1 router
   envelope to: usery@test.ex
   transport: t1
@@ -119,7 +119,7 @@ routed by r1 router
 queued for t1 transport: local_part = userx
 domain = test.ex
   errors_to=usery@test.ex
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL localpart_data=userx
 routed by r1 router
   envelope to: userx@test.ex
   transport: t1
