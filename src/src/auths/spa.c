@@ -141,6 +141,7 @@ SPAAuthResponse  response;
 SPAAuthResponse  *responseptr = &response;
 uschar msgbuf[2048];
 uschar *clearpass, *s;
+unsigned off;
 
 /* send a 334, MS Exchange style, and grab the client's request,
 unless we already have it via an initial response. */
@@ -187,10 +188,13 @@ that causes failure if the size of msgbuf is exceeded. ****/
 
   {
   int i;
-  char * p = (CS responseptr) + IVAL(&responseptr->uUser.offset,0);
+  char * p;
   int len = SVAL(&responseptr->uUser.len,0)/2;
 
-  if (p + len*2 >= CS (responseptr+1))
+  if (  (off = IVAL(&responseptr->uUser.offset,0)) >= sizeof(SPAAuthResponse)
+     || len >= sizeof(responseptr->buffer)/2
+     || (p = (CS responseptr) + off) + len*2 >= CS (responseptr+1)
+     )
     {
     DEBUG(D_auth)
       debug_printf("auth_spa_server(): bad uUser spec in response\n");
@@ -242,13 +246,14 @@ spa_smb_nt_encrypt(clearpass, challenge.challengeData, ntRespData);
 
 /* compare NT hash (LM may not be available) */
 
-s = (US responseptr) + IVAL(&responseptr->ntResponse.offset,0);
-if (s + 24 >= US (responseptr+1))
+off = IVAL(&responseptr->ntResponse.offset,0);
+if (off >= sizeof(SPAAuthResponse) - 24)
   {
   DEBUG(D_auth)
     debug_printf("auth_spa_server(): bad ntRespData spec in response\n");
   return FAIL;
   }
+s = (US responseptr) + off;
 
 if (memcmp(ntRespData, s, 24) == 0)
   return auth_check_serv_cond(ablock);	/* success. we have a winner. */
