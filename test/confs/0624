@@ -1,0 +1,23 @@
+# Exim test configuration 0624
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+primary_hostname = primaryhostname.ex
+hosts_treat_as_local = 46.test.ex
+allow_domain_literals
+
+acl_smtp_rcpt = chk_rcpt
+
+# ----- ACL -----
+
+begin acl
+
+chk_rcpt:
+  accept	domains = OPT
+		logwrite = domain $domain
+		logwrite = value $domain_data
+
+# End

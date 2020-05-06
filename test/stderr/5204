@@ -220,7 +220,7 @@ set transport null
 queued for null transport: local_part = postmaster
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL localpart_data=postmaster
 routed by pm router
   envelope to: postmaster@test.ex
   transport: null

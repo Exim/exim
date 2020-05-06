@@ -8528,7 +8528,7 @@ possible to use the same configuration file on several different hosts that
 differ only in their names.
 
 .new
-The value for a match will be the primary host name/
+The value for a match will be the primary host name.
 .wen
 
 
@@ -8541,7 +8541,8 @@ in square brackets (as in an email address that contains a domain literal), but
 only if that IP address is recognized as local for email routing purposes. The
 &%local_interfaces%& and &%extra_local_interfaces%& options can be used to
 control which of a host's several IP addresses are treated as local.
-In today's Internet, the use of domain literals is controversial.
+In today's Internet, the use of domain literals is controversial;
+see the &%allow_domain_literals%& main option.
 
 .new
 The value for a match will be the &`@[]`& string.

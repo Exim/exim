@@ -160,7 +160,7 @@ if (pattern[0] == '*')
     expand_nlength[expand_setup] = slen - patlen;
     expand_nmax = expand_setup;
     }
-  if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
+  if (valueptr) *valueptr = pattern - 1;	/* "value" gets the (original) pattern */
   return OK;
   }
 
