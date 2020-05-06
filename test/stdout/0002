@@ -443,9 +443,9 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > match_domain:    yes
 > match_domain:    no
 > 
->  >x@zz.aa.bb< [] >x@zz.aa.bb< 
+>  >x@zz.aa.bb< [zz] >x@zz.aa.bb< 
 > 
->  >x@xxxabc< [] >x@xxxabc< 
+>  >x@xxxabc< [abc] >x@xxxabc< 
 > 
 > match_address:   yes
 > match_address:   yes

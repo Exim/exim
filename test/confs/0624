@@ -18,6 +18,7 @@ begin acl
 chk_rcpt:
   accept	domains = OPT
 		logwrite = domain $domain
-		logwrite = value $domain_data
+		logwrite = value  $domain_data
+		logwrite = \$0 '$0'  \$1 '$1'
 
 # End

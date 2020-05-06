@@ -63,6 +63,11 @@ Version 4.94
 
 19. bounce_message_file and warn_message_file are now expanded before use.
 
+20. $domain_data and $localpart_data are now set by all list-match successes.
+    Previously only list items that performed lookups did so.
+    Also, matching list items that are tail-match or RE-match now set the
+    numeric variables $0 (etc) in the same way os other RE matches.
+
 
 
 Version 4.93

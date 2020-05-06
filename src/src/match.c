@@ -106,7 +106,7 @@ void *handle;
 
 error = error;  /* Keep clever compilers from complaining */
 
-if (valueptr != NULL) *valueptr = NULL;  /* For non-lookup matches */
+if (valueptr) *valueptr = NULL;
 
 /* For regular expressions, use cb->origsubject rather than cb->subject so that
 it works if the pattern uses (?-i) to turn off case-independence, overriding
@@ -136,7 +136,6 @@ if (pattern[0] == '^')
       : !regex_match_and_setup(re, s, 0, expand_setup)
      )
     return FAIL;
-  /* assume the above wrote $0, $n... TODO: CHECK THAT !! */
   if (valueptr) *valueptr = pattern;	/* "value" gets the RE */
   return OK;
   }
@@ -158,7 +157,7 @@ if (pattern[0] == '*')
     {
     expand_nstring[++expand_setup] = s;		/* write a $n, the matched subject variable-part */
     expand_nlength[expand_setup] = slen - patlen;
-    expand_nmax = expand_setup;
+    expand_nmax = expand_setup;			/* commit also $0, the matched subject */
     }
   if (valueptr) *valueptr = pattern - 1;	/* "value" gets the (original) pattern */
   return OK;
@@ -185,7 +184,7 @@ if (cb->at_is_special && pattern[0] == '@')
       if (Ustrncmp(ip->address, s+1, slen - 2) == 0
             && ip->address[slen - 2] == 0)
 	{
-/* I see no reason not to return $0, the matchd IP.  if (expand_setup >= 0) expand_nmax = expand_setup; */
+	if (expand_setup >= 0) expand_nmax = expand_setup;	/* commit $0, the IP addr */
 	if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
         return OK;
 	}
@@ -238,11 +237,11 @@ if (cb->at_is_special && pattern[0] == '@')
       return DEFER;
       }
 
-    if (rc != HOST_FOUND_LOCAL || secy)
-      if (prim || !removed) return FAIL;
+    if ((rc != HOST_FOUND_LOCAL || secy) && (prim || !removed))
+      return FAIL;
 
-/* again, $0 getting the subject, the matched IP.  if (expand_setup >= 0) expand_nmax = expand_setup; */
-    if (valueptr) *valueptr = pattern;	/* "vaulue" gets the patterm */
+    if (expand_setup >= 0) expand_nmax = expand_setup;	/* commit $0, the matched subject */
+    if (valueptr) *valueptr = pattern;	/* "value" gets the patterm */
     return OK;
 
     /*** The above line used to be the following line, but this is incorrect,
@@ -268,10 +267,6 @@ if ((semicolon = Ustrchr(pattern, ';')) == NULL)
   if (expand_setup >= 0) expand_nmax = expand_setup;	/* Original code!   $0 gets the matched subject */
   if (valueptr) *valueptr = pattern;	/* "value" gets the pattern */
   return OK;
-
-/*
-XXX  looks like $0 may be usable
-*/
   }
 
 /* Otherwise we have a lookup item. The lookup type, including partial, etc. is
@@ -355,7 +350,7 @@ match_check_string(const uschar *s, const uschar *pattern, int expand_setup,
 {
 check_string_block cb;
 cb.origsubject = s;
-cb.subject = caseless? string_copylc(s) : string_copy(s);
+cb.subject = caseless ? string_copylc(s) : string_copy(s);
 cb.expand_setup = expand_setup;
 cb.use_partial = use_partial;
 cb.caseless = caseless;
@@ -966,12 +961,17 @@ match_isinlist(const uschar *s, const uschar **listptr, int sep,
 unsigned int *local_cache_bits = cache_bits;
 check_string_block cb;
 cb.origsubject = s;
-cb.subject = caseless? string_copylc(s) : string_copy(s);
-cb.expand_setup = (sep > UCHAR_MAX)? 0 : -1;
+cb.subject = caseless ? string_copylc(s) : string_copy(s);
+cb.at_is_special = FALSE;
+switch (type & ~MCL_NOEXPAND)
+  {
+  case MCL_DOMAIN:	cb.at_is_special = TRUE;	/*FALLTHROUGH*/
+  case MCL_LOCALPART:	cb.expand_setup = 0;				break;
+  default:		cb.expand_setup = sep > UCHAR_MAX ? 0 : -1;	break;
+  }
 cb.use_partial = TRUE;
 cb.caseless = caseless;
-cb.at_is_special = (type == MCL_DOMAIN || type == MCL_DOMAIN + MCL_NOEXPAND);
-if (valueptr != NULL) *valueptr = NULL;
+if (valueptr) *valueptr = NULL;
 return  match_check_list(listptr, sep, anchorptr, &local_cache_bits,
   check_string, &cb, type, s, valueptr);
 }

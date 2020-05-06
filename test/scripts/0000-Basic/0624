@@ -21,7 +21,7 @@ RCPT TO:<a@headtail.ex>
 QUIT
 ****
 #
-exim -bs '-DOPT=notthis : ^.*regex : nothiseither'
+exim -bs '-DOPT=notthis : ^.*r(e.)ex : nothiseither'
 HELO test
 MAIL FROM:<testclient>
 RCPT TO:<a@headregextail.ex>

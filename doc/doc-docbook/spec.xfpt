@@ -8545,7 +8545,7 @@ In today's Internet, the use of domain literals is controversial;
 see the &%allow_domain_literals%& main option.
 
 .new
-The value for a match will be the &`@[]`& string.
+The value for a match will be the string &`@[]`&.
 .wen
 
 
@@ -8616,6 +8616,8 @@ list item such as &`*key.ex`& matches &'donkey.ex'& as well as
 
 .new
 The value for a match will be the list element string (starting with the asterisk).
+Additionally, &$0$& will be set to the matched string
+and &$1$& to the variable portion which the asterisk matched.
 .wen
 
 .next
@@ -8637,6 +8639,8 @@ expression by expansion, of course).
 
 .new
 The value for a match will be the list element string (starting with the circumflex).
+Additionally, &$0$& will be set to the string matching the regular expression,
+and &$1$& (onwards) to any submatches identified by parentheses.
 .wen
 
 
