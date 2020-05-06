@@ -43,9 +43,9 @@ file lookup required for b.domain
   in TESTSUITE/aux-fixed/0414.list2
 lookup yielded: b.domain-data
 b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list2")
-data from lookup saved for cache for +B: b.domain-data
+data from lookup saved for cache for +B: key 'b.domain' value 'b.domain-data'
 b.domain in "+A : +B"? yes (matched "+B")
-data from lookup saved for cache for +C: b.domain-data
+data from lookup saved for cache for +C: key 'b.domain' value 'b.domain-data'
 b.domain in "!+C"? no (matched "!+C")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
@@ -89,9 +89,9 @@ file lookup required for a.domain
   in TESTSUITE/aux-fixed/0414.list1
 lookup yielded: a.domain-data
 a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list1")
-data from lookup saved for cache for +A: a.domain-data
+data from lookup saved for cache for +A: key 'a.domain' value 'a.domain-data'
 a.domain in "+A : +B"? yes (matched "+A")
-data from lookup saved for cache for +C: a.domain-data
+data from lookup saved for cache for +C: key 'a.domain' value 'a.domain-data'
 a.domain in "!+C"? no (matched "!+C")
 r1 router skipped: domains mismatch
 --------> r2 router <--------

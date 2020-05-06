@@ -8335,6 +8335,35 @@ in the previous section. You could also use the &(wildlsearch)& or
 
 
 
+.new
+.section "Results of list checking" SECTlistresults
+The primary result of doing a list check is a truth value.
+In some contexts additional information is stored
+about the list element that matched:
+.vlist
+.vitem hosts
+A &%hosts%& ACL condition
+will store a result in the &$host_data$& variable.
+.vitem local_parts
+A &%local_parts%& router option or &%local_parts%& ACL condition
+will store a result in the &$local_part_data$& variable.
+.vitem domains
+A &%domains%& router option or &%domains%& ACL condition
+.vitem senders
+A &%senders%& router option or &%senders%& ACL condition
+will store a result in the &$sender_data$& variable.
+.vitem recipients
+A &%recipients%& ACL condition
+will store a result in the &$recipient_data$& variable.
+.endlist
+
+The detail of the additional information depends on the
+type of match and is given below as the &*value*& information.
+.wen
+
+
+
+
 .section "Named lists" "SECTnamedlists"
 .cindex "named lists"
 .cindex "list" "named"
@@ -8497,6 +8526,12 @@ If a pattern consists of a single @ character, it matches the local host name,
 as set by the &%primary_hostname%& option (or defaulted). This makes it
 possible to use the same configuration file on several different hosts that
 differ only in their names.
+
+.new
+The value for a match will be the primary host name/
+.wen
+
+
 .next
 .cindex "@[] in a domain list"
 .cindex "domain list" "matching local IP interfaces"
@@ -8507,6 +8542,12 @@ only if that IP address is recognized as local for email routing purposes. The
 &%local_interfaces%& and &%extra_local_interfaces%& options can be used to
 control which of a host's several IP addresses are treated as local.
 In today's Internet, the use of domain literals is controversial.
+
+.new
+The value for a match will be the &`@[]`& string.
+.wen
+
+
 .next
 .cindex "@mx_any"
 .cindex "@mx_primary"
@@ -8555,6 +8596,11 @@ involved, it is easiest to change the delimiter for the main list as well:
 domains = <? @mx_any/ignore=<;127.0.0.1;::1 ? \
           an.other.domain ? ...
 .endd
+.new
+The value for a match will be the list element string (starting &`@mx_`&).
+.wen
+
+
 .next
 .cindex "asterisk" "in domain list"
 .cindex "domain list" "asterisk in"
@@ -8566,6 +8612,10 @@ list, the character following the asterisk need not be a dot, whereas partial
 matching works only in terms of dot-separated components. For example, a domain
 list item such as &`*key.ex`& matches &'donkey.ex'& as well as
 &'cipher.key.ex'&.
+
+.new
+The value for a match will be the list element string (starting with the asterisk).
+.wen
 
 .next
 .cindex "regular expressions" "in domain list"
@@ -8583,6 +8633,13 @@ must escape any backslash and dollar characters in the regular expression, or
 use the special &`\N`& sequence (see chapter &<<CHAPexpand>>&) to specify that
 it is not to be expanded (unless you really do want to build a regular
 expression by expansion, of course).
+
+.new
+The value for a match will be the list element string (starting with the circumflex).
+.wen
+
+
+
 .next
 .cindex "lookup" "in domain list"
 .cindex "domain list" "matching by lookup"
@@ -8594,12 +8651,15 @@ must be a filename in a suitable format for the lookup type. For example, for
 domains = cdb;/etc/mail/local_domains.cdb
 .endd
 The appropriate type of lookup is done on the file using the domain name as the
-key. In most cases, the data that is looked up is not used; Exim is interested
+key. In most cases, the value resulting from the lookup is not used; Exim is interested
 only in whether or not the key is present in the file. However, when a lookup
 is used for the &%domains%& option on a router
-or a &%domains%& condition in an ACL statement, the data is preserved in the
+or a &%domains%& condition in an ACL statement, the value is preserved in the
 &$domain_data$& variable and can be referred to in other router options or
 other statements in the same ACL.
+.cindex "tainted data" "de-tainting"
+The value will be untainted.
+
 
 .next
 Any of the single-key lookup type names may be preceded by
@@ -8618,6 +8678,7 @@ original lookup fails. This is not a useful feature when using a domain list to
 select particular domains (because any domain would match), but it might have
 value if the result of the lookup is being used via the &$domain_data$&
 expansion variable.
+
 .next
 If the pattern starts with the name of a query-style lookup type followed by a
 semicolon (for example, &"nisplus;"& or &"ldap;"&), the remainder of the
@@ -8627,24 +8688,36 @@ chapter &<<CHAPfdlookup>>&. For example:
 hold_domains = mysql;select domain from holdlist \
   where domain = '${quote_mysql:$domain}';
 .endd
-In most cases, the data that is looked up is not used (so for an SQL query, for
+In most cases, the value resulting from the lookup is not used (so for an SQL query, for
 example, it doesn't matter what field you select). Exim is interested only in
 whether or not the query succeeds. However, when a lookup is used for the
-&%domains%& option on a router, the data is preserved in the &$domain_data$&
+&%domains%& option on a router, the value is preserved in the &$domain_data$&
 variable and can be referred to in other options.
+.cindex "tainted data" "de-tainting"
+The value will be untainted.
+
 .next
 .new
 If the pattern starts with the name of a lookup type
 of either kind (single-key or query-style) it may be
-followed by a command and options,
+followed by a comma and options,
 The options are lookup-type specific and consist of a comma-separated list.
 Each item starts with a tag and and equals "=".
 .wen
+
 .next
 .cindex "domain list" "matching literal domain name"
 If none of the above cases apply, a caseless textual comparison is made
 between the pattern and the domain.
+
+The value for a match will be the list element string.
+.cindex "tainted data" "de-tainting"
+Note that this is commonly untainted
+(depending on the way the list was created).
+This is a useful way of obtaining an untainted equivalent to
+the domain, for later operations.
 .endlist
+
 
 Here is an example that uses several different kinds of pattern:
 .code

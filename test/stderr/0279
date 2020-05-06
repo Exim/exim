@@ -34,7 +34,7 @@ CALLER@test.ex in "never1@test.ex"? no (end of list)
 address match test: subject=CALLER@test.ex pattern=CALLER@test.ex
 test.ex in "test.ex"? yes (matched "test.ex")
 CALLER@test.ex in "CALLER@test.ex"? yes (matched "CALLER@test.ex")
-data from lookup saved for cache for +local_addresses: test.ex
+data from lookup saved for cache for +local_addresses: key 'CALLER@test.ex' value 'test.ex'
 CALLER@test.ex in "+never_addresses : +n1_addresses : ! +local_addresses"? no (matched "! +local_addresses")
 r1 router skipped: senders mismatch
 --------> r2 router <--------

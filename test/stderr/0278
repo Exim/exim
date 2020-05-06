@@ -21,7 +21,7 @@ checking local_parts
 CALLER in "never"? no (end of list)
 CALLER in "never1"? no (end of list)
 CALLER in "CALLER"? yes (matched "CALLER")
-data from lookup saved for cache for +local_localparts: CALLER
+data from lookup saved for cache for +local_localparts: key 'CALLER' value 'CALLER'
 CALLER in "+never_localparts : +n1_localparts : ! +local_localparts"? no (matched "! +local_localparts")
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------
@@ -150,7 +150,7 @@ checking local_parts
 CALLER in "never"? no (end of list)
 CALLER in "never1"? no (end of list)
 CALLER in "CALLER"? yes (matched "CALLER")
-data from lookup saved for cache for +local_localparts: CALLER
+data from lookup saved for cache for +local_localparts: key 'CALLER' value 'CALLER'
 CALLER in "+never_localparts : +n1_localparts : ! +local_localparts"? no (matched "! +local_localparts")
 r1 router skipped: local_parts mismatch
 --------> r2 router <--------

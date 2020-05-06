@@ -33,7 +33,7 @@ file lookup required for domain1
   in TESTSUITE/aux-fixed/0464.domains
 lookup yielded: data for domain1
 domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? yes (matched "lsearch;TESTSUITE/aux-fixed/0464.domains")
-data from lookup saved for cache for +special_domains: data for domain1
+data from lookup saved for cache for +special_domains: key 'domain1' value 'data for domain1'
 domain1 in "+special_domains"? yes (matched "+special_domains")
 check verify = recipient
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

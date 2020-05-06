@@ -63,7 +63,7 @@ checking domains
 test.ex in "never.ex"? no (end of list)
 test.ex in "never1.ex"? no (end of list)
 test.ex in "test.ex"? yes (matched "test.ex")
-data from lookup saved for cache for +local_domains: test.ex
+data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 test.ex in "+never_domains : +n1_domains : ! +local_domains"? no (matched "! +local_domains")
 r1 router skipped: domains mismatch
 --------> r2 router <--------
@@ -237,7 +237,7 @@ checking domains
 test.ex in "never.ex"? no (end of list)
 test.ex in "never1.ex"? no (end of list)
 test.ex in "test.ex"? yes (matched "test.ex")
-data from lookup saved for cache for +local_domains: test.ex
+data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 test.ex in "+never_domains : +n1_domains : ! +local_domains"? no (matched "! +local_domains")
 r1 router skipped: domains mismatch
 --------> r2 router <--------

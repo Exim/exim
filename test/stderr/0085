@@ -105,7 +105,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=test.ex
 checking domains
 test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
-data from lookup saved for cache for +local_domains: test.ex
+data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
@@ -188,7 +188,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=myhost.test.ex
 checking domains
 myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
-data from lookup saved for cache for +local_domains: myhost.test.ex
+data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
 myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
@@ -304,7 +304,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=test.ex
 checking domains
 test.ex in "test.ex : myhost.test.ex"? yes (matched "test.ex")
-data from lookup saved for cache for +local_domains: test.ex
+data from lookup saved for cache for +local_domains: key 'test.ex' value 'test.ex'
 test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------
@@ -361,7 +361,7 @@ smart1 router skipped: domains mismatch
 local_part=x domain=myhost.test.ex
 checking domains
 myhost.test.ex in "test.ex : myhost.test.ex"? yes (matched "myhost.test.ex")
-data from lookup saved for cache for +local_domains: myhost.test.ex
+data from lookup saved for cache for +local_domains: key 'myhost.test.ex' value 'myhost.test.ex'
 myhost.test.ex in "! +local_domains"? no (matched "! +local_domains")
 fail_remote_domains router skipped: domains mismatch
 --------> smart2 router <--------

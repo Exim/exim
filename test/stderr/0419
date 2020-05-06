@@ -18,7 +18,7 @@ routing k@mxt13.test.ex
 local_part=k domain=mxt13.test.ex
 checking domains
 mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!mxt13.test.ex")
-data from lookup saved for cache for +local_domains: mxt13.test.ex
+data from lookup saved for cache for +local_domains: key 'mxt13.test.ex' value 'mxt13.test.ex'
 mxt13.test.ex in "! +local_domains"? yes (end of list)
 calling dnslookup router
 dnslookup router called for k@mxt13.test.ex

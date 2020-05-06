@@ -271,12 +271,6 @@ if ((semicolon = Ustrchr(pattern, ';')) == NULL)
 
 /*
 XXX  looks like $0 may be usable
-XXX  could add setting of *valueptr to all the OK returns; seems doable here, the Q
-     is: what effect would it have at config-file level.  domain_data & local_part_data
-     would get filled in... might anyone be checking it for emptiness?  I think the docs
-     do not say "will be empty otherwise", so that seems ok.
-XXX WORRY: we get new caching of named-list match results.  Is that cache checked
-     for the key being matched?
 */
   }
 
@@ -698,7 +692,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
             nb->cache_data = p;
             if (*valueptr)
               DEBUG(D_lists) debug_printf("data from lookup saved for "
-                "cache for %s: %s\n", ss, *valueptr);
+                "cache for %s: key '%s' value '%s'\n", ss, p->key, *valueptr);
             }
           }
         }
@@ -710,7 +704,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
       else
         {
         DEBUG(D_lists) debug_printf("cached %s match for %s\n",
-          ((bits & (-bits)) == bits)? "yes" : "no", ss);
+          (bits & (-bits)) == bits ? "yes" : "no", ss);
 
         cached = US" - cached";
         if (valueptr)
