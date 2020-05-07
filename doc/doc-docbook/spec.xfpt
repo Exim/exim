@@ -3910,7 +3910,7 @@ messages through the same SMTP connection.
 .oindex "&%-MCS%&"
 This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
-SMTP SIZE option should be used on messages delivered down the existing
+ESMTP SIZE option should be used on messages delivered down the existing
 connection.
 
 .vitem &%-MCT%&
@@ -14795,6 +14795,7 @@ Those options that undergo string expansion before use are marked with
 .cindex "8-bit characters"
 .cindex "log" "selectors"
 .cindex "log" "8BITMIME"
+.cindex "ESMTP extensions" 8BITMIME
 This option causes Exim to send 8BITMIME in its response to an SMTP
 EHLO command, and to accept the BODY= parameter on MAIL commands.
 However, though Exim is 8-bit clean, it is not a protocol converter, and it
@@ -15008,6 +15009,7 @@ That is, set the option to an empty string so that no check is done.
 .option auth_advertise_hosts main "host list&!!" *
 .cindex "authentication" "advertising"
 .cindex "AUTH" "advertising"
+.cindex "ESMTP extensions" AUTH
 If any server authentication mechanisms are configured, Exim advertises them in
 response to an EHLO command only if the calling host matches this list.
 Otherwise, Exim does not advertise AUTH.
@@ -15269,6 +15271,7 @@ may wish to deliberately disable them.
 .option chunking_advertise_hosts main "host list&!!" *
 .cindex CHUNKING advertisement
 .cindex "RFC 3030" "CHUNKING"
+.cindex "ESMTP extensions" CHUNKING
 The CHUNKING extension (RFC3030) will be advertised in the EHLO message to
 these hosts.
 Hosts may use the BDAT command as an alternate to DATA.
@@ -15620,6 +15623,7 @@ described in section &<<SECTlineendings>>&.
 .cindex "bounce messages" "success"
 .cindex "DSN" "success"
 .cindex "Delivery Status Notification" "success"
+.cindex "ESMTP extensions" DSN
 DSN extensions (RFC3461) will be advertised in the EHLO message to,
 and accepted from, these hosts.
 Hosts may use the NOTIFY and ENVID options on RCPT TO commands,
@@ -16508,6 +16512,11 @@ to depend on the IP address of the remote host for messages arriving via
 TCP/IP. After expansion, the value must be a sequence of decimal digits,
 optionally followed by K or M.
 
+.cindex "SIZE" "ESMTP extension, advertising"
+.cindex "ESMTP extensions" SIZE
+If nonzero the value will be advertised as a parameter to the ESMTP SIZE
+service extension keyword.
+
 &*Note*&: This limit cannot be made to depend on a message's sender or any
 other properties of an individual message, because it has to be advertised in
 the server's response to EHLO. String expansion failure causes a temporary
@@ -16775,6 +16784,7 @@ of the &%-oX%& option, unless a path is explicitly supplied by &%-oP%&.
 
 .option pipelining_advertise_hosts main "host list&!!" *
 .cindex "PIPELINING" "suppressing advertising"
+.cindex "ESMTP extensions" PIPELINING
 This option can be used to suppress the advertisement of the SMTP
 PIPELINING extension to specific hosts. See also the &*no_pipelining*&
 control in section &<<SECTcontrols>>&. When PIPELINING is not advertised and
@@ -16786,6 +16796,7 @@ not count as protocol errors (see &%smtp_max_synprot_errors%&).
 .option pipelining_connect_advertise_hosts main "host list&!!" *
 .cindex "pipelining" "early connection"
 .cindex "pipelining" PIPE_CONNECT
+.cindex "ESMTP extensions" X_PIPE_CONNECT
 If Exim is built with the SUPPORT_PIPE_CONNECT build option
 this option controls which hosts the facility is advertised to
 and from which pipeline early-connection (before MAIL) SMTP
@@ -16799,6 +16810,7 @@ Currently the option name &"X_PIPE_CONNECT"& is used.
 
 .option prdr_enable main boolean false
 .cindex "PRDR" "enabling on server"
+.cindex "ESMTP extensions" PRDR
 This option can be used to enable the Per-Recipient Data Response extension
 to SMTP, defined by Eric Hall.
 If the option is set, PRDR is advertised by Exim when operating as a server.
@@ -17518,6 +17530,7 @@ hosts), you can do so by an appropriate use of a &%control%& modifier in an ACL
 
 .option smtp_etrn_command main string&!! unset
 .cindex "ETRN" "command to be run"
+.cindex "ESMTP extensions" ETRN
 .vindex "&$domain$&"
 If this option is set, the given command is run whenever an SMTP ETRN
 command is received from a host that is permitted to issue such commands (see
@@ -17698,7 +17711,8 @@ example, instead of &"Administrative prohibition"&, it might give:
 
 
 .option smtputf8_advertise_hosts main "host list&!!" *
-.cindex "SMTPUTF8" "advertising"
+.cindex "SMTPUTF8" "ESMTP extension, advertising"
+.cindex "ESMTP extensions" SMTPUTF8
 When Exim is built with support for internationalised mail names,
 the availability thereof is advertised in
 response to EHLO only to those client hosts that match this option. See
@@ -17989,6 +18003,7 @@ unfortunately not all, operating systems.
 .cindex "TLS" "advertising"
 .cindex "encryption" "on SMTP connection"
 .cindex "SMTP" "encrypted connection"
+.cindex "ESMTP extensions" STARTTLS
 When Exim is built with support for TLS encrypted connections, the availability
 of the STARTTLS command to set up an encrypted session is advertised in
 response to EHLO only to those client hosts that match this option. See
@@ -22396,7 +22411,7 @@ message. For example, a content scan could insert a new header line containing
 a spam score. This could be interpreted by a filter in the user's MUA. It is
 not possible to discard a message at this stage.
 
-.cindex "SMTP" "SIZE"
+.cindex "SIZE" "ESMTP extension"
 A problem might arise if the filter increases the size of a message that is
 being sent down an SMTP connection. If the receiving SMTP server has indicated
 support for the SIZE parameter, Exim will have sent the size of the message
@@ -25109,7 +25124,8 @@ facilities such as AUTH, PIPELINING, SIZE, and STARTTLS.
 
 .option hosts_avoid_pipelining smtp "host list&!!" unset
 .cindex "PIPELINING" "avoiding the use of"
-Exim will not use the SMTP PIPELINING extension when delivering to any host
+.cindex "ESMTP extensions" PIPELINING
+Exim will not use the ESMTP PIPELINING extension when delivering to any host
 that matches this list, even if the server host advertises PIPELINING support.
 
 .option hosts_pipe_connect smtp "host list&!!" unset
@@ -25313,6 +25329,7 @@ such as DNSBL lookups, will still delay the emission of the SMTP banner.
 
 .option hosts_try_prdr smtp "host list&!!" *
 .cindex "PRDR" "enabling, optional in client"
+.cindex "ESMTP extensions" PRDR
 This option provides a list of servers to which, provided they announce
 PRDR support, Exim will attempt to negotiate PRDR
 for multi-recipient messages.
@@ -25470,7 +25487,7 @@ See also the &%max_parallel%& generic transport option.
 
 
 .option size_addition smtp integer 1024
-.cindex "SMTP" "SIZE"
+.cindex "SIZE" "ESMTP extension"
 .cindex "message" "size issue for transport filter"
 .cindex "size" "of message"
 .cindex "transport" "filter"
@@ -25655,7 +25672,7 @@ The &%tls_verify_certificates%& option must also be set.
 If both this option and &%tls_try_verify_hosts%& are unset
 operation is as if this option selected all hosts.
 
-.option utf8_downconvert smtp integer!! unset
+.option utf8_downconvert smtp integer&!! unset
 .cindex utf8 "address downconversion"
 .cindex i18n "utf8 address downconversion"
 If built with internationalization support,
@@ -26769,6 +26786,7 @@ transfer of mail between servers that have no managerial connection with each
 other.
 
 .cindex "AUTH" "description of"
+.cindex "ESMTP extensions" AUTH
 Very briefly, the way SMTP authentication works is as follows:
 
 .ilist
@@ -28800,6 +28818,7 @@ tls_require_ciphers = ${if =={$received_port}{25}\
 
 .section "Configuring an Exim server to use TLS" "SECID182"
 .cindex "TLS" "configuring an Exim server"
+.cindex "ESMTP extensions" STARTTLS
 When Exim has been built with TLS support, it advertises the availability of
 the STARTTLS command to client hosts that match &%tls_advertise_hosts%&,
 but not to any others. The default value of this option is *, which means
@@ -29059,6 +29078,7 @@ deliveries as well as to incoming, the latter one causing logging of the
 server certificate's DN. The remaining client configuration for TLS is all
 within the &(smtp)& transport.
 
+.cindex "ESMTP extensions" STARTTLS
 It is not necessary to set any options to have TLS work in the &(smtp)&
 transport. If Exim is built with TLS support, and TLS is advertised by a
 server, the &(smtp)& transport always tries to start a TLS session. However,
@@ -31001,6 +31021,7 @@ calling host. Its effect lasts until the end of the SMTP connection.
 
 .vitem &*control&~=&~no_pipelining*&
 .cindex "PIPELINING" "suppressing advertising"
+.cindex "ESMTP extensions" PIPELINING
 This control turns off the advertising of the PIPELINING extension to SMTP in
 the current session. To be useful, it must be obeyed before Exim sends its
 response to an EHLO command. Therefore, it should normally appear in an ACL
@@ -35964,13 +35985,14 @@ used to contain the envelope information.
 .cindex "outgoing LMTP over TCP/IP"
 .cindex "EHLO"
 .cindex "HELO"
-.cindex "SIZE option on MAIL command"
+.cindex "SIZE" "option on MAIL command"
 Outgoing SMTP and LMTP over TCP/IP is implemented by the &(smtp)& transport.
 The &%protocol%& option selects which protocol is to be used, but the actual
 processing is the same in both cases.
 
+.cindex "ESMTP extensions" SIZE
 If, in response to its EHLO command, Exim is told that the SIZE
-parameter is supported, it adds SIZE=<&'n'&> to each subsequent MAIL
+extension is supported, it adds SIZE=<&'n'&> to each subsequent MAIL
 command. The value of <&'n'&> is the message size plus the value of the
 &%size_addition%& option (default 1024) to allow for additions to the message
 such as per-transport header lines, or changes made in a
@@ -36366,7 +36388,8 @@ RCPT failures.
 
 .section "The ETRN command" "SECTETRN"
 .cindex "ETRN" "processing"
-RFC 1985 describes an SMTP command called ETRN that is designed to
+.cindex "ESMTP extensions" ETRN
+RFC 1985 describes an ESMTP command called ETRN that is designed to
 overcome the security problems of the TURN command (which has fallen into
 disuse). When Exim receives an ETRN command on a TCP/IP connection, it runs
 the ACL specified by &%acl_smtp_etrn%& in order to decide whether the command
@@ -41454,6 +41477,7 @@ requirement, upon libidn2.
 
 .section "MTA operations" SECTi18nMTA
 .cindex SMTPUTF8 "ESMTP option"
+.cindex "ESMTP extensions" SMTPUTF8
 The main configuration option &%smtputf8_advertise_hosts%& specifies
 a host list.  If this matches the sending host and
 accept_8bitmime is true (the default) then the ESMTP option
