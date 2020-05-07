@@ -189,6 +189,16 @@ JH/41 Bug 2571: Fix SPA authenticator.  Running as a server, an offset supplied
       being used.  A malicious client could thus cause an out-of-bounds read and
       possibly gain authentication.  Fix by adding the check.
 
+JH/42 Internationalisation: change the default for downconversion in the smtp
+      transport to be "if needed".  Previously it was "as previously set" for
+      the message, which usually meant "if needed" for message-submission but
+      "no" for everything else.  However, MTAs have been seen using SMTPUTF8
+      even when the envelope addresses did not need it, resulting in forwarding
+      failures to non-supporting MTAs.  A downconvert in such cases will be
+      a no-op on the addresses, merely dropping the use of SMTPUTF8 by the
+      transport.  The change does mean that addresses needing conversion will
+      be converted when previously a delivery failure would occur.
+
 
 Exim version 4.93
 -----------------

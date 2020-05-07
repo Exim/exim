@@ -114,9 +114,10 @@ local_delivery:
   return_path_add
 
 rmt_smtp:
-  driver = smtp
+  driver =		smtp
   hosts_try_fastopen =	:
-  hosts_require_tls = *
+  hosts_require_tls =	*
   tls_try_verify_hosts = :
+  utf8_downconvert =	0
 
 # End

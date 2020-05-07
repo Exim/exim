@@ -41,7 +41,7 @@ exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
 ****
 #
 # Recipient verify callout, fail
-exim -bs -odi -DCONTROL="verify=recipient/callout"
+exim -bs -odi -DCONTROL="verify=recipient/callout" -DSTRICT=0
 EHLO client.ffail
 MAIL FROM: <CALLER@spanish.PorquénopuedensimplementehablarenEspañol.local> SMTPUTF8
 RCPT TO: <userS@test.ex>
@@ -49,7 +49,7 @@ QUIT
 ****
 #
 # Recipient+random verify callout, fail
-exim -bs -odi -DCONTROL="verify=recipient/callout=random"
+exim -bs -odi -DCONTROL="verify=recipient/callout=random" -DSTRICT=0
 EHLO client.ffail
 MAIL FROM: <CALLER@vietnamese.TạisaohọkhôngthểchỉnóitiếngViệt.local> SMTPUTF8
 RCPT TO: <userT@test.ex>

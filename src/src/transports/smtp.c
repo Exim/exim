@@ -241,7 +241,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_verify_cert_hostnames =	US"*",
 #endif
 #ifdef SUPPORT_I18N
-  .utf8_downconvert =		NULL,
+  .utf8_downconvert =		US"-1",
 #endif
 #ifndef DISABLE_DKIM
  .dkim =
