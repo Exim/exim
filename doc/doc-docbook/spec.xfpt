@@ -25676,9 +25676,12 @@ operation is as if this option selected all hosts.
 .cindex utf8 "address downconversion"
 .cindex i18n "utf8 address downconversion"
 If built with internationalization support,
-this option controls conversion of UTF-8 in message addresses
+this option controls conversion of UTF-8 in message envelope addresses
 to a-label form.
-For details see section &<<SECTi18nMTA>>&.
+If, after expansion, the value is 1, 0, or -1 then this value overrides
+any value previously set for the message.  Otherwise, any previously
+set value is used.
+For details on the values see section &<<SECTi18nMTA>>&.
 
 
 
@@ -31097,7 +31100,7 @@ data is read.
 that are being submitted at the same time using &%-bs%& or &%-bS%&.
 
 .vitem &*control&~=&~utf8_downconvert*&
-This control enables conversion of UTF-8 in message addresses
+This control enables conversion of UTF-8 in message envelope addresses
 to a-label form.
 For details see section &<<SECTi18nMTA>>&.
 .endlist vlist
@@ -41524,22 +41527,27 @@ may use the following modifier:
 control = utf8_downconvert
 control = utf8_downconvert/<value>
 .endd
-This sets a flag requiring that addresses are converted to
-a-label form before smtp delivery, for use in a
-Message Submission Agent context.
+This sets a flag requiring that envelope addresses are converted to
+a-label form before smtp delivery.
+This is usually for use in a Message Submission Agent context,
+but could be used for any message.
+
 If a value is appended it may be:
 .display
-&`1  `& (default) mandatory downconversion
+&`1  `& mandatory downconversion
 &`0  `& no downconversion
 &`-1 `& if SMTPUTF8 not supported by destination host
 .endd
+If no value is given, 1 is used.
 
 If mua_wrapper is set, the utf8_downconvert control
 is initially set to -1.
 
 The smtp transport has an option &%utf8_downconvert%&.
 If set it must expand to one of the three values described above,
-and it overrides any previously set value.
+or an empty string.
+If non-empty it overrides value previously set
+(due to mua_wrapper or by an ACL control).
 
 
 There is no explicit support for VRFY and EXPN.
