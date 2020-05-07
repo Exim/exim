@@ -117,5 +117,6 @@ rmt_smtp:
   driver = smtp
   hosts_require_tls = *
   tls_try_verify_hosts = :
+  utf8_downconvert =	0
 
 # End

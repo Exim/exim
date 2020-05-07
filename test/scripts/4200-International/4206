@@ -39,14 +39,14 @@ exim -DSERVER=server -DNOTDAEMON -qqff
 exim -DSERVER=server -DOPTION="" -bd -oX PORT_D
 ****
 # sender verify callout, fail
-exim -bs -odi -DCONTROL="verify=sender/callout"
+exim -bs -odi -DCONTROL="verify=sender/callout" -DSTRICT=0
 EHLO client.sfail
 MAIL FROM: <userA@test.ex> SMTPUTF8
 RCPT TO: <user.यष्टिमधु@test.ex>
 QUIT
 ****
 # sender+random verify callout, fail
-exim -bs -odi -DCONTROL="verify=sender/callout=random"
+exim -bs -odi -DCONTROL="verify=sender/callout=random" -DSTRICT=0
 EHLO client.sfail
 MAIL FROM: <userB.જેઠીમધ@test.ex> SMTPUTF8
 RCPT TO: <user.ქართული@test.ex>
