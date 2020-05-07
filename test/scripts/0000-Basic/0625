@@ -1,0 +1,18 @@
+# singlekey lookup ret-key
+#
+# baseline, get the data
+exim -d-all+expand -bs '-DOPT=notthis : lsearch;DIR/aux-fixed/TESTNUM.lsearch : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@trythiskey.ex>
+QUIT
+****
+#
+# get the key
+exim -d-all+expand -bs '-DOPT=notthis : lsearch,ret=key;DIR/aux-fixed/TESTNUM.lsearch : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@trythiskey.ex>
+QUIT
+****
+#

@@ -5,6 +5,7 @@
 > Failed: failed to open TESTSUITE/AUX-fixed for directory search: No such file or directory
 > Failed: dirname '.' for dsearch is not absolute
 > ok,full:    TESTSUITE/aux-fixed/2500.tst
+> ok,key:     2500.tst
 > ok,file:    2500.tst
 > fail,file:  FAIL
 > ok,dir:     2500.dir

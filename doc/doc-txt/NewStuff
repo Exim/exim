@@ -54,19 +54,22 @@ Version 4.94
 15. Options on pgsql and mysql lookups, to specify server separate from the
     lookup string.
 
-16. Expansion item ${listquote {<char} {<item>}}.
+16. An option on all single-key lookups, to return (on a hit) a de-tainted
+    version of the lookup key rather than the looked-up data.
 
-17. An option for the ${readsocket {}{}{}} expansion to make the result data
-    cacheable.
-
-18. dkim_verify_min_keysizes, a list of minimum acceptable public-key sizes.
-
-19. bounce_message_file and warn_message_file are now expanded before use.
-
-20. $domain_data and $localpart_data are now set by all list-match successes.
+17. $domain_data and $localpart_data are now set by all list-match successes.
     Previously only list items that performed lookups did so.
     Also, matching list items that are tail-match or RE-match now set the
     numeric variables $0 (etc) in the same way os other RE matches.
+
+18. Expansion item ${listquote {<char} {<item>}}.
+
+19. An option for the ${readsocket {}{}{}} expansion to make the result data
+    cacheable.
+
+20. dkim_verify_min_keysizes, a list of minimum acceptable public-key sizes.
+
+21. bounce_message_file and warn_message_file are now expanded before use.
 
 
 

@@ -1,0 +1,59 @@
+Exim version x.yz ....
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+ ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ╭considering: domain $domain
+ ├──expanding: domain $domain
+ ╰─────result: domain trythiskey.ex
+            ╰──(tainted)
+LOG: MAIN
+  domain trythiskey.ex
+created log directory TESTSUITE/spool/log
+ ╭considering: value  $domain_data
+ ├──expanding: value  $domain_data
+ ╰─────result: value  has this data
+LOG: MAIN
+  value  has this data
+ ╭considering: \$0 '$0'  \$1 '$1'
+ ├──expanding: \$0 '$0'  \$1 '$1'
+ ╰─────result: $0 'trythiskey.ex'  $1 ''
+            ╰──(tainted)
+LOG: MAIN
+  $0 'trythiskey.ex'  $1 ''
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+adding SSLKEYLOGFILE=TESTSUITE/spool/sslkeys
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+ ╭considering: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ├──expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+ ╰─────result: primaryhostname.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+ ╭considering: domain $domain
+ ├──expanding: domain $domain
+ ╰─────result: domain trythiskey.ex
+            ╰──(tainted)
+LOG: MAIN
+  domain trythiskey.ex
+ ╭considering: value  $domain_data
+ ├──expanding: value  $domain_data
+ ╰─────result: value  trythiskey.ex
+LOG: MAIN
+  value  trythiskey.ex
+ ╭considering: \$0 '$0'  \$1 '$1'
+ ├──expanding: \$0 '$0'  \$1 '$1'
+ ╰─────result: $0 'trythiskey.ex'  $1 ''
+            ╰──(tainted)
+LOG: MAIN
+  $0 'trythiskey.ex'  $1 ''
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

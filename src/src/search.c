@@ -189,7 +189,7 @@ if ((t = Ustrchr(t, ',')))
   *opts = string_copy(t+1);
   }
 else
-  * opts = NULL;
+  *opts = NULL;
 
 /* Check for the individual search type. Only those that are actually in the
 binary are valid. For query-style types, "partial" and default types are
@@ -715,7 +715,7 @@ else if (partial >= 0)
   /* The key in its entirety did not match a wild entry; try chopping off
   leading components. */
 
-  if (yield == NULL)
+  if (!yield)
     {
     int dotcount = 0;
     uschar *keystring3 = keystring2 + affixlen;
@@ -837,6 +837,19 @@ if (set_null_wild && expand_setup && *expand_setup >= 0)
   *expand_setup += 1;
   expand_nstring[*expand_setup] = keystring;
   expand_nlength[*expand_setup] = Ustrlen(keystring);
+  }
+
+/* If we have a result, check the options to see if the key was wanted rather
+than the result.  Return a de-tainted version of the key on the grounds that
+it have been validated by the lookup. */
+
+if (yield && opts)
+  {
+  int sep = ',';
+  uschar * ele;
+  while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
+    if (Ustrcmp(ele, "ret=key") == 0)
+      { yield = string_copy_taint(keystring, FALSE); break; }
   }
 
 return yield;

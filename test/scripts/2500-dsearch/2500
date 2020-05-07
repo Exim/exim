@@ -8,6 +8,7 @@ fail(case): ${lookup{TESTNUM.TST}		dsearch{DIR/aux-fixed}{$value}{FAIL}}
 fail(case): ${lookup{TESTNUM.TST}		dsearch{DIR/AUX-fixed}{$value}{FAIL}}
 fail(path): ${lookup{TESTNUM.tst}		dsearch{.}{$value}{OTHER}}
 ok,full:    ${lookup{TESTNUM.tst} dsearch,ret=full      {DIR/aux-fixed}{$value}{FAIL}}
+ok,key:     ${lookup{TESTNUM.tst} dsearch,ret=key       {DIR/aux-fixed}{$value}{FAIL}}
 ok,file:    ${lookup{TESTNUM.tst} dsearch,filter=file   {DIR/aux-fixed}{$value}{FAIL}}
 fail,file:  ${lookup{TESTNUM.dir} dsearch,filter=file   {DIR/aux-fixed}{$value}{FAIL}}
 ok,dir:     ${lookup{TESTNUM.dir} dsearch,filter=dir    {DIR/aux-fixed}{$value}{FAIL}}
