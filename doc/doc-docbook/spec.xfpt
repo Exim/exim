@@ -6641,6 +6641,8 @@ file that is searched could contain lines like this:
 .endd
 When the lookup succeeds, the result of the expansion is a list of domains (and
 possibly other types of item that are allowed in domain lists).
+.cindex "tainted data" "de-tainting"
+The result of the expansion is not tainted.
 
 In the second example, the lookup is a single item in a domain list. It causes
 Exim to use a lookup to see if the domain that is being processed can be found
@@ -15631,6 +15633,10 @@ and RET and ORCPT options on MAIL FROM commands.
 A NOTIFY=SUCCESS option requests success-DSN messages.
 A NOTIFY= option with no argument requests that no delay or failure DSNs
 are sent.
+.new
+&*Note*&: Supplying success-DSN messages has been criticised
+on privacy grounds; it can leak details of internal forwarding.
+.wen
 
 .option dsn_from main "string&!!" "see below"
 .cindex "&'From:'& header line" "in bounces"
