@@ -2,6 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2020 */
 /* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
@@ -96,7 +97,7 @@ int sep = 0;
 
 
 user = string_nextinlist(&radius_args, &sep, big_buffer, big_buffer_size);
-if (user == NULL) user = US"";
+if (!user) user = US"";
 
 DEBUG(D_auth) debug_printf("Running RADIUS authentication for user \"%s\" "
                "and \"%s\"\n", user, radius_args);
@@ -115,38 +116,38 @@ if (rc_read_config(RADIUS_CONFIG_FILE) != 0)
   *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
 
 else if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
-  *errptr = string_sprintf("RADIUS: can't read dictionary");
+  *errptr = US"RADIUS: can't read dictionary";
 
-else if (rc_avpair_add(&send, PW_USER_NAME, user, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add user name failed\n");
+else if (!rc_avpair_add(&send, PW_USER_NAME, user, 0))
+  *errptr = US"RADIUS: add user name failed";
 
-else if (rc_avpair_add(&send, PW_USER_PASSWORD, CS radius_args, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add password failed\n");
+else if (!rc_avpair_add(&send, PW_USER_PASSWORD, CS radius_args, 0))
+  *errptr = US"RADIUS: add password failed");
 
-else if (rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add service type failed\n");
+else if (!rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0))
+  *errptr = US"RADIUS: add service type failed";
 
 #else  /* RADIUS_LIB_RADIUSCLIENT unset => RADIUS_LIB_RADIUSCLIENT2 */
 
-if ((h = rc_read_config(RADIUS_CONFIG_FILE)) == NULL)
+if (!(h = rc_read_config(RADIUS_CONFIG_FILE)))
   *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
 
 else if (rc_read_dictionary(h, rc_conf_str(h, "dictionary")) != 0)
-  *errptr = string_sprintf("RADIUS: can't read dictionary");
+  *errptr = US"RADIUS: can't read dictionary";
 
-else if (rc_avpair_add(h, &send, PW_USER_NAME, user, Ustrlen(user), 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add user name failed\n");
+else if (!rc_avpair_add(h, &send, PW_USER_NAME, user, Ustrlen(user), 0))
+  *errptr = US"RADIUS: add user name failed";
 
-else if (rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args,
-    Ustrlen(radius_args), 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add password failed\n");
+else if (!rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args,
+    Ustrlen(radius_args), 0))
+  *errptr = US"RADIUS: add password failed";
 
-else if (rc_avpair_add(h, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add service type failed\n");
+else if (!rc_avpair_add(h, &send, PW_SERVICE_TYPE, &service, 0, 0))
+  *errptr = US"RADIUS: add service type failed";
 
 #endif  /* RADIUS_LIB_RADIUSCLIENT */
 
-if (*errptr != NULL)
+if (*errptr)
   {
   DEBUG(D_auth) debug_printf("%s\n", *errptr);
   return ERROR;
@@ -163,28 +164,27 @@ DEBUG(D_auth) debug_printf("RADIUS code returned %d\n", result);
 switch (result)
   {
   case OK_RC:
-  return OK;
+    return OK;
 
   case REJECT_RC:
   case ERROR_RC:
-  return FAIL;
+    return FAIL;
 
   case TIMEOUT_RC:
-  *errptr = US"RADIUS: timed out";
-  return ERROR;
+    *errptr = US"RADIUS: timed out";
+    return ERROR;
 
-  default:
   case BADRESP_RC:
-  *errptr = string_sprintf("RADIUS: unexpected response (%d)", result);
-  return ERROR;
+  default:
+    *errptr = string_sprintf("RADIUS: unexpected response (%d)", result);
+    return ERROR;
   }
 
 #else  /* RADIUS_LIB_RADLIB is set */
 
 /* Authenticate using the libradius library */
 
-h = rad_auth_open();
-if (h == NULL)
+if (!(h = rad_auth_open()))
   {
   *errptr = string_sprintf("RADIUS: can't initialise libradius");
   return ERROR;
@@ -200,32 +200,28 @@ if (rad_config(h, RADIUS_CONFIG_FILE) != 0 ||
   result = ERROR;
   }
 else
-  {
-  result = rad_send_request(h);
-
-  switch(result)
+  switch (result = rad_send_request(h))
     {
     case RAD_ACCESS_ACCEPT:
-    result = OK;
-    break;
+      result = OK;
+      break;
 
     case RAD_ACCESS_REJECT:
-    result = FAIL;
-    break;
+      result = FAIL;
+      break;
 
     case -1:
-    *errptr = string_sprintf("RADIUS: %s", rad_strerror(h));
-    result = ERROR;
-    break;
+      *errptr = string_sprintf("RADIUS: %s", rad_strerror(h));
+      result = ERROR;
+      break;
 
     default:
-    *errptr = string_sprintf("RADIUS: unexpected response (%d)", result);
-    result= ERROR;
-    break;
+      *errptr = string_sprintf("RADIUS: unexpected response (%d)", result);
+      result= ERROR;
+      break;
     }
-  }
 
-if (*errptr != NULL) DEBUG(D_auth) debug_printf("%s\n", *errptr);
+if (*errptr) DEBUG(D_auth) debug_printf("%s\n", *errptr);
 rad_close(h);
 return result;
 
