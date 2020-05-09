@@ -509,6 +509,16 @@ else
 	      0
 #endif
 	     );
+
+#if defined(__linux__)
+    /* This is a workaround for a current linux kernel bug: as of
+    5.6.8-200.fc31.x86_64  small (<MSS) writes get delayed by about 200ms,
+    This is despite NODELAY being active.
+    https://bugzilla.redhat.com/show_bug.cgi?id=1803806 */
+
+    if (!more)
+      setsockopt(outblock->cctx->sock, IPPROTO_TCP, TCP_CORK, &off, sizeof(off));
+#endif
     }
   }
 
