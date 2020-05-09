@@ -204,7 +204,7 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_DSN_INFO
 #define EXPERIMENTAL_LMDB
 #define EXPERIMENTAL_QUEUEFILE
-#define EXPERIMENTAL_SRS
+#define EXPERIMENTAL_SRS_ALT
 #define EXPERIMENTAL_SRS_NATIVE
 #define EXPERIMENTAL_TLS_RESUME
 

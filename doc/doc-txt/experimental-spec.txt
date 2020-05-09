@@ -292,61 +292,9 @@ These four steps are explained in more details below.
 
 
 
-SRS (Sender Rewriting Scheme) Support (using libsrs_alt)
---------------------------------------------------------------
-See also below, for an alternative native support implementation.
-
-Exim  currently  includes SRS  support  via Miles  Wilton's
-libsrs_alt library. The current version of the supported
-library is 0.5, there are reports of 1.0 working.
-
-In order to  use SRS, you  must get a  copy of libsrs_alt from
-
-https://opsec.eu/src/srs/
-
-(not the original source, which has disappeared.)
-
-Unpack the tarball, then refer to MTAs/README.EXIM
-to proceed. You need to set
-
-EXPERIMENTAL_SRS=yes
-
-in your Local/Makefile.
-
-The following main-section options become available:
-	srs_config		string
-	srs_hashlength		int
-	srs_hashmin		int
-	srs_maxage		int
-	srs_secrets		string
-	srs_usehash		bool
-	srs_usetimestamp	bool
-
-The redirect router gains these options (all of type string, unset by default):
-	srs
-	srs_alias
-	srs_condition
-	srs_dbinsert
-	srs_dbselect
-
-The following variables become available:
-	$srs_db_address
-	$srs_db_key
-	$srs_orig_recipient
-	$srs_orig_sender
-	$srs_recipient
-	$srs_status
-
-The predefined feature-macro _HAVE_SRS will be present.
-Additional delivery log line elements, tagged with "SRS=" will show the srs sender.	
-For configuration information see https://github.com/Exim/exim/wiki/SRS .
-
-
-
-
 SRS (Sender Rewriting Scheme) Support (native)
 --------------------------------------------------------------
-This is less full-featured than the libsrs_alt version above.
+This is less full-featured than the libsrs_alt version below.
 
 The Exim build needs to be done with this in Local/Makefile:
 EXPERIMENTAL_SRS_NATIVE=yes
@@ -371,7 +319,7 @@ The following are provided:
 Sample usage:
 
   #macro
-  SRS_SECRET = <pick something unique for your site for this>
+  SRS_SECRET = <pick something unique for your site for this. Use on all MXs.>
   
   #routers
 
@@ -410,6 +358,58 @@ Sample usage:
     # modify the envelope from, for mails that we forward
     max_rcpt =            1
     return_path =         ${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
+
+
+
+
+SRS (Sender Rewriting Scheme) Support (using libsrs_alt)
+--------------------------------------------------------------
+See also above, for an alternative native support implementation.
+
+Exim  currently  includes SRS  support  via Miles  Wilton's
+libsrs_alt library. The current version of the supported
+library is 0.5, there are reports of 1.0 working.
+
+In order to  use SRS, you  must get a  copy of libsrs_alt from
+
+https://opsec.eu/src/srs/
+
+(not the original source, which has disappeared.)
+
+Unpack the tarball, then refer to MTAs/README.EXIM
+to proceed. You need to set
+
+EXPERIMENTAL_SRS_ALT=yes
+
+in your Local/Makefile.
+
+The following main-section options become available:
+	srs_config		string
+	srs_hashlength		int
+	srs_hashmin		int
+	srs_maxage		int
+	srs_secrets		string
+	srs_usehash		bool
+	srs_usetimestamp	bool
+
+The redirect router gains these options (all of type string, unset by default):
+	srs
+	srs_alias
+	srs_condition
+	srs_dbinsert
+	srs_dbselect
+
+The following variables become available:
+	$srs_db_address
+	$srs_db_key
+	$srs_orig_recipient
+	$srs_orig_sender
+	$srs_recipient
+	$srs_status
+
+The predefined feature-macro _HAVE_SRS will be present.
+Additional delivery log line elements, tagged with "SRS=" will show the srs sender.	
+For configuration information see https://github.com/Exim/exim/wiki/SRS .
 
 
 

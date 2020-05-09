@@ -183,7 +183,7 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_SPF
   builtin_macro_create(US"_HAVE_SPF");
 #endif
-#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT) || defined(EXPERIMENTAL_SRS_NATIVE)
   builtin_macro_create(US"_HAVE_SRS");
 #endif
 #if defined(EXPERIMENTAL_SRS_NATIVE)

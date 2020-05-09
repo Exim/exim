@@ -334,7 +334,7 @@ static optionlist optionlist_config[] = {
   { "sqlite_dbfile",            opt_stringptr,   {&sqlite_dbfile} },
   { "sqlite_lock_timeout",      opt_int,         {&sqlite_lock_timeout} },
 #endif
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   { "srs_config",               opt_stringptr,   {&srs_config} },
   { "srs_hashlength",           opt_int,         {&srs_hashlength} },
   { "srs_hashmin",              opt_int,         {&srs_hashmin} },

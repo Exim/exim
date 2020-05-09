@@ -584,18 +584,19 @@ DISABLE_MAL_MKS=yes
 
 # EXPERIMENTAL_DCC=yes
 
-# Uncomment the following lines to add SRS (Sender rewriting scheme) support.
+# Uncomment the following lines to add SRS (Sender rewriting scheme) support
+# using only native facilities.
+# EXPERIMENTAL_SRS_NATIVE=yes
+
+# Uncomment the following lines to add SRS (Sender rewriting scheme) support
+# using the implementation in linbsrs_alt.
 # You need to have libsrs_alt installed on your system (srs.mirtol.com).
 # Depending on where it is installed you may have to edit the CFLAGS and
 # LDFLAGS lines.
 
-# EXPERIMENTAL_SRS=yes
+# EXPERIMENTAL_SRS_ALT=yes
 # CFLAGS  += -I/usr/local/include
 # LDFLAGS += -lsrs_alt
-
-# Uncomment the following lines to add SRS (Sender rewriting scheme) support
-# using only native facilities.
-# EXPERIMENTAL_SRS_NATIVE=yes
 
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries. You must have SPF and DKIM support enabled also.

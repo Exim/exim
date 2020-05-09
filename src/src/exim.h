@@ -493,7 +493,7 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef SUPPORT_SPF
 # include "spf.h"
 #endif
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 # include "srs.h"
 #endif
 #ifndef DISABLE_DKIM

@@ -2156,7 +2156,7 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     addr_list = addr->next;
 
     fprintf(fp, "%s", CS addr->address);
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
     if(addr->prop.srs_sender)
       fprintf(fp, "    [srs = %s]", addr->prop.srs_sender);
 #endif

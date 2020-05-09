@@ -515,7 +515,7 @@ typedef struct address_item_propagated {
   uschar *remove_headers;         /* list of those to remove */
   void   *variables;		  /* router-vasriables */
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   uschar *srs_sender;             /* Change return path when delivering */
 #endif
   BOOL    ignore_error:1;	  /* ignore delivery error */

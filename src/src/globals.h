@@ -987,7 +987,7 @@ extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern FILE   *spool_data_file;	       /* handle for -D file */
 extern uschar *spool_directory;        /* Name of spool directory */
 extern BOOL    spool_wireformat;       /* can write wireformat -D files */
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 extern uschar *srs_config;             /* SRS config secret:max age:hash length:use timestamp:use hash */
 extern uschar *srs_db_address;         /* SRS db address */
 extern uschar *srs_db_key;             /* SRS db key */

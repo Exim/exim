@@ -407,7 +407,7 @@ BOOL    spf_result_guessed     = FALSE;
 #endif
 BOOL    split_spool_directory  = FALSE;
 BOOL    spool_wireformat       = FALSE;
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 BOOL    srs_usehash            = TRUE;
 BOOL    srs_usetimestamp       = TRUE;
 #endif
@@ -596,7 +596,7 @@ address_item address_defaults = {
     .extra_headers =	NULL,
     .remove_headers =	NULL,
     .variables =	NULL,
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
     .srs_sender =	NULL,
 #endif
     .ignore_error =	FALSE,
@@ -1504,7 +1504,7 @@ uschar *spf_smtp_comment       = NULL;
 FILE   *spool_data_file	       = NULL;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 uschar *srs_config             = NULL;
 uschar *srs_db_address         = NULL;
 uschar *srs_db_key             = NULL;
@@ -1517,7 +1517,7 @@ uschar *srs_recipient          = NULL;
 uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
 #endif
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef EXPERIMENTAL_SRS_ALT
 uschar *srs_recipient          = NULL;
 #endif
 int     string_datestamp_offset= -1;

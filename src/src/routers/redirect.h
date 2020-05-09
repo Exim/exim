@@ -34,7 +34,7 @@ typedef struct {
   uid_t  *owners;
   gid_t  *owngroups;
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   uschar *srs;
   uschar *srs_alias;
   uschar *srs_condition;

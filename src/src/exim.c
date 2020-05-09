@@ -1001,7 +1001,7 @@ g = string_cat(NULL, US"Support for:");
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
-#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT) || defined(EXPERIMENTAL_SRS_NATIVE)
   g = string_cat(g, US" Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_TLS_RESUME

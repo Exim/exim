@@ -1149,7 +1149,7 @@ if (LOGGING(sender_on_delivery) || msg)
 if (*queue_name)
   g = string_append(g, 2, US" Q=", queue_name);
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 if(addr->prop.srs_sender)
   g = string_append(g, 3, US" SRS=<", addr->prop.srs_sender, US">");
 #endif
@@ -2143,7 +2143,7 @@ has its own return path setting, expand it and replace the existing value. */
 
 if(addr->prop.errors_address)
   return_path = addr->prop.errors_address;
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 else if (addr->prop.srs_sender)
   return_path = addr->prop.srs_sender;
 #endif
@@ -4429,7 +4429,7 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
 
   if(addr->prop.errors_address)
     return_path = addr->prop.errors_address;
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   else if(addr->prop.srs_sender)
     return_path = addr->prop.srs_sender;
 #endif
