@@ -174,6 +174,9 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_SOCKS
   builtin_macro_create(US"_HAVE_SOCKS");
 #endif
+#if defined(SUPPORT_SRS)
+  builtin_macro_create(US"_HAVE_NATIVE_SRS");	/* beware clash with _HAVE_SRS */
+#endif
 #ifdef TCP_FASTOPEN
   builtin_macro_create(US"_HAVE_TCP_FASTOPEN");
 #endif
@@ -183,11 +186,8 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_SPF
   builtin_macro_create(US"_HAVE_SPF");
 #endif
-#if defined(EXPERIMENTAL_SRS_ALT) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT) || defined(SUPPORT_SRS)
   builtin_macro_create(US"_HAVE_SRS");
-#endif
-#if defined(EXPERIMENTAL_SRS_NATIVE)
-  builtin_macro_create(US"_HAVE_NATIVE_SRS");	/* beware clash with _HAVE_SRS */
 #endif
 #ifdef EXPERIMENTAL_ARC
   builtin_macro_create(US"_HAVE_ARC");

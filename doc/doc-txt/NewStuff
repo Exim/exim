@@ -12,6 +12,9 @@ Version 4.95
  1. The fast-ramp two phase queue run support, previously experimental, is
     now supported by default.
 
+ 2. The native SRS support, previously experimental, is now supported. It is
+    not built unless specified in the Local/Makefile.
+
 
 Version 4.94
 ------------

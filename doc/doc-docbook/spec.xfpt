@@ -10597,6 +10597,14 @@ ${sort {${lookup dnsdb{>:,,mx=example.com}}} {<} {${listextract{1}{<,$item}}}}
 will sort an MX lookup into priority order.
 
 
+
+.new
+.vitem &*${srs_encode&~{*&<&'secret'&>&*}{*&<&'return&~path'&>&*}{*&<&'original&~domain'&>&*}}*&
+SRS encoding.  See SECT &<<SECTSRS>>& for details.
+.wen
+
+
+
 .vitem &*${substr{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
 .cindex "&%substr%& expansion item"
 .cindex "substring extraction"
@@ -11658,6 +11666,13 @@ string is lexically greater than the second string. For &%gt%& the comparison
 includes the case of letters, whereas for &%gti%& the comparison is
 case-independent.
 Case and collation order are defined per the system C locale.
+
+
+.new
+.vitem &*inbound_srs&~{*&<&'local&~part'&>&*}{*&<&'secret'&>&*}*&
+SRS decode.  See SECT &<<SECTSRS>>& for details.
+.wen
+
 
 .vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*inlisti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
@@ -41075,6 +41090,108 @@ The lookup will return the same result strings as can appear in
 &$spf_result$& (pass,fail,softfail,neutral,none,err_perm,err_temp).
 
 
+
+
+
+.section "SRS (Sender Rewriting Scheme)" SECTSRS
+.cindex SRS "sender rewriting scheme"
+
+.new
+SRS can be used to modify sender addresses when forwarding so that
+SPF verification does not object to them.
+It operates by encoding the original envelope sender in a new
+sender local part and using a domain run by the forwarding site
+as the new domain for the sender.  Any DSN message should be returned
+to this new sender at the forwarding site, which can extract the
+original sender from the coded local part and forward the DSN to
+the originator.
+
+This is a way of avoiding the breakage that SPF does to forwarding.
+The constructed local-part will be longer than the original,
+leading to possible problems with very long addresses.
+The changing of the sender address also hinders the tracing of mail
+problems.
+
+Exim can be built to include native SRS support.  To do this
+SUPPORT_SRS=yes must be defined in &_Local/Makefile_&.
+If this has been done, the macros _HAVE_SRS and _HAVE_NATIVE_SRS
+will be defined.
+The support is limited to SRS0-encoding; SRS1 is not supported.
+
+.cindex SRS excoding
+To encode an address use this expansion item:
+.vlist
+.vitem &*${srs_encode&~{*&<&'secret'&>&*}{*&<&'return&~path'&>&*}{*&<&'original&~domain'&>&*}}*&
+.cindex "&%srs_encode%& expansion item"
+.cindex SRS "expansion item"
+The first argument should be a secret known and used by all systems
+handling the recipient domain for the original message.
+There is no need to periodically change this key; a timestamp is also
+encoded.
+The second argument should be given as the envelope sender address before this
+encoding operation.
+The third argument should be the recipient domain of the message when
+it arrived at this system.
+.endlist
+
+.cindex SRS decoding
+To decode an address use this expansion condition:
+.vlist
+.vitem &*inbound_srs&~{*&<&'local&~part'&>&*}{*&<&'secret'&>&*}*&
+The first argument should be the recipient local prt as is was received.
+The second argument is the site secret.
+
+If the messages is not for an SRS-encoded recipient the condition will
+return false.  If it is, the condition will return true and the variable
+&$srs_recipient$& will be set to the decoded (original) value.
+.endlist
+
+Example usage:
+.code
+  #macro
+  SRS_SECRET = <pick something unique for your site for this. Use on all MXs.>
+  
+  #routers
+
+  outbound:
+    driver =    dnslookup
+    # if outbound, and forwarding has been done, use an alternate transport
+    domains =   ! +my_domains
+    transport = ${if eq {$local_part@$domain} \
+                        {$original_local_part@$original_domain} \
+                     {remote_smtp} {remote_forwarded_smtp}}
+  
+  inbound_srs:
+    driver =    redirect
+    senders =   :
+    domains =   +my_domains
+    # detect inbound bounces which are SRS'd, and decode them
+    condition = ${if inbound_srs {$local_part} {SRS_SECRET}}
+    data =      $srs_recipient
+  
+  inbound_srs_failure:
+    driver =    redirect
+    senders =   :
+    domains =   +my_domains
+    # detect inbound bounces which look SRS'd but are invalid
+    condition = ${if inbound_srs {$local_part} {}}
+    allow_fail
+    data =      :fail: Invalid SRS recipient address
+
+  #... further routers here
+
+  
+  # transport; should look like the non-forward outbound
+  # one, plus the max_rcpt and return_path options
+  remote_forwarded_smtp:
+    driver =              smtp
+    # modify the envelope from, for mails that we forward
+    max_rcpt =            1
+    return_path =         ${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
+.endd
+
+
+.wen
 
 
 

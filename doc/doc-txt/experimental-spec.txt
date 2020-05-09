@@ -292,81 +292,11 @@ These four steps are explained in more details below.
 
 
 
-SRS (Sender Rewriting Scheme) Support (native)
---------------------------------------------------------------
-This is less full-featured than the libsrs_alt version below.
-
-The Exim build needs to be done with this in Local/Makefile:
-EXPERIMENTAL_SRS_NATIVE=yes
-
-The following are provided:
-- an expansion item "srs_encode"
-  This takes three arguments:
-  - a site SRS secret
-  - the return_path
-  - the pre-forwarding domain
-
-- an expansion condition "inbound_srs"
-  This takes two arguments: the local_part to check, and a site SRS secret.
-  If the secret is zero-length, only the pattern of the local_part is checked.
-  The $srs_recipient variable is set as a side-effect.
-
-- an expansion variable $srs_recipient
-  This gets the original return_path encoded in the SRS'd local_part
-
-- predefined macros _HAVE_SRS and _HAVE_NATIVE_SRS
-
-Sample usage:
-
-  #macro
-  SRS_SECRET = <pick something unique for your site for this. Use on all MXs.>
-  
-  #routers
-
-  outbound:
-    driver =    dnslookup
-    # if outbound, and forwarding has been done, use an alternate transport
-    domains =   ! +my_domains
-    transport = ${if eq {$local_part@$domain} \
-                        {$original_local_part@$original_domain} \
-                     {remote_smtp} {remote_forwarded_smtp}}
-  
-  inbound_srs:
-    driver =    redirect
-    senders =   :
-    domains =   +my_domains
-    # detect inbound bounces which are SRS'd, and decode them
-    condition = ${if inbound_srs {$local_part} {SRS_SECRET}}
-    data =      $srs_recipient
-  
-  inbound_srs_failure:
-    driver =    redirect
-    senders =   :
-    domains =   +my_domains
-    # detect inbound bounces which look SRS'd but are invalid
-    condition = ${if inbound_srs {$local_part} {}}
-    allow_fail
-    data =      :fail: Invalid SRS recipient address
-
-  #... further routers here
-
-  
-  # transport; should look like the non-forward outbound
-  # one, plus the max_rcpt and return_path options
-  remote_forwarded_smtp:
-    driver =              smtp
-    # modify the envelope from, for mails that we forward
-    max_rcpt =            1
-    return_path =         ${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
-
-
-
-
 SRS (Sender Rewriting Scheme) Support (using libsrs_alt)
 --------------------------------------------------------------
-See also above, for an alternative native support implementation.
+See also the main docs, for an alternative native support implementation.
 
-Exim  currently  includes SRS  support  via Miles  Wilton's
+Exim can be built with SRS support using Miles  Wilton's
 libsrs_alt library. The current version of the supported
 library is 0.5, there are reports of 1.0 working.
 
@@ -382,6 +312,10 @@ to proceed. You need to set
 EXPERIMENTAL_SRS_ALT=yes
 
 in your Local/Makefile.
+
+The built-in support, included by SUPPORT_SRS,
+shuold *not* be enabled if you wish to use the libsrs_alt
+version.
 
 The following main-section options become available:
 	srs_config		string

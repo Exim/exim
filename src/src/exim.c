@@ -979,6 +979,9 @@ g = string_cat(NULL, US"Support for:");
 #ifdef SUPPORT_SPF
   g = string_cat(g, US" SPF");
 #endif
+#if defined(SUPPORT_SRS)
+  g = string_cat(g, US" SRS");
+#endif
 #ifdef TCP_FASTOPEN
   tcp_init();
   if (f.tcp_fastopen_ok) g = string_cat(g, US" TCP_Fast_Open");
@@ -1001,7 +1004,7 @@ g = string_cat(NULL, US"Support for:");
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
-#if defined(EXPERIMENTAL_SRS_ALT) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT)
   g = string_cat(g, US" Experimental_SRS");
 #endif
 #ifdef EXPERIMENTAL_TLS_RESUME

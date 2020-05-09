@@ -131,7 +131,7 @@ static uschar *item_table[] = {
   US"run",
   US"sg",
   US"sort",
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   US"srs_encode",
 #endif
   US"substr",
@@ -166,7 +166,7 @@ enum {
   EITEM_RUN,
   EITEM_SG,
   EITEM_SORT,
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   EITEM_SRS_ENCODE,
 #endif
   EITEM_SUBSTR,
@@ -334,7 +334,7 @@ static uschar *cond_table[] = {
   US"gei",
   US"gt",
   US"gti",
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   US"inbound_srs",
 #endif
   US"inlist",
@@ -387,7 +387,7 @@ enum {
   ECOND_STR_GEI,
   ECOND_STR_GT,
   ECOND_STR_GTI,
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   ECOND_INBOUND_SRS,
 #endif
   ECOND_INLIST,
@@ -758,7 +758,7 @@ static var_entry var_table[] = {
   { "srs_orig_recipient",  vtype_stringptr,   &srs_orig_recipient },
   { "srs_orig_sender",     vtype_stringptr,   &srs_orig_sender },
 #endif
-#if defined(EXPERIMENTAL_SRS_ALT) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT) || defined(SUPPORT_SRS)
   { "srs_recipient",       vtype_stringptr,   &srs_recipient },
 #endif
 #ifdef EXPERIMENTAL_SRS_ALT
@@ -2438,7 +2438,7 @@ else
 
 
 
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
 /* Do an hmac_md5.  The result is _not_ nul-terminated, and is sized as
 the smaller of a full hmac_md5 result (16 bytes) or the supplied output buffer.
 
@@ -2513,7 +2513,7 @@ for (int i = 0, j = len; i < MD5_HASHLEN; i++)
   }
 return;
 }
-#endif /*EXPERIMENTAL_SRS_NATIVE*/
+#endif /*SUPPORT_SRS*/
 
 
 /*************************************************
@@ -3443,7 +3443,7 @@ switch(cond_type = identify_operator(&s, &opname))
     return s;
     }
 
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   case ECOND_INBOUND_SRS:
     /* ${if inbound_srs {local_part}{secret}  {yes}{no}} */
     {
@@ -3535,7 +3535,7 @@ srs_result:
     if (yield) *yield = (boolvalue == testfor);
     return s;
     }
-#endif /*EXPERIMENTAL_SRS_NATIVE*/
+#endif /*SUPPORT_SRS*/
 
   /* Unknown condition */
 
@@ -6783,7 +6783,7 @@ while (*s != 0)
       continue;
       }
 
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
     case EITEM_SRS_ENCODE:
       /* ${srs_encode {secret} {return_path} {orig_domain}} */
       {
@@ -6837,7 +6837,7 @@ while (*s != 0)
       yield = string_cat(yield, sub[2]);
       continue;
       }
-#endif /*EXPERIMENTAL_SRS_NATIVE*/
+#endif /*SUPPORT_SRS*/
     }	/* EITEM_* switch */
 
   /* Control reaches here if the name is not recognized as one of the more

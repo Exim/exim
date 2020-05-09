@@ -1517,7 +1517,7 @@ uschar *srs_recipient          = NULL;
 uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
 #endif
-#ifdef EXPERIMENTAL_SRS_ALT
+#ifdef SUPPORT_SRS
 uschar *srs_recipient          = NULL;
 #endif
 int     string_datestamp_offset= -1;

@@ -1002,7 +1002,7 @@ extern uschar *srs_status;             /* SRS staus */
 extern BOOL    srs_usehash;            /* SRS use hash flag */
 extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
 #endif
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
 extern uschar *srs_recipient;          /* SRS recipient */
 #endif
 extern BOOL    strict_acl_vars;        /* ACL variables have to be set before being used */
