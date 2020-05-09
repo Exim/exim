@@ -2,6 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
+/* Copyright (c) The Exim Maintainers 2020 */
 /* Copyright (c) University of Cambridge 1995 - 2016 */
 /* See the file NOTICE for conditions of use and distribution. */
 
@@ -115,34 +116,34 @@ if (rc_read_config(RADIUS_CONFIG_FILE) != 0)
   *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
 
 else if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
-  *errptr = string_sprintf("RADIUS: can't read dictionary");
+  *errptr = US"RADIUS: can't read dictionary";
 
-else if (rc_avpair_add(&send, PW_USER_NAME, user, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add user name failed\n");
+else if (!rc_avpair_add(&send, PW_USER_NAME, user, 0))
+  *errptr = US"RADIUS: add user name failed";
 
-else if (rc_avpair_add(&send, PW_USER_PASSWORD, CS radius_args, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add password failed\n");
+else if (!rc_avpair_add(&send, PW_USER_PASSWORD, CS radius_args, 0))
+  *errptr = US"RADIUS: add password failed");
 
-else if (rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add service type failed\n");
+else if (!rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0))
+  *errptr = US"RADIUS: add service type failed";
 
 #else  /* RADIUS_LIB_RADIUSCLIENT unset => RADIUS_LIB_RADIUSCLIENT2 */
 
-if ((h = rc_read_config(RADIUS_CONFIG_FILE)) == NULL)
+if (!(h = rc_read_config(RADIUS_CONFIG_FILE)))
   *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
 
 else if (rc_read_dictionary(h, rc_conf_str(h, "dictionary")) != 0)
-  *errptr = string_sprintf("RADIUS: can't read dictionary");
+  *errptr = US"RADIUS: can't read dictionary";
 
-else if (rc_avpair_add(h, &send, PW_USER_NAME, user, Ustrlen(user), 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add user name failed\n");
+else if (!rc_avpair_add(h, &send, PW_USER_NAME, user, Ustrlen(user), 0))
+  *errptr = US"RADIUS: add user name failed";
 
-else if (rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args,
-    Ustrlen(radius_args), 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add password failed\n");
+else if (!rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args,
+    Ustrlen(radius_args), 0))
+  *errptr = US"RADIUS: add password failed";
 
-else if (rc_avpair_add(h, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
-  *errptr = string_sprintf("RADIUS: add service type failed\n");
+else if (!rc_avpair_add(h, &send, PW_SERVICE_TYPE, &service, 0, 0))
+  *errptr = US"RADIUS: add service type failed";
 
 #endif  /* RADIUS_LIB_RADIUSCLIENT */
 
