@@ -792,7 +792,7 @@ extern uschar *prvscheck_result;       /* Set during prvscheck expansion item */
 extern const uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
 extern uschar *qualify_domain_sender;  /* Domain to qualify senders with */
 extern uschar *queue_domains;          /* Queue these domains */
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 extern BOOL    queue_fast_ramp;        /* 2-phase queue-run overlap */
 #endif
 extern BOOL    queue_list_requires_admin; /* TRUE if -bp requires admin */

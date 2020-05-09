@@ -262,7 +262,7 @@ static optionlist optionlist_config[] = {
   { "qualify_domain",           opt_stringptr,   {&qualify_domain_sender} },
   { "qualify_recipient",        opt_stringptr,   {&qualify_domain_recipient} },
   { "queue_domains",            opt_stringptr,   {&queue_domains} },
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
   { "queue_fast_ramp",          opt_bool,        {&queue_fast_ramp} },
 #endif
   { "queue_list_requires_admin",opt_bool,        {&queue_list_requires_admin} },

@@ -379,7 +379,7 @@ extern void    queue_check_only(void);
 extern unsigned queue_count(void);
 extern unsigned queue_count_cached(void);
 extern void    queue_list(int, uschar **, int);
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 extern void    queue_notify_daemon(const uschar * hostname);
 #endif
 extern void    queue_run(uschar *, uschar *, BOOL);

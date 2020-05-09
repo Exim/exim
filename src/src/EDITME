@@ -561,13 +561,16 @@ DISABLE_MAL_MKS=yes
 # DISABLE_DNSSEC=yes
 
 # To disable support for Events set DISABLE_EVENT to "yes"
-
 # DISABLE_EVENT=yes
 
 
 # Uncomment this line to include support for early pipelining, per
 # https://datatracker.ietf.org/doc/draft-harris-early-pipe/
 # SUPPORT_PIPE_CONNECT=yes
+
+
+# Uncomment the following to remove the fast-ramp two-phase-queue-run support
+# DISABLE_QUEUE_RAMP=yes
 
 
 #------------------------------------------------------------------------------
@@ -631,9 +634,6 @@ DISABLE_MAL_MKS=yes
 
 # Uncomment the following line to include support for TLS Resumption
 # EXPERIMENTAL_TLS_RESUME=yes
-
-# Uncomment the following to include the fast-ramp two-phase-queue-run support
-# EXPERIMENTAL_QUEUE_RAMP=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

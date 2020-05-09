@@ -946,6 +946,9 @@ g = string_cat(NULL, US"Support for:");
 #ifndef DISABLE_DKIM
   g = string_cat(g, US" DKIM");
 #endif
+#ifdef SUPPORT_DMARC
+  g = string_cat(g, US" DMARC");
+#endif
 #ifndef DISABLE_DNSSEC
   g = string_cat(g, US" DNSSEC");
 #endif
@@ -967,14 +970,14 @@ g = string_cat(NULL, US"Support for:");
 #ifdef SUPPORT_PROXY
   g = string_cat(g, US" PROXY");
 #endif
+#ifndef DISABLE_QUEUE_RAMP
+  g = string_cat(g, US" Experimental_Queue_Ramp");
+#endif
 #ifdef SUPPORT_SOCKS
   g = string_cat(g, US" SOCKS");
 #endif
 #ifdef SUPPORT_SPF
   g = string_cat(g, US" SPF");
-#endif
-#ifdef SUPPORT_DMARC
-  g = string_cat(g, US" DMARC");
 #endif
 #ifdef TCP_FASTOPEN
   tcp_init();
@@ -994,9 +997,6 @@ g = string_cat(NULL, US"Support for:");
 #endif
 #ifdef EXPERIMENTAL_LMDB
   g = string_cat(g, US" Experimental_LMDB");
-#endif
-#ifdef EXPERIMENTAL_QUEUE_RAMP
-  g = string_cat(g, US" Experimental_Queue_Ramp");
 #endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");

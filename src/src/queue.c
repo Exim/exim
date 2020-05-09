@@ -1531,7 +1531,7 @@ if (s)
 /******************************************************************************/
 /******************************************************************************/
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 void
 queue_notify_daemon(const uschar * msgid)
 {

@@ -382,7 +382,7 @@ BOOL    prod_requires_admin    = TRUE;
 BOOL    proxy_session          = FALSE;
 #endif
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 BOOL    queue_fast_ramp		= FALSE;
 #endif
 BOOL    queue_list_requires_admin = TRUE;

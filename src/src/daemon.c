@@ -1138,14 +1138,14 @@ for (struct cmsghdr * cp = CMSG_FIRSTHDR(&msg);
 buf[sz] = 0;
 switch (buf[0])
   {
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
   case NOTIFY_MSG_QRUN:
     /* this should be a message_id */
     DEBUG(D_queue_run)
       debug_printf("%s: qrunner trigger: %s\n", __FUNCTION__, buf+1);
     memcpy(queuerun_msgid, buf+1, MESSAGE_ID_LENGTH+1);
     return TRUE;
-#endif	/*EXPERIMENTAL_QUEUE_RAMP*/
+#endif
 
   case NOTIFY_QUEUE_SIZE_REQ:
     {
@@ -2120,7 +2120,7 @@ for (;;)
     else
       {
       DEBUG(D_any) debug_printf("%s received\n",
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 	*queuerun_msgid ? "qrun notification" :
 #endif
 	"SIGALRM");
@@ -2165,7 +2165,7 @@ for (;;)
             *p++ = '-';
             *p++ = 'q';
             if (  f.queue_2stage
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 	       && !*queuerun_msgid
 #endif
 	       ) *p++ = 'q';
@@ -2177,7 +2177,7 @@ for (;;)
 	    extra[0] = *queue_name
 	      ? string_sprintf("%sG%s", opt, queue_name) : opt;
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 	    if (*queuerun_msgid)
 	      {
 	      log_write(0, LOG_MAIN, "notify triggered queue run");
@@ -2212,7 +2212,7 @@ for (;;)
 
           /* No need to re-exec; SIGALRM remains set to the default handler */
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 	  if (*queuerun_msgid)
 	    {
 	    log_write(0, LOG_MAIN, "notify triggered queue run");
@@ -2248,7 +2248,7 @@ for (;;)
       /* Reset the alarm clock */
 
       sigalrm_seen = FALSE;
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
       if (*queuerun_msgid)
 	*queuerun_msgid = 0;
       else
