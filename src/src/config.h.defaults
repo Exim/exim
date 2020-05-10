@@ -54,6 +54,7 @@ Do not put spaces between # and the 'define'.
 #define DISABLE_PRDR
 #define DISABLE_QUEUE_RAMP
 #define DISABLE_TLS
+#define DISABLE_TLS_RESUME
 #define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
@@ -206,7 +207,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_LMDB
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_SRS_ALT
-#define EXPERIMENTAL_TLS_RESUME
 
 
 /* For developers */

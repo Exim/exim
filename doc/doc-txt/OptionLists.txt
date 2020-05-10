@@ -602,6 +602,8 @@ tls_privatekey                       string*         unset         main         
 tls_remember_emstp                   boolean         false         main              4.21
 tls_require_ciphers                  string*         unset         smtp              4.00 replaces tls_verify_ciphers
                                      string*         unset         main              4.33
+tls_resumption_hosts                 host list*      unset         main              4.95
+                                     host list*      unset         smtp              4.95
 tls_sni                              string*         unset         main              4.80
 tls_tempfail_tryclear                boolean         true          smtp              4.05
 tls_try_verify_hosts                 host list       unset         main              4.00

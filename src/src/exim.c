@@ -931,6 +931,9 @@ g = string_cat(NULL, US"Support for:");
 #ifdef USE_OPENSSL
   g = string_cat(g, US" OpenSSL");
 #endif
+#ifndef DISABLE_TLS_RESUME
+  g = string_cat(g, US" TLS_resume");
+#endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   g = string_cat(g, US" translate_ip_address");
 #endif
@@ -1006,9 +1009,6 @@ g = string_cat(NULL, US"Support for:");
 #endif
 #if defined(EXPERIMENTAL_SRS_ALT)
   g = string_cat(g, US" Experimental_SRS");
-#endif
-#ifdef EXPERIMENTAL_TLS_RESUME
-  g = string_cat(g, US" Experimental_TLS_resume");
 #endif
 g = string_cat(g, US"\n");
 

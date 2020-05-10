@@ -127,7 +127,7 @@ optionlist smtp_transport_options[] = {
   { "tls_dh_min_bits",      opt_int,	   LOFF(tls_dh_min_bits) },
   { "tls_privatekey",       opt_stringptr, LOFF(tls_privatekey) },
   { "tls_require_ciphers",  opt_stringptr, LOFF(tls_require_ciphers) },
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   { "tls_resumption_hosts", opt_stringptr, LOFF(tls_resumption_hosts) },
 # endif
   { "tls_sni",              opt_stringptr, LOFF(tls_sni) },
@@ -233,7 +233,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_verify_certificates =	US"system",
   .tls_dh_min_bits =		EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
   .tls_tempfail_tryclear =	TRUE,
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   .tls_resumption_hosts =	NULL,
 # endif
   .tls_verify_hosts =		NULL,
@@ -1970,7 +1970,7 @@ tls_out.peerdn = NULL;
 tls_out.sni = NULL;
 #endif
 tls_out.ocsp = OCSP_NOT_REQ;
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_out.resumption = 0;
 #endif
 tls_out.ver = NULL;

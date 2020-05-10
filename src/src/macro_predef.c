@@ -204,7 +204,7 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_HAVE_DSN_INFO");
 #endif
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   builtin_macro_create(US"_HAVE_TLS_RESUME");
 #endif
 

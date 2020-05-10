@@ -13766,6 +13766,17 @@ the value of the Distinguished Name of the certificate is made available in the
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
 
+
+.new
+.vitem &$tls_in_resumption$& &&&
+       &$tls_out_resumption$&
+.vindex &$tls_in_resumption$&
+.vindex &$tls_out_resumption$&
+.cindex TLS resumption
+Observability for TLS session resumption.  See &<<SECTresumption>>& for details.
+.wen
+
+
 .vitem &$tls_in_sni$&
 .vindex "&$tls_in_sni$&"
 .vindex "&$tls_sni$&"
@@ -18272,6 +18283,14 @@ permitted cipher suites. The OpenSSL and GnuTLS libraries handle cipher control
 in somewhat different ways. If GnuTLS is being used, the client controls the
 preference order of the available ciphers. Details are given in sections
 &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
+
+
+.new
+.option tls_resumption_hosts main "host list&!!" unset
+.cindex TLS resumption
+This option controls which connections to offer the TLS resumption feature.
+See &<<SECTresumption>>& for details.
+.wen
 
 
 .option tls_try_verify_hosts main "host list&!!" unset
@@ -25594,6 +25613,14 @@ is used in different ways by OpenSSL and GnuTLS (see sections
 ciphers is a preference order.
 
 
+.new
+.option tls_resumption_hosts smtp "host list&!!" unset
+.cindex TLS resumption
+This option controls which connections to use the TLS resumption feature.
+See &<<SECTresumption>>& for details.
+.wen
+
+
 
 .option tls_sni smtp string&!! unset
 .cindex "TLS" "Server Name Indication"
@@ -29423,6 +29450,100 @@ Open-source PKI book, available online at
 .ecindex IIDencsmtp1
 .ecindex IIDencsmtp2
 
+
+.new
+.section "TLS Resumption" "SECTresumption"
+.cindex TLS resumption
+TLS Session Resumption for TLS 1.2 and TLS 1.3 connections can be used (defined
+in RFC 5077 for 1.2).  The support for this requires GnuTLS 3.6.3 or OpenSSL 1.1.1
+(or later).
+
+Session resumption (this is the "stateless" variant) involves the server sending
+a "session ticket" to the client on one connection, which can be stored by the
+client and used for a later session.  The ticket contains sufficient state for
+the server to reconstruct the TLS session, avoiding some expensive crypto
+calculation and one full packet roundtrip time.
+
+.ilist
+Operational cost/benefit:
+
+ The extra data being transmitted costs a minor amount, and the client has
+ extra costs in storing and retrieving the data.
+
+ In the Exim/Gnutls implementation the extra cost on an initial connection
+ which is TLS1.2 over a loopback path is about 6ms on 2017-laptop class hardware.
+ The saved cost on a subsequent connection is about 4ms; three or more
+ connections become a net win.  On longer network paths, two or more
+ connections will have an average lower startup time thanks to the one
+ saved packet roundtrip.  TLS1.3 will save the crypto cpu costs but not any
+ packet roundtrips.
+
+.cindex "hints database" tls
+ Since a new hints DB is used on the TLS client,
+ the hints DB maintenance should be updated to additionally handle "tls".
+
+.next
+Security aspects:
+
+ The session ticket is encrypted, but is obviously an additional security
+ vulnarability surface.  An attacker able to decrypt it would have access
+ all connections using the resumed session.
+ The session ticket encryption key is not committed to storage by the server
+ and is rotated regularly (OpenSSL: 1hr, and one previous key is used for
+ overlap; GnuTLS 6hr but does not specify any overlap).
+ Tickets have limited lifetime (2hr, and new ones issued after 1hr under
+ OpenSSL.  GnuTLS 2hr, appears to not do overlap).
+
+ There is a question-mark over the security of the Diffie-Helman parameters
+ used for session negotiation.
+
+.next
+Observability:
+
+ The &%log_selector%& "tls_resumption" appends an asterisk to the tls_cipher "X="
+ element.
+
+ The variables &$tls_in_resumption$& and &$tls_out_resumption$&
+ have bits 0-4 indicating respectively
+ support built, client requested ticket, client offered session,
+ server issued ticket, resume used.  A suitable decode list is provided
+ in the builtin macro _RESUME_DECODE for in &%listextract%& expansions.
+
+.next:
+Control:
+
+The &%tls_resumption_hosts%& main option specifies a hostlist for which
+exim, operating as a server, will offer resumption to clients.
+Current best practice is to not offer the feature to MUA connection.
+Commonly this can be done like this:
+.code
+tls_resumption_hosts = ${if inlist {$received_port}{587:465} {:}{*}}
+.endd
+If the peer host matches the list after expansion then resumption
+is offered and/or accepted.
+
+The &%tls_resumption_hosts% smtp transport option performs the
+equivalent function for operation as a client.
+If the peer host matches the list after expansion then resumption
+is attempted (if a stored session is available) or the information
+stored (if supplied by the peer).
+
+
+.next
+Issues:
+
+ In a resumed session:
+.ilist
+  The variables &$tls_{in,out}_cipher$& will have values different
+ to the original (under GnuTLS).
+.next
+  The variables &$tls_{in,out}_ocsp$& will be "not requested" or "no response",
+ and the &%hosts_require_ocsp%& smtp trasnport option will fail.
+. XXX need to do something with that hosts_require_ocsp
+.endlist
+
+.endlist
+.wen
 
 
 .section DANE "SECDANE"
@@ -38043,6 +38164,7 @@ selection marked by asterisks:
 &`*tls_certificate_verified   `&  certificate verification status
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
+&` tls_resumption             `&  append * to cipher field
 &` tls_sni                    `&  TLS SNI on <= lines
 &` unknown_in_list            `&  DNS lookup failed in list match
 
@@ -38443,6 +38565,14 @@ connection, the cipher suite used is added to the log line, preceded by X=.
 &%tls_peerdn%&: When a message is sent or received over an encrypted
 connection, and a certificate is supplied by the remote host, the peer DN is
 added to the log line, preceded by DN=.
+.next
+.cindex "log" "TLS resumption"
+.cindex "TLS" "logging session resumption"
+.new
+&%tls_resumption%&: When a message is sent or received over an encrypted
+connection and the TLS session resumed one used on a previous TCP connection,
+an asterisk is appended to the X= cipher field in the log line.
+.wen
 .next
 .cindex "log" "TLS SNI"
 .cindex "TLS" "logging SNI"
@@ -38988,6 +39118,10 @@ for remote hosts
 &'callout'&: the callout cache
 .next
 &'ratelimit'&: the data for implementing the ratelimit ACL condition
+.next
+.new
+&'tls'&: TLS session resumption data
+.wen
 .next
 &'misc'&: other hints data
 .endlist

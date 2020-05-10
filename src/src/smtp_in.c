@@ -1801,7 +1801,7 @@ s_tlslog(gstring * g)
 if (LOGGING(tls_cipher) && tls_in.cipher)
   {
   g = string_append(g, 2, US" X=", tls_in.cipher);
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   if (LOGGING(tls_resumption) && tls_in.resumption & RESUME_USED)
     g = string_catn(g, US"*", 1);
 #endif

@@ -111,7 +111,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 # endif
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 # if GNUTLS_VERSION_NUMBER < 0x030603
 #  error GNUTLS version too early for session-resumption
 # endif
@@ -131,7 +131,7 @@ require current GnuTLS, then we'll drop support for the ancient libraries).
 void
 options_tls(void)
 {
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
 # endif
 # ifdef EXIM_HAVE_TLS1_3
@@ -266,7 +266,7 @@ static BOOL gnutls_buggy_ocsp = FALSE;
 static BOOL exim_testharness_disable_ocsp_validity_check = FALSE;
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 static gnutls_datum_t server_sessticket_key;
 #endif
 
@@ -326,7 +326,7 @@ static void exim_gnutls_logger_cb(int level, const char *message);
 
 static int exim_sni_handling_cb(gnutls_session_t session);
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 static int
 tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
   unsigned incoming, const gnutls_datum_t * msg);
@@ -337,7 +337,7 @@ tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
 void
 tls_daemon_init(void)
 {
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 /* We are dependent on the GnuTLS implementation of the Session Ticket
 encryption; both the strength and the key rotation period.  We hope that
 the strength at least matches that of the ciphersuite (but GnuTLS does not
@@ -1003,7 +1003,7 @@ So we need to spot the Certificate handshake message, parse it and spot any stat
 This is different to tls1.2 - where it is a separate record (wireshake term) / handshake message (gnutls term).
 */
 
-#if defined(EXPERIMENTAL_TLS_RESUME) || defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
+#if !defined(DISABLE_TLS_RESUME) || defined(SUPPORT_GNUTLS_EXT_RAW_PARSE)
 /* Callback for certificate-status, on server. We sent stapled OCSP. */
 static int
 tls_server_certstatus_cb(gnutls_session_t session, unsigned int htype,
@@ -1035,7 +1035,7 @@ switch (htype)
 # endif
   case GNUTLS_HANDSHAKE_CERTIFICATE_STATUS:
     return tls_server_certstatus_cb(sess, htype, when, incoming, msg);
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   case GNUTLS_HANDSHAKE_NEW_SESSION_TICKET:
     return tls_server_ticket_cb(sess, htype, when, incoming, msg);
 # endif
@@ -2328,7 +2328,7 @@ else
 }
 
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 static int
 tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
   unsigned incoming, const gnutls_datum_t * msg)
@@ -2442,7 +2442,7 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a server\n");
 #endif
   }
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_server_resume_prehandshake(state);
 #endif
 
@@ -2550,7 +2550,7 @@ if (gnutls_session_get_flags(state->session) & GNUTLS_SFLAGS_EXT_MASTER_SECRET)
   tls_in.ext_master_secret = TRUE;
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_server_resume_posthandshake(state);
 #endif
 
@@ -2683,7 +2683,7 @@ return TRUE;
 
 
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 /* On the client, get any stashed session for the given IP from hints db
 and apply it to the ssl-connection for attempted resumption.  Although
 there is a gnutls_session_ticket_enable_client() interface it is
@@ -2816,7 +2816,7 @@ if (gnutls_session_is_resumed(state->session))
 
 tls_save_session(tlsp, state->session, host);
 }
-#endif	/* EXPERIMENTAL_TLS_RESUME */
+#endif	/* !DISABLE_TLS_RESUME */
 
 
 /*************************************************
@@ -2970,7 +2970,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_client_resume_prehandshake(state, tlsp, host, ob);
 #endif
 
@@ -3070,7 +3070,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_client_resume_posthandshake(state, tlsp, host);
 #endif
 

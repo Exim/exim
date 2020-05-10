@@ -137,7 +137,7 @@ uschar *tls_ocsp_file          = NULL;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 uschar *tls_resumption_hosts   = NULL;
 # endif
 uschar *tls_try_verify_hosts   = NULL;

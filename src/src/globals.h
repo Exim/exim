@@ -107,7 +107,7 @@ typedef struct {
     OCSP_FAILED,		/* verify failed */
     OCSP_VFIED			/* verified */
     }     ocsp;		      /* Stapled OCSP status */
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   unsigned resumption;		/* Session resumption */
   BOOL	  host_resumable:1;
   BOOL	  ticket_received:1;
@@ -134,7 +134,7 @@ extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 extern uschar *tls_resumption_hosts;   /* TLS session resumption */
 # endif
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */

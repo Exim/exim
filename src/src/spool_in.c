@@ -683,7 +683,7 @@ for (;;)
 	tls_in.sni = string_unprinting(string_copy_taint(q+4, tainted));
       else if (Ustrncmp(q, "ocsp", 4) == 0)
 	tls_in.ocsp = q[5] - '0';
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
       else if (Ustrncmp(q, "resumption", 10) == 0)
 	tls_in.resumption = q[11] - 'A';
 # endif

@@ -817,7 +817,7 @@ d_tlslog(gstring * g, address_item * addr)
 if (LOGGING(tls_cipher) && addr->cipher)
   {
   g = string_append(g, 2, US" X=", addr->cipher);
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   if (LOGGING(tls_resumption) && testflag(addr, af_tls_resume))
     g = string_catn(g, US"*", 1);
 #endif
@@ -4773,7 +4773,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #ifdef SUPPORT_DANE
       if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
 #endif
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
       if (tls_out.resumption & RESUME_USED) setflag(addr, af_tls_resume);
 # endif
 

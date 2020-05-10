@@ -15,6 +15,9 @@ Version 4.95
  2. The native SRS support, previously experimental, is now supported. It is
     not built unless specified in the Local/Makefile.
 
+ 3. TLS resumption support, previously experimental, is now supported and
+    included in default builds.
+
 
 Version 4.94
 ------------

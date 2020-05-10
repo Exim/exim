@@ -277,6 +277,9 @@ SPOOL_DIRECTORY=/var/spool/exim
 # specified in INCLUDE.
 
 
+# Uncomment the following line to remove support for TLS Resumption
+# DISABLE_TLS_RESUME=yes
+
 
 ###############################################################################
 #           THESE ARE THINGS YOU PROBABLY WANT TO SPECIFY                     #
@@ -632,9 +635,6 @@ DISABLE_MAL_MKS=yes
 
 # Uncomment the following line to add queuefile transport support
 # EXPERIMENTAL_QUEUEFILE=yes
-
-# Uncomment the following line to include support for TLS Resumption
-# EXPERIMENTAL_TLS_RESUME=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

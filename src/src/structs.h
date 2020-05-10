@@ -644,7 +644,7 @@ typedef struct address_item {
 #ifdef SUPPORT_I18N
     BOOL af_utf8_downcvt:1;		/* downconvert was done for delivery */
 #endif
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
     BOOL af_tls_resume:1;		/* TLS used a resumed session */
 #endif
   } flags;
