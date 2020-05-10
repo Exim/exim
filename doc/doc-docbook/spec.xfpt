@@ -29462,7 +29462,7 @@ Session resumption (this is the "stateless" variant) involves the server sending
 a "session ticket" to the client on one connection, which can be stored by the
 client and used for a later session.  The ticket contains sufficient state for
 the server to reconstruct the TLS session, avoiding some expensive crypto
-calculation and one full packet roundtrip time.
+calculation and (on TLS1.2) one full packet roundtrip time.
 
 .ilist
 Operational cost/benefit:
@@ -29509,7 +29509,7 @@ Observability:
  server issued ticket, resume used.  A suitable decode list is provided
  in the builtin macro _RESUME_DECODE for in &%listextract%& expansions.
 
-.next:
+.next
 Control:
 
 The &%tls_resumption_hosts%& main option specifies a hostlist for which
