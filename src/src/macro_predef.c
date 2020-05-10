@@ -180,9 +180,6 @@ due to conflicts with other common macros. */
 #ifdef TCP_FASTOPEN
   builtin_macro_create(US"_HAVE_TCP_FASTOPEN");
 #endif
-#ifdef EXPERIMENTAL_LMDB
-  builtin_macro_create(US"_HAVE_LMDB");
-#endif
 #ifdef SUPPORT_SPF
   builtin_macro_create(US"_HAVE_SPF");
 #endif
@@ -225,6 +222,10 @@ due to conflicts with other common macros. */
 #endif
 #ifdef LOOKUP_IBASE
   builtin_macro_create(US"_HAVE_LOOKUP_IBASE");
+#endif
+#ifdef LOOKUP_LMDB
+  builtin_macro_create(US"_HAVE_LMDB");
+  builtin_macro_create(US"_HAVE_LOOKUP_LMDB");
 #endif
 #ifdef LOOKUP_LDAP
   builtin_macro_create(US"_HAVE_LOOKUP_JSON");

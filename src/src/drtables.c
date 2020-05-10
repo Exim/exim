@@ -602,7 +602,7 @@ extern lookup_module_info pgsql_lookup_module_info;
 #if defined(LOOKUP_REDIS) && LOOKUP_REDIS!=2
 extern lookup_module_info redis_lookup_module_info;
 #endif
-#if defined(EXPERIMENTAL_LMDB)
+#if defined(LOOKUP_LMDB)
 extern lookup_module_info lmdb_lookup_module_info;
 #endif
 #if defined(SUPPORT_SPF)
@@ -698,7 +698,7 @@ addlookupmodule(NULL, &pgsql_lookup_module_info);
 addlookupmodule(NULL, &redis_lookup_module_info);
 #endif
 
-#ifdef EXPERIMENTAL_LMDB
+#ifdef LOOKUP_LMDB
 addlookupmodule(NULL, &lmdb_lookup_module_info);
 #endif
 

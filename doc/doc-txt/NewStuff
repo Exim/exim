@@ -18,6 +18,9 @@ Version 4.95
  3. TLS resumption support, previously experimental, is now supported and
     included in default builds.
 
+ 4. Single-key LMDB lookups, previously experimental, are now supported.
+    The support is not built unless specified in the Local/Makefile.
+
 
 Version 4.94
 ------------

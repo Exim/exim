@@ -99,6 +99,7 @@ Do not put spaces between # and the 'define'.
 #define LOOKUP_IBASE
 #define LOOKUP_JSON
 #define LOOKUP_LDAP
+#define LOOKUP_LMDB
 #define LOOKUP_LSEARCH
 #define LOOKUP_MYSQL
 #define LOOKUP_NIS
@@ -204,7 +205,6 @@ Do not put spaces between # and the 'define'.
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 #define EXPERIMENTAL_DSN_INFO
-#define EXPERIMENTAL_LMDB
 #define EXPERIMENTAL_QUEUEFILE
 #define EXPERIMENTAL_SRS_ALT
 

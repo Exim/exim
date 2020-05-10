@@ -415,6 +415,8 @@ LOOKUP_DNSDB=yes
 # LOOKUP_IBASE=yes
 # LOOKUP_JSON=yes
 # LOOKUP_LDAP=yes
+# LOOKUP_LMDB=yes
+
 # LOOKUP_MYSQL=yes
 # LOOKUP_MYSQL_PC=mariadb
 # LOOKUP_NIS=yes
@@ -491,7 +493,8 @@ SUPPORT_DANE=yes
 # You do not need to use this for any lookup information added via pkg-config.
 
 # LOOKUP_INCLUDE=-I /usr/local/ldap/include -I /usr/local/mysql/include -I /usr/local/pgsql/include
-# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3
+# LOOKUP_INCLUDE +=-I /usr/local/include
+# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
 
 
 #------------------------------------------------------------------------------
@@ -625,13 +628,6 @@ DISABLE_MAL_MKS=yes
 
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes
-
-# Uncomment the following to add LMDB lookup support
-# You need to have LMDB installed on your system (https://github.com/LMDB/lmdb)
-# Depending on where it is installed you may have to edit the CFLAGS and LDFLAGS lines.
-# EXPERIMENTAL_LMDB=yes
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -llmdb
 
 # Uncomment the following line to add queuefile transport support
 # EXPERIMENTAL_QUEUEFILE=yes

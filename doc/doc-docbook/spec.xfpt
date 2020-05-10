@@ -6858,6 +6858,29 @@ The final resulting element can be a simple JSON type or a JSON object
 or array; for the latter two a string-representation of the JSON
 is returned.
 For elements of type string, the returned value is de-quoted.
+
+
+.new
+.next
+.cindex LMDB
+.cindex lookup lmdb
+.cindex database lmdb
+&(lmdb)&: The given file is an LMDB database.
+LMDB is a memory-mapped key-value store,
+with API modeled loosely on that of BerkeleyDB.
+See &url(https://symas.com/products/lightning-memory-mapped-database/)
+for the feature set and operation modes.
+
+Exim provides read-only access via the LMDB C library.
+The library can be obtained from &url(https://github.com/LMDB/lmdb)
+or your operating system package repository.
+To enable LMDB support in Exim set LOOKUP_LMDB=yes in &_Local/Makefile_&.
+
+You will need to separately create the LMDB database file,
+possibly using the &"mdb_load"& utility.
+.wen
+
+
 .next
 .cindex "linear search"
 .cindex "lookup" "lsearch"

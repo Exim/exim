@@ -1001,9 +1001,6 @@ g = string_cat(NULL, US"Support for:");
 #ifdef EXPERIMENTAL_DSN_INFO
   g = string_cat(g, US" Experimental_DSN_info");
 #endif
-#ifdef EXPERIMENTAL_LMDB
-  g = string_cat(g, US" Experimental_LMDB");
-#endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
@@ -1037,7 +1034,7 @@ g = string_cat(g, US"Lookups (built-in):");
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
   g = string_cat(g, US" ldap ldapdn ldapm");
 #endif
-#ifdef EXPERIMENTAL_LMDB
+#ifdef LOOKUP_LMDB
   g = string_cat(g, US" lmdb");
 #endif
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
