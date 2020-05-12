@@ -5379,7 +5379,8 @@ Returns:       nothing
 static void
 print_dsn_diagnostic_code(const address_item *addr, FILE *f)
 {
-uschar *s = testflag(addr, af_pass_message) ? addr->message : NULL;
+uschar * s = testflag(addr, af_pass_message) ? addr->message : NULL;
+unsigned cnt;
 
 /* af_pass_message and addr->message set ? print remote host answer */
 if (s)
@@ -5391,19 +5392,32 @@ if (s)
   if (!(s = Ustrstr(addr->message, ": ")))
     return;				/* not found, bail out */
   s += 2;  /* skip ": " */
-  fprintf(f, "Diagnostic-Code: smtp; ");
+  cnt = fprintf(f, "Diagnostic-Code: smtp; ");
   }
 /* no message available. do nothing */
 else return;
 
 while (*s)
+  {
+  if (cnt > 950)	/* RFC line length limit: 998 */
+    {
+    DEBUG(D_deliver) debug_printf("print_dsn_diagnostic_code() truncated line\n");
+    fputs("[truncated]", f);
+    break;
+    }
+
   if (*s == '\\' && s[1] == 'n')
     {
     fputs("\n ", f);    /* as defined in RFC 3461 */
     s += 2;
+    cnt += 2;
     }
   else
+    {
     fputc(*s++, f);
+    cnt++;
+    }
+  }
 
 fputc('\n', f);
 }
@@ -7809,11 +7823,11 @@ wording. */
 	    fprintf(fp, "Remote-MTA: X-ip; [%s]%s\n", hu->address, p);
 	    }
 	  if ((s = addr->smtp_greeting) && *s)
-	    fprintf(fp, "X-Remote-MTA-smtp-greeting: X-str; %s\n", s);
+	    fprintf(fp, "X-Remote-MTA-smtp-greeting: X-str; %.900s\n", s);
 	  if ((s = addr->helo_response) && *s)
-	    fprintf(fp, "X-Remote-MTA-helo-response: X-str; %s\n", s);
+	    fprintf(fp, "X-Remote-MTA-helo-response: X-str; %.900s\n", s);
 	  if ((s = addr->message) && *s)
-	    fprintf(fp, "X-Exim-Diagnostic: X-str; %s\n", s);
+	    fprintf(fp, "X-Exim-Diagnostic: X-str; %.900s\n", s);
 	  }
 #endif
 	  print_dsn_diagnostic_code(addr, fp);

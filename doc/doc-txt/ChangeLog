@@ -112,6 +112,10 @@ JH/41 Bug 2571: Fix SPA authenticator.  Running as a server, an offset supplied
       being used.  A malicious client could thus cause an out-of-bounds read and
       possibly gain authentication.  Fix by adding the check.
 
+JH/43 Fix possible long line in DSN.  Previously when a very long SMTP error
+      response was received it would be used unchecked in a fail-DSN, violating
+      standards on line-length limits.  Truncate if needed.
+
 
 Exim version 4.93
 -----------------
