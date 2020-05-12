@@ -14805,7 +14805,7 @@ See also the &'Policy controls'& section above.
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
 .row &%queue_domains%&               "no immediate delivery for these"
-.row &%queue_fast ramp%&             "parallel delivery with 2-phase queue run"
+.row &%queue_fast_ramp%&             "parallel delivery with 2-phase queue run"
 .row &%queue_only%&                  "no immediate delivery at all"
 .row &%queue_only_file%&             "no immediate delivery if file exists"
 .row &%queue_only_load%&             "no immediate delivery if load is high"
