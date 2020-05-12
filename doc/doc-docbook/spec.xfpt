@@ -4518,6 +4518,7 @@ appear in the correct order. Each flag is described in a separate item below.
 .cindex "queue" "routing"
 .cindex "routing" "whole queue before delivery"
 .cindex "first pass routing"
+.cindex "queue runner" "two phase"
 An option starting with &%-qq%& requests a two-stage queue run. In the first
 stage, the queue is scanned as if the &%queue_smtp_domains%& option matched
 every domain. Addresses are routed, local deliveries happen, but no remote
@@ -4525,6 +4526,10 @@ transports are run.
 
 .new
 Performance will be best if the &%queue_run_in_order%& option is false.
+If that is so and the &%queue_fast_ramp%& option is true then
+in the first phase of the run,
+once a threshold number of messages are routed for a given host,
+a delivery process is forked in parallel with the rest of the scan.
 .wen
 
 .cindex "hints database" "remembering routing"
@@ -14800,6 +14805,7 @@ See also the &'Policy controls'& section above.
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
 .row &%queue_domains%&               "no immediate delivery for these"
+.row &%queue_fast ramp%&             "parallel delivery with 2-phase queue run"
 .row &%queue_only%&                  "no immediate delivery at all"
 .row &%queue_only_file%&             "no immediate delivery if file exists"
 .row &%queue_only_load%&             "no immediate delivery if load is high"
@@ -16974,6 +16980,17 @@ This option lists domains for which immediate delivery is not required.
 A delivery process is started whenever a message is received, but only those
 domains that do not match are processed. All other deliveries wait until the
 next queue run. See also &%hold_domains%& and &%queue_smtp_domains%&.
+
+
+.new
+.option queue_fast_ramp main boolean false
+.cindex "queue runner" "two phase"
+.cindex "queue" "double scanning"
+If set to true, two-phase queue runs, initiated using &%-qq%& on the
+command line, may start parallel delivery processes during their first
+phase.  This will be done when a threshold number of messages have been
+routed for a single host.
+.wen
 
 
 .option queue_list_requires_admin main boolean true
@@ -29545,7 +29562,7 @@ tls_resumption_hosts = ${if inlist {$received_port}{587:465} {:}{*}}
 If the peer host matches the list after expansion then resumption
 is offered and/or accepted.
 
-The &%tls_resumption_hosts% smtp transport option performs the
+The &%tls_resumption_hosts%& smtp transport option performs the
 equivalent function for operation as a client.
 If the peer host matches the list after expansion then resumption
 is attempted (if a stored session is available) or the information

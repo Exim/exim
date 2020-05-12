@@ -443,6 +443,7 @@ qualify_recipient                    string          +             main
 qualify_single                       boolean         true          dnslookup         4.00
 query                                string*         +             iplookup          4.00
 queue_domains                        domain list     unset         main              4.00
+queue_fasst_ramp                     boolean         false         main              4.95
 queue_list_requires_admin            boolean         true          main              1.95
 queue_only                           boolean         false         main
 queue_only_file                      string          unset         main              2.05
