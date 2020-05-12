@@ -199,6 +199,10 @@ JH/42 Internationalisation: change the default for downconversion in the smtp
       transport.  The change does mean that addresses needing conversion will
       be converted when previously a delivery failure would occur.
 
+JH/43 Fix possible long line in DSN.  Previously when a very long SMTP error
+      response was received it would be used unchecked in a fail-DSN, violating
+      standards on line-length limits.  Truncate if needed.
+
 
 Exim version 4.93
 -----------------
