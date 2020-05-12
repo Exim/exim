@@ -507,8 +507,8 @@ acl_check_rcpt:
   # examples of how you can get Exim to perform a DNS black list lookup at this
   # point. The first one denies, whereas the second just warns.
   #
-  # deny    message       = rejected because $sender_host_address is in a black list at $dnslist_domain\n$dnslist_text
-  #         dnslists      = black.list.example
+  # deny    dnslists      = black.list.example
+  #         message       = rejected because $sender_host_address is in a black list at $dnslist_domain\n$dnslist_text
   #
   # warn    dnslists      = black.list.example
   #         add_header    = X-Warning: $sender_host_address is in a black list at $dnslist_domain
@@ -578,9 +578,9 @@ acl_check_data:
   # Deny if the message contains an overlong line.  Per the standards
   # we should never receive one such via SMTP.
   #
-  deny    message    = maximum allowed line length is 998 octets, \
+  deny    condition  = ${if > {$max_received_linelength}{998}}
+          message    = maximum allowed line length is 998 octets, \
                        got $max_received_linelength
-          condition  = ${if > {$max_received_linelength}{998}}
 
   # Deny if the headers contain badly-formed addresses.
   #

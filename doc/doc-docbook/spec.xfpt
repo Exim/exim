@@ -5905,13 +5905,13 @@ messages that are submitted by SMTP from local processes using the standard
 input and output (that is, not using TCP/IP). A number of MUAs operate in this
 manner.
 .code
-deny    message       = Restricted characters in address
-        domains       = +local_domains
+deny    domains       = +local_domains
         local_parts   = ^[.] : ^.*[@%!/|]
+        message       = Restricted characters in address
 
-deny    message       = Restricted characters in address
-        domains       = !+local_domains
+deny    domains       = !+local_domains
         local_parts   = ^[./|] : ^.*[@%!] : ^.*/\\.\\./
+        message       = Restricted characters in address
 .endd
 These statements are concerned with local parts that contain any of the
 characters &"@"&, &"%"&, &"!"&, &"/"&, &"|"&, or dots in unusual places.
@@ -6015,10 +6015,10 @@ require verify = recipient
 This statement requires the recipient address to be verified; if verification
 fails, the address is rejected.
 .code
-# deny    message     = rejected because $sender_host_address \
+# deny    dnslists    = black.list.example
+#         message     = rejected because $sender_host_address \
 #                       is in a black list at $dnslist_domain\n\
 #                       $dnslist_text
-#         dnslists    = black.list.example
 #
 # warn    dnslists    = black.list.example
 #         add_header  = X-Warning: $sender_host_address is in \
@@ -10871,8 +10871,7 @@ a decimal representation of the answer (without &"K"&, &"M"& or &"G"&). For exam
 
 As a more realistic example, in an ACL you might have
 .code
-deny   message = Too many bad recipients
-       condition =                    \
+deny   condition =                    \
          ${if and {                   \
            {>{$rcpt_count}{10}}       \
            {                          \
@@ -10881,6 +10880,7 @@ deny   message = Too many bad recipients
              {${eval:$rcpt_count/2}}  \
            }                          \
          }{yes}{no}}
+       message = Too many bad recipients
 .endd
 The condition is true if there have been more than 10 RCPT commands and
 fewer than half of them have resulted in a valid recipient.
@@ -12521,7 +12521,7 @@ result of the lookup is made available in the &$host_data$& variable. This
 allows you, for example, to do things like this:
 .code
 deny  hosts = net-lsearch;/some/file
-message = $host_data
+      message = $host_data
 .endd
 .vitem &$host_lookup_deferred$&
 .cindex "host name" "lookup, failure of"
@@ -12873,9 +12873,9 @@ header and the body).
 
 Here is an example of the use of this variable in a DATA ACL:
 .code
-deny message   = Too many lines in message header
-     condition = \
+deny condition = \
       ${if <{250}{${eval:$message_linecount - $body_linecount}}}
+     message   = Too many lines in message header
 .endd
 In the MAIL and RCPT ACLs, the value is zero because at that stage the
 message has not yet been received.
@@ -30227,8 +30227,8 @@ The &%message%& modifier operates exactly as it does for &%accept%&.
 &%drop%&: This verb behaves like &%deny%&, except that an SMTP connection is
 forcibly closed after the 5&'xx'& error message has been sent. For example:
 .code
-drop   message   = I don't take more than 20 RCPTs
-       condition = ${if > {$rcpt_count}{20}}
+drop   condition = ${if > {$rcpt_count}{20}}
+       message   = I don't take more than 20 RCPTs
 .endd
 There is no difference between &%deny%& and &%drop%& for the connect-time ACL.
 The connection is always dropped after sending a 550 response.
@@ -31464,7 +31464,7 @@ of the lookup is made available in the &$host_data$& variable. This
 allows you, for example, to set up a statement like this:
 .code
 deny  hosts = net-lsearch;/some/file
-message = $host_data
+      message = $host_data
 .endd
 which gives a custom error message for each denied host.
 
@@ -31608,8 +31608,8 @@ section &<<SECTaddressverification>>& (callouts are described in section
 condition to restrict it to bounce messages only:
 .code
 deny    senders = :
-        message = A valid sender header is required for bounces
        !verify  = header_sender
+        message = A valid sender header is required for bounces
 .endd
 
 .vitem &*verify&~=&~header_syntax*&
@@ -31791,8 +31791,8 @@ Testing the list of domains stops as soon as a match is found. If you want to
 warn for one list and block for another, you can use two different statements:
 .code
 deny  dnslists = blackholes.mail-abuse.org
-warn  message  = X-Warn: sending host is on dialups list
-      dnslists = dialups.mail-abuse.org
+warn  dnslists = dialups.mail-abuse.org
+      message  = X-Warn: sending host is on dialups list
 .endd
 .cindex caching "of dns lookup"
 .cindex DNS TTL
@@ -31833,8 +31833,8 @@ addresses (see, e.g., the &'domain based zones'& link at
 with these lists. You can change the name that is looked up in a DNS list by
 listing it after the domain name, introduced by a slash. For example,
 .code
-deny  message  = Sender's domain is listed at $dnslist_domain
-      dnslists = dsn.rfc-ignorant.org/$sender_address_domain
+deny  dnslists = dsn.rfc-ignorant.org/$sender_address_domain
+      message  = Sender's domain is listed at $dnslist_domain
 .endd
 This particular example is useful only in ACLs that are obeyed after the
 RCPT or DATA commands, when a sender address is available. If (for
@@ -31898,13 +31898,13 @@ dnslists = black.list.tld/a.domain::b.domain
 However, when the data for the list is obtained from a lookup, the second form
 is usually much more convenient. Consider this example:
 .code
-deny message  = The mail servers for the domain \
+deny dnslists = sbl.spamhaus.org/<|${lookup dnsdb {>|a=<|\
+                                   ${lookup dnsdb {>|mxh=\
+                                   $sender_address_domain} }} }
+     message  = The mail servers for the domain \
                 $sender_address_domain \
                 are listed at $dnslist_domain ($dnslist_value); \
                 see $dnslist_text.
-     dnslists = sbl.spamhaus.org/<|${lookup dnsdb {>|a=<|\
-                                   ${lookup dnsdb {>|mxh=\
-                                   $sender_address_domain} }} }
 .endd
 Note the use of &`>|`& in the dnsdb lookup to specify the separator for
 multiple DNS records. The inner dnsdb lookup produces a list of MX hosts
@@ -31977,7 +31977,7 @@ very meaningful. See section &<<SECTmordetinf>>& for a way of obtaining more
 information.
 
 You can use the DNS list variables in &%message%& or &%log_message%& modifiers
-&-- although these appear before the condition in the ACL, they are not
+&-- even if these appear before the condition in the ACL, they are not
 expanded until after it has failed. For example:
 .code
 deny    hosts = !+local_networks
@@ -32163,12 +32163,12 @@ restrictions, to get the TXT record. As a byproduct of this, there is also
 a check that the IP being tested is indeed on the first list. The first
 domain is the one that is put in &$dnslist_domain$&. For example:
 .code
-deny message  = \
-         rejected because $sender_host_address is blacklisted \
-         at $dnslist_domain\n$dnslist_text
-       dnslists = \
+deny   dnslists = \
          sbl.spamhaus.org,sbl-xbl.spamhaus.org=127.0.0.2 : \
          dul.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.10
+       message  = \
+         rejected because $sender_host_address is blacklisted \
+         at $dnslist_domain\n$dnslist_text
 .endd
 For the first blacklist item, this starts by doing a lookup in
 &'sbl-xbl.spamhaus.org'& and testing for a 127.0.0.2 return. If there is a
@@ -32358,12 +32358,12 @@ new rate.
 .code
 acl_check_connect:
  deny ratelimit = 100 / 5m / readonly
-    log_message = RATE CHECK: $sender_rate/$sender_rate_period \
+      log_message = RATE CHECK: $sender_rate/$sender_rate_period \
                   (max $sender_rate_limit)
 # ...
 acl_check_mail:
  warn ratelimit = 100 / 5m / strict
-    log_message = RATE UPDATE: $sender_rate/$sender_rate_period \
+      log_message = RATE UPDATE: $sender_rate/$sender_rate_period \
                   (max $sender_rate_limit)
 .endd
 
@@ -32473,16 +32473,16 @@ deny authenticated = *
      ratelimit = 100 / 1d / strict / $authenticated_id
 
 # System-wide rate limit
-defer message = Sorry, too busy. Try again later.
-     ratelimit = 10 / 1s / $primary_hostname
+defer ratelimit = 10 / 1s / $primary_hostname
+      message = Sorry, too busy. Try again later.
 
 # Restrict incoming rate from each host, with a default
 # set using a macro and special cases looked up in a table.
-defer message = Sender rate exceeds $sender_rate_limit \
-               messages per $sender_rate_period
-     ratelimit = ${lookup {$sender_host_address} \
+defer ratelimit = ${lookup {$sender_host_address} \
                    cdb {DB/ratelimits.cdb} \
                    {$value} {RATELIMIT} }
+      message = Sender rate exceeds $sender_rate_limit \
+               messages per $sender_rate_period
 .endd
 &*Warning*&: If you have a busy server with a lot of &%ratelimit%& tests,
 especially with the &%per_rcpt%& option, you may suffer from a performance
@@ -33071,16 +33071,16 @@ list called &%batv_senders%&. Then, in the ACL for RCPT commands, you could
 use this:
 .code
 # Bounces: drop unsigned addresses for BATV senders
-deny message = This address does not send an unsigned reverse path
-     senders = :
+deny senders = :
      recipients = +batv_senders
+     message = This address does not send an unsigned reverse path
 
 # Bounces: In case of prvs-signed address, check signature.
-deny message = Invalid reverse path signature.
-     senders = :
+deny senders = :
      condition  = ${prvscheck {$local_part@$domain}\
                   {PRVSCHECK_SQL}{1}}
      !condition = $prvscheck_result
+     message = Invalid reverse path signature.
 .endd
 The first statement rejects recipients for bounce messages that are addressed
 to plain BATV sender addresses, because it is known that BATV senders do not
@@ -33617,13 +33617,13 @@ imposed by your anti-virus scanner.
 
 Here is a very simple scanning example:
 .code
-deny message = This message contains malware ($malware_name)
-     malware = *
+deny malware = *
+     message = This message contains malware ($malware_name)
 .endd
 The next example accepts messages when there is a problem with the scanner:
 .code
-deny message = This message contains malware ($malware_name)
-     malware = */defer_ok
+deny malware = */defer_ok
+     message = This message contains malware ($malware_name)
 .endd
 The next example shows how to use an ACL variable to scan with both sophie and
 aveserver. It assumes you have set:
@@ -33632,13 +33632,13 @@ av_scanner = $acl_m0
 .endd
 in the main Exim configuration.
 .code
-deny message = This message contains malware ($malware_name)
-     set acl_m0 = sophie
+deny set acl_m0 = sophie
      malware = *
+     message = This message contains malware ($malware_name)
 
-deny message = This message contains malware ($malware_name)
-     set acl_m0 = aveserver
+deny set acl_m0 = aveserver
      malware = *
+     message = This message contains malware ($malware_name)
 .endd
 
 
@@ -33767,8 +33767,8 @@ is set to record the actual address used.
 .section "Calling SpamAssassin from an Exim ACL" "SECID206"
 Here is a simple example of the use of the &%spam%& condition in a DATA ACL:
 .code
-deny message = This message was classified as SPAM
-     spam = joe
+deny spam = joe
+     message = This message was classified as SPAM
 .endd
 The right-hand side of the &%spam%& condition specifies a name. This is
 relevant if you have set up multiple SpamAssassin profiles. If you do not want
@@ -33800,9 +33800,9 @@ large ones may cause significant performance degradation. As most spam messages
 are quite small, it is recommended that you do not scan the big ones. For
 example:
 .code
-deny message = This message was classified as SPAM
-     condition = ${if < {$message_size}{10K}}
+deny condition = ${if < {$message_size}{10K}}
      spam = nobody
+     message = This message was classified as SPAM
 .endd
 
 The &%spam%& condition returns true if the threshold specified in the user's
@@ -33860,8 +33860,8 @@ failed. If you want to treat DEFER as FAIL (to pass on to the next ACL
 statement block), append &`/defer_ok`& to the right-hand side of the
 spam condition, like this:
 .code
-deny message = This message was classified as SPAM
-     spam    = joe/defer_ok
+deny spam    = joe/defer_ok
+     message = This message was classified as SPAM
 .endd
 This causes messages to be accepted even if there is a problem with &%spamd%&.
 
@@ -33879,9 +33879,9 @@ warn  spam = nobody
       add_header = Subject: *SPAM* $h_Subject:
 
 # reject spam at high scores (> 12)
-deny  message = This message scored $spam_score spam points.
-      spam = nobody:true
+deny  spam = nobody:true
       condition = ${if >{$spam_score_int}{120}{1}{0}}
+      message = This message scored $spam_score spam points.
 .endd
 
 
@@ -34085,10 +34085,10 @@ As an example, the following will ban &"HTML mail"& (including that sent with
 alternative plain text), while allowing HTML files to be attached. HTML
 coverletter mail attached to non-HTML coverletter mail will also be allowed:
 .code
-deny message = HTML mail is not accepted here
-!condition = $mime_is_rfc822
-condition = $mime_is_coverletter
-condition = ${if eq{$mime_content_type}{text/html}{1}{0}}
+deny !condition = $mime_is_rfc822
+     condition = $mime_is_coverletter
+     condition = ${if eq{$mime_content_type}{text/html}{1}{0}}
+     message = HTML mail is not accepted here
 .endd
 
 .vitem &$mime_is_multipart$&
@@ -34141,8 +34141,8 @@ expanded before being used, you must also escape dollar signs and backslashes
 with more backslashes, or use the &`\N`& facility to disable expansion.
 Here is a simple example that contains two regular expressions:
 .code
-deny message = contains blacklisted regex ($regex_match_string)
-     regex = [Mm]ortgage : URGENT BUSINESS PROPOSAL
+deny regex = [Mm]ortgage : URGENT BUSINESS PROPOSAL
+     message = contains blacklisted regex ($regex_match_string)
 .endd
 The conditions returns true if any one of the regular expressions matches. The
 &$regex_match_string$& expansion variable is then set up and contains the
@@ -40873,10 +40873,10 @@ verb to a group of domains or identities. For example:
 
 .code
 # Warn when Mail purportedly from GMail has no gmail signature
-warn log_message = GMail sender without gmail.com DKIM signature
-     sender_domains = gmail.com
+warn sender_domains = gmail.com
      dkim_signers = gmail.com
      dkim_status = none
+     log_message = GMail sender without gmail.com DKIM signature
 .endd
 
 Note that the above does not check for a total lack of DKIM signing;
@@ -40888,10 +40888,10 @@ results against the actual result of verification. This is typically used
 to restrict an ACL verb to a list of verification outcomes, for example:
 
 .code
-deny message = Mail from Paypal with invalid/missing signature
-     sender_domains = paypal.com:paypal.de
+deny sender_domains = paypal.com:paypal.de
      dkim_signers = paypal.com:paypal.de
      dkim_status = none:invalid:fail
+     message = Mail from Paypal with invalid/missing signature
 .endd
 
 The possible status keywords are: 'none','invalid','fail' and 'pass'. Please
@@ -41390,8 +41390,8 @@ A possible solution is:
   # Or do some kind of IP lookup in a flat file or database
   # LIMIT = ${lookup{$sender_host_address}iplsearch{/etc/exim/proxy_limits}}
 
-  defer   message        = Too many connections from this IP right now
-          ratelimit      = LIMIT / 5s / per_conn / strict
+  defer   ratelimit      = LIMIT / 5s / per_conn / strict
+          message        = Too many connections from this IP right now
 .endd
 
 
