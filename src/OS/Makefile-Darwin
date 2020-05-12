@@ -10,8 +10,12 @@ HAVE_SA_LEN=YES
 
 # Removed -DBIND_8_COMPAT for 4.61
 # CFLAGS=-O -no-cpp-precomp -DBIND_8_COMPAT
+#
+# 2020/05/12 disable TLS resume support; it results in
+# "1 select() failure: No such file or directory"
+# being logged by the daeomn (sending the testsuite red...)
 
-CFLAGS=-O -no-cpp-precomp
+CFLAGS=-O -no-cpp-precomp -DDISABLE_TLS_RESUME
 LIBRESOLV=-lresolv
 
 USE_DB = yes
