@@ -1,0 +1,42 @@
+# Exim test configuration 0588
+
+.include DIR/aux-var/std_conf_prefix
+
+log_selector = +received_recipients +sender_on_delivery +millisec
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+rx_dump:
+  driver =	redirect
+  condition =	${if !eq {$received_ip_address}{127.0.0.1}}
+  data =	:blackhole:
+
+smtp_try:
+  driver =	accept
+  transport =	send_to_server
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  hosts = HOSTIPV4
+  allow_localhost
+  port = PORT_D
+  hosts_try_fastopen = :
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End
+

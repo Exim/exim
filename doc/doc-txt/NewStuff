@@ -21,6 +21,9 @@ Version 4.95
  4. Single-key LMDB lookups, previously experimental, are now supported.
     The support is not built unless specified in the Local/Makefile.
 
+ 5. Option "message_linelength_limit" on the smtp transport to enforce (by
+    default) the RFC 998 character limit.
+
 
 Version 4.94
 ------------

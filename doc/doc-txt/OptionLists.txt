@@ -382,6 +382,7 @@ message_body_newlines                boolean         false         main         
 message_body_visible                 integer         500           main
 message_id_header_domain             string*         unset         main              4.11
 message_id_header_text               string*         unset         main
+message_linelength_limit             integer         998           smtp              4.94
 message_logs                         boolean         true          main              4.10
 message_prefix                       string*         +             appendfile        4.00 replaces prefix
                                      string*         unset         pipe              4.00 replaces prefix

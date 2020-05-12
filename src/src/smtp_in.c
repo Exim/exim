@@ -5173,9 +5173,9 @@ while (done <= 0)
 	recipients_list[recipients_count-1].orcpt = orcpt;
 	recipients_list[recipients_count-1].dsn_flags = dsn_flags;
 
-	DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n",
+	/* DEBUG(D_receive) debug_printf("DSN: orcpt: %s  flags: %d\n",
 	  recipients_list[recipients_count-1].orcpt,
-	  recipients_list[recipients_count-1].dsn_flags);
+	  recipients_list[recipients_count-1].dsn_flags); */
 	}
 
       /* The recipient was discarded */
@@ -5190,8 +5190,8 @@ while (done <= 0)
 	discarded = TRUE;
 	log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> RCPT %s: "
 	  "discarded by %s ACL%s%s", host_and_ident(TRUE),
-	  sender_address_unrewritten? sender_address_unrewritten : sender_address,
-	  smtp_cmd_argument, f.recipients_discarded? "MAIL" : "RCPT",
+	  sender_address_unrewritten ? sender_address_unrewritten : sender_address,
+	  smtp_cmd_argument, f.recipients_discarded ? "MAIL" : "RCPT",
 	  log_msg ? US": " : US"", log_msg ? log_msg : US"");
 	}
 

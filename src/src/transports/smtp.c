@@ -111,6 +111,7 @@ optionlist smtp_transport_options[] = {
   { "lmtp_ignore_quota",    opt_bool,	   LOFF(lmtp_ignore_quota) },
   { "max_rcpt",             opt_int | opt_public,
       OPT_OFF(transport_instance, max_addresses) },
+  { "message_linelength_limit", opt_int,   LOFF(message_linelength_limit) },
   { "multi_domain",         opt_expand_bool | opt_public,
       OPT_OFF(transport_instance, multi_domain) },
   { "port",                 opt_stringptr, LOFF(port) },
@@ -207,6 +208,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .size_addition =		1024,
   .hosts_max_try =		5,
   .hosts_max_try_hardlimit =	50,
+  .message_linelength_limit =	998,
   .address_retry_include_sender = TRUE,
   .allow_localhost =		FALSE,
   .authenticated_sender_force =	FALSE,
@@ -4522,6 +4524,23 @@ DEBUG(D_transport)
     debug_printf("already connected to %s [%s] (on fd %d)\n",
       continue_hostname, continue_host_address,
       cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0);
+  }
+
+/* Check the restrictions on line length */
+
+debug_printf("%s %d: max_received_linelength %u message_linelength_limit %u\n", __FUNCTION__, __LINE__, max_received_linelength, ob->message_linelength_limit);
+if (max_received_linelength > ob->message_linelength_limit)
+  {
+  struct timeval now;
+  gettimeofday(&now, NULL);
+
+  for (address_item * addr = addrlist; addr; addr = addr->next)
+    if (addr->transport_return == DEFER)
+      addr->transport_return = PENDING_DEFER;
+
+  set_errno_nohost(addrlist, ERRNO_SMTPFORMAT,
+    US"message has lines too long for transport", FAIL, TRUE, &now);
+  goto END_TRANSPORT;
   }
 
 /* Set the flag requesting that these hosts be added to the waiting

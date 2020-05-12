@@ -808,13 +808,9 @@ begin transports
 
 
 # This transport is used for delivering messages over SMTP connections.
-# Refuse to send any message with over-long lines, which could have
-# been received other than via SMTP. The use of message_size_limit to
-# enforce this is a red herring.
 
 remote_smtp:
   driver = smtp
-  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
 .ifdef _HAVE_TLS
   tls_resumption_hosts = *
 #endif
@@ -832,7 +828,6 @@ remote_smtp:
 
 smarthost_smtp:
   driver = smtp
-  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
   multi_domain
   #
 .ifdef _HAVE_TLS

@@ -25472,6 +25472,20 @@ so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this.
 
 
+.new
+.option message_linelength_limit smtp integer 998
+.cindex "line length" limit
+This option sets the maximum line length, in bytes, that the transport
+will send.  Any messages with lines exceeding the given value
+will fail and a failure-DSN ("bounce") message will if possible be returned
+to the sender.
+The default value is that defined by the SMTP standards.
+
+It is generally wise to also check in the data ACL so that messages
+received via SMTP can be refused without producing a bounce.
+.wen
+
+
 .option multi_domain smtp boolean&!! true
 .vindex "&$domain$&"
 When this option is set, the &(smtp)& transport can handle a number of
