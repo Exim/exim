@@ -102,7 +102,6 @@ test.ex in "+local_domains"? yes (matched "+local_domains")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called

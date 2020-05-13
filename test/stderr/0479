@@ -71,7 +71,6 @@ processing "accept" (TESTSUITE/test-config 18)
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<e@f>
 using ACL "rcpt"
 processing "require" (TESTSUITE/test-config 16)
@@ -86,7 +85,6 @@ processing "accept" (TESTSUITE/test-config 18)
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection
 LOG: smtp_connection MAIN

@@ -36,7 +36,6 @@ processing "accept" (TESTSUITE/test-config 30)
 accept: condition test succeeded in ACL "warn_empty"
 end of ACL "warn_empty": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -104,7 +103,6 @@ processing "accept" (TESTSUITE/test-config 34)
 accept: condition test succeeded in ACL "warn_log"
 end of ACL "warn_log": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -170,7 +168,6 @@ processing "accept" (TESTSUITE/test-config 38)
 accept: condition test succeeded in ACL "warn_user"
 end of ACL "warn_user": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called

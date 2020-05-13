@@ -55,7 +55,6 @@ postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@e
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:list@exim.test.ex
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 19)

@@ -156,17 +156,10 @@ P Received: from CALLER by mail.test.ex with local (Exim x.yz)
  ├──expanding: ${tod_full}
  ╰─────result: Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <CALLER@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <usery@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userz@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <rd+CALLER@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <rd+usery@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss

@@ -253,7 +253,6 @@ host in "+relay_hosts"? yes (matched "+relay_hosts")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
 processing "accept" (TESTSUITE/test-config 26)
@@ -278,7 +277,6 @@ host in "+relay_hosts"? yes (matched "+relay_hosts")
 accept: condition test succeeded in ACL "check_recipient"
 end of ACL "check_recipient": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
@@ -321,9 +319,6 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userx@myhost.test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss

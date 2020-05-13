@@ -59,7 +59,6 @@ sender U@W.x.y verified ok as U@x.y
 accept: condition test succeeded in ACL "acl_rcpt"
 end of ACL "acl_rcpt": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN

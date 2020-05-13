@@ -2,9 +2,6 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <rz.b@outside> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbJ-0005vi-00-H
 LOG: MAIN
@@ -95,9 +92,6 @@ time on queue = 0s  id 10HmbJ-0005vi-00  addr rz.b@outside
 warning counts: required 0 done 0
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbJ-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <rz.b@outside> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbJ-0005vi-00-H
 end delivery of 10HmbJ-0005vi-00

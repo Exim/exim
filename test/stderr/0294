@@ -14,23 +14,18 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<one@z>
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.25 sec
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.263 sec
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.276 sec
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 rate limit RCPT: delay 0.289 sec
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 >>Headers received:
@@ -61,7 +56,6 @@ log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
 SMTP>> 250 OK
 SMTP<< rcpt to:<two@z>
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 >>Headers received:
@@ -126,7 +120,6 @@ processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? no (end of list)
 processing "deny" (TESTSUITE/test-config 35)
@@ -137,7 +130,6 @@ processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
@@ -174,7 +166,6 @@ processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? yes (matched "V4NET.9.8.7")
 rate limit RCPT: delay 0.25 sec
@@ -186,7 +177,6 @@ processing "accept" (TESTSUITE/test-config 35)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
 LOG: smtp_connection MAIN
