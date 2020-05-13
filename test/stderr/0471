@@ -25376,9 +25376,6 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for r1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <r1@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss

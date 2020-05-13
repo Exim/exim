@@ -34,9 +34,6 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for nofile@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <nofile@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
@@ -223,9 +220,6 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss
@@ -412,9 +406,6 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaZ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
@@ -562,9 +553,6 @@ Writing retry data for T:userx@test.ex
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
 Size of headers = sss
@@ -610,9 +598,6 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss
@@ -755,9 +740,6 @@ Writing retry data for T:userx@test.ex
 end of retry processing
 delivery deferred: update_spool=1 header_rewritten=0
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmbA-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <userx@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmbA-0005vi-00-H
 Size of headers = sss

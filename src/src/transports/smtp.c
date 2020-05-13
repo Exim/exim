@@ -4528,7 +4528,6 @@ DEBUG(D_transport)
 
 /* Check the restrictions on line length */
 
-debug_printf("%s %d: max_received_linelength %u message_linelength_limit %u\n", __FUNCTION__, __LINE__, max_received_linelength, ob->message_linelength_limit);
 if (max_received_linelength > ob->message_linelength_limit)
   {
   struct timeval now;

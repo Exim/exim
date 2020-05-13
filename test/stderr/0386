@@ -211,7 +211,6 @@ created log directory TESTSUITE/spool/log
 accept: condition test succeeded in ACL "chk_rcpt"
 end of ACL "chk_rcpt": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -233,9 +232,6 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: This is a test blacklisting message
 >>
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaX-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <2@b> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaX-0005vi-00-H
 Size of headers = sss
@@ -404,7 +400,6 @@ LOG: MAIN
 accept: condition test succeeded in ACL "chk_rcpt"
 end of ACL "chk_rcpt": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
@@ -426,9 +421,6 @@ P Received: from [V4NET.11.12.13] (ident=CALLER)
   X-Warning: This is a test blacklisting message
 >>
 Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
-DSN: Write SPOOL: -dsn_envid NULL
-DSN: Write SPOOL  :-dsn_ret 0
-DSN: Flags: 0x0
 DSN: **** SPOOL_OUT - address: <2@b> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
 Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
 Size of headers = sss

@@ -70,7 +70,6 @@ check set acl_c0 = $acl_c0; rcpt
 accept: condition test succeeded in ACL "rcpt"
 end of ACL "rcpt": ACCEPT
 SMTP>> 250 Accepted
-DSN: orcpt: NULL  flags: 0
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
 search_tidyup called
