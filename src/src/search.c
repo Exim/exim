@@ -846,10 +846,13 @@ it have been validated by the lookup. */
 if (yield && opts)
   {
   int sep = ',';
-  uschar * ele;
-  while ((ele = string_nextinlist(&opts, &sep, NULL, 0)))
+  for (uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
     if (Ustrcmp(ele, "ret=key") == 0)
-      { yield = string_copy_taint(keystring, FALSE); break; }
+      {
+      DEBUG(D_lookup) debug_printf_indent("lookup ret=key: %s\n", keystring);
+      yield = string_copy_taint(keystring, FALSE);
+      break;
+      }
   }
 
 return yield;
