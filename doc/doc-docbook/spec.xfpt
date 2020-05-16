@@ -6663,6 +6663,13 @@ If the value of &$sender_host_address$& is 192.168.5.6, expansion of the
 first &%domains%& setting above generates the second setting, which therefore
 causes a second lookup to occur.
 
+.new
+The lookup type may optionally be followed by a comma
+and a comma-separated list of options.
+Each option is a &"name=value"& pair.
+Whether an option is meaningful depands on the lookup type.
+.wen
+
 The rest of this chapter describes the different lookup types that are
 available. Any of them can be used in any part of the configuration where a
 lookup is permitted.
@@ -6680,6 +6687,13 @@ lookup to succeed. The lookup type determines how the file is searched.
 .new
 .cindex "tainted data" "single-key lookups"
 The file string may not be tainted
+
+.cindex "tainted data" "de-tainting"
+All single-key lookups support the option &"ret=key"&.
+If this is given and the lookup
+(either underlying implementation or cached value)
+returns data, the result is replaced with a non-tainted
+version of the lookup key.
 .wen
 .next
 .cindex "query-style lookup" "definition of"

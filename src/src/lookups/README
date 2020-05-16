@@ -135,6 +135,8 @@ DEFER. The arguments are:
                       If set to a nonzero number of seconds, the cached value
                       becomes unusable after this time. Currently the dnsdb
                       lookup uses this to support the TTL value.
+  uschar *opts	      options, a comma-separated list of tagged values for
+                      modifying the search operation
 
 Even though the key is zero-terminated, the length is passed because in the
 common case it has been computed already and is often needed.
