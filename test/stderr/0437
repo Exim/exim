@@ -9,6 +9,7 @@ Exim version x.yz ....
    type=lsearch key="spool" opts=NULL
  file lookup required for spool
    in TESTSUITE/aux-fixed/0437.ls
+ creating new cache entry
  lookup yielded: spool
 configuration file is TESTSUITE/test-config
 admin user
@@ -26,6 +27,7 @@ search_tidyup called
    type=lsearch key="transport" opts=NULL
  file lookup required for transport
    in TESTSUITE/aux-fixed/0437.ls
+ creating new cache entry
  lookup yielded: t1
 search_tidyup called
 search_tidyup called
@@ -39,6 +41,7 @@ search_tidyup called
    type=lsearch key="file" opts=NULL
  file lookup required for file
    in TESTSUITE/aux-fixed/0437.ls
+ creating new cache entry
  lookup yielded: file
 search_tidyup called
 LOG: MAIN
@@ -58,6 +61,7 @@ search_tidyup called
    type=lsearch key="transport" opts=NULL
  file lookup required for transport
    in TESTSUITE/aux-fixed/0437.ls
+ creating new cache entry
  lookup yielded: t1
 search_tidyup called
 search_tidyup called
@@ -71,6 +75,7 @@ search_tidyup called
    type=lsearch key="file" opts=NULL
  file lookup required for file
    in TESTSUITE/aux-fixed/0437.ls
+ creating new cache entry
  lookup yielded: file
 search_tidyup called
 LOG: MAIN

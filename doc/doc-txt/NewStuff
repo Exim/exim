@@ -24,6 +24,8 @@ Version 4.95
  5. Option "message_linelength_limit" on the smtp transport to enforce (by
     default) the RFC 998 character limit.
 
+ 6. An option to ignore the cache on a lookup.
+
 
 Version 4.94
 ------------

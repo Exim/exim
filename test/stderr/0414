@@ -28,6 +28,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
   type=lsearch key="b.domain" opts=NULL
 file lookup required for b.domain
   in TESTSUITE/aux-fixed/0414.list1
+creating new cache entry
 lookup failed
 b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? no (end of list)
 search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
@@ -41,6 +42,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
   type=lsearch key="b.domain" opts=NULL
 file lookup required for b.domain
   in TESTSUITE/aux-fixed/0414.list2
+creating new cache entry
 lookup yielded: b.domain-data
 b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list2")
 data from lookup saved for cache for +B: key 'b.domain' value 'b.domain-data'
@@ -87,6 +89,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
   type=lsearch key="a.domain" opts=NULL
 file lookup required for a.domain
   in TESTSUITE/aux-fixed/0414.list1
+creating new cache entry
 lookup yielded: a.domain-data
 a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list1")
 data from lookup saved for cache for +A: key 'a.domain' value 'a.domain-data'
@@ -109,6 +112,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
   type=lsearch key="a.domain" opts=NULL
 file lookup required for a.domain
   in TESTSUITE/aux-fixed/0414.list2
+creating new cache entry
 lookup failed
 a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? no (end of list)
 a.domain in "+B"? no (end of list)

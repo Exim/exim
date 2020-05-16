@@ -44,6 +44,7 @@ cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning DNS_NOMATCH
 DNS: no SOA record found for neg-TTL
  writing neg-cache entry for cioce.test.again.dns-MX-xxxx, ttl -1
+ creating new cache entry
  lookup failed
 sender host name required, to match against *.cioce.test.again.dns
 looking up host name for ip4.ip4.ip4.ip4

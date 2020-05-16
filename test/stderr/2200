@@ -10,6 +10,7 @@ dropping to exim gid; retaining priv uid
    type=dnsdb key="a=localhost.test.ex" opts=NULL
  database lookup required for a=localhost.test.ex
  dnsdb key: localhost.test.ex
+ creating new cache entry
  lookup yielded: 127.0.0.1
  search_open: dnsdb "NULL"
    cached open
@@ -35,6 +36,7 @@ search_tidyup called
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
+  creating new cache entry
   lookup yielded: 127.0.0.1
   search_open: dnsdb "NULL"
     cached open
@@ -45,6 +47,7 @@ search_tidyup called
     type=dnsdb key="a=shorthost.test.ex" opts=NULL
   cached data found but out-of-date;   database lookup required for a=shorthost.test.ex
   dnsdb key: shorthost.test.ex
+  replacing old cache entry
   lookup yielded: 127.0.0.1
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss

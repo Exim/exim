@@ -13,18 +13,21 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="a.b.c" opts=NULL
  file lookup required for a.b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.a.b.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.a.b.c" opts=NULL
  file lookup required for *.a.b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.b.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.b.c" opts=NULL
  file lookup required for *.b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [*.b.c]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -37,18 +40,21 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="x.y.c" opts=NULL
  file lookup required for x.y.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.x.y.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.x.y.c" opts=NULL
  file lookup required for *.x.y.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.y.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.y.c" opts=NULL
  file lookup required for *.y.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -79,6 +85,7 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="*" opts=NULL
  file lookup required for *
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [*]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -109,6 +116,7 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="*.c" opts=NULL
  file lookup required for *.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [*.c]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -121,12 +129,14 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="x@y.c" opts=NULL
  file lookup required for x@y.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.x@y.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.x@y.c" opts=NULL
  file lookup required for *.x@y.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
@@ -151,6 +161,7 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="*@y.c" opts=NULL
  file lookup required for *@y.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [*@y.c]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -193,12 +204,14 @@ dropping to exim gid; retaining priv uid
    type=lsearch key=".a.b.c" opts=NULL
  file lookup required for .a.b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match .b.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key=".b.c" opts=NULL
  file lookup required for .b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [.b.c]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -217,6 +230,7 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="b.c" opts=NULL
  file lookup required for b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [b.c]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -235,12 +249,14 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="*a.b.c" opts=NULL
  file lookup required for *a.b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *b.c
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*b.c" opts=NULL
  file lookup required for *b.c
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [*b.c]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -253,24 +269,28 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="p.q.r" opts=NULL
  file lookup required for p.q.r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.p.q.r
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.p.q.r" opts=NULL
  file lookup required for *.p.q.r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.q.r
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.q.r" opts=NULL
  file lookup required for *.q.r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *.r
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="*.r" opts=NULL
  file lookup required for *.r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match *
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
@@ -295,24 +315,28 @@ dropping to exim gid; retaining priv uid
    type=lsearch key=".p.q.r" opts=NULL
  file lookup required for .p.q.r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match .q.r
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key=".q.r" opts=NULL
  file lookup required for .q.r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match .r
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key=".r" opts=NULL
  file lookup required for .r
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match .
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="." opts=NULL
  file lookup required for .
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [.]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -325,18 +349,21 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="x.aa.bb" opts=NULL
  file lookup required for x.aa.bb
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match ++x.aa.bb
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="++x.aa.bb" opts=NULL
  file lookup required for ++x.aa.bb
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match ++aa.bb
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="++aa.bb" opts=NULL
  file lookup required for ++aa.bb
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [++aa.bb]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open
@@ -349,30 +376,35 @@ dropping to exim gid; retaining priv uid
    type=lsearch key="x.aa.zz" opts=NULL
  file lookup required for x.aa.zz
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match ++x.aa.zz
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="++x.aa.zz" opts=NULL
  file lookup required for ++x.aa.zz
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match ++aa.zz
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="++aa.zz" opts=NULL
  file lookup required for ++aa.zz
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match ++zz
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="++zz" opts=NULL
  file lookup required for ++zz
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup failed
  trying partial match ++
  internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
    type=lsearch key="++" opts=NULL
  file lookup required for ++
    in TESTSUITE/aux-fixed/0387.1
+ creating new cache entry
  lookup yielded: [++]
  search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
    cached open

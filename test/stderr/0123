@@ -27,6 +27,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases1
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -47,6 +48,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases2
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -69,6 +71,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases3
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -91,6 +94,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases4
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -113,6 +117,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases5
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -135,6 +140,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="x" opts=NULL
  file lookup required for x
    in TESTSUITE/aux-fixed/0123.aliases6
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -165,6 +171,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases1
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -188,6 +195,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases2
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -211,6 +219,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases3
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -234,6 +243,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases4
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -257,6 +267,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases5
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -280,6 +291,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="y" opts=NULL
  file lookup required for y
    in TESTSUITE/aux-fixed/0123.aliases6
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -310,6 +322,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases1
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -333,6 +346,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases2
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -356,6 +370,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases3
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -379,6 +394,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases4
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -402,6 +418,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases5
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file
@@ -425,6 +442,7 @@ rda_interpret (string): '${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.a
    type=lsearch key="z" opts=NULL
  file lookup required for z
    in TESTSUITE/aux-fixed/0123.aliases6
+ creating new cache entry
  lookup failed
 expanded: ''
 file is not a filter file

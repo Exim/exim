@@ -31,6 +31,7 @@ internal_search_find: file="NULL"
   type=testdb key="fail" opts=NULL
 database lookup required for fail
 testdb lookup forced FAIL
+creating new cache entry
 lookup failed
 host in "testdb;fail"? no (end of list)
 deny: condition test failed in ACL "connect1"
@@ -73,6 +74,7 @@ internal_search_find: file="NULL"
   type=testdb key="fail" opts=NULL
 database lookup required for fail
 testdb lookup forced FAIL
+creating new cache entry
 lookup failed
 host in "net-testdb;fail"? no (end of list)
 deny: condition test failed in ACL "connect2"

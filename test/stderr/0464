@@ -31,6 +31,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
   type=lsearch key="domain1" opts=NULL
 file lookup required for domain1
   in TESTSUITE/aux-fixed/0464.domains
+creating new cache entry
 lookup yielded: data for domain1
 domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? yes (matched "lsearch;TESTSUITE/aux-fixed/0464.domains")
 data from lookup saved for cache for +special_domains: key 'domain1' value 'data for domain1'
@@ -78,6 +79,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0464.domains"
   type=lsearch key="xxx.domain1" opts=NULL
 file lookup required for xxx.domain1
   in TESTSUITE/aux-fixed/0464.domains
+creating new cache entry
 lookup failed
 xxx.domain1 in "lsearch;TESTSUITE/aux-fixed/0464.domains"? no (end of list)
 xxx.domain1 in "+special_domains"? no (end of list)

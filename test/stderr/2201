@@ -37,6 +37,7 @@ database lookup required for test.ex
 dnsdb key: test.ex
 DNS lookup of test.ex (TXT) using fakens
 DNS lookup of test.ex (TXT) succeeded
+creating new cache entry
 lookup yielded: A TXT record for test.ex.
 test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
 checking local_parts
@@ -101,6 +102,7 @@ DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
 returning DNS_NOMATCH
 faking res_search(TXT) response length as 65535
  writing neg-cache entry for unknown-TXT-xxxx, ttl 3000
+creating new cache entry
 lookup failed
 unknown in "dnsdb;unknown"? no (end of list)
 r1 router skipped: local_parts mismatch
@@ -130,6 +132,7 @@ database lookup required for A=myhost.test.ex
 dnsdb key: myhost.test.ex
 DNS lookup of myhost.test.ex (A) using fakens
 DNS lookup of myhost.test.ex (A) succeeded
+creating new cache entry
 lookup yielded: V4NET.10.10.10
 CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"? yes (matched "dnsdb;A=myhost.test.ex")
 calling r2 router
@@ -159,6 +162,7 @@ internal_search_find: file="NULL"
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 database lookup required for a=shorthost.test.ex
 dnsdb key: shorthost.test.ex
+creating new cache entry
 lookup yielded: 127.0.0.1
 search_open: dnsdb "NULL"
   cached open
@@ -178,6 +182,7 @@ internal_search_find: file="NULL"
   type=dnsdb key="a=shorthost.test.ex" opts=NULL
 cached data found but out-of-date; database lookup required for a=shorthost.test.ex
 dnsdb key: shorthost.test.ex
+replacing old cache entry
 lookup yielded: 127.0.0.1
 LOG: MAIN
   <= a@shorthost.test.ex U=CALLER P=local S=sss

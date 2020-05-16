@@ -1,3 +1,4 @@
+> dsearch specifics
 > ok:         2500.tst
 > fail:       FAIL
 > Failed: failed to open TESTSUITE/dir_not_here for directory search: No such file or directory
@@ -13,4 +14,14 @@
 > ok,subdir:  2500.dir
 > fail,subdir:FAIL
 > fail,subdir:FAIL
+> 
+> cachelayer tests
+> fail:       FAIL
+> createfile: OK
+> fail,cached:FAIL
+> ok,no_rd    test-data
+> delfile:    OK
+> ok,cached:  test-data
+> fail,no_rd  FAIL
+> fail:       FAIL
 > 
