@@ -1816,6 +1816,29 @@ return g;
 }
 #endif
 
+
+
+static gstring *
+s_connhad_log(gstring * g)
+{
+uschar * sep = smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE
+  ? US" C=..." : US" C=";
+
+for (int i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+  if (smtp_connection_had[i] != SCH_NONE)
+    {
+    g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
+    sep = US",";
+    }
+for (int i = 0; i < smtp_ch_index; i++)
+  {
+  g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
+  sep = US",";
+  }
+return g;
+}
+
+
 /*************************************************
 *      Log lack of MAIL if so configured         *
 *************************************************/
@@ -1831,7 +1854,7 @@ Returns:     nothing
 void
 smtp_log_no_mail(void)
 {
-uschar * sep, * s;
+uschar * s;
 gstring * g = NULL;
 
 if (smtp_mailcmd_count > 0 || !LOGGING(smtp_no_mail))
@@ -1847,20 +1870,7 @@ if (sender_host_authenticated)
 g = s_tlslog(g);
 #endif
 
-sep = smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE ?  US" C=..." : US" C=";
-
-for (int i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
-  if (smtp_connection_had[i] != SCH_NONE)
-    {
-    g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
-    sep = US",";
-    }
-
-for (int i = 0; i < smtp_ch_index; i++)
-  {
-  g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
-  sep = US",";
-  }
+g = s_connhad_log(g);
 
 if (!(s = string_from_gstring(g))) s = US"";
 
@@ -3102,15 +3112,17 @@ synprot_error(int type, int code, uschar *data, uschar *errmess)
 int yield = -1;
 
 log_write(type, LOG_MAIN, "SMTP %s error in \"%s\" %s %s",
-  (type == L_smtp_syntax_error)? "syntax" : "protocol",
+  type == L_smtp_syntax_error ? "syntax" : "protocol",
   string_printing(smtp_cmd_buffer), host_and_ident(TRUE), errmess);
 
 if (++synprot_error_count > smtp_max_synprot_errors)
   {
   yield = 1;
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-    "syntax or protocol errors (last command was \"%s\")",
-    host_and_ident(FALSE), string_printing(smtp_cmd_buffer));
+    "syntax or protocol errors (last command was \"%s\", %s)",
+    host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
+    string_from_gstring(s_connhad_log(NULL))
+    );
   }
 
 if (code > 0)
@@ -4158,8 +4170,10 @@ while (done <= 0)
 	if (++synprot_error_count > smtp_max_synprot_errors)
 	  {
 	  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
-	    "syntax or protocol errors (last command was \"%s\")",
-	    host_and_ident(FALSE), string_printing(smtp_cmd_buffer));
+	    "syntax or protocol errors (last command was \"%s\", %s)",
+	    host_and_ident(FALSE), string_printing(smtp_cmd_buffer),
+	    string_from_gstring(s_connhad_log(NULL))
+	    );
 	  done = 1;
 	  }
 

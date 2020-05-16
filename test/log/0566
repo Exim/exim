@@ -12,4 +12,4 @@
 1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss M8S=8
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
-1999-03-02 09:44:33 SMTP call from CALLER dropped: too many syntax or protocol errors (last command was "foo")
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many syntax or protocol errors (last command was "foo",  C=EHLO,MAIL,RCPT,DATA)

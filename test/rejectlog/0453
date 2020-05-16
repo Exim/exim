@@ -2,5 +2,5 @@
 1999-03-02 09:44:33 rejected HELO from CALLER: syntactically invalid argument(s): (no argument given)
 1999-03-02 09:44:33 rejected HELO from CALLER: syntactically invalid argument(s): (no argument given)
 1999-03-02 09:44:33 rejected HELO from CALLER: syntactically invalid argument(s): (no argument given)
-1999-03-02 09:44:33 SMTP call from CALLER dropped: too many syntax or protocol errors (last command was "helo")
-1999-03-02 09:44:33 SMTP call from CALLER dropped: too many syntax or protocol errors (last command was "mail from:<>")
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many syntax or protocol errors (last command was "helo",  C=HELO,HELO,HELO,HELO)
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many syntax or protocol errors (last command was "mail from:<>",  C=MAIL,MAIL,MAIL)
