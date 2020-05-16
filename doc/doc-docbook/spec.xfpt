@@ -40590,8 +40590,8 @@ There is no dot-stuffing (and no dot-termination).
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "DKIM, SPF and DMARC" "CHAPdkim" &&&
-         "DKIM, SPF and DMARC Support"
+.chapter "DKIM, SPF, SRS and DMARC" "CHAPdkim" &&&
+         "DKIM, SPF, SRS and DMARC Support"
 
 .section "DKIM (DomainKeys Identified Mail)" SECDKIM
 .cindex "DKIM"
