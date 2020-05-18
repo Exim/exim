@@ -203,6 +203,9 @@ JH/43 Fix possible long line in DSN.  Previously when a very long SMTP error
       response was received it would be used unchecked in a fail-DSN, violating
       standards on line-length limits.  Truncate if needed.
 
+HS/01 Remove parameters of the link to www.open-spf.org. The linked form
+      doesn't work.
+
 
 Exim version 4.93
 -----------------
