@@ -176,7 +176,9 @@ tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
 # Don't offer resumption to (most) MUAs, who we don't want to reuse
 # tickets.  Once the TLS extension for vended ticket numbers comes
 # though, re-examine since resumption on a single-use ticket is still a benefit.
+.ifdef _HAVE_TLS_RESUME
 tls_resumption_hosts = ${if inlist {$received_port}{587:465} {:}{*}}
+.endif
 
 # In order to support roaming users who wish to send email from anywhere,
 # you may want to make Exim listen on other ports as well as port 25, in
@@ -811,7 +813,7 @@ begin transports
 
 remote_smtp:
   driver = smtp
-.ifdef _HAVE_TLS
+.ifdef _HAVE_TLS_RESUME
   tls_resumption_hosts = *
 #endif
 .ifdef _HAVE_PRDR
@@ -853,7 +855,9 @@ smarthost_smtp:
 .ifdef _HAVE_GNUTLS
   tls_require_ciphers = SECURE192:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
 .endif
+.ifdef _HAVE_TLS_RESUME
   tls_resumption_hosts = *
+.endif
 .endif
 .ifdef _HAVE_PRDR
   hosts_try_prdr = *
