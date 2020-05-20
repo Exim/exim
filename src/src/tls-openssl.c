@@ -3458,6 +3458,7 @@ int inbytes;
 DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
   ssl_xfer_buffer, ssl_xfer_buffer_size);
 
+ERR_clear_error();
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer,
 		  MIN(ssl_xfer_buffer_size, lim));
@@ -3607,6 +3608,7 @@ int error;
 DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
   buff, (unsigned int)len);
 
+ERR_clear_error();
 inbytes = SSL_read(ssl, CS buff, len);
 error = SSL_get_error(ssl, inbytes);
 
@@ -3696,6 +3698,7 @@ if ((more || corked))
 for (int left = len; left > 0;)
   {
   DEBUG(D_tls) debug_printf("SSL_write(%p, %p, %d)\n", ssl, buff, left);
+  ERR_clear_error();
   outbytes = SSL_write(ssl, CS buff, left);
   error = SSL_get_error(ssl, outbytes);
   DEBUG(D_tls) debug_printf("outbytes=%d error=%d\n", outbytes, error);
