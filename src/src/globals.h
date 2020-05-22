@@ -92,7 +92,7 @@ typedef struct {
   uschar *cipher;             /* Cipher used */
   const uschar *cipher_stdname; /* Cipher used, RFC version */
   const uschar *ver;	      /* TLS version */
-  
+
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
   uschar *on_connect_ports;   /* Ports always tls-on-connect */
   void   *ourcert;            /* Certificate we presented, binary */
@@ -982,6 +982,8 @@ extern uschar *spf_received;           /* Received-SPF: header */
 extern uschar *spf_result;             /* spf result in string form */
 extern BOOL    spf_result_guessed;     /* spf result is of best-guess operation */
 extern uschar *spf_smtp_comment;       /* spf comment to include in SMTP reply */
+extern uschar *spf_smtp_comment_template;
+                                       /* template to construct the spf comment by libspf2 */
 #endif
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern FILE   *spool_data_file;	       /* handle for -D file */

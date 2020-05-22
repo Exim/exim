@@ -1499,6 +1499,10 @@ uschar *spf_header_comment     = NULL;
 uschar *spf_received           = NULL;
 uschar *spf_result             = NULL;
 uschar *spf_smtp_comment       = NULL;
+uschar *spf_smtp_comment_template
+                    /* Used to be: "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}" */
+                               = US"Please%_see%_http://www.open-spf.org/Why";
+
 #endif
 
 FILE   *spool_data_file	       = NULL;

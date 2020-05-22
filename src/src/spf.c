@@ -218,6 +218,7 @@ spf_init(void)
 {
 SPF_dns_server_t * dc;
 int debug = 0;
+const uschar *s;
 
 DEBUG(D_receive) debug = 1;
 
@@ -244,9 +245,12 @@ if (!(spf_server = SPF_server_new_dns(dc, debug)))
   See https://www.mail-archive.com/mailop@mailop.org/msg08019.html
   Used to work as "Please%_see%_http://www.open-spf.org/Why?id=%{S}&ip=%{C}&receiver=%{R}",
   but is broken now (May 18th, 2020) */
-  SPF_server_set_explanation(spf_server, "Please%_see%_http://www.open-spf.org/Why", &spf_response);
-  if (SPF_response_errcode(spf_response) != SPF_E_SUCCESS)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", SPF_strerror(SPF_response_errcode(spf_response)));
+if (!(s = expand_string(spf_smtp_comment_template)))
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "expansion of spf_smtp_comment_template failed");
+
+SPF_server_set_explanation(spf_server, s, &spf_response);
+if (SPF_response_errcode(spf_response) != SPF_E_SUCCESS)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", SPF_strerror(SPF_response_errcode(spf_response)));
 
 return TRUE;
 }

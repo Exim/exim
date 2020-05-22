@@ -326,6 +326,7 @@ static optionlist optionlist_config[] = {
 #endif
 #ifdef SUPPORT_SPF
   { "spf_guess",                opt_stringptr,   {&spf_guess} },
+  { "spf_smtp_comment_template",opt_stringptr,   {&spf_smtp_comment_template} },
 #endif
   { "split_spool_directory",    opt_bool,        {&split_spool_directory} },
   { "spool_directory",          opt_stringptr,   {&spool_directory} },

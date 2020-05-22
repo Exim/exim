@@ -204,7 +204,8 @@ JH/43 Fix possible long line in DSN.  Previously when a very long SMTP error
       standards on line-length limits.  Truncate if needed.
 
 HS/01 Remove parameters of the link to www.open-spf.org. The linked form
-      doesn't work.
+      doesn't work. (Additionally add a new main config option to configure the
+      spf_smtp_comment)
 
 
 Exim version 4.93

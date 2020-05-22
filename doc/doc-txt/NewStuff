@@ -17,7 +17,7 @@ Version 4.94
 
  3. A msg:defer event.
 
- 4. Client-side support in the gsasl authenticator.  Tested against the 
+ 4. Client-side support in the gsasl authenticator.  Tested against the
     plaintext driver for PLAIN; only against itself for SCRAM-SHA-1 and
     SCRAM-SHA-1-PLUS methods.
 
@@ -71,6 +71,9 @@ Version 4.94
 
 21. bounce_message_file and warn_message_file are now expanded before use.
 
+22. New main config option spf_smtp_comment_template to customise the
+    $spf_smtp_comment variable
+
 
 
 Version 4.93
@@ -111,7 +114,7 @@ Version 4.93
 15: Support under OpenSSL for writing NSS-style key files for packet-capture
     decode.  The environment variable SSLKEYLOGFILE is used; if an absolute path
     it must indicate a file under the spool directory; if relative the the spool
-    directory is prepended.  Works on the server side only.  Support under 
+    directory is prepended.  Works on the server side only.  Support under
     GnuTLS was already there, being done purely by the library (server side
     only, and exim must be run as root).
 
