@@ -17767,35 +17767,42 @@ See section &<<SECSPF>>& for more details.
 This option is available when Exim is compiled with SPF support.  It
 allows the customisation of the SMTP comment that the SPF library
 generates.  You are strongly encouraged to link to your own explanative
-site. The following placeholders (along with Exim variables) are allowed
-in the template (this list is compiled from the libspf2 sources):
+site. The template must not contain spaces. If you need spaces in the
+output, use the proper placeholder. If libspf2 can not parse the
+template, it uses a built-in default broken link. The following placeholders
+(along with Exim variables (but see below)) are allowed in the template:
 .ilist
-&*L*&: Envelope sender's local part.
+&*%_*&: A space.
 .next
-&*S*&: Envelope sender.
+&*%{L}*&: Envelope sender's local part.
 .next
-&*O*&: Envelope sender's domain.
+&*%{S}*&: Envelope sender.
 .next
-&*D*&: Current(?) domain.
+&*%{O}*&: Envelope sender's domain.
 .next
-&*I*&: SMTP client Ip.
+&*%{D}*&: Current(?) domain.
 .next
-&*C*&: SMTP client pretty IP.
+&*%{I}*&: SMTP client Ip.
 .next
-&*T*&: Epoch time (UTC).
+&*%{C}*&: SMTP client pretty IP.
 .next
-&*P*&: SMTP client domain name.
+&*%{T}*&: Epoch time (UTC).
 .next
-&*V*&: IP version.
+&*%{P}*&: SMTP client domain name.
 .next
-&*H*&: EHLO/HELO domain.
+&*%{V}*&: IP version.
 .next
-&*R*&: Receiving domain.
+&*%{H}*&: EHLO/HELO domain.
+.next
+&*%{R}*&: Receiving domain.
 .endlist
 The capitalized placeholders do proper URL encoding, if you use them
-lowercased, no encoding takes place.  A note on using Exim variables: As
-currenty the SPF library is initialized already during the EHLO phase,
-the amount of variables available for expansion is quite limited.
+lowercased, no encoding takes place.  This list was compiled from the
+libspf2 sources.
+
+A note on using Exim variables: As currenty the SPF library is initialized
+already during the EHLO phase, the amount of variables available for
+expansion is quite limited.
 .wen
 
 
