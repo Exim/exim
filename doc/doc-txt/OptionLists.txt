@@ -553,6 +553,10 @@ smtp_reserve_hosts                   host list       unset         main
 smtp_return_error_details            boolean         false         main              4.11
 socket                               string*         unset         lmtp              4.11
 spamd_address                        string*         +             main              4.50 with content scan
+spf_guess			     string          "v=spf1 a/24 mx/24 ptr ?all"
+								   main		     4.91 with SUPPORT_SPF
+spf_smtp_comment_template	     string*	     "Please see http://www.open-spf.org/Why"
+								   main		     4.94 with SUPPORT_SPF
 split_spool_directory                boolean         false         main              1.70
 spool_directory                      string          ++            main
 spool_wireformat                     boolean         false         main              4.90

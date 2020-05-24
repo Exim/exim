@@ -17800,9 +17800,9 @@ The capitalized placeholders do proper URL encoding, if you use them
 lowercased, no encoding takes place.  This list was compiled from the
 libspf2 sources.
 
-A note on using Exim variables: As currenty the SPF library is initialized
-already during the EHLO phase, the amount of variables available for
-expansion is quite limited.
+A note on using Exim variables: As
+currently the SPF library is initialized before the SMTP EHLO phase,
+the variables useful for expansion are quite limited.
 .wen
 
 
