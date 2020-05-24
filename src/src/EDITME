@@ -13,12 +13,11 @@
 
 # Things that depend on the operating system have default settings in
 # OS/Makefile-Default, but these are overridden for some OS by files
-# called called OS/Makefile-<osname>. You can further override these by
-# creating files called Local/Makefile-<osname>, and
-# Local/Makefile-<buildname> (where "<osname>" stands for the name of
-# your operating system - look at the names in the OS directory to see
-# which names are recognized, and "<buildname>" is derived from the
-# environment variable "build")
+# called OS/Makefile-<osname>. You can further override these settings by
+# creating files Local/Makefile-<osname>, and Local/Makefile-<build>.
+# The suffix "<osname>" stands for the name of your operating system - look
+# at the names in the OS directory to see which names are recognized,
+# and "<build>" is the content of the environment variable "build".
 
 # However, if you are building Exim for a single OS only, you don't need to
 # worry about setting up Local/Makefile-<osname>. Any build-time configuration
