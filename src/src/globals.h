@@ -943,6 +943,7 @@ extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */
 extern int     smtp_max_unknown_commands; /* As it says */
+extern uschar *smtp_names[];	       /* decode for command codes */
 extern uschar *smtp_notquit_reason;    /* Global for disconnect reason */
 extern FILE   *smtp_out;               /* Incoming SMTP output file */
 extern uschar *smtp_ratelimit_hosts;   /* Rate limit these hosts */

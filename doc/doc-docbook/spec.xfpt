@@ -3906,6 +3906,13 @@ together with the file descriptor number of an open pipe. Closure of the pipe
 signals the final completion of the sequence of processes that are passing
 messages through the same SMTP connection.
 
+.new
+.vitem &%-MCq%&&~<&'recipient&~address'&>&~<&'size'&>
+.oindex "&%-MCq%&"
+This option is not intended for use by external callers. It is used internally
+by Exim to implement quota checking for local users.
+.wen
+
 .vitem &%-MCS%&
 .oindex "&%-MCS%&"
 This option is not intended for use by external callers. It is used internally
@@ -32740,6 +32747,15 @@ The &%success_on_redirect%& option causes verification always to succeed
 immediately after a successful redirection. By default, if a redirection
 generates just one address, that address is also verified. See further
 discussion in section &<<SECTredirwhilveri>>&.
+.new
+.next
+If the &%quota%& option is specified for recipient verify,
+successful routing to an appendfile transport is followed by a call into
+the transport to evaluate the quota status for the recipient.
+No actual delivery is done, but verification will succeed if the quota
+is sufficient for the message (if the sender gave a message size) or
+not already exceeded (otherwise).
+.wen
 .endlist
 
 .cindex "verifying address" "differentiating failures"
@@ -32773,6 +32789,9 @@ connection, HELO, or MAIL).
 &%recipient%&: The RCPT command in a callout was rejected.
 .next
 &%postmaster%&: The postmaster check in a callout was rejected.
+.new
+.next
+&%quota%&: The quota check for a local recipient did non pass.
 .endlist
 
 The main use of these variables is expected to be to distinguish between
@@ -33101,6 +33120,38 @@ being tested. If the domain routes to several hosts, it is assumed that their
 behaviour will be the same.
 
 
+
+.new
+.section "Quota caching" "SECTquotacache"
+.cindex "hints database" "quota cache"
+.cindex "quota" "cache, description of"
+.cindex "caching" "quota"
+Exim caches the results of quota verification
+in order to reduce the amount of resources used.
+The &"callout"& hints database is used.
+
+The default cache periods are five minutes for a positive (good) result
+and one hour for a negative result.
+To change the periods the &%quota%& option can be followed by an equals sign
+and a number of optional paramemters, separated by commas.
+For example:
+.code
+verify = recipient/quota=cachepos=1h,cacheneg=1d
+.endd
+Possible parameters are:
+.vlist
+.vitem &*cachepos&~=&~*&<&'time&~interval'&>
+.cindex "quota cache" "positive entry expiry, specifying"
+Set the lifetime for a positive cache entry.
+A value of zero seconds is legitimate.
+
+.vitem &*cacheneg&~=&~*&<&'time&~interval'&>
+.cindex "quota cache" "negative entry expiry, specifying"
+As above, for a negative entry.
+
+.vitem &*no_cache*&
+Set both positive and negative lifetimes to zero.
+.wen
 
 .section "Sender address verification reporting" "SECTsenaddver"
 .cindex "verifying" "suppressing error details"

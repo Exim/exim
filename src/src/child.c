@@ -27,7 +27,7 @@ Arguments:
 Returns:       nothing
 */
 
-static void
+void
 force_fd(int oldfd, int newfd)
 {
 if (oldfd == newfd) return;

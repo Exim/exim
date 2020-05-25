@@ -227,7 +227,7 @@ static smtp_cmd_list *cmd_list_end =
 /* This list of names is used for performing the smtp_no_mail logging action.
 It must be kept in step with the SCH_xxx enumerations. */
 
-static uschar *smtp_names[] =
+uschar * smtp_names[] =
   {
   US"NONE", US"AUTH", US"DATA", US"BDAT", US"EHLO", US"ETRN", US"EXPN",
   US"HELO", US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET",
@@ -2058,6 +2058,7 @@ sending_ip_address = NULL;
 return_path = sender_address = NULL;
 deliver_localpart_data = deliver_domain_data =
 recipient_data = sender_data = NULL;			/* Can be set by ACL */
+recipient_verify_failure = NULL;
 deliver_localpart_parent = deliver_localpart_orig = NULL;
 deliver_domain_parent = deliver_domain_orig = NULL;
 callout_address = NULL;

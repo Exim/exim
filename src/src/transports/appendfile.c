@@ -2740,6 +2740,18 @@ if (!disable_quota && ob->quota_value > 0)
 
   }
 
+if (verify_mode)
+  {
+  addr->basic_errno = errno;
+  addr->message = US"Over quota";
+  addr->transport_return = yield;
+  DEBUG(D_transport)
+    debug_printf("appendfile (verify) yields %d with errno=%d more_errno=%d\n",
+      yield, addr->basic_errno, addr->more_errno);
+
+  goto RETURN;
+  }
+
 /* If we are writing in MBX format, what we actually do is to write the message
 to a temporary file, and then copy it to the real file once we know its size.
 This is the most straightforward way of getting the correct length in the

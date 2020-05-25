@@ -1618,6 +1618,7 @@ BOOL removed_privilege = FALSE;
 BOOL usage_wanted = FALSE;
 BOOL verify_address_mode = FALSE;
 BOOL verify_as_sender = FALSE;
+BOOL rcpt_verify_quota = FALSE;
 BOOL version_printed = FALSE;
 uschar *alias_arg = NULL;
 uschar *called_as = US"";
@@ -2787,6 +2788,13 @@ on the second character (the one after '-'), to save some effort. */
 	case 'Q': if (++i < argc) passed_qr_pid = (pid_t)(Uatol(argv[i]));
 		  else badarg = TRUE;
 		  if (++i < argc) passed_qr_pipe = (int)(Uatol(argv[i]));
+		  else badarg = TRUE;
+		  break;
+
+    /* -MCq: do a quota check on the given recipient for the given size
+    of message.  Separate from -MC. */
+	case 'q': rcpt_verify_quota = TRUE;
+		  if (++i < argc) message_size = Uatoi(argv[i]);
 		  else badarg = TRUE;
 		  break;
 
@@ -4296,6 +4304,7 @@ if (  !unprivileged				/* originally had root AND */
             || msg_action != MSG_DELIVER	/* not delivering          */
 	    )					/*       and               */
          && (!checking || !f.address_test_mode)	/* not address checking    */
+	 && !rcpt_verify_quota			/* and not quota checking  */
    )  )  )
   exim_setugid(exim_uid, exim_gid, TRUE, US"privilege not needed");
 
@@ -4413,6 +4422,18 @@ needed in transports so we lost the optimisation. */
   report_time_since(&t0, US"readconf_rest (delta)");
 #endif
   }
+
+/* Handle a request to check quota */
+if (rcpt_verify_quota)
+  if (real_uid != root_uid && real_uid != exim_uid)
+    exim_fail("exim: Permission denied\n");
+  else if (recipients_arg >= argc)
+    exim_fail("exim: missing recipient for quota check\n");
+  else
+    {
+    verify_quota(argv[recipients_arg]);
+    exim_exit(EXIT_SUCCESS);
+    }
 
 /* Handle the -brt option. This is for checking out retry configurations.
 The next three arguments are a domain name or a complete address, and

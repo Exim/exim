@@ -15,6 +15,12 @@
 
 #define CALLOUT_TIMEOUT_DEFAULT 30
 
+/* Default quota cache TTLs */
+
+#define QUOTA_POS_DEFAULT (5*60)
+#define QUOTA_NEG_DEFAULT (60*60)
+
+
 /* ACL verb codes - keep in step with the table of verbs that follows */
 
 enum { ACL_ACCEPT, ACL_DEFER, ACL_DENY, ACL_DISCARD, ACL_DROP, ACL_REQUIRE,
@@ -1556,6 +1562,20 @@ static callout_opt_t callout_opt_list[] = {
 
 
 
+static int
+v_period(const uschar * s, const uschar * arg, uschar ** log_msgptr)
+{
+int period;
+if ((period = readconf_readtime(s, 0, FALSE)) < 0)
+  {
+  *log_msgptr = string_sprintf("bad time value in ACL condition "
+    "\"verify %s\"", arg);
+  }
+return period;
+}
+
+
+
 /* This function implements the "verify" condition. It is called when
 encountered in any ACL, because some tests are almost always permitted. Some
 just don't make sense, and always fail (for example, an attempt to test a host
@@ -1590,6 +1610,8 @@ BOOL defer_ok = FALSE;
 BOOL callout_defer_ok = FALSE;
 BOOL no_details = FALSE;
 BOOL success_on_redirect = FALSE;
+BOOL quota = FALSE;
+int quota_pos_cache = QUOTA_POS_DEFAULT, quota_neg_cache = QUOTA_NEG_DEFAULT;
 address_item *sender_vaddr = NULL;
 uschar *verify_sender_address = NULL;
 uschar *pm_mailfrom = NULL;
@@ -1823,12 +1845,8 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
               }
             while (isspace(*opt)) opt++;
 	    }
-	  if (op->timeval && (period = readconf_readtime(opt, 0, FALSE)) < 0)
-	    {
-	    *log_msgptr = string_sprintf("bad time value in ACL condition "
-	      "\"verify %s\"", arg);
+	  if (op->timeval && (period = v_period(opt, arg, log_msgptr)) < 0)
 	    return ERROR;
-	    }
 
 	  switch(op->value)
 	    {
@@ -1861,6 +1879,38 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
       }
     }
 
+  /* The quota option has sub-options, comma-separated */
+
+  else if (strncmpic(ss, US"quota", 5) == 0)
+    {
+    quota = TRUE;
+    if (*(ss += 5))
+      {
+      while (isspace(*ss)) ss++;
+      if (*ss++ == '=')
+        {
+	const uschar * sublist = ss;
+        int optsep = ',';
+	int period;
+
+        while (isspace(*sublist)) sublist++;
+        for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
+	  if (Ustrncmp(opt, "cachepos=", 9) == 0)
+	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
+	      return ERROR;
+	    else
+	      quota_pos_cache = period;
+	  else if (Ustrncmp(opt, "cacheneg=", 9) == 0)
+	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
+	      return ERROR;
+	    else
+	      quota_neg_cache = period;
+	  else if (Ustrcmp(opt, "no_cache") == 0)
+	    quota_pos_cache = quota_neg_cache = 0;
+	}
+      }
+    }
+
   /* Option not recognized */
 
   else
@@ -1877,6 +1927,31 @@ if ((verify_options & (vopt_callout_recipsender|vopt_callout_recippmaster)) ==
   *log_msgptr = US"only one of use_sender and use_postmaster can be set "
     "for a recipient callout";
   return ERROR;
+  }
+
+/* Handle quota verification */
+if (quota)
+  {
+  if (vp->value != VERIFY_RCPT)
+    {
+    *log_msgptr = US"can only verify quota of recipient";
+    return ERROR;
+    }
+
+  if ((rc = verify_quota_call(addr->address,
+	      quota_pos_cache, quota_neg_cache, log_msgptr)) != OK)
+    {
+    *basic_errno = errno;
+    if (smtp_return_error_details)
+      {
+      if (!*user_msgptr && *log_msgptr)
+        *user_msgptr = string_sprintf("Rejected after %s: %s",
+	    smtp_names[smtp_connection_had[smtp_ch_index-1]], *log_msgptr);
+      if (rc == DEFER) f.acl_temp_details = TRUE;
+      }
+    }
+
+  return rc;
   }
 
 /* Handle sender-in-header verification. Default the user message to the log

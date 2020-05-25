@@ -26,6 +26,9 @@ Version 4.95
 
  6. An option to ignore the cache on a lookup.
 
+ 7. Quota checking during reception (i.e. at SMTP time) for appendfile-
+    transport-managed quotas.
+
 
 Version 4.94
 ------------

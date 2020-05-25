@@ -2125,7 +2125,7 @@ Arguments:
 Returns:     nothing
 */
 
-static void
+void
 deliver_local(address_item *addr, BOOL shadowing)
 {
 BOOL use_initgroups;

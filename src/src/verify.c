@@ -568,6 +568,7 @@ if (!addr->transport)
   {
   HDEBUG(D_verify) debug_printf("cannot callout via null transport\n");
   }
+
 else if (Ustrcmp(addr->transport->driver_name, "smtp") != 0)
   log_write(0, LOG_MAIN|LOG_PANIC|LOG_CONFIG_FOR, "callout transport '%s': %s is non-smtp",
     addr->transport->name, addr->transport->driver_name);
@@ -1846,6 +1847,8 @@ while (addr_new)
 
   if (rc == OK)
     {
+    BOOL local_verify = FALSE;
+
     if (routed) *routed = TRUE;
     if (callout > 0)
       {
@@ -1872,72 +1875,76 @@ while (addr_new)
       transport's options, so as to mimic what would happen if we were really
       sending a message to this address. */
 
-      if ((tp = addr->transport) && !tp->info->local)
-        {
-        (void)(tp->setup)(tp, addr, &tf, 0, 0, NULL);
+      if ((tp = addr->transport))
+	if (!tp->info->local)
+	  {
+	  (void)(tp->setup)(tp, addr, &tf, 0, 0, NULL);
 
-        /* If the transport has hosts and the router does not, or if the
-        transport is configured to override the router's hosts, we must build a
-        host list of the transport's hosts, and find the IP addresses */
+	  /* If the transport has hosts and the router does not, or if the
+	  transport is configured to override the router's hosts, we must build a
+	  host list of the transport's hosts, and find the IP addresses */
 
-        if (tf.hosts && (!host_list || tf.hosts_override))
-          {
-          uschar *s;
-          const uschar *save_deliver_domain = deliver_domain;
-          uschar *save_deliver_localpart = deliver_localpart;
+	  if (tf.hosts && (!host_list || tf.hosts_override))
+	    {
+	    uschar *s;
+	    const uschar *save_deliver_domain = deliver_domain;
+	    uschar *save_deliver_localpart = deliver_localpart;
 
-          host_list = NULL;    /* Ignore the router's hosts */
+	    host_list = NULL;    /* Ignore the router's hosts */
 
-          deliver_domain = addr->domain;
-          deliver_localpart = addr->local_part;
-          s = expand_string(tf.hosts);
-          deliver_domain = save_deliver_domain;
-          deliver_localpart = save_deliver_localpart;
+	    deliver_domain = addr->domain;
+	    deliver_localpart = addr->local_part;
+	    s = expand_string(tf.hosts);
+	    deliver_domain = save_deliver_domain;
+	    deliver_localpart = save_deliver_localpart;
 
-          if (!s)
-            {
-            log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
-              "\"%s\" in %s transport for callout: %s", tf.hosts,
-              tp->name, expand_string_message);
-            }
-          else
-            {
-            int flags;
-            host_build_hostlist(&host_list, s, tf.hosts_randomize);
+	    if (!s)
+	      {
+	      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand list of hosts "
+		"\"%s\" in %s transport for callout: %s", tf.hosts,
+		tp->name, expand_string_message);
+	      }
+	    else
+	      {
+	      int flags;
+	      host_build_hostlist(&host_list, s, tf.hosts_randomize);
 
-            /* Just ignore failures to find a host address. If we don't manage
-            to find any addresses, the callout will defer. Note that more than
-            one address may be found for a single host, which will result in
-            additional host items being inserted into the chain. Hence we must
-            save the next host first. */
+	      /* Just ignore failures to find a host address. If we don't manage
+	      to find any addresses, the callout will defer. Note that more than
+	      one address may be found for a single host, which will result in
+	      additional host items being inserted into the chain. Hence we must
+	      save the next host first. */
 
-            flags = HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
-            if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
-            if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
+	      flags = HOST_FIND_BY_A | HOST_FIND_BY_AAAA;
+	      if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
+	      if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
-            for (host_item * host = host_list, * nexthost; host; host = nexthost)
-              {
-              nexthost = host->next;
-              if (tf.gethostbyname ||
-                  string_is_ip_address(host->name, NULL) != 0)
-                (void)host_find_byname(host, NULL, flags, NULL, TRUE);
-              else
+	      for (host_item * host = host_list, * nexthost; host; host = nexthost)
 		{
-		const dnssec_domains * dsp = NULL;
-		if (Ustrcmp(tp->driver_name, "smtp") == 0)
+		nexthost = host->next;
+		if (tf.gethostbyname ||
+		    string_is_ip_address(host->name, NULL) != 0)
+		  (void)host_find_byname(host, NULL, flags, NULL, TRUE);
+		else
 		  {
-		  smtp_transport_options_block * ob =
-		      (smtp_transport_options_block *) tp->options_block;
-		  dsp = &ob->dnssec;
-		  }
+		  const dnssec_domains * dsp = NULL;
+		  if (Ustrcmp(tp->driver_name, "smtp") == 0)
+		    {
+		    smtp_transport_options_block * ob =
+			(smtp_transport_options_block *) tp->options_block;
+		    dsp = &ob->dnssec;
+		    }
 
-                (void) host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
-		  dsp, NULL, NULL);
+		  (void) host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
+		    dsp, NULL, NULL);
+		  }
 		}
-              }
-            }
-          }
-        }
+	      }
+	    }
+	  }
+	else if (  options & vopt_quota
+		&& Ustrcmp(tp->driver_name, "appendfile") == 0)
+	  local_verify = TRUE;
 
       /* Can only do a callout if we have at least one host! If the callout
       fails, it will have set ${sender,recipient}_verify_failure. */
@@ -1963,11 +1970,17 @@ while (addr_new)
 #endif
           }
         }
+      else if (local_verify)
+	{
+        HDEBUG(D_verify) debug_printf("Attempting quota verification\n");
+
+	deliver_set_expansions(addr);
+	deliver_local(addr, TRUE);
+	rc = addr->transport_return;
+	}
       else
-        {
         HDEBUG(D_verify) debug_printf("Cannot do callout: neither router nor "
           "transport provided a host list, or transport is not smtp\n");
-        }
       }
     }
 
@@ -3918,6 +3931,246 @@ while ((domain = string_nextinlist(&list, &sep, NULL, 0)))
 
 return FAIL;
 }
+
+
+
+/****************************************************
+  Verify a local user account for quota sufficiency
+****************************************************/
+
+/* The real work, done via a re-exec for privs, calls
+down to the transport for the quota check.
+
+Route and transport (in recipient-verify mode) the
+given recipient. 
+
+A routing result indicating any transport type other than appendfile
+results in a fail.
+
+Return, on stdout, a result string containing:
+- highlevel result code (OK, DEFER, FAIL)
+- errno
+- where string
+- message string
+*/
+
+void
+verify_quota(uschar * address)
+{
+address_item vaddr = {.address = address};
+BOOL routed;
+uschar * msg = US"\0";
+int rc, len = 1;
+
+if ((rc = verify_address(&vaddr, NULL, vopt_is_recipient | vopt_quota,
+    1, 0, 0, NULL, NULL, &routed)) != OK)
+  {
+  uschar * where = recipient_verify_failure;
+  msg = acl_verify_message ? acl_verify_message : vaddr.message;
+  if (!msg) msg = US"";
+  if (rc == DEFER && vaddr.basic_errno == ERRNO_EXIMQUOTA)
+    {
+    rc = FAIL;					/* DEFER -> FAIL */
+    where = US"quota";
+    vaddr.basic_errno = 0;
+    }
+  else if (!where) where = US"";
+
+  len = 5 + Ustrlen(msg) + 1 + Ustrlen(where);
+  msg = string_sprintf("%c%c%c%c%c%s%c%s", (uschar)rc,
+    (vaddr.basic_errno >> 24) && 0xff, (vaddr.basic_errno >> 16) && 0xff,
+    (vaddr.basic_errno >> 8) && 0xff, vaddr.basic_errno && 0xff,
+    where, '\0', msg);
+  }
+
+DEBUG(D_verify) debug_printf_indent("verify_quota: len %d\n", len);
+write(1, msg, len);
+return;
+}
+
+
+/******************************************************************************/
+
+/* Quota cache lookup.  We use the callout hints db also for the quota cache.
+Return TRUE if a nonexpired record was found, having filled in the yield
+argument.
+*/
+
+static BOOL
+cached_quota_lookup(const uschar * rcpt, int * yield,
+  int pos_cache, int neg_cache)
+{
+open_db dbblock, *dbm_file = NULL;
+dbdata_callout_cache_address * cache_address_record;
+
+if (!pos_cache && !neg_cache)
+  return FALSE;
+if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
+  {
+  HDEBUG(D_verify) debug_printf_indent("quota cache: not available\n");
+  return FALSE;
+  }
+if (!(cache_address_record = (dbdata_callout_cache_address *)
+    get_callout_cache_record(dbm_file, rcpt, US"address",
+      pos_cache, neg_cache)))
+  {
+  dbfn_close(dbm_file);
+  return FALSE;
+  }
+if (cache_address_record->result == ccache_accept)
+  *yield = OK;
+dbfn_close(dbm_file);
+return TRUE;
+}
+
+/* Quota cache write */
+
+static void
+cache_quota_write(const uschar * rcpt, int yield, int pos_cache, int neg_cache)
+{
+open_db dbblock, *dbm_file = NULL;
+dbdata_callout_cache_address cache_address_record;
+
+if (!pos_cache && !neg_cache)
+  return;
+if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
+  {
+  HDEBUG(D_verify) debug_printf_indent("quota cache: not available\n");
+  return;
+  }
+
+cache_address_record.result = yield == OK ? ccache_accept : ccache_reject;
+
+(void)dbfn_write(dbm_file, rcpt, &cache_address_record,
+	(int)sizeof(dbdata_callout_cache_address));
+HDEBUG(D_verify) debug_printf_indent("wrote %s quota cache record for %s\n",
+      yield == OK ? "positive" : "negative", rcpt);
+
+dbfn_close(dbm_file);
+return;
+}
+
+
+/* To evaluate a local user's quota, starting in ACL, we need to
+fork & exec to regain privileges, to that we can change to the user's
+identity for access to their files.
+
+Arguments:
+ rcpt		Recipient account
+ pos_cache	Number of seconds to cache a positive result (delivery
+ 		to be accepted).  Zero to disable caching.
+ neg_cache	Number of seconds to cache a negative result.  Zero to disable.
+ msg		Pointer to result string pointer
+
+Return:		OK/DEFER/FAIL code
+*/
+
+int
+verify_quota_call(const uschar * rcpt, int pos_cache, int neg_cache,
+  uschar ** msg)
+{
+int pfd[2], pid, save_errno, yield = FAIL;
+void (*oldsignal)(int);
+const uschar * where = US"socketpair";
+
+*msg = NULL;
+
+if (cached_quota_lookup(rcpt, &yield, pos_cache, neg_cache))
+  {
+  HDEBUG(D_verify) debug_printf_indent("quota cache: address record is %d\n",
+    yield == OK ? "positive" : "negative");
+  if (yield != OK)
+    {
+    recipient_verify_failure = US"quota";
+    acl_verify_message = *msg =
+      US"Previous (cached) quota verification failure";
+    }
+  return yield;
+  }
+
+if (pipe(pfd) != 0)
+  goto fail;
+
+where = US"fork";
+oldsignal = signal(SIGCHLD, SIG_DFL);
+if ((pid = exim_fork(US"quota-verify")) < 0)
+  {
+  save_errno = errno;
+  close(pfd[pipe_write]);
+  close(pfd[pipe_read]);
+  errno = save_errno;
+  goto fail;
+  }
+
+if (pid == 0)		/* child */
+  {
+  close(pfd[pipe_read]);
+  force_fd(pfd[pipe_write], 1);		/* stdout to pipe */
+  close(pfd[pipe_write]);
+  dup2(1, 0);
+  if (debug_fd > 0) force_fd(debug_fd, 2);
+
+  child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 3,
+    US"-MCq", string_sprintf("%d", message_size), rcpt);
+  /*NOTREACHED*/
+  }
+
+save_errno = errno;
+close(pfd[pipe_write]);
+
+if (pid < 0)
+  {
+  DEBUG(D_verify) debug_printf_indent(" fork: %s\n", strerror(save_errno));
+  }
+else
+  {
+  uschar buf[128];
+  int n = read(pfd[pipe_read], buf, sizeof(buf));
+  int status;
+
+  waitpid(pid, &status, 0);
+  if (status == 0)
+    {
+    uschar * s;
+
+    if (n > 0) yield = buf[0];
+    if (n > 4)
+      save_errno = (buf[1] << 24) | (buf[2] << 16) | (buf[3] << 8) | buf[4];
+    if ((recipient_verify_failure = n > 5
+	? string_copyn_taint(buf+5, n-5, FALSE) : NULL))
+      {
+      int m;
+      s = buf + 5 + Ustrlen(recipient_verify_failure) + 1;
+      m = n - (s - buf);
+      acl_verify_message = *msg =
+	m > 0 ? string_copyn_taint(s, m, FALSE) : NULL;
+      }
+
+    DEBUG(D_verify) debug_printf_indent("verify call response:"
+      " len %d yield %s errno '%s' where '%s' msg '%s'\n",
+      n, rc_names[yield], strerror(save_errno), recipient_verify_failure, *msg);
+
+    if (  yield == OK
+       || save_errno == 0 && Ustrcmp(recipient_verify_failure, "quota") == 0)
+      cache_quota_write(rcpt, yield, pos_cache, neg_cache);
+    else DEBUG(D_verify)
+      debug_printf_indent("result not cacheable\n");
+    }
+  else
+    {
+    DEBUG(D_verify)
+      debug_printf_indent("verify call response: waitpid status 0x%04x\n", status);
+    }
+  }
+
+close(pfd[pipe_read]);
+errno = save_errno;
+
+fail:
+
+return yield;
+}
+
 
 /* vi: aw ai sw=2
 */
