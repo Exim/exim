@@ -85,9 +85,9 @@ Attempting full verification using callout
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
  dbfn_read: key=y
-callout cache: no domain record found for y
+ callout cache: no domain record found for y
  dbfn_read: key=x@y
-callout cache: no address record found for x@y
+ callout cache: no address record found for x@y
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 interface=NULL port=1224
@@ -117,10 +117,10 @@ cmd buf flush ddd bytes
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
  dbfn_write: key=y
-wrote callout cache domain record for y:
-  result=1 postmaster=0 random=0
+ wrote callout cache domain record for y:
+   result=1 postmaster=0 random=0
  dbfn_write: key=x@y
-wrote positive callout cache address record for x@y
+ wrote positive callout cache address record for x@y
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 ----------- end verify ------------
@@ -196,10 +196,10 @@ Attempting full verification using callout
  returned from EXIM_DBOPEN: 0xAAAAAAAA
  opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
  dbfn_read: key=y
-callout cache: found domain record for y
+ callout cache: found domain record for y
  dbfn_read: key=x@y
-callout cache: found address record for x@y
-callout cache: address record is positive
+ callout cache: found address record for x@y
+ callout cache: address record is positive
  EXIM_DBCLOSE(0xAAAAAAAA)
  closed hints database and lockfile
 ----------- end verify ------------

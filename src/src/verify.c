@@ -71,7 +71,7 @@ dbdata_callout_cache *cache_record;
 
 if (!(cache_record = dbfn_read_with_length(dbm_file, key, &length)))
   {
-  HDEBUG(D_verify) debug_printf("callout cache: no %s record found for %s\n", type, key);
+  HDEBUG(D_verify) debug_printf_indent("callout cache: no %s record found for %s\n", type, key);
   return NULL;
   }
 
@@ -85,7 +85,7 @@ now = time(NULL);
 
 if (now - cache_record->time_stamp > expire)
   {
-  HDEBUG(D_verify) debug_printf("callout cache: %s record expired for %s\n", type, key);
+  HDEBUG(D_verify) debug_printf_indent("callout cache: %s record expired for %s\n", type, key);
   return NULL;
   }
 
@@ -112,7 +112,7 @@ if (type[0] == 'd' && cache_record->result != ccache_reject)
     cache_record->random_result = ccache_unknown;
   }
 
-HDEBUG(D_verify) debug_printf("callout cache: found %s record for %s\n", type, key);
+HDEBUG(D_verify) debug_printf_indent("callout cache: found %s record for %s\n", type, key);
 return cache_record;
 }
 
@@ -139,11 +139,11 @@ stage, unless caching has been disabled. */
 
 if (options & vopt_callout_no_cache)
   {
-  HDEBUG(D_verify) debug_printf("callout cache: disabled by no_cache\n");
+  HDEBUG(D_verify) debug_printf_indent("callout cache: disabled by no_cache\n");
   }
 else if (!(dbm_file = dbfn_open(US"callout", O_RDWR, &dbblock, FALSE, TRUE)))
   {
-  HDEBUG(D_verify) debug_printf("callout cache: not available\n");
+  HDEBUG(D_verify) debug_printf_indent("callout cache: not available\n");
   }
 else
   {
@@ -174,7 +174,7 @@ else
        || *from_address == 0 && cache_record->result == ccache_reject_mfnull)
       {
       HDEBUG(D_verify)
-	debug_printf("callout cache: domain gave initial rejection, or "
+	debug_printf_indent("callout cache: domain gave initial rejection, or "
 	  "does not accept HELO or MAIL FROM:<>\n");
       setflag(addr, af_verify_nsfail);
       addr->user_message = US"(result of an earlier callout reused).";
@@ -195,14 +195,14 @@ else
       {
       case ccache_accept:
 	HDEBUG(D_verify)
-	  debug_printf("callout cache: domain accepts random addresses\n");
+	  debug_printf_indent("callout cache: domain accepts random addresses\n");
 	*failure_ptr = US"random";
 	dbfn_close(dbm_file);
 	return TRUE;     /* Default yield is OK */
 
       case ccache_reject:
 	HDEBUG(D_verify)
-	  debug_printf("callout cache: domain rejects random addresses\n");
+	  debug_printf_indent("callout cache: domain rejects random addresses\n");
 	*opt_ptr = options & ~vopt_callout_random;
 	new_domain_record->random_result = ccache_reject;
 	new_domain_record->random_stamp = cache_record->random_stamp;
@@ -210,7 +210,7 @@ else
 
       default:
 	HDEBUG(D_verify)
-	  debug_printf("callout cache: need to check random address handling "
+	  debug_printf_indent("callout cache: need to check random address handling "
 	    "(not cached or cache expired)\n");
 	dbfn_close(dbm_file);
 	return FALSE;
@@ -227,7 +227,7 @@ else
 	{
 	setflag(addr, af_verify_pmfail);
 	HDEBUG(D_verify)
-	  debug_printf("callout cache: domain does not accept "
+	  debug_printf_indent("callout cache: domain does not accept "
 	    "RCPT TO:<postmaster@domain>\n");
 	*yield = FAIL;
 	*failure_ptr = US"postmaster";
@@ -239,7 +239,7 @@ else
       if (cache_record->postmaster_result == ccache_unknown)
 	{
 	HDEBUG(D_verify)
-	  debug_printf("callout cache: need to check RCPT "
+	  debug_printf_indent("callout cache: need to check RCPT "
 	    "TO:<postmaster@domain> (not cached or cache expired)\n");
 	dbfn_close(dbm_file);
 	return FALSE;
@@ -250,7 +250,7 @@ else
       that the value in the cache record is preserved (with its old timestamp).
       */
 
-      HDEBUG(D_verify) debug_printf("callout cache: domain accepts RCPT "
+      HDEBUG(D_verify) debug_printf_indent("callout cache: domain accepts RCPT "
 	"TO:<postmaster@domain>\n");
       *pm_ptr = NULL;
       new_domain_record->postmaster_result = ccache_accept;
@@ -274,12 +274,12 @@ else
   if (cache_address_record->result == ccache_accept)
     {
     HDEBUG(D_verify)
-      debug_printf("callout cache: address record is positive\n");
+      debug_printf_indent("callout cache: address record is positive\n");
     }
   else
     {
     HDEBUG(D_verify)
-      debug_printf("callout cache: address record is negative\n");
+      debug_printf_indent("callout cache: address record is negative\n");
     addr->user_message = US"Previous (cached) callout verification failure";
     *failure_ptr = US"recipient";
     *yield = FAIL;
@@ -316,13 +316,13 @@ Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
 if (dom_rec->result != ccache_unknown)
   if (!(dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE)))
     {
-    HDEBUG(D_verify) debug_printf("callout cache: not available\n");
+    HDEBUG(D_verify) debug_printf_indent("callout cache: not available\n");
     }
   else
     {
     (void)dbfn_write(dbm_file, domain, dom_rec,
       (int)sizeof(dbdata_callout_cache));
-    HDEBUG(D_verify) debug_printf("wrote callout cache domain record for %s:\n"
+    HDEBUG(D_verify) debug_printf_indent("wrote callout cache domain record for %s:\n"
       "  result=%d postmaster=%d random=%d\n",
       domain,
       dom_rec->result,
@@ -339,13 +339,13 @@ if (done  &&  addr_rec->result != ccache_unknown)
     dbm_file = dbfn_open(US"callout", O_RDWR|O_CREAT, &dbblock, FALSE, TRUE);
   if (!dbm_file)
     {
-    HDEBUG(D_verify) debug_printf("no callout cache available\n");
+    HDEBUG(D_verify) debug_printf_indent("no callout cache available\n");
     }
   else
     {
     (void)dbfn_write(dbm_file, address_key, addr_rec,
       (int)sizeof(dbdata_callout_cache_address));
-    HDEBUG(D_verify) debug_printf("wrote %s callout cache address record for %s\n",
+    HDEBUG(D_verify) debug_printf_indent("wrote %s callout cache address record for %s\n",
       addr_rec->result == ccache_accept ? "positive" : "negative",
       address_key);
     }
