@@ -1515,7 +1515,7 @@ static verify_type_t verify_type_list[] = {
     { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"sender",	  	VERIFY_SNDR,		ACL_BIT_MAIL | ACL_BIT_RCPT
-			|ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
+			| ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
 										FALSE, 6 },
     { US"recipient",	  	VERIFY_RCPT,	 	ACL_BIT_RCPT,	FALSE, 0 },
     { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
@@ -1746,7 +1746,7 @@ switch(vp->value)
     in place of the actual sender (rare special-case requirement). */
     {
     uschar *s = ss + 6;
-    if (*s == 0)
+    if (!*s)
       verify_sender_address = sender_address;
     else
       {
@@ -1792,19 +1792,16 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   else if (strncmpic(ss, US"callout", 7) == 0)
     {
     callout = CALLOUT_TIMEOUT_DEFAULT;
-    ss += 7;
-    if (*ss != 0)
+    if (*(ss += 7))
       {
       while (isspace(*ss)) ss++;
       if (*ss++ == '=')
         {
 	const uschar * sublist = ss;
         int optsep = ',';
-        uschar buffer[256];
-	uschar * opt;
 
         while (isspace(*sublist)) sublist++;
-        while ((opt = string_nextinlist(&sublist, &optsep, buffer, sizeof(buffer))))
+        for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
           {
 	  callout_opt_t * op;
 	  double period = 1.0F;
@@ -1928,8 +1925,8 @@ else if (verify_sender_address)
     }
 
   sender_vaddr = verify_checked_sender(verify_sender_address);
-  if (sender_vaddr != NULL &&               /* Previously checked */
-      callout <= 0)                         /* No callout needed this time */
+  if (   sender_vaddr				/* Previously checked */
+      && callout <= 0)				/* No callout needed this time */
     {
     /* If the "routed" flag is set, it means that routing worked before, so
     this check can give OK (the saved return code value, if set, belongs to a
@@ -1996,14 +1993,12 @@ else if (verify_sender_address)
         *basic_errno = sender_vaddr->basic_errno;
       else
 	DEBUG(D_acl)
-	  {
 	  if (Ustrcmp(sender_vaddr->address, verify_sender_address) != 0)
 	    debug_printf_indent("sender %s verified ok as %s\n",
 	      verify_sender_address, sender_vaddr->address);
 	  else
 	    debug_printf_indent("sender %s verified ok\n",
 	      verify_sender_address);
-	  }
       }
     else
       rc = OK;  /* Null sender */
@@ -2047,8 +2042,7 @@ else
 
   *basic_errno = addr2.basic_errno;
   *log_msgptr = addr2.message;
-  *user_msgptr = (addr2.user_message != NULL)?
-    addr2.user_message : addr2.message;
+  *user_msgptr = addr2.user_message ? addr2.user_message : addr2.message;
 
   /* Allow details for temporary error if the address is so flagged. */
   if (testflag((&addr2), af_pass_message)) f.acl_temp_details = TRUE;
@@ -2059,8 +2053,10 @@ else
 
 /* We have a result from the relevant test. Handle defer overrides first. */
 
-if (rc == DEFER && (defer_ok ||
-   (callout_defer_ok && *basic_errno == ERRNO_CALLOUTDEFER)))
+if (  rc == DEFER
+   && (  defer_ok
+      || callout_defer_ok && *basic_errno == ERRNO_CALLOUTDEFER
+   )  )
   {
   HDEBUG(D_acl) debug_printf_indent("verify defer overridden by %s\n",
     defer_ok? "defer_ok" : "callout_defer_ok");
@@ -2070,7 +2066,7 @@ if (rc == DEFER && (defer_ok ||
 /* If we've failed a sender, set up a recipient message, and point
 sender_verified_failed to the address item that actually failed. */
 
-if (rc != OK && verify_sender_address != NULL)
+if (rc != OK && verify_sender_address)
   {
   if (rc != DEFER)
     *log_msgptr = *user_msgptr = US"Sender verify failed";
@@ -2089,7 +2085,7 @@ if (rc != OK && verify_sender_address != NULL)
 /* Verifying an address messes up the values of $domain and $local_part,
 so reset them before returning if this is a RCPT ACL. */
 
-if (addr != NULL)
+if (addr)
   {
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;

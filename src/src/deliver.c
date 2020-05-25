@@ -2152,18 +2152,16 @@ else
 
 if (tp->return_path)
   {
-  uschar *new_return_path = expand_string(tp->return_path);
-  if (!new_return_path)
+  uschar * new_return_path = expand_string(tp->return_path);
+  if (new_return_path)
+    return_path = new_return_path;
+  else if (!f.expand_string_forcedfail)
     {
-    if (!f.expand_string_forcedfail)
-      {
-      common_error(TRUE, addr, ERRNO_EXPANDFAIL,
-        US"Failed to expand return path \"%s\" in %s transport: %s",
-        tp->return_path, tp->name, expand_string_message);
-      return;
-      }
+    common_error(TRUE, addr, ERRNO_EXPANDFAIL,
+      US"Failed to expand return path \"%s\" in %s transport: %s",
+      tp->return_path, tp->name, expand_string_message);
+    return;
     }
-  else return_path = new_return_path;
   }
 
 /* For local deliveries, one at a time, the value used for logging can just be

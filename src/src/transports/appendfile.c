@@ -2287,14 +2287,14 @@ else
         {
         uschar *new_check_path = string_copy(check_path);
         uschar *slash = Ustrrchr(new_check_path, '/');
-        if (slash != NULL)
+        if (slash)
           {
-          if (slash[1] == 0)
+          if (!slash[1])
             {
             *slash = 0;
             slash = Ustrrchr(new_check_path, '/');
             }
-          if (slash != NULL)
+          if (slash)
             {
             *slash = 0;
             check_path = new_check_path;
@@ -2349,7 +2349,7 @@ else
         {
         uschar *s = path + check_path_len;
         while (*s == '/') s++;
-        s = (*s == 0) ? US "new" : string_sprintf("%s/new", s);
+        s = *s ? string_sprintf("%s/new", s) : US"new";
         if (pcre_exec(dir_regex, NULL, CS s, Ustrlen(s), 0, 0, NULL, 0) < 0)
           {
           disable_quota = TRUE;
@@ -2408,10 +2408,11 @@ else
   count. Note that ob->quota_filecount_value cannot be set without
   ob->quota_value being set. */
 
-  if (!disable_quota &&
-      (ob->quota_value > 0 || THRESHOLD_CHECK) &&
-      (mailbox_size < 0 ||
-        (mailbox_filecount < 0 && ob->quota_filecount_value > 0)))
+  if (  !disable_quota
+     && (ob->quota_value > 0 || THRESHOLD_CHECK)
+     && (  mailbox_size < 0
+	|| mailbox_filecount < 0 && ob->quota_filecount_value > 0
+    )   )
     {
     off_t size;
     int filecount = 0;

@@ -1612,7 +1612,7 @@ address testing (-bt), which is indicated by address_test_mode being set.
 Arguments:
   vaddr            contains the address to verify; the next field in this block
                      must be NULL
-  f                if not NULL, write the result to this file
+  fp               if not NULL, write the result to this file
   options          various option bits:
                      vopt_fake_sender => this sender verify is not for the real
                        sender (it was verify=sender=xxxx or an address from a
@@ -1663,9 +1663,9 @@ BOOL expn         = (options & vopt_expn) != 0;
 BOOL success_on_redirect = (options & vopt_success_on_redirect) != 0;
 int i;
 int yield = OK;
-int verify_type = expn? v_expn :
-   f.address_test_mode? v_none :
-          options & vopt_is_recipient? v_recipient : v_sender;
+int verify_type = expn ? v_expn :
+   f.address_test_mode ? v_none :
+          options & vopt_is_recipient ? v_recipient : v_sender;
 address_item *addr_list;
 address_item *addr_new = NULL;
 address_item *addr_remote = NULL;
