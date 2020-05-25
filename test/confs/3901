@@ -10,11 +10,13 @@ primary_hostname = myhost.test.ex
 
 acl_smtp_rcpt = check_recipient
 
+.ifdef TRUSTED
 tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 tls_verify_hosts = HOSTIPV4
 tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+.endif
 
 queue_only
 
