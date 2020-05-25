@@ -6186,11 +6186,12 @@ while (*s != 0)
         case 2:
         case 3: goto EXPAND_FAILED;
         }
-      for (uschar sep = *sub[0], c; c = *sub[1]; sub[1]++)
+      if (*sub[1]) for (uschar sep = *sub[0], c; c = *sub[1]; sub[1]++)
 	{
 	if (c == sep) yield = string_catn(yield, sub[1], 1);
 	yield = string_catn(yield, sub[1], 1);
 	}
+      else yield = string_catn(yield, US" ", 1);
       continue;
       }
 

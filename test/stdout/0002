@@ -122,6 +122,7 @@
 > listquote: ab:cd
 > listquote: ab;;cd
 > listquote:   ab  cd
+> listquote: < >
 > 
 > sort: 1:2:3:4
 > sort: 4,3,2,1

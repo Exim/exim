@@ -133,6 +133,7 @@ listquote: ${listquote{:}{ab::cd}}
 listquote: ${listquote{;}{ab:cd}}
 listquote: ${listquote{;}{ab;cd}}
 listquote: ${listquote{ }{ ab cd}}
+listquote: <${listquote{:}{}}>
 
 sort: ${sort{3:2:1:4}{<}{$item}}
 sort: ${sort {<, 3,2,1,4}{>}{$item}}
