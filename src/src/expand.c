@@ -2066,7 +2066,8 @@ switch (vp->type)
   case vtype_string_func:
     {
     stringptr_fn_t * fn = (stringptr_fn_t *) val;
-    return fn();
+    uschar* s = fn();
+    return s ? s : US"";
     }
 
   case vtype_pspace:
