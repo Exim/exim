@@ -1811,4 +1811,116 @@ return 0;
 }
 #endif
 
+/* Now build the unique message id. This has changed several times over the
+lifetime of Exim. This description was rewritten for Exim 4.14 (February 2003).
+Retaining all the history in the comment has become too unwieldy - read
+previous release sources if you want it.
+
+The message ID has 3 parts: tttttt-pppppp-ss. Each part is a number in base 62.
+The first part is the current time, in seconds. The second part is the current
+pid. Both are large enough to hold 32-bit numbers in base 62. The third part
+can hold a number in the range 0-3843. It used to be a computed sequence
+number, but is now the fractional component of the current time in units of
+1/2000 of a second (i.e. a value in the range 0-1999). After a message has been
+received, Exim ensures that the timer has ticked at the appropriate level
+before proceeding, to avoid duplication if the pid happened to be re-used
+within the same time period. It seems likely that most messages will take at
+least half a millisecond to be received, so no delay will normally be
+necessary. At least for some time...
+
+There is a modification when localhost_number is set. Formerly this was allowed
+to be as large as 255. Now it is restricted to the range 0-16, and the final
+component of the message id becomes (localhost_number * 200) + fractional time
+in units of 1/200 of a second (i.e. a value in the range 0-3399).
+
+Some not-really-Unix operating systems use case-insensitive file names (Darwin,
+Cygwin). For these, we have to use base 36 instead of base 62. Luckily, this
+still allows the tttttt field to hold a large enough number to last for some
+more decades, and the final two-digit field can hold numbers up to 1295, which
+is enough for milliseconds (instead of 1/2000 of a second).
+
+However, the pppppp field cannot hold a 32-bit pid, but it can hold a 31-bit
+pid, so it is probably safe because pids have to be positive. The
+localhost_number is restricted to 0-10 for these hosts, and when it is set, the
+final field becomes (localhost_number * 100) + fractional time in centiseconds.
+
+Note that string_base62() returns its data in a static storage block, so it
+must be copied before calling string_base62() again. It always returns exactly
+6 characters.
+
+There doesn't seem to be anything in the RFC which requires a message id to
+start with a letter, but Smail was changed to ensure this. The external form of
+the message id (as supplied by string expansion) therefore starts with an
+additional leading 'E'. The spool file names do not include this leading
+letter and it is not used internally.
+
+NOTE: If ever the format of message ids is changed, the regular expression for
+checking that a string is in this format must be updated in a corresponding
+way. It appears in the initializing code in exim.c. The macro MESSAGE_ID_LENGTH
+must also be changed to reflect the correct string length. The queue-sort code
+needs to know the layout. Then, of course, other programs that rely on the
+message id format will need updating too. */
+
+void
+generate_message_id()
+{
+int id_resolution = 0;
+
+/* Remember the time of reception. Exim uses time+pid for uniqueness of message
+ids, and fractions of a second are required. See the comments that precede the
+message id creation below. */
+
+(void)gettimeofday(&message_id_tv, NULL);
+
+/* For other uses of the received time we can operate with granularity of one
+second, and for that we use the global variable received_time. This is for
+things like ultimate message timeouts. */
+
+received_time = message_id_tv;
+
+Ustrncpy(message_id, string_base62((long int)(message_id_tv.tv_sec)), 6);
+message_id[6] = '-';
+Ustrncpy(message_id + 7, string_base62((long int)getpid()), 6);
+
+/* Deal with the case where the host number is set. The value of the number was
+checked when it was read, to ensure it isn't too big. The timing granularity is
+left in id_resolution so that an appropriate wait can be done after receiving
+the message, if necessary (we hope it won't be). */
+
+if (host_number_string)
+  {
+  id_resolution = BASE_62 == 62 ? 5000 : 10000;
+  sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
+    string_base62((long int)(
+      host_number * (1000000/id_resolution) +
+        message_id_tv.tv_usec/id_resolution)) + 4);
+  }
+
+/* Host number not set: final field is just the fractional time at an
+appropriate resolution. */
+
+else
+  {
+  id_resolution = BASE_62 == 62 ? 500 : 1000;
+  sprintf(CS(message_id + MESSAGE_ID_LENGTH - 3), "-%2s",
+    string_base62((long int)(message_id_tv.tv_usec/id_resolution)) + 4);
+  }
+
+/* In SMTP sessions we may receive several messages in one connection. After
+each one, we wait for the clock to tick at the level of message-id granularity.
+This is so that the combination of time+pid is unique, even on systems where the
+pid can be re-used within our time interval. We can't shorten the interval
+without re-designing the message-id. See comments above where the message id is
+created. This is Something For The Future.
+Do this wait any time we have created a message-id, even if we rejected the
+message.  This gives unique IDs for logging done by ACLs. */
+
+if (id_resolution != 0)
+  {
+  message_id_tv.tv_usec = (message_id_tv.tv_usec/id_resolution) * id_resolution;
+  exim_wait_tick(&message_id_tv, id_resolution);
+  id_resolution = 0;
+  }
+}
+
 /* End of string.c */

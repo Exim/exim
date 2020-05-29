@@ -634,6 +634,9 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following to include the fast-ramp two-phase-queue-run support
 # EXPERIMENTAL_QUEUE_RAMP=yes
 
+# Uncomment the following line to enable message_id generation in mail from:
+# EXPERIMENTAL_MAILFROM_MSGID=yes
+
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #
 ###############################################################################
