@@ -2485,7 +2485,7 @@ else
       uschar *basename;
 
       (void)gettimeofday(&msg_tv, NULL);
-      basename = string_sprintf(TIME_T_FMT ".H%luP" PID_T_FMT ".%s",
+      basename = string_sprintf(TIME_T_FMT ".M%luP" PID_T_FMT ".%s",
        	msg_tv.tv_sec, msg_tv.tv_usec, getpid(), primary_hostname);
 
       filename = dataname = string_sprintf("tmp/%s", basename);
@@ -2557,11 +2557,12 @@ else
     dataname = string_sprintf("%s.msg", mailstore_basename);
 
     fd = Uopen(filename, O_WRONLY|O_CREAT|O_EXCL, mode);
-    if (fd < 0 &&                                 /* failed to open, and */
-        (errno != ENOENT ||                       /* either not non-exist */
-         !ob->create_directory ||                 /* or not allowed to make */
-         !directory_make(NULL, path, ob->dirmode, FALSE) ||  /* or failed to create dir */
-         (fd = Uopen(filename, O_WRONLY|O_CREAT|O_EXCL, mode)) < 0)) /* or then failed to open */
+    if (  fd < 0				/* failed to open, and */
+       && (   errno != ENOENT			/* either not non-exist */
+	  || !ob->create_directory		/* or not allowed to make */
+	  || !directory_make(NULL, path, ob->dirmode, FALSE)  /* or failed to create dir */
+	  || (fd = Uopen(filename, O_WRONLY|O_CREAT|O_EXCL, mode)) < 0 /* or then failed to open */
+       )  )
       {
       addr->basic_errno = errno;
       addr->message = string_sprintf("while creating file %s", filename);

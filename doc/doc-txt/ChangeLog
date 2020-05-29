@@ -6,7 +6,9 @@ options, and new features, see the NewStuff file next to this ChangeLog.
 Since Exim version 4.94
 ----------------------
 
-(none yet)
+JH/01 Bug 1329: Fix format of Maildir-format filenames to match other mail-
+      related applications.  Previously an "H" was used where available info
+      says that "M" should be, so change to match.
 
 
 Exim version 4.94
