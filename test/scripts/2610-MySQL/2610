@@ -10,28 +10,40 @@ system 'mysql_install_db --no-defaults --datadir=DIR/mysql --user=CALLER';
 ****
 sudo rm test-stdout test-stderr
 #
-# start a db server
+### start a db server
 echo Starting DB server
 background
 DIR/bin.sys/mysqld --datadir=DIR/mysql --log-error=DIR/mysql/log --bind-address=* --port=PORT_N --socket=DIR/mysql/sock --pid-file=DIR/mysql/pidfile
 ****
 #
-# wait for db startup, insert some data
+### wait for db startup, set password on the root user
 echo Waiting for DB server startup
+sudo perl
+system 'mysql --protocol=socket --socket=`pwd`/mysql/sock --connect_timeout=10 -u root -e "set password = password(\"pass\")"';
+****
+#
+### create testdb and extra users
+echo Create testdb and extra users
 perl
-system 'mysqladmin --protocol=TCP -P PORT_N --connect_timeout=2 --wait=5 -u root create test';
+system 'mysqladmin --protocol=TCP -P PORT_N -u root -ppass create test';
 my $fh;
-open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -D test -e "select 1 from mysql.user where User = \'root\' and Host = \'HOSTIPV4\'"');
+open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "select 1 from mysql.user where User = \'root\' and Host = \'HOSTIPV4\'"');
 my $line = <$fh>;
 if (length($line) == 0) {
-  system 'mysql --protocol=TCP -P PORT_N -u root -D test -e "create user \'root\'@\'HOSTIPV4\'"';
+  system 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "create user \'root\'@\'HOSTIPV4\'"';
 }
-open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -D test -e "select 1 from mysql.user where User = \'CALLER\' and Host = \'HOSTIPV4\'"');
+open($fh, '-|', 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "select 1 from mysql.user where User = \'CALLER\' and Host = \'HOSTIPV4\'"');
 $line = <$fh>;
 if (length($line) == 0) {
-  system 'mysql --protocol=TCP -P PORT_N -u root -D test -e "create user \'CALLER\'@\'HOSTIPV4\'"';
+  system 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test -e "create user \'CALLER\'@\'HOSTIPV4\'"';
 }
-system 'mysql --protocol=TCP -P PORT_N -u root -D test \
+****
+#
+#
+# wait for db startup, insert some data
+echo Insert some data
+perl
+system 'mysql --protocol=TCP -P PORT_N -u root -ppass -D test \
  -e "CREATE TABLE them ( name text, id text ); \
      INSERT INTO them VALUES ( \'Philip Hazel\', \'ph10\' ); \
      INSERT INTO them VALUES ( \'Aristotle\',    \'aaaa\' ); \
@@ -63,7 +75,7 @@ ${lookup mysql {servers=x:127.0.0.1::PORT_N; select name from them where id='ph1
 ${lookup mysql {servers=127.0.0.1::PORT_N:x; select name from them where id='ph10';}}
 ${lookup mysql {servers=127.0.0.1::PORT_N/test/root/:x; select name from them where id='ph10';}}
 ${lookup mysql {servers=HOSTIPV4::PORT_N/test/root/:127.0.0.1::PORT_N; select name from them where id='ph10';}}
-${lookup mysql {servers=localhost(DIR/mysql/sock)/test/root/; select name from them where id='ph10';}}
+${lookup mysql {servers=localhost(DIR/mysql/sock)/test/root/pass; select name from them where id='ph10';}}
 x
 ${lookup mysql {SELECT name FROM them WHERE id IN ('ph10', 'aaaa');}}
 ${lookup mysql {SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');}}
@@ -80,7 +92,7 @@ Test message
 ****
 #
 perl
-system 'mysqladmin --protocol=TCP -P PORT_N -u root shutdown';
+system 'mysqladmin --protocol=TCP -P PORT_N -u root -ppass shutdown';
 ****
 killdaemon
 sudo rm -fr DIR/mysql

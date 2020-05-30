@@ -4326,8 +4326,10 @@ else
     if (!(unprivileged || removed_privilege))
       exim_fail("exim: changing group failed: %s\n", strerror(errno));
     else
+      {
       DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
           (long int)exim_gid, strerror(errno));
+      }
   }
 
 /* Handle a request to scan a file for malware */

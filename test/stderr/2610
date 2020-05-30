@@ -1,3 +1,6 @@
+### start a db server
+### wait for db startup, set password on the root user
+### create testdb and extra users
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 admin user
@@ -161,12 +164,12 @@ dropping to exim gid; retaining priv uid
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';" opts=NULL
- database lookup required for servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';
- MySQL query: "servers=localhost(TESTSUITE/mysql/sock)/test/root/; select name from them where id='ph10';" opts 'NULL'
+   type=mysql key="servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" opts=NULL
+ database lookup required for servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';
+ MySQL query: "servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" opts 'NULL'
  MYSQL new connection: host=localhost port=0 socket=TESTSUITE/mysql/sock database=test user=root
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
@@ -260,16 +263,16 @@ check set acl_m0 = ok:   ${lookup mysql                    {select name from the
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223/test/root/"
+   key="select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223/test/root/pass"
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::1223/test/root/"
+   type=mysql key="select name from them where id = 'c'" opts="servers=127.0.0.1::1223/test/root/pass"
  cached data found but wrong opts;  database lookup required for select name from them where id = 'c'
- MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223/test/root/'
+ MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223/test/root/pass'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
  lookup failed
-check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/      {select name from them where id = '$local_part'}}
+check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass      {select name from them where id = '$local_part'}}
                  = ok:   
  search_open: mysql "NULL"
    cached open
@@ -288,16 +291,16 @@ check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223    {select name 
  search_open: mysql "NULL"
    cached open
  search_find: file="NULL"
-   key="servers=127.0.0.1::1223/test/root/; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
+   key="servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
  internal_search_find: file="NULL"
-   type=mysql key="servers=127.0.0.1::1223/test/root/; select name from them where id = 'c'" opts=NULL
- database lookup required for servers=127.0.0.1::1223/test/root/; select name from them where id = 'c'
- MySQL query: "servers=127.0.0.1::1223/test/root/; select name from them where id = 'c'" opts 'NULL'
- lookup deferred: MySQL server "127.0.0.1:1223/test/root/" is tainted
+   type=mysql key="servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" opts=NULL
+ database lookup required for servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'
+ MySQL query: "servers=127.0.0.1::1223/test/root/pass; select name from them where id = 'c'" opts 'NULL'
+ lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=[10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/" is tainted
+  H=[10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 processing "warn" (TESTSUITE/test-config 36)
 check set acl_m0 = ok:   hostlist
 check hosts = net-mysql;select * from them where id='$local_part'
@@ -317,38 +320,38 @@ host in "net-mysql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
 processing "warn" (TESTSUITE/test-config 39)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-mysql;servers=127.0.0.1::1223/test/root/; select * from them where id='$local_part'
+check hosts = <& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='$local_part'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
-  key="servers=127.0.0.1::1223/test/root/; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
+  key="servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts=NULL
 LRU list:
 internal_search_find: file="NULL"
-  type=mysql key="servers=127.0.0.1::1223/test/root/; select * from them where id='c'" opts=NULL
-database lookup required for servers=127.0.0.1::1223/test/root/; select * from them where id='c'
-MySQL query: "servers=127.0.0.1::1223/test/root/; select * from them where id='c'" opts 'NULL'
-lookup deferred: MySQL server "127.0.0.1:1223/test/root/" is tainted
-host in "<& net-mysql;servers=127.0.0.1::1223/test/root/; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/; select * from them where id='c'
+  type=mysql key="servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" opts=NULL
+database lookup required for servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
+MySQL query: "servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'" opts 'NULL'
+lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
+host in "<& net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql;servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=[10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/" is tainted
+  H=[10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 processing "warn" (TESTSUITE/test-config 44)
 check set acl_m0 = FAIL: hostlist
-check hosts = <& net-mysql,servers=127.0.0.1::1223/test/root/; select * from them where id='$local_part'
+check hosts = <& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='$local_part'
 search_open: mysql "NULL"
   cached open
 search_find: file="NULL"
-  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223/test/root/"
+  key=" select * from them where id='c'" partial=-1 affix=NULL starflags=0 opts="servers=127.0.0.1::1223/test/root/pass"
 LRU list:
 internal_search_find: file="NULL"
-  type=mysql key=" select * from them where id='c'" opts="servers=127.0.0.1::1223/test/root/"
+  type=mysql key=" select * from them where id='c'" opts="servers=127.0.0.1::1223/test/root/pass"
 database lookup required for  select * from them where id='c'
-MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::1223/test/root/'
-lookup deferred: MySQL server "127.0.0.1:1223/test/root/" is tainted
-host in "<& net-mysql,servers=127.0.0.1::1223/test/root/; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/; select * from them where id='c'
+MySQL query: " select * from them where id='c'" opts 'servers=127.0.0.1::1223/test/root/pass'
+lookup deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
+host in "<& net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'"? list match deferred for net-mysql,servers=127.0.0.1::1223/test/root/pass; select * from them where id='c'
 warn: condition test deferred in ACL "check_recipient"
 LOG: MAIN
-  H=[10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/" is tainted
+  H=[10.0.0.0] Warning: ACL "warn" statement skipped: condition test deferred: MySQL server "127.0.0.1:1223/test/root/pass" is tainted
 processing "accept" (TESTSUITE/test-config 47)
 check domains = +local_domains
 d in "@"? no (end of list)
