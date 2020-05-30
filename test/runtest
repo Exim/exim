@@ -1324,6 +1324,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^Waiting for MySQL server to answer/;
     next if /mysqladmin: CREATE DATABASE failed; .* database exists/;
 
+    # Postgres version-dependent differences
+    s/^initdb: warning: (enabling "trust" authentication for local connections)$/\nWARNING: $1/;
+
     # Not all builds include DMARC
     next if /^DMARC: no (dmarc_tld_file|sender_host_address)$/ ;
 
