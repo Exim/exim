@@ -10,6 +10,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='userx';" opts=NULL
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: Ayen Other
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
@@ -41,6 +42,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='nothing';" opts=NULL
  file lookup required for select name from them where id='nothing';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
@@ -51,6 +53,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select id,name from them where id='nothing';" opts=NULL
  file lookup required for select id,name from them where id='nothing';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: id=nothing name="" 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
@@ -61,6 +64,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select * from them where id='quote2';" opts=NULL
  file lookup required for select * from them where id='quote2';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: name="\"stquot" id=quote2 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
@@ -71,6 +75,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select * from them where id='newline';" opts=NULL
  file lookup required for select * from them where id='newline';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: name="before
  after" id=newline 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
@@ -82,6 +87,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select * from them where id='tab';" opts=NULL
  file lookup required for select * from them where id='tab';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: name="x	x" id=tab 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
@@ -92,6 +98,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select * from them where id='its';" opts=NULL
  file lookup required for select * from them where id='its';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: name=it's id=its 
  search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
    cached open
@@ -102,6 +109,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select * from them where name='it''s';" opts=NULL
  file lookup required for select * from them where name='it''s';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: name=it's id=its 
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -247,6 +255,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
   type=sqlite key="select * from them where id='10.10.10.10'" opts=NULL
 file lookup required for select * from them where id='10.10.10.10'
   in TESTSUITE/aux-fixed/sqlitedb
+creating new cache entry
 lookup yielded: name=ok id=10.10.10.10 
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
 host in "+relay_hosts"? yes (matched "+relay_hosts")
@@ -377,6 +386,7 @@ processing address_data
    type=sqlite key="select name from them where id='userx'" opts=NULL
  file lookup required for select name from them where id='userx'
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: Ayen Other
 calling r1 router
 r1 router called for userx@myhost.test.ex
@@ -419,6 +429,7 @@ appendfile transport entered
    type=sqlite key="select id from them where id='userx'" opts=NULL
  file lookup required for select id from them where id='userx'
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: userx
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/userx format=unix
@@ -481,6 +492,7 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='userx';" opts=NULL
  file lookup required for select name from them where id='userx';
    in TESTSUITE/aux-fixed/sqlitedb
+ creating new cache entry
  lookup yielded: Ayen Other
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -495,6 +507,7 @@ dropping to exim gid; retaining priv uid
  internal_search_find: file="NULL"
    type=sqlite key="select name from them where id='userx';" opts=NULL
  database lookup required for select name from them where id='userx';
+ creating new cache entry
  lookup yielded: Ayen Other
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

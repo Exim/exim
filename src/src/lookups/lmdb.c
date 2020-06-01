@@ -8,7 +8,7 @@
 
 #include "../exim.h"
 
-#ifdef EXPERIMENTAL_LMDB
+#ifdef LOOKUP_LMDB
 
 #include <lmdb.h>
 
@@ -158,4 +158,4 @@ static lookup_info lmdb_lookup_info = {
 static lookup_info *_lookup_list[] = { &lmdb_lookup_info };
 lookup_module_info lmdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
-#endif /* EXPERIMENTAL_LMDB */
+#endif /* LOOKUP_LMDB */

@@ -169,7 +169,16 @@ acl_smtp_data =         acl_check_data
 # tls_privatekey = /etc/ssl/exim.pem
 
 # For OpenSSL, prefer EC- over RSA-authenticated ciphers
-# tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
+.ifdef _HAVE_OPENSSL
+tls_require_ciphers = ECDSA:RSA:!COMPLEMENTOFDEFAULT
+.endif
+
+# Don't offer resumption to (most) MUAs, who we don't want to reuse
+# tickets.  Once the TLS extension for vended ticket numbers comes
+# though, re-examine since resumption on a single-use ticket is still a benefit.
+.ifdef _HAVE_TLS_RESUME
+tls_resumption_hosts = ${if inlist {$received_port}{587:465} {:}{*}}
+.endif
 
 # In order to support roaming users who wish to send email from anywhere,
 # you may want to make Exim listen on other ports as well as port 25, in
@@ -801,13 +810,12 @@ begin transports
 
 
 # This transport is used for delivering messages over SMTP connections.
-# Refuse to send any message with over-long lines, which could have
-# been received other than via SMTP. The use of message_size_limit to
-# enforce this is a red herring.
 
 remote_smtp:
   driver = smtp
-  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
+.ifdef _HAVE_TLS_RESUME
+  tls_resumption_hosts = *
+.endif
 
 
 # This transport is used for delivering messages to a smarthost, if the
@@ -819,7 +827,6 @@ remote_smtp:
 
 smarthost_smtp:
   driver = smtp
-  message_size_limit = ${if > {$max_received_linelength}{998} {1}{0}}
   multi_domain
   #
 .ifdef _HAVE_TLS
@@ -844,6 +851,9 @@ smarthost_smtp:
 .endif
 .ifdef _HAVE_GNUTLS
   tls_require_ciphers = SECURE192:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1
+.endif
+.ifdef _HAVE_TLS_RESUME
+  tls_resumption_hosts = *
 .endif
 .endif
 

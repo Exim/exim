@@ -326,6 +326,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
   type=lsearch key="ten-1.test.ex" opts=NULL
 file lookup required for ten-1.test.ex
   in TESTSUITE/aux-fixed/0002.lsearch
+creating new cache entry
 lookup yielded: 
 host in "<
  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
@@ -372,6 +373,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
   type=lsearch key="V4NET.0.0.2" opts=NULL
 file lookup required for V4NET.0.0.2
   in TESTSUITE/aux-fixed/0002.lsearch
+creating new cache entry
 lookup failed
 host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
 deny: condition test failed in ACL "connect2"

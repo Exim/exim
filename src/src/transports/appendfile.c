@@ -2287,14 +2287,14 @@ else
         {
         uschar *new_check_path = string_copy(check_path);
         uschar *slash = Ustrrchr(new_check_path, '/');
-        if (slash != NULL)
+        if (slash)
           {
-          if (slash[1] == 0)
+          if (!slash[1])
             {
             *slash = 0;
             slash = Ustrrchr(new_check_path, '/');
             }
-          if (slash != NULL)
+          if (slash)
             {
             *slash = 0;
             check_path = new_check_path;
@@ -2349,7 +2349,7 @@ else
         {
         uschar *s = path + check_path_len;
         while (*s == '/') s++;
-        s = (*s == 0) ? US "new" : string_sprintf("%s/new", s);
+        s = *s ? string_sprintf("%s/new", s) : US"new";
         if (pcre_exec(dir_regex, NULL, CS s, Ustrlen(s), 0, 0, NULL, 0) < 0)
           {
           disable_quota = TRUE;
@@ -2408,10 +2408,11 @@ else
   count. Note that ob->quota_filecount_value cannot be set without
   ob->quota_value being set. */
 
-  if (!disable_quota &&
-      (ob->quota_value > 0 || THRESHOLD_CHECK) &&
-      (mailbox_size < 0 ||
-        (mailbox_filecount < 0 && ob->quota_filecount_value > 0)))
+  if (  !disable_quota
+     && (ob->quota_value > 0 || THRESHOLD_CHECK)
+     && (  mailbox_size < 0
+	|| mailbox_filecount < 0 && ob->quota_filecount_value > 0
+    )   )
     {
     off_t size;
     int filecount = 0;
@@ -2484,7 +2485,7 @@ else
       uschar *basename;
 
       (void)gettimeofday(&msg_tv, NULL);
-      basename = string_sprintf(TIME_T_FMT ".H%luP" PID_T_FMT ".%s",
+      basename = string_sprintf(TIME_T_FMT ".M%luP" PID_T_FMT ".%s",
        	msg_tv.tv_sec, msg_tv.tv_usec, getpid(), primary_hostname);
 
       filename = dataname = string_sprintf("tmp/%s", basename);
@@ -2556,11 +2557,12 @@ else
     dataname = string_sprintf("%s.msg", mailstore_basename);
 
     fd = Uopen(filename, O_WRONLY|O_CREAT|O_EXCL, mode);
-    if (fd < 0 &&                                 /* failed to open, and */
-        (errno != ENOENT ||                       /* either not non-exist */
-         !ob->create_directory ||                 /* or not allowed to make */
-         !directory_make(NULL, path, ob->dirmode, FALSE) ||  /* or failed to create dir */
-         (fd = Uopen(filename, O_WRONLY|O_CREAT|O_EXCL, mode)) < 0)) /* or then failed to open */
+    if (  fd < 0				/* failed to open, and */
+       && (   errno != ENOENT			/* either not non-exist */
+	  || !ob->create_directory		/* or not allowed to make */
+	  || !directory_make(NULL, path, ob->dirmode, FALSE)  /* or failed to create dir */
+	  || (fd = Uopen(filename, O_WRONLY|O_CREAT|O_EXCL, mode)) < 0 /* or then failed to open */
+       )  )
       {
       addr->basic_errno = errno;
       addr->message = string_sprintf("while creating file %s", filename);
@@ -2737,6 +2739,18 @@ if (!disable_quota && ob->quota_value > 0)
     else DEBUG(D_transport) if (ob->quota_filecount_no_check)
       debug_printf("mailbox file count quota exceeded but ignored\n");
 
+  }
+
+if (verify_mode)
+  {
+  addr->basic_errno = errno;
+  addr->message = US"Over quota";
+  addr->transport_return = yield;
+  DEBUG(D_transport)
+    debug_printf("appendfile (verify) yields %d with errno=%d more_errno=%d\n",
+      yield, addr->basic_errno, addr->more_errno);
+
+  goto RETURN;
   }
 
 /* If we are writing in MBX format, what we actually do is to write the message

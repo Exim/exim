@@ -15,6 +15,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: "select name from them where id='ph10';" opts 'NULL'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: pgsql "NULL"
    cached open
@@ -36,6 +37,7 @@ dropping to exim gid; retaining priv uid
  PostgreSQL query: "select name from them where id='xxxx';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
  PGSQL: no data found
+ creating new cache entry
  lookup failed
  search_open: pgsql "NULL"
    cached open
@@ -47,6 +49,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select name from them where id='nothing';
  PostgreSQL query: "select name from them where id='nothing';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: 
  search_open: pgsql "NULL"
    cached open
@@ -58,6 +61,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select id,name from them where id='nothing';
  PostgreSQL query: "select id,name from them where id='nothing';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: id=nothing name="" 
  search_open: pgsql "NULL"
    cached open
@@ -82,6 +86,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select * from them where id='quote2';
  PostgreSQL query: "select * from them where id='quote2';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: name="\"stquot" id=quote2 
  search_open: pgsql "NULL"
    cached open
@@ -93,6 +98,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select * from them where id='newline';
  PostgreSQL query: "select * from them where id='newline';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: name="before
  after" id=newline 
  search_open: pgsql "NULL"
@@ -105,6 +111,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select * from them where id='tab';
  PostgreSQL query: "select * from them where id='tab';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: name="x	x" id=tab 
  search_open: pgsql "NULL"
    cached open
@@ -116,6 +123,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select * from them where name='''stquot';
  PostgreSQL query: "select * from them where name='''stquot';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: name='stquot id=quote1 
  search_open: pgsql "NULL"
    cached open
@@ -137,6 +145,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=localhost::1223:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::1223:x; select name from them where id='ph10';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: pgsql "NULL"
    cached open
@@ -148,6 +157,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=localhost::1223/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: pgsql "NULL"
    cached open
@@ -159,6 +169,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';
  PostgreSQL query: "servers=(TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER/:x; select name from them where id='ph10';" opts 'NULL'
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: pgsql "NULL"
    cached open
@@ -170,6 +181,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  PostgreSQL query: "SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
  Aristotle
  search_open: pgsql "NULL"
@@ -182,6 +194,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  PostgreSQL query: "SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  PGSQL using cached connection for localhost:1223/test/CALLER
+ creating new cache entry
  lookup yielded: name="Philip Hazel" id=ph10 
  name=Aristotle id=aaaa 
  search_open: pgsql "NULL"
@@ -244,6 +257,7 @@ processing "warn" (TESTSUITE/test-config 27)
  PostgreSQL query: "select name from them where id = 'c'" opts 'NULL'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
  PGSQL: no data found
+ creating new cache entry
  lookup failed
 check set acl_m0 = ok:   ${lookup pgsql                    {select name from them where id = '$local_part'}}
                  = ok:   
@@ -274,6 +288,7 @@ database lookup required for select * from them where id='c'
 PostgreSQL query: "select * from them where id='c'" opts 'NULL'
 PGSQL using cached connection for localhost:1223/test/CALLER
 PGSQL: no data found
+creating new cache entry
 lookup failed
 host in "net-pgsql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
@@ -329,6 +344,7 @@ database lookup required for select * from them where id='10.0.0.0'
 PostgreSQL query: "select * from them where id='10.0.0.0'" opts 'NULL'
 PGSQL using cached connection for localhost:1223/test/CALLER
 PGSQL: no data found
+creating new cache entry
 lookup failed
 host in "net-pgsql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
@@ -543,6 +559,7 @@ processing address_data
  database lookup required for select name from them where id='ph10'
  PostgreSQL query: "select name from them where id='ph10'" opts 'NULL'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
 calling r1 router
 r1 router called for CALLER@myhost.test.ex
@@ -587,6 +604,7 @@ appendfile transport entered
  database lookup required for select id from them where id='ph10'
  PostgreSQL query: "select id from them where id='ph10'" opts 'NULL'
  PGSQL new connection: host=localhost port=1223 database=test user=CALLER
+ creating new cache entry
  lookup yielded: ph10
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/ph10 format=unix
@@ -651,6 +669,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select name from them where id='ph10';
  PostgreSQL query: "select name from them where id='ph10';" opts 'NULL'
  PGSQL new connection: socket=TESTSUITE/pgsql/.s.PGSQL.1223 database=test user=CALLER
+ creating new cache entry
  lookup yielded: Philip Hazel
 search_tidyup called
 close PGSQL connection: (TESTSUITE/pgsql/.s.PGSQL.1223)/test/CALLER

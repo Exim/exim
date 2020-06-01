@@ -14,6 +14,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select name from them where id='ph10';
  MySQL query: "select name from them where id='ph10';" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
@@ -35,6 +36,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select name from them where id='xxxx';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
+ creating new cache entry
  lookup failed
  search_open: mysql "NULL"
    cached open
@@ -46,6 +48,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select name from them where id='nothing';
  MySQL query: "select name from them where id='nothing';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: 
  search_open: mysql "NULL"
    cached open
@@ -57,6 +60,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select id,name from them where id='nothing';
  MySQL query: "select id,name from them where id='nothing';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: id=nothing name="" 
  search_open: mysql "NULL"
    cached open
@@ -82,6 +86,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select * from them where id='quote';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
+ creating new cache entry
  lookup failed
  search_open: mysql "NULL"
    cached open
@@ -94,6 +99,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select * from them where id='filter';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
+ creating new cache entry
  lookup failed
  search_open: mysql "NULL"
    cached open
@@ -105,6 +111,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for select * from them where id='quote2';
  MySQL query: "select * from them where id='quote2';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: name="\"stquot" id=quote2 
  search_open: mysql "NULL"
    cached open
@@ -117,6 +124,7 @@ dropping to exim gid; retaining priv uid
  MySQL query: "select * from them where id='nlonly';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
+ creating new cache entry
  lookup failed
  search_open: mysql "NULL"
    cached open
@@ -138,6 +146,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=127.0.0.1::1223:x; select name from them where id='ph10';
  MySQL query: "servers=127.0.0.1::1223:x; select name from them where id='ph10';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
@@ -149,6 +158,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';
  MySQL query: "servers=127.0.0.1::1223/test/root/:x; select name from them where id='ph10';" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
@@ -160,6 +170,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';
  MySQL query: "servers=ip4.ip4.ip4.ip4::1223/test/root/:127.0.0.1::1223; select name from them where id='ph10';" opts 'NULL'
  MYSQL new connection: host=ip4.ip4.ip4.ip4 port=1223 socket=NULL database=test user=root
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
@@ -171,6 +182,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';
  MySQL query: "servers=localhost(TESTSUITE/mysql/sock)/test/root/pass; select name from them where id='ph10';" opts 'NULL'
  MYSQL new connection: host=localhost port=0 socket=TESTSUITE/mysql/sock database=test user=root
+ creating new cache entry
  lookup yielded: Philip Hazel
  search_open: mysql "NULL"
    cached open
@@ -182,6 +194,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for SELECT name FROM them WHERE id IN ('ph10', 'aaaa');
  MySQL query: "SELECT name FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: Philip Hazel
  Aristotle
  search_open: mysql "NULL"
@@ -194,6 +207,7 @@ dropping to exim gid; retaining priv uid
  database lookup required for SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');
  MySQL query: "SELECT *    FROM them WHERE id IN ('ph10', 'aaaa');" opts 'NULL'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
+ creating new cache entry
  lookup yielded: name="Philip Hazel" id=ph10 
  name=Aristotle id=aaaa 
  search_open: mysql "NULL"
@@ -257,6 +271,7 @@ processing "warn" (TESTSUITE/test-config 25)
  MySQL query: "select name from them where id = 'c'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
  MYSQL: no data found
+ creating new cache entry
  lookup failed
 check set acl_m0 = ok:   ${lookup mysql                    {select name from them where id = '$local_part'}}
                  = ok:   
@@ -271,6 +286,7 @@ check set acl_m0 = ok:   ${lookup mysql                    {select name from the
  MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223/test/root/pass'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
+ replacing old cache entry
  lookup failed
 check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass      {select name from them where id = '$local_part'}}
                  = ok:   
@@ -285,6 +301,7 @@ check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223/test/root/pass  
  MySQL query: "select name from them where id = 'c'" opts 'servers=127.0.0.1::1223'
  MYSQL using cached connection for 127.0.0.1:1223/test/root
  MYSQL: no data found
+ replacing old cache entry
  lookup failed
 check set acl_m0 = ok:   ${lookup mysql,servers=127.0.0.1::1223    {select name from them where id = '$local_part'}}
                  = ok:   
@@ -315,6 +332,7 @@ database lookup required for select * from them where id='c'
 MySQL query: "select * from them where id='c'" opts 'NULL'
 MYSQL using cached connection for 127.0.0.1:1223/test/root
 MYSQL: no data found
+creating new cache entry
 lookup failed
 host in "net-mysql;select * from them where id='c'"? no (end of list)
 warn: condition test failed in ACL "check_recipient"
@@ -370,6 +388,7 @@ database lookup required for select * from them where id='10.0.0.0'
 MySQL query: "select * from them where id='10.0.0.0'" opts 'NULL'
 MYSQL using cached connection for 127.0.0.1:1223/test/root
 MYSQL: no data found
+creating new cache entry
 lookup failed
 host in "net-mysql;select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
@@ -483,6 +502,7 @@ processing address_data
  database lookup required for select name from them where id='ph10'
  MySQL query: "select name from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ creating new cache entry
  lookup yielded: Philip Hazel
 calling r1 router
 r1 router called for ph10@myhost.test.ex
@@ -527,6 +547,7 @@ appendfile transport entered
  database lookup required for select id from them where id='ph10'
  MySQL query: "select id from them where id='ph10'" opts 'NULL'
  MYSQL new connection: host=127.0.0.1 port=1223 socket=NULL database=test user=root
+ creating new cache entry
  lookup yielded: ph10
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0
   file=TESTSUITE/test-mail/ph10 format=unix

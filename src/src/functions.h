@@ -189,6 +189,7 @@ extern void    debug_print_socket(int);
 extern void    decode_bits(unsigned int *, size_t, int *,
 	           uschar *, bit_table *, int, uschar *, int);
 extern void    delete_pid_file(void);
+extern void    deliver_local(address_item *, BOOL);
 extern address_item *deliver_make_addr(uschar *, BOOL);
 extern void    delivery_log(int, address_item *, int, uschar *);
 extern int     deliver_message(uschar *, BOOL, BOOL);
@@ -260,6 +261,7 @@ extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern uschar * fn_hdrs_added(void);
+extern void    force_fd(int, int);
 
 extern void    header_add(int, const char *, ...);
 extern header_line *header_add_at_position_internal(BOOL, uschar *, BOOL, int, const char *, ...);
@@ -379,7 +381,7 @@ extern void    queue_check_only(void);
 extern unsigned queue_count(void);
 extern unsigned queue_count_cached(void);
 extern void    queue_list(int, uschar **, int);
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 extern void    queue_notify_daemon(const uschar * hostname);
 #endif
 extern void    queue_run(uschar *, uschar *, BOOL);
@@ -620,6 +622,8 @@ extern int     verify_check_this_host(const uschar **, unsigned int *,
 	         const uschar*, const uschar *, const uschar **);
 extern address_item *verify_checked_sender(uschar *);
 extern void    verify_get_ident(int);
+extern void    verify_quota(uschar *);
+extern int     verify_quota_call(const uschar *, int, int, uschar **);
 extern BOOL    verify_sender(int *, uschar **);
 extern BOOL    verify_sender_preliminary(int *, uschar **);
 extern void    version_init(void);

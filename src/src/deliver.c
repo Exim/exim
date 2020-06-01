@@ -817,7 +817,7 @@ d_tlslog(gstring * g, address_item * addr)
 if (LOGGING(tls_cipher) && addr->cipher)
   {
   g = string_append(g, 2, US" X=", addr->cipher);
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   if (LOGGING(tls_resumption) && testflag(addr, af_tls_resume))
     g = string_catn(g, US"*", 1);
 #endif
@@ -1149,7 +1149,7 @@ if (LOGGING(sender_on_delivery) || msg)
 if (*queue_name)
   g = string_append(g, 2, US" Q=", queue_name);
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 if(addr->prop.srs_sender)
   g = string_append(g, 3, US" SRS=<", addr->prop.srs_sender, US">");
 #endif
@@ -2125,7 +2125,7 @@ Arguments:
 Returns:     nothing
 */
 
-static void
+void
 deliver_local(address_item *addr, BOOL shadowing)
 {
 BOOL use_initgroups;
@@ -2143,7 +2143,7 @@ has its own return path setting, expand it and replace the existing value. */
 
 if(addr->prop.errors_address)
   return_path = addr->prop.errors_address;
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 else if (addr->prop.srs_sender)
   return_path = addr->prop.srs_sender;
 #endif
@@ -2152,18 +2152,16 @@ else
 
 if (tp->return_path)
   {
-  uschar *new_return_path = expand_string(tp->return_path);
-  if (!new_return_path)
+  uschar * new_return_path = expand_string(tp->return_path);
+  if (new_return_path)
+    return_path = new_return_path;
+  else if (!f.expand_string_forcedfail)
     {
-    if (!f.expand_string_forcedfail)
-      {
-      common_error(TRUE, addr, ERRNO_EXPANDFAIL,
-        US"Failed to expand return path \"%s\" in %s transport: %s",
-        tp->return_path, tp->name, expand_string_message);
-      return;
-      }
+    common_error(TRUE, addr, ERRNO_EXPANDFAIL,
+      US"Failed to expand return path \"%s\" in %s transport: %s",
+      tp->return_path, tp->name, expand_string_message);
+    return;
     }
-  else return_path = new_return_path;
   }
 
 /* For local deliveries, one at a time, the value used for logging can just be
@@ -4429,7 +4427,7 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
 
   if(addr->prop.errors_address)
     return_path = addr->prop.errors_address;
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   else if(addr->prop.srs_sender)
     return_path = addr->prop.srs_sender;
 #endif
@@ -4773,7 +4771,7 @@ all pipes, so I do not see a reason to use non-blocking IO here
 #ifdef SUPPORT_DANE
       if (tls_out.dane_verified)        setflag(addr, af_dane_verified);
 #endif
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
       if (tls_out.resumption & RESUME_USED) setflag(addr, af_tls_resume);
 # endif
 

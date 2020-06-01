@@ -137,7 +137,7 @@ uschar *tls_ocsp_file          = NULL;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 uschar *tls_resumption_hosts   = NULL;
 # endif
 uschar *tls_try_verify_hosts   = NULL;
@@ -382,7 +382,7 @@ BOOL    prod_requires_admin    = TRUE;
 BOOL    proxy_session          = FALSE;
 #endif
 
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 BOOL    queue_fast_ramp		= FALSE;
 #endif
 BOOL    queue_list_requires_admin = TRUE;
@@ -407,7 +407,7 @@ BOOL    spf_result_guessed     = FALSE;
 #endif
 BOOL    split_spool_directory  = FALSE;
 BOOL    spool_wireformat       = FALSE;
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 BOOL    srs_usehash            = TRUE;
 BOOL    srs_usetimestamp       = TRUE;
 #endif
@@ -596,7 +596,7 @@ address_item address_defaults = {
     .extra_headers =	NULL,
     .remove_headers =	NULL,
     .variables =	NULL,
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
     .srs_sender =	NULL,
 #endif
     .ignore_error =	FALSE,
@@ -1508,7 +1508,7 @@ uschar *spf_smtp_comment_template
 FILE   *spool_data_file	       = NULL;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 uschar *srs_config             = NULL;
 uschar *srs_db_address         = NULL;
 uschar *srs_db_key             = NULL;
@@ -1521,7 +1521,7 @@ uschar *srs_recipient          = NULL;
 uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
 #endif
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
 uschar *srs_recipient          = NULL;
 #endif
 int     string_datestamp_offset= -1;

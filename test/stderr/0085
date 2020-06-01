@@ -54,6 +54,7 @@ checking local_parts
    type=lsearch key="smart.domain" opts=NULL
  file lookup required for smart.domain
    in TESTSUITE/aux-fixed/0085.data
+ creating new cache entry
  lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
@@ -124,6 +125,7 @@ checking local_parts
    type=lsearch key="test.ex" opts=NULL
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0085.data
+ creating new cache entry
  lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
@@ -158,6 +160,7 @@ checking require_files
    type=lsearch key="test.ex.files" opts=NULL
  file lookup required for test.ex.files
    in TESTSUITE/aux-fixed/0085.data
+ creating new cache entry
  lookup yielded: /etc/passwd
 file check: ${lookup{$domain.files}lsearch{TESTSUITE/aux-fixed/0085.data}{$value}}
 expanded file: /etc/passwd
@@ -255,6 +258,7 @@ checking local_parts
    type=lsearch key="smart.domain" opts=NULL
  file lookup required for smart.domain
    in TESTSUITE/aux-fixed/0085.data
+ creating new cache entry
  lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders
@@ -323,6 +327,7 @@ checking local_parts
    type=lsearch key="test.ex" opts=NULL
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0085.data
+ creating new cache entry
  lookup yielded: x : y : abc@d.e.f
 x in "x : y : abc@d.e.f"? yes (matched "x")
 checking senders

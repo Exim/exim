@@ -93,7 +93,7 @@ optionlist redirect_router_options[] = {
   { "sieve_useraddress", opt_stringptr,		LOFF(sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,	LOFF(sieve_vacation_directory) },
   { "skip_syntax_errors", opt_bool,		LOFF(skip_syntax_errors) },
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   { "srs",                opt_stringptr,	LOFF(srs) },
   { "srs_alias",          opt_stringptr,	LOFF(srs_alias) },
   { "srs_condition",      opt_stringptr,	LOFF(srs_condition) },
@@ -149,7 +149,7 @@ redirect_router_options_block redirect_router_option_defaults = {
   NULL,        /* qualify_domain */
   NULL,        /* owners */
   NULL,        /* owngroups */
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   NULL,        /* srs */
   NULL,        /* srs_alias */
   NULL,        /* srs_condition */
@@ -543,7 +543,7 @@ addr_prop.remove_headers = NULL;
 addr_prop.variables = NULL;
 tree_dup((tree_node **)&addr_prop.variables, addr->prop.variables);
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 addr_prop.srs_sender = NULL;
 #endif
 #ifdef SUPPORT_I18N
@@ -578,7 +578,7 @@ if (!ugid.gid_set && pw != NULL)
   ugid.gid_set = TRUE;
   }
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   /* Perform SRS on recipient/return-path as required  */
 
   if(ob->srs != NULL)

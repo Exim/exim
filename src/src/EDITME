@@ -276,6 +276,9 @@ SPOOL_DIRECTORY=/var/spool/exim
 # specified in INCLUDE.
 
 
+# Uncomment the following line to remove support for TLS Resumption
+# DISABLE_TLS_RESUME=yes
+
 
 ###############################################################################
 #           THESE ARE THINGS YOU PROBABLY WANT TO SPECIFY                     #
@@ -411,6 +414,8 @@ LOOKUP_DNSDB=yes
 # LOOKUP_IBASE=yes
 # LOOKUP_JSON=yes
 # LOOKUP_LDAP=yes
+# LOOKUP_LMDB=yes
+
 # LOOKUP_MYSQL=yes
 # LOOKUP_MYSQL_PC=mariadb
 # LOOKUP_NIS=yes
@@ -487,7 +492,8 @@ SUPPORT_DANE=yes
 # You do not need to use this for any lookup information added via pkg-config.
 
 # LOOKUP_INCLUDE=-I /usr/local/ldap/include -I /usr/local/mysql/include -I /usr/local/pgsql/include
-# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3
+# LOOKUP_INCLUDE +=-I /usr/local/include
+# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3 -llmdb
 
 
 #------------------------------------------------------------------------------
@@ -560,13 +566,20 @@ DISABLE_MAL_MKS=yes
 # DISABLE_DNSSEC=yes
 
 # To disable support for Events set DISABLE_EVENT to "yes"
-
 # DISABLE_EVENT=yes
 
 
 # Uncomment this line to include support for early pipelining, per
 # https://datatracker.ietf.org/doc/draft-harris-early-pipe/
 # SUPPORT_PIPE_CONNECT=yes
+
+
+# Uncomment the following to remove the fast-ramp two-phase-queue-run support
+# DISABLE_QUEUE_RAMP=yes
+
+# Uncomment the following lines to add SRS (Sender Rewriting Scheme) support
+# using only native facilities.  See EXPERIMENTAL_SRS_ALT for an alternative.
+# SUPPORT_SRS=yes
 
 
 #------------------------------------------------------------------------------
@@ -580,18 +593,15 @@ DISABLE_MAL_MKS=yes
 
 # EXPERIMENTAL_DCC=yes
 
-# Uncomment the following lines to add SRS (Sender rewriting scheme) support.
+# Uncomment the following lines to add SRS (Sender rewriting scheme) support
+# using the implementation in linbsrs_alt.
 # You need to have libsrs_alt installed on your system (srs.mirtol.com).
 # Depending on where it is installed you may have to edit the CFLAGS and
 # LDFLAGS lines.
 
-# EXPERIMENTAL_SRS=yes
+# EXPERIMENTAL_SRS_ALT=yes
 # CFLAGS  += -I/usr/local/include
 # LDFLAGS += -lsrs_alt
-
-# Uncomment the following lines to add SRS (Sender rewriting scheme) support
-# using only native facilities.
-# EXPERIMENTAL_SRS_NATIVE=yes
 
 # Uncomment the following line to add DMARC checking capability, implemented
 # using libopendmarc libraries. You must have SPF and DKIM support enabled also.
@@ -618,21 +628,8 @@ DISABLE_MAL_MKS=yes
 # Uncomment the following to include extra information in fail DSN message (bounces)
 # EXPERIMENTAL_DSN_INFO=yes
 
-# Uncomment the following to add LMDB lookup support
-# You need to have LMDB installed on your system (https://github.com/LMDB/lmdb)
-# Depending on where it is installed you may have to edit the CFLAGS and LDFLAGS lines.
-# EXPERIMENTAL_LMDB=yes
-# CFLAGS += -I/usr/local/include
-# LDFLAGS += -llmdb
-
 # Uncomment the following line to add queuefile transport support
 # EXPERIMENTAL_QUEUEFILE=yes
-
-# Uncomment the following line to include support for TLS Resumption
-# EXPERIMENTAL_TLS_RESUME=yes
-
-# Uncomment the following to include the fast-ramp two-phase-queue-run support
-# EXPERIMENTAL_QUEUE_RAMP=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

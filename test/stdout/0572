@@ -64,6 +64,7 @@ interface = ip4.ip4.ip4.ip4
 keepalive
 no_lmtp_ignore_quota
 max_rcpt = 100
+message_linelength_limit = 998
 multi_domain
 port = 1224
 protocol = smtp

@@ -11,7 +11,7 @@
   License: GPL */
 
 #include "exim.h"
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 
 #include <srs_alt.h>
 #include "srs.h"

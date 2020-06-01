@@ -227,7 +227,7 @@ static smtp_cmd_list *cmd_list_end =
 /* This list of names is used for performing the smtp_no_mail logging action.
 It must be kept in step with the SCH_xxx enumerations. */
 
-static uschar *smtp_names[] =
+uschar * smtp_names[] =
   {
   US"NONE", US"AUTH", US"DATA", US"BDAT", US"EHLO", US"ETRN", US"EXPN",
   US"HELO", US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET",
@@ -1801,7 +1801,7 @@ s_tlslog(gstring * g)
 if (LOGGING(tls_cipher) && tls_in.cipher)
   {
   g = string_append(g, 2, US" X=", tls_in.cipher);
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   if (LOGGING(tls_resumption) && tls_in.resumption & RESUME_USED)
     g = string_catn(g, US"*", 1);
 #endif
@@ -2068,6 +2068,7 @@ sending_ip_address = NULL;
 return_path = sender_address = NULL;
 deliver_localpart_data = deliver_domain_data =
 recipient_data = sender_data = NULL;			/* Can be set by ACL */
+recipient_verify_failure = NULL;
 deliver_localpart_parent = deliver_localpart_orig = NULL;
 deliver_domain_parent = deliver_domain_orig = NULL;
 callout_address = NULL;

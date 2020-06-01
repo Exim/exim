@@ -365,7 +365,7 @@ HDEBUG(D_auth)
 #ifndef DISABLE_TLS
 if (tls_in.channelbinding && ob->server_channelbinding)
   {
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   if (!tls_in.ext_master_secret && tls_in.resumption == RESUME_USED)
     {		/* per RFC 7677 section 4 */
     HDEBUG(D_auth) debug_printf(
@@ -814,7 +814,7 @@ HDEBUG(D_auth)
 #ifndef DISABLE_TLS
 if (tls_out.channelbinding && ob->client_channelbinding)
   {
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   if (!tls_out.ext_master_secret && tls_out.resumption == RESUME_USED)
     {		/* per RFC 7677 section 4 */
     string_format(buffer, buffsize, "%s",

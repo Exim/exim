@@ -382,6 +382,7 @@ message_body_newlines                boolean         false         main         
 message_body_visible                 integer         500           main
 message_id_header_domain             string*         unset         main              4.11
 message_id_header_text               string*         unset         main
+message_linelength_limit             integer         998           smtp              4.94
 message_logs                         boolean         true          main              4.10
 message_prefix                       string*         +             appendfile        4.00 replaces prefix
                                      string*         unset         pipe              4.00 replaces prefix
@@ -443,6 +444,7 @@ qualify_recipient                    string          +             main
 qualify_single                       boolean         true          dnslookup         4.00
 query                                string*         +             iplookup          4.00
 queue_domains                        domain list     unset         main              4.00
+queue_fasst_ramp                     boolean         false         main              4.95
 queue_list_requires_admin            boolean         true          main              1.95
 queue_only                           boolean         false         main
 queue_only_file                      string          unset         main              2.05
@@ -606,6 +608,8 @@ tls_privatekey                       string*         unset         main         
 tls_remember_emstp                   boolean         false         main              4.21
 tls_require_ciphers                  string*         unset         smtp              4.00 replaces tls_verify_ciphers
                                      string*         unset         main              4.33
+tls_resumption_hosts                 host list*      unset         main              4.95
+                                     host list*      unset         smtp              4.95
 tls_sni                              string*         unset         main              4.80
 tls_tempfail_tryclear                boolean         true          smtp              4.05
 tls_try_verify_hosts                 host list       unset         main              4.00

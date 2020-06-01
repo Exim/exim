@@ -174,20 +174,17 @@ due to conflicts with other common macros. */
 #ifdef SUPPORT_SOCKS
   builtin_macro_create(US"_HAVE_SOCKS");
 #endif
+#if defined(SUPPORT_SRS)
+  builtin_macro_create(US"_HAVE_NATIVE_SRS");	/* beware clash with _HAVE_SRS */
+#endif
 #ifdef TCP_FASTOPEN
   builtin_macro_create(US"_HAVE_TCP_FASTOPEN");
-#endif
-#ifdef EXPERIMENTAL_LMDB
-  builtin_macro_create(US"_HAVE_LMDB");
 #endif
 #ifdef SUPPORT_SPF
   builtin_macro_create(US"_HAVE_SPF");
 #endif
-#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT) || defined(SUPPORT_SRS)
   builtin_macro_create(US"_HAVE_SRS");
-#endif
-#if defined(EXPERIMENTAL_SRS_NATIVE)
-  builtin_macro_create(US"_HAVE_NATIVE_SRS");	/* beware clash with _HAVE_SRS */
 #endif
 #ifdef EXPERIMENTAL_ARC
   builtin_macro_create(US"_HAVE_ARC");
@@ -204,7 +201,7 @@ due to conflicts with other common macros. */
 #ifdef EXPERIMENTAL_DSN_INFO
   builtin_macro_create(US"_HAVE_DSN_INFO");
 #endif
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   builtin_macro_create(US"_HAVE_TLS_RESUME");
 #endif
 
@@ -225,6 +222,10 @@ due to conflicts with other common macros. */
 #endif
 #ifdef LOOKUP_IBASE
   builtin_macro_create(US"_HAVE_LOOKUP_IBASE");
+#endif
+#ifdef LOOKUP_LMDB
+  builtin_macro_create(US"_HAVE_LMDB");
+  builtin_macro_create(US"_HAVE_LOOKUP_LMDB");
 #endif
 #ifdef LOOKUP_LDAP
   builtin_macro_create(US"_HAVE_LOOKUP_JSON");

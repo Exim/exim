@@ -1,0 +1,6 @@
+
+******** SERVER ********
+2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<b@test.ex> rejected RCPT <quota_fail@test.ex>: Over quota
+2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<c@test.ex> rejected RCPT <route_fail@test.ex>: Unrouteable address
+2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<e@test.ex> rejected RCPT <quota_fail@test.ex>: Previous (cached) quota verification failure
+2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<f@test.ex> rejected RCPT <route_fail@test.ex>: Unrouteable address

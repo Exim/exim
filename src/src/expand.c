@@ -131,7 +131,7 @@ static uschar *item_table[] = {
   US"run",
   US"sg",
   US"sort",
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   US"srs_encode",
 #endif
   US"substr",
@@ -166,7 +166,7 @@ enum {
   EITEM_RUN,
   EITEM_SG,
   EITEM_SORT,
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   EITEM_SRS_ENCODE,
 #endif
   EITEM_SUBSTR,
@@ -334,7 +334,7 @@ static uschar *cond_table[] = {
   US"gei",
   US"gt",
   US"gti",
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   US"inbound_srs",
 #endif
   US"inlist",
@@ -387,7 +387,7 @@ enum {
   ECOND_STR_GEI,
   ECOND_STR_GT,
   ECOND_STR_GTI,
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   ECOND_INBOUND_SRS,
 #endif
   ECOND_INLIST,
@@ -752,16 +752,16 @@ static var_entry var_table[] = {
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
   { "spool_space",         vtype_pspace,      (void *)TRUE },
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   { "srs_db_address",      vtype_stringptr,   &srs_db_address },
   { "srs_db_key",          vtype_stringptr,   &srs_db_key },
   { "srs_orig_recipient",  vtype_stringptr,   &srs_orig_recipient },
   { "srs_orig_sender",     vtype_stringptr,   &srs_orig_sender },
 #endif
-#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT) || defined(SUPPORT_SRS)
   { "srs_recipient",       vtype_stringptr,   &srs_recipient },
 #endif
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   { "srs_status",          vtype_stringptr,   &srs_status },
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
@@ -779,7 +779,7 @@ static var_entry var_table[] = {
   { "tls_in_ourcert",      vtype_cert,        &tls_in.ourcert },
   { "tls_in_peercert",     vtype_cert,        &tls_in.peercert },
   { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   { "tls_in_resumption",   vtype_int,         &tls_in.resumption },
 #endif
 #ifndef DISABLE_TLS
@@ -797,7 +797,7 @@ static var_entry var_table[] = {
   { "tls_out_ourcert",     vtype_cert,        &tls_out.ourcert },
   { "tls_out_peercert",    vtype_cert,        &tls_out.peercert },
   { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   { "tls_out_resumption",  vtype_int,         &tls_out.resumption },
 #endif
 #ifndef DISABLE_TLS
@@ -2439,7 +2439,7 @@ else
 
 
 
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
 /* Do an hmac_md5.  The result is _not_ nul-terminated, and is sized as
 the smaller of a full hmac_md5 result (16 bytes) or the supplied output buffer.
 
@@ -2514,7 +2514,7 @@ for (int i = 0, j = len; i < MD5_HASHLEN; i++)
   }
 return;
 }
-#endif /*EXPERIMENTAL_SRS_NATIVE*/
+#endif /*SUPPORT_SRS*/
 
 
 /*************************************************
@@ -3444,7 +3444,7 @@ switch(cond_type = identify_operator(&s, &opname))
     return s;
     }
 
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
   case ECOND_INBOUND_SRS:
     /* ${if inbound_srs {local_part}{secret}  {yes}{no}} */
     {
@@ -3536,7 +3536,7 @@ srs_result:
     if (yield) *yield = (boolvalue == testfor);
     return s;
     }
-#endif /*EXPERIMENTAL_SRS_NATIVE*/
+#endif /*SUPPORT_SRS*/
 
   /* Unknown condition */
 
@@ -6785,7 +6785,7 @@ while (*s != 0)
       continue;
       }
 
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
     case EITEM_SRS_ENCODE:
       /* ${srs_encode {secret} {return_path} {orig_domain}} */
       {
@@ -6839,7 +6839,7 @@ while (*s != 0)
       yield = string_cat(yield, sub[2]);
       continue;
       }
-#endif /*EXPERIMENTAL_SRS_NATIVE*/
+#endif /*SUPPORT_SRS*/
     }	/* EITEM_* switch */
 
   /* Control reaches here if the name is not recognized as one of the more

@@ -515,7 +515,7 @@ typedef struct address_item_propagated {
   uschar *remove_headers;         /* list of those to remove */
   void   *variables;		  /* router-vasriables */
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   uschar *srs_sender;             /* Change return path when delivering */
 #endif
   BOOL    ignore_error:1;	  /* ignore delivery error */
@@ -644,7 +644,7 @@ typedef struct address_item {
 #ifdef SUPPORT_I18N
     BOOL af_utf8_downcvt:1;		/* downconvert was done for delivery */
 #endif
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
     BOOL af_tls_resume:1;		/* TLS used a resumed session */
 #endif
   } flags;

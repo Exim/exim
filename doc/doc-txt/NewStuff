@@ -6,6 +6,30 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the Git before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.95
+------------
+
+ 1. The fast-ramp two phase queue run support, previously experimental, is
+    now supported by default.
+
+ 2. The native SRS support, previously experimental, is now supported. It is
+    not built unless specified in the Local/Makefile.
+
+ 3. TLS resumption support, previously experimental, is now supported and
+    included in default builds.
+
+ 4. Single-key LMDB lookups, previously experimental, are now supported.
+    The support is not built unless specified in the Local/Makefile.
+
+ 5. Option "message_linelength_limit" on the smtp transport to enforce (by
+    default) the RFC 998 character limit.
+
+ 6. An option to ignore the cache on a lookup.
+
+ 7. Quota checking during reception (i.e. at SMTP time) for appendfile-
+    transport-managed quotas.
+
+
 Version 4.94
 ------------
 

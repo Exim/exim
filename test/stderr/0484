@@ -16,6 +16,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="list" opts=NULL
  file lookup required for list
    in TESTSUITE/aux-fixed/0484.aliases
+ creating new cache entry
  lookup yielded: userx, usery
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
@@ -40,6 +41,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="root" opts=NULL
  file lookup required for root
    in TESTSUITE/aux-fixed/0484.aliases
+ creating new cache entry
  lookup yielded: userx
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
    cached open
@@ -76,6 +78,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="list" opts=NULL
  file lookup required for list
    in TESTSUITE/aux-fixed/0484.aliases2
+ creating new cache entry
  lookup yielded: userx2, usery2
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
    cached open
@@ -89,6 +92,7 @@ sender address = CALLER@myhost.test.ex
    type=lsearch key="root" opts=NULL
  file lookup required for root
    in TESTSUITE/aux-fixed/0484.aliases2
+ creating new cache entry
  lookup failed
  search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
    cached open

@@ -262,7 +262,7 @@ static optionlist optionlist_config[] = {
   { "qualify_domain",           opt_stringptr,   {&qualify_domain_sender} },
   { "qualify_recipient",        opt_stringptr,   {&qualify_domain_recipient} },
   { "queue_domains",            opt_stringptr,   {&queue_domains} },
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
   { "queue_fast_ramp",          opt_bool,        {&queue_fast_ramp} },
 #endif
   { "queue_list_requires_admin",opt_bool,        {&queue_list_requires_admin} },
@@ -335,7 +335,7 @@ static optionlist optionlist_config[] = {
   { "sqlite_dbfile",            opt_stringptr,   {&sqlite_dbfile} },
   { "sqlite_lock_timeout",      opt_int,         {&sqlite_lock_timeout} },
 #endif
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
   { "srs_config",               opt_stringptr,   {&srs_config} },
   { "srs_hashlength",           opt_int,         {&srs_hashlength} },
   { "srs_hashmin",              opt_int,         {&srs_hashmin} },
@@ -379,7 +379,7 @@ static optionlist optionlist_config[] = {
   { "tls_privatekey",           opt_stringptr,   {&tls_privatekey} },
   { "tls_remember_esmtp",       opt_bool,        {&tls_remember_esmtp} },
   { "tls_require_ciphers",      opt_stringptr,   {&tls_require_ciphers} },
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   { "tls_resumption_hosts",     opt_stringptr,   {&tls_resumption_hosts} },
 # endif
   { "tls_try_verify_hosts",     opt_stringptr,   {&tls_try_verify_hosts} },

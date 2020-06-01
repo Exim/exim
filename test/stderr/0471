@@ -111,12 +111,14 @@ r1@test.ex in "*@*"? yes (matched "*@*")
    type=lsearch key="test.ex" opts=NULL
  file lookup required for test.ex
    in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
  lookup failed
  trying partial match *.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
    type=lsearch key="*.test.ex" opts=NULL
  file lookup required for *.test.ex
    in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
  lookup failed
 address match test: subject=CALLER@myhost.test.ex pattern=*@*
 myhost.test.ex in "*"? yes (matched "*")
@@ -132,12 +134,14 @@ CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
    type=lsearch key="myhost.test.ex" opts=NULL
  file lookup required for myhost.test.ex
    in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
  lookup failed
  trying partial match *.myhost.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
    type=lsearch key="*.myhost.test.ex" opts=NULL
  file lookup required for *.myhost.test.ex
    in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
  lookup failed
  trying partial match *.test.ex
  internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
@@ -241,6 +245,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    type=lsearch key="test.example" opts=NULL
  file lookup required for test.example
    in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
   "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1

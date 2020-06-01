@@ -916,7 +916,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/renamed tmp\/\d+\.[^.]+\.(\S+) as new\/\d+\.[^.]+\.(\S+)/renamed tmp\/MAILDIR.$1 as new\/MAILDIR.$1/;
 
   # Maildir file names in general
-  s/\b\d+\.H\d+P\d+\b/dddddddddd.HddddddPddddd/;
+  s/\b\d+\.M\d+P\d+\b/dddddddddd.HddddddPddddd/;
 
   # Maildirsize data
   while (/^\d+S,\d+C\s*$/)

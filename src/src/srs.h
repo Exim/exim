@@ -10,7 +10,7 @@
 
 #define __SRS_H__ 1
 
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 
 #include "mytypes.h"
 #include <srs_alt.h>

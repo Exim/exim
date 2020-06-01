@@ -94,6 +94,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
   type=lsearch key="test.ex" opts=NULL
 file lookup required for test.ex
   in TESTSUITE/aux-fixed/0403.data
+creating new cache entry
 lookup yielded: [DOMAINDATA_test.ex]
 test.ex in "lsearch;TESTSUITE/aux-fixed/0403.data"? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
 checking local_parts
@@ -108,6 +109,7 @@ internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
   type=lsearch key="userx" opts=NULL
 file lookup required for userx
   in TESTSUITE/aux-fixed/0403.data
+creating new cache entry
 lookup yielded: [LOCALPARTDATA_userx]
 userx in "lsearch;TESTSUITE/aux-fixed/0403.data"? yes (matched "lsearch;TESTSUITE/aux-fixed/0403.data")
 +++ROUTER:

@@ -931,6 +931,9 @@ g = string_cat(NULL, US"Support for:");
 #ifdef USE_OPENSSL
   g = string_cat(g, US" OpenSSL");
 #endif
+#ifndef DISABLE_TLS_RESUME
+  g = string_cat(g, US" TLS_resume");
+#endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   g = string_cat(g, US" translate_ip_address");
 #endif
@@ -945,6 +948,9 @@ g = string_cat(NULL, US"Support for:");
 #endif
 #ifndef DISABLE_DKIM
   g = string_cat(g, US" DKIM");
+#endif
+#ifdef SUPPORT_DMARC
+  g = string_cat(g, US" DMARC");
 #endif
 #ifndef DISABLE_DNSSEC
   g = string_cat(g, US" DNSSEC");
@@ -967,14 +973,17 @@ g = string_cat(NULL, US"Support for:");
 #ifdef SUPPORT_PROXY
   g = string_cat(g, US" PROXY");
 #endif
+#ifndef DISABLE_QUEUE_RAMP
+  g = string_cat(g, US" Experimental_Queue_Ramp");
+#endif
 #ifdef SUPPORT_SOCKS
   g = string_cat(g, US" SOCKS");
 #endif
 #ifdef SUPPORT_SPF
   g = string_cat(g, US" SPF");
 #endif
-#ifdef SUPPORT_DMARC
-  g = string_cat(g, US" DMARC");
+#if defined(SUPPORT_SRS)
+  g = string_cat(g, US" SRS");
 #endif
 #ifdef TCP_FASTOPEN
   tcp_init();
@@ -992,20 +1001,11 @@ g = string_cat(NULL, US"Support for:");
 #ifdef EXPERIMENTAL_DSN_INFO
   g = string_cat(g, US" Experimental_DSN_info");
 #endif
-#ifdef EXPERIMENTAL_LMDB
-  g = string_cat(g, US" Experimental_LMDB");
-#endif
-#ifdef EXPERIMENTAL_QUEUE_RAMP
-  g = string_cat(g, US" Experimental_Queue_Ramp");
-#endif
 #ifdef EXPERIMENTAL_QUEUEFILE
   g = string_cat(g, US" Experimental_QUEUEFILE");
 #endif
-#if defined(EXPERIMENTAL_SRS) || defined(EXPERIMENTAL_SRS_NATIVE)
+#if defined(EXPERIMENTAL_SRS_ALT)
   g = string_cat(g, US" Experimental_SRS");
-#endif
-#ifdef EXPERIMENTAL_TLS_RESUME
-  g = string_cat(g, US" Experimental_TLS_resume");
 #endif
 g = string_cat(g, US"\n");
 
@@ -1034,7 +1034,7 @@ g = string_cat(g, US"Lookups (built-in):");
 #if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
   g = string_cat(g, US" ldap ldapdn ldapm");
 #endif
-#ifdef EXPERIMENTAL_LMDB
+#ifdef LOOKUP_LMDB
   g = string_cat(g, US" lmdb");
 #endif
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
@@ -1618,6 +1618,7 @@ BOOL removed_privilege = FALSE;
 BOOL usage_wanted = FALSE;
 BOOL verify_address_mode = FALSE;
 BOOL verify_as_sender = FALSE;
+BOOL rcpt_verify_quota = FALSE;
 BOOL version_printed = FALSE;
 uschar *alias_arg = NULL;
 uschar *called_as = US"";
@@ -2790,6 +2791,13 @@ on the second character (the one after '-'), to save some effort. */
 		  else badarg = TRUE;
 		  break;
 
+    /* -MCq: do a quota check on the given recipient for the given size
+    of message.  Separate from -MC. */
+	case 'q': rcpt_verify_quota = TRUE;
+		  if (++i < argc) message_size = Uatoi(argv[i]);
+		  else badarg = TRUE;
+		  break;
+
     /* -MCS: set the smtp_use_size flag; this is useful only when it
     precedes -MC (see above) */
 
@@ -3504,54 +3512,40 @@ END_ARG:
 if (usage_wanted) exim_usage(called_as);
 
 /* Arguments have been processed. Check for incompatibilities. */
-if ((
-    (smtp_input || extract_recipients || recipients_arg < argc) &&
-    (f.daemon_listen || queue_interval >= 0 || bi_option ||
-      test_retry_arg >= 0 || test_rewrite_arg >= 0 ||
-      filter_test != FTEST_NONE || (msg_action_arg > 0 && !one_msg_action))
-    ) ||
-    (
-    msg_action_arg > 0 &&
-    (f.daemon_listen || queue_interval > 0 || list_options ||
-      (checking && msg_action != MSG_LOAD) ||
-      bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0)
-    ) ||
-    (
-    (f.daemon_listen || queue_interval > 0) &&
-    (sender_address != NULL || list_options || list_queue || checking ||
-      bi_option)
-    ) ||
-    (
-    f.daemon_listen && queue_interval == 0
-    ) ||
-    (
-    f.inetd_wait_mode && queue_interval >= 0
-    ) ||
-    (
-    list_options &&
-    (checking || smtp_input || extract_recipients ||
-      filter_test != FTEST_NONE || bi_option)
-    ) ||
-    (
-    verify_address_mode &&
-    (f.address_test_mode || smtp_input || extract_recipients ||
-      filter_test != FTEST_NONE || bi_option)
-    ) ||
-    (
-    f.address_test_mode && (smtp_input || extract_recipients ||
-      filter_test != FTEST_NONE || bi_option)
-    ) ||
-    (
-    smtp_input && (sender_address != NULL || filter_test != FTEST_NONE ||
-      extract_recipients)
-    ) ||
-    (
-    deliver_selectstring != NULL && queue_interval < 0
-    ) ||
-    (
-    msg_action == MSG_LOAD &&
-      (!expansion_test || expansion_test_message != NULL)
-    )
+if (  (  (smtp_input || extract_recipients || recipients_arg < argc)
+      && (  f.daemon_listen || queue_interval >= 0 || bi_option
+	 || test_retry_arg >= 0 || test_rewrite_arg >= 0
+	 || filter_test != FTEST_NONE
+	 || msg_action_arg > 0 && !one_msg_action
+      )  )
+   || (  msg_action_arg > 0
+      && (  f.daemon_listen || queue_interval > 0 || list_options
+	 || checking && msg_action != MSG_LOAD
+	 || bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0
+      )  )
+   || (  (f.daemon_listen || queue_interval > 0)
+      && (  sender_address || list_options || list_queue || checking
+	 || bi_option
+      )  )
+   || f.daemon_listen && queue_interval == 0
+   || f.inetd_wait_mode && queue_interval >= 0
+   || (  list_options
+      && (  checking || smtp_input || extract_recipients
+	 || filter_test != FTEST_NONE || bi_option
+      )  )
+   || (  verify_address_mode
+      && (  f.address_test_mode || smtp_input || extract_recipients
+	 || filter_test != FTEST_NONE || bi_option
+      )  )
+   || (  f.address_test_mode
+      && (  smtp_input || extract_recipients || filter_test != FTEST_NONE
+	 || bi_option
+      )  )
+   || (  smtp_input
+      && (sender_address || filter_test != FTEST_NONE || extract_recipients)
+      )
+   || deliver_selectstring && queue_interval < 0
+   || msg_action == MSG_LOAD && (!expansion_test || expansion_test_message)
    )
   exim_fail("exim: incompatible command-line options or arguments\n");
 
@@ -4172,7 +4166,7 @@ if (!f.admin_user)
      || queue_name_dest && prod_requires_admin
      || debugset && !f.running_in_test_harness
      )
-    exim_fail("exim:%s permission denied\n", debugset? " debugging" : "");
+    exim_fail("exim:%s permission denied\n", debugset ? " debugging" : "");
   }
 
 /* If the real user is not root or the exim uid, the argument for passing
@@ -4181,11 +4175,13 @@ running with the -N option for any delivery action, unless this call to exim is
 one that supplied an input message, or we are using a patched exim for
 regression testing. */
 
-if (real_uid != root_uid && real_uid != exim_uid &&
-     (continue_hostname != NULL ||
-       (f.dont_deliver &&
-         (queue_interval >= 0 || f.daemon_listen || msg_action_arg > 0)
-       )) && !f.running_in_test_harness)
+if (  real_uid != root_uid && real_uid != exim_uid
+   && (  continue_hostname
+      || (  f.dont_deliver
+	 && (queue_interval >= 0 || f.daemon_listen || msg_action_arg > 0)
+      )  )
+   && !f.running_in_test_harness
+   )
   exim_fail("exim: Permission denied\n");
 
 /* If the caller is not trusted, certain arguments are ignored when running for
@@ -4207,9 +4203,9 @@ Exim exits if the syntax is bad. */
 
 else
   {
-  if (sender_host_address != NULL)
+  if (sender_host_address)
     sender_host_port = check_port(sender_host_address);
-  if (interface_address != NULL)
+  if (interface_address)
     interface_port = check_port(interface_address);
   }
 
@@ -4296,18 +4292,20 @@ retained only for starting the daemon. We always do the initgroups() in this
 situation (controlled by the TRUE below), in order to be as close as possible
 to the state Exim usually runs in. */
 
-if (!unprivileged &&                      /* originally had root AND */
-    !removed_privilege &&                 /* still got root AND      */
-    !f.daemon_listen &&                     /* not starting the daemon */
-    queue_interval <= 0 &&                /* (either kind of daemon) */
-      (                                   /*    AND EITHER           */
-      deliver_drop_privilege ||           /* requested unprivileged  */
-        (                                 /*       OR                */
-        queue_interval < 0 &&             /* not running the queue   */
-        (msg_action_arg < 0 ||            /*       and               */
-          msg_action != MSG_DELIVER) &&   /* not delivering and      */
-        (!checking || !f.address_test_mode) /* not address checking    */
-   )  ) )
+if (  !unprivileged				/* originally had root AND */
+   && !removed_privilege			/* still got root AND      */
+   && !f.daemon_listen				/* not starting the daemon */
+   && queue_interval <= 0			/* (either kind of daemon) */
+   && (						/*    AND EITHER           */
+         deliver_drop_privilege			/* requested unprivileged  */
+      || (					/*       OR                */
+            queue_interval < 0			/* not running the queue   */
+         && (  msg_action_arg < 0		/*       and               */
+            || msg_action != MSG_DELIVER	/* not delivering          */
+	    )					/*       and               */
+         && (!checking || !f.address_test_mode)	/* not address checking    */
+	 && !rcpt_verify_quota			/* and not quota checking  */
+   )  )  )
   exim_setugid(exim_uid, exim_gid, TRUE, US"privilege not needed");
 
 /* When we are retaining a privileged uid, we still change to the exim gid. */
@@ -4338,8 +4336,7 @@ if (malware_test_file)
 #ifdef WITH_CONTENT_SCAN
   int result;
   set_process_info("scanning file for malware");
-  result = malware_in_file(malware_test_file);
-  if (result == FAIL)
+  if ((result = malware_in_file(malware_test_file)) == FAIL)
     {
     printf("No malware found.\n");
     exit(EXIT_SUCCESS);
@@ -4427,6 +4424,18 @@ needed in transports so we lost the optimisation. */
   report_time_since(&t0, US"readconf_rest (delta)");
 #endif
   }
+
+/* Handle a request to check quota */
+if (rcpt_verify_quota)
+  if (real_uid != root_uid && real_uid != exim_uid)
+    exim_fail("exim: Permission denied\n");
+  else if (recipients_arg >= argc)
+    exim_fail("exim: missing recipient for quota check\n");
+  else
+    {
+    verify_quota(argv[recipients_arg]);
+    exim_exit(EXIT_SUCCESS);
+    }
 
 /* Handle the -brt option. This is for checking out retry configurations.
 The next three arguments are a domain name or a complete address, and
@@ -4862,8 +4871,8 @@ if (  !smtp_input && !sender_address
   sender, or if a sender other than <> is set, override with the originator's
   login (which will get qualified below), except when checking things. */
 
-  if (sender_address == NULL             /* No sender_address set */
-       ||                                /*         OR            */
+  if (  !sender_address                  /* No sender_address set */
+     ||                                  /*         OR            */
        (sender_address[0] != 0 &&        /* Non-empty sender address, AND */
        !checking))                       /* Not running tests, including filter tests */
     {
@@ -4914,7 +4923,6 @@ if (verify_address_mode || f.address_test_mode)
     }
 
   if (recipients_arg < argc)
-    {
     while (recipients_arg < argc)
       {
       /* Supplied addresses are tainted since they come from a user */
@@ -4930,7 +4938,6 @@ if (verify_address_mode || f.address_test_mode)
           while (*++s == ',' || isspace(*s)) ;
         }
       }
-    }
 
   else for (;;)
     {

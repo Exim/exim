@@ -3902,6 +3902,13 @@ together with the file descriptor number of an open pipe. Closure of the pipe
 signals the final completion of the sequence of processes that are passing
 messages through the same SMTP connection.
 
+.new
+.vitem &%-MCq%&&~<&'recipient&~address'&>&~<&'size'&>
+.oindex "&%-MCq%&"
+This option is not intended for use by external callers. It is used internally
+by Exim to implement quota checking for local users.
+.wen
+
 .vitem &%-MCS%&
 .oindex "&%-MCS%&"
 This option is not intended for use by external callers. It is used internally
@@ -4512,12 +4519,17 @@ appear in the correct order. Each flag is described in a separate item below.
 .cindex "queue" "routing"
 .cindex "routing" "whole queue before delivery"
 .cindex "first pass routing"
+.cindex "queue runner" "two phase"
 An option starting with &%-qq%& requests a two-stage queue run. In the first
 stage, the queue is scanned as if the &%queue_smtp_domains%& option matched
 every domain. Addresses are routed, local deliveries happen, but no remote
 transports are run.
 
 Performance will be best if the &%queue_run_in_order%& option is false.
+If that is so and the &%queue_fast_ramp%& option is true then
+in the first phase of the run,
+once a threshold number of messages are routed for a given host,
+a delivery process is forked in parallel with the rest of the scan.
 
 .cindex "hints database" "remembering routing"
 The hints database that remembers which messages are waiting for specific hosts
@@ -6653,10 +6665,17 @@ If the value of &$sender_host_address$& is 192.168.5.6, expansion of the
 first &%domains%& setting above generates the second setting, which therefore
 causes a second lookup to occur.
 
+.new
 The lookup type may optionally be followed by a comma
 and a comma-separated list of options.
 Each option is a &"name=value"& pair.
 Whether an option is meaningful depands on the lookup type.
+
+All lookups support the option &"cache=no_rd"&.
+If this is given then the cache that Exim manages for lookup results
+is not checked before diong the lookup.
+The result of the lookup is still written to the cache.
+.wen
 
 The rest of this chapter describes the different lookup types that are
 available. Any of them can be used in any part of the configuration where a
@@ -6681,6 +6700,7 @@ If this is given and the lookup
 (either underlying implementation or cached value)
 returns data, the result is replaced with a non-tainted
 version of the lookup key.
+.cindex "tainted data" "de-tainting"
 .next
 .cindex "query-style lookup" "definition of"
 The &'query-style'& type accepts a generalized database query. No particular
@@ -6854,6 +6874,29 @@ The final resulting element can be a simple JSON type or a JSON object
 or array; for the latter two a string-representation of the JSON
 is returned.
 For elements of type string, the returned value is de-quoted.
+
+
+.new
+.next
+.cindex LMDB
+.cindex lookup lmdb
+.cindex database lmdb
+&(lmdb)&: The given file is an LMDB database.
+LMDB is a memory-mapped key-value store,
+with API modeled loosely on that of BerkeleyDB.
+See &url(https://symas.com/products/lightning-memory-mapped-database/)
+for the feature set and operation modes.
+
+Exim provides read-only access via the LMDB C library.
+The library can be obtained from &url(https://github.com/LMDB/lmdb)
+or your operating system package repository.
+To enable LMDB support in Exim set LOOKUP_LMDB=yes in &_Local/Makefile_&.
+
+You will need to separately create the LMDB database file,
+possibly using the &"mdb_load"& utility.
+.wen
+
+
 .next
 .cindex "linear search"
 .cindex "lookup" "lsearch"
@@ -10564,6 +10607,14 @@ ${sort {${lookup dnsdb{>:,,mx=example.com}}} {<} {${listextract{1}{<,$item}}}}
 will sort an MX lookup into priority order.
 
 
+
+.new
+.vitem &*${srs_encode&~{*&<&'secret'&>&*}{*&<&'return&~path'&>&*}{*&<&'original&~domain'&>&*}}*&
+SRS encoding.  See SECT &<<SECTSRS>>& for details.
+.wen
+
+
+
 .vitem &*${substr{*&<&'string1'&>&*}{*&<&'string2'&>&*}{*&<&'string3'&>&*}}*&
 .cindex "&%substr%& expansion item"
 .cindex "substring extraction"
@@ -11625,6 +11676,13 @@ string is lexically greater than the second string. For &%gt%& the comparison
 includes the case of letters, whereas for &%gti%& the comparison is
 case-independent.
 Case and collation order are defined per the system C locale.
+
+
+.new
+.vitem &*inbound_srs&~{*&<&'local&~part'&>&*}{*&<&'secret'&>&*}*&
+SRS decode.  See SECT &<<SECTSRS>>& for details.
+.wen
+
 
 .vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*inlisti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
@@ -13708,6 +13766,17 @@ the value of the Distinguished Name of the certificate is made available in the
 If certificate verification fails it may refer to a failing chain element
 which is not the leaf.
 
+
+.new
+.vitem &$tls_in_resumption$& &&&
+       &$tls_out_resumption$&
+.vindex &$tls_in_resumption$&
+.vindex &$tls_out_resumption$&
+.cindex TLS resumption
+Observability for TLS session resumption.  See &<<SECTresumption>>& for details.
+.wen
+
+
 .vitem &$tls_in_sni$&
 .vindex "&$tls_in_sni$&"
 .vindex "&$tls_sni$&"
@@ -14712,6 +14781,7 @@ See also the &'Policy controls'& section above.
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
 .row &%queue_domains%&               "no immediate delivery for these"
+.row &%queue_fast_ramp%&             "parallel delivery with 2-phase queue run"
 .row &%queue_only%&                  "no immediate delivery at all"
 .row &%queue_only_file%&             "no immediate delivery if file exists"
 .row &%queue_only_load%&             "no immediate delivery if load is high"
@@ -16884,6 +16954,17 @@ domains that do not match are processed. All other deliveries wait until the
 next queue run. See also &%hold_domains%& and &%queue_smtp_domains%&.
 
 
+.new
+.option queue_fast_ramp main boolean false
+.cindex "queue runner" "two phase"
+.cindex "queue" "double scanning"
+If set to true, two-phase queue runs, initiated using &%-qq%& on the
+command line, may start parallel delivery processes during their first
+phase.  This will be done when a threshold number of messages have been
+routed for a single host.
+.wen
+
+
 .option queue_list_requires_admin main boolean true
 .cindex "restricting access to features"
 .oindex "&%-bp%&"
@@ -18252,6 +18333,14 @@ permitted cipher suites. The OpenSSL and GnuTLS libraries handle cipher control
 in somewhat different ways. If GnuTLS is being used, the client controls the
 preference order of the available ciphers. Details are given in sections
 &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
+
+
+.new
+.option tls_resumption_hosts main "host list&!!" unset
+.cindex TLS resumption
+This option controls which connections to offer the TLS resumption feature.
+See &<<SECTresumption>>& for details.
+.wen
 
 
 .option tls_try_verify_hosts main "host list&!!" unset
@@ -25375,6 +25464,20 @@ so can cause parallel connections to the same host if &%remote_max_parallel%&
 permits this.
 
 
+.new
+.option message_linelength_limit smtp integer 998
+.cindex "line length" limit
+This option sets the maximum line length, in bytes, that the transport
+will send.  Any messages with lines exceeding the given value
+will fail and a failure-DSN ("bounce") message will if possible be returned
+to the sender.
+The default value is that defined by the SMTP standards.
+
+It is generally wise to also check in the data ACL so that messages
+received via SMTP can be refused without producing a bounce.
+.wen
+
+
 .option multi_domain smtp boolean&!! true
 .vindex "&$domain$&"
 When this option is set, the &(smtp)& transport can handle a number of
@@ -25554,6 +25657,14 @@ expansion. See chapter &<<CHAPTLS>>& for details of TLS; note that this option
 is used in different ways by OpenSSL and GnuTLS (see sections
 &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&). For GnuTLS, the order of the
 ciphers is a preference order.
+
+
+.new
+.option tls_resumption_hosts smtp "host list&!!" unset
+.cindex TLS resumption
+This option controls which connections to use the TLS resumption feature.
+See &<<SECTresumption>>& for details.
+.wen
 
 
 
@@ -29372,6 +29483,100 @@ Open-source PKI book, available online at
 .ecindex IIDencsmtp2
 
 
+.new
+.section "TLS Resumption" "SECTresumption"
+.cindex TLS resumption
+TLS Session Resumption for TLS 1.2 and TLS 1.3 connections can be used (defined
+in RFC 5077 for 1.2).  The support for this requires GnuTLS 3.6.3 or OpenSSL 1.1.1
+(or later).
+
+Session resumption (this is the "stateless" variant) involves the server sending
+a "session ticket" to the client on one connection, which can be stored by the
+client and used for a later session.  The ticket contains sufficient state for
+the server to reconstruct the TLS session, avoiding some expensive crypto
+calculation and (on TLS1.2) one full packet roundtrip time.
+
+.ilist
+Operational cost/benefit:
+
+ The extra data being transmitted costs a minor amount, and the client has
+ extra costs in storing and retrieving the data.
+
+ In the Exim/Gnutls implementation the extra cost on an initial connection
+ which is TLS1.2 over a loopback path is about 6ms on 2017-laptop class hardware.
+ The saved cost on a subsequent connection is about 4ms; three or more
+ connections become a net win.  On longer network paths, two or more
+ connections will have an average lower startup time thanks to the one
+ saved packet roundtrip.  TLS1.3 will save the crypto cpu costs but not any
+ packet roundtrips.
+
+.cindex "hints database" tls
+ Since a new hints DB is used on the TLS client,
+ the hints DB maintenance should be updated to additionally handle "tls".
+
+.next
+Security aspects:
+
+ The session ticket is encrypted, but is obviously an additional security
+ vulnarability surface.  An attacker able to decrypt it would have access
+ all connections using the resumed session.
+ The session ticket encryption key is not committed to storage by the server
+ and is rotated regularly (OpenSSL: 1hr, and one previous key is used for
+ overlap; GnuTLS 6hr but does not specify any overlap).
+ Tickets have limited lifetime (2hr, and new ones issued after 1hr under
+ OpenSSL.  GnuTLS 2hr, appears to not do overlap).
+
+ There is a question-mark over the security of the Diffie-Helman parameters
+ used for session negotiation.
+
+.next
+Observability:
+
+ The &%log_selector%& "tls_resumption" appends an asterisk to the tls_cipher "X="
+ element.
+
+ The variables &$tls_in_resumption$& and &$tls_out_resumption$&
+ have bits 0-4 indicating respectively
+ support built, client requested ticket, client offered session,
+ server issued ticket, resume used.  A suitable decode list is provided
+ in the builtin macro _RESUME_DECODE for in &%listextract%& expansions.
+
+.next
+Control:
+
+The &%tls_resumption_hosts%& main option specifies a hostlist for which
+exim, operating as a server, will offer resumption to clients.
+Current best practice is to not offer the feature to MUA connection.
+Commonly this can be done like this:
+.code
+tls_resumption_hosts = ${if inlist {$received_port}{587:465} {:}{*}}
+.endd
+If the peer host matches the list after expansion then resumption
+is offered and/or accepted.
+
+The &%tls_resumption_hosts%& smtp transport option performs the
+equivalent function for operation as a client.
+If the peer host matches the list after expansion then resumption
+is attempted (if a stored session is available) or the information
+stored (if supplied by the peer).
+
+
+.next
+Issues:
+
+ In a resumed session:
+.ilist
+  The variables &$tls_{in,out}_cipher$& will have values different
+ to the original (under GnuTLS).
+.next
+  The variables &$tls_{in,out}_ocsp$& will be "not requested" or "no response",
+ and the &%hosts_require_ocsp%& smtp trasnport option will fail.
+. XXX need to do something with that hosts_require_ocsp
+.endlist
+
+.endlist
+.wen
+
 
 .section DANE "SECDANE"
 .cindex DANE
@@ -32492,6 +32697,15 @@ The &%success_on_redirect%& option causes verification always to succeed
 immediately after a successful redirection. By default, if a redirection
 generates just one address, that address is also verified. See further
 discussion in section &<<SECTredirwhilveri>>&.
+.new
+.next
+If the &%quota%& option is specified for recipient verify,
+successful routing to an appendfile transport is followed by a call into
+the transport to evaluate the quota status for the recipient.
+No actual delivery is done, but verification will succeed if the quota
+is sufficient for the message (if the sender gave a message size) or
+not already exceeded (otherwise).
+.wen
 .endlist
 
 .cindex "verifying address" "differentiating failures"
@@ -32525,6 +32739,9 @@ connection, HELO, or MAIL).
 &%recipient%&: The RCPT command in a callout was rejected.
 .next
 &%postmaster%&: The postmaster check in a callout was rejected.
+.new
+.next
+&%quota%&: The quota check for a local recipient did non pass.
 .endlist
 
 The main use of these variables is expected to be to distinguish between
@@ -32853,6 +33070,38 @@ being tested. If the domain routes to several hosts, it is assumed that their
 behaviour will be the same.
 
 
+
+.new
+.section "Quota caching" "SECTquotacache"
+.cindex "hints database" "quota cache"
+.cindex "quota" "cache, description of"
+.cindex "caching" "quota"
+Exim caches the results of quota verification
+in order to reduce the amount of resources used.
+The &"callout"& hints database is used.
+
+The default cache periods are five minutes for a positive (good) result
+and one hour for a negative result.
+To change the periods the &%quota%& option can be followed by an equals sign
+and a number of optional paramemters, separated by commas.
+For example:
+.code
+verify = recipient/quota=cachepos=1h,cacheneg=1d
+.endd
+Possible parameters are:
+.vlist
+.vitem &*cachepos&~=&~*&<&'time&~interval'&>
+.cindex "quota cache" "positive entry expiry, specifying"
+Set the lifetime for a positive cache entry.
+A value of zero seconds is legitimate.
+
+.vitem &*cacheneg&~=&~*&<&'time&~interval'&>
+.cindex "quota cache" "negative entry expiry, specifying"
+As above, for a negative entry.
+
+.vitem &*no_cache*&
+Set both positive and negative lifetimes to zero.
+.wen
 
 .section "Sender address verification reporting" "SECTsenaddver"
 .cindex "verifying" "suppressing error details"
@@ -37983,6 +38232,7 @@ selection marked by asterisks:
 &`*tls_certificate_verified   `&  certificate verification status
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
+&` tls_resumption             `&  append * to cipher field
 &` tls_sni                    `&  TLS SNI on <= lines
 &` unknown_in_list            `&  DNS lookup failed in list match
 
@@ -38383,6 +38633,14 @@ connection, the cipher suite used is added to the log line, preceded by X=.
 &%tls_peerdn%&: When a message is sent or received over an encrypted
 connection, and a certificate is supplied by the remote host, the peer DN is
 added to the log line, preceded by DN=.
+.next
+.cindex "log" "TLS resumption"
+.cindex "TLS" "logging session resumption"
+.new
+&%tls_resumption%&: When a message is sent or received over an encrypted
+connection and the TLS session resumed one used on a previous TCP connection,
+an asterisk is appended to the X= cipher field in the log line.
+.wen
 .next
 .cindex "log" "TLS SNI"
 .cindex "TLS" "logging SNI"
@@ -38928,6 +39186,10 @@ for remote hosts
 &'callout'&: the callout cache
 .next
 &'ratelimit'&: the data for implementing the ratelimit ACL condition
+.next
+.new
+&'tls'&: TLS session resumption data
+.wen
 .next
 &'misc'&: other hints data
 .endlist
@@ -40342,8 +40604,8 @@ There is no dot-stuffing (and no dot-termination).
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "DKIM, SPF and DMARC" "CHAPdkim" &&&
-         "DKIM, SPF and DMARC Support"
+.chapter "DKIM, SPF, SRS and DMARC" "CHAPdkim" &&&
+         "DKIM, SPF, SRS and DMARC Support"
 
 .section "DKIM (DomainKeys Identified Mail)" SECDKIM
 .cindex "DKIM"
@@ -41032,6 +41294,108 @@ The lookup will return the same result strings as can appear in
 &$spf_result$& (pass,fail,softfail,neutral,none,err_perm,err_temp).
 
 
+
+
+
+.section "SRS (Sender Rewriting Scheme)" SECTSRS
+.cindex SRS "sender rewriting scheme"
+
+.new
+SRS can be used to modify sender addresses when forwarding so that
+SPF verification does not object to them.
+It operates by encoding the original envelope sender in a new
+sender local part and using a domain run by the forwarding site
+as the new domain for the sender.  Any DSN message should be returned
+to this new sender at the forwarding site, which can extract the
+original sender from the coded local part and forward the DSN to
+the originator.
+
+This is a way of avoiding the breakage that SPF does to forwarding.
+The constructed local-part will be longer than the original,
+leading to possible problems with very long addresses.
+The changing of the sender address also hinders the tracing of mail
+problems.
+
+Exim can be built to include native SRS support.  To do this
+SUPPORT_SRS=yes must be defined in &_Local/Makefile_&.
+If this has been done, the macros _HAVE_SRS and _HAVE_NATIVE_SRS
+will be defined.
+The support is limited to SRS0-encoding; SRS1 is not supported.
+
+.cindex SRS excoding
+To encode an address use this expansion item:
+.vlist
+.vitem &*${srs_encode&~{*&<&'secret'&>&*}{*&<&'return&~path'&>&*}{*&<&'original&~domain'&>&*}}*&
+.cindex "&%srs_encode%& expansion item"
+.cindex SRS "expansion item"
+The first argument should be a secret known and used by all systems
+handling the recipient domain for the original message.
+There is no need to periodically change this key; a timestamp is also
+encoded.
+The second argument should be given as the envelope sender address before this
+encoding operation.
+The third argument should be the recipient domain of the message when
+it arrived at this system.
+.endlist
+
+.cindex SRS decoding
+To decode an address use this expansion condition:
+.vlist
+.vitem &*inbound_srs&~{*&<&'local&~part'&>&*}{*&<&'secret'&>&*}*&
+The first argument should be the recipient local prt as is was received.
+The second argument is the site secret.
+
+If the messages is not for an SRS-encoded recipient the condition will
+return false.  If it is, the condition will return true and the variable
+&$srs_recipient$& will be set to the decoded (original) value.
+.endlist
+
+Example usage:
+.code
+  #macro
+  SRS_SECRET = <pick something unique for your site for this. Use on all MXs.>
+  
+  #routers
+
+  outbound:
+    driver =    dnslookup
+    # if outbound, and forwarding has been done, use an alternate transport
+    domains =   ! +my_domains
+    transport = ${if eq {$local_part@$domain} \
+                        {$original_local_part@$original_domain} \
+                     {remote_smtp} {remote_forwarded_smtp}}
+  
+  inbound_srs:
+    driver =    redirect
+    senders =   :
+    domains =   +my_domains
+    # detect inbound bounces which are SRS'd, and decode them
+    condition = ${if inbound_srs {$local_part} {SRS_SECRET}}
+    data =      $srs_recipient
+  
+  inbound_srs_failure:
+    driver =    redirect
+    senders =   :
+    domains =   +my_domains
+    # detect inbound bounces which look SRS'd but are invalid
+    condition = ${if inbound_srs {$local_part} {}}
+    allow_fail
+    data =      :fail: Invalid SRS recipient address
+
+  #... further routers here
+
+  
+  # transport; should look like the non-forward outbound
+  # one, plus the max_rcpt and return_path options
+  remote_forwarded_smtp:
+    driver =              smtp
+    # modify the envelope from, for mails that we forward
+    max_rcpt =            1
+    return_path =         ${srs_encode {SRS_SECRET} {$return_path} {$original_domain}}
+.endd
+
+
+.wen
 
 
 

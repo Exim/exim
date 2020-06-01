@@ -15,6 +15,12 @@
 
 #define CALLOUT_TIMEOUT_DEFAULT 30
 
+/* Default quota cache TTLs */
+
+#define QUOTA_POS_DEFAULT (5*60)
+#define QUOTA_NEG_DEFAULT (60*60)
+
+
 /* ACL verb codes - keep in step with the table of verbs that follows */
 
 enum { ACL_ACCEPT, ACL_DEFER, ACL_DENY, ACL_DISCARD, ACL_DROP, ACL_REQUIRE,
@@ -1515,7 +1521,7 @@ static verify_type_t verify_type_list[] = {
     { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
     { US"sender",	  	VERIFY_SNDR,		ACL_BIT_MAIL | ACL_BIT_RCPT
-			|ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
+			| ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
 										FALSE, 6 },
     { US"recipient",	  	VERIFY_RCPT,	 	ACL_BIT_RCPT,	FALSE, 0 },
     { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
@@ -1556,6 +1562,20 @@ static callout_opt_t callout_opt_list[] = {
 
 
 
+static int
+v_period(const uschar * s, const uschar * arg, uschar ** log_msgptr)
+{
+int period;
+if ((period = readconf_readtime(s, 0, FALSE)) < 0)
+  {
+  *log_msgptr = string_sprintf("bad time value in ACL condition "
+    "\"verify %s\"", arg);
+  }
+return period;
+}
+
+
+
 /* This function implements the "verify" condition. It is called when
 encountered in any ACL, because some tests are almost always permitted. Some
 just don't make sense, and always fail (for example, an attempt to test a host
@@ -1590,6 +1610,8 @@ BOOL defer_ok = FALSE;
 BOOL callout_defer_ok = FALSE;
 BOOL no_details = FALSE;
 BOOL success_on_redirect = FALSE;
+BOOL quota = FALSE;
+int quota_pos_cache = QUOTA_POS_DEFAULT, quota_neg_cache = QUOTA_NEG_DEFAULT;
 address_item *sender_vaddr = NULL;
 uschar *verify_sender_address = NULL;
 uschar *pm_mailfrom = NULL;
@@ -1746,7 +1768,7 @@ switch(vp->value)
     in place of the actual sender (rare special-case requirement). */
     {
     uschar *s = ss + 6;
-    if (*s == 0)
+    if (!*s)
       verify_sender_address = sender_address;
     else
       {
@@ -1792,19 +1814,16 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   else if (strncmpic(ss, US"callout", 7) == 0)
     {
     callout = CALLOUT_TIMEOUT_DEFAULT;
-    ss += 7;
-    if (*ss != 0)
+    if (*(ss += 7))
       {
       while (isspace(*ss)) ss++;
       if (*ss++ == '=')
         {
 	const uschar * sublist = ss;
         int optsep = ',';
-        uschar buffer[256];
-	uschar * opt;
 
         while (isspace(*sublist)) sublist++;
-        while ((opt = string_nextinlist(&sublist, &optsep, buffer, sizeof(buffer))))
+        for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
           {
 	  callout_opt_t * op;
 	  double period = 1.0F;
@@ -1826,12 +1845,8 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
               }
             while (isspace(*opt)) opt++;
 	    }
-	  if (op->timeval && (period = readconf_readtime(opt, 0, FALSE)) < 0)
-	    {
-	    *log_msgptr = string_sprintf("bad time value in ACL condition "
-	      "\"verify %s\"", arg);
+	  if (op->timeval && (period = v_period(opt, arg, log_msgptr)) < 0)
 	    return ERROR;
-	    }
 
 	  switch(op->value)
 	    {
@@ -1864,6 +1879,38 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
       }
     }
 
+  /* The quota option has sub-options, comma-separated */
+
+  else if (strncmpic(ss, US"quota", 5) == 0)
+    {
+    quota = TRUE;
+    if (*(ss += 5))
+      {
+      while (isspace(*ss)) ss++;
+      if (*ss++ == '=')
+        {
+	const uschar * sublist = ss;
+        int optsep = ',';
+	int period;
+
+        while (isspace(*sublist)) sublist++;
+        for (uschar * opt; opt = string_nextinlist(&sublist, &optsep, NULL, 0); )
+	  if (Ustrncmp(opt, "cachepos=", 9) == 0)
+	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
+	      return ERROR;
+	    else
+	      quota_pos_cache = period;
+	  else if (Ustrncmp(opt, "cacheneg=", 9) == 0)
+	    if ((period = v_period(opt += 9, arg, log_msgptr)) < 0)
+	      return ERROR;
+	    else
+	      quota_neg_cache = period;
+	  else if (Ustrcmp(opt, "no_cache") == 0)
+	    quota_pos_cache = quota_neg_cache = 0;
+	}
+      }
+    }
+
   /* Option not recognized */
 
   else
@@ -1880,6 +1927,31 @@ if ((verify_options & (vopt_callout_recipsender|vopt_callout_recippmaster)) ==
   *log_msgptr = US"only one of use_sender and use_postmaster can be set "
     "for a recipient callout";
   return ERROR;
+  }
+
+/* Handle quota verification */
+if (quota)
+  {
+  if (vp->value != VERIFY_RCPT)
+    {
+    *log_msgptr = US"can only verify quota of recipient";
+    return ERROR;
+    }
+
+  if ((rc = verify_quota_call(addr->address,
+	      quota_pos_cache, quota_neg_cache, log_msgptr)) != OK)
+    {
+    *basic_errno = errno;
+    if (smtp_return_error_details)
+      {
+      if (!*user_msgptr && *log_msgptr)
+        *user_msgptr = string_sprintf("Rejected after %s: %s",
+	    smtp_names[smtp_connection_had[smtp_ch_index-1]], *log_msgptr);
+      if (rc == DEFER) f.acl_temp_details = TRUE;
+      }
+    }
+
+  return rc;
   }
 
 /* Handle sender-in-header verification. Default the user message to the log
@@ -1928,8 +2000,8 @@ else if (verify_sender_address)
     }
 
   sender_vaddr = verify_checked_sender(verify_sender_address);
-  if (sender_vaddr != NULL &&               /* Previously checked */
-      callout <= 0)                         /* No callout needed this time */
+  if (   sender_vaddr				/* Previously checked */
+      && callout <= 0)				/* No callout needed this time */
     {
     /* If the "routed" flag is set, it means that routing worked before, so
     this check can give OK (the saved return code value, if set, belongs to a
@@ -1996,14 +2068,12 @@ else if (verify_sender_address)
         *basic_errno = sender_vaddr->basic_errno;
       else
 	DEBUG(D_acl)
-	  {
 	  if (Ustrcmp(sender_vaddr->address, verify_sender_address) != 0)
 	    debug_printf_indent("sender %s verified ok as %s\n",
 	      verify_sender_address, sender_vaddr->address);
 	  else
 	    debug_printf_indent("sender %s verified ok\n",
 	      verify_sender_address);
-	  }
       }
     else
       rc = OK;  /* Null sender */
@@ -2047,8 +2117,7 @@ else
 
   *basic_errno = addr2.basic_errno;
   *log_msgptr = addr2.message;
-  *user_msgptr = (addr2.user_message != NULL)?
-    addr2.user_message : addr2.message;
+  *user_msgptr = addr2.user_message ? addr2.user_message : addr2.message;
 
   /* Allow details for temporary error if the address is so flagged. */
   if (testflag((&addr2), af_pass_message)) f.acl_temp_details = TRUE;
@@ -2059,8 +2128,10 @@ else
 
 /* We have a result from the relevant test. Handle defer overrides first. */
 
-if (rc == DEFER && (defer_ok ||
-   (callout_defer_ok && *basic_errno == ERRNO_CALLOUTDEFER)))
+if (  rc == DEFER
+   && (  defer_ok
+      || callout_defer_ok && *basic_errno == ERRNO_CALLOUTDEFER
+   )  )
   {
   HDEBUG(D_acl) debug_printf_indent("verify defer overridden by %s\n",
     defer_ok? "defer_ok" : "callout_defer_ok");
@@ -2070,7 +2141,7 @@ if (rc == DEFER && (defer_ok ||
 /* If we've failed a sender, set up a recipient message, and point
 sender_verified_failed to the address item that actually failed. */
 
-if (rc != OK && verify_sender_address != NULL)
+if (rc != OK && verify_sender_address)
   {
   if (rc != DEFER)
     *log_msgptr = *user_msgptr = US"Sender verify failed";
@@ -2089,7 +2160,7 @@ if (rc != OK && verify_sender_address != NULL)
 /* Verifying an address messes up the values of $domain and $local_part,
 so reset them before returning if this is a RCPT ACL. */
 
-if (addr != NULL)
+if (addr)
   {
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;

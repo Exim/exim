@@ -107,7 +107,7 @@ typedef struct {
     OCSP_FAILED,		/* verify failed */
     OCSP_VFIED			/* verified */
     }     ocsp;		      /* Stapled OCSP status */
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   unsigned resumption;		/* Session resumption */
   BOOL	  host_resumable:1;
   BOOL	  ticket_received:1;
@@ -134,7 +134,7 @@ extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 extern uschar *tls_resumption_hosts;   /* TLS session resumption */
 # endif
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */
@@ -792,7 +792,7 @@ extern uschar *prvscheck_result;       /* Set during prvscheck expansion item */
 extern const uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
 extern uschar *qualify_domain_sender;  /* Domain to qualify senders with */
 extern uschar *queue_domains;          /* Queue these domains */
-#ifdef EXPERIMENTAL_QUEUE_RAMP
+#ifndef DISABLE_QUEUE_RAMP
 extern BOOL    queue_fast_ramp;        /* 2-phase queue-run overlap */
 #endif
 extern BOOL    queue_list_requires_admin; /* TRUE if -bp requires admin */
@@ -943,6 +943,7 @@ extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */
 extern int     smtp_max_unknown_commands; /* As it says */
+extern uschar *smtp_names[];	       /* decode for command codes */
 extern uschar *smtp_notquit_reason;    /* Global for disconnect reason */
 extern FILE   *smtp_out;               /* Incoming SMTP output file */
 extern uschar *smtp_ratelimit_hosts;   /* Rate limit these hosts */
@@ -989,7 +990,7 @@ extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern FILE   *spool_data_file;	       /* handle for -D file */
 extern uschar *spool_directory;        /* Name of spool directory */
 extern BOOL    spool_wireformat;       /* can write wireformat -D files */
-#ifdef EXPERIMENTAL_SRS
+#ifdef EXPERIMENTAL_SRS_ALT
 extern uschar *srs_config;             /* SRS config secret:max age:hash length:use timestamp:use hash */
 extern uschar *srs_db_address;         /* SRS db address */
 extern uschar *srs_db_key;             /* SRS db key */
@@ -1004,7 +1005,7 @@ extern uschar *srs_status;             /* SRS staus */
 extern BOOL    srs_usehash;            /* SRS use hash flag */
 extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
 #endif
-#ifdef EXPERIMENTAL_SRS_NATIVE
+#ifdef SUPPORT_SRS
 extern uschar *srs_recipient;          /* SRS recipient */
 #endif
 extern BOOL    strict_acl_vars;        /* ACL variables have to be set before being used */

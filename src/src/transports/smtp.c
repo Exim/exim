@@ -111,6 +111,7 @@ optionlist smtp_transport_options[] = {
   { "lmtp_ignore_quota",    opt_bool,	   LOFF(lmtp_ignore_quota) },
   { "max_rcpt",             opt_int | opt_public,
       OPT_OFF(transport_instance, max_addresses) },
+  { "message_linelength_limit", opt_int,   LOFF(message_linelength_limit) },
   { "multi_domain",         opt_expand_bool | opt_public,
       OPT_OFF(transport_instance, multi_domain) },
   { "port",                 opt_stringptr, LOFF(port) },
@@ -127,7 +128,7 @@ optionlist smtp_transport_options[] = {
   { "tls_dh_min_bits",      opt_int,	   LOFF(tls_dh_min_bits) },
   { "tls_privatekey",       opt_stringptr, LOFF(tls_privatekey) },
   { "tls_require_ciphers",  opt_stringptr, LOFF(tls_require_ciphers) },
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   { "tls_resumption_hosts", opt_stringptr, LOFF(tls_resumption_hosts) },
 # endif
   { "tls_sni",              opt_stringptr, LOFF(tls_sni) },
@@ -207,6 +208,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .size_addition =		1024,
   .hosts_max_try =		5,
   .hosts_max_try_hardlimit =	50,
+  .message_linelength_limit =	998,
   .address_retry_include_sender = TRUE,
   .allow_localhost =		FALSE,
   .authenticated_sender_force =	FALSE,
@@ -233,7 +235,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .tls_verify_certificates =	US"system",
   .tls_dh_min_bits =		EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
   .tls_tempfail_tryclear =	TRUE,
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
   .tls_resumption_hosts =	NULL,
 # endif
   .tls_verify_hosts =		NULL,
@@ -1970,7 +1972,7 @@ tls_out.peerdn = NULL;
 tls_out.sni = NULL;
 #endif
 tls_out.ocsp = OCSP_NOT_REQ;
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_out.resumption = 0;
 #endif
 tls_out.ver = NULL;
@@ -4522,6 +4524,22 @@ DEBUG(D_transport)
     debug_printf("already connected to %s [%s] (on fd %d)\n",
       continue_hostname, continue_host_address,
       cutthrough.cctx.sock >= 0 ? cutthrough.cctx.sock : 0);
+  }
+
+/* Check the restrictions on line length */
+
+if (max_received_linelength > ob->message_linelength_limit)
+  {
+  struct timeval now;
+  gettimeofday(&now, NULL);
+
+  for (address_item * addr = addrlist; addr; addr = addr->next)
+    if (addr->transport_return == DEFER)
+      addr->transport_return = PENDING_DEFER;
+
+  set_errno_nohost(addrlist, ERRNO_SMTPFORMAT,
+    US"message has lines too long for transport", FAIL, TRUE, &now);
+  goto END_TRANSPORT;
   }
 
 /* Set the flag requesting that these hosts be added to the waiting

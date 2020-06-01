@@ -116,7 +116,7 @@ change this guard and punt the issue for a while longer. */
 # define DISABLE_OCSP
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 # if OPENSSL_VERSION_NUMBER < 0x0101010L
 #  error OpenSSL version too old for session-resumption
 # endif
@@ -292,7 +292,7 @@ for (struct exim_openssl_option * o = exim_openssl_options;
   builtin_macro_create(buf);
   }
 
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 builtin_macro_create_var(US"_RESUME_DECODE", RESUME_DECODE_STRING );
 # endif
 # ifdef SSL_OP_NO_TLSv1_3
@@ -422,7 +422,7 @@ static int tls_server_stapling_cb(SSL *s, void *arg);
 
 
 /* Daemon-called, before every connection, key create/rotate */
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 static void tk_init(void);
 static int tls_exdata_idx = -1;
 #endif
@@ -430,7 +430,7 @@ static int tls_exdata_idx = -1;
 void
 tls_daemon_init(void)
 {
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tk_init();
 #endif
 return;
@@ -891,7 +891,7 @@ fclose(fp);
 #endif
 
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 /* Manage the keysets used for encrypting the session tickets, on the server. */
 
 typedef struct {			/* Session ticket encryption key */
@@ -2176,12 +2176,12 @@ availability of the option value macros from OpenSSL.  */
 if (!tls_openssl_options_parse(openssl_options, &init_options))
   return tls_error(US"openssl_options parsing failed", host, NULL, errstr);
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tlsp->resumption = RESUME_SUPPORTED;
 #endif
 if (init_options)
   {
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
   /* Should the server offer session resumption? */
   if (!host && verify_check_host(&tls_resumption_hosts) == OK)
     {
@@ -2685,12 +2685,12 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
   server_verify_optional = TRUE;
   }
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 SSL_CTX_set_tlsext_ticket_key_cb(server_ctx, ticket_key_callback);
 /* despite working, appears to always return failure, so ignoring */
 #endif
 #ifdef OPENSSL_HAVE_NUM_TICKETS
-# ifdef EXPERIMENTAL_TLS_RESUME
+# ifndef DISABLE_TLS_RESUME
 SSL_CTX_set_num_tickets(server_ctx, tls_in.host_resumable ? 1 : 0);
 # else
 SSL_CTX_set_num_tickets(server_ctx, 0);	/* send no TLS1.3 stateful-tickets */
@@ -2796,7 +2796,7 @@ DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
 ERR_clear_error();	/* Even success can leave errors in the stack. Seen with
 			anon-authentication ciphersuite negotiated. */
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 if (SSL_session_reused(server_ssl))
   {
   tls_in.resumption |= RESUME_USED;
@@ -2983,7 +2983,7 @@ return DEFER;
 
 
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 /* On the client, get any stashed session for the given IP from hints db
 and apply it to the ssl-connection for attempted resumption. */
 
@@ -3145,7 +3145,7 @@ if (SSL_session_reused(exim_client_ctx->ssl))
   tlsp->resumption |= RESUME_USED;
   }
 }
-#endif	/* EXPERIMENTAL_TLS_RESUME */
+#endif	/* !DISABLE_TLS_RESUME */
 
 
 /*************************************************
@@ -3294,7 +3294,7 @@ else
 	client_static_cbinfo, errstr) != OK)
     return FALSE;
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_client_ctx_resume_prehandshake(exim_client_ctx, tlsp, ob, host);
 #endif
 
@@ -3365,7 +3365,7 @@ if (request_ocsp)
   }
 #endif
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 if (!tls_client_ssl_resume_prehandshake(exim_client_ctx->ssl, tlsp, host,
       errstr))
   return FALSE;
@@ -3406,7 +3406,7 @@ DEBUG(D_tls)
 #endif
   }
 
-#ifdef EXPERIMENTAL_TLS_RESUME
+#ifndef DISABLE_TLS_RESUME
 tls_client_resume_posthandshake(exim_client_ctx, tlsp);
 #endif
 

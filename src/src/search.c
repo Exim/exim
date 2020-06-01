@@ -462,6 +462,7 @@ Arguments:
                NULL for query-style searches
   keystring    the keystring for single-key+file lookups, or
                the querystring for query-style lookups
+  cache_rd     FALSE to avoid lookup in cache layer
   opts	       type-specific options
 
 Returns:       a pointer to a dynamic string containing the answer,
@@ -472,7 +473,7 @@ Returns:       a pointer to a dynamic string containing the answer,
 
 static uschar *
 internal_search_find(void * handle, const uschar * filename, uschar * keystring,
-  const uschar * opts)
+  BOOL cache_rd, const uschar * opts)
 {
 tree_node * t = (tree_node *)handle;
 search_cache * c = (search_cache *)(t->data.ptr);
@@ -501,11 +502,13 @@ if (keystring[0] == 0) return NULL;
 store_pool = POOL_SEARCH;
 
 /* Look up the data for the key, unless it is already in the cache for this
-file. No need to check c->item_cache for NULL, tree_search will do so. */
+file. No need to check c->item_cache for NULL, tree_search will do so. Check
+whether we want to use the cache entry last so that we can always replace it. */
 
 if (  (t = tree_search(c->item_cache, keystring))
    && (!(e = t->data.ptr)->expiry || e->expiry > time(NULL))
    && (!opts && !e->opts  ||  opts && e->opts && Ustrcmp(opts, e->opts) == 0)
+   && cache_rd
    )
   { /* Data was in the cache already; set the pointer from the tree node */
   data = e->data.ptr;
@@ -522,7 +525,8 @@ else
     {
     if (t)
       debug_printf_indent("cached data found but %s; ",
-	e->expiry && e->expiry <= time(NULL) ? "out-of-date" : "wrong opts");
+	e->expiry && e->expiry <= time(NULL) ? "out-of-date"
+	: cache_rd ? "wrong opts" : "no_rd option set");
     debug_printf_indent("%s lookup required for %s%s%s\n",
       filename ? US"file" : US"database",
       keystring,
@@ -541,14 +545,19 @@ else
   or points to a bit of dynamic store. Cache the result of the lookup if
   caching is permitted. Lookups can disable caching, when they did something
   that changes their data. The mysql and pgsql lookups do this when an
-  UPDATE/INSERT query was executed. */
+  UPDATE/INSERT query was executed.  Lookups can also set a TTL for the
+  cache entry; the dnsdb lookup does.
+  Finally, the caller can request no caching by setting an option. */
 
   else if (do_cache)
     {
+    DEBUG(D_lookup) debug_printf_indent("%s cache entry\n",
+      t ? "replacing old" : "creating new");
     if (!t)	/* No existing entry.  Create new one. */
       {
       int len = keylength + 1;
-      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len, is_tainted(keystring));
+      e = store_get(sizeof(expiring_data) + sizeof(tree_node) + len,
+		    is_tainted(keystring));
       t = (tree_node *)(e+1);
       memcpy(t->name, keystring, len);
       t->data.ptr = e;
@@ -621,9 +630,9 @@ search_find(void * handle, const uschar * filename, uschar * keystring,
   int partial, const uschar * affix, int affixlen, int starflags,
   int * expand_setup, const uschar * opts)
 {
-tree_node *t = (tree_node *)handle;
-BOOL set_null_wild = FALSE;
-uschar *yield;
+tree_node * t = (tree_node *)handle;
+BOOL set_null_wild = FALSE, cache_rd = TRUE, ret_key = FALSE;
+uschar * yield;
 
 DEBUG(D_lookup)
   {
@@ -634,6 +643,23 @@ DEBUG(D_lookup)
     keystring, partial, affixlen, affix, starflags,
     opts ? "\"" : "", opts, opts ? "\"" : "");
 
+  }
+
+/* Parse global lookup options. Also, create a new options list with
+the global options dropped so that the cache-modifiers are not
+used in the cache key. */
+
+if (opts)
+  {
+  int sep = ',';
+  gstring * g = NULL;
+
+  for (uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
+    if (Ustrcmp(ele, "ret=key") == 0) ret_key = TRUE;
+    else if (Ustrcmp(ele, "cache=no_rd") == 0) cache_rd = FALSE;
+    else g = string_append_listele(g, ',', ele);
+
+  opts = string_from_gstring(g);
   }
 
 /* Arrange to put this database at the top of the LRU chain if it is a type
@@ -683,7 +709,7 @@ DEBUG(D_lookup)
 /* First of all, try to match the key string verbatim. If matched a complete
 entry but could have been partial, flag to set up variables. */
 
-yield = internal_search_find(handle, filename, keystring, opts);
+yield = internal_search_find(handle, filename, keystring, cache_rd, opts);
 if (f.search_find_defer) return NULL;
 
 if (yield) { if (partial >= 0) set_null_wild = TRUE; }
@@ -708,7 +734,7 @@ else if (partial >= 0)
     Ustrncpy(keystring2, affix, affixlen);
     Ustrcpy(keystring2 + affixlen, keystring);
     DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring2);
-    yield = internal_search_find(handle, filename, keystring2, opts);
+    yield = internal_search_find(handle, filename, keystring2, cache_rd, opts);
     if (f.search_find_defer) return NULL;
     }
 
@@ -746,7 +772,8 @@ else if (partial >= 0)
         }
 
       DEBUG(D_lookup) debug_printf_indent("trying partial match %s\n", keystring3);
-      yield = internal_search_find(handle, filename, keystring3, opts);
+      yield = internal_search_find(handle, filename, keystring3,
+		cache_rd, opts);
       if (f.search_find_defer) return NULL;
       if (yield)
         {
@@ -787,7 +814,7 @@ if (!yield  &&  starflags & SEARCH_STARAT)
     *atat = '*';
 
     DEBUG(D_lookup) debug_printf_indent("trying default match %s\n", atat);
-    yield = internal_search_find(handle, filename, atat, opts);
+    yield = internal_search_find(handle, filename, atat, cache_rd, opts);
     *atat = savechar;
     if (f.search_find_defer) return NULL;
 
@@ -810,7 +837,7 @@ and the second is empty. */
 if (!yield  &&  starflags & (SEARCH_STAR|SEARCH_STARAT))
   {
   DEBUG(D_lookup) debug_printf_indent("trying to match *\n");
-  yield = internal_search_find(handle, filename, US"*", opts);
+  yield = internal_search_find(handle, filename, US"*", cache_rd, opts);
   if (yield && expand_setup && *expand_setup >= 0)
     {
     *expand_setup += 1;
@@ -843,17 +870,8 @@ if (set_null_wild && expand_setup && *expand_setup >= 0)
 than the result.  Return a de-tainted version of the key on the grounds that
 it have been validated by the lookup. */
 
-if (yield && opts)
-  {
-  int sep = ',';
-  for (uschar * ele; ele = string_nextinlist(&opts, &sep, NULL, 0); )
-    if (Ustrcmp(ele, "ret=key") == 0)
-      {
-      DEBUG(D_lookup) debug_printf_indent("lookup ret=key: %s\n", keystring);
-      yield = string_copy_taint(keystring, FALSE);
-      break;
-      }
-  }
+if (yield && ret_key)
+  yield = string_copy_taint(keystring, FALSE);
 
 return yield;
 }
