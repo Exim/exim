@@ -10169,9 +10169,9 @@ You can use &`fail`& instead of {<&'string3'&>} as in a string extract.
 
 
 .new
-.vitem &*${listquote{*&<&'separator'&>&*}{*&<&'string'&>&*}}*"
-.citem quoting "for list"
-.citem list quoting
+.vitem &*${listquote{*&<&'separator'&>&*}{*&<&'string'&>&*}}*&
+.cindex quoting "for list"
+.cindex list quoting
 This item doubles any occurrence of the separator character
 in the given string.
 An empty string is replaced with a single space.
