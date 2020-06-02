@@ -83,8 +83,7 @@ for (int i = 0; i < num_msg; i++)
     {
     case PAM_PROMPT_ECHO_ON:
     case PAM_PROMPT_ECHO_OFF:
-      arg = string_nextinlist(&pam_args, &sep, big_buffer, big_buffer_size);
-      if (!arg)
+      if (!(arg = string_nextinlist(&pam_args, &sep, NULL, 0)))
 	{
 	arg = US"";
 	pam_arg_ended = TRUE;
@@ -155,7 +154,7 @@ pam_arg_ended = FALSE;
 fail. PAM doesn't support authentication with an empty user (it prompts for it,
 causing a potential mis-interpretation). */
 
-user = string_nextinlist(&pam_args, &sep, big_buffer, big_buffer_size);
+user = string_nextinlist(&pam_args, &sep, NULL, 0);
 if (user == NULL || user[0] == 0) return FAIL;
 
 /* Start off PAM interaction */

@@ -10,6 +10,11 @@ JH/01 Bug 1329: Fix format of Maildir-format filenames to match other mail-
       related applications.  Previously an "H" was used where available info
       says that "M" should be, so change to match.
 
+JH/02 Bug 2587: Fix pam expansion condition.  Tainted values are commonly used
+      as arguments, so an implementation trying to copy these into local
+      buffer was taking a taint-enformance trap.  Fix by using dynamically
+      created buffers.
+
 
 Exim version 4.94
 -----------------
