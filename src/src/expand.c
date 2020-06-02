@@ -7208,9 +7208,8 @@ while (*s != 0)
         {
 	int cnt = 0;
 	int sep = 0;
-	uschar buffer[256];
 
-	while (string_nextinlist(CUSS &sub, &sep, buffer, sizeof(buffer))) cnt++;
+	while (string_nextinlist(CUSS &sub, &sep, NULL, 0)) cnt++;
 	yield = string_fmt_append(yield, "%d", cnt);
         continue;
         }
