@@ -10168,6 +10168,18 @@ extracted is used.
 You can use &`fail`& instead of {<&'string3'&>} as in a string extract.
 
 
+.new
+.vitem &*${listquote{*&<&'separator'&>&*}{*&<&'string'&>&*}}*"
+.citem quoting "for list"
+.citem list quoting
+This item doubles any occurrence of the separator character
+in the given string.
+An empty string is replaced with a single space.
+This converts the string into a safe form for use as a list element,
+in a list using the given separator.
+.wen
+
+
 .vitem "&*${lookup{*&<&'key'&>&*}&~*&<&'search&~type'&>&*&~&&&
         {*&<&'file'&>&*}&~{*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&"
 This is the first of one of two different types of lookup item, which are both
@@ -11933,15 +11945,12 @@ request, for a password, so the data consists of just two strings.
 
 There can be problems if any of the strings are permitted to contain colon
 characters. In the usual way, these have to be doubled to avoid being taken as
-separators. If the data is being inserted from a variable, the &%sg%& expansion
-item can be used to double any existing colons. For example, the configuration
+separators.
+The &%listquote%& expansion item can be used for this.
+For example, the configuration
 of a LOGIN authenticator might contain this setting:
 .code
-server_condition = ${if pam{$auth1:${sg{$auth2}{:}{::}}}}
-.endd
-For a PLAIN authenticator you could use:
-.code
-server_condition = ${if pam{$auth2:${sg{$auth3}{:}{::}}}}
+server_condition = ${if pam{$auth1:${listquote{:}{$auth2}}}}
 .endd
 In some operating systems, PAM authentication can be done only from a process
 running as root. Since Exim is running as the Exim user when receiving
