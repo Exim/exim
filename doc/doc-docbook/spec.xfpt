@@ -8038,8 +8038,8 @@ For MySQL, PostgreSQL and Redis lookups (but not currently for Oracle and InterB
 it is possible to specify a list of servers with an individual query. This is
 done by appending a comma-separated option to the query type:
 .display
-.endd
 &`,servers=`&&'server1:server2:server3:...'&
+.endd
 .wen
 Each item in the list may take one of two forms:
 .olist
