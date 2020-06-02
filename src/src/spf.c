@@ -248,7 +248,7 @@ if (!(spf_server = SPF_server_new_dns(dc, debug)))
 if (!(s = expand_string(spf_smtp_comment_template)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "expansion of spf_smtp_comment_template failed");
 
-SPF_server_set_explanation(spf_server, s, &spf_response);
+SPF_server_set_explanation(spf_server, CCS s, &spf_response);
 if (SPF_response_errcode(spf_response) != SPF_E_SUCCESS)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", SPF_strerror(SPF_response_errcode(spf_response)));
 
