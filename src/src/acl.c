@@ -3349,11 +3349,11 @@ for (; cb; cb = cb->next)
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
+      uschar *ss = string_nextinlist(&list, &sep, NULL, 0);
       /* Run the dcc backend. */
       rc = dcc_process(&ss);
       /* Modify return code based upon the existence of options. */
-      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+      while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           rc = FAIL;   /* FAIL so that the message is passed to the next ACL */
       }
@@ -3514,7 +3514,7 @@ for (; cb; cb = cb->next)
       int sep = 0;
       const uschar *s = arg;
       uschar * ss;
-      while ((ss = string_nextinlist(&s, &sep, big_buffer, big_buffer_size)))
+      while ((ss = string_nextinlist(&s, &sep, NULL, 0)))
         {
         if (Ustrcmp(ss, "main") == 0) logbits |= LOG_MAIN;
         else if (Ustrcmp(ss, "panic") == 0) logbits |= LOG_PANIC;
@@ -3567,7 +3567,7 @@ for (; cb; cb = cb->next)
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar * ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
+      uschar * ss = string_nextinlist(&list, &sep, NULL, 0);
       uschar * opt;
       BOOL defer_ok = FALSE;
       int timeout = 0;
@@ -3672,11 +3672,11 @@ for (; cb; cb = cb->next)
       {
       /* Separate the regular expression and any optional parameters. */
       const uschar * list = arg;
-      uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
+      uschar *ss = string_nextinlist(&list, &sep, NULL, 0);
 
       rc = spam(CUSS &ss);
       /* Modify return code based upon the existence of options. */
-      while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+      while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
         if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
           rc = FAIL;	/* FAIL so that the message is passed to the next ACL */
       }

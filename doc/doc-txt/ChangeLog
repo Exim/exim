@@ -13,7 +13,9 @@ JH/02 Bug 2587: Fix pam expansion condition.  Tainted values are commonly used
 
 JH/03 Bug 2586: Fix listcount expansion operator.  Using tainted arguments is
       reasonable, eg. to count headers.  Fix by using dynamically created
-      buffers rather than a local,
+      buffers rather than a local.  Do similar fixes for ACL actions "dcc",
+      "log_reject_target", "malware" and "spam"; the arguments are expanded
+      so could be handling tainted values.
 
 
 Exim version 4.94
