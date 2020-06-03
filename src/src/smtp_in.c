@@ -1821,20 +1821,14 @@ return g;
 static gstring *
 s_connhad_log(gstring * g)
 {
-uschar * sep = smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE
+const uschar * sep = smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE
   ? US" C=..." : US" C=";
 
-for (int i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+for (int i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++, sep = US",")
   if (smtp_connection_had[i] != SCH_NONE)
-    {
     g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
-    sep = US",";
-    }
-for (int i = 0; i < smtp_ch_index; i++)
-  {
+for (int i = 0; i < smtp_ch_index; i++, sep = US",")
   g = string_append(g, 2, sep, smtp_names[smtp_connection_had[i]]);
-  sep = US",";
-  }
 return g;
 }
 

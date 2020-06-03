@@ -927,14 +927,11 @@ else
   start of a string. Avoid getting working memory for an empty item. */
 
   if (*s == sep)
-    {
-    s++;
-    if (*s != sep || sep_is_special)
+    if (*++s != sep || sep_is_special)
       {
       *listptr = s;
       return string_copy(US"");
       }
-    }
 
   /* Not an empty string; the first character is guaranteed to be a data
   character. */

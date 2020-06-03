@@ -8096,7 +8096,7 @@ option, you can still update it by a query of this form:
 ${lookup pgsql,servers=master/db/name/pw {UPDATE ...} }
 .endd
 
-An older syntax places the servers speciification before the qury,
+An older syntax places the servers specification before the query,
 semicolon separated:
 .code
 ${lookup mysql{servers=master; UPDATE ...} }
