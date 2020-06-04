@@ -2148,7 +2148,7 @@ on the second character (the one after '-'), to save some effort. */
 	concept of *the* alias file, but since Sun's YP make script calls
 	sendmail this way, some support must be provided. */
 	case 'i':
-	  if (!*++argrest) bi_option = TRUE;
+	  if (!*argrest) bi_option = TRUE;
 	  else badarg = TRUE;
 	  break;
 
