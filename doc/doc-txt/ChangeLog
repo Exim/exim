@@ -21,6 +21,10 @@ JH/03 Bug 2586: Fix listcount expansion operator.  Using tainted arguments is
       "log_reject_target", "malware" and "spam"; the arguments are expanded
       so could be handling tainted values.
 
+JH/04 Bug 2590: Fix -bi (newaliases).  A previous code rearrangement had
+      broken the (no-op) support for this sendmail command.  Restore it
+      to doing nothing, silently, and returning good status.
+
 
 Exim version 4.94
 -----------------

@@ -1,0 +1,6 @@
+# -bi / newaliases
+#
+exim -bi
+****
+exim -DOPT=bi_command=/bin/echo -bi -oA 'hello from -bi'
+****

@@ -2149,7 +2149,7 @@ on the second character (the one after '-'), to save some effort. */
 	concept of *the* alias file, but since Sun's YP make script calls
 	sendmail this way, some support must be provided. */
 	case 'i':
-	  if (!*++argrest) bi_option = TRUE;
+	  if (!*argrest) bi_option = TRUE;
 	  else badarg = TRUE;
 	  break;
 
@@ -4117,7 +4117,7 @@ script. */
 if (bi_option)
   {
   (void)fclose(config_file);
-  if (bi_command)
+  if (bi_command && *bi_command)
     {
     int i = 0;
     uschar *argv[3];
@@ -4128,11 +4128,11 @@ if (bi_option)
     setgroups(group_count, group_list);
     exim_setugid(real_uid, real_gid, FALSE, US"running bi_command");
 
-    DEBUG(D_exec) debug_printf("exec %.256s %.256s\n", argv[0],
-      argv[1] ? argv[1] : US"");
+    DEBUG(D_exec) debug_printf("exec '%.256s' %s%.256s%s\n", argv[0],
+      argv[1] ? "'" : "", argv[1] ? argv[1] : US"", argv[1] ? "'" : "");
 
     execv(CS argv[0], (char *const *)argv);
-    exim_fail("exim: exec failed: %s\n", strerror(errno));
+    exim_fail("exim: exec '%s' failed: %s\n", argv[0], strerror(errno));
     }
   else
     {
