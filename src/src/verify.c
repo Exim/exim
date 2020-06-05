@@ -4077,7 +4077,7 @@ const uschar * where = US"socketpair";
 
 if (cached_quota_lookup(rcpt, &yield, pos_cache, neg_cache))
   {
-  HDEBUG(D_verify) debug_printf_indent("quota cache: address record is %d\n",
+  HDEBUG(D_verify) debug_printf_indent("quota cache: address record is %s\n",
     yield == OK ? "positive" : "negative");
   if (yield != OK)
     {

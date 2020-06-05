@@ -9453,9 +9453,21 @@ the data type.  ACL rules always expand strings.  A couple of expansion
 conditions do not expand some of the brace-delimited branches, for security
 reasons,
 .cindex "tainted data" expansion
+.cindex "tainted data" definition
 .cindex expansion "tainted data"
 and expansion of data deriving from the sender (&"tainted data"&)
 is not permitted.
+
+.new
+Common ways of obtaining untainted equivalents of variables with
+tainted values
+.cindex "tainted data" "de-tainting"
+come down to using the tainted value as a lookup key in a trusted database.
+This database could be the filestem structure,
+or the password file,
+or accessed via a DBMS.
+Specific methods are indexed under &"de-tainting"&.
+.wen
 
 
 
