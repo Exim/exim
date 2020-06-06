@@ -448,7 +448,7 @@ extern void    route_init(void);
 extern gstring * route_show_supported(gstring *);
 extern void    route_tidyup(void);
 
-extern uschar *search_args(int, uschar *, uschar *, uschar **);
+extern uschar *search_args(int, uschar *, uschar *, uschar **, const uschar *);
 extern uschar *search_find(void *, const uschar *, uschar *, int,
 		 const uschar *, int, int, int *, const uschar *);
 extern int     search_findtype(const uschar *, int);

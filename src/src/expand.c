@@ -4875,7 +4875,7 @@ while (*s)
       file types, the query (i.e. "key") starts with a file name. */
 
       if (!key)
-	key = search_args(stype, name, filename, &filename);
+	key = search_args(stype, name, filename, &filename, opts);
 
       /* If skipping, don't do the next bit - just lookup_value == NULL, as if
       the entry was not found. Note that there is no search_close() function.

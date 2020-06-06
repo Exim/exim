@@ -7,9 +7,15 @@ primary_hostname = myhost.test.ex
 # ----- Main settings -----
 
 domainlist local_domains = @
+.ifdef OPT
+hostlist   relay_hosts = sqlite,file=DIR/aux-fixed/sqlitedb; \
+                                     select * from them where \
+                                     id='$sender_host_address'
+.else
 hostlist   relay_hosts = sqlite;DIR/aux-fixed/sqlitedb \
                                      select * from them where \
                                      id='$sender_host_address'
+.endif
 
 acl_smtp_rcpt = check_recipient
 sqlite_lock_timeout = 2

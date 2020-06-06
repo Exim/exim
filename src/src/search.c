@@ -223,18 +223,31 @@ Arguments:
  search		the search-type string
  query		argument for the search; filename or query
  fnamep		pointer to return filename
+ opts		options
 
 Return:	keyquery	the search-type (for single-key) or query (for query-type)
  */
 uschar *
-search_args(int search_type, uschar * search, uschar * query, uschar ** fnamep)
+search_args(int search_type, uschar * search, uschar * query, uschar ** fnamep,
+  const uschar * opts)
 {
 Uskip_whitespace(&query);
 if (mac_islookup(search_type, lookup_absfilequery))
   {					/* query-style but with file (sqlite) */
-  uschar * s = query;
+  int sep = ',';
+
+  /* Check options first for new-style file spec */
+  if (opts) for (uschar * s; s = string_nextinlist(&opts, &sep, NULL, 0); )
+    if (Ustrncmp(s, "file=", 5) == 0)
+      {
+      *fnamep = s+5;
+      return query;
+      }
+
+  /* If no filename from options, use old-tyle space-sep prefix on query */
   if (*query == '/')
     {
+    uschar * s = query;
     while (*query && !isspace(*query)) query++;
     *fnamep = string_copyn(s, query - s);
     Uskip_whitespace(&query);

@@ -1,15 +1,23 @@
 # sqlite lookups
 exim -d-all+lookup -be
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select name from them where id='userx';}}
 ${lookup sqlite{DIR/aux-fixed/sqlitedb select name from them where id='userx';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select name from them where id='userx';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select name from them where id='xxxx';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select name from them where id='nothing';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select id,name from them where id='nothing';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select * from them where id='quote2';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select * from them where id='newline';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select * from them where id='tab';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select * from them where id='its';}}
-${lookup sqlite{DIR/aux-fixed/sqlitedb select * from them where name='${quote_sqlite:it's}';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{ select name from them where id='userx';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{ select name from them where id='userx';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{ select name from them where id='xxxx';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select name from them where id='nothing';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select id,name from them where id='nothing';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb {select * from them where id='quote2';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select * from them where id='newline';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select * from them where id='tab';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select * from them where id='its';}}
+${lookup sqlite,file=DIR/aux-fixed/sqlitedb{select * from them where name='${quote_sqlite:it's}';}}
+****
+exim -d -DOPT=y -bh 10.0.0.0
+mail from:<a@b>
+rcpt to:<c@d>
+rcpt to:<c@d>
+quit
 ****
 exim -d -bh 10.0.0.0
 mail from:<a@b>
@@ -23,7 +31,7 @@ rcpt to:<c@d>
 rcpt to:<c@d>
 quit
 ****
-exim -odi -d userx
+exim -DOPT=y -odi -d userx
 Test message
 .
 ****

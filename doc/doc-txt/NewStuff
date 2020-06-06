@@ -29,6 +29,10 @@ Version 4.95
  7. Quota checking during reception (i.e. at SMTP time) for appendfile-
     transport-managed quotas.
 
+ 8. Sqlite lookups accept a "file=<path>" option to specify a per-operation
+    db file, replacing the previous prefix to the SQL string (which had
+    issues when the SQL used tainted values).
+
 
 Version 4.94
 ------------

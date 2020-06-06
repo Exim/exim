@@ -286,7 +286,7 @@ if (!cb->use_partial) partial = -1;
 
 /* Set the parameters for the three different kinds of lookup. */
 
-keyquery = search_args(search_type, s, semicolon+1, &filename);
+keyquery = search_args(search_type, s, semicolon+1, &filename, opts);
 
 /* Now do the actual lookup; throw away the data returned unless it was asked
 for; partial matching is all handled inside search_find(). Note that there is

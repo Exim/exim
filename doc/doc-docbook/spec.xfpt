@@ -6606,14 +6606,15 @@ cause parts of the string to be replaced by data that is obtained from the
 lookup. Lookups of this type are conditional expansion items. Different results
 can be defined for the cases of lookup success and failure. See chapter
 &<<CHAPexpand>>&, where string expansions are described in detail.
-The key for the lookup is specified as part of the string expansion.
+The key for the lookup is &*specified*& as part of the string expansion.
 .next
 Lists of domains, hosts, and email addresses can contain lookup requests as a
 way of avoiding excessively long linear lists. In this case, the data that is
 returned by the lookup is often (but not always) discarded; whether the lookup
 succeeds or fails is what really counts. These kinds of list are described in
 chapter &<<CHAPdomhosaddlists>>&.
-The key for the lookup is given by the context in which the list is expanded.
+The key for the lookup is &*implicit*&,
+given by the context in which the list is expanded.
 .endlist
 
 String expansions, lists, and lookups interact with each other in such a way
@@ -6648,7 +6649,8 @@ The result of the expansion is not tainted.
 
 In the second example, the lookup is a single item in a domain list. It causes
 Exim to use a lookup to see if the domain that is being processed can be found
-in the file. The file could contains lines like this:
+in the file.
+The file could contains lines like this:
 .code
 domain1:
 domain2:
@@ -7093,10 +7095,7 @@ passed to a Redis database. See section &<<SECTsql>>&.
 .cindex "sqlite lookup type"
 .cindex "lookup" "sqlite"
 &(sqlite)&: The format of the query is
-new
-an optional filename
-followed by an SQL statement
-that is passed to an SQLite database. See section &<<SECTsqlite>>&.
+an SQL statement that is passed to an SQLite database. See section &<<SECTsqlite>>&.
 
 .next
 &(testdb)&: This is a lookup type that is used for testing Exim. It is
@@ -8155,17 +8154,27 @@ SQLite is different to the other SQL lookups because a filename is required in
 addition to the SQL query. An SQLite database is a single file, and there is no
 daemon as in the other SQL databases.
 
+.new
 .oindex &%sqlite_dbfile%&
-The preferred way of specifying the file is by using the
-&%sqlite_dbfile%& option, set to
-an absolute path.
+There are two ways of
+specifying the file.
+The first is is by using the &%sqlite_dbfile%& main option.
+The second, which allows separate files for each query,
+is to use an option appended, comma-separated, to the &"sqlite"&
+lookup type word.  The option is the word &"file"&, then an equals,
+then the filename.
+The filename in this case cannot contain whitespace or open-brace charachters.
+.wen
+
 A deprecated method is available, prefixing the query with the filename
 separated by white space.
-This means that the path name cannot contain white space.
+This means that
 .cindex "tainted data" "sqlite file"
-It also means that the query cannot use any tainted values, as that taints
+the query cannot use any tainted values, as that taints
 the entire query including the filename - resulting in a refusal to open
 the file.
+
+In all the above cases the filename must be an absolute path.
 
 Here is a lookup expansion example:
 .code
@@ -10193,11 +10202,8 @@ in a list using the given separator.
 
 
 .vitem "&*${lookup{*&<&'key'&>&*}&~*&<&'search&~type'&>&*&~&&&
-        {*&<&'file'&>&*}&~{*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&"
-This is the first of one of two different types of lookup item, which are both
-described in the next item.
-
-.vitem "&*${lookup&~*&<&'search&~type'&>&*&~{*&<&'query'&>&*}&~&&&
+        {*&<&'file'&>&*}&~{*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&" &&&
+       "&*${lookup&~*&<&'search&~type'&>&*&~{*&<&'query'&>&*}&~&&&
         {*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&"
 .cindex "expansion" "lookup in"
 .cindex "file" "lookups"

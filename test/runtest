@@ -951,12 +951,6 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/^\d\d\d(?=[PFS*])/ddd/;
 
 
-  # ========= Exim lookups ==================
-  # Lookups have a char which depends on the number of lookup types compiled in,
-  # in stderr output.  Replace with a "0".  Recognising this while avoiding
-  # other output is fragile; perhaps the debug output should be revised instead.
-  s%(?<!sqlite)(?<!lsearch\*@)(?<!lsearch\*)(?<!lsearch)[0-?]TESTSUITE/aux-fixed/%0TESTSUITE/aux-fixed/%g;
-
   # ==========================================================
   # MIME boundaries in RFC3461 DSN messages
   s/\d{8,10}-eximdsn-\d+/NNNNNNNNNN-eximdsn-MMMMMMMMMM/;
@@ -1055,6 +1049,12 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # we don't care what TZ enviroment the testhost was running
     next if /^Reset TZ to/;
+
+    # ========= Exim lookups ==================
+    # Lookups have a char which depends on the number of lookup types compiled in,
+    # in stderr output.  Replace with a "0".  Recognising this while avoiding
+    # other output is fragile; perhaps the debug output should be revised instead.
+    s%^\s+(:?closing )?\K[0-?]TESTSUITE/aux-fixed/%0TESTSUITE/aux-fixed/%g;
 
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
