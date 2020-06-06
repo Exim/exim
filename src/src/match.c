@@ -286,22 +286,7 @@ if (!cb->use_partial) partial = -1;
 
 /* Set the parameters for the three different kinds of lookup. */
 
-keyquery = semicolon + 1;
-Uskip_whitespace(&keyquery);
-
-if (mac_islookup(search_type, lookup_absfilequery))
-  {
-  filename = keyquery;
-  while (*keyquery && !isspace(*keyquery)) keyquery++;
-  filename = string_copyn(filename, keyquery - filename);
-  Uskip_whitespace(&keyquery);
-  }
-
-else if (!mac_islookup(search_type, lookup_querystyle))
-  {
-  filename = keyquery;
-  keyquery = s;
-  }
+keyquery = search_args(search_type, s, semicolon+1, &filename);
 
 /* Now do the actual lookup; throw away the data returned unless it was asked
 for; partial matching is all handled inside search_find(). Note that there is

@@ -4390,7 +4390,7 @@ if (is_tainted(string))
   goto EXPAND_FAILED;
   }
 
-while (*s != 0)
+while (*s)
   {
   uschar *value;
   uschar name[256];
@@ -4776,7 +4776,7 @@ while (*s != 0)
       int save_expand_nmax =
         save_expand_strings(save_expand_nstring, save_expand_nlength);
 
-      if ((expand_forbid & RDO_LOOKUP) != 0)
+      if (expand_forbid & RDO_LOOKUP)
         {
         expand_string_message = US"lookup expansions are not permitted";
         goto EXPAND_FAILED;
@@ -4875,21 +4875,7 @@ while (*s != 0)
       file types, the query (i.e. "key") starts with a file name. */
 
       if (!key)
-        {
-	Uskip_whitespace(&filename);
-        key = filename;
-
-        if (mac_islookup(stype, lookup_querystyle))
-          filename = NULL;
-        else
-          if (*filename == '/')
-	    {
-	    while (*key && !isspace(*key)) key++;
-	    if (*key) *key++ = '\0';
-	    }
-	  else
-	    filename = NULL;
-        }
+	key = search_args(stype, name, filename, &filename);
 
       /* If skipping, don't do the next bit - just lookup_value == NULL, as if
       the entry was not found. Note that there is no search_close() function.

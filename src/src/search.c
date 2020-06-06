@@ -217,6 +217,42 @@ return stype;
 }
 
 
+/* Set the parameters for the three different kinds of lookup.
+Arguments:
+ search_type	the search-type code
+ search		the search-type string
+ query		argument for the search; filename or query
+ fnamep		pointer to return filename
+
+Return:	keyquery	the search-type (for single-key) or query (for query-type)
+ */
+uschar *
+search_args(int search_type, uschar * search, uschar * query, uschar ** fnamep)
+{
+Uskip_whitespace(&query);
+if (mac_islookup(search_type, lookup_absfilequery))
+  {					/* query-style but with file (sqlite) */
+  uschar * s = query;
+  if (*query == '/')
+    {
+    while (*query && !isspace(*query)) query++;
+    *fnamep = string_copyn(s, query - s);
+    Uskip_whitespace(&query);
+    }
+  else
+    *fnamep = NULL;
+  return query;		/* remainder after file skipped */
+  }
+if (!mac_islookup(search_type, lookup_querystyle))
+  {					/* single-key */
+  *fnamep = query;
+  return search;	/* modifiers important so use "keyquery" for them */
+  }
+*fnamep = NULL;				/* else query-style */
+return query;
+}
+
+
 
 /*************************************************
 *               Release cached resources         *
