@@ -9472,7 +9472,7 @@ Common ways of obtaining untainted equivalents of variables with
 tainted values
 .cindex "tainted data" "de-tainting"
 come down to using the tainted value as a lookup key in a trusted database.
-This database could be the filestem structure,
+This database could be the filesystem structure,
 or the password file,
 or accessed via a DBMS.
 Specific methods are indexed under &"de-tainting"&.
@@ -10201,7 +10201,7 @@ in a list using the given separator.
 .wen
 
 
-.vitem "&*${lookup{*&<&'key'&>&*}&~*&<&'search&~type'&>&*&~&&&
+.vitem "&*${lookup&~{*&<&'key'&>&*}&~*&<&'search&~type'&>&*&~&&&
         {*&<&'file'&>&*}&~{*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&" &&&
        "&*${lookup&~*&<&'search&~type'&>&*&~{*&<&'query'&>&*}&~&&&
         {*&<&'string1'&>&*}&~{*&<&'string2'&>&*}}*&"
