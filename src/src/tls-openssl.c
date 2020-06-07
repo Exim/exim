@@ -2738,6 +2738,7 @@ SSL_set_accept_state(server_ssl);
 
 DEBUG(D_tls) debug_printf("Calling SSL_accept\n");
 
+ERR_clear_error();
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 rc = SSL_accept(server_ssl);
@@ -2787,7 +2788,10 @@ if (rc <= 0)
 	  }
 	DEBUG(D_tls) debug_printf(" - syscall %s\n", strerror(errno));
 	}
-      (void) tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL, errstr);
+      (void) tls_error(US"SSL_accept", NULL,
+		      sigalrm_seen ? US"timed out"
+		      : ERR_peek_error() ? NULL : string_sprintf("ret %d", error),
+		      errstr);
       return FAIL;
     }
   }
