@@ -125,6 +125,15 @@ Subject: should give filter error (6)
 exim -odi filter-vacation
 Subject: should give rise to vacation message
 ****
+#
+write DIR/test-mail/.vacation.msg
+vacation message
+****
+exim -odi filter-vdefaults
+Subject: should give rise to 2nd vacation message
+****
+sudo rm DIR/test-mail/.vacation DIR/test-mail/.vacation.msg
+#
 exim -bF DIR/aux-fixed/TESTNUM.f-5 </dev/null
 ****
 exim -qf

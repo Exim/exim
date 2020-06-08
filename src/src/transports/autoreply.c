@@ -474,10 +474,10 @@ if (oncelog && *oncelog && to)
   else
     {
     EXIM_DATUM key_datum, result_datum;
-    uschar * dirname = string_copy(oncelog);
-    uschar * s;
+    uschar * dirname, * s;
 
-    if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
+    dirname = (s = Ustrrchr(oncelog, '/'))
+      ? string_copyn(oncelog, s - oncelog) : NULL;
     EXIM_DBOPEN(oncelog, dirname, O_RDWR|O_CREAT, ob->mode, &dbm_file);
     if (!dbm_file)
       {

@@ -227,7 +227,7 @@ Testprint: body_linecount    = 2
 Testprint: message_body      = This is the body of 
 Testprint: message_body_end  = ible in the filter. 
 Logfile TESTSUITE/spool/log/mainlog
-Logwrite "1999-03-02 09:44:33 10HmcE-0005vi-00 "message for filter test" first delivery\n"
+Logwrite "1999-03-02 09:44:33 10HmcG-0005vi-00 "message for filter test" first delivery\n"
 Headers add "X-added: qualify_domain is test.ex"
 Headers remove "remove-this"
 Unseen deliver message to: userz@test.ex errors_to abcd@test.ex
@@ -239,11 +239,11 @@ Recipient   = CALLER@test.ex
 Testing Exim filter file "TESTSUITE/aux-var/0037.F"
 
 Testprint: ------------------------------------------------
-Testprint: Test-headers: first one\nFrom: x@y\nTest-headers: another one\nMore-test-headers : yet another one\nSubject: testing, testing\nMessage-Id: <E10HmcF-0005vi-00@the.local.host.name>\nDate: Tue, 2 Mar 1999 09:44:33 +0000
+Testprint: Test-headers: first one\nFrom: x@y\nTest-headers: another one\nMore-test-headers : yet another one\nSubject: testing, testing\nMessage-Id: <E10HmcH-0005vi-00@the.local.host.name>\nDate: Tue, 2 Mar 1999 09:44:33 +0000
 Testprint: ------------------------------------------------
 Headers remove "test-headers:more-test-headers"
 Headers add "added-header: this is added\nadded-header2: a second line"
-Testprint: From: x@y\nSubject: testing, testing\nMessage-Id: <E10HmcF-0005vi-00@the.local.host.name>\nDate: Tue, 2 Mar 1999 09:44:33 +0000\nadded-header: this is added\nadded-header2: a second line
+Testprint: From: x@y\nSubject: testing, testing\nMessage-Id: <E10HmcH-0005vi-00@the.local.host.name>\nDate: Tue, 2 Mar 1999 09:44:33 +0000\nadded-header: this is added\nadded-header2: a second line
 Testprint: ------------------------------------------------
 Testprint: message_size      = 122
 Testprint: message_body_size = 0
@@ -251,7 +251,7 @@ Testprint: body_linecount    = 0
 Testprint: message_body      = 
 Testprint: message_body_end  = 
 Logfile TESTSUITE/spool/log/mainlog
-Logwrite "1999-03-02 09:44:33 10HmcF-0005vi-00 "testing, testing" first delivery\n"
+Logwrite "1999-03-02 09:44:33 10HmcH-0005vi-00 "testing, testing" first delivery\n"
 Headers add "X-added: qualify_domain is test.ex"
 Headers remove "remove-this"
 Unseen deliver message to: userz@test.ex errors_to abcd@test.ex

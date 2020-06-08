@@ -93,6 +93,7 @@ address_reply:
   driver = autoreply
   never_mail = never_mail@test.ex
   user = CALLER
+  current_directory = DIR/test-mail
   initgroups
 
 # End
