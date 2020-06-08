@@ -477,6 +477,7 @@ if (oncelog && *oncelog && to)
     uschar * dirname = string_copy(oncelog);
     uschar * s;
 
+debug_printf("%s %d: oncelog '%s'\n", __FUNCTION__, __LINE__, oncelog);
     if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
     EXIM_DBOPEN(oncelog, dirname, O_RDWR|O_CREAT, ob->mode, &dbm_file);
     if (!dbm_file)

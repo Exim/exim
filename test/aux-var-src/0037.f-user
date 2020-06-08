@@ -19,6 +19,8 @@ elif $local_part is filter-vacation then
                 file /dev/null
                 log  /dev/null
                 once DIR/test-once
+elif $local_part is filter-vdefaults then
+  seen vacation
 elif $local_part is filter-userx then
   deliver userx                
 elif $local_part is filter-resubject then
