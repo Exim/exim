@@ -25,6 +25,11 @@ JH/04 Bug 2590: Fix -bi (newaliases).  A previous code rearrangement had
       broken the (no-op) support for this sendmail command.  Restore it
       to doing nothing, silently, and returning good status.
 
+JH/05 Bug 2593: Fix "vacation" in Exim filter.  Previously, when a "once"
+      record path was given (or the default used) without a leading directory
+      path, an error occurred on trying to open it.  Use the transport's working
+      directory.
+
 
 Exim version 4.94
 -----------------
