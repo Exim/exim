@@ -427,10 +427,12 @@ uschar * errstr;
 msg = rc == GNUTLS_E_FATAL_ALERT_RECEIVED
   ? string_sprintf("A TLS fatal alert has been received: %s",
       US gnutls_alert_get_name(gnutls_alert_get(state->session)))
+#ifdef GNUTLS_E_PREMATURE_TERMINATION
   : rc == GNUTLS_E_PREMATURE_TERMINATION && errno
   ? errno == ECONNRESET		/* Outlook does this to us right after sending us QUIT */
   ? string_sprintf("syscall: %s", strerror(errno))
   : string_sprintf("%s: syscall: %s", US gnutls_strerror(rc), strerror(errno))
+#endif
   : US gnutls_strerror(rc);
 
 (void) tls_error(when, msg, state->host, &errstr);
