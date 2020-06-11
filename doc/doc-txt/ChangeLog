@@ -9,7 +9,7 @@ Since Exim version 4.94
 JH/02 Bug 2587: Fix pam expansion condition.  Tainted values are commonly used
       as arguments, so an implementation trying to copy these into a local
       buffer was taking a taint-enforcement trap.  Fix by using dynamically
-      created buffers.
+      created buffers.  Similar fix for radius expansion condition.
 
 JH/03 Bug 2586: Fix listcount expansion operator.  Using tainted arguments is
       reasonable, eg. to count headers.  Fix by using dynamically created

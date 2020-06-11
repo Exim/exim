@@ -96,8 +96,7 @@ int sep = 0;
 #endif
 
 
-user = string_nextinlist(&radius_args, &sep, big_buffer, big_buffer_size);
-if (!user) user = US"";
+if (!(user = string_nextinlist(&radius_args, &sep, NULL, 0))) user = US"";
 
 DEBUG(D_auth) debug_printf("Running RADIUS authentication for user \"%s\" "
                "and \"%s\"\n", user, radius_args);
