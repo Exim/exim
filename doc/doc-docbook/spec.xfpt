@@ -12473,7 +12473,7 @@ the complete argument of the ETRN command (see section &<<SECTETRN>>&).
 .cindex "tainted data"
 If the origin of the data is an incoming message,
 the result of expanding this variable is tainted.
-When in untainted version is needed, one should be obtained from
+When an untainted version is needed, one should be obtained from
 looking up the value in a local (therefore trusted) database.
 Often &$domain_data$& is usable in this role.
 
@@ -17990,6 +17990,7 @@ syslog. The value must be no longer than 32 characters. See chapter
 
 .option syslog_timestamp main boolean true
 .cindex "syslog" "timestamps"
+.cindex timestamps syslog
 If &%syslog_timestamp%& is set false, the timestamps on Exim's log lines are
 omitted when these lines are sent to syslog. See chapter &<<CHAPlog>>& for
 details of Exim's logging.
