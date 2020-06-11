@@ -372,10 +372,10 @@ typedef struct ocsp_resp {
 } ocsp_resplist;
 
 typedef struct tls_ext_ctx_cb {
-  tls_support * tlsp;
-  uschar *certificate;
-  uschar *privatekey;
-  BOOL is_server;
+  tls_support *	tlsp;
+  uschar *	certificate;
+  uschar *	privatekey;
+  BOOL		is_server;
 #ifndef DISABLE_OCSP
   STACK_OF(X509) *verify_stack;		/* chain for verifying the proof */
   union {
@@ -390,14 +390,14 @@ typedef struct tls_ext_ctx_cb {
     } client;
   } u_ocsp;
 #endif
-  uschar *dhparam;
+  uschar *	dhparam;
   /* these are cached from first expand */
-  uschar *server_cipher_list;
+  uschar *	server_cipher_list;
   /* only passed down to tls_error: */
-  host_item *host;
+  host_item *	host;
   const uschar * verify_cert_hostnames;
 #ifndef DISABLE_EVENT
-  uschar * event_action;
+  uschar *	event_action;
 #endif
 } tls_ext_ctx_cb;
 
@@ -2915,9 +2915,9 @@ if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
   {
   cbinfo->verify_cert_hostnames =
 #ifdef SUPPORT_I18N
-    string_domain_utf8_to_alabel(host->name, NULL);
+    string_domain_utf8_to_alabel(host->certname, NULL);
 #else
-    host->name;
+    host->certname;
 #endif
   DEBUG(D_tls) debug_printf("Cert hostname to check: \"%s\"\n",
 		    cbinfo->verify_cert_hostnames);

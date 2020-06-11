@@ -36,7 +36,10 @@ uppercase	TXT	v=sPf1 +all
 
 ; Alias A record for the local host, under the name "server1"
 
-server1     A       HOSTIPV4
+server1               A     HOSTIPV4
+serverbadname         A     HOSTIPV4
+serverchain1	      CNAME server1
+alternatename.server1 CNAME server1
 
 ; DANE testing
 

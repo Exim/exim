@@ -1950,6 +1950,13 @@ BOOL temp_error = FALSE;
 int af;
 #endif
 
+#ifndef DISABLE_TLS
+/* Copy the host name at this point to the value which is used for
+TLS certificate name checking, before anything modifies it.  */
+
+host->certname = host->name;
+#endif
+
 /* Make sure DNS options are set as required. This appears to be necessary in
 some circumstances when the get..byname() function actually calls the DNS. */
 
@@ -2117,6 +2124,9 @@ for (int i = 1; i <= times;
       {
       host_item *next = store_get(sizeof(host_item), FALSE);
       next->name = host->name;
+#ifndef DISABLE_TLS
+      next->certname = host->certname;
+#endif
       next->mx = host->mx;
       next->address = text_address;
       next->port = PORT_NONE;
@@ -2259,6 +2269,13 @@ host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
 BOOL v6_find_again = FALSE;
 BOOL dnssec_fail = FALSE;
 int i;
+
+#ifndef DISABLE_TLS
+/* Copy the host name at this point to the value which is used for
+TLS certificate name checking, before any CNAME-following modifies it.  */
+
+host->certname = host->name;
+#endif
 
 /* If allow_ip is set, a name which is an IP address returns that value
 as its address. This is used for MX records when allow_mx_to_ip is set, for

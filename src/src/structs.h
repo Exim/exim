@@ -80,14 +80,17 @@ typedef enum {DS_UNK=-1, DS_NO, DS_YES} dnssec_status_t;
 
 typedef struct host_item {
   struct host_item *next;
-  const uschar *name;             /* Host name */
-  const uschar *address;          /* IP address in text form */
-  int     port;                   /* port value in host order (if SRV lookup) */
-  int     mx;                     /* MX value if found via MX records */
-  int     sort_key;               /* MX*1000 plus random "fraction" */
-  int     status;                 /* Usable, unusable, or unknown */
-  int     why;                    /* Why host is unusable */
-  int     last_try;               /* Time of last try if known */
+  const uschar *name;		/* Host name */
+#ifndef DISABLE_TLS
+  const uschar *certname;	/* Name used for certificate checks */
+#endif
+  const uschar *address;	/* IP address in text form */
+  int     port;			/* port value in host order (if SRV lookup) */
+  int     mx;			/* MX value if found via MX records */
+  int     sort_key;		/* MX*1000 plus random "fraction" */
+  int     status;		/* Usable, unusable, or unknown */
+  int     why;			/* Why host is unusable */
+  int     last_try;		/* Time of last try if known */
   dnssec_status_t dnssec;
 } host_item;
 

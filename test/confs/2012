@@ -83,6 +83,18 @@ client_s:
   retry_use_local_part
   transport = send_to_server_req_passname
 
+client_t:
+  driver = accept
+  local_parts = usert
+  retry_use_local_part
+  transport = send_to_server_req_failchain
+
+client_u:
+  driver = accept
+  local_parts = useru
+  retry_use_local_part
+  transport = send_to_server_req_passchain
+
 
 # ----- Transports -----
 
@@ -150,30 +162,58 @@ send_to_server_req_fail:
 
  # this will fail to verify the cert name and fallback to unencrypted
  send_to_server_req_failname:
-   driver = smtp
+   driver =		smtp
    allow_localhost
-   hosts = HOSTIPV4
-   port = PORT_D
-  hosts_try_fastopen =	:
-   tls_certificate = CERT2
-   tls_privatekey = CERT2
+   hosts =		serverbadname.example.com
+   port =		PORT_D
+   hosts_try_fastopen =	:
+   tls_certificate =	CERT2
+   tls_privatekey =	CERT2
  
-   tls_verify_certificates = CA1
-   tls_verify_cert_hostnames = server1.example.net : server1.example.org
-   tls_verify_hosts = *
+   tls_verify_certificates =	CA1
+   tls_verify_cert_hostnames =	HOSTIPV4
+   tls_verify_hosts =		*
  
  # this will pass the cert verify including name check
  send_to_server_req_passname:
-   driver = smtp
+   driver =		smtp
    allow_localhost
-   hosts = HOSTIPV4
-   port = PORT_D
-  hosts_try_fastopen =	:
-   tls_certificate = CERT2
-   tls_privatekey = CERT2
+   hosts =		server1.example.com
+   port =		PORT_D
+   hosts_try_fastopen =	:
+   tls_certificate =	CERT2
+   tls_privatekey =	CERT2
  
-   tls_verify_certificates = CA1
-   tls_verify_cert_hostnames = noway.example.com : server1.example.com
-   tls_verify_hosts = *
+   tls_verify_certificates =	CA1
+   tls_verify_cert_hostnames =	HOSTIPV4
+   tls_verify_hosts =		*
+
+ # this will fail the cert verify name check, because CNAME rules
+ send_to_server_req_failchain:
+   driver =		smtp
+   allow_localhost
+   hosts =		serverchain1.example.com
+   port =		PORT_D
+   hosts_try_fastopen =	:
+   tls_certificate =	CERT2
+   tls_privatekey =	CERT2
+ 
+   tls_verify_certificates =	CA1
+   tls_verify_cert_hostnames =	HOSTIPV4
+   tls_verify_hosts =		*
+
+ # this will pass the cert verify name check, because CNAME rules
+ send_to_server_req_passchain:
+   driver =		smtp
+   allow_localhost
+   hosts =		alternatename.server1.example.com
+   port =		PORT_D
+   hosts_try_fastopen =	:
+   tls_certificate =	CERT2
+   tls_privatekey =	CERT2
+ 
+   tls_verify_certificates =	CA1
+   tls_verify_cert_hostnames =	HOSTIPV4
+   tls_verify_hosts =		*
 
 # End

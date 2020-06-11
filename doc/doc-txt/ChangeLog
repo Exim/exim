@@ -26,6 +26,11 @@ JH/05 Bug 2593: Fix "vacation" in Exim filter.  Previously, when a "once"
       path, an error occurred on trying to open it.  Use the transport's working
       directory.
 
+JH/06 Bug 2594: Change the name used for certificate name checks in the smtp
+      transport.  Previously it was the name on the DNS A-record; use instead
+      the head of the CNAME chain leading there (if there is one).  This seems
+      to align better with RFC 6125.
+
 
 Exim version 4.94
 -----------------
@@ -331,7 +336,7 @@ JH/20 Bug 2389: fix server advertising of usable certificates, under GnuTLS in
 
 JH/21 The smtp transport option "hosts_noproxy_tls" is now unset by default.
       A single TCP connection by a client will now hold a TLS connection open
-      for multiple message deliveries, by default.  Previoud the default was to
+      for multiple message deliveries, by default.  Previously the default was to
       not do so.
 
 JH/22 The smtp transport option "hosts_try_dane" now enables all hosts by

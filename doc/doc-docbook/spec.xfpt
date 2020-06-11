@@ -29218,8 +29218,14 @@ certificate verification to the listed servers.  Verification either must
 or need not succeed respectively.
 
 The &%tls_verify_cert_hostnames%& option lists hosts for which additional
-checks are made: that the host name (the one in the DNS A record)
-is valid for the certificate.
+name checks are made on the server certificate.
+.new
+The match against this list is, as per other Exim usage, the
+IP for the host.  That is most closely associated with the
+name on the DNS A (or AAAA) record for the host.
+However, the name that needs to be in the certificate
+is the one at the head of any CNAME chain leading to the A record.
+.wen
 The option defaults to always checking.
 
 The &(smtp)& transport has two OCSP-related options:
