@@ -6692,11 +6692,11 @@ causes a second lookup to occur.
 The lookup type may optionally be followed by a comma
 and a comma-separated list of options.
 Each option is a &"name=value"& pair.
-Whether an option is meaningful depands on the lookup type.
+Whether an option is meaningful depends on the lookup type.
 
 All lookups support the option &"cache=no_rd"&.
 If this is given then the cache that Exim manages for lookup results
-is not checked before diong the lookup.
+is not checked before doing the lookup.
 The result of the lookup is still written to the cache.
 .wen
 
@@ -41610,7 +41610,7 @@ mean, refer to the DMARC website above.  Valid strings are:
 &'reject      '& The DMARC check failed and the library recommends rejecting the email.
 &'quarantine  '& The DMARC check failed and the library recommends keeping it for further inspection.
 &'none        '& The DMARC check passed and the library recommends no specific action, neutral.
-&'norecord    '& No policy section in the DMARC record for this sender domain.
+&'norecord    '& No policy section in the DMARC record for this RFC5322.From field
 &'nofrom      '& Unable to determine the domain of the sender.
 &'temperror   '& Library error or dns error.
 &'off         '& The DMARC check was disabled for this email.
