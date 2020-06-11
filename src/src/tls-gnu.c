@@ -2603,9 +2603,9 @@ if (verify_check_given_host(CUSS &ob->tls_verify_cert_hostnames, host) == OK)
   {
   state->exp_tls_verify_cert_hostnames =
 #ifdef SUPPORT_I18N
-    string_domain_utf8_to_alabel(host->name, NULL);
+    string_domain_utf8_to_alabel(host->certname, NULL);
 #else
-    host->name;
+    host->certname;
 #endif
   DEBUG(D_tls)
     debug_printf("TLS: server cert verification includes hostname: \"%s\".\n",
