@@ -278,10 +278,10 @@ to provide host-specific limits according to $sender_host address, but because
 this is in the daemon mainline, only fast expansions (such as inline address
 checks) should be used. The documentation is full of warnings. */
 
-if (smtp_accept_max_per_host != NULL)
+if (smtp_accept_max_per_host)
   {
   uschar *expanded = expand_string(smtp_accept_max_per_host);
-  if (expanded == NULL)
+  if (!expanded)
     {
     if (!f.expand_string_forcedfail)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
@@ -293,7 +293,7 @@ if (smtp_accept_max_per_host != NULL)
     uschar *s = expanded;
     while (isdigit(*s))
       max_for_this_host = max_for_this_host * 10 + *s++ - '0';
-    if (*s != 0)
+    if (*s)
       log_write(0, LOG_MAIN|LOG_PANIC, "expansion of smtp_accept_max_per_host "
         "for %s contains non-digit: %s", whofrom->s, expanded);
     }
@@ -303,8 +303,7 @@ if (smtp_accept_max_per_host != NULL)
 per host_address checks. Note that at this stage smtp_accept_count contains the
 count of *other* connections, not including this one. */
 
-if ((max_for_this_host > 0) &&
-    (smtp_accept_count >= max_for_this_host))
+if (max_for_this_host > 0 && smtp_accept_count >= max_for_this_host)
   {
   int host_accept_count = 0;
   int other_host_count = 0;    /* keep a count of non matches to optimise */
@@ -321,8 +320,8 @@ if ((max_for_this_host > 0) &&
       early, either by hitting the target, or finding there are not enough
       connections left to make the target. */
 
-      if ((host_accept_count >= max_for_this_host) ||
-         ((smtp_accept_count - other_host_count) < max_for_this_host))
+      if (  host_accept_count >= max_for_this_host
+         || smtp_accept_count - other_host_count < max_for_this_host)
        break;
       }
 
@@ -336,6 +335,7 @@ if ((max_for_this_host > 0) &&
     log_write(L_connection_reject,
               LOG_MAIN, "Connection from %s refused: too many connections "
       "from that IP address", whofrom->s);
+    search_tidyup();
     goto ERROR_RETURN;
     }
   }

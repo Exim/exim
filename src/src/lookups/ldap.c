@@ -1348,16 +1348,13 @@ Make sure that eldap_dn does not refer to reclaimed or worse, freed store */
 static void
 eldap_tidy(void)
 {
-LDAP_CONNECTION *lcp = NULL;
 eldap_dn = NULL;
 
-while ((lcp = ldap_connections) != NULL)
+for (LDAP_CONNECTION *lcp; lcp = ldap_connections; ldap_connections = lcp->next)
   {
-  DEBUG(D_lookup) debug_printf_indent("unbind LDAP connection to %s:%d\n", lcp->host,
-    lcp->port);
-  if(lcp->bound == TRUE)
-    ldap_unbind(lcp->ld);
-  ldap_connections = lcp->next;
+  DEBUG(D_lookup) debug_printf_indent("unbind LDAP connection to %s:%d\n",
+    lcp->host, lcp->port);
+  if(lcp->bound) ldap_unbind(lcp->ld);
   }
 }
 
