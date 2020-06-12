@@ -336,6 +336,7 @@ if ((max_for_this_host > 0) &&
     log_write(L_connection_reject,
               LOG_MAIN, "Connection from %s refused: too many connections "
       "from that IP address", whofrom->s);
+    search_tidyup();
     goto ERROR_RETURN;
     }
   }

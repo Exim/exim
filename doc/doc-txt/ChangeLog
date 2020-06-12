@@ -31,6 +31,11 @@ JH/06 Bug 2594: Change the name used for certificate name checks in the smtp
       the head of the CNAME chain leading there (if there is one).  This seems
       to align better with RFC 6125.
 
+JH/07 Bug 2597: Fix a resource leak.  Using a lookup in obtaining a value for
+      smtp_accept_max_per_host allocated resources which were not released
+      when the limit was exceeded.  This eventually crashed the daemon.  Fix
+      by adding a relase action in that path.
+
 
 Exim version 4.94
 -----------------
