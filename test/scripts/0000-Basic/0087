@@ -1,4 +1,4 @@
-# verify = header_sender
+# verify = header_sender & sender
 exim -bh V4NET.10.10.10
 mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>

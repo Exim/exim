@@ -1789,7 +1789,7 @@ switch(vp->value)
 /* Remaining items are optional; they apply to sender and recipient
 verification, including "header sender" verification. */
 
-while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
+while ((ss = string_nextinlist(&list, &sep, NULL, 0)))
   {
   if (strcmpic(ss, US"defer_ok") == 0) defer_ok = TRUE;
   else if (strcmpic(ss, US"no_details") == 0) no_details = TRUE;

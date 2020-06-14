@@ -1,0 +1,33 @@
+# Exim test configuration 0591
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = check_recipient
+queue_only
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  require verify = sender=OPT
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+goodroute:
+  driver = accept
+  local_parts = userx
+  verify_only
+
+
+# End
