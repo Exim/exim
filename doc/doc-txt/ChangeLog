@@ -36,6 +36,10 @@ JH/07 Bug 2597: Fix a resource leak.  Using a lookup in obtaining a value for
       when the limit was exceeded.  This eventually crashed the daemon.  Fix
       by adding a relase action in that path.
 
+JH/08 Bug 2598: Fix verify ACL condition.  The options for the condition are
+      expanded; previously using tainted values was rejected.  Fix by using
+      dynamically-created buffers.
+
 
 Exim version 4.94
 -----------------
