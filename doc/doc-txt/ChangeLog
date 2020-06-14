@@ -44,6 +44,11 @@ JH/08 Bug 2598: Fix verify ACL condition.  The options for the condition are
       expanded; previously using tainted values was rejected.  Fix by using
       dynamically-created buffers.
 
+JH/09 Relax restrictions on ACL verify condition needing access to message
+      headers.  Previously they were only permitted in data and non-smtp ACLs;
+      permit also mime, dkim, prdr quit and notquit.  Applies to header-syntax,
+      not_blind, header_sender and header_names_ascii verification.
+
 
 Exim version 4.94
 -----------------

@@ -1517,14 +1517,14 @@ static verify_type_t verify_type_list[] = {
     { US"certificate",	  	VERIFY_CERT,	 	(unsigned)~0,	TRUE,  0 },
     { US"helo",	  		VERIFY_HELO,	 	(unsigned)~0,	TRUE,  0 },
     { US"csa",	  		VERIFY_CSA,	 	(unsigned)~0,	FALSE, 0 },
-    { US"header_syntax",	VERIFY_HDR_SYNTAX,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
-    { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
-    { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BIT_DATA | ACL_BIT_NOTSMTP, FALSE, 0 },
+    { US"header_syntax",	VERIFY_HDR_SYNTAX,	ACL_BITS_HAVEDATA, TRUE, 0 },
+    { US"not_blind",	  	VERIFY_NOT_BLIND,	ACL_BITS_HAVEDATA, FALSE, 0 },
+    { US"header_sender",	VERIFY_HDR_SNDR,	ACL_BITS_HAVEDATA, FALSE, 0 },
     { US"sender",	  	VERIFY_SNDR,		ACL_BIT_MAIL | ACL_BIT_RCPT
 			| ACL_BIT_PREDATA | ACL_BIT_DATA | ACL_BIT_NOTSMTP,
 										FALSE, 6 },
     { US"recipient",	  	VERIFY_RCPT,	 	ACL_BIT_RCPT,	FALSE, 0 },
-    { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, ACL_BIT_DATA | ACL_BIT_NOTSMTP, TRUE, 0 },
+    { US"header_names_ascii",	VERIFY_HDR_NAMES_ASCII, ACL_BITS_HAVEDATA, TRUE, 0 },
 #ifdef EXPERIMENTAL_ARC
     { US"arc",			VERIFY_ARC,	 	ACL_BIT_DATA,	FALSE , 0 },
 #endif

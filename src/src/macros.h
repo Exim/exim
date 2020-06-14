@@ -974,7 +974,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
 #define ACL_BIT_MIME		BIT(ACL_WHERE_MIME)
 #define ACL_BIT_DKIM		BIT(ACL_WHERE_DKIM)
 #define ACL_BIT_DATA		BIT(ACL_WHERE_DATA)
-#ifndef DISABLE_PRDR
+#ifdef DISABLE_PRDR
+# define ACL_BIT_PRDR		0
+#else
 # define ACL_BIT_PRDR		BIT(ACL_WHERE_PRDR)
 #endif
 #define ACL_BIT_NOTSMTP		BIT(ACL_WHERE_NOTSMTP)
@@ -991,6 +993,10 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
 #define ACL_BIT_VRFY		BIT(ACL_WHERE_VRFY)
 #define ACL_BIT_DELIVERY	BIT(ACL_WHERE_DELIVERY)
 #define ACL_BIT_UNKNOWN		BIT(ACL_WHERE_UNKNOWN)
+
+#define ACL_BITS_HAVEDATA	(ACL_BIT_MIME | ACL_BIT_DKIM | ACL_BIT_DATA \
+				| ACL_BIT_PRDR \
+				| ACL_BIT_NOTSMTP | ACL_BIT_QUIT | ACL_BIT_NOTQUIT)
 
 
 /* Situations for spool_write_header() */

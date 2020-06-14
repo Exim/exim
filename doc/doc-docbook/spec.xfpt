@@ -31776,8 +31776,9 @@ send email. Details of how this works are given in section
 .cindex "header lines" "verifying header names only ASCII"
 .cindex "verifying" "header names only ASCII"
 This condition is relevant only in an ACL that is run after a message has been
-received, that is, in an ACL specified by &%acl_smtp_data%& or
-&%acl_not_smtp%&.  It checks all header names (not the content) to make sure
+received.
+This usually means an ACL specified by &%acl_smtp_data%& or &%acl_not_smtp%&.
+It checks all header names (not the content) to make sure
 there are no non-ASCII characters, also excluding control characters.  The
 allowable characters are decimal ASCII values 33 through 126.
 
@@ -31932,7 +31933,7 @@ Note that '/' is legal in local-parts; if the address may have such
 (eg. is generated from the received message)
 they must be protected from the options parsing by doubling:
 .code
-verify = sender=${sg{${address:$h_sender:}}{/}{//}}
+verify = sender=${listquote{/}{${address:$h_sender:}}}
 .endd
 .endlist
 
