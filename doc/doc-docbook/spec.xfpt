@@ -13808,6 +13808,8 @@ Observability for TLS session resumption.  See &<<SECTresumption>>& for details.
 .vindex "&$tls_in_sni$&"
 .vindex "&$tls_sni$&"
 .cindex "TLS" "Server Name Indication"
+.cindex "TLS" SNI
+.cindex SNI "observability on server"
 When a TLS session is being established, if the client sends the Server
 Name Indication extension, the value will be placed in this variable.
 If the variable appears in &%tls_certificate%& then this option and
@@ -13823,6 +13825,8 @@ the outbound.
 .vitem &$tls_out_sni$&
 .vindex "&$tls_out_sni$&"
 .cindex "TLS" "Server Name Indication"
+.cindex "TLS" SNI
+.cindex SNI "observability in client"
 During outbound
 SMTP deliveries, this variable reflects the value of the &%tls_sni%& option on
 the transport.
@@ -18146,6 +18150,7 @@ when a list of more than one
 file is used, the &$tls_in_ourcert$& variable is unreliable.
 The macro "_TLS_BAD_MULTICERT_IN_OURCERT" will be defined for those versions.
 
+.cindex SNI "selecting server certificate based on"
 If the option contains &$tls_out_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
 Server Name Indication extension, then this option and others documented in
@@ -25698,6 +25703,8 @@ See &<<SECTresumption>>& for details.
 
 .option tls_sni smtp string&!! unset
 .cindex "TLS" "Server Name Indication"
+.cindex "TLS" SNI
+.cindex SNI "setting in client"
 .vindex "&$tls_sni$&"
 If this option is set then it sets the $tls_out_sni variable and causes any
 TLS session to pass this value as the Server Name Indication extension to
@@ -29300,6 +29307,8 @@ outgoing connection.
 
 .section "Use of TLS Server Name Indication" "SECTtlssni"
 .cindex "TLS" "Server Name Indication"
+.cindex "TLS" SNI
+.cindex SNI
 .vindex "&$tls_in_sni$&"
 .oindex "&%tls_in_sni%&"
 With TLS1.0 or above, there is an extension mechanism by which extra
@@ -38679,6 +38688,7 @@ an asterisk is appended to the X= cipher field in the log line.
 .next
 .cindex "log" "TLS SNI"
 .cindex "TLS" "logging SNI"
+.cindex SNI logging
 &%tls_sni%&: When a message is received over an encrypted connection, and
 the remote host provided the Server Name Indication extension, the SNI is
 added to the log line, preceded by SNI=.
