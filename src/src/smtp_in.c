@@ -2045,22 +2045,23 @@ rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
 message_linecount = 0;
 message_size = -1;
+message_body = message_body_end = NULL;
 acl_added_headers = NULL;
 acl_removed_headers = NULL;
 f.queue_only_policy = FALSE;
 rcpt_smtp_response = NULL;
 fl.rcpt_smtp_response_same = TRUE;
 fl.rcpt_in_progress = FALSE;
-f.deliver_freeze = FALSE;                              /* Can be set by ACL */
-freeze_tell = freeze_tell_config;                    /* Can be set by ACL */
-fake_response = OK;                                  /* Can be set by ACL */
+f.deliver_freeze = FALSE;				/* Can be set by ACL */
+freeze_tell = freeze_tell_config;			/* Can be set by ACL */
+fake_response = OK;					/* Can be set by ACL */
 #ifdef WITH_CONTENT_SCAN
-f.no_mbox_unspool = FALSE;                             /* Can be set by ACL */
+f.no_mbox_unspool = FALSE;				/* Can be set by ACL */
 #endif
-f.submission_mode = FALSE;                             /* Can be set by ACL */
+f.submission_mode = FALSE;				/* Can be set by ACL */
 f.suppress_local_fixups = f.suppress_local_fixups_default; /* Can be set by ACL */
-f.active_local_from_check = local_from_check;          /* Can be set by ACL */
-f.active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
+f.active_local_from_check = local_from_check;		/* Can be set by ACL */
+f.active_local_sender_retain = local_sender_retain;	/* Can be set by ACL */
 sending_ip_address = NULL;
 return_path = sender_address = NULL;
 deliver_localpart_data = deliver_domain_data =
@@ -2069,7 +2070,7 @@ recipient_verify_failure = NULL;
 deliver_localpart_parent = deliver_localpart_orig = NULL;
 deliver_domain_parent = deliver_domain_orig = NULL;
 callout_address = NULL;
-submission_name = NULL;                              /* Can be set by ACL */
+submission_name = NULL;					/* Can be set by ACL */
 raw_sender = NULL;                  /* After SMTP rewrite, before qualifying */
 sender_address_unrewritten = NULL;  /* Set only after verify rewrite */
 sender_verified_list = NULL;        /* No senders verified */
@@ -2123,23 +2124,7 @@ ratelimiters_mail = NULL;           /* Updated by ratelimit ACL condition */
 
 acl_var_m = NULL;
 
-/* The message body variables use malloc store. They may be set if this is
-not the first message in an SMTP session and the previous message caused them
-to be referenced in an ACL. */
-
-if (message_body)
-  {
-  store_free(message_body);
-  message_body = NULL;
-  }
-
-if (message_body_end)
-  {
-  store_free(message_body_end);
-  message_body_end = NULL;
-  }
-
-/* Warning log messages are also saved in malloc store. They are saved to avoid
+/* Warning log messages are saved in malloc store. They are saved to avoid
 repetition in the same message, but it seems right to repeat them for different
 messages. */
 

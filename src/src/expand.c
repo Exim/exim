@@ -1984,11 +1984,12 @@ switch (vp->type)
     ss = (uschar **)(val);
     if (!*ss && deliver_datafile >= 0)  /* Read body when needed */
       {
-      uschar *body;
+      uschar * body;
       off_t start_offset = SPOOL_DATA_START_OFFSET;
       int len = message_body_visible;
+
       if (len > message_size) len = message_size;
-      *ss = body = store_malloc(len+1);
+      *ss = body = store_get(len+1, TRUE);
       body[0] = 0;
       if (vp->type == vtype_msgbody_end)
 	{
@@ -2003,8 +2004,7 @@ switch (vp->type)
       if (lseek(deliver_datafile, start_offset, SEEK_SET) < 0)
 	log_write(0, LOG_MAIN|LOG_PANIC_DIE, "deliver_datafile lseek: %s",
 	  strerror(errno));
-      len = read(deliver_datafile, body, len);
-      if (len > 0)
+      if ((len = read(deliver_datafile, body, len)) > 0)
 	{
 	body[len] = 0;
 	if (message_body_newlines)   /* Separate loops for efficiency */
