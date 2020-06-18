@@ -12472,7 +12472,8 @@ the complete argument of the ETRN command (see section &<<SECTETRN>>&).
 
 .cindex "tainted data"
 If the origin of the data is an incoming message,
-the result of expanding this variable is tainted.
+the result of expanding this variable is tainted and may not
+be further expanded or used as a filename.
 When an untainted version is needed, one should be obtained from
 looking up the value in a local (therefore trusted) database.
 Often &$domain_data$& is usable in this role.
@@ -12672,7 +12673,8 @@ once.
 
 .cindex "tainted data"
 If the origin of the data is an incoming message,
-the result of expanding this variable is tainted.
+the result of expanding this variable is tainted and
+may not be further expanded or used as a filename.
 
 &*Warning*&: the content of this variable is usually provided by a potential
 attacker.
@@ -35474,14 +35476,14 @@ address if its delivery failed.
 
 
 .section "Per-address filtering" "SECTperaddfil"
-.vindex "&$domain$&"
-.vindex "&$local_part$&"
+.vindex "&$domain_data$&"
+.vindex "&$local_part_data$&"
 In contrast to the system filter, which is run just once per message for each
 delivery attempt, it is also possible to set up a system-wide filtering
 operation that runs once for each recipient address. In this case, variables
-such as &$local_part$& and &$domain$& can be used, and indeed, the choice of
-filter file could be made dependent on them. This is an example of a router
-which implements such a filter:
+such as &$local_part_data$& and &$domain_data$& can be used,
+and indeed, the choice of filter file could be made dependent on them.
+This is an example of a router which implements such a filter:
 .code
 central_filter:
   check_local_user
@@ -37302,7 +37304,7 @@ follows:
 .code
 my_mailboxes:
   driver = appendfile
-  file = /var/mail/$domain/$local_part_data
+  file = /var/mail/$domain_data/$local_part_data
   user = mail
 .endd
 This uses a directory of mailboxes for each domain. The &%user%& setting is
@@ -37342,7 +37344,7 @@ It runs a user's &_.forward_& file for all local parts of the form
 cases by testing the variable &$local_part_suffix$&. For example:
 .code
 if $local_part_suffix contains -special then
-save /home/$local_part/Mail/special
+save /home/$local_part_data/Mail/special
 endif
 .endd
 If the filter file does not exist, or does not deal with such addresses, they
