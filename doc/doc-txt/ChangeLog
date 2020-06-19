@@ -40,6 +40,12 @@ JH/08 Bug 2598: Fix verify ACL condition.  The options for the condition are
       expanded; previously using tainted values was rejected.  Fix by using
       dynamically-created buffers.
 
+JH/10 Bug 2603: Fix coding of string copying to only evaluate arguments once.
+      Previously a macro used one argument twice; when called with the
+      argument as an expression having side-effects, incorrect operation
+      resulted.  Use an inlineable function.
+
+
 
 Exim version 4.94
 -----------------

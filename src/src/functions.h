@@ -767,9 +767,9 @@ string_copy_trc(const uschar * s, const char * func, int line)
 /* Simple string-copy functions maintaining the taint */
 
 #define string_copyn(s, len) \
-	string_copyn_taint_trc((s), (len), is_tainted(s), __FUNCTION__, __LINE__)
+	string_copyn_trc((s), (len), __FUNCTION__, __LINE__)
 #define string_copy(s) \
-	string_copy_taint_trc((s), is_tainted(s), __FUNCTION__, __LINE__)
+	string_copy_trc((s), __FUNCTION__, __LINE__)
 
 
 /*************************************************
