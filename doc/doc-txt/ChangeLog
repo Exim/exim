@@ -49,6 +49,12 @@ JH/09 Relax restrictions on ACL verify condition needing access to message
       permit also mime, dkim, prdr quit and notquit.  Applies to header-syntax,
       not_blind, header_sender and header_names_ascii verification.
 
+JH/10 Bug 2603: Fix coding of string copying to only evaluate arguments once.
+      Previously a macro used one argument twice; when called with the
+      argument as an expression having side-effects, incorrect operation
+      resulted.  Use an inlineable function.
+
+
 
 Exim version 4.94
 -----------------
