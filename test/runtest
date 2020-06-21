@@ -934,7 +934,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # SRS timestamps and signatures vary by hostname and from run to run
 
-  s/SRS0=....=..=[^=]+=[^@]+\@test.ex/SRS0=ZZZZ=YY=the.local.host.name=CALLER\@test.ex/;
+  s/SRS0=....=.[^=]?=[^=]+=[^@]+\@test.ex/SRS0=ZZZZ=YY=the.local.host.name=CALLER\@test.ex/;
 
 
   # ======== Output from the "fd" program about open descriptors ========
