@@ -1,0 +1,46 @@
+# Exim test configuration 5409
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+
+acl_smtp_rcpt = acl_rcpt
+
+# ----- ACLs -------
+
+begin acl
+
+acl_rcpt:
+    accept	verify = recipient/callout=use_sender,hold,no_cache
+  		control = cutthrough_delivery
+
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * 127.0.0.1
+  self = send
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  interface = HOSTIPV4
+  port = PORT_S
+  hosts_try_fastopen =	:
+
+
+# End
