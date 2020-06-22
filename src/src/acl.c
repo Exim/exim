@@ -3264,37 +3264,41 @@ for (; cb; cb = cb->next)
 	    the case where both sides handle prdr and this-node prdr acl
 	    is "accept" */
 	    ignored = US"PRDR active";
+	  else if (f.deliver_freeze)
+	    ignored = US"frozen";
+	  else if (f.queue_only_policy)
+	    ignored = US"queue-only";
+	  else if (fake_response == FAIL)
+	    ignored = US"fakereject";
+	  else if (rcpt_count != 1)
+	    ignored = US"nonfirst rcpt";
+	  else if (cutthrough.delivery)
+	    ignored = US"repeated";
+	  else if (cutthrough.callout_hold_only)
+	    {
+	    DEBUG(D_acl)
+	      debug_printf_indent(" cutthrough request upgrades callout hold\n");
+	    cutthrough.callout_hold_only = FALSE;
+	    cutthrough.delivery = TRUE;	/* control accepted */
+	    }
 	  else
 	    {
-	    if (f.deliver_freeze)
-	      ignored = US"frozen";
-	    else if (f.queue_only_policy)
-	      ignored = US"queue-only";
-	    else if (fake_response == FAIL)
-	      ignored = US"fakereject";
-	    else
+	    cutthrough.delivery = TRUE;	/* control accepted */
+	    while (*p == '/')
 	      {
-	      if (rcpt_count == 1)
+	      const uschar * pp = p+1;
+	      if (Ustrncmp(pp, "defer=", 6) == 0)
 		{
-		cutthrough.delivery = TRUE;	/* control accepted */
-		while (*p == '/')
-		  {
-		  const uschar * pp = p+1;
-		  if (Ustrncmp(pp, "defer=", 6) == 0)
-		    {
-		    pp += 6;
-		    if (Ustrncmp(pp, "pass", 4) == 0) cutthrough.defer_pass = TRUE;
-		    /* else if (Ustrncmp(pp, "spool") == 0) ;	default */
-		    }
-		  else
-		    while (*pp && *pp != '/') pp++;
-		  p = pp;
-		  }
+		pp += 6;
+		if (Ustrncmp(pp, "pass", 4) == 0) cutthrough.defer_pass = TRUE;
+		/* else if (Ustrncmp(pp, "spool") == 0) ;	default */
 		}
 	      else
-		ignored = US"nonfirst rcpt";
+		while (*pp && *pp != '/') pp++;
+	      p = pp;
 	      }
 	    }
+
 	  DEBUG(D_acl) if (ignored)
 	    debug_printf(" cutthrough request ignored on %s item\n", ignored);
 	  }

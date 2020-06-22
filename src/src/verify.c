@@ -875,12 +875,12 @@ tls_retry_connection:
 		    case PENDING_OK:  done = TRUE;
 				      new_address_record.result = ccache_accept;
 				      break;
-		    case FAIL:	    done = TRUE;
+		    case FAIL:	      done = TRUE;
 				      yield = FAIL;
 				      *failure_ptr = US"recipient";
 				      new_address_record.result = ccache_reject;
 				      break;
-		    default:	    break;
+		    default:	      break;
 		    }
 		  break;
 

@@ -45,6 +45,10 @@ JH/10 Bug 2603: Fix coding of string copying to only evaluate arguments once.
       argument as an expression having side-effects, incorrect operation
       resulted.  Use an inlineable function.
 
+JH/11 Bug 2604: Fix request to cutthrough-deliver when a connection is already
+      held open for a verify callout.  Previously this wan not accounted for
+      and a corrupt onward SMTP conversation resulted.
+
 
 
 Exim version 4.94
