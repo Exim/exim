@@ -3451,7 +3451,7 @@ switch(cond_type = identify_operator(&s, &opname))
     uschar * sub[2];
     const pcre * re;
     int ovec[3*(4+1)];
-    int n;
+    int n, quoting = 0;
     uschar cksum[4];
     BOOL boolvalue = FALSE;
 
@@ -3474,10 +3474,20 @@ switch(cond_type = identify_operator(&s, &opname))
       goto srs_result;
       }
 
-    /* Side-effect: record the decoded recipient */
+    if (sub[0][0] == '"')
+      quoting = 1;
+    else for (uschar * s = sub[0]; *s; s++)
+      if (!isalnum(*s) && Ustrchr(".!#$%&'*+-/=?^_`{|}~", *s) == NULL)
+	{ quoting = 1; break; }
+    if (quoting)
+      DEBUG(D_expand) debug_printf_indent("auto-quoting local part\n");
 
-    srs_recipient = string_sprintf("%.*S@%.*S",   		/* lowercased */
+    /* Record the (quoted, if needed) decoded recipient as $srs_recipient */
+
+    srs_recipient = string_sprintf("%.*s%.*S%.*s@%.*S",   	/* lowercased */
+		      quoting, "\"",
 		      ovec[9]-ovec[8], sub[0] + ovec[8],	/* substring 4 */
+		      quoting, "\"",
 		      ovec[7]-ovec[6], sub[0] + ovec[6]);	/* substring 3 */
 
     /* If a zero-length secret was given, we're done.  Otherwise carry on
@@ -6777,6 +6787,8 @@ while (*s)
       {
       uschar * sub[3];
       uschar cksum[4];
+      gstring * g = NULL;
+      BOOL quoted = FALSE;
 
       switch (read_subs(sub, 3, 3, CUSS &s, skipping, TRUE, name, &resetok))
         {
@@ -6785,40 +6797,64 @@ while (*s)
         case 3: goto EXPAND_FAILED;
         }
 
-      yield = string_catn(yield, US"SRS0=", 5);
+      g = string_catn(g, US"SRS0=", 5);
 
       /* ${l_4:${hmac{md5}{SRS_SECRET}{${lc:$return_path}}}}= */
       hmac_md5(sub[0], string_copylc(sub[1]), cksum, sizeof(cksum));
-      yield = string_catn(yield, cksum, sizeof(cksum));
-      yield = string_catn(yield, US"=", 1);
+      g = string_catn(g, cksum, sizeof(cksum));
+      g = string_catn(g, US"=", 1);
 
       /* ${base32:${eval:$tod_epoch/86400&0x3ff}}= */
 	{
 	struct timeval now;
 	unsigned long i;
-	gstring * g = NULL;
+	gstring * h = NULL;
 
 	gettimeofday(&now, NULL);
 	for (unsigned long i = (now.tv_sec / 86400) & 0x3ff; i; i >>= 5)
-	  g = string_catn(g, &base32_chars[i & 0x1f], 1);
-	if (g) while (g->ptr > 0)
-	  yield = string_catn(yield, &g->s[--g->ptr], 1);
+	  h = string_catn(h, &base32_chars[i & 0x1f], 1);
+	if (h) while (h->ptr > 0)
+	  g = string_catn(g, &h->s[--h->ptr], 1);
 	}
-      yield = string_catn(yield, US"=", 1);
+      g = string_catn(g, US"=", 1);
 
       /* ${domain:$return_path}=${local_part:$return_path} */
 	{
         int start, end, domain;
         uschar * t = parse_extract_address(sub[1], &expand_string_message,
 					  &start, &end, &domain, FALSE);
+	uschar * s;
+
         if (!t)
 	  goto EXPAND_FAILED;
 
-	if (domain > 0) yield = string_cat(yield, t + domain);
-	yield = string_catn(yield, US"=", 1);
-	yield = domain > 0
-	  ? string_catn(yield, t, domain - 1) : string_cat(yield, t);
+	if (domain > 0) g = string_cat(g, t + domain);
+	g = string_catn(g, US"=", 1);
+
+	s = domain > 0 ? string_copyn(t, domain - 1) : t;
+	if ((quoted = Ustrchr(s, '"') != NULL))
+	  {
+	  gstring * h = NULL;
+	  DEBUG(D_expand) debug_printf_indent("auto-quoting local part\n");
+	  while (*s)		/* de-quote */
+	    {
+	    while (*s && *s != '"') h = string_catn(h, s++, 1);
+	    if (*s) s++;
+	    while (*s && *s != '"') h = string_catn(h, s++, 1);
+	    if (*s) s++;
+	    }
+	  gstring_release_unused(h);
+	  s = string_from_gstring(h);
+	  }
+	g = string_cat(g, s);
         }
+
+      /* Assume that if the original local_part had quotes
+      it was for good reason */
+
+      if (quoted) yield = string_catn(yield, US"\"", 1);
+      yield = string_catn(yield, g->s, g->ptr);
+      if (quoted) yield = string_catn(yield, US"\"", 1);
 
       /* @$original_domain */
       yield = string_catn(yield, US"@", 1);
@@ -7471,24 +7507,20 @@ while (*s)
         uschar *t = sub - 1;
 
         if (c == EOP_QUOTE)
-          {
-          while (!needs_quote && *(++t) != 0)
+          while (!needs_quote && *++t)
             needs_quote = !isalnum(*t) && !strchr("_-.", *t);
-          }
+
         else  /* EOP_QUOTE_LOCAL_PART */
-          {
-          while (!needs_quote && *(++t) != 0)
-            needs_quote = !isalnum(*t) &&
-              strchr("!#$%&'*+-/=?^_`{|}~", *t) == NULL &&
-              (*t != '.' || t == sub || t[1] == 0);
-          }
+          while (!needs_quote && *++t)
+            needs_quote = !isalnum(*t)
+	      && strchr("!#$%&'*+-/=?^_`{|}~", *t) == NULL
+	      && (*t != '.' || t == sub || !t[1]);
 
         if (needs_quote)
           {
           yield = string_catn(yield, US"\"", 1);
           t = sub - 1;
-          while (*(++t) != 0)
-            {
+          while (*++t)
             if (*t == '\n')
               yield = string_catn(yield, US"\\n", 2);
             else if (*t == '\r')
@@ -7499,10 +7531,10 @@ while (*s)
                 yield = string_catn(yield, US"\\", 1);
               yield = string_catn(yield, t, 1);
               }
-            }
           yield = string_catn(yield, US"\"", 1);
           }
-        else yield = string_cat(yield, sub);
+        else
+	  yield = string_cat(yield, sub);
         continue;
         }
 

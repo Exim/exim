@@ -7,9 +7,36 @@ exim -odi redirect@test.ex
 Message body
 ****
 # Run the queue for the remote, will generate bounce which is queued
-exim -q
+exim -DCONTROL=remote -q
 ****
 # Run the queue for the remote, will send bounce to origin
+exim -DCONTROL=remote -q
+****
+# Run the queue for the local, will process the bounce
+exim -q
+****
+#
+#
+#
+#
+# Sender with quoted local_part:
+#
+exim -be
+${srs_encode {mysecret} {eximtest@lap.dom.ain} {test.ex}}
+${srs_encode {mysecret} {"eximtest"@lap.dom.ain} {test.ex}}
+****
+#
+# Inject a message; will be passed on to remote and queued there
+sudo exim -odi -f '"fred["@test.ex' redirect@test.ex
+Message body
+****
+# Run the queue for the remote, will generate bounce which is queued
+exim -DCONTROL=remote -q
+****
+# Run the queue for the remote, will send bounce to origin
+exim -DCONTROL=remote -q
+****
+# Run the queue for the local, will process the bounce
 exim -q
 ****
 #

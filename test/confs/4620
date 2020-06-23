@@ -11,18 +11,28 @@ acl_smtp_rcpt = accept
 domainlist local_domains = test.ex
 domainlist remotesite_domains = remote.ex
 
-log_selector = +all_parents +received_recipients
+log_selector = +all_parents +received_recipients +return_path_on_delivery
 queue_only
 
 # ----- Routers -----
 
 begin routers
 
+.ifdef CONTROL
 remote_bouncer:
   driver =	redirect
   condition =	${if eq {$sender_host_address}{127.0.0.1}}
   data =	:fail: account disabled
   allow_fail
+
+bounce_return:
+  driver =	manualroute
+  domains =	+local_domains
+  senders =	:
+  route_list =	test.ex		127.0.0.1::PORT_S
+  self =	send
+  transport =	to_external
+.endif
 
 external:
   driver =	manualroute
@@ -32,6 +42,7 @@ external:
   transport =	${if eq {$local_part@$domain} {$original_local_part@$original_domain} \
 			{to_external} {forwarded_external}}
 
+.ifndef CONTROL
 inbound_srs:
   driver =	redirect
   senders =	:
@@ -48,7 +59,7 @@ inbound_srs_failure:
   condition =	${if inbound_srs {$local_part} {}}
   allow_fail
   data =	:fail: Invalid SRS recipient address
-
+.endif
 
 local_redirect:
   driver =	redirect
