@@ -8744,8 +8744,13 @@ The value for a match will be the list element string.
 .cindex "tainted data" "de-tainting"
 Note that this is commonly untainted
 (depending on the way the list was created).
+Specifically, explicit text in the configuration file in not tainted.
 This is a useful way of obtaining an untainted equivalent to
 the domain, for later operations.
+
+However if the list (including one-element lists)
+is created by expanding a variable containing tainted data,
+it is tainted and so will the match value be.
 .endlist
 
 
@@ -12481,17 +12486,23 @@ Often &$domain_data$& is usable in this role.
 
 .vitem &$domain_data$&
 .vindex "&$domain_data$&"
-When the &%domains%& option on a router matches a domain by
-means of a lookup, the data read by the lookup is available during the running
-of the router as &$domain_data$&. In addition, if the driver routes the
+When the &%domains%& condition on a router
+.new
+or an ACL
+matches a domain
+against a list, the match value is copied to &$domain_data$&.
+This is an enhancement over previous versions of Exim, when it only
+applied to the data read by a lookup.
+For details on match values see section &<<SECTlistresults>>& et. al.
+.wen
+
+If the router routes the
 address to a transport, the value is available in that transport. If the
 transport is handling multiple addresses, the value from the first address is
 used.
 
-&$domain_data$& is also set when the &%domains%& condition in an ACL matches a
-domain by means of a lookup. The data read by the lookup is available during
-the rest of the ACL statement. In all other situations, this variable expands
-to nothing.
+&$domain_data$& set in an ACL is available during
+the rest of the ACL statement.
 
 .vitem &$exim_gid$&
 .vindex "&$exim_gid$&"
@@ -12724,18 +12735,16 @@ to process local parts in a case-dependent manner in a router, you can set the
 
 .vitem &$local_part_data$&
 .vindex "&$local_part_data$&"
-When the &%local_parts%& option on a router matches a local part by means of a
-lookup, the data read by the lookup is available during the running of the
-router as &$local_part_data$&. In addition, if the driver routes the address
-to a transport, the value is available in that transport. If the transport is
-handling multiple addresses, the value from the first address is used.
+When the &%local_parts%& condition on a router or ACL
+matches a local part list
+.new
+the match value is copied to &$local_part_data$&.
+This is an enhancement over previous versions of Exim, when it only
+applied to the data read by a lookup.
+For details on match values see section &<<SECTlistresults>>& et. al.
+.wen
 
 The &%check_local_user%& router option also sets this variable.
-
-&$local_part_data$& is also set when the &%local_parts%& condition in an ACL
-matches a local part by means of a lookup. The data read by the lookup is
-available during the rest of the ACL statement. In all other situations, this
-variable expands to nothing.
 
 .vindex &$local_part_prefix$& &&&
 	&$local_part_prefix_v$& &&&
