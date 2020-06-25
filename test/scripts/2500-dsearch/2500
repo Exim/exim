@@ -14,8 +14,9 @@ fail,file:  ${lookup{TESTNUM.dir} dsearch,filter=file   {DIR/aux-fixed}{$value}{
 ok,dir:     ${lookup{TESTNUM.dir} dsearch,filter=dir    {DIR/aux-fixed}{$value}{FAIL}}
 fail,dir:   ${lookup{TESTNUM.tst} dsearch,filter=dir    {DIR/aux-fixed}{$value}{FAIL}}
 ok,subdir:  ${lookup{TESTNUM.dir} dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
-fail,subdir:${lookup{..}          dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
-fail,subdir:${lookup{TESTNUM.tst} dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
+fail,subdir(..):${lookup{..}          dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
+fail,subdir(.) :${lookup{.}           dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
+fail,subdir(f) :${lookup{TESTNUM.tst} dsearch,filter=subdir {DIR/aux-fixed}{$value}{FAIL}}
 ****
 #
 1

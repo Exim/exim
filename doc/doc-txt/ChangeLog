@@ -49,6 +49,8 @@ JH/11 Bug 2604: Fix request to cutthrough-deliver when a connection is already
       held open for a verify callout.  Previously this wan not accounted for
       and a corrupt onward SMTP conversation resulted.
 
+JH/13 Fix dsearch "subdir" filter to ignore ".".  Previously only ".." was
+      excluded, not matching the documentation.
 
 
 Exim version 4.94
