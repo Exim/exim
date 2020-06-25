@@ -125,8 +125,7 @@ if (  Ulstat(filename, &statbuf) >= 0
        	 && S_ISDIR(statbuf.st_mode)
 	 && (  flags & FILTER_DIR
 	    || keystring[0] != '.'
-	    || keystring[1] != '.'
-	    || keystring[1] && keystring[2]
+	    || keystring[1] && keystring[1] != '.'
    )  )  )  )
   {
   /* Since the filename exists in the filesystem, we can return a
@@ -135,10 +134,10 @@ if (  Ulstat(filename, &statbuf) >= 0
   return OK;
   }
 
-if (errno == ENOENT) return FAIL;
+if (errno == ENOENT || errno == 0) return FAIL;
 
 save_errno = errno;
-*errmsg = string_sprintf("%s: lstat failed", filename);
+*errmsg = string_sprintf("%s: lstat: %s", filename, strerror(errno));
 errno = save_errno;
 return DEFER;
 }

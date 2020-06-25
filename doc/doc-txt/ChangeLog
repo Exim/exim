@@ -63,6 +63,8 @@ JH/12 Bug 2607: Fix the ${srs_encode } expansion to handle quoted local_parts.
       needed, strip the quoting and quote the entire local_part.
       Also make the inbound_srs expansion condition handle quoting.
 
+JH/13 Fix dsearch "subdir" filter to ignore ".".  Previously only ".." was
+      excluded, not matching the documentation.
 
 
 Exim version 4.94

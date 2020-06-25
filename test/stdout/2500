@@ -12,8 +12,9 @@
 > ok,dir:     2500.dir
 > fail,dir:   FAIL
 > ok,subdir:  2500.dir
-> fail,subdir:FAIL
-> fail,subdir:FAIL
+> fail,subdir(..):FAIL
+> fail,subdir(.) :FAIL
+> fail,subdir(f) :FAIL
 > 
 > cachelayer tests
 > fail:       FAIL
