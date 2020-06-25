@@ -11,6 +11,10 @@
 #include "../exim.h"
 #include "queuefile.h"
 
+#ifndef EXIM_HAVE_OPENAT
+# error queuefile transport reqires openat() support
+#endif
+
 /* Options specific to the appendfile transport. They must be in alphabetic
 order (note that "_" comes before the lower case letters). Some of them are
 stored in the publicly visible instance block - these are flagged with the

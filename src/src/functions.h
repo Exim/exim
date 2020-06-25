@@ -1104,6 +1104,7 @@ log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
 errno = EACCES;
 return -1;
 }
+#ifdef EXIM_HAVE_OPENAT
 static inline int
 exim_openat(int dirfd, const char *pathname, int flags)
 {
@@ -1120,6 +1121,7 @@ log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
 errno = EACCES;
 return -1;
 }
+#endif
 
 static inline FILE *
 exim_fopen(const char *pathname, const char *mode)
