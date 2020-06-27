@@ -15,6 +15,7 @@
 #define HAVE_SRANDOMDEV
 #define HAVE_ARC4RANDOM
 #define EXIM_HAVE_OPENAT
+#define EXIM_HAVE_FUTIMENS
 
 /* Applications should not call arc4random_stir() explicitly after
  * FreeBSD r227520 (approximately 1000002).

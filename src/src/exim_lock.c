@@ -584,7 +584,7 @@ else
 if (restore_times)
   {
   struct stat strestore;
-#ifdef EXIM_HAVE_OPENAT
+#ifdef EXIM_HAVE_FUTIMENS
   int fd = open(filename, O_RDWR); /* use fd for both get & restore */
   struct timespec tt[2];
 

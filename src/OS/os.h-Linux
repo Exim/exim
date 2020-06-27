@@ -73,6 +73,7 @@ then change the 0 to 1 in the next block. */
 
 #if _POSIX_C_SOURCE >= 200809L || _ATFILE_SOURCE
 # define EXIM_HAVE_OPENAT
+# define EXIM_HAVE_FUTIMENS
 #endif
 
 /* TCP Fast Open support */
