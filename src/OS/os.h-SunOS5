@@ -8,6 +8,7 @@
 
 #define HAVE_GETIPNODEBYNAME    1
 #define HAVE_GETIPNODEBYADDR    1
+##define EXIM_HAVE_OPENAT
 
 #define HAVE_KSTAT
 #define LOAD_AVG_KSTAT         "system_misc"

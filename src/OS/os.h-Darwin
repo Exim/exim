@@ -6,6 +6,7 @@
 #define HAVE_SYS_MOUNT_H
 #define PAM_H_IN_PAM
 #define SIOCGIFCONF_GIVES_ADDR
+#define EXIM_HAVE_OPENAT
 
 
 #define F_FREESP     O_TRUNC
