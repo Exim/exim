@@ -19,8 +19,6 @@
 static void *
 passwd_open(const uschar * filename, uschar ** errmsg)
 {
-filename = filename;     /* Keep picky compilers happy */
-errmsg = errmsg;
 return (void *)(-1);     /* Just return something non-null */
 }
 
@@ -39,12 +37,6 @@ passwd_find(void * handle, const uschar * filename, const uschar * keystring,
   const uschar * opts)
 {
 struct passwd *pw;
-
-handle = handle;         /* Keep picky compilers happy */
-filename = filename;
-length = length;
-errmsg = errmsg;
-do_cache = do_cache;
 
 if (!route_finduser(keystring, &pw, NULL)) return FAIL;
 *result = string_sprintf("*:%d:%d:%s:%s:%s", (int)pw->pw_uid, (int)pw->pw_gid,

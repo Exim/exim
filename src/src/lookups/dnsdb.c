@@ -80,8 +80,6 @@ static int type_values[] = {
 static void *
 dnsdb_open(const uschar * filename, uschar **errmsg)
 {
-filename = filename;   /* Keep picky compilers happy */
-errmsg = errmsg;       /* Ditto */
 return (void *)(-1);   /* Any non-0 value */
 }
 
@@ -154,11 +152,6 @@ dns_scan dnss;
 store as possible later, so we preallocate the result here */
 
 gstring * yield = string_get(256);
-
-handle = handle;           /* Keep picky compilers happy */
-filename = filename;
-length = length;
-do_cache = do_cache;
 
 /* If the string starts with '>' we change the output separator.
 If it's followed by ';' or ',' we set the TXT output separator. */

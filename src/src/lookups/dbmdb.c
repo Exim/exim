@@ -52,7 +52,6 @@ dbmdb_check(void *handle, const uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
 int rc;
-handle = handle;    /* Keep picky compilers happy */
 
 #if defined(USE_DB) || defined(USE_TDB) || defined(USE_GDBM)
 rc = lf_check_file(-1, filename, S_IFREG, modemask, owners, owngroups,
@@ -97,10 +96,6 @@ dbmdb_find(void * handle, const uschar * filename, const uschar * keystring,
 {
 EXIM_DB *d = (EXIM_DB *)handle;
 EXIM_DATUM key, data;
-
-filename = filename;    /* Keep picky compilers happy */
-errmsg = errmsg;
-do_cache = do_cache;
 
 EXIM_DATUM_INIT(key);               /* Some DBM libraries require datums to */
 EXIM_DATUM_INIT(data);              /* be cleared before use. */

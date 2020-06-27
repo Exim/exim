@@ -1288,8 +1288,6 @@ eldap_find(void * handle, const uschar * filename, const uschar * ldap_url,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-/* Keep picky compilers happy */
-do_cache = do_cache;
 return(control_ldap_search(ldap_url, SEARCH_LDAP_SINGLE, result, errmsg));
 }
 
@@ -1298,8 +1296,6 @@ eldapm_find(void * handle, const uschar * filename, const uschar * ldap_url,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-/* Keep picky compilers happy */
-do_cache = do_cache;
 return(control_ldap_search(ldap_url, SEARCH_LDAP_MULTIPLE, result, errmsg));
 }
 
@@ -1308,8 +1304,6 @@ eldapdn_find(void * handle, const uschar * filename, const uschar * ldap_url,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-/* Keep picky compilers happy */
-do_cache = do_cache;
 return(control_ldap_search(ldap_url, SEARCH_LDAP_DN, result, errmsg));
 }
 
@@ -1317,8 +1311,6 @@ int
 eldapauth_find(void * handle, const uschar * filename, const uschar * ldap_url,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache)
 {
-/* Keep picky compilers happy */
-do_cache = do_cache;
 return(control_ldap_search(ldap_url, SEARCH_LDAP_AUTH, result, errmsg));
 }
 

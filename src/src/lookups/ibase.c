@@ -459,9 +459,6 @@ uschar *server;
 uschar *list = ibase_servers;
 uschar buffer[512];
 
-/* Keep picky compilers happy */
-do_cache = do_cache;
-
 DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
 
 while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))

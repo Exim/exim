@@ -160,9 +160,6 @@ const uschar *fully_qualified_name;
 const uschar *listptr;
 uschar widen_buffer[256];
 
-addr_new = addr_new;          /* Keep picky compilers happy */
-addr_succeed = addr_succeed;
-
 DEBUG(D_route)
   debug_printf("%s router called for %s\n  domain = %s\n",
     rblock->name, addr->address, addr->domain);

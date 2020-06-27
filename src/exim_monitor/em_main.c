@@ -173,8 +173,6 @@ va_start(ap, format);
 vfprintf(stderr, format, ap);
 fprintf(stderr, "\n");
 va_end(ap);
-selector = selector;     /* Keep picky compilers happy */
-flags = flags;
 }
 
 
@@ -240,9 +238,6 @@ if (action_queue_update) tick_queue_accumulator = 999999;
 
 void updateAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;       /* Keep picky compilers happy */
-client_data = client_data;
-call_data = call_data;
 scan_spool_input(TRUE);
 queue_display();
 tick_queue_accumulator = 0;
@@ -250,9 +245,6 @@ tick_queue_accumulator = 0;
 
 void hideAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;       /* Keep picky compilers happy */
-client_data = client_data;
-call_data = call_data;
 actioned_message[0] = 0;
 dialog_ref_widget = w;
 dialog_action = da_hide;
@@ -263,11 +255,7 @@ void unhideAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 skip_item *sk = queue_skip;
 
-w = w;       /* Keep picky compilers happy */
-client_data = client_data;
-call_data = call_data;
-
-while (sk != NULL)
+while (sk)
   {
   skip_item *next = sk->next;
   store_free(sk);
@@ -285,9 +273,6 @@ tick_queue_accumulator = 0;
 
 void quitAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;       /* Keep picky compilers happy */
-client_data = client_data;
-call_data = call_data;
 exit(0);
 }
 
@@ -317,10 +302,6 @@ Dimension x, y;
 Dimension width, height;
 XWindowAttributes a;
 Window w = XtWindow(toplevel_widget);
-
-button = button;    /* Keep picky compilers happy */
-client_data = client_data;
-call_data = call_data;
 
 /* Get the position and size of the top level widget. */
 
@@ -472,9 +453,6 @@ pipe_item *p = pipe_chain;
 tick_queue_accumulator += tick_interval;
 tick_stripchart_accumulator += tick_interval;
 read_log();
-
-pt = pt;    /* Keep picky compilers happy */
-i = i;
 
 /* If we have passed the queue update time, we must do a full
 scan of the queue, checking for new arrivals, etc. This will

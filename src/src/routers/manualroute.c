@@ -248,9 +248,6 @@ transport_instance *transport = NULL;
 BOOL individual_transport_set = FALSE;
 BOOL randomize = ob->hosts_randomize;
 
-addr_new = addr_new;           /* Keep picky compilers happy */
-addr_succeed = addr_succeed;
-
 DEBUG(D_route) debug_printf("%s router called for %s\n  domain = %s\n",
   rblock->name, addr->address, addr->domain);
 

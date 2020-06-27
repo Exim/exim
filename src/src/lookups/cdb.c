@@ -281,9 +281,6 @@ hash_offset,
 hash_offlen,
 hash_slotnm;
 
-/* Keep picky compilers happy */
-do_cache = do_cache;
-
 key_hash = cdb_hash(keystring, key_len);
 
 hash_offset_entry = CDB_HASH_ENTRY * (key_hash & CDB_HASH_MASK);

@@ -226,11 +226,6 @@ appendfile_transport_options_block *ob =
 uschar *q = ob->quota;
 double default_value = 0.0;
 
-addrlist = addrlist;    /* Keep picky compilers happy */
-dummy = dummy;
-uid = uid;
-gid = gid;
-
 if (ob->expand_maildir_use_size_file)
 	ob->maildir_use_size_file = expand_check_condition(ob->expand_maildir_use_size_file,
 		US"`maildir_use_size_file` in transport", tblock->name);

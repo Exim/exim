@@ -436,9 +436,8 @@ before been able to pass successfully. */
 #define EXIM_DBSCAN(db, key, data, first, cursor)      \
        ((db)->seq(db, &key, &data, (first? R_FIRST : R_NEXT)) == 0)
 
-/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). Make it
-refer to cursor, to keep picky compilers happy. */
-#define EXIM_DBDELETE_CURSOR(cursor) { cursor = cursor; }
+/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
+#define EXIM_DBDELETE_CURSOR(cursor) { }
 
 /* EXIM_DBCLOSE */
 #define EXIM_DBCLOSE__(db)        (db)->close(db)
@@ -524,9 +523,8 @@ typedef struct {
     (((db)->lkey.dptr != NULL)? (free((db)->lkey.dptr),1) : 1),\
     db->lkey = key, key.dptr != NULL)
 
-/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). Make it
-refer to cursor, to keep picky compilers happy. */
-#define EXIM_DBDELETE_CURSOR(cursor) { cursor = cursor; }
+/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
+#define EXIM_DBDELETE_CURSOR(cursor) { }
 
 /* EXIM_DBCLOSE */
 #define EXIM_DBCLOSE__(db) \
@@ -602,9 +600,8 @@ interface */
 #define EXIM_DBSCAN(db, key, data, first, cursor)      \
        (key = (first? dbm_firstkey(db) : dbm_nextkey(db)), key.dptr != NULL)
 
-/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). Make it
-refer to cursor, to keep picky compilers happy. */
-#define EXIM_DBDELETE_CURSOR(cursor) { cursor = cursor; }
+/* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). */
+#define EXIM_DBDELETE_CURSOR(cursor) { }
 
 /* EXIM_DBCLOSE */
 #define EXIM_DBCLOSE__(db) dbm_close(db)

@@ -116,9 +116,6 @@ const uschar *ip;
 int len = Ustrlen(domain);
 int rc, ipv;
 
-addr_new = addr_new;         /* Keep picky compilers happy */
-addr_succeed = addr_succeed;
-
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
   rblock->name, addr->address, addr->domain);
 

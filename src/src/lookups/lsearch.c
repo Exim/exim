@@ -95,9 +95,6 @@ if(type == LSEARCH_WILD || type == LSEARCH_NWILD)
   reset_point = store_mark();
   }
 
-filename = filename;  /* Keep picky compilers happy */
-errmsg = errmsg;
-
 rewind(f);
 for (last_was_eol = TRUE;
      Ufgets(buffer, sizeof(buffer), f) != NULL;
@@ -324,7 +321,6 @@ lsearch_find(void * handle, const uschar * filename, const uschar * keystring,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
   errmsg, LSEARCH_PLAIN);
 }
@@ -342,7 +338,6 @@ wildlsearch_find(void * handle, const uschar * filename, const uschar * keystrin
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
   errmsg, LSEARCH_WILD);
 }
@@ -360,7 +355,6 @@ nwildlsearch_find(void * handle, const uschar * filename, const uschar * keystri
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-do_cache = do_cache;  /* Keep picky compilers happy */
 return internal_lsearch_find(handle, filename, keystring, length, result,
   errmsg, LSEARCH_NWILD);
 }
@@ -379,8 +373,6 @@ iplsearch_find(void * handle, uschar const * filename, const uschar * keystring,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-do_cache = do_cache;  /* Keep picky compilers happy */
-
 if ((length == 1 && keystring[0] == '*') ||
     string_is_ip_address(keystring, NULL) != 0)
   return internal_lsearch_find(handle, filename, keystring, length, result,

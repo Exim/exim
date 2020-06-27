@@ -3573,9 +3573,6 @@ struct Sieve sieve;
 int r;
 uschar *msg;
 
-options = options; /* Keep picky compilers happy */
-error = error;
-
 DEBUG(D_route) debug_printf("Sieve: start of processing\n");
 sieve.filter = filter;
 

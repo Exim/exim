@@ -89,9 +89,6 @@ json_error_t jerr;
 uschar * key;
 int sep = 0;
 
-length = length;	/* Keep picky compilers happy */
-do_cache = do_cache;	/* Keep picky compilers happy */
-
 rewind(f);
 if (!(j = json_loadf(f, 0, &jerr)))
   {

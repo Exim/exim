@@ -24,8 +24,6 @@ the find function. */
 static void *
 testdb_open(const uschar * filename, uschar ** errmsg)
 {
-filename = filename;   /* Keep picky compilers happy */
-errmsg = errmsg;
 return (void *)(1);    /* Just return something non-null */
 }
 
@@ -42,10 +40,6 @@ testdb_find(void * handle, const uschar * filename, const uschar * query,
   int length, uschar ** result, uschar ** errmsg, uint * do_cache,
   const uschar * opts)
 {
-handle = handle;          /* Keep picky compilers happy */
-filename = filename;
-length = length;
-
 if (Ustrcmp(query, "fail") == 0)
   {
   *errmsg = US"testdb lookup forced FAIL";

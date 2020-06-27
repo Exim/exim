@@ -86,8 +86,6 @@ int pwcheck_verify_password(const char *userid,
                             const char *passwd,
                             const char **reply)
 {
-userid = userid;  /* Keep picky compilers happy */
-passwd = passwd;
 *reply = "pwcheck support is not included in this Exim binary";
 return PWCHECK_FAIL;
 }
@@ -163,10 +161,6 @@ int saslauthd_verify_password(const uschar *userid,
                 const uschar *realm,
                 const uschar **reply)
 {
-userid = userid;  /* Keep picky compilers happy */
-passwd = passwd;
-service = service;
-realm = realm;
 *reply = US"saslauthd support is not included in this Exim binary";
 return PWCHECK_FAIL;
 }

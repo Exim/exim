@@ -301,10 +301,7 @@ store_last_get[pool] = next_yield[pool];
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
-#ifdef COMPILE_UTILITY
-func = func;
-linenumber = linenumber;
-#else
+#ifndef COMPILE_UTILITY
 DEBUG(D_memory)
   debug_printf("---%d Get %6p %5d %-14s %4d\n", pool,
     store_last_get[pool], size, func, linenumber);
@@ -395,10 +392,7 @@ if (CS ptr + rounded_oldsize != CS (next_yield[pool]) ||
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
-#ifdef COMPILE_UTILITY
-func = func;
-linenumber = linenumber;
-#else
+#ifndef COMPILE_UTILITY
 DEBUG(D_memory)
   debug_printf("---%d Ext %6p %5d %-14s %4d\n", pool, ptr, newsize,
     func, linenumber);
@@ -522,10 +516,7 @@ while ((b = bb))
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
-#ifdef COMPILE_UTILITY
-func = func;
-linenumber = linenumber;
-#else
+#ifndef COMPILE_UTILITY
 DEBUG(D_memory)
   debug_printf("---%d Rst %6p %5d %-14s %4d %d\n", pool, ptr,
     count + oldmalloc - pool_malloc,
@@ -609,10 +600,7 @@ for (int pool = 0; pool < nelem(current_block); pool++)
   /* Cut out the debugging stuff for utilities, but stop picky compilers from
   giving warnings. */
 
-#ifdef COMPILE_UTILITY
-  func = func;
-  linenumber = linenumber;
-#else
+#ifndef COMPILE_UTILITY
   DEBUG(D_memory)
     debug_printf("---%d Rel %6p %5d %-14s %4d %d\n", pool, ptr, count,
       func, linenumber, pool_malloc);
@@ -683,10 +671,7 @@ for (storeblock * b = chainbase[pool]; b; b = b->next)
     /* Cut out the debugging stuff for utilities, but stop picky compilers
     from giving warnings. */
 
-#ifdef COMPILE_UTILITY
-    func = func;
-    linenumber = linenumber;
-#else
+#ifndef COMPILE_UTILITY
     DEBUG(D_memory)
       debug_printf("-Release %6p %-20s %4d %d\n", (void *)bb, func,
 	linenumber, pool_malloc);
@@ -781,10 +766,7 @@ if ((nonpool_malloc += size) > max_nonpool_malloc)
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
 giving warnings. */
 
-#ifdef COMPILE_UTILITY
-func = func; line = line;
-#else
-
+#ifndef COMPILE_UTILITY
 /* If running in test harness, spend time making sure all the new store
 is not filled with zeros so as to catch problems. */
 
@@ -823,10 +805,7 @@ Returns:      nothing
 static void
 internal_store_free(void * block, const char * func, int linenumber)
 {
-#ifdef COMPILE_UTILITY
-func = func;
-linenumber = linenumber;
-#else
+#ifndef COMPILE_UTILITY
 DEBUG(D_memory)
   debug_printf("----Free %6p %-20s %4d\n", block, func, linenumber);
 #endif  /* COMPILE_UTILITY */

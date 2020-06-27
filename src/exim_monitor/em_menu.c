@@ -117,8 +117,6 @@ static Arg item_99_arg[] = {
 
 static void popdownAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-client_data = client_data;    /* Keep picky compilers happy */
-call_data = call_data;
 if (highlighted_x >= 0)
   XawTextSinkDisplayText(queue_text_sink,
     highlighted_x, highlighted_y,
@@ -136,17 +134,13 @@ menu_is_up = FALSE;
 static void
 msglogAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-int i;
 Widget text = text_create(US client_data, text_depth);
 uschar * fname = NULL;
 FILE * f = NULL;
 
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
-
 /* End up with the split version, so message looks right when non-exist */
 
-for (i = 0; i < (spool_is_split ? 2:1); i++)
+for (int i = 0; i < (spool_is_split ? 2:1); i++)
   {
   message_subdir[0] = i != 0 ? (US client_data)[5] : 0;
   fname = spool_fname(US"msglog", message_subdir, US client_data, US"");
@@ -173,14 +167,10 @@ else
 static void
 bodyAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-int i;
 Widget text = text_create(US client_data, text_depth);
 FILE *f = NULL;
 
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
-
-for (i = 0; i < (spool_is_split? 2:1); i++)
+for (int i = 0; i < (spool_is_split? 2:1); i++)
   {
   uschar * fname;
   message_subdir[0] = i != 0 ? (US client_data)[5] : 0;
@@ -189,7 +179,7 @@ for (i = 0; i < (spool_is_split? 2:1); i++)
     break;
   }
 
-if (f == NULL)
+if (!f)
   text_showf(text, "Failed to open file: %s\n", strerror(errno));
 else
   {
@@ -409,8 +399,6 @@ if (pid < 0) text_showf(text, "Failed to fork: %s\n", strerror(errno)); else
 
 static void deliverAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 ActOnMessage(US client_data, US"-v -M", US"");
 }
 
@@ -422,8 +410,6 @@ ActOnMessage(US client_data, US"-v -M", US"");
 
 static void freezeAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 ActOnMessage(US client_data, US"-Mf", US"");
 }
 
@@ -435,8 +421,6 @@ ActOnMessage(US client_data, US"-Mf", US"");
 
 static void thawAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 ActOnMessage(US client_data, US"-Mt", US"");
 }
 
@@ -454,21 +438,14 @@ XtActionProc dialogAction(Widget w, XEvent *event, String *ss, Cardinal *c)
 {
 uschar *s = US XawDialogGetValueString(dialog_widget);
 
-w = w;      /* Keep picky compilers happy */
-event = event;
-ss = ss;
-c = c;
-
 XtPopdown((Widget)dialog_shell);
 XtDestroyWidget((Widget)dialog_shell);
 while (isspace(*s)) s++;
 if (s[0] != 0)
-  {
   if (actioned_message[0] != 0)
     ActOnMessage(actioned_message, action_required, s);
   else
     NonMessageDialogue(s);    /* When called from somewhere else */
-  }
 return NULL;
 }
 
@@ -556,8 +533,6 @@ in. */
 
 static void addrecipAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 Ustrncpy(actioned_message, client_data, 24);
 actioned_message[23] = '\0';
 action_required = US"-Mar";
@@ -573,8 +548,6 @@ create_dialog(US"Recipient address to add?", US"");
 
 static void markdelAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 Ustrncpy(actioned_message, client_data, 24);
 actioned_message[23] = '\0';
 action_required = US"-Mmd";
@@ -589,8 +562,6 @@ create_dialog(US"Recipient address to mark delivered?", US"");
 
 static void markalldelAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 ActOnMessage(US client_data, US"-Mmad", US"");
 }
 
@@ -604,8 +575,7 @@ static void editsenderAction(Widget w, XtPointer client_data,
 {
 queue_item *q;
 uschar *sender;
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
+
 Ustrncpy(actioned_message, client_data, 24);
 actioned_message[23] = '\0';
 q = find_queue(actioned_message, queue_noop, 0);
@@ -622,8 +592,6 @@ create_dialog(US"New sender address?", sender);
 
 static void giveupAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 ActOnMessage(US client_data, US"-v -Mg", US"");
 }
 
@@ -635,8 +603,6 @@ ActOnMessage(US client_data, US"-v -Mg", US"");
 
 static void removeAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 ActOnMessage(US client_data, US"-Mrm", US"");
 }
 
@@ -652,9 +618,6 @@ uschar buffer[256];
 header_line *h, *next;
 Widget text = text_create(US client_data, text_depth);
 rmark reset_point;
-
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
 
 /* Remember the point in the dynamic store so we can recover to it afterwards.
 Then use Exim's function to read the header. */
@@ -678,26 +641,24 @@ if (spool_read_header(buffer, TRUE, FALSE) != spool_read_OK)
   return;
   }
 
-if (sender_address != NULL)
+if (sender_address)
   {
   text_showf(text, "%s sender: <%s>\n", f.sender_local ? "Local" : "Remote",
     sender_address);
   }
 
-if (recipients_list != NULL)
+if (recipients_list)
   {
   int i;
   text_show(text, US"Recipients:\n");
   for (i = 0; i < recipients_count; i++)
-    {
     text_showf(text, "  %s %s\n",
       (tree_search(tree_nonrecipients, recipients_list[i].address) == NULL)?
         " ":"*", recipients_list[i].address);
-    }
   text_show(text, US"\n");
   }
 
-for (h = header_list; h != NULL; h = next)
+for (h = header_list; h; h = next)
   {
   next = h->next;
   text_showf(text, "%c ", h->type);   /* Don't push h->text through a %s */
@@ -716,11 +677,6 @@ store_reset(reset_point);
 
 static void dismissAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-pipe_item *p = pipe_chain;
-
-w = w;      /* Keep picky compilers happy */
-call_data = call_data;
-
 XtPopdown((Widget)client_data);
 XtDestroyWidget((Widget)client_data);
 
@@ -729,16 +685,9 @@ the chain so that subsequent data doesn't try to use it. We have
 to search the parents of the saved widget to see if one of them
 is what we have just destroyed. */
 
-while (p != NULL)
-  {
-  Widget pp = p->widget;
-  while (pp != NULL)
-    {
+for (pipe_item * p = pipe_chain; p; p = p->next)
+  for (Widget pp = p->widget; pp; pp = XtParent(pp))
     if (pp == (Widget)client_data) { p->widget = NULL; return; }
-    pp = XtParent(pp);
-    }
-  p = p->next;
-  }
 }
 
 
@@ -823,9 +772,6 @@ XtTranslations menu_trans = XtParseTranslationTable(
    <BtnMotion>:     highlight()\n\
    <BtnUp>:         MenuPopdown()notify()unhighlight()\n\
   ");
-
-actargs = actargs;   /* Keep picky compilers happy */
-count = count;
 
 /* Get the sink and source and the current text pointer */
 

@@ -87,7 +87,6 @@ the other stuff in os.c, so force the other macros to omit it. */
 static void
 sigalrm_handler(int sig)
 {
-sig = sig;      /* Keep picky compilers happy */
 sigalrm_seen = TRUE;
 }
 

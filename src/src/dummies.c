@@ -47,8 +47,6 @@ va_start(ap, format);
 vfprintf(stderr, format, ap);
 fprintf(stderr, "\n");
 va_end(ap);
-selector = selector;     /* Keep picky compilers happy */
-flags = flags;
 }
 
 
@@ -103,7 +101,6 @@ extern int sigalrm_seen;
 void
 sigalrm_handler(int sig)
 {
-sig = sig;            /* Keep picky compilers happy */
 sigalrm_seen = TRUE;
 }
 
@@ -116,19 +113,12 @@ sigalrm_seen = TRUE;
 int
 header_checkname(void *h, char *name, int len)
 {
-h = h;            /* Keep picky compilers happy */
-name = name;
-len = len;
 return 0;
 }
 
 void
 directory_make(char *parent, char *name, int mode, int panic)
 {
-parent = parent;  /* Keep picky compilers happy */
-name = name;
-mode = mode;
-panic = panic;
 }
 
 void
@@ -140,10 +130,6 @@ host_build_sender_fullhost(void) { }
 char *
 host_ntoa(int type, const void *arg, char *buffer, int *portptr)
 {
-type = type;      /* Keep picky compilers happy */
-arg = arg;
-buffer = buffer;
-portptr = portptr;
 return NULL;
 }
 #endif

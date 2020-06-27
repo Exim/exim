@@ -364,10 +364,6 @@ smtp_transport_setup(transport_instance *tblock, address_item *addrlist,
 {
 smtp_transport_options_block *ob = SOB tblock->options_block;
 
-errmsg = errmsg;    /* Keep picky compilers happy */
-uid = uid;
-gid = gid;
-
 /* Pass back options if required. This interface is getting very messy. */
 
 if (tf)

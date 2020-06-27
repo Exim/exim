@@ -86,10 +86,6 @@ int save_errno;
 uschar * filename;
 unsigned flags = 0;
 
-handle = handle;  /* Keep picky compilers happy */
-length = length;
-do_cache = do_cache;
-
 if (Ustrchr(keystring, '/') != 0)
   {
   *errmsg = string_sprintf("key for dsearch lookup contains a slash: %s",

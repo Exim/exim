@@ -529,9 +529,6 @@ int options = ob->bit_options;
 int frc = 0;
 int xrc = 0;
 
-addr_local = addr_local;     /* Keep picky compilers happy */
-addr_remote = addr_remote;
-
 /* Initialize the data to be propagated to the children */
 
 addr_prop.address_data = deliver_address_data;

@@ -57,8 +57,6 @@ The return values of this function are:
 int
 local_scan(int fd, uschar **return_text)
 {
-fd = fd;                      /* Keep picky compilers happy */
-return_text = return_text;
 return LOCAL_SCAN_ACCEPT;
 }
 

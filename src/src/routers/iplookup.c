@@ -169,11 +169,6 @@ const pcre *re = ob->re_response_pattern;
 int count, query_len, rc;
 int sep = 0;
 
-addr_local = addr_local;    /* Keep picky compilers happy */
-addr_remote = addr_remote;
-addr_succeed = addr_succeed;
-pw = pw;
-
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
   rblock->name, addr->address, addr->domain);
 

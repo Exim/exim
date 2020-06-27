@@ -59,7 +59,6 @@ Returns:  nothing
 static void
 sighup_handler(int sig)
 {
-sig = sig;    /* Keep picky compilers happy */
 sighup_seen = TRUE;
 signal(SIGHUP, sighup_handler);
 }
@@ -83,7 +82,6 @@ Returns:  nothing
 static void
 main_sigchld_handler(int sig)
 {
-sig = sig;    /* Keep picky compilers happy */
 os_non_restarting_signal(SIGCHLD, SIG_DFL);
 sigchld_seen = TRUE;
 }
