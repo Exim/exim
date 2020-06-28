@@ -43,3 +43,9 @@ ${lookup sqlite{DIR/aux-fixed/sqlitedb select name from them where id='userx';}}
 exim -DDATA=DIR/aux-fixed/sqlitedb -d-all+lookup -be
 ${lookup sqlite{select name from them where id='userx';}}
 ****
+exim -DDATA=nonabsolute_filename -d-all+lookup -be
+${lookup sqlite{select name from them where id='userx';}}
+****
+exim -DDATA=DIR/missingfile -d-all+lookup -be
+${lookup sqlite{select name from them where id='userx';}}
+****
