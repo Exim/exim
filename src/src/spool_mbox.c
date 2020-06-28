@@ -226,12 +226,11 @@ if (spool_mbox_ok && !f.no_mbox_unspool)
   for (struct dirent *entry; entry = readdir(tempdir); )
     {
     uschar *name = US entry->d_name;
-    int dummy;
     if (Ustrcmp(name, US".") == 0 || Ustrcmp(name, US"..") == 0) continue;
 
     file_path = string_sprintf("%s/%s", mbox_path, name);
     debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
-    dummy = unlink(CS file_path); dummy = dummy;	/* compiler quietening */
+    (void) unlink(CS file_path);
     }
 
   closedir(tempdir);

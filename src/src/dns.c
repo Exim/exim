@@ -334,7 +334,6 @@ char * trace = NULL;
 #ifdef rr_trace
 # define TRACE DEBUG(D_dns)
 #else
-trace = trace;
 # define TRACE if (FALSE)
 #endif
 
@@ -1249,7 +1248,7 @@ switch (type)
 
 	/* Extract the numerical SRV fields (p is incremented) */
 	GETSHORT(priority, p);
-	GETSHORT(weight, p);	weight = weight; /* compiler quietening */
+	GETSHORT(weight, p);
 	GETSHORT(port, p);
 
 	/* Check the CSA version number */

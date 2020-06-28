@@ -127,8 +127,6 @@ if (af == AF_INET6)
   return sizeof(sin->v6);
   }
 else
-#else     /* HAVE_IPv6 */
-af = af;  /* Avoid compiler warning */
 #endif    /* HAVE_IPV6 */
 
 /* Setup code when using IPv4 socket. The wildcard address is "". */
@@ -209,8 +207,6 @@ if (af == AF_INET6)
   s_len = sizeof(s_in6);
   }
 else
-#else     /* HAVE_IPV6 */
-af = af;  /* Avoid compiler warning */
 #endif    /* HAVE_IPV6 */
 
 /* For an IPv4 address, use an IPv4 sockaddr structure, even on a system with

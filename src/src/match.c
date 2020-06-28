@@ -104,8 +104,6 @@ uschar *filename = NULL;
 uschar *keyquery, *result, *semicolon;
 void *handle;
 
-error = error;  /* Keep clever compilers from complaining */
-
 if (valueptr) *valueptr = NULL;
 
 /* For regular expressions, use cb->origsubject rather than cb->subject so that
@@ -1003,8 +1001,6 @@ const uschar *listptr;
 uschar *subject = cb->address;
 const uschar *s;
 uschar *pdomain, *sdomain;
-
-error = error;  /* Keep clever compilers from complaining */
 
 DEBUG(D_lists) debug_printf("address match test: subject=%s pattern=%s\n",
   subject, pattern);

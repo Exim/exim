@@ -53,7 +53,7 @@ return store_get((int)size, TRUE);
 }
 
 static void
-function_dummy_free(void *block) { block = block; }
+function_dummy_free(void * block) {}
 
 static void *
 function_store_malloc(size_t size)
@@ -62,7 +62,7 @@ return store_malloc((int)size);
 }
 
 static void
-function_store_free(void *block)
+function_store_free(void * block)
 {
 store_free(block);
 }
@@ -4101,10 +4101,8 @@ privilege by now. Before the chdir, we try to ensure that the directory exists.
 
 if (Uchdir(spool_directory) != 0)
   {
-  int dummy;
-  (void)directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
-  dummy = /* quieten compiler */ Uchdir(spool_directory);
-  dummy = dummy;	/* yet more compiler quietening, sigh */
+  (void) directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
+  (void) Uchdir(spool_directory);
   }
 
 /* Handle calls with the -bi option. This is a sendmail option to rebuild *the*
@@ -4115,7 +4113,7 @@ script. */
 
 if (bi_option)
   {
-  (void)fclose(config_file);
+  (void) fclose(config_file);
   if (bi_command && *bi_command)
     {
     int i = 0;

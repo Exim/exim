@@ -496,7 +496,6 @@ RSA *rsa_key;
 BIGNUM *bn = BN_new();
 #endif
 
-export = export;     /* Shut picky compilers up */
 DEBUG(D_tls) debug_printf("Generating %d bit RSA key...\n", keylength);
 
 #ifdef EXIM_HAVE_RSA_GENKEY_EX

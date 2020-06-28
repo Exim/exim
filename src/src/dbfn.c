@@ -423,7 +423,6 @@ dbfn_scan(open_db *dbblock, BOOL start, EXIM_CURSOR **cursor)
 {
 EXIM_DATUM key_datum, value_datum;
 uschar *yield;
-value_datum = value_datum;    /* dummy; not all db libraries use this */
 
 DEBUG(D_hints_lookup) debug_printf_indent("dbfn_scan\n");
 

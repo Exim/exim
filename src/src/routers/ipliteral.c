@@ -57,7 +57,6 @@ ipliteral_router_init(router_instance *rblock)
 ipliteral_router_options_block *ob =
   (ipliteral_router_options_block *)(rblock->options_block);
 */
-rblock = rblock;
 }
 
 

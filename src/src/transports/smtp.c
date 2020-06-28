@@ -3428,7 +3428,6 @@ uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
 
-suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 *message_defer = FALSE;
 
 memset(sx, 0, sizeof(*sx));

@@ -1186,8 +1186,6 @@ acl_verify_reverse(uschar **user_msgptr, uschar **log_msgptr)
 {
 int rc;
 
-user_msgptr = user_msgptr;  /* stop compiler warning */
-
 /* Previous success */
 
 if (sender_host_name != NULL) return OK;

@@ -144,13 +144,6 @@ pipe_transport_setup(transport_instance *tblock, address_item *addrlist,
 pipe_transport_options_block *ob =
   (pipe_transport_options_block *)(tblock->options_block);
 
-addrlist = addrlist;  /* Keep compiler happy */
-dummy = dummy;
-uid = uid;
-gid = gid;
-errmsg = errmsg;
-ob = ob;
-
 #ifdef HAVE_SETCLASSRESOURCES
 if (ob->use_classresources)
   {

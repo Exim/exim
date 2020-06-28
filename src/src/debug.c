@@ -332,7 +332,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
   socklen_t alen = sizeof(a);
   struct sockaddr_in * sinp = (struct sockaddr_in *)&a;
   struct sockaddr_in6 * sin6p = (struct sockaddr_in6 *)&a;
-  struct sockaddr_un * sa_unp ; (struct sockaddr_un *)&a;
+  struct sockaddr_un * sa_unp = (struct sockaddr_un *)&a;
 
   if (getsockname(fd, &a, &alen) == 0)
     switch (sinp->sin_family)

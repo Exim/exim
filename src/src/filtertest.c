@@ -95,7 +95,7 @@ if (!dot_ended && !feof(stdin))
       if (s > message_body_end + message_body_visible) s = message_body_end;
       message_size++;
       }
-    READ_END: ch = ch;  /* Some compilers don't like null statements */
+    READ_END: ;
     }
   if (s == message_body_end || s[-1] != '\n') body_linecount++;
   }

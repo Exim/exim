@@ -4497,10 +4497,8 @@ while (done <= 0)
 # endif
       else
 #endif
+	(void) fwrite(g->s, 1, g->ptr, smtp_out);
 
-	{
-	int i = fwrite(g->s, 1, g->ptr, smtp_out); i = i; /* compiler quietening */
-	}
       DEBUG(D_receive)
 	{
 	uschar *cr;

@@ -1400,7 +1400,6 @@ if (write_pid > 0)
 	int dummy = read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->more_errno, sizeof(int));
         dummy = read(pfd[pipe_read], (void *)&tctx->addr->delivery_time, sizeof(struct timeval));
-	dummy = dummy;		/* compiler quietening */
         yield = FALSE;
         }
       }
