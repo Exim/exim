@@ -7,7 +7,7 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => srs0=12a1=f=the.local.host.name=CALLER@test.ex <SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex> P=<> R=bounce_return T=to_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex <SRS0=ZZZZ=YY=the.local.host.name=CALLER@test.ex> P=<> R=bounce_return T=to_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbA-0005vi-00"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
@@ -23,7 +23,7 @@
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmbD-0005vi-00 => srs0=5a75=f=test.ex=fred[@test.ex <"SRS0=ZZZZ=YY=test.ex=fred["@test.ex> P=<> R=bounce_return T=to_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbD-0005vi-00 => SRS0=ZZZZ=YY=test.ex=fred[@test.ex <"SRS0=ZZZZ=YY=test.ex=fred["@test.ex> P=<> R=bounce_return T=to_external H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-0005vi-00"
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
