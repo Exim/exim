@@ -489,6 +489,7 @@ configuration file is TESTSUITE/test-config
 admin user
 dropping to exim gid; retaining priv uid
  search_open: sqlite "NULL"
+ Using sqlite_dbfile: TESTSUITE/aux-fixed/sqlitedb
  search_find: file="NULL"
    key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
  LRU list:
@@ -496,5 +497,29 @@ dropping to exim gid; retaining priv uid
    type=sqlite key="select name from them where id='userx';" opts=NULL
  database lookup required for select name from them where id='userx';
  lookup yielded: Ayen Other
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+ search_open: sqlite "NULL"
+ Using sqlite_dbfile: nonabsolute_filename
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+dropping to exim gid; retaining priv uid
+ search_open: sqlite "NULL"
+ Using sqlite_dbfile: TESTSUITE/missingfile
+ search_find: file="NULL"
+   key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0 opts=NULL
+ LRU list:
+ internal_search_find: file="NULL"
+   type=sqlite key="select name from them where id='userx';" opts=NULL
+ database lookup required for select name from them where id='userx';
+ sqlite3_exec failed: no such table: them
+ lookup failed
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>

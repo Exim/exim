@@ -24,16 +24,23 @@ sqlite_open(const uschar * filename, uschar ** errmsg)
 sqlite3 *db = NULL;
 int ret;
 
-if (!filename || !*filename) filename = sqlite_dbfile;
-if (*filename != '/')
+if (!filename || !*filename)
+  {
+  DEBUG(D_lookup) debug_printf_indent("Using sqlite_dbfile: %s\n", sqlite_dbfile);
+  filename = sqlite_dbfile;
+  }
+if (!filename || *filename != '/')
   *errmsg = US"absolute file name expected for \"sqlite\" lookup";
 else if ((ret = sqlite3_open(CCS filename, &db)) != 0)
   {
   *errmsg = (void *)sqlite3_errmsg(db);
+  sqlite3_close(db);
+  db = NULL;
   DEBUG(D_lookup) debug_printf_indent("Error opening database: %s\n", *errmsg);
   }
 
-sqlite3_busy_timeout(db, 1000 * sqlite_lock_timeout);
+if (db)
+  sqlite3_busy_timeout(db, 1000 * sqlite_lock_timeout);
 return db;
 }
 

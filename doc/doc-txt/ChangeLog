@@ -52,6 +52,9 @@ JH/11 Bug 2604: Fix request to cutthrough-deliver when a connection is already
 JH/13 Fix dsearch "subdir" filter to ignore ".".  Previously only ".." was
       excluded, not matching the documentation.
 
+JH/14 Bug 2606: Fix a segfault in sqlite lookups.  When no, or a bad, filename
+      was given for the sqlite_dbfile a trap resulted.
+
 
 Exim version 4.94
 -----------------
