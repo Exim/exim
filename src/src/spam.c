@@ -190,7 +190,6 @@ spam(const uschar **listptr)
 int sep = 0;
 const uschar *list = *listptr;
 uschar *user_name;
-uschar user_name_buffer[128];
 unsigned long mbox_size;
 FILE *mbox_file;
 client_conn_ctx spamd_cctx = {.sock = -1};
@@ -218,9 +217,7 @@ spamd_address_container * sd;
 result = 0;
 
 /* find the username from the option list */
-if ((user_name = string_nextinlist(&list, &sep,
-				   user_name_buffer,
-				   sizeof(user_name_buffer))) == NULL)
+if (!(user_name = string_nextinlist(&list, &sep, NULL, 0)))
   {
   /* no username given, this means no scanning should be done */
   return FAIL;
