@@ -190,7 +190,6 @@ spam(const uschar **listptr)
 int sep = 0;
 const uschar *list = *listptr;
 uschar *user_name;
-uschar user_name_buffer[128];
 unsigned long mbox_size;
 FILE *mbox_file;
 client_conn_ctx spamd_cctx = {.sock = -1};
@@ -218,17 +217,14 @@ spamd_address_container * sd;
 result = 0;
 
 /* find the username from the option list */
-if ((user_name = string_nextinlist(&list, &sep,
-				   user_name_buffer,
-				   sizeof(user_name_buffer))) == NULL)
+if (!(user_name = string_nextinlist(&list, &sep, NULL, 0)))
   {
   /* no username given, this means no scanning should be done */
   return FAIL;
   }
 
 /* if username is "0" or "false", do not scan */
-if ( (Ustrcmp(user_name,"0") == 0) ||
-     (strcmpic(user_name,US"false") == 0) )
+if (Ustrcmp(user_name, "0") == 0 || strcmpic(user_name, US"false") == 0)
   return FAIL;
 
 /* if there is an additional option, check if it is "true" */
@@ -237,19 +233,15 @@ if (strcmpic(list,US"true") == 0)
   override = 1;
 
 /* expand spamd_address if needed */
-if (*spamd_address == '$')
-  {
-  spamd_address_work = expand_string(spamd_address);
-  if (spamd_address_work == NULL)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC,
-      "%s spamd_address starts with $, but expansion failed: %s",
-      loglabel, expand_string_message);
-    return DEFER;
-    }
-  }
-else
+if (*spamd_address != '$')
   spamd_address_work = spamd_address;
+else if (!(spamd_address_work = expand_string(spamd_address)))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "%s spamd_address starts with $, but expansion failed: %s",
+    loglabel, expand_string_message);
+  return DEFER;
+  }
 
 DEBUG(D_acl) debug_printf_indent("spamd: addrlist '%s'\n", spamd_address_work);
 

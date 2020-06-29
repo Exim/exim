@@ -69,6 +69,10 @@ JH/13 Fix dsearch "subdir" filter to ignore ".".  Previously only ".." was
 JH/14 Bug 2606: Fix a segfault in sqlite lookups.  When no, or a bad, filename
       was given for the sqlite_dbfile a trap resulted.
 
+JH/15 Fix "spam" ACL condition.  Previously, tainted values for the "name"
+      argument resulted in a trap.  There is no reason to disallow such; this
+      was a coding error.
+
 
 Exim version 4.94
 -----------------
