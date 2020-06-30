@@ -383,14 +383,20 @@ return 0;
 *************************************************/
 
 #ifdef _POSIX_MONOTONIC_CLOCK
-/* Amount CLOCK_MONOTONIC is behind realtime, at startup. */
+# ifdef CLOCK_BOOTTIME
+#  define EXIM_CLOCKTYPE CLOCK_BOOTTIME
+# else
+#  define EXIM_CLOCKTYPE CLOCK_MONOTONIC
+# endif
+
+/* Amount EXIM_CLOCK is behind realtime, at startup. */
 static struct timespec offset_ts;
 
 static void
 exim_clock_init(void)
 {
 struct timeval tv;
-if (clock_gettime(CLOCK_MONOTONIC, &offset_ts) != 0) return;
+if (clock_gettime(EXIM_CLOCKTYPE, &offset_ts) != 0) return;
 (void)gettimeofday(&tv, NULL);
 offset_ts.tv_sec = tv.tv_sec - offset_ts.tv_sec;
 offset_ts.tv_nsec = tv.tv_usec * 1000 - offset_ts.tv_nsec;
@@ -399,6 +405,29 @@ offset_ts.tv_sec--;
 offset_ts.tv_nsec += 1000*1000*1000;
 }
 #endif
+
+
+void
+exim_gettime(struct timeval * tv)
+{
+#ifdef _POSIX_MONOTONIC_CLOCK
+struct timespec now_ts;
+
+if (clock_gettime(EXIM_CLOCKTYPE, &now_ts) == 0)
+  {
+  now_ts.tv_sec += offset_ts.tv_sec;
+  if ((now_ts.tv_nsec += offset_ts.tv_nsec) >= 1000*1000*1000)
+    {
+    now_ts.tv_sec++;
+    now_ts.tv_nsec -= 1000*1000*1000;
+    }
+  tv->tv_sec = now_ts.tv_sec;
+  tv->tv_usec = now_ts.tv_nsec / 1000;
+  }
+else
+#endif
+  (void)gettimeofday(tv, NULL);
+}
 
 
 /* Exim uses a time + a pid to generate a unique identifier in two places: its
@@ -427,28 +456,9 @@ exim_wait_tick(struct timeval * tgt_tv, int resolution)
 struct timeval now_tv;
 long int now_true_usec;
 
-#ifdef _POSIX_MONOTONIC_CLOCK
-struct timespec now_ts;
-
-if (clock_gettime(CLOCK_MONOTONIC, &now_ts) == 0)
-  {
-  now_ts.tv_sec += offset_ts.tv_sec;
-  if ((now_ts.tv_nsec += offset_ts.tv_nsec) >= 1000*1000*1000)
-    {
-    now_ts.tv_sec++;
-    now_ts.tv_nsec -= 1000*1000*1000;
-    }
-  now_tv.tv_sec = now_ts.tv_sec;
-  now_true_usec = (now_ts.tv_nsec / (resolution * 1000)) * resolution;
-  now_tv.tv_usec = now_true_usec;
-  }
-else
-#endif
-  {
-  (void)gettimeofday(&now_tv, NULL);
-  now_true_usec = now_tv.tv_usec;
-  now_tv.tv_usec = (now_true_usec/resolution) * resolution;
-  }
+exim_gettime(&now_tv);
+now_true_usec = now_tv.tv_usec;
+now_tv.tv_usec = (now_true_usec/resolution) * resolution;
 
 while (exim_tvcmp(&now_tv, tgt_tv) <= 0)
   {
@@ -1728,7 +1738,7 @@ make quite sure. */
 
 setlocale(LC_ALL, "C");
 
-/* Get the offset between CLOCK_MONOTONIC and wallclock */
+/* Get the offset between CLOCK_MONOTONIC/CLOCK_BOOTTIME and wallclock */
 
 #ifdef _POSIX_MONOTONIC_CLOCK
 exim_clock_init();

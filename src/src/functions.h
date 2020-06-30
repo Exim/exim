@@ -235,6 +235,7 @@ extern void    msg_event_raise(const uschar *, const address_item *);
 extern int     exim_chown_failure(int, const uschar*, uid_t, gid_t);
 extern const uschar * exim_errstr(int);
 extern void    exim_exit(int) NORETURN;
+extern void    exim_gettimg(struct timeval *);
 extern void    exim_nullstd(void);
 extern void    exim_setugid(uid_t, gid_t, BOOL, uschar *);
 extern void    exim_underbar_exit(int) NORETURN;
