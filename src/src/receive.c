@@ -1784,7 +1784,7 @@ if (sender_host_address) dmarc_init();	/* initialize libopendmarc */
 ids, and fractions of a second are required. See the comments that precede the
 message id creation below. */
 
-(void)gettimeofday(&message_id_tv, NULL);
+exim_gettime(&message_id_tv);
 
 /* For other uses of the received time we can operate with granularity of one
 second, and for that we use the global variable received_time. This is for

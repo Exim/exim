@@ -59,6 +59,14 @@ JH/15 Fix "spam" ACL condition.  Previously, tainted values for the "name"
       argument resulted in a trap.  There is no reason to disallow such; this
       was a coding error.
 
+JH/16 Bug 2615: Fix pause during message reception, on systems that have been
+      suspended/resumed.  The Linux CLOCK_MONOTONIC does not account for time
+      spent suspended, ignoring the Posix definition.  Previously we assumed
+      it did and a constant offset from real time could be used as a correction.
+      Change to using the same clock source for the start-of-message and the
+      post-message next-tick-wait.  Also change to using CLOCK_BOOTTIME if it
+      exists, just to get a clock slightly more aligned to reality.
+
 
 Exim version 4.94
 -----------------
