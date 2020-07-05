@@ -123,7 +123,7 @@ if ((dbblock->lockfd = Uopen(filename, O_RDWR, EXIMDB_LOCKFILE_MODE)) < 0)
 if (dbblock->lockfd < 0)
   {
   log_write(0, LOG_MAIN, "%s",
-    string_open_failed(errno, "database lock file %s", filename));
+    string_open_failed("database lock file %s", filename));
   errno = 0;      /* Indicates locking failure */
   DEBUG(D_hints_lookup) acl_level--;
   return NULL;
@@ -228,12 +228,13 @@ exist. */
 
 if (!dbblock->dbptr)
   {
+  errno = save_errno;
   if (lof && save_errno != ENOENT)
-    log_write(0, LOG_MAIN, "%s", string_open_failed(save_errno, "DB file %s",
+    log_write(0, LOG_MAIN, "%s", string_open_failed("DB file %s",
         filename));
   else
     DEBUG(D_hints_lookup)
-      debug_printf_indent("%s\n", CS string_open_failed(save_errno, "DB file %s",
+      debug_printf_indent("%s\n", CS string_open_failed("DB file %s",
           filename));
   (void)close(dbblock->lockfd);
   errno = save_errno;

@@ -1525,7 +1525,7 @@ for (;;)
 
     if (!f)
       {
-      *error = string_open_failed(errno, "included file %s", filename);
+      *error = string_open_failed("included file %s", filename);
       return FF_INCLUDEFAIL;
       }
 

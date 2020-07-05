@@ -728,7 +728,7 @@ else if (errno == ENOENT)
     debug_printf("D-H parameter cache file \"%s\" does not exist\n", filename);
   }
 else
-  return tls_error(string_open_failed(errno, "\"%s\" for reading", filename),
+  return tls_error(string_open_failed("\"%s\" for reading", filename),
       NULL, NULL, errstr);
 
 /* If ret < 0, either the cache file does not exist, or the data it contains

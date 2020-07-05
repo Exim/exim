@@ -1952,7 +1952,7 @@ while (commands)
 	  (long int)geteuid());
 	if (log_fd < 0)
 	  {
-	  if (log_filename == NULL)
+	  if (!log_filename)
 	    {
 	    *error_pointer = US"attempt to obey \"logwrite\" command "
 	      "without a previous \"logfile\"";
@@ -1961,7 +1961,7 @@ while (commands)
 	  log_fd = Uopen(log_filename, O_CREAT|O_APPEND|O_WRONLY, log_mode);
 	  if (log_fd < 0)
 	    {
-	    *error_pointer = string_open_failed(errno, "filter log file \"%s\"",
+	    *error_pointer = string_open_failed("filter log file \"%s\"",
 	      log_filename);
 	    return FF_ERROR;
 	    }
@@ -1975,9 +1975,8 @@ while (commands)
 	  }
 	}
       else
-	{
-	DEBUG(D_filter) debug_printf_indent("skipping logwrite (verifying or testing)\n");
-	}
+	DEBUG(D_filter)
+	  debug_printf_indent("skipping logwrite (verifying or testing)\n");
       break;
 
       /* Header addition and removal is available only in the system filter. The

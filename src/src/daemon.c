@@ -950,8 +950,7 @@ if ((f = Ufopen(pid_file_path, "rb")))
   }
 else
   DEBUG(D_any)
-    debug_printf("%s\n", string_open_failed(errno, "pid file %s",
-      pid_file_path));
+    debug_printf("%s\n", string_open_failed("pid file %s", pid_file_path));
 exim_exit(EXIT_SUCCESS);
 }
 
@@ -1822,8 +1821,7 @@ if (f.running_in_test_harness || write_pid)
     }
   else
     DEBUG(D_any)
-      debug_printf("%s\n", string_open_failed(errno, "pid file %s",
-        pid_file_path));
+      debug_printf("%s\n", string_open_failed("pid file %s", pid_file_path));
   }
 
 /* Set up the handler for SIGHUP, which causes a restart of the daemon. */

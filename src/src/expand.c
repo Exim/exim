@@ -5261,7 +5261,7 @@ while (*s)
 
       if (!(f = Ufopen(sub_arg[0], "rb")))
         {
-        expand_string_message = string_open_failed(errno, "%s", sub_arg[0]);
+        expand_string_message = string_open_failed("%s", sub_arg[0]);
         goto EXPAND_FAILED;
         }
 

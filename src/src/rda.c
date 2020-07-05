@@ -222,7 +222,7 @@ if (!(fwd = Ufopen(filename, "rb"))) switch(errno)
 
 DEFAULT_ERROR:
   default:
-    *error = string_open_failed(errno, "%s", filename);
+    *error = string_open_failed("%s", filename);
     *yield = FF_ERROR;
     return NULL;
   }

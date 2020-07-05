@@ -786,7 +786,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
       if (listname[0] == 0)
         listname = string_sprintf("\"%s\"", *listptr);
       log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-        string_open_failed(errno, "%s when checking %s", sss, listname));
+        string_open_failed("%s when checking %s", sss, listname));
       }
 
     /* Trailing comments are introduced by #, but in an address list or local

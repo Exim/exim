@@ -31,9 +31,7 @@ dsearch_open(const uschar * dirname, uschar ** errmsg)
 DIR * dp = exim_opendir(dirname);
 if (!dp)
   {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno, "%s for directory search", dirname);
-  errno = save_errno;
+  *errmsg = string_open_failed("%s for directory search", dirname);
   return NULL;
   }
 closedir(dp);

@@ -29,14 +29,9 @@ enum {
 static void *
 lsearch_open(const uschar * filename, uschar ** errmsg)
 {
-FILE *f = Ufopen(filename, "rb");
-if (f == NULL)
-  {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno, "%s for linear search", filename);
-  errno = save_errno;
-  return NULL;
-  }
+FILE * f = Ufopen(filename, "rb");
+if (!f)
+  *errmsg = string_open_failed("%s for linear search", filename);
 return f;
 }
 

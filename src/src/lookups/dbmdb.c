@@ -26,11 +26,7 @@ EXIM_DB *yield = NULL;
 if ((s = Ustrrchr(dirname, '/'))) *s = '\0';
 EXIM_DBOPEN(filename, dirname, O_RDONLY, 0, &yield);
 if (!yield)
-  {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno, "%s as a %s file", filename, EXIM_DBTYPE);
-  errno = save_errno;
-  }
+  *errmsg = string_open_failed("%s as a %s file", filename, EXIM_DBTYPE);
 return yield;
 }
 

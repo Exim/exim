@@ -554,10 +554,10 @@ extern BOOL    string_format_trc(uschar *, int, const uschar *, unsigned,
 extern gstring *string_vformat_trc(gstring *, const uschar *, unsigned,
 			unsigned, unsigned, const char *, va_list);
 
-#define string_open_failed(eno, fmt, ...) \
-	string_open_failed_trc(eno, US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
-extern uschar *string_open_failed_trc(int, const uschar *, unsigned,
-			const char *, ...) PRINTF_FUNCTION(4,5);
+#define string_open_failed(fmt, ...) \
+	string_open_failed_trc(US __FUNCTION__, __LINE__, fmt, __VA_ARGS__)
+extern uschar *string_open_failed_trc(const uschar *, unsigned,
+			const char *, ...) PRINTF_FUNCTION(3,4);
 
 #define string_nextinlist(lp, sp, b, l) \
 	string_nextinlist_trc((lp), (sp), (b), (l), US __FUNCTION__, __LINE__)

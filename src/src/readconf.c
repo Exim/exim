@@ -3214,12 +3214,12 @@ if (config_file)
   }
 else
   {
-  if (filename == NULL)
+  if (!filename)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "non-existent configuration file(s): "
       "%s", config_main_filelist);
   else
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", string_open_failed(errno,
-      "configuration file %s", filename));
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
+      string_open_failed("configuration file %s", filename));
   }
 
 /* Now, once we found and opened our configuration file, we change the directory

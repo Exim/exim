@@ -1612,7 +1612,6 @@ string supplied as data, adds the strerror() text, and if the failure was
 "Permission denied", reads and includes the euid and egid.
 
 Arguments:
-  eno           the value of errno after the failure
   format        a text format string - deliberately not uschar *
   ...           arguments for the format string
 
@@ -1620,7 +1619,7 @@ Returns:        a message, in dynamic store
 */
 
 uschar *
-string_open_failed_trc(int eno, const uschar * func, unsigned line,
+string_open_failed_trc(const uschar * func, unsigned line,
   const char *format, ...)
 {
 va_list ap;
@@ -1636,22 +1635,26 @@ doesn't seem much we can do about that. */
 va_start(ap, format);
 (void) string_vformat_trc(g, func, line, STRING_SPRINTF_BUFFER_SIZE,
 	SVFMT_REBUFFER, format, ap);
-string_from_gstring(g);
-gstring_release_unused(g);
 va_end(ap);
 
-return eno == EACCES
-  ? string_sprintf("%s: %s (euid=%ld egid=%ld)", g->s, strerror(eno),
-    (long int)geteuid(), (long int)getegid())
-  : string_sprintf("%s: %s", g->s, strerror(eno));
+g = string_catn(g, US": ", 2);
+g = string_cat(g, US strerror(errno));
+
+if (errno == EACCES)
+  {
+  int save_errno = errno;
+  g = string_fmt_append(g, " (euid=%ld egid=%ld)",
+    (long int)geteuid(), (long int)getegid());
+  errno = save_errno;
+  }
+gstring_release_unused(g);
+return string_from_gstring(g);
 }
-#endif  /* COMPILE_UTILITY */
 
 
 
 
 
-#ifndef COMPILE_UTILITY
 /* qsort(3), currently used to sort the environment variables
 for -bP environment output, needs a function to compare two pointers to string
 pointers. Here it is. */

@@ -47,12 +47,7 @@ FILE * f;
 json_set_alloc_funcs(json_malloc, json_free);
 
 if (!(f = Ufopen(filename, "rb")))
-  {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno, "%s for json search", filename);
-  errno = save_errno;
-  return NULL;
-  }
+  *errmsg = string_open_failed("%s for json search", filename);
 return f;
 }
 

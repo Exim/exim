@@ -564,7 +564,7 @@ for (int i = 0; i <= 2; i++)
     {
     if (devnull < 0) devnull = open("/dev/null", O_RDWR);
     if (devnull < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-      string_open_failed(errno, "/dev/null", NULL));
+      string_open_failed("/dev/null", NULL));
     if (devnull != i) (void)dup2(devnull, i);
     }
   }

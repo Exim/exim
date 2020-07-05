@@ -157,19 +157,14 @@ void * mapbuf;
 
 if ((fileno = Uopen(filename, O_RDONLY, 0)) < 0)
   {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno, "%s for cdb lookup", filename);
-  errno = save_errno;
+  *errmsg = string_open_failed("%s for cdb lookup", filename);
   return NULL;
   }
 
 if (fstat(fileno, &statbuf) != 0)
   {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno,
-			      "fstat(%s) failed - cannot do cdb lookup",
+  *errmsg = string_open_failed("fstat(%s) failed - cannot do cdb lookup",
 			      filename);
-  errno = save_errno;
   return NULL;
   }
 
@@ -178,11 +173,7 @@ CDB_HASH_TABLE bytes long */
 
 if (statbuf.st_size < CDB_HASH_TABLE)
   {
-  int save_errno = errno;
-  *errmsg = string_open_failed(errno,
-			      "%s too short for cdb lookup",
-			      filename);
-  errno = save_errno;
+  *errmsg = string_open_failed("%s too short for cdb lookup", filename);
   return NULL;
   }
 
@@ -231,8 +222,7 @@ if (cdb_bread(fileno, cdbp->cdb_offsets, CDB_HASH_TABLE) == -1)
   /* read of hash table failed, oh dear, oh.....  time to give up I think....
   call the close routine (deallocs the memory), and return NULL */
 
-  *errmsg = string_open_failed(errno,
-			      "cannot read header from %s for cdb lookup",
+  *errmsg = string_open_failed("cannot read header from %s for cdb lookup",
 			      filename);
   cdb_close(cdbp);
   return NULL;

@@ -53,8 +53,8 @@ if (!spool_mbox_ok)
   temp_string = string_sprintf("scan/%s", message_id);
   if (!directory_make(spool_directory, temp_string, 0750, FALSE))
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
-      "scan directory %s/scan/%s", spool_directory, temp_string));
+    log_write(0, LOG_MAIN|LOG_PANIC, "%s",
+      string_open_failed("scan directory %s/scan/%s", spool_directory, temp_string));
     goto OUT;
     }
 
@@ -62,8 +62,8 @@ if (!spool_mbox_ok)
 
   if (!(mbox_file = modefopen(mbox_path, "wb", SPOOL_MODE)))
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
-      "scan file %s", mbox_path));
+    log_write(0, LOG_MAIN|LOG_PANIC, "%s",
+      string_open_failed("scan file %s", mbox_path));
     goto OUT;
     }
 
@@ -185,8 +185,8 @@ if (!spool_mbox_ok)
 if (  !(yield = Ufopen(mbox_path,"rb"))
    || fstat(fileno(yield), &statbuf) != 0
    )
-  log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
-    "scan file %s", mbox_path));
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s",
+    string_open_failed( "scan file %s", mbox_path));
 else
   *mbox_file_size = statbuf.st_size;
 
