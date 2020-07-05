@@ -491,11 +491,17 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > # lookups that are required in all cases.
 > 
 > CALLER
+> postmaster: CALLER
 > 
 > ==X@Y
 > ==*
 > ==*@Z
 > ==*
+> 
+> x@y  ==X@Y
+> *    ==*
+> *@z  ==*@Z
+> *    ==*
 > 
 > data for a.b.c.d
 > failed x.y.z
@@ -505,6 +511,14 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > Failed: "lookup" failed and "fail" requested
 > data for *
 > 
+> a.b.c.d: data for a.b.c.d
+> failed x.y.z
+> *.p.q:   data for *.p.q
+> *.p.q:   data for *.p.q
+> *.p.q:   data for *.p.q
+> Failed: "lookup" failed and "fail" requested
+> *:       data for *
+> 
 > q1:  "abc"
 > q2:  "xyz":
 > q3:  "pqr"  :
@@ -512,6 +526,14 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > q5:  "\"quoted\""
 > q6:  "white space"
 > q7:  "b\\s"
+> 
+> q1:  abc           "abc"
+> q2:  xyz:          "xyz":
+> q3:  pqr  :        "pqr"  :
+> q4:  a:b           "a:b" abc continued data (make sure not key)
+> q5:  "quoted"    "\"quoted\""
+> q6:  white space   "white space"
+> q7:  b\s          "b\\s"
 > 
 > abc:   abc
 > a.b.c: *.b.c

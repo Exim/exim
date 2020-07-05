@@ -6859,6 +6859,13 @@ the implicit key is the host's IP address rather than its name (see section
 &*Warning 3*&: Do not use an IPv4-mapped IPv6 address for a key; use the
 IPv4, in dotted-quad form. (Exim converts IPv4-mapped IPv6 addresses to this
 notation before executing the lookup.)
+
+.new
+One option is supported, "ret=full", to request the return of the entire line
+rather than omitting the key porttion.
+Note however that the key portion will have been de-quoted.
+.wen
+
 .next
 .cindex lookup json
 .cindex json "lookup type"

@@ -33,6 +33,9 @@ Version 4.95
     db file, replacing the previous prefix to the SQL string (which had
     issues when the SQL used tainted values).
 
+ 9. Lsearch lookups accept a "ret=full" option, to return both the portion
+    of the line matching the key, and the remainder.
+
 
 Version 4.94
 ------------

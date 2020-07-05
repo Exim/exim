@@ -526,28 +526,50 @@ acl if: ${if acl {{a_defer}{argN}{arg2}} {Y:$value}{N:$value}}
 # Lookups: DIR is the testing directory. In this test we can only use the
 # lookups that are required in all cases.
 
-${lookup{postmaster}lsearch{DIR/aux-fixed/0002.aliases}{$value}fail}
+${lookup{postmaster}lsearch         {DIR/aux-fixed/0002.aliases}{$value}fail}
+${lookup{postmaster}lsearch,ret=full{DIR/aux-fixed/0002.aliases}{$value}fail}
 
 ${lookup{x@y}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
-${lookup{x@z}lsearch*{DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@z}lsearch* {DIR/aux-fixed/0002.starat}{$value}fail}
 ${lookup{x@z}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
 ${lookup{x@w}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
 
-${lookup{a.b.c.d}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}{failed x.y.z}}
-${lookup{p.q}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{o.p.q}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{m.n.o.p.q}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}partial1-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
-${lookup{x.y.z}partial0-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x@y}lsearch*@,ret=full {DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@z}lsearch*,ret=full  {DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@z}lsearch*@,ret=full {DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@w}lsearch*@,ret=full {DIR/aux-fixed/0002.starat}{$value}fail}
 
-q1:  ${lookup{abc}lsearch{DIR/aux-fixed/0002.quoted}}
-q2:  ${lookup{xyz}lsearch{DIR/aux-fixed/0002.quoted}}
-q3:  ${lookup{pqr}lsearch{DIR/aux-fixed/0002.quoted}}
-q4:  ${lookup{a:b}lsearch{DIR/aux-fixed/0002.quoted}}
-q5:  ${lookup{"quoted"}lsearch{DIR/aux-fixed/0002.quoted}}
+${lookup{a.b.c.d}  partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}    partial-lsearch {DIR/aux-fixed/0002.domains}{$value}{failed x.y.z}}
+${lookup{p.q}      partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{o.p.q}    partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{m.n.o.p.q}partial-lsearch {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}    partial1-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}    partial0-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+
+${lookup{a.b.c.d}  partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}    partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}{failed x.y.z}}
+${lookup{p.q}      partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{o.p.q}    partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{m.n.o.p.q}partial-lsearch,ret=full {DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}    partial1-lsearch,ret=full{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}    partial0-lsearch,ret=full{DIR/aux-fixed/0002.domains}{$value}fail}
+
+q1:  ${lookup{abc}        lsearch{DIR/aux-fixed/0002.quoted}}
+q2:  ${lookup{xyz}        lsearch{DIR/aux-fixed/0002.quoted}}
+q3:  ${lookup{pqr}        lsearch{DIR/aux-fixed/0002.quoted}}
+q4:  ${lookup{a:b}        lsearch{DIR/aux-fixed/0002.quoted}}
+q5:  ${lookup{"quoted"}   lsearch{DIR/aux-fixed/0002.quoted}}
 q6:  ${lookup{white space}lsearch{DIR/aux-fixed/0002.quoted}}
-q7:  ${lookup{b\\s}lsearch{DIR/aux-fixed/0002.quoted}}
+q7:  ${lookup{b\\s}       lsearch{DIR/aux-fixed/0002.quoted}}
+
+q1:  ${lookup{abc}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q2:  ${lookup{xyz}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q3:  ${lookup{pqr}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q4:  ${lookup{a:b}        lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q5:  ${lookup{"quoted"}   lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q6:  ${lookup{white space}lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
+q7:  ${lookup{b\\s}       lsearch,ret=full{DIR/aux-fixed/0002.quoted}}
 
 abc:   ${lookup{abc}wildlsearch{DIR/aux-var/0002.wild}}
 a.b.c: ${lookup{a.b.c}wildlsearch{DIR/aux-var/0002.wild}}
