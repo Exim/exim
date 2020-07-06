@@ -81,6 +81,11 @@ JH/16 Bug 2615: Fix pause during message reception, on systems that have been
       post-message next-tick-wait.  Also change to using CLOCK_BOOTTIME if it
       exists, just to get a clock slightly more aligned to reality.
 
+JH/17 Bug 2295: Fix DKIM signing to always semicolon-terminate.  Although the
+      RFC says it is optional some validators care.  The missing char was not
+      intended but triggered by a line-wrap alignement.  Discovery and fix by
+      Guillaume Outters, hacked on by JH.
+
 
 Exim version 4.94
 -----------------
