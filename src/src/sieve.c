@@ -3087,11 +3087,8 @@ while (*filter->pc)
             if ((pid = child_open_exim2(&fd, envelope_from, envelope_from,
 			US"sieve-notify")) >= 1)
               {
-              FILE *f;
-              uschar *buffer;
-              int buffer_capacity;
+              FILE * f = fdopen(fd, "wb");
 
-              f = fdopen(fd, "wb");
               fprintf(f,"From: %s\n", from.length == -1
 		? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain")
 		: from.character);
@@ -3104,12 +3101,9 @@ while (*filter->pc)
                 message.character=US"Notification";
                 message.length=Ustrlen(message.character);
                 }
-              /* Allocation is larger than necessary, but enough even for split MIME words */
-              buffer_capacity = 32 + 4*message.length;
-              buffer=store_get(buffer_capacity, TRUE);
               if (message.length != -1)
 		fprintf(f, "Subject: %s\n", parse_quote_2047(message.character,
-		  message.length, US"utf-8", buffer, buffer_capacity, TRUE));
+		  message.length, US"utf-8", TRUE));
               fprintf(f,"\n");
               if (body.length>0) fprintf(f,"%s\n",body.character);
               fflush(f);
@@ -3263,8 +3257,6 @@ while (*filter->pc)
     if (exec)
       {
       address_item *addr;
-      uschar *buffer;
-      int buffer_capacity;
       md5 base;
       uschar digest[16];
       uschar hexdigest[33];
@@ -3342,11 +3334,8 @@ while (*filter->pc)
             addr->reply->from = expand_string(US"$local_part@$domain");
           else
             addr->reply->from = from.character;
-          /* Allocation is larger than necessary, but enough even for split MIME words */
-          buffer_capacity=32+4*subject.length;
-          buffer = store_get(buffer_capacity, is_tainted(subject.character));
 	  /* deconst cast safe as we pass in a non-const item */
-          addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
+          addr->reply->subject = US parse_quote_2047(subject.character, subject.length, US"utf-8", TRUE);
           addr->reply->oncelog = string_from_gstring(once);
           addr->reply->once_repeat=days*86400;
 

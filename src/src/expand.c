@@ -7571,13 +7571,10 @@ while (*s != 0)
       prescribed by the RFC, if there are characters that need to be encoded */
 
       case EOP_RFC2047:
-        {
-        uschar buffer[2048];
         yield = string_cat(yield,
 			    parse_quote_2047(sub, Ustrlen(sub), headers_charset,
-			      buffer, sizeof(buffer), FALSE));
+			      FALSE));
         continue;
-        }
 
       /* RFC 2047 decode */
 

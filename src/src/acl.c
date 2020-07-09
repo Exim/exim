@@ -3199,8 +3199,7 @@ for (; cb; cb = cb->next)
 	      {
 	      const uschar *pp = p + 6;
 	      while (*pp) pp++;
-	      submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
-		big_buffer, big_buffer_size));
+	      submission_name = parse_fix_phrase(p+6, pp-p-6);
 	      p = pp;
 	      }
 	    else break;

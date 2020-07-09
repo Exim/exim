@@ -684,8 +684,8 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > abcd      abcd
 > <:abcd:>  =?iso-8859-8?Q?=3C=3Aabcd=3A=3E?=
 > <:ab cd:> =?iso-8859-8?Q?=3C=3Aab_cd=3A=3E?=
-> long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_?= =?iso-8859-8?Q?it_will_go_over_the_75-char_limit?=
-> long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_?= =?iso-8859-8?Q?it_will_go_over_the_75-char_limit_by_a_long_way=3B_in?= =?iso-8859-8?Q?_fact_this_one_will_go_over_the_150_character_limit?=
+> long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_ov?= =?iso-8859-8?Q?er_the_75-char_limit?=
+> long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_ov?= =?iso-8859-8?Q?er_the_75-char_limit_by_a_long_way=3B_in_fact_this_on?= =?iso-8859-8?Q?e_will_go_over_the_150_character_limit?=
 > 
 > # RFC 2047 decode
 > 
