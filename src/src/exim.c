@@ -4775,8 +4775,7 @@ if (!originator_login || f.running_in_test_harness)
 /* Ensure that the user name is in a suitable form for use as a "phrase" in an
 RFC822 address.*/
 
-originator_name = string_copy(parse_fix_phrase(originator_name,
-  Ustrlen(originator_name), big_buffer, big_buffer_size));
+originator_name = parse_fix_phrase(originator_name, Ustrlen(originator_name));
 
 /* If a message is created by this call of Exim, the uid/gid of its originator
 are those of the caller. These values are overridden if an existing message is

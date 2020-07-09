@@ -368,9 +368,9 @@ extern int     parse_forward_list(uschar *, int, address_item **, uschar **,
                  const uschar *, uschar *, error_block **);
 extern uschar *parse_find_address_end(uschar *, BOOL);
 extern uschar *parse_find_at(uschar *);
-extern const uschar *parse_fix_phrase(const uschar *, int, uschar *, int);
+extern const uschar *parse_fix_phrase(const uschar *, int);
 extern uschar *parse_message_id(uschar *, uschar **, uschar **);
-extern const uschar *parse_quote_2047(const uschar *, int, uschar *, uschar *, int, BOOL);
+extern const uschar *parse_quote_2047(const uschar *, int, uschar *, BOOL);
 extern uschar *parse_date_time(uschar *str, time_t *t);
 extern int     vaguely_random_number(int);
 #ifndef DISABLE_TLS

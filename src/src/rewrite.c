@@ -292,16 +292,11 @@ for (rewrite_rule * rule = rewrite_rules;
         uschar *p1 = new + start - 1;
         uschar *p2 = new + end + 1;
         const uschar *pf1, *pf2;
-        uschar buff1[256], buff2[256];
 
         while (p1 > new && p1[-1] == ' ') p1--;
-        pf1 = parse_fix_phrase(new, p1 - new, buff1, sizeof(buff1));
+        pf1 = parse_fix_phrase(new, p1 - new);
         while (*p2 == ' ') p2++;
-        pf2 = parse_fix_phrase(p2, Ustrlen(p2), buff2, sizeof(buff2));
-
-        /* Note that pf1 and pf2 are NOT necessarily buff1 and buff2. For
-        a non-RFC 2047 phrase that does not need to be RFC 2822 quoted, they
-        will be buff1+1 and buff2+1. */
+        pf2 = parse_fix_phrase(p2, Ustrlen(p2));
 
         start = Ustrlen(pf1) + start + new - p1;
         end = start + Ustrlen(newparsed);

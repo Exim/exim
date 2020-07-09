@@ -843,8 +843,7 @@ return NULL;
 
 /* This function is used for quoting text in headers according to RFC 2047.
 If the only characters that strictly need quoting are spaces, we return the
-original string, unmodified. If a quoted string is too long for the buffer, it
-is truncated. (This shouldn't happen: this is normally handling short strings.)
+original string, unmodified.
 
 Hmmph. As always, things get perverted for other uses. This function was
 originally for the "phrase" part of addresses. Now it is being used for much
@@ -856,77 +855,57 @@ Arguments:
                  chars
   len          the length of the string
   charset      the name of the character set; NULL => iso-8859-1
-  buffer       the buffer to put the answer in
-  buffer_size  the size of the buffer
   fold         if TRUE, a newline is inserted before the separating space when
                  more than one encoded-word is generated
 
 Returns:       pointer to the original string, if no quoting needed, or
-               pointer to buffer containing the quoted string, or
-               a pointer to "String too long" if the buffer can't even hold
-               the introduction
+               pointer to allocated memory containing the quoted string
 */
 
 const uschar *
-parse_quote_2047(const uschar *string, int len, uschar *charset, uschar *buffer,
-  int buffer_size, BOOL fold)
+parse_quote_2047(const uschar *string, int len, uschar *charset, BOOL fold)
 {
-const uschar *s = string;
-uschar *p, *t;
-int hlen;
+const uschar * s = string;
+int hlen, l;
 BOOL coded = FALSE;
 BOOL first_byte = FALSE;
+gstring * g =
+  string_fmt_append(NULL, "=?%s?Q?", charset ? charset : US"iso-8859-1");
 
-if (!charset) charset = US"iso-8859-1";
+hlen = l = g->ptr;
 
-/* We don't expect this to fail! */
-
-if (!string_format(buffer, buffer_size, "=?%s?Q?", charset))
-  return US"String too long";
-
-hlen = Ustrlen(buffer);
-t = buffer + hlen;
-p = buffer;
-
-for (; len > 0; len--)
+for (s = string; len > 0; s++, len--)
   {
-  int ch = *s++;
-  if (t > buffer + buffer_size - hlen - 8) break;
+  int ch = *s;
 
-  if ((t - p > 67) && !first_byte)
+  if (g->ptr - l > 67 && !first_byte)
     {
-    *t++ = '?';
-    *t++ = '=';
-    if (fold) *t++ = '\n';
-    *t++ = ' ';
-    p = t;
-    Ustrncpy(p, buffer, hlen);
-    t += hlen;
+    g = fold ? string_catn(g, US"?=\n ", 4) : string_catn(g, US"?= ", 3);
+    l = g->ptr;
+    g = string_catn(g, g->s, hlen);
     }
 
-  if (ch < 33 || ch > 126 ||
-      Ustrchr("?=()<>@,;:\\\".[]_", ch) != NULL)
+  if (  ch < 33 || ch > 126
+     || Ustrchr("?=()<>@,;:\\\".[]_", ch) != NULL)
     {
     if (ch == ' ')
       {
-      *t++ = '_';
+      g = string_catn(g, US"_", 1);
       first_byte = FALSE;
       }
     else
       {
-      t += sprintf(CS t, "=%02X", ch);
+      g = string_fmt_append(g, "=%02X", ch);
       coded = TRUE;
       first_byte = !first_byte;
       }
     }
-  else { *t++ = ch; first_byte = FALSE; }
+  else
+    { g = string_catn(g, s, 1); first_byte = FALSE; }
   }
 
-*t++ = '?';
-*t++ = '=';
-*t = 0;
-
-return coded ? buffer : string;
+g = string_catn(g, US"?=", 2);
+return coded ? string_from_gstring(g) : string;
 }
 
 
@@ -969,32 +948,25 @@ August 2000: Additional code added:
   We *could* use this for all cases, getting rid of the messy original code,
   but leave it for now. It would complicate simple cases like "John Q. Smith".
 
-The result is passed back in the buffer; it is usually going to be added to
-some other string. In order to be sure there is going to be no overflow,
-restrict the length of the input to 1/4 of the buffer size - this allows for
-every single character to be quoted or encoded without overflowing, and that
-wouldn't happen because of amalgamation. If the phrase is too long, return a
-fixed string.
+The result is passed back in allocated memory.
 
 Arguments:
   phrase       an RFC822 phrase
   len          the length of the phrase
-  buffer       a buffer to put the result in
-  buffer_size  the size of the buffer
 
 Returns:       the fixed RFC822 phrase
 */
 
 const uschar *
-parse_fix_phrase(const uschar *phrase, int len, uschar *buffer, int buffer_size)
+parse_fix_phrase(const uschar *phrase, int len)
 {
 int ch, i;
 BOOL quoted = FALSE;
 const uschar *s, *end;
+uschar * buffer;
 uschar *t, *yield;
 
 while (len > 0 && isspace(*phrase)) { phrase++; len--; }
-if (len > buffer_size/4) return US"Name too long";
 
 /* See if there are any non-printing characters, and if so, use the RFC 2047
 encoding for the whole thing. */
@@ -1002,10 +974,12 @@ encoding for the whole thing. */
 for (i = 0, s = phrase; i < len; i++, s++)
   if ((*s < 32 && *s != '\t') || *s > 126) break;
 
-if (i < len) return parse_quote_2047(phrase, len, headers_charset, buffer,
-  buffer_size, FALSE);
+if (i < len)
+  return parse_quote_2047(phrase, len, headers_charset, FALSE);
 
 /* No non-printers; use the RFC 822 quoting rules */
+
+buffer = store_get(len*4, is_tainted(phrase));
 
 s = phrase;
 end = s + len;
@@ -1173,6 +1147,7 @@ while (s < end)
   }
 
 *t = 0;
+store_release_above(t+1);
 return yield;
 }
 
@@ -2102,7 +2077,6 @@ int main(void)
 {
 int start, end, domain;
 uschar buffer[1024];
-uschar outbuff[1024];
 
 big_buffer = store_malloc(big_buffer_size);
 
@@ -2115,8 +2089,7 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
   {
   buffer[Ustrlen(buffer)-1] = 0;
   if (buffer[0] == 0) break;
-  printf("%s\n", CS parse_fix_phrase(buffer, Ustrlen(buffer), outbuff,
-    sizeof(outbuff)));
+  printf("%s\n", CS parse_fix_phrase(buffer, Ustrlen(buffer)));
   }
 
 printf("Testing parse_extract_address without group syntax and without UTF-8\n");

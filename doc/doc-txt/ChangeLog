@@ -86,6 +86,12 @@ JH/17 Bug 2295: Fix DKIM signing to always semicolon-terminate.  Although the
       intended but triggered by a line-wrap alignement.  Discovery and fix by
       Guillaume Outters, hacked on by JH.
 
+JH/18 Bug 2617: Fix a taint trap in parse_fix_phrase().  Previously when the
+      name being quoted was tainted a trap would be taken.  Fix by using
+      dynamicaly created buffers.  The routine could have been called by a
+      rewrite with the "h" flag, by using the "-F" command-line option, or
+      by using a "name=" option on a control=submission ACL modifier.
+
 
 Exim version 4.94
 -----------------
