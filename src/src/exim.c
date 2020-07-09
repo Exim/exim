@@ -4758,16 +4758,16 @@ for (i = 0;;)
 configuration specifies something to use. When running in the test harness,
 any setting of unknown_login overrides the actual name. */
 
-if (originator_login == NULL || f.running_in_test_harness)
+if (!originator_login || f.running_in_test_harness)
   {
-  if (unknown_login != NULL)
+  if (unknown_login)
     {
     originator_login = expand_string(unknown_login);
-    if (originator_name == NULL && unknown_username != NULL)
+    if (!originator_name && unknown_username)
       originator_name = expand_string(unknown_username);
-    if (originator_name == NULL) originator_name = US"";
+    if (!originator_name) originator_name = US"";
     }
-  if (originator_login == NULL)
+  if (!originator_login)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Failed to get user name for uid %d",
       (int)real_uid);
   }
