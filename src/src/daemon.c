@@ -1007,6 +1007,11 @@ const uschar * where;
 struct sockaddr_un sa_un = {.sun_family = AF_UNIX};
 int len;
 
+if (!notifier_socket || !*notifier_socket)
+  {
+  DEBUG(D_any) debug_printf("-oY used so not creating notifier socket\n");
+  return;
+  }
 if (override_local_interfaces && !override_pid_file_path)
   {
   DEBUG(D_any)

@@ -683,6 +683,6 @@ system "grep -q '=> bob' DIR/spool/log/servermainlog && echo 'daemon did make at
 system "awk '/<=/{i++} END{print i, \"messages received by dest\"}' DIR/spool/log/servermainlog 1>&2";
 system "ls DIR/spool/input 1>&2";
 ****
-sudo rm DIR/spool/log/mainlog DIR/spool/log/servermainlog
+sudo rm -f DIR/spool/log/mainlog DIR/spool/log/servermainlog
 no_stdout_check
 no_msglog_check

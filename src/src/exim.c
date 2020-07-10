@@ -3208,6 +3208,13 @@ on the second character (the one after '-'), to save some effort. */
 	else override_local_interfaces = string_copy_taint(argv[++i], TRUE);
 	break;
 
+      /* -oY: Override creation of daemon notifier socket */
+
+      case 'Y':
+	if (*argrest) badarg = TRUE;
+	else notifier_socket = NULL;
+	break;
+
       /* Unknown -o argument */
 
       default:
@@ -4775,7 +4782,7 @@ if (!originator_login || f.running_in_test_harness)
 /* Ensure that the user name is in a suitable form for use as a "phrase" in an
 RFC822 address.*/
 
-originator_name = parse_fix_phrase(originator_name, Ustrlen(originator_name));
+originator_name = US parse_fix_phrase(originator_name, Ustrlen(originator_name));
 
 /* If a message is created by this call of Exim, the uid/gid of its originator
 are those of the caller. These values are overridden if an existing message is

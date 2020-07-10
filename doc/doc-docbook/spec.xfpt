@@ -4441,6 +4441,27 @@ of the syntax, and how it interacts with configuration file options, are given
 in chapter &<<CHAPinterfaces>>&. When &%-oX%& is used to start a daemon, no pid
 file is written unless &%-oP%& is also present to specify a pid filename.
 
+.new
+.vitem &%-oY%&
+.oindex &%-oY%&
+.cindex "daemon notifier socket"
+This option controls the creation of an inter-process communications endpoint
+by the Exim daemon.
+It is only relevant when the &%-bd%& (start listening daemon) option is also
+given.
+Normally the daemon creates this socket, unless a &%-oX%& and &*no*& &%-oP%&
+option is also present.
+If this option is given then the socket will not be created.  This could be
+required if the system is running multiple daemons.
+
+The socket is currently used for
+.ilist
+fast ramp-up of queue runner processes
+.next
+obtaining a current queue size
+.endlist
+.wen
+
 .vitem &%-pd%&
 .oindex "&%-pd%&"
 .cindex "Perl" "starting the interpreter"
@@ -13111,6 +13132,8 @@ The name of the spool queue in use; empty for the default queue.
 .cindex "spool" "number of messages"
 This variable contains the number of messages queued.
 It is evaluated on demand, but no more often than once every minute.
+If there is no daemon notifier socket open, the value will be
+an empty string.
 
 .vitem &$r_...$&
 .vindex &$r_...$&
@@ -16687,10 +16710,16 @@ should need to modify the default.
 The option is expanded before use.
 If the platform supports Linux-style abstract socket names, the result
 is used with a nul byte prefixed.
-Otherwise, it should be a full path name and use a directory accessible
+Otherwise,
+.new "if nonempty,"
+it should be a full path name and use a directory accessible
 to Exim.
 
-If the Exim command line uses a &%-oX%& option and does not use &%-oP%&
+.new
+If this option is set as empty,
+or the command line &%-oY%& option is used, or
+.wen
+the command line uses a &%-oX%& option and does not use &%-oP%&,
 then a notifier socket is not created.
 
 

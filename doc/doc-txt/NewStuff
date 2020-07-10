@@ -36,6 +36,8 @@ Version 4.95
  9. Lsearch lookups accept a "ret=full" option, to return both the portion
     of the line matching the key, and the remainder.
 
+10. A command-line option to have a daemon not create a notifier socket.
+
 
 Version 4.94
 ------------
