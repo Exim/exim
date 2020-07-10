@@ -904,8 +904,13 @@ for (s = string; len > 0; s++, len--)
     { g = string_catn(g, s, 1); first_byte = FALSE; }
   }
 
-g = string_catn(g, US"?=", 2);
-return coded ? string_from_gstring(g) : string;
+if (coded)
+  string = string_from_gstring(g = string_catn(g, US"?=", 2));
+else
+  g->ptr = -1;
+
+gstring_release_unused(g);
+return string;
 }
 
 
