@@ -11656,6 +11656,11 @@ condition is true if the named file (or directory) exists. The existence test
 is done by calling the &[stat()]& function. The use of the &%exists%& test in
 users' filter files may be locked out by the system administrator.
 
+.new
+&*Note:*& Testing a path using this condition is not a sufficient way of
+de-tainting it.
+.wen
+
 .vitem &*first_delivery*&
 .cindex "delivery" "first"
 .cindex "first delivery"
