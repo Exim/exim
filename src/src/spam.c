@@ -18,7 +18,7 @@ uschar spam_score_int_buffer[16];
 uschar spam_bar_buffer[128];
 uschar spam_action_buffer[32];
 uschar spam_report_buffer[32600];
-uschar prev_user_name[128] = "";
+uschar * prev_user_name = NULL;
 int spam_ok = 0;
 int spam_rc = 0;
 uschar *prev_spamd_address_work = NULL;
@@ -388,13 +388,12 @@ if (sd->is_rspamd)
   }
 else
   {				/* spamassassin variant */
-  (void)string_format(spamd_buffer,
-	  sizeof(spamd_buffer),
-	  "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
-	  user_name,
-	  mbox_size);
+  int n;
+  uschar * s = string_sprintf(
+	  "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n%n",
+	  user_name, mbox_size, &n);
   /* send our request */
-  wrote = send(spamd_cctx.sock, spamd_buffer, Ustrlen(spamd_buffer), 0);
+  wrote = send(spamd_cctx.sock, s, n, 0);
   }
 
 if (wrote == -1)
@@ -625,7 +624,7 @@ if (spamd_address_work != spamd_address)
   prev_spamd_address_work = string_copy(spamd_address_work);
 
 /* remember user name and "been here" for it */
-Ustrcpy(prev_user_name, user_name);
+prev_user_name = user_name;
 spam_ok = 1;
 
 return override
