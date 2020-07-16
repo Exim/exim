@@ -328,20 +328,21 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
   gstring * g = NULL;
   int val;
   socklen_t vlen = sizeof(val);
-  struct sockaddr a;
+  struct sockaddr_storage a;
   socklen_t alen = sizeof(a);
   struct sockaddr_in * sinp = (struct sockaddr_in *)&a;
   struct sockaddr_in6 * sin6p = (struct sockaddr_in6 *)&a;
-  struct sockaddr_un * sa_unp ; (struct sockaddr_un *)&a;
+  struct sockaddr_un * sunp = (struct sockaddr_un *)&a;
 
-  if (getsockname(fd, &a, &alen) == 0)
-    switch (sinp->sin_family)
+  if (getsockname(fd, (struct sockaddr*)&a, &alen) == 0)
+    switch (a.ss_family)
       {
       case AF_INET:
 	g = string_cat(g, US" domain AF_INET");
 	g = string_fmt_append(g, " lcl [%s]:%u",
 	  inet_ntoa(sinp->sin_addr), ntohs(sinp->sin_port));
-	if (getpeername(fd, &a, &alen) == 0)
+	alen = sizeof(*sinp);
+	if (getpeername(fd, sinp, &alen) == 0)
 	  g = string_fmt_append(g, " rmt [%s]:%u",
 	    inet_ntoa(sinp->sin_addr), ntohs(sinp->sin_port));
 	break;
@@ -352,22 +353,25 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
 	g = string_fmt_append(g, " lcl [%s]:%u",
 	  inet_ntop(AF_INET6, &sin6p->sin6_addr, CS buf, sizeof(buf)),
 	  ntohs(sin6p->sin6_port));
-	if (getpeername(fd, &a, &alen) == 0)
+	alen = sizeof(*sin6p);
+	if (getpeername(fd, sin6p, &alen) == 0)
 	  g = string_fmt_append(g, " rmt [%s]:%u",
 	    inet_ntop(AF_INET6, &sin6p->sin6_addr, CS buf, sizeof(buf)),
 	    ntohs(sin6p->sin6_port));
 	break;
 	}
       case AF_UNIX:
-	g = string_cat(g, US" domain AF_UNIX");
-	g = string_fmt_append(g, " lcl %s%s",
-	  sa_unp->sun_path[0] ? US"" : US"@",
-	  sa_unp->sun_path[0] ? sa_unp->sun_path : sa_unp->sun_path+1);
-	if (getpeername(fd, &a, &alen) == 0)
-	  g = string_fmt_append(g, " rmt %s%s",
-	    sa_unp->sun_path[0] ? US"" : US"@",
-	    sa_unp->sun_path[0] ? sa_unp->sun_path : sa_unp->sun_path+1);
-	break;
+        g = string_cat(g, US"domain AF_UNIX");
+        if (alen > sizeof(sa_family_t)) /* not unix(7) "unnamed socket" */
+          g = string_fmt_append(g, " lcl %s%s",
+            sunp->sun_path[0] ? US"" : US"@",
+            sunp->sun_path[0] ? sunp->sun_path : sunp->sun_path+1);
+        alen = sizeof(*sunp);
+        if (getpeername(fd, sunp, &alen) == 0)
+          g = string_fmt_append(g, " rmt %s%s",
+            sunp->sun_path[0] ? US"" : US"@",
+            sunp->sun_path[0] ? sunp->sun_path : sunp->sun_path+1);
+        break;
       default:
 	g = string_fmt_append(g, " domain %u", sinp->sin_family);
 	break;
