@@ -307,6 +307,7 @@ struct global_flags f =
 #endif
 	.smtp_in_pipelining_advertised = FALSE,
 	.smtp_in_pipelining_used = FALSE,
+	.smtp_in_quit		= FALSE,
 	.spool_file_wireformat  = FALSE,
 	.submission_mode        = FALSE,
 	.suppress_local_fixups  = FALSE,
@@ -1073,6 +1074,7 @@ bit_table log_options[]        = { /* must be in alphabetical order,
   BIT_TABLE(L, outgoing_port),
   BIT_TABLE(L, pid),
   BIT_TABLE(L, pipelining),
+  BIT_TABLE(L, protocol_detail),
 #if defined(SUPPORT_PROXY) || defined(SUPPORT_SOCKS)
   BIT_TABLE(L, proxy),
 #endif
@@ -1464,6 +1466,8 @@ uschar *smtp_etrn_command      = NULL;
 int     smtp_max_synprot_errors= 3;
 int     smtp_max_unknown_commands = 3;
 uschar *smtp_notquit_reason    = NULL;
+unsigned smtp_peer_options     = 0;
+unsigned smtp_peer_options_wrap= 0;
 uschar *smtp_ratelimit_hosts   = NULL;
 uschar *smtp_ratelimit_mail    = NULL;
 uschar *smtp_ratelimit_rcpt    = NULL;
@@ -1479,8 +1483,6 @@ int     smtp_rlr_base          = 0;
 double  smtp_rlr_factor        = 0.0;
 int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
-unsigned smtp_peer_options     = 0;
-unsigned smtp_peer_options_wrap= 0;
 #ifdef SUPPORT_I18N
 uschar *smtputf8_advertise_hosts = US"*";	/* overridden under test-harness */
 #endif

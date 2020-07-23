@@ -269,6 +269,7 @@ extern struct global_flags {
 #endif
  BOOL   smtp_in_pipelining_advertised	:1; /* server advertised PIPELINING */
  BOOL   smtp_in_pipelining_used		:1; /* server noted client using PIPELINING */
+ BOOL   smtp_in_quit			:1; /* server noted QUIT command */
  BOOL   spool_file_wireformat		:1; /* current -D file has CRLF rather than NL */
  BOOL   submission_mode			:1; /* Can be forced from ACL */
  BOOL   suppress_local_fixups		:1; /* Can be forced from ACL */

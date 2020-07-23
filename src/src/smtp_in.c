@@ -1733,6 +1733,7 @@ for (;;) switch(smtp_read_command(FALSE, GETC_BUFFER_UNLIMITED))
     return;
 
   case QUIT_CMD:
+    f.smtp_in_quit = TRUE;
     smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
     mac_smtp_fflush();
     return;
@@ -2349,8 +2350,9 @@ while (done <= 0)
       break;
 
 
-    case EOF_CMD:
     case QUIT_CMD:
+      f.smtp_in_quit = TRUE;
+    case EOF_CMD:
       done = 2;
       break;
 
@@ -3835,14 +3837,13 @@ static void
 smtp_quit_handler(uschar ** user_msgp, uschar ** log_msgp)
 {
 HAD(SCH_QUIT);
+f.smtp_in_quit = TRUE;
 incomplete_transaction_log(US"QUIT");
-if (acl_smtp_quit)
-  {
-  int rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, user_msgp, log_msgp);
-  if (rc == ERROR)
+if (  acl_smtp_quit
+   && acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, user_msgp, log_msgp)
+	== ERROR)
     log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
       *log_msgp);
-  }
 
 #ifdef TCP_CORK
 (void) setsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_CORK, US &on, sizeof(on));
@@ -5284,10 +5285,10 @@ while (done <= 0)
 	  }
 	if (f.smtp_in_pipelining_advertised && last_was_rcpt)
 	  smtp_printf("503 Valid RCPT command must precede %s\r\n", FALSE,
-	    smtp_names[smtp_connection_had[smtp_ch_index-1]]);
+	    smtp_names[smtp_connection_had[SMTP_HBUFF_PREV(smtp_ch_index)]]);
 	else
 	  done = synprot_error(L_smtp_protocol_error, 503, NULL,
-	    smtp_connection_had[smtp_ch_index-1] == SCH_DATA
+	    smtp_connection_had[SMTP_HBUFF_PREV(smtp_ch_index)] == SCH_DATA
 	    ? US"valid RCPT command must precede DATA"
 	    : US"valid RCPT command must precede BDAT");
 
@@ -5551,6 +5552,7 @@ while (done <= 0)
 	some sense is perhaps "right". */
 
 	case QUIT_CMD:
+	  f.smtp_in_quit = TRUE;
 	  user_msg = NULL;
 	  if (  acl_smtp_quit
 	     && ((rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg,

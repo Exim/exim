@@ -3673,7 +3673,7 @@ context for the stashed information. */
 a store reset there, so use POOL_PERM. */
 /* + if CHUNKING, cmds EHLO,MAIL,RCPT(s),BDAT */
 
-if ((more || corked))
+if (more || corked)
   {
   if (!len) buff = US &error;	/* dummy just so that string_catn is ok */
 
@@ -3722,9 +3722,16 @@ for (int left = len; left > 0;)
       return -1;
 
     case SSL_ERROR_SYSCALL:
-      log_write(0, LOG_MAIN, "SSL_write: (from %s) syscall: %s",
-	sender_fullhost ? sender_fullhost : US"<unknown>",
-	strerror(errno));
+      if (ct_ctx || errno != ECONNRESET || !f.smtp_in_quit)
+	log_write(0, LOG_MAIN, "SSL_write: (from %s) syscall: %s",
+	  sender_fullhost ? sender_fullhost : US"<unknown>",
+	  strerror(errno));
+      else if (LOGGING(protocol_detail))
+	log_write(0, LOG_MAIN, "[%s] after QUIT, client reset TCP before"
+	  " SMTP response and TLS close\n", sender_host_address);
+      else
+	DEBUG(D_tls) debug_printf("[%s] SSL_write: after QUIT,"
+	  " client reset TCP before TLS close\n", sender_host_address);
       return -1;
 
     default:
