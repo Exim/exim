@@ -429,9 +429,7 @@ msg = rc == GNUTLS_E_FATAL_ALERT_RECEIVED
       US gnutls_alert_get_name(gnutls_alert_get(state->session)))
 #ifdef GNUTLS_E_PREMATURE_TERMINATION
   : rc == GNUTLS_E_PREMATURE_TERMINATION && errno
-  ? errno == ECONNRESET		/* Outlook does this to us right after sending us QUIT */
-  ? string_sprintf("syscall: %s", strerror(errno))
-  : string_sprintf("%s: syscall: %s", US gnutls_strerror(rc), strerror(errno))
+  ? string_sprintf("%s: syscall: %s", US gnutls_strerror(rc), strerror(errno))
 #endif
   : US gnutls_strerror(rc);
 
@@ -3396,8 +3394,24 @@ while (left > 0)
 
   if (outbytes < 0)
     {
-    DEBUG(D_tls) debug_printf("%s: gnutls_record_send err\n", __FUNCTION__);
-    record_io_error(state, outbytes, US"send", NULL);
+#ifdef GNUTLS_E_PREMATURE_TERMINATION
+    if (  outbytes == GNUTLS_E_PREMATURE_TERMINATION && errno == ECONNRESET
+       && !ct_ctx && f.smtp_in_quit
+       )
+      {					/* Outlook, dammit */
+      if (LOGGING(protocol_detail))
+	log_write(0, LOG_MAIN, "[%s] after QUIT, client reset TCP before"
+	  " SMTP response and TLS close\n", sender_host_address);
+      else
+	DEBUG(D_tls) debug_printf("[%s] SSL_write: after QUIT,"
+	  " client reset TCP before TLS close\n", sender_host_address);
+      }
+    else
+#endif
+      {
+      DEBUG(D_tls) debug_printf("%s: gnutls_record_send err\n", __FUNCTION__);
+      record_io_error(state, outbytes, US"send", NULL);
+      }
     return -1;
     }
   if (outbytes == 0)

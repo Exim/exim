@@ -672,7 +672,7 @@ Logging protocol unusual states
 An extra log_selector, "protocol_detail" has been added in the default build.
 The name may change in future, hence the Experimenal status.
 
-Currrently the only effect is to enable logging, under OpenSSL,
+Currrently the only effect is to enable logging, under TLS,
 of a TCP RST received directly after a QUIT (in server mode).
 
 Outlook is consistently doing this; not waiting for the SMTP response
