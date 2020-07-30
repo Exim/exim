@@ -2461,9 +2461,7 @@ if (  smtp_peer_options & OPTION_TLS
       /* TLS negotiation failed; give an error. From outside, this function may
       be called again to try in clear on a new connection, if the options permit
       it for this host. */
-#ifdef USE_GNUTLS
-  GNUTLS_CONN_FAILED:
-#endif
+  TLS_CONN_FAILED:
       DEBUG(D_tls) debug_printf("TLS session fail: %s\n", tls_errstr);
 
 # ifdef SUPPORT_DANE
@@ -2485,7 +2483,23 @@ if (  smtp_peer_options & OPTION_TLS
       goto TLS_FAILED;
       }
 
-    /* TLS session is set up */
+    /* TLS session is set up.  Check the inblock fill level.  If there is
+    content then as we have not yet done a tls read it must have arrived before
+    the TLS handshake, in-clear.  That violates the sync requirement of the
+    STARTTLS RFC, so fail. */
+
+    if (sx->inblock.ptr != sx->inblock.ptrend)
+      {
+      DEBUG(D_tls)
+	{
+	int i = sx->inblock.ptrend - sx->inblock.ptr;
+	debug_printf("unused data in input buffer after ack for STARTTLS:\n"
+	  "'%.*s'%s\n",
+	  i > 100 ? 100 : i, sx->inblock.ptr, i > 100 ? "..." : "");
+	}
+      tls_errstr = US"synch error before connect";
+      goto TLS_CONN_FAILED;
+      }
 
     smtp_peer_options_wrap = smtp_peer_options;
     for (address_item * addr = sx->addrlist; addr; addr = addr->next)
@@ -2590,7 +2604,7 @@ if (tls_out.active.sock >= 0)
       Can it do that, with all the flexibility we need? */
 
       tls_errstr = US"error on first read";
-      goto GNUTLS_CONN_FAILED;
+      goto TLS_CONN_FAILED;
       }
 #else
       goto RESPONSE_FAILED;
