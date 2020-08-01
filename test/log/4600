@@ -1,6 +1,6 @@
 
 ******** SERVER ********
-1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D port PORT_S port PORT_N
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D port PORT_S port PORT_D2
 1999-03-02 09:44:33 spf_result         pass
 1999-03-02 09:44:33 spf_header_comment myhost.test.ex: localhost is always allowed.
 1999-03-02 09:44:33 spf_smtp_comment   
@@ -28,3 +28,8 @@
 1999-03-02 09:44:33 spf_received       
 1999-03-02 09:44:33 Authentication-Results: myhost.test.ex
 1999-03-02 09:44:33 H=(testclient) [127.0.0.1] F=<c@example.com> rejected RCPT <fred@test.ex>
+1999-03-02 09:44:33 spf_result         pass
+1999-03-02 09:44:33 spf_header_comment myhost.test.ex: localhost is always allowed.
+1999-03-02 09:44:33 spf_smtp_comment   
+1999-03-02 09:44:33 spf_received       Received-SPF: pass (myhost.test.ex: localhost is always allowed.) client-ip=127.0.0.1; envelope-from=postmaster@example.com; helo=example.com;
+1999-03-02 09:44:33 Authentication-Results: myhost.test.ex;\n	spf=pass smtp.helo=example.com

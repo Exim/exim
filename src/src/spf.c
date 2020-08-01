@@ -402,8 +402,12 @@ if (spf_result_guessed)
   g = string_cat(g, US" (best guess record for domain)");
 
 s = expand_string(US"$sender_address_domain");
+if (s && *s)
+  return string_append(g, 2, US" smtp.mailfrom=", s);
+
+s = sender_helo_name;
 return s && *s
-  ? string_append(g, 2, US" smtp.mailfrom=", s)
+  ? string_append(g, 2, US" smtp.helo=", s)
   : string_cat(g, US" smtp.mailfrom=<>");
 }
 

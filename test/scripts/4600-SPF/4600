@@ -7,7 +7,7 @@
 # so the testsuite intercept to fakedns works.  Be careful of names and addresses
 # used, as nonhandled lookups are passed on to real DNS.
 #
-exim -bd -DSERVER=server -oX PORT_D:PORT_S:PORT_N
+exim -bd -DSERVER=server -oX PORT_D:PORT_S:PORT_D2
 ****
 client 127.0.0.1 PORT_S
 ??? 220
@@ -49,7 +49,7 @@ rcpt to:<fred@test.ex>
 ??? 550
 quit
 ****
-client 127.0.0.1 PORT_N
+client 127.0.0.1 PORT_D2
 ??? 220
 helo testclient
 ??? 250
@@ -57,6 +57,17 @@ mail from:<c@example.com>
 ??? 250
 rcpt to:<fred@test.ex>
 ??? 550
+quit
+****
+#
+client 127.0.0.1 PORT_S
+??? 220
+helo example.com
+??? 250
+mail from:<>
+??? 250
+rcpt to:<fred@test.ex>
+??? 250
 quit
 ****
 #

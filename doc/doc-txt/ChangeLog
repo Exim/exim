@@ -92,6 +92,10 @@ JH/18 Bug 2617: Fix a taint trap in parse_fix_phrase().  Previously when the
       rewrite with the "h" flag, by using the "-F" command-line option, or
       by using a "name=" option on a control=submission ACL modifier.
 
+JH/19 SPF: change the Authentication-Results expansion component to give
+      smtp.helo when the sender domain is empty.  Previously it gave
+      "smtp.mailfrom=<>"
+
 
 Exim version 4.94
 -----------------
