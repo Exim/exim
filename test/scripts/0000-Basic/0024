@@ -25,6 +25,7 @@ quit
 # deny   x@y (bad address)
 # accept x@ten-1.test.ex (good relay address)
 # deny   x@ten-2.test.ex (good address, but not relay domain or host)
+# accept EAI local part
 exim -odi -oMa V4NET.0.0.0 -bs
 mail from:<userx@test.ex>
 rcpt to:<postmaster@test.ex>
@@ -32,6 +33,7 @@ rcpt to:<userx@test.ex>
 rcpt to:<x@y>
 rcpt to:<x@ten-1.test.ex>
 rcpt to:<x@ten-2.test.ex>
+rcpt to:<føø@test.ex>
 data
 Message 2
 .

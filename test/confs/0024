@@ -27,6 +27,10 @@ acl_rcpt:
 
   require verify        = sender
 
+  deny	  domains	= +local_domains
+	  local_parts	= ^[.] : ^.*[@%!/|]
+  	  message	= Restricted characters in address
+
   deny    message       = rejected because $sender_host_address is in a black list at $dnslist_domain\n$dnslist_text
           dnslists      = rbl.test.ex
 
@@ -58,6 +62,11 @@ r1:
   domains = ! +local_domains
   transport = dev_null
   no_more
+
+redir:
+  driver =	redirect
+  local_parts =	føø
+  data =	userx
 
 r2:
   driver = accept
