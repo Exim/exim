@@ -154,7 +154,7 @@ for (BOOL this_is_eol, last_was_eol = TRUE;
     linekeylength = t - buffer;
     if (*s) s++;			/* Past terminating " */
     if (ret_full)
-      Ustrcpy(t, s);			/* copy the rest of line does also */
+      memmove(t, s, Ustrlen(s)+1);	/* copy the rest of line also */
     }
 
   /* Otherwise it is terminated by a colon or white space */

@@ -527,13 +527,13 @@ newline	tab\134backslash ~tilde\177DEL\200\201.
 > q6:  "white space"
 > q7:  "b\\s"
 > 
-> q1:  abc           "abc"
-> q2:  xyz:          "xyz":
-> q3:  pqr  :        "pqr"  :
-> q4:  a:b           "a:b" abc continued data (make sure not key)
-> q5:  "quoted"    "\"quoted\""
-> q6:  white space   "white space"
-> q7:  b\s          "b\\s"
+> q1f: abc           "abc"
+> q2f: xyz:          "xyz":
+> q3f: pqr  :        "pqr"  :
+> q4f: a:b           "a:b" abc continued data (make sure not key)
+> q5f: "quoted"    "\"quoted\""
+> q6f: white space   "white space"
+> q7f: b\s          "b\\s"
 > 
 > abc:   abc
 > a.b.c: *.b.c
