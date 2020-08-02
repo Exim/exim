@@ -1,7 +1,7 @@
-# Exim test configuration 5890
+# Exim test configuration 5893
 
 SERVER =
-OPTION = NORMAL
+OPTION =
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -15,6 +15,7 @@ acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
 log_selector = +received_recipients +tls_resumption +tls_peerdn
 
+openssl_options = +no_sslv2 +no_sslv3 +single_dh_use OPTION
 tls_advertise_hosts = *
 
 # Set certificate only if server
@@ -23,8 +24,8 @@ CDIR=DIR/aux-fixed/exim-ca/example.com
 
 tls_certificate = CDIR/server1.example.com/server1.example.com.chain.pem
 tls_privatekey =  CDIR/server1.example.com/server1.example.com.unlocked.key
+tls_ocsp_file =   CDIR/server1.example.com/server1.example.com.ocsp.good.resp
 
-tls_require_ciphers = OPTION
 tls_resumption_hosts = 127.0.0.1
 
 
@@ -39,6 +40,7 @@ check_helo:
 	  logwrite =	peer cert subject\t${certextract {subject}{$tls_in_peercert}}
 	  logwrite =	peer cert verified\t${tls_in_certificate_verified}
 	  logwrite =	peer dn\t${tls_in_peerdn}
+	  logwrite =	ocsp\t${tls_in_ocsp}
 	  logwrite =	cipher\t${tls_in_cipher}
 	  logwrite =	bits\t${tls_in_bits}
   accept
@@ -55,6 +57,7 @@ log_resumption:
 	  logwrite =	peer cert subject\t${certextract {subject}{$tls_out_peercert}}
 	  logwrite =	peer cert verified\t${tls_out_certificate_verified}
 	  logwrite =	peer dn\t${tls_out_peerdn}
+	  logwrite =	ocsp\t${tls_out_ocsp}
 	  logwrite =	cipher\t${tls_out_cipher}
 	  logwrite =	bits\t${tls_out_bits}
 

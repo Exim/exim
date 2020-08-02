@@ -1,0 +1,4 @@
+support OpenSSL
+running IPv4
+support TLS_resume
+support OCSP

@@ -1,0 +1,4 @@
+support GnuTLS
+running IPv4
+support TLS_resume
+support OCSP

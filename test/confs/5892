@@ -1,7 +1,7 @@
-# Exim test configuration 5890
+# Exim test configuration 5892
 
 SERVER =
-OPTION = NORMAL
+OPTION =
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -15,6 +15,7 @@ acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
 log_selector = +received_recipients +tls_resumption +tls_peerdn
 
+openssl_options = +no_sslv2 +no_sslv3 +single_dh_use OPTION
 tls_advertise_hosts = *
 
 # Set certificate only if server
@@ -24,7 +25,6 @@ CDIR=DIR/aux-fixed/exim-ca/example.com
 tls_certificate = CDIR/server1.example.com/server1.example.com.chain.pem
 tls_privatekey =  CDIR/server1.example.com/server1.example.com.unlocked.key
 
-tls_require_ciphers = OPTION
 tls_resumption_hosts = 127.0.0.1
 
 
