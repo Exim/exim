@@ -58,7 +58,7 @@ set transport local_delivery
 queued for local_delivery transport: local_part = test.ex
 domain = test.ex
   errors_to=NULL
-  domain_data=A TXT record for test.ex. localpart_data=A TXT record for test.ex.
+  domain_data=A TXT record for test.ex. local_part_data=A TXT record for test.ex.
 routed by r1 router
   envelope to: test.ex@test.ex
   transport: local_delivery
@@ -142,7 +142,7 @@ set transport local_delivery
 queued for local_delivery transport: local_part = unknown
 domain = test.ex
   errors_to=NULL
-  domain_data=A TXT record for test.ex. localpart_data=NULL
+  domain_data=A TXT record for test.ex. local_part_data=NULL
 routed by r2 router
   envelope to: unknown@test.ex
   transport: local_delivery

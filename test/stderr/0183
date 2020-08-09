@@ -103,7 +103,7 @@ set transport smtp
 queued for smtp transport: local_part = abcd
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: abcd@ten-1.test.ex
   transport: smtp
@@ -201,7 +201,7 @@ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx
 queued for smtp transport: local_part = xyz
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xyz@ten-1.test.ex
   transport: smtp
@@ -312,7 +312,7 @@ set transport smtp
 queued for smtp transport: local_part = abcd
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: abcd@ten-1.test.ex
   transport: smtp
@@ -409,7 +409,7 @@ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx
 queued for smtp transport: local_part = xyz
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xyz@ten-1.test.ex
   transport: smtp
@@ -523,7 +523,7 @@ set transport smtp
 queued for smtp transport: local_part = abcd
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: abcd@ten-1.test.ex
   transport: smtp
@@ -621,7 +621,7 @@ ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx
 queued for smtp transport: local_part = xyz
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xyz@ten-1.test.ex
   transport: smtp

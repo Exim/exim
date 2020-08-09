@@ -93,7 +93,7 @@ set transport smtp
 queued for smtp transport: local_part = abc
 domain = xxx.domain1
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to: abc@xxx.domain1
   transport: smtp
@@ -159,7 +159,7 @@ r2 router called for abc@xxx.domain1
 queued for smtp transport: local_part = abc
 domain = xxx.domain1
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to: abc@xxx.domain1
   transport: smtp

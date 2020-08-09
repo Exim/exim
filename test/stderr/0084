@@ -41,7 +41,7 @@ localuser router called for userx@test.ex
 queued for <unset> transport: local_part = userx
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=userx
+  domain_data=NULL local_part_data=userx
 routed by localuser router
   envelope to: userx@test.ex
   transport: <none>
@@ -60,7 +60,7 @@ smart router called for no@myhost.test.ex
 queued for <unset> transport: local_part = no
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by smart router
   envelope to: no@myhost.test.ex
   transport: <none>

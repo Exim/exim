@@ -6718,7 +6718,7 @@ Exim version 4.31
     same list, then the first domain was re-checked, the value of $domain_data
     after the final check could be wrong. In particular, if the second check
     failed, it could be set empty. This bug probably also applied to
-    $localpart_data.
+    $local_part_data.
 
 41. The strip_trailing_dot option was not being applied to the address given
     with the -f command-line option.

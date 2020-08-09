@@ -11,7 +11,7 @@ lookuphost router called for xxx@mxt9.test.ex
 queued for <unset> transport: local_part = xxx
 domain = mxt9.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xxx@mxt9.test.ex
   transport: <none>
@@ -32,7 +32,7 @@ lookuphost router called for xxx@mxt9a.test.ex
 queued for <unset> transport: local_part = xxx
 domain = mxt9a.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xxx@mxt9a.test.ex
   transport: <none>
@@ -53,7 +53,7 @@ lookuphost router called for xxx@mxt9b.test.ex
 queued for <unset> transport: local_part = xxx
 domain = mxt9b.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xxx@mxt9b.test.ex
   transport: <none>

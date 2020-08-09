@@ -57,7 +57,7 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 queued for smtp transport: local_part = x
 domain = y
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to: x@y
   transport: smtp

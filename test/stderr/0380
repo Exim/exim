@@ -47,7 +47,7 @@ set transport t1
 queued for t1 transport: local_part = bbbb
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r3 router
   envelope to: bbbb@myhost.test.ex
   transport: t1
