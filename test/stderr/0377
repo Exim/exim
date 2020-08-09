@@ -206,7 +206,7 @@ set transport t1
 queued for t1 transport: local_part = cccc
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=cccc
+  domain_data=NULL local_part_data=cccc
 routed by cccc_accept router
   envelope to: cccc@myhost.test.ex
   transport: t1
@@ -251,7 +251,7 @@ set transport t1
 queued for t1 transport: local_part = bbbb
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=bbbb
+  domain_data=NULL local_part_data=bbbb
 routed by bbbb_0 router
   envelope to: bbbb@myhost.test.ex
   transport: t1
@@ -282,7 +282,7 @@ set transport t1
 queued for t1 transport: local_part = aaaa
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=aaaa
+  domain_data=NULL local_part_data=aaaa
 routed by seen_aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: t1
@@ -396,7 +396,7 @@ set transport t1
 queued for t1 transport: local_part = bbbb
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=bbbb
+  domain_data=NULL local_part_data=bbbb
 routed by bbbb_0 router
   envelope to: bbbb@myhost.test.ex
   transport: t1
@@ -421,7 +421,7 @@ set transport t1
 queued for t1 transport: local_part = aaaa
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=aaaa
+  domain_data=NULL local_part_data=aaaa
 routed by seen_aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: t1
@@ -533,7 +533,7 @@ set transport t1
 queued for t1 transport: local_part = cccc
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=cccc
+  domain_data=NULL local_part_data=cccc
 routed by cccc_accept router
   envelope to: cccc@myhost.test.ex
   transport: t1
@@ -641,7 +641,7 @@ set transport t1
 queued for t1 transport: local_part = bbbb
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=bbbb
+  domain_data=NULL local_part_data=bbbb
 routed by bbbb_0 router
   envelope to: bbbb@myhost.test.ex
   transport: t1
@@ -666,7 +666,7 @@ set transport t1
 queued for t1 transport: local_part = aaaa
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=aaaa
+  domain_data=NULL local_part_data=aaaa
 routed by seen_aaaa router
   envelope to: aaaa@myhost.test.ex
   transport: t1
@@ -778,7 +778,7 @@ set transport t1
 queued for t1 transport: local_part = cccc
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=cccc
+  domain_data=NULL local_part_data=cccc
 routed by cccc_accept router
   envelope to: cccc@myhost.test.ex
   transport: t1

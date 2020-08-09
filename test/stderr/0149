@@ -19,7 +19,7 @@ calling host_find_byname
 queued for <unset> transport: local_part = x
 domain = ten
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by domainlist1 router
   envelope to: x@ten
   transport: <none>
@@ -44,7 +44,7 @@ calling host_find_byname
 queued for <unset> transport: local_part = y
 domain = two
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by domainlist1 router
   envelope to: y@two
   transport: <none>
@@ -69,7 +69,7 @@ set transport local_delivery
 queued for local_delivery transport: local_part = x
 domain = test1
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by local router
   envelope to: x@test1
   transport: local_delivery
@@ -91,7 +91,7 @@ local router called for x@test2
 queued for local_delivery transport: local_part = x
 domain = test2
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by local router
   envelope to: x@test2
   transport: local_delivery
@@ -113,7 +113,7 @@ local router called for x@test3-4
 queued for local_delivery transport: local_part = x
 domain = test3-4
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by local router
   envelope to: x@test3-4
   transport: local_delivery
@@ -145,7 +145,7 @@ calling host_find_byname
 queued for <unset> transport: local_part = x
 domain = one
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by domainlist2 router
   envelope to: x@one
   transport: <none>
@@ -178,7 +178,7 @@ calling host_find_byname
 queued for <unset> transport: local_part = x
 domain = six
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by domainlist2 router
   envelope to: x@six
   transport: <none>

@@ -43,7 +43,7 @@ set transport t1
 queued for t1 transport: local_part = ph
 domain = mxt1.test.ex
   errors_to=NULL
-  domain_data=@mx_any localpart_data=NULL
+  domain_data=@mx_any local_part_data=NULL
 routed by r1 router
   envelope to: ph@mxt1.test.ex
   transport: t1

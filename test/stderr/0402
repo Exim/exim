@@ -359,7 +359,7 @@ set transport t2
 queued for t2 transport: local_part = userz
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=userz
+  domain_data=NULL local_part_data=userz
 routed by r3 router
   envelope to: userz@test.ex
   transport: t2
@@ -385,7 +385,7 @@ set transport t1
 queued for t1 transport: local_part = usery
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=usery
+  domain_data=NULL local_part_data=usery
 routed by r2 router
   envelope to: usery@test.ex
   transport: t1
@@ -406,7 +406,7 @@ set transport t1
 queued for t1 transport: local_part = CALLER
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=CALLER
+  domain_data=NULL local_part_data=CALLER
 routed by r1 router
   envelope to: CALLER@test.ex
   transport: t1

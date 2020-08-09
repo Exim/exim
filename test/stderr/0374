@@ -59,7 +59,7 @@ set transport ut4
 queued for ut4 transport: local_part = d3
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=^d\d
+  domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
   envelope to: d3@myhost.test.ex
   transport: ut4
@@ -87,7 +87,7 @@ ut4 router called for d2@myhost.test.ex
 queued for ut4 transport: local_part = d2
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=^d\d
+  domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
   envelope to: d2@myhost.test.ex
   transport: ut4
@@ -115,7 +115,7 @@ ut4 router called for d1@myhost.test.ex
 queued for ut4 transport: local_part = d1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=^d\d
+  domain_data=NULL local_part_data=^d\d
 routed by ut4 router (unseen)
   envelope to: d1@myhost.test.ex
   transport: ut4
@@ -140,7 +140,7 @@ set transport ut3
 queued for ut3 transport: local_part = c1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=^c\d
+  domain_data=NULL local_part_data=^c\d
 routed by ut3 router (unseen)
   envelope to: c1@myhost.test.ex
   transport: ut3
@@ -161,7 +161,7 @@ set transport ut2
 queued for ut2 transport: local_part = b1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=^b\d
+  domain_data=NULL local_part_data=^b\d
 routed by ut2 router (unseen)
   envelope to: b1@myhost.test.ex
   transport: ut2
@@ -178,7 +178,7 @@ set transport ut1
 queued for ut1 transport: local_part = a1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=^a\d
+  domain_data=NULL local_part_data=^a\d
 routed by u1 router (unseen)
   envelope to: a1@myhost.test.ex
   transport: ut1
@@ -220,7 +220,7 @@ set transport real
 queued for real transport: local_part = d3
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: d3@myhost.test.ex
   transport: real
@@ -234,7 +234,7 @@ real router called for d2@myhost.test.ex
 queued for real transport: local_part = d2
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: d2@myhost.test.ex
   transport: real
@@ -248,7 +248,7 @@ real router called for d1@myhost.test.ex
 queued for real transport: local_part = d1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: d1@myhost.test.ex
   transport: real
@@ -266,7 +266,7 @@ real router called for c1@myhost.test.ex
 queued for real transport: local_part = c1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: c1@myhost.test.ex
   transport: real
@@ -288,7 +288,7 @@ real router called for b1@myhost.test.ex
 queued for real transport: local_part = b1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: b1@myhost.test.ex
   transport: real
@@ -314,7 +314,7 @@ real router called for a1@myhost.test.ex
 queued for real transport: local_part = a1
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: a1@myhost.test.ex
   transport: real
@@ -420,7 +420,7 @@ set transport real
 queued for real transport: local_part = CALLER
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by real router
   envelope to: CALLER@myhost.test.ex
   transport: real

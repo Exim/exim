@@ -43,7 +43,7 @@ set transport t2
 queued for t2 transport: local_part = kilos
 domain = thishost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r5 router
   envelope to: kilos@thishost.test.ex
   transport: t2
@@ -145,7 +145,7 @@ set transport t1
 queued for t1 transport: local_part = xxx
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to: xxx@ten-1.test.ex
   transport: t1
@@ -205,7 +205,7 @@ r2 router called for xxx@testsub.sub.test.ex
 queued for t1 transport: local_part = xxx
 domain = testsub.sub.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r2 router
   envelope to: xxx@testsub.sub.test.ex
   transport: t1

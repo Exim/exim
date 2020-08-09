@@ -19,7 +19,7 @@ set transport remote_smtp
 queued for remote_smtp transport: local_part = xx
 domain = mxt6.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by lookuphost router
   envelope to: xx@mxt6.test.ex
   transport: remote_smtp
@@ -65,7 +65,7 @@ calling host_find_byname
 queued for remote_smtp transport: local_part = myhost.test.ex
 domain = mxt1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by self router
   envelope to: myhost.test.ex@mxt1.test.ex
   transport: remote_smtp
@@ -125,7 +125,7 @@ calling host_find_byname
 queued for remote_smtp transport: local_part = xx
 domain = mxt1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by self2 router
   envelope to: xx@mxt1.test.ex
   transport: remote_smtp

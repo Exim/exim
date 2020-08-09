@@ -191,7 +191,7 @@ set transport t2
 queued for t2 transport: local_part = kilos
 domain = recurse.test.ex.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r4 router
   envelope to: kilos@recurse.test.ex.test.ex
   transport: t2

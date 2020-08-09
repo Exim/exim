@@ -72,7 +72,7 @@ set transport smtp
 queued for smtp transport: local_part = x
 domain = ten-1.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by all router
   envelope to: x@ten-1.test.ex
   transport: smtp

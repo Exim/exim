@@ -57,7 +57,7 @@ Version 4.94
 16. An option on all single-key lookups, to return (on a hit) a de-tainted
     version of the lookup key rather than the looked-up data.
 
-17. $domain_data and $localpart_data are now set by all list-match successes.
+17. $domain_data and $local_part_data are now set by all list-match successes.
     Previously only list items that performed lookups did so.
     Also, matching list items that are tail-match or RE-match now set the
     numeric variables $0 (etc) in the same way os other RE matches.

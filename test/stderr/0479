@@ -60,7 +60,7 @@ set transport t1
 queued for t1 transport: local_part = rewritten-a
 domain = rewritten-b
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to: rewritten-a@rewritten-b
   transport: t1

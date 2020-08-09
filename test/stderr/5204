@@ -104,7 +104,7 @@ doing DNS lookup
 queued for other_smtp transport: local_part = ACCEPT transport = other_smtp hosts=ten-1.test.ex
 domain = some.host
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by q router
   envelope to: "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
   transport: other_smtp
@@ -144,7 +144,7 @@ remote host address is the local host: some.host: configured to try delivery any
 queued for smtp transport: local_part = pass
 domain = some.host
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by s router
   envelope to: PASS@some.host
   transport: smtp
@@ -220,7 +220,7 @@ set transport null
 queued for null transport: local_part = postmaster
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=postmaster
+  domain_data=NULL local_part_data=postmaster
 routed by pm router
   envelope to: postmaster@test.ex
   transport: null

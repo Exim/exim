@@ -66,7 +66,7 @@ set transport smtp
 queued for smtp transport: local_part = userx
 domain = alias-eximtesthost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by dns router
   envelope to: userx@alias-eximtesthost.test.ex
   transport: smtp
@@ -116,7 +116,7 @@ set transport smtp
 queued for smtp transport: local_part = userx
 domain = alias-eximtesthost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by dns router
   envelope to: userx@alias-eximtesthost.test.ex
   transport: smtp

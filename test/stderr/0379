@@ -89,7 +89,7 @@ set transport t1
 queued for t1 transport: local_part = cccc
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=cccc
+  domain_data=NULL local_part_data=cccc
 routed by bc router
   envelope to: cccc@myhost.test.ex
   transport: t1
@@ -112,7 +112,7 @@ bc router called for bbbb@myhost.test.ex
 queued for t1 transport: local_part = bbbb
 domain = myhost.test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=bbbb
+  domain_data=NULL local_part_data=bbbb
 routed by bc router
   envelope to: bbbb@myhost.test.ex
   transport: t1

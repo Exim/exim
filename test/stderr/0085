@@ -86,7 +86,7 @@ expanded list of hosts = '' options = ''
 queued for <unset> transport: local_part = x
 domain = smart.domain
   errors_to=NULL
-  domain_data=smart.domain localpart_data=x
+  domain_data=smart.domain local_part_data=x
 routed by smart1 router
   envelope to: x@smart.domain
   transport: <none>
@@ -169,7 +169,7 @@ set transport dummy
 queued for dummy transport: local_part = x
 domain = test.ex
   errors_to=NULL
-  domain_data=test.ex localpart_data=x
+  domain_data=test.ex local_part_data=x
 routed by smart2 router
   envelope to: x@test.ex
   transport: dummy

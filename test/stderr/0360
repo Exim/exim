@@ -46,7 +46,7 @@ v0 router called for postmaster@test.ex
 queued for <unset> transport: local_part = postmaster
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=postmaster
+  domain_data=NULL local_part_data=postmaster
 routed by v0 router
   envelope to: postmaster@test.ex
   transport: <none>
@@ -128,7 +128,7 @@ set transport t1
 queued for t1 transport: local_part = unknown
 domain = recurse.test.ex.test.ex
   errors_to=postmaster@test.ex
-  domain_data=NULL localpart_data=NULL
+  domain_data=NULL local_part_data=NULL
 routed by r1 router
   envelope to: unknown@recurse.test.ex.test.ex
   transport: t1
@@ -189,7 +189,7 @@ v0 router called for postmaster@test.ex
 queued for <unset> transport: local_part = postmaster
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=postmaster
+  domain_data=NULL local_part_data=postmaster
 routed by v0 router
   envelope to: postmaster@test.ex
   transport: <none>

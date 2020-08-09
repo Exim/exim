@@ -90,7 +90,7 @@ set transport appendfile
 queued for appendfile transport: local_part = userx
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=userx
+  domain_data=NULL local_part_data=userx
 routed by user_accept2 router
   envelope to: userx@test.ex
   transport: appendfile

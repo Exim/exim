@@ -44,7 +44,7 @@ set transport smtp
 queued for smtp transport: local_part = k
 domain = mxt13.test.ex
   errors_to=NULL
-  domain_data=mxt13.test.ex localpart_data=NULL
+  domain_data=mxt13.test.ex local_part_data=NULL
 routed by dnslookup router
   envelope to: k@mxt13.test.ex
   transport: smtp

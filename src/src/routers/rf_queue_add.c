@@ -98,7 +98,7 @@ DEBUG(D_route)
     "  errors_to=%s\n",
     addr->transport ? addr->transport->name : US"<unset>",
     addr->local_part, addr->domain, addr->prop.errors_address);
-  debug_printf("  domain_data=%s localpart_data=%s\n", addr->prop.domain_data,
+  debug_printf("  domain_data=%s local_part_data=%s\n", addr->prop.domain_data,
     addr->prop.localpart_data);
   }
 

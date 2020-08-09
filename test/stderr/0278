@@ -52,7 +52,7 @@ set transport t1
 queued for t1 transport: local_part = CALLER
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=CALLER
+  domain_data=NULL local_part_data=CALLER
 routed by r3 router
   envelope to: CALLER@test.ex
   transport: t1
@@ -178,7 +178,7 @@ set transport t1
 queued for t1 transport: local_part = CALLER
 domain = test.ex
   errors_to=NULL
-  domain_data=NULL localpart_data=CALLER
+  domain_data=NULL local_part_data=CALLER
 routed by r3 router
   envelope to: CALLER@test.ex
   transport: t1
