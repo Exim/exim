@@ -201,6 +201,17 @@ TTL=2 14.12.11.V4NET.rbl A 127.0.0.2
 2.13.13.V4NET.rbl     A   127.0.0.1
                       A   127.0.0.2
 
+; Foolish return values outside 127.0/8
+
+100.13.13.V4NET.rbl    A   0.0.0.0
+101.13.13.V4NET.rbl    A   126.255.255.255
+102.13.13.V4NET.rbl    A   128.0.0.0
+103.13.13.V4NET.rbl    A   255.255.255.255
+104.13.13.V4NET.rbl    A   255.255.255.255
+                       A   127.0.0.0
+105.13.13.V4NET.rbl    A   255.255.255.255
+                       A   255.255.255.254
+
 ; -------- Testing MX records --------
 
 mxcased      MX  5  ten-99.TEST.EX.

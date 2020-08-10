@@ -96,6 +96,10 @@ JH/19 SPF: change the Authentication-Results expansion component to give
       smtp.helo when the sender domain is empty.  Previously it gave
       "smtp.mailfrom=<>"
 
+JH/20 Bug 2631: ACL dnslist conditions now ignore and log any lookups returns
+      not in 127.0.0.0/8 to help in spotting list domains taken over by a
+      domain-parking registrar.
+
 
 Exim version 4.94
 -----------------

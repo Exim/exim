@@ -18,7 +18,7 @@ check_connect:
    warn  dnslists = rbl.test.ex/<;1.2.3.4;V4NET.11.12.13
          logwrite = rbl.test.ex/<;1.2.3.4;V4NET.11.12.13
 
-   warn  dnslists = test.ex/a.b.c.d::ten-1
-         logwrite = test.ex/a.b.c.d::ten-1
+   warn  dnslists = test.ex/a.b.c.d::ten-1::localhost
+         logwrite = test.ex/a.b.c.d::ten-1::localhost
 
 # End

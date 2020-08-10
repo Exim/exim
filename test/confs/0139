@@ -30,6 +30,7 @@ check_vrfy:
   warn    dnslists = rbl.test.ex!==127.0.0.1
   warn    dnslists = rbl.test.ex!==127.0.0.3
   warn    dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+  warn    dnslists = rbl.test.ex
   accept
 
 check_mail:

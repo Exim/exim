@@ -247,7 +247,15 @@ if (cb->rc == DNS_SUCCEED)
         ignore IPv6 addresses. The default mask is 0, which always matches.
         We change this only for IPv4 addresses in the list. */
 
-        if (host_aton(da->address, address) == 1) mask = address[0];
+        if (host_aton(da->address, address) == 1)
+	  if ((address[0] & 0xff000000) != 0x7f000000)    /* 127.0.0.0/8 */
+	    log_write(0, LOG_MAIN,
+	      "DNS list lookup for %s at %s returned %s;"
+	      " not in 127.0/8 and discarded",
+	      keydomain, domain, da->address);
+
+	  else
+	    mask = address[0];
 
         /* Scan the returned addresses, skipping any that are IPv6 */
 
@@ -299,6 +307,29 @@ if (cb->rc == DNS_SUCCEED)
         }
       return FAIL;
       }
+    }
+
+  /* No address list check; discard any illegal returns and give up if
+  none remain. */
+
+  else
+    {
+    BOOL ok = FALSE;
+    for (da = cb->rhs; da; da = da->next)
+      {
+      int address[4];
+
+      if (  host_aton(da->address, address) == 1		/* ipv4 */
+	 && (address[0] & 0xff000000) == 0x7f000000	/* 127.0.0.0/8 */
+	 )
+	ok = TRUE;
+      else
+	log_write(0, LOG_MAIN,
+	    "DNS list lookup for %s at %s returned %s;"
+	    " not in 127.0/8 and discarded",
+	    keydomain, domain, da->address);
+      }
+    if (!ok) return FAIL;
     }
 
   /* Either there was no IP list, or the record matched, implying that the
