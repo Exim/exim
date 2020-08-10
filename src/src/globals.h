@@ -1015,8 +1015,8 @@ extern int     string_datestamp_length;/* After insertion by string_format */
 extern int     string_datestamp_type;  /* After insertion by string_format */
 extern BOOL    strip_excess_angle_brackets; /* Surrounding route-addrs */
 extern BOOL    strip_trailing_dot;     /* Remove dots at ends of domains */
-extern uschar *submission_domain;      /* Domain for submission mode */
-extern uschar *submission_name;        /* User name set from ACL */
+extern const uschar *submission_domain;/* Domain for submission mode */
+extern const uschar *submission_name;  /* User name set from ACL */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */
 extern BOOL    syslog_pid;             /* TRUE if PID on syslogs */

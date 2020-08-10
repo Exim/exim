@@ -2806,7 +2806,7 @@ From:) but we still want to ensure a valid Sender: if it is required. */
 if (  !from_header
    && ((!sender_host_address && !f.suppress_local_fixups) || f.submission_mode))
   {
-  uschar *oname = US"";
+  const uschar * oname = US"";
 
   /* Use the originator_name if this is a locally submitted message and the
   caller is not trusted. For trusted callers, use it only if -F was used to
