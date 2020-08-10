@@ -484,7 +484,7 @@ OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
 
 OBJ_EXIM = acl.o base64.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o dkim.o dkim_transport.o hash.o \
+        filtertest.o globals.o dkim.o dkim_transport.o dnsbl.o hash.o \
         header.o host.o ip.o log.o lss.o match.o md5.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
@@ -774,6 +774,7 @@ debug.o:         $(HDRS) debug.c
 deliver.o:       $(HDRS) transports/smtp.h deliver.c
 directory.o:     $(HDRS) directory.c
 dns.o:           $(HDRS) dns.c
+dnsbl.o:         $(HDRS) dnsbl.c
 enq.o:           $(HDRS) enq.c
 exim.o:          $(HDRS) exim.c
 expand.o:        $(HDRS) expand.c

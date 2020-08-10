@@ -100,7 +100,7 @@ for f in blob.h dbfunctions.h dbstuff.h exim.h functions.h globals.h \
   macros.h mytypes.h osfunctions.h store.h structs.h lookupapi.h sha_ver.h \
   \
   acl.c buildconfig.c base64.c child.c crypt16.c daemon.c dbfn.c debug.c \
-  deliver.c directory.c dns.c drtables.c dummies.c enq.c exim.c \
+  deliver.c directory.c dns.c dnsbl.c drtables.c dummies.c enq.c exim.c \
   exim_dbmbuild.c exim_dbutil.c exim_lock.c expand.c filter.c filtertest.c \
   globals.c hash.c header.c host.c ip.c log.c lss.c match.c md5.c moan.c \
   parse.c perl.c queue.c rda.c readconf.c receive.c retry.c rewrite.c \
