@@ -78,6 +78,10 @@ JH/18 Bug 2617: Fix a taint trap in parse_fix_phrase().  Previously when the
       rewrite with the "h" flag, by using the "-F" command-line option, or
       by using a "name=" option on a control=submission ACL modifier.
 
+JH/21 Bug 2630: Fix eol-replacement string for the ${readsocket } expansion.
+      Previously when a whitespace character was specified it was not inserted
+      after removing the newline.
+
 
 Exim version 4.94
 -----------------

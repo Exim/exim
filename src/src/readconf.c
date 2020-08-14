@@ -1546,7 +1546,7 @@ if (flags & opt_fn_print)
   {
   if (flags & opt_fn_print_label) printf("%s = ", name);
   printf("%s\n", smtp_receive_timeout_s
-    ? string_printing2(smtp_receive_timeout_s, FALSE)
+    ? string_printing2(smtp_receive_timeout_s, SP_TAB)
     : readconf_printtime(smtp_receive_timeout));
   }
 else if (*str == '$')
@@ -2463,7 +2463,7 @@ switch(ol->type & opt_mask)
   case opt_rewrite:        /* Show the text value */
     s = *(USS value);
     if (!no_labels) printf("%s = ", name);
-    printf("%s\n", s ? string_printing2(s, FALSE) : US"");
+    printf("%s\n", s ? string_printing2(s, SP_TAB) : US"");
     break;
 
   case opt_int:

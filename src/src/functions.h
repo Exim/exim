@@ -529,7 +529,7 @@ extern int     string_is_ip_address(const uschar *, int *);
 #ifdef SUPPORT_I18N
 extern BOOL    string_is_utf8(const uschar *);
 #endif
-extern const uschar *string_printing2(const uschar *, BOOL);
+extern const uschar *string_printing2(const uschar *, int);
 extern uschar *string_split_message(uschar *);
 extern uschar *string_unprinting(uschar *);
 #ifdef SUPPORT_I18N

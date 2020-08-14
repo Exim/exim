@@ -60,7 +60,7 @@ quit
 #
 # Tests of IPv4 sockets
 #
-server PORT_S 11
+server PORT_S 17
 QUERY-1
 >LF>ANSWER-1
 >*eof
@@ -89,6 +89,24 @@ QUERY-10
 >*eof
 >LF>ANSWER-11
 >*eof
+QUERY-12
+>>ANSWER-12\x0d\x0aANSWER-12\x0d\x0a
+>*eof
+QUERY-13
+>>ANSWER-13\x0d\x0aANSWER-13\x0d\x0a
+>*eof
+QUERY-14
+>>ANSWER-14\x0d\x0aANSWER-14\x0d\x0a
+>*eof
+QUERY-15
+>>ANSWER-15\x0d\x0aANSWER-15\x0d\x0a
+>*eof
+QUERY-16
+>>ANSWER-16\x0d\x0aANSWER-16\x0d\x0a
+>*eof
+QUERY-17
+>>ANSWER-17\x0d\x0aANSWER-17\x0d\x0a
+>*eof
 ****
 millisleep 500
 exim -be
@@ -104,6 +122,14 @@ ipv4 cases
 9  sock error    >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-9\n}{1s}{}{sock error}}<<
 10 ANSWER-10\\n     >>${readsocket{inet:badloop:PORT_S}{QUERY-10\n}}<<
 11 ANSWER-11     >>${readsocket{inet:thisloop:PORT_S}{QUERY-11\n}{2s:shutdown=no}}<<
+
+eol-replacement arg
+12 ANSWER-12x2  (no arg)     >>${escape:${readsocket{inet:127.0.0.1:PORT_S}{QUERY-12\n}{2s}}}<<
+13 ANSWER-13x2  (empty arg)  >>${escape:${readsocket{inet:127.0.0.1:PORT_S}{QUERY-13\n}{2s}{}}}<<
+14 ANSWER-14x2  X            >>${escape:${readsocket{inet:127.0.0.1:PORT_S}{QUERY-14\n}{2s}{X}}}<<
+15 ANSWER-15x2  XYZZY        >>${escape:${readsocket{inet:127.0.0.1:PORT_S}{QUERY-15\n}{2s}{XYZZY}}}<<
+16 ANSWER-16x2  (space)      >>${escape:${readsocket{inet:127.0.0.1:PORT_S}{QUERY-16\n}{2s}{ }}}<<
+17 ANSWER-17x2  (newline)    >>${escape:${readsocket{inet:127.0.0.1:PORT_S}{QUERY-17\n}{2s}{\n}}}<<
 ****
 #
 exim -be

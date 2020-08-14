@@ -186,7 +186,9 @@ FILE * fp;
 gstring * yield;
 int ret = DEFER;
 
-DEBUG(D_lookup) debug_printf_indent("readsock: file=\"%s\" key=\"%s\" len=%d opts=\"%s\"\n", filename, keystring, length, opts);
+DEBUG(D_lookup)
+  debug_printf_indent("readsock: file=\"%s\" key=\"%s\" len=%d opts=\"%s\"\n",
+    filename, keystring, length, opts);
 
 /* Parse options */
 
@@ -200,7 +202,7 @@ if (opts) for (uschar * s; s = string_nextinlist(&opts, &sep, NULL, 0); )
     lf.do_tls = TRUE;
 #endif
   else if (Ustrncmp(s, "eol=", 4) == 0)
-    eol = s + 4;
+    eol = string_unprinting(s + 4);
   else if (Ustrcmp(s, "cache=yes") == 0)
     lf.cache = TRUE;
   else if (Ustrcmp(s, "send=no") == 0)
