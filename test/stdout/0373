@@ -30,6 +30,14 @@
 <<
 > 11 ANSWER-11     >><<
 > 
+> eol-replacement arg
+> 12 ANSWER-12x2  (no arg)     >>ANSWER-12\r\nANSWER-12\r\n<<
+> 13 ANSWER-13x2  (empty arg)  >>ANSWER-13\r\nANSWER-13\r\n<<
+> 14 ANSWER-14x2  X            >>ANSWER-14\rXANSWER-14\rX<<
+> 15 ANSWER-15x2  XYZZY        >>ANSWER-15\rXYZZYANSWER-15\rXYZZY<<
+> 16 ANSWER-16x2  (space)      >>ANSWER-16\r ANSWER-16\r <<
+> 17 ANSWER-17x2  (newline)    >>ANSWER-17\r\nANSWER-17\r\n<<
+> 
 > Failed: failed to connect to any address for 127.0.0.1: Connection refused
 > 
 > caching of response value
@@ -143,6 +151,36 @@ QUERY-10
 Listening on port 1224 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 >LF>ANSWER-11
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-12
+>>ANSWER-12\x0d\x0aANSWER-12\x0d\x0a
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-13
+>>ANSWER-13\x0d\x0aANSWER-13\x0d\x0a
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-14
+>>ANSWER-14\x0d\x0aANSWER-14\x0d\x0a
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-15
+>>ANSWER-15\x0d\x0aANSWER-15\x0d\x0a
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-16
+>>ANSWER-16\x0d\x0aANSWER-16\x0d\x0a
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-17
+>>ANSWER-17\x0d\x0aANSWER-17\x0d\x0a
 >*eof
 End of script
 Listening on TESTSUITE/test-socket ... 

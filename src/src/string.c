@@ -281,17 +281,17 @@ return ch;
 /* This function is called for critical strings. It checks for any
 non-printing characters, and if any are found, it makes a new copy
 of the string with suitable escape sequences. It is most often called by the
-macro string_printing(), which sets allow_tab TRUE.
+macro string_printing(), which sets flags to 0.
 
 Arguments:
   s             the input string
-  allow_tab     TRUE to allow tab as a printing character
+  flags		Bit 0: convert tabs.  Bit 1: convert spaces.
 
 Returns:        string with non-printers encoded as printing sequences
 */
 
 const uschar *
-string_printing2(const uschar *s, BOOL allow_tab)
+string_printing2(const uschar *s, int flags)
 {
 int nonprintcount = 0;
 int length = 0;
@@ -301,7 +301,10 @@ uschar *ss, *tt;
 while (*t != 0)
   {
   int c = *t++;
-  if (!mac_isprint(c) || (!allow_tab && c == '\t')) nonprintcount++;
+  if (  !mac_isprint(c)
+     || flags & SP_TAB && c == '\t'
+     || flags & SP_SPACE && c == ' '
+     ) nonprintcount++;
   length++;
   }
 
@@ -310,17 +313,19 @@ if (nonprintcount == 0) return s;
 /* Get a new block of store guaranteed big enough to hold the
 expanded string. */
 
-ss = store_get(length + nonprintcount * 3 + 1, is_tainted(s));
+tt = ss = store_get(length + nonprintcount * 3 + 1, is_tainted(s));
 
 /* Copy everything, escaping non printers. */
 
-t = s;
-tt = ss;
-
-while (*t != 0)
+for (t = s; *t; )
   {
   int c = *t;
-  if (mac_isprint(c) && (allow_tab || c != '\t')) *tt++ = *t++; else
+  if (  mac_isprint(c)
+     && (!(flags & SP_TAB) || c != '\t')
+     && (!(flags & SP_SPACE) || c != ' ')
+     )
+    *tt++ = *t++;
+  else
     {
     *tt++ = '\\';
     switch (*t)
@@ -944,7 +949,10 @@ else
     s = ss;
     if (!*s || *++s != sep || sep_is_special) break;
     }
-  while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--;
+  /* while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--; */
+  while (  g->ptr > 0 && isspace(g->s[g->ptr-1])
+	&& (g->ptr == 1 || g->s[g->ptr-2] != '\\') )
+    g->ptr--;
   buffer = string_from_gstring(g);
   gstring_release_unused(g);
   }

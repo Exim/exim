@@ -4916,7 +4916,7 @@ while (*s)
           {
           expand_string_message =
             string_sprintf("lookup of \"%s\" gave DEFER: %s",
-              string_printing2(key, FALSE), search_error_message);
+              string_printing2(key, SP_TAB), search_error_message);
           goto EXPAND_FAILED;
           }
         if (expand_setup > 0) expand_nmax = expand_setup;
@@ -5330,11 +5330,14 @@ while (*s)
 	  while ((item = string_nextinlist(&list, &sep, NULL, 0)))
 	    g = string_append_listele(g, ',', item);
 
-	  /* possibly plus an EOL string */
+	  /* possibly plus an EOL string.  Process with escapes, to protect
+	  from list-processing.  The only current user of eol= in search
+	  options is the readsock expansion. */
+
 	  if (sub_arg[3] && *sub_arg[3])
 	    g = string_append_listele(g, ',',
-		  string_sprintf("eol=%s", sub_arg[3]));
-
+		  string_sprintf("eol=%s",
+		    string_printing2(sub_arg[3], SP_TAB|SP_SPACE)));
 	  }
 
 	/* Gat a (possibly cached) handle for the connection */

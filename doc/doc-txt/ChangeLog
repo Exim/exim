@@ -100,6 +100,10 @@ JH/20 Bug 2631: ACL dnslist conditions now ignore and log any lookups returns
       not in 127.0.0.0/8 to help in spotting list domains taken over by a
       domain-parking registrar.
 
+JH/21 Bug 2630: Fix trace eol-replacement string for the ${readsocket }
+      expansion.  Previously when a whitespace character was specified it
+      was not inserted after removing the newline.
+
 
 Exim version 4.94
 -----------------
