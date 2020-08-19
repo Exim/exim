@@ -3200,6 +3200,7 @@ tlsp->tlsa_usage = 0;
 #ifndef DISABLE_OCSP
   {
 # ifdef SUPPORT_DANE
+  /*XXX this should be moved to caller, to be common across gnutls/openssl */
   if (  conn_args->dane
      && ob->hosts_request_ocsp[0] == '*'
      && ob->hosts_request_ocsp[1] == '\0'

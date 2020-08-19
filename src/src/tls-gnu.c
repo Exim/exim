@@ -2868,7 +2868,7 @@ DEBUG(D_tls) debug_printf("initialising GnuTLS as a client on fd %d\n", cctx->so
 /* If dane is flagged, have either request or require dane for this host, and
 a TLSA record found.  Therefore, dane verify required.  Which implies cert must
 be requested and supplied, dane verify must pass, and cert verify irrelevant
-(incl.  hostnames), and (caller handled) require_tls */
+(incl.  hostnames), and (caller handled) require_tls and sni=$domain */
 
 if (conn_args->dane && ob->dane_require_tls_ciphers)
   {

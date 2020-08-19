@@ -2018,6 +2018,7 @@ if (!continue_hostname)
 	  {
 	  case OK:		sx->conn_args.dane = TRUE;
 				ob->tls_tempfail_tryclear = FALSE;
+				ob->tls_sni = sx->addrlist->domain;
 				break;
 	  case FAIL_FORCED:	break;
 	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,

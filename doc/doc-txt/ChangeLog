@@ -100,9 +100,16 @@ JH/20 Bug 2631: ACL dnslist conditions now ignore and log any lookups returns
       not in 127.0.0.0/8 to help in spotting list domains taken over by a
       domain-parking registrar.
 
-JH/21 Bug 2630: Fix trace eol-replacement string for the ${readsocket }
-      expansion.  Previously when a whitespace character was specified it
-      was not inserted after removing the newline.
+JH/21 Bug 2630: Fix eol-replacement string for the ${readsocket } expansion.
+      Previously when a whitespace character was specified it was not inserted
+      after removing the newline.
+
+JH/22 Bug 2265: Force SNI usage for smtp transport DANE'd connections, to be
+      the domain part of the recipient address.  This overrides any tls_sni
+      option set, which was previously used.
+
+JH/23 Logging: with the +tls_sni log_selector, do not wrap the received SNI
+      in quotes.
 
 
 Exim version 4.94

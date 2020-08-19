@@ -16,7 +16,8 @@ acl_smtp_rcpt = accept logwrite = "rcpt ACL"
 acl_smtp_rcpt = accept verify = recipient/callout
 .endif
 
-log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
+log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified \
+		+tls_sni
 
 queue_run_in_order
 
