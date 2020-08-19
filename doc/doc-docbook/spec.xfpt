@@ -25669,7 +25669,11 @@ ciphers is a preference order.
 .option tls_sni smtp string&!! unset
 .cindex "TLS" "Server Name Indication"
 .vindex "&$tls_sni$&"
-If this option is set then it sets the $tls_out_sni variable and causes any
+If this option is set
+.new
+and the connection is not DANE-validated
+.wen
+then it sets the $tls_out_sni variable and causes any
 TLS session to pass this value as the Server Name Indication extension to
 the remote side, which can be used by the remote side to select an appropriate
 certificate and private key for the session.
@@ -29315,6 +29319,11 @@ nothing more to it.  Choosing a sensible value not derived insecurely is the
 only point of caution.  The &$tls_out_sni$& variable will be set to this string
 for the lifetime of the client connection (including during authentication).
 
+.new
+If DAVE validated the connection attempt then the value of the &%tls_sni%& option
+is forced to the domain part of the recipient address.
+.wen
+
 Except during SMTP client sessions, if &$tls_in_sni$& is set then it is a string
 received from a client.
 It can be logged with the &%log_selector%& item &`+tls_sni`&.
@@ -29518,7 +29527,7 @@ by (a) is thought to be smaller than that of the set of root CAs.
 It also allows the server to declare (implicitly) that connections to it should use TLS.  An MITM could simply
 fail to pass on a server's STARTTLS.
 
-DANE scales better than having to maintain (and side-channel communicate) copies of server certificates
+DANE scales better than having to maintain (and communicate via side-channel) copies of server certificates
 for every possible target server.  It also scales (slightly) better than having to maintain on an SMTP
 client a copy of the standard CAs bundle.  It also means not having to pay a CA for certificates.
 
@@ -29663,6 +29672,7 @@ If DANE is requested and useable (see above) the following transport options are
   tls_verify_certificates
   tls_crl
   tls_verify_cert_hostnames
+  tls_sni
 .endd
 
 If DANE is not usable, whether requested or not, and CA-anchored
