@@ -82,6 +82,11 @@ JH/21 Bug 2630: Fix eol-replacement string for the ${readsocket } expansion.
       Previously when a whitespace character was specified it was not inserted
       after removing the newline.
 
+JH/24 Bug 2634: Fix a taint trap seen on NetBSD: the testing coded for
+      is_tainted() had an off-by-one error in the overenthusiastic direction.
+      Find and fix by Gavan.  Although NetBSD is not a supported platform for
+      4.94 this bug could affect other platforms.
+
 
 Exim version 4.94
 -----------------

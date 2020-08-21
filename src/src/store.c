@@ -188,14 +188,14 @@ for (int pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   if ((b = current_block[pool]))
     {
     uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (US p >= bc && US p <= bc + b->length) return TRUE;
+    if (US p >= bc && US p < bc + b->length) return TRUE;
     }
 
 for (int pool = POOL_TAINT_BASE; pool < nelem(chainbase); pool++)
   for (b = chainbase[pool]; b; b = b->next)
     {
     uschar * bc = US b + ALIGNED_SIZEOF_STOREBLOCK;
-    if (US p >= bc && US p <= bc + b->length) return TRUE;
+    if (US p >= bc && US p < bc + b->length) return TRUE;
     }
 return FALSE;
 }
