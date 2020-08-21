@@ -111,6 +111,11 @@ JH/22 Bug 2265: Force SNI usage for smtp transport DANE'd connections, to be
 JH/23 Logging: with the +tls_sni log_selector, do not wrap the received SNI
       in quotes.
 
+JH/24 Bug 2634: Fix a taint trap seen on NetBSD: the testing coded for
+      is_tainted() had an off-by-one error in the overenthusiastic direction.
+      Find and fix by Gavan.  Although NetBSD is not a supported platform for
+      4.94 this bug could affect other platforms.
+
 
 Exim version 4.94
 -----------------
