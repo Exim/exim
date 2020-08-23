@@ -1627,7 +1627,6 @@ Arguments:
   local_message_max  maximum number of messages down one connection
                        as set by the caller transport
   new_message_id     set to the message id of a waiting message
-  more               set TRUE if there are yet more messages waiting
   oicf_func          function to call to validate if it is ok to send
                      to this message_id from the current instance.
   oicf_data          opaque data for oicf_func
@@ -1643,7 +1642,7 @@ typedef struct msgq_s
 
 BOOL
 transport_check_waiting(const uschar *transport_name, const uschar *hostname,
-  int local_message_max, uschar *new_message_id, BOOL *more, oicf oicf_func, void *oicf_data)
+  int local_message_max, uschar *new_message_id, oicf oicf_func, void *oicf_data)
 {
 dbdata_wait *host_record;
 int host_length;
@@ -1652,8 +1651,6 @@ open_db *dbm_file;
 
 int         i;
 struct stat statbuf;
-
-*more = FALSE;
 
 DEBUG(D_transport)
   {
@@ -1858,9 +1855,7 @@ record if required, close the database, and return TRUE. */
 if (host_length > 0)
   {
   host_record->count = host_length/MESSAGE_ID_LENGTH;
-
   dbfn_write(dbm_file, hostname, host_record, (int)sizeof(dbdata_wait) + host_length);
-  *more = TRUE;
   }
 
 dbfn_close(dbm_file);

@@ -1371,18 +1371,18 @@ switch (dns_special_lookup(dnsa, domain, T_CSA, &found))
   /* If something bad happened (most commonly DNS_AGAIN), defer. */
 
   default:
-  return t->data.val = CSA_DEFER_SRV;
+    return t->data.val = CSA_DEFER_SRV;
 
   /* If we found nothing, the client's authorization is unknown. */
 
   case DNS_NOMATCH:
   case DNS_NODATA:
-  return t->data.val = CSA_UNKNOWN;
+    return t->data.val = CSA_UNKNOWN;
 
   /* We got something! Go on to look at the reply in more detail. */
 
   case DNS_SUCCEED:
-  break;
+    break;
   }
 
 /* Scan the reply for well-formed CSA SRV records. */

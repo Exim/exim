@@ -16,94 +16,94 @@
 /* Private structure for the private options and other private data. */
 
 typedef struct {
-  uschar *hosts;
-  uschar *fallback_hosts;
-  host_item *hostlist;
-  host_item *fallback_hostlist;
-  uschar *authenticated_sender;
-  uschar *helo_data;
-  uschar *interface;
-  uschar *port;
-  uschar *protocol;
-  uschar *dscp;
-  uschar *serialize_hosts;
-  uschar *hosts_try_auth;
-  uschar *hosts_require_auth;
-  uschar *hosts_try_chunking;
+  uschar	*hosts;
+  uschar	*fallback_hosts;
+  host_item	*hostlist;
+  host_item	*fallback_hostlist;
+  uschar	*authenticated_sender;
+  uschar	*helo_data;
+  uschar	*interface;
+  uschar	*port;
+  uschar	*protocol;
+  uschar	*dscp;
+  uschar	*serialize_hosts;
+  uschar	*hosts_try_auth;
+  uschar	*hosts_require_auth;
+  uschar	*hosts_try_chunking;
 #ifdef SUPPORT_DANE
-  uschar *hosts_try_dane;
-  uschar *hosts_require_dane;
-  uschar *dane_require_tls_ciphers;
+  uschar	*hosts_try_dane;
+  uschar	*hosts_require_dane;
+  uschar	*dane_require_tls_ciphers;
 #endif
-  uschar *hosts_try_fastopen;
+  uschar	*hosts_try_fastopen;
 #ifndef DISABLE_PRDR
-  uschar *hosts_try_prdr;
+  uschar	*hosts_try_prdr;
 #endif
 #ifndef DISABLE_OCSP
-  uschar *hosts_request_ocsp;
-  uschar *hosts_require_ocsp;
+  uschar	*hosts_request_ocsp;
+  uschar	*hosts_require_ocsp;
 #endif
-  uschar *hosts_require_tls;
-  uschar *hosts_avoid_tls;
-  uschar *hosts_verify_avoid_tls;
-  uschar *hosts_avoid_pipelining;
+  uschar	*hosts_require_tls;
+  uschar	*hosts_avoid_tls;
+  uschar	*hosts_verify_avoid_tls;
+  uschar	*hosts_avoid_pipelining;
 #ifndef DISABLE_PIPE_CONNECT
-  uschar *hosts_pipe_connect;
+  uschar	*hosts_pipe_connect;
 #endif
-  uschar *hosts_avoid_esmtp;
+  uschar	*hosts_avoid_esmtp;
 #ifndef DISABLE_TLS
-  uschar *hosts_nopass_tls;
-  uschar *hosts_noproxy_tls;
+  uschar	*hosts_nopass_tls;
+  uschar	*hosts_noproxy_tls;
 #endif
-  int     command_timeout;
-  int     connect_timeout;
-  int     data_timeout;
-  int     final_timeout;
-  int     size_addition;
-  int     hosts_max_try;
-  int     hosts_max_try_hardlimit;
-  int	  message_linelength_limit;
-  BOOL    address_retry_include_sender;
-  BOOL    allow_localhost;
-  BOOL    authenticated_sender_force;
-  BOOL    gethostbyname;
-  BOOL    dns_qualify_single;
-  BOOL    dns_search_parents;
+  int		command_timeout;
+  int		connect_timeout;
+  int		data_timeout;
+  int		final_timeout;
+  int		size_addition;
+  int		hosts_max_try;
+  int		hosts_max_try_hardlimit;
+  int			message_linelength_limit;
+  BOOL		address_retry_include_sender;
+  BOOL		allow_localhost;
+  BOOL		authenticated_sender_force;
+  BOOL		gethostbyname;
+  BOOL		dns_qualify_single;
+  BOOL		dns_search_parents;
   dnssec_domains dnssec;
-  BOOL    delay_after_cutoff;
-  BOOL    hosts_override;
-  BOOL    hosts_randomize;
-  BOOL    keepalive;
-  BOOL    lmtp_ignore_quota;
-  uschar *expand_retry_include_ip_address;
-  BOOL    retry_include_ip_address;
+  BOOL		delay_after_cutoff;
+  BOOL		hosts_override;
+  BOOL		hosts_randomize;
+  BOOL		keepalive;
+  BOOL		lmtp_ignore_quota;
+  uschar	*expand_retry_include_ip_address;
+  BOOL		retry_include_ip_address;
 #ifdef SUPPORT_SOCKS
-  uschar *socks_proxy;
+  uschar	*socks_proxy;
 #endif
 #ifndef DISABLE_TLS
-  uschar *tls_certificate;
-  uschar *tls_crl;
-  uschar *tls_privatekey;
-  uschar *tls_require_ciphers;
+  uschar	*tls_certificate;
+  uschar	*tls_crl;
+  uschar	*tls_privatekey;
+  uschar	*tls_require_ciphers;
 # ifndef DISABLE_TLS_RESUME
-  uschar *tls_resumption_hosts;
+  uschar	*tls_resumption_hosts;
 # endif
-  uschar *tls_sni;
-  uschar *tls_verify_certificates;
-  int     tls_dh_min_bits;
-  BOOL    tls_tempfail_tryclear;
-  uschar *tls_verify_hosts;
-  uschar *tls_try_verify_hosts;
-  uschar *tls_verify_cert_hostnames;
+  const uschar	*tls_sni;
+  uschar	*tls_verify_certificates;
+  int		tls_dh_min_bits;
+  BOOL		tls_tempfail_tryclear;
+  uschar	*tls_verify_hosts;
+  uschar	*tls_try_verify_hosts;
+  uschar	*tls_verify_cert_hostnames;
 #endif
 #ifdef SUPPORT_I18N
-  uschar *utf8_downconvert;
+  uschar	*utf8_downconvert;
 #endif
 #ifndef DISABLE_DKIM
   struct ob_dkim dkim;
 #endif
 #ifdef EXPERIMENTAL_ARC
-  uschar *arc_sign;
+  uschar	*arc_sign;
 #endif
 } smtp_transport_options_block;
 

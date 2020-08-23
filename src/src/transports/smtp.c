@@ -4160,7 +4160,6 @@ DEBUG(D_transport)
 
 if (sx->completed_addr && sx->ok && sx->send_quit)
   {
-  BOOL more;
   smtp_compare_t t_compare;
 
   t_compare.tblock = tblock;
@@ -4176,7 +4175,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
         &&
 #endif
            transport_check_waiting(tblock->name, host->name,
-             tblock->connection_max_messages, new_message_id, &more,
+             tblock->connection_max_messages, new_message_id,
 	     (oicf)smtp_are_same_identities, (void*)&t_compare)
      )  )
     {
@@ -4229,6 +4228,10 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
       if (tls_out.active.sock >= 0)
 	if (  f.continue_more
 	   || verify_check_given_host(CUSS &ob->hosts_noproxy_tls, host) == OK)
+
+/*XXX*/
+/*	   || sx->conn_args.dane && Ustrcmp( , ob->tls_sni) != 0 */
+/*XXX*/
 	  {
 	  /* Before passing the socket on, or returning to caller with it still
 	  open, we must shut down TLS.  Not all MTAs allow for the continuation

@@ -577,7 +577,7 @@ extern void    tls_modify_variables(tls_support *);
 extern uschar *tod_stamp(int);
 
 extern BOOL    transport_check_waiting(const uschar *, const uschar *, int, uschar *,
-                 BOOL *, oicf, void*);
+                 oicf, void*);
 extern void    transport_init(void);
 extern void    transport_do_pass_socket(const uschar *, const uschar *,
 		 const uschar *, uschar *, int);
