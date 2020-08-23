@@ -118,7 +118,7 @@ reading spool file 10HmaX-0005vi-00-H
 user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
 sender_local=1 ident=CALLER
 Non-recipients:
-Empty Tree
+ Empty Tree
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields

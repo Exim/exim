@@ -260,7 +260,7 @@ sender_fullhost = [V4NET.11.12.13]
 sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
 sender_local=0 ident=CALLER
 Non-recipients:
-Empty Tree
+ Empty Tree
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields
@@ -449,7 +449,7 @@ sender_fullhost = [V4NET.11.12.13]
 sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
 sender_local=0 ident=CALLER
 Non-recipients:
-Empty Tree
+ Empty Tree
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields

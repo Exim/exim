@@ -182,7 +182,7 @@ extern void    debug_print_argv(const uschar **);
 extern void    debug_print_ids(uschar *);
 extern void    debug_printf_indent(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    debug_print_string(uschar *);
-extern void    debug_print_tree(tree_node *);
+extern void    debug_print_tree(const char *, tree_node *);
 extern void    debug_vprintf(int, const char *, va_list);
 extern void    debug_print_socket(int);
 

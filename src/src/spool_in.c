@@ -727,11 +727,7 @@ if (Ustrncmp(big_buffer, "XX\n", 3) != 0 &&
     goto SPOOL_FORMAT_ERROR;
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_deliver)
-  {
-  debug_printf("Non-recipients:\n");
-  debug_print_tree(tree_nonrecipients);
-  }
+DEBUG(D_deliver) debug_print_tree("Non-recipients", tree_nonrecipients);
 #endif  /* COMPILE_UTILITY */
 
 /* After reading the tree, the next line has not yet been read into the

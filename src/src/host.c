@@ -3197,7 +3197,7 @@ BOOL sec;
 rc = dns_lookup_timerwrap(dnsa, buffer, T_TLSA, &fullname);
 sec = dns_is_secure(dnsa);
 DEBUG(D_transport)
-  debug_printf("TLSA lookup ret %d %sDNSSEC\n", rc, sec ? "" : "not ");
+  debug_printf("TLSA lookup ret %s %sDNSSEC\n", dns_rc_names[rc], sec ? "" : "not ");
 
 switch (rc)
   {

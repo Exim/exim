@@ -62,7 +62,7 @@ calling lookuphost router
 lookuphost router called for abcd@test.again.dns
   domain = test.again.dns
 test.again.dns in "*"? yes (matched "*")
-DNS lookup of test.again.dns-MX: using cached value DNS_AGAIN
+DNS lookup of test.again.dns (MX): using cached value DNS_AGAIN
 lookuphost router: defer for abcd@test.again.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -166,7 +166,7 @@ expanded list of hosts = 'test.again.dns' options = 'bydns'
 finding IP address for test.again.dns
 doing DNS lookup
 test.again.dns in "*"? yes (matched "*")
-DNS lookup of test.again.dns-A: using cached value DNS_AGAIN
+DNS lookup of test.again.dns (A): using cached value DNS_AGAIN
 useryz router: defer for userz@test.again.dns
   message: host lookup for test.again.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -193,7 +193,7 @@ calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
-DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
+DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -271,7 +271,7 @@ calling lookuphost router
 lookuphost router called for abcd@test.fail.dns
   domain = test.fail.dns
 test.fail.dns in "*"? yes (matched "*")
-DNS lookup of test.fail.dns-MX: using cached value DNS_FAIL
+DNS lookup of test.fail.dns (MX): using cached value DNS_FAIL
 lookuphost router: defer for abcd@test.fail.dns
   message: host lookup did not complete
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -374,7 +374,7 @@ expanded list of hosts = 'test.fail.dns' options = 'bydns'
 finding IP address for test.fail.dns
 doing DNS lookup
 test.fail.dns in "*"? yes (matched "*")
-DNS lookup of test.fail.dns-A: using cached value DNS_FAIL
+DNS lookup of test.fail.dns (A): using cached value DNS_FAIL
 useryz router: defer for userz@test.fail.dns
   message: host lookup for test.fail.dns did not complete (DNS timeout?)
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -401,7 +401,7 @@ calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
-DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
+DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -481,7 +481,7 @@ calling lookuphost router
 lookuphost router called for abcd@nonexist.test.ex
   domain = nonexist.test.ex
 nonexist.test.ex in "*"? yes (matched "*")
-DNS lookup of nonexist.test.ex-MX: using cached value DNS_NOMATCH
+DNS lookup of nonexist.test.ex (MX): using cached value DNS_NOMATCH
 lookuphost router declined for abcd@nonexist.test.ex
 "more" is false: skipping remaining routers
 no more routers
@@ -586,7 +586,7 @@ expanded list of hosts = 'nonexist.test.ex' options = 'bydns'
 finding IP address for nonexist.test.ex
 doing DNS lookup
 nonexist.test.ex in "*"? yes (matched "*")
-DNS lookup of nonexist.test.ex-A: using cached value DNS_NOMATCH
+DNS lookup of nonexist.test.ex (A): using cached value DNS_NOMATCH
 useryz router: defer for userz@nonexist.test.ex
   message: lookup of host "nonexist.test.ex" failed in useryz router
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -613,7 +613,7 @@ calling lookuphost router
 lookuphost router called for xyz@ten-1.test.ex
   domain = ten-1.test.ex
 ten-1.test.ex in "*"? yes (matched "*")
-DNS lookup of ten-1.test.ex-MX: using cached value DNS_NODATA
+DNS lookup of ten-1.test.ex (MX): using cached value DNS_NODATA
 DNS lookup of ten-1.test.ex (A) using fakens
 DNS lookup of ten-1.test.ex (A) succeeded
 fully qualified name = ten-1.test.ex
@@ -769,7 +769,7 @@ calling delay router
 delay router called for userd@nonexist.example.com
   domain = nonexist.example.com
 nonexist.example.com in "*"? yes (matched "*")
-DNS lookup of nonexist.example.com-MX: cached value DNS_NOMATCH past valid time
+DNS lookup of nonexist.example.com (MX): cached value DNS_NOMATCH past valid time
 DNS lookup of nonexist.example.com (MX) using fakens
 DNS lookup of nonexist.example.com (MX) gave HOST_NOT_FOUND
 returning DNS_NOMATCH

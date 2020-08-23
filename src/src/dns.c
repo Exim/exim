@@ -671,13 +671,10 @@ e = previous->data.ptr;
 val = e->data.val;
 rc = e->expiry && e->expiry <= time(NULL) ? -1 : val;
 
-DEBUG(D_dns) debug_printf("DNS lookup of %.255s-%s: %scached value %s%s\n",
+DEBUG(D_dns) debug_printf("DNS lookup of %.255s (%s): %scached value %s%s\n",
   name, dns_text_type(type),
   rc == -1 ? "" : "using ",
-    val == DNS_NOMATCH ? "DNS_NOMATCH" :
-    val == DNS_NODATA ? "DNS_NODATA" :
-    val == DNS_AGAIN ? "DNS_AGAIN" :
-    val == DNS_FAIL ? "DNS_FAIL" : "??",
+  dns_rc_names[val],
   rc == -1 ? " past valid time" : "");
 
 return rc;

@@ -52,7 +52,7 @@ alias-eximtesthost.test.ex in "*"? yes (matched "*")
 DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
-DNS lookup of eximtesthost.test.ex-MX: using cached value DNS_NODATA
+DNS lookup of eximtesthost.test.ex (MX): using cached value DNS_NODATA
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex

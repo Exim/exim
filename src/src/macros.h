@@ -313,7 +313,7 @@ Use rc_names[] for debug strings. */
 #define DELIVER_MUA_FAILED         2  /* Failure when mua_wrapper is set */
 #define DELIVER_NOT_ATTEMPTED      3  /* Not tried (no msg or is locked */
 
-/* Returns from DNS lookup functions. */
+/* Returns from DNS lookup functions. Use dns_rc_names[] for debug strings */
 
 enum { DNS_SUCCEED, DNS_NOMATCH, DNS_NODATA, DNS_AGAIN, DNS_FAIL };
 

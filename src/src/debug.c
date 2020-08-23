@@ -30,7 +30,15 @@ const uschar * rc_names[] = {		/* Mostly for debug output */
   [UNEXPECTED] =	US"UNEXPECTED",
   [CANCELLED] =		US"CANCELLED",
   [FAIL_SEND] =		US"FAIL_SEND",
-  [FAIL_DROP] =		US"FAIL_DROP"
+  [FAIL_DROP] =		US"FAIL_DROP",
+};
+
+const uschar * dns_rc_names[] = {
+  [DNS_SUCCEED] =	US"DNS_SUCCEED",
+  [DNS_NOMATCH] =	US"DNS_NOMATCH",
+  [DNS_NODATA] =	US"DNS_NODATA",
+  [DNS_AGAIN] =		US"DNS_AGAIN",
+  [DNS_FAIL] =		US"DNS_FAIL",
 };
 
 
@@ -43,8 +51,8 @@ hold the line-drawing characters that need to be printed on every line as it
 moves down the page. This function is used only in debugging circumstances. The
 output is done via debug_printf(). */
 
-#define tree_printlinesize 132   /* line size for printing */
-static uschar tree_printline[tree_printlinesize];
+#define TREE_PRINTLINESIZE 132   /* line size for printing */
+static uschar tree_printline[TREE_PRINTLINESIZE];
 
 /* Internal recursive subroutine.
 
@@ -57,12 +65,12 @@ Returns:     nothing
 */
 
 static void
-tree_printsub(tree_node *p, int pos, int barswitch)
+tree_printsub(tree_node * p, int pos, int barswitch)
 {
 if (p->right) tree_printsub(p->right, pos+2, 1);
-for (int i = 0; i <= pos-1; i++) debug_printf("%c", tree_printline[i]);
-debug_printf("-->%s [%d]\n", p->name, p->balance);
-tree_printline[pos] = barswitch? '|' : ' ';
+for (int i = 0; i <= pos-1; i++) debug_printf_indent(" %c", tree_printline[i]);
+debug_printf_indent(" -->%s [%d]\n", p->name, p->balance);
+tree_printline[pos] = barswitch ? '|' : ' ';
 if (p->left)
   {
   tree_printline[pos+2] = '|';
@@ -73,11 +81,12 @@ if (p->left)
 /* The external function, with just a tree node argument. */
 
 void
-debug_print_tree(tree_node *p)
+debug_print_tree(const char * title, tree_node * p)
 {
-for (int i = 0; i < tree_printlinesize; i++) tree_printline[i] = ' ';
-if (!p) debug_printf("Empty Tree\n"); else tree_printsub(p, 0, 0);
-debug_printf("---- End of tree ----\n");
+debug_printf_indent("%s:\n", title);
+for (int i = 0; i < TREE_PRINTLINESIZE; i++) tree_printline[i] = ' ';
+if (!p) debug_printf_indent(" Empty Tree\n"); else tree_printsub(p, 0, 0);
+debug_printf_indent("---- End of tree ----\n");
 }
 
 

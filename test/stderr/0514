@@ -11,7 +11,7 @@ reading spool file 10HmaX-0005vi-00-H
 user=spaced user uid=CALLER_UID gid=CALLER_GID sender="spaced user"@myhost.test.ex
 sender_local=1 ident=spaced user
 Non-recipients:
-Empty Tree
+ Empty Tree
 ---- End of tree ----
 recipients_count=1
 **** SPOOL_IN - No additional fields
