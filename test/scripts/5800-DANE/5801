@@ -1,0 +1,12 @@
+# DANE client: conflicting domain
+#
+exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
+****
+#
+#
+# A single message with 2 receipients, different domains though same MX host
+exim -odf t00@mxdane512ee.test.ex t01@mxdane512ee1.test.ex
+****
+#
+killdaemon
+no_msglog_check

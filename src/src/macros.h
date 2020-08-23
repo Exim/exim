@@ -305,6 +305,7 @@ Use rc_names[] for debug strings. */
 #define CANCELLED     13    /* Authentication cancelled */
 #define FAIL_SEND     14    /* send() failed in authenticator */
 #define FAIL_DROP     15    /* Fail and drop connection (used in ACL) */
+#define DANE	      16    /* Deferred for domain mismatch (used in transport) */
 
 /* Returns from the deliver_message() function */
 

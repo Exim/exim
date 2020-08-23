@@ -31,6 +31,7 @@ const uschar * rc_names[] = {		/* Mostly for debug output */
   [CANCELLED] =		US"CANCELLED",
   [FAIL_SEND] =		US"FAIL_SEND",
   [FAIL_DROP] =		US"FAIL_DROP",
+  [DANE] =		US"DANE",
 };
 
 const uschar * dns_rc_names[] = {
