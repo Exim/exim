@@ -28693,6 +28693,12 @@ Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
 explicitly state that the feature is infeasible in the other TLS
 implementation, then patches are welcome.
+.new
+.next
+The output from "exim -bV" will show which (if any) support was included
+in the build.
+Also, the macro "_HAVE_OPENSSL" or "_HAVE_GNUTLS" will be defined.
+.wen
 .endlist
 
 

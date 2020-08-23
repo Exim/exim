@@ -674,7 +674,7 @@ coding means skipping this whole loop and doing the append separately.  */
     if (!sx) sx = store_get(sizeof(*sx), TRUE);	/* tainted buffers */
     memset(sx, 0, sizeof(*sx));
 
-    sx->addrlist = addr;
+    sx->addrlist = sx->first_addr = addr;
     sx->conn_args.host = host;
     sx->conn_args.host_af = host_af,
     sx->port = port;

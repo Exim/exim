@@ -460,6 +460,9 @@ TRUE if the lists refer to the same hosts in the same order, except that
 This enables Exim to use a single SMTP transaction for sending to two entirely
 different domains that happen to end up pointing at the same hosts.
 
+We do not try to batch up different A-record host names that refer to the
+same IP.
+
 Arguments:
   one       points to the first host list
   two       points to the second host list

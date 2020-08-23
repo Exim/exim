@@ -2019,11 +2019,12 @@ if (!continue_hostname)
 	switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
 	  {
 	  case OK:		sx->conn_args.dane = TRUE;
-				ob->tls_tempfail_tryclear = FALSE;
-				ob->tls_sni = sx->addrlist->domain;
+				ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
+				ob->tls_sni = sx->first_addr->domain;	/* force SNI */
 				break;
 	  case FAIL_FORCED:	break;
-	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
+	  default:
+	  set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
 				  string_sprintf("DANE error: tlsa lookup %s",
 				    rc_to_string(rc)),
 				  rc, FALSE, &sx->delivery_start);
@@ -3430,6 +3431,7 @@ BOOL pass_message = FALSE;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
+BOOL dane_held;
 
 suppress_tls = suppress_tls;  /* stop compiler warning when no TLS support */
 *message_defer = FALSE;
@@ -3446,13 +3448,36 @@ sx->conn_args.tblock = tblock;
 gettimeofday(&sx->delivery_start, NULL);
 sx->sync_addr = sx->first_addr = addrlist;
 
-/* Get the channel set up ready for a message (MAIL FROM being the next
-SMTP command to send */
+DANE_DOMAINS:
+dane_held = FALSE;
+
+/* Get the channel set up ready for a message, MAIL FROM being the next
+SMTP command to send. */
 
 if ((rc = smtp_setup_conn(sx, suppress_tls)) != OK)
   {
   timesince(&addrlist->delivery_time, &sx->delivery_start);
-  return rc;
+  yield = rc;
+  goto TIDYUP;
+  }
+
+/*XXX*/
+/* If the connection used DANE, ignore for now any addresses with incompatible
+domains.  The SNI has to be the domain.  Arrange a whole new TCP conn later,
+just in case only TLS isn't enough. */
+
+if (sx->conn_args.dane)
+  {
+  const uschar * dane_domain = sx->first_addr->domain;
+
+  for (address_item * a = sx->first_addr->next; a; a = a->next)
+    if (  a->transport_return == PENDING_DEFER
+       && Ustrcmp(dane_domain, a->domain) != 0)
+      {
+      DEBUG(D_transport) debug_printf("DANE: holding %s for later\n", a->domain);
+      dane_held = TRUE;
+      a->transport_return = DANE;
+      }
   }
 
 /* If there is a filter command specified for this transport, we can now
@@ -4203,7 +4228,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 
 
       if (sx->first_addr != NULL)	/* More addresses still to be sent */
-        {				/*   in this run of the transport */
+        {				/*   on this connection            */
         continue_sequence++;		/* Causes * in logging */
 	pipelining_active = sx->pipelining_used;    /* was cleared at DATA */
         goto SEND_MESSAGE;
@@ -4235,7 +4260,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 				      '2', ob->command_timeout);
 
 	  if (sx->ok && f.continue_more)
-	    return yield;		/* More addresses for another run */
+	    goto TIDYUP;		/* More addresses for another run */
 	  }
 	else
 	  {
@@ -4255,7 +4280,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
       else
 #endif
 	if (f.continue_more)
-	  return yield;			/* More addresses for another run */
+	  goto TIDYUP;			/* More addresses for another run */
 
       /* If the socket is successfully passed, we mustn't send QUIT (or
       indeed anything!) from here. */
@@ -4295,7 +4320,7 @@ propagate it from the initial
 	    sx->cctx.sock = -1;
 	    continue_transport = NULL;
 	    continue_hostname = NULL;
-	    return yield;
+	    goto TIDYUP;
 	    }
 	  log_write(0, LOG_PANIC_DIE, "fork failed");
 	  }
@@ -4370,8 +4395,34 @@ if (sx->send_quit)
 (void) event_raise(tblock->event_action, US"tcp:close", NULL);
 #endif
 
+/*XXX*/
+if (dane_held)
+  {
+  sx->first_addr = NULL;
+  for (address_item * a = sx->addrlist->next; a; a = a->next)
+    if (a->transport_return == DANE)
+      {
+      a->transport_return = PENDING_DEFER;
+      if (!sx->first_addr)
+	{
+	/* Remember the new start-point in the addrlist, for smtp_setup_conn()
+	to get the domain string for SNI */
+
+	sx->first_addr = a;
+	DEBUG(D_transport) debug_printf("DANE: go-around for %s\n", a->domain);
+	}
+      }
+  goto DANE_DOMAINS;
+  }
+
 continue_transport = NULL;
 continue_hostname = NULL;
+return yield;
+
+TIDYUP:
+if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
+  if (a->transport_return == DANE)
+    a->transport_return = PENDING_DEFER;
 return yield;
 }
 

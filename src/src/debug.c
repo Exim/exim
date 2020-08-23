@@ -30,7 +30,16 @@ const uschar * rc_names[] = {		/* Mostly for debug output */
   [UNEXPECTED] =	US"UNEXPECTED",
   [CANCELLED] =		US"CANCELLED",
   [FAIL_SEND] =		US"FAIL_SEND",
-  [FAIL_DROP] =		US"FAIL_DROP"
+  [FAIL_DROP] =		US"FAIL_DROP",
+  [DANE] =		US"DANE",
+};
+
+const uschar * dns_rc_names[] = {
+  [DNS_SUCCEED] =	US"DNS_SUCCEED",
+  [DNS_NOMATCH] =	US"DNS_NOMATCH",
+  [DNS_NODATA] =	US"DNS_NODATA",
+  [DNS_AGAIN] =		US"DNS_AGAIN",
+  [DNS_FAIL] =		US"DNS_FAIL",
 };
 
 
