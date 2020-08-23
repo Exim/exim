@@ -2021,8 +2021,7 @@ if (!continue_hostname)
 				ob->tls_sni = sx->first_addr->domain;	/* force SNI */
 				break;
 	  case FAIL_FORCED:	break;
-	  default:
-	  set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
+	  default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
 				  string_sprintf("DANE error: tlsa lookup %s",
 				    rc_to_string(rc)),
 				  rc, FALSE, &sx->delivery_start);
@@ -3443,7 +3442,9 @@ BOOL pass_message = FALSE;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
 BOOL dane_held;
+#endif
 
 *message_defer = FALSE;
 
@@ -3459,8 +3460,10 @@ sx->conn_args.tblock = tblock;
 gettimeofday(&sx->delivery_start, NULL);
 sx->sync_addr = sx->first_addr = addrlist;
 
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
 DANE_DOMAINS:
 dane_held = FALSE;
+#endif
 
 /* Get the channel set up ready for a message, MAIL FROM being the next
 SMTP command to send. */
@@ -3472,7 +3475,7 @@ if ((rc = smtp_setup_conn(sx, suppress_tls)) != OK)
   goto TIDYUP;
   }
 
-/*XXX*/
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
 /* If the connection used DANE, ignore for now any addresses with incompatible
 domains.  The SNI has to be the domain.  Arrange a whole new TCP conn later,
 just in case only TLS isn't enough. */
@@ -3490,6 +3493,7 @@ if (sx->conn_args.dane)
       a->transport_return = DANE;
       }
   }
+#endif
 
 /* If there is a filter command specified for this transport, we can now
 set it up. This cannot be done until the identity of the host is known. */
@@ -4253,10 +4257,6 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
       if (tls_out.active.sock >= 0)
 	if (  f.continue_more
 	   || verify_check_given_host(CUSS &ob->hosts_noproxy_tls, host) == OK)
-
-/*XXX*/
-/*	   || sx->conn_args.dane && Ustrcmp( , ob->tls_sni) != 0 */
-/*XXX*/
 	  {
 	  /* Before passing the socket on, or returning to caller with it still
 	  open, we must shut down TLS.  Not all MTAs allow for the continuation
@@ -4409,7 +4409,7 @@ if (sx->send_quit)
 (void) event_raise(tblock->event_action, US"tcp:close", NULL);
 #endif
 
-/*XXX*/
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
 if (dane_held)
   {
   sx->first_addr = NULL;
@@ -4428,15 +4428,18 @@ if (dane_held)
       }
   goto DANE_DOMAINS;
   }
+#endif
 
 continue_transport = NULL;
 continue_hostname = NULL;
 return yield;
 
 TIDYUP:
+#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
 if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
   if (a->transport_return == DANE)
     a->transport_return = PENDING_DEFER;
+#endif
 return yield;
 }
 
