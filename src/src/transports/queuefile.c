@@ -8,7 +8,10 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 
+
 #include "../exim.h"
+
+#ifdef EXPERIMENTAL_QUEUEFILE	/* whole file */
 #include "queuefile.h"
 
 #ifndef EXIM_HAVE_OPENAT
@@ -280,3 +283,4 @@ return FALSE;
 }
 
 #endif /*!MACRO_PREDEF*/
+#endif /*EXPERIMENTAL_QUEUEFILE*/
