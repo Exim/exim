@@ -352,7 +352,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
 	g = string_fmt_append(g, " lcl [%s]:%u",
 	  inet_ntoa(sinp->sin_addr), ntohs(sinp->sin_port));
 	alen = sizeof(*sinp);
-	if (getpeername(fd, sinp, &alen) == 0)
+	if (getpeername(fd, (struct sockaddr *)sinp, &alen) == 0)
 	  g = string_fmt_append(g, " rmt [%s]:%u",
 	    inet_ntoa(sinp->sin_addr), ntohs(sinp->sin_port));
 	break;
@@ -364,7 +364,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
 	  inet_ntop(AF_INET6, &sin6p->sin6_addr, CS buf, sizeof(buf)),
 	  ntohs(sin6p->sin6_port));
 	alen = sizeof(*sin6p);
-	if (getpeername(fd, sin6p, &alen) == 0)
+	if (getpeername(fd, (struct sockaddr *)sin6p, &alen) == 0)
 	  g = string_fmt_append(g, " rmt [%s]:%u",
 	    inet_ntop(AF_INET6, &sin6p->sin6_addr, CS buf, sizeof(buf)),
 	    ntohs(sin6p->sin6_port));
@@ -377,7 +377,7 @@ if (fstat(fd, &s) == 0 && (s.st_mode & S_IFMT) == S_IFSOCK)
             sunp->sun_path[0] ? US"" : US"@",
             sunp->sun_path[0] ? sunp->sun_path : sunp->sun_path+1);
         alen = sizeof(*sunp);
-        if (getpeername(fd, sunp, &alen) == 0)
+        if (getpeername(fd, (struct sockaddr *)sunp, &alen) == 0)
           g = string_fmt_append(g, " rmt %s%s",
             sunp->sun_path[0] ? US"" : US"@",
             sunp->sun_path[0] ? sunp->sun_path : sunp->sun_path+1);
