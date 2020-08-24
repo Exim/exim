@@ -8,7 +8,10 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 
+
 #include "../exim.h"
+
+#ifdef EXPERIMENTAL_QUEUEFILE	/* whole file */
 #include "queuefile.h"
 
 /* Options specific to the appendfile transport. They must be in alphabetic
@@ -276,3 +279,4 @@ return FALSE;
 }
 
 #endif /*!MACRO_PREDEF*/
+#endif /*EXPERIMENTAL_QUEUEFILE*/
