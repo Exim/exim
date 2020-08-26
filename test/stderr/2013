@@ -45,6 +45,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+Transport port=1225 replaced by host-specific port=1225
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userz@test.ex>
   SMTP>> DATA
@@ -64,6 +65,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+Transport port=1225 replaced by host-specific port=1225
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<usery@test.ex>
   SMTP>> DATA
@@ -131,6 +133,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+Transport port=1225 replaced by host-specific port=1225
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userc@test.ex>
   SMTP>> DATA
@@ -150,6 +153,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
+Transport port=1225 replaced by host-specific port=1225
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
   SMTP>> RCPT TO:<userb@test.ex>
   SMTP>> DATA

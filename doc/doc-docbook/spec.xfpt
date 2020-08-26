@@ -3922,6 +3922,18 @@ This option is not intended for use by external callers. It is used internally
 by Exim in conjunction with the &%-MC%& option, and passes on the fact that the
 host to which Exim is connected supports TLS encryption.
 
+.new
+.vitem &%-MCr%&&~<&'SNI'&> &&&
+       &%-MCs%&&~<&'SNI'&>
+.oindex "&%-MCs%&"
+.oindex "&%-MCr%&"
+These options are not intended for use by external callers. It is used internally
+by Exim in conjunction with the &%-MCt%& option, and passes on the fact that
+a TLS Server Name Indication was sent as part of the channel establishment.
+The argument gives the SNI string.
+The "r" variant indicates a DANE-verified connection.
+.wen
+
 .vitem &%-MCt%&&~<&'IP&~address'&>&~<&'port'&>&~<&'cipher'&>
 .oindex "&%-MCt%&"
 This option is not intended for use by external callers. It is used internally

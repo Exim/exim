@@ -1195,7 +1195,7 @@ else
   if (addr->host_used)
     {
     g = d_hostlog(g, addr);
-    if (continue_sequence > 1)
+    if (continue_sequence > 1)		/*XXX this is wrong for a dropped proxyconn.  Would have to pass back from transport */
       g = string_catn(g, US"*", 1);
 
 #ifndef DISABLE_EVENT
@@ -4273,6 +4273,10 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
       }
     }
 
+/*XXX need to defeat this when DANE is used - but we don't know that yet.
+So look out for the place it gets used.
+*/
+
   /* Get the flag which specifies whether the transport can handle different
   domains that nevertheless resolve to the same set of hosts. If it needs
   expanding, get variables set: $address_data, $domain_data, $localpart_data,
@@ -4350,6 +4354,11 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
 
   /************************************************************************/
 
+
+/*XXX don't know yet if DANE will be used.  So tpt will have to
+check at the point if gets next addr from list, and skip/defer any
+nonmatch domains
+*/
 
   /* Pick off all addresses which have the same transport, errors address,
   destination, and extra headers. In some cases they point to the same host
@@ -4497,6 +4506,7 @@ for (int delivery_count = 0; addr_remote; delivery_count++)
   if (continue_transport)
     {
     BOOL ok = Ustrcmp(continue_transport, tp->name) == 0;
+/*XXX do we need to check for a DANEd conn vs. a change of domain? */
 
     /* If the transport is about to override the host list do not check
     it here but take the cost of running the transport process to discover

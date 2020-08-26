@@ -426,6 +426,8 @@ extern uschar *config_main_filename;   /* File name actually used */
 extern uschar *config_main_directory;  /* Directory where the main config file was found */
 extern uid_t   config_uid;             /* Additional owner */
 extern uschar *continue_proxy_cipher;  /* TLS cipher for proxied continued delivery */
+extern BOOL    continue_proxy_dane;    /* proxied conn is DANE */
+extern uschar *continue_proxy_sni;     /* proxied conn SNI */
 extern uschar *continue_hostname;      /* Host for continued delivery */
 extern uschar *continue_host_address;  /* IP address for ditto */
 extern int     continue_sequence;      /* Sequence num for continued delivery */

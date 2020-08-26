@@ -2813,10 +2813,22 @@ on the second character (the one after '-'), to save some effort. */
 	case 'S': smtp_peer_options |= OPTION_SIZE; break;
 
 #ifndef DISABLE_TLS
+    /* -MCs: used with -MCt; SNI was sent */
+    /* -MCr: ditto, DANE */
+
+	case 'r':
+	case 's': if (++i < argc)
+		    {
+		    continue_proxy_sni = string_copy_taint(argv[i], TRUE);
+		    if (argrest[1] == 'r') continue_proxy_dane = TRUE;
+		    }
+		  else badarg = TRUE;
+		  break;
+
     /* -MCt: similar to -MCT below but the connection is still open
     via a proxy process which handles the TLS context and coding.
     Require three arguments for the proxied local address and port,
-    and the TLS cipher.  */
+    and the TLS cipher. */
 
 	case 't': if (++i < argc)
 		    sending_ip_address = string_copy_taint(argv[i], TRUE);

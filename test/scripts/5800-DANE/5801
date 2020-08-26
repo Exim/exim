@@ -3,10 +3,76 @@
 exim -DSERVER=server -DDETAILS=ee -bd -oX PORT_D
 ****
 #
+# Baseline: simple message
+exim -odf t@mxdane512ee.test.ex
+****
 #
-# A single message with 2 receipients, different domains though same MX host
+# A single message with 2 recipients, different domains though same DANE MX host
 exim -odf t00@mxdane512ee.test.ex t01@mxdane512ee1.test.ex
 ****
+#
+# Two DANE messages from queue, one-pass queue-run
+exim -odq t10@mxdane512ee.test.ex
+****
+exim -odq t11@mxdane512ee1.test.ex
+****
+exim -q
+****
+#
+# Two DANE messages from queue, two-pass queue-run
+exim -odq t20@mxdane512ee.test.ex
+****
+exim -odq t21@mxdane512ee1.test.ex
+****
+exim -qq
+****
+#
+# DANE followed by non-DANE, 1-Pqr
+exim -odq t30@mxdane512ee.test.ex
+****
+exim -odq t31@mxnondane512ee.test.ex
+****
+exim -q
+****
+# DANE followed by non-DANE, 2-Pqr
+exim -odq t40@mxdane512ee.test.ex
+****
+exim -odq t41@mxnondane512ee.test.ex
+****
+exim -qq
+****
+#
+# DANE followed by non-DANE, SNI set, 1-Pqr
+exim -odq t50@mxdane512ee.test.ex
+****
+exim -odq t51@mxnondane512ee.test.ex
+****
+exim -DOPT=MY-SNI -q
+****
+# DANE followed by non-DANE, SNI set, 2-Pqr
+exim -odq t60@mxdane512ee.test.ex
+****
+exim -odq t61@mxnondane512ee.test.ex
+****
+exim -DOPT=MY-SNI -qq
+****
+#
+# non-DANE followed by DANE, 2-pqr
+exim -odq t70@mxnondane512ee.test.ex
+****
+exim -odq t71@mxdane512ee.test.ex
+****
+exim -qq
+****
+# non-DANE (SNI set) followed by DANE, 2-pqr
+exim -odq t80@mxnondane512ee.test.ex
+****
+exim -odq t91@mxdane512ee.test.ex
+****
+exim -DOPT=SNISNISNISNI -qq
+****
+#
+#
 #
 killdaemon
 no_msglog_check
