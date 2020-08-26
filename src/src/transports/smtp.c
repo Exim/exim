@@ -1989,8 +1989,6 @@ if (sx->smtps)
   }
 #endif
 
-#ifdef SUPPORT_DANE
-/*XXX new */
 /* If we have a proxied TLS connection, check usability for this message */
 
 if (continue_hostname && continue_proxy_cipher)
@@ -1998,8 +1996,10 @@ if (continue_hostname && continue_proxy_cipher)
   int rc;
   const uschar * sni = US"";
 
+#ifdef SUPPORT_DANE
   /* Check if the message will be DANE-verified; if so force its SNI */
 
+  tls_out.dane_verified = FALSE;
   smtp_port_for_connect(sx->conn_args.host, sx->port);
   if (  sx->conn_args.host->dnssec == DS_YES
      && (  sx->dane_required
@@ -2023,15 +2023,17 @@ if (continue_hostname && continue_proxy_cipher)
 # endif
 			    return rc;
       }
+#endif
 
-  /* If the SNI required for the new message differs from the existing conn
-  drop the connection to force a new one. */
+  /* If the SNI or the DANE status required for the new message differs from the
+  existing conn drop the connection to force a new one. */
 
   if (ob->tls_sni && !(sni = expand_cstring(ob->tls_sni)))
     log_write(0, LOG_MAIN|LOG_PANIC,
       "<%s>: failed to expand transport's tls_sni value: %s",
       sx->addrlist->address, expand_string_message);
 
+#ifdef SUPPORT_DANE
   if (  (continue_proxy_sni ? (Ustrcmp(continue_proxy_sni, sni) == 0) : !*sni)
      && continue_proxy_dane == sx->conn_args.dane)
     {
@@ -2039,6 +2041,10 @@ if (continue_hostname && continue_proxy_cipher)
     if ((tls_out.dane_verified = continue_proxy_dane))
       sx->conn_args.host->dnssec = DS_YES;
     }
+#else
+  if ((continue_proxy_sni ? (Ustrcmp(continue_proxy_sni, sni) == 0) : !*sni))
+    tls_out.sni = US sni;
+#endif
   else
     {
     DEBUG(D_transport)
@@ -2047,7 +2053,6 @@ if (continue_hostname && continue_proxy_cipher)
     HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
     write(0, "QUIT\r\n", 6);
     close(0);
-    tls_out.dane_verified = FALSE;
     continue_hostname = continue_proxy_cipher = NULL;
     f.continue_more = FALSE;
     continue_sequence = 1;	/* Unfortunately, this process cannot affect success log
@@ -2055,7 +2060,6 @@ if (continue_hostname && continue_proxy_cipher)
 				back through reporting pipe. */
     }
   }
-#endif
 
 
 /* Make a connection to the host if this isn't a continued delivery, and handle
@@ -4250,16 +4254,6 @@ If we have started a TLS session, we have to end it before passing the
 connection to a new process. However, not all servers can handle this (Exim
 can), so we do not pass such a connection on if the host matches
 hosts_nopass_tls. */
-
-/*XXX do we have to veto all passing of DANE'd connections?
-Can we be any more intelligent?
-
-I could see that unpleasantly impacting high-vol mailinglist.
-Where many messages are queued for a single dest MX.
-
-But the wait-DB used by transport_check_waiting only records hosts, not domains.
-So we cannot look for a domain mismatch.
-*/
 
 DEBUG(D_transport)
   debug_printf("ok=%d send_quit=%d send_rset=%d continue_more=%d "
