@@ -55,7 +55,7 @@ for (int i = 0; i < 2; i++)
 
   set_subdir_str(message_subdir, id, i);
   fname = spool_fname(US"input", message_subdir, id, US"-D");
-  DEBUG(D_deliver) debug_printf("Trying spool file %s\n", fname);
+  DEBUG(D_deliver) debug_printf_indent("Trying spool file %s\n", fname);
 
   /* We protect against symlink attacks both in not propagating the
    * file-descriptor to other processes as we exec, and also ensuring that we
@@ -367,7 +367,7 @@ for (int n = 0; n < 2; n++)
 errno = 0;
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_deliver) debug_printf("reading spool file %s\n", name);
+DEBUG(D_deliver) debug_printf_indent("reading spool file %s\n", name);
 #endif  /* COMPILE_UTILITY */
 
 /* The first line of a spool file contains the message id followed by -H (i.e.
@@ -430,7 +430,7 @@ if (f.running_in_test_harness)
 #endif
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_deliver) debug_printf("user=%s uid=%ld gid=%ld sender=%s\n",
+DEBUG(D_deliver) debug_printf_indent("user=%s uid=%ld gid=%ld sender=%s\n",
   originator_login, (long int)originator_uid, (long int)originator_gid,
   sender_address);
 #endif
@@ -715,7 +715,7 @@ host_build_sender_fullhost();
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_deliver)
-  debug_printf("sender_local=%d ident=%s\n", f.sender_local,
+  debug_printf_indent("sender_local=%d ident=%s\n", f.sender_local,
     sender_ident ? sender_ident : US"unset");
 #endif  /* COMPILE_UTILITY */
 
@@ -743,7 +743,7 @@ if (sscanf(CS big_buffer, "%d", &rcount) != 1 || rcount > 16384)
   goto SPOOL_FORMAT_ERROR;
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_deliver) debug_printf("recipients_count=%d\n", rcount);
+DEBUG(D_deliver) debug_printf_indent("recipients_count=%d\n", rcount);
 #endif  /* COMPILE_UTILITY */
 
 recipients_list_max = rcount;
@@ -814,7 +814,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     {
     int dummy;
 #if !defined (COMPILE_UTILITY)
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim 3 spool file\n");
+    DEBUG(D_deliver) debug_printf_indent("**** SPOOL_IN - Exim 3 spool file\n");
 #endif
     while (isdigit(*(--p)) || *p == ',');
     if (*p == ' ')
@@ -829,7 +829,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   else if (*p == ' ')
     {
 #if !defined (COMPILE_UTILITY)
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - early Exim 4 spool file\n");
+    DEBUG(D_deliver) debug_printf_indent("**** SPOOL_IN - early Exim 4 spool file\n");
 #endif
     *p++ = 0;
     (void)sscanf(CS p, "%d", &pno);
@@ -842,7 +842,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     int flags;
 
 #if !defined (COMPILE_UTILITY)
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - Exim standard format spoolfile\n");
+    DEBUG(D_deliver) debug_printf_indent("**** SPOOL_IN - Exim standard format spoolfile\n");
 #endif
 
     (void)sscanf(CS p+1, "%d", &flags);
@@ -878,13 +878,13 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     }
 #if !defined(COMPILE_UTILITY)
   else
-    { DEBUG(D_deliver) debug_printf("**** SPOOL_IN - No additional fields\n"); }
+    { DEBUG(D_deliver) debug_printf_indent("**** SPOOL_IN - No additional fields\n"); }
 
   if (orcpt || dsn_flags)
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: <%s> orcpt: <%s> dsn_flags: 0x%x\n",
+    DEBUG(D_deliver) debug_printf_indent("**** SPOOL_IN - address: <%s> orcpt: <%s> dsn_flags: 0x%x\n",
       big_buffer, orcpt, dsn_flags);
   if (errors_to)
-    DEBUG(D_deliver) debug_printf("**** SPOOL_IN - address: <%s> errorsto: <%s>\n",
+    DEBUG(D_deliver) debug_printf_indent("**** SPOOL_IN - address: <%s> errorsto: <%s>\n",
       big_buffer, errors_to);
 #endif
 
@@ -956,7 +956,7 @@ line count by adding the body linecount to the header linecount. Close the file
 and give a positive response. */
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_deliver) debug_printf("body_linecount=%d message_linecount=%d\n",
+DEBUG(D_deliver) debug_printf_indent("body_linecount=%d message_linecount=%d\n",
   body_linecount, message_linecount);
 #endif  /* COMPILE_UTILITY */
 

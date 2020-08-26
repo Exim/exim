@@ -87,7 +87,7 @@ typedef struct {
 # ifdef EXPERIMENTAL_TLS_RESUME
   uschar *tls_resumption_hosts;
 # endif
-  uschar *tls_sni;
+  const uschar *tls_sni;
   uschar *tls_verify_certificates;
   int     tls_dh_min_bits;
   BOOL    tls_tempfail_tryclear;

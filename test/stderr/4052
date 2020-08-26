@@ -54,7 +54,8 @@ writing data block fd=dddd size=sss timeout=300
 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
 transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
-no messages waiting for 127.0.0.1
+ no messages waiting for 127.0.0.1
+transport_check_waiting: FALSE
   SMTP>> QUIT
 cmd buf flush ddd bytes
   SMTP(close)>>

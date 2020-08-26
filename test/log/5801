@@ -1,13 +1,131 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t00@mxdane512ee.test.ex t01@mxdane512ee1.test.ex
-1999-03-02 09:44:33 10HmaX-0005vi-00 => t00@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => t01@mxdane512ee1.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 => t@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmaY-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t00@mxdane512ee.test.ex t01@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => t00@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => t01@mxdane512ee1.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbB-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t10@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t11@mxdane512ee1.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbC-0005vi-00 => t10@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 => t11@mxdane512ee1.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbF-0005vi-00"
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t20@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t21@mxdane512ee1.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmbG-0005vi-00 => t20@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbI-0005vi-00"
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 => t21@mxdane512ee1.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbJ-0005vi-00"
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t30@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t31@mxnondane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbK-0005vi-00 => t30@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbM-0005vi-00"
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 => t31@mxnondane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbN-0005vi-00"
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t40@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbP-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t41@mxnondane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmbO-0005vi-00 => t40@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbQ-0005vi-00"
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbP-0005vi-00 => t41@mxnondane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbR-0005vi-00"
+1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmbS-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t50@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbT-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t51@mxnondane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbS-0005vi-00 => t50@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbU-0005vi-00"
+1999-03-02 09:44:33 10HmbS-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbT-0005vi-00 => t51@mxnondane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbV-0005vi-00"
+1999-03-02 09:44:33 10HmbT-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbW-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t60@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t61@mxnondane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmbW-0005vi-00 => t60@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmbY-0005vi-00"
+1999-03-02 09:44:33 10HmbW-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbX-0005vi-00 => t61@mxnondane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbZ-0005vi-00"
+1999-03-02 09:44:33 10HmbX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmcA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t70@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmcB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t71@mxdane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmcA-0005vi-00 => t70@mxnondane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmcC-0005vi-00"
+1999-03-02 09:44:33 10HmcA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcB-0005vi-00 => t71@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmcD-0005vi-00"
+1999-03-02 09:44:33 10HmcB-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmcE-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t80@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmcF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for t91@mxdane512ee.test.ex
+1999-03-02 09:44:33 Start queue run: pid=pppp -qq
+1999-03-02 09:44:33 10HmcE-0005vi-00 => t80@mxnondane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmcG-0005vi-00"
+1999-03-02 09:44:33 10HmcE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcF-0005vi-00 => t91@mxdane512ee.test.ex R=client T=send_to_server H=dane512ee.test.ex [ip4.ip4.ip4.ip4]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=dane C="250 OK id=10HmcH-0005vi-00"
+1999-03-02 09:44:33 10HmcF-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qq
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmaX-0005vi-00@myhost.test.ex for t00@mxdane512ee.test.ex
-1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <t00@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmaX-0005vi-00@myhost.test.ex for t@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <t@mxdane512ee.test.ex> R=server
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee1.test.ex S=sss id=E10HmaX-0005vi-00@myhost.test.ex for t01@mxdane512ee1.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <t01@mxdane512ee1.test.ex> R=server
-1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for t00@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <t00@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee1.test.ex S=sss id=E10HmaZ-0005vi-00@myhost.test.ex for t01@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 => :blackhole: <t01@mxdane512ee1.test.ex> R=server
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmbC-0005vi-00@myhost.test.ex for t10@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <t10@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee1.test.ex S=sss id=E10HmbD-0005vi-00@myhost.test.ex for t11@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmbF-0005vi-00 => :blackhole: <t11@mxdane512ee1.test.ex> R=server
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmbG-0005vi-00@myhost.test.ex for t20@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbI-0005vi-00 => :blackhole: <t20@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee1.test.ex S=sss id=E10HmbH-0005vi-00@myhost.test.ex for t21@mxdane512ee1.test.ex
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => :blackhole: <t21@mxdane512ee1.test.ex> R=server
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmbK-0005vi-00@myhost.test.ex for t30@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbM-0005vi-00 => :blackhole: <t30@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-0005vi-00@myhost.test.ex for t31@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbN-0005vi-00 => :blackhole: <t31@mxnondane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmbO-0005vi-00@myhost.test.ex for t40@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbQ-0005vi-00 => :blackhole: <t40@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbR-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbP-0005vi-00@myhost.test.ex for t41@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbR-0005vi-00 => :blackhole: <t41@mxnondane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbR-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbU-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmbS-0005vi-00@myhost.test.ex for t50@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbU-0005vi-00 => :blackhole: <t50@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbU-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbV-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=MY-SNI S=sss id=E10HmbT-0005vi-00@myhost.test.ex for t51@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbV-0005vi-00 => :blackhole: <t51@mxnondane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbV-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbY-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmbW-0005vi-00@myhost.test.ex for t60@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmbY-0005vi-00 => :blackhole: <t60@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbZ-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=MY-SNI S=sss id=E10HmbX-0005vi-00@myhost.test.ex for t61@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmbZ-0005vi-00 => :blackhole: <t61@mxnondane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmbZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcC-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmcA-0005vi-00@myhost.test.ex for t70@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmcC-0005vi-00 => :blackhole: <t70@mxnondane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmcC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcD-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmcB-0005vi-00@myhost.test.ex for t71@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmcD-0005vi-00 => :blackhole: <t71@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmcD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcG-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=SNISNISNISNI S=sss id=E10HmcE-0005vi-00@myhost.test.ex for t80@mxnondane512ee.test.ex
+1999-03-02 09:44:33 10HmcG-0005vi-00 => :blackhole: <t80@mxnondane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmcG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcH-0005vi-00 <= <> H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no SNI=mxdane512ee.test.ex S=sss id=E10HmcF-0005vi-00@myhost.test.ex for t91@mxdane512ee.test.ex
+1999-03-02 09:44:33 10HmcH-0005vi-00 => :blackhole: <t91@mxdane512ee.test.ex> R=server
+1999-03-02 09:44:33 10HmcH-0005vi-00 Completed

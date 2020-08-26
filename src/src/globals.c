@@ -729,6 +729,8 @@ uid_t   config_uid             = 0;
 
 int     connection_max_messages= -1;
 uschar *continue_proxy_cipher  = NULL;
+BOOL    continue_proxy_dane    = FALSE;
+uschar *continue_proxy_sni     = NULL;
 uschar *continue_hostname      = NULL;
 uschar *continue_host_address  = NULL;
 int     continue_sequence      = 1;

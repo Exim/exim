@@ -1620,8 +1620,8 @@ return FALSE;
 
 typedef struct smtp_compare_s
 {
-    uschar                          *current_sender_address;
-    struct transport_instance       *tblock;
+    uschar *			current_sender_address;
+    struct transport_instance *	tblock;
 } smtp_compare_t;
 
 
@@ -1990,6 +1990,74 @@ if (sx->smtps)
   return ERROR;
   }
 #endif
+
+#ifdef SUPPORT_DANE
+/* If we have a proxied TLS connection, check usability for this message */
+
+if (continue_hostname && continue_proxy_cipher)
+  {
+  int rc;
+  const uschar * sni = US"";
+
+  /* Check if the message will be DANE-verified; if so force its SNI */
+
+  smtp_port_for_connect(sx->conn_args.host, sx->port);
+  if (  sx->conn_args.host->dnssec == DS_YES
+     && (  sx->dane_required
+	|| verify_check_given_host(CUSS &ob->hosts_try_dane, sx->conn_args.host) == OK
+     )  )
+    switch (rc = tlsa_lookup(sx->conn_args.host, &sx->conn_args.tlsa_dnsa, sx->dane_required))
+      {
+      case OK:		sx->conn_args.dane = TRUE;
+			ob->tls_tempfail_tryclear = FALSE;	/* force TLS */
+			ob->tls_sni = sx->first_addr->domain;	/* force SNI */
+			break;
+      case FAIL_FORCED:	break;
+      default:		set_errno_nohost(sx->addrlist, ERRNO_DNSDEFER,
+			      string_sprintf("DANE error: tlsa lookup %s",
+				rc_to_string(rc)),
+			      rc, FALSE, &sx->delivery_start);
+# ifndef DISABLE_EVENT
+			    (void) event_raise(sx->conn_args.tblock->event_action,
+			      US"dane:fail", sx->dane_required
+				?  US"dane-required" : US"dnssec-invalid");
+# endif
+			    return rc;
+      }
+
+  /* If the SNI required for the new message differs from the existing conn
+  drop the connection to force a new one. */
+
+  if (ob->tls_sni && !(sni = expand_cstring(ob->tls_sni)))
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "<%s>: failed to expand transport's tls_sni value: %s",
+      sx->addrlist->address, expand_string_message);
+
+  if (  (continue_proxy_sni ? (Ustrcmp(continue_proxy_sni, sni) == 0) : !*sni)
+     && continue_proxy_dane == sx->conn_args.dane)
+    {
+    tls_out.sni = US sni;
+    if ((tls_out.dane_verified = continue_proxy_dane))
+      sx->conn_args.host->dnssec = DS_YES;
+    }
+  else
+    {
+    DEBUG(D_transport)
+      debug_printf("Closing proxied-TLS connection due to SNI mismatch\n");
+
+    HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> QUIT\n");
+    write(0, "QUIT\r\n", 6);
+    close(0);
+    tls_out.dane_verified = FALSE;
+    continue_hostname = continue_proxy_cipher = NULL;
+    f.continue_more = FALSE;
+    continue_sequence = 1;	/* Unfortunately, this process cannot affect success log
+    				which is done by delivery proc.  Would have to pass this
+				back through reporting pipe. */
+    }
+  }
+#endif
+
 
 /* Make a connection to the host if this isn't a continued delivery, and handle
 the initial interaction and HELO/EHLO/LHLO. Connect timeout errors are handled
@@ -3430,7 +3498,7 @@ BOOL pass_message = FALSE;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffers */
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
 BOOL dane_held;
 #endif
 
@@ -3449,7 +3517,7 @@ sx->conn_args.tblock = tblock;
 gettimeofday(&sx->delivery_start, NULL);
 sx->sync_addr = sx->first_addr = addrlist;
 
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
 DANE_DOMAINS:
 dane_held = FALSE;
 #endif
@@ -3464,7 +3532,7 @@ if ((rc = smtp_setup_conn(sx, suppress_tls)) != OK)
   goto TIDYUP;
   }
 
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
 /* If the connection used DANE, ignore for now any addresses with incompatible
 domains.  The SNI has to be the domain.  Arrange a whole new TCP conn later,
 just in case only TLS isn't enough. */
@@ -4184,8 +4252,8 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
   t_compare.tblock = tblock;
   t_compare.current_sender_address = sender_address;
 
-  if (  sx->first_addr != NULL
-     || f.continue_more
+  if (  sx->first_addr != NULL		/* more addrs for this message */
+     || f.continue_more			/* more addrs for coninued-host */
      || (
 #ifndef DISABLE_TLS
 	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
@@ -4232,7 +4300,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 
 
       if (sx->first_addr != NULL)	/* More addresses still to be sent */
-        {				/*   on this connection            */
+        {				/*   for this message              */
         continue_sequence++;		/* Causes * in logging */
 	pipelining_active = sx->pipelining_used;    /* was cleared at DATA */
         goto SEND_MESSAGE;
@@ -4256,6 +4324,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 
 	  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
 	  sx->cctx.tls_ctx = NULL;
+	  tls_out.active.sock = -1;
 	  smtp_peer_options = smtp_peer_options_wrap;
 	  sx->ok = !sx->smtps
 	    && smtp_write_command(sx, SCMD_FLUSH, "EHLO %s\r\n", sx->helo_data)
@@ -4399,7 +4468,7 @@ if (sx->send_quit)
 (void) event_raise(tblock->event_action, US"tcp:close", NULL);
 #endif
 
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
 if (dane_held)
   {
   sx->first_addr = NULL;
@@ -4425,7 +4494,7 @@ continue_hostname = NULL;
 return yield;
 
 TIDYUP:
-#if !defined(DISABLE_TLS) && defined(SUPPORT_DANE)
+#ifdef SUPPORT_DANE
 if (dane_held) for (address_item * a = sx->addrlist->next; a; a = a->next)
   if (a->transport_return == DANE)
     a->transport_return = PENDING_DEFER;

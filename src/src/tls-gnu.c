@@ -545,7 +545,10 @@ else
 
 /* peercert is set in peer_status() */
 tlsp->peerdn = state->peerdn;
-tlsp->sni =    state->received_sni;
+
+/* do not corrupt sni sent by client; record sni rxd by server */
+if (!state->host)
+  tlsp->sni = state->received_sni;
 
 /* record our certificate */
   {
@@ -2889,6 +2892,7 @@ if (!cipher_list)
       ob->tls_sni, ob->tls_verify_certificates, ob->tls_crl,
       cipher_list, &state, tlsp, errstr) != OK)
     return FALSE;
+
 
 #ifdef MEASURE_TIMING
   report_time_since(&t0, US"client tls_init (delta)");

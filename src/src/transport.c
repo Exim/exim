@@ -1661,6 +1661,7 @@ DEBUG(D_transport)
   debug_printf("transport_check_waiting entered\n");
   debug_printf("  sequence=%d local_max=%d global_max=%d\n",
     continue_sequence, local_message_max, connection_max_messages);
+  acl_level++;
   }
 
 /* Do nothing if we have hit the maximum number that can be send down one
@@ -1670,23 +1671,23 @@ if (connection_max_messages >= 0) local_message_max = connection_max_messages;
 if (local_message_max > 0 && continue_sequence >= local_message_max)
   {
   DEBUG(D_transport)
-    debug_printf("max messages for one connection reached: returning\n");
-  return FALSE;
+    debug_printf_indent("max messages for one connection reached: returning\n");
+  goto retfalse;
   }
 
 /* Open the waiting information database. */
 
 if (!(dbm_file = dbfn_open(string_sprintf("wait-%.200s", transport_name),
 			  O_RDWR, &dbblock, TRUE, TRUE)))
-  return FALSE;
+  goto retfalse;
 
 /* See if there is a record for this host; if not, there's nothing to do. */
 
 if (!(host_record = dbfn_read(dbm_file, hostname)))
   {
   dbfn_close(dbm_file);
-  DEBUG(D_transport) debug_printf("no messages waiting for %s\n", hostname);
-  return FALSE;
+  DEBUG(D_transport) debug_printf_indent("no messages waiting for %s\n", hostname);
+  goto retfalse;
   }
 
 /* If the data in the record looks corrupt, just log something and
@@ -1697,7 +1698,7 @@ if (host_record->count > WAIT_NAME_MAX)
   dbfn_close(dbm_file);
   log_write(0, LOG_MAIN|LOG_PANIC, "smtp-wait database entry for %s has bad "
     "count=%d (max=%d)", hostname, host_record->count, WAIT_NAME_MAX);
-  return FALSE;
+  goto retfalse;
   }
 
 /* Scan the message ids in the record from the end towards the beginning,
@@ -1835,8 +1836,8 @@ while (1)
   if (host_length <= 0)
     {
     dbfn_close(dbm_file);
-    DEBUG(D_transport) debug_printf("waiting messages already delivered\n");
-    return FALSE;
+    DEBUG(D_transport) debug_printf_indent("waiting messages already delivered\n");
+    goto retfalse;
     }
 
   /* we were not able to find an acceptable message, nor was there a
@@ -1847,7 +1848,7 @@ while (1)
     {
     Ustrcpy(new_message_id, message_id);
     dbfn_close(dbm_file);
-    return FALSE;
+    goto retfalse;
     }
   }		/* we need to process a continuation record */
 
@@ -1865,7 +1866,12 @@ if (host_length > 0)
   }
 
 dbfn_close(dbm_file);
+DEBUG(D_transport) {acl_level--; debug_printf("transport_check_waiting: TRUE\n"); }
 return TRUE;
+
+retfalse:
+DEBUG(D_transport) {acl_level--; debug_printf("transport_check_waiting: FALSE\n"); }
+return FALSE;
 }
 
 /*************************************************
@@ -1877,7 +1883,7 @@ void
 transport_do_pass_socket(const uschar *transport_name, const uschar *hostname,
   const uschar *hostaddress, uschar *id, int socket_fd)
 {
-int i = 20;
+int i = 22;
 const uschar **argv;
 
 /* Set up the calling arguments; use the standard function for the basics,
@@ -1898,6 +1904,12 @@ if (smtp_peer_options & OPTION_TLS)
     argv[i++] = sending_ip_address;
     argv[i++] = string_sprintf("%d", sending_port);
     argv[i++] = tls_out.active.sock >= 0 ? tls_out.cipher : continue_proxy_cipher;
+
+    if (tls_out.sni)
+      {
+      argv[i++] = tls_out.dane_verified ? US"-MCr" : US"-MCs";
+      argv[i++] = tls_out.sni;
+      }
     }
   else
     argv[i++] = US"-MCT";

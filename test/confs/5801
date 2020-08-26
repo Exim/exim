@@ -2,7 +2,7 @@
 # DANE common
 
 SERVER=
-CONTROL= *
+OPT=
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -48,16 +48,16 @@ tls_privatekey = ${if eq {SERVER}{server} \
 begin routers
 
 client:
-  driver = dnslookup
-  condition = ${if eq {SERVER}{}}
+  driver =	dnslookup
+  condition =	${if eq {SERVER}{}}
   dnssec_request_domains = *
-  self = send
-  transport = send_to_server
-  errors_to = ""
+  self =	send
+  transport =	send_to_server
+  errors_to =	""
 
 server:
-  driver = redirect
-  data = :blackhole:
+  driver =	redirect
+  data =	:blackhole:
 
 
 # ----- Transports -----
@@ -65,16 +65,14 @@ server:
 begin transports
 
 send_to_server:
-  driver = smtp
+  driver =		smtp
   allow_localhost
-  port = PORT_D
+  port =		PORT_D
   hosts_try_fastopen =	:
 
-  hosts_try_dane =     CONTROL
-  hosts_require_dane = HOSTIPV4
-  tls_verify_cert_hostnames = ${if eq {OPT}{no_certname} {}{*}}
-  tls_try_verify_hosts = thishost.test.ex
-  tls_verify_certificates = ${if eq {DETAILS}{ca} {CDIR2/ca_chain.pem} {}}
+  hosts_try_dane =	*
+  tls_sni =		OPT
+  tls_verify_certificates =
 
 
 
