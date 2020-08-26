@@ -1907,7 +1907,11 @@ if (smtp_peer_options & OPTION_TLS)
 
     if (tls_out.sni)
       {
-      argv[i++] = tls_out.dane_verified ? US"-MCr" : US"-MCs";
+      argv[i++] =
+#ifdef SUPPORT_DANE
+        tls_out.dane_verified ? US"-MCr" :
+#endif
+        US"-MCs";
       argv[i++] = tls_out.sni;
       }
     }
