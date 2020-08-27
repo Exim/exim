@@ -38090,7 +38090,8 @@ fields record the router and transport that were used to process the address.
 If SMTP AUTH was used for the delivery there is an additional item A=
 followed by the name of the authenticator that was used.
 If an authenticated identification was set up by the authenticator's &%client_set_id%&
-option, this is logged too, separated by a colon from the authenticator name.
+option, this is logged too, as a second colon-separated list item.
+Optionally (see the &%smtp_mailauth%& &%log_selector%&) there may be a third list item.
 
 If a shadow transport was run after a successful local delivery, the log line
 for the successful delivery has an item added on the end, of the form
