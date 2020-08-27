@@ -1987,7 +1987,7 @@ if (sx->smtps)
 	    DEFER, FALSE, &sx->delivery_start);
   return ERROR;
   }
-#endif
+#else
 
 /* If we have a proxied TLS connection, check usability for this message */
 
@@ -1996,7 +1996,7 @@ if (continue_hostname && continue_proxy_cipher)
   int rc;
   const uschar * sni = US"";
 
-#ifdef SUPPORT_DANE
+# ifdef SUPPORT_DANE
   /* Check if the message will be DANE-verified; if so force its SNI */
 
   tls_out.dane_verified = FALSE;
@@ -2016,14 +2016,14 @@ if (continue_hostname && continue_proxy_cipher)
 			      string_sprintf("DANE error: tlsa lookup %s",
 				rc_to_string(rc)),
 			      rc, FALSE, &sx->delivery_start);
-# ifndef DISABLE_EVENT
+#  ifndef DISABLE_EVENT
 			    (void) event_raise(sx->conn_args.tblock->event_action,
 			      US"dane:fail", sx->dane_required
 				?  US"dane-required" : US"dnssec-invalid");
-# endif
+#  endif
 			    return rc;
       }
-#endif
+# endif
 
   /* If the SNI or the DANE status required for the new message differs from the
   existing conn drop the connection to force a new one. */
@@ -2033,7 +2033,7 @@ if (continue_hostname && continue_proxy_cipher)
       "<%s>: failed to expand transport's tls_sni value: %s",
       sx->addrlist->address, expand_string_message);
 
-#ifdef SUPPORT_DANE
+# ifdef SUPPORT_DANE
   if (  (continue_proxy_sni ? (Ustrcmp(continue_proxy_sni, sni) == 0) : !*sni)
      && continue_proxy_dane == sx->conn_args.dane)
     {
@@ -2041,10 +2041,10 @@ if (continue_hostname && continue_proxy_cipher)
     if ((tls_out.dane_verified = continue_proxy_dane))
       sx->conn_args.host->dnssec = DS_YES;
     }
-#else
+# else
   if ((continue_proxy_sni ? (Ustrcmp(continue_proxy_sni, sni) == 0) : !*sni))
     tls_out.sni = US sni;
-#endif
+# endif
   else
     {
     DEBUG(D_transport)
@@ -2060,7 +2060,7 @@ if (continue_hostname && continue_proxy_cipher)
 				back through reporting pipe. */
     }
   }
-
+#endif	/*!DISABLE_TLS*/
 
 /* Make a connection to the host if this isn't a continued delivery, and handle
 the initial interaction and HELO/EHLO/LHLO. Connect timeout errors are handled
