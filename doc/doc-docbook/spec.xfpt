@@ -38607,9 +38607,9 @@ the next chapter. The utilities described here are:
   "check address acceptance from given IP"
 .irow &<<SECTdbmbuild>>&      &'exim_dbmbuild'& "build a DBM file"
 .irow &<<SECTfinindret>>&     &'exinext'&       "extract retry information"
-.irow &<<SECThindatmai>>&     &'exim_dumpdb'&   "dump a hints database"
-.irow &<<SECThindatmai>>&     &'exim_tidydb'&   "clean up a hints database"
-.irow &<<SECThindatmai>>&     &'exim_fixdb'&    "patch a hints database"
+.irow &<<SECTdumpdb>>&        &'exim_dumpdb'&   "dump a hints database"
+.irow &<<SECTtidydb>>&        &'exim_tidydb'&   "clean up a hints database"
+.irow &<<SECTfixdb>>&         &'exim_fixdb'&    "patch a hints database"
 .irow &<<SECTmailboxmaint>>&  &'exim_lock'&     "lock a mailbox file"
 .endtable
 
@@ -39111,7 +39111,7 @@ in a transport)
 
 
 
-.section "exim_dumpdb" "SECID261"
+.section "exim_dumpdb" "SECTdumpdb"
 .cindex "&'exim_dumpdb'&"
 The entire contents of a database are written to the standard output by the
 &'exim_dumpdb'& program, which has no options or arguments other than the
@@ -39148,7 +39148,7 @@ cross-references.
 
 
 
-.section "exim_tidydb" "SECID262"
+.section "exim_tidydb" "SECTtidydb"
 .cindex "&'exim_tidydb'&"
 The &'exim_tidydb'& utility program is used to tidy up the contents of a hints
 database. If run with no options, it removes all records that are more than 30
@@ -39197,7 +39197,7 @@ databases is likely to keep on increasing.
 
 
 
-.section "exim_fixdb" "SECID263"
+.section "exim_fixdb" "SECTfixdb"
 .cindex "&'exim_fixdb'&"
 The &'exim_fixdb'& program is a utility for interactively modifying databases.
 Its main use is for testing Exim, but it might also be occasionally useful for
