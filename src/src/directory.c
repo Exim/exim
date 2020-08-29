@@ -44,6 +44,9 @@ uschar c = 1;
 struct stat statbuf;
 uschar * path;
 
+if (is_tainted(name)) 
+  { p = US"create"; path = US name; errno = ERRNO_TAINT; goto bad; }
+
 if (parent)
   {
   path = string_sprintf("%s%s%s", parent, US"/", name);
@@ -85,7 +88,7 @@ return TRUE;
 
 bad:
   if (panic) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "Failed to %s directory \"%s\": %s\n", p, path, strerror(errno));
+    "Failed to %s directory \"%s\": %s\n", p, path, exim_errstr(errno));
   return FALSE;
 }
 

@@ -505,6 +505,9 @@ spool_move_message(uschar *id, uschar *subdir, uschar *from, uschar *to)
 {
 uschar * dest_qname = queue_name_dest ? queue_name_dest : queue_name;
 
+/* Since we are working within the spool, de-taint the dest queue name */
+dest_qname = string_copy_taint(dest_qname, FALSE);
+
 /* Create any output directories that do not exist. */
 
 (void) directory_make(spool_directory,
