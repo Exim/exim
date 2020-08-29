@@ -75,7 +75,7 @@ retry time not reached: checking ultimate address timeout
   now=tttt first_failed=tttt next_try=tttt expired=F
   received_time=tttt diff=tttt timeout=259200
 LOG: retry_defer MAIN
-  == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-52): Retry time not yet reached
+  == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-53): Retry time not yet reached
 Processing retry items
 Succeeded addresses:
  x@test.ex: no retry items

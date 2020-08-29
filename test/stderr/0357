@@ -173,7 +173,7 @@ retry time not reached: checking ultimate address timeout
   now=tttt first_failed=tttt next_try=tttt expired=F
   received_time=tttt diff=tttt timeout=3600
 LOG: retry_defer MAIN
-  == userx@test.ex routing defer (-51): retry time not reached
+  == userx@test.ex routing defer (-52): retry time not reached
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

@@ -12,7 +12,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmbB-0005vi-00 == usery@domf.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbB-0005vi-00 == usery@domf.ex R=all T=smtp defer (-57): concurrency limit reached for transport
 1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@dome.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
@@ -27,7 +27,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmbG-0005vi-00 == usery@doml.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbG-0005vi-00 == usery@doml.ex R=all T=smtp defer (-57): concurrency limit reached for transport
 1999-03-02 09:44:33 10HmbG-0005vi-00 => userx@domk.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbH-0005vi-00"
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
@@ -36,7 +36,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmbJ-0005vi-00 == usery@domn.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbJ-0005vi-00 == usery@domn.ex R=all T=smtp defer (-57): concurrency limit reached for transport
 1999-03-02 09:44:33 10HmbJ-0005vi-00 => userx@domm.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbK-0005vi-00"
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
@@ -45,7 +45,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp
-1999-03-02 09:44:33 10HmbM-0005vi-00 == userz@domq.ex R=all T=smtp defer (-56): concurrency limit reached for transport
+1999-03-02 09:44:33 10HmbM-0005vi-00 == userz@domq.ex R=all T=smtp defer (-57): concurrency limit reached for transport
 1999-03-02 09:44:33 10HmbM-0005vi-00 => userx@domp.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbN-0005vi-00"
 1999-03-02 09:44:33 10HmbM-0005vi-00 -> usery@domp.ex R=all T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbN-0005vi-00"
 1999-03-02 09:44:33 End queue run: pid=pppp

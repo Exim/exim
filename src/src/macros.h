@@ -565,19 +565,20 @@ table exim_errstrings[] in log.c */
 #define ERRNO_AUTHPROB       (-48)   /* Authenticator "other" failure */
 #define ERRNO_UTF8_FWD       (-49)   /* target not supporting SMTPUTF8 */
 #define ERRNO_HOST_IS_LOCAL  (-50)   /* Transport refuses to talk to localhost */
+#define ERRNO_TAINT          (-51)   /* Transport refuses to talk use tainted filename */
 
 /* These must be last, so all retry deferments can easily be identified */
 
-#define ERRNO_RETRY_BASE     (-51)   /* Base to test against */
-#define ERRNO_RRETRY         (-51)   /* Not time for routing */
+#define ERRNO_RETRY_BASE     (-52)   /* Base to test against */
+#define ERRNO_RRETRY         (-52)   /* Not time for routing */
 
-#define ERRNO_WARN_BASE      (-52)   /* Base to test against */
-#define ERRNO_LRETRY         (-52)   /* Not time for local delivery */
-#define ERRNO_HRETRY         (-53)   /* Not time for any remote host */
-#define ERRNO_LOCAL_ONLY     (-54)   /* Local-only delivery */
-#define ERRNO_QUEUE_DOMAIN   (-55)   /* Domain in queue_domains */
-#define ERRNO_TRETRY         (-56)   /* Transport concurrency limit */
-#define ERRNO_EVENT	     (-57)   /* Event processing request alternate response */
+#define ERRNO_WARN_BASE      (-53)   /* Base to test against */
+#define ERRNO_LRETRY         (-53)   /* Not time for local delivery */
+#define ERRNO_HRETRY         (-54)   /* Not time for any remote host */
+#define ERRNO_LOCAL_ONLY     (-55)   /* Local-only delivery */
+#define ERRNO_QUEUE_DOMAIN   (-56)   /* Domain in queue_domains */
+#define ERRNO_TRETRY         (-57)   /* Transport concurrency limit */
+#define ERRNO_EVENT	     (-58)   /* Event processing request alternate response */
 
 
 

@@ -16,7 +16,7 @@ LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmaZ-0005vi-00
 LOG: retry_defer MAIN
-  == xxx@local.test.ex routing defer (-55): domain is in queue_domains
+  == xxx@local.test.ex routing defer (-56): domain is in queue_domains
 LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmbB-0005vi-00
@@ -68,7 +68,7 @@ LOG: MAIN
   <= CALLER@myhost.ex U=CALLER P=local S=sss
 delivering 10HmbG-0005vi-00
 LOG: retry_defer MAIN
-  == xxx@local.test.ex routing defer (-55): domain is in queue_domains
+  == xxx@local.test.ex routing defer (-56): domain is in queue_domains
 delivering 10HmbG-0005vi-00
 LOG: MAIN
   *> xxx@local.test.ex R=localreally T=local_delivery

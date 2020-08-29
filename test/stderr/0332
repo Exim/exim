@@ -49,7 +49,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 Considering: delay@test.again.dns
 unique = delay@test.again.dns
 LOG: retry_defer MAIN
-  == delay@test.again.dns routing defer (-51): reusing SMTP connection skips previous routing defer
+  == delay@test.again.dns routing defer (-52): reusing SMTP connection skips previous routing defer
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: ok@no.delay
 unique = ok@no.delay
@@ -88,7 +88,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 Considering: delay@test.again.dns
 unique = delay@test.again.dns
 LOG: retry_defer MAIN
-  == delay@test.again.dns routing defer (-51): retry time not reached
+  == delay@test.again.dns routing defer (-52): retry time not reached
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

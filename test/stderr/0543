@@ -43,7 +43,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 Considering: usery@domain1
 unique = usery@domain1
 LOG: retry_defer MAIN
-  == usery@domain1 routing defer (-51): retry time not reached
+  == usery@domain1 routing defer (-52): retry time not reached
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 After routing:
   Local deliveries:

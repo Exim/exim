@@ -105,7 +105,8 @@ static const uschar * exim_errstrings[] = {
   US"Negotiation failed for proxy configured host",
   US"Authenticator 'other' failure",
   US"target not supporting SMTPUTF8",
-  US"",
+  US"host is local",
+  US"tainted filename",
 
   US"Not time for routing",
   US"Not time for local delivery",
