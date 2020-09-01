@@ -1557,6 +1557,23 @@ return arc_try_header(&arc_sign_ctx, headers_rlist->h, TRUE);
 
 
 
+/* Per RFCs 6376, 7489 the only allowed chars in either an ADMD id
+or a selector are ALPHA/DIGGIT/'-'/'.'
+
+Check, to help catch misconfigurations such as a missing selector
+element in the arc_sign list.
+*/
+
+static BOOL
+arc_valid_id(const uschar * s)
+{
+for (uschar c; c = *s++; )
+  if (!isalnum(c) && c != '-' && c != '.') return FALSE;
+return TRUE;
+}
+
+
+
 /* ARC signing.  Called from the smtp transport, if the arc_sign option is set.
 The dkim_exim_sign() function has already been called, so will have hashed the
 message body for us so long as we requested a hash previously.
@@ -1595,10 +1612,13 @@ selector = string_nextinlist(&signspec, &sep, NULL, 0);
 if (  !*identity || !*selector
    || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0)) || !*privkey)
   {
-  log_write(0, LOG_MAIN, "ARC: bad signing-specification (%s)",
-    !*identity ? "identity" : !*selector ? "selector" : "private-key");
-  return sigheaders ? sigheaders : string_get(0);
+  s = !*identity ? US"identity" : !*selector ? US"selector" : US"private-key";
+  goto bad_arg_ret;
   }
+if (!arc_valid_id(identity))
+  { s = US"identity"; goto bad_arg_ret; }
+if (!arc_valid_id(selector))
+  { s = US"selector"; goto bad_arg_ret; }
 if (*privkey == '/' && !(privkey = expand_file_big_buffer(privkey)))
   return sigheaders ? sigheaders : string_get(0);
 
@@ -1718,6 +1738,11 @@ if (sigheaders) g = string_catn(g, sigheaders->s, sigheaders->ptr);
 (void) string_from_gstring(g);
 gstring_release_unused(g);
 return g;
+
+
+bad_arg_ret:
+  log_write(0, LOG_MAIN, "ARC: bad signing-specification (%s)", s);
+  return sigheaders ? sigheaders : string_get(0);
 }
 
 
