@@ -21,8 +21,8 @@
 1999-03-02 09:44:33 10HmbG-0005vi-00 client ocsp status: 1 (notresp)
 1999-03-02 09:44:33 10HmbG-0005vi-00 == failrevoked@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (certificate verification failed): certificate revoked
 1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@server1.example.com U=CALLER P=local S=sss
-1999-03-02 09:44:33 10HmbH-0005vi-00 client ocsp status: 3 (failed)
-1999-03-02 09:44:33 10HmbH-0005vi-00 == failexpired@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (certificate status check failed)
+1999-03-02 09:44:33 10HmbH-0005vi-00 client ocsp status: 1 (notresp)
+1999-03-02 09:44:33 10HmbH-0005vi-00 == failexpired@test.ex R=client T=send_to_server3 defer (-37) H=127.0.0.1 [127.0.0.1]: TLS session: (certificate verification failed): certificate invalid
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
@@ -48,4 +48,4 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (recv): A TLS fatal alert has been received: Certificate is bad
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (recv): The TLS connection was non-properly terminated.
+1999-03-02 09:44:33 TLS error on connection from [127.0.0.1] (recv): A TLS fatal alert has been received: Certificate is bad
