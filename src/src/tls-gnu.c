@@ -3167,6 +3167,7 @@ DEBUG(D_tls) debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, buf
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) ALARM(smtp_receive_timeout);
 
+errno = 0;
 do
   inbytes = gnutls_record_recv(state->session, state->xfer_buffer,
     MIN(ssl_xfer_buffer_size, lim));
@@ -3327,6 +3328,7 @@ DEBUG(D_tls)
   debug_printf("Calling gnutls_record_recv(session=%p, buffer=%p, len=" SIZE_T_FMT ")\n",
       state->session, buff, len);
 
+errno = 0;
 do
   inbytes = gnutls_record_recv(state->session, buff, len);
 while (inbytes == GNUTLS_E_AGAIN);
@@ -3390,6 +3392,7 @@ while (left > 0)
   DEBUG(D_tls) debug_printf("gnutls_record_send(session=%p, buffer=%p, left=" SIZE_T_FMT ")\n",
       state->session, buff, left);
 
+  errno = 0;
   do
     outbytes = gnutls_record_send(state->session, buff, left);
   while (outbytes == GNUTLS_E_AGAIN);
