@@ -113,7 +113,7 @@ int options = *opt_ptr;
 open_db dbblock;
 open_db *dbm_file = NULL;
 
-/* Open the callout cache database, it it exists, for reading only at this
+/* Open the callout cache database, if it exists, for reading only at this
 stage, unless caching has been disabled. */
 
 if (options & vopt_callout_no_cache)
