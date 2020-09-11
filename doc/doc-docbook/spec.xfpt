@@ -32608,7 +32608,7 @@ in kilobytes, megabytes, or gigabytes, respectively.
 
 The &%per_rcpt%& option causes Exim to limit the rate at which recipients are
 accepted. It can be used in the &%acl_smtp_rcpt%&, &%acl_smtp_predata%&,
-&%acl_smtp_mime%&, &%acl_smtp_data%&, or &%acl_smtp_rcpt%& ACLs. In
+&%acl_smtp_mime%&, or &%acl_smtp_data%& ACLs. In
 &%acl_smtp_rcpt%& the rate is updated one recipient at a time; in the other
 ACLs the rate is updated with the total (accepted) recipient count in one go. Note that
 in either case the rate limiting engine will see a message with many
