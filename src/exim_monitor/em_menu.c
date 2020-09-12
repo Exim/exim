@@ -115,7 +115,8 @@ static Arg item_99_arg[] = {
 *        Destroy the menu when popped down       *
 *************************************************/
 
-static void popdownAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+popdownAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 if (highlighted_x >= 0)
   XawTextSinkDisplayText(queue_text_sink,
@@ -211,7 +212,8 @@ unless action_output is set. We can't, however, tell until we have run
 the command whether we want the output or not, so the pipe has to be set up in
 all cases. */
 
-static void ActOnMessage(uschar *id, uschar *action, uschar *address_arg)
+static void
+ActOnMessage(uschar *id, uschar *action, uschar *address_arg)
 {
 int pid;
 int pipe_fd[2];
@@ -397,34 +399,31 @@ if (pid < 0) text_showf(text, "Failed to fork: %s\n", strerror(errno)); else
 *        Cause a message to be delivered         *
 *************************************************/
 
-static void deliverAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+deliverAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 ActOnMessage(US client_data, US"-v -M", US"");
 }
-
-
 
 /*************************************************
 *        Cause a message to be Frozen            *
 *************************************************/
 
-static void freezeAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+freezeAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 ActOnMessage(US client_data, US"-Mf", US"");
 }
-
-
 
 /*************************************************
 *        Cause a message to be thawed            *
 *************************************************/
 
-static void thawAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+thawAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 ActOnMessage(US client_data, US"-Mt", US"");
 }
-
-
 
 /*************************************************
 *          Take action using dialog data         *
@@ -434,7 +433,8 @@ ActOnMessage(US client_data, US"-Mt", US"");
 in. It is global because it is set up in the action table at
 start-up time. If the string is empty, do nothing. */
 
-XtActionProc dialogAction(Widget w, XEvent *event, String *ss, Cardinal *c)
+XtActionProc
+dialogAction(Widget w, XEvent *event, String *ss, Cardinal *c)
 {
 uschar *s = US XawDialogGetValueString(dialog_widget);
 
@@ -459,7 +459,8 @@ return NULL;
 be done to the application until the box is filled in. This
 function is also used by the Hide button handler. */
 
-void create_dialog(uschar *label, uschar *value)
+void
+create_dialog(uschar *label, uschar *value)
 {
 Arg warg[4];
 Dimension x, y, xx, yy;
@@ -521,9 +522,6 @@ XFlush(X_display);
 }
 
 
-
-
-
 /*************************************************
 *        Cause a recipient to be added           *
 *************************************************/
@@ -531,7 +529,8 @@ XFlush(X_display);
 /* This just sets up the dialog box; the action happens when it has been filled
 in. */
 
-static void addrecipAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+addrecipAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 Ustrncpy(actioned_message, client_data, 24);
 actioned_message[23] = '\0';
@@ -540,13 +539,12 @@ dialog_ref_widget = menushell;
 create_dialog(US"Recipient address to add?", US"");
 }
 
-
-
 /*************************************************
 *    Cause an address to be marked delivered     *
 *************************************************/
 
-static void markdelAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+markdelAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 Ustrncpy(actioned_message, client_data, 24);
 actioned_message[23] = '\0';
@@ -555,23 +553,22 @@ dialog_ref_widget = menushell;
 create_dialog(US"Recipient address to mark delivered?", US"");
 }
 
-
 /*************************************************
 *   Cause all addresses to be marked delivered   *
 *************************************************/
 
-static void markalldelAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+markalldelAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 ActOnMessage(US client_data, US"-Mmad", US"");
 }
-
 
 /*************************************************
 *        Edit the message's sender               *
 *************************************************/
 
-static void editsenderAction(Widget w, XtPointer client_data,
-  XtPointer call_data)
+static void
+editsenderAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 queue_item *q;
 uschar *sender;
@@ -585,37 +582,34 @@ dialog_ref_widget = menushell;
 create_dialog(US"New sender address?", sender);
 }
 
-
 /*************************************************
 *    Cause a message to be returned to sender    *
 *************************************************/
 
-static void giveupAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+giveupAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 ActOnMessage(US client_data, US"-v -Mg", US"");
 }
-
-
 
 /*************************************************
 *      Cause a message to be cancelled           *
 *************************************************/
 
-static void removeAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+removeAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 ActOnMessage(US client_data, US"-Mrm", US"");
 }
-
-
 
 /*************************************************
 *             Display a message's headers        *
 *************************************************/
 
-static void headersAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+headersAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 uschar buffer[256];
-header_line *h, *next;
 Widget text = text_create(US client_data, text_depth);
 rmark reset_point;
 
@@ -642,23 +636,21 @@ if (spool_read_header(buffer, TRUE, FALSE) != spool_read_OK)
   }
 
 if (sender_address)
-  {
   text_showf(text, "%s sender: <%s>\n", f.sender_local ? "Local" : "Remote",
     sender_address);
-  }
 
 if (recipients_list)
   {
-  int i;
   text_show(text, US"Recipients:\n");
-  for (i = 0; i < recipients_count; i++)
+  for (int i = 0; i < recipients_count; i++)
     text_showf(text, "  %s %s\n",
-      (tree_search(tree_nonrecipients, recipients_list[i].address) == NULL)?
-        " ":"*", recipients_list[i].address);
+      tree_search(tree_nonrecipients, recipients_list[i].address)
+        ? "*" : " ",
+      recipients_list[i].address);
   text_show(text, US"\n");
   }
 
-for (h = header_list; h; h = next)
+for (header_line * next, * h = header_list; h; h = next)
   {
   next = h->next;
   text_showf(text, "%c ", h->type);   /* Don't push h->text through a %s */
@@ -668,14 +660,12 @@ for (h = header_list; h; h = next)
 store_reset(reset_point);
 }
 
-
-
-
 /*************************************************
 *              Dismiss a text window             *
 *************************************************/
 
-static void dismissAction(Widget w, XtPointer client_data, XtPointer call_data)
+static void
+dismissAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
 XtPopdown((Widget)client_data);
 XtDestroyWidget((Widget)client_data);
@@ -696,7 +686,8 @@ for (pipe_item * p = pipe_chain; p; p = p->next)
 *             Set up popup text window           *
 *************************************************/
 
-static Widget text_create(uschar *name, int height)
+static Widget
+text_create(uschar *name, int height)
 {
 Widget textshell, form, text, button;
 
@@ -747,9 +738,6 @@ XtPopup(textshell, XtGrabNone);
 return text;
 }
 
-
-
-
 /*************************************************
 *            Set up menu in queue window         *
 *************************************************/
@@ -757,7 +745,8 @@ return text;
 /* We have added an action table that causes this function to
 be called, and set up button 2 in the text widgets to call it. */
 
-void menu_create(Widget w, XEvent *event, String *actargs, Cardinal *count)
+void
+menu_create(Widget w, XEvent *event, String *actargs, Cardinal *count)
 {
 int line;
 int i;
