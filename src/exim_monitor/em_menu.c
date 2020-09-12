@@ -670,7 +670,7 @@ if (spool_read_header(buffer, TRUE, FALSE) != spool_read_OK)
     sprintf(CS big_buffer, "%s/input/%s", spool_directory, buffer);
     if (Ustat(big_buffer, &statbuf) == 0)
       text_showf(text, "Format error in spool file %s: size=%lu\n", buffer,
-        (ulong)statbuf.st_size);
+        (unsigned long)statbuf.st_size);
     else text_showf(text, "Format error in spool file %s\n", buffer);
     }
   else text_showf(text, "Read error for spool file %s\n", buffer);
