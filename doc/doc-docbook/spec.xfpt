@@ -17319,6 +17319,9 @@ manager, there is no way of controlling the total number of simultaneous
 deliveries if the configuration allows a delivery attempt as soon as a message
 is received.
 
+See also the &%max_parallel%& generic transport option,
+and the &%serialize_hosts%& smtp transport option.
+
 .cindex "number of deliveries"
 .cindex "delivery" "maximum number of"
 If you want to control the total number of deliveries on the system, you
