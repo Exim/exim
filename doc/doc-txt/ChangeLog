@@ -116,6 +116,11 @@ JH/24 Bug 2634: Fix a taint trap seen on NetBSD: the testing coded for
       Find and fix by Gavan.  Although NetBSD is not a supported platform for
       4.94 this bug could affect other platforms.
 
+PP/01 Fix default prime selection to be consistent.
+      One path used ike23 still, instead of exim.dev.20160529.3; now both
+      execution flows will use the same DH primes (currently
+      exim.dev.20160529.3).
+
 
 Exim version 4.94
 -----------------

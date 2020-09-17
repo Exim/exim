@@ -959,11 +959,13 @@ struct dh_constant {
   const char *pem;
 };
 
+#define EXIM_DH_PRIME_DEFAULT dh_exim_20160529_3
+
 /* KEEP SORTED ALPHABETICALLY;
  * duplicate PEM are okay, if we want aliases, but names must be alphabetical */
 static struct dh_constant dh_constants[] = {
     /*  label			pem */
-    { "default",		dh_exim_20160529_3 },
+    { "default",		EXIM_DH_PRIME_DEFAULT },
     { "exim.dev.20160529.1",	dh_exim_20160529_1 },
     { "exim.dev.20160529.2",	dh_exim_20160529_2 },
     { "exim.dev.20160529.3",	dh_exim_20160529_3 },
@@ -993,7 +995,7 @@ static const int dh_constants_count =
 const char *
 std_dh_prime_default(void)
 {
-  return dh_ike_23_pem;
+  return EXIM_DH_PRIME_DEFAULT;
 }
 
 
