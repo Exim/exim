@@ -350,12 +350,12 @@ static const char dh_ike_18_pem[] =
 */
 static const char dh_ike_22_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIIBCAKBgQCxC4+WoIDgHd6S3l6uXVTsUsmfvPsGo8aaap3KUtI7YWBz4oZ1oj0Y\n"
+"MIIBDAKBgQCxC4+WoIDgHd6S3l6uXVTsUsmfvPsGo8aaap3KUtI7YWBz4oZ1oj0Y\n"
 "mDjvHi7mUsAT7LSuqQYRIySXXDzUm4O/rMvdfZDEvXCYSI6cIZpzck7/1vrlZEc4\n"
 "+qMaT/VbzMChUa9fDci0vUW/N982XBpl5oz9p21NpwjfH7K8LkpDcQKBgQCk0cvV\n"
 "w/00EmdlpELvuZkF+BBN0lisUH/WQGz/FCZtMSZv6h5cQVZLd35pD1UE8hMWAhe0\n"
 "sBuIal6RVH+eJ0n01/vX07mpLuGQnQ0iY/gKdqaiTAh6CR9THb8KAWm2oorWYqTR\n"
-"jnOvoy13nVkY0IvIhY9Nzvl8KiSFXm7rIrOy5Q==\n"
+"jnOvoy13nVkY0IvIhY9Nzvl8KiSFXm7rIrOy5QICAKA=\n"
 "-----END DH PARAMETERS-----\n";
 
 /* RFC 5114 IKE_id=23
@@ -396,7 +396,7 @@ static const char dh_ike_22_pem[] =
 */
 static const char dh_ike_23_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIICCgKCAQEArRB+HpEjqdDWYPqnlVnFH6INZOVoO5/RtUsVl7YdCnXm+hQd+VpW\n"
+"MIICDgKCAQEArRB+HpEjqdDWYPqnlVnFH6INZOVoO5/RtUsVl7YdCnXm+hQd+VpW\n"
 "26+aPEB7od8V6z1oijCcGA4d5rhaEnSgpm0/gVKtasISkDfJ7e/aTfjZHo/vVbc5\n"
 "S3rVt9C2wSIHyfmNEe002/bGugssi7wnvmoA4KC5xJcIs7+KMXCRiDaBKGEwvImF\n"
 "2xYC5xRBXZMwJ4Jzx94x79xzEPcSH9WgdBWYfZrcCkhtzfk6zEQyg4cxXXXhmMZB\n"
@@ -406,7 +406,8 @@ static const char dh_ike_23_pem[] =
 "kAGo1mrXwXZpEBmZAkr00CcnWsE0i7inYtBSG8mK4kcVBCLqHtQJk51U2nRgzbX2\n"
 "xrJQcXy+8YDrNBGOmNEZUppF1vg0Vm4wJeMWozDvu3eobwwasVsFGuPUKMj4rLcK\n"
 "gTcVC47rEOGD7dGZY93Z4mPkdwWJ72qiHn9fL/OBtTnM40CdE81Wavu0jWwBkYHh\n"
-"vP6UswJp7f5y/ptqpL17Wg8ccc//TBnEGOH27AF5gbwIfypwZbOEuJDTGR8r+g==\n"
+"vP6UswJp7f5y/ptqpL17Wg8ccc//TBnEGOH27AF5gbwIfypwZbOEuJDTGR8r+gIC\n"
+"AOA=\n"
 "-----END DH PARAMETERS-----\n";
 
 /* RFC 5114 IKE_id=24
@@ -447,7 +448,7 @@ static const char dh_ike_23_pem[] =
 */
 static const char dh_ike_24_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIICCQKCAQEAh6jmHbS2Zjz/u9GcZRlZmYzu9ghmDdDyXSzu1ENeOwDgDfjx1hlX\n"
+"MIICDQKCAQEAh6jmHbS2Zjz/u9GcZRlZmYzu9ghmDdDyXSzu1ENeOwDgDfjx1hlX\n"
 "1Pr330VhsqowFsPZETQJb6o79Cltgw6afCCeDGSXUXq9WoqdMGvPZ+2R+eZyW0dY\n"
 "wCLgse9Cdb97bFv8EdRfkIi5QfVOseWbuLw5oL8SMH9cT9twxYGyP3a2Osrhyqa3\n"
 "kC1SUmc1SIoO8TxtmlG/pKs62DR3llJNjvahZ7WkGCXZZ+FE5RQFZCUcysuD5rSG\n"
@@ -457,7 +458,8 @@ static const char dh_ike_24_pem[] =
 "+MKMuxilWuMTQQAKZQGW+THHelfy3fRj5ensFEt3feYqqrioYorDdtKC1u04ZOZ5\n"
 "gkKOvIMdFDSPby+Rk7UEWvJ2cWTh38lnwfs/LlWkvRv/6DucgNBSuYXRguoK2yo7\n"
 "cxPT/hTISEseBSWIubfSu9LfAWGZ7NBuFVfNCRWzNTu7ZODsN3/QKDcN+StSx4kU\n"
-"KM3GfrYYS1I9HbJGwy9jB4SQ8A741kfRSNR5VFFeIyfP75jFgmZLTA9sxBZZ\n"
+"KM3GfrYYS1I9HbJGwy9jB4SQ8A741kfRSNR5VFFeIyfP75jFgmZLTA9sxBZZAgIB\n"
+"AA==\n"
 "-----END DH PARAMETERS-----\n";
 
 /* ------------------------------------------------------------------------- */
@@ -509,12 +511,12 @@ A.1.  ffdhe2048
 */
 static const char dh_ffdhe2048_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIH+AoH4DfhUWKK7Spqv3FYgJz088di5xYPOLTaVqeE2QRRkM/vMk53OJJs++X0v\n"
-"42NjDHXY9oGyAq7EYXrT3x7V1f1lYSQz9R9fBm7QhWNlVT3tGvO1VxNef1fJNZhP\n"
-"DHDg5ot34qaJ2vPv6HId8VihNq3nNTCsyk9IOnl6vAqxgrMk+2HRCKlLssjj+7lq\n"
-"2rdg1/RoHU9Co945TfSuVu3nY3K7GQsHp8juCm1wngL84c334uzANATNKDQvYZFy\n"
-"/pzphYP/jk8SMu7ygYPD/jsbTG+tczu1/LwuwiAFxY7xg30Wg7LG80omwbLv+ohr\n"
-"QjhhKFyX//////////8CAQI=\n"
+"MIIBDAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
+"+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a\n"
+"87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7\n"
+"YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi\n"
+"7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD\n"
+"ssbzSibBsu/6iGtCOGEoXJf//////////wIBAgICB/8=\n"
 "-----END DH PARAMETERS-----\n";
 
 /*
@@ -574,7 +576,7 @@ A.2.  ffdhe3072
 */
 static const char dh_ffdhe3072_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIIBiAKCAYEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
+"MIIBjAKCAYEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
 "+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a\n"
 "87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7\n"
 "YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi\n"
@@ -582,7 +584,7 @@ static const char dh_ffdhe3072_pem[] =
 "ssbzSibBsu/6iGtCOGEfz9zeNVs7ZRkDW7w09N75nAI4YbRvydbmyQd62R0mkff3\n"
 "7lmMsPrBhtkcrv4TCYUTknC0EwyTvEN5RPT9RFLi103TZPLiHnH1S/9croKrnJ32\n"
 "nuhtK8UiNjoNq8Uhl5sN6todv5pC1cRITgq80Gv6U93vPBsg7j/VnXwl5B0rZsYu\n"
-"N///////////AgEC\n"
+"N///////////AgECAgIL/w==\n"
 "-----END DH PARAMETERS-----\n";
 
 /*
@@ -654,7 +656,7 @@ A.3.  ffdhe4096
 */
 static const char dh_ffdhe4096_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIICCAKCAgEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
+"MIICDAKCAgEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
 "+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a\n"
 "87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7\n"
 "YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi\n"
@@ -664,7 +666,7 @@ static const char dh_ffdhe4096_pem[] =
 "nuhtK8UiNjoNq8Uhl5sN6todv5pC1cRITgq80Gv6U93vPBsg7j/VnXwl5B0rZp4e\n"
 "8W5vUsMWTfT7eTDp5OWIV7asfV9C1p9tGHdjzx1VA0AEh/VbpX4xzHpxNciG77Qx\n"
 "iu1qHgEtnmgyqQdgCpGBMMRtx3j5ca0AOAkpmaMzy4t6Gh25PXFAADwqTs6p+Y0K\n"
-"zAqCkc3OyX3Pjsm1Wn+IpGtNtahR9EGC4caKAH5eZV9q//////////8CAQI=\n"
+"zAqCkc3OyX3Pjsm1Wn+IpGtNtahR9EGC4caKAH5eZV9q//////////8CAQICAg//\n"
 "-----END DH PARAMETERS-----\n";
 
 /*
@@ -756,7 +758,7 @@ A.4.  ffdhe6144
 */
 static const char dh_ffdhe6144_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIIDCAKCAwEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
+"MIIDDAKCAwEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
 "+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a\n"
 "87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7\n"
 "YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi\n"
@@ -772,7 +774,7 @@ static const char dh_ffdhe6144_pem[] =
 "w1h+ONoAd9m0dj5OS5Syu8GUxmUed8r5ku6qwCMqKBv2s6c5wSJhFoIK6NtYR6Z8\n"
 "vvnJCRtGLVOM1ysDdGrnf15iKSwxFWKoRlBdyC24VDOK5J9SNclbkReMzy3Vys70\n"
 "A+ydGBDGJysEWztx+dxrgNY/3UqOmtseaWKmlSbUMWHBpB1XDXk42tSkDjKc0OQO\n"
-"Zf//////////AgEC\n"
+"Zf//////////AgECAgIX/w==\n"
 "-----END DH PARAMETERS-----\n";
 
 /*
@@ -886,7 +888,7 @@ A.5.  ffdhe8192
 */
 static const char dh_ffdhe8192_pem[] =
 "-----BEGIN DH PARAMETERS-----\n"
-"MIIECAKCBAEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
+"MIIEDAKCBAEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz\n"
 "+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a\n"
 "87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7\n"
 "YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi\n"
@@ -907,8 +909,7 @@ static const char dh_ffdhe8192_pem[] =
 "UVQfxoychrAiu3CZh2pGDnRRqKkxCXA/7hwhfmw4JuUsUappHg5CPPyZ6eMWUMEh\n"
 "e2JIFs2tmpX51bgBlIjZwKCh/jB1pXfiMYP4HUo/L6RXHvyM4LqKT+i2hV3+crCm\n"
 "bt7S+6v75Yow+vq+HF1xqH4vdB74wf6G/qa7/eUwZ38Nl9EdSfeoRD0IIuUGqfRh\n"
-"TgEeKpSDj/iM1oyLt8XGQkz//////////wIBAg==\n"
-"-----END DH PARAMETERS-----\n";
+"TgEeKpSDj/iM1oyLt8XGQkz//////////wIBAgICH/8=\n"
 
 /* ========================================================================= */
 
