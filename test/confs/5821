@@ -10,7 +10,7 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept logwrite = "rcpt ACL"
+acl_smtp_rcpt = accept logwrite = "rcpt ACL: tls_in_bits $tls_in_bits"
 
 log_selector =  +received_recipients +tls_peerdn +tls_certificate_verified
 
@@ -19,11 +19,11 @@ tls_advertise_hosts = *
 # Set certificate only if server
 CDIR2 = DIR/aux-fixed/exim-ca/example.com/server1.example.com
 
-tls_certificate = ${if eq {SERVER}{server} {CDIR2/fullchain.pem}fail}
-tls_privatekey =  ${if eq {SERVER}{server} {CDIR2/server1.example.com.unlocked.key}fail}
+tls_certificate = CDIR2/fullchain.pem
+tls_privatekey =  CDIR2/server1.example.com.unlocked.key
 
 # Permit two specific ciphers
-tls_require_ciphers = NORMAL:-VERS-ALL:+VERS-TLS1.2:-KX-ALL:+RSA:-CIPHER-ALL:+AES-128-CBC:+CAMELLIA-256-GCM
+tls_require_ciphers = NORMAL:-VERS-ALL:+VERS-TLS1.2:-KX-ALL:+RSA:-CIPHER-ALL:+AES-128-CBC:+AES-256-GCM
 
 # ----- Routers -----
 begin routers
