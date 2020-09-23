@@ -40812,7 +40812,7 @@ but for EC keys it is the base64 of the pure key; no ASN.1 wrapping.
 Signing is enabled by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
 
-.option dkim_domain smtp string list&!! unset
+.option dkim_domain smtp "string list&!!" unset
 The domain(s) you want to sign with.
 After expansion, this can be a list.
 Each element in turn,
@@ -40822,7 +40822,7 @@ while expanding the remaining signing options.
 If it is empty after expansion, DKIM signing is not done,
 and no error will result even if &%dkim_strict%& is set.
 
-.option dkim_selector smtp string list&!! unset
+.option dkim_selector smtp "string list&!!" unset
 This sets the key selector string.
 After expansion, which can use &$dkim_domain$&, this can be a list.
 Each element in turn is put in the expansion
