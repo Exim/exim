@@ -139,9 +139,9 @@ JH/04 Support CHUNKING from an smtp transport using a transport_filter, when
       DKIM signing is being done.  Previously a transport_filter would always
       disable CHUNKING, falling back to traditional DATA.
 
-JH/05 Regard command-line receipients as tainted.
+JH/05 Regard command-line recipients as tainted.
 
-JH/06 Bug 340: Remove the daemon pid file on exit, whe due to SIGTERM.
+JH/06 Bug 340: Remove the daemon pid file on exit, when due to SIGTERM.
 
 JH/07 Bug 2489: Fix crash in the "pam" expansion condition.  It seems that the
       PAM library frees one of the arguments given to it, despite the
@@ -803,7 +803,7 @@ JH/11 The runtime Berkeley DB library version is now additionally output by
       "exim -d -bV".  Previously only the compile-time version was shown.
 
 JH/12 Bug 2230: Fix cutthrough routing for nonfirst messages in an initiating
-      SMTP connection.  Previously, when one had more receipients than the
+      SMTP connection.  Previously, when one had more recipients than the
       first, an abortive onward connection was made.  Move to full support for
       multiple onward connections in sequence, handling cutthrough connection
       for all multi-message initiating connections.

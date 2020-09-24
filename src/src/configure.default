@@ -540,11 +540,11 @@ acl_check_rcpt:
   # to the first recipient must be deferred unless the sender talks PRDR.
   #
   # defer  !condition     = $prdr_requested
-  #        condition      = ${if > {0}{$receipients_count}}
+  #        condition      = ${if > {0}{$recipients_count}}
   #        condition      = ${if !eq {$acl_m_content_filter} \
   #                                  {${lookup PER_RCPT_CONTENT_FILTER}}}
   # warn   !condition     = $prdr_requested
-  #        condition      = ${if > {0}{$receipients_count}}
+  #        condition      = ${if > {0}{$recipients_count}}
   #        set acl_m_content_filter = ${lookup PER_RCPT_CONTENT_FILTER}
   #############################################################################
 
