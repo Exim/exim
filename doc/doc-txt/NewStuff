@@ -63,7 +63,7 @@ Version 4.94
  7. Named-list definitions can now be prefixed "hide" so that "-bP" commands do
     not output the content.  Previously this could only be done on options.
 
- 8. As an exerimental feature, the dovecot authenticatino driver supports inet
+ 8. As an exerimental feature, the dovecot authentication driver supports inet
     sockets.  Previously it was unix-domain sockets only.
 
  9. The ACL control "queue_only" can also be spelled "queue", and now takes an
