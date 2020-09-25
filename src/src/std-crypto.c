@@ -910,6 +910,7 @@ static const char dh_ffdhe8192_pem[] =
 "e2JIFs2tmpX51bgBlIjZwKCh/jB1pXfiMYP4HUo/L6RXHvyM4LqKT+i2hV3+crCm\n"
 "bt7S+6v75Yow+vq+HF1xqH4vdB74wf6G/qa7/eUwZ38Nl9EdSfeoRD0IIuUGqfRh\n"
 "TgEeKpSDj/iM1oyLt8XGQkz//////////wIBAgICH/8=\n"
+"-----END DH PARAMETERS-----\n";
 
 /* ========================================================================= */
 
