@@ -29421,7 +29421,7 @@ only point of caution.  The &$tls_out_sni$& variable will be set to this string
 for the lifetime of the client connection (including during authentication).
 
 .new
-If DAVE validated the connection attempt then the value of the &%tls_sni%& option
+If DANE validated the connection attempt then the value of the &%tls_sni%& option
 is forced to the domain part of the recipient address.
 .wen
 
