@@ -41486,7 +41486,7 @@ Example usage:
 .code
   #macro
   SRS_SECRET = <pick something unique for your site for this. Use on all MXs.>
-  
+
   #routers
 
   outbound:
@@ -41496,7 +41496,7 @@ Example usage:
     transport = ${if eq {$local_part@$domain} \
                         {$original_local_part@$original_domain} \
                      {remote_smtp} {remote_forwarded_smtp}}
-  
+
   inbound_srs:
     driver =    redirect
     senders =   :
@@ -41504,7 +41504,7 @@ Example usage:
     # detect inbound bounces which are SRS'd, and decode them
     condition = ${if inbound_srs {$local_part} {SRS_SECRET}}
     data =      $srs_recipient
-  
+
   inbound_srs_failure:
     driver =    redirect
     senders =   :
@@ -41516,7 +41516,7 @@ Example usage:
 
   #... further routers here
 
-  
+
   # transport; should look like the non-forward outbound
   # one, plus the max_rcpt and return_path options
   remote_forwarded_smtp:
