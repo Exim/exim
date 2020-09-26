@@ -17,22 +17,13 @@ remote_max_parallel = 1
 
 tls_advertise_hosts = *
 
-# Set certificate only if server
-
-tls_certificate = ${if eq {SERVER}{server} \
-	{DIR/aux-fixed/${if eq {$tls_in_sni}{bill} \
+tls_certificate = DIR/aux-fixed/${if eq {$tls_in_sni}{bill} \
 	    {exim-ca/example.com/server1.example.com/server1.example.com.pem} \
-	    {cert1} \
-			}\
-	}fail}
+	    {cert1} }
 
-tls_privatekey = ${if eq {SERVER}{server} \
-	{DIR/aux-fixed/${if eq {$tls_in_sni}{bill} \
+tls_privatekey = DIR/aux-fixed/${if eq {$tls_in_sni}{bill} \
 	    {exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key} \
-	    {cert1} \
-			}\
-	}fail}
-
+	    {cert1} }
 
 # ------ ACL ------
 
@@ -68,7 +59,8 @@ send_to_server1:
   hosts_try_fastopen =	:
   tls_sni = fred
   hosts_require_tls = *
-  tls_try_verify_hosts = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 send_to_server2:
   driver = smtp
@@ -78,7 +70,8 @@ send_to_server2:
   hosts_try_fastopen =	:
   tls_sni = bill
   hosts_require_tls = *
-  tls_try_verify_hosts = :
+  tls_verify_certificates = DIR/aux-fixed/exim-ca/example.com/server1.example.com/ca_chain.pem
+  tls_verify_cert_hostnames = :
 
 
 # ----- Retry -----

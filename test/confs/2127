@@ -14,8 +14,7 @@ queue_only
 queue_run_in_order
 
 tls_advertise_hosts = *
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
 tls_try_verify_hosts = 127.0.0.1
 tls_verify_hosts = HOSTIPV4
 tls_verify_certificates = DIR/aux-fixed/cert1
@@ -56,6 +55,7 @@ send_to_server:
   hosts = ${if eq{$local_part}{userx}{127.0.0.1}{HOSTIPV4}}
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_try_verify_hosts = :
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
 
 # End

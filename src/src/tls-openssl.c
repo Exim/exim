@@ -2894,12 +2894,17 @@ tls_client_basic_ctx_init(SSL_CTX * ctx,
     uschar ** errstr)
 {
 int rc;
-/* stick to the old behaviour for compatibility if tls_verify_certificates is
-   set but both tls_verify_hosts and tls_try_verify_hosts is not set. Check only
-   the specified host patterns if one of them is defined */
 
-if (  (  !ob->tls_verify_hosts
-      && (!ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts)
+/* Back-compatible old behaviour if tls_verify_certificates is set but both
+tls_verify_hosts and tls_try_verify_hosts are not set. Check only the specified
+host patterns if one of them is set with content. */
+
+if (  (  (  !ob->tls_verify_hosts || !ob->tls_verify_hosts
+	 || Ustrcmp(ob->tls_try_verify_hosts, ":") == 0
+	 )
+      && (  !ob->tls_try_verify_hosts || !*ob->tls_try_verify_hosts
+	 || Ustrcmp(ob->tls_try_verify_hosts, ":") == 0
+         )
       )
    || verify_check_given_host(CUSS &ob->tls_verify_hosts, host) == OK
    )

@@ -110,7 +110,7 @@ cmd buf flush ddd bytes
 cmd buf flush ddd bytes
   SMTP<< 220 TLS go ahead
 127.0.0.1 in tls_verify_hosts? no (option unset)
-127.0.0.1 in tls_try_verify_hosts? no (end of list)
+127.0.0.1 in tls_try_verify_hosts? yes (matched "*")
   SMTP>> EHLO myhost.test.ex
 cmd buf flush ddd bytes
   SMTP<< 250-myhost.test.ex Hello the.local.host.name [ip4.ip4.ip4.ip4]
@@ -131,7 +131,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept" (TESTSUITE/test-config 56)
+processing "accept" (TESTSUITE/test-config 57)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -373,7 +373,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept" (TESTSUITE/test-config 56)
+processing "accept" (TESTSUITE/test-config 57)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA
@@ -615,7 +615,7 @@ sync_responses expect rcpt
   SMTP<< 250 Accepted
 holding verify callout open for cutthrough delivery
 ----------- end cutthrough setup ------------
-processing "accept" (TESTSUITE/test-config 56)
+processing "accept" (TESTSUITE/test-config 57)
 accept: condition test succeeded in inline ACL
 end of inline ACL: ACCEPT
   SMTP>> DATA

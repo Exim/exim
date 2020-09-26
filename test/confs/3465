@@ -18,8 +18,6 @@ queue_only = true
 
 tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
-tls_privatekey = DIR/aux-fixed/cert1
-
 
 # ----- Authenticators -----
 
@@ -61,11 +59,12 @@ t1:
   driver = smtp
   hosts = 127.0.0.1
   port = PORT_D
-  hosts_try_fastopen =	:
-  hosts_avoid_tls = HOSTS_AVOID_TLS
-  tls_try_verify_hosts = :
-  hosts_require_auth = *
   allow_localhost
+  hosts_try_fastopen =	:
+  hosts_avoid_tls	= HOSTS_AVOID_TLS
+  tls_verify_certificates = 	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+  hosts_require_auth = *
 
   # These can be made visible by adding "-d-all+deliver+transport+tls" to the script 1st queuerun
   headers_add = X-tls-cipher: <$tls_cipher>

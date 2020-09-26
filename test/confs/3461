@@ -19,11 +19,7 @@ queue_run_in_order
 smtp_accept_max_nonmail = 0
 
 tls_advertise_hosts = *
-
-# Set certificate only if server
-
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate =DIR/aux-fixed/cert1
 
 
 # ----- Authenticators -----
@@ -73,6 +69,7 @@ send_to_server:
   hosts_try_fastopen =	:
   hosts_try_auth = *
   hosts_noproxy_tls = PEX
-  tls_try_verify_hosts = :
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
 
 # End

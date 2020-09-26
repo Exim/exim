@@ -13,8 +13,6 @@ log_selector = +tls_peerdn
 
 tls_advertise_hosts = HOSTIPV4
 tls_certificate = DIR/aux-fixed/cert1
-tls_privatekey = DIR/aux-fixed/cert1
-
 
 # ----- ACLs -----
 
@@ -53,7 +51,8 @@ t1:
   port = PORT_D
   hosts_try_fastopen =	:
   allow_localhost
-  tls_try_verify_hosts = :
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
 
 t2:
   driver = appendfile

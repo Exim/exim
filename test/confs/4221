@@ -21,9 +21,8 @@ queue_only
 queue_run_in_order
 .endif
 
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey =  ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
 
 smtputf8_advertise_hosts = OPTION
 
@@ -117,7 +116,8 @@ rmt_smtp:
   driver =	smtp
   hosts_try_fastopen =	:
   hosts_require_tls =	*
-  tls_try_verify_hosts = :
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
   utf8_downconvert =	0
 
 # End

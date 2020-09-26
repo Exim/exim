@@ -19,11 +19,7 @@ remote_max_parallel = 1
 smtp_accept_max_nonmail = 0
 
 tls_advertise_hosts = *
-
-# Set certificate only if server
-
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
 
 
 # ----- Routers -----
@@ -55,12 +51,13 @@ local_delivery:
   user = CALLER
 
 send_to_server:
-  driver =	smtp
+  driver =		smtp
   allow_localhost
-  port =	PORT_D
+  port =		PORT_D
   hosts_try_fastopen =	:
-  hosts_noproxy_tls = :
-  tls_try_verify_hosts = :
-  max_rcpt =	1
+  hosts_noproxy_tls =	:
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
+  max_rcpt =		1
 
 # End

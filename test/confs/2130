@@ -16,10 +16,7 @@ log_selector = +tls_peerdn +tls_sni
 remote_max_parallel = 1
 
 tls_advertise_hosts = *
-
-# Set certificate only if server
-
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
 
 
 # ------ ACL ------
@@ -55,7 +52,8 @@ send_to_server1:
   port = PORT_D
   hosts_try_fastopen =	:
   tls_sni = fred
-  tls_try_verify_hosts = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 send_to_server2:
   driver = smtp
@@ -63,7 +61,8 @@ send_to_server2:
   hosts = HOSTIPV4
   port = PORT_D
   hosts_try_fastopen =	:
-  tls_try_verify_hosts = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 
 # ----- Retry -----

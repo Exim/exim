@@ -8,7 +8,7 @@ primary_hostname = myhost.test.ex
 
 log_selector =  +smtp_confirmation
 tls_advertise_hosts = *
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
 
 domainlist local_domains = test.ex : *.test.ex
 
@@ -50,7 +50,8 @@ smtp:
   hosts_try_fastopen =	:
   hosts_avoid_tls =        ${if eq {$address_data}{usery}{*}{:}}
   hosts_verify_avoid_tls = ${if eq {$address_data}{userz}{*}{:}}
-  tls_try_verify_hosts = :
+  tls_verify_certificates =	DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =	:
 
 
 # End

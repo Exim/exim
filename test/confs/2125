@@ -19,11 +19,7 @@ tls_advertise_hosts = *
 
 tls_require_ciphers = ${if eq{$sender_host_address}{HOSTIPV4}\
                       {AES256}{AES128}}
-
-# Set certificate only if server
-
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
 
 .ifdef _OPT_OPENSSL_NO_TLSV1_3_X
 openssl_options = +no_tlsv1_3
@@ -52,7 +48,8 @@ send_to_server:
   hosts_require_tls = HOSTIPV4
   tls_require_ciphers = AES128-SHA
   hosts_try_fastopen = :
-  tls_try_verify_hosts = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames = :
 
 
 # ----- Retry -----
