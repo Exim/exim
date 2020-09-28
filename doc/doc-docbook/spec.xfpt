@@ -25594,6 +25594,12 @@ It is expanded per-address and can depend on any of
 &$address_data$&, &$domain_data$&, &$local_part_data$&,
 &$host$&, &$host_address$& and &$host_port$&.
 
+.new
+If the connection is DANE-enabled then this option is ignored;
+only messages having the domain used for the DANE TLSA lookup are
+sent on the connection.
+.wen
+
 .option port smtp string&!! "see below"
 .cindex "port" "sending TCP/IP"
 .cindex "TCP/IP" "setting outgoing port"
