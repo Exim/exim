@@ -1128,7 +1128,7 @@ if (cr != NULL)
 
 while (capacity > 0)
   {
-  do { ret = recv(fd, to, 1, 0); } while (ret == -1 && errno == EINTR);
+  do { ret = read(fd, to, 1); } while (ret == -1 && errno == EINTR);
   if (ret == -1)
     return -1;
   have++;
@@ -1253,7 +1253,7 @@ do
   don't do a PEEK into the data, actually slurp up enough to be
   "safe". Can't take it all because TLS-on-connect clients follow
   immediately with TLS handshake. */
-  ret = recv(fd, &hdr, PROXY_INITIAL_READ, 0);
+  ret = read(fd, &hdr, PROXY_INITIAL_READ);
   }
   while (ret == -1 && errno == EINTR);
 
@@ -1269,7 +1269,7 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
   /* First get the length fields. */
   do
     {
-    retmore = recv(fd, (uschar*)&hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ, 0);
+    retmore = read(fd, (uschar*)&hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ);
     } while (retmore == -1 && errno == EINTR);
   if (retmore == -1)
     goto proxyfail;
@@ -1306,7 +1306,7 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
     {
     do
       {
-      retmore = recv(fd, (uschar*)&hdr + ret, size-ret, 0);
+      retmore = read(fd, (uschar*)&hdr + ret, size-ret);
       } while (retmore == -1 && errno == EINTR);
     if (retmore == -1)
       goto proxyfail;
