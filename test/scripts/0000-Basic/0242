@@ -17,7 +17,7 @@ QUIT
 250 OK
 ****
 exim -odi abc@x.y.z
->>> Test message
+Test message\NONL\
 ****
 server PORT_S
 220 Server ready
@@ -35,5 +35,5 @@ QUIT
 250 OK
 ****
 exim -odi abc@x.y.z
->>> Subject: Test message
+Subject: Test message\NONL\
 ****

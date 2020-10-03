@@ -862,12 +862,6 @@ The remaining commands are followed by data lines for their standard input,
 terminated by four asterisks. Even if no data is required for the particular
 usage, the asterisks must be given.
 
-If the input line starts with '>>> ', this prefix and any trailing spaces
-(including line feed) are removed. The reminder is processed with Perl's string
-eval() function, effectivly evaluatiing escape sequences like '\x41', '\r', and
-such.  If you need a line feed there, you need to encode it according to your
-needs.
-
 
   background
 
@@ -880,6 +874,7 @@ in parallel with following commands.  For external daemons, eg. redis-server.
 This command operates like the "write" command, which is described below,
 except that the data it generates is copied to the end of the test-stdout file
 as well as to the named file.
+
 
 
   client [<options>] <ip address> <port> [<outgoing interface>]
