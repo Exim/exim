@@ -2934,7 +2934,7 @@ if (check_proxy_protocol_host())
 #ifndef DISABLE_TLS
   if (tls_in.on_connect)
     {
-    if (tls_server_start(tls_require_ciphers, &user_msg) != OK)
+    if (tls_server_start(&user_msg) != OK)
       return smtp_log_tls_fail(user_msg);
     cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
     }
@@ -5490,7 +5490,7 @@ while (done <= 0)
       STARTTLS that don't add to the nonmail command count. */
 
       s = NULL;
-      if ((rc = tls_server_start(tls_require_ciphers, &s)) == OK)
+      if ((rc = tls_server_start(&s)) == OK)
 	{
 	if (!tls_remember_esmtp)
 	  fl.helo_seen = fl.esmtp = fl.auth_advertised = f.smtp_in_pipelining_advertised = FALSE;

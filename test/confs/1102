@@ -1,0 +1,27 @@
+# Exim test configuration 1102
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/tmp/certs/servercert
+tls_privatekey = DIR/tmp/certs/serverkey
+#tls_verify_certificates = DIR/aux-fixed/cert2
+tls_verify_certificates = system,cache
+
+queue_only
+log_selector = +millisec
+
+# --- ACL ---
+
+acl_smtp_rcpt = acl_check_rcpt
+
+begin acl
+acl_check_rcpt:
+    accept	logwrite = server cert: CN=${certextract{subject,CN}{$tls_in_ourcert}}
+
+# End

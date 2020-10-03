@@ -163,23 +163,12 @@ void smtp_transport_closedown(transport_instance *tblock) {}
 /* Default private options block for the smtp transport. */
 
 smtp_transport_options_block smtp_transport_option_defaults = {
-  .hosts =			NULL,
-  .fallback_hosts =		NULL,
-  .hostlist =			NULL,
-  .fallback_hostlist =		NULL,
+  /* All non-mentioned elements 0/NULL/FALSE */
   .helo_data =			US"$primary_hostname",
-  .interface =			NULL,
-  .port =			NULL,
   .protocol =			US"smtp",
-  .dscp =			NULL,
-  .serialize_hosts =		NULL,
-  .hosts_try_auth =		NULL,
-  .hosts_require_auth =		NULL,
   .hosts_try_chunking =		US"*",
 #ifdef SUPPORT_DANE
   .hosts_try_dane =		US"*",
-  .hosts_require_dane =		NULL,
-  .dane_require_tls_ciphers =	NULL,
 #endif
   .hosts_try_fastopen =		US"*",
 #ifndef DISABLE_PRDR
@@ -187,19 +176,6 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #endif
 #ifndef DISABLE_OCSP
   .hosts_request_ocsp =		US"*",               /* hosts_request_ocsp (except under DANE; tls_client_start()) */
-  .hosts_require_ocsp =		NULL,
-#endif
-  .hosts_require_tls =		NULL,
-  .hosts_avoid_tls =		NULL,
-  .hosts_verify_avoid_tls =	NULL,
-  .hosts_avoid_pipelining =	NULL,
-#ifndef DISABLE_PIPE_CONNECT
-  .hosts_pipe_connect =		NULL,
-#endif
-  .hosts_avoid_esmtp =		NULL,
-#ifndef DISABLE_TLS
-  .hosts_nopass_tls =		NULL,
-  .hosts_noproxy_tls =		NULL,
 #endif
   .command_timeout =		5*60,
   .connect_timeout =		5*60,
@@ -210,35 +186,15 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .hosts_max_try_hardlimit =	50,
   .message_linelength_limit =	998,
   .address_retry_include_sender = TRUE,
-  .allow_localhost =		FALSE,
-  .authenticated_sender_force =	FALSE,
-  .gethostbyname =		FALSE,
   .dns_qualify_single =		TRUE,
-  .dns_search_parents =		FALSE,
   .dnssec = { .request= US"*", .require=NULL },
   .delay_after_cutoff =		TRUE,
-  .hosts_override =		FALSE,
-  .hosts_randomize =		FALSE,
   .keepalive =			TRUE,
-  .lmtp_ignore_quota =		FALSE,
-  .expand_retry_include_ip_address =	NULL,
   .retry_include_ip_address =	TRUE,
-#ifdef SUPPORT_SOCKS
-  .socks_proxy =		NULL,
-#endif
 #ifndef DISABLE_TLS
-  .tls_certificate =		NULL,
-  .tls_crl =			NULL,
-  .tls_privatekey =		NULL,
-  .tls_require_ciphers =	NULL,
-  .tls_sni =			NULL,
   .tls_verify_certificates =	US"system",
   .tls_dh_min_bits =		EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
   .tls_tempfail_tryclear =	TRUE,
-# ifndef DISABLE_TLS_RESUME
-  .tls_resumption_hosts =	NULL,
-# endif
-  .tls_verify_hosts =		NULL,
   .tls_try_verify_hosts =	US"*",
   .tls_verify_cert_hostnames =	US"*",
 #endif
@@ -247,24 +203,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 #endif
 #ifndef DISABLE_DKIM
  .dkim =
-   {.dkim_domain =		NULL,
-    .dkim_identity =		NULL,
-    .dkim_private_key =		NULL,
-    .dkim_selector =		NULL,
-    .dkim_canon =		NULL,
-    .dkim_sign_headers =	NULL,
-    .dkim_strict =		NULL,
-    .dkim_hash =		US"sha256",
-    .dkim_timestamps =		NULL,
-    .dot_stuffed =		FALSE,
-    .force_bodyhash =		FALSE,
-# ifdef EXPERIMENTAL_ARC
-    .arc_signspec =		NULL,
-# endif
-    },
-# ifdef EXPERIMENTAL_ARC
-  .arc_sign =			NULL,
-# endif
+   { .dkim_hash =		US"sha256", },
 #endif
 };
 

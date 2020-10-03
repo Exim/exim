@@ -26,6 +26,9 @@ Michael Haardt. */
 #define LOG2_MAXNODES 32
 
 
+#ifndef DISABLE_TLS
+static BOOL queue_tls_init = FALSE;
+#endif
 
 /*************************************************
 *  Helper sort function for queue_get_spool_list *
@@ -646,6 +649,16 @@ for (int i = queue_run_in_order ? -1 : 0;
     fq->text[SPOOL_NAME_LENGTH-2] = 0;
 #ifdef MEASURE_TIMING
     report_time_since(&timestamp_startup, US"queue msg selected");
+#endif
+
+#ifndef DISABLE_TLS
+    if (!queue_tls_init)
+      {
+      queue_tls_init = TRUE;
+      /* Preload TLS library info for smtp transports.  Once, and only if we
+      have a delivery to do. */
+      tls_client_creds_reload(FALSE);
+      }
 #endif
 
 single_item_retry:

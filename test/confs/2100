@@ -22,11 +22,13 @@ tls_advertise_hosts = *
 
 # Set certificate only if server
 
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+#tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
+#tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 
 tls_verify_hosts = *
-tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+#tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
+tls_verify_certificates = DIR/aux-fixed/cert2
 
 
 # ----- Routers -----

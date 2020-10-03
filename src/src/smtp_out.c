@@ -609,7 +609,7 @@ if (format)
       while (!isspace(*p)) p++;
       while (isspace(*p)) p++;
       }
-    while (*p != 0) *p++ = '*';
+    while (*p) *p++ = '*';
     }
 
   HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP>> %s\n", big_buffer);

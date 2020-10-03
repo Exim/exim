@@ -87,6 +87,10 @@ making unique names. */
 # include <limits.h>
 #endif
 
+#ifdef EXIM_HAVE_INOTIFY
+# include <sys/inotify.h>
+#endif
+
 /* C99 integer types, figure out how to undo this if needed for older systems */
 
 #include <inttypes.h>

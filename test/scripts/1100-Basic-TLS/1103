@@ -1,0 +1,21 @@
+# TLS client: creds caching
+#
+#
+mkdir -p DIR/tmp/certs
+cp DIR/aux-fixed/cert1 DIR/tmp/certs/servercert
+cp DIR/aux-fixed/cert1 DIR/tmp/certs/serverkey
+#
+# load up one message in the queue
+exim test@example.com
+****
+#
+# start the daemon, with a queue-run interval
+# this will send the queued message and the receive will re-queue it
+#exim -d-all+tls+receive+timestamp -DSERVER=server -bd -q7s -oX PORT_D
+exim -DSERVER=server -bd -q7s -oX PORT_D
+****
+sleep 1
+killdaemon
+#
+sudo rm -fr DIR/tmp
+no_msglog_check

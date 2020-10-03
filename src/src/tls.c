@@ -36,6 +36,15 @@ functions from the OpenSSL or GNU TLS libraries. */
 
 #ifndef MACRO_PREDEF
 
+static void tls_per_lib_daemon_init(void);
+static void tls_per_lib_daemon_tick(void);
+static void tls_server_creds_init(void);
+static void tls_server_creds_invalidate(void);
+static void tls_client_creds_init(transport_instance *, BOOL);
+static void tls_client_creds_invalidate(transport_instance *);
+
+
+
 /* This module is compiled only when it is specifically requested in the
 build-time configuration. However, some compilers don't like compiling empty
 modules, so keep them happy with a dummy when skipping the rest. Make it
@@ -45,7 +54,9 @@ loops. */
 
 #ifdef DISABLE_TLS
 static void dummy(int x) { dummy(x-1); }
-#else
+#else	/* most of the rest of the file */
+
+const exim_tlslib_state	null_tls_preload = {0};
 
 /* Static variables that are used for buffering data by both sets of
 functions and the common functions below.
@@ -93,6 +104,154 @@ else if (  !(*result = expand_string(US s)) /* need to clean up const more */
   return FALSE;
   }
 return TRUE;
+}
+
+
+#ifdef EXIM_HAVE_INOTIFY
+/* Add the directory for a filename to the inotify handle, creating that if
+needed.  This is enough to see changes to files in that dir.
+Return boolean success.
+
+The word "system" fails, which is on the safe side as we don't know what
+directory it implies nor if the TLS library handles a watch for us.
+
+The string "system,cache" is recognised and explicitly accepted without
+setting a watch.  This permits the system CA bundle to be cached even though
+we have no way to tell when it gets modified by an update.
+
+We *might* try to run "openssl version -d" and set watches on the dir
+indicated in its output, plus the "certs" subdir of it (following
+synlimks for both).  But this is undocumented even for OpenSSL, and
+who knows what GnuTLS might be doing.
+
+A full set of caching including the CAs takes 35ms output off of the
+server tls_init() (GnuTLS, Fedora 32, 2018-class x86_64 laptop hardware).
+*/
+static BOOL
+tls_set_one_watch(const uschar * filename)
+{
+uschar * s;
+
+if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
+
+if (!(s = Ustrrchr(filename, '/'))) return FALSE;
+s = string_copyn(filename, s - filename);
+DEBUG(D_tls) debug_printf("watch dir '%s'\n", s);
+
+if (inotify_add_watch(tls_watch_fd, CCS s,
+      IN_ONESHOT | IN_CLOSE_WRITE | IN_DELETE | IN_DELETE_SELF
+      | IN_MOVED_FROM | IN_MOVED_TO | IN_MOVE_SELF) >= 0)
+  return TRUE;
+DEBUG(D_tls) debug_printf("add_watch: %s\n", strerror(errno));
+return FALSE;
+}
+
+
+/* Create an inotify facility if needed.
+Then set watches on the dir containing the given file or (optionally)
+list of files.  Return boolean success. */
+
+static BOOL
+tls_set_watch(const uschar * filename, BOOL list)
+{
+rmark r;
+BOOL rc = FALSE;
+
+if (tls_watch_fd < 0 && (tls_watch_fd = inotify_init1(O_CLOEXEC)) < 0)
+  {
+  DEBUG(D_tls) debug_printf("inotify_init: %s\n", strerror(errno));
+  return FALSE;
+  }
+
+if (!filename || !*filename) return TRUE;
+
+r = store_mark();
+
+if (list)
+  {
+  int sep = 0;
+  for (uschar * s; s = string_nextinlist(&filename, &sep, NULL, 0); )
+    if (!(rc = tls_set_one_watch(s))) break;
+  }
+else
+  rc = tls_set_one_watch(filename);
+
+store_reset(r);
+return rc;
+}
+
+
+void
+tls_client_creds_reload(BOOL watch)
+{
+for(transport_instance * t = transports; t; t = t->next)
+  if (Ustrcmp(t->driver_name, "smtp") == 0)
+    {
+    tls_client_creds_invalidate(t);
+    tls_client_creds_init(t, watch);
+    }
+}
+
+static void
+tls_daemon_creds_reload(void)
+{
+tls_server_creds_invalidate();
+tls_server_creds_init();
+
+tls_client_creds_reload(TRUE);
+}
+
+
+/* Called, after a delay for multiple file ops to get done, from
+the daemon when any of the watches added (above) fire.
+
+Dump the set of watches and arrange to reload cached creds (which
+will set up new watches). */
+
+static void
+tls_watch_triggered(void)
+{
+DEBUG(D_tls) debug_printf("watch triggered\n");
+close(tls_watch_fd);
+tls_watch_fd = -1;
+
+tls_daemon_creds_reload();
+}
+
+
+/* Utility predicates for use by the per-library code */
+static BOOL
+opt_set_and_noexpand(const uschar * opt)
+{ return opt && *opt && Ustrchr(opt, '$') == NULL; }
+
+static BOOL
+opt_unset_or_noexpand(const uschar * opt)
+{ return !opt || Ustrchr(opt, '$') == NULL; }
+
+#endif	/* EXIM_HAVE_INOTIFY */
+
+
+/* Called every time round the daemon loop */
+
+void
+tls_daemon_tick(void)
+{
+tls_per_lib_daemon_tick();
+#ifdef EXIM_HAVE_INOTIFY
+if (tls_watch_trigger_time && time(NULL) >= tls_watch_trigger_time + 5)
+  {
+  tls_watch_trigger_time = 0;
+  tls_watch_triggered();
+  }
+#endif
+}
+
+/* Called once at daemon startup */
+
+void
+tls_daemon_init(void)
+{
+tls_per_lib_daemon_init();
 }
 
 

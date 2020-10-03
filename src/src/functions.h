@@ -53,10 +53,12 @@ extern uschar * tls_cert_fprt_sha256(void *);
 extern void    tls_clean_env(void);
 extern BOOL    tls_client_start(client_conn_ctx *, smtp_connect_args *,
 		  void *, tls_support *, uschar **);
+extern void    tls_client_creds_reload(BOOL);
 
 extern void    tls_close(void *, int);
 extern BOOL    tls_could_read(void);
 extern void    tls_daemon_init(void);
+extern void    tls_daemon_tick(void);
 extern BOOL    tls_dropprivs_validate_require_cipher(BOOL);
 extern BOOL    tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
@@ -67,7 +69,7 @@ extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(void);
 extern BOOL    tls_import_cert(const uschar *, void **);
 extern int     tls_read(void *, uschar *, size_t);
-extern int     tls_server_start(const uschar *, uschar **);
+extern int     tls_server_start(uschar **);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
 extern int     tls_write(void *, const uschar *, size_t, BOOL);

@@ -29271,6 +29271,61 @@ There is no current way to staple a proof for a client certificate.
 .endd
 
 
+.new
+.section "Caching of static server configuration items" "SECTserverTLScache"
+.cindex certificate caching
+.cindex privatekey caching
+.cindex crl caching
+.cindex ocsp caching
+.cindex ciphers caching
+.cindex "CA bundle" caching
+.cindex "certificate authorities" caching
+.cindex tls_certificate caching
+.cindex tls_privatekey caching
+.cindex tls_crl caching
+.cindex tls_ocsp_file caching
+.cindex tls_require_ciphers caching
+.cindex tls_verify_certificate caching
+.cindex caching certificate
+.cindex caching privatekey
+.cindex caching crl
+.cindex caching ocsp
+.cindex caching ciphers
+.cindex caching "certificate authorities
+If any of the main configuration options &%tls_certificate%&, &%tls_privatekey%&,
+&%tls_crl%& and &%tls_ocsp_file%& have values with no
+expandable elements,
+then the associated information is loaded at daemon startup.
+It is made available
+to child processes forked for handling received SMTP connections.
+
+This caching is currently only supported under Linux.
+
+If caching is not possible, for example if an item has to be dependent
+on the peer host so contains a &$sender_host_name$& expansion, the load
+of the associated information is done at the startup of the TLS connection.
+
+The cache is invalidated and reloaded after any changes to the directories
+containing files specified by these options.
+
+The information specified by the main option &%tls_verify_certificates%&
+is similarly cached so long as it specifies files explicitly
+or (under GnuTLS) is the string &"system,cache"&.
+The latter case is not automatically invaludated;
+it is the operator's responsibility to arrange for a daemon restart
+any time the system certificate authority bundle is updated.
+A HUP signal is sufficient for this.
+The value &"system"& results in no caching under GnuTLS.
+
+The macro _HAVE_TLS_CA_CACHE will be defined if the suffix for "system"
+is acceptable in configurations for the Exim executavble.
+
+Caching of the system Certificate Authorities bundle can
+save siginificant time and processing on every TLS connection
+accepted by Exim.
+.wen
+
+
 
 
 .section "Configuring an Exim client to use TLS" "SECTclientTLS"
@@ -29311,7 +29366,10 @@ unencrypted.
 
 The &%tls_certificate%& and &%tls_privatekey%& options of the &(smtp)&
 transport provide the client with a certificate, which is passed to the server
-if it requests it. If the server is Exim, it will request a certificate only if
+if it requests it.
+This is an optional thing for TLS connections, although either end
+may insist on it.
+If the server is Exim, it will request a certificate only if
 &%tls_verify_hosts%& or &%tls_try_verify_hosts%& matches the client.
 
 &*Note*&: Do not use a certificate which has the OCSP-must-staple extension,
@@ -29388,6 +29446,62 @@ variables are emptied. (Until the first connection, they contain the values
 that were set when the message was received.) If STARTTLS is subsequently
 successfully obeyed, these variables are set to the relevant values for the
 outgoing connection.
+
+
+
+.new
+.section "Caching of static client configuration items" "SECTclientTLScache"
+.cindex certificate caching
+.cindex privatekey caching
+.cindex crl caching
+.cindex ciphers caching
+.cindex "CA bundle" caching
+.cindex "certificate authorities" caching
+.cindex tls_certificate caching
+.cindex tls_privatekey caching
+.cindex tls_crl caching
+.cindex tls_require_ciphers caching
+.cindex tls_verify_certificate caching
+.cindex caching certificate
+.cindex caching privatekey
+.cindex caching crl
+.cindex caching ciphers
+.cindex caching "certificate authorities
+If any of the transport configuration options &%tls_certificate%&, &%tls_privatekey%&
+and &%tls_crl%& have values with no
+expandable elements,
+then the associated information is loaded per smtp transport
+at daemon startup, at the start of a queue run, or on a
+command-line specified message delivery.
+It is made available
+to child processes forked for handling making SMTP connections.
+
+This caching is currently only supported under Linux.
+
+If caching is not possible, the load
+of the associated information is done at the startup of the TLS connection.
+
+The cache is invalidated in the daemon
+and reloaded after any changes to the directories
+containing files specified by these options.
+
+The information specified by the main option &%tls_verify_certificates%&
+is similarly cached so long as it specifies files explicitly
+or (under GnuTLS) is the string &"system,cache"&.
+The latter case is not automatically invaludated;
+it is the operator's responsibility to arrange for a daemon restart
+any time the system certificate authority bundle is updated.
+A HUP signal is sufficient for this.
+The value &"system"& results in no caching under GnuTLS.
+
+The macro _HAVE_TLS_CA_CACHE will be defined if the suffix for "system"
+is acceptable in configurations for the Exim executavble.
+
+Caching of the system Certificate Authorities bundle can
+save siginificant time and processing on every TLS connection
+initiated by Exim.
+.wen
+
 
 
 

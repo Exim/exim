@@ -91,5 +91,8 @@ then change the 0 to 1 in the next block. */
 /* "Abstract" Unix-socket names */
 #define EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
 
+/* inotify(7) etc syscalls */
+#define EXIM_HAVE_INOTIFY
+
 
 /* End */

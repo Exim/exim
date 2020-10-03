@@ -13,6 +13,26 @@
 #define PENDING_OK      (PENDING + OK)
 
 
+#if !defined(DISABLE_TLS) && defined(EXIM_HAVE_INOTIFY)
+/* Flags structure for validity of TLS configuration */
+
+typedef struct {
+  BOOL conn_certs:1;		/* certificates etc. loaded */
+  BOOL cabundle:1;		/* CA certificates loaded */
+  BOOL crl:1;			/* CRL loaded */
+  BOOL pri_string:1;		/* cipher priority-string cache loaded */
+  BOOL dh:1;			/* Diffie-Helman params loaded */
+  BOOL ecdh:1;			/* EC Diffie-Helman params loaded */
+
+  BOOL ca_rdn_emulate:1;	/* do not advertise usable-cert list */
+  BOOL ocsp_hook:1;		/* need hshake callback on session */
+
+  void * libdata0;		/* library-dependent preloaded data */
+  void * libdata1;		/* library-dependent preloaded data */
+} exim_tlslib_state;
+#endif
+
+
 /* Private structure for the private options and other private data. */
 
 typedef struct {
@@ -104,6 +124,9 @@ typedef struct {
 #endif
 #ifdef EXPERIMENTAL_ARC
   uschar	*arc_sign;
+#endif
+#if !defined(DISABLE_TLS) && defined(EXIM_HAVE_INOTIFY)
+  exim_tlslib_state tls_preload;
 #endif
 } smtp_transport_options_block;
 

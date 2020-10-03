@@ -1,4 +1,5 @@
-# TLS server: uncork in pipelining mode, fixed in bd95ffc2ba87fbd3c752df17bc8fd9c01586d45a
+# TLS server: uncork in pipelining mode
+# fixed in bd95ffc2ba87fbd3c752df17bc8fd9c01586d45a
 exim -DSERVER=server -bd -oX PORT_D:PORT_S
 ****
 client-anytls 127.0.0.1 PORT_D

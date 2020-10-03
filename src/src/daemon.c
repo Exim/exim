@@ -963,6 +963,11 @@ daemon_die(void)
 {
 int pid;
 
+#ifndef DISABLE_TLS
+if (tls_watch_fd >= 0)
+  { close(tls_watch_fd); tls_watch_fd = -1; }
+#endif
+
 if (daemon_notifier_fd >= 0)
   {
   close(daemon_notifier_fd);
@@ -2039,6 +2044,9 @@ malware_init();
 #ifdef SUPPORT_SPF
 spf_init();
 #endif
+#ifndef DISABLE_TLS
+tls_daemon_init();
+#endif
 
 /* Close the log so it can be renamed and moved. In the few cases below where
 this long-running process writes to the log (always exceptional conditions), it
@@ -2277,8 +2285,18 @@ for (;;)
     fd_set select_listen;
 
     FD_ZERO(&select_listen);
+#ifndef DISABLE_TLS
+    if (tls_watch_fd >= 0)
+      {
+      FD_SET(tls_watch_fd, &select_listen);
+      if (tls_watch_fd > max_socket) max_socket = tls_watch_fd;
+      }
+#endif
     if (daemon_notifier_fd >= 0)
+      {
       FD_SET(daemon_notifier_fd, &select_listen);
+      if (daemon_notifier_fd > max_socket) max_socket = daemon_notifier_fd;
+      }
     for (int sk = 0; sk < listen_socket_count; sk++)
       {
       FD_SET(listen_sockets[sk], &select_listen);
@@ -2321,8 +2339,8 @@ for (;;)
     errno = select_errno;
 
 #ifndef DISABLE_TLS
-    /* Create or rotate any required keys */
-    tls_daemon_init();
+    /* Create or rotate any required keys; handle (delayed) filewatch event */
+    tls_daemon_tick();
 #endif
 
     /* Loop for all the sockets that are currently ready to go. If select
@@ -2335,6 +2353,15 @@ for (;;)
 
       if (!select_failed)
 	{
+#if defined(EXIM_HAVE_INOTIFY) && !defined(DISABLE_TLS)
+	if (tls_watch_fd >= 0 && FD_ISSET(tls_watch_fd, &select_listen))
+	  {
+	  FD_CLR(tls_watch_fd, &select_listen);
+          tls_watch_trigger_time = time(NULL);	/* Set up delayed event */
+	  (void) read(tls_watch_fd, big_buffer, big_buffer_size);
+	  break;	/* to top of daemon loop */
+	  }
+#endif
 	if (  daemon_notifier_fd >= 0
 	   && FD_ISSET(daemon_notifier_fd, &select_listen))
 	  {

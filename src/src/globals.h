@@ -140,6 +140,8 @@ extern uschar *tls_resumption_hosts;   /* TLS session resumption */
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */
 extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */
+extern int     tls_watch_fd;	       /* for inotify of creds files */
+extern time_t  tls_watch_trigger_time; /* non-0: triggered */
 #endif
 extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 

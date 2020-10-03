@@ -1,0 +1,51 @@
+# TLS server: creds caching
+#
+#
+mkdir -p DIR/tmp/certs
+cp DIR/aux-fixed/cert1 DIR/tmp/certs/servercert
+cp DIR/aux-fixed/cert1 DIR/tmp/certs/serverkey
+#
+#exim -d-all+tls+receive+timestamp -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
+****
+client-anytls 127.0.0.1 PORT_D
+??? 220
+EHLO rhu.barb
+????250
+STARTTLS
+??? 220
+EHLO rhu.barb
+????250
+MAIL FROM:<>
+RCPT TO:test@example.com
+??? 250
+??? 250
+QUIT
+??? 221
+****
+sleep 1
+# Now overwrite the cert.  key?
+cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.pem DIR/tmp/certs/servercert
+cp DIR/aux-fixed/exim-ca/example.com/server1.example.com/server1.example.com.unlocked.key DIR/tmp/certs/serverkey
+# The watch mech waits 5 sec after the last trigger, so give that time to expire the send another message
+sleep 7
+client-anytls 127.0.0.1 PORT_D
+??? 220
+EHLO rhu.barb
+????250
+STARTTLS
+??? 220
+EHLO rhu.barb
+????250
+MAIL FROM:<>
+RCPT TO:test@example.com
+??? 250
+??? 250
+QUIT
+??? 221
+****
+#
+killdaemon
+#
+sudo rm -fr DIR/tmp
+no_msglog_check

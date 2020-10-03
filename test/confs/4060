@@ -21,7 +21,11 @@ gecos_name = CALLER_NAME
 dns_cname_loops = 9
 chunking_advertise_hosts = OPT
 tls_advertise_hosts = *
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
+
+.ifdef _HAVE_TLS_CA_CACHE
+tls_verify_certificates = system,cache
+.endif
 
 .ifdef _HAVE_DMARC
 dmarc_tld_file =

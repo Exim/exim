@@ -38,6 +38,10 @@ Version 4.95
 
 10. A command-line option to have a daemon not create a notifier socket.
 
+11. Faster TLS startup.  When various configuration options contain no
+    expandable elements, the information can be preloaded and cached rather
+    than the provious behaviour of always loading at startup time for every
+    connection.  This helps particularly for the CA bundle.
 
 Version 4.94
 ------------

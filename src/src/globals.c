@@ -143,6 +143,8 @@ uschar *tls_resumption_hosts   = NULL;
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= US"system";
 uschar *tls_verify_hosts       = NULL;
+int     tls_watch_fd	       = -1;
+time_t  tls_watch_trigger_time = (time_t)0;
 #else	/*DISABLE_TLS*/
 uschar *tls_advertise_hosts    = NULL;
 #endif
@@ -1560,60 +1562,16 @@ struct timeval timestamp_startup;
 transport_instance  *transports = NULL;
 
 transport_instance  transport_defaults = {
-    .next =			NULL,
-    .name =			NULL,
-    .info =			NULL,
-    .options_block =		NULL,
-    .driver_name =		NULL,
-    .setup =			NULL,
+    /* All non-mentioned elements zero/NULL/FALSE */
     .batch_max =		1,
-    .batch_id =			NULL,
-    .home_dir =			NULL,
-    .current_dir =		NULL,
-    .expand_multi_domain =	NULL,
     .multi_domain =		TRUE,
-    .overrides_hosts =		FALSE,
     .max_addresses =		100,
     .connection_max_messages =	500,
-    .deliver_as_creator =	FALSE,
-    .disable_logging =		FALSE,
-    .initgroups =		FALSE,
-    .uid_set =			FALSE,
-    .gid_set =			FALSE,
     .uid =			(uid_t)(-1),
     .gid =			(gid_t)(-1),
-    .expand_uid =		NULL,
-    .expand_gid =		NULL,
-    .warn_message =		NULL,
-    .shadow =			NULL,
-    .shadow_condition =		NULL,
-    .filter_command =		NULL,
-    .add_headers =		NULL,
-    .remove_headers =		NULL,
-    .return_path =		NULL,
-    .debug_string =		NULL,
-    .max_parallel =		NULL,
-    .message_size_limit =	NULL,
-    .headers_rewrite =		NULL,
-    .rewrite_rules =		NULL,
-    .rewrite_existflags =	0,
     .filter_timeout =		300,
-    .body_only =		FALSE,
-    .delivery_date_add =	FALSE,
-    .envelope_to_add =		FALSE,
-    .headers_only =		FALSE,
-    .rcpt_include_affixes =	FALSE,
-    .return_path_add =		FALSE,
-    .return_output =		FALSE,
-    .return_fail_output =	FALSE,
-    .log_output =		FALSE,
-    .log_fail_output =		FALSE,
-    .log_defer_output =		FALSE,
     .retry_use_local_part =	TRUE_UNSET,	/* retry_use_local_part: BOOL, but set neither
 						 1 nor 0 so can detect unset */
-#ifndef DISABLE_EVENT
-   .event_action =		NULL
-#endif
 };
 
 int     transport_count;
