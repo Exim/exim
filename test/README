@@ -862,6 +862,16 @@ The remaining commands are followed by data lines for their standard input,
 terminated by four asterisks. Even if no data is required for the particular
 usage, the asterisks must be given.
 
+If the input line starts with '>>> ', this prefix and any trailing spaces
+(including line feed) are removed. The reminder is processed with Perl's
+string eval() function, effectivly evaluatiing escape sequences like
+'\x41', or '\r'.  If you need a line feed there, you need to encode it
+according to your needs.
+
+If the input line starts with '\>>> ', the backslash is removed and the
+rest of the line is passed as input. This is used by the client tool,
+which understands the '>>> ' prefix for similar processing.
+
 
   background
 
@@ -874,7 +884,6 @@ in parallel with following commands.  For external daemons, eg. redis-server.
 This command operates like the "write" command, which is described below,
 except that the data it generates is copied to the end of the test-stdout file
 as well as to the named file.
-
 
 
   client [<options>] <ip address> <port> [<outgoing interface>]
@@ -1047,10 +1056,13 @@ Lines in client scripts are of several kinds:
 
 (5) If a line begins with three '>' characters and a space, the rest of the
     line is input to be sent to the server.  Backslash escaping is done as
-    described below, but no trailing "\r\n" is sent.
+    described below, but no trailing "\r\n" is sent. As the runtest's 
+    input processing catches the '>>> ' for its string eval, you may
+    want to escape from this first stage processing by prefixing your
+    line with '\'.
 
 (6) If a line begin with three '<' characters and a space, the rest of the
-    line is a filename; the content of the file is inserted intto the script
+    line is a filename; the content of the file is inserted into the script
     at this point.
 
 (7) Otherwise, the line is an input line line that is sent to the server. Any

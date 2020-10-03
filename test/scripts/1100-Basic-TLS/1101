@@ -10,7 +10,7 @@ STARTTLS
 ??? 220
 EHLO rhu.barb
 ????250
->>> MAIL FROM:<>\r\nRCPT TO:test@example.com\r\n
+\>>> MAIL FROM:<>\r\nRCPT TO:test@example.com\r\n
 ??? 250 OK
 ??? 250 Accepted (rcpt via callout)
 QUIT

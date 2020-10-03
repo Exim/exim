@@ -2792,8 +2792,9 @@ else { tests_exit(-1, "Command unrecognized in line $lineno: $_"); }
 
 
 # Run the command, with stdin connected to a pipe, and write the stdin data
-# to it, with appropriate substitutions. If a line ends with \NONL\, chop off
-# the terminating newline (and the \NONL\). If the command contains
+# to it, with appropriate substitutions. If a starts with '>>> ', process it
+# via Perl's string eval().
+# If the command contains
 # -DSERVER=server add "-server" to the command, where it will adjoin the name
 # for the stderr file. See comment above about the use of -DSERVER.
 
@@ -2807,7 +2808,8 @@ while (<SCRIPT>)
   $lineno++;
   last if /^\*{4}\s*$/;
   do_substitute($testno);
-  if (/^(.*)\\NONL\\\s*$/) { print CMD $1; } else { print CMD; }
+  s/^\\(>>>\s.*)/$1/ or s/^>>>\s(.*)\s*$/$1/ and $_ = eval "\"$1\"";
+  print CMD;
   }
 
 # For timeout tests, wait before closing the pipe; we expect a

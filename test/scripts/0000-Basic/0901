@@ -58,7 +58,7 @@ mail from:someone3@some.domain
 rcpt to:CALLER@test.ex
 ??? 250
 bdat 10
->>> To: Susan@
+\>>> To: Susan@
 ??? 250
 bdat 78 last
 random.com
@@ -103,7 +103,7 @@ mail from:someone3A@some.domain
 rcpt to:CALLER@test.ex
 ??? 250
 bdat 10
->>> To: Susan@
+\>>> To: Susan@
 ??? 250
 bdat 78 last
 random.com
