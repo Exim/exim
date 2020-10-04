@@ -1763,9 +1763,11 @@ else
   state->exp_tls_certificate = US state->tls_certificate;
   state->exp_tls_privatekey = US state->tls_privatekey;
 
+#ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
   if (state->lib_state.ocsp_hook)
      gnutls_handshake_set_hook_function(state->session,
        GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
+#endif
   }
 
 
@@ -1871,12 +1873,11 @@ client-side params. */
 
 if (!state->host)
   {
-/*XXX DDD done-bit */
   if (!dh_server_params)
     if ((rc = init_server_dh(errstr)) != OK) return rc;
 
   /* Unnecessary & discouraged with 3.6.0 or later */
-  gnutls_certificate_set_dh_params(state->.lib_statex509_cred, dh_server_params);
+  gnutls_certificate_set_dh_params(state->lib_state.x509_cred, dh_server_params);
   }
 #endif
 
