@@ -788,6 +788,7 @@ extern uschar *proxy_external_address; /* IP of remote interface of proxy */
 extern int     proxy_external_port;    /* Port on remote interface of proxy */
 extern uschar *proxy_local_address;    /* IP of local interface of proxy */
 extern int     proxy_local_port;       /* Port on local interface of proxy */
+extern int     proxy_protocol_timeout; /* Timeout for proxy negotiation */
 extern BOOL    proxy_session;          /* TRUE if receiving mail from valid proxy  */
 #endif
 

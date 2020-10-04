@@ -9,7 +9,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> clientname in helo_lookup_domains? no (end of list)
 >>> using ACL "r_acl"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check logwrite = proxy session: $proxy_session
 >>>                = proxy session: no
 LOG: proxy session: no
@@ -42,7 +42,7 @@ LOG: 10HmaX-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2] P=smtp S=sss
 LOG: no host name found for IP address 127.0.0.2
 >>> clientname in helo_lookup_domains? no (end of list)
 >>> using ACL "r_acl"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check logwrite = proxy session: $proxy_session
 >>>                = proxy session: yes
 LOG: proxy session: yes
@@ -75,7 +75,7 @@ LOG: 10HmaY-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip
 LOG: no host name found for IP address 127.0.0.2
 >>> clientname in helo_lookup_domains? no (end of list)
 >>> using ACL "r_acl"
->>> processing "accept" (TESTSUITE/test-config 20)
+>>> processing "accept" (TESTSUITE/test-config 22)
 >>> check logwrite = proxy session: $proxy_session
 >>>                = proxy session: yes
 LOG: proxy session: yes
@@ -95,8 +95,18 @@ LOG: remote         [127.0.0.2]:1115
 >>> end of ACL "r_acl": ACCEPT
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaZ-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+### proxy timeout
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
 
 ******** SERVER ********
 ### non-prox plain receive
 ### protocol v1 receive
 ### protocol v2 receive
+### proxy timeout

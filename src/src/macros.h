@@ -196,13 +196,6 @@ record. */
 
 #define WAIT_NAME_MAX 50
 
-/* Wait this long before determining that a Proxy Protocol configured
-host isn't speaking the protocol, and so is disallowed. Can be moved to
-runtime configuration if per site settings become needed. */
-#ifdef SUPPORT_PROXY
-#define PROXY_NEGOTIATION_TIMEOUT_SEC 3
-#endif
-
 /* Fixed option values for all PCRE functions */
 
 #define PCRE_COPT 0   /* compile */
@@ -887,7 +880,7 @@ enum {
 
 /* Options for smtp_write_command */
 
-enum {	
+enum {
   SCMD_FLUSH = 0,	/* write to kernel */
   SCMD_MORE,		/* write to kernel, but likely more soon */
   SCMD_BUFFER		/* stash in application cmd output buffer */

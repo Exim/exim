@@ -1219,7 +1219,7 @@ socklen_t vslen = sizeof(struct timeval);
 BOOL yield = FALSE;
 
 os_non_restarting_signal(SIGALRM, command_timeout_handler);
-ALARM(PROXY_NEGOTIATION_TIMEOUT_SEC);
+ALARM(proxy_protocol_timeout);
 
 do
   {

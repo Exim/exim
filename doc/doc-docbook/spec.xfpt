@@ -14680,6 +14680,7 @@ listed in more than one group.
 .row &%local_scan_timeout%&          "timeout for &[local_scan()]&"
 .row &%message_size_limit%&          "for all messages"
 .row &%percent_hack_domains%&        "recognize %-hack for these domains"
+.row &%proxy_protocol_timeout%&      "timeout for proxy protocol negotiation"
 .row &%spamd_address%&               "set interface to SpamAssassin"
 .row &%strict_acl_vars%&             "object to unset ACL variables"
 .row &%spf_smtp_comment_template%&   "template for &$spf_smtp_comment$&"
@@ -17015,6 +17016,14 @@ different spool directories.
 The &%-M%&, &%-R%&, and &%-q%& command-line options require the caller to be an
 admin user unless &%prod_requires_admin%& is set false. See also
 &%queue_list_requires_admin%& and &%commandline_checks_require_admin%&.
+
+
+.new
+.option proxy_protocol_timeout main time 3s
+.cindex proxy "proxy protocol"
+This option sets the timeout for proxy protocol negotiation.
+For details see section &<<SECTproxyInbound>>&.
+.wen
 
 
 .option qualify_domain main string "see below"
@@ -41929,7 +41938,8 @@ automatically determines which version is in use.
 The Proxy Protocol header is the first data received on a TCP connection
 and is inserted before any TLS-on-connect handshake from the client; Exim
 negotiates TLS between Exim-as-server and the remote client, not between
-Exim and the proxy server.
+Exim and the proxy server. The Proxy Protocol header must be received
+within &%proxy_protocol_timeout%&, which defaults to 3s.
 
 The following expansion variables are usable
 (&"internal"& and &"external"& here refer to the interfaces

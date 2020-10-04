@@ -5,6 +5,8 @@
 
 primary_hostname = myhost.test.ex
 hosts_proxy = HOSTIPV4
+# default timeout is 3s, speed up the timeout test here
+proxy_protocol_timeout = 1s
 queue_only
 
 # ----- Main settings -----

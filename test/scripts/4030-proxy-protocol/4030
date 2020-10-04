@@ -5,7 +5,7 @@ munge loopback
 exim -bd -DSERVER=server -oX PORT_D
 ****
 #
-# non-prox plain receive
+### non-prox plain receive
 client 127.0.0.1 PORT_D
 ??? 220
 HELO clientname
@@ -25,7 +25,7 @@ QUIT
 ??? 221
 ****
 #
-# protocol v1 plain receive
+### protocol v1 plain receive
 client HOSTIPV4 PORT_D
 PROXY TCP4 127.0.0.2 127.42.42.42 64000 25
 ??? 220
@@ -48,7 +48,7 @@ QUIT
 #
 #
 #
-# protocol v2 plain receive
+### protocol v2 plain receive
 client HOSTIPV4 PORT_D
 >>> \x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x21\x11\x00\x0c\x7f\x00\x00\x02\x7f\x2a\x2a\x2a\xc2\x95\x04\x01
 ??? 220
@@ -71,5 +71,13 @@ QUIT
 #
 #
 #
+### proxy timeout
+client HOSTIPV4 PORT_D
+??? 220
+PROXY TCP4 127.0.0.2 127.42.42.42 64000 25
+??? 503
+QUIT
+??? 221
+****
 killdaemon
 no_msglog_check

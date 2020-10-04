@@ -38,3 +38,9 @@ body v2
 .
 QUIT
 ****
+### proxy timeout
+exim -bh HOSTIPV4
+:sleep:3
+PROXY TCP4 127.0.0.2 127.42.42.42 64000 25
+QUIT
+****

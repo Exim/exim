@@ -1204,6 +1204,7 @@ uschar *proxy_external_address = NULL;
 int     proxy_external_port    = 0;
 uschar *proxy_local_address    = NULL;
 int     proxy_local_port       = 0;
+int     proxy_protocol_timeout = 3;
 #endif
 
 uschar *prvscheck_address      = NULL;
