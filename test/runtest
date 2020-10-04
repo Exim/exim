@@ -1075,7 +1075,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: preloading DH params for server/;
     next if /^Diffie-Hellman initialized from default/;
     next if /^TLS: preloading ECDH curve for server/;
-    next if /^ECDH OpenSSL [\d.+]+ temp key parameter settings:/;
+    next if /^ECDH OpenSSL [< ]?[\d.+]+ temp key parameter settings:/;
+    next if /^ECDH: .'*prime256v1'/;
     next if /^watch dir/;
 
     # TLS preload

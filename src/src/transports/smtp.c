@@ -192,7 +192,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   .keepalive =			TRUE,
   .retry_include_ip_address =	TRUE,
 #ifndef DISABLE_TLS
+# if defined(SUPPORT_SYSDEFAULT_CABUNDLE) || !defined(USE_GNUTLS)
   .tls_verify_certificates =	US"system",
+# endif
   .tls_dh_min_bits =		EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
   .tls_tempfail_tryclear =	TRUE,
   .tls_try_verify_hosts =	US"*",
