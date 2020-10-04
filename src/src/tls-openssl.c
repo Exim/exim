@@ -1572,220 +1572,6 @@ return OK;
 * One-time init credentials for server and client *
 **************************************************/
 
-
-#ifdef gnutls
-static void
-creds_basic_init(gnutls_certificate_credentials_t x509_cred, BOOL server)
-{
-}
-#endif
-
-static int
-creds_load_server_certs(/*exim_gnutls_state_st * state,*/ const uschar * cert,
-  const uschar * pkey, const uschar * ocsp, uschar ** errstr)
-{
-#ifdef gnutls
-const uschar * clist = cert;
-const uschar * klist = pkey;
-const uschar * olist;
-int csep = 0, ksep = 0, osep = 0, cnt = 0, rc;
-uschar * cfile, * kfile, * ofile;
-#ifndef DISABLE_OCSP
-# ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
-gnutls_x509_crt_fmt_t ocsp_fmt = GNUTLS_X509_FMT_DER;
-# endif
-
-if (!expand_check(ocsp, US"tls_ocsp_file", &ofile, errstr))
-  return DEFER;
-olist = ofile;
-#endif
-
-while (cfile = string_nextinlist(&clist, &csep, NULL, 0))
-
-  if (!(kfile = string_nextinlist(&klist, &ksep, NULL, 0)))
-    return tls_error(US"cert/key setup: out of keys", NULL, NULL, errstr);
-  else if ((rc = tls_add_certfile(state, NULL, cfile, kfile, errstr)) > 0)
-    return rc;
-  else
-    {
-    int gnutls_cert_index = -rc;
-    DEBUG(D_tls) debug_printf("TLS: cert/key %d %s registered\n",
-			      gnutls_cert_index, cfile);
-
-#ifndef DISABLE_OCSP
-    if (ocsp)
-      {
-      /* Set the OCSP stapling server info */
-      if (gnutls_buggy_ocsp)
-	{
-	DEBUG(D_tls)
-	  debug_printf("GnuTLS library is buggy for OCSP; avoiding\n");
-	}
-      else if ((ofile = string_nextinlist(&olist, &osep, NULL, 0)))
-	{
-	DEBUG(D_tls) debug_printf("OCSP response file %d  = %s\n",
-				  gnutls_cert_index, ofile);
-# ifdef SUPPORT_GNUTLS_EXT_RAW_PARSE
-	if (Ustrncmp(ofile, US"PEM ", 4) == 0)
-	  {
-	  ocsp_fmt = GNUTLS_X509_FMT_PEM;
-	  ofile += 4;
-	  }
-	else if (Ustrncmp(ofile, US"DER ", 4) == 0)
-	  {
-	  ocsp_fmt = GNUTLS_X509_FMT_DER;
-	  ofile += 4;
-	  }
-
-	if  ((rc = gnutls_certificate_set_ocsp_status_request_file2(
-		  state->lib_state.x509_cred, CCS ofile, gnutls_cert_index,
-		  ocsp_fmt)) < 0)
-	  return tls_error_gnu(
-		  US"gnutls_certificate_set_ocsp_status_request_file2",
-		  rc, NULL, errstr);
-	DEBUG(D_tls)
-	  debug_printf(" %d response%s loaded\n", rc, rc>1 ? "s":"");
-
-	/* Arrange callbacks for OCSP request observability */
-
-	if (state->session)
-	  gnutls_handshake_set_hook_function(state->session,
-	    GNUTLS_HANDSHAKE_ANY, GNUTLS_HOOK_POST, tls_server_hook_cb);
-	else
-	  state->lib_state.ocsp_hook = TRUE;
-
-
-# else
-#  if defined(SUPPORT_SRV_OCSP_STACK)
-	if ((rc = gnutls_certificate_set_ocsp_status_request_function2(
-		     state->lib_state.x509_cred, gnutls_cert_index,
-		     server_ocsp_stapling_cb, ofile)))
-	    return tls_error_gnu(
-		  US"gnutls_certificate_set_ocsp_status_request_function2",
-		  rc, NULL, errstr);
-	else
-#  endif
-	  {
-	  if (cnt++ > 0)
-	    {
-	    DEBUG(D_tls)
-	      debug_printf("oops; multiple OCSP files not supported\n");
-	    break;
-	    }
-	  gnutls_certificate_set_ocsp_status_request_function(
-	    state->lib_state.x509_cred, server_ocsp_stapling_cb, ofile);
-	  }
-# endif	/* SUPPORT_GNUTLS_EXT_RAW_PARSE */
-	}
-      else
-	DEBUG(D_tls) debug_printf("ran out of OCSP response files in list\n");
-      }
-#endif /* DISABLE_OCSP */
-    }
-return 0;
-#endif /*gnutls*/
-}
-
-static int
-creds_load_client_certs(/*exim_gnutls_state_st * state,*/ const host_item * host,
-  const uschar * cert, const uschar * pkey, uschar ** errstr)
-{
-return 0;
-}
-
-static int
-creds_load_cabundle(/*exim_gnutls_state_st * state,*/ const uschar * bundle,
-  const host_item * host, uschar ** errstr)
-{
-#ifdef gnutls
-int cert_count;
-struct stat statbuf;
-
-#ifdef SUPPORT_SYSDEFAULT_CABUNDLE
-if (Ustrcmp(bundle, "system") == 0 || Ustrncmp(bundle, "system,", 7) == 0)
-  cert_count = gnutls_certificate_set_x509_system_trust(state->lib_state.x509_cred);
-else
-#endif
-  {
-  if (Ustat(bundle, &statbuf) < 0)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "could not stat '%s' "
-	"(tls_verify_certificates): %s", bundle, strerror(errno));
-    return DEFER;
-    }
-
-#ifndef SUPPORT_CA_DIR
-  /* The test suite passes in /dev/null; we could check for that path explicitly,
-  but who knows if someone has some weird FIFO which always dumps some certs, or
-  other weirdness.  The thing we really want to check is that it's not a
-  directory, since while OpenSSL supports that, GnuTLS does not.
-  So s/!S_ISREG/S_ISDIR/ and change some messaging ... */
-  if (S_ISDIR(statbuf.st_mode))
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC,
-	"tls_verify_certificates \"%s\" is a directory", bundle);
-    return DEFER;
-    }
-#endif
-
-  DEBUG(D_tls) debug_printf("verify certificates = %s size=" OFF_T_FMT "\n",
-	  bundle, statbuf.st_size);
-
-  if (statbuf.st_size == 0)
-    {
-    DEBUG(D_tls)
-      debug_printf("cert file empty, no certs, no verification, ignoring any CRL\n");
-    return OK;
-    }
-
-  cert_count =
-
-#ifdef SUPPORT_CA_DIR
-    (statbuf.st_mode & S_IFMT) == S_IFDIR
-    ?
-    gnutls_certificate_set_x509_trust_dir(state->lib_state.x509_cred,
-      CS bundle, GNUTLS_X509_FMT_PEM)
-    :
-#endif
-    gnutls_certificate_set_x509_trust_file(state->lib_state.x509_cred,
-      CS bundle, GNUTLS_X509_FMT_PEM);
-
-#ifdef SUPPORT_CA_DIR
-  /* Mimic the behaviour with OpenSSL of not advertising a usable-cert list
-  when using the directory-of-certs config model. */
-
-  if ((statbuf.st_mode & S_IFMT) == S_IFDIR)
-    if (state->session)
-      gnutls_certificate_send_x509_rdn_sequence(state->session, 1);
-    else
-      state->lib_state.ca_rdn_emulate = TRUE;
-#endif
-  }
-
-if (cert_count < 0)
-  return tls_error_gnu(US"setting certificate trust", cert_count, host, errstr);
-DEBUG(D_tls)
-  debug_printf("Added %d certificate authorities\n", cert_count);
-
-#endif /*gnutls*/
-return OK;
-}
-
-
-static int
-creds_load_crl(/*exim_gnutls_state_st * state,*/ const uschar * crl, uschar ** errstr)
-{
-return FAIL;
-}
-
-
-static int
-creds_load_pristring(/*exim_gnutls_state_st * state,*/ const uschar * p,
-  const char ** errpos)
-{
-return FAIL;
-}
-
 static int
 server_load_ciphers(SSL_CTX * ctx, exim_openssl_state_st * state,
   uschar * ciphers, uschar ** errstr)
@@ -2045,6 +1831,17 @@ smtp_transport_options_block * ob = t->options_block;
 SSL_CTX_free(ob->tls_preload.lib_ctx);
 ob->tls_preload = null_tls_preload;
 }
+
+#else
+
+static void
+tls_server_creds_invalidate(void)
+{ return; }
+
+static void
+tls_client_creds_invalidate(transport_instance * t)
+{ return; }
+
 #endif	/*EXIM_HAVE_INOTIFY*/
 
 

@@ -42,6 +42,9 @@ static void tls_server_creds_init(void);
 static void tls_server_creds_invalidate(void);
 static void tls_client_creds_init(transport_instance *, BOOL);
 static void tls_client_creds_invalidate(transport_instance *);
+static void tls_daemon_creds_reload(void);
+static BOOL opt_set_and_noexpand(const uschar *);
+static BOOL opt_unset_or_noexpand(const uschar *);
 
 
 
@@ -181,6 +184,24 @@ return rc;
 }
 
 
+/* Called, after a delay for multiple file ops to get done, from
+the daemon when any of the watches added (above) fire.
+
+Dump the set of watches and arrange to reload cached creds (which
+will set up new watches). */
+
+static void
+tls_watch_triggered(void)
+{
+DEBUG(D_tls) debug_printf("watch triggered\n");
+close(tls_watch_fd);
+tls_watch_fd = -1;
+
+tls_daemon_creds_reload();
+}
+#endif	/* EXIM_HAVE_INOTIFY */
+
+
 void
 tls_client_creds_reload(BOOL watch)
 {
@@ -202,23 +223,6 @@ tls_client_creds_reload(TRUE);
 }
 
 
-/* Called, after a delay for multiple file ops to get done, from
-the daemon when any of the watches added (above) fire.
-
-Dump the set of watches and arrange to reload cached creds (which
-will set up new watches). */
-
-static void
-tls_watch_triggered(void)
-{
-DEBUG(D_tls) debug_printf("watch triggered\n");
-close(tls_watch_fd);
-tls_watch_fd = -1;
-
-tls_daemon_creds_reload();
-}
-
-
 /* Utility predicates for use by the per-library code */
 static BOOL
 opt_set_and_noexpand(const uschar * opt)
@@ -228,7 +232,6 @@ static BOOL
 opt_unset_or_noexpand(const uschar * opt)
 { return !opt || Ustrchr(opt, '$') == NULL; }
 
-#endif	/* EXIM_HAVE_INOTIFY */
 
 
 /* Called every time round the daemon loop */

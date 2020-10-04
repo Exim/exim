@@ -13,7 +13,7 @@
 #define PENDING_OK      (PENDING + OK)
 
 
-#if !defined(DISABLE_TLS) && defined(EXIM_HAVE_INOTIFY)
+#ifndef DISABLE_TLS
 /* Flags structure for validity of TLS configuration */
 
 typedef struct {
@@ -125,7 +125,7 @@ typedef struct {
 #ifdef EXPERIMENTAL_ARC
   uschar	*arc_sign;
 #endif
-#if !defined(DISABLE_TLS) && defined(EXIM_HAVE_INOTIFY)
+#ifndef DISABLE_TLS
   exim_tlslib_state tls_preload;
 #endif
 } smtp_transport_options_block;
