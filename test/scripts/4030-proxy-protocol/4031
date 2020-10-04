@@ -1,0 +1,40 @@
+# proxy-protocol proxy on inbound -bh
+#
+### non-prox plain receive
+exim -bh 127.0.0.2
+HELO clientname
+MAIL FROM: <a@test.ex>
+RCPT TO:<b@test.ex>
+DATA
+Subject: test non-prox
+
+body non-prox
+.
+QUIT
+****
+### protocol v1 receive
+exim -bh HOSTIPV4
+>>> PROXY TCP4 127.0.0.2 127.42.42.42 64000 25\r\n
+HELO clientname
+MAIL FROM: <a@test.ex>
+RCPT TO:<b@test.ex>
+DATA
+Subject: test v1
+
+body v1
+.
+QUIT
+****
+### protocol v2 receive
+exim -bh HOSTIPV4
+>>> \x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A\x21\x11\x00\x0c\x7f\x00\x00\x02\x7f\x2a\x2a\x2a\xc2\x95\x04\x01
+HELO clientname
+MAIL FROM: <a@test.ex>
+RCPT TO:<b@test.ex>
+DATA
+Subject: test v2
+
+body v2
+.
+QUIT
+****

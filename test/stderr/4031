@@ -1,0 +1,102 @@
+### non-prox plain receive
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> clientname in helo_lookup_domains? no (end of list)
+>>> using ACL "r_acl"
+>>> processing "accept" (TESTSUITE/test-config 20)
+>>> check logwrite = proxy session: $proxy_session
+>>>                = proxy session: no
+LOG: proxy session: no
+>>> check logwrite = local          [$received_ip_address]:$received_port
+>>>                = local          []:-1
+LOG: local          []:-1
+>>> check logwrite = proxy internal [$proxy_local_address]:$proxy_local_port
+>>>                = proxy internal []:0
+LOG: proxy internal []:0
+>>> check logwrite = proxy external [$proxy_external_address]:$proxy_external_port
+>>>                = proxy external []:0
+LOG: proxy external []:0
+>>> check logwrite = remote         [$sender_host_address]:$sender_host_port
+>>>                = remote         [127.0.0.2]:1111
+LOG: remote         [127.0.0.2]:1111
+>>> accept: condition test succeeded in ACL "r_acl"
+>>> end of ACL "r_acl": ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaX-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2] P=smtp S=sss
+### protocol v1 receive
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> looking up host name for 127.0.0.2
+LOG: no host name found for IP address 127.0.0.2
+>>> clientname in helo_lookup_domains? no (end of list)
+>>> using ACL "r_acl"
+>>> processing "accept" (TESTSUITE/test-config 20)
+>>> check logwrite = proxy session: $proxy_session
+>>>                = proxy session: yes
+LOG: proxy session: yes
+>>> check logwrite = local          [$received_ip_address]:$received_port
+>>>                = local          []:-1
+LOG: local          []:-1
+>>> check logwrite = proxy internal [$proxy_local_address]:$proxy_local_port
+>>>                = proxy internal [ip4.ip4.ip4.ip4]:1111
+LOG: proxy internal [ip4.ip4.ip4.ip4]:1111
+>>> check logwrite = proxy external [$proxy_external_address]:$proxy_external_port
+>>>                = proxy external [127.42.42.42]:1112
+LOG: proxy external [127.42.42.42]:1112
+>>> check logwrite = remote         [$sender_host_address]:$sender_host_port
+>>>                = remote         [127.0.0.2]:1113
+LOG: remote         [127.0.0.2]:1113
+>>> accept: condition test succeeded in ACL "r_acl"
+>>> end of ACL "r_acl": ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaY-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1113 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+### protocol v2 receive
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> looking up host name for 127.0.0.2
+LOG: no host name found for IP address 127.0.0.2
+>>> clientname in helo_lookup_domains? no (end of list)
+>>> using ACL "r_acl"
+>>> processing "accept" (TESTSUITE/test-config 20)
+>>> check logwrite = proxy session: $proxy_session
+>>>                = proxy session: yes
+LOG: proxy session: yes
+>>> check logwrite = local          [$received_ip_address]:$received_port
+>>>                = local          []:-1
+LOG: local          []:-1
+>>> check logwrite = proxy internal [$proxy_local_address]:$proxy_local_port
+>>>                = proxy internal [ip4.ip4.ip4.ip4]:1111
+LOG: proxy internal [ip4.ip4.ip4.ip4]:1111
+>>> check logwrite = proxy external [$proxy_external_address]:$proxy_external_port
+>>>                = proxy external [127.42.42.42]:1114
+LOG: proxy external [127.42.42.42]:1114
+>>> check logwrite = remote         [$sender_host_address]:$sender_host_port
+>>>                = remote         [127.0.0.2]:1115
+LOG: remote         [127.0.0.2]:1115
+>>> accept: condition test succeeded in ACL "r_acl"
+>>> end of ACL "r_acl": ACCEPT
+>>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaZ-0005vi-00 <= a@test.ex H=(clientname) [127.0.0.2]:1115 P=smtp PRX=ip4.ip4.ip4.ip4 S=sss
+
+******** SERVER ********
+### non-prox plain receive
+### protocol v1 receive
+### protocol v2 receive

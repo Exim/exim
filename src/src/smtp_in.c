@@ -1034,25 +1034,6 @@ had_command_sigterm = sig;
 
 #ifdef SUPPORT_PROXY
 /*************************************************
-*     Restore socket timeout to previous value   *
-*************************************************/
-/* If the previous value was successfully retrieved, restore
-it before returning control to the non-proxy routines
-
-Arguments: fd     - File descriptor for input
-           get_ok - Successfully retrieved previous values
-           tvtmp  - Time struct with previous values
-           vslen  - Length of time struct
-Returns:   none
-*/
-static void
-restore_socket_timeout(int fd, int get_ok, struct timeval * tvtmp, socklen_t vslen)
-{
-if (get_ok == 0)
-  (void) setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS tvtmp, vslen);
-}
-
-/*************************************************
 *       Check if host is required proxy host     *
 *************************************************/
 /* The function determines if inbound host will be a regular smtp host
@@ -1128,7 +1109,7 @@ if (cr != NULL)
 
 while (capacity > 0)
   {
-  do { ret = recv(fd, to, 1, 0); } while (ret == -1 && errno == EINTR);
+  do { ret = read(fd, to, 1); } while (ret == -1 && errno == EINTR && !had_command_timeout);
   if (ret == -1)
     return -1;
   have++;
@@ -1237,15 +1218,8 @@ struct timeval tvtmp;
 socklen_t vslen = sizeof(struct timeval);
 BOOL yield = FALSE;
 
-/* Save current socket timeout values */
-get_ok = getsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tvtmp, &vslen);
-
-/* Proxy Protocol host must send header within a short time
-(default 3 seconds) or it's considered invalid */
-tv.tv_sec  = PROXY_NEGOTIATION_TIMEOUT_SEC;
-tv.tv_usec = PROXY_NEGOTIATION_TIMEOUT_USEC;
-if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, CS &tv, sizeof(tv)) < 0)
-  goto bad;
+os_non_restarting_signal(SIGALRM, command_timeout_handler);
+ALARM(PROXY_NEGOTIATION_TIMEOUT_SEC);
 
 do
   {
@@ -1253,9 +1227,9 @@ do
   don't do a PEEK into the data, actually slurp up enough to be
   "safe". Can't take it all because TLS-on-connect clients follow
   immediately with TLS handshake. */
-  ret = recv(fd, &hdr, PROXY_INITIAL_READ, 0);
+  ret = read(fd, &hdr, PROXY_INITIAL_READ);
   }
-  while (ret == -1 && errno == EINTR);
+  while (ret == -1 && errno == EINTR && !had_command_timeout);
 
 if (ret == -1)
   goto proxyfail;
@@ -1269,8 +1243,8 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
   /* First get the length fields. */
   do
     {
-    retmore = recv(fd, (uschar*)&hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ, 0);
-    } while (retmore == -1 && errno == EINTR);
+    retmore = read(fd, (uschar*)&hdr + ret, PROXY_V2_HEADER_SIZE - PROXY_INITIAL_READ);
+    } while (retmore == -1 && errno == EINTR && !had_command_timeout);
   if (retmore == -1)
     goto proxyfail;
   ret += retmore;
@@ -1306,8 +1280,8 @@ if ((ret == PROXY_INITIAL_READ) && (memcmp(&hdr.v2, v2sig, sizeof(v2sig)) == 0))
     {
     do
       {
-      retmore = recv(fd, (uschar*)&hdr + ret, size-ret, 0);
-      } while (retmore == -1 && errno == EINTR);
+      retmore = read(fd, (uschar*)&hdr + ret, size-ret);
+      } while (retmore == -1 && errno == EINTR && !had_command_timeout);
     if (retmore == -1)
       goto proxyfail;
     ret += retmore;
@@ -1535,7 +1509,8 @@ done:
 should cause a synchronization failure */
 
 proxyfail:
-  restore_socket_timeout(fd, get_ok, &tvtmp, vslen);
+  DEBUG(D_receive) if (had_command_timeout)
+    debug_printf("Timeout while reading proxy header\n");
 
 bad:
   if (yield)
@@ -1551,6 +1526,7 @@ bad:
       debug_printf("Failure to extract proxied host, only QUIT allowed\n");
     }
 
+ALARM(0);
 return;
 }
 #endif
@@ -2412,7 +2388,7 @@ TCP_SYN_RCV (as of 12.1) so no idea about data-use. */
 
 if (getsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_FASTOPEN, &is_fastopen, &len) == 0)
   {
-  if (is_fastopen) 
+  if (is_fastopen)
     {
     DEBUG(D_receive)
       debug_printf("TFO mode connection (TCP_FASTOPEN getsockopt)\n");
@@ -5769,7 +5745,7 @@ while (done <= 0)
 	/* If not serializing, do the exec right away. Otherwise, fork down
 	into another process. */
 
-	if (  !smtp_etrn_serialize 
+	if (  !smtp_etrn_serialize
 	   || (pid = exim_fork(US"etrn-serialised-command")) == 0)
 	  {
 	  DEBUG(D_exec) debug_print_argv(argv);
