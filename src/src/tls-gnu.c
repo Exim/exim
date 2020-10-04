@@ -345,119 +345,6 @@ tls_server_ticket_cb(gnutls_session_t sess, u_int htype, unsigned when,
 #endif
 
 
-/* ------------------------------------------------------------------------ */
-/* Initialisation */
-
-#ifndef DISABLE_OCSP
-
-static BOOL
-tls_is_buggy_ocsp(void)
-{
-const uschar * s;
-uschar maj, mid, mic;
-
-s = CUS gnutls_check_version(NULL);
-maj = atoi(CCS s);
-if (maj == 3)
-  {
-  while (*s && *s != '.') s++;
-  mid = atoi(CCS ++s);
-  if (mid <= 2)
-    return TRUE;
-  else if (mid >= 5)
-    return FALSE;
-  else
-    {
-    while (*s && *s != '.') s++;
-    mic = atoi(CCS ++s);
-    return mic <= (mid == 3 ? 16 : 3);
-    }
-  }
-return FALSE;
-}
-
-#endif
-
-
-static void
-tls_g_init(void)
-{
-DEBUG(D_tls) debug_printf("GnuTLS global init required\n");
-
-#if defined(HAVE_GNUTLS_PKCS11) && !defined(GNUTLS_AUTO_PKCS11_MANUAL)
-/* By default, gnutls_global_init will init PKCS11 support in auto mode,
-which loads modules from a config file, which sounds good and may be wanted
-by some sysadmin, but also means in common configurations that GNOME keyring
-environment variables are used and so breaks for users calling mailq.
-To prevent this, we init PKCS11 first, which is the documented approach. */
-
-if (!gnutls_allow_auto_pkcs11)
-  if ((rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL)))
-    return tls_error_gnu(US"gnutls_pkcs11_init", rc, host, errstr);
-#endif
-
-#ifndef GNUTLS_AUTO_GLOBAL_INIT
-if ((rc = gnutls_global_init()))
-  return tls_error_gnu(US"gnutls_global_init", rc, host, errstr);
-#endif
-
-#if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
-DEBUG(D_tls)
-  {
-  gnutls_global_set_log_function(exim_gnutls_logger_cb);
-  /* arbitrarily chosen level; bump up to 9 for more */
-  gnutls_global_set_log_level(EXIM_GNUTLS_LIBRARY_LOG_LEVEL);
-  }
-#endif
-
-#ifndef DISABLE_OCSP
-if (tls_ocsp_file && (gnutls_buggy_ocsp = tls_is_buggy_ocsp()))
-  log_write(0, LOG_MAIN, "OCSP unusable with this GnuTLS library version");
-#endif
-
-exim_gnutls_base_init_done = TRUE;
-}
-
-
-
-/* Daemon-call before each connection.  Nothing to do for GnuTLS. */
-
-static void
-tls_per_lib_daemon_tick(void)
-{
-}
-
-/* Daemon one-time initialisation */
-
-static void
-tls_per_lib_daemon_init(void)
-{
-static BOOL once = FALSE;
-
-if (!exim_gnutls_base_init_done)
-  tls_g_init();
-
-if (!once)
-  {
-  once = TRUE;
-
-#ifdef EXIM_HAVE_TLS_RESUME
-  /* We are dependent on the GnuTLS implementation of the Session Ticket
-  encryption; both the strength and the key rotation period.  We hope that
-  the strength at least matches that of the ciphersuite (but GnuTLS does not
-  document this). */
-
-  gnutls_session_ticket_key_generate(&server_sessticket_key);	/* >= 2.10.0 */
-  if (f.running_in_test_harness) ssl_session_timeout = 6;
-#endif
-
-  tls_daemon_creds_reload();
-  }
-}
-
-/* ------------------------------------------------------------------------ */
-/* Static functions */
-
 /*************************************************
 *               Handle TLS error                 *
 *************************************************/
@@ -504,6 +391,121 @@ tls_error_sys(const uschar *prefix, int err, const host_item *host,
 return tls_error(prefix, US strerror(err), host, errstr);
 }
 
+
+/* ------------------------------------------------------------------------ */
+/* Initialisation */
+
+#ifndef DISABLE_OCSP
+
+static BOOL
+tls_is_buggy_ocsp(void)
+{
+const uschar * s;
+uschar maj, mid, mic;
+
+s = CUS gnutls_check_version(NULL);
+maj = atoi(CCS s);
+if (maj == 3)
+  {
+  while (*s && *s != '.') s++;
+  mid = atoi(CCS ++s);
+  if (mid <= 2)
+    return TRUE;
+  else if (mid >= 5)
+    return FALSE;
+  else
+    {
+    while (*s && *s != '.') s++;
+    mic = atoi(CCS ++s);
+    return mic <= (mid == 3 ? 16 : 3);
+    }
+  }
+return FALSE;
+}
+
+#endif
+
+
+static int
+tls_g_init(uschar ** errstr)
+{
+int rc;
+DEBUG(D_tls) debug_printf("GnuTLS global init required\n");
+
+#if defined(HAVE_GNUTLS_PKCS11) && !defined(GNUTLS_AUTO_PKCS11_MANUAL)
+/* By default, gnutls_global_init will init PKCS11 support in auto mode,
+which loads modules from a config file, which sounds good and may be wanted
+by some sysadmin, but also means in common configurations that GNOME keyring
+environment variables are used and so breaks for users calling mailq.
+To prevent this, we init PKCS11 first, which is the documented approach. */
+
+if (!gnutls_allow_auto_pkcs11)
+  if ((rc = gnutls_pkcs11_init(GNUTLS_PKCS11_FLAG_MANUAL, NULL)))
+    return tls_error_gnu(US"gnutls_pkcs11_init", rc, NULL, errstr);
+#endif
+
+#ifndef GNUTLS_AUTO_GLOBAL_INIT
+if ((rc = gnutls_global_init()))
+  return tls_error_gnu(US"gnutls_global_init", rc, NULL, errstr);
+#endif
+
+#if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
+DEBUG(D_tls)
+  {
+  gnutls_global_set_log_function(exim_gnutls_logger_cb);
+  /* arbitrarily chosen level; bump up to 9 for more */
+  gnutls_global_set_log_level(EXIM_GNUTLS_LIBRARY_LOG_LEVEL);
+  }
+#endif
+
+#ifndef DISABLE_OCSP
+if (tls_ocsp_file && (gnutls_buggy_ocsp = tls_is_buggy_ocsp()))
+  log_write(0, LOG_MAIN, "OCSP unusable with this GnuTLS library version");
+#endif
+
+exim_gnutls_base_init_done = TRUE;
+return OK;
+}
+
+
+
+/* Daemon-call before each connection.  Nothing to do for GnuTLS. */
+
+static void
+tls_per_lib_daemon_tick(void)
+{
+}
+
+/* Daemon one-time initialisation */
+
+static void
+tls_per_lib_daemon_init(void)
+{
+uschar * dummy_errstr;
+static BOOL once = FALSE;
+
+if (!exim_gnutls_base_init_done)
+  tls_g_init(&dummy_errstr);
+
+if (!once)
+  {
+  once = TRUE;
+
+#ifdef EXIM_HAVE_TLS_RESUME
+  /* We are dependent on the GnuTLS implementation of the Session Ticket
+  encryption; both the strength and the key rotation period.  We hope that
+  the strength at least matches that of the ciphersuite (but GnuTLS does not
+  document this). */
+
+  gnutls_session_ticket_key_generate(&server_sessticket_key);	/* >= 2.10.0 */
+  if (f.running_in_test_harness) ssl_session_timeout = 6;
+#endif
+
+  tls_daemon_creds_reload();
+  }
+}
+
+/* ------------------------------------------------------------------------ */
 
 /*************************************************
 *    Deal with logging errors during I/O         *
@@ -1532,8 +1534,9 @@ exim_gnutls_state_st tpt_dummy_state;
 host_item * dummy_host = (host_item *)1;
 uschar * dummy_errstr;
 
-if (!exim_gnutls_base_init_done)
-  tls_g_init();
+if (  !exim_gnutls_base_init_done
+   && tls_g_init(&dummy_errstr) != OK)
+  return;
 
 ob->tls_preload = null_tls_preload;
 if (gnutls_certificate_allocate_credentials(
@@ -1937,8 +1940,9 @@ exim_gnutls_state_st * state;
 int rc;
 size_t sz;
 
-if (!exim_gnutls_base_init_done)
-  tls_g_init();
+if (  !exim_gnutls_base_init_done
+   && (rc = tls_g_init(errstr)) != OK)
+  return rc;
 
 if (host)
   {
