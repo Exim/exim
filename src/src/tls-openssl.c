@@ -1866,17 +1866,20 @@ if (opt_unset_or_noexpand(tls_eccurve))
 /* If we can, preload the server-side cert, key and ocsp */
 
 if (  opt_set_and_noexpand(tls_certificate)
-   && opt_unset_or_noexpand(tls_privatekey)
-   && opt_unset_or_noexpand(tls_ocsp_file))
+# ifndef DISABLE_OCSP
+   && opt_unset_or_noexpand(tls_ocsp_file)
+#endif
+   && opt_unset_or_noexpand(tls_privatekey))
   {
   /* Set watches on the filenames.  The implementation does de-duplication
   so we can just blindly do them all.
   */
 
   if (  tls_set_watch(tls_certificate, TRUE)
-     && tls_set_watch(tls_privatekey, TRUE)
+# ifndef DISABLE_OCSP
      && tls_set_watch(tls_ocsp_file, TRUE)
-     )
+#endif
+     && tls_set_watch(tls_privatekey, TRUE))
     {
     state_server.certificate = tls_certificate;
     state_server.privatekey = tls_privatekey;

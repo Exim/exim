@@ -1078,6 +1078,7 @@ return gnutls_ext_raw_parse(NULL, tls_server_clienthello_ext, msg,
 }
 
 
+# ifdef notdef_crashes
 /* Make a note that we saw a status-response */
 static int
 tls_server_servercerts_ext(void * ctx, unsigned tls_id,
@@ -1093,6 +1094,7 @@ if (FALSE && tls_id == 5)	/* status_request */
   }
 return 0;
 }
+# endif
 
 /* Callback for certificates packet, on server, if we think we might serve stapled-OCSP */
 static int
@@ -1100,12 +1102,12 @@ tls_server_servercerts_cb(gnutls_session_t session, unsigned int htype,
   unsigned when, unsigned int incoming, const gnutls_datum_t * msg)
 {
 /* Call fn for each extension seen.  3.6.3 onwards */
-#ifdef notdef
-/*XXX crashes */
+# ifdef notdef_crashes
+				/*XXX crashes */
 return gnutls_ext_raw_parse(NULL, tls_server_servercerts_ext, msg, 0);
-#endif
+# endif
 }
-#endif
+#endif /*SUPPORT_GNUTLS_EXT_RAW_PARSE*/
 
 /*XXX in tls1.3 the cert-status travel as an extension next to the cert, in the
  "Handshake Protocol: Certificate" record.
@@ -1439,22 +1441,30 @@ to handle selfsign generation for now (tls_certificate null/empty;
 XXX will want to do that later though) due to the lifetime/expiry issue. */
 
 if (  opt_set_and_noexpand(tls_certificate)
-   && opt_unset_or_noexpand(tls_privatekey)
-   && opt_unset_or_noexpand(tls_ocsp_file))
+# ifndef DISABLE_OCSP
+   && opt_unset_or_noexpand(tls_ocsp_file)
+# endif
+   && opt_unset_or_noexpand(tls_privatekey))
   {
   /* Set watches on the filenames.  The implementation does de-duplication
   so we can just blindly do them all.
   */
 
   if (  tls_set_watch(tls_certificate, TRUE)
-     && tls_set_watch(tls_privatekey, TRUE)
+# ifndef DISABLE_OCSP
      && tls_set_watch(tls_ocsp_file, TRUE)
-     )
+# endif
+     && tls_set_watch(tls_privatekey, TRUE))
     {
     DEBUG(D_tls) debug_printf("TLS: preloading server certs\n");
     if (creds_load_server_certs(&state_server, tls_certificate,
 	  tls_privatekey && *tls_privatekey ? tls_privatekey : tls_certificate,
-	  tls_ocsp_file, &dummy_errstr) == 0)
+# ifdef DISABLE_OCSP
+	  NULL,
+# else
+	  tls_ocsp_file,
+# endif
+	  &dummy_errstr) == 0)
       state_server.lib_state.conn_certs = TRUE;
     }
   }
@@ -1750,7 +1760,13 @@ if (!state->lib_state.conn_certs)
 	  ? creds_load_client_certs(state, host, state->exp_tls_certificate,
 			      state->exp_tls_privatekey, errstr)
 	  : creds_load_server_certs(state, state->exp_tls_certificate,
-			      state->exp_tls_privatekey, tls_ocsp_file, errstr)
+			      state->exp_tls_privatekey,
+#ifdef DISABLE_OCSP
+			      NULL,
+#else
+			      tls_ocsp_file,
+#endif
+			      errstr)
        )  ) return rc;
     }
   }
