@@ -1067,13 +1067,15 @@ RESET_AFTER_EXTRA_LINE_READ:
     # this is timing-dependent
     next if /^OpenSSL: creating STEK$/;
 
+    # TLS preload
     # only OpenSSL speaks of these
     next if /^TLS: preloading DH params for server/;
     next if /^Diffie-Hellman initialized from default/;
     next if /^TLS: preloading ECDH curve for server/;
     next if /^ECDH OpenSSL [\d.+]+ temp key parameter settings: default selection$/;
-    next if /^watch dir '\/etc\/pki\/tls'$/;
+    next if /^watch dir/;
 
+    # TLS preload
     # only GnuTLS speaks of these
     next if /^GnuTLS global init required$/;
     next if /^TLS: basic cred init, server/;
@@ -1081,6 +1083,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^GnuTLS using default session cipher\/priority "NORMAL"$/TLS: not preloading cipher list for server/;
     next if /^GnuTLS<2>: added \d+ protocols, \d+ ciphersuites, \d+ sig algos and \d+ groups into priority list$/;
 
+    # TLS preload
     # there happen in different orders for OpenSSL/GnuTLS/noTLS
     next if /^TLS: not preloading (CA bundle|cipher list) for server$/;
     next if /^TLS: not preloading server certs$/;
@@ -1241,6 +1244,15 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^(\s*\d+|ppppp)  \@?(.*exim_daemon_notify)$/ppppp  $2/;
     next if /unlinking notifier socket/;
 
+    # daemon notifier socket
+    # Timing variance over runs.  Collapse repeated memssages.
+    if (/notify triggered queue run/)
+      {
+      my $line = $_;
+      while (/notify triggered queue run/) { $_ = <IN>; }
+      $_ = $line . $_;
+      }
+
     # DISABLE_OCSP
     next if /in hosts_requ(est|ire)_ocsp\? (no|yes)/;
 
@@ -1292,14 +1304,6 @@ RESET_AFTER_EXTRA_LINE_READ:
     #  Parts of DKIM-specific debug output depend on the time/date
     next if /^date:\w+,\{SP\}/;
     next if /^DKIM \[[^[]+\] (Header hash|b) computed:/;
-
-    # Timing variable over runs.  Collapse repeated memssages.
-    if (/notify triggered queue run/)
-      {
-      my $line = $_;
-      while (/notify triggered queue run/) { $_ = <IN>; }
-      $_ = $line . $_;
-      }
 
     # Not all platforms support TCP Fast Open, and the compile omits the check
     if (s/\S+ in hosts_try_fastopen\? (no \(option unset\)|no \(end of list\)|yes \(matched "\*"\))\n$//)
