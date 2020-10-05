@@ -859,7 +859,7 @@ Commands with input
 -------------------
 
 The remaining commands are followed by data lines for their standard input,
-terminated by four asterisks. Even if no data is required for the particular
+terminated by four asterisks ("****"). Even if no data is required for the particular
 usage, the asterisks must be given.
 
 If the input line starts with '>>> ', this prefix and any trailing spaces
@@ -1038,30 +1038,30 @@ CLIENT SCRIPTS
 
 Lines in client scripts are of several kinds:
 
-(1) If a line begins with three question marks and a space, the rest of the
+(1) "??? ": If a line begins with three question marks and a space, the rest of the
     line defines the start of expected output from the server. If what is
     received does not match, the client bombs out with an error message.
 
-(2) If a line begins with three question marks and an asterisk, the server
+(2) "???*": If a line begins with three question marks and an asterisk, the server
     is expected to close the connection.
 
-(3) If a line begins with four question marks, the rest of the line defines
+(3) "????": If a line begins with four question marks, the rest of the line defines
     the start of one or more possible output lines from the server.  When it
     matches, the client silently repeats the comparison using the next server
     line.  When the match fails, the client silently proceeds to the next script
     line with the then-current server output unconsumed.
 
-(4) If a line starts with three plus signs followed by a space, the rest of the
+(4) "+++ ": If a line starts with three plus signs followed by a space, the rest of the
     line specifies a number of seconds to sleep for before proceeding.
 
-(5) If a line begins with three '>' characters and a space, the rest of the
+(5) ">>> ": If a line begins with three '>' characters and a space, the rest of the
     line is input to be sent to the server.  Backslash escaping is done as
     described below, but no trailing "\r\n" is sent. As the runtest's 
     input processing catches the '>>> ' for its string eval, you may
     want to escape from this first stage processing by prefixing your
     line with '\'.
 
-(6) If a line begin with three '<' characters and a space, the rest of the
+(6) "<<< ": If a line begin with three '<' characters and a space, the rest of the
     line is a filename; the content of the file is inserted into the script
     at this point.
 
