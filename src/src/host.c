@@ -1946,9 +1946,7 @@ host_find_byname(host_item *host, const uschar *ignore_target_hosts, int flags,
 int yield, times;
 host_item *last = NULL;
 BOOL temp_error = FALSE;
-#if HAVE_IPV6
 int af;
-#endif
 
 #ifndef DISABLE_TLS
 /* Copy the host name at this point to the value which is used for
