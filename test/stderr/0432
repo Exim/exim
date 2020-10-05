@@ -72,7 +72,6 @@ domain = y
 routed by r1 router
   envelope to: x@y
   transport: t1
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows
@@ -183,7 +182,6 @@ domain = y
 routed by r1 router
   envelope to: x@y
   transport: t1
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
 MUNGED: ::1 will be omitted in what follows

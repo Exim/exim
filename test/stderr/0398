@@ -52,7 +52,6 @@ expanded list of hosts = '127.0.0.1' options = ''
 set transport t2
 finding IP address for 127.0.0.1
 calling host_find_byname
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
 fully qualified name = 127.0.0.1
@@ -101,7 +100,6 @@ original list of hosts = '127.0.0.1' options = ''
 expanded list of hosts = '127.0.0.1' options = ''
 finding IP address for 127.0.0.1
 calling host_find_byname
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
 fully qualified name = 127.0.0.1
@@ -215,7 +213,6 @@ original list of hosts = '127.0.0.1' options = ''
 expanded list of hosts = '127.0.0.1' options = ''
 finding IP address for 127.0.0.1
 calling host_find_byname
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
 fully qualified name = 127.0.0.1

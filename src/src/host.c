@@ -1974,10 +1974,10 @@ lookups here (except when testing standalone). */
   #ifdef STAND_ALONE
   if (disable_ipv6)
   #else
-  if (disable_ipv6 ||
-    (dns_ipv4_lookup != NULL &&
-        match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
-	  MCL_DOMAIN, TRUE, NULL) == OK))
+  if (  disable_ipv6
+     ||    dns_ipv4_lookup
+	&& match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+	    MCL_DOMAIN, TRUE, NULL) == OK)
   #endif
 
     { af = AF_INET; times = 1; }
@@ -1987,7 +1987,7 @@ lookups here (except when testing standalone). */
 /* No IPv6 support */
 
 #else   /* HAVE_IPV6 */
-  times = 1;
+  af = AF_INET; times = 1;
 #endif  /* HAVE_IPV6 */
 
 /* Initialize the flag that gets set for DNS syntax check errors, so that the
@@ -2029,7 +2029,7 @@ for (int i = 1; i <= times;
 
   #else    /* not HAVE_IPV6 */
   if (f.running_in_test_harness)
-    hostdata = host_fake_gethostbyname(host->name, AF_INET, &error_num);
+    hostdata = host_fake_gethostbyname(host->name, af, &error_num);
   else
     {
     hostdata = gethostbyname(CS host->name);
@@ -2043,44 +2043,42 @@ for (int i = 1; i <= times;
 
   if (!hostdata)
     {
-    uschar *error;
+    uschar * error;
     switch (error_num)
       {
-      case HOST_NOT_FOUND: error = US"HOST_NOT_FOUND"; break;
-      case TRY_AGAIN:      error = US"TRY_AGAIN"; break;
-      case NO_RECOVERY:    error = US"NO_RECOVERY"; break;
-      case NO_DATA:        error = US"NO_DATA"; break;
+      case HOST_NOT_FOUND: error = US"HOST_NOT_FOUND";	break;
+      case TRY_AGAIN:      error = US"TRY_AGAIN";   temp_error = TRUE; break;
+      case NO_RECOVERY:    error = US"NO_RECOVERY"; temp_error = TRUE; break;
+      case NO_DATA:        error = US"NO_DATA";		break;
     #if NO_DATA != NO_ADDRESS
-      case NO_ADDRESS:     error = US"NO_ADDRESS"; break;
+      case NO_ADDRESS:     error = US"NO_ADDRESS";	break;
     #endif
       default: error = US"?"; break;
       }
 
-    DEBUG(D_host_lookup) debug_printf("%s returned %d (%s)\n",
+    DEBUG(D_host_lookup) debug_printf("%s(af=%s) returned %d (%s)\n",
       f.running_in_test_harness ? "host_fake_gethostbyname" :
-      #if HAVE_IPV6
-        #if HAVE_GETIPNODEBYNAME
-        af == AF_INET6 ? "getipnodebyname(af=inet6)" : "getipnodebyname(af=inet)",
-        #else
-        af == AF_INET6 ? "gethostbyname2(af=inet6)" : "gethostbyname2(af=inet)",
-        #endif
-      #else
-      "gethostbyname",
-      #endif
-      error_num, error);
+#if HAVE_IPV6
+# if HAVE_GETIPNODEBYNAME
+        "getipnodebyname",
+# else
+        "gethostbyname2",
+# endif
+#else
+	"gethostbyname",
+#endif
+      af == AF_INET ? "inet" : "inet6", error_num, error);
 
-    if (error_num == TRY_AGAIN || error_num == NO_RECOVERY) temp_error = TRUE;
     continue;
     }
-  if ((hostdata->h_addr_list)[0] == NULL) continue;
+  if (!(hostdata->h_addr_list)[0]) continue;
 
   /* Replace the name with the fully qualified one if necessary, and fill in
   the fully_qualified_name pointer. */
 
-  if (hostdata->h_name[0] != 0 &&
-      Ustrcmp(host->name, hostdata->h_name) != 0)
+  if (hostdata->h_name[0] && Ustrcmp(host->name, hostdata->h_name) != 0)
     host->name = string_copy_dnsdomain(US hostdata->h_name);
-  if (fully_qualified_name != NULL) *fully_qualified_name = host->name;
+  if (fully_qualified_name) *fully_qualified_name = host->name;
 
   /* Get the list of addresses. IPv4 and IPv6 addresses can be distinguished
   by their different lengths. Scan the list, ignoring any that are to be
@@ -2094,9 +2092,9 @@ for (int i = 1; i <= times;
       host_ntoa(ipv4_addr? AF_INET:AF_INET6, *addrlist, NULL, NULL);
 
     #ifndef STAND_ALONE
-    if (ignore_target_hosts != NULL &&
-        verify_check_this_host(&ignore_target_hosts, NULL, host->name,
-          text_address, NULL) == OK)
+    if (  ignore_target_hosts
+       && verify_check_this_host(&ignore_target_hosts, NULL, host->name,
+	    text_address, NULL) == OK)
       {
       DEBUG(D_host_lookup)
         debug_printf("ignored host %s [%s]\n", host->name, text_address);
@@ -2104,10 +2102,10 @@ for (int i = 1; i <= times;
       }
     #endif
 
-    /* If this is the first address, last == NULL and we put the data in the
+    /* If this is the first address, last is NULL and we put the data in the
     original block. */
 
-    if (last == NULL)
+    if (!last)
       {
       host->address = text_address;
       host->port = PORT_NONE;
@@ -2149,7 +2147,7 @@ if (!host->address)
   {
   uschar *msg =
     #ifndef STAND_ALONE
-    message_id[0] == 0 && smtp_in
+    !message_id[0] && smtp_in
       ? string_sprintf("no IP address found for host %s (during %s)", host->name,
           smtp_get_connection_info()) :
     #endif

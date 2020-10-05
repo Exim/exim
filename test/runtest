@@ -1047,6 +1047,9 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     s/\b(gethostbyname2?|\bgetipnodebyname)(\(af=inet\))?/get[host|ipnode]byname[2]/;
 
+    # Extra lookups done when ipv6 is supported
+    next if /^host_fake_gethostbyname\(af=inet6\) returned 1 \(HOST_NOT_FOUND\)$/;
+
     # we don't care what TZ enviroment the testhost was running
     next if /^Reset TZ to/;
 

@@ -38,7 +38,6 @@ expanded list of hosts = '127.0.0.1 : V4NET.0.0.0' options = ''
 set transport smtp
 finding IP address for 127.0.0.1
 calling host_find_byname
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for 127.0.0.1 (IPv4)
 local host found for non-MX address
 fully qualified name = 127.0.0.1
@@ -48,7 +47,6 @@ get[host|ipnode]byname[2] looked up these IP addresses:
 remote host address is the local host: y: configured to try delivery anyway
 finding IP address for V4NET.0.0.0
 calling host_find_byname
-host_fake_gethostbyname returned 1 (HOST_NOT_FOUND)
 using host_fake_gethostbyname for V4NET.0.0.0 (IPv4)
 fully qualified name = V4NET.0.0.0
 MUNGED: ::1 will be omitted in what follows
