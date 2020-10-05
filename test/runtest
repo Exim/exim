@@ -2807,12 +2807,28 @@ print ">> |${cmd}${stderrsuffix}\n" if ($debug);
 open CMD, "|${cmd}${stderrsuffix}" || tests_exit(1, "Failed to run $cmd");
 
 CMD->autoflush(1);
-while (<SCRIPT>)
+LINE: while (<SCRIPT>)
   {
   $lineno++;
   last if /^\*{4}\s*$/;
   do_substitute($testno);
-  s/^\\(>>>\s.*)/$1/ or s/^>>>\s(.*)\s*$/$1/ and $_ = eval "\"$1\"";
+  if (my ($cmd, $line) = /^(:\S+?:)(.*)/) {
+    $_ = $line;
+      {
+      $cmd eq ':eval:' and do {
+        $_ = eval "\"$_\"";
+        last;
+      };
+      $cmd eq ':noeol:' and do {
+        s/[\r\n]*$//;
+        last;
+      };
+      $cmd eq ':sleep:' and do {
+        sleep $_;
+        next LINE;
+      };
+    }
+  }
   print CMD;
   }
 

@@ -78,7 +78,7 @@ exim -odi userx@test.ex <test-data
 ****
 exim -odi userx@test.ex
 Last line ending without a newline and with a partial match: 
->>> From
+:noeol:From
 ****
 exim -odi filter-userx@test.ex
 Test message
@@ -91,11 +91,11 @@ From: is how headers start
 ****
 exim -odi filter-userx@test.ex
 Last line ending without a newline and with a partial match: 
->>> From
+:noeol:From
 ****
 exim -odi userx@test.ex
 Last line ending without a newline and being a single dot:
->>> .
+:noeol:.
 ****
 exim -odi mmdf-userx@test.ex
 Line consisting of four ^A characters
