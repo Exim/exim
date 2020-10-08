@@ -1648,7 +1648,7 @@ if (opt_unset_or_noexpand(tls_eccurve))
     state_server.lib_state.ecdh = TRUE;
   }
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* If we can, preload the server-side cert, key and ocsp */
 
 if (  opt_set_and_noexpand(tls_certificate)
@@ -1658,8 +1658,7 @@ if (  opt_set_and_noexpand(tls_certificate)
    && opt_unset_or_noexpand(tls_privatekey))
   {
   /* Set watches on the filenames.  The implementation does de-duplication
-  so we can just blindly do them all.
-  */
+  so we can just blindly do them all.  */
 
   if (  tls_set_watch(tls_certificate, TRUE)
 # ifndef DISABLE_OCSP
@@ -1759,7 +1758,7 @@ if (opt_unset_or_noexpand(tls_eccurve))
     ob->tls_preload.ecdh = TRUE;
   }
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 if (  opt_set_and_noexpand(ob->tls_certificate)
    && opt_unset_or_noexpand(ob->tls_privatekey))
   {
@@ -1812,7 +1811,7 @@ else
 }
 
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* Invalidate the creds cached, by dropping the current ones.
 Call when we notice one of the source files has changed. */
  

@@ -963,9 +963,8 @@ daemon_die(void)
 {
 int pid;
 
-#ifndef DISABLE_TLS
-if (tls_watch_fd >= 0)
-  { close(tls_watch_fd); tls_watch_fd = -1; }
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
+tls_watch_invalidate();
 #endif
 
 if (daemon_notifier_fd >= 0)
@@ -2353,12 +2352,12 @@ for (;;)
 
       if (!select_failed)
 	{
-#if defined(EXIM_HAVE_INOTIFY) && !defined(DISABLE_TLS)
+#if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
 	if (tls_watch_fd >= 0 && FD_ISSET(tls_watch_fd, &select_listen))
 	  {
 	  FD_CLR(tls_watch_fd, &select_listen);
           tls_watch_trigger_time = time(NULL);	/* Set up delayed event */
-	  (void) read(tls_watch_fd, big_buffer, big_buffer_size);
+	  tls_watch_discard_event(tls_watch_fd);
 	  break;	/* to top of daemon loop */
 	  }
 #endif

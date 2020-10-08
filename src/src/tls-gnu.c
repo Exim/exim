@@ -145,7 +145,7 @@ builtin_macro_create(US"_HAVE_TLS_OCSP");
 # ifdef SUPPORT_SRV_OCSP_STACK
 builtin_macro_create(US"_HAVE_TLS_OCSP_LIST");
 # endif
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 builtin_macro_create(US"_HAVE_TLS_CA_CACHE");
 # endif
 }
@@ -1435,7 +1435,7 @@ if (gnutls_certificate_allocate_credentials(
   }
 creds_basic_init(state_server.lib_state.x509_cred, TRUE);
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* If tls_certificate has any $ indicating expansions, it is not good.
 If tls_privatekey is set but has $, not good.  Likewise for tls_ocsp_file.
 If all good (and tls_certificate set), load the cert(s).  Do not try
@@ -1550,7 +1550,7 @@ creds_basic_init(ob->tls_preload.x509_cred, FALSE);
 tpt_dummy_state.session = NULL;
 tpt_dummy_state.lib_state = ob->tls_preload;
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 if (  opt_set_and_noexpand(ob->tls_certificate)
    && opt_unset_or_noexpand(ob->tls_privatekey))
   {
@@ -1614,7 +1614,7 @@ depends on DANE or plain usage. */
 }
 
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* Invalidate the creds cached, by dropping the current ones.
 Call when we notice one of the source files has changed. */
  

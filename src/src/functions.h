@@ -63,23 +63,27 @@ extern BOOL    tls_dropprivs_validate_require_cipher(BOOL);
 extern BOOL    tls_export_cert(uschar *, size_t, void *);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
+extern uschar *tls_field_from_dn(uschar *, const uschar *);
 extern void    tls_free_cert(void **);
 extern int     tls_getc(unsigned);
 extern uschar *tls_getbuf(unsigned *);
 extern void    tls_get_cache(void);
 extern BOOL    tls_import_cert(const uschar *, void **);
+extern BOOL    tls_is_name_for_cert(const uschar *, void *);
+# ifdef USE_OPENSSL
+extern BOOL    tls_openssl_options_parse(uschar *, long *);
+# endif
 extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(uschar **);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
+extern void    tls_watch_discard_event(int);
+extern void    tls_watch_invalidate(void);
+#endif
 extern int     tls_write(void *, const uschar *, size_t, BOOL);
 extern uschar *tls_validate_require_cipher(void);
 extern void    tls_version_report(FILE *);
-# ifdef USE_OPENSSL
-extern BOOL    tls_openssl_options_parse(uschar *, long *);
-# endif
-extern uschar * tls_field_from_dn(uschar *, const uschar *);
-extern BOOL    tls_is_name_for_cert(const uschar *, void *);
 
 # ifdef SUPPORT_DANE
 extern int     tlsa_lookup(const host_item *, dns_answer *, BOOL);

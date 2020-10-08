@@ -1072,12 +1072,12 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TLS preload
     # only OpenSSL speaks of these
-    next if /^TLS: preloading DH params for server/;
+    next if /^TLS: preloading (DH params|ECDH curve|CA bundle) for server/;
     next if /^Diffie-Hellman initialized from default/;
-    next if /^TLS: preloading ECDH curve for server/;
     next if /^ECDH OpenSSL [< ]?[\d.+]+ temp key parameter settings:/;
     next if /^ECDH: .'*prime256v1'/;
-    next if /^watch dir/;
+    next if /^tls_verify_certificates: system$/;
+    next if /^tls_set_watch: .*\/cert.pem/;
 
     # TLS preload
     # only GnuTLS speaks of these
@@ -1086,6 +1086,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: preloading cipher list for server: NULL$/;
     s/^GnuTLS using default session cipher\/priority "NORMAL"$/TLS: not preloading cipher list for server/;
     next if /^GnuTLS<2>: added \d+ protocols, \d+ ciphersuites, \d+ sig algos and \d+ groups into priority list$/;
+
+    # only kevent platforms (FreeBSD) say this
+    next if /^watch dir/;
+    next if /^watch file .*\/usr\/local/;
 
     # TLS preload
     # there happen in different orders for OpenSSL/GnuTLS/noTLS

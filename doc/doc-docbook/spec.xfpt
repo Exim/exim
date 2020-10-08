@@ -29308,7 +29308,7 @@ then the associated information is loaded at daemon startup.
 It is made available
 to child processes forked for handling received SMTP connections.
 
-This caching is currently only supported under Linux.
+This caching is currently only supported under Linux and FreeBSD.
 
 If caching is not possible, for example if an item has to be dependent
 on the peer host so contains a &$sender_host_name$& expansion, the load
@@ -29320,7 +29320,7 @@ containing files specified by these options.
 The information specified by the main option &%tls_verify_certificates%&
 is similarly cached so long as it specifies files explicitly
 or (under GnuTLS) is the string &"system,cache"&.
-The latter case is not automatically invaludated;
+The latter case is not automatically invalidated;
 it is the operator's responsibility to arrange for a daemon restart
 any time the system certificate authority bundle is updated.
 A HUP signal is sufficient for this.

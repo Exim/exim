@@ -76,6 +76,11 @@ static int ssl_xfer_eof = FALSE;
 static BOOL ssl_xfer_error = FALSE;
 #endif
 
+#ifdef EXIM_HAVE_KEVENT
+# define KEV_SIZE 16	/* Eight file,dir pairs */
+static struct kevent kev[KEV_SIZE];
+static int kev_used = 0;
+#endif
 
 /*************************************************
 *       Expand string; give error on failure     *
@@ -110,7 +115,7 @@ return TRUE;
 }
 
 
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* Add the directory for a filename to the inotify handle, creating that if
 needed.  This is enough to see changes to files in that dir.
 Return boolean success.
@@ -121,25 +126,25 @@ directory it implies nor if the TLS library handles a watch for us.
 The string "system,cache" is recognised and explicitly accepted without
 setting a watch.  This permits the system CA bundle to be cached even though
 we have no way to tell when it gets modified by an update.
-
-We *might* try to run "openssl version -d" and set watches on the dir
-indicated in its output, plus the "certs" subdir of it (following
-synlimks for both).  But this is undocumented even for OpenSSL, and
-who knows what GnuTLS might be doing.
+The call chain for OpenSSL uses a (undocumented) call into the library
+to discover the actual file.  We don't know what GnuTLS uses.
 
 A full set of caching including the CAs takes 35ms output off of the
 server tls_init() (GnuTLS, Fedora 32, 2018-class x86_64 laptop hardware).
 */
 static BOOL
 tls_set_one_watch(const uschar * filename)
+# ifdef EXIM_HAVE_INOTIFY
 {
 uschar * s;
 
 if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
 
 if (!(s = Ustrrchr(filename, '/'))) return FALSE;
-s = string_copyn(filename, s - filename);
+s = string_copyn(filename, s - filename);	/* mem released by tls_set_watch */
 DEBUG(D_tls) debug_printf("watch dir '%s'\n", s);
+
+/*XXX unclear what effect symlinked files will have for inotify */
 
 if (inotify_add_watch(tls_watch_fd, CCS s,
       IN_ONESHOT | IN_CLOSE_WRITE | IN_DELETE | IN_DELETE_SELF
@@ -148,6 +153,66 @@ if (inotify_add_watch(tls_watch_fd, CCS s,
 DEBUG(D_tls) debug_printf("add_watch: %s\n", strerror(errno));
 return FALSE;
 }
+# endif
+# ifdef EXIM_HAVE_KEVENT
+{
+uschar * s;
+int fd1, fd2, i, cnt = 0;
+struct stat sb;
+
+if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
+
+for (;;)
+  {
+  if (!(s = Ustrrchr(filename, '/'))) return FALSE;
+  if ((lstat(filename, &sb)) < 0) return FALSE;
+  if (kev_used > KEV_SIZE-2) return FALSE;
+
+  /* The dir open will fail if there is a symlink on the path. Fine; it's too
+  much effort to handle all possible cases; just refuse the preload. */
+
+  if ((fd2 = open(s, O_RDONLY | O_NOFOLLOW)) < 0) return FALSE;
+
+  if (!S_ISLNK(sb.st_mode))
+    {
+    if ((fd1 = open(filename, O_RDONLY | O_NOFOLLOW)) < 0) return FALSE;
+    DEBUG(D_tls) debug_printf("watch file '%s'\n", filename);
+    EV_SET(&kev[++kev_used],
+	(uintptr_t)fd1,
+	EVFILT_VNODE,
+	EV_ADD | EV_ENABLE | EV_ONESHOT,
+	NOTE_DELETE | NOTE_WRITE | NOTE_EXTEND
+	| NOTE_ATTRIB | NOTE_RENAME | NOTE_REVOKE,
+	0,
+	NULL);
+    cnt++;
+    }
+  DEBUG(D_tls) debug_printf("watch dir  '%s'\n", s);
+  EV_SET(&kev[++kev_used],
+	(uintptr_t)fd2,
+	EVFILT_VNODE,
+	EV_ADD | EV_ENABLE | EV_ONESHOT,
+	NOTE_DELETE | NOTE_WRITE | NOTE_EXTEND
+	| NOTE_ATTRIB | NOTE_RENAME | NOTE_REVOKE,
+	0,
+	NULL);
+  cnt++;
+
+  if (!(S_ISLNK(sb.st_mode))) break;
+
+  s = store_get(1024, FALSE);
+  if ((i = readlink(filename, s, 1024)) < 0) return FALSE;
+  filename = s;
+  *(s += i) = '\0';
+  store_release_above(s+1);
+  }
+
+if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, NULL, 0, NULL) >= 0)
+  return TRUE;
+DEBUG(D_tls) debug_printf("add_watch: %d, %s\n", strerror(errno));
+return FALSE;
+}
+# endif	/*EXIM_HAVE_KEVENT*/
 
 
 /* Create an inotify facility if needed.
@@ -160,13 +225,23 @@ tls_set_watch(const uschar * filename, BOOL list)
 rmark r;
 BOOL rc = FALSE;
 
-if (tls_watch_fd < 0 && (tls_watch_fd = inotify_init1(O_CLOEXEC)) < 0)
-  {
-  DEBUG(D_tls) debug_printf("inotify_init: %s\n", strerror(errno));
-  return FALSE;
-  }
-
 if (!filename || !*filename) return TRUE;
+if (Ustrncmp(filename, "system", 6) == 0) return TRUE;
+
+DEBUG(D_tls) debug_printf("tls_set_watch: '%s'\n", filename);
+
+if (  tls_watch_fd < 0
+# ifdef EXIM_HAVE_INOTIFY
+   && (tls_watch_fd = inotify_init1(O_CLOEXEC)) < 0
+# endif
+# ifdef EXIM_HAVE_KEVENT
+   && (tls_watch_fd = kqueue()) < 0
+# endif
+   )
+    {
+    DEBUG(D_tls) debug_printf("inotify_init: %s\n", strerror(errno));
+    return FALSE;
+    }
 
 r = store_mark();
 
@@ -180,9 +255,23 @@ else
   rc = tls_set_one_watch(filename);
 
 store_reset(r);
+if (!rc) DEBUG(D_tls) debug_printf("tls_set_watch() fail on '%s': %s\n", filename, strerror(errno));
 return rc;
 }
 
+
+void
+tls_watch_discard_event(int fd)
+{
+#ifdef EXIM_HAVE_INOTIFY
+(void) read(fd, big_buffer, big_buffer_size);
+#endif
+#ifdef EXIM_HAVE_KEVENT
+struct kevent kev;
+struct timespec t = {0};
+(void) kevent(fd, NULL, 0, &kev, 1, &t);
+#endif
+}
 
 /* Called, after a delay for multiple file ops to get done, from
 the daemon when any of the watches added (above) fire.
@@ -194,12 +283,10 @@ static void
 tls_watch_triggered(void)
 {
 DEBUG(D_tls) debug_printf("watch triggered\n");
-close(tls_watch_fd);
-tls_watch_fd = -1;
 
 tls_daemon_creds_reload();
 }
-#endif	/* EXIM_HAVE_INOTIFY */
+#endif	/*EXIM_HAVE_INOTIFY*/
 
 
 void
@@ -213,9 +300,34 @@ for(transport_instance * t = transports; t; t = t->next)
     }
 }
 
+
+void
+tls_watch_invalidate(void)
+{
+if (tls_watch_fd < 0) return;
+
+#ifdef EXIM_HAVE_KEVENT
+/* Close the files we had open for kevent */
+for (int fd, i = 0; i < kev_used; i++)
+  {
+  (void) close((int) kev[i].ident);
+  kev[i].ident = (uintptr_t)-1;
+  }
+kev_used = 0;
+#endif
+
+close(tls_watch_fd);
+tls_watch_fd = -1;
+}
+
+
 static void
 tls_daemon_creds_reload(void)
 {
+#ifdef EXIM_HAVE_KEVENT
+tls_watch_invalidate();
+#endif
+
 tls_server_creds_invalidate();
 tls_server_creds_init();
 
@@ -240,7 +352,7 @@ void
 tls_daemon_tick(void)
 {
 tls_per_lib_daemon_tick();
-#ifdef EXIM_HAVE_INOTIFY
+#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 if (tls_watch_trigger_time && time(NULL) >= tls_watch_trigger_time + 5)
   {
   tls_watch_trigger_time = 0;
