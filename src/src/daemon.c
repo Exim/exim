@@ -963,7 +963,7 @@ daemon_die(void)
 {
 int pid;
 
-#if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
+#if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
 tls_watch_invalidate();
 #endif
 
