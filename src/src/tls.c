@@ -165,15 +165,16 @@ if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
 
 for (;;)
   {
-  if (!(s = Ustrrchr(filename, '/'))) return FALSE;
-  if ((lstat(CCS filename, &sb)) < 0) { s = US"lstat"; goto bad; }
   if (kev_used > KEV_SIZE-2) { s = US"out of kev space"; goto bad; }
+  if (!(s = Ustrrchr(filename, '/'))) return FALSE;
+  s = string_copyn(filename, s - filename);	/* mem released by tls_set_watch */
 
   /* The dir open will fail if there is a symlink on the path. Fine; it's too
   much effort to handle all possible cases; just refuse the preload. */
 
   if ((fd2 = open(CCS s, O_RDONLY | O_NOFOLLOW)) < 0) { s = US"open dir"; goto bad; }
 
+  if ((lstat(CCS filename, &sb)) < 0) { s = US"lstat"; goto bad; }
   if (!S_ISLNK(sb.st_mode))
     {
     if ((fd1 = open(CCS filename, O_RDONLY | O_NOFOLLOW)) < 0)
