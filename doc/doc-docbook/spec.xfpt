@@ -18489,7 +18489,9 @@ than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
 the value is a file then the certificates are sent by Exim as a server to
 connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
-use the explicit directory version.
+use the explicit directory version. (If your peer is Exim up to 4.85,
+using GnuTLS, you may need to send the CAs (thus using the file
+variant). Otherwise the peer doesn't send its certificate.)
 
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 
