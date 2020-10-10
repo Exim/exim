@@ -150,7 +150,7 @@ if (inotify_add_watch(tls_watch_fd, CCS s,
       IN_ONESHOT | IN_CLOSE_WRITE | IN_DELETE | IN_DELETE_SELF
       | IN_MOVED_FROM | IN_MOVED_TO | IN_MOVE_SELF) >= 0)
   return TRUE;
-DEBUG(D_tls) debug_printf("add_watch: %s\n", strerror(errno));
+DEBUG(D_tls) debug_printf("notify_add_watch: %s\n", strerror(errno));
 return FALSE;
 }
 # endif
@@ -160,22 +160,24 @@ uschar * s;
 int fd1, fd2, i, cnt = 0;
 struct stat sb;
 
+errno = 0;
 if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
 
 for (;;)
   {
   if (!(s = Ustrrchr(filename, '/'))) return FALSE;
-  if ((lstat(filename, &sb)) < 0) return FALSE;
-  if (kev_used > KEV_SIZE-2) return FALSE;
+  if ((lstat(CCS filename, &sb)) < 0) { s = US"lstat"; goto bad; }
+  if (kev_used > KEV_SIZE-2) { s = US"out of kev space"; goto bad; }
 
   /* The dir open will fail if there is a symlink on the path. Fine; it's too
   much effort to handle all possible cases; just refuse the preload. */
 
-  if ((fd2 = open(s, O_RDONLY | O_NOFOLLOW)) < 0) return FALSE;
+  if ((fd2 = open(CCS s, O_RDONLY | O_NOFOLLOW)) < 0) { s = US"open dir"; goto bad; }
 
   if (!S_ISLNK(sb.st_mode))
     {
-    if ((fd1 = open(filename, O_RDONLY | O_NOFOLLOW)) < 0) return FALSE;
+    if ((fd1 = open(CCS filename, O_RDONLY | O_NOFOLLOW)) < 0)
+      { s = US"open file"; goto bad; }
     DEBUG(D_tls) debug_printf("watch file '%s'\n", filename);
     EV_SET(&kev[++kev_used],
 	(uintptr_t)fd1,
@@ -201,7 +203,7 @@ for (;;)
   if (!(S_ISLNK(sb.st_mode))) break;
 
   s = store_get(1024, FALSE);
-  if ((i = readlink(filename, s, 1024)) < 0) return FALSE;
+  if ((i = readlink(CCS filename, s, 1024)) < 0) { s = US"readlink"; goto bad; }
   filename = s;
   *(s += i) = '\0';
   store_release_above(s+1);
@@ -209,7 +211,14 @@ for (;;)
 
 if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, NULL, 0, NULL) >= 0)
   return TRUE;
-DEBUG(D_tls) debug_printf("add_watch: %d, %s\n", strerror(errno));
+s = US"kevent";
+
+bad:
+DEBUG(D_tls)
+  if (errno)
+    debug_printf("%s: %s: %s\n", __FUNCTION__, s, strerror(errno));
+  else
+    debug_printf("%s: %s\n", __FUNCTION__, s);
 return FALSE;
 }
 # endif	/*EXIM_HAVE_KEVENT*/
