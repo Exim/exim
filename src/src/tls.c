@@ -159,6 +159,9 @@ return FALSE;
 uschar * s;
 int fd1, fd2, i, cnt = 0;
 struct stat sb;
+#ifdef OpenBSD
+struct kevent k_dummy;
+#endif
 
 errno = 0;
 if (Ustrcmp(filename, "system,cache") == 0) return TRUE;
@@ -204,13 +207,19 @@ for (;;)
   if (!(S_ISLNK(sb.st_mode))) break;
 
   s = store_get(1024, FALSE);
-  if ((i = readlink(CCS filename, s, 1024)) < 0) { s = US"readlink"; goto bad; }
+  if ((i = readlink(CCS filename, (void *)s, 1024)) < 0) { s = US"readlink"; goto bad; }
   filename = s;
   *(s += i) = '\0';
   store_release_above(s+1);
   }
 
-if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, NULL, 0, NULL) >= 0)
+if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt,
+#ifdef OpenBSD
+	    &k_dummy, 1,
+#else
+	    NULL, 0,
+#endif
+	    NULL) >= 0)
   return TRUE;
 s = US"kevent";
 
@@ -318,7 +327,7 @@ if (tls_watch_fd < 0) return;
 
 #ifdef EXIM_HAVE_KEVENT
 /* Close the files we had open for kevent */
-for (int fd, i = 0; i < kev_used; i++)
+for (int i = 0; i < kev_used; i++)
   {
   (void) close((int) kev[i].ident);
   kev[i].ident = (uintptr_t)-1;

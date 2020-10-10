@@ -1087,9 +1087,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/^GnuTLS using default session cipher\/priority "NORMAL"$/TLS: not preloading cipher list for server/;
     next if /^GnuTLS<2>: added \d+ protocols, \d+ ciphersuites, \d+ sig algos and \d+ groups into priority list$/;
 
-    # only kevent platforms (FreeBSD) say this
+    # only kevent platforms (FreeBSD, OpenBSD) say this
     next if /^watch dir/;
     next if /^watch file .*\/usr\/local/;
+    next if /^watch file .*\/etc\/ssl/;
 
     # TLS preload
     # there happen in different orders for OpenSSL/GnuTLS/noTLS
