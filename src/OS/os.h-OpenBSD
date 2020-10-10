@@ -59,4 +59,6 @@ typedef struct __res_state *res_state;
 Space-constrained devices could use much smaller; a few k. */
 #define NS_MAXMSG 65535
 
+#define EXIM_HAVE_KEVENT
+
 /* End */
