@@ -704,12 +704,12 @@ if (Ustrcmp(exp_curve, "auto") == 0)
 #else
 # if defined SSL_CTRL_SET_ECDH_AUTO
   DEBUG(D_tls) debug_printf(
-    "ECDH OpenSSL 1.0.2+ temp key parameter settings: autoselection\n");
+    "ECDH OpenSSL 1.0.2+: temp key parameter settings: autoselection\n");
   SSL_CTX_set_ecdh_auto(sctx, 1);
   return TRUE;
 # else
   DEBUG(D_tls) debug_printf(
-    "ECDH OpenSSL 1.1.0+ temp key parameter settings: default selection\n");
+    "ECDH OpenSSL 1.1.0+: temp key parameter settings: default selection\n");
   return TRUE;
 # endif
 #endif
