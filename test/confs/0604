@@ -1,56 +1,30 @@
 # Exim test configuration 0604
-# Send many messages in hopes of tripping continuation records code
 
-hostlist loopback = <; 127.0.0.0/8 ; 0.0.0.0 ; ::1 ; 0000:0000:0000:0000:0000:ffff
-untrusted_set_sender = *
+LOG_SELECTOR=
 
-SERVER =
+keep_environment = PATH
+exim_path = EXIM_PATH
+spool_directory = DIR/spool
 
-.include DIR/aux-var/std_conf_prefix
+log_file_path = DIR/spool/log/%slog
 
-rfc1413_query_timeout = 0s
-log_selector = +sender_on_delivery +millisec
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
+tls_advertise_hosts =
+
+.ifdef _HAVE_DMARC
+dmarc_tld_file =
+.endif
+
+primary_hostname = myhost.test.ex
+queue_only
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
+log_selector = LOG_SELECTOR
 
-queue_only
-queue_run_in_order
+acl_not_smtp = accept
 
-# ----- Routers -----
-
-begin routers
-
-client:
-  driver = accept
-  condition = ${if eq {SERVER}{server}{no}{yes}}
-  transport = send_to_server
-
-server:
-  driver = accept
-  transport = send_to_server
-
-
-# ----- Transports -----
-
-begin transports
-
-send_to_server:
-  driver = smtp
-  connection_max_messages = 0
-  allow_localhost
-  hosts = 127.0.0.1
-  port = PORT_D
-  hosts_try_fastopen = :
-  # assumes that HOSTIPV4 can sent to 127.0.0.1
-  interface = ${if eq {$sender_address_domain}{dustybelt.tld} {127.0.0.1}{HOSTIPV4}}
-
-# ----- Retry -----
-
-begin retry
-
-* * F,5d,10s
 
 # End
-

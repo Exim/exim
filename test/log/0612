@@ -1,3 +1,104 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for a
-1999-03-02 09:44:33 10HmaX-0005vi-00 <a@myhost.test.ex>: pipe transport output: Hi from pipe
-1999-03-02 09:44:33 10HmaX-0005vi-00 == a@myhost.test.ex R=client T=pipe defer (0): Child process of pipe transport returned 5 from command: SYSBINDIR/perl
+1999-03-02 09:44:33 rej/never
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmaX-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmaX-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** rmt_reject@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_reject@test.ex>: 550 Administrative prohibition
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:fail:delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 rmt_reject@test.ex: error ignored: RFC 3461 DSN, failure notify not requested
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 accept/success
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmaY-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmaY-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmaY-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmaY-0005vi-00 => rmt_accept@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => rmt_accept <rmt_accept@test.ex> R=r1 T=tofile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss for b@dump.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <b@dump.ex> R=r_dump
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 defer/delay
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmbB-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmbB-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:rcpt:host:defer
+1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:rcpt:defer
+1999-03-02 09:44:33 10HmbB-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmbB-0005vi-00 == rmt_defer@test.ex R=r2 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 defer/never
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 == rmt_defer@test.ex routing defer (-52): retry time not reached
+1999-03-02 09:44:33 10HmbC-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmbC-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmbC-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:rcpt:host:defer
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:rcpt:defer
+1999-03-02 09:44:33 10HmbC-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmbC-0005vi-00 == rmt_defer@test.ex R=r2 T=smtp defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_defer@test.ex>: 451 Temporary local problem - please try later
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 playout
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 == rmt_defer@test.ex routing defer (-52): retry time not reached
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss for c@dump.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 == rmt_defer@test.ex routing defer (-52): retry time not reached
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbB-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbB-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:fail:internal
+1999-03-02 09:44:33 10HmbC-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbC-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 rej/failure+delay
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <c@dump.ex> R=r_dump
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 event msg:complete
+1999-03-02 09:44:33 10HmbE-0005vi-00 event tcp:connect
+1999-03-02 09:44:33 10HmbE-0005vi-00 event smtp:connect
+1999-03-02 09:44:33 10HmbE-0005vi-00 event smtp:ehlo
+1999-03-02 09:44:33 10HmbE-0005vi-00 event tcp:close
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** rmt_reject@test.ex R=r2 T=smtp H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<rmt_reject@test.ex>: 550 Administrative prohibition
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss for e@dump.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 deliver DSN
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbF-0005vi-00 => :blackhole: <e@dump.ex> R=r_dump
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 event msg:complete
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= a@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_reject@test.ex
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<a@dump.ex> rejected RCPT <rmt_reject@test.ex>
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= b@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_accept@test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= b@dump.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss for rmt_accept@test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= c@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_defer@test.ex
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<c@dump.ex> temporarily rejected RCPT <rmt_defer@test.ex>
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= d@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_defer@test.ex
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<d@dump.ex> temporarily rejected RCPT <rmt_defer@test.ex>
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= e@dump.ex H=(testclient) [ip4.ip4.ip4.ip4] P=esmtp S=sss for rmt_reject@test.ex
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<e@dump.ex> rejected RCPT <rmt_reject@test.ex>

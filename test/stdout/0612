@@ -1,0 +1,161 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [127.0.0.1]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250 HELP
+<<< 250 HELP
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-DSN
+<<< 250-DSN
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<a@dump.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<any@test.ex> NOTIFY=foo
+??? 501
+<<< 501 Invalid value for NOTIFY parameter
+>>> RCPT TO:<rmt_reject@test.ex> NOTIFY=never
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-DSN
+<<< 250-DSN
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<b@dump.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<rmt_accept@test.ex> NOTIFY=success
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-DSN
+<<< 250-DSN
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<c@dump.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<rmt_defer@test.ex> NOTIFY=delay
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> .
+??? 250
+<<< 250 OK id=10HmbB-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-DSN
+<<< 250-DSN
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<d@dump.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<rmt_defer@test.ex> NOTIFY=never
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> .
+??? 250
+<<< 250 OK id=10HmbC-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Message 10HmbB-0005vi-00 has been removed
+Message 10HmbC-0005vi-00 has been removed
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO testclient
+??? 250-
+<<< 250-myhost.test.ex Hello testclient [ip4.ip4.ip4.ip4]
+??? 250-SIZE
+<<< 250-SIZE 52428800
+??? 250-DSN
+<<< 250-DSN
+??? 250 HELP
+<<< 250 HELP
+>>> MAIL FROM:<e@dump.ex>
+??? 250
+<<< 250 OK
+>>> RCPT TO:<rmt_reject@test.ex> NOTIFY=fAiLuRe,DELAY
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Subject: test
+>>> .
+??? 250
+<<< 250 OK id=10HmbE-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

@@ -1,0 +1,33 @@
+# Exim test configuration 0594
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+
+
+# ----- Routers -----
+
+begin routers
+
+r2:
+  driver = redirect
+  local_part_prefix = pipe-
+  local_part_suffix = =*
+  caseful_local_part = true
+  data = |${substr_1:$local_part_suffix}
+  pipe_transport = t2
+
+
+# ----- Transports -----
+
+begin transports
+
+t2:
+  driver = pipe
+  user = CALLER
+  batch_max = 10
+
+# End

@@ -1,24 +1,60 @@
 # Exim test configuration 0583
 
-ERROR_DETAILS=
-
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept
-acl_smtp_data = check_data
+acl_smtp_rcpt = chk_rcpt
+log_selector = +millisec
 
-ERROR_DETAILS
-
-# ----- ACL ------
+# --- ACL ---
 
 begin acl
 
-check_data:
-  accept  verify = not_blind/case_insensitive
+chk_rcpt:
+  deny		!verify = recipient/quota=cachepos=20s,cacheneg=100s
+		logwrite = where='$recipient_verify_failure' msg='$acl_verify_message'
+  accept
+
+loggit:
+  accept	logwrite = $acl_arg1 was called for $local_part@$domain
+		message = /
+
+# ----- Routers -----
+
+begin routers
+
+localuser:
+  driver =	accept
+  local_parts =	!route_fail
+  transport =	appendfile
+  # set address_data purely to get logging of use of the router
+  address_data = ${acl {loggit}{router   }}
+
+failrouter:
+  driver =	accept
+  condition =	${if eq {${acl {loggit}{router   }}}{} {no}{no}}
+  transport =	appendfile
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver =	appendfile
+  file =	DIR/test-mail/themailfile
+  quota =	1k
+  user =	CALLER
+  # set homedir purely to get logging of use of the transport
+  home_directory = ${acl {loggit}{transport}}
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,1d
 
 
 # End

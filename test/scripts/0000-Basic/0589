@@ -1,44 +1,45 @@
-# verify quota at smtp time
+# message_linelength_limit
+#
+# The "write" script cmd subtracts 1 for the newline,
+# and the linecount in exim doesn't count the line-ending.
+write test-data-good 1x999
+++++
+****
+write test-data-bad  1x1000
+++++
+****
 #
 exim -bd -DSERVER=server -oX PORT_D
 ****
 client 127.0.0.1 PORT_D
 ??? 220
-EHLO test
-??? 250-
-??? 250-SIZE
-??? 250-8BITMIME
-??? 250-PIPELINING
-??? 250 HELP
-MAIL FROM:<a@test.ex>\r\nRCPT TO:<quota_good@test.ex>
+HELO test
 ??? 250
+MAIL FROM:<CALLER@test.ex>
 ??? 250
-RSET
+RCPT TO:<good@test.ex>
 ??? 250
-MAIL FROM:<b@test.ex> SIZE=2048\r\nRCPT TO:<quota_fail@test.ex>
+DATA
+??? 354
+Subject: should be good
+
+<<< test-data-good
+.
 ??? 250
-??? 550
-RSET
+MAIL FROM:<CALLER@test.ex>
 ??? 250
-MAIL FROM:<c@test.ex>\r\nRCPT TO:<route_fail@test.ex>
+RCPT TO:<bad@test.ex>
 ??? 250
-??? 550
-RSET
+DATA
+??? 354
+Subject: should be bad
+
+<<< test-data-bad
+.
 ??? 250
-MAIL FROM:<d@test.ex>\r\nRCPT TO:<quota_good@test.ex>
-??? 250
-??? 250
-RSET
-??? 250
-MAIL FROM:<e@test.ex> SIZE=512\r\nRCPT TO:<quota_fail@test.ex>
-??? 250
-??? 550
-RSET
-??? 250
-MAIL FROM:<f@test.ex>\r\nRCPT TO:<route_fail@test.ex>
-??? 250
-??? 550
 QUIT
+??? 221
 ****
 #
+sleep 1
 killdaemon

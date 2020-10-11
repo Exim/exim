@@ -2,59 +2,41 @@
 
 .include DIR/aux-var/std_conf_prefix
 
-primary_hostname = myhost.test.ex
+log_selector = +received_recipients +sender_on_delivery +millisec
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = chk_rcpt
-log_selector = +millisec
-
-# --- ACL ---
-
-begin acl
-
-chk_rcpt:
-  deny		!verify = recipient/quota=cachepos=20s,cacheneg=100s
-		logwrite = where='$recipient_verify_failure' msg='$acl_verify_message'
-  accept
-
-loggit:
-  accept	logwrite = $acl_arg1 was called for $local_part@$domain
-		message = /
+acl_smtp_rcpt = accept
 
 # ----- Routers -----
 
 begin routers
 
-localuser:
-  driver =	accept
-  local_parts =	!route_fail
-  transport =	appendfile
-  # set address_data purely to get logging of use of the router
-  address_data = ${acl {loggit}{router   }}
+rx_dump:
+  driver =	redirect
+  condition =	${if !eq {$received_ip_address}{127.0.0.1}}
+  data =	:blackhole:
 
-failrouter:
+smtp_try:
   driver =	accept
-  condition =	${if eq {${acl {loggit}{router   }}}{} {no}{no}}
-  transport =	appendfile
+  transport =	send_to_server
 
 # ----- Transports -----
 
 begin transports
 
-appendfile:
-  driver =	appendfile
-  file =	DIR/test-mail/themailfile
-  quota =	1k
-  user =	CALLER
-  # set homedir purely to get logging of use of the transport
-  home_directory = ${acl {loggit}{transport}}
+send_to_server:
+  driver = smtp
+  hosts = HOSTIPV4
+  allow_localhost
+  port = PORT_D
+  hosts_try_fastopen = :
 
 # ----- Retry -----
 
 begin retry
 
-* * F,5d,1d
-
+* * F,5d,10s
 
 # End
+

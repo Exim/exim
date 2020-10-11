@@ -1,17 +1,15 @@
 
 ******** SERVER ********
 2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-2017-07-30 18:51:05.712 router    was called for quota_good@test.ex
-2017-07-30 18:51:05.712 transport was called for quota_good@test.ex
-2017-07-30 18:51:05.712 router    was called for quota_fail@test.ex
-2017-07-30 18:51:05.712 transport was called for quota_fail@test.ex
-2017-07-30 18:51:05.712 where='quota' msg='Over quota'
-2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<b@test.ex> rejected RCPT <quota_fail@test.ex>: Over quota
-2017-07-30 18:51:05.712 router    was called for route_fail@test.ex
-2017-07-30 18:51:05.712 where='route' msg='Unrouteable address'
-2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<c@test.ex> rejected RCPT <route_fail@test.ex>: Unrouteable address
-2017-07-30 18:51:05.712 where='quota' msg='Previous (cached) quota verification failure'
-2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<e@test.ex> rejected RCPT <quota_fail@test.ex>: Previous (cached) quota verification failure
-2017-07-30 18:51:05.712 router    was called for route_fail@test.ex
-2017-07-30 18:51:05.712 where='route' msg='Unrouteable address'
-2017-07-30 18:51:05.712 H=(test) [127.0.0.1] F=<f@test.ex> rejected RCPT <route_fail@test.ex>: Unrouteable address
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtp S=sss for good@test.ex
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 <= CALLER@test.ex H=(test) [127.0.0.1] P=smtp S=sss for bad@test.ex
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 <= CALLER@test.ex H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss for good@test.ex
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 => :blackhole: <good@test.ex> R=rx_dump
+2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 => good@test.ex F=<CALLER@test.ex> R=smtp_try T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaZ-0005vi-00"
+2017-07-30 18:51:05.712 10HmaX-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 ** bad@test.ex F=<CALLER@test.ex> R=smtp_try T=send_to_server: message has lines too long for transport
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss for CALLER@test.ex
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 => :blackhole: <CALLER@test.ex> R=rx_dump
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 Completed
+2017-07-30 18:51:05.712 10HmaY-0005vi-00 Completed

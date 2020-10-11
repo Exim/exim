@@ -1,65 +1,44 @@
-# verify = not_blind/case_insensitive
+# verify quota at smtp time
 #
-# Accept: the env rcpt matches a header To:
-exim -odq -bs
-mail from:<>
-rcpt to:<userx@dom.com>
-data
-To: a@b.c, himself <UserX@dom.com>
-.
-quit
+exim -bd -DSERVER=server -oX PORT_D
 ****
-### Reject: no match
-exim -odq -bs
-mail from:<>
-rcpt to:<userx@dom.com>
-data
-To: b@b.c, himself <usery@dom.com>
-.
-quit
+client 127.0.0.1 PORT_D
+??? 220
+EHLO test
+??? 250-
+??? 250-SIZE
+??? 250-8BITMIME
+??? 250-PIPELINING
+??? 250 HELP
+MAIL FROM:<a@test.ex>\r\nRCPT TO:<quota_good@test.ex>
+??? 250
+??? 250
+RSET
+??? 250
+MAIL FROM:<b@test.ex> SIZE=2048\r\nRCPT TO:<quota_fail@test.ex>
+??? 250
+??? 550
+RSET
+??? 250
+MAIL FROM:<c@test.ex>\r\nRCPT TO:<route_fail@test.ex>
+??? 250
+??? 550
+RSET
+??? 250
+MAIL FROM:<d@test.ex>\r\nRCPT TO:<quota_good@test.ex>
+??? 250
+??? 250
+RSET
+??? 250
+MAIL FROM:<e@test.ex> SIZE=512\r\nRCPT TO:<quota_fail@test.ex>
+??? 250
+??? 550
+RSET
+??? 250
+MAIL FROM:<f@test.ex>\r\nRCPT TO:<route_fail@test.ex>
+??? 250
+??? 550
+QUIT
 ****
-### Reject, with specific SMTP message
-exim -DERROR_DETAILS=smtp_return_error_details -odq -bs
-mail from:<>
-rcpt to:<userx@dom.com>
-data
-To: c@b.c, himself <usery@dom.com>
-.
-quit
-****
-### Accept, matches in header CC:
-exim -odq -bs
-mail from:<>
-rcpt to:<userx@dom.com>
-rcpt to:<usery@dom.com>
-data
-To: d@b.c, himself <UserY@dom.com>
-Cc: unqualified, UserX@dom.com, x@y.z
-.
-quit
-****
-### Reject: To: & CC: combo, an env rcpt missing
-exim -odq -bs
-mail from:<>
-rcpt to:<userx@dom.com>
-rcpt to:<usery@dom.com>
-rcpt to:<userz@dom.com>
-data
-To: e@b.c, himself <UserY@dom.com>
-Cc: unqualified, UserX@dom.com, x@y.z
-.
-quit
-****
-### Accept: Resent-To: & Resent-CC: combo
-exim -odq -bs
-mail from:<>
-rcpt to:<userx@dom.com>
-rcpt to:<usery@dom.com>
-data
-Resent-To: f@b.c, himself <UserY@dom.com>
-Resent-Cc: unqualified, UserX@dom.com, x@y.z
-To: an@other
-.
-quit
-****
-no_msglog_check
+#
+killdaemon

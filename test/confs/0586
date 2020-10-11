@@ -2,16 +2,19 @@
 
 .include DIR/aux-var/std_conf_prefix
 
+primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
+acl_smtp_helo = check_helo
 
-# ----- Routers -----
 
-begin routers
+# ----- ACLs -----
 
-list:
-  driver = redirect
-  file = DIR/aux-fixed/TESTNUM.list.$local_part
+begin acl
+
+check_helo:
+  require verify = helo
+  accept  logwrite = helo $sender_helo_name dnssec <$sender_helo_dnssec>
 
 # End

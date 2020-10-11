@@ -1,14 +1,15 @@
 # Exim test configuration 0605
+# hosts_connection_nolog versus sender_host lists caching
 
 .include DIR/aux-var/std_conf_prefix
 
+primary_hostname = myhost.test.ex
+
 # ----- Main settings -----
 
-disable_ipv6 = true
-
-acl_smtp_rcpt = accept hosts = test.again.dns
-
+log_selector = +smtp_connection
+hostlist nolog = 127.0.0.1
+hosts_connection_nolog = +nolog
 queue_only
 
 # End
-

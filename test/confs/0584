@@ -1,14 +1,15 @@
-# Exim test configuration 0005
+# Exim test configuration 0584
 
 .include DIR/aux-var/std_conf_prefix
 
+primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-domainlist local_domains = @
+domainlist local_domains = test.ex
 
 acl_smtp_rcpt = check_recipient
-trusted_users = CALLER
+queue_only
 
 
 # ----- ACL -----
@@ -16,25 +17,17 @@ trusted_users = CALLER
 begin acl
 
 check_recipient:
-  accept hosts = :
-  accept domains = +local_domains
-  deny   message = relay not permitted
+  require verify = sender=OPT
+  accept
 
 # ----- Routers -----
 
 begin routers
 
-localuser:
+goodroute:
   driver = accept
-  check_local_user
-  transport = local_delivery
+  local_parts = userx
+  verify_only
 
-# ----- Transports -----
-
-begin transports
-
-local_delivery:
-  driver = appendfile
-  file = DIR/test-mail/$local_part
 
 # End

@@ -1,0 +1,4 @@
+# tainted data for filter filename
+1
+exim -bv abcd@test.ex
+****

@@ -1,0 +1,45 @@
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => queue_only_1@test.ex R=outbound T=smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmaY-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => queue_only_2@test.ex R=outbound T=smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <queue_only_1@test.ex> R=discard_remote_source
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <queue_only_2@test.ex> R=discard_remote_source
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbB-0005vi-00 => first_pass_route_1@test.ex R=outbound T=smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 => first_pass_route_2@test.ex R=outbound T=smtp H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]* C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=(me) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex H=(me) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex H=(me) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex H=(me) [127.0.0.1] P=smtp S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbB-0005vi-00 == first_pass_route_1@test.ex R=outbound T=smtp defer (0): SMTP delivery explicitly queued
+1999-03-02 09:44:33 10HmbD-0005vi-00 == first_pass_route_2@test.ex R=outbound T=smtp defer (0): SMTP delivery explicitly queued
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <first_pass_route_1@test.ex> R=discard_remote_source
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex H=the.local.host.name [ip4.ip4.ip4.ip4] P=esmtp S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 no immediate delivery: queued by ACL
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <first_pass_route_2@test.ex> R=discard_remote_source
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed

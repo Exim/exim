@@ -1,8 +1,29 @@
-# tainted data for appendfile file option
-exim -bs -odi
-mail from:someone@some.domain
-rcpt to:CALLER@HOSTNAME
+# verify = sender=address
+#
+# pass
+exim -DOPT=userx@test.ex -bh 127.0.0.1
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
 data
+From: userx@test.ex
+Subject: testing
 .
-quit
+QUIT
 ****
+# fail
+exim -DOPT=fail@test.ex -bh 127.0.0.1
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+QUIT
+****
+# check can use tainted data
+exim -DOPT='$sender_address/defer_ok' -bh 127.0.0.1
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@test.ex
+Subject: testing
+.
+QUIT
+****
+no_msglog_check

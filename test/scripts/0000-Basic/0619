@@ -1,45 +1,69 @@
-# log_selector msg_id and msg_id_created
+# domainlist match values
 #
-# msg_id is on by default; check baseline
-exim -DLOG_SELECTOR=+received_recipients -t
-From: CALLER@test.ex
-To: a@test.ex
-Message-ID: original1235@example.com
-
-body
+exim -bs -DOPT=:
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@notmatched.ex>
+QUIT
 ****
 #
-# msg_id is on by default; check it can be disabled
-exim -DLOG_SELECTOR=+received_recipients-msg_id -t
-From: CALLER@test.ex
-To: b@test.ex
-Message-ID: original1235@example.com
-
-body
+exim -bs '-DOPT=notthis : plainstring.ex : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@plainstring.ex>
+QUIT
 ****
 #
-# check msg_id_created shows invented ones
-exim -DLOG_SELECTOR=+received_recipients+msg_id_created -t
-From: CALLER@test.ex
-To: c@test.ex
-
-body
+exim -bs '-DOPT=notthis : *tail.ex : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@headtail.ex>
+QUIT
 ****
 #
-# check msg_id_created ignores non-invented ones
-exim -DLOG_SELECTOR=+received_recipients+msg_id_created -t
-From: CALLER@test.ex
-To: d@test.ex
-Message-ID: original1235@example.com
-
-body
+exim -bs '-DOPT=notthis : ^.*r(e.)ex : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@headregextail.ex>
+QUIT
 ****
 #
-# check that bounces don't log created, by default
-exim -DLOG_SELECTOR=+received_recipients -M $msg1
-****
-# and check they do with msg_id_created
-exim -DLOG_SELECTOR=+received_recipients+msg_id_created -M $msg1
+exim -bs '-DOPT=notthis : @ : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@primaryhostname.ex>
+QUIT
 ****
 #
-no_msglog_check
+#
+exim -bs '-DOPT=notthis : @[] : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@[127.0.0.1]>
+QUIT
+****
+#
+# malformed
+exim -bs '-DOPT=notthis : @[] : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@127.0.0.1]>
+QUIT
+****
+#
+# malformed
+exim -bs '-DOPT=notthis : @[] : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@[127.0.0.1>
+QUIT
+****
+#
+#
+exim -bs '-DOPT=notthis : @mx_any/ignore=1.1.1.1 : nothiseither'
+HELO test
+MAIL FROM:<testclient>
+RCPT TO:<a@mx46.test.ex>
+QUIT
+****
+#

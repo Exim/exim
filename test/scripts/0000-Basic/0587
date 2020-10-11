@@ -1,19 +1,11 @@
-# $local_part_data, multi-rcpt message
+# dns retry in hostlist
+# Exim test configuration 0605
 #
-exim -bs -odi
-mail from:<someone@some.domain>
-rcpt to:<CALLER@HOSTNAME>
-rcpt to:<b@remote>
-data
-.
+need_ipv4
+#
+exim -bh HOSTIPV4
+helo test
+mail from:<ralph@dustyshoes.tld>
+rcpt to:<bob@anotherone.tld>
 quit
 ****
-exim -bs -odi
-mail from:<someone@some.domain>
-rcpt to:<a@remote>
-rcpt to:<CALLER@HOSTNAME>
-data
-.
-quit
-****
-no_message_check

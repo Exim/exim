@@ -1,8 +1,0 @@
-2017-07-30 18:51:05.712 10HmaX-0005vi-00 Failed to open TESTSUITE/aux-fixed/0622.nonexist.tmpl for error message texts: No such file or directory
-2017-07-30 18:51:05.712 10HmaY-0005vi-00 bounce_message_file is not absolute after expansion: 'relative_file_path'
-
-2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Failed to expand bounce_message_file: '$acl_m_unset'
-
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 bounce_message_file is not untainted after expansion: 'TESTSUITE/aux-fixed/0622.CALLER@myhost.test.ex'
-
-2017-07-30 18:51:05.712 10HmbB-0005vi-00 Failed to open TESTSUITE/aux-fixed/0622.nonexist.tmpl for warning message texts: No such file or directory

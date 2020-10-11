@@ -1,5 +1,6 @@
 # Exim test configuration 0612
-# log_defer_output on pipe transport
+
+SERVER =
 
 .include DIR/aux-var/std_conf_prefix
 
@@ -7,35 +8,87 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-log_selector = +received_recipients
+.ifdef OPT
+dsn_advertise_hosts = *
+.endif
+delay_warning = 6s : 24h
 
-#acl_smtp_rcpt = accept
+accept_8bitmime = false
+pipelining_advertise_hosts = :
+
+trusted_users = CALLER
+acl_smtp_rcpt = rcpt
+
+log_selector = +received_recipients
+queue_only
+queue_run_in_order
+
+
+event_action = ${acl {ev_log}}
+
+#
+
+begin acl
+
+ev_log:
+  accept logwrite = event $event_name
+
+rcpt:
+  accept hosts =	HOSTIPV4
+
+  deny	local_parts =	rmt_reject
+  defer	local_parts =	rmt_defer
+  accept
 
 # ----- Routers -----
 
 begin routers
 
-client:
+r_dump:
+  driver =	redirect
+  domains =	dump.ex
+  data =	:blackhole:
+
+r1:
   driver =	accept
-  transport =	pipe
+  condition =	${if eq {127.0.0.1}{$sender_host_address}}
+  transport =	tofile
+
+r2:
+  driver =	manualroute
+  local_parts =	^rmt_.*
+  route_list =	* 127.0.0.1::PORT_D
+  self =	send
+  transport =	smtp
+
+r3:
+  driver =	manualroute
+  local_parts =	deferred
+  route_list =	* 127.0.0.1::PORT_S
+  self =	send
+  transport =	bad_tpt
 
 # ----- Transports -----
 
 begin transports
 
-pipe:
-    driver      = pipe
-    temp_errors = *
-    command     = perl -e "print 'Hi from pipe'; exit 5;"
-    log_defer_output = true
-    path	= ${env{PATH}}
+smtp:
+  driver =	smtp
+  event_action = ${acl {ev_log}}
+  hosts_try_fastopen = :
 
-# ----- Retry -----
+bad_tpt:
+  driver =	smtp
+  connect_timeout = 1s
+  event_action = ${acl {ev_log}}
 
+tofile:
+  driver = appendfile
+  file = DIR/test-mail/${bless:$local_part}
+  user = CALLER
+  event_action = ${acl {ev_log}}
 
 begin retry
 
-* * F,1h,10m
-
-
+*	*	F,2m,10s
 # End

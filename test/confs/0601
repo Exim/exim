@@ -1,19 +1,32 @@
 # Exim test configuration 0601
-# udpsend
 
+keep_environment = PATH
 exim_path = EXIM_PATH
-keep_environment =
 spool_directory = DIR/spool
-log_file_path = DIR/spool/log/%slog
+
+log_file_path = DIR/spool/log/%slog : syslog
+
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+chunking_advertise_hosts =
 tls_advertise_hosts =
-queue_only
+
 .ifdef _HAVE_DMARC
 dmarc_tld_file =
 .endif
 
+primary_hostname = myhost.test.ex
+queue_only
+
 # ----- Main settings -----
 
-acl_smtp_rcpt = accept udpsend = <; 127.0.0.1 ; 1223 ; message from exim
+log_selector = LOG_SELECTOR
+log_timezone = TIMES
+
+syslog_timestamp = ARG1
+syslog_pid = ARG2
+
+acl_not_smtp = accept logwrite = msg
 
 
 # End

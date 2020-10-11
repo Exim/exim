@@ -2,41 +2,18 @@
 
 .include DIR/aux-var/std_conf_prefix
 
-log_selector = +received_recipients +sender_on_delivery +millisec
+slow_lookup_log = 1000
 
-# ----- Main settings -----
+acl_smtp_rcpt = accept verify = recipient
 
-acl_smtp_rcpt = accept
-
-# ----- Routers -----
+queue_only
 
 begin routers
 
-rx_dump:
-  driver =	redirect
-  condition =	${if !eq {$received_ip_address}{127.0.0.1}}
-  data =	:blackhole:
-
-smtp_try:
-  driver =	accept
-  transport =	send_to_server
-
-# ----- Transports -----
-
-begin transports
-
-send_to_server:
-  driver = smtp
-  hosts = HOSTIPV4
-  allow_localhost
-  port = PORT_D
-  hosts_try_fastopen = :
-
-# ----- Retry -----
-
-begin retry
-
-* * F,5d,10s
+all:
+  driver = dnslookup
+  verify_only
+  self = send
 
 # End
 

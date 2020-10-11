@@ -1,45 +1,19 @@
-# message_linelength_limit
+# dns log long lookups
+# Exim test configuration 0606
 #
-# The "write" script cmd subtracts 1 for the newline,
-# and the linecount in exim doesn't count the line-ending.
-write test-data-good 1x999
-++++
-****
-write test-data-bad  1x1000
-++++
-****
+munge delay_1500
 #
-exim -bd -DSERVER=server -oX PORT_D
-****
-client 127.0.0.1 PORT_D
-??? 220
-HELO test
-??? 250
-MAIL FROM:<CALLER@test.ex>
-??? 250
-RCPT TO:<good@test.ex>
-??? 250
-DATA
-??? 354
-Subject: should be good
-
-<<< test-data-good
-.
-??? 250
-MAIL FROM:<CALLER@test.ex>
-??? 250
-RCPT TO:<bad@test.ex>
-??? 250
-DATA
-??? 354
-Subject: should be bad
-
-<<< test-data-bad
-.
-??? 250
-QUIT
-??? 221
+exim -bh 127.0.0.1
+helo test
+mail from:<ralph@dustyshoes.tld>
+rcpt to:<should_log@delay1500.test.ex>
+quit
 ****
 #
-sleep 1
-killdaemon
+#
+exim -bh 127.0.0.1
+helo test
+mail from:<ralph@dustyshoes.tld>
+rcpt to:<should_not_log@delay500.test.ex>
+quit
+****

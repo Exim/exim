@@ -1,0 +1,55 @@
+# Exim test configuration 0597
+# control = queue/first_pass_route
+
+.include DIR/aux-var/std_conf_prefix
+
+
+# ----- Main settings -----
+
+domainlist local_domains = @
+
+acl_smtp_rcpt = check_rcpt
+
+trusted_users = CALLER
+queue_run_in_order
+
+
+# ----- ACL -----
+
+begin acl
+
+check_rcpt:
+  accept	senders =	HOSTIPV4
+
+  accept	local_parts =	^queue_only.*
+		control =	queue_only
+
+  accept	local_parts =	^first_pass_route.*
+		control =	queue/first_pass_route
+
+# ----- Routers -----
+
+begin routers
+
+discard_remote_source:
+  driver =	redirect
+  condition =	${if !eq {$sender_host_address}{127.0.0.1}}
+  data =	:blackhole:
+
+outbound:
+  driver =	accept
+  transport =	smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver =	smtp
+  hosts =	HOSTIPV4
+  port =	PORT_D
+  allow_localhost
+  hosts_try_fastopen = :
+
+# End
