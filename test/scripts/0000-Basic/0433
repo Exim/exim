@@ -3,19 +3,25 @@ need_ipv4
 #
 exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D
 ****
+millisleep 1000
 killdaemon
 exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:PORT_D2
 ****
+millisleep 1000
 killdaemon
 exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:PORT_D2 -DIFACE='local_interfaces = <; 127.0.0.1.PORT_D4 ; 0.0.0.0'
 ****
+millisleep 1000
 killdaemon
 exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:PORT_D2 -DIFACE='local_interfaces = <;  0.0.0.0; 127.0.0.1.PORT_D4'
 ****
+millisleep 1000
 killdaemon
 exim -d -bd -DSERVER=server -oX PORT_D3 -DPORT=daemon_smtp_port=PORT_D:PORT_D2 -DIFACE='local_interfaces = <; 127.0.0.1.PORT_D4 ; 0.0.0.0'
 ****
+millisleep 1000
 killdaemon
 exim -d -bd -DSERVER=server -oX '<; 0.0.0.0.PORT_D;0.0.0.0.PORT_D2'
 ****
+millisleep 1000
 killdaemon

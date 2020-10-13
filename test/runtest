@@ -1072,12 +1072,13 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TLS preload
     # only OpenSSL speaks of these
-    next if /^TLS: preloading (DH params|ECDH curve|CA bundle) for server/;
+    next if /^TLS: (preloading (DH params|ECDH curve|CA bundle) for server|generating selfsigned server cert)/;
     next if /^Diffie-Hellman initialized from default/;
     next if /^ECDH OpenSSL (< )?[\d.+]+: temp key parameter settings:/;
     next if /^ECDH: .*'prime256v1'/;
     next if /^tls_verify_certificates: system$/;
     next if /^tls_set_watch: .*\/cert.pem/;
+    next if /^Generating 2048 bit RSA key/;
 
     # TLS preload
     # only GnuTLS speaks of these
@@ -1086,6 +1087,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^TLS: preloading cipher list for server: NULL$/;
     s/^GnuTLS using default session cipher\/priority "NORMAL"$/TLS: not preloading cipher list for server/;
     next if /^GnuTLS<2>: added \d+ protocols, \d+ ciphersuites, \d+ sig algos and \d+ groups into priority list$/;
+    next if /^GnuTLS<2>: (Disabling X.509 extensions|signing structure using RSA-SHA256)/;
+    next if /^GnuTLS.*(wrap_nettle_mpi_print|gnutls_subject_alt_names_get|get_alt_name)/;
 
     # only kevent platforms (FreeBSD, OpenBSD) say this
     next if /^watch dir/;
@@ -1094,6 +1097,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # TLS preload
     # there happen in different orders for OpenSSL/GnuTLS/noTLS
+    next if /^TLS: generating selfsigned server cert/;
     next if /^TLS: not preloading (CA bundle|cipher list) for server$/;
     next if /^TLS: not preloading server certs$/;
 

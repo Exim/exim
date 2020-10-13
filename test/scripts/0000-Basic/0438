@@ -3,10 +3,12 @@ need_ipv4
 #
 exim -d -DSERVER=server -bd -oX PORT_D
 ****
+millisleep 1000
 killdaemon
 # PID file must be DIR/spool/exim-daemon.* in order for "killdaemon" to work
 exim -d -DSERVER=server -bd -oX PORT_D -oP DIR/spool/exim-daemon.anotherpid
 ****
+millisleep 1000
 killdaemon
 #
 # Check for a SIGTERM daemon kill removing the pid file
