@@ -794,6 +794,9 @@ return rsa_key;
 
 
 /* Create and install a selfsigned certificate, for use in server mode */
+/*XXX we could arrange to call this during prelo for a null tls_certificate option.
+The normal cache inval + relo will suffice.
+Just need a timer for inval. */
 
 static int
 tls_install_selfsign(SSL_CTX * sctx, uschar ** errstr)
@@ -804,6 +807,7 @@ RSA * rsa;
 X509_NAME * name;
 uschar * where;
 
+DEBUG(D_tls) debug_printf("TLS: generating selfsigned server cert\n");
 where = US"allocating pkey";
 if (!(pkey = EVP_PKEY_new()))
   goto err;
@@ -823,7 +827,7 @@ if (!EVP_PKEY_assign_RSA(pkey, rsa))
 X509_set_version(x509, 2);				/* N+1 - version 3 */
 ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
 X509_gmtime_adj(X509_get_notBefore(x509), 0);
-X509_gmtime_adj(X509_get_notAfter(x509), (long)60 * 60);	/* 1 hour */
+X509_gmtime_adj(X509_get_notAfter(x509), (long)2 * 60 * 60);	/* 2 hour */
 X509_set_pubkey(x509, pkey);
 
 name = X509_get_subject_name(x509);
@@ -1619,18 +1623,19 @@ return OK;
 }
 
 
-static void
+static unsigned
 tls_server_creds_init(void)
 {
 SSL_CTX * ctx;
 uschar * dummy_errstr;
+unsigned lifetime = 0;
 
 tls_openssl_init();
 
 state_server.lib_state = null_tls_preload;
 
 if (lib_ctx_new(&ctx, NULL, &dummy_errstr) != OK)
-  return;
+  return 0;
 state_server.lib_state.lib_ctx = ctx;
 
 /* Preload DH params and EC curve */
@@ -1677,6 +1682,18 @@ if (  opt_set_and_noexpand(tls_certificate)
       state_server.lib_state.conn_certs = TRUE;
     }
   }
+else if (  !tls_certificate && !tls_privatekey
+# ifndef DISABLE_OCSP
+	&& !tls_ocsp_file
+#endif
+   )
+  {		/* Generate & preload a selfsigned cert. No files to watch. */
+  if (tls_expand_session_files(ctx, &state_server, &dummy_errstr) == OK)
+    {
+    state_server.lib_state.conn_certs = TRUE;
+    lifetime = f.running_in_test_harness ? 2 : 60 * 60;		/* 1 hour */
+    }
+  }
 else
   DEBUG(D_tls) debug_printf("TLS: not preloading server certs\n");
 
@@ -1717,6 +1734,7 @@ if (opt_set_and_noexpand(tls_require_ciphers))
   }
 else
   DEBUG(D_tls) debug_printf("TLS: not preloading cipher list for server\n");
+return lifetime;
 }
 
 

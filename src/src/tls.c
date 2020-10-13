@@ -38,7 +38,7 @@ functions from the OpenSSL or GNU TLS libraries. */
 
 static void tls_per_lib_daemon_init(void);
 static void tls_per_lib_daemon_tick(void);
-static void tls_server_creds_init(void);
+static unsigned  tls_server_creds_init(void);
 static void tls_server_creds_invalidate(void);
 static void tls_client_creds_init(transport_instance *, BOOL);
 static void tls_client_creds_invalidate(transport_instance *);
@@ -81,6 +81,8 @@ static BOOL ssl_xfer_error = FALSE;
 static struct kevent kev[KEV_SIZE];
 static int kev_used = 0;
 #endif
+
+static unsigned tls_creds_expire = 0;
 
 /*************************************************
 *       Expand string; give error on failure     *
@@ -291,20 +293,6 @@ struct timespec t = {0};
 (void) kevent(fd, NULL, 0, &kev, 1, &t);
 #endif
 }
-
-/* Called, after a delay for multiple file ops to get done, from
-the daemon when any of the watches added (above) fire.
-
-Dump the set of watches and arrange to reload cached creds (which
-will set up new watches). */
-
-static void
-tls_watch_triggered(void)
-{
-DEBUG(D_tls) debug_printf("watch triggered\n");
-
-tls_daemon_creds_reload();
-}
 #endif	/*EXIM_HAVE_INOTIFY*/
 
 
@@ -343,12 +331,15 @@ tls_watch_fd = -1;
 static void
 tls_daemon_creds_reload(void)
 {
+unsigned lifetime;
+
 #ifdef EXIM_HAVE_KEVENT
 tls_watch_invalidate();
 #endif
 
 tls_server_creds_invalidate();
-tls_server_creds_init();
+tls_creds_expire = (lifetime = tls_server_creds_init())
+  ? time(NULL) + lifetime : 0;
 
 tls_client_creds_reload(TRUE);
 }
@@ -372,10 +363,26 @@ tls_daemon_tick(void)
 {
 tls_per_lib_daemon_tick();
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
-if (tls_watch_trigger_time && time(NULL) >= tls_watch_trigger_time + 5)
+if (tls_creds_expire && time(NULL) >= tls_creds_expire)
   {
-  tls_watch_trigger_time = 0;
-  tls_watch_triggered();
+  /* The server cert is a selfsign, with limited lifetime.  Dump it and
+  generate a new one.  Reload the rest of the creds also as the machinery
+  is all there. */
+
+  DEBUG(D_tls) debug_printf("selfsign cert rotate\n");
+  tls_creds_expire = 0;
+  tls_daemon_creds_reload();
+  }
+else if (tls_watch_trigger_time && time(NULL) >= tls_watch_trigger_time + 5)
+  {
+  /* Called, after a delay for multiple file ops to get done, from
+  the daemon when any of the watches added (above) fire.
+  Dump the set of watches and arrange to reload cached creds (which
+  will set up new watches). */
+
+  DEBUG(D_tls) debug_printf("watch triggered\n");
+  tls_watch_trigger_time = tls_creds_expire = 0;
+  tls_daemon_creds_reload();
   }
 #endif
 }

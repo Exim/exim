@@ -929,7 +929,7 @@ return OK;
 
 
 
-/* Create and install a selfsigned certificate, for use in server mode */
+/* Create and install a selfsigned certificate, for use in server mode. */
 
 static int
 tls_install_selfsign(exim_gnutls_state_st * state, uschar ** errstr)
@@ -946,6 +946,7 @@ rc = GNUTLS_E_NO_CERTIFICATE_FOUND;
 if (TRUE) goto err;
 #endif
 
+DEBUG(D_tls) debug_printf("TLS: generating selfsigned server cert\n");
 where = US"initialising pkey";
 if ((rc = gnutls_x509_privkey_init(&pkey))) goto err;
 
@@ -970,7 +971,7 @@ now = 1;
 if (  (rc = gnutls_x509_crt_set_version(cert, 3))
    || (rc = gnutls_x509_crt_set_serial(cert, &now, sizeof(now)))
    || (rc = gnutls_x509_crt_set_activation_time(cert, now = time(NULL)))
-   || (rc = gnutls_x509_crt_set_expiration_time(cert, now + 60 * 60)) /* 1 hr */
+   || (rc = gnutls_x509_crt_set_expiration_time(cert, (long)2 * 60 * 60))	/* 2 hour */
    || (rc = gnutls_x509_crt_set_key(cert, pkey))
 
    || (rc = gnutls_x509_crt_set_dn_by_oid(cert,
@@ -1421,26 +1422,25 @@ return gnutls_priority_init( (gnutls_priority_t *) &state->lib_state.pri_cache,
   CCS p, errpos);
 }
 
-static void
+static unsigned
 tls_server_creds_init(void)
 {
 uschar * dummy_errstr;
+unsigned lifetime = 0;
 
 state_server.lib_state = null_tls_preload;
 if (gnutls_certificate_allocate_credentials(
       (gnutls_certificate_credentials_t *) &state_server.lib_state.x509_cred))
   {
   state_server.lib_state.x509_cred = NULL;
-  return;
+  return lifetime;
   }
 creds_basic_init(state_server.lib_state.x509_cred, TRUE);
 
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
 /* If tls_certificate has any $ indicating expansions, it is not good.
 If tls_privatekey is set but has $, not good.  Likewise for tls_ocsp_file.
-If all good (and tls_certificate set), load the cert(s).  Do not try
-to handle selfsign generation for now (tls_certificate null/empty;
-XXX will want to do that later though) due to the lifetime/expiry issue. */
+If all good (and tls_certificate set), load the cert(s). */
 
 if (  opt_set_and_noexpand(tls_certificate)
 # ifndef DISABLE_OCSP
@@ -1470,6 +1470,18 @@ if (  opt_set_and_noexpand(tls_certificate)
       state_server.lib_state.conn_certs = TRUE;
     }
   }
+else if (  !tls_certificate && !tls_privatekey
+# ifndef DISABLE_OCSP
+	&& !tls_ocsp_file
+# endif
+	)
+  {		/* Generate & preload a selfsigned cert. No files to watch. */
+  if ((tls_install_selfsign(&state_server, &dummy_errstr)) == OK)
+    {
+    state_server.lib_state.conn_certs = TRUE;
+    lifetime = f.running_in_test_harness ? 2 : 60 * 60;		/* 1 hour */
+    }
+  }
 else
   DEBUG(D_tls) debug_printf("TLS: not preloading server certs\n");
 
@@ -1482,7 +1494,7 @@ if (opt_set_and_noexpand(tls_verify_certificates))
     DEBUG(D_tls) debug_printf("TLS: preloading CA bundle for server\n");
     if (creds_load_cabundle(&state_server, tls_verify_certificates,
 			    NULL, &dummy_errstr) != OK)
-      return;
+      return lifetime;
     state_server.lib_state.cabundle = TRUE;
 
     /* If CAs loaded and tls_crl is non-empty and has no $, load it */
@@ -1493,7 +1505,7 @@ if (opt_set_and_noexpand(tls_verify_certificates))
 	{
 	DEBUG(D_tls) debug_printf("TLS: preloading CRL for server\n");
 	if (creds_load_crl(&state_server, tls_crl, &dummy_errstr) != OK)
-	  return;
+	  return lifetime;
 	state_server.lib_state.crl = TRUE;
 	}
       }
@@ -1520,6 +1532,7 @@ if (!tls_require_ciphers || opt_set_and_noexpand(tls_require_ciphers))
   }
 else
   DEBUG(D_tls) debug_printf("TLS: not preloading cipher list for server\n");
+return lifetime;
 }
 
 
@@ -1990,7 +2003,7 @@ state->tls_require_ciphers =	require_ciphers;
 state->host = host;
 
 /* This handles the variables that might get re-expanded after TLS SNI;
-that's tls_certificate, tls_privatekey, tls_verify_certificates, tls_crl */
+tls_certificate, tls_privatekey, tls_verify_certificates, tls_crl */
 
 DEBUG(D_tls)
   debug_printf("Expanding various TLS configuration options for session credentials\n");

@@ -5,7 +5,10 @@ exim -DSERVER=server -bd -oX PORT_D
 exim userx
 Test
 ****
-exim -qf
+exim -q
+****
+sleep 4
+exim -q
 ****
 killdaemon
 no_msglog_check
