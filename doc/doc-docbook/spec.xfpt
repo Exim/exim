@@ -5968,7 +5968,7 @@ Libraries you use may depend on specific environment settings.  This
 imposes a security risk (e.g. PATH). There are two lists:
 &%keep_environment%& for the variables to import as they are, and
 &%add_environment%& for variables we want to set to a fixed value.
-Note that TZ is handled separately, by the $%timezone%$ runtime
+Note that TZ is handled separately, by the &%timezone%& runtime
 option and by the TIMEZONE_DEFAULT buildtime option.
 .code
 # keep_environment = ^LDAP
