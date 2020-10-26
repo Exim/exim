@@ -18810,7 +18810,10 @@ address (with affixes removed if relevant) is the name of an account on the
 local system. The check is done by calling the &[getpwnam()]& function rather
 than trying to read &_/etc/passwd_& directly. This means that other methods of
 holding password data (such as NIS) are supported. If the local part is a local
-user, &$home$& is set from the password data, and can be tested in other
+user,
+.cindex "tainted data" "de-tainting"
+&$local_part_data$& is set to an untainted version of the local part and
+&$home$& is set from the password data. The latter can be tested in other
 preconditions that are evaluated after this one (the order of evaluation is
 given in section &<<SECTrouprecon>>&). However, the value of &$home$& can be
 overridden by &%router_home_directory%&. If the local part is not a local user,
