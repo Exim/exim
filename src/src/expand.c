@@ -1708,9 +1708,9 @@ authres_iprev(gstring * g)
 if (sender_host_name)
   g = string_append(g, 3, US";\n\tiprev=pass (", sender_host_name, US")");
 else if (host_lookup_deferred)
-  g = string_catn(g, US";\n\tiprev=temperror", 19);
+  g = string_cat(g, US";\n\tiprev=temperror");
 else if (host_lookup_failed)
-  g = string_catn(g, US";\n\tiprev=fail", 13);
+  g = string_cat(g, US";\n\tiprev=fail");
 else
   return g;
 

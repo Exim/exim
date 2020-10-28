@@ -5899,7 +5899,7 @@ if (Ustrcmp(sender_host_auth_pubname, "tls") != 0)
 else if (authenticated_id)
   g = string_append(g, 2, US") x509.auth=", authenticated_id);
 else
-  g = string_catn(g, US") reason=x509.auth", 17);
+  g = string_cat(g, US") reason=x509.auth");
 
 if (authenticated_sender)
   g = string_append(g, 2, US" smtp.mailfrom=", authenticated_sender);
