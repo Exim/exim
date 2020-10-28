@@ -25048,12 +25048,14 @@ authenticated as a client.
 
 
 .option command_timeout smtp time 5m
+.cindex timeout "smtp transport command"
 This sets a timeout for receiving a response to an SMTP command that has been
 sent out. It is also used when waiting for the initial banner line from the
 remote host. Its value must not be zero.
 
 
 .option connect_timeout smtp time 5m
+.cindex timeout "smtp transport connect"
 This sets a timeout for the &[connect()]& function, which sets up a TCP/IP call
 to a remote host. A setting of zero allows the system timeout (typically
 several minutes) to act. To have any effect, the value of this option must be
@@ -25089,6 +25091,7 @@ be treated as unset and &%tls_require_ciphers%& will be used instead.
 
 
 .option data_timeout smtp time 5m
+.cindex timeout "for transmitted SMTP data blocks"
 This sets a timeout for the transmission of each block in the data portion of
 the message. As a result, the overall timeout for a message depends on the size
 of the message. Its value must not be zero. See also &%final_timeout%&.
@@ -25227,6 +25230,7 @@ fails"& facility.
 
 
 .option final_timeout smtp time 10m
+.cindex timeout "for transmitted SMTP data accept"
 This is the timeout that applies while waiting for the response to the final
 line containing just &"."& that terminates a message. Its value must not be
 zero.
