@@ -1213,8 +1213,6 @@ int size, ret;
 int fd = fileno(smtp_in);
 const char v2sig[12] = "\x0D\x0A\x0D\x0A\x00\x0D\x0A\x51\x55\x49\x54\x0A";
 uschar * iptype;  /* To display debug info */
-struct timeval tv;
-struct timeval tvtmp;
 socklen_t vslen = sizeof(struct timeval);
 BOOL yield = FALSE;
 

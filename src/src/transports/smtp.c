@@ -43,7 +43,7 @@ optionlist smtp_transport_options[] = {
   { "dane_require_tls_ciphers", opt_stringptr, LOFF(dane_require_tls_ciphers) },
 # endif
   { "data_timeout",         opt_time,	   LOFF(data_timeout) },
-  { "delay_after_cutoff", opt_bool,	   LOFF(delay_after_cutoff) },
+  { "delay_after_cutoff",   opt_bool,	   LOFF(delay_after_cutoff) },
 #ifndef DISABLE_DKIM
   { "dkim_canon", opt_stringptr,	   LOFF(dkim.dkim_canon) },
   { "dkim_domain", opt_stringptr,	   LOFF(dkim.dkim_domain) },

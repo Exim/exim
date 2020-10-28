@@ -13,8 +13,6 @@ static int
 internal_readsock_open(client_conn_ctx * cctx, const uschar * sspec,
   int timeout, BOOL do_tls, uschar ** errmsg)
 {
-int sep = ',';
-uschar * ele;
 const uschar * server_name;
 host_item host;
 
