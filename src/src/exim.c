@@ -3870,7 +3870,13 @@ during readconf_main() some expansion takes place already. */
 
 /* Store the initial cwd before we change directories.  Can be NULL if the
 dir has already been unlinked. */
+errno = 0;
 initial_cwd = os_getcwd(NULL, 0);
+if (!initial_cwd && errno)
+  exim_fail("exim: getting initial cwd failed: %s\n", strerror(errno));
+
+if (initial_cwd && (strlen(CCS initial_cwd) >= BIG_BUFFER_SIZE))
+  exim_fail("exim: initial cwd is far too long (%d)\n", Ustrlen(CCS initial_cwd));
 
 /* checking:
     -be[m] expansion test        -
