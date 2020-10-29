@@ -263,6 +263,12 @@ PP/02 Bug 2643: Correct TLS DH constants.
       incorrect Diffie-Hellman constants in the Exim source.
       Reported by kylon94, code-gen tool fix by Simon Arlott.
 
+PP/03 Fix Linux security issue CVE-2020-SLCWD and guard against PATH_MAX
+      better.  Reported by Qualys.
+
+PP/04 Impose security length checks on various command-line options.
+      Fixes CVE-2020-SPRSS reported by Qualys.
+
 
 Exim version 4.94
 -----------------
