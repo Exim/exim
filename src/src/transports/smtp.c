@@ -4134,6 +4134,13 @@ if (!sx->ok)
 
         *message_defer = TRUE;
         }
+
+      DEBUG(D_transport) if (sx->cctx.sock >= 0)
+	{
+	int n;
+	if (ioctl(sx->cctx.sock, TIOCOUTQ, &n) == 0)
+	  debug_printf("%d bytes remain in socket output buffer\n", n);
+	}
       }
 
     /* Otherwise, we have an I/O error or a timeout other than after MAIL or
