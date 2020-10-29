@@ -269,6 +269,10 @@ PP/03 Impose security length checks on various command-line options.
 PP/04 Fix Linux security issue CVE-2020-SLCWD and guard against PATH_MAX
       better.  Reported by Qualys.
 
+PP/05 Fix security issue CVE-2020-PFPSN and guard against cmdline invoker
+      providing a particularly obnoxious sender full name.
+      Reported by Qualys.
+
 
 Exim version 4.94
 -----------------
