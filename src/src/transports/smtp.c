@@ -4134,7 +4134,7 @@ if (!sx->ok)
 
         *message_defer = TRUE;
         }
-
+#ifdef TIOCOUTQ
       DEBUG(D_transport) if (sx->cctx.sock >= 0)
 	{
 	int n;
@@ -4142,7 +4142,7 @@ if (!sx->ok)
 	  debug_printf("%d bytes remain in socket output buffer\n", n);
 	}
       }
-
+#endif
     /* Otherwise, we have an I/O error or a timeout other than after MAIL or
     ".", or some other transportation error. We defer all addresses and yield
     DEFER, except for the case of failed add_headers expansion, or a transport
