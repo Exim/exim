@@ -1758,6 +1758,9 @@ f.running_in_test_harness =
 if (f.running_in_test_harness)
   debug_store = TRUE;
 
+/* Protect against abusive argv[0] */
+exim_len_fail_toolong(argv[0], PATH_MAX, "argv[0]");
+
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
 at the start of a program; however, it seems that some environments do not
 follow this. A "strange" locale can affect the formatting of timestamps, so we
@@ -4553,7 +4556,7 @@ if (test_retry_arg >= 0)
     printf("-brt needs a domain or address argument\n");
     exim_exit(EXIT_FAILURE);
     }
-  s1 = argv[test_retry_arg++];
+  s1 = exim_str_fail_toolong(argv[test_retry_arg++], EXIM_EMAILADDR_MAX, "-brt");
   s2 = NULL;
 
   /* If the first argument contains no @ and no . it might be a local user
@@ -4569,13 +4572,13 @@ if (test_retry_arg >= 0)
   /* There may be an optional second domain arg. */
 
   if (test_retry_arg < argc && Ustrchr(argv[test_retry_arg], '.') != NULL)
-    s2 = argv[test_retry_arg++];
+    s2 = exim_str_fail_toolong(argv[test_retry_arg++], EXIM_DOMAINNAME_MAX, "-brt 2nd");
 
   /* The final arg is an error name */
 
   if (test_retry_arg < argc)
     {
-    uschar *ss = argv[test_retry_arg];
+    uschar *ss = exim_str_fail_toolong(argv[test_retry_arg], EXIM_DRIVERNAME_MAX, "-brt 3rd");
     uschar *error =
       readconf_retry_error(ss, ss + Ustrlen(ss), &basic_errno, &more_errno);
     if (error != NULL)
@@ -4677,11 +4680,11 @@ if (list_options)
 	 Ustrcmp(argv[i], "macro") == 0 ||
 	 Ustrcmp(argv[i], "environment") == 0))
       {
-      fail |= !readconf_print(argv[i+1], argv[i], flag_n);
+      fail |= !readconf_print(exim_str_fail_toolong(argv[i+1], EXIM_DRIVERNAME_MAX, "-bP name"), argv[i], flag_n);
       i++;
       }
     else
-      fail = !readconf_print(argv[i], NULL, flag_n);
+      fail = !readconf_print(exim_str_fail_toolong(argv[i], EXIM_DRIVERNAME_MAX, "-bP item"), NULL, flag_n);
     }
   exim_exit(fail ? EXIT_FAILURE : EXIT_SUCCESS);
   }
@@ -4726,6 +4729,7 @@ if (msg_action_arg > 0 && msg_action != MSG_LOAD)
     pid_t pid;
     /*XXX This use of argv[i] for msg_id should really be tainted, but doing
     that runs into a later copy into the untainted global message_id[] */
+    /*XXX Do we need a length limit check here? */
     if (i == argc - 1)
       (void)deliver_message(argv[i], forced_delivery, deliver_give_up);
     else if ((pid = exim_fork(US"cmdline-delivery")) == 0)
@@ -4931,7 +4935,7 @@ if (test_rewrite_arg >= 0)
     printf("-brw needs an address argument\n");
     exim_exit(EXIT_FAILURE);
     }
-  rewrite_test(argv[test_rewrite_arg]);
+  rewrite_test(exim_str_fail_toolong(argv[test_rewrite_arg], EXIM_EMAILADDR_MAX, "-brw"));
   exim_exit(EXIT_SUCCESS);
   }
 
@@ -5024,7 +5028,7 @@ if (verify_address_mode || f.address_test_mode)
     while (recipients_arg < argc)
       {
       /* Supplied addresses are tainted since they come from a user */
-      uschar * s = string_copy_taint(argv[recipients_arg++], TRUE);
+      uschar * s = string_copy_taint(exim_str_fail_toolong(argv[recipients_arg++], EXIM_DISPLAYMAIL_MAX, "address verification"), TRUE);
       while (*s)
         {
         BOOL finished = FALSE;
@@ -5041,7 +5045,7 @@ if (verify_address_mode || f.address_test_mode)
     {
     uschar * s = get_stdinput(NULL, NULL);
     if (!s) break;
-    test_address(string_copy_taint(s, TRUE), flags, &exit_value);
+    test_address(string_copy_taint(exim_str_fail_toolong(s, EXIM_DISPLAYMAIL_MAX, "address verification (stdin)"), TRUE), flags, &exit_value);
     }
 
   route_tidyup();
@@ -5058,10 +5062,10 @@ if (expansion_test)
   dns_init(FALSE, FALSE, FALSE);
   if (msg_action_arg > 0 && msg_action == MSG_LOAD)
     {
-    uschar spoolname[256];  /* Not big_buffer; used in spool_read_header() */
+    uschar spoolname[SPOOL_NAME_LENGTH];  /* Not big_buffer; used in spool_read_header() */
     if (!f.admin_user)
       exim_fail("exim: permission denied\n");
-    message_id = argv[msg_action_arg];
+    message_id = exim_str_fail_toolong(argv[msg_action_arg], MESSAGE_ID_LENGTH, "message-id");
     (void)string_format(spoolname, sizeof(spoolname), "%s-H", message_id);
     if ((deliver_datafile = spool_open_datafile(message_id)) < 0)
       printf ("Failed to load message datafile %s\n", message_id);
@@ -5101,7 +5105,7 @@ if (expansion_test)
 
   if (recipients_arg < argc)
     while (recipients_arg < argc)
-      expansion_test_line(argv[recipients_arg++]);
+      expansion_test_line(exim_str_fail_toolong(argv[recipients_arg++], EXIM_EMAILADDR_MAX, "recipient"));
 
   /* Read stdin */
 
@@ -5544,7 +5548,9 @@ while (more)
       {
       int start, end, domain;
       uschar * errmess;
-      uschar * s = string_copy_taint(list[i], TRUE);
+      /* There can be multiple addresses, so EXIM_DISPLAYMAIL_MAX (tuned for 1) is too short.
+       * We'll still want to cap it to something, just in case. */
+      uschar * s = string_copy_taint(exim_str_fail_toolong(list[i], BIG_BUFFER_SIZE, "address argument"), TRUE);
 
       /* Loop for each comma-separated address */
 
