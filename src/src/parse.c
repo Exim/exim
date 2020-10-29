@@ -808,11 +808,11 @@ while (isspace(endptr[-1])) endptr--;
 *end = endptr - US mailbox;
 
 /* Although this code has no limitation on the length of address extracted,
-other parts of Exim may have limits, and in any case, RFC 2821 limits local
-parts to 64 and domains to 255, so we do a check here, giving an error if the
-address is ridiculously long. */
+other parts of Exim may have limits, and in any case, RFC 5321 limits email
+addresses to 256, so we do a check here, giving an error if the address is
+ridiculously long. */
 
-if (*end - *start > ADDRESS_MAXLENGTH)
+if (*end - *start > EXIM_EMAILADDR_MAX)
   {
   *errorptr = string_sprintf("address is ridiculously long: %.64s...", yield);
   return NULL;

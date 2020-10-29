@@ -72,7 +72,7 @@ options_from_list(optionlist * opts, unsigned nopt,
   const uschar * section, uschar * group)
 {
 const uschar * s;
-uschar buf[64];
+uschar buf[EXIM_DRIVERNAME_MAX];
 
 /* The 'previously-defined-substring' rule for macros in config file
 lines is done thus for these builtin macros: we know that the table

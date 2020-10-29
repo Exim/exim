@@ -179,12 +179,6 @@ written on the spool, it gets read into big_buffer. */
 
 #define LOCAL_SCAN_MAX_RETURN (BIG_BUFFER_SIZE - 24)
 
-/* A limit to the length of an address. RFC 2821 limits the local part to 64
-and the domain to 255, so this should be adequate, taking into account quotings
-etc. */
-
-#define ADDRESS_MAXLENGTH 512
-
 /* The length of the base names of spool files, which consist of an internal
 message id with a trailing "-H" or "-D" added. */
 
