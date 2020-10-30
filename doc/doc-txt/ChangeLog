@@ -288,6 +288,12 @@ PP/09 Fix security issue with too many recipients on a message (to remove a
 PP/10 Fix security issue in SMTP verb option parsing
       Fixes CVE-2020-EXOPT reported by Qualys.
 
+PP/11 Fix security issue in BDAT state confusion.
+      Ensure we reset known-good where we know we need to not be reading BDAT
+      data, as a general case fix, and move the places where we switch to BDAT
+      mode until after various protocol state checks.
+      Fixes CVE-2020-BDATA reported by Qualys.
+
 
 Exim version 4.94
 -----------------
