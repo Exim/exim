@@ -167,6 +167,8 @@ HS/01 Enforce absolute PID file path name.
 
 HS/02 Handle SIGINT as we handle SIGTERM: terminate the Exim process.
 
+PP/01 Add a too-many-bad-recipients guard to the default config's RCPT ACL.
+
 
 Exim version 4.94
 -----------------
