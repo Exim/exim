@@ -196,6 +196,9 @@ PP/09 Fix security issue with too many recipients on a message (to remove a
       or if local additions add to the recipient list).
       Fixes CVE-2020-RCPTL reported by Qualys.
 
+PP/10 Fix security issue in SMTP verb option parsing
+      Fixes CVE-2020-EXOPT reported by Qualys.
+
 
 Exim version 4.94
 -----------------
