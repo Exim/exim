@@ -1093,7 +1093,6 @@ uschar *password = NULL;
 uschar *local_servers = NULL;
 uschar *server;
 const uschar *list;
-uschar buffer[512];
 
 while (isspace(*url)) url++;
 
@@ -1254,7 +1253,7 @@ if (!eldap_default_servers && !local_servers  || p[3] != '/')
 /* Loop through the default servers until OK or FAIL. Use local_servers list
  * if defined in the lookup, otherwise use the global default list */
 list = !local_servers ? eldap_default_servers : local_servers;
-while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+while ((server = string_nextinlist(&list, &sep, NULL, 0)))
   {
   int rc;
   int port = 0;

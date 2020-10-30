@@ -102,6 +102,11 @@ JH/22 Bug 2265: Force SNI usage for smtp transport DANE'd connections, to be
 JH/23 Logging: with the +tls_sni log_selector, do not wrap the received SNI
       in quotes.
 
+JH/26 Bug 2646: fix a memory usage issue in ldap lookups.  Previously, when more
+      than one server was defined and depending on the platform memory layout
+      details, an internal consistency trap could be hit while walking the list
+      of servers.
+
 
 Exim version 4.94
 -----------------
