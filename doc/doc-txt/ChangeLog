@@ -273,8 +273,10 @@ PP/05 Fix security issue CVE-2020-PFPSN and guard against cmdline invoker
       providing a particularly obnoxious sender full name.
       Reported by Qualys.
 
-pp/06 Fix CVE-2020-28016 (PFPZA): Heap out-of-bounds write in parse_fix_phrase()
+PP/06 Fix CVE-2020-28016 (PFPZA): Heap out-of-bounds write in parse_fix_phrase()
 
+PP/07 Refuse to allocate too little memory, block negative/zero allocations.
+      Security guard.
 
 
 Exim version 4.94

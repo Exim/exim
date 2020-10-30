@@ -268,6 +268,17 @@ store_get_3(int size, BOOL tainted, const char *func, int linenumber)
 {
 int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 
+/* Ensure we've been asked to allocate memory.
+A negative size is a sign of a security problem.
+A zero size is also suspect (but we might have to allow it if we find our API
+expects it in some places). */
+if (size < 1)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory allocation requested (%d bytes) at %s %d",
+            size, func, linenumber);
+  }
+
 /* Round up the size to a multiple of the alignment. Although this looks a
 messy statement, because "alignment" is a constant expression, the compiler can
 do a reasonable job of optimizing, especially if the value of "alignment" is a
