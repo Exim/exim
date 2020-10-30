@@ -18,7 +18,7 @@ r0:
 
 r1:
   driver = redirect
-  data = ${lookup ldap user="cn=xxx,o=yyy,c=UK" pass="secret" \
+  data = ${lookup ldap {USER="cn=xxx,o=yyy,c=UK" PASS="secret" \
          ldap:///o=zzz,c=UK,?sn?sub?(cn=foo)}}
 
 

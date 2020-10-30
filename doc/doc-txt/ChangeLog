@@ -121,9 +121,14 @@ PP/01 Fix default prime selection to be consistent.
       execution flows will use the same DH primes (currently
       exim.dev.20160529.3).
 
-JH/25 OpenSSL: Fix back-compatibiility behaviour surrounding tls_certificates
+JH/25 OpenSSL: Fix back-compatibility behaviour surrounding tls_certificates
       option in smtp transport, to match the documentation.  Previously
       verification was not being done in some cases where it should have been.
+
+JH/26 Bug 2646: fix a memory usage issue in ldap lookups.  Previously, when more
+      than one server was defined and depending on the platform memory layout
+      details, an internal consistency trap could be hit while walking the list
+      of servers.
 
 
 Exim version 4.94
