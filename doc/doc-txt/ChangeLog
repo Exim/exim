@@ -278,6 +278,8 @@ PP/06 Fix CVE-2020-28016 (PFPZA): Heap out-of-bounds write in parse_fix_phrase()
 PP/07 Refuse to allocate too little memory, block negative/zero allocations.
       Security guard.
 
+PP/08 Change default for recipients_max from unlimited to 50,000.
+
 
 Exim version 4.94
 -----------------
