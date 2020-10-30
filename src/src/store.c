@@ -390,6 +390,13 @@ int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 int inc = newsize - oldsize;
 int rounded_oldsize = oldsize;
 
+if (newsize < 0)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory extension requested (%d -> %d bytes) at %s %d",
+            oldsize, newsize, func, linenumber);
+  }
+
 /* Check that the block being extended was already of the required taint status;
 refuse to extend if not. */
 
