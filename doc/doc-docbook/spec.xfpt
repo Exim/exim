@@ -17200,7 +17200,7 @@ or if the message was submitted locally (not using TCP/IP), and the &%-bnq%&
 option was not set.
 
 
-.option recipients_max main integer 0
+.option recipients_max main integer 50000
 .cindex "limit" "number of recipients"
 .cindex "recipient" "maximum number"
 If this option is set greater than zero, it specifies the maximum number of
