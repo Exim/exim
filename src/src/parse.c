@@ -984,6 +984,11 @@ if (i < len)
 
 /* No non-printers; use the RFC 822 quoting rules */
 
+if (!len)
+  {
+  return string_copy_taint_function("", is_tainted(phrase));
+  }
+
 buffer = store_get(len*4, is_tainted(phrase));
 
 s = phrase;
