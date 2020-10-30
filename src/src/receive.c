@@ -486,11 +486,18 @@ Returns:      nothing
 void
 receive_add_recipient(uschar *recipient, int pno)
 {
+/* XXX This is a math limit; we should consider a performance/sanity limit too. */
+const int safe_recipients_limit = INT_MAX / sizeof(recipient_item) - 1;
+
 if (recipients_count >= recipients_list_max)
   {
   recipient_item *oldlist = recipients_list;
   int oldmax = recipients_list_max;
   recipients_list_max = recipients_list_max ? 2*recipients_list_max : 50;
+  if ((recipients_list_max >= safe_recipients_limit) || (recipients_list_max < 0))
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "Too many recipients needed: %d not satisfiable", recipients_list_max);
+    }
   recipients_list = store_get(recipients_list_max * sizeof(recipient_item), FALSE);
   if (oldlist)
     memcpy(recipients_list, oldlist, oldmax * sizeof(recipient_item));

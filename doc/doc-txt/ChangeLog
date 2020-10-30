@@ -280,6 +280,11 @@ PP/07 Refuse to allocate too little memory, block negative/zero allocations.
 
 PP/08 Change default for recipients_max from unlimited to 50,000.
 
+PP/09 Fix security issue with too many recipients on a message (to remove a
+      known security problem if someone does set recipients_max to unlimited,
+      or if local additions add to the recipient list).
+      Fixes CVE-2020-RCPTL reported by Qualys.
+
 
 Exim version 4.94
 -----------------
