@@ -624,9 +624,7 @@ for(;;)
   if (chunking_data_left > 0)
     return lwr_receive_getc(chunking_data_left--);
 
-  receive_getc = lwr_receive_getc;
-  receive_getbuf = lwr_receive_getbuf;
-  receive_ungetc = lwr_receive_ungetc;
+  bdat_pop_receive_functions();
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
   dkim_collect_input = 0;
@@ -730,9 +728,7 @@ next_cmd:
 	  goto repeat_until_rset;
 	  }
 
-      receive_getc = bdat_getc;
-      receive_getbuf = bdat_getbuf;	/* r~getbuf is never actually used */
-      receive_ungetc = bdat_ungetc;
+      bdat_push_receive_functions();
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
 #endif
@@ -765,9 +761,7 @@ while (chunking_data_left)
   if (!bdat_getbuf(&n)) break;
   }
 
-receive_getc = lwr_receive_getc;
-receive_getbuf = lwr_receive_getbuf;
-receive_ungetc = lwr_receive_ungetc;
+bdat_pop_receive_functions();
 
 if (chunking_state != CHUNKING_LAST)
   {
@@ -777,7 +771,35 @@ if (chunking_state != CHUNKING_LAST)
 }
 
 
+void
+bdat_push_receive_functions(void)
+{
+/* push the current receive_* function on the "stack", and
+replace them by bdat_getc(), which in turn will use the lwr_receive_*
+functions to do the dirty work. */
+if (lwr_receive_getc == NULL)
+  {
+  lwr_receive_getc = receive_getc;
+  lwr_receive_getbuf = receive_getbuf;
+  lwr_receive_ungetc = receive_ungetc;
+  }
+else
+  {
+  DEBUG(D_receive) debug_printf("chunking double-push receive functions\n");
+  }
 
+receive_getc = bdat_getc;
+receive_ungetc = bdat_ungetc;
+}
+
+void
+bdat_pop_receive_functions(void)
+{
+receive_getc = lwr_receive_getc;
+receive_getbuf = lwr_receive_getbuf;
+receive_ungetc = lwr_receive_ungetc;
+lwr_receive_getc = lwr_receive_getbuf = lwr_receive_ungetc = NULL;
+}
 
 /*************************************************
 *          SMTP version of ungetc()              *
@@ -2565,6 +2587,7 @@ receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;
 receive_smtp_buffered = smtp_buffered;
+lwr_receive_getc = lwr_receive_getbuf = lwr_receive_ungetc = NULL;
 smtp_inptr = smtp_inend = smtp_inbuffer;
 smtp_had_eof = smtp_had_error = 0;
 
@@ -3946,6 +3969,14 @@ cmd_list[CMD_LIST_EHLO].is_mail_cmd = TRUE;
 cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = TRUE;
 #endif
 
+if (lwr_receive_getc != NULL)
+  {
+  /* This should have already happened, but if we've gotten confused,
+  force a reset here. */
+  DEBUG(D_receive) debug_printf("WARNING: smtp_setup_msg had to restore receive functions to lowers\n");
+  bdat_pop_receive_functions();
+  }
+
 /* Set the local signal handler for SIGTERM - it tries to end off tidily */
 
 had_command_sigterm = 0;
@@ -5266,16 +5297,7 @@ while (done <= 0)
       DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
 				    (int)chunking_state, chunking_data_left);
 
-      /* push the current receive_* function on the "stack", and
-      replace them by bdat_getc(), which in turn will use the lwr_receive_*
-      functions to do the dirty work. */
-      lwr_receive_getc = receive_getc;
-      lwr_receive_getbuf = receive_getbuf;
-      lwr_receive_ungetc = receive_ungetc;
-
-      receive_getc = bdat_getc;
-      receive_ungetc = bdat_ungetc;
-
+      f.bdat_readers_wanted = TRUE;
       f.dot_ends = FALSE;
 
       goto DATA_BDAT;
@@ -5284,6 +5306,7 @@ while (done <= 0)
     case DATA_CMD:
       HAD(SCH_DATA);
       f.dot_ends = TRUE;
+      f.bdat_readers_wanted = FALSE
 
     DATA_BDAT:		/* Common code for DATA and BDAT */
 #ifndef DISABLE_PIPE_CONNECT
@@ -5312,7 +5335,10 @@ while (done <= 0)
 	    : US"valid RCPT command must precede BDAT");
 
 	if (chunking_state > CHUNKING_OFFERED)
+	  {
+	  bdat_push_receive_functions();
 	  bdat_flush_data();
+	  }
 	break;
 	}
 
@@ -5350,6 +5376,9 @@ while (done <= 0)
 	    break;
 	    }
 	  }
+
+	if (f.bdat_readers_wanted)
+	  bdat_push_receive_functions();
 
 	if (user_msg)
 	  smtp_user_msg(US"354", user_msg);
