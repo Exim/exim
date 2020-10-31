@@ -958,11 +958,10 @@ if (!(tctx->options & topt_no_headers))
 
   if (tctx->options & topt_add_return_path)
     {
-    uschar buffer[EXIM_EMAILADDR_MAX + 20];
-    int n = string_format(CS buffer, sizeof(buffer),
-                          "Return-path: <%.*s>\n",
-                          EXIM_EMAILADDR_MAX, return_path);
-    if (!write_chunk(tctx, buffer, n)) goto bad;
+    int n;
+    uschar * s = string_sprintf("Return-path: <%.*s>\n%n",
+                          EXIM_EMAILADDR_MAX, return_path, &n);
+    if (!write_chunk(tctx, s, n)) goto bad;
     }
 
   /* Add envelope-to: if requested */

@@ -768,7 +768,7 @@ exim_len_fail_toolong(int itemlen, int maxlen, const char *description)
 if (itemlen <= maxlen)
   return;
 fprintf(stderr, "exim: length limit exceeded (%d > %d) for: %s\n",
-        len, maxlen, description)
+        itemlen, maxlen, description);
 exit(EXIT_FAILURE);
 }
 
@@ -1554,10 +1554,11 @@ Arguments:
 */
 
 static void
-expansion_test_line(uschar * line)
+expansion_test_line(const uschar * line)
 {
 int len;
 BOOL dummy_macexp;
+uschar * s;
 
 Ustrncpy(big_buffer, line, big_buffer_size);
 big_buffer[big_buffer_size-1] = '\0';
@@ -1571,7 +1572,7 @@ if (isupper(big_buffer[0]))
     printf("Defined macro '%s'\n", mlast->name);
   }
 else
-  if ((line = expand_string(big_buffer))) printf("%s\n", CS line);
+  if ((s = expand_string(big_buffer))) printf("%s\n", CS s);
   else printf("Failed: %s\n", expand_string_message);
 }
 
@@ -1654,10 +1655,10 @@ uschar *cmdline_syslog_name = NULL;
 uschar *start_queue_run_id = NULL;
 uschar *stop_queue_run_id = NULL;
 uschar *expansion_test_message = NULL;
-uschar *ftest_domain = NULL;
-uschar *ftest_localpart = NULL;
-uschar *ftest_prefix = NULL;
-uschar *ftest_suffix = NULL;
+const uschar *ftest_domain = NULL;
+const uschar *ftest_localpart = NULL;
+const uschar *ftest_prefix = NULL;
+const uschar *ftest_suffix = NULL;
 uschar *log_oneline = NULL;
 uschar *malware_test_file = NULL;
 uschar *real_sender_address;
@@ -1751,7 +1752,7 @@ if (f.running_in_test_harness)
   debug_store = TRUE;
 
 /* Protect against abusive argv[0] */
-exim_len_fail_toolong(argv[0], PATH_MAX, "argv[0]");
+exim_str_fail_toolong(argv[0], PATH_MAX, "argv[0]");
 
 /* The C standard says that the equivalent of setlocale(LC_ALL, "C") is obeyed
 at the start of a program; however, it seems that some environments do not
@@ -3235,7 +3236,7 @@ on the second character (the one after '-'), to save some effort. */
 
       case 'X':
 	if (*argrest) badarg = TRUE;
-	else override_local_interfaces = string_copy_taint(exim_str_fail_toolong(argv[++i], 1024, "-oX", TRUE);
+	else override_local_interfaces = string_copy_taint(exim_str_fail_toolong(argv[++i], 1024, "-oX"), TRUE);
 	break;
 
       /* Unknown -o argument */
@@ -3365,7 +3366,10 @@ on the second character (the one after '-'), to save some effort. */
 
 
     case 'R':   /* Synonymous with -qR... */
-    receiving_message = FALSE;
+      {
+      const uschar *tainted_selectstr;
+
+      receiving_message = FALSE;
 
     /* -Rf:   As -R (below) but force all deliveries,
        -Rff:  Ditto, but also thaw all frozen messages,
@@ -3376,29 +3380,29 @@ on the second character (the one after '-'), to save some effort. */
     in all cases provided there are no further characters in this
     argument. */
 
-    if (*argrest)
-      for (int i = 0; i < nelem(rsopts); i++)
-        if (Ustrcmp(argrest, rsopts[i]) == 0)
-          {
-          if (i != 2) f.queue_run_force = TRUE;
-          if (i >= 2) f.deliver_selectstring_regex = TRUE;
-          if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
-          argrest += Ustrlen(rsopts[i]);
-          }
+      if (*argrest)
+	for (int i = 0; i < nelem(rsopts); i++)
+	  if (Ustrcmp(argrest, rsopts[i]) == 0)
+	    {
+	    if (i != 2) f.queue_run_force = TRUE;
+	    if (i >= 2) f.deliver_selectstring_regex = TRUE;
+	    if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
+	    argrest += Ustrlen(rsopts[i]);
+	    }
 
     /* -R: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
-    /* Avoid attacks from people providing very long strings, and do so before
-    we make copies. */
-    const char *tainted_selectstr;
-    if (*argrest)
-      tainted_selectstr = argrest;
-    else if (i+1 < argc)
-      tainted_selectstr = argv[++i];
-    else
-      exim_fail("exim: string expected after -R\n");
-    deliver_selectstring = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"), TRUE);
+      /* Avoid attacks from people providing very long strings, and do so before
+      we make copies. */
+      if (*argrest)
+	tainted_selectstr = argrest;
+      else if (i+1 < argc)
+	tainted_selectstr = argv[++i];
+      else
+	exim_fail("exim: string expected after -R\n");
+      deliver_selectstring = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-R"), TRUE);
+      }
     break;
 
     /* -r: an obsolete synonym for -f (see above) */
@@ -3407,7 +3411,10 @@ on the second character (the one after '-'), to save some effort. */
     /* -S: Like -R but works on sender. */
 
     case 'S':   /* Synonymous with -qS... */
-    receiving_message = FALSE;
+      {
+      const uschar *tainted_selectstr;
+
+      receiving_message = FALSE;
 
     /* -Sf:   As -S (below) but force all deliveries,
        -Sff:  Ditto, but also thaw all frozen messages,
@@ -3418,27 +3425,27 @@ on the second character (the one after '-'), to save some effort. */
     in all cases provided there are no further characters in this
     argument. */
 
-    if (*argrest)
-      for (int i = 0; i < nelem(rsopts); i++)
-        if (Ustrcmp(argrest, rsopts[i]) == 0)
-          {
-          if (i != 2) f.queue_run_force = TRUE;
-          if (i >= 2) f.deliver_selectstring_sender_regex = TRUE;
-          if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
-          argrest += Ustrlen(rsopts[i]);
-          }
+      if (*argrest)
+	for (int i = 0; i < nelem(rsopts); i++)
+	  if (Ustrcmp(argrest, rsopts[i]) == 0)
+	    {
+	    if (i != 2) f.queue_run_force = TRUE;
+	    if (i >= 2) f.deliver_selectstring_sender_regex = TRUE;
+	    if (i == 1 || i == 4) f.deliver_force_thaw = TRUE;
+	    argrest += Ustrlen(rsopts[i]);
+	    }
 
     /* -S: Set string to match in addresses for forced queue run to
     pick out particular messages. */
 
-    const char *tainted_selectstr;
-    if (*argrest)
-      tainted_selectstr = argrest;
-    else if (i+1 < argc)
-      tainted_selectstr = argv[++i];
-    else
-      exim_fail("exim: string expected after -S\n");
-    deliver_selectstring_sender = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-S"), TRUE);
+      if (*argrest)
+	tainted_selectstr = argrest;
+      else if (i+1 < argc)
+	tainted_selectstr = argv[++i];
+      else
+	exim_fail("exim: string expected after -S\n");
+      deliver_selectstring_sender = string_copy_taint(exim_str_fail_toolong(tainted_selectstr, EXIM_EMAILADDR_MAX, "-S"), TRUE);
+      }
     break;
 
     /* -Tqt is an option that is exclusively for use by the testing suite.
@@ -4500,7 +4507,7 @@ if (test_retry_arg >= 0)
   retry_config *yield;
   int basic_errno = 0;
   int more_errno = 0;
-  uschar *s1, *s2;
+  const uschar *s1, *s2;
 
   if (test_retry_arg >= argc)
     {
@@ -4529,7 +4536,7 @@ if (test_retry_arg >= 0)
 
   if (test_retry_arg < argc)
     {
-    uschar *ss = exim_str_fail_toolong(argv[test_retry_arg], EXIM_DRIVERNAME_MAX, "-brt 3rd");
+    const uschar *ss = exim_str_fail_toolong(argv[test_retry_arg], EXIM_DRIVERNAME_MAX, "-brt 3rd");
     uschar *error =
       readconf_retry_error(ss, ss + Ustrlen(ss), &basic_errno, &more_errno);
     if (error != NULL)
@@ -5015,11 +5022,15 @@ if (expansion_test)
   dns_init(FALSE, FALSE, FALSE);
   if (msg_action_arg > 0 && msg_action == MSG_LOAD)
     {
-    uschar spoolname[SPOOL_NAME_LENGTH];  /* Not big_buffer; used in spool_read_header() */
+    uschar * spoolname;
     if (!f.admin_user)
       exim_fail("exim: permission denied\n");
-    message_id = exim_str_fail_toolong(argv[msg_action_arg], MESSAGE_ID_LENGTH, "message-id");
-    (void)string_format(spoolname, sizeof(spoolname), "%s-H", message_id);
+    message_id = US exim_str_fail_toolong(argv[msg_action_arg], MESSAGE_ID_LENGTH, "message-id");
+    /* Checking the length of the ID is sufficient to validate it.
+    Get an untainted version so file opens can be done. */
+    message_id = string_copy_taint(message_id, FALSE);
+
+    spoolname = string_sprintf("%s-H", message_id);
     if ((deliver_datafile = spool_open_datafile(message_id)) < 0)
       printf ("Failed to load message datafile %s\n", message_id);
     if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
@@ -5640,10 +5651,10 @@ while (more)
     {
     deliver_domain = ftest_domain ? ftest_domain : qualify_domain_recipient;
     deliver_domain_orig = deliver_domain;
-    deliver_localpart = ftest_localpart ? ftest_localpart : originator_login;
+    deliver_localpart = ftest_localpart ? US ftest_localpart : originator_login;
     deliver_localpart_orig = deliver_localpart;
-    deliver_localpart_prefix = ftest_prefix;
-    deliver_localpart_suffix = ftest_suffix;
+    deliver_localpart_prefix = US ftest_prefix;
+    deliver_localpart_suffix = US ftest_suffix;
     deliver_home = originator_home;
 
     if (!return_path)

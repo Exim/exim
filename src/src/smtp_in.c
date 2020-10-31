@@ -593,6 +593,11 @@ if (n > 0)
 }
 
 
+/* Forward declarations */
+static void bdat_push_receive_functions(void);
+static void bdat_pop_receive_functions(void);
+
+
 /* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
 previous BDAT chunk and getting new ones when we run out.  Uses the
 underlying smtp_getc or tls_getc both for that and for getting the
@@ -771,7 +776,7 @@ if (chunking_state != CHUNKING_LAST)
 }
 
 
-void
+static void
 bdat_push_receive_functions(void)
 {
 /* push the current receive_* function on the "stack", and
@@ -792,13 +797,15 @@ receive_getc = bdat_getc;
 receive_ungetc = bdat_ungetc;
 }
 
-void
+static void
 bdat_pop_receive_functions(void)
 {
 receive_getc = lwr_receive_getc;
 receive_getbuf = lwr_receive_getbuf;
 receive_ungetc = lwr_receive_ungetc;
-lwr_receive_getc = lwr_receive_getbuf = lwr_receive_ungetc = NULL;
+lwr_receive_getc = NULL;
+lwr_receive_getbuf = NULL;
+lwr_receive_ungetc = NULL;
 }
 
 /*************************************************
@@ -2266,9 +2273,11 @@ while (done <= 0)
 
       /* Apply SMTP rewrite */
 
-      raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-	rewrite_one(smtp_cmd_data, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
-	  US"", global_rewrite_rules) : smtp_cmd_data;
+      raw_sender = rewrite_existflags & rewrite_smtp
+	/* deconst ok as smtp_cmd_data was not const */
+        ? US rewrite_one(smtp_cmd_data, rewrite_smtp|rewrite_smtp_sender, NULL,
+		      FALSE, US"", global_rewrite_rules)
+	: smtp_cmd_data;
 
       /* Extract the address; the TRUE flag allows <> as valid */
 
@@ -2288,7 +2297,8 @@ while (done <= 0)
          && sender_address[0] != 0 && sender_address[0] != '@')
 	if (f.allow_unqualified_sender)
 	  {
-	  sender_address = rewrite_address_qualify(sender_address, FALSE);
+	  /* deconst ok as sender_address was not const */
+	  sender_address = US rewrite_address_qualify(sender_address, FALSE);
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted "
 	    "and rewritten\n", raw_sender);
 	  }
@@ -2327,7 +2337,8 @@ while (done <= 0)
       recipient address */
 
       recipient = rewrite_existflags & rewrite_smtp
-	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	/* deconst ok as smtp_cmd_data was not const */
+	? US rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 		      global_rewrite_rules)
 	: smtp_cmd_data;
 
@@ -2346,7 +2357,8 @@ while (done <= 0)
 	  {
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
 	    recipient);
-	  recipient = rewrite_address_qualify(recipient, TRUE);
+	  /* deconst ok as recipient was not const */
+	  recipient = US rewrite_address_qualify(recipient, TRUE);
 	  }
 	/* The function moan_smtp_batch() does not return. */
 	else
@@ -2587,7 +2599,9 @@ receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;
 receive_smtp_buffered = smtp_buffered;
-lwr_receive_getc = lwr_receive_getbuf = lwr_receive_ungetc = NULL;
+lwr_receive_getc = NULL;
+lwr_receive_getbuf = NULL;
+lwr_receive_ungetc = NULL;
 smtp_inptr = smtp_inend = smtp_inbuffer;
 smtp_had_eof = smtp_had_error = 0;
 
@@ -3858,7 +3872,8 @@ if (f.allow_unqualified_recipient || strcmpic(*recipient, US"postmaster") == 0)
   DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
     *recipient);
   rd = Ustrlen(recipient) + 1;
-  *recipient = rewrite_address_qualify(*recipient, TRUE);
+  /* deconst ok as *recipient was not const */
+  *recipient = US rewrite_address_qualify(*recipient, TRUE);
   return rd;
   }
 smtp_printf("501 %s: recipient address must contain a domain\r\n", FALSE,
@@ -4865,7 +4880,8 @@ while (done <= 0)
       TRUE flag allows "<>" as a sender address. */
 
       raw_sender = rewrite_existflags & rewrite_smtp
-	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	/* deconst ok as smtp_cmd_data was not const */
+	? US rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 		      global_rewrite_rules)
 	: smtp_cmd_data;
 
@@ -4927,7 +4943,8 @@ while (done <= 0)
 	if (f.allow_unqualified_sender)
 	  {
 	  sender_domain = Ustrlen(sender_address) + 1;
-	  sender_address = rewrite_address_qualify(sender_address, FALSE);
+	  /* deconst ok as sender_address was not const */
+	  sender_address = US rewrite_address_qualify(sender_address, FALSE);
 	  DEBUG(D_receive) debug_printf("unqualified address %s accepted\n",
 	    raw_sender);
 	  }
@@ -5119,7 +5136,8 @@ while (done <= 0)
       as a recipient address */
 
       recipient = rewrite_existflags & rewrite_smtp
-	? rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
+	/* deconst ok as smtp_cmd_data was not const */
+	? US rewrite_one(smtp_cmd_data, rewrite_smtp, NULL, FALSE, US"",
 	    global_rewrite_rules)
 	: smtp_cmd_data;
 
@@ -5306,7 +5324,7 @@ while (done <= 0)
     case DATA_CMD:
       HAD(SCH_DATA);
       f.dot_ends = TRUE;
-      f.bdat_readers_wanted = FALSE
+      f.bdat_readers_wanted = FALSE;
 
     DATA_BDAT:		/* Common code for DATA and BDAT */
 #ifndef DISABLE_PIPE_CONNECT
@@ -5377,15 +5395,15 @@ while (done <= 0)
 	    }
 	  }
 
-	if (f.bdat_readers_wanted)
-	  bdat_push_receive_functions();
-
 	if (user_msg)
 	  smtp_user_msg(US"354", user_msg);
 	else
 	  smtp_printf(
 	    "354 Enter message, ending with \".\" on a line by itself\r\n", FALSE);
 	}
+
+      if (f.bdat_readers_wanted)
+	bdat_push_receive_functions();
 
 #ifdef TCP_QUICKACK
       if (smtp_in)	/* all ACKs needed to ramp window up for bulk data */

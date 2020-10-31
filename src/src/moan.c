@@ -86,7 +86,8 @@ if (h || message_id)
   fprintf(fp, "References:");
   if (h)
     {
-    uschar * s, * id, * error;
+    const uschar * s;
+    uschar * id, * error;
     uschar * referenced_ids[12];
     int reference_count = 0;
 
