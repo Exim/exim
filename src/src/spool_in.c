@@ -253,7 +253,7 @@ sender_helo_name = NULL;
 sender_host_address = NULL;
 sender_host_name = NULL;
 sender_host_port = 0;
-sender_host_authenticated = NULL;
+sender_host_authenticated = sender_host_auth_pubname = NULL;
 sender_ident = NULL;
 f.sender_local = FALSE;
 f.sender_set_untrusted = FALSE;
@@ -580,6 +580,8 @@ for (;;)
       host_lookup_deferred = TRUE;
     else if (Ustrcmp(p, "ost_lookup_failed") == 0)
       host_lookup_failed = TRUE;
+    else if (Ustrncmp(p, "ost_auth_pubname", 16) == 0)
+      sender_host_auth_pubname = string_copy_taint(var + 18, tainted);
     else if (Ustrncmp(p, "ost_auth", 8) == 0)
       sender_host_authenticated = string_copy_taint(var + 10, tainted);
     else if (Ustrncmp(p, "ost_name", 8) == 0)

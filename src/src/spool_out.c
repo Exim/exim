@@ -174,9 +174,11 @@ if (sender_host_address)
   fprintf(fp, "-host_address %s.%d\n", sender_host_address, sender_host_port);
   if (sender_host_name)
     spool_var_write(fp, US"host_name", sender_host_name);
-  if (sender_host_authenticated)
-    spool_var_write(fp, US"host_auth", sender_host_authenticated);
   }
+if (sender_host_authenticated)
+  spool_var_write(fp, US"host_auth", sender_host_authenticated);
+if (sender_host_auth_pubname)
+  spool_var_write(fp, US"host_auth_pubname", sender_host_auth_pubname);
 
 /* Also about the interface a message came in on */
 
