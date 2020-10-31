@@ -205,6 +205,7 @@ uschar *sender_address         = NULL;
 uschar *sender_fullhost        = NULL;
 uschar *sender_helo_name       = NULL;
 uschar *sender_host_address    = NULL;
+uschar *sender_host_auth_pubname = NULL;
 uschar *sender_host_authenticated = NULL;
 uschar *sender_host_name       = NULL;
 int     sender_host_port       = 0;

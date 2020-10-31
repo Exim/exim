@@ -40,6 +40,7 @@ begin routers
 d1:
   driver = accept
   headers_add = aid: $authenticated_id
+  headers_add = rtr_authres: ${authresults {$primary_hostname}}
   retry_use_local_part
   transport = t1
 

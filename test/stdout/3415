@@ -159,6 +159,7 @@ ddddddddd 0
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
+-host_auth_pubname PLAIN
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
@@ -186,6 +187,7 @@ ddddddddd 0
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
+-host_auth_pubname PLAIN
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
@@ -211,6 +213,7 @@ ddddddddd 0
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
+-host_auth_pubname PLAIN
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
@@ -236,6 +239,7 @@ ddddddddd 0
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
+-host_auth_pubname PLAIN
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
@@ -261,6 +265,7 @@ ddddddddd 0
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
+-host_auth_pubname PLAIN
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0

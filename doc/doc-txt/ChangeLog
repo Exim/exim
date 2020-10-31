@@ -107,6 +107,10 @@ JH/26 Bug 2646: fix a memory usage issue in ldap lookups.  Previously, when more
       details, an internal consistency trap could be hit while walking the list
       of servers.
 
+JH/27 Bug 2648: fix the passing of an authenticator public-name through spool
+      files.  The value is used by the authresults expansion item.  Previously
+      if this was used in a router or transport, a crash could result.
+
 
 Exim version 4.94
 -----------------

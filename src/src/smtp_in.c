@@ -5935,12 +5935,14 @@ if (!sender_host_authenticated)
 
 g = string_append(g, 2, US";\n\tauth=pass (", sender_host_auth_pubname);
 
-if (Ustrcmp(sender_host_auth_pubname, "tls") != 0)
-  g = string_append(g, 2, US") smtp.auth=", authenticated_id);
-else if (authenticated_id)
-  g = string_append(g, 2, US") x509.auth=", authenticated_id);
+if (Ustrcmp(sender_host_auth_pubname, "tls") == 0)
+  g = authenticated_id
+    ? string_append(g, 2, US") x509.auth=", authenticated_id)
+    : string_cat(g, US") reason=x509.auth");
 else
-  g = string_catn(g, US") reason=x509.auth", 17);
+  g = authenticated_id
+    ? string_append(g, 2, US") smtp.auth=", authenticated_id)
+    : string_cat(g, US", no id saved)");
 
 if (authenticated_sender)
   g = string_append(g, 2, US" smtp.mailfrom=", authenticated_sender);

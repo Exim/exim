@@ -10,6 +10,8 @@ Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 aid: userx
+rtr_authres: Authentication-Results: myhost.test.ex;
+	auth=pass (PLAIN) smtp.auth=userx
 
 Test data
 
