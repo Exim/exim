@@ -1685,7 +1685,8 @@ if (parse_find_at(address) == NULL)
     *failure_ptr = US"qualify";
     return FAIL;
     }
-  address = rewrite_address_qualify(address, options & vopt_is_recipient);
+  /* deconst ok as address was not const */
+  address = US rewrite_address_qualify(address, options & vopt_is_recipient);
   }
 
 DEBUG(D_verify)
@@ -1700,7 +1701,8 @@ may have been set by domains and local part tests during an ACL. */
 if (global_rewrite_rules)
   {
   uschar *old = address;
-  address = rewrite_address(address, options & vopt_is_recipient, FALSE,
+  /* deconst ok as address was not const */
+  address = US rewrite_address(address, options & vopt_is_recipient, FALSE,
     global_rewrite_rules, rewrite_existflags);
   if (address != old)
     {

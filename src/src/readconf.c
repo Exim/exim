@@ -1321,7 +1321,7 @@ Returns:    pointer to an option entry, or NULL if not found
 */
 
 static optionlist *
-find_option(uschar *name, optionlist *ol, int last)
+find_option(const uschar *name, optionlist *ol, int last)
 {
 int first = 0;
 while (last > first)
@@ -1360,7 +1360,7 @@ Returns:        a pointer to the boolean flag.
 */
 
 static BOOL *
-get_set_flag(uschar *name, optionlist *oltop, int last, void *data_block)
+get_set_flag(const uschar *name, optionlist *oltop, int last, void *data_block)
 {
 optionlist *ol;
 uschar name2[EXIM_DRIVERNAME_MAX];
@@ -2436,7 +2436,7 @@ Returns:         boolean success
 */
 
 static BOOL
-print_ol(optionlist *ol, uschar *name, void *options_block,
+print_ol(optionlist *ol, const uschar *name, void *options_block,
   optionlist *oltop, int last, BOOL no_labels)
 {
 struct passwd *pw;
@@ -2746,7 +2746,7 @@ Returns:      Boolean success
 */
 
 BOOL
-readconf_print(uschar *name, uschar *type, BOOL no_labels)
+readconf_print(const uschar *name, uschar *type, BOOL no_labels)
 {
 BOOL names_only = FALSE;
 optionlist *ol2 = NULL;
@@ -2885,7 +2885,7 @@ if (!type)
 
   else
     return print_ol(find_option(name,
-      optionlist_config, nelem(optionlist_config)),
+		      optionlist_config, nelem(optionlist_config)),
       name, NULL, optionlist_config, nelem(optionlist_config), no_labels);
   }
 

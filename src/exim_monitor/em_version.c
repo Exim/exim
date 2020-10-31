@@ -8,6 +8,17 @@
 
 #define EM_VERSION_C
 
+/* Needed by macros.h */
+/* Some systems have PATH_MAX and some have MAX_PATH_LEN. */
+
+#ifndef PATH_MAX
+# ifdef MAX_PATH_LEN
+#  define PATH_MAX MAX_PATH_LEN
+# else
+#  define PATH_MAX 1024
+# endif
+#endif
+
 #include "mytypes.h"
 #include "store.h"
 #include "macros.h"

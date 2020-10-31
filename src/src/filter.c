@@ -51,7 +51,7 @@ typedef struct condition_block {
 /* Miscellaneous other declarations */
 
 static uschar **error_pointer;
-static uschar *log_filename;
+static const uschar *log_filename;
 static int  filter_options;
 static int  line_number;
 static int  expect_endif;
@@ -1668,7 +1668,7 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 static int
 interpret_commands(filter_cmd *commands, address_item **generated)
 {
-uschar *s;
+const uschar *s;
 int mode;
 address_item *addr;
 BOOL condition_value;
@@ -1677,7 +1677,7 @@ while (commands)
   {
   int ff_ret;
   uschar *fmsg, *ff_name;
-  uschar *expargs[MAILARGS_STRING_COUNT];
+  const uschar *expargs[MAILARGS_STRING_COUNT];
 
   int i, n[2];
 
@@ -1709,7 +1709,7 @@ while (commands)
     case add_command:
       for (i = 0; i < 2; i++)
 	{
-	uschar *ss = expargs[i];
+	const uschar *ss = expargs[i];
 	uschar *end;
 
 	if (i == 1 && (*ss++ != 'n' || ss[1] != 0))
@@ -1806,9 +1806,8 @@ while (commands)
 	af_ignore_error flag if necessary, and the errors address, which can be
 	set in a system filter and to the local address in user filters. */
 
-	addr = deliver_make_addr(expargs[0], TRUE);  /* TRUE => copy s */
-	addr->prop.errors_address = (s == NULL)?
-	  s : string_copy(s);                        /* Default is NULL */
+	addr = deliver_make_addr(US expargs[0], TRUE);  /* TRUE => copy s, so deconst ok */
+	addr->prop.errors_address = !s ? NULL : string_copy(s); /* Default is NULL */
 	if (commands->noerror) addr->prop.ignore_error = TRUE;
 	addr->next = *generated;
 	*generated = addr;
@@ -1848,7 +1847,7 @@ while (commands)
 	af_pfr and af_file flags, the af_ignore_error flag if necessary, and the
 	mode value. */
 
-	addr = deliver_make_addr(s, TRUE);  /* TRUE => copy s */
+	addr = deliver_make_addr(US s, TRUE);  /* TRUE => copy s, so deconst ok */
 	setflag(addr, af_pfr);
 	setflag(addr, af_file);
 	if (commands->noerror) addr->prop.ignore_error = TRUE;
@@ -1878,7 +1877,7 @@ while (commands)
 	each command argument is expanded in the transport after the command
 	has been split up into separate arguments. */
 
-	addr = deliver_make_addr(s, TRUE);  /* TRUE => copy s */
+	addr = deliver_make_addr(US s, TRUE);  /* TRUE => copy s, so deconst ok */
 	setflag(addr, af_pfr);
 	setflag(addr, af_expand_pipe);
 	if (commands->noerror) addr->prop.ignore_error = TRUE;
@@ -2016,7 +2015,7 @@ while (commands)
 	/* This setting lasts only while the filter is running; on exit, the
 	variable is reset to the previous value. */
 
-	else headers_charset = s;
+	else headers_charset = s;	/*XXX loses track of const */
 	}
       break;
 
@@ -2040,7 +2039,7 @@ while (commands)
       ff_ret = FF_FREEZE;
 
       DEFERFREEZEFAIL:
-      fmsg = expargs[0];
+      fmsg = expargs[0];		/*XXX loses track of const */
       if (Ustrlen(fmsg) > 1024) Ustrcpy(fmsg + 1000, US" ... (truncated)");
       fmsg = US string_printing(fmsg);
       *error_pointer = fmsg;
@@ -2123,7 +2122,7 @@ while (commands)
 	for (i = 0; i < MAILARGS_STRING_COUNT; i++)
 	  {
 	  uschar *p;
-	  uschar *s = expargs[i];
+	  const uschar *s = expargs[i];
 
 	  if (s == NULL) continue;
 
@@ -2177,7 +2176,7 @@ while (commands)
 
 	  /* The string is OK */
 
-	  commands->args[i].u = s;
+	  commands->args[i].u = s;	/*XXX loses track of const */
 	  }
 
 	/* Proceed with mail or vacation command */
@@ -2365,8 +2364,9 @@ Returns:     TRUE if the message is deemed to be personal
 BOOL
 filter_personal(string_item *aliases, BOOL scan_cc)
 {
-uschar *self, *self_from, *self_to;
-uschar *psself = NULL, *psself_from = NULL, *psself_to = NULL;
+const uschar *self, *self_from, *self_to;
+uschar *psself = NULL;
+const uschar *psself_from = NULL, *psself_to = NULL;
 rmark reset_point = store_mark();
 BOOL yield;
 header_line *h;

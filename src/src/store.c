@@ -270,9 +270,11 @@ int pool = tainted ? store_pool + POOL_TAINT_BASE : store_pool;
 
 /* Ensure we've been asked to allocate memory.
 A negative size is a sign of a security problem.
-A zero size is also suspect (but we might have to allow it if we find our API
-expects it in some places). */
-if (size < 1)
+A zero size might be also suspect, but our internal usage deliberately
+does this to return a current watermark value for a later release of
+allocated store. */
+
+if (size < 0)
   {
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
             "bad memory allocation requested (%d bytes) at %s %d",
