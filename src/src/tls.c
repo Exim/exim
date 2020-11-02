@@ -163,6 +163,7 @@ int fd1, fd2, i, cnt = 0;
 struct stat sb;
 #ifdef OpenBSD
 struct kevent k_dummy;
+struct timespec ts = {0};
 #endif
 
 errno = 0;
@@ -215,14 +216,13 @@ for (;;)
   store_release_above(s+1);
   }
 
-if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt,
 #ifdef OpenBSD
-	    &k_dummy, 1,
-#else
-	    NULL, 0,
-#endif
-	    NULL) >= 0)
+if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, &k_dummy, 1, &ts) >= 0)
   return TRUE;
+#else
+if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, NULL, 0, NULL) >= 0)
+  return TRUE;
+#endiv
 s = US"kevent";
 
 bad:
