@@ -26,6 +26,24 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.95
+-----------------
+
+Various length limits have been applied to Exim's parsing of its command-line.
+These are all set to be at least as long as any valid input, so we do not believe
+that any real use-cases have been affected by this.
+
+The names of various drivers (authenticators, routers, transports, ...) have
+always been limited to 64 characters, but before this release the names were
+silently truncated, inviting problems.  Now the length limit should be enforced.
+If this affects you, then please rename to use shorter names.
+
+The default maximum number of recipients of a single email has changed from
+"unlimited" (ie: as much as CPU and memory will allow, until something breaks
+badly) to 50,000.  You can raise or lower this as you see fit, but we strongly
+caution against using zero/unlimited.
+
+
 Exim version 4.94
 -----------------
 
