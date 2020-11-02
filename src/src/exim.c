@@ -762,7 +762,7 @@ exit(EXIT_FAILURE);
 }
 
 /* fail if a length is too long */
-static void
+static inline void
 exim_len_fail_toolong(int itemlen, int maxlen, const char *description)
 {
 if (itemlen <= maxlen)
@@ -773,7 +773,7 @@ exit(EXIT_FAILURE);
 }
 
 /* only pass through the string item back to the caller if it's short enough */
-static const uschar *
+static inline const uschar *
 exim_str_fail_toolong(const uschar *item, int maxlen, const char *description)
 {
 exim_len_fail_toolong(Ustrlen(item), maxlen, description);
