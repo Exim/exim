@@ -222,7 +222,7 @@ if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, &k_dummy, 1, &ts) >= 0)
 #else
 if (kevent(tls_watch_fd, &kev[kev_used-cnt], cnt, NULL, 0, NULL) >= 0)
   return TRUE;
-#endiv
+#endif
 s = US"kevent";
 
 bad:
