@@ -594,8 +594,8 @@ if (n > 0)
 
 
 /* Forward declarations */
-static void bdat_push_receive_functions(void);
-static void bdat_pop_receive_functions(void);
+static inline void bdat_push_receive_functions(void);
+static inline void bdat_pop_receive_functions(void);
 
 
 /* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
@@ -776,7 +776,7 @@ if (chunking_state != CHUNKING_LAST)
 }
 
 
-static void
+static inline void
 bdat_push_receive_functions(void)
 {
 /* push the current receive_* function on the "stack", and
@@ -797,7 +797,7 @@ receive_getc = bdat_getc;
 receive_ungetc = bdat_ungetc;
 }
 
-static void
+static inline void
 bdat_pop_receive_functions(void)
 {
 receive_getc = lwr_receive_getc;
