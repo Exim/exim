@@ -134,6 +134,12 @@ JH/27 Bug 2648: fix the passing of an authenticator public-name through spool
       files.  The value is used by the authresults expansion item.  Previously
       if this was used in a router or transport, a crash could result.
 
+JH/28 Fix spurious logging of select error.  Some platforms, notably FreeBSD,
+      have a sufficient incidence of EINTR returns from select that an
+      interaction with other operations done by the main daemon loop exposed
+      a bug in the error-handling.  This was benign apart from the log
+      messages.
+
 
 Exim version 4.94
 -----------------

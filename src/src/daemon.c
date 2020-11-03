@@ -2278,7 +2278,7 @@ for (;;)
 
   if (f.daemon_listen)
     {
-    int lcount, select_errno;
+    int lcount;
     int max_socket = 0;
     BOOL select_failed = FALSE;
     fd_set select_listen;
@@ -2333,14 +2333,16 @@ for (;;)
     old one had just finished. Preserve the errno from any select() failure for
     the use of the common select/accept error processing below. */
 
-    select_errno = errno;
-    handle_ending_processes();
-    errno = select_errno;
+      {
+      int select_errno = errno;
+      handle_ending_processes();
 
 #ifndef DISABLE_TLS
-    /* Create or rotate any required keys; handle (delayed) filewatch event */
-    tls_daemon_tick();
+      /* Create or rotate any required keys; handle (delayed) filewatch event */
+      tls_daemon_tick();
 #endif
+      errno = select_errno;
+      }
 
     /* Loop for all the sockets that are currently ready to go. If select
     actually failed, we have set the count to 1 and select_failed=TRUE, so as
@@ -2396,40 +2398,33 @@ for (;;)
           accept_retry_errno = errno;
           accept_retry_select_failed = select_failed;
           }
-        else
-          {
-          if (errno != accept_retry_errno ||
-              select_failed != accept_retry_select_failed ||
-              accept_retry_count >= 50)
+        else if (  errno != accept_retry_errno 
+		|| select_failed != accept_retry_select_failed
+		|| accept_retry_count >= 50)
             {
-            log_write(0, LOG_MAIN | ((accept_retry_count >= 50)? LOG_PANIC : 0),
+            log_write(0, LOG_MAIN | (accept_retry_count >= 50 ? LOG_PANIC : 0),
               "%d %s() failure%s: %s",
               accept_retry_count,
-              accept_retry_select_failed? "select" : "accept",
-              (accept_retry_count == 1)? "" : "s",
+              accept_retry_select_failed ? "select" : "accept",
+              accept_retry_count == 1 ? "" : "s",
               strerror(accept_retry_errno));
             log_close_all();
             accept_retry_count = 0;
             accept_retry_errno = errno;
             accept_retry_select_failed = select_failed;
             }
-          }
         accept_retry_count++;
         }
-
-      else
-        {
-        if (accept_retry_count > 0)
-          {
-          log_write(0, LOG_MAIN, "%d %s() failure%s: %s",
-            accept_retry_count,
-            accept_retry_select_failed? "select" : "accept",
-            (accept_retry_count == 1)? "" : "s",
-            strerror(accept_retry_errno));
-          log_close_all();
-          accept_retry_count = 0;
-          }
-        }
+      else if (accept_retry_count > 0)
+	{
+	log_write(0, LOG_MAIN, "%d %s() failure%s: %s",
+	  accept_retry_count,
+	  accept_retry_select_failed ? "select" : "accept",
+	  accept_retry_count == 1 ? "" : "s",
+	  strerror(accept_retry_errno));
+	log_close_all();
+	accept_retry_count = 0;
+	}
 
       /* If select/accept succeeded, deal with the connection. */
 
