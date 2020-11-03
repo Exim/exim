@@ -1069,6 +1069,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # this is timing-dependent
     next if /^OpenSSL: creating STEK$/;
+    next if /^selfsign cert rotate$/;
 
     # TLS preload
     # only OpenSSL speaks of these
