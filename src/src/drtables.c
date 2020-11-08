@@ -764,10 +764,10 @@ else
 	}
 
       /* FreeBSD nsdispatch() can trigger dlerror() errors about
-       * _nss_cache_cycle_prevention_function; we need to clear the dlerror()
-       * state before calling dlsym(), so that any error afterwards only
-       * comes from dlsym().
-       */
+      _nss_cache_cycle_prevention_function; we need to clear the dlerror()
+      state before calling dlsym(), so that any error afterwards only comes
+      from dlsym().  */
+
       errormsg = dlerror();
 
       info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");

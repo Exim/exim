@@ -22,9 +22,7 @@ int dmarc_store_data(header_line *);
 int dmarc_process();
 uschar *dmarc_exim_expand_query(int);
 uschar *dmarc_exim_expand_defaults(int);
-uschar *dmarc_auth_results_header(header_line *,uschar *);
 
-#define DMARC_AR_HEADER        US"Authentication-Results:"
 #define DMARC_VERIFY_STATUS    1
 
 #define DMARC_HIST_OK          1
