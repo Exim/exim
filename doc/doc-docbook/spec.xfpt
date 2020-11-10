@@ -25524,9 +25524,12 @@ incoming messages, use an appropriate ACL.
 .cindex "authentication" "optional in client"
 This option provides a list of servers to which, provided they announce
 authentication support, Exim will attempt to authenticate as a client when it
-connects. If authentication fails, Exim will try to transfer the message
-unauthenticated. See also &%hosts_require_auth%&, and chapter
-&<<CHAPSMTPAUTH>>& for details of authentication.
+connects. If authentication fails
+.new
+and &%hosts_require_auth%& permits,
+.wen
+Exim will try to transfer the message unauthenticated.
+See also chapter &<<CHAPSMTPAUTH>>& for details of authentication.
 
 .option hosts_try_chunking smtp "host list&!!" *
 .cindex CHUNKING "enabling, in client"
