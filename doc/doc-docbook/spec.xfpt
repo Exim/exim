@@ -1394,9 +1394,22 @@ Again, cutthrough delivery counts as a verification.
 .next
 Individual routers can be explicitly skipped when running the routers to
 check an address given in the SMTP EXPN command (see the &%expn%& option).
+
 .next
 If the &%domains%& option is set, the domain of the address must be in the set
 of domains that it defines.
+.new
+.cindex "tainted data" "de-tainting"
+A match verifies the variable &$domain$& (which carries tainted data)
+and assigns an untainted value to the &$domain_data$& variable.
+Such an untainted value is often needed in the transport.
+For specifics of the matching operation and the resulting untainted value,
+refer to section &<<SECTdomainlist>>&.
+
+When an untainted value is wanted, use this option
+rather than the generic &%condition%& option.
+.wen
+
 .next
 .vindex "&$local_part_prefix$&"
 .vindex "&$local_part_prefix_v$&"
@@ -1405,13 +1418,26 @@ of domains that it defines.
 .vindex "&$local_part_suffix_v$&"
 .cindex affix "router precondition"
 If the &%local_parts%& option is set, the local part of the address must be in
-the set of local parts that it defines. If &%local_part_prefix%& or
+the set of local parts that it defines.
+.new
+A match verifies the variable &$local_part$& (which carries tainted data)
+and assigns an untainted value to the &$local_part_data$& variable.
+Such an untainted value is often needed in the transport.
+For specifics of the matching operation and the resulting untainted value,
+refer to section &<<SECTlocparlis>>&.
+
+When an untainted value is wanted, use this option
+rather than the generic &%condition%& option.
+.wen
+
+If &%local_part_prefix%& or
 &%local_part_suffix%& is in use, the prefix or suffix is removed from the local
 part before this check. If you want to do precondition tests on local parts
 that include affixes, you can do so by using a &%condition%& option (see below)
 that uses the variables &$local_part$&, &$local_part_prefix$&,
 &$local_part_prefix_v$&, &$local_part_suffix$&
 and &$local_part_suffix_v$& as necessary.
+
 .next
 .vindex "&$local_user_uid$&"
 .vindex "&$local_user_gid$&"
@@ -1421,23 +1447,37 @@ an account on the local host. If this check succeeds, the uid and gid of the
 local user are placed in &$local_user_uid$& and &$local_user_gid$& and the
 user's home directory is placed in &$home$&; these values can be used in the
 remaining preconditions.
+
 .next
 If the &%router_home_directory%& option is set, it is expanded at this point,
 because it overrides the value of &$home$&. If this expansion were left till
 later, the value of &$home$& as set by &%check_local_user%& would be used in
 subsequent tests. Having two different values of &$home$& in the same router
 could lead to confusion.
+
 .next
 If the &%senders%& option is set, the envelope sender address must be in the
 set of addresses that it defines.
+
 .next
 If the &%require_files%& option is set, the existence or non-existence of
 specified files is tested.
+
 .next
 .cindex "customizing" "precondition"
 If the &%condition%& option is set, it is evaluated and tested. This option
 uses an expanded string to allow you to set up your own custom preconditions.
 Expanded strings are described in chapter &<<CHAPexpand>>&.
+
+.new
+Note that while using
+this option for address matching technically works,
+it does not set any de-tainted values.
+Such values are often needed, either for router-specific options or
+for transport options.
+Using the &%domains%& and &%local_parts%& options is usually the most
+convenient way to obtain them.
+.wen
 .endlist
 
 
@@ -8428,7 +8468,10 @@ will store a result in the &$host_data$& variable.
 A &%local_parts%& router option or &%local_parts%& ACL condition
 will store a result in the &$local_part_data$& variable.
 .vitem domains
+.new
 A &%domains%& router option or &%domains%& ACL condition
+will store a result in the &$domain_data$& variable
+.wen
 .vitem senders
 A &%senders%& router option or &%senders%& ACL condition
 will store a result in the &$sender_data$& variable.
@@ -9513,7 +9556,9 @@ reasons,
 .cindex "tainted data" definition
 .cindex expansion "tainted data"
 and expansion of data deriving from the sender (&"tainted data"&)
-is not permitted.
+.new
+is not permitted (including acessing a file using a tainted name).
+.wen
 
 .new
 Common ways of obtaining untainted equivalents of variables with
@@ -18960,7 +19005,8 @@ This applies to all of the SRV, MX, AAAA, A lookup sequence.
 If this option is set, the router is skipped unless the current domain matches
 the list. If the match is achieved by means of a file lookup, the data that the
 lookup returned for the domain is placed in &$domain_data$& for use in string
-expansions of the driver's private options. See section &<<SECTrouprecon>>& for
+expansions of the driver's private options and in the transport.
+See section &<<SECTrouprecon>>& for
 a list of the order in which preconditions are evaluated.
 
 
@@ -19323,12 +19369,13 @@ section &<<SECTlocparlis>>& for a discussion of local part lists. Because the
 string is expanded, it is possible to make it depend on the domain, for
 example:
 .code
-local_parts = dbm;/usr/local/specials/$domain
+local_parts = dbm;/usr/local/specials/$domain_data
 .endd
 .vindex "&$local_part_data$&"
 If the match is achieved by a lookup, the data that the lookup returned
 for the local part is placed in the variable &$local_part_data$& for use in
-expansions of the router's private options. You might use this option, for
+expansions of the router's private options or in the transport.
+You might use this option, for
 example, if you have a large number of local virtual domains, and you want to
 send all postmaster mail to the same place without having to set up an alias in
 each virtual domain:
