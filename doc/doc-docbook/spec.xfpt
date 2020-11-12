@@ -10147,7 +10147,7 @@ newline at the very end. For the &%header%& and &%bheader%& expansion, for
 those headers that contain lists of addresses, a comma is also inserted at the
 junctions between headers. This does not happen for the &%rheader%& expansion.
 
-.cindex "tainted data"
+.cindex "tainted data" "message headers"
 When the headers are from an incoming message,
 the result of expanding any of these variables is tainted.
 
@@ -14092,6 +14092,10 @@ interpreter, the &%perl_taintmode%& option can be set. This enables the
 taint mode of the Perl interpreter. You are encouraged to set this
 option to a true value. To avoid breaking existing installations, it
 defaults to false.
+
+.new
+&*Note*&: This is entirely separate from Exim's tainted-data tracking.
+.wen
 
 
 .section "Calling Perl subroutines" "SECID86"
