@@ -780,7 +780,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # This handles "connection from" and the like, when the port is given
   if (!/listening for SMTP on/ && !/Connecting to/ && !/=>/ && !/->/
-      && !/\*>/ && !/Connection refused/)
+      && !/\*>/&& !/==/  && !/\*\*/ && !/Connection refused/ && !/in response to/)
     {
     s/\[([a-z\d:]+|\d+(?:\.\d+){3})\]:(\d+)/"[".$1."]:".new_value($2,"%s",\$next_port)/ie;
     }

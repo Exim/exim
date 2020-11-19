@@ -1325,20 +1325,10 @@ else if (driver_kind)
 g = string_fmt_append(g, " defer (%d)", addr->basic_errno);
 
 if (addr->basic_errno > 0)
-  g = string_append(g, 2, US": ",
-    US strerror(addr->basic_errno));
+  g = string_append(g, 2, US": ", US strerror(addr->basic_errno));
 
 if (addr->host_used)
-  {
-  g = string_append(g, 5,
-		    US" H=", addr->host_used->name,
-		    US" [",  addr->host_used->address, US"]");
-  if (LOGGING(outgoing_port))
-    {
-    int port = addr->host_used->port;
-    g = string_fmt_append(g, ":%d", port == PORT_NONE ? 25 : port);
-    }
-  }
+  g = d_hostlog(g, addr);
 
 if (LOGGING(deliver_time))
   g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));

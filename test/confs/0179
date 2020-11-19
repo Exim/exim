@@ -8,7 +8,7 @@ primary_hostname = myhost.test.ex
 
 queue_run_in_order
 # incoming_interface is used here to get the _outgoing_ local port
-log_selector = +outgoing_port +incoming_interface
+log_selector = +outgoing_port +incoming_interface +received_recipients
 
 
 # ----- Routers -----
@@ -20,6 +20,7 @@ all:
   route_list = * 127.0.0.1 byname
   self = send
   transport = smtp
+  errors_to = ""
   no_more
 
 

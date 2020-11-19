@@ -38668,6 +38668,7 @@ routing email addresses, but it does apply to &"byname"& lookups.
 client's ident port times out.
 .next
 .cindex "log" "incoming interface"
+.cindex "log" "outgoing interface"
 .cindex "log" "local interface"
 .cindex "log" "local address and port"
 .cindex "TCP/IP" "logging local address and port"
@@ -38676,7 +38677,10 @@ client's ident port times out.
 to the &"<="& line as an IP address in square brackets, tagged by I= and
 followed by a colon and the port number. The local interface and port are also
 added to other SMTP log lines, for example, &"SMTP connection from"&, to
-rejection lines, and (despite the name) to outgoing &"=>"& and &"->"& lines.
+rejection lines, and (despite the name) to outgoing
+.new
+&"=>"&, &"->"&, &"=="& and &"**"& lines.
+.wen
 The latter can be disabled by turning off the &%outgoing_interface%& option.
 .next
 .cindex log "incoming proxy address"

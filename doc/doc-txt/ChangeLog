@@ -140,6 +140,10 @@ JH/28 Fix spurious logging of select error.  Some platforms, notably FreeBSD,
       a bug in the error-handling.  This was benign apart from the log
       messages.
 
+JH/29 Bug 2675: add outgoing-interface I= element to deferred "==" log lines,
+      for consistency with delivered "=>" and failed "**" lines.  While we're
+      there, handle PRX and TFO.
+
 
 Exim version 4.94
 -----------------

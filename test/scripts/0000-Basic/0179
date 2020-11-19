@@ -33,3 +33,38 @@ QUIT
 ****
 exim -odi -qqf
 ****
+#
+# Defer from receiving host
+exim -odq userz@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+450 not right now, sorry
+QUIT
+250 OK
+****
+exim -odi -qqf
+****
+#
+# Deny from receiving host
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient refused
+QUIT
+250 OK
+****
+exim -odi -qqf
+****
+#
+no_msglog_check

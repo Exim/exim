@@ -6,7 +6,7 @@ Connection request from [127.0.0.1]
 EHLO myhost.test.ex
 250-OK
 250 HELP
-MAIL FROM:<CALLER@myhost.test.ex>
+MAIL FROM:<>
 250 Sender OK
 RCPT TO:<userx@domain.com>
 250 Recipient OK
@@ -22,7 +22,7 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 .
 250 OK
-MAIL FROM:<CALLER@myhost.test.ex>
+MAIL FROM:<>
 250 Sender OK
 RCPT TO:<abcd@domain.com>
 250 Recipient OK
@@ -38,6 +38,30 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 .
 250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<>
+450 not right now, sorry
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<>
+250 Sender OK
+RCPT TO:<userz@domain.com>
+550 Recipient refused
 QUIT
 250 OK
 End of script
