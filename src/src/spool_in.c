@@ -468,7 +468,7 @@ for (;;)
     uschar * buf;
     if (big_buffer_size >= BIG_BUFFER_SIZE*4) goto SPOOL_READ_ERROR;
     buf = store_get_perm(big_buffer_size *= 2, FALSE);
-    memcpy(buf, big_buffer, --len);
+    memcpy(buf, big_buffer, len);
     big_buffer = buf;
     if (Ufgets(big_buffer+len, big_buffer_size-len, fp) == NULL)
       goto SPOOL_READ_ERROR;
