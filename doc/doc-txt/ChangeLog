@@ -294,6 +294,8 @@ PP/11 Fix security issue in BDAT state confusion.
       mode until after various protocol state checks.
       Fixes CVE-2020-BDATA reported by Qualys.
 
+HS/03 Die on "/../" in msglog file names
+
 
 Exim version 4.94
 -----------------

@@ -334,7 +334,7 @@ static int
 open_msglog_file(uschar *filename, int mode, uschar **error)
 {
 if (Ustrstr(filename, US"/../"))
-  log_write(0, LOG_MAIN|LOG_PANIC,
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "Attempt to open msglog file path with upward-traversal: '%s'\n", filename);
 
 for (int i = 2; i > 0; i--)
