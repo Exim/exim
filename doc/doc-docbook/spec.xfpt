@@ -13703,7 +13703,11 @@ filter file to set values that can be tested in users' filter files. For
 example, a system filter could set a value indicating how likely it is that a
 message is junk mail.
 
-.vitem &$spam_$&&'xxx'&
+.vitem &$spam_score$& &&&
+       &$spam_score_int$& &&&
+       &$spam_bar$& &&&
+       &$spam_report$& &&&
+       &$spam_action$&
 A number of variables whose names start with &$spam$& are available when Exim
 is compiled with the content-scanning extension. For details, see section
 &<<SECTscanspamass>>&.
