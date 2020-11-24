@@ -1607,10 +1607,10 @@ expire = now = 0;
 
 /* Parse the signing specification */
 
-identity = string_nextinlist(&signspec, &sep, NULL, 0);
-selector = string_nextinlist(&signspec, &sep, NULL, 0);
-if (  !*identity || !*selector
-   || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0)) || !*privkey)
+if (  !(identity = string_nextinlist(&signspec, &sep, NULL, 0)) || !*identity
+   || !(selector = string_nextinlist(&signspec, &sep, NULL, 0)) || !*selector
+   || !(privkey = string_nextinlist(&signspec, &sep, NULL, 0))  || !*privkey
+   )
   {
   s = !*identity ? US"identity" : !*selector ? US"selector" : US"private-key";
   goto bad_arg_ret;
