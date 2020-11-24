@@ -27366,7 +27366,7 @@ conditions:
 .ilist
 The client host must match &%auth_advertise_hosts%& (default *).
 .next
-It the &%server_advertise_condition%& option is set, its expansion must not
+If the &%server_advertise_condition%& option is set, its expansion must not
 yield the empty string, &"0"&, &"no"&, or &"false"&.
 .endlist
 
@@ -27474,7 +27474,7 @@ encode '\0user@domain.com\0pas$$word'
 .endd
 gives an incorrect answer because of the unescaped &"@"& and &"$"& characters.
 
-If you have the &%mimencode%& command installed, another way to do produce
+If you have the &%mimencode%& command installed, another way to produce
 base64-encoded strings is to run the command
 .code
 echo -e -n `\0user\0password' | mimencode
