@@ -720,10 +720,10 @@ return NULL;
 If we have to relax the data for this sig, return our copy of it. */
 
 static blob *
-pdkim_update_ctx_bodyhash(pdkim_bodyhash * b, blob * orig_data, blob * relaxed_data)
+pdkim_update_ctx_bodyhash(pdkim_bodyhash * b, const blob const * orig_data, blob * relaxed_data)
 {
 const blob const * canon_data = orig_data;
-size_t len;
+size_t left;
 
 /* Defaults to simple canon (no further treatment necessary) */
 
@@ -769,16 +769,17 @@ if (b->canon_method == PDKIM_CANON_RELAXED)
   }
 
 /* Make sure we don't exceed the to-be-signed body length */
+left = canon_data->len;
 if (  b->bodylength >= 0
-   && b->signed_body_bytes + (unsigned long)canon_data->len > b->bodylength
+   && b->signed_body_bytes + left > b->bodylength
    )
-  len = b->bodylength - b->signed_body_bytes;
+  left = b->bodylength - b->signed_body_bytes;
 
-if (len > 0)
+if (left > 0)
   {
-  exim_sha_update(&b->body_hash_ctx, CUS canon_data->data, len);
-  b->signed_body_bytes += len;
-  DEBUG(D_acl) pdkim_quoteprint(canon_data->data, len);
+  exim_sha_update(&b->body_hash_ctx, CUS canon_data->data, left);
+  b->signed_body_bytes += left;
+  DEBUG(D_acl) pdkim_quoteprint(canon_data->data, left);
   }
 
 return relaxed_data;
