@@ -19728,6 +19728,10 @@ Values containing a list-separator should have them doubled.
 When a router runs, the strings are evaluated in order,
 to create variables which are added to the set associated with
 the address.
+.new
+This is done immediately after all the preconditions, before the
+evaluation of the &%address_data%& option.
+.wen
 The variable is set with the expansion of the value.
 The variables can be used by the router options
 (not including any preconditions)
