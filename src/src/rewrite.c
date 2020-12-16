@@ -109,21 +109,17 @@ int yield_start = 0, yield_end = 0;
 
 if (whole) *whole = FALSE;
 
-/* Scan the rewriting rules */
+/* Scan the rewriting rules, ignoring any without matching flag */
 
 for (rewrite_rule * rule = rewrite_rules;
      rule && !done;
-     rule_number++, rule = rule->next)
+     rule_number++, rule = rule->next) if (rule->flags & flag)
   {
   int start, end, pdomain;
   int count = 0;
   uschar *save_localpart;
   const uschar *save_domain;
   uschar *error, *new, *newparsed;
-
-  /* Ensure that the flag matches the flags in the rule. */
-
-  if (!(rule->flags & flag)) continue;
 
   /* Come back here for a repeat after a successful rewrite. We do this
   only so many times. */
@@ -451,6 +447,7 @@ int lastnewline = 0;
 header_line *newh = NULL;
 rmark function_reset_point = store_mark();
 uschar *s = Ustrchr(h->text, ':') + 1;
+
 while (isspace(*s)) s++;
 
 DEBUG(D_rewrite)
@@ -480,10 +477,10 @@ while (*s)
   the next address, saving the start of the old one. */
 
   *ss = 0;
-  recipient = parse_extract_address(s,&errmess,&start,&end,&domain,FALSE);
+  recipient = parse_extract_address(s, &errmess, &start, &end, &domain, FALSE);
   *ss = terminator;
   sprev = s;
-  s = ss + (terminator? 1:0);
+  s = ss + (terminator ? 1 :0);
   while (isspace(*s)) s++;
 
   /* There isn't much we can do for syntactic disasters at this stage.
@@ -505,7 +502,7 @@ while (*s)
   as abc@xyz, which the DNS lookup turns into abc@xyz.foo.com). However, if no
   change is made here, don't bother carrying on. */
 
-  if (routed_old != NULL)
+  if (routed_old)
     {
     if (domain <= 0 || strcmpic(recipient+domain, routed_old) != 0) continue;
     recipient[domain-1] = 0;
@@ -549,7 +546,7 @@ while (*s)
   "whole" flag set, adjust the pointers so that the whole address gets
   replaced, except possibly a final \n. */
 
-  if ((existflags & flag) != 0)
+  if (existflags & flag)
     {
     BOOL whole;
     new = rewrite_one(recipient, flag, &whole, FALSE, NULL, rewrite_rules);
@@ -660,7 +657,7 @@ while (*s)
     /* Set up for scanning the rest of the header */
 
     s = newh->text + remlen;
-    DEBUG(D_rewrite) debug_printf("remainder: %s", (*s == 0)? US"\n" : s);
+    DEBUG(D_rewrite) debug_printf("remainder: %s", *s ? s : US"\n");
     }
   }
 
@@ -670,10 +667,10 @@ f.parse_found_group = FALSE;
 /* If a rewrite happened and "replace" is true, put the new header into the
 chain following the old one, and mark the old one as replaced. */
 
-if (newh != NULL && replace)
+if (newh && replace)
   {
   newh->next = h->next;
-  if (newh->next == NULL) header_last = newh;
+  if (!newh->next) header_last = newh;
   h->type = htype_old;
   h->next = newh;
   }

@@ -98,6 +98,8 @@ To: random@test.example,
  
 **** debug string too long - truncated ****
 
+address match test: subject=r1@test.ex pattern=^.{40,}@*
+r1@test.ex in "^.{40,}@*"? no (end of list)
 address match test: subject=r1@test.ex pattern=*@*
 test.ex in "*"? yes (matched "*")
 r1@test.ex in "*@*"? yes (matched "*@*")
@@ -120,6 +122,8 @@ r1@test.ex in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  creating new cache entry
  lookup failed
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
 address match test: subject=CALLER@myhost.test.ex pattern=*@*
 myhost.test.ex in "*"? yes (matched "*")
 CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
@@ -231,6 +235,8 @@ rewrite_one_header: type=T:
     random@test.example,
     random@test.examp
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -248,7 +254,7 @@ random@test.example in "*@*"? yes (matched "*@*")
  creating new cache entry
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4051 newtype=T newtext:
 To: random@rwtest.example,
     random@test.example,
@@ -411,6 +417,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -427,7 +435,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4053 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -590,6 +598,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -606,7 +616,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4055 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -769,6 +779,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -785,7 +797,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4057 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -948,6 +960,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -964,7 +978,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4059 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -1127,6 +1141,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -1143,7 +1159,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4061 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -1306,6 +1322,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -1322,7 +1340,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4063 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -1485,6 +1503,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -1501,7 +1521,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4065 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -1664,6 +1684,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -1680,7 +1702,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4067 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -1843,6 +1865,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -1859,7 +1883,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4069 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -2021,6 +2045,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -2037,7 +2063,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4071 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -2199,6 +2225,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -2215,7 +2243,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4073 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -2377,6 +2405,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -2393,7 +2423,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4075 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -2555,6 +2585,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -2571,7 +2603,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4077 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -2733,6 +2765,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -2749,7 +2783,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4079 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -2911,6 +2945,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -2927,7 +2963,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4081 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -3089,6 +3125,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -3105,7 +3143,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4083 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -3267,6 +3305,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -3283,7 +3323,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4085 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -3445,6 +3485,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -3461,7 +3503,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4087 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -3623,6 +3665,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -3639,7 +3683,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4089 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -3801,6 +3845,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -3817,7 +3863,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4091 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -3979,6 +4025,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -3995,7 +4043,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4093 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -4157,6 +4205,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -4173,7 +4223,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4095 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -4334,6 +4384,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -4350,7 +4402,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4097 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -4511,6 +4563,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -4527,7 +4581,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4099 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -4688,6 +4742,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -4704,7 +4760,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4101 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -4865,6 +4921,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -4881,7 +4939,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4103 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -5042,6 +5100,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -5058,7 +5118,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4105 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -5219,6 +5279,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -5235,7 +5297,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4107 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -5396,6 +5458,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -5412,7 +5476,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4109 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -5573,6 +5637,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -5589,7 +5655,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4111 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -5750,6 +5816,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -5766,7 +5834,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4113 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -5927,6 +5995,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -5943,7 +6013,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4115 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -6104,6 +6174,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -6120,7 +6192,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4117 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -6281,6 +6353,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -6297,7 +6371,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4119 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -6457,6 +6531,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -6473,7 +6549,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4121 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -6633,6 +6709,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -6649,7 +6727,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4123 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -6809,6 +6887,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -6825,7 +6905,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4125 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -6985,6 +7065,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -7001,7 +7083,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4127 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -7161,6 +7243,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -7177,7 +7261,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4129 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -7337,6 +7421,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -7353,7 +7439,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4131 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -7513,6 +7599,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -7529,7 +7617,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4133 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -7689,6 +7777,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -7705,7 +7795,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4135 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -7865,6 +7955,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -7881,7 +7973,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4137 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -8041,6 +8133,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -8057,7 +8151,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4139 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -8217,6 +8311,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -8233,7 +8329,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4141 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -8393,6 +8489,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -8409,7 +8507,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4143 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -8569,6 +8667,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -8585,7 +8685,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4145 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -8744,6 +8844,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -8760,7 +8862,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4147 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -8919,6 +9021,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -8935,7 +9039,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4149 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -9094,6 +9198,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -9110,7 +9216,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4151 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -9269,6 +9375,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -9285,7 +9393,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4153 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -9444,6 +9552,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -9460,7 +9570,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4155 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -9619,6 +9729,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -9635,7 +9747,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4157 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -9794,6 +9906,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -9810,7 +9924,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4159 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -9969,6 +10083,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -9985,7 +10101,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4161 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -10144,6 +10260,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -10160,7 +10278,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4163 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -10319,6 +10437,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -10335,7 +10455,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4165 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -10494,6 +10614,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -10510,7 +10632,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4167 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -10669,6 +10791,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -10685,7 +10809,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4169 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -10843,6 +10967,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -10859,7 +10985,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4171 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -11017,6 +11143,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -11033,7 +11161,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4173 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -11191,6 +11319,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -11207,7 +11337,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4175 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -11365,6 +11495,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -11381,7 +11513,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4177 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -11539,6 +11671,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -11555,7 +11689,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4179 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -11713,6 +11847,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -11729,7 +11865,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4181 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -11887,6 +12023,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -11903,7 +12041,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4183 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -12061,6 +12199,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -12077,7 +12217,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4185 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -12235,6 +12375,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -12251,7 +12393,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4187 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -12409,6 +12551,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -12425,7 +12569,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4189 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -12583,6 +12727,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -12599,7 +12745,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4191 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -12757,6 +12903,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -12773,7 +12921,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4193 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -12931,6 +13079,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -12947,7 +13097,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4195 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -13104,6 +13254,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -13120,7 +13272,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4197 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -13277,6 +13429,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -13293,7 +13447,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4199 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -13450,6 +13604,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -13466,7 +13622,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4201 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -13623,6 +13779,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -13639,7 +13797,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4203 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -13796,6 +13954,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -13812,7 +13972,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4205 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -13969,6 +14129,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -13985,7 +14147,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4207 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -14142,6 +14304,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -14158,7 +14322,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4209 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -14315,6 +14479,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.exa
 **** debug string too long - truncated ****
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -14331,7 +14497,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4211 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -14488,6 +14654,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -14504,7 +14672,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4213 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -14660,6 +14828,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -14676,7 +14846,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4215 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -14831,6 +15001,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -14847,7 +15019,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4217 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -15001,6 +15173,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -15017,7 +15191,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4219 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -15170,6 +15344,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -15186,7 +15362,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4221 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -15338,6 +15514,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -15354,7 +15532,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4223 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -15505,6 +15683,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -15521,7 +15701,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4225 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -15671,6 +15851,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -15687,7 +15869,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4227 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -15836,6 +16018,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -15852,7 +16036,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4229 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16000,6 +16184,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16016,7 +16202,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4231 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16163,6 +16349,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16179,7 +16367,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4233 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16325,6 +16513,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16341,7 +16531,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4235 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16486,6 +16676,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16502,7 +16694,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4237 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16646,6 +16838,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16662,7 +16856,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4239 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16805,6 +16999,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16821,7 +17017,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4241 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -16963,6 +17159,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -16979,7 +17177,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4243 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -17120,6 +17318,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -17136,7 +17336,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4245 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -17276,6 +17476,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -17292,7 +17494,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4247 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -17431,6 +17633,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -17447,7 +17651,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4249 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -17585,6 +17789,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -17601,7 +17807,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4251 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -17738,6 +17944,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -17754,7 +17962,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4253 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -17890,6 +18098,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -17906,7 +18116,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4255 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18041,6 +18251,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18057,7 +18269,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4257 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18191,6 +18403,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18207,7 +18421,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4259 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18340,6 +18554,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18356,7 +18572,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4261 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18488,6 +18704,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18504,7 +18722,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4263 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18635,6 +18853,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18651,7 +18871,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4265 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18781,6 +19001,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18797,7 +19019,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4267 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -18926,6 +19148,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -18942,7 +19166,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4269 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19070,6 +19294,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19086,7 +19312,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4271 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19213,6 +19439,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19229,7 +19457,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4273 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19355,6 +19583,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19371,7 +19601,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4275 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19496,6 +19726,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19512,7 +19744,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4277 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19636,6 +19868,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19652,7 +19886,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4279 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19775,6 +20009,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19791,7 +20027,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4281 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -19913,6 +20149,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -19929,7 +20167,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4283 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20050,6 +20288,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20066,7 +20306,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4285 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20186,6 +20426,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20202,7 +20444,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4287 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20321,6 +20563,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20337,7 +20581,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4289 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20455,6 +20699,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20471,7 +20717,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4291 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20588,6 +20834,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20604,7 +20852,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4293 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20720,6 +20968,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20736,7 +20986,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4295 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20851,6 +21101,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20867,7 +21119,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4297 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -20981,6 +21233,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -20997,7 +21251,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4299 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21110,6 +21364,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21126,7 +21382,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4301 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21238,6 +21494,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21254,7 +21512,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4303 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21365,6 +21623,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21381,7 +21641,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4305 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21491,6 +21751,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21507,7 +21769,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4307 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21616,6 +21878,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21632,7 +21896,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4309 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21740,6 +22004,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21756,7 +22022,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4311 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21863,6 +22129,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -21879,7 +22147,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4313 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -21985,6 +22253,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22001,7 +22271,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4315 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22106,6 +22376,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22122,7 +22394,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4317 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22226,6 +22498,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22242,7 +22516,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4319 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22345,6 +22619,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22361,7 +22637,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4321 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22463,6 +22739,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22479,7 +22757,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4323 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22580,6 +22858,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22596,7 +22876,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4325 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22696,6 +22976,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22712,7 +22994,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4327 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22811,6 +23093,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22827,7 +23111,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4329 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -22925,6 +23209,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -22941,7 +23227,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4331 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23038,6 +23324,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23054,7 +23342,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4333 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23150,6 +23438,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23166,7 +23456,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4335 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23261,6 +23551,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23277,7 +23569,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4337 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23371,6 +23663,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23387,7 +23681,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4339 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23480,6 +23774,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23496,7 +23792,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4341 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23588,6 +23884,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23604,7 +23902,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4343 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23695,6 +23993,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23711,7 +24011,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4345 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23801,6 +24101,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23817,7 +24119,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4347 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -23906,6 +24208,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -23922,7 +24226,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4349 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24010,6 +24314,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24026,7 +24332,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4351 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24113,6 +24419,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24129,7 +24437,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4353 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24215,6 +24523,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24231,7 +24541,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4355 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24316,6 +24626,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24332,7 +24644,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4357 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24416,6 +24728,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24432,7 +24746,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4359 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24515,6 +24829,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24531,7 +24847,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4361 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24613,6 +24929,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24629,7 +24947,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4363 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24710,6 +25028,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24726,7 +25046,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4365 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24806,6 +25126,8 @@ remainder: random@test.example,
     random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24822,7 +25144,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4367 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24901,6 +25223,8 @@ To: random@rwtest.example,
 remainder: random@test.example,
     random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -24917,7 +25241,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4369 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -24995,6 +25319,8 @@ To: random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example,
     random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -25011,7 +25337,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4371 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -25088,6 +25414,8 @@ To: random@rwtest.example,
     random@rwtest.example,
 **** debug string too long - truncated ****
 remainder: random@test.example
+address match test: subject=random@test.example pattern=^.{40,}@*
+random@test.example in "^.{40,}@*"? no (end of list)
 address match test: subject=random@test.example pattern=*@*
 test.example in "*"? yes (matched "*")
 random@test.example in "*@*"? yes (matched "*@*")
@@ -25104,7 +25432,7 @@ random@test.example in "*@*"? yes (matched "*@*")
    in TESTSUITE/aux-fixed/0471.rw
  lookup yielded: rwtest.example
 LOG: address_rewrite MAIN
-  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 1
+  "random@test.example" from to: rewritten as "random@rwtest.example" by rule 2
 newlen=4373 newtype=T newtext:
 To: random@rwtest.example,
     random@rwtest.example,
@@ -25183,6 +25511,8 @@ To: random@rwtest.example,
 remainder: 
 rewrite_one_header: type=F:
   From: CALLER_NAME <CALLER@myhost.test.ex>
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
 address match test: subject=CALLER@myhost.test.ex pattern=*@*
 myhost.test.ex in "*"? yes (matched "*")
 CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
@@ -25387,5 +25717,317 @@ Size of headers = sss
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 created log directory TESTSUITE/spool/log
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
+Sender: CALLER@myhost.test.ex
+Recipients:
+  r2@test.ex
+search_tidyup called
+>>Headers received:
+To: localpart_with_056_chars_56789012345678901234567890123456@test.example
+
+address match test: subject=r2@test.ex pattern=^.{40,}@*
+r2@test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=r2@test.ex pattern=*@*
+test.ex in "*"? yes (matched "*")
+r2@test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="test.ex" opts=NULL
+ file lookup required for test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ file lookup required for *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
+myhost.test.ex in "*"? yes (matched "*")
+CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="myhost.test.ex" opts=NULL
+ file lookup required for myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+ trying partial match *.myhost.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
+ file lookup required for *.myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ cached data used for lookup of *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+rewritten sender = CALLER@myhost.test.ex
+rewrite_one_header: type=T:
+  To: localpart_with_056_chars_56789012345678901234567890123456@test.example
+address match test: subject=localpart_with_056_chars_56789012345678901234567890123456@test.example pattern=^.{40,}@*
+localpart_with_056_chars_56789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
+LOG: address_rewrite MAIN
+  "localpart_with_056_chars_56789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
+address match test: subject=deny_me@test.example pattern=*@*
+test.example in "*"? yes (matched "*")
+deny_me@test.example in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="test.example" opts=NULL
+ file lookup required for test.example
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup yielded: rwtest.example
+LOG: address_rewrite MAIN
+  "deny_me@test.example" from to: rewritten as "deny_me@rwtest.example" by rule 2
+newlen=27 newtype=T newtext:
+To: deny_me@rwtest.example
+remainder: 
+rewrite_one_header: type=F:
+  From: CALLER_NAME <CALLER@myhost.test.ex>
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
+myhost.test.ex in "*"? yes (matched "*")
+CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="myhost.test.ex" opts=NULL
+ cached data used for lookup of myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.myhost.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
+ cached data used for lookup of *.myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ cached data used for lookup of *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+search_tidyup called
+>>Headers after rewriting and local additions:
+* To: localpart_with_056_chars_56789012345678901234567890123456@test.example
+T To: deny_me@rwtest.example
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file name: TESTSUITE/spool//input//10HmaY-0005vi-00-D
+Data file written for message 10HmaY-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for r2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Writing spool header file: TESTSUITE/spool//input//hdr.10HmaY-0005vi-00
+DSN: **** SPOOL_OUT - address: <r2@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+Renaming spool header file: TESTSUITE/spool//input//10HmaY-0005vi-00-H
+Size of headers = sss
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+spool directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100 msg_size = 0
+log directory space = nnnnnK inodes = nnnnn check_space = 10240K inodes = 100
+Sender: CALLER@myhost.test.ex
+Recipients:
+  r3@test.ex
+search_tidyup called
+>>Headers received:
+To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+
+address match test: subject=r3@test.ex pattern=^.{40,}@*
+r3@test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=r3@test.ex pattern=*@*
+test.ex in "*"? yes (matched "*")
+r3@test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="test.ex" opts=NULL
+ file lookup required for test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ file lookup required for *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
+myhost.test.ex in "*"? yes (matched "*")
+CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="myhost.test.ex" opts=NULL
+ file lookup required for myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+ trying partial match *.myhost.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
+ file lookup required for *.myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ cached data used for lookup of *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+rewritten sender = CALLER@myhost.test.ex
+rewrite_one_header: type=T:
+  To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+address match test: subject=localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example pattern=^.{40,}@*
+localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example in "^.{40,}@*"? yes (matched "^.{40,}@*")
+LOG: address_rewrite MAIN
+  "localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example" from to: rewritten as "deny_me@test.example" by rule 1
+address match test: subject=deny_me@test.example pattern=*@*
+test.example in "*"? yes (matched "*")
+deny_me@test.example in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="test.example" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="test.example" opts=NULL
+ file lookup required for test.example
+   in TESTSUITE/aux-fixed/0471.rw
+ creating new cache entry
+ lookup yielded: rwtest.example
+LOG: address_rewrite MAIN
+  "deny_me@test.example" from to: rewritten as "deny_me@rwtest.example" by rule 2
+newlen=27 newtype=T newtext:
+To: deny_me@rwtest.example
+remainder: 
+rewrite_one_header: type=F:
+  From: CALLER_NAME <CALLER@myhost.test.ex>
+address match test: subject=CALLER@myhost.test.ex pattern=^.{40,}@*
+CALLER@myhost.test.ex in "^.{40,}@*"? no (end of list)
+address match test: subject=CALLER@myhost.test.ex pattern=*@*
+myhost.test.ex in "*"? yes (matched "*")
+CALLER@myhost.test.ex in "*@*"? yes (matched "*@*")
+ search_open: lsearch "TESTSUITE/aux-fixed/0471.rw"
+   cached open
+ search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   key="myhost.test.ex" partial=2 affix=*. starflags=0 opts=NULL
+ LRU list:
+   0TESTSUITE/aux-fixed/0471.rw
+   End
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="myhost.test.ex" opts=NULL
+ cached data used for lookup of myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.myhost.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.myhost.test.ex" opts=NULL
+ cached data used for lookup of *.myhost.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+ trying partial match *.test.ex
+ internal_search_find: file="TESTSUITE/aux-fixed/0471.rw"
+   type=lsearch key="*.test.ex" opts=NULL
+ cached data used for lookup of *.test.ex
+   in TESTSUITE/aux-fixed/0471.rw
+ lookup failed
+search_tidyup called
+>>Headers after rewriting and local additions:
+* To: localpart_with_256_chars_5678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456@test.example
+T To: deny_me@rwtest.example
+I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file name: TESTSUITE/spool//input//10HmaZ-0005vi-00-D
+Data file written for message 10HmaZ-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for r3@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Writing spool header file: TESTSUITE/spool//input//hdr.10HmaZ-0005vi-00
+DSN: **** SPOOL_OUT - address: <r3@test.ex> errorsto: <NULL> orcpt: <NULL> dsn_flags: 0x0
+Renaming spool header file: TESTSUITE/spool//input//10HmaZ-0005vi-00-H
+Size of headers = sss
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
