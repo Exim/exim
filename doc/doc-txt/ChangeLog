@@ -111,6 +111,12 @@ JH/27 Bug 2648: fix the passing of an authenticator public-name through spool
       files.  The value is used by the authresults expansion item.  Previously
       if this was used in a router or transport, a crash could result.
 
+JH/30 Bug 2677: fix matching of long addresses. Since 4.93 a limit of 256 was
+      applied. This resulted, if any header-line rewrite rules were configured,
+      in a panic-log trigerrable by sending a message with a long address in
+      a header.	Fix by increaing the arbitrary limit to larger than a single
+      (dewrapped) 5322 header line maximum size.
+
 
 Exim version 4.94
 -----------------

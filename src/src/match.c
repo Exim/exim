@@ -1288,9 +1288,11 @@ compared. Therefore, Exim now forces the entire address into lower case here,
 provided that "caseless" is set. (It is FALSE for calls for matching rewriting
 patterns.) Otherwise just the domain is lower cases. A magic item "+caseful" in
 the list can be used to restore a caseful copy of the local part from the
-original address. */
+original address.
+Limit the subject address size to avoid mem-exhastion attacks.  The size chosen
+is historical (we used to use big_buffer her). */
 
-if ((len = Ustrlen(address)) > 255) len = 255;
+if ((len = Ustrlen(address)) > BIG_BUFFER_SIZE) len = BIG_BUFFER_SIZE;
 ab.address = string_copyn(address, len);
 
 for (uschar * p = ab.address + len - 1; p >= ab.address; p--)
