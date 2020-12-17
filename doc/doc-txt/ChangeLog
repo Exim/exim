@@ -150,6 +150,12 @@ JH/30 Bug 2677: fix matching of long addresses. Since 4.93 a limit of 256 was
       a header.	Fix by increaing the arbitrary limit to larger than a single
       (dewrapped) 5322 header line maximum size.
 
+JH/31 The ESMTP option name advertised for the SUPPORT_EARLY_PIPE build option
+      is changed from X_PIPE_CONNECT to PIPE_CONNECT. This is in line with
+      RFC 6648 which deprecates X- options in protocols as a general practice.
+      Changeover between the implementations is handled by the mechanisms
+      alrready coded.
+
 
 Exim version 4.94
 -----------------

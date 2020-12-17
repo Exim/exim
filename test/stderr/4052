@@ -36,7 +36,7 @@ smtp_reap_early_pipe expect banner
 smtp_reap_early_pipe expect ehlo
   SMTP<< 250-esmtp-resp
          250-PIPELINING
-         250-X_PIPE_CONNECT
+         250-PIPE_CONNECT
          250-SIZE
          250 ok
 EHLO cleartext extensions changed, 0x0120/0x0000 -> 0x0160/0x0000

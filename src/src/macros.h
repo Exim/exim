@@ -1072,8 +1072,8 @@ should not be one active. */
 
 #define AUTHS_REGEX US"\\n250[\\s\\-]AUTH\\s+([\\-\\w \\t]+)(?:\\n|$)"
 
-#define EARLY_PIPE_FEATURE_NAME "X_PIPE_CONNECT"
-#define EARLY_PIPE_FEATURE_LEN  14
+#define EARLY_PIPE_FEATURE_NAME "PIPE_CONNECT"
+#define EARLY_PIPE_FEATURE_LEN  12
 
 
 /* Flags for auth_client_item() */
