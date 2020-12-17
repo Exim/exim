@@ -16858,7 +16858,7 @@ not count as protocol errors (see &%smtp_max_synprot_errors%&).
 .option pipelining_connect_advertise_hosts main "host list&!!" *
 .cindex "pipelining" "early connection"
 .cindex "pipelining" PIPE_CONNECT
-.cindex "ESMTP extensions" X_PIPE_CONNECT
+.cindex "ESMTP extensions" PIPE_CONNECT
 If Exim is built with the SUPPORT_PIPE_CONNECT build option
 this option controls which hosts the facility is advertised to
 and from which pipeline early-connection (before MAIL) SMTP
@@ -16867,7 +16867,9 @@ When used, the pipelining saves on roundtrip times.
 
 See also the &%hosts_pipe_connect%& smtp transport option.
 
-Currently the option name &"X_PIPE_CONNECT"& is used.
+.new
+The SMTP service extension keyword advertised is &"PIPE_CONNECT"&.
+.wen
 
 
 .option prdr_enable main boolean false

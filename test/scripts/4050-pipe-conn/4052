@@ -53,7 +53,7 @@ server PORT_D
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 <MAIL
 >250 mail-from accepted
@@ -75,7 +75,7 @@ server PORT_D
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 <MAIL
 >250 mail-from accepted
@@ -118,7 +118,7 @@ server PORT_D
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 <MAIL
 >250 mail-from accepted
@@ -140,7 +140,7 @@ server PORT_D
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 <MAIL
 >250 mail-from accepted
@@ -166,7 +166,7 @@ server PORT_D
 >220 banner
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 >250 mail good
 >250 rcpt good
@@ -187,7 +187,7 @@ server PORT_D
 >220 banner
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 >250 mail good
 >550 rcpt refused
@@ -208,7 +208,7 @@ server PORT_D
 >220 banner
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 >550 mail cmd refused
 >550 rcpt cmd rejected - no valid mail
@@ -226,7 +226,7 @@ server PORT_D
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250 ok
 <MAIL
 >250 mail-from accepted
@@ -258,7 +258,7 @@ server PORT_D 1
 <EHLO
 >250-esmtp-resp
 >250-PIPELINING
->250-X_PIPE_CONNECT
+>250-PIPE_CONNECT
 >250-SIZE
 >250 ok
 <MAIL
