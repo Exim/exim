@@ -521,7 +521,7 @@ extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for 
 extern uschar *dkim_verify_hashes;     /* Preference order for signatures */
 extern uschar *dkim_verify_keytypes;   /* Preference order for signatures */
 extern uschar *dkim_verify_min_keysizes; /* list of minimum key sizes, keyed by algo */
-extern BOOL    dkim_verify_minimal;    /* Shortcircuit signture verification */
+extern BOOL    dkim_verify_minimal;    /* Shortcircuit signature verification */
 extern uschar *dkim_verify_overall;    /* First successful domain verified, or null */
 extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for each of which we call the DKIM ACL */
 extern uschar *dkim_verify_status;     /* result for this signature */
