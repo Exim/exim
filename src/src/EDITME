@@ -569,9 +569,9 @@ DISABLE_MAL_MKS=yes
 # DISABLE_EVENT=yes
 
 
-# Uncomment this line to include support for early pipelining, per
+# Uncomment this line to remove support for early pipelining, per
 # https://datatracker.ietf.org/doc/draft-harris-early-pipe/
-# SUPPORT_PIPE_CONNECT=yes
+# DISABLE_PIPE_CONNECT=yes
 
 
 # Uncomment the following to remove the fast-ramp two-phase-queue-run support
