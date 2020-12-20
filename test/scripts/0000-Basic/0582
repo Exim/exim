@@ -15,12 +15,11 @@ QUIT
 221 Bye
 ****
 #
-exim -bs
+exim -bs -odi
 mail from:<userg@ok.example>
 rcpt to:<userg@test.ex>
 quit
 ****
-sleep 1
 #
 # cmdline -bs send, data-time defer
 server PORT_S
@@ -39,7 +38,7 @@ QUIT
 221 Bye
 ****
 #
-exim -bs
+exim -bs -odi
 mail from:<userh@ok.example>
 rcpt to:<userh@test.ex>
 data
@@ -49,7 +48,7 @@ body
 .
 quit
 ****
-sleep 1
+#
 #
 #
 no_stdout_check

@@ -18,27 +18,43 @@ OPT
 begin acl
 
 check_rcpt:
-  accept  verify = recipient/callout=use_sender,hold
+  accept
+  	local_parts =	delay : remote
+	verify =	recipient/callout=2s,use_sender,defer_ok,hold
 
+  accept
+	local_parts =	local
+
+  accept
+	verify = recipient/callout=use_sender,hold
 
 # ----- Routers -----
 
 begin routers
 
-r1:
-  driver = manualroute
+r_local:
+  driver =	accept
+  local_parts =	local
+  transport =	local_deliv
+
+r_remote:
+  driver =	manualroute
   route_list = * 127.0.0.1
-  self = send
-  transport = t1
+  self =	send
+  transport =	t1
 
 
 begin transports
+
+local_deliv:
+  driver =	appendfile
+  file =	DIR/test-mail/$local_part_data
+  user =	CALLER
 
 t1:
   driver = smtp
   port =   PORT_S
   hosts_try_fastopen = :
-
 
 # ----- Retry -----
 begin retry

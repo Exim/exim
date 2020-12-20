@@ -3885,7 +3885,9 @@ id, and the remaining ones must be email addresses. However, if the message is
 active (in the middle of a delivery attempt), it is not altered. This option
 can be used only by an admin user.
 
-.vitem "&%-MC%&&~<&'transport'&>&~<&'hostname'&>&~<&'sequence&~number'&>&&&
+.vitem "&%-MC%&&~<&'transport'&>&~<&'hostname'&>&&&
+	&~<&'host&~IP'&>&&&
+	&~<&'sequence&~number'&>&&&
         &~<&'message&~id'&>"
 .oindex "&%-MC%&"
 .cindex "SMTP" "passed connection"

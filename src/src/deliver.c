@@ -7067,13 +7067,23 @@ if (  mua_wrapper
 
 
 /* If this is a run to continue deliveries to an external channel that is
-already set up, defer any local deliveries. */
+already set up, defer any local deliveries.
 
-if (continue_transport)
+jgh 2020/12/20: I don't see why; locals should be quick.
+The defer goes back to version 1.62 in 1997.  A local being still deliverable
+during a continued run might result from something like a defer during the
+original delivery, eg. in a DB lookup.  Unlikely but possible.
+
+To avoid delaying a local when combined with a callout-hold for a remote
+delivery, test continue_sequence rather than continue_transport. */
+
+if (continue_sequence > 1 && addr_local)
   {
+  DEBUG(D_deliver|D_retry|D_route)
+    debug_printf("deferring local deliveries due to continued-transport\n");
   if (addr_defer)
     {
-    address_item *addr = addr_defer;
+    address_item * addr = addr_defer;
     while (addr->next) addr = addr->next;
     addr->next = addr_local;
     }
