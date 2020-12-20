@@ -1,0 +1,191 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbA-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbB-0005vi-00
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<userx@ok.example>
+250 OK
+RCPT TO:<usery@test.ex>
+250 OK
+DATA
+354 hit me
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for usery@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
+250 yeah got that message
+QUIT
+221 Bye
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<userx@ok.example>
+250 OK
+RCPT TO:<usery2@test.ex>
+250 OK
+QUIT
+221 Bye
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<usery@test.ex>
+250 OK
+RCPT TO:<usery2@test.ex>
+250 OK
+DATA
+354 hit me
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
+250 yeah got that message
+QUIT
+221 Bye
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<userx@ok.example>
+250 OK
+RCPT TO:<usery3@test.ex>
+250 OK
+QUIT
+221 Bye
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<usery3@test.ex>
+250 OK
+RCPT TO:<usery@test.ex>
+250 OK
+DATA
+354 hit me
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
+250 yeah got that message
+QUIT
+221 Bye
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<userx@ok.example>
+250 OK
+RCPT TO:<usery4@test.ex>
+250 OK
+RCPT TO:<usery5@test.ex>
+250 OK
+DATA
+354 hit me
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbA-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+body
+.
+250 yeah got that message
+QUIT
+221 Bye
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 Hi
+MAIL FROM:<useri@ok.example>
+250 OK
+RCPT TO:<remote@test.ex>
+250 OK
+DATA
+354 hit me
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbB-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: test
+Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 message accepted
+QUIT
+221 bye
+End of script
