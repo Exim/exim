@@ -1085,3 +1085,7 @@ exim -be
 ${if inlist{aa}{aa} {in list}{not in list}}
 ${if !inlist{aa}{aa} {not in list}{in list}}
 ****
+# listextract from tainted list
+exim -be -oMs my.target.host.name
+'\${listextract {2} {<. $sender_host_name}}'  =>   '${listextract {2} {<. $sender_host_name}}'
+****
