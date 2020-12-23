@@ -1034,3 +1034,5 @@ xyz
 > in list
 > in list
 > 
+> '${listextract {2} {<. my.target.host.name}}'  =>   'target'
+> 

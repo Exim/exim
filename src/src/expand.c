@@ -1298,15 +1298,16 @@ expand_getlistele(int field, const uschar * list)
 {
 const uschar * tlist = list;
 int sep = 0;
-uschar dummy;
+/* Tainted mem for the throwaway element copies */
+uschar * dummy = store_get(2, TRUE);
 
 if (field < 0)
   {
-  for (field++; string_nextinlist(&tlist, &sep, &dummy, 1); ) field++;
+  for (field++; string_nextinlist(&tlist, &sep, dummy, 1); ) field++;
   sep = 0;
   }
 if (field == 0) return NULL;
-while (--field > 0 && (string_nextinlist(&list, &sep, &dummy, 1))) ;
+while (--field > 0 && (string_nextinlist(&list, &sep, dummy, 1))) ;
 return string_nextinlist(&list, &sep, NULL, 0);
 }
 
