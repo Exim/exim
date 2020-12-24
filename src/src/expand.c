@@ -7324,10 +7324,10 @@ while (*s)
 
       case EOP_LISTCOUNT:
         {
-	int cnt = 0;
-	int sep = 0;
+	int cnt = 0, sep = 0;
+	uschar * buf = store_get(2, is_tainted(sub));
 
-	while (string_nextinlist(CUSS &sub, &sep, NULL, 0)) cnt++;
+	while (string_nextinlist(CUSS &sub, &sep, buf, 1)) cnt++;
 	yield = string_fmt_append(yield, "%d", cnt);
         continue;
         }
