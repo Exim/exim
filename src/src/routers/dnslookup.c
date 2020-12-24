@@ -204,6 +204,7 @@ if (  ob->widen_domains
    && (verify != v_sender || !ob->rewrite_headers || addr->parent))
   {
   listptr = ob->widen_domains;
+  /* not expanded so should never be tainted */
   widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,
     sizeof(widen_buffer));
 
@@ -233,6 +234,7 @@ for (;;)
   else if (widen)
     {
     h.name = string_sprintf("%s.%s", addr->domain, widen);
+    /* not expanded so should never be tainted */
     widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,
       sizeof(widen_buffer));
     DEBUG(D_route) debug_printf("%s router widened %s to %s\n", rblock->name,

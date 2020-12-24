@@ -109,7 +109,7 @@ already been provided as part of the AUTH command. For the rest, send them
 out as prompts, and get a data item back. If the data item is "*", abandon the
 authentication attempt. Otherwise, split it into items as above. */
 
-while (  (s = string_nextinlist(&prompts, &sep, big_buffer, big_buffer_size))
+while (  (s = string_nextinlist(&prompts, &sep, NULL, 0))
       && expand_nmax < EXPAND_MAXN)
   if (number++ > expand_nmax)
     if ((rc = auth_prompt(CUS s)) != OK)

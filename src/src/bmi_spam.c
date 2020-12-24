@@ -448,9 +448,11 @@ int bmi_check_rule(uschar *base64_verdict, uschar *option_list) {
   }
 
   /* loop through numbers */
+  /* option_list doesn't seem to be expanded so cannot be tainted.  If it ever is we
+  will trap here */
   rule_ptr = option_list;
   while ((rule_num = string_nextinlist(&rule_ptr, &sep,
-                                       rule_buffer, 32)) != NULL) {
+                                       rule_buffer, sizeof(rule_buffer)))) {
     int rule_int = -1;
 
     /* try to translate to int */

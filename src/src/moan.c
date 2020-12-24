@@ -718,7 +718,6 @@ moan_check_errorcopy(uschar *recipient)
 uschar *item, *localpart, *domain;
 const uschar *listptr = errors_copy;
 uschar *yield = NULL;
-uschar buffer[256];
 int sep = 0;
 int llen;
 
@@ -734,7 +733,7 @@ llen = domain++ - recipient;
 
 /* Scan through the configured items */
 
-while ((item = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
+while ((item = string_nextinlist(&listptr, &sep, NULL, 0)))
   {
   const uschar *newaddress = item;
   const uschar *pattern = string_dequote(&newaddress);

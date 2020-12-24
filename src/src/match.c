@@ -1061,7 +1061,6 @@ if (pattern[0] == '@' && pattern[1] == '@')
   {
   int watchdog = 50;
   uschar *list, *ss;
-  uschar buffer[1024];
 
   if (sdomain == subject + 1 && *subject == '*') return FAIL;
 
@@ -1092,7 +1091,7 @@ if (pattern[0] == '@' && pattern[1] == '@')
     /* Look up the local parts provided by the list; negation is permitted.
     If a local part has to begin with !, a regex can be used. */
 
-    while ((ss = string_nextinlist(CUSS &list, &sep, buffer, sizeof(buffer))))
+    while ((ss = string_nextinlist(CUSS &list, &sep, NULL, 0)))
       {
       int local_yield;
 

@@ -607,14 +607,13 @@ gid_t gid = 0;            /* For picky compilers */
 BOOL ugid_set = FALSE;
 const uschar *listptr;
 uschar *check;
-uschar buffer[1024];
 
 if (!s) return OK;
 
 DEBUG(D_route) debug_printf("checking require_files\n");
 
 listptr = s;
-while ((check = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer))))
+while ((check = string_nextinlist(&listptr, &sep, NULL, 0)))
   {
   int rc;
   int eacces_code = 0;

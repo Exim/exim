@@ -1848,6 +1848,7 @@ switch (type)
         flagptr = (int *)ol3->v.value;
         }
 
+      /* This will trap if sptr is tainted. Not sure if that can happen */
       while ((p = string_nextinlist(CUSS &sptr, &sep, big_buffer, BIG_BUFFER_SIZE)))
         {
         rewrite_rule *next = readconf_one_rewrite(p, flagptr, FALSE);
@@ -1992,6 +1993,7 @@ switch (type)
       while (count-- > 1)
         {
         int sep = 0;
+	/* If p is tainted we trap.  Not sure that can happen */
         (void)string_nextinlist(&p, &sep, big_buffer, BIG_BUFFER_SIZE);
         if (!route_finduser(big_buffer, NULL, &uid))
           log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "user %s was not found",
@@ -2033,6 +2035,7 @@ switch (type)
       while (count-- > 1)
         {
         int sep = 0;
+	/* If p is tainted we trap.  Not sure that can happen */
         (void)string_nextinlist(&p, &sep, big_buffer, BIG_BUFFER_SIZE);
         if (!route_findgroup(big_buffer, &gid))
           log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "group %s was not found",
@@ -3115,6 +3118,7 @@ const uschar *list = config_main_filelist;
 
 /* Loop through the possible file names */
 
+/* Should never be a tainted list */
 while((filename = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
   {
 
@@ -3428,6 +3432,7 @@ if (*log_file_path)
       "\"%s\": %s", log_file_path, expand_string_message);
 
   ss = s;
+  /* should never be a tainted list */
   while ((sss = string_nextinlist(&ss, &sep, big_buffer, big_buffer_size)))
     {
     uschar *t;

@@ -50,6 +50,7 @@ if (srs == NULL)
   co = 0;
   if (srs_config != NULL)
     {
+    /* looks like list not expanded, so cannot be tainted */
     secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH);
 
     if ((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))))
@@ -72,6 +73,7 @@ if (srs == NULL)
   co = 0;
   list = srs_secrets;
   if (secret == NULL || *secret == '\0')
+    /* looks like list not expanded so cannot be tainted */
     if (!(secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)))
       {
       log_write(0, LOG_MAIN | LOG_PANIC,
@@ -104,6 +106,7 @@ if (srs == NULL)
   srs_set_option(srs, SRS_OPTION_USEHASH, usehash);
 
   /* Extra secrets? */
+  /* looks like list not expanded so cannot be tainted */
   while((secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)))
       srs_add_secret(srs, secret,
        	Ustrlen(secret) > SRS_MAX_SECRET_LENGTH ? SRS_MAX_SECRET_LENGTH :  Ustrlen(secret));

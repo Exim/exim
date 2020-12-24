@@ -457,11 +457,10 @@ ibase_find(void * handle, const uschar * filename, uschar * query, int length,
 int sep = 0;
 uschar *server;
 uschar *list = ibase_servers;
-uschar buffer[512];
 
 DEBUG(D_lookup) debug_printf_indent("Interbase query: %s\n", query);
 
-while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+while ((server = string_nextinlist(&list, &sep, NULL, 0)))
   {
   BOOL defer_break = FALSE;
   int rc = perform_ibase_search(query, server, result, errmsg, &defer_break);

@@ -2373,6 +2373,7 @@ on the second character (the one after '-'), to save some effort. */
       int len = Ustrlen(ALT_CONFIG_PREFIX);
       const uschar *list = argrest;
       uschar *filename;
+      /* The argv is untainted, so big_buffer (also untainted) is ok to use */
       while((filename = string_nextinlist(&list, &sep, big_buffer,
              big_buffer_size)))
         if (  (  Ustrlen(filename) < len

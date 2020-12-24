@@ -67,6 +67,7 @@ if (is_tainted(expint))
 Uskip_whitespace(&expint);
 if (!*expint) return TRUE;
 
+/* we just tested to ensure no taint, so big_buffer is ok */
 while ((iface = string_nextinlist(&expint, &sep, big_buffer,
           big_buffer_size)))
   {

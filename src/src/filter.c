@@ -2007,11 +2007,9 @@ while (commands)
 	else if (subtype == FALSE)
 	  {
 	  int sep = 0;
-	  uschar *ss;
-	  const uschar *list = s;
-	  uschar buffer[128];
-	  while ((ss = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
-		 != NULL)
+	  const uschar * list = s;
+
+	  for (uschar * ss; ss = string_nextinlist(&list, &sep, NULL, 0); )
 	    header_remove(0, ss);
 	  }
 

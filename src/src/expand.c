@@ -7251,7 +7251,9 @@ while (*s)
 	uschar * item;
 	uschar * suffix = US"";
 	BOOL needsep = FALSE;
-	uschar buffer[256];
+#define LISTNAMED_BUF_SIZE 256
+	uschar b[LISTNAMED_BUF_SIZE];
+	uschar * buffer = b;
 
 	if (*sub == '+') sub++;
 	if (!arg)		/* no-argument version */
@@ -7286,7 +7288,11 @@ while (*s)
 
 	list = ((namedlist_block *)(t->data.ptr))->string;
 
-	while ((item = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+	/* The list could be quite long so we (re)use a buffer for each element
+	rather than getting each in new memory */
+
+	if (is_tainted(list)) buffer = store_get(LISTNAMED_BUF_SIZE, TRUE);
+	while ((item = string_nextinlist(&list, &sep, buffer, LISTNAMED_BUF_SIZE)))
 	  {
 	  uschar * buf = US" : ";
 	  if (needsep)

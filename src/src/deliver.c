@@ -3184,6 +3184,7 @@ const uschar *listptr = remote_sort_domains;
 uschar *pattern;
 uschar patbuf[256];
 
+/*XXX The list is used before expansion. Not sure how that ties up with the docs */
 while (  *aptr
       && (pattern = string_nextinlist(&listptr, &sep, patbuf, sizeof(patbuf)))
       )

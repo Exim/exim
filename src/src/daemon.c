@@ -1426,6 +1426,7 @@ if (f.daemon_listen && !f.inetd_wait_mode)
 
   list = tls_in.on_connect_ports;
   sep = 0;
+  /* the list isn't expanded so cannot be tainted.  If it ever is we will trap here */
   while ((s = string_nextinlist(&list, &sep, big_buffer, big_buffer_size)))
     if (!isdigit(*s))
       {

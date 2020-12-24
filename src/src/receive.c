@@ -176,6 +176,7 @@ else
   empty item in a list. */
 
   if (*p == 0) p = US":";
+  /* should never be a tainted list */
   while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))))
     if (Ustrcmp(path, "syslog") != 0)
       break;
@@ -1228,9 +1229,8 @@ if (acl_removed_headers)
     const uschar * list = acl_removed_headers;
     int sep = ':';         /* This is specified as a colon-separated list */
     uschar *s;
-    uschar buffer[128];
 
-    while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))))
+    while ((s = string_nextinlist(&list, &sep, NULL, 0)))
       if (header_testname(h, s, Ustrlen(s), FALSE))
 	{
 	h->type = htype_old;

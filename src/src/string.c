@@ -858,6 +858,9 @@ Arguments:
   separator  a pointer to the separator character in an int (see above)
   buffer     where to put a copy of the next string in the list; or
                NULL if the next string is returned in new memory
+	     Note that if the list is tainted then a provided buffer must be
+	     also (else we trap, with a message referencing the callsite).
+	     If we do the allocation, taint is handled there.
   buflen     when buffer is not NULL, the size of buffer; otherwise ignored
 
 Returns:     pointer to buffer, containing the next substring,

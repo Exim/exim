@@ -200,6 +200,7 @@ response it received. Initialization insists on the port being set and there
 being a host list. */
 
 listptr = ob->hosts;
+/* not expanded so should never be tainted */
 while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
        sizeof(host_buffer))))
   {

@@ -644,7 +644,8 @@ if (len == 0) return tblock;
 
 /* Search the formats for a match */
 
-while ((s = string_nextinlist(&format,&sep,big_buffer,big_buffer_size)))
+/* not expanded so cannot be tainted */
+while ((s = string_nextinlist(&format, &sep, big_buffer, big_buffer_size)))
   {
   int slen = Ustrlen(s);
   BOOL match = len >= slen && Ustrncmp(data, s, slen) == 0;
