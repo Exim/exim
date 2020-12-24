@@ -4303,6 +4303,98 @@ return FALSE;	/* should not happen */
 }
 
 
+/* Expand a named list.  Return false on failure. */
+static gstring *
+expand_listnamed(gstring * yield, const uschar * name, const uschar * listtype)
+{
+tree_node *t = NULL;
+const uschar * list;
+int sep = 0;
+uschar * item;
+uschar * suffix = US"";
+BOOL needsep = FALSE;
+#define LISTNAMED_BUF_SIZE 256
+uschar b[LISTNAMED_BUF_SIZE];
+uschar * buffer = b;
+
+if (*name == '+') name++;
+if (!listtype)		/* no-argument version */
+  {
+  if (  !(t = tree_search(addresslist_anchor, name))
+     && !(t = tree_search(domainlist_anchor,  name))
+     && !(t = tree_search(hostlist_anchor,    name)))
+    t = tree_search(localpartlist_anchor, name);
+  }
+else switch(*listtype)	/* specific list-type version */
+  {
+  case 'a': t = tree_search(addresslist_anchor,   name); suffix = US"_a"; break;
+  case 'd': t = tree_search(domainlist_anchor,    name); suffix = US"_d"; break;
+  case 'h': t = tree_search(hostlist_anchor,      name); suffix = US"_h"; break;
+  case 'l': t = tree_search(localpartlist_anchor, name); suffix = US"_l"; break;
+  default:
+    expand_string_message = US"bad suffix on \"list\" operator";
+    return yield;
+  }
+
+if(!t)
+  {
+  expand_string_message = string_sprintf("\"%s\" is not a %snamed list",
+    name, !listtype?""
+      : *listtype=='a'?"address "
+      : *listtype=='d'?"domain "
+      : *listtype=='h'?"host "
+      : *listtype=='l'?"localpart "
+      : 0);
+  return yield;
+  }
+
+list = ((namedlist_block *)(t->data.ptr))->string;
+
+/* The list could be quite long so we (re)use a buffer for each element
+rather than getting each in new memory */
+
+if (is_tainted(list)) buffer = store_get(LISTNAMED_BUF_SIZE, TRUE);
+while ((item = string_nextinlist(&list, &sep, buffer, LISTNAMED_BUF_SIZE)))
+  {
+  uschar * buf = US" : ";
+  if (needsep)
+    yield = string_catn(yield, buf, 3);
+  else
+    needsep = TRUE;
+
+  if (*item == '+')	/* list item is itself a named list */
+    {
+    yield = expand_listnamed(yield, item, listtype);
+    if (expand_string_message)
+      return yield;
+    }
+
+  else if (sep != ':')	/* item from non-colon-sep list, re-quote for colon list-separator */
+    {
+    char tok[3];
+    tok[0] = sep; tok[1] = ':'; tok[2] = 0;
+
+    for(char * cp; cp = strpbrk(CCS item, tok); item = US cp)
+      {
+      yield = string_catn(yield, item, cp - CS item);
+      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
+	yield = string_catn(yield, US"::", 2);
+      else		/* sep in item; should already be doubled; emit once */
+	{
+	yield = string_catn(yield, US tok, 1);
+	if (*cp == sep) cp++;
+	}
+      }
+    yield = string_cat(yield, item);
+    }
+  else
+    yield = string_cat(yield, item);
+  }
+return yield;
+}
+
+
+
 /*************************************************
 *                 Expand string                  *
 *************************************************/
@@ -7244,92 +7336,11 @@ while (*s)
       /* handles nested named lists; requotes as colon-sep list */
 
       case EOP_LISTNAMED:
-	{
-	tree_node *t = NULL;
-	const uschar * list;
-	int sep = 0;
-	uschar * item;
-	uschar * suffix = US"";
-	BOOL needsep = FALSE;
-#define LISTNAMED_BUF_SIZE 256
-	uschar b[LISTNAMED_BUF_SIZE];
-	uschar * buffer = b;
-
-	if (*sub == '+') sub++;
-	if (!arg)		/* no-argument version */
-	  {
-	  if (!(t = tree_search(addresslist_anchor, sub)) &&
-	      !(t = tree_search(domainlist_anchor,  sub)) &&
-	      !(t = tree_search(hostlist_anchor,    sub)))
-	    t = tree_search(localpartlist_anchor, sub);
-	  }
-	else switch(*arg)	/* specific list-type version */
-	  {
-	  case 'a': t = tree_search(addresslist_anchor,   sub); suffix = US"_a"; break;
-	  case 'd': t = tree_search(domainlist_anchor,    sub); suffix = US"_d"; break;
-	  case 'h': t = tree_search(hostlist_anchor,      sub); suffix = US"_h"; break;
-	  case 'l': t = tree_search(localpartlist_anchor, sub); suffix = US"_l"; break;
-	  default:
-            expand_string_message = US"bad suffix on \"list\" operator";
-	    goto EXPAND_FAILED;
-	  }
-
-	if(!t)
-	  {
-          expand_string_message = string_sprintf("\"%s\" is not a %snamed list",
-            sub, !arg?""
-	      : *arg=='a'?"address "
-	      : *arg=='d'?"domain "
-	      : *arg=='h'?"host "
-	      : *arg=='l'?"localpart "
-	      : 0);
+	expand_string_message = NULL;
+	yield = expand_listnamed(yield, sub, arg);
+	if (expand_string_message)
 	  goto EXPAND_FAILED;
-	  }
-
-	list = ((namedlist_block *)(t->data.ptr))->string;
-
-	/* The list could be quite long so we (re)use a buffer for each element
-	rather than getting each in new memory */
-
-	if (is_tainted(list)) buffer = store_get(LISTNAMED_BUF_SIZE, TRUE);
-	while ((item = string_nextinlist(&list, &sep, buffer, LISTNAMED_BUF_SIZE)))
-	  {
-	  uschar * buf = US" : ";
-	  if (needsep)
-	    yield = string_catn(yield, buf, 3);
-	  else
-	    needsep = TRUE;
-
-	  if (*item == '+')	/* list item is itself a named list */
-	    {
-	    uschar * sub = string_sprintf("${listnamed%s:%s}", suffix, item);
-	    item = expand_string_internal(sub, FALSE, NULL, FALSE, TRUE, &resetok);
-	    }
-	  else if (sep != ':')	/* item from non-colon-sep list, re-quote for colon list-separator */
-	    {
-	    char * cp;
-	    char tok[3];
-	    tok[0] = sep; tok[1] = ':'; tok[2] = 0;
-	    while ((cp= strpbrk(CCS item, tok)))
-	      {
-              yield = string_catn(yield, item, cp - CS item);
-	      if (*cp++ == ':')	/* colon in a non-colon-sep list item, needs doubling */
-	        {
-                yield = string_catn(yield, US"::", 2);
-	        item = US cp;
-		}
-	      else		/* sep in item; should already be doubled; emit once */
-	        {
-                yield = string_catn(yield, US tok, 1);
-		if (*cp == sep) cp++;
-	        item = US cp;
-		}
-	      }
-	    }
-          yield = string_cat(yield, item);
-	  }
         continue;
-	}
 
       /* quote a list-item for the given list-separator */
 
