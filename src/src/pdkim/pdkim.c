@@ -1324,7 +1324,8 @@ check_bare_ed25519_pubkey(pdkim_pubkey * p)
 int excess = p->key.len - 32;
 if (excess > 0)
   {
-  DEBUG(D_acl) debug_printf("DKIM: unexpected pubkey len %lu\n", p->key.len);
+  DEBUG(D_acl)
+    debug_printf("DKIM: unexpected pubkey len %lu\n", (unsigned long) p->key.len);
   p->key.data += excess; p->key.len = 32;
   }
 }
