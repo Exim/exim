@@ -1,6 +1,8 @@
 /* Exim: OS-specific C header file for GNU/Hurd */
 /* Copyright (c) The Exim Maintainers 2020 */
 
+#include <features.h>
+
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS
 #define HAVE_BSD_GETLOADAVG
@@ -24,5 +26,9 @@ typedef struct flock flock_t;
 /* setgroups(0, NULL) succeeds, and drops the gid group
 as well as any supplementary groups*/
 #define OS_SETGROUPS_ZERO_DROPS_ALL
+
+#if _POSIX_C_SOURCE >= 200809L || _ATFILE_SOURCE
+# define EXIM_HAVE_OPENAT
+#endif
 
 /* End */
