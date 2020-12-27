@@ -27,7 +27,6 @@ sense in all contexts.  For some, we can do checks at init time.
 */
 
 #include "../exim.h"
-#define CHANNELBIND_HACK
 
 #ifndef AUTH_GSASL
 /* dummy function to satisfy compilers when we link in an "empty" file. */
@@ -46,6 +45,11 @@ static void dummy(int x) { dummy2(x-1); }
 # if GSASL_VERSION_PATCH >= 1
 #  define EXIM_GSASL_SCRAM_S_KEY
 # endif
+# if GSASL_VERSION_PATCH < 2
+#  define CHANNELBIND_HACK
+# endif
+#else
+# define CHANNELBIND_HACK
 #endif
 
 
@@ -374,9 +378,9 @@ if (tls_in.channelbinding && ob->server_channelbinding)
     }
 # endif
 # ifdef CHANNELBIND_HACK
-/* This is a gross hack to get around the library a) requiring that
-c-b was already set, at the _start() call, and b) caching a b64'd
-version of the binding then which it never updates. */
+/* This is a gross hack to get around the library before 1.9.2
+a) requiring that c-b was already set, at the _start() call, and
+b) caching a b64'd version of the binding then which it never updates. */
 
   gsasl_callback_hook_set(gsasl_ctx, tls_in.channelbinding);
 # endif
@@ -429,6 +433,12 @@ if (tls_in.channelbinding)
   would then result in mechanism name changes on a library update, we
   have little choice but to default it off and let the admin choose to
   enable it.  *sigh*
+
+  Earlier library versions need this set early, during the _start() call,
+  so we had to misuse gsasl_callback_hook_set/get() as a data transfer
+  mech for the callback done at that time to get the bind-data.  More recently
+  the callback is done (if needed) during the first gsasl_stop().  We know
+  the bind-data here so can set it (and should not get a callback).
   */
   if (ob->server_channelbinding)
     {
@@ -823,9 +833,9 @@ if (tls_out.channelbinding && ob->client_channelbinding)
     }
 # endif
 # ifdef CHANNELBIND_HACK
-  /* This is a gross hack to get around the library a) requiring that
-  c-b was already set, at the _start() call, and b) caching a b64'd
-  version of the binding then which it never updates. */
+  /* This is a gross hack to get around the library before 1.9.2
+  a) requiring that c-b was already set, at the _start() call, and
+  b) caching a b64'd version of the binding then which it never updates. */
 
   gsasl_callback_hook_set(gsasl_ctx, tls_out.channelbinding);
 # endif
@@ -944,7 +954,7 @@ HDEBUG(D_auth) debug_printf("GNU SASL callback %s for %s/%s as client\n",
 	    gsasl_prop_code_to_name(prop), ablock->name, ablock->public_name);
 switch (prop)
   {
-  case GSASL_CB_TLS_UNIQUE:
+  case GSASL_CB_TLS_UNIQUE:	/*XXX should never get called for this */
     HDEBUG(D_auth)
       debug_printf(" filling in\n");
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
