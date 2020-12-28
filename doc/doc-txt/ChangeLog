@@ -162,6 +162,12 @@ JH/32 Bug 2599: fix delay of delivery to a local address where there is also
 JH/33 Fix a taint trap in the ${listextract } expansion when the source data
       was tainted.
 
+JH/34 Fix the placement of a multiple-message delivery marker in the delivery
+      log line. The asterisk is now consistently appended to the remote IP
+      (and port, if given), and will also be provided on defer and fail log
+      lines.  Previously it could be placed on the local IP if that was being
+      logged, and was only provided on delivery lines.
+
 
 Exim version 4.94
 -----------------

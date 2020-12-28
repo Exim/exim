@@ -792,6 +792,9 @@ g = string_append(g, 3, US" [", h->address, US"]");
 if (LOGGING(outgoing_port))
   g = string_fmt_append(g, ":%d", h->port);
 
+if (continue_sequence > 1)		/*XXX this is wrong for a dropped proxyconn.  Would have to pass back from transport */
+  g = string_catn(g, US"*", 1);
+
 #ifdef SUPPORT_SOCKS
 if (LOGGING(proxy) && proxy_local_address)
   {
@@ -1195,8 +1198,6 @@ else
   if (addr->host_used)
     {
     g = d_hostlog(g, addr);
-    if (continue_sequence > 1)		/*XXX this is wrong for a dropped proxyconn.  Would have to pass back from transport */
-      g = string_catn(g, US"*", 1);
 
 #ifndef DISABLE_EVENT
     deliver_host_address = addr->host_used->address;

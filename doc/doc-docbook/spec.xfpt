@@ -38312,8 +38312,11 @@ parentheses afterwards.
 When more than one address is included in a single delivery (for example, two
 SMTP RCPT commands in one transaction) the second and subsequent addresses are
 flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
-down a single SMTP connection, an asterisk follows the IP address in the log
-lines for the second and subsequent messages.
+down a single SMTP connection, an asterisk follows the
+.new
+remote IP address (and port if enabled)
+.ewn
+in the log lines for the second and subsequent messages.
 When two or more messages are delivered down a single TLS connection, the
 DNS and some TLS-related information logged for the first message delivered
 will not be present in the log lines for the second and subsequent messages.
