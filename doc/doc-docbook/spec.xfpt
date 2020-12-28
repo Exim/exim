@@ -38315,7 +38315,7 @@ flagged with &`->`& instead of &`=>`&. When two or more messages are delivered
 down a single SMTP connection, an asterisk follows the
 .new
 remote IP address (and port if enabled)
-.ewn
+.wen
 in the log lines for the second and subsequent messages.
 When two or more messages are delivered down a single TLS connection, the
 DNS and some TLS-related information logged for the first message delivered
