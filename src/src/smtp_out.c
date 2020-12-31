@@ -159,20 +159,32 @@ tfo_out_check(int sock)
 {
 # ifdef __FreeBSD__
 struct tcp_info tinfo;
-int val;
-socklen_t len = sizeof(val);
+socklen_t len = sizeof(tinfo);
 
-/* The observability as of 12.1 is not useful as a client, only telling us that
-a TFO option was used on SYN.  It could have been a TFO-R, or ignored by the
-server. */
-
-/*
-if (tcp_out_fastopen == TFO_ATTEMPTED_NODATA || tcp_out_fastopen == TFO_ATTEMPTED_DATA)
-  if (getsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN, &val, &len) == 0 && val != 0) {}
-*/
+/* A getsockopt TCP_FASTOPEN unfortunately returns "was-used" for a TFO/R as
+well as a TFO/C.  Use what we can of the Linux hack below; reliability issues ditto. */
 switch (tcp_out_fastopen)
   {
-  case TFO_ATTEMPTED_NODATA:	tcp_out_fastopen = TFO_USED_NODATA; break;
+  case TFO_ATTEMPTED_NODATA:
+    if (  getsockopt(sock, IPPROTO_TCP, TCP_INFO, &tinfo, &len) == 0
+       && tinfo.tcpi_state == TCPS_SYN_SENT
+       && tinfo.__tcpi_unacked > 0
+       )
+      {
+      DEBUG(D_transport|D_v)
+       debug_printf("TCP_FASTOPEN tcpi_unacked %d\n", tinfo.__tcpi_unacked);
+      tcp_out_fastopen = TFO_USED_NODATA;
+      }
+    break;
+  /*
+  case TFO_ATTEMPTED_DATA:
+  case TFO_ATTEMPTED_DATA:
+       if (tinfo.tcpi_options & TCPI_OPT_SYN_DATA)   XXX no equvalent as of 12.2
+  */
+  }
+
+switch (tcp_out_fastopen)
+  {
   case TFO_ATTEMPTED_DATA:	tcp_out_fastopen = TFO_USED_DATA; break;
   default: break; /* compiler quietening */
   }

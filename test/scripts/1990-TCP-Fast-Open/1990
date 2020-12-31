@@ -27,6 +27,14 @@
 # 'net.inet.tcp.fastopen.server_enable=1' in /etc/sysctl.conf
 # Seems to always claim TFO used by transport, if tried.
 #
+# FreeBSD: tried this setup, but we only get the banner captured 100ms after 3rd-ack:
+# #kenv net.inet.ip.fw.default_to_accept=1
+# #kldload ipfw dummynet
+# #ipfw add 00097 pipe 1 ip from 127.0.0.1 to 127.0.0.1
+# #ipfw pipe 1 config delay 50ms
+# Also, the VM managed to lose the ipv4 & 6 addrs on its main interface
+# after a while - so not usable in production
+#
 sudo perl
 system ("tc qdisc add dev lo root netem delay 50ms");
 ****
@@ -50,7 +58,14 @@ system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 
 #
 # First clear any previously-obtained cookie:
 sudo perl
+open(INFO, "-|", "/usr/bin/uname -s");
+$_ = <INFO>;
+if (/^FreeBSD/) {
+system("sysctl net.inet.tcp.fastopen.client_enable=0"); system("sysctl net.inet.tcp.fastopen.client_enable=1");
+} else {
 system ("ip tcp_metrics delete 127.0.0.1");
+}
+
 ****
 #
 #
