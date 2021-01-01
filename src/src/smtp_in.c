@@ -3819,8 +3819,8 @@ if (  acl_smtp_quit
     log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
       *log_msgp);
 
-#ifdef TCP_CORK
-(void) setsockopt(fileno(smtp_out), IPPROTO_TCP, TCP_CORK, US &on, sizeof(on));
+#ifdef EXIM_TCP_CORK
+(void) setsockopt(fileno(smtp_out), IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
 #endif
 
 if (*user_msgp)

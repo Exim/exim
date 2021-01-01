@@ -606,5 +606,13 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
 # define EXIM_GROUPLIST_SIZE NGROUPS_MAX
 #endif
 
+/* Linux has TCP_CORK, FreeBSD has TCP_NOPUSH; they do pretty much the same */
+
+#ifdef TCP_CORK
+# define EXIM_TCP_CORK TCP_CORK
+#elif defined(TCP_NOPUSH)
+# define EXIM_TCP_CORK TCP_NOPUSH
+#endif
+
 #endif
 /* End of exim.h */
