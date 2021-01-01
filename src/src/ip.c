@@ -463,8 +463,8 @@ for (host_item * h = &shost; h; h = h->next)
   for (int port = portlo; port <= porthi; port++)
     if (ip_connect(fd, af, h->address, port, timeout, fastopen_blob) == 0)
       {
-      if (fd != fd6) close(fd6);
-      if (fd != fd4) close(fd4);
+      if (fd6 >= 0 && fd != fd6) close(fd6);
+      if (fd4 >= 0 && fd != fd4) close(fd4);
       if (connhost)
 	{
 	h->port = port;
