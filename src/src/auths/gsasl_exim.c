@@ -39,7 +39,11 @@ static void dummy(int x) { dummy2(x-1); }
 #include "gsasl_exim.h"
 
 
-#if GSASL_VERSION_MINOR >= 9
+#if GSASL_VERSION_MINOR >= 10
+# define EXIM_GSASL_HAVE_SCRAM_SHA_256
+# define EXIM_GSASL_SCRAM_S_KEY
+
+#elif GSASL_VERSION_MINOR == 9
 # define EXIM_GSASL_HAVE_SCRAM_SHA_256
 
 # if GSASL_VERSION_PATCH >= 1
@@ -48,6 +52,7 @@ static void dummy(int x) { dummy2(x-1); }
 # if GSASL_VERSION_PATCH < 2
 #  define CHANNELBIND_HACK
 # endif
+
 #else
 # define CHANNELBIND_HACK
 #endif
