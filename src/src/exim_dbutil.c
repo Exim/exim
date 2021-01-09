@@ -388,7 +388,7 @@ pick out the timestamps, etc., do the copying centrally here.
 Arguments:
   dbblock   a pointer to an open database block
   key       the key of the record to be read
-  length    where to put the length (or NULL if length not wanted)
+  length    where to put the length (or NULL if length not wanted). Includes overhead.
 
 Returns: a pointer to the retrieved record, or
          NULL if the record is not found
@@ -416,7 +416,7 @@ we should store the taint status along with the data. */
 
 yield = store_get(EXIM_DATUM_SIZE(result_datum), TRUE);
 memcpy(yield, EXIM_DATUM_DATA(result_datum), EXIM_DATUM_SIZE(result_datum));
-if (length != NULL) *length = EXIM_DATUM_SIZE(result_datum);
+if (length) *length = EXIM_DATUM_SIZE(result_datum);
 
 EXIM_DATUM_FREE(result_datum);    /* Some DBM libs require freeing */
 return yield;
@@ -616,6 +616,7 @@ for (uschar * key = dbfn_scan(dbm, TRUE, &cursor);
 	t = wait->text;
 	name[MESSAGE_ID_LENGTH] = 0;
 
+    /* Leave corrupt records alone */
 	if (wait->count > WAIT_NAME_MAX)
 	  {
 	  fprintf(stderr,
@@ -1218,7 +1219,7 @@ for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
   /* A continuation record may have been deleted or renamed already, so
   non-existence is not serious. */
 
-  if (value == NULL) continue;
+  if (!value) continue;
 
   /* Delete if too old */
 
@@ -1239,10 +1240,31 @@ for (; keychain && (reset_point = store_mark()); store_reset(reset_point))
 
     /* Leave corrupt records alone */
 
+    if (wait->time_stamp > time(NULL))
+      {
+      printf("**** Data for '%s' corrupted\n  time in future: %s\n",
+        key, print_time(((dbdata_generic *)value)->time_stamp));
+      continue;
+      }
     if (wait->count > WAIT_NAME_MAX)
       {
-      printf("**** Data for %s corrupted\n  count=%d=0x%x max=%d\n",
+      printf("**** Data for '%s' corrupted\n  count=%d=0x%x max=%d\n",
         key, wait->count, wait->count, WAIT_NAME_MAX);
+      continue;
+      }
+    if (wait->sequence > WAIT_CONT_MAX)
+      {
+      printf("**** Data for '%s' corrupted\n  sequence=%d=0x%x max=%d\n",
+        key, wait->sequence, wait->sequence, WAIT_CONT_MAX);
+      continue;
+      }
+
+    /* Record over 1 year old; just remove it */
+
+    if (wait->time_stamp < time(NULL) - 365*24*60*60)
+      {
+      dbfn_delete(dbm, key);
+      printf("deleted %s (too old)\n", key);
       continue;
       }
 
