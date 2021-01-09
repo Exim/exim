@@ -129,6 +129,8 @@ JH/32 Bug 2599: fix delay of delivery to a local address where there is also
 JH/33 Fix a taint trap in the ${listextract } expansion when the source data
       was tainted.
 
+JH/35 Bug 2343: Harden exim_tidydb against corrupt wait- files.
+
 
 Exim version 4.94
 -----------------

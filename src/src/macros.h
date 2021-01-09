@@ -191,9 +191,10 @@ message id with a trailing "-H" or "-D" added. */
 #define SPOOL_NAME_LENGTH (MESSAGE_ID_LENGTH+2)
 
 /* The maximum number of message ids to store in a waiting database
-record. */
+record, and the max number of continuation records allowed. */
 
 #define WAIT_NAME_MAX 50
+#define WAIT_CONT_MAX 1000
 
 /* Wait this long before determining that a Proxy Protocol configured
 host isn't speaking the protocol, and so is disallowed. Can be moved to
