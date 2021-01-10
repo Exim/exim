@@ -831,7 +831,8 @@ if (tls_out.channelbinding && ob->client_channelbinding)
   {
 # ifndef DISABLE_TLS_RESUME
   if (!tls_out.ext_master_secret && tls_out.resumption == RESUME_USED)
-    {		/* per RFC 7677 section 4 */
+    {	/* Per RFC 7677 section 4.  See also RFC 7627, "Triple Handshake"
+	vulnerability, and https://www.mitls.org/pages/attacks/3SHAKE */
     string_format(buffer, buffsize, "%s",
       "channel binding not usable on resumed TLS without extended-master-secret");
     return FAIL;

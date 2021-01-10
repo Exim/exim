@@ -28181,6 +28181,10 @@ supplied by the server.
 .option server_channelbinding gsasl boolean false
 Do not set this true and rely on the properties
 without consulting a cryptographic engineer.
+. Unsure what that's about.  It might be the "Triple Handshake"
+. vulnerability; cf. https://www.mitls.org/pages/attacks/3SHAKE
+. If so, we're ok, requiring Extended Master Secret if TLS
+. Session Resumption was used.
 
 Some authentication mechanisms are able to use external context at both ends
 of the session to bind the authentication to that context, and fail the
