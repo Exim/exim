@@ -177,6 +177,10 @@ JH/36 Bug 2687: Fix interpretation of multiple ^ chars in a plaintext
       documentation.  There is still no way to get a leading ^ immediately
       after a NUL (ie. for the password of a PLAIN method authenticator.
 
+JH/37 Enforce the expected size, for fixed-size records read from hints-DB
+      files.  For bad sizes read, delete the record and whine to paniclog.
+
+
 
 Exim version 4.94
 -----------------

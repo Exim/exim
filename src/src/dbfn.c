@@ -333,6 +333,34 @@ return yield;
 }
 
 
+/* Read a record.  If the length is not as expected then delete it, write
+an error log line and return NULL.
+Use this for fixed-size records (so not retry or wait records).
+
+Arguments:
+  dbblock   a pointer to an open database block
+  key       the key of the record to be read
+  length    the expected record length
+
+Returns: a pointer to the retrieved record, or
+         NULL if the record is not found/bad
+*/
+
+void *
+dbfn_read_enforce_length(open_db * dbblock, const uschar * key, size_t length)
+{
+int rlen;
+void * yield = dbfn_read_with_length(dbblock, key, &rlen);
+
+if (yield)
+  {
+  if (rlen == length) return yield;
+  log_write(0, LOG_MAIN|LOG_PANIC, "Bad db record size for '%s'", key);
+  dbfn_delete(dbblock, key);
+  }
+return NULL;
+}
+
 
 /*************************************************
 *             Write to database file             *

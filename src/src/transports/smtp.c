@@ -805,7 +805,7 @@ else
   uschar * ehlo_resp_key = ehlo_cache_key(sx);
   dbdata_ehlo_resp * er;
 
-  if (!(er = dbfn_read(dbm_file, ehlo_resp_key)))
+  if (!(er = dbfn_read_enforce_length(dbm_file, ehlo_resp_key, sizeof(dbdata_ehlo_resp))))
     { DEBUG(D_transport) debug_printf("no ehlo-resp record\n"); }
   else if (time(NULL) - er->time_stamp > retry_data_expire)
     {
