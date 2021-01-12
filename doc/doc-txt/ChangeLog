@@ -168,6 +168,8 @@ JH/34 Fix the placement of a multiple-message delivery marker in the delivery
       lines.  Previously it could be placed on the local IP if that was being
       logged, and was only provided on delivery lines.
 
+JH/35 Bug 2343: Harden exim_tidydb against corrupt wait- files.
+
 
 Exim version 4.94
 -----------------
