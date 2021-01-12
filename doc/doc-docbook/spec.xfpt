@@ -27824,7 +27824,14 @@ fixed_plain:
   client_send = ^username^mysecret
 .endd
 The lack of colons means that the entire text is sent with the AUTH
-command, with the circumflex characters converted to NULs. A similar example
+command, with the circumflex characters converted to NULs.
+.new
+Note that due to the ambiguity of parsing three consectutive circumflex characters
+there is no way to provide a password having a leading circumflex.
+.wen
+
+
+A similar example
 that uses the LOGIN mechanism is:
 .code
 fixed_login:

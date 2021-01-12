@@ -170,6 +170,13 @@ JH/34 Fix the placement of a multiple-message delivery marker in the delivery
 
 JH/35 Bug 2343: Harden exim_tidydb against corrupt wait- files.
 
+JH/36 Bug 2687: Fix interpretation of multiple ^ chars in a plaintext
+      authenticator client_send option.  Previously the next char, after a pair
+      was collapsed, was taken verbatim (so ^^^foo became ^^foo; ^^^^foo became
+      ^^\x00foo). Fixed to get ^\x00foo and ^^foo respectively to match the
+      documentation.  There is still no way to get a leading ^ immediately
+      after a NUL (ie. for the password of a PLAIN method authenticator.
+
 
 Exim version 4.94
 -----------------
