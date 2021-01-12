@@ -168,14 +168,20 @@ if (!ss)
 len = Ustrlen(ss);
 
 /* The character ^ is used as an escape for a binary zero character, which is
-needed for the PLAIN mechanism. It must be doubled if really needed. */
+needed for the PLAIN mechanism. It must be doubled if really needed.
+
+The parsing ambiguity of ^^^ is taken as ^^ -> ^ ; ^ -> NUL - and there is
+no way to get a leading ^ after a NUL.  We would need to intro new syntax to
+support that (probably preferring to take a more-standard exim list as a source
+and concat the elements with intervening NULs.  Either a magic marker on the
+source string for client_send, or a new option). */
 
 for (int i = 0; i < len; i++)
   if (ss[i] == '^')
     if (ss[i+1] != '^')
       ss[i] = 0;
     else
-      if (--len > ++i) memmove(ss + i, ss + i + 1, len - i);
+      if (--len > i+1) memmove(ss + i + 1, ss + i + 2, len - i);
 
 /* The first string is attached to the AUTH command; others are sent
 unembellished. */
