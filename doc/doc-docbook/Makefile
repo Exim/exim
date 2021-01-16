@@ -3,10 +3,12 @@
 export LC_ALL=C
 
 notarget:;    @echo "** You must specify a target, in the form x.y, where x is 'filter', 'spec',"
-	      @echo "** or 'test', and y is 'xml', 'fo', 'ps', 'pdf', 'html', 'txt', or 'info'."
+	      @echo "** or 'test', and y is 'xml', 'fo', 'ps', 'pdf', 'txt', or 'info'."
 	      @echo "** One other possible targets 'exim.8', 'spec.utf8'".
 	      exit 1
 
+# html used to be supported, but is not here since 50023e0551 (2010).
+# The website build script seems to handle it.
 
 ############################# EVERYTHING ###############################
 #
