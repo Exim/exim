@@ -2,6 +2,7 @@
 # Content-scan: clamav interface
 
 OPT=
+SRV=unset
 CONTROL=
 
 .include DIR/aux-var/std_conf_prefix
@@ -9,8 +10,7 @@ CONTROL=
 log_selector = +subject
 primary_hostname = myhost.test.ex
 
-#XXX we need an additional test for tcp-connected clamd
-av_scanner = clamd : DIR/eximdir/clam_sock CONTROL
+av_scanner = clamd : SRV CONTROL
 
 # ----- Main settings -----
 

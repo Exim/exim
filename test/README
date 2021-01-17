@@ -1119,13 +1119,16 @@ are of the following kinds:
 (2) A line that starts with "*sleep" specifies a number of seconds to wait
     before proceeding.
 
-(3) A line containing "*eof" specifies that the client is expected to close
+(3) A line containing "*data" and a number specifies that the client is
+    expected to send that many byte; the server discards them
+
+(4) A line containing "*eof" specifies that the client is expected to close
     the connection at this point.
 
-(4) A line containing just '.' specifies that the client is expected to send
+(5) A line containing just '.' specifies that the client is expected to send
     many lines, terminated by one that contains just a dot.
 
-(5) Otherwise, the line defines the start of an input line that the client
+(6) Otherwise, the line defines the start of an input line that the client
     is expected to send. To allow for lines that start with digits, the line
     may start with '<', which is not taken as part of the input data. If the
     lines starts with '<<' then only the characters are expected; no return-
