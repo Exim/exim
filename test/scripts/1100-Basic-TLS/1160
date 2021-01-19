@@ -1,0 +1,20 @@
+# TLS client: tls-on-connect
+#
+# For packet-capture, use "runtest -keep" and add (at least) tls debug on the daemon line.
+# For GnuTLS, additionally run the daemon under sudo.
+# Tell wireshark to use DIR/spool/sslkeys for Master Secret log, and decode TCP/1225 as TLS, TLS/1225 as SMTP
+#
+# sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim CALLER@test.ex
+Test message. Contains FF: ÿ
+****
+exim CALLER@test.ex abcd@test.ex xyz@test.ex
+Test message to two different hosts
+****
+exim -v -qf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****
