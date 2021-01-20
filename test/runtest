@@ -1489,6 +1489,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # Platform differences in errno strings
     s/Arg list too long/Argument list too long/;
+
+    s/session: \((SSL_connect|gnutls_handshake)\): timed out/session: (tls lib connect fn): timed out/;
     }
 
   # ======== mail ========

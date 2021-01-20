@@ -1,4 +1,4 @@
-# Exim test configuration 2033
+# Exim test configuration 1162
 # TLS client: verify certificate from server - name-fails
 
 SERVER=
@@ -81,7 +81,7 @@ client_r:
 
 client_s:
   driver = accept
-  local_parts = users
+  local_parts = user_s
   retry_use_local_part
   transport = send_to_server_req_passname
 

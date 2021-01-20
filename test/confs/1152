@@ -1,0 +1,70 @@
+# Exim test configuration 1152
+
+SERVER =
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector = +smtp_confirmation
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+.ifdef _HAVE_GNUTLS
+tls_require_ciphers = NORMAL:!DHE-RSA:!DHE-DSS:!ECDHE-RSA:!ECDHE-ECDSA:!ECDHE-PSK
+.endif
+
+tls_certificate = DIR/aux-fixed/cert1
+
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  retry_use_local_part
+  transport = send_to_server${if eq{$local_part}{abcd}{2}{1}}
+
+server:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/${bless:$local_part}
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+send_to_server1:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  hosts_try_fastopen =	:
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =
+
+send_to_server2:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4
+  port = PORT_D
+  hosts_try_fastopen =	:
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =
+
+# End

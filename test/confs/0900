@@ -43,8 +43,7 @@ log_selector = +received_recipients
 .endif
 
 .ifdef _OPT_MAIN_TLS_CERTIFICATE
-tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
-tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_certificate = DIR/aux-fixed/cert1
 .endif
 
 ALLOW
@@ -107,6 +106,8 @@ remote_smtp:
   hosts =	127.0.0.1
   port =	PORT_S
   hosts_try_fastopen = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s
@@ -116,6 +117,8 @@ remote_smtp_dkim:
   hosts =	127.0.0.1
   port =	PORT_S
   hosts_try_fastopen = :
+  tls_verify_certificates = DIR/aux-fixed/cert1
+  tls_verify_cert_hostnames =
   allow_localhost
   command_timeout = 2s
   final_timeout = 2s
