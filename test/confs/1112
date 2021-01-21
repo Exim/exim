@@ -1,4 +1,6 @@
-# Exim test configuration 1106
+# Exim test configuration 1112
+
+SERVER=
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -11,6 +13,7 @@ tls_advertise_hosts = *
 tls_certificate = DIR/aux-fixed/cert1
 tls_privatekey = DIR/aux-fixed/cert1
 
-smtp_receive_timeout = 1s
+tls_on_connect_ports = PORT_D2 : PORT_D3
+
 
 # End

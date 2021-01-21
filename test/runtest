@@ -1490,7 +1490,10 @@ RESET_AFTER_EXTRA_LINE_READ:
     # Platform differences in errno strings
     s/Arg list too long/Argument list too long/;
 
-    s/session: \((SSL_connect|gnutls_handshake)\): timed out/session: (tls lib connect fn): timed out/;
+    # OpenSSL vs. GnuTLS
+    s/session: \K\((SSL_connect|gnutls_handshake)\): timed out/(tls lib connect fn): timed out/;
+    s/TLS error on connection from .*\K\((SSL_accept|gnutls_handshake)\): timed out/(tls lib accept fn): timed out/;
+    s/TLS error on connection from .*\K(SSL_accept: TCP connection closed by peer|\(gnutls_handshake\): The TLS connection was non-properly terminated.)/(tls lib accept fn): TCP connection closed by peer/;
     }
 
   # ======== mail ========

@@ -1,0 +1,59 @@
+# Exim test configuration 1103
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+
+queue_only
+queue_run_in_order
+
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+tls_advertise_hosts = *
+
+
+# ------ ACL ------
+
+begin acl
+
+check_recipient:
+  deny   message = unacceptable cipher $tls_cipher
+        !encrypted = ${if eq {$sender_host_address}{HOSTIPV4}{IDEA-CBC-MD5}{*}}
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+abc:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/${bless:$local_part}
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

@@ -1,4 +1,4 @@
-# Exim test configuration 1106
+# Exim test configuration 1107
 
 .include DIR/aux-var/tls_conf_prefix
 
@@ -6,11 +6,12 @@ primary_hostname = myhost.test.ex
 
 # ----- Main settings -----
 
-tls_advertise_hosts = *
-
-tls_certificate = DIR/aux-fixed/cert1
-tls_privatekey = DIR/aux-fixed/cert1
+log_selector = +smtp_connection
 
 smtp_receive_timeout = 1s
+
+tls_advertise_hosts = *
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
 
 # End

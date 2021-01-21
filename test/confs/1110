@@ -1,0 +1,59 @@
+# Exim test configuration 1110
+
+.include DIR/aux-var/tls_conf_prefix
+
+primary_hostname = myhost.test.ex
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+tls_verify_hosts = HOSTIPV4
+tls_verify_certificates = DIR/aux-fixed/cert2
+
+
+# ------ ACL ------
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  deny    hosts = HOSTIPV4
+         !encrypted = *
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+abc:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/${bless:$local_part}
+.ifdef _HAVE_GNUTLS
+  headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {<, $tls_in_peerdn}}'
+.endif
+.ifdef _HAVE_OPENSSL
+  headers_add = TLS: cipher=$tls_cipher peerdn/cn '${listextract {-1} {</ $tls_in_peerdn}}'
+.endif
+  user = CALLER
+
+# End
