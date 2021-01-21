@@ -1,4 +1,4 @@
-# Exim test configuration 1990
+# Exim test configuration 1090
 # TCP Fast Open
 
 SERVER=
