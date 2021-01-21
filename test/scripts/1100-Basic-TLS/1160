@@ -25,8 +25,31 @@
 #    Finished		>
 # (otherwise the same).  The extra segments are piplined and do not incur an extra roundtrip time.
 #
-# exim -DSERVER=server -bd -oX PORT_D
-sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
+# To see that pipelining:
+# sudo tc qdisc add dev lo root netem delay 50ms  /  sudo tc qdisc delete dev lo root
+#
+# To test TFO, enable in the transport in the conf/ file
+# With TFO we get the Client Hello on the SYN, and the initial Server segment pipelined with/after the SYN,ACK
+# and before the 3rd-ACK.  We still can't merge the 3rd-ACK with the second Client record set,
+# but it does ack the initial Server data.
+#
+# To see the TFO((R):
+# First clear any previously-obtained cookie:
+#sudo perl
+#open(INFO, "-|", "/usr/bin/uname -s");
+#$_ = <INFO>;
+#if (/^FreeBSD/) {
+#system("sysctl net.inet.tcp.fastopen.client_enable=0"); system("sysctl net.inet.tcp.fastopen.client_enable=1");
+#} else {
+#system ("[ -e /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec ] && echo 0 > /proc/sys/net/ipv4/tcp_fastopen_blackhole_timeout_sec");
+#system ("ip tcp_metrics delete 127.0.0.1");
+#}
+#
+#****
+#
+#
+# sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
+exim -DSERVER=server -bd -oX PORT_D
 ****
 exim CALLER@test.ex
 Test message. Contains FF: ÿ

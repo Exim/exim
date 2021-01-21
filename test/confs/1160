@@ -20,6 +20,8 @@ tls_on_connect_ports = PORT_D
 
 tls_certificate = DIR/aux-fixed/cert1
 
+log_selector = +millisec
+
 # ------ ACL ------
 
 begin acl

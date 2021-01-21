@@ -2098,7 +2098,12 @@ PIPE_CONNECT_RETRY:
   else
 #endif
     {
-    if ((sx->cctx.sock = smtp_connect(&sx->conn_args, NULL)) < 0)
+    blob lazy_conn = {.data = NULL};
+    /* For TLS-connect, a TFO lazy-connect is useful since the Client Hello
+    can go on the TCP SYN. */
+
+    if ((sx->cctx.sock = smtp_connect(&sx->conn_args,
+			    sx->smtps ? &lazy_conn : NULL)) < 0)
       {
       set_errno_nohost(sx->addrlist,
 	errno == ETIMEDOUT ? ERRNO_CONNECTTIMEOUT : errno,

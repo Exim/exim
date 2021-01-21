@@ -246,9 +246,18 @@ switch (tcp_out_fastopen)
 #endif
 
 
-/* Arguments as for smtp_connect(), plus
-  early_data	if non-NULL, idenmpotent data to be sent -
+/* Arguments:
+  host        host item containing name and address and port
+  host_af     AF_INET or AF_INET6
+  port	      TCP port number
+  interface   outgoing interface address or NULL
+  tb          transport
+  timeout     timeout value or 0
+  early_data	if non-NULL, idempotent data to be sent -
 		preferably in the TCP SYN segment
+	      Special case: non-NULL but with NULL blob.data - caller is
+	      client-data-first (eg. TLS-on-connect) and a lazy-TCP-connect is
+	      acceptable.
 
 Returns:      connected socket number, or -1 with errno set
 */
@@ -318,8 +327,22 @@ early-data but no TFO support, send it after connecting. */
 else
   {
 #ifdef TCP_FASTOPEN
+  /* See if TCP Fast Open usable.  Default is a traditional 3WHS connect */
   if (verify_check_given_host(CUSS &ob->hosts_try_fastopen, host) == OK)
-    fastopen_blob = early_data ? early_data : &tcp_fastopen_nodata;
+    {
+    if (!early_data)
+      fastopen_blob = &tcp_fastopen_nodata;	/* TFO, with no data */
+    else if (early_data->data)
+      fastopen_blob = early_data;		/* TFO, with data */
+# ifdef TCP_FASTOPEN_CONNECT
+    else
+      {						/* expecting client data */
+      debug_printf(" set up lazy-connect\n");
+      setsockopt(sock, IPPROTO_TCP, TCP_FASTOPEN_CONNECT, US &on, sizeof(on));
+      /* fastopen_blob = NULL;		 lazy TFO, triggered by data write */
+      }
+# endif
+    }
 #endif
 
   if (ip_connect(sock, host_af, host->address, port, timeout, fastopen_blob) < 0)
@@ -409,6 +432,9 @@ host->address will always be an IPv4 address.
 Arguments:
   sc	      details for making connection: host, af, interface, transport
   early_data  if non-NULL, data to be sent - preferably in the TCP SYN segment
+	      Special case: non-NULL but with NULL blob.data - caller is
+	      client-data-first (eg. TLS-on-connect) and a lazy-TCP-connect is
+	      acceptable.
 
 Returns:      connected socket number, or -1 with errno set
 */
