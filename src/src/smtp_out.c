@@ -329,12 +329,12 @@ else
     HDEBUG(D_transport|D_acl|D_v)
       debug_printf("sending %ld nonTFO early-data\n", (long)early_data->len);
 
-#ifdef TCP_QUICKACK
-    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
-#endif
     if (send(sock, early_data->data, early_data->len, 0) < 0)
       save_errno = errno;
     }
+#ifdef TCP_QUICKACK
+    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
   }
 
 /* Either bind() or connect() failed */

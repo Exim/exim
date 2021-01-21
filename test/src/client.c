@@ -1234,6 +1234,13 @@ if (rc < 0)
   exit(85);
   }
 
+#ifdef TCP_QUICKACK
+  {
+  int off = 0;
+  (void) setsockopt(srv.sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+  }
+#endif
+
 printf("connected\n");
 
 

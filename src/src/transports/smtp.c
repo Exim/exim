@@ -2107,6 +2107,10 @@ PIPE_CONNECT_RETRY:
       sx->send_quit = FALSE;
       return DEFER;
       }
+#ifdef TCP_QUICKACK
+    (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
+			sizeof(off));
+#endif
     }
   /* Expand the greeting message while waiting for the initial response. (Makes
   sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is
@@ -2152,10 +2156,6 @@ will be?  Somehow I doubt it. */
     else
 #endif
       {
-#ifdef TCP_QUICKACK
-      (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, TCP_QUICKACK, US &off,
-			sizeof(off));
-#endif
       if (!smtp_reap_banner(sx))
 	goto RESPONSE_FAILED;
       }

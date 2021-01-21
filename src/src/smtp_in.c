@@ -2893,7 +2893,7 @@ if (!f.sender_host_unknown)
 if (smtp_batched_input) return TRUE;
 
 /* If valid Proxy Protocol source is connecting, set up session.
- * Failure will not allow any SMTP function other than QUIT. */
+Failure will not allow any SMTP function other than QUIT. */
 
 #ifdef SUPPORT_PROXY
 proxy_session = FALSE;
@@ -2902,16 +2902,21 @@ if (check_proxy_protocol_host())
   setup_proxy_protocol_host();
 #endif
 
+#ifdef TCP_QUICKACK /* Avoid pure-ACKs while in tls protocol pingpong phase */
+(void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
+	  US &off, sizeof(off));
+#endif
+
   /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
   smtps port for use with older style SSL MTAs. */
 
 #ifndef DISABLE_TLS
-  if (tls_in.on_connect)
-    {
-    if (tls_server_start(&user_msg) != OK)
-      return smtp_log_tls_fail(user_msg);
-    cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
-    }
+if (tls_in.on_connect)
+  {
+  if (tls_server_start(&user_msg) != OK)
+    return smtp_log_tls_fail(user_msg);
+  cmd_list[CMD_LIST_TLS_AUTH].is_mail_cmd = TRUE;
+  }
 #endif
 
 /* Run the connect ACL if it exists */
@@ -3912,6 +3917,12 @@ os_non_restarting_signal(SIGTERM, command_sigterm_handler);
 
 if (smtp_batched_input) return smtp_setup_batch_msg();
 
+#ifdef TCP_QUICKACK
+if (smtp_in)		/* Avoid pure-ACKs while in cmd pingpong phase */
+  (void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
+	  US &off, sizeof(off));
+#endif
+
 /* Deal with SMTP commands. This loop is exited by setting done to a POSITIVE
 value. The values are 2 larger than the required yield of the function. */
 
@@ -3967,12 +3978,6 @@ while (done <= 0)
 	break;
 	}
     }
-#endif
-
-#ifdef TCP_QUICKACK
-  if (smtp_in)		/* Avoid pure-ACKs while in cmd pingpong phase */
-    (void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
-	    US &off, sizeof(off));
 #endif
 
   switch(smtp_read_command(

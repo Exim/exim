@@ -4,8 +4,29 @@
 # For GnuTLS, additionally run the daemon under sudo.
 # Tell wireshark to use DIR/spool/sslkeys for Master Secret log, and decode TCP/1225 as TLS, TLS/1225 as SMTP
 #
-# sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
-exim -DSERVER=server -bd -oX PORT_D
+# We get (TLS1.3 , OpenSSL):
+#    SYN		>
+#			< SYN,ACK
+#    ACK		>
+#    Client Hello	>
+#			< Server Hello, Change Ciph, Extensions, Cert, Cert Verify, Finished
+#    Change Ciph,Finsh	>
+#			< Banner
+#    EHLO		>
+#			< EHLO resp
+#    MAIL,RCPT,DATA	>
+#			< ACK,ACK,DATA-go-ahead
+#
+# GnuTLS splits both the server records and the client response pair over two TCP segments:
+#    Client Hello	>
+#			< Server Hello, Change Ciph
+#    Change Ciph	>
+#			< Extensins, Cert, Cert Verify, Finished
+#    Finished		>
+# (otherwise the same).  The extra segments are piplined and do not incur an extra roundtrip time.
+#
+# exim -DSERVER=server -bd -oX PORT_D
+sudo exim -DSERVER=server -d+tls -bd -oX PORT_D
 ****
 exim CALLER@test.ex
 Test message. Contains FF: ÿ
