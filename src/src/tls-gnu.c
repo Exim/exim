@@ -3513,6 +3513,8 @@ tls_support * tlsp = state->tlsp;
 
 if (!tlsp || tlsp->active.sock < 0) return;  /* TLS was not active */
 
+tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
+
 if (shutdown)
   {
   DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",

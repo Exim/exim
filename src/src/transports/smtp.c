@@ -4380,35 +4380,21 @@ propagate it from the initial
   }
 
 /* End off tidily with QUIT unless the connection has died or the socket has
-been passed to another process. There has been discussion on the net about what
-to do after sending QUIT. The wording of the RFC suggests that it is necessary
-to wait for a response, but on the other hand, there isn't anything one can do
-with an error response, other than log it. Exim used to do that. However,
-further discussion suggested that it is positively advantageous not to wait for
-the response, but to close the session immediately. This is supposed to move
-the TCP/IP TIME_WAIT state from the server to the client, thereby removing some
-load from the server. (Hosts that are both servers and clients may not see much
-difference, of course.) Further discussion indicated that this was safe to do
-on Unix systems which have decent implementations of TCP/IP that leave the
-connection around for a while (TIME_WAIT) after the application has gone away.
-This enables the response sent by the server to be properly ACKed rather than
-timed out, as can happen on broken TCP/IP implementations on other OS.
-
-This change is being made on 31-Jul-98. After over a year of trouble-free
-operation, the old commented-out code was removed on 17-Sep-99. */
+been passed to another process. */
 
 SEND_QUIT:
 if (sx->send_quit)
-  {
-#ifdef EXIM_TCP_CORK
-  (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
-#endif
-  (void)smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n");
-  }
+			/* Use _MORE to get QUIT in FIN segment */
+  (void)smtp_write_command(sx, SCMD_MORE, "QUIT\r\n");
 
 END_OFF:
 
 #ifndef DISABLE_TLS
+# ifdef EXIM_TCP_CORK
+if (sx->cctx.tls_ctx)	/* Use _CORK to get TLS Close Notify in FIN segment */
+  (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+# endif
+
 tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
 sx->cctx.tls_ctx = NULL;
 #endif
@@ -4426,7 +4412,17 @@ case continue_more won't get set. */
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 if (sx->send_quit)
   {
+  /* This flushes data queued in the socket, being the QUIT and any TLS Close,
+  sending them along with the client FIN flag.  Us (we hope) sending FIN first
+  means we (client) take the TIME_WAIT state, so the server (which likely has a
+  higher connection rate) does no have to. */
+
   shutdown(sx->cctx.sock, SHUT_WR);
+
+  /* Wait for (we hope) ack of our QUIT, and a server FIN.  Discard any data
+  received, then discard the socket.  Any packet received after then, or receive
+  data still in the socket, will get a RST - hence the pause/drain. */
+
   millisleep(20);
   testharness_pause_ms(200);
   if (fcntl(sx->cctx.sock, F_SETFL, O_NONBLOCK) == 0)

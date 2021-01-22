@@ -49,7 +49,7 @@ dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=te
 DKIM [test.ex] Header sha256 computed: 241e16230df5723d899cfae9474c6b376a2ab1f81d1094e358f50ffd0e0067b3
   SMTP<< 250 OK id=10HmbL-0005vi-00
   SMTP>> QUIT
-cmd buf flush ddd bytes
+cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 LOG: MAIN
   => d@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] C="250 OK id=10HmbL-0005vi-00"

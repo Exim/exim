@@ -4147,6 +4147,8 @@ int *fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
 
 if (*fdp < 0) return;  /* TLS was not active */
 
+tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
+
 if (shutdown)
   {
   int rc;

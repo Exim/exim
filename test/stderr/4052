@@ -57,7 +57,7 @@ transport_check_waiting entered
  no messages waiting for 127.0.0.1
 transport_check_waiting: FALSE
   SMTP>> QUIT
-cmd buf flush ddd bytes
+cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 Leaving smtp transport
 LOG: MAIN
