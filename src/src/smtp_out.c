@@ -349,14 +349,22 @@ else
     save_errno = errno;
   else if (early_data && !fastopen_blob && early_data->data && early_data->len)
     {
+    /* We had some early-data to send, but couldn't do TFO */
     HDEBUG(D_transport|D_acl|D_v)
       debug_printf("sending %ld nonTFO early-data\n", (long)early_data->len);
 
+#ifdef TCP_QUICKACK_notdef
+    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
     if (send(sock, early_data->data, early_data->len, 0) < 0)
       save_errno = errno;
     }
-#ifdef TCP_QUICKACK
-    (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#ifdef TCP_QUICKACK_notdef
+  /* Under TFO (with openssl & pipe-conn; testcase 4069, as of
+  5.10.8-100.fc32.x86_64) this seems to be inop.
+  Perhaps overwritten when we (client) go -> ESTABLISHED on seeing the 3rd-ACK?
+  For that case, added at smtp_reap_banner(). */
+  (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
 #endif
   }
 

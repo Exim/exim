@@ -712,7 +712,17 @@ return count;
 static BOOL
 smtp_reap_banner(smtp_context * sx)
 {
-BOOL good_response = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
+BOOL good_response;
+#if defined(__linux__) && defined(TCP_QUICKACK)
+  {	/* Hack to get QUICKACK disabled; has to be right after 3whs, and has to on->off */
+  int sock = sx->cctx.sock;
+  struct pollfd p = {.fd = sock, .events = POLLOUT};
+  int rc = poll(&p, 1, 1000);
+  (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &on, sizeof(on));
+  (void) setsockopt(sock, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+  }
+#endif
+good_response = smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
   '2', (SOB sx->conn_args.ob)->command_timeout);
 #ifdef EXPERIMENTAL_DSN_INFO
 sx->smtp_greeting = string_copy(sx->buffer);
