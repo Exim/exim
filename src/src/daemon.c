@@ -2431,6 +2431,11 @@ for (;;)
 
       if (accept_socket >= 0)
         {
+#ifdef TCP_QUICKACK /* Avoid pure-ACKs while in tls protocol pingpong phase */
+	/* Unfortunately we cannot be certain to do this before a TLS-on-connect
+	Client Hello arrives and is acked. We do it as early as possible. */
+	(void) setsockopt(accept_socket, IPPROTO_TCP, TCP_QUICKACK, US &off, sizeof(off));
+#endif
         if (inetd_wait_timeout)
           last_connection_time = time(NULL);
         handle_smtp_call(listen_sockets, listen_socket_count, accept_socket,

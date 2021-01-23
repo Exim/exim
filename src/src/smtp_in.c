@@ -2902,13 +2902,8 @@ if (check_proxy_protocol_host())
   setup_proxy_protocol_host();
 #endif
 
-#ifdef TCP_QUICKACK /* Avoid pure-ACKs while in tls protocol pingpong phase */
-(void) setsockopt(fileno(smtp_in), IPPROTO_TCP, TCP_QUICKACK,
-	  US &off, sizeof(off));
-#endif
-
-  /* Start up TLS if tls_on_connect is set. This is for supporting the legacy
-  smtps port for use with older style SSL MTAs. */
+/* Start up TLS if tls_on_connect is set. This is for supporting the legacy
+smtps port for use with older style SSL MTAs. */
 
 #ifndef DISABLE_TLS
 if (tls_in.on_connect)
