@@ -3279,18 +3279,7 @@ int codelen = 3;
 uschar *smtp_code;
 uschar *lognl;
 uschar *sender_info = US"";
-uschar *what =
-#ifdef WITH_CONTENT_SCAN
-  where == ACL_WHERE_MIME ? US"during MIME ACL checks" :
-#endif
-  where == ACL_WHERE_PREDATA ? US"DATA" :
-  where == ACL_WHERE_DATA ? US"after DATA" :
-#ifndef DISABLE_PRDR
-  where == ACL_WHERE_PRDR ? US"after DATA PRDR" :
-#endif
-  smtp_cmd_data ?
-    string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_data) :
-    string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]);
+uschar *what;
 
 if (drop) rc = FAIL;
 
@@ -3306,19 +3295,45 @@ fixed, sender_address at this point became the rewritten address. I'm not sure
 this is what should be logged, so I've changed to logging the unrewritten
 address to retain backward compatibility. */
 
-#ifndef WITH_CONTENT_SCAN
-if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA)
-#else
-if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA || where == ACL_WHERE_MIME)
-#endif
+switch (where)
   {
-  sender_info = string_sprintf("F=<%s>%s%s%s%s ",
-    sender_address_unrewritten ? sender_address_unrewritten : sender_address,
-    sender_host_authenticated ? US" A="                                    : US"",
-    sender_host_authenticated ? sender_host_authenticated                  : US"",
-    sender_host_authenticated && authenticated_id ? US":"                  : US"",
-    sender_host_authenticated && authenticated_id ? authenticated_id       : US""
-    );
+#ifdef WITH_CONTENT_SCAN
+  case ACL_WHERE_MIME:		what = US"during MIME ACL checks";	break;
+#endif
+  case ACL_WHERE_PREDATA:	what = US"DATA";			break;
+  case ACL_WHERE_DATA:		what = US"after DATA";			break;
+#ifndef DISABLE_PRDR
+  case ACL_WHERE_PRDR:		what = US"after DATA PRDR";		break;
+#endif
+  default:
+    {
+    uschar * place = smtp_cmd_data ? smtp_cmd_data : US"in \"connect\" ACL";
+    int lim = 100;
+
+    if (where == ACL_WHERE_AUTH)	/* avoid logging auth creds */
+      {
+      uschar * s;
+      for (s = smtp_cmd_data; *s && !isspace(*s); ) s++;
+      lim = s - smtp_cmd_data;	/* atop after method */
+      }
+    what = string_sprintf("%s %.*s", acl_wherenames[where], lim, place);
+    }
+  }
+switch (where)
+  {
+  case ACL_WHERE_RCPT:
+  case ACL_WHERE_DATA:
+#ifdef WITH_CONTENT_SCAN
+  case ACL_WHERE_MIME:
+#endif
+    sender_info = string_sprintf("F=<%s>%s%s%s%s ",
+      sender_address_unrewritten ? sender_address_unrewritten : sender_address,
+      sender_host_authenticated ? US" A="                                    : US"",
+      sender_host_authenticated ? sender_host_authenticated                  : US"",
+      sender_host_authenticated && authenticated_id ? US":"                  : US"",
+      sender_host_authenticated && authenticated_id ? authenticated_id       : US""
+      );
+  break;
   }
 
 /* If there's been a sender verification failure with a specific message, and
@@ -4035,21 +4050,18 @@ while (done <= 0)
       /* Find the name of the requested authentication mechanism. */
 
       s = smtp_cmd_data;
-      while ((c = *smtp_cmd_data) != 0 && !isspace(c))
-	{
+      for (; (c = *smtp_cmd_data) && !isspace(c); smtp_cmd_data++)
 	if (!isalnum(c) && c != '-' && c != '_')
 	  {
 	  done = synprot_error(L_smtp_syntax_error, 501, NULL,
 	    US"invalid character in authentication mechanism name");
 	  goto COMMAND_LOOP;
 	  }
-	smtp_cmd_data++;
-	}
 
       /* If not at the end of the line, we must be at white space. Terminate the
       name and move the pointer on to any data that may be present. */
 
-      if (*smtp_cmd_data != 0)
+      if (*smtp_cmd_data)
 	{
 	*smtp_cmd_data++ = 0;
 	while (isspace(*smtp_cmd_data)) smtp_cmd_data++;

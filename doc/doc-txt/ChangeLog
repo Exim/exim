@@ -180,6 +180,10 @@ JH/36 Bug 2687: Fix interpretation of multiple ^ chars in a plaintext
 JH/37 Enforce the expected size, for fixed-size records read from hints-DB
       files.  For bad sizes read, delete the record and whine to paniclog.
 
+JH/38 When logging an AUTH failure, as server, do not include sensitive
+      information. Previously, the credentials would be included if given
+      as part of the AUTH command line and an ACL denied authentidcation.
+
 
 
 Exim version 4.94
