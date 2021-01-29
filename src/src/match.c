@@ -850,6 +850,11 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 	  (void)fclose(f);
 	  HDEBUG(D_lists) debug_printf("%s %s (matched \"%s\" in %s)\n", ot,
 	    yield == OK ? "yes" : "no", sss, filename);
+
+	  /* The "pattern" being matched came from the file; we use a stack-local.
+	  Copy it to allocated memory now we know it matched. */
+
+	  if (valueptr) *valueptr = string_copy(ss);
 	  return file_yield;
 
         case DEFER:

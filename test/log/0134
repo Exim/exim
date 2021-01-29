@@ -23,3 +23,6 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbE-0005vi-00 => PIPE <PIPE@PIPE.DOMAIN> R=topipe T=pipe
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => direct_file_user <direct_file_user@test.ex> R=smartuser_direct T=directfile
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed

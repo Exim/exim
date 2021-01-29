@@ -138,6 +138,10 @@ JH/36 Bug 2687: Fix interpretation of multiple ^ chars in a plaintext
       documentation.  There is still no way to get a leading ^ immediately
       after a NUL (ie. for the password of a PLAIN method authenticator.
 
+JH/39 Bug 2691: fix $local_part_data.  When the matching list element
+      referred to a file, bad data was returned.  This likely also affected
+      $domain_part_data.
+
 
 Exim version 4.94
 -----------------
