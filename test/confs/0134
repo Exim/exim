@@ -45,6 +45,14 @@ smartuser:
   retry_use_local_part
   transport = appendfile
 
+smartuser_direct:
+  driver = accept
+  domains = test.ex
+  headers_add = "smartuser: dd=$domain_data lpd=$local_part_data"
+  local_parts = DIR/aux-fixed/TESTNUM.listL
+  retry_use_local_part
+  transport = directfile
+
 default2:
   driver = accept
   headers_add = router: defaulted
@@ -70,6 +78,13 @@ appendfile:
          ${if eq {$local_part}{USERX}{UC-USERX}{\
          ${if eq {$local_part}{userx}{lc-userx}{\
          $local_part}}}}}}
+
+directfile:
+  driver = appendfile
+  user = CALLER
+  headers_add = "domain_data: $domain_data\n\
+                 local_part_data: $local_part_data"
+  file = DIR/test-mail/directfile
 
 pipe:
   driver = pipe

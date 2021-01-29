@@ -809,19 +809,19 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
         sss = ss + 1;
         }
 
-      ss = filebuffer + Ustrlen(filebuffer);             /* trailing space */
+      ss = filebuffer + Ustrlen(filebuffer);		/* trailing space */
       while (ss > filebuffer && isspace(ss[-1])) ss--;
       *ss = 0;
 
       ss = filebuffer;
-      while (isspace(*ss)) ss++;                         /* leading space */
+      while (isspace(*ss)) ss++;			/* leading space */
 
-      if (*ss == 0) continue;                            /* ignore empty */
+      if (!*ss) continue;				/* ignore empty */
 
-      file_yield = yield;                                /* positive yield */
-      sss = ss;                                          /* for debugging */
+      file_yield = yield;				/* positive yield */
+      sss = ss;						/* for debugging */
 
-      if (*ss == '!')                                    /* negation */
+      if (*ss == '!')					/* negation */
         {
         file_yield = (file_yield == OK)? FAIL : OK;
         while (isspace((*(++ss))));
@@ -833,6 +833,11 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
 	  (void)fclose(f);
 	  HDEBUG(D_lists) debug_printf("%s %s (matched \"%s\" in %s)\n", ot,
 	    yield == OK ? "yes" : "no", sss, filename);
+
+	  /* The "pattern" being matched came from the file; we use a stack-local.
+	  Copy it to allocated memory now we know it matched. */
+
+	  if (valueptr) *valueptr = string_copy(ss);
 	  return file_yield;
 
         case DEFER:

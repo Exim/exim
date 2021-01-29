@@ -184,6 +184,10 @@ JH/38 When logging an AUTH failure, as server, do not include sensitive
       information. Previously, the credentials would be included if given
       as part of the AUTH command line and an ACL denied authentidcation.
 
+JH/39 Bug 2691: fix $local_part_data.  When the matching list element
+      referred to a file, bad data was returned.  This likely also affected
+      $domain_part_data.
+
 
 
 Exim version 4.94

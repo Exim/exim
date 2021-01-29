@@ -31,3 +31,7 @@ exim -odi PIPE@PIPE.DOMAIN
 Test to uppercased piped address.
 .
 ****
+exim -odi direct_file_user@test.ex
+Test use of filename in local_part list
+.
+****

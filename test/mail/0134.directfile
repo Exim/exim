@@ -1,0 +1,14 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbF-0005vi-00
+	for direct_file_user@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+smartuser: dd=test.ex lpd=direct_file_user
+domain_data: test.ex
+local_part_data: direct_file_user
+
+Test use of filename in local_part list
+
