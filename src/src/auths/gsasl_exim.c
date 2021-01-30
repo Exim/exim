@@ -308,44 +308,41 @@ gsasl_prop_code_to_name(Gsasl_property prop)
 {
 switch (prop)
   {
-  case GSASL_AUTHID: return US"AUTHID";
-  case GSASL_AUTHZID: return US"AUTHZID";
-  case GSASL_PASSWORD: return US"PASSWORD";
-  case GSASL_ANONYMOUS_TOKEN: return US"ANONYMOUS_TOKEN";
-  case GSASL_SERVICE: return US"SERVICE";
-  case GSASL_HOSTNAME: return US"HOSTNAME";
-  case GSASL_GSSAPI_DISPLAY_NAME: return US"GSSAPI_DISPLAY_NAME";
-  case GSASL_PASSCODE: return US"PASSCODE";
-  case GSASL_SUGGESTED_PIN: return US"SUGGESTED_PIN";
-  case GSASL_PIN: return US"PIN";
-  case GSASL_REALM: return US"REALM";
-  case GSASL_DIGEST_MD5_HASHED_PASSWORD: return US"DIGEST_MD5_HASHED_PASSWORD";
-  case GSASL_QOPS: return US"QOPS";
-  case GSASL_QOP: return US"QOP";
-  case GSASL_SCRAM_ITER: return US"SCRAM_ITER";
-  case GSASL_SCRAM_SALT: return US"SCRAM_SALT";
-  case GSASL_SCRAM_SALTED_PASSWORD: return US"SCRAM_SALTED_PASSWORD";
+  case GSASL_AUTHID:			return US"AUTHID";
+  case GSASL_AUTHZID:			return US"AUTHZID";
+  case GSASL_PASSWORD:			return US"PASSWORD";
+  case GSASL_ANONYMOUS_TOKEN:		return US"ANONYMOUS_TOKEN";
+  case GSASL_SERVICE:			return US"SERVICE";
+  case GSASL_HOSTNAME:			return US"HOSTNAME";
+  case GSASL_GSSAPI_DISPLAY_NAME:	return US"GSSAPI_DISPLAY_NAME";
+  case GSASL_PASSCODE:			return US"PASSCODE";
+  case GSASL_SUGGESTED_PIN:		return US"SUGGESTED_PIN";
+  case GSASL_PIN:			return US"PIN";
+  case GSASL_REALM:			return US"REALM";
+  case GSASL_DIGEST_MD5_HASHED_PASSWORD:	return US"DIGEST_MD5_HASHED_PASSWORD";
+  case GSASL_QOPS:			return US"QOPS";
+  case GSASL_QOP:			return US"QOP";
+  case GSASL_SCRAM_ITER:		return US"SCRAM_ITER";
+  case GSASL_SCRAM_SALT:		return US"SCRAM_SALT";
+  case GSASL_SCRAM_SALTED_PASSWORD:	return US"SCRAM_SALTED_PASSWORD";
 #ifdef EXIM_GSASL_SCRAM_S_KEY
-  case GSASL_SCRAM_STOREDKEY: return US"SCRAM_STOREDKEY";
-  case GSASL_SCRAM_SERVERKEY: return US"SCRAM_SERVERKEY";
+  case GSASL_SCRAM_STOREDKEY:		return US"SCRAM_STOREDKEY";
+  case GSASL_SCRAM_SERVERKEY:		return US"SCRAM_SERVERKEY";
 #endif
-  case GSASL_CB_TLS_UNIQUE: return US"CB_TLS_UNIQUE";
-  case GSASL_SAML20_IDP_IDENTIFIER: return US"SAML20_IDP_IDENTIFIER";
-  case GSASL_SAML20_REDIRECT_URL: return US"SAML20_REDIRECT_URL";
-  case GSASL_OPENID20_REDIRECT_URL: return US"OPENID20_REDIRECT_URL";
-  case GSASL_OPENID20_OUTCOME_DATA: return US"OPENID20_OUTCOME_DATA";
-  case GSASL_SAML20_AUTHENTICATE_IN_BROWSER: return US"SAML20_AUTHENTICATE_IN_BROWSER";
-  case GSASL_OPENID20_AUTHENTICATE_IN_BROWSER: return US"OPENID20_AUTHENTICATE_IN_BROWSER";
-#ifdef EXIM_GSASL_SCRAM_S_KEY
-  case GSASL_SCRAM_CLIENTKEY: return US"SCRAM_CLIENTKEY";
-#endif
-  case GSASL_VALIDATE_SIMPLE: return US"VALIDATE_SIMPLE";
-  case GSASL_VALIDATE_EXTERNAL: return US"VALIDATE_EXTERNAL";
-  case GSASL_VALIDATE_ANONYMOUS: return US"VALIDATE_ANONYMOUS";
-  case GSASL_VALIDATE_GSSAPI: return US"VALIDATE_GSSAPI";
-  case GSASL_VALIDATE_SECURID: return US"VALIDATE_SECURID";
-  case GSASL_VALIDATE_SAML20: return US"VALIDATE_SAML20";
-  case GSASL_VALIDATE_OPENID20: return US"VALIDATE_OPENID20";
+  case GSASL_CB_TLS_UNIQUE:		return US"CB_TLS_UNIQUE";
+  case GSASL_SAML20_IDP_IDENTIFIER:	return US"SAML20_IDP_IDENTIFIER";
+  case GSASL_SAML20_REDIRECT_URL:	return US"SAML20_REDIRECT_URL";
+  case GSASL_OPENID20_REDIRECT_URL:	return US"OPENID20_REDIRECT_URL";
+  case GSASL_OPENID20_OUTCOME_DATA:	return US"OPENID20_OUTCOME_DATA";
+  case GSASL_SAML20_AUTHENTICATE_IN_BROWSER:	return US"SAML20_AUTHENTICATE_IN_BROWSER";
+  case GSASL_OPENID20_AUTHENTICATE_IN_BROWSER:	return US"OPENID20_AUTHENTICATE_IN_BROWSER";
+  case GSASL_VALIDATE_SIMPLE:		return US"VALIDATE_SIMPLE";
+  case GSASL_VALIDATE_EXTERNAL:		return US"VALIDATE_EXTERNAL";
+  case GSASL_VALIDATE_ANONYMOUS:	return US"VALIDATE_ANONYMOUS";
+  case GSASL_VALIDATE_GSSAPI:		return US"VALIDATE_GSSAPI";
+  case GSASL_VALIDATE_SECURID:		return US"VALIDATE_SECURID";
+  case GSASL_VALIDATE_SAML20:		return US"VALIDATE_SAML20";
+  case GSASL_VALIDATE_OPENID20:		return US"VALIDATE_OPENID20";
   }
 return CUS string_sprintf("(unknown prop: %d)", (int)prop);
 }
@@ -585,14 +582,19 @@ return GSASL_AUTHENTICATION_ERROR;
 }
 
 
+/* Set the "next" $auth[n] and increment expand_nmax */
+
 static void
 set_exim_authvar_from_prop(Gsasl_session * sctx, Gsasl_property prop)
 {
 uschar * propval = US gsasl_property_fast(sctx, prop);
 int i = expand_nmax, j = i + 1;
 propval = propval ? string_copy(propval) : US"";
-auth_vars[i] = expand_nstring[j] = propval;
+HDEBUG(D_auth) debug_printf("auth[%d] <=  %s'%s'\n",
+			    j, gsasl_prop_code_to_name(prop), propval);
+expand_nstring[j] = propval;
 expand_nlength[j] = Ustrlen(propval);
+if (i < AUTH_VARS) auth_vars[i] = propval;
 expand_nmax = j;
 }
 
@@ -862,10 +864,7 @@ gsasl_session_hook_set(sctx, &cb_state);
 
 /* Set properties */
 
-if (  !set_client_prop(sctx, GSASL_SCRAM_SALTED_PASSWORD, ob->client_spassword,
-		  0, buffer, buffsize)
-      &&
-      !set_client_prop(sctx, GSASL_PASSWORD, ob->client_password,
+if (  !set_client_prop(sctx, GSASL_PASSWORD, ob->client_password,
 		  0, buffer, buffsize)
    || !set_client_prop(sctx, GSASL_AUTHID, ob->client_username,
 		  0, buffer, buffsize)
@@ -943,10 +942,13 @@ for(s = NULL; ;)
   }
 
 done:
-HDEBUG(D_auth)
+if (yield == OK)
   {
-  const uschar * s = CUS gsasl_property_fast(sctx, GSASL_SCRAM_SALTED_PASSWORD);
-  if (s) debug_printf(" - SaltedPassword: '%s'\n", s);
+  expand_nmax = 0;
+  set_exim_authvar_from_prop(sctx, GSASL_AUTHID);
+  set_exim_authvar_from_prop(sctx, GSASL_SCRAM_ITER);
+  set_exim_authvar_from_prop(sctx, GSASL_SCRAM_SALT);
+  set_exim_authvar_from_prop(sctx, GSASL_SCRAM_SALTED_PASSWORD);
   }
 
 gsasl_finish(sctx);
@@ -965,6 +967,26 @@ switch (prop)
       debug_printf(" filling in\n");
     gsasl_property_set(sctx, GSASL_CB_TLS_UNIQUE, CCS tls_out.channelbinding);
     break;
+  case GSASL_SCRAM_SALTED_PASSWORD:
+    {
+    uschar * client_spassword =
+      ((auth_gsasl_options_block *) ablock->options_block)->client_spassword;
+    uschar dummy[4];
+    HDEBUG(D_auth) if (!client_spassword)
+      debug_printf(" client_spassword option unset\n");
+    if (client_spassword)
+      {
+      expand_nmax = 0;
+      set_exim_authvar_from_prop(sctx, GSASL_AUTHID);
+      set_exim_authvar_from_prop(sctx, GSASL_SCRAM_ITER);
+      set_exim_authvar_from_prop(sctx, GSASL_SCRAM_SALT);
+      set_client_prop(sctx, GSASL_SCRAM_SALTED_PASSWORD, client_spassword,
+		  0, dummy, sizeof(dummy));
+      for (int i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
+      expand_nmax = 0;
+      }
+    break;
+    }
   default:
     HDEBUG(D_auth)
       debug_printf(" not providing one\n");

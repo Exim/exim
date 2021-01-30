@@ -12338,7 +12338,7 @@ to the relevant file.
 When, as a result of aliasing or forwarding, a message is directed to a pipe,
 this variable holds the pipe command when the transport is running.
 
-.vitem "&$auth1$& &-- &$auth3$&"
+.vitem "&$auth1$& &-- &$auth4$&"
 .vindex "&$auth1$&, &$auth2$&, etc"
 These variables are used in SMTP authenticators (see chapters
 &<<CHAPplaintext>>&&--&<<CHAPtlsauth>>&). Elsewhere, they are empty.
@@ -28167,6 +28167,12 @@ realease for the SCRAM-SHA-256 method.
 The macro _HAVE_AUTH_GSASL_SCRAM_SHA_256 will be defined
 when this happens.
 
+.new
+To see the list of mechanisms supported by the library run Exim with "auth" debug
+enabled and look for a line containing "GNU SASL supports".
+Note however that some may not have been tested from Exim.
+.wen
+
 
 .option client_authz gsasl string&!! unset
 This option can be used to supply an &'authorization id'&
@@ -28186,25 +28192,44 @@ the password to be used, in clear.
 This option is exapanded before use, and should result in
 the account name to be used.
 
+
 .option client_spassword gsasl string&!! unset
+.new
+This option is only supported for library versions 1.9.1 and greater.
+The macro _HAVE_AUTH_GSASL_SCRAM_S_KEY will be defined when this is so.
+.wen
+
 If a SCRAM mechanism is being used and this option is set
+and correctly sized
 it is used in preference to &%client_password%&.
 The value after expansion should be
 a 40 (for SHA-1) or 64 (for SHA-256) character string
 with the PBKDF2-prepared password, hex-encoded.
+
 Note that this value will depend on the salt and iteration-count
 supplied by the server.
+The option is expanded before use.
+.new
+During the expansion &$auth1$& is set with the client username,
+&$auth2$& with the iteration count, and
+&$auth3$& with the salt.
 
+The intent of this option
+is to support clients that can cache thes salted password
+to save on recalculation costs.
+The cache lookup should return an unusable value
+(eg. an empty string)
+if the salt or iteration count has changed
+
+If the authentication succeeds then the above variables are set,
+.vindex "&$auth4$&"
+plus the calculated salted password value value in &$auth4$&,
+during the expansion of the &%client_set_id%& option.
+A side-effect of this expansion can be used to prime the cache.
+.wen
 
 
 .option server_channelbinding gsasl boolean false
-Do not set this true and rely on the properties
-without consulting a cryptographic engineer.
-. Unsure what that's about.  It might be the "Triple Handshake"
-. vulnerability; cf. https://www.mitls.org/pages/attacks/3SHAKE
-. If so, we're ok, requiring Extended Master Secret if TLS
-. Session Resumption was used.
-
 Some authentication mechanisms are able to use external context at both ends
 of the session to bind the authentication to that context, and fail the
 authentication process if that context differs.  Specifically, some TLS
@@ -28224,9 +28249,16 @@ This defaults off to ensure smooth upgrade across Exim releases, in case
 this option causes some clients to start failing.  Some future release
 of Exim might have switched the default to be true.
 
-However, Channel Binding in TLS has proven to be vulnerable in current versions.
-Do not plan to rely upon this feature for security, ever, without consulting
-with a subject matter expert (a cryptographic engineer).
+. However, Channel Binding in TLS has proven to be vulnerable in current versions.
+. Do not plan to rely upon this feature for security, ever, without consulting
+. with a subject matter expert (a cryptographic engineer).
+
+.new
+This option was deprecated in previous releases due to doubts over
+the "Triple Handshake" vulnerability.
+Exim takes suitable precausions (requiring Extended Master Secret if TLS
+Session Resumption was used) for safety.
+.wen
 
 
 .option server_hostname gsasl string&!! "see below"

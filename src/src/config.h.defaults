@@ -31,7 +31,7 @@ Do not put spaces between # and the 'define'.
 #define AUTH_SPA
 #define AUTH_TLS
 
-#define AUTH_VARS                     3
+#define AUTH_VARS                     4
 
 #define BIN_DIRECTORY
 
