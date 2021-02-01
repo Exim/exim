@@ -28578,7 +28578,7 @@ and for clients to only attempt,
 this authentication method on a secure (eg. under TLS) connection.
 
 One possible use, compatible with the
-K-9 Mail Andoid client (&url(https://k9mail.github.io/)),
+K-9 Mail Android client (&url(https://k9mail.github.io/)),
 is for using X509 client certificates.
 
 It thus overlaps in function with the TLS authenticator
@@ -39024,7 +39024,7 @@ unchanged, or whether they should be rendered as escape sequences.
 when TLS is in use. The item is &`CV=yes`& if the peer's certificate was
 verified
 using a CA trust anchor,
-&`CA=dane`& if using a DNS trust anchor,
+&`CV=dane`& if using a DNS trust anchor,
 and &`CV=no`& if not.
 .next
 .cindex "log" "TLS cipher"

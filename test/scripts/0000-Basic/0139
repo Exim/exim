@@ -1,4 +1,4 @@
-# RBL specific address
+# dnslists specific address
 exim -bh V4NET.11.12.14
 mail from:postmaster@exim.test.ex
 rcpt to:<userx@exim.test.ex>

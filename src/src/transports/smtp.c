@@ -380,7 +380,7 @@ if (ob->command_timeout <= 0 || ob->data_timeout <= 0 ||
 /* If hosts_override is set and there are local hosts, set the global
 flag that stops verify from showing router hosts. */
 
-if (ob->hosts_override && ob->hosts != NULL) tblock->overrides_hosts = TRUE;
+if (ob->hosts_override && ob->hosts) tblock->overrides_hosts = TRUE;
 
 /* If there are any fallback hosts listed, build a chain of host items
 for them, but do not do any lookups at this time. */
@@ -2675,7 +2675,7 @@ so its response needs to be analyzed. If TLS is not active and this is a
 continued session down a previously-used socket, we haven't just done EHLO, so
 we skip this. */
 
-if (continue_hostname == NULL
+if (   !continue_hostname
 #ifndef DISABLE_TLS
     || tls_out.active.sock >= 0
 #endif
@@ -4233,7 +4233,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
   t_compare.tblock = tblock;
   t_compare.current_sender_address = sender_address;
 
-  if (  sx->first_addr != NULL		/* more addrs for this message */
+  if (  sx->first_addr			/* more addrs for this message */
      || f.continue_more			/* more addrs for coninued-host */
      || (
 #ifndef DISABLE_TLS
@@ -4280,7 +4280,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
       int socket_fd = sx->cctx.sock;
 
 
-      if (sx->first_addr != NULL)	/* More addresses still to be sent */
+      if (sx->first_addr)		/* More addresses still to be sent */
         {				/*   for this message              */
         continue_sequence++;		/* Causes * in logging */
 	pipelining_active = sx->pipelining_used;    /* was cleared at DATA */
@@ -4685,7 +4685,7 @@ if (!hostlist || (ob->hosts_override && ob->hosts))
     {
     uschar *s = ob->hosts;
 
-    if (Ustrchr(s, '$') != NULL)
+    if (Ustrchr(s, '$'))
       {
       if (!(expanded_hosts = expand_string(s)))
         {
@@ -5033,7 +5033,7 @@ retry_non_continued:
     because connections to the same host from a different interface should be
     treated separately. */
 
-    host_af = Ustrchr(host->address, ':') == NULL ? AF_INET : AF_INET6;
+    host_af = Ustrchr(host->address, ':') ? AF_INET6 : AF_INET;
       {
       uschar * s = ob->interface;
       if (s && *s)
