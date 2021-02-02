@@ -33,6 +33,7 @@ doubleplus	TXT	v=spf1 include:_spf.google.com ~all
 		TXT	v=spf1 +a +mx -all
 
 uppercase	TXT	v=sPf1 +all
+passme.helo	TXT	v=spf1 +all
 
 ; Alias A record for the local host, under the name "server1"
 

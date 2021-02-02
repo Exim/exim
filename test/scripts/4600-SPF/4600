@@ -60,14 +60,31 @@ rcpt to:<fred@test.ex>
 quit
 ****
 #
-client 127.0.0.1 PORT_S
+#
+#
+#
+#
+# helo name gets used when mailfrom is null
+client HOSTIPV4 PORT_S
 ??? 220
-helo example.com
+helo passme.helo.example.com
 ??? 250
 mail from:<>
 ??? 250
 rcpt to:<fred@test.ex>
 ??? 250
+quit
+****
+#
+# helo name is overridden when a mailfrom is set
+client HOSTIPV4 PORT_S
+??? 220
+helo passme.helo.example.com
+??? 250
+mail from:<failme@example.com>
+??? 250
+rcpt to:<fred@test.ex>
+??? 550
 quit
 ****
 #
