@@ -142,6 +142,14 @@ JH/39 Bug 2691: fix $local_part_data.  When the matching list element
       referred to a file, bad data was returned.  This likely also affected
       $domain_part_data.
 
+JH/41 Fix daemon SIGHUP on FreeBSD.  Previously, a named socket for IPC was
+      left undeleted; the attempt to re-create it then failed - resulting in
+      the usual "SIGHUP tp have daemon reload configuration" to not work.
+      This affected any platform not supporting "abstract" Unix-domain
+      sockets (i.e. not Linux).
+
+
+
 
 Exim version 4.94
 -----------------

@@ -130,11 +130,30 @@ if (smtp_out) smtp_printf("421 %s\r\n", FALSE, smtp_msg);
 /*************************************************
 *************************************************/
 
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+static void
+unlink_notifier_socket(void)
+{
+uschar * s = expand_string(notifier_socket);
+DEBUG(D_any) debug_printf("unlinking notifier socket %s\n", s);
+Uunlink(s);
+}
+#endif
+
+
 static void
 close_daemon_sockets(int daemon_notifier_fd,
   int * listen_sockets, int listen_socket_count)
 {
-if (daemon_notifier_fd >= 0) (void) close(daemon_notifier_fd);
+if (daemon_notifier_fd >= 0)
+  {
+  (void) close(daemon_notifier_fd);
+  daemon_notifier_fd = -1;
+#ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
+  unlink_notifier_socket();
+#endif
+  }
+
 for (int i = 0; i < listen_socket_count; i++) (void) close(listen_sockets[i]);
 }
 
@@ -972,11 +991,7 @@ if (daemon_notifier_fd >= 0)
   close(daemon_notifier_fd);
   daemon_notifier_fd = -1;
 #ifndef EXIM_HAVE_ABSTRACT_UNIX_SOCKETS
-    {
-    uschar * s = expand_string(notifier_socket);
-    DEBUG(D_any) debug_printf("unlinking notifier socket %s\n", s);
-    Uunlink(s);
-    }
+  unlink_notifier_socket();
 #endif
   }
 
