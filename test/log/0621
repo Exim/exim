@@ -1,0 +1,5 @@
+
+******** SERVER ********
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
+2017-07-30 18:51:05.712 pid pppp: SIGHUP received: re-exec daemon
+2017-07-30 18:51:05.712 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D

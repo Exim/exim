@@ -31,7 +31,7 @@ LOG: MAIN
   == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): first-pass only routing due to -odqs, queue_smtp_domains or control=queue
 LOG: queue_run MAIN
   Start queue run: pid=pppp
-delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+delivering 10HmbC-0005vi-00 (queue run pid pppp)
 LOG: MAIN
   *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2] C="delivery bypassed by -N option"
 LOG: MAIN
@@ -40,14 +40,14 @@ LOG: queue_run MAIN
   End queue run: pid=pppp
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
-delivering 10HmbD-0005vi-00 (queue run pid ppppp)
-delivering 10HmbE-0005vi-00 (queue run pid ppppp)
-delivering 10HmbD-0005vi-00 (queue run pid ppppp)
+delivering 10HmbD-0005vi-00 (queue run pid pppp)
+delivering 10HmbE-0005vi-00 (queue run pid pppp)
+delivering 10HmbD-0005vi-00 (queue run pid pppp)
 LOG: MAIN
   *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN
   Completed
-delivering 10HmbE-0005vi-00 (queue run pid ppppp)
+delivering 10HmbE-0005vi-00 (queue run pid pppp)
 LOG: MAIN
   *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1] C="delivery bypassed by -N option"
 LOG: MAIN

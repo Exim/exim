@@ -1,0 +1,6 @@
+# testcase 0621
+
+.include DIR/aux-var/std_conf_prefix
+log_selector = +millisec
+
+# End

@@ -738,11 +738,10 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/\bgid=\d+/gid=gggg/;
   s/\begid=\d+/egid=gggg/;
-  s/\b(pid=|PID: )\d+/$1pppp/;
+  s/\b(pid=|pid |PID: )\d+/$1pppp/;
   s/\buid=\d+/uid=uuuu/;
   s/\beuid=\d+/euid=uuuu/;
   s/set_process_info:\s+\d+/set_process_info: pppp/;
-  s/queue run pid \d+/queue run pid ppppp/;
   s/process \d+ running as transport filter/process pppp running as transport filter/;
   s/process \d+ writing to transport filter/process pppp writing to transport filter/;
   s/reading pipe for subprocess \d+/reading pipe for subprocess pppp/;

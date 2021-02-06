@@ -7,17 +7,17 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+delivering 10HmaX-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+delivering 10HmaY-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+delivering 10HmaX-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
@@ -44,7 +44,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+delivering 10HmaY-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>
@@ -74,17 +74,17 @@ LOG: queue_run MAIN
   Start queue run: pid=pppp -qq
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
+delivering 10HmaZ-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+delivering 10HmbA-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
 queue running combined directories
 looking in TESTSUITE/spool//input
-delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
+delivering 10HmaZ-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
@@ -112,7 +112,7 @@ LOG: MAIN
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+delivering 10HmbA-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  failed: Connection refused
@@ -130,11 +130,11 @@ admin user
 dropping to exim gid; retaining priv uid
 LOG: queue_run MAIN
   Start queue run: pid=pppp -qqf
-delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+delivering 10HmbA-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbB-0005vi-00 (queue run pid ppppp)
+delivering 10HmbB-0005vi-00 (queue run pid pppp)
 R: bounce  (ACL)
 LOG: MAIN
   ** CALLER@test.ex F=<> R=bounce: just discard
@@ -143,11 +143,11 @@ LOG: MAIN
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+delivering 10HmbC-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
-delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+delivering 10HmbA-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
@@ -181,7 +181,7 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+delivering 10HmbC-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
   SMTP>> MAIL FROM:<CALLER@test.ex>

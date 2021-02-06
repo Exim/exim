@@ -6,7 +6,7 @@ set_process_info: pppp running the queue (single queue run)
 LOG: queue_run MAIN
   Start queue run: pid=pppp
 set_process_info: pppp running queue: 10HmaX-0005vi-00-H
-set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid pppp)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> userx@test.ex <--------
 set_process_info: pppp delivering 10HmaX-0005vi-00 using t1
@@ -107,7 +107,7 @@ LOG: MAIN
 set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-0005vi-00-H
-set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid pppp)
 >>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
 --------> usery@test.ex <--------
 set_process_info: pppp delivering 10HmaY-0005vi-00 using t1

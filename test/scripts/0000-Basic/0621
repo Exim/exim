@@ -1,0 +1,12 @@
+# daemon: re-exec on SIGHUP
+exim -DSERVER=server -bd -oX PORT_D -oP DIR/spool/exim-daemon.pid
+****
+millisleep 500
+sudo perl
+open(PID, "DIR/spool/exim-daemon.pid");
+chomp($daemon_pid = <PID>);
+close(PID);
+system("kill -HUP $daemon_pid");
+****
+sleep 1
+killdaemon
