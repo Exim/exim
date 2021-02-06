@@ -198,6 +198,11 @@ JH/41 Fix daemon SIGHUP on FreeBSD.  Previously, a named socket for IPC was
       This affected any platform not supporting "abstract" Unix-domain
       sockets (i.e. not Linux).
 
+JH/42 Bug 2692: Harden against a peer which reneges on a 452 "too many
+      recipients" response to RCPT in a later response, with a 250.  The
+      previous coding assumed this would not happen, and under PIPELINING
+      would result in both lost and duplicate recipients for a message.
+
 
 
 

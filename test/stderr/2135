@@ -30,7 +30,7 @@ not using DSN
 cmd buf flush ddd bytes
 sync_responses expect mail
   SMTP<< 250 OK
-sync_responses expect rcpt
+sync_responses expect rcpt for userb@test.ex
   SMTP<< 250 Accepted
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss

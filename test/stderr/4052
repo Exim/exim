@@ -43,7 +43,7 @@ EHLO cleartext extensions changed, 0x0120/0x0000 -> 0x0160/0x0000
 writing clr 0160/0000 cry 0000/0000
 sync_responses expect mail
   SMTP<< 250 mail-from accepted
-sync_responses expect rcpt
+sync_responses expect rcpt for extchange@test.ex
   SMTP<< 250 rcpt-to accepted
 sync_responses expect data
   SMTP<< 354 data go-ahead

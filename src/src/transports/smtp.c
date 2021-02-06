@@ -1036,7 +1036,7 @@ if (sx->pending_MAIL)
   {
   DEBUG(D_transport) debug_printf("%s expect mail\n", __FUNCTION__);
   count--;
-  sx->pending_MAIL = FALSE;
+  sx->pending_MAIL = sx->RCPT_452 = FALSE;
   if (!smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
@@ -1082,7 +1082,7 @@ while (count-- > 0)
   /* The address was accepted */
   addr->host_used = sx->conn_args.host;
 
-  DEBUG(D_transport) debug_printf("%s expect rcpt\n", __FUNCTION__);
+  DEBUG(D_transport) debug_printf("%s expect rcpt for %s\n", __FUNCTION__, addr->address);
   if (smtp_read_response(sx, sx->buffer, sizeof(sx->buffer),
 			  '2', ob->command_timeout))
     {
@@ -1176,7 +1176,7 @@ while (count-- > 0)
 
 	if (addr->more_errno >> 8 == 52  &&  yield & 3)
 	  {
-	  if (!sx->RCPT_452)
+	  if (!sx->RCPT_452)		/* initialised at MAIL-ack above */
 	    {
 	    DEBUG(D_transport)
 	      debug_printf("%s: seen first 452 too-many-rcpts\n", __FUNCTION__);
@@ -1223,6 +1223,8 @@ while (count-- > 0)
 	}
       }
     }
+  if (count && !(addr = addr->next))
+    return -2;
   }       /* Loop for next RCPT response */
 
 /* Update where to start at for the next block of responses, unless we
@@ -3883,15 +3885,16 @@ else
           !sx->lmtp
        )
       {
-      const uschar *s = string_printing(sx->buffer);
+      const uschar * s = string_printing(sx->buffer);
       /* deconst cast ok here as string_printing was checked to have alloc'n'copied */
-      conf = (s == sx->buffer)? US string_copy(s) : US s;
+      conf = s == sx->buffer ? US string_copy(s) : US s;
       }
 
     /* Process all transported addresses - for LMTP or PRDR, read a status for
-    each one. */
+    each one. We used to drop out at first_addr, until someone returned a 452
+    followed by a 250... and we screwed up the accepted addresses. */
 
-    for (address_item * addr = addrlist; addr != sx->first_addr; addr = addr->next)
+    for (address_item * addr = addrlist; addr; addr = addr->next)
       {
       if (addr->transport_return != PENDING_OK) continue;
 

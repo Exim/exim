@@ -33,7 +33,7 @@ not using DSN
 cmd buf flush ddd bytes
 sync_responses expect mail
   SMTP<< 250 OK
-sync_responses expect rcpt
+sync_responses expect rcpt for userx@test.ex
   SMTP<< 550 NO
 sync_responses expect data
   SMTP(closed)<<

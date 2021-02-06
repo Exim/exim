@@ -34,7 +34,7 @@ cmd buf flush ddd bytes
   SMTP<< 250 Sender OK
   SMTP>> RCPT TO:<userx@domain.com>
 cmd buf flush ddd bytes
-sync_responses expect rcpt
+sync_responses expect rcpt for userx@domain.com
   SMTP<< 250 Recipient OK
   SMTP>> DATA
 cmd buf flush ddd bytes

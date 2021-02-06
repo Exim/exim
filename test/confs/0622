@@ -1,0 +1,79 @@
+# Exim test configuration 0622
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+log_selector = +pipelining +received_recipients
+
+
+# ----- Main settings -----
+
+acl_smtp_connect = check_connect
+acl_smtp_rcpt = check_rcpt
+
+begin acl
+
+check_connect:
+	accept
+		logwrite = :main:New connection
+
+check_rcpt:
+	defer
+		condition = ${if eq {$acl_m0}{1}}
+		recipients = B@test.ex : C@test.ex : D@test.ex : E@test.ex : F@test.ex 
+		message = 452 4.5.3 Try again
+
+	defer
+		condition = ${if eq {$acl_m0}{2}}
+		recipients = C@test.ex : D@test.ex
+		message = 452 4.5.3 Try again
+
+	warn
+		recipients = A@test.ex
+		set acl_m0 = 1
+
+	warn
+		recipients = B@test.ex
+		set acl_m0 = 2
+
+	accept
+
+
+# ----- Routers -----
+
+begin routers
+
+server:
+  driver =	redirect
+  condition =	${if eq {SERVER}{server} {yes}{no}}
+  data =	:blackhole:
+
+client:
+  driver =	accept
+  condition =	${if eq {SERVER}{server} {no}{yes}}
+  retry_use_local_part
+  transport =	send_to_server
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+  max_rcpt = 0
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

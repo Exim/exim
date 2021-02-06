@@ -1,0 +1,17 @@
+# PIPELINING and 250 after 452 in a set of RCPT responses
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -odq -t
+To: A@test.ex,B@test.ex,C@test.ex,D@test.ex,E@test.ex,F@test.ex
+     
+Testing
+****
+exim -M $msg1
+****
+#
+#
+killdaemon
+no_msglog_check
+sleep 1
