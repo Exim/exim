@@ -6,10 +6,25 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 -> e@test.ex <E@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 -> f@test.ex <F@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for A@test.ex B@test.ex C@test.ex D@test.ex E@test.ex F@test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 => a@test.ex <A@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 == b@test.ex <B@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<B@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 == c@test.ex <C@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 == d@test.ex <D@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 == e@test.ex <E@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<E@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 == f@test.ex <F@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<F@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 => b@test.ex <B@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbD-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 == c@test.ex <C@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 == d@test.ex <D@test.ex> R=client T=send_to_server defer (-44) H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after RCPT TO:<D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbB-0005vi-00 -> e@test.ex <E@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbD-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 -> f@test.ex <F@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbD-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 => c@test.ex <C@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 -> d@test.ex <D@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbE-0005vi-00"
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
-1999-03-02 09:44:33 New connection
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <B@test.ex>: 452 4.5.3 Try again
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
 1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
@@ -29,3 +44,29 @@
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <D@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <C@test.ex> R=server
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <B@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <E@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <F@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for A@test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <A@test.ex> R=server
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <C@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 H=localhost (myhost.test.ex) [127.0.0.1] F=<CALLER@myhost.test.ex> temporarily rejected RCPT <D@test.ex>: 452 4.5.3 Try again
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for B@test.ex E@test.ex F@test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <F@test.ex> R=server
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <E@test.ex> R=server
+1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <B@test.ex> R=server
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT
+1999-03-02 09:44:33 SMTP connection from [127.0.0.1] (TCP/IP connection count = 1)
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp L- S=sss id=E10HmbB-0005vi-00@myhost.test.ex for C@test.ex D@test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <D@test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <C@test.ex> R=server
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1] closed by QUIT

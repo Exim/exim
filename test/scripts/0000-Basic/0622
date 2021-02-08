@@ -8,7 +8,32 @@ To: A@test.ex,B@test.ex,C@test.ex,D@test.ex,E@test.ex,F@test.ex
      
 Testing
 ****
+# "A" should go throuugh as one MAIL FROM message, B,E,F as a second, C,D
+# as a third - due to the server responses.  Note that the client logging
+# gets overlapped; look at the server's id= logged with the 250 by the client.
 exim -M $msg1
+****
+#
+#
+#
+#
+# Repeat without pipelining, just as a baseline check.
+# The optimisation, that does another message attempt immediately on the open
+# connection, is only there for the pipelined case at present.  So we must
+# kick the message three times for three separate connections.
+# (A possible enhancement, if anyone cares.  "first_addr" in
+# smtp_deliver/sync_responses is the key).
+#
+exim -odq -t
+To: A@test.ex,B@test.ex,C@test.ex,D@test.ex,E@test.ex,F@test.ex
+     
+Testing
+****
+exim -DHAP=hosts_avoid_pipelining=127.0.0.1 -M $msg1
+****
+exim -DHAP=hosts_avoid_pipelining=127.0.0.1 -M $msg1
+****
+exim -DHAP=hosts_avoid_pipelining=127.0.0.1 -M $msg1
 ****
 #
 #

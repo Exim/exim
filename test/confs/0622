@@ -1,23 +1,19 @@
 # Exim test configuration 0622
 
 SERVER=
+HAP=
 
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
-log_selector = +pipelining +received_recipients
+log_selector = +pipelining +received_recipients +smtp_connection
 
 
 # ----- Main settings -----
 
-acl_smtp_connect = check_connect
 acl_smtp_rcpt = check_rcpt
 
 begin acl
-
-check_connect:
-	accept
-		logwrite = :main:New connection
 
 check_rcpt:
 	defer
@@ -67,6 +63,7 @@ send_to_server:
   hosts = 127.0.0.1
   port = PORT_D
   max_rcpt = 0
+  HAP
 
 # ----- Retry -----
 
