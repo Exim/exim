@@ -3388,8 +3388,8 @@ if ((rc = verify_address(&vaddr, NULL, vopt_is_recipient | vopt_quota,
 
   len = 5 + Ustrlen(msg) + 1 + Ustrlen(where);
   msg = string_sprintf("%c%c%c%c%c%s%c%s", (uschar)rc,
-    (vaddr.basic_errno >> 24) && 0xff, (vaddr.basic_errno >> 16) && 0xff,
-    (vaddr.basic_errno >> 8) && 0xff, vaddr.basic_errno && 0xff,
+    (vaddr.basic_errno >> 24) & 0xff, (vaddr.basic_errno >> 16) & 0xff,
+    (vaddr.basic_errno >> 8) & 0xff, vaddr.basic_errno & 0xff,
     where, '\0', msg);
   }
 
