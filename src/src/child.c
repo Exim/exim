@@ -269,6 +269,8 @@ if (pid == 0)
     }
   }
 
+testharness_pause_ms(100); /* let child work even longer, for exec */
+
 /* Parent process. Save fork() errno and close the reading end of the stdin
 pipe. */
 
