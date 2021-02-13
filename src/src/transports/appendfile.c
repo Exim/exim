@@ -1784,7 +1784,7 @@ if (!isdirectory)
         {
         addr->basic_errno = ERRNO_NOTREGULAR;
         addr->message = string_sprintf("mailbox %s%s has too many links (%lu)",
-          filename, islink ? " (symlink)" : "", (ulong)statbuf.st_nlink);
+          filename, islink ? " (symlink)" : "", (unsigned long)statbuf.st_nlink);
         goto RETURN;
 
         }
