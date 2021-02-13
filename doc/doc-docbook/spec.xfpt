@@ -32496,6 +32496,13 @@ Section &<<SECTaddmatcon>>& below describes how you can distinguish between
 different values. Some DNS lists may return more than one address record;
 see section &<<SECThanmuldnsrec>>& for details of how they are checked.
 
+.new
+Values returned by a properly running DBSBL should be in the 127.0.0.0/8
+range. If a DNSBL operator loses control of the domain, lookups on it
+may start returning other addresses.  Because of this, Exim now ignores
+returned values outside the 127/8 region.
+.wen
+
 
 .section "Variables set from DNS lists" "SECID204"
 .cindex "expansion" "variables, set from DNS list"
@@ -32631,6 +32638,14 @@ deny  dnslists = dnsbl.njabl.org
 deny  dnslists = relays.ordb.org
 .endd
 which is less clear, and harder to maintain.
+
+Negation can also be used with a bitwise-and restriction.
+The dnslists condition with only be trus if a result is returned
+by the lookup which, anded with the restriction, is all zeroes.
+For example:
+.code
+deny dnslists = zen.spamhaus.org!&0.255.255.0
+.endd
 
 
 
