@@ -651,7 +651,7 @@ for (count = 0; count < connection_count; count++)
         { end = "\n"; ss += 3; len -= 3; }
 
       fwrite(ss, 1, len, out);
-      if (*end) fprintf(out, end);
+      if (*end) fputs(end, out);
       }
 
     else if (isdigit((unsigned char)ss[0]))

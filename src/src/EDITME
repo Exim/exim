@@ -198,7 +198,7 @@ SPOOL_DIRECTORY=/var/spool/exim
 # the libraries and headers are installed, as the pkg-config .pc
 # specification should include all -L/-I information necessary.
 # Enabling the USE_*_PC options should be sufficient. If not using
-# pkg-config, then you have to specify the libraries, and you mmight
+# pkg-config, then you have to specify the libraries, and you might
 # need to specify the locations too.
 
 # Uncomment the following lines if you want
@@ -207,7 +207,7 @@ SPOOL_DIRECTORY=/var/spool/exim
 # Unless you do this, you must define one of USE_OPENSSL or USE_GNUTLS
 # below.
 
-# If you are buliding with TLS, the library configuration must be done:
+# If you are building with TLS, the library configuration must be done:
 
 # Uncomment this if you are using OpenSSL
 # USE_OPENSSL=yes

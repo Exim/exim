@@ -29807,7 +29807,7 @@ Ivan is the author of the popular TLS testing tools at
 
 
 .section "Certificate chains" "SECID186"
-The file named by &%tls_certificate%& may contain more than one
+A file named by &%tls_certificate%& may contain more than one
 certificate. This is useful in the case where the certificate that is being
 sent is validated by an intermediate certificate which the other end does
 not have. Multiple certificates must be in the correct order in the file.
