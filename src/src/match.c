@@ -498,8 +498,18 @@ else
   }
 
 /* For an unnamed list, use the expanded version in comments */
+#define LIST_LIMIT_PR 2048
 
-HDEBUG(D_any) if (!ot) ot = string_sprintf("%s in \"%s\"?", name, list);
+HDEBUG(D_any) if (!ot) 
+  {
+  int n, m;
+  gstring * g = string_fmt_append(NULL, "%s in \"%n%.*s%n\"",
+    name, &n, LIST_LIMIT_PR, list, &m);
+  if (m - n >= LIST_LIMIT_PR) g = string_catn(g, US"...", 3);
+  g = string_catn(g, US"?", 1);
+  gstring_release_unused(g);
+  ot = string_from_gstring(g);
+  }
 
 /* Now scan the list and process each item in turn, until one of them matches,
 or we hit an error. */
@@ -705,7 +715,7 @@ while ((sss = string_nextinlist(&list, &sep, NULL, 0)))
       if ((bits & (-bits)) == bits)    /* Only one of the two bits is set */
         {
         HDEBUG(D_lists) debug_printf("%s %s (matched \"%s\"%s)\n", ot,
-          (yield == OK)? "yes" : "no", sss, cached);
+          yield == OK ? "yes" : "no", sss, cached);
         return yield;
         }
       }
