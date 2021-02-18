@@ -28117,7 +28117,7 @@ connection, a client certificate has been verified, the &"valid-client-cert"&
 option is passed. When authentication succeeds, the identity of the user
 who authenticated is placed in &$auth1$&.
 
-The Dovecot configuration to match the above wil look
+The Dovecot configuration to match the above will look
 something like:
 .code
 conf.d/10-master.conf :-
