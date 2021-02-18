@@ -8788,6 +8788,13 @@ other statements in the same ACL.
 .cindex "tainted data" "de-tainting"
 The value will be untainted.
 
+.new
+&*Note*&: If the data result of the lookup (as opposed to the key)
+is empty, then this empty value is stored in &$domain_data$&.
+The option to return the key for the lookup, as the value,
+may be what is wanted.
+.wen
+
 
 .next
 Any of the single-key lookup type names may be preceded by
