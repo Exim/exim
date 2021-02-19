@@ -190,7 +190,7 @@ for (rnd = random() % weights, i = 0; i < nproxies; i++)
   {
   sd = &proxies[i];
   if (!sd->is_failed && sd->priority == pri)
-    if ((rnd -= sd->weight) <= 0)
+    if ((rnd -= sd->weight) < 0)
       return i;
   }
 
