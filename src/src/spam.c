@@ -174,7 +174,7 @@ for (long rnd = random() % weights, i = 0; i < num_servers; i++)
   {
   sd = spamds[i];
   if (!sd->is_failed && sd->priority == pri)
-    if ((rnd -= sd->weight) <= 0)
+    if ((rnd -= sd->weight) < 0)
       return i;
   }
 
