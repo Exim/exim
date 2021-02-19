@@ -139,20 +139,10 @@ unsigned int i;
 spamd_address_container * sd;
 long weights;
 unsigned pri;
-static BOOL srandomed = FALSE;
 
 /* speedup, if we have only 1 server */
 if (num_servers == 1)
   return (spamds[0]->is_failed ? -1 : 0);
-
-/* init ranmod */
-if (!srandomed)
-  {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  srandom((unsigned int)(tv.tv_usec/1000));
-  srandomed = TRUE;
-  }
 
 /* scan for highest pri */
 for (pri = 0, i = 0; i < num_servers; i++)
@@ -170,7 +160,7 @@ for (weights = 0, i = 0; i < num_servers; i++)
 if (weights == 0)	/* all servers failed */
   return -1;
 
-for (long rnd = random() % weights, i = 0; i < num_servers; i++)
+for (long rnd = random_number(weights), i = 0; i < num_servers; i++)
   {
   sd = spamds[i];
   if (!sd->is_failed && sd->priority == pri)

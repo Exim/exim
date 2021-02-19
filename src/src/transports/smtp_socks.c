@@ -160,19 +160,9 @@ socks_opts * sd;
 socks_opts * lim = &proxies[nproxies];
 long rnd, weights;
 unsigned pri;
-static BOOL srandomed = FALSE;
 
 if (nproxies == 1)		/* shortcut, if we have only 1 server */
   return (proxies[0].is_failed ? -1 : 0);
-
-/* init random */
-if (!srandomed)
-  {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  srandom((unsigned int)(tv.tv_usec/1000));
-  srandomed = TRUE;
-  }
 
 /* scan for highest pri */
 for (pri = 0, sd = proxies; sd < lim; sd++)
@@ -186,7 +176,7 @@ for (weights = 0, sd = proxies; sd < lim; sd++)
 if (weights == 0)       /* all servers failed */
   return -1;
 
-for (rnd = random() % weights, i = 0; i < nproxies; i++)
+for (rnd = random_number(weights), i = 0; i < nproxies; i++)
   {
   sd = &proxies[i];
   if (!sd->is_failed && sd->priority == pri)
