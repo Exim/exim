@@ -204,8 +204,8 @@ JH/42 Bug 2693: Harden against a peer which reneges on a 452 "too many
       would result in both lost and duplicate recipients for a message.
 
 JH/43 Bug 2694: Fix weighted distribution of work to multiple spamd servers.
-      Previously the weighting was incorrectly applied.  Found and fixed by
-      Heiko Schlichting.
+      Previously the weighting was incorrectly applied.  Similar fix for socks
+      proxies.  Found and fixed by Heiko Schlichting.
 
 
 Exim version 4.94
