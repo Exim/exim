@@ -21,8 +21,9 @@
 # define SHUT_WR 1
 #endif
 
-/* default weight */
+/* Defaults */
 #define SPAMD_WEIGHT 1
+#define SPAMD_PRIORITY 1
 
 typedef struct spamd_address_container
 {

@@ -35,7 +35,7 @@ spamd->is_failed = FALSE;
 spamd->weight = SPAMD_WEIGHT;
 spamd->timeout = SPAMD_TIMEOUT;
 spamd->retry = 0;
-spamd->priority = 1;
+spamd->priority = SPAMD_PRIORITY;
 return 0;
 }
 
