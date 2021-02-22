@@ -825,7 +825,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   /* VERIFICATION --------------------------------------------------------- */
   /* Be careful that the header sig included a bodyash */
 
-    if (  sig->bodyhash.data
+    if (sig->bodyhash.data && sig->bodyhash.len == b->bh.len
        && memcmp(b->bh.data, sig->bodyhash.data, b->bh.len) == 0)
       {
       DEBUG(D_acl) debug_printf("PDKIM [%s] Body hash compared OK\n", sig->domain);
@@ -1524,7 +1524,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
   do this hash incrementally.
   We don't need the hash we're calculating here for the GnuTLS and OpenSSL
   cases of RSA signing, since those library routines can do hash-and-sign.
- 
+
   Some time in the future we could easily avoid doing the hash here for those
   cases (which will be common for a long while.  We could also change from
   the current copy-all-the-headers-into-one-block, then call the hash-and-sign
@@ -1779,7 +1779,7 @@ for (sig = ctx->sig; sig; sig = sig->next)
 	  );
       goto NEXT_VERIFY;
       }
- 
+
     /* Make sure sig uses supported DKIM version (only v1) */
     if (sig->version != 1)
       {
