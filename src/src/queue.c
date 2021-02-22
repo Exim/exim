@@ -416,12 +416,18 @@ if (!recurse)
     p += sprintf(CS p, " -q%s", extras);
 
   if (deliver_selectstring)
-    p += sprintf(CS p, " -R%s %s", f.deliver_selectstring_regex? "r" : "",
-      deliver_selectstring);
+    {
+    snprintf(CS p, big_buffer_size - (p - big_buffer), " -R%s %s",
+      f.deliver_selectstring_regex? "r" : "", deliver_selectstring);
+    p += strlen(CCS p);
+    }
 
   if (deliver_selectstring_sender)
-    p += sprintf(CS p, " -S%s %s", f.deliver_selectstring_sender_regex? "r" : "",
-      deliver_selectstring_sender);
+    {
+    snprintf(CS p, big_buffer_size - (p - big_buffer), " -S%s %s",
+      f.deliver_selectstring_sender_regex? "r" : "", deliver_selectstring_sender);
+    p += strlen(CCS p);
+    }
 
   log_detail = string_copy(big_buffer);
   if (*queue_name)
