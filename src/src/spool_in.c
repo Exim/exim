@@ -307,6 +307,36 @@ dsn_ret = 0;
 dsn_envid = NULL;
 }
 
+static void *
+fgets_big_buffer(FILE *fp)
+{
+int len = 0;
+
+big_buffer[0] = 0;
+if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) return NULL;
+
+while ((len = Ustrlen(big_buffer)) == big_buffer_size-1
+      && big_buffer[len-1] != '\n')
+  {
+  uschar *newbuffer;
+  int newsize;
+
+  if (big_buffer_size >= BIG_BUFFER_SIZE * 4) return NULL;
+  newsize = big_buffer_size * 2;
+  newbuffer = store_get_perm(newsize);
+  memcpy(newbuffer, big_buffer, len);
+
+  big_buffer = newbuffer;
+  big_buffer_size = newsize;
+  if (Ufgets(big_buffer + len, big_buffer_size - len, fp) == NULL) return NULL;
+  }
+
+if (len <= 0 || big_buffer[len-1] != '\n') return NULL;
+return big_buffer;
+}
+
+
+
 
 /*************************************************
 *             Read spool header file             *
@@ -450,21 +480,9 @@ p = big_buffer + 2;
 for (;;)
   {
   int len;
-  if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
+  if (fgets_big_buffer(fp) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
-  while (  (len = Ustrlen(big_buffer)) == big_buffer_size-1
-	&& big_buffer[len-1] != '\n'
-	)
-    {	/* buffer not big enough for line; certs make this possible */
-    uschar * buf;
-    if (big_buffer_size >= BIG_BUFFER_SIZE*4) goto SPOOL_READ_ERROR;
-    buf = store_get_perm(big_buffer_size *= 2);
-    memcpy(buf, big_buffer, --len);
-    big_buffer = buf;
-    if (Ufgets(big_buffer+len, big_buffer_size-len, fp) == NULL)
-      goto SPOOL_READ_ERROR;
-    }
-  big_buffer[len-1] = 0;
+  big_buffer[Ustrlen(big_buffer)-1] = 0;
 
   switch(big_buffer[1])
     {
@@ -724,7 +742,7 @@ DEBUG(D_deliver)
 buffer. It contains the count of recipients which follow on separate lines.
 Apply an arbitrary sanity check.*/
 
-if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
+if (fgets_big_buffer(fp) == NULL) goto SPOOL_READ_ERROR;
 if (sscanf(CS big_buffer, "%d", &rcount) != 1 || rcount > 16384)
   goto SPOOL_FORMAT_ERROR;
 
