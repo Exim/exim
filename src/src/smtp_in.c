@@ -4993,6 +4993,8 @@ while (done <= 0)
 
     case RCPT_CMD:
       HAD(SCH_RCPT);
+      if (rcpt_count < 0 || rcpt_count >= INT_MAX/2)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Too many recipients: %d", rcpt_count);
       rcpt_count++;
       was_rcpt = fl.rcpt_in_progress = TRUE;
 
