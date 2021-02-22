@@ -217,6 +217,10 @@ QS/03 When reading the output from interpreted forward files we do not
       pass the pipe between the parent and the interpreting process to
       executed child processes (if any).
 
+QS/04 Always die if requested from internal logging, even is logging is
+      disabled.
+
+
 Exim version 4.94
 -----------------
 

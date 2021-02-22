@@ -900,6 +900,7 @@ if (!(flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)))
 if (f.disable_logging)
   {
   DEBUG(D_any) debug_printf("log writing disabled\n");
+  if ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE) exim_exit(EXIT_FAILURE);
   return;
   }
 
