@@ -825,7 +825,7 @@ for (pdkim_signature * sig = ctx->sig; sig; sig = sig->next)
   /* VERIFICATION --------------------------------------------------------- */
   /* Be careful that the header sig included a bodyash */
 
-    if (  sig->bodyhash.data
+    if (sig->bodyhash.data && sig->bodyhash.len == b->bh.len
        && memcmp(b->bh.data, sig->bodyhash.data, b->bh.len) == 0)
       {
       DEBUG(D_acl) debug_printf("DKIM [%s] Body hash compared OK\n", sig->domain);
