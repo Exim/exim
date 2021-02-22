@@ -3047,7 +3047,7 @@ my $eximinfo = "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd -bP exim_
 chomp(my @eximinfo = `$eximinfo 2>&1`);
 die "$0: Can't run $eximinfo\n" if $? == -1;
 
-warn 'Got ' . $?>>8 . " from $eximinfo\n" if $?;
+warn 'Got ' . ($?>>8) . " from $eximinfo\n" if $?;
 foreach (@eximinfo)
   {
   if (my ($version) = /^Exim version (\S+)/) {
