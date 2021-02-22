@@ -516,7 +516,7 @@ if (  !h->aa
    || !(trusted = expand_string(dns_trust_aa))
    || !*trusted
    || !(auth_name = dns_extract_auth_name(dnsa))
-   || OK != match_isinlist(auth_name, &trusted, 0, NULL, NULL,
+   || OK != match_isinlist(auth_name, &trusted, 0, &domainlist_anchor, NULL,
 			    MCL_DOMAIN, TRUE, NULL)
    )
   return FALSE;
@@ -908,8 +908,8 @@ if (dnsa->answerlen < 0) switch (h_errno)
 #ifndef STAND_ALONE
     save_domain = deliver_domain;
     deliver_domain = string_copy(name);  /* set $domain */
-    rc = match_isinlist(name, (const uschar **)&dns_again_means_nonexist, 0, NULL, NULL,
-      MCL_DOMAIN, TRUE, NULL);
+    rc = match_isinlist(name, CUSS &dns_again_means_nonexist, 0,
+      &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
     deliver_domain = save_domain;
     if (rc != OK)
       {

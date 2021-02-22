@@ -157,6 +157,12 @@ JH/43 Bug 2694: Fix weighted distribution of work to multiple spamd servers.
       Previously the weighting was incorrectly applied.  Similar fix for socks
       proxies.  Found and fixed by Heiko Schlichting.
 
+JH/44 Bug 2701: Fix list-expansion of dns_ipv4_lookup.  Previously, it did
+      not handle sub-lists included using the +namedlist syntax.  While
+      investigating, the same found for dns_trust_aa, dns_again_means_nonexist,
+      dnssec_require_domains, dnssec_request_domains, srv_fail_domains,
+      mx_fail_domains.
+
 
 Exim version 4.94
 -----------------
