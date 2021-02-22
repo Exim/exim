@@ -805,6 +805,9 @@ Returns:       the character
 int
 smtp_ungetc(int ch)
 {
+if (smtp_inptr <= smtp_inbuffer)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in smtp_ungetc");
+
 *--smtp_inptr = ch;
 return ch;
 }
