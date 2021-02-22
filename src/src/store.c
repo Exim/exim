@@ -128,6 +128,12 @@ Returns:      pointer to store (panic on malloc failure)
 void *
 store_get_3(int size, const char *filename, int linenumber)
 {
+if (size < 0 || size > INT_MAX/2)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+          "bad memory allocation requested (%d bytes)",
+          size);
+  }
 /* Round up the size to a multiple of the alignment. Although this looks a
 messy statement, because "alignment" is a constant expression, the compiler can
 do a reasonable job of optimizing, especially if the value of "alignment" is a
@@ -269,6 +275,13 @@ store_extend_3(void *ptr, int oldsize, int newsize, const char *filename,
 {
 int inc = newsize - oldsize;
 int rounded_oldsize = oldsize;
+
+if (oldsize < 0 || newsize < oldsize || newsize >= INT_MAX/2)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+          "bad memory extension requested (%d -> %d bytes)",
+          oldsize, newsize);
+  }
 
 if (rounded_oldsize % alignment != 0)
   rounded_oldsize += alignment - (rounded_oldsize % alignment);
@@ -508,7 +521,16 @@ store_newblock_3(void * block, int newsize, int len,
   const char * filename, int linenumber)
 {
 BOOL release_ok = store_last_get[store_pool] == block;
-uschar * newtext = store_get(newsize);
+uschar * newtext;
+
+if (len < 0 || len > newsize)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+            "bad memory extension requested (%d -> %d bytes)",
+            len, newsize);
+  }
+
+newtext = store_get(newsize);
 
 memcpy(newtext, block, len);
 if (release_ok) store_release_3(block, filename, linenumber);
@@ -538,6 +560,11 @@ void *
 store_malloc_3(int size, const char *filename, int linenumber)
 {
 void *yield;
+
+if (size < 0 || size >= INT_MAX/2)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+      "bad memory allocation requested (%d bytes)",
+      size);
 
 if (size < 16) size = 16;
 
