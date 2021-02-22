@@ -1010,7 +1010,7 @@ else
       last_sig->next = sig;
       }
 
-    if (--dkim_collect_input == 0)
+    if (dkim_collect_input && --dkim_collect_input == 0)
       {
       ctx->headers = pdkim_prepend_stringlist(ctx->headers, ctx->cur_header->s);
       ctx->cur_header->s[ctx->cur_header->ptr = 0] = '\0';
