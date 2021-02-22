@@ -5364,10 +5364,10 @@ while (done <= 0)
 	  }
 	if (f.smtp_in_pipelining_advertised && last_was_rcpt)
 	  smtp_printf("503 Valid RCPT command must precede %s\r\n", FALSE,
-	    smtp_names[smtp_connection_had[smtp_ch_index-1]]);
+	    smtp_names[smtp_connection_had[SMTP_HBUFF_PREV(smtp_ch_index)]]);
 	else
 	  done = synprot_error(L_smtp_protocol_error, 503, NULL,
-	    smtp_connection_had[smtp_ch_index-1] == SCH_DATA
+	    smtp_connection_had[SMTP_HBUFF_PREV(smtp_ch_index)] == SCH_DATA
 	    ? US"valid RCPT command must precede DATA"
 	    : US"valid RCPT command must precede BDAT");
 
