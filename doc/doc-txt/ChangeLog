@@ -213,6 +213,9 @@ QS/01 Creation of (database) files in $spool_dir: only uid=0 or the uid of
 QS/02 PID file creation/deletion: only possible if uid=0 or uid is the Exim
       runtime user.
 
+QS/03 When reading the output from interpreted forward files we do not
+      pass the pipe between the parent and the interpreting process to
+      executed child processes (if any).
 
 Exim version 4.94
 -----------------
