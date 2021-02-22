@@ -173,6 +173,7 @@ extern struct global_flags {
  BOOL   authentication_local		:1; /* TRUE if non-smtp (implicit authentication) */
 
  BOOL   background_daemon		:1; /* Set FALSE to keep in foreground */
+ BOOL   bdat_readers_wanted		:1; /* BDAT-handling to be pushed on readfunc stack */
 
  BOOL   chunking_offered		:1;
  BOOL   config_changed			:1; /* True if -C used */

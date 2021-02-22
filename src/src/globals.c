@@ -247,6 +247,7 @@ struct global_flags f =
 	.authentication_local   = FALSE,
 
 	.background_daemon      = TRUE,
+	.bdat_readers_wanted    = FALSE,
 
 	.chunking_offered       = FALSE,
 	.config_changed         = FALSE,

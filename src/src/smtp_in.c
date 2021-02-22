@@ -602,6 +602,10 @@ if (n > 0)
 #endif
 }
 
+/* Forward declarations */
+static inline void bdat_push_receive_functions(void);
+static inline void bdat_pop_receive_functions(void);
+
 
 /* Get a byte from the smtp input, in CHUNKING mode.  Handle ack of the
 previous BDAT chunk and getting new ones when we run out.  Uses the
@@ -634,9 +638,7 @@ for(;;)
   if (chunking_data_left > 0)
     return lwr_receive_getc(chunking_data_left--);
 
-  receive_getc = lwr_receive_getc;
-  receive_getbuf = lwr_receive_getbuf;
-  receive_ungetc = lwr_receive_ungetc;
+  bdat_pop_receive_functions();
 #ifndef DISABLE_DKIM
   dkim_save = dkim_collect_input;
   dkim_collect_input = 0;
@@ -740,9 +742,7 @@ next_cmd:
 	  goto repeat_until_rset;
 	  }
 
-      receive_getc = bdat_getc;
-      receive_getbuf = bdat_getbuf;	/* r~getbuf is never actually used */
-      receive_ungetc = bdat_ungetc;
+      bdat_push_receive_functions();
 #ifndef DISABLE_DKIM
       dkim_collect_input = dkim_save;
 #endif
@@ -775,9 +775,7 @@ while (chunking_data_left)
   if (!bdat_getbuf(&n)) break;
   }
 
-receive_getc = lwr_receive_getc;
-receive_getbuf = lwr_receive_getbuf;
-receive_ungetc = lwr_receive_ungetc;
+bdat_pop_receive_functions();
 
 if (chunking_state != CHUNKING_LAST)
   {
@@ -787,6 +785,45 @@ if (chunking_state != CHUNKING_LAST)
 }
 
 
+static inline void
+bdat_push_receive_functions(void)
+{
+/* push the current receive_* function on the "stack", and
+replace them by bdat_getc(), which in turn will use the lwr_receive_*
+functions to do the dirty work. */
+if (lwr_receive_getc == NULL)
+  {
+  lwr_receive_getc = receive_getc;
+  lwr_receive_getbuf = receive_getbuf;
+  lwr_receive_ungetc = receive_ungetc;
+  }
+else
+  {
+  DEBUG(D_receive) debug_printf("chunking double-push receive functions\n");
+  }
+
+receive_getc = bdat_getc;
+receive_getbuf = bdat_getbuf;
+receive_ungetc = bdat_ungetc;
+}
+
+static inline void
+bdat_pop_receive_functions(void)
+{
+if (lwr_receive_getc == NULL)
+  {
+  DEBUG(D_receive) debug_printf("chunking double-pop receive functions\n");
+  return;
+  }
+
+receive_getc = lwr_receive_getc;
+receive_getbuf = lwr_receive_getbuf;
+receive_ungetc = lwr_receive_ungetc;
+
+lwr_receive_getc = NULL;
+lwr_receive_getbuf = NULL;
+lwr_receive_ungetc = NULL;
+}
 
 
 /*************************************************
