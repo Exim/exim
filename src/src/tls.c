@@ -457,6 +457,9 @@ Returns:       the character
 int
 tls_ungetc(int ch)
 {
+if (ssl_xfer_buffer_lwm <= 0)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "buffer underflow in tls_ungetc");
+
 ssl_xfer_buffer[--ssl_xfer_buffer_lwm] = ch;
 return ch;
 }
