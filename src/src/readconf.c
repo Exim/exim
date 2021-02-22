@@ -3350,10 +3350,11 @@ but if that yields an unqualified value, make a FQDN by using gethostbyname to
 canonize it. Some people like upper case letters in their host names, so we
 don't force the case. */
 
-if (primary_hostname == NULL)
+if (!primary_hostname)
   {
-  const uschar *hostname;
+  const uschar * hostname;
   struct utsname uts;
+
   if (uname(&uts) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "uname() failed to yield host name");
   hostname = US uts.nodename;
@@ -3363,33 +3364,29 @@ if (primary_hostname == NULL)
     int af = AF_INET;
     struct hostent *hostdata;
 
-    #if HAVE_IPV6
-    if (!disable_ipv6 && (dns_ipv4_lookup == NULL ||
-         match_isinlist(hostname, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
+#if HAVE_IPV6
+    if (  !disable_ipv6
+       && (  !dns_ipv4_lookup
+	  || match_isinlist(hostname, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
 	    MCL_DOMAIN, TRUE, NULL) != OK))
       af = AF_INET6;
-    #else
-    af = AF_INET;
-    #endif
+#endif
 
     for (;;)
       {
-      #if HAVE_IPV6
-        #if HAVE_GETIPNODEBYNAME
+#if HAVE_IPV6
+# if HAVE_GETIPNODEBYNAME
         int error_num;
         hostdata = getipnodebyname(CS hostname, af, 0, &error_num);
         #else
         hostdata = gethostbyname2(CS hostname, af);
-        #endif
-      #else
+# endif
+#else
       hostdata = gethostbyname(CS hostname);
-      #endif
+#endif
 
-      if (hostdata != NULL)
-        {
-        hostname = US hostdata->h_name;
-        break;
-        }
+      if (hostdata)
+        { hostname = US hostdata->h_name; break; }
 
       if (af == AF_INET) break;
       af = AF_INET;

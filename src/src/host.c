@@ -1971,8 +1971,8 @@ lookups here (except when testing standalone). */
   #else
   if (  disable_ipv6
      ||    dns_ipv4_lookup
-	&& match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
-	    MCL_DOMAIN, TRUE, NULL) == OK)
+	&& match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0,
+	    &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK)
   #endif
 
     { af = AF_INET; times = 1; }
@@ -2191,12 +2191,12 @@ dns_again_means_nonexist, return permanent rather than temporary failure. */
 
 RETURN_AGAIN:
   {
-  #ifndef STAND_ALONE
+#ifndef STAND_ALONE
   int rc;
   const uschar *save = deliver_domain;
   deliver_domain = host->name;  /* set $domain */
-  rc = match_isinlist(host->name, CUSS &dns_again_means_nonexist, 0, NULL, NULL,
-    MCL_DOMAIN, TRUE, NULL);
+  rc = match_isinlist(host->name, CUSS &dns_again_means_nonexist, 0,
+    &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL);
   deliver_domain = save;
   if (rc == OK)
     {
@@ -2204,7 +2204,7 @@ RETURN_AGAIN:
       "returning HOST_FIND_FAILED\n", host->name);
     return HOST_FIND_FAILED;
     }
-  #endif
+#endif
   return HOST_FIND_AGAIN;
   }
 }
@@ -2296,9 +2296,9 @@ On an IPv4 system, go round the loop once only, looking only for A records. */
   #ifndef STAND_ALONE
     if (  disable_ipv6
        || !(whichrrs & HOST_FIND_BY_AAAA)
-       || (dns_ipv4_lookup
-          && match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0, NULL, NULL,
-	      MCL_DOMAIN, TRUE, NULL) == OK)
+       ||    dns_ipv4_lookup
+          && match_isinlist(host->name, CUSS &dns_ipv4_lookup, 0,
+	      &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK
        )
       i = 0;    /* look up A records only */
     else
@@ -2556,12 +2556,12 @@ int yield;
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 BOOL dnssec_require = dnssec_d
-		    && match_isinlist(host->name, CUSS &dnssec_d->require,
-				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
+  && match_isinlist(host->name, CUSS &dnssec_d->require,
+		  0, &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK;
 BOOL dnssec_request = dnssec_require
-		    || (  dnssec_d
-		       && match_isinlist(host->name, CUSS &dnssec_d->request,
-				    0, NULL, NULL, MCL_DOMAIN, TRUE, NULL) == OK);
+    || (  dnssec_d
+       && match_isinlist(host->name, CUSS &dnssec_d->request,
+		    0, &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK);
 dnssec_status_t dnssec;
 
 /* Set the default fully qualified name to the incoming name, initialize the
@@ -2626,13 +2626,13 @@ if (whichrrs & HOST_FIND_BY_SRV)
     }
   if (rc == DNS_FAIL || rc == DNS_AGAIN)
     {
-    #ifndef STAND_ALONE
-    if (match_isinlist(host->name, CUSS &srv_fail_domains, 0, NULL, NULL,
-	MCL_DOMAIN, TRUE, NULL) != OK)
-    #endif
+#ifndef STAND_ALONE
+    if (match_isinlist(host->name, CUSS &srv_fail_domains, 0,
+	&domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
+#endif
       { yield = HOST_FIND_AGAIN; goto out; }
     DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
-      "(domain in srv_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
+      "(domain in srv_fail_domains)\n", rc == DNS_FAIL ? "FAIL":"AGAIN");
     }
   }
 
@@ -2678,8 +2678,8 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
       DEBUG(D_host_lookup)
 	debug_printf("dnssec fail on MX for %.256s", host->name);
 #ifndef STAND_ALONE
-      if (match_isinlist(host->name, CUSS &mx_fail_domains, 0, NULL, NULL,
-	  MCL_DOMAIN, TRUE, NULL) != OK)
+      if (match_isinlist(host->name, CUSS &mx_fail_domains, 0,
+	  &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
 	{ yield = HOST_FIND_SECURITY; goto out; }
 #endif
       rc = DNS_FAIL;
@@ -2688,8 +2688,8 @@ if (rc != DNS_SUCCEED  &&  whichrrs & HOST_FIND_BY_MX)
     case DNS_FAIL:
     case DNS_AGAIN:
 #ifndef STAND_ALONE
-      if (match_isinlist(host->name, CUSS &mx_fail_domains, 0, NULL, NULL,
-	  MCL_DOMAIN, TRUE, NULL) != OK)
+      if (match_isinlist(host->name, CUSS &mx_fail_domains, 0,
+	  &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) != OK)
 #endif
 	{ yield = HOST_FIND_AGAIN; goto out; }
       DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "

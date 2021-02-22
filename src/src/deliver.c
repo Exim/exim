@@ -6814,7 +6814,7 @@ while (addr_new)           /* Loop until all addresses dealt with */
       addr_route = addr->next;
 
       deliver_domain = addr->domain;  /* set $domain */
-      if ((rc = match_isinlist(addr->domain, (const uschar **)&queue_domains, 0,
+      if ((rc = match_isinlist(addr->domain, CUSS &queue_domains, 0,
             &domainlist_anchor, addr->domain_cache, MCL_DOMAIN, TRUE, NULL))
               != OK)
         if (rc == DEFER)

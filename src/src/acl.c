@@ -3508,14 +3508,14 @@ for (; cb; cb = cb->next)
     case ACLC_DKIM_SIGNER:
     if (dkim_cur_signer)
       rc = match_isinlist(dkim_cur_signer,
-                          &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+                          &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
     else
       rc = FAIL;
     break;
 
     case ACLC_DKIM_STATUS:
     rc = match_isinlist(dkim_verify_status,
-                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+                        &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
     break;
     #endif
 
@@ -3527,7 +3527,7 @@ for (; cb; cb = cb->next)
     /* used long way of dmarc_exim_expand_query() in case we need more
      * view into the process in the future. */
     rc = match_isinlist(dmarc_exim_expand_query(DMARC_VERIFY_STATUS),
-                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+                        &arg, 0, NULL, NULL, MCL_STRING, TRUE, NULL);
     break;
 #endif
 
