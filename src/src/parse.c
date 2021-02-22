@@ -1149,9 +1149,12 @@ while (s < end)
             {
             if (ss >= end) ss--;
             *t++ = '(';
-            Ustrncpy(t, s, ss-s);
-            t += ss-s;
-            s = ss;
+            if (ss > s)
+              {
+              Ustrncpy(t, s, ss-s);
+              t += ss-s;
+              s = ss;
+              }
             }
           }
 
