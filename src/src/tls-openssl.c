@@ -4053,16 +4053,12 @@ if (more || corked)
   {
   if (!len) buff = US &error;	/* dummy just so that string_catn is ok */
 
-#ifndef DISABLE_PIPE_CONNECT
   int save_pool = store_pool;
   store_pool = POOL_PERM;
-#endif
 
   corked = string_catn(corked, buff, len);
 
-#ifndef DISABLE_PIPE_CONNECT
   store_pool = save_pool;
-#endif
 
   if (more)
     {
