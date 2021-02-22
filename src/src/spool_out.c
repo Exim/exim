@@ -105,6 +105,18 @@ return fd;
 
 
 
+static const uschar *
+zap_newlines(const uschar *s)
+{
+uschar *z, *p;
+
+if (Ustrchr(s, '\n') == NULL) return s;
+
+p = z = string_copy(s);
+while ((p = Ustrchr(p, '\n')) != NULL) *p++ = ' ';
+return z;
+}
+
 static void
 spool_var_write(FILE * fp, const uschar * name, const uschar * val)
 {
@@ -223,7 +235,7 @@ if (body_zerocount > 0) fprintf(fp, "-body_zerocount %d\n", body_zerocount);
 if (authenticated_id)
   spool_var_write(fp, US"auth_id", authenticated_id);
 if (authenticated_sender)
-  spool_var_write(fp, US"auth_sender", authenticated_sender);
+  spool_var_write(fp, US"auth_sender", zap_newlines(authenticated_sender));
 
 if (f.allow_unqualified_recipient) fprintf(fp, "-allow_unqualified_recipient\n");
 if (f.allow_unqualified_sender) fprintf(fp, "-allow_unqualified_sender\n");
@@ -296,19 +308,20 @@ fprintf(fp, "%d\n", recipients_count);
 for (int i = 0; i < recipients_count; i++)
   {
   recipient_item *r = recipients_list + i;
+  const uschar *address = zap_newlines(r->address);
 
   /* DEBUG(D_deliver) debug_printf("DSN: Flags: 0x%x\n", r->dsn_flags); */
 
   if (r->pno < 0 && !r->errors_to && r->dsn_flags == 0)
-    fprintf(fp, "%s\n", r->address);
+    fprintf(fp, "%s\n", address);
   else
     {
-    uschar * errors_to = r->errors_to ? r->errors_to : US"";
+    const uschar *errors_to = r->errors_to ? zap_newlines(r->errors_to) : CUS"";
     /* for DSN SUPPORT extend exim 4 spool in a compatible way by
     adding new values upfront and add flag 0x02 */
-    uschar * orcpt = r->orcpt ? r->orcpt : US"";
+    const uschar *orcpt = r->orcpt ? zap_newlines(r->orcpt) : CUS"";
 
-    fprintf(fp, "%s %s %d,%d %s %d,%d#3\n", r->address, orcpt, Ustrlen(orcpt),
+    fprintf(fp, "%s %s %d,%d %s %d,%d#3\n", address, orcpt, Ustrlen(orcpt),
       r->dsn_flags, errors_to, Ustrlen(errors_to), r->pno);
     }
 
