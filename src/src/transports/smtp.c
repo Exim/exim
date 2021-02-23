@@ -1020,7 +1020,7 @@ fail:
   (void) smtp_discard_responses(sx, sx->conn_args.ob, *countp);
   return rc;
 }
-#endif
+#endif	/*!DISABLE_PIPE_CONNECT*/
 
 
 /*************************************************
@@ -1551,7 +1551,9 @@ if (  sx->esmtp
 
 if (require_auth == OK && !f.smtp_authenticated)
   {
+#ifndef DISABLE_PIPE_CONNECT
   invalidate_ehlo_cache_entry(sx);
+#endif
   set_errno_nohost(sx->addrlist, ERRNO_AUTHFAIL,
     string_sprintf("authentication required but %s", fail_reason), DEFER,
     FALSE, &sx->delivery_start);
