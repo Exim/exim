@@ -204,6 +204,97 @@ if (  dmarc_policy == DMARC_POLICY_REJECT     && action == DMARC_RESULT_REJECT
     }
 }
 
+
+static int
+dmarc_write_history_file()
+{
+int tmp_ans;
+u_char **rua; /* aggregate report addressees */
+uschar *history_buffer = NULL;
+
+if (!dmarc_history_file)
+  {
+  DEBUG(D_receive) debug_printf("DMARC history file not set\n");
+  return DMARC_HIST_DISABLED;
+  }
+
+/* Generate the contents of the history file */
+history_buffer = string_sprintf(
+  "job %s\nreporter %s\nreceived %ld\nipaddr %s\nfrom %s\nmfrom %s\n",
+  message_id, primary_hostname, time(NULL), sender_host_address,
+  header_from_sender, expand_string(US"$sender_address_domain"));
+
+if (spf_response)
+  history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_ares_result);
+  /* history_buffer = string_sprintf("%sspf -1\n", history_buffer); */
+
+history_buffer = string_sprintf(
+  "%s%spdomain %s\npolicy %d\n",
+  history_buffer, dkim_history_buffer, dmarc_used_domain, dmarc_policy);
+
+if ((rua = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1)))
+  for (tmp_ans = 0; rua[tmp_ans]; tmp_ans++)
+    history_buffer = string_sprintf("%srua %s\n", history_buffer, rua[tmp_ans]);
+else
+  history_buffer = string_sprintf("%srua -\n", history_buffer);
+
+opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
+history_buffer = string_sprintf("%spct %d\n", history_buffer, tmp_ans);
+
+opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
+history_buffer = string_sprintf("%sadkim %d\n", history_buffer, tmp_ans);
+
+opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
+history_buffer = string_sprintf("%saspf %d\n", history_buffer, tmp_ans);
+
+opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
+history_buffer = string_sprintf("%sp %d\n", history_buffer, tmp_ans);
+
+opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
+history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
+
+history_buffer = string_sprintf(
+  "%salign_dkim %d\nalign_spf %d\naction %d\n",
+  history_buffer, da, sa, action);
+
+/* Write the contents to the history file */
+DEBUG(D_receive)
+  debug_printf("DMARC logging history data for opendmarc reporting%s\n",
+	     (host_checking || f.running_in_test_harness) ? " (not really)" : "");
+if (host_checking || f.running_in_test_harness)
+  {
+  DEBUG(D_receive)
+    debug_printf("DMARC history data for debugging:\n%s", history_buffer);
+  }
+else
+  {
+  ssize_t written_len;
+  const int history_file_fd = log_open_as_exim(dmarc_history_file);
+
+  if (history_file_fd < 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
+			   dmarc_history_file);
+    return DMARC_HIST_FILE_ERR;
+    }
+
+  written_len = write_to_fd_buf(history_file_fd,
+				history_buffer,
+				Ustrlen(history_buffer));
+
+  (void)close(history_file_fd);
+
+  if (written_len <= 0)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC, "failure to write to DMARC history file: %s",
+			   dmarc_history_file);
+    return DMARC_HIST_WRITE_ERR;
+    }
+  }
+return DMARC_HIST_OK;
+}
+
+
 /* dmarc_process adds the envelope sender address to the existing
 context (if any), retrieves the result, sets up expansion
 strings and evaluates the condition outcome. */
@@ -485,94 +576,6 @@ if (!f.dmarc_disable_verify)
 
 return OK;
 }
-
-static int
-dmarc_write_history_file()
-{
-int history_file_fd;
-ssize_t written_len;
-int tmp_ans;
-u_char **rua; /* aggregate report addressees */
-uschar *history_buffer = NULL;
-
-if (!dmarc_history_file)
-  {
-  DEBUG(D_receive) debug_printf("DMARC history file not set\n");
-  return DMARC_HIST_DISABLED;
-  }
-history_file_fd = log_create(dmarc_history_file);
-
-if (history_file_fd < 0)
-  {
-  log_write(0, LOG_MAIN|LOG_PANIC, "failure to create DMARC history file: %s",
-			   dmarc_history_file);
-  return DMARC_HIST_FILE_ERR;
-  }
-
-/* Generate the contents of the history file */
-history_buffer = string_sprintf(
-  "job %s\nreporter %s\nreceived %ld\nipaddr %s\nfrom %s\nmfrom %s\n",
-  message_id, primary_hostname, time(NULL), sender_host_address,
-  header_from_sender, expand_string(US"$sender_address_domain"));
-
-if (spf_response)
-  history_buffer = string_sprintf("%sspf %d\n", history_buffer, dmarc_spf_ares_result);
-  /* history_buffer = string_sprintf("%sspf -1\n", history_buffer); */
-
-history_buffer = string_sprintf(
-  "%s%spdomain %s\npolicy %d\n",
-  history_buffer, dkim_history_buffer, dmarc_used_domain, dmarc_policy);
-
-if ((rua = opendmarc_policy_fetch_rua(dmarc_pctx, NULL, 0, 1)))
-  for (tmp_ans = 0; rua[tmp_ans]; tmp_ans++)
-    history_buffer = string_sprintf("%srua %s\n", history_buffer, rua[tmp_ans]);
-else
-  history_buffer = string_sprintf("%srua -\n", history_buffer);
-
-opendmarc_policy_fetch_pct(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%spct %d\n", history_buffer, tmp_ans);
-
-opendmarc_policy_fetch_adkim(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%sadkim %d\n", history_buffer, tmp_ans);
-
-opendmarc_policy_fetch_aspf(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%saspf %d\n", history_buffer, tmp_ans);
-
-opendmarc_policy_fetch_p(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%sp %d\n", history_buffer, tmp_ans);
-
-opendmarc_policy_fetch_sp(dmarc_pctx, &tmp_ans);
-history_buffer = string_sprintf("%ssp %d\n", history_buffer, tmp_ans);
-
-history_buffer = string_sprintf(
-  "%salign_dkim %d\nalign_spf %d\naction %d\n",
-  history_buffer, da, sa, action);
-
-/* Write the contents to the history file */
-DEBUG(D_receive)
-  debug_printf("DMARC logging history data for opendmarc reporting%s\n",
-	     (host_checking || f.running_in_test_harness) ? " (not really)" : "");
-if (host_checking || f.running_in_test_harness)
-  {
-  DEBUG(D_receive)
-    debug_printf("DMARC history data for debugging:\n%s", history_buffer);
-  }
-else
-  {
-  written_len = write_to_fd_buf(history_file_fd,
-				history_buffer,
-				Ustrlen(history_buffer));
-  if (written_len == 0)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "failure to write to DMARC history file: %s",
-			   dmarc_history_file);
-    return DMARC_HIST_WRITE_ERR;
-    }
-  (void)close(history_file_fd);
-  }
-return DMARC_HIST_OK;
-}
-
 
 uschar *
 dmarc_exim_expand_query(int what)
