@@ -53,9 +53,9 @@ static dmarc_exim_p dmarc_policy_description[] = {
 };
 
 
-void 
+void
 dmarc_version_report(FILE *f)
-{ 
+{
 const char *implementation, *version;
 
 fprintf(f, "Library version: dmarc: Compile: %d.%d.%d.%d\n",
@@ -254,7 +254,7 @@ if (!dmarc_history_file)
   DEBUG(D_receive) debug_printf("DMARC history file not set\n");
   return DMARC_HIST_DISABLED;
   }
-history_file_fd = log_create(dmarc_history_file);
+history_file_fd = log_create_as_exim(dmarc_history_file);
 
 if (history_file_fd < 0)
   {
