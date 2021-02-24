@@ -249,34 +249,28 @@ addr_prop.srs_sender = NULL;
 /* Get the fixed or expanded uid under which the command is to run
 (initialization ensures that one or the other is set). */
 
-if (!ob->cmd_uid_set)
-  {
-  if (!route_find_expanded_user(ob->expand_cmd_uid, rblock->name, US"router",
-      &upw, &uid, &(addr->message)))
+if (  !ob->cmd_uid_set
+   && !route_find_expanded_user(ob->expand_cmd_uid, rblock->name, US"router",
+	&upw, &uid, &(addr->message)))
     return DEFER;
-  }
 
 /* Get the fixed or expanded gid, or take the gid from the passwd entry. */
 
 if (!ob->cmd_gid_set)
-  {
-  if (ob->expand_cmd_gid != NULL)
+  if (ob->expand_cmd_gid)
     {
     if (route_find_expanded_group(ob->expand_cmd_gid, rblock->name,
         US"router", &gid, &(addr->message)))
       return DEFER;
     }
-  else if (upw != NULL)
-    {
+  else if (upw)
     gid = upw->pw_gid;
-    }
   else
     {
     addr->message = string_sprintf("command_user set without command_group "
       "for %s router", rblock->name);
     return DEFER;
     }
-  }
 
 DEBUG(D_route) debug_printf("requires uid=%ld gid=%ld current_directory=%s\n",
   (long int)uid, (long int)gid, current_directory);
@@ -302,10 +296,8 @@ if (!transport_set_up_command(&argvptr, /* anchor for arg list */
     0,                                  /* not relevant when... */
     NULL,                               /* no transporting address */
     US"queryprogram router",            /* for error messages */
-    &(addr->message)))                  /* where to put error message */
-  {
+    &addr->message))                    /* where to put error message */
   return DEFER;
-  }
 
 /* Create the child process, making it a group leader. */
 
@@ -373,8 +365,8 @@ DEBUG(D_route) debug_printf("command wrote: %s\n", buffer);
 rword = buffer;
 while (isspace(*rword)) rword++;
 rdata = rword;
-while (*rdata != 0 && !isspace(*rdata)) rdata++;
-if (*rdata != 0) *rdata++ = 0;
+while (*rdata && !isspace(*rdata)) rdata++;
+if (*rdata) *rdata++ = 0;
 
 /* The word must be a known yield name. If it is "REDIRECT", the rest of the
 line is redirection data, as for a .forward file. It may not contain filter
@@ -402,7 +394,7 @@ if (strcmpic(rword, US"REDIRECT") == 0)
     NULL,                        /* sieve subaddress not relevant */
     &ugid,                       /* uid/gid (but not set) */
     &generated,                  /* where to hang the results */
-    &(addr->message),            /* where to put messages */
+    &addr->message,              /* where to put messages */
     NULL,                        /* don't skip syntax errors */
     &filtertype,                 /* not used; will always be FILTER_FORWARD */
     string_sprintf("%s router", rblock->name));
@@ -414,28 +406,28 @@ if (strcmpic(rword, US"REDIRECT") == 0)
     response after verifying. */
 
     case FF_DEFER:
-    if (addr->message == NULL) addr->message = US"forced defer";
+      if (!addr->message) addr->message = US"forced defer";
       else addr->user_message = addr->message;
-    return DEFER;
+      return DEFER;
 
     case FF_FAIL:
-    add_generated(rblock, addr_new, addr, generated, &addr_prop);
-    if (addr->message == NULL) addr->message = US"forced rejection";
+      add_generated(rblock, addr_new, addr, generated, &addr_prop);
+      if (!addr->message) addr->message = US"forced rejection";
       else addr->user_message = addr->message;
-    return FAIL;
+      return FAIL;
 
     case FF_DELIVERED:
-    break;
+      break;
 
     case FF_NOTDELIVERED:    /* an empty redirection list is bad */
-    addr->message = US"no addresses supplied";
+      addr->message = US"no addresses supplied";
     /* Fall through */
 
     case FF_ERROR:
     default:
-    addr->basic_errno = ERRNO_BADREDIRECT;
-    addr->message = string_sprintf("error in redirect data: %s", addr->message);
-    return DEFER;
+      addr->basic_errno = ERRNO_BADREDIRECT;
+      addr->message = string_sprintf("error in redirect data: %s", addr->message);
+      return DEFER;
     }
 
   /* Handle the generated addresses, if any. */
@@ -473,20 +465,15 @@ if (strcmpic(rword, US"accept") != 0)
   }
 
 /* The command yielded "ACCEPT". The rest of the string is a number of keyed
-fields from which we can fish out values using the "extract" expansion
-function. To use this feature, we must put the string into the $value variable,
-i.e. set lookup_value. */
+fields from which we can fish out values using the equivalent of the "extract"
+expansion function. */
 
-lookup_value = rdata;
-s = expand_string(US"${extract{data}{$value}}");
-if (*s != 0) addr_prop.address_data = string_copy(s);
-
-s = expand_string(US"${extract{transport}{$value}}");
-lookup_value = NULL;
+if ((s = expand_getkeyed(US"data", rdata)) && *s)
+  addr_prop.address_data = string_copy(s);
 
 /* If we found a transport name, find the actual transport */
 
-if (*s != 0)
+if ((s = expand_getkeyed(US"transport", rdata)) && *s)
   {
   transport_instance *transport;
   for (transport = transports; transport; transport = transport->next)
@@ -507,7 +494,7 @@ the last argument not being NULL. */
 
 else
   {
-  if (!rf_get_transport(rblock->transport_name, &(rblock->transport), addr,
+  if (!rf_get_transport(rblock->transport_name, &rblock->transport, addr,
        rblock->name, US"transport"))
     return DEFER;
   addr->transport = rblock->transport;
@@ -515,16 +502,12 @@ else
 
 /* See if a host list is given, and if so, look up the addresses. */
 
-lookup_value = rdata;
-s = expand_string(US"${extract{hosts}{$value}}");
-
-if (*s != 0)
+if ((s = expand_getkeyed(US"hosts", rdata)) && *s)
   {
   int lookup_type = LK_DEFAULT;
-  uschar *ss = expand_string(US"${extract{lookup}{$value}}");
-  lookup_value = NULL;
+  uschar * ss = expand_getkeyed(US"lookup", rdata);
 
-  if (*ss != 0)
+  if (ss && *ss)
     {
     if (Ustrcmp(ss, "byname") == 0) lookup_type = LK_BYNAME;
     else if (Ustrcmp(ss, "bydns") == 0) lookup_type = LK_BYDNS;
@@ -551,8 +534,7 @@ addr->prop = addr_prop;
 
 /* Queue the address for local or remote delivery. */
 
-return rf_queue_add(addr, addr_local, addr_remote, rblock, pw)?
-  OK : DEFER;
+return rf_queue_add(addr, addr_local, addr_remote, rblock, pw) ? OK : DEFER;
 }
 
 #endif   /*!MACRO_PREDEF*/
