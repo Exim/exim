@@ -19016,7 +19016,7 @@ transport option of the same name.
 .cindex "security" "MX lookup"
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
-the dnssec request bit set.
+the DNSSEC request bit set.
 This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
 .option dnssec_require_domains routers "domain list&!!" unset
@@ -19025,7 +19025,7 @@ This applies to all of the SRV, MX, AAAA, A lookup sequence.
 .cindex "security" "MX lookup"
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_require_domains%& will be done with
-the dnssec request bit set.  Any returns not having the Authenticated Data bit
+the DNSSEC request bit set.  Any returns not having the Authenticated Data bit
 (AD bit) set will be ignored and logged as a host-lookup failure.
 This applies to all of the SRV, MX, AAAA, A lookup sequence.
 
@@ -25244,7 +25244,7 @@ details.
 .cindex "security" "MX lookup"
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_request_domains%& will be done with
-the dnssec request bit set. Setting this transport option is only useful if the
+the DNSSEC request bit set. Setting this transport option is only useful if the
 transport overrides or sets the host names. See the &%dnssec_request_domains%&
 router option.
 
@@ -25256,7 +25256,7 @@ router option.
 .cindex "security" "MX lookup"
 .cindex "DNS" "DNSSEC"
 DNS lookups for domains matching &%dnssec_require_domains%& will be done with
-the dnssec request bit set.  Setting this transport option is only
+the DNSSEC request bit set.  Setting this transport option is only
 useful if the transport overrides or sets the host names. See the
 &%dnssec_require_domains%& router option.
 
@@ -25537,9 +25537,9 @@ TLS session for any host that matches this list.
 .cindex DANE "requiring for certain servers"
 If built with DANE support, Exim  will require that a DNSSEC-validated
 TLSA record is present for any host matching the list,
-and that a DANE-verified TLS connection is made. See
-the &%dnssec_request_domains%& router and transport options.
+and that a DANE-verified TLS connection is made.
 There will be no fallback to in-clear communication.
+See the &%dnssec_request_domains%& router and transport options.
 See section &<<SECDANE>>&.
 
 .option hosts_require_ocsp smtp "host list&!!" unset
@@ -25578,11 +25578,14 @@ BDAT will not be used in conjunction with a transport filter.
 .option hosts_try_dane smtp "host list&!!" *
 .cindex DANE "transport options"
 .cindex DANE "attempting for certain servers"
-If built with DANE support, Exim  will require that a DNSSEC-validated
-TLSA record is present for any host matching the list,
-and that a DANE-verified TLS connection is made. See
-the &%dnssec_request_domains%& router and transport options.
-There will be no fallback to in-clear communication.
+.new
+If built with DANE support, Exim  will look up a
+TLSA record for any host matching the list,
+If one is found and that lookup was DNSSEC-validated,
+then Exim requires that a DANE-verified TLS connection is made for that host;
+there will be no fallback to in-clear communication.
+.wen
+See the &%dnssec_request_domains%& router and transport options.
 See section &<<SECDANE>>&.
 
 .option hosts_try_fastopen smtp "host list&!!" *
@@ -30112,7 +30115,7 @@ the &%dnssec_request_domains%& router or transport option.
 
 DANE will only be usable if the target host has DNSSEC-secured MX, A and TLSA records.
 
-A TLSA lookup will be done if either of the above options match and the host-lookup succeeded using dnssec.
+A TLSA lookup will be done if either of the above options match and the host-lookup succeeded using DNSSEC.
 If a TLSA lookup is done and succeeds, a DANE-verified TLS connection
 will be required for the host.  If it does not, the host will not
 be used; there is no fallback to non-DANE or non-TLS.
