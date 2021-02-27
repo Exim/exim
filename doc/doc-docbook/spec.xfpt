@@ -25408,11 +25408,14 @@ BDAT will not be used in conjunction with a transport filter.
 .option hosts_try_dane smtp "host list&!!" *
 .cindex DANE "transport options"
 .cindex DANE "attempting for certain servers"
-If built with DANE support, Exim  will require that a DNSSEC-validated
-TLSA record is present for any host matching the list,
-and that a DANE-verified TLS connection is made. See
-the &%dnssec_request_domains%& router and transport options.
-There will be no fallback to in-clear communication.
+.new
+If built with DANE support, Exim  will look up a
+TLSA record for any host matching the list,
+If one is found and that lookup was DNSSEC-validated,
+then Exim requires that a DANE-verified TLS connection is made for that host;
+there will be no fallback to in-clear communication.
+.wen
+See the &%dnssec_request_domains%& router and transport options.
 See section &<<SECDANE>>&.
 
 .option hosts_try_fastopen smtp "host list&!!" *
