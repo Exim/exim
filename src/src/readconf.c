@@ -140,6 +140,7 @@ static optionlist optionlist_config[] = {
   { "dns_retry",                opt_int,         {&dns_retry} },
   { "dns_trust_aa",             opt_stringptr,   {&dns_trust_aa} },
   { "dns_use_edns0",            opt_int,         {&dns_use_edns0} },
+  { "dnslist_valid_addresses",  opt_stringptr,   {&dnslist_valid_addresses} },
  /* This option is now a no-op, retained for compatibility */
   { "drop_cr",                  opt_bool,        {&drop_cr} },
 /*********************************************************/

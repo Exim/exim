@@ -8,6 +8,16 @@
 domainlist local_domains = exim.test.ex
 trusted_users = CALLER
 
+.ifdef DNSBL_127_255
+# Split into two /9s so that it's visible in the debug output
+dnslist_valid_addresses = ${if eq{$dnslist_domain}{rbl.test.ex}{!127.255.255.0/24 : 127.0.0.0/9 : 127.128.0.0/9}{127.0.0.0/8}}
+.endif
+
+.ifdef DNSBL_DEFER
+# Expansion failure
+dnslist_valid_addresses = ${if eq{intentional_expansion_failure
+.endif
+
 acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
 acl_smtp_mail = check_mail

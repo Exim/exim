@@ -7,7 +7,7 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 37)
+>>> processing "warn" (TESTSUITE/test-config 47)
 >>> check dnslists = rbl4.test.ex&0.0.0.6
 >>> dnslists check: rbl4.test.ex&0.0.0.6
 >>> new DNS lookup for 14.12.11.V4NET.rbl4.test.ex
@@ -15,50 +15,52 @@
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 38)
+>>> processing "warn" (TESTSUITE/test-config 48)
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> dnslists check: rbl4.test.ex&127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 39)
+>>> processing "warn" (TESTSUITE/test-config 49)
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> dnslists check: rbl4.test.ex!&0.0.0.7
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 41)
+>>> processing "warn" (TESTSUITE/test-config 51)
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 43)
+>>> processing "accept" (TESTSUITE/test-config 53)
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> end of ACL "check_mail": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "warn" (TESTSUITE/test-config 47)
+>>> processing "warn" (TESTSUITE/test-config 57)
 >>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
 >>> dnslists check: rbl3.test.ex!=127.0.0.3
 >>> new DNS lookup for 14.12.11.V4NET.rbl3.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 50)
+>>> processing "deny" (TESTSUITE/test-config 60)
 >>>   message: host is listed in $dnslist_domain with value 127.0.0.3${if def:dnslist_text{\n$dnslist_text}}
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> dnslists check: rbl3.test.ex=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.3
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 52)
+>>> processing "require" (TESTSUITE/test-config 62)
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing postmaster@exim.test.ex
@@ -73,7 +75,7 @@
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 53)
+>>> processing "deny" (TESTSUITE/test-config 63)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -85,35 +87,37 @@
 >>> routed by localuser router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 55)
+>>> processing "accept" (TESTSUITE/test-config 65)
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> accept: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "warn" (TESTSUITE/test-config 47)
+>>> processing "warn" (TESTSUITE/test-config 57)
 >>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
 >>> dnslists check: rbl3.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
 >>> warn: condition test succeeded in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 50)
+>>> processing "deny" (TESTSUITE/test-config 60)
 >>>   message: host is listed in $dnslist_domain with value 127.0.0.3${if def:dnslist_text{\n$dnslist_text}}
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> dnslists check: rbl3.test.ex=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.3
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "require" (TESTSUITE/test-config 52)
+>>> processing "require" (TESTSUITE/test-config 62)
 >>> check verify = sender
 >>> using cached sender verify result
 >>> require: condition test succeeded in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 53)
+>>> processing "deny" (TESTSUITE/test-config 63)
 >>>   message: unrouteable address
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -122,7 +126,7 @@
 >>> routed by system_aliases router
 >>> ----------- end verify ------------
 >>> deny: condition test failed in ACL "check_recipient"
->>> processing "accept" (TESTSUITE/test-config 55)
+>>> processing "accept" (TESTSUITE/test-config 65)
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
@@ -139,7 +143,7 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 37)
+>>> processing "warn" (TESTSUITE/test-config 47)
 >>> check dnslists = rbl4.test.ex&0.0.0.6
 >>> dnslists check: rbl4.test.ex&0.0.0.6
 >>> new DNS lookup for 15.12.11.V4NET.rbl4.test.ex
@@ -147,47 +151,49 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 38)
+>>> processing "warn" (TESTSUITE/test-config 48)
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> dnslists check: rbl4.test.ex&127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 39)
+>>> processing "warn" (TESTSUITE/test-config 49)
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> dnslists check: rbl4.test.ex!&0.0.0.7
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 41)
+>>> processing "warn" (TESTSUITE/test-config 51)
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 43)
+>>> processing "accept" (TESTSUITE/test-config 53)
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> end of ACL "check_mail": ACCEPT
 >>> using ACL "check_recipient"
->>> processing "warn" (TESTSUITE/test-config 47)
+>>> processing "warn" (TESTSUITE/test-config 57)
 >>>   message: X-Warn: host is listed in $dnslist_domain but not =127.0.0.3${if def:dnslist_text{\n  $dnslist_text}}
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
 >>> dnslists check: rbl3.test.ex!=127.0.0.3
 >>> new DNS lookup for 15.12.11.V4NET.rbl3.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
+>>> 127.0.0.3 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was an exclude match for =127.0.0.3
 >>> warn: condition test failed in ACL "check_recipient"
->>> processing "deny" (TESTSUITE/test-config 50)
+>>> processing "deny" (TESTSUITE/test-config 60)
 >>>   message: host is listed in $dnslist_domain with value 127.0.0.3${if def:dnslist_text{\n$dnslist_text}}
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> dnslists check: rbl3.test.ex=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
+>>> 127.0.0.3 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.15 is listed at rbl3.test.ex
 >>> deny: condition test succeeded in ACL "check_recipient"
 >>> end of ACL "check_recipient": DENY
@@ -201,40 +207,44 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 37)
+>>> processing "warn" (TESTSUITE/test-config 47)
 >>> check dnslists = rbl4.test.ex&0.0.0.6
 >>> dnslists check: rbl4.test.ex&0.0.0.6
 >>> new DNS lookup for 20.12.11.V4NET.rbl4.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
+>>> 127.0.0.6 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.20 is listed at rbl4.test.ex
 >>> warn: condition test succeeded in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 38)
+>>> processing "warn" (TESTSUITE/test-config 48)
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> dnslists check: rbl4.test.ex&127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
+>>> 127.0.0.6 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was no match for &127.0.0.3
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 39)
+>>> processing "warn" (TESTSUITE/test-config 49)
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> dnslists check: rbl4.test.ex!&0.0.0.7
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
+>>> 127.0.0.6 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.20 is listed at rbl4.test.ex
 >>> check add_header = DNSlist: $dnslist_domain $dnslist_text $dnslist_matched
 >>>                  = DNSlist: rbl4.test.ex  V4NET.11.12.20
 >>> warn: condition test succeeded in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 41)
+>>> processing "warn" (TESTSUITE/test-config 51)
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
+>>> 127.0.0.6 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.128
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 43)
+>>> processing "accept" (TESTSUITE/test-config 53)
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> end of ACL "check_mail": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -246,38 +256,42 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 37)
+>>> processing "warn" (TESTSUITE/test-config 47)
 >>> check dnslists = rbl4.test.ex&0.0.0.6
 >>> dnslists check: rbl4.test.ex&0.0.0.6
 >>> new DNS lookup for 21.12.11.V4NET.rbl4.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
+>>> 127.0.0.7 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.21 is listed at rbl4.test.ex
 >>> warn: condition test succeeded in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 38)
+>>> processing "warn" (TESTSUITE/test-config 48)
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> dnslists check: rbl4.test.ex&127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
+>>> 127.0.0.7 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.21 is listed at rbl4.test.ex
 >>> warn: condition test succeeded in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 39)
+>>> processing "warn" (TESTSUITE/test-config 49)
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> dnslists check: rbl4.test.ex!&0.0.0.7
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
+>>> 127.0.0.7 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was an exclude match for &0.0.0.7
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "warn" (TESTSUITE/test-config 41)
+>>> processing "warn" (TESTSUITE/test-config 51)
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
+>>> 127.0.0.7 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.128
 >>> warn: condition test failed in ACL "check_mail"
->>> processing "accept" (TESTSUITE/test-config 43)
+>>> processing "accept" (TESTSUITE/test-config 53)
 >>> accept: condition test succeeded in ACL "check_mail"
 >>> end of ACL "check_mail": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -290,7 +304,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> a.b in helo_lookup_domains? no (end of list)
 >>> using ACL "check_helo"
->>> processing "warn" (TESTSUITE/test-config 21)
+>>> processing "warn" (TESTSUITE/test-config 31)
 >>> check dnslists = rbl2.test.ex!=127.0.0.3 : rbl3.test.ex=127.0.0.3
 >>> dnslists check: rbl2.test.ex!=127.0.0.3
 >>> new DNS lookup for 15.12.11.V4NET.rbl2.test.ex
@@ -301,9 +315,10 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> new DNS lookup for 15.12.11.V4NET.rbl3.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
+>>> 127.0.0.3 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.11.12.15 is listed at rbl3.test.ex
 >>> warn: condition test succeeded in ACL "check_helo"
->>> processing "accept" (TESTSUITE/test-config 22)
+>>> processing "accept" (TESTSUITE/test-config 32)
 >>> accept: condition test succeeded in ACL "check_helo"
 >>> end of ACL "check_helo": ACCEPT
 >>> host in hosts_connection_nolog? no (option unset)
@@ -316,74 +331,92 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was an exclude match for =127.0.0.1
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there was an IP address that did not match for ==127.0.0.1
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => but we are not accepting this block class because
 >>> => there were no IP addresses that did not match for ==127.0.0.1,127.0.0.2
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -403,74 +436,98 @@ LOG: VRFY failed for a@b H=[V4NET.13.13.2]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 100.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => but we are not accepting this block class because
->>> => there was no match for =127.0.0.1
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => that means V4NET.13.13.100 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => that means V4NET.13.13.100 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => that means V4NET.13.13.100 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => that means V4NET.13.13.100 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
->>> => that means V4NET.13.13.100 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 100.13.13.V4NET.rbl.test.ex succeeded (yielding 0.0.0.0)
-LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; not in 127.0/8 and discarded
+>>> 0.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.100 at rbl.test.ex returned 0.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.100 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -490,74 +547,98 @@ LOG: VRFY failed for a@b H=[V4NET.13.13.100]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 101.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => but we are not accepting this block class because
->>> => there was no match for =127.0.0.1
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => that means V4NET.13.13.101 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => that means V4NET.13.13.101 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => that means V4NET.13.13.101 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => that means V4NET.13.13.101 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
->>> => that means V4NET.13.13.101 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 101.13.13.V4NET.rbl.test.ex succeeded (yielding 126.255.255.255)
-LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; not in 127.0/8 and discarded
+>>> 126.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.101 at rbl.test.ex returned 126.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.101 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -577,74 +658,98 @@ LOG: VRFY failed for a@b H=[V4NET.13.13.101]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 102.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => but we are not accepting this block class because
->>> => there was no match for =127.0.0.1
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => that means V4NET.13.13.102 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => that means V4NET.13.13.102 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => that means V4NET.13.13.102 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => that means V4NET.13.13.102 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
->>> => that means V4NET.13.13.102 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 102.13.13.V4NET.rbl.test.ex succeeded (yielding 128.0.0.0)
-LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; not in 127.0/8 and discarded
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.102 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.102 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -664,74 +769,98 @@ LOG: VRFY failed for a@b H=[V4NET.13.13.102]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 103.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => but we are not accepting this block class because
->>> => there was no match for =127.0.0.1
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => that means V4NET.13.13.103 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => that means V4NET.13.13.103 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => that means V4NET.13.13.103 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => that means V4NET.13.13.103 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
->>> => that means V4NET.13.13.103 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 103.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255)
-LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; not in 127.0/8 and discarded
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.103 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.103 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -751,75 +880,110 @@ LOG: VRFY failed for a@b H=[V4NET.13.13.103]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 104.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.1
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => that means V4NET.13.13.104 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => that means V4NET.13.13.104 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => but we are not accepting this block class because
 >>> => there was an IP address that did not match for ==127.0.0.1
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => but we are not accepting this block class because
 >>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => that means V4NET.13.13.104 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => that means V4NET.13.13.104 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => that means V4NET.13.13.104 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 104.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 127.0.0.0)
-LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; not in 127.0/8 and discarded
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.104 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 127.0.0.0 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => updated address list: 127.0.0.0
 >>> => that means V4NET.13.13.104 is listed at rbl.test.ex
 >>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -839,75 +1003,116 @@ LOG: VRFY failed for a@b H=[V4NET.13.13.104]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 25)
+>>> processing "warn" (TESTSUITE/test-config 35)
 >>> check dnslists = rbl.test.ex=127.0.0.1
 >>> dnslists check: rbl.test.ex=127.0.0.1
 >>> new DNS lookup for 105.13.13.V4NET.rbl.test.ex
 >>> dnslists: wrote cache entry, ttl=3600
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => but we are not accepting this block class because
->>> => there was no match for =127.0.0.1
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 26)
+>>> processing "warn" (TESTSUITE/test-config 36)
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> dnslists check: rbl.test.ex!=127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => that means V4NET.13.13.105 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 27)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> dnslists check: rbl.test.ex!=127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => that means V4NET.13.13.105 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 28)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> dnslists check: rbl.test.ex==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 29)
+>>> processing "warn" (TESTSUITE/test-config 39)
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => but we are not accepting this block class because
->>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 30)
+>>> processing "warn" (TESTSUITE/test-config 40)
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> dnslists check: rbl.test.ex!==127.0.0.1
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => that means V4NET.13.13.105 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 31)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> dnslists check: rbl.test.ex!==127.0.0.3
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => that means V4NET.13.13.105 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 32)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
->>> => that means V4NET.13.13.105 is listed at rbl.test.ex
->>> warn: condition test succeeded in ACL "check_vrfy"
->>> processing "warn" (TESTSUITE/test-config 33)
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
 >>> check dnslists = rbl.test.ex
 >>> dnslists check: rbl.test.ex
 >>> dnslists: using result of previous lookup
 >>> DNS lookup for 105.13.13.V4NET.rbl.test.ex succeeded (yielding 255.255.255.255, 255.255.255.254)
-LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; not in 127.0/8 and discarded
-LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; not in 127.0/8 and discarded
+>>> 255.255.255.255 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.255; invalid address discarded
+>>> 255.255.255.254 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.105 is not listed at rbl.test.ex
 >>> warn: condition test failed in ACL "check_vrfy"
->>> processing "accept" (TESTSUITE/test-config 34)
+>>> processing "accept" (TESTSUITE/test-config 44)
 >>> accept: condition test succeeded in ACL "check_vrfy"
 >>> end of ACL "check_vrfy": ACCEPT
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -917,3 +1122,558 @@ LOG: DNS list lookup for V4NET.13.13.105 at rbl.test.ex returned 255.255.255.254
 >>> a in "userx"? no (end of list)
 >>> no more routers
 LOG: VRFY failed for a@b H=[V4NET.13.13.105]
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 35)
+>>> check dnslists = rbl.test.ex=127.0.0.1
+>>> dnslists check: rbl.test.ex=127.0.0.1
+>>> new DNS lookup for 106.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => but we are not accepting this block class because
+>>> => there was no match for =127.0.0.1
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 36)
+>>> check dnslists = rbl.test.ex!=127.0.0.1
+>>> dnslists check: rbl.test.ex!=127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => that means V4NET.13.13.106 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
+>>> check dnslists = rbl.test.ex!=127.0.0.3
+>>> dnslists check: rbl.test.ex!=127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => that means V4NET.13.13.106 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
+>>> check dnslists = rbl.test.ex==127.0.0.1
+>>> dnslists check: rbl.test.ex==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => but we are not accepting this block class because
+>>> => there was an IP address that did not match for ==127.0.0.1
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 39)
+>>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => but we are not accepting this block class because
+>>> => there was an IP address that did not match for ==127.0.0.1,127.0.0.2
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 40)
+>>> check dnslists = rbl.test.ex!==127.0.0.1
+>>> dnslists check: rbl.test.ex!==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => that means V4NET.13.13.106 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
+>>> check dnslists = rbl.test.ex!==127.0.0.3
+>>> dnslists check: rbl.test.ex!==127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => that means V4NET.13.13.106 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
+>>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => that means V4NET.13.13.106 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
+>>> check dnslists = rbl.test.ex
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> => that means V4NET.13.13.106 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "accept" (TESTSUITE/test-config 44)
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling system_aliases router
+>>> system_aliases router declined for a@b
+>>> a in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for a@b H=[V4NET.13.13.106]
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 35)
+>>> check dnslists = rbl.test.ex=127.0.0.1
+>>> dnslists check: rbl.test.ex=127.0.0.1
+>>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 36)
+>>> check dnslists = rbl.test.ex!=127.0.0.1
+>>> dnslists check: rbl.test.ex!=127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => but we are not accepting this block class because
+>>> => there was an exclude match for =127.0.0.1
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
+>>> check dnslists = rbl.test.ex!=127.0.0.3
+>>> dnslists check: rbl.test.ex!=127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
+>>> check dnslists = rbl.test.ex==127.0.0.1
+>>> dnslists check: rbl.test.ex==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => but we are not accepting this block class because
+>>> => there was an IP address that did not match for ==127.0.0.1
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 39)
+>>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 40)
+>>> check dnslists = rbl.test.ex!==127.0.0.1
+>>> dnslists check: rbl.test.ex!==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
+>>> check dnslists = rbl.test.ex!==127.0.0.3
+>>> dnslists check: rbl.test.ex!==127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
+>>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => but we are not accepting this block class because
+>>> => there were no IP addresses that did not match for ==127.0.0.1,127.0.0.2
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
+>>> check dnslists = rbl.test.ex
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> 127.0.0.2 in dnslist_valid_addresses? yes (matched "127.0.0.0/9")
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "accept" (TESTSUITE/test-config 44)
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling system_aliases router
+>>> system_aliases router declined for a@b
+>>> a in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for a@b H=[V4NET.13.13.2]
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 35)
+>>> check dnslists = rbl.test.ex=127.0.0.1
+>>> dnslists check: rbl.test.ex=127.0.0.1
+>>> new DNS lookup for 106.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 36)
+>>> check dnslists = rbl.test.ex!=127.0.0.1
+>>> dnslists check: rbl.test.ex!=127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
+>>> check dnslists = rbl.test.ex!=127.0.0.3
+>>> dnslists check: rbl.test.ex!=127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
+>>> check dnslists = rbl.test.ex==127.0.0.1
+>>> dnslists check: rbl.test.ex==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 39)
+>>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 40)
+>>> check dnslists = rbl.test.ex!==127.0.0.1
+>>> dnslists check: rbl.test.ex!==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
+>>> check dnslists = rbl.test.ex!==127.0.0.3
+>>> dnslists check: rbl.test.ex!==127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
+>>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
+>>> check dnslists = rbl.test.ex
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 106.13.13.V4NET.rbl.test.ex succeeded (yielding 127.255.255.255)
+>>> 127.255.255.255 in dnslist_valid_addresses? no (matched "!127.255.255.0/24")
+LOG: DNS list lookup for V4NET.13.13.106 at rbl.test.ex returned 127.255.255.255; invalid address discarded
+>>> => all addresses are invalid
+>>> => that means V4NET.13.13.106 is not listed at rbl.test.ex
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "accept" (TESTSUITE/test-config 44)
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling system_aliases router
+>>> system_aliases router declined for a@b
+>>> a in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for a@b H=[V4NET.13.13.106]
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 35)
+>>> check dnslists = rbl.test.ex=127.0.0.1
+>>> dnslists check: rbl.test.ex=127.0.0.1
+>>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 36)
+>>> check dnslists = rbl.test.ex!=127.0.0.1
+>>> dnslists check: rbl.test.ex!=127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 37)
+>>> check dnslists = rbl.test.ex!=127.0.0.3
+>>> dnslists check: rbl.test.ex!=127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 38)
+>>> check dnslists = rbl.test.ex==127.0.0.1
+>>> dnslists check: rbl.test.ex==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 39)
+>>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 40)
+>>> check dnslists = rbl.test.ex!==127.0.0.1
+>>> dnslists check: rbl.test.ex!==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 41)
+>>> check dnslists = rbl.test.ex!==127.0.0.3
+>>> dnslists check: rbl.test.ex!==127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 42)
+>>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "warn" (TESTSUITE/test-config 43)
+>>> check dnslists = rbl.test.ex
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.1; unable to verify, returned DEFER
+LOG: failed to expand "${if eq{intentional_expansion_failure" while checking a list: missing } at end of string
+LOG: DNS list lookup for V4NET.13.13.2 at rbl.test.ex returned 127.0.0.2; unable to verify, returned DEFER
+>>> warn: condition test deferred in ACL "check_vrfy"
+LOG: H=[V4NET.13.13.2] Warning: ACL "warn" statement skipped: condition test deferred
+>>> processing "accept" (TESTSUITE/test-config 44)
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling system_aliases router
+>>> system_aliases router declined for a@b
+>>> a in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for a@b H=[V4NET.13.13.2]
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 35)
+>>> check dnslists = rbl.test.ex=127.0.0.1
+>>> dnslists check: rbl.test.ex=127.0.0.1
+>>> new DNS lookup for 107.13.13.V4NET.rbl.test.ex
+>>> dnslists: wrote cache entry, ttl=3600
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => that means V4NET.13.13.107 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 36)
+>>> check dnslists = rbl.test.ex!=127.0.0.1
+>>> dnslists check: rbl.test.ex!=127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => but we are not accepting this block class because
+>>> => there was an exclude match for =127.0.0.1
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 37)
+>>> check dnslists = rbl.test.ex!=127.0.0.3
+>>> dnslists check: rbl.test.ex!=127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => that means V4NET.13.13.107 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 38)
+>>> check dnslists = rbl.test.ex==127.0.0.1
+>>> dnslists check: rbl.test.ex==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => that means V4NET.13.13.107 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 39)
+>>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => that means V4NET.13.13.107 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 40)
+>>> check dnslists = rbl.test.ex!==127.0.0.1
+>>> dnslists check: rbl.test.ex!==127.0.0.1
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => but we are not accepting this block class because
+>>> => there were no IP addresses that did not match for ==127.0.0.1
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 41)
+>>> check dnslists = rbl.test.ex!==127.0.0.3
+>>> dnslists check: rbl.test.ex!==127.0.0.3
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => that means V4NET.13.13.107 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 42)
+>>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists check: rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => but we are not accepting this block class because
+>>> => there were no IP addresses that did not match for ==127.0.0.1,127.0.0.2
+>>> warn: condition test failed in ACL "check_vrfy"
+>>> processing "warn" (TESTSUITE/test-config 43)
+>>> check dnslists = rbl.test.ex
+>>> dnslists check: rbl.test.ex
+>>> dnslists: using result of previous lookup
+>>> DNS lookup for 107.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 128.0.0.0)
+>>> 127.0.0.1 in dnslist_valid_addresses? yes (matched "127.0.0.0/8")
+>>> 128.0.0.0 in dnslist_valid_addresses? no (end of list)
+LOG: DNS list lookup for V4NET.13.13.107 at rbl.test.ex returned 128.0.0.0; invalid address discarded
+>>> => updated address list: 127.0.0.1
+>>> => that means V4NET.13.13.107 is listed at rbl.test.ex
+>>> warn: condition test succeeded in ACL "check_vrfy"
+>>> processing "accept" (TESTSUITE/test-config 44)
+>>> accept: condition test succeeded in ACL "check_vrfy"
+>>> end of ACL "check_vrfy": ACCEPT
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling system_aliases router
+>>> system_aliases router declined for a@b
+>>> a in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for a@b H=[V4NET.13.13.107]

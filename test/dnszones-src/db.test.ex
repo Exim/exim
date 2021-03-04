@@ -212,6 +212,15 @@ TTL=2 14.12.11.V4NET.rbl A 127.0.0.2
 105.13.13.V4NET.rbl    A   255.255.255.255
                        A   255.255.255.254
 
+; Configuration to consider 127.255.255.0/24 as invalid
+
+106.13.13.V4NET.rbl    A   127.255.255.255
+
+; Exact match along with invalid return value
+
+107.13.13.V4NET.rbl    A   127.0.0.1
+107.13.13.V4NET.rbl    A   128.0.0.0
+
 ; -------- Testing MX records --------
 
 mxcased      MX  5  ten-99.TEST.EX.
