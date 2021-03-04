@@ -794,15 +794,22 @@ else
   }
 
 receive_getc = bdat_getc;
+receive_getbuf = bdat_getbuf;
 receive_ungetc = bdat_ungetc;
 }
 
 static inline void
 bdat_pop_receive_functions(void)
 {
+if (lwr_receive_getc == NULL)
+  {
+  DEBUG(D_receive) debug_printf("chunking double-pop receive functions\n");
+  return;
+  }
 receive_getc = lwr_receive_getc;
 receive_getbuf = lwr_receive_getbuf;
 receive_ungetc = lwr_receive_ungetc;
+
 lwr_receive_getc = NULL;
 lwr_receive_getbuf = NULL;
 lwr_receive_ungetc = NULL;
@@ -5341,7 +5348,7 @@ while (done <= 0)
       DEBUG(D_receive) debug_printf("chunking state %d, %d bytes\n",
 				    (int)chunking_state, chunking_data_left);
 
-      f.bdat_readers_wanted = TRUE;
+      f.bdat_readers_wanted = TRUE; /* FIXME: redundant vs chunking_state? */
       f.dot_ends = FALSE;
 
       goto DATA_BDAT;
@@ -5391,6 +5398,12 @@ while (done <= 0)
 	sender_address = NULL;  /* This will allow a new MAIL without RSET */
 	sender_address_unrewritten = NULL;
 	smtp_printf("554 Too many recipients\r\n", FALSE);
+
+	if (chunking_state > CHUNKING_OFFERED)
+	  {
+	  bdat_push_receive_functions();
+	  bdat_flush_data();
+	  }
 	break;
 	}
 
