@@ -65,4 +65,24 @@ exim -bh V4NET.13.13.105
 vrfy a@b
 quit
 ****
+exim -bh V4NET.13.13.106
+vrfy a@b
+quit
+****
+exim -DDNSBL_127_255 -bh V4NET.13.13.2
+vrfy a@b
+quit
+****
+exim -DDNSBL_127_255 -bh V4NET.13.13.106
+vrfy a@b
+quit
+****
+exim -DDNSBL_DEFER -bh V4NET.13.13.2
+vrfy a@b
+quit
+****
+exim -bh V4NET.13.13.107
+vrfy a@b
+quit
+****
 no_msglog_check

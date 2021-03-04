@@ -796,6 +796,7 @@ address. */
 
 typedef struct dns_address {
   struct dns_address *next;
+  BOOL    dnsbl_invalid;
   uschar  address[1];
 } dns_address;
 
