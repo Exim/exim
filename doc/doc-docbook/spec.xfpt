@@ -27235,7 +27235,7 @@ choose to honour.
 
 A &'realm'& is a text string, typically a domain name, presented by a server
 to a client to help it select an account and credentials to use.  In some
-mechanisms, the client and server probably agree on the realm, but clients
+mechanisms, the client and server provably agree on the realm, but clients
 typically can not treat the realm as secure data to be blindly trusted.
 
 
@@ -41025,7 +41025,7 @@ There is no dot-stuffing (and no dot-termination).
 .section "DKIM (DomainKeys Identified Mail)" SECDKIM
 .cindex "DKIM"
 
-DKIM is a mechanism by which messages sent by some entity can be probably
+DKIM is a mechanism by which messages sent by some entity can be provably
 linked to a domain which that entity controls.  It permits reputation to
 be tracked on a per-domain basis, rather than merely upon source IP address.
 DKIM is documented in RFC 6376.
