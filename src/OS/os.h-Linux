@@ -94,5 +94,9 @@ then change the 0 to 1 in the next block. */
 /* inotify(7) etc syscalls */
 #define EXIM_HAVE_INOTIFY
 
+/* Needed for uClibc */
+#ifndef NS_MAXMSG
+# define NS_MAXMSG 65535
+#endif
 
 /* End */
