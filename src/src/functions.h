@@ -381,6 +381,8 @@ extern const uschar *parse_fix_phrase(const uschar *, int);
 extern const uschar *parse_message_id(const uschar *, uschar **, uschar **);
 extern const uschar *parse_quote_2047(const uschar *, int, uschar *, BOOL);
 extern const uschar *parse_date_time(const uschar *str, time_t *t);
+extern void priv_drop_temp(const uid_t, const gid_t);
+extern void priv_restore(void);
 extern int     vaguely_random_number(int);
 #ifndef DISABLE_TLS
 extern int     vaguely_random_number_fallback(int);
