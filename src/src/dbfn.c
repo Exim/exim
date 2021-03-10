@@ -58,68 +58,6 @@ log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
 #endif
 
 
-
-
-static enum {
-  PRIV_DROPPING, PRIV_DROPPED,
-  PRIV_RESTORING, PRIV_RESTORED
-} priv_state = PRIV_RESTORED;
-
-static uid_t priv_euid;
-static gid_t priv_egid;
-static gid_t priv_groups[EXIM_GROUPLIST_SIZE + 1];
-static int priv_ngroups;
-
-/* Inspired by OpenSSH's temporarily_use_uid(). Thanks! */
-
-static void
-priv_drop_temp(const uid_t temp_uid, const gid_t temp_gid)
-{
-if (priv_state != PRIV_RESTORED) _exit(EXIT_FAILURE);
-priv_state = PRIV_DROPPING;
-
-priv_euid = geteuid();
-if (priv_euid == root_uid)
-  {
-  priv_egid = getegid();
-  priv_ngroups = getgroups(nelem(priv_groups), priv_groups);
-  if (priv_ngroups < 0) _exit(EXIT_FAILURE);
-
-  if (priv_ngroups > 0 && setgroups(1, &temp_gid) != 0) _exit(EXIT_FAILURE);
-  if (setegid(temp_gid) != 0) _exit(EXIT_FAILURE);
-  if (seteuid(temp_uid) != 0) _exit(EXIT_FAILURE);
-
-  if (geteuid() != temp_uid) _exit(EXIT_FAILURE);
-  if (getegid() != temp_gid) _exit(EXIT_FAILURE);
-  }
-
-priv_state = PRIV_DROPPED;
-}
-
-/* Inspired by OpenSSH's restore_uid(). Thanks! */
-
-static void
-priv_restore(void)
-{
-if (priv_state != PRIV_DROPPED) _exit(EXIT_FAILURE);
-priv_state = PRIV_RESTORING;
-
-if (priv_euid == root_uid)
-  {
-  if (seteuid(priv_euid) != 0) _exit(EXIT_FAILURE);
-  if (setegid(priv_egid) != 0) _exit(EXIT_FAILURE);
-  if (priv_ngroups > 0 && setgroups(priv_ngroups, priv_groups) != 0) _exit(EXIT_FAILURE);
-
-  if (geteuid() != priv_euid) _exit(EXIT_FAILURE);
-  if (getegid() != priv_egid) _exit(EXIT_FAILURE);
-  }
-
-priv_state = PRIV_RESTORED;
-}
-
-
-
-
 /*************************************************
 *          Open and lock a database file         *
 *************************************************/
