@@ -25,8 +25,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
          250 PIPELINING
-  SMTP>> MAIL FROM:<CALLER@test.ex>
-  SMTP>> RCPT TO:<a@test.ex>
+  SMTP|> MAIL FROM:<CALLER@test.ex>
+  SMTP|> RCPT TO:<a@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 250 OK
@@ -47,15 +47,15 @@ dropping to exim gid; retaining priv uid
 delivering 10HmaY-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
-  SMTP>> MAIL FROM:<CALLER@test.ex>
-  SMTP>> RCPT TO:<b@test.ex>
+  SMTP|> MAIL FROM:<CALLER@test.ex>
+  SMTP|> RCPT TO:<b@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP<< 351 Send more
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK
-  SMTP>> QUIT
+  SMTP+> QUIT
   SMTP(close)>>
 LOG: MAIN
   => b@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK"
@@ -92,13 +92,13 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
          250 PIPELINING
-  SMTP>> MAIL FROM:<CALLER@test.ex>
-  SMTP>> RCPT TO:<a@test.ex>
+  SMTP|> MAIL FROM:<CALLER@test.ex>
+  SMTP|> RCPT TO:<a@test.ex>
   SMTP>> DATA
   SMTP<< 550 NO
   SMTP<< 503 Unexpected RCPT
   SMTP<< 503 Unexpected DATA
-  SMTP>> QUIT
+  SMTP+> QUIT
   SMTP(close)>>
 LOG: MAIN
   ** a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]: SMTP error from remote mail server after pipelined MAIL FROM:<CALLER@test.ex>: 550 NO
@@ -155,8 +155,8 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ...  connected
   SMTP>> EHLO myhost.test.ex
   SMTP<< 250-OK
          250 PIPELINING
-  SMTP>> MAIL FROM:<CALLER@test.ex>
-  SMTP>> RCPT TO:<b@test.ex>
+  SMTP|> MAIL FROM:<CALLER@test.ex>
+  SMTP|> RCPT TO:<b@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 550 Unknown
@@ -184,15 +184,15 @@ dropping to exim gid; retaining priv uid
 delivering 10HmbC-0005vi-00 (queue run pid pppp)
 R: client  (ACL)
 T: send_to_server  (ACL)
-  SMTP>> MAIL FROM:<CALLER@test.ex>
-  SMTP>> RCPT TO:<c@test.ex>
+  SMTP|> MAIL FROM:<CALLER@test.ex>
+  SMTP|> RCPT TO:<c@test.ex>
   SMTP>> DATA
   SMTP<< 250 OK
   SMTP<< 250 OK
   SMTP<< 351 OK
   SMTP>> writing message and terminating "."
   SMTP<< 250 OK
-  SMTP>> QUIT
+  SMTP+> QUIT
   SMTP(close)>>
 LOG: MAIN
   => c@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK"

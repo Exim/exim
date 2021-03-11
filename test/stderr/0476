@@ -27,8 +27,8 @@ cmd buf flush ddd bytes
          250 OK
 using PIPELINING
 not using DSN
-  SMTP>> MAIL FROM:<CALLER@the.local.host.name>
-  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP|> MAIL FROM:<CALLER@the.local.host.name>
+  SMTP|> RCPT TO:<userx@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
 sync_responses expect mail

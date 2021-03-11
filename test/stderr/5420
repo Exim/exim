@@ -123,7 +123,7 @@ cmd buf flush ddd bytes
 using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<userx@domain.com>
 cmd buf flush ddd bytes
 sync_responses expect mail
@@ -365,7 +365,7 @@ cmd buf flush ddd bytes
 using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
 sync_responses expect mail
@@ -607,7 +607,7 @@ cmd buf flush ddd bytes
 using PIPELINING
 not using DSN
 127.0.0.1 in hosts_require_auth? no (option unset)
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP>> RCPT TO:<usery@domain.com>
 cmd buf flush ddd bytes
 sync_responses expect mail

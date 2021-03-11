@@ -22,11 +22,11 @@ delivering 10HmbP-0005vi-00 to 127.0.0.1 [127.0.0.1] (extchange@test.ex)
 Transport port=25 replaced by host-specific port=1225
 EHLO response bits from cache: cleartext 0x0120/0x0000 crypted 0x0000/0x0000
 Using cached cleartext PIPE_CONNECT
-  SMTP>> EHLO the.local.host.name
+  SMTP|> EHLO the.local.host.name
 using PIPELINING
 not using DSN
-  SMTP>> MAIL FROM:<CALLER@the.local.host.name>
-  SMTP>> RCPT TO:<extchange@test.ex>
+  SMTP|> MAIL FROM:<CALLER@the.local.host.name>
+  SMTP|> RCPT TO:<extchange@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
 Connecting to 127.0.0.1 [127.0.0.1]:1225 ... sending dd nonTFO early-data
@@ -56,7 +56,7 @@ transport_check_waiting entered
   sequence=1 local_max=500 global_max=-1
  no messages waiting for 127.0.0.1
 transport_check_waiting: FALSE
-  SMTP>> QUIT
+  SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 Leaving smtp transport

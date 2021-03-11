@@ -17,8 +17,8 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<d@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<d@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -48,7 +48,7 @@ DKIM >> Signed DKIM-Signature header, canonicalized (relaxed) >>>>>>>
 dkim-signature:v=1;{SP}a=rsa-sha256;{SP}q=dns/txt;{SP}c=relaxed/relaxed;{SP}d=test.ex;{SP}s=sel_bad;{SP}h=From;{SP}bh=/Ab0giHZitYQbDhFszoqQRUkgqueaX9zatJttIU/plc=;{SP}b=;
 DKIM [test.ex] Header sha256 computed: 241e16230df5723d899cfae9474c6b376a2ab1f81d1094e358f50ffd0e0067b3
   SMTP<< 250 OK id=10HmbL-0005vi-00
-  SMTP>> QUIT
+  SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 LOG: MAIN

@@ -25,7 +25,7 @@ cmd buf flush ddd bytes
          250 HELP
 using PIPELINING
 not using DSN
-  SMTP>> MAIL FROM:<usera@ok.example>
+  SMTP|> MAIL FROM:<usera@ok.example>
   SMTP>> RCPT TO:<userb@test.ex>
 cmd buf flush ddd bytes
 sync_responses expect mail
@@ -62,7 +62,7 @@ cannot use sendfile for body: spoolfile not wireformat
 writing data block fd=dddd size=sss timeout=300
   SMTP<< 250 OK id=10HmaY-0005vi-00
 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
-  SMTP>> QUIT
+  SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 >>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>

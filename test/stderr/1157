@@ -27,8 +27,8 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<userx@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -45,8 +45,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userz@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<userz@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -64,15 +64,15 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<usery@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<usery@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbC-0005vi-00
-  SMTP>> QUIT
+  SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 >>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -113,8 +113,8 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<usera@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<usera@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -131,8 +131,8 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userc@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<userc@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -150,15 +150,15 @@ configuration file is TESTSUITE/test-config
 trusted user
 admin user
 dropping to exim gid; retaining priv uid
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userb@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<userb@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbI-0005vi-00
-  SMTP>> QUIT
+  SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 >>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -199,8 +199,8 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<userx@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -236,8 +236,8 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<userz@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<userz@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -273,15 +273,15 @@ cmd buf flush ddd bytes
          250-8BITMIME
          250-PIPELINING
          250 HELP
-  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP>> RCPT TO:<usery@test.ex>
+  SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP|> RCPT TO:<usery@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP<< 250 OK id=10HmbO-0005vi-00
-  SMTP>> QUIT
+  SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
   SMTP(close)>>
 LOG: MAIN
