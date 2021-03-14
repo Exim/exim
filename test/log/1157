@@ -20,15 +20,15 @@
 1999-03-02 09:44:33 10HmbE-0005vi-00 => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
-1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userx@test.ex
-1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for usery@test.ex
-1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for userz@test.ex
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for user_p@test.ex
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for user_q@test.ex
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for user_r@test.ex
 1999-03-02 09:44:33 Start queue run: pid=pppp -qqf
-1999-03-02 09:44:33 10HmbJ-0005vi-00 => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbM-0005vi-00"
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => user_p@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbM-0005vi-00"
 1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbL-0005vi-00 => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbN-0005vi-00"
+1999-03-02 09:44:33 10HmbL-0005vi-00 => user_r@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbN-0005vi-00"
 1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbK-0005vi-00 => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-0005vi-00"
+1999-03-02 09:44:33 10HmbK-0005vi-00 => user_q@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-0005vi-00"
 1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qqf
 
@@ -63,7 +63,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port PORT_D
 1999-03-02 09:44:33 SMTP connection from [127.0.0.1]:1113 (TCP/IP connection count = 1)
-1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1113 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbJ-0005vi-00@myhost.test.ex for userx@test.ex
-1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1113 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-0005vi-00@myhost.test.ex for userz@test.ex
-1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1113 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-0005vi-00@myhost.test.ex for usery@test.ex
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1113 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbJ-0005vi-00@myhost.test.ex for user_p@test.ex
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1113 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbL-0005vi-00@myhost.test.ex for user_r@test.ex
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1]:1113 P=esmtps X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no S=sss id=E10HmbK-0005vi-00@myhost.test.ex for user_q@test.ex
 1999-03-02 09:44:33 SMTP connection from localhost (myhost.test.ex) [127.0.0.1]:1113 closed by QUIT

@@ -38,13 +38,13 @@ exim -DSERVER=server -DNOTDAEMON -qf
 # no tls proxy (default for test was permitting proxy)
 exim -DSERVER=server -bd -oX PORT_D
 ****
-exim userx@test.ex
+exim user_p@test.ex
 Test message 1
 ****
-exim usery@test.ex
+exim user_q@test.ex
 Test message 2
 ****
-exim userz@test.ex
+exim user_r@test.ex
 Test message 3
 ****
 exim -d-all+acl '-DPEX=*' -qqf

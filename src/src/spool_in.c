@@ -993,6 +993,47 @@ errno = ERRNO_SPOOLFORMAT;
 return inheader? spool_read_hdrerror : spool_read_enverror;
 }
 
+
+#ifndef COMPILE_UTILITY
+/* Read out just the (envelope) sender string from the spool -H file.
+Remove the <> wrap and return it in allocated store.  Return NULL on error.
+
+We assume that message_subdir is already set.
+*/
+
+uschar *
+spool_sender_from_msgid(const uschar * id)
+{
+uschar * name = string_sprintf("%s-H", id);
+FILE * fp;
+int n;
+uschar * yield = NULL;
+
+if (!(fp = Ufopen(spool_fname(US"input", message_subdir, name, US""), "rb")))
+  return NULL;
+
+DEBUG(D_deliver) debug_printf_indent("reading spool file %s\n", name);
+
+/* Skip the line with the copy of the filename, then the line with login/uid/gid.
+Read the next line, which should be the envelope sender.
+Do basic validation on that. */
+
+if (  Ufgets(big_buffer, big_buffer_size, fp) != NULL
+   && Ufgets(big_buffer, big_buffer_size, fp) != NULL
+   && Ufgets(big_buffer, big_buffer_size, fp) != NULL
+   && (n = Ustrlen(big_buffer)) >= 3
+   && big_buffer[0] == '<' && big_buffer[n-2] == '>'
+   )
+  {
+  yield = store_get(n-2, TRUE);	/* tainted */
+  Ustrncpy(yield, big_buffer+1, n-3);
+  yield[n-3] = 0;
+  }
+fclose(fp);
+return yield;
+}
+#endif  /* COMPILE_UTILITY */
+
 /* vi: aw ai sw=2
 */
 /* End of spool_in.c */

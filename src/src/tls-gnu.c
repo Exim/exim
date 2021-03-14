@@ -3489,6 +3489,25 @@ return TRUE;
 
 
 
+/*
+Arguments:
+  ct_ctx	client TLS context pointer, or NULL for the one global server context
+*/
+
+void
+tls_shutdown_wr(void * ct_ctx)
+{
+exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
+tls_support * tlsp = state->tlsp;
+
+if (!tlsp || tlsp->active.sock < 0) return;  /* TLS was not active */
+
+tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
+
+HDEBUG(D_transport|D_tls|D_acl|D_v) debug_printf_indent("  SMTP(TLS shutdown)>>\n");
+gnutls_bye(state->session, GNUTLS_SHUT_WR);
+}
+
 /*************************************************
 *         Close down a TLS session               *
 *************************************************/
@@ -3499,29 +3518,30 @@ would tamper with the TLS session in the parent process).
 
 Arguments:
   ct_ctx	client context pointer, or NULL for the one global server context
-  shutdown	1 if TLS close-alert is to be sent,
-		2 if also response to be waited for
+  do_shutdown	0 no data-flush or TLS close-alert
+		1 if TLS close-alert is to be sent,
+		2 if also response to be waited for (2s timeout)
 
 Returns:     nothing
 */
 
 void
-tls_close(void * ct_ctx, int shutdown)
+tls_close(void * ct_ctx, int do_shutdown)
 {
 exim_gnutls_state_st * state = ct_ctx ? ct_ctx : &state_server;
 tls_support * tlsp = state->tlsp;
 
 if (!tlsp || tlsp->active.sock < 0) return;  /* TLS was not active */
 
-tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
-
-if (shutdown)
+if (do_shutdown)
   {
   DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
-    shutdown > 1 ? " (with response-wait)" : "");
+    do_shutdown > 1 ? " (with response-wait)" : "");
+
+  tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
   ALARM(2);
-  gnutls_bye(state->session, shutdown > 1 ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
+  gnutls_bye(state->session, do_shutdown > 1 ? GNUTLS_SHUT_RDWR : GNUTLS_SHUT_WR);
   ALARM_CLR(0);
   }
 
@@ -3669,7 +3689,7 @@ return buf;
 
 
 void
-tls_get_cache()
+tls_get_cache(void)
 {
 #ifndef DISABLE_DKIM
 exim_gnutls_state_st * state = &state_server;
@@ -3686,8 +3706,6 @@ tls_could_read(void)
 return state_server.xfer_buffer_lwm < state_server.xfer_buffer_hwm
  || gnutls_record_check_pending(state_server.session) > 0;
 }
-
-
 
 
 /*************************************************

@@ -1,0 +1,142 @@
+# CHUNKING and PIPELINING of QUIT
+need_ipv4
+#
+# Chunking Baseline: no error.  Check the QUIT arrived befre we ack message-data
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250-CHUNKING
+250 OK
+MAIL FROM
+RCPT TO
+BDAT 313 LAST
+250 OK mail
+250 OK rcpt
+*data 313
+QUIT
+250 OK chunked message data
+221 Closing connection
+****
+sudo exim -d-all+transport -odi -bs
+helo tester
+mail from:<fred@myhost.test.ex>
+rcpt to:<good@test.ex>
+data
+.
+quit
+****
+#
+# QUIT-pipeliining should not be done when PIPELINING not advertised
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-CHUNKING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+BDAT 315 LAST
+*data 315
+250 OK chunked message data
+QUIT
+221 Closing connection
+****
+sudo exim -d-all+transport -odi -bs
+helo tester
+mail from:<fred@myhost.test.ex>
+rcpt to:<nopipe@test.ex>
+data
+.
+quit
+****
+#
+# Temp-error response to message-data
+# Check specifically for a close, and no repeated command
+# Also check Exim's list of commands sent
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250-CHUNKING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+BDAT 319 LAST
+*data 319
+QUIT
+451 Service not available
+221 Closing connection
+*eof
+****
+sudo exim -d-all+transport -odi -bs
+helo tester
+mail from:<fred@myhost.test.ex>
+rcpt to:<tempreject@test.ex>
+data
+.
+quit
+****
+exim -Mrm $msg1
+****
+#
+# Perm-error response to message-data
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250-CHUNKING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+BDAT 319 LAST
+*data 319
+QUIT
+550 content rejected
+221 Closing connection
+*eof
+****
+sudo exim -d-all+transport -odi -bs
+helo tester
+mail from:<fred@myhost.test.ex>
+rcpt to:<permreject@test.ex>
+data
+.
+quit
+****
+#
+# Channel-close response to message-data
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250-CHUNKING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+BDAT 317 LAST
+*data 317
+>*eof
+****
+sudo exim -d-all+transport -odi -bs
+helo tester
+mail from:<fred@myhost.test.ex>
+rcpt to:<dataloss@test.ex>
+data
+.
+quit
+****
+exim -Mrm $msg1
+****

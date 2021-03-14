@@ -1,0 +1,114 @@
+# PIPELINING of QUIT
+need_ipv4
+#
+# Baseline: no error.  Check the QUIT arrived befre we ack message-data
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+DATA
+300 go ahead
+.
+QUIT
+250 OK message data
+221 Closing connection
+****
+exim -odi good@test.ex
+****
+#
+# QUIT-pipeliining should not be done when PIPELINING not advertised
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+DATA
+300 go ahead
+.
+250 OK message data
+*sleep 1
+<<
+QUIT
+221 Closing connection
+****
+exim -odi nopipe@test.ex
+****
+#
+# Temp-error response to message-data
+# Check specifically for a close, and no repeated command
+# Also check Exim's list of commands sent
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+DATA
+300 go ahead
+.
+QUIT
+451 Service not available
+221 Closing connection
+*eof
+****
+exim -d-all+transport -odi tempreject@test.ex
+****
+exim -Mrm $msg1
+****
+#
+# Perm-error response to message-data
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+DATA
+300 go ahead
+.
+QUIT
+550 content rejected
+221 Closing connection
+*eof
+****
+exim -d-all+transport -odi permreject@test.ex
+****
+#
+# Channel-close response to message-data
+server PORT_D
+220 Server ready
+EHLO
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK mail
+RCPT TO
+250 OK rcpt
+DATA
+300 go ahead
+.
+>*eof
+****
+exim -d-all+transport -odi permreject@test.ex
+****
+exim -Mrm $msg1
+****

@@ -25,8 +25,9 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> writing message and terminating "."
+  SMTP>> QUIT
   SMTP<< 250 OK id=10HmaZ-0005vi-00
-  SMTP+> QUIT
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 LOG: MAIN
   => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmaZ-0005vi-00"
@@ -59,8 +60,9 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ...  connected
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> writing message and terminating "."
+  SMTP>> QUIT
   SMTP<< 250 OK id=10HmbA-0005vi-00
-  SMTP+> QUIT
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 LOG: MAIN
   => CALLER@test.ex R=client T=send_to_server1 H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbA-0005vi-00"
@@ -90,8 +92,9 @@ Connecting to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]:1225 ...  connected
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
   SMTP>> writing message and terminating "."
+  SMTP>> QUIT
   SMTP<< 250 OK id=10HmbB-0005vi-00
-  SMTP+> QUIT
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 LOG: MAIN
   => abcd@test.ex R=client T=send_to_server2 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbB-0005vi-00"

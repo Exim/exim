@@ -1,0 +1,133 @@
+Message 10HmaZ-0005vi-00 has been removed
+Message 10HmbB-0005vi-00 has been removed
+
+******** SERVER ********
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+250 OK mail
+RCPT TO:<good@test.ex>
+250 OK rcpt
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for good@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+QUIT
+250 OK message data
+221 Closing connection
+End of script
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-hi there
+250 OK
+MAIL FROM:<>
+250 OK mail
+RCPT TO:<nopipe@test.ex>
+250 OK rcpt
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for nopipe@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK message data
+*sleep 1
+<<QUIT
+Unexpected EOF read from client
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+250 OK mail
+RCPT TO:<tempreject@test.ex>
+250 OK rcpt
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for tempreject@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+QUIT
+451 Service not available
+221 Closing connection
+Expected EOF read from client
+End of script
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+250 OK mail
+RCPT TO:<permreject@test.ex>
+250 OK rcpt
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbA-0005vi-00
+	for permreject@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+QUIT
+550 content rejected
+221 Closing connection
+Expected EOF read from client
+End of script
+Listening on port 1225 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-hi there
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+250 OK mail
+RCPT TO:<permreject@test.ex>
+250 OK rcpt
+DATA
+300 go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbB-0005vi-00
+	for permreject@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+>*eof
+End of script

@@ -51,6 +51,8 @@ transport_check_waiting entered
 transport_check_waiting: FALSE
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
+  SMTP(shutdown)>>
+  SMTP<< 250 OK
   SMTP(close)>>
 Leaving my_smtp transport
 LOG: MAIN

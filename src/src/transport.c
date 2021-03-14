@@ -886,7 +886,7 @@ transport_write_timeout non-zero.
 
 Arguments:
   tctx
-    (fd, msg)		Either and fd, to write the message to,
+    (fd, msg)		Either an fd, to write the message to,
 			or a string: if null write message to allocated space
 			otherwire take content as headers.
     addr                (chain of) addresses (for extra headers), or NULL;
@@ -905,6 +905,7 @@ Arguments:
       add_delivery_date     if TRUE, add a "delivery-date" header
       use_crlf              if TRUE, turn NL into CR LF
       end_dot               if TRUE, send a terminating "." line at the end
+      no_flush		    if TRUE, do not flush at end
       no_headers            if TRUE, omit the headers
       no_body               if TRUE, omit the body
     check_string          a string to check for at the start of lines, or NULL
@@ -1161,8 +1162,9 @@ if (tctx->options & topt_end_dot && !write_chunk(tctx, US".\n", 2))
 
 /* Write out any remaining data in the buffer before returning. */
 
-return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
-  transport_write_block(tctx, deliver_out_buffer, len, FALSE);
+return (len = chunk_ptr - deliver_out_buffer) <= 0
+  || transport_write_block(tctx, deliver_out_buffer, len,
+			    !!(tctx->options & topt_no_flush));
 }
 
 
@@ -1260,7 +1262,7 @@ if ((write_pid = exim_fork(US"tpt-filter-writer")) == 0)
 
   tctx->u.fd = fd_write;
   tctx->check_string = tctx->escape_string = NULL;
-  tctx->options &= ~(topt_use_crlf | topt_end_dot | topt_use_bdat);
+  tctx->options &= ~(topt_use_crlf | topt_end_dot | topt_use_bdat | topt_no_flush);
 
   rc = internal_transport_write_message(tctx, size_limit);
 
@@ -1599,7 +1601,8 @@ for (host_item * host = hostlist; host; host = host->next)
   /* Update the database */
 
   dbfn_write(dbm_file, host->name, host_record, sizeof(dbdata_wait) + host_length);
-  DEBUG(D_transport) debug_printf("added to list for %s\n", host->name);
+  DEBUG(D_transport) debug_printf("added %.*s to queue for %s\n",
+				  MESSAGE_ID_LENGTH, message_id, host->name);
   }
 
 /* All now done */

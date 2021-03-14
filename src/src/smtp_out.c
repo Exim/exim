@@ -659,8 +659,9 @@ if (format)
     while (*p) *p++ = '*';
     }
 
-  HDEBUG(D_transport|D_acl|D_v)
-    debug_printf_indent("  SMTP%c> %s\n", ">+|"[mode], big_buffer);
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP%c> %s\n",
+    mode == SCMD_BUFFER ? '|' : mode == SCMD_MORE ? '+' : '>',
+    big_buffer);
   }
 
 if (mode != SCMD_BUFFER)

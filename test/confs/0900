@@ -6,6 +6,7 @@ ALLOW=
 
 exim_path = EXIM_PATH
 keep_environment =
+add_environment = SSLKEYLOGFILE=DIR/spool/sslkeys
 host_lookup_order = bydns
 spool_directory = DIR/spool
 log_file_path = DIR/spool/log/SERVER%slog
@@ -37,9 +38,9 @@ queue_only
 smtp_receive_timeout = 2s
 
 .ifdef _HAVE_DKIM
-log_selector = +received_recipients +dkim_verbose
+log_selector = +received_recipients +millisec +dkim_verbose
 .else
-log_selector = +received_recipients
+log_selector = +received_recipients +millisec
 .endif
 
 .ifdef _OPT_MAIN_TLS_CERTIFICATE

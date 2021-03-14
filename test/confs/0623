@@ -1,0 +1,43 @@
+# Exim test configuration 0623
+
+SERVER=
+
+.include DIR/aux-var/std_conf_prefix
+
+primary_hostname = myhost.test.ex
+log_selector = +pipelining +received_recipients +smtp_connection
+
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver =	accept
+  transport =	send_to_server
+  errors_to =	""
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_D
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

@@ -3941,7 +3941,7 @@ return buf;
 
 
 void
-tls_get_cache()
+tls_get_cache(void)
 {
 #ifndef DISABLE_DKIM
 int n = ssl_xfer_buffer_hwm - ssl_xfer_buffer_lwm;
@@ -3955,7 +3955,7 @@ BOOL
 tls_could_read(void)
 {
 return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm
-      || SSL_pending(state_server.lib_state.lib_ssl) > 0;
+    || SSL_pending(state_server.lib_state.lib_ssl) > 0;
 }
 
 
@@ -4120,6 +4120,32 @@ return olen;
 
 
 
+/*
+Arguments:
+  ct_ctx	client TLS context pointer, or NULL for the one global server context
+*/
+
+void
+tls_shutdown_wr(void * ct_ctx)
+{
+exim_openssl_client_tls_ctx * o_ctx = ct_ctx;
+SSL ** sslp = o_ctx ? &o_ctx->ssl : (SSL **) &state_server.lib_state.lib_ssl;
+int * fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
+int rc;
+
+if (*fdp < 0) return;  /* TLS was not active */
+
+tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
+
+HDEBUG(D_transport|D_tls|D_acl|D_v) debug_printf_indent("  SMTP(TLS shutdown)>>\n");
+rc = SSL_shutdown(*sslp);
+if (rc < 0) DEBUG(D_tls)
+  {
+  ERR_error_string_n(ERR_get_error(), ssl_errstring, sizeof(ssl_errstring));
+  debug_printf("SSL_shutdown: %s\n", ssl_errstring);
+  }
+}
+
 /*************************************************
 *         Close down a TLS session               *
 *************************************************/
@@ -4130,7 +4156,8 @@ would tamper with the SSL session in the parent process).
 
 Arguments:
   ct_ctx	client TLS context pointer, or NULL for the one global server context
-  shutdown	1 if TLS close-alert is to be sent,
+  do_shutdown	0 no data-flush or TLS close-alert
+		1 if TLS close-alert is to be sent,
  		2 if also response to be waited for
 
 Returns:     nothing
@@ -4139,24 +4166,24 @@ Used by both server-side and client-side TLS.
 */
 
 void
-tls_close(void * ct_ctx, int shutdown)
+tls_close(void * ct_ctx, int do_shutdown)
 {
 exim_openssl_client_tls_ctx * o_ctx = ct_ctx;
-SSL **sslp = o_ctx ? &o_ctx->ssl : (SSL **) &state_server.lib_state.lib_ssl;
-int *fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
+SSL ** sslp = o_ctx ? &o_ctx->ssl : (SSL **) &state_server.lib_state.lib_ssl;
+int * fdp = o_ctx ? &tls_out.active.sock : &tls_in.active.sock;
 
 if (*fdp < 0) return;  /* TLS was not active */
 
-tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
-
-if (shutdown)
+if (do_shutdown)
   {
   int rc;
   DEBUG(D_tls) debug_printf("tls_close(): shutting down TLS%s\n",
-    shutdown > 1 ? " (with response-wait)" : "");
+    do_shutdown > 1 ? " (with response-wait)" : "");
+
+  tls_write(ct_ctx, NULL, 0, FALSE);	/* flush write buffer */
 
   if (  (rc = SSL_shutdown(*sslp)) == 0	/* send "close notify" alert */
-     && shutdown > 1)
+     && do_shutdown > 1)
     {
     ALARM(2);
     rc = SSL_shutdown(*sslp);		/* wait for response */

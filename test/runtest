@@ -1152,6 +1152,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     # drop pdkim debugging header
     next if /^DKIM( <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+|: no signatures)$/;
 
+    # Some platforms have TIOCOUTome do not
+    next if /\d+ bytes remain in socket output buffer$/;
     # Various other IPv6 lines must be omitted too
 
     next if /using host_fake_gethostbyname for \S+ \(IPv6\)/;

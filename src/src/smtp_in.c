@@ -347,7 +347,7 @@ wouldblock_reading(void)
 {
 int fd, rc;
 fd_set fds;
-struct timeval tzero;
+struct timeval tzero = {.tv_sec = 0, .tv_usec = 0};
 
 #ifndef DISABLE_TLS
 if (tls_in.active.sock >= 0)
@@ -360,8 +360,6 @@ if (smtp_inptr < smtp_inend)
 fd = fileno(smtp_in);
 FD_ZERO(&fds);
 FD_SET(fd, &fds);
-tzero.tv_sec = 0;
-tzero.tv_usec = 0;
 rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
 
 if (rc <= 0) return TRUE;     /* Not ready to read */
@@ -587,6 +585,8 @@ smtp_get_cache(void)
 {
 #ifndef DISABLE_DKIM
 int n = smtp_inend - smtp_inptr;
+if (chunking_state == CHUNKING_LAST && chunking_data_left < n)
+  n = chunking_data_left;
 if (n > 0)
   dkim_exim_verify_feed(smtp_inptr, n);
 #endif
@@ -3844,11 +3844,24 @@ else
   smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 
 #ifndef DISABLE_TLS
-tls_close(NULL, TLS_SHUTDOWN_NOWAIT);
+tls_close(NULL, TLS_SHUTDOWN_WAIT);
 #endif
 
 log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
   smtp_get_connection_info());
+
+/* Pause, hoping client will FIN first so that they get the TIME_WAIT.
+The socket should become readble (though with no data) */
+
+  {
+  int fd = fileno(smtp_in);
+  fd_set fds;
+  struct timeval t_limit = {.tv_sec = 0, .tv_usec = 200*1000};
+
+  FD_ZERO(&fds);
+  FD_SET(fd, &fds);
+  (void) select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &t_limit);
+  }
 }
 
 

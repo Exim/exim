@@ -4177,12 +4177,10 @@ response, but the chance of this happening should be small. */
 if (smtp_input && sender_host_address && !f.sender_host_notsocket &&
     !receive_smtp_buffered())
   {
-  struct timeval tv;
+  struct timeval tv = {.tv_sec = 0, .tv_usec = 0};
   fd_set select_check;
   FD_ZERO(&select_check);
   FD_SET(fileno(smtp_in), &select_check);
-  tv.tv_sec = 0;
-  tv.tv_usec = 0;
 
   if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0)
     {
@@ -4375,12 +4373,17 @@ if (smtp_input)
 
       else if (chunking_state > CHUNKING_OFFERED)
 	{
-        smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n", FALSE,
+	/* If there is more input waiting, no need to flush (probably the client
+	pipelined QUIT after data).  We check only the in-process buffer, not
+	the socket. */
+
+        smtp_printf("250- %u byte chunk, total %d\r\n250 OK id=%s\r\n",
+	    receive_smtp_buffered(),
 	    chunking_datasize, message_size+message_linecount, message_id);
 	chunking_state = CHUNKING_OFFERED;
 	}
       else
-        smtp_printf("250 OK id=%s\r\n", FALSE, message_id);
+        smtp_printf("250 OK id=%s\r\n", receive_smtp_buffered(), message_id);
 
       if (host_checking)
         fprintf(stdout,

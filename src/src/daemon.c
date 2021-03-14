@@ -554,7 +554,7 @@ if (pid == 0)
         }
       if (message_id[0] == 0) continue;   /* No message was accepted */
       }
-    else
+    else				/* bad smtp_setup_msg() */
       {
       if (smtp_out)
 	{
@@ -674,15 +674,15 @@ if (pid == 0)
       {
       pid_t dpid;
 
-      /* Before forking, ensure that the C output buffer is flushed. Otherwise
-      anything that it in it will get duplicated, leading to duplicate copies
-      of the pending output. */
-
-      mac_smtp_fflush();
+      /* We used to flush smtp_out before forking so that buffered data was not
+      duplicated, but now we want to pipeline the responses for data and quit.
+      Instead, hard-close the fd underlying smtp_out right after fork to discard
+      the data buffer. */
 
       if ((dpid = exim_fork(US"daemon-accept-delivery")) == 0)
         {
         (void)fclose(smtp_in);
+	(void)close(fileno(smtp_out));
         (void)fclose(smtp_out);
 
         /* Don't ever molest the parent's SSL connection, but do clean up

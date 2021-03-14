@@ -75,6 +75,7 @@ extern BOOL    tls_openssl_options_parse(uschar *, long *);
 # endif
 extern int     tls_read(void *, uschar *, size_t);
 extern int     tls_server_start(uschar **);
+extern void    tls_shutdown_wr(void *);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
 #if defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT)
@@ -204,7 +205,6 @@ extern void    deliver_set_expansions(address_item *);
 extern int     deliver_split_address(address_item *);
 extern void    deliver_succeeded(address_item *);
 
-extern uschar *deliver_get_sender_address (uschar *id);
 extern void    delivery_re_exec(int);
 
 extern void    die_tainted(const uschar *, const uschar *, int);
@@ -514,6 +514,7 @@ extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern int     spool_open_datafile(uschar *);
 extern int     spool_open_temp(uschar *);
 extern int     spool_read_header(uschar *, BOOL, BOOL);
+extern uschar *spool_sender_from_msgid(const uschar *);
 extern int     spool_write_header(uschar *, int, uschar **);
 extern int     stdin_getc(unsigned);
 extern int     stdin_feof(void);

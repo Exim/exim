@@ -174,6 +174,7 @@ typedef struct {
   BOOL completed_addr:1;
   BOOL send_rset:1;
   BOOL send_quit:1;
+  BOOL send_tlsclose:1;
 
   int		max_rcpt;
   int		cmd_count;

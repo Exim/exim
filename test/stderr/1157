@@ -71,16 +71,19 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP<< 250 OK id=10HmbC-0005vi-00
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
+  SMTP(shutdown)>>
+  SMTP(TLS shutdown)>>
+  SMTP<< 250 OK id=10HmbC-0005vi-00
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
->>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbC-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qqf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -157,16 +160,19 @@ cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
-  SMTP<< 250 OK id=10HmbI-0005vi-00
   SMTP+> QUIT
 cmd buf flush ddd bytes (more expected)
+  SMTP(shutdown)>>
+  SMTP(TLS shutdown)>>
+  SMTP<< 250 OK id=10HmbI-0005vi-00
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
->>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   => userb@test.ex R=cl_override T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=no C="250 OK id=10HmbI-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp (tls-proxy) terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: queue_run MAIN
   End queue run: pid=pppp -qqf
 >>>>>>>>>>>>>>>> Exim pid=pppp (fresh-exec) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -200,7 +206,7 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250 HELP
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP|> RCPT TO:<userx@test.ex>
+  SMTP|> RCPT TO:<user_p@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -217,7 +223,7 @@ cmd buf flush ddd bytes
          250 HELP
   SMTP(close)>>
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbM-0005vi-00"
+  => user_p@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbM-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (qrun-delivery) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -237,7 +243,7 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250 HELP
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP|> RCPT TO:<userz@test.ex>
+  SMTP|> RCPT TO:<user_r@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
@@ -254,7 +260,7 @@ cmd buf flush ddd bytes
          250 HELP
   SMTP(close)>>
 LOG: MAIN
-  => userz@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbN-0005vi-00"
+  => user_r@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbN-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -274,18 +280,19 @@ cmd buf flush ddd bytes
          250-PIPELINING
          250 HELP
   SMTP|> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
-  SMTP|> RCPT TO:<usery@test.ex>
+  SMTP|> RCPT TO:<user_q@test.ex>
   SMTP>> DATA
 cmd buf flush ddd bytes
   SMTP<< 250 OK
   SMTP<< 250 Accepted
   SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP>> QUIT
+cmd buf flush ddd bytes
   SMTP<< 250 OK id=10HmbO-0005vi-00
-  SMTP+> QUIT
-cmd buf flush ddd bytes (more expected)
+  SMTP<< 221 myhost.test.ex closing connection
   SMTP(close)>>
 LOG: MAIN
-  => usery@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-0005vi-00"
+  => user_q@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS1.x:ke-RSA-AES256-SHAnnn:xxx CV=yes C="250 OK id=10HmbO-0005vi-00"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp (continued-transport) terminating with rc=0 >>>>>>>>>>>>>>>>

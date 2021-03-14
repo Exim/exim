@@ -1637,8 +1637,9 @@ uschar * message_local_identity,
 current_local_identity =
   smtp_local_identity(s_compare->current_sender_address, s_compare->tblock);
 
-if (!(new_sender_address = deliver_get_sender_address(message_id)))
-    return FALSE;
+if (!(new_sender_address = spool_sender_from_msgid(message_id)))
+  return FALSE;
+
 
 message_local_identity =
   smtp_local_identity(new_sender_address, s_compare->tblock);
@@ -2516,6 +2517,7 @@ if (  smtp_peer_options & OPTION_TLS
       sx->send_quit = FALSE;
       goto TLS_FAILED;
       }
+    sx->send_tlsclose = TRUE;
 
     /* TLS session is set up.  Check the inblock fill level.  If there is
     content then as we have not yet done a tls read it must have arrived before
@@ -2949,7 +2951,11 @@ if (sx->send_quit)
 #ifndef DISABLE_TLS
 if (sx->cctx.tls_ctx)
   {
-  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+  if (sx->send_tlsclose)
+    {
+    tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
+    sx->send_tlsclose = FALSE;
+    }
   sx->cctx.tls_ctx = NULL;
   }
 #endif
@@ -3328,6 +3334,7 @@ smtp_proxy_tls(void * ct_ctx, uschar * buf, size_t bsize, int * pfd,
 fd_set rfds, efds;
 int max_fd = MAX(pfd[0], tls_out.active.sock) + 1;
 int rc, i;
+BOOL send_tls_shutdown = TRUE;
 
 close(pfd[1]);
 if ((rc = exim_fork(US"tls-proxy")))
@@ -3372,8 +3379,8 @@ for (int fd_bits = 3; fd_bits; )
 
   /* handle inbound data */
   if (FD_ISSET(tls_out.active.sock, &rfds))
-    if ((rc = tls_read(ct_ctx, buf, bsize)) <= 0)
-      {
+    if ((rc = tls_read(ct_ctx, buf, bsize)) <= 0)	/* Expect -1 for EOF; */
+    {				    /* that reaps the TLS Close Notify record */
       fd_bits &= ~1;
       FD_CLR(tls_out.active.sock, &rfds);
       shutdown(pfd[0], SHUT_WR);
@@ -3384,16 +3391,21 @@ for (int fd_bits = 3; fd_bits; )
       for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = write(pfd[0], buf + nbytes, rc - nbytes)) < 0) goto done;
       }
-  else if (fd_bits & 1)
-    FD_SET(tls_out.active.sock, &rfds);
 
-  /* handle outbound data */
+  /* Handle outbound data.  We cannot combine payload and the TLS-close
+  due to the limitations of the (pipe) channel feeding us. */
   if (FD_ISSET(pfd[0], &rfds))
     if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
-      fd_bits = 0;
-      tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);
-      ct_ctx = NULL;
+      fd_bits &= ~2;
+      FD_CLR(pfd[0], &rfds);
+
+# ifdef EXIM_TCP_CORK  /* Use _CORK to get TLS Close Notify in FIN segment */
+      (void) setsockopt(tls_out.active.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+# endif
+      tls_shutdown_wr(ct_ctx);
+      send_tls_shutdown = FALSE;
+      shutdown(tls_out.active.sock, SHUT_WR);
       }
     else
       {
@@ -3401,11 +3413,14 @@ for (int fd_bits = 3; fd_bits; )
 	if ((i = tls_write(ct_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
 	  goto done;
       }
-  else if (fd_bits & 2)
-    FD_SET(pfd[0], &rfds);
+
+  if (fd_bits & 1) FD_SET(tls_out.active.sock, &rfds);
+  if (fd_bits & 2) FD_SET(pfd[0], &rfds);
   }
 
 done:
+  if (send_tls_shutdown) tls_close(ct_ctx, TLS_SHUTDOWN_NOWAIT);
+  ct_ctx = NULL;
   testharness_pause_ms(100);	/* let logging complete */
   exim_exit(EXIT_SUCCESS);
 }
@@ -3478,6 +3493,7 @@ smtp_context * sx = store_get(sizeof(*sx), TRUE);	/* tainted, for the data buffe
 #ifdef SUPPORT_DANE
 BOOL dane_held;
 #endif
+BOOL tcw_done = FALSE, tcw = FALSE;
 
 *message_defer = FALSE;
 
@@ -3767,6 +3783,44 @@ else
   report_time_since(&t0, US"dkim_exim_sign_init (delta)");
 # endif
   }
+#endif
+
+  /* See if we can pipeline QUIT.  Reasons not to are
+  - pipelining not active
+  - not ok to send quit
+  - errors in amtp transation responses
+  - more addrs to send for this message or this host
+  - more messages for this host
+  If we can, we want the message-write to not flush (the tail end of) its data out.  */
+
+  if (  sx->pipelining_used
+     && (sx->ok && sx->completed_addr || sx->peer_offered & OPTION_CHUNKING)
+     && sx->send_quit
+     && !(sx->first_addr || f.continue_more)
+     )
+    {
+    smtp_compare_t t_compare =
+      {.tblock = tblock, .current_sender_address = sender_address};
+
+    tcw_done = TRUE;
+    tcw =
+#ifndef DISABLE_TLS
+	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
+           || verify_check_given_host(CUSS &ob->hosts_nopass_tls, host) != OK
+	   )
+        &&
+#endif
+           transport_check_waiting(tblock->name, host->name,
+             tblock->connection_max_messages, new_message_id,
+	     (oicf)smtp_are_same_identities, (void*)&t_compare);
+    if (!tcw)
+      {
+      HDEBUG(D_transport) debug_printf("will pipeline QUIT\n");
+      tctx.options |= topt_no_flush;
+      }
+    }
+
+#ifndef DISABLE_DKIM
   sx->ok = dkim_transport_write_message(&tctx, &ob->dkim, CUSS &message);
 #else
   sx->ok = transport_write_message(&tctx, 0);
@@ -3794,6 +3848,47 @@ else
   flag above. */
 
   smtp_command = US"end of data";
+
+  /* If we can pipeline a QUIT with the data them send it now.  If a new message
+  for this host appeared in the queue while data was being sent, we will not see
+  it and it will have to wait for a queue run.  If there was one but another
+  thread took it, we might attempt to send it - but locking of spoolfiles will
+  detect that. Use _MORE to get QUIT in FIN segment. */
+
+  if (tcw_done && !tcw)
+    {
+    /*XXX jgh 2021/03/10 google et. al screwup.  G, at least, sends TCP FIN in response to TLS
+    close-notify.  Under TLS 1.3, violating RFC.
+    However, TLS 1.2 does not have half-close semantics. */
+
+    if (  sx->cctx.tls_ctx
+#if 0 && !defined(DISABLE_TLS)
+       && Ustrcmp(tls_out.ver, "TLS1.3") != 0
+#endif
+       )
+      {				/* Send QUIT now and not later */
+      (void)smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n");
+      sx->send_quit = FALSE;
+      }
+    else
+      {				/* add QUIT to the output buffer */
+      (void)smtp_write_command(sx, SCMD_MORE, "QUIT\r\n");
+      sx->send_quit = FALSE;	/* avoid sending it later */
+
+#ifndef DISABLE_TLS
+      if (sx->cctx.tls_ctx)	/* need to send TLS Cloe Notify */
+	{
+# ifdef EXIM_TCP_CORK		/* Use _CORK to get Close Notify in FIN segment */
+	(void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+# endif
+	tls_shutdown_wr(sx->cctx.tls_ctx);
+	sx->send_tlsclose = FALSE;	/* avoid later repeat */
+	}
+#endif
+      HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(shutdown)>>\n");
+      shutdown(sx->cctx.sock, SHUT_WR);	/* flush output buffer, with TCP FIN */
+      }
+    }
 
   if (sx->peer_offered & OPTION_CHUNKING && sx->cmd_count > 1)
     {
@@ -4069,7 +4164,8 @@ if (!sx->ok)
     {
     save_errno = errno;
     message = NULL;
-    sx->send_quit = check_response(host, &save_errno, addrlist->more_errno,
+    /* Clear send_quit flag if needed.  Do not set. */
+    sx->send_quit &= check_response(host, &save_errno, addrlist->more_errno,
       sx->buffer, &code, &message, &pass_message);
     goto FAILED;
     }
@@ -4230,13 +4326,12 @@ DEBUG(D_transport)
 
 if (sx->completed_addr && sx->ok && sx->send_quit)
   {
-  smtp_compare_t t_compare;
-
-  t_compare.tblock = tblock;
-  t_compare.current_sender_address = sender_address;
+  smtp_compare_t t_compare =
+    {.tblock = tblock, .current_sender_address = sender_address};
 
   if (  sx->first_addr			/* more addrs for this message */
-     || f.continue_more			/* more addrs for coninued-host */
+     || f.continue_more			/* more addrs for continued-host */
+     || tcw_done && tcw			/* more messages for host */
      || (
 #ifndef DISABLE_TLS
 	   (  tls_out.active.sock < 0  &&  !continue_proxy_cipher
@@ -4281,7 +4376,6 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 #endif
       int socket_fd = sx->cctx.sock;
 
-
       if (sx->first_addr)		/* More addresses still to be sent */
         {				/*   for this message              */
         continue_sequence++;		/* Causes * in logging */
@@ -4306,6 +4400,7 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 	  the socket on. */
 
 	  tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+	  sx->send_tlsclose = FALSE;
 	  sx->cctx.tls_ctx = NULL;
 	  tls_out.active.sock = -1;
 	  smtp_peer_options = smtp_peer_options_wrap;
@@ -4399,20 +4494,21 @@ been passed to another process. */
 
 SEND_QUIT:
 if (sx->send_quit)
-			/* Use _MORE to get QUIT in FIN segment */
+  {			/* Use _MORE to get QUIT in FIN segment */
   (void)smtp_write_command(sx, SCMD_MORE, "QUIT\r\n");
+#ifndef DISABLE_TLS
+  if (sx->cctx.tls_ctx)
+    {
+# ifdef EXIM_TCP_CORK	/* Use _CORK to get TLS Close Notify in FIN segment */
+    (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+# endif
+    tls_shutdown_wr(sx->cctx.tls_ctx);
+    sx->send_tlsclose = FALSE;
+    }
+#endif
+  }
 
 END_OFF:
-
-#ifndef DISABLE_TLS
-# ifdef EXIM_TCP_CORK
-if (sx->cctx.tls_ctx)	/* Use _CORK to get TLS Close Notify in FIN segment */
-  (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
-# endif
-
-tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_NOWAIT);
-sx->cctx.tls_ctx = NULL;
-#endif
 
 /* Close the socket, and return the appropriate value, first setting
 works because the NULL setting is passed back to the calling process, and
@@ -4424,26 +4520,58 @@ writing RSET might have failed, or there may be other addresses whose hosts are
 specified in the transports, and therefore not visible at top level, in which
 case continue_more won't get set. */
 
-HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 if (sx->send_quit)
   {
   /* This flushes data queued in the socket, being the QUIT and any TLS Close,
   sending them along with the client FIN flag.  Us (we hope) sending FIN first
   means we (client) take the TIME_WAIT state, so the server (which likely has a
-  higher connection rate) does no have to. */
+  higher connection rate) does not have to. */
 
+  HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(shutdown)>>\n");
   shutdown(sx->cctx.sock, SHUT_WR);
+  }
 
+if (sx->send_quit || tcw_done && !tcw)
+  {
   /* Wait for (we hope) ack of our QUIT, and a server FIN.  Discard any data
   received, then discard the socket.  Any packet received after then, or receive
   data still in the socket, will get a RST - hence the pause/drain. */
 
+  /* Reap the response to QUIT, timing out after one second */
+  (void) smtp_read_response(sx, sx->buffer, sizeof(sx->buffer), '2', 1);
+#ifndef DISABLE_TLS
+  if (sx->cctx.tls_ctx)
+    {
+    int n;
+
+    /* Reap the TLS Close Notify from the server, timing out after one second */
+    sigalrm_seen = FALSE;
+    ALARM(1);
+    do
+      n = tls_read(sx->cctx.tls_ctx, sx->inbuffer, sizeof(sx->inbuffer));
+    while (!sigalrm_seen && n > 0);
+    ALARM_CLR(0);
+
+# ifdef EXIM_TCP_CORK
+    (void) setsockopt(sx->cctx.sock, IPPROTO_TCP, EXIM_TCP_CORK, US &on, sizeof(on));
+# endif
+    tls_close(sx->cctx.tls_ctx, TLS_SHUTDOWN_WAIT);
+    sx->cctx.tls_ctx = NULL;
+    }
+#endif
   millisleep(20);
-  testharness_pause_ms(200);
   if (fcntl(sx->cctx.sock, F_SETFL, O_NONBLOCK) == 0)
-    for (int i = 16; read(sx->cctx.sock, sx->inbuffer, sizeof(sx->inbuffer)) > 0 && i > 0;)
-      i--;				/* drain socket */
+    for (int i = 16, n;						/* drain socket */
+	 (n = read(sx->cctx.sock, sx->inbuffer, sizeof(sx->inbuffer))) > 0 && i > 0;
+	 i--) HDEBUG(D_transport|D_acl|D_v)
+      {
+      int m = MIN(n, 64);
+      debug_printf_indent("  SMTP(drain %d bytes)<< %.*s\n", n, m, sx->inbuffer);
+      for (m = 0; m < n; m++)
+	debug_printf("0x%02x\n", sx->inbuffer[m]);
+      }
   }
+HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 (void)close(sx->cctx.sock);
 
 #ifndef DISABLE_EVENT
