@@ -97,11 +97,14 @@ header_add_backend(BOOL after, uschar *name, BOOL topnot, int type,
 header_line *h, *new = NULL;
 header_line **hptr;
 
-uschar *p, *q;
-uschar * buf = store_get(HEADER_ADD_BUFFER_SIZE, FALSE);
-gstring gs = { .size = HEADER_ADD_BUFFER_SIZE, .ptr = 0, .s = buf };
+uschar * p, * q, * buf;
+gstring gs;
 
 if (!header_last) return NULL;
+
+gs.s = buf = store_get(HEADER_ADD_BUFFER_SIZE, FALSE);
+gs.size = HEADER_ADD_BUFFER_SIZE;
+gs.ptr = 0;
 
 if (!string_vformat(&gs, SVFMT_REBUFFER, format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "string too long in header_add: "
