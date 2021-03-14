@@ -75,7 +75,7 @@ free() must not die when passed NULL */
         key.dptr != NULL)
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation. */
-#define EXIM_DBDELETE_CURSOR(cursor) free(cursor)
+#define EXIM_DBDELETE_CURSOR(cursor) store_free(cursor)
 
 /* EXIM_DBCLOSE */
 #define EXIM_DBCLOSE__(db)        tdb_close(db)

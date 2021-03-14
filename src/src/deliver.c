@@ -2884,10 +2884,8 @@ while (addr_local)
   deliveries (e.g. to pipes) can take a substantial time. */
 
   if (!(dbm_file = dbfn_open(US"retry", O_RDONLY, &dbblock, FALSE, TRUE)))
-    {
     DEBUG(D_deliver|D_retry|D_hints_lookup)
       debug_printf("no retry data available\n");
-    }
 
   addr2 = addr;
   addr3 = NULL;

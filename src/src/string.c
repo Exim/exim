@@ -952,12 +952,15 @@ else
     s = ss;
     if (!*s || *++s != sep || sep_is_special) break;
     }
+
+  /* Trim trailing spaces from the returned string */
+
   /* while (g->ptr > 0 && isspace(g->s[g->ptr-1])) g->ptr--; */
   while (  g->ptr > 0 && isspace(g->s[g->ptr-1])
 	&& (g->ptr == 1 || g->s[g->ptr-2] != '\\') )
     g->ptr--;
   buffer = string_from_gstring(g);
-  gstring_release_unused(g);
+  gstring_release_unused_trc(g, func, line);
   }
 
 /* Update the current pointer and return the new string */
@@ -1143,7 +1146,7 @@ BOOL srctaint = is_tainted(s);
 if (!g)
   {
   unsigned inc = count < 4096 ? 127 : 1023;
-  unsigned size = ((count + inc) &  ~inc) + 1;
+  unsigned size = ((count + inc) &  ~inc) + 1;	/* round up requested count */
   g = string_get_tainted(size, srctaint);
   }
 else if (srctaint && !is_tainted(g->s))

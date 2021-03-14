@@ -3607,13 +3607,12 @@ for (int fd_bits = 3; fd_bits; )
       timeout = 5;
       }
     else
-      {
       for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = write(pfd[0], buf + nbytes, rc - nbytes)) < 0) goto done;
-      }
 
   /* Handle outbound data.  We cannot combine payload and the TLS-close
-  due to the limitations of the (pipe) channel feeding us. */
+  due to the limitations of the (pipe) channel feeding us.  Maybe use a unix-domain
+  socket? */
   if (FD_ISSET(pfd[0], &rfds))
     if ((rc = read(pfd[0], buf, bsize)) <= 0)
       {
@@ -3628,11 +3627,9 @@ for (int fd_bits = 3; fd_bits; )
       shutdown(tls_out.active.sock, SHUT_WR);
       }
     else
-      {
       for (int nbytes = 0; rc - nbytes > 0; nbytes += i)
 	if ((i = tls_write(ct_ctx, buf + nbytes, rc - nbytes, FALSE)) < 0)
 	  goto done;
-      }
 
   if (fd_bits & 1) FD_SET(tls_out.active.sock, &rfds);
   if (fd_bits & 2) FD_SET(pfd[0], &rfds);

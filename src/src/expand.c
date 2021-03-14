@@ -6431,13 +6431,10 @@ while (*s)
       condition for real. For EITEM_MAP and EITEM_REDUCE, do the same, using
       the normal internal expansion function. */
 
-      if (item_type == EITEM_FILTER)
-        {
-        if ((temp = eval_condition(expr, &resetok, NULL)))
-	  s = temp;
-        }
-      else
+      if (item_type != EITEM_FILTER)
         temp = expand_string_internal(s, TRUE, &s, TRUE, TRUE, &resetok);
+      else
+        if ((temp = eval_condition(expr, &resetok, NULL))) s = temp;
 
       if (!temp)
         {
@@ -6446,7 +6443,7 @@ while (*s)
         goto EXPAND_FAILED;
         }
 
-      Uskip_whitespace(&s);
+      Uskip_whitespace(&s);				/*{*/
       if (*s++ != '}')
         {						/*{*/
         expand_string_message = string_sprintf("missing } at end of condition "
