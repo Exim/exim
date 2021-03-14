@@ -1692,6 +1692,7 @@ int main(void)
 uschar buffer[256];
 
 printf("Testing is_ip_address\n");
+store_init();
 
 while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
   {

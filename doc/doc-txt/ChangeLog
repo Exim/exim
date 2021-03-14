@@ -213,6 +213,11 @@ JH/44 Bug 2701: Fix list-expansion of dns_ipv4_lookup.  Previously, it did
       dnssec_require_domains, dnssec_request_domains, srv_fail_domains,
       mx_fail_domains.
 
+JH/45 Use a (new) separate store pool-pair for DKIM verify working data.
+      Previously the permanent pool was used, so the sore could not be freed.
+      This meant a connection with many messages would use continually-growing
+      memory.
+
 
 Exim version 4.94
 -----------------

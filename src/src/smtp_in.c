@@ -2109,7 +2109,11 @@ while (acl_warn_logged)
   acl_warn_logged = acl_warn_logged->next;
   store_free(this);
   }
+
+message_tidyup();
 store_reset(reset_point);
+
+message_start();
 return store_mark();
 }
 
@@ -2186,7 +2190,7 @@ while (done <= 0)
 
     case MAIL_CMD:
       smtp_mailcmd_count++;              /* Count for no-mail log */
-      if (sender_address != NULL)
+      if (sender_address)
 	/* The function moan_smtp_batch() does not return. */
 	moan_smtp_batch(smtp_cmd_buffer, "503 Sender already given");
 
@@ -4533,6 +4537,7 @@ while (done <= 0)
     case MAIL_CMD:
       HAD(SCH_MAIL);
       smtp_mailcmd_count++;              /* Count for limit and ratelimit */
+      message_start();
       was_rej_mail = TRUE;               /* Reset if accepted */
       env_mail_type_t * mail_args;       /* Sanity check & validate args */
 

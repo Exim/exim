@@ -3260,6 +3260,7 @@ uschar buffer[256];
 
 disable_ipv6 = FALSE;
 primary_hostname = US"";
+store_init();
 store_pool = POOL_MAIN;
 debug_selector = D_host_lookup|D_interface;
 debug_file = stdout;

@@ -2083,6 +2083,7 @@ int main(void)
 int start, end, domain;
 uschar buffer[1024];
 
+store_init();
 big_buffer = store_malloc(big_buffer_size);
 
 /* strip_trailing_dot = TRUE; */

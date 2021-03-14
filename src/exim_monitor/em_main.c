@@ -570,7 +570,8 @@ return ret;
 *               Initialize                       *
 *************************************************/
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 int i;
 struct stat statdata;
@@ -591,6 +592,7 @@ message_subdir[1] = 0;
 constructing file names and things. This call will initialize
 the store_get() function. */
 
+store_init();
 big_buffer = store_get(big_buffer_size, FALSE);
 
 /* Set up the version string and date and output them */

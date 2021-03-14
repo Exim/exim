@@ -340,6 +340,9 @@ extern int     match_isinlist(const uschar *, const uschar **, int, tree_node **
                  unsigned int *, int, BOOL, const uschar **);
 extern int     match_check_string(const uschar *, const uschar *, int, BOOL, BOOL, BOOL,
                  const uschar **);
+
+extern void    message_start(void);
+extern void    message_tidyup(void);
 extern void    md5_end(md5 *, const uschar *, int, uschar *);
 extern void    md5_mid(md5 *, const uschar *);
 extern void    md5_start(md5 *);
@@ -522,6 +525,8 @@ extern int     stdin_ferror(void);
 extern int     stdin_ungetc(int);
 
 extern void    store_exit(void);
+extern void    store_init(void);
+
 extern gstring *string_append(gstring *, int, ...) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele(gstring *, uschar, const uschar *) WARN_UNUSED_RESULT;
 extern gstring *string_append_listele_n(gstring *, uschar, const uschar *, unsigned) WARN_UNUSED_RESULT;

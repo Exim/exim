@@ -37,11 +37,15 @@ The following different types of store are recognized:
   This means it can be freed when search_tidyup() is called to close down all
   the lookup caching.
 
+- There is another pool (POOL_MESSAGE) used for medium-lifetime objects; within
+  a single message transaction but needed for longer than the use of the main
+  pool permits.  Currently this means only receive-time DKIM information.
+
 . Orthogonal to the three pool types, there are two classes of memory: untainted
   and tainted.  The latter is used for values derived from untrusted input, and
   the string-expansion mechanism refuses to operate on such values (obviously,
   it can expand an untainted value to return a tainted result).  The classes
-  are implemented by duplicating the three pool types.  Pool resets are requested
+  are implemented by duplicating the four pool types.  Pool resets are requested
   against the nontainted sibling and apply to both siblings.
 
   Only memory blocks requested for tainted use are regarded as tainted; anything
@@ -113,11 +117,10 @@ even if the length is zero (which is used for getting a point to reset to). */
 
 int store_pool = POOL_MAIN;
 
-#define NPOOLS 6
 static storeblock *chainbase[NPOOLS];
 static storeblock *current_block[NPOOLS];
 static void *next_yield[NPOOLS];
-static int yield_length[NPOOLS] = { -1, -1, -1,  -1, -1, -1 };
+static int yield_length[NPOOLS];
 
 /* pool_malloc holds the amount of memory used by the store pools; this goes up
 and down as store is reset or released. nonpool_malloc is the total got by
@@ -150,23 +153,38 @@ static const uschar * pooluse[NPOOLS] = {
 [POOL_MAIN] =		US"main",
 [POOL_PERM] =		US"perm",
 [POOL_SEARCH] =		US"search",
+[POOL_MESSAGE] =	US"message",
 [POOL_TAINT_MAIN] =	US"main",
 [POOL_TAINT_PERM] =	US"perm",
 [POOL_TAINT_SEARCH] =	US"search",
+[POOL_TAINT_SEARCH] =	US"search",
+[POOL_TAINT_MESSAGE] =	US"message",
 };
 static const uschar * poolclass[NPOOLS] = {
 [POOL_MAIN] =		US"untainted",
 [POOL_PERM] =		US"untainted",
 [POOL_SEARCH] =		US"untainted",
+[POOL_MESSAGE] =	US"untainted",
 [POOL_TAINT_MAIN] =	US"tainted",
 [POOL_TAINT_PERM] =	US"tainted",
 [POOL_TAINT_SEARCH] =	US"tainted",
+[POOL_TAINT_MESSAGE] =	US"tainted",
 };
 #endif
 
 
 static void * internal_store_malloc(int, const char *, int);
 static void   internal_store_free(void *, const char *, int linenumber);
+
+/******************************************************************************/
+/* Initialisation, for things fragile with parameter channges when using
+static initialisers. */
+
+void
+store_init(void)
+{
+for (int i = 0; i < NPOOLS; i++) yield_length[i] = -1;
+}
 
 /******************************************************************************/
 
@@ -526,19 +544,19 @@ DEBUG(D_memory)
 
 
 rmark
-store_reset_3(rmark r, int pool, const char *func, int linenumber)
+store_reset_3(rmark r, const char *func, int linenumber)
 {
 void ** ptr = r;
 
-if (pool >= POOL_TAINT_BASE)
+if (store_pool >= POOL_TAINT_BASE)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "store_reset called for pool %d: %s %d\n", pool, func, linenumber);
+    "store_reset called for pool %d: %s %d\n", store_pool, func, linenumber);
 if (!r)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "store_reset called with bad mark: %s %d\n", func, linenumber);
 
-internal_store_reset(*ptr, pool + POOL_TAINT_BASE, func, linenumber);
-internal_store_reset(ptr,  pool,		   func, linenumber);
+internal_store_reset(*ptr, store_pool + POOL_TAINT_BASE, func, linenumber);
+internal_store_reset(ptr,  store_pool,		   func, linenumber);
 return NULL;
 }
 
@@ -835,6 +853,31 @@ DEBUG(D_memory)
     i, maxbytes[i]/1024, maxblocks[i], poolclass[i], pooluse[i]);
  }
 #endif
+}
+
+
+/******************************************************************************/
+/* Per-message pool management */
+
+static rmark   message_reset_point    = NULL;
+
+void
+message_start(void)
+{
+int oldpool = store_pool;
+store_pool = POOL_MESSAGE;
+if (!message_reset_point) message_reset_point = store_mark();
+store_pool = oldpool;
+}
+
+void message_tidyup(void)
+{
+int oldpool;
+if (!message_reset_point) return;
+oldpool = store_pool;
+store_pool = POOL_MESSAGE;
+message_reset_point = store_reset(message_reset_point);
+store_pool = oldpool;
 }
 
 /* End of store.c */

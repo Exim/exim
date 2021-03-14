@@ -8641,6 +8641,7 @@ debug_selector = D_v;
 debug_file = stderr;
 debug_fd = fileno(debug_file);
 big_buffer = malloc(big_buffer_size);
+store_init();
 
 for (int i = 1; i < argc; i++)
   {

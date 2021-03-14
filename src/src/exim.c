@@ -1669,6 +1669,8 @@ extern char **environ;
 (void)gettimeofday(&timestamp_startup, NULL);
 #endif
 
+store_init();	/* Initialise the memory allocation susbsystem */
+
 /* If the Exim user and/or group and/or the configuration file owner/group were
 defined by ref:name at build time, we must now find the actual uid/gid values.
 This is a feature to make the lives of binary distributors easier. */

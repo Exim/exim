@@ -13,15 +13,24 @@
 
 /* Define symbols for identifying the store pools. */
 
-enum { POOL_MAIN,       POOL_PERM,       POOL_SEARCH,
+#define NPOOLS 8
+enum { POOL_MAIN,
+       POOL_PERM,
+       POOL_SEARCH,
+       POOL_MESSAGE,
+
        POOL_TAINT_BASE,
-       POOL_TAINT_MAIN = POOL_TAINT_BASE, POOL_TAINT_PERM, POOL_TAINT_SEARCH };
+
+       POOL_TAINT_MAIN = POOL_TAINT_BASE,
+       POOL_TAINT_PERM,
+       POOL_TAINT_SEARCH,
+       POOL_TAINT_MESSAGE };
 
 /* This variable (the one for the current pool) is set by store_get() to its
 yield, and by store_reset() to NULL. This allows string_cat() to optimize its
 store handling. */
 
-extern void *store_last_get[6];
+extern void *store_last_get[NPOOLS];
 
 /* This variable contains the current store pool number. */
 
@@ -45,7 +54,7 @@ tracing information for debugging. */
 #define store_release_above(addr) \
 	store_release_above_3(addr, __FUNCTION__, __LINE__)
 #define store_reset(mark) \
-	store_reset_3(mark, store_pool, __FUNCTION__, __LINE__)
+	store_reset_3(mark, __FUNCTION__, __LINE__)
 
 
 /* The real functions */
@@ -58,7 +67,7 @@ extern void   *store_malloc_3(int, const char *, int)		ALLOC ALLOC_SIZE(1) WARN_
 extern rmark   store_mark_3(const char *, int);
 extern void   *store_newblock_3(void *, BOOL, int, int, const char *, int);
 extern void    store_release_above_3(void *, const char *, int);
-extern rmark   store_reset_3(rmark, int, const char *, int);
+extern rmark   store_reset_3(rmark, const char *, int);
 
 #endif  /* STORE_H */
 

@@ -109,12 +109,15 @@ dkim_exim_verify_init(BOOL dot_stuffing)
 {
 dkim_exim_init();
 
-/* There is a store-reset between header & body reception
-so cannot use the main pool. Any allocs done by Exim
-memory-handling must use the perm pool. */
+/* There is a store-reset between header & body reception for the main pool
+(actually, after every header line) so cannot use that as we need the data we
+store per-header, during header processing, at the end of body reception
+for evaluating the signature.  Any allocs done for dkim verify
+memory-handling must use a different pool.  We use a separate one that we
+can reset per message. */
 
 dkim_verify_oldpool = store_pool;
-store_pool = POOL_PERM;
+store_pool = POOL_MESSAGE;
 
 /* Free previous context if there is one */
 
@@ -139,7 +142,7 @@ dkim_exim_verify_feed(uschar * data, int len)
 {
 int rc;
 
-store_pool = POOL_PERM;
+store_pool = POOL_MESSAGE;
 if (  dkim_collect_input
    && (rc = pdkim_feed(dkim_verify_ctx, data, len)) != PDKIM_OK)
   {
@@ -305,7 +308,7 @@ int rc;
 gstring * g = NULL;
 const uschar * errstr = NULL;
 
-store_pool = POOL_PERM;
+store_pool = POOL_MESSAGE;
 
 /* Delete eventual previous signature chain */
 

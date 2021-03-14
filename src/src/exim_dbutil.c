@@ -551,6 +551,8 @@ EXIM_CURSOR *cursor;
 uschar **argv = USS cargv;
 uschar keybuffer[1024];
 
+store_init();
+
 /* Check the arguments, and open the database */
 
 dbdata_type = check_args(argc, argv, US"dumpdb", US"");
@@ -765,6 +767,7 @@ uschar buffer[256];
 uschar name[256];
 rmark reset_point;
 
+store_init();
 name[0] = 0;  /* No name set */
 
 /* Sort out the database type, verify what we are working on and then process
@@ -1133,6 +1136,8 @@ EXIM_CURSOR *cursor;
 uschar **argv = USS cargv;
 uschar buffer[256];
 uschar *key;
+
+store_init();
 
 /* Scan the options */
 
