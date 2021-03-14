@@ -9,6 +9,11 @@
 
 #include "exim.h"
 
+/* We have buffers holding path names for database files.
+PATH_MAX could be used here, but would be wasting memory, as we deal
+with database files like $spooldirectory/db/<name> */
+#define PATHLEN 256
+
 
 /* Functions for accessing Exim's hints database, which consists of a number of
 different DBM files. This module does not contain code for reading DBM files
@@ -93,7 +98,7 @@ int rc, save_errno;
 BOOL read_only = flags == O_RDONLY;
 BOOL created = FALSE;
 flock_t lock_data;
-uschar dirname[256], filename[256];
+uschar dirname[PATHLEN], filename[PATHLEN];
 
 DEBUG(D_hints_lookup) acl_level++;
 
@@ -196,12 +201,15 @@ but creation of the database file failed. */
 if (created && geteuid() == root_uid)
   {
   DIR * dd;
-  uschar *lastname = Ustrrchr(filename, '/') + 1;
+  uschar path[PATHLEN];
+  uschar *lastname;
   int namelen = Ustrlen(name);
 
+  Ustrcpy(path, filename);
+  lastname = Ustrrchr(path, '/') + 1;
   *lastname = 0;
 
-  if ((dd = exim_opendir(filename)))
+  if ((dd = exim_opendir(path)))
     for (struct dirent *ent; ent = readdir(dd); )
       if (Ustrncmp(ent->d_name, name, namelen) == 0)
 	{
@@ -209,13 +217,13 @@ if (created && geteuid() == root_uid)
 	/* Filenames from readdir() are trusted,
 	so use a taint-nonchecking copy */
 	strcpy(CS lastname, CCS ent->d_name);
-	if (Ustat(filename, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
+	if (Ustat(path, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
 	  {
 	  DEBUG(D_hints_lookup)
-	    debug_printf_indent("ensuring %s is owned by exim\n", filename);
-	  if (exim_chown(filename, exim_uid, exim_gid))
+	    debug_printf_indent("ensuring %s is owned by exim\n", path);
+	  if (exim_chown(path, exim_uid, exim_gid))
 	    DEBUG(D_hints_lookup)
-	      debug_printf_indent("failed setting %s to owned by exim\n", filename);
+	      debug_printf_indent("failed setting %s to owned by exim\n", path);
 	  }
 	}
 
