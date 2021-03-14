@@ -218,6 +218,12 @@ JH/45 Use a (new) separate store pool-pair for DKIM verify working data.
       This meant a connection with many messages would use continually-growing
       memory.
 
+JH/46 Use an exponentially-increasing block size when malloc'ing store.  Do it
+      per-pool so as not to waste too much space.  Previously a constant size
+      was used which resulted in O(n^2) behaviour; now we get O(n log n) making
+      DOS attacks harder.  The cost is wasted memory use in the larger blocks.
+
+
 
 Exim version 4.94
 -----------------

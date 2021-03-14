@@ -105,10 +105,21 @@ length. */
   (((sizeof(storeblock) + alignment - 1) / alignment) * alignment)
 
 /* Size of block to get from malloc to carve up into smaller ones. This
-must be a multiple of the alignment. We assume that 8192 is going to be
-suitably aligned. */
+must be a multiple of the alignment. We assume that 4096 is going to be
+suitably aligned.  Double the size per-pool for every malloc, to mitigate
+certain denial-of-service attacks.  Don't bother to decrease on block frees.
+We waste average half the current alloc size per pool.  This could be several
+hundred kB now, vs. 4kB with a constant-size block size.  But the search time
+for is_tainted(), linear in the number of blocks for the pool, is O(n log n)
+rather than O(n^2).
+A test of 2000 RCPTs and just accept ACL had 370kB in 21 blocks before,
+504kB in 6 blocks now, for the untainted-main (largest) pool.
+Builds for restricted-memory system can disable the expansion by
+defining RESTRICTED_MEMORY */
+/*XXX should we allow any for malloc's own overhead?  But how much? */
 
-#define STORE_BLOCK_SIZE (8192 - ALIGNED_SIZEOF_STOREBLOCK)
+/* #define RESTRICTED_MEMORY */
+#define STORE_BLOCK_SIZE(order) ((1U << (order)) - ALIGNED_SIZEOF_STOREBLOCK)
 
 /* Variables holding data for the local pools of store. The current pool number
 is held in store_pool, which is global so that it can be changed from outside.
@@ -121,6 +132,7 @@ static storeblock *chainbase[NPOOLS];
 static storeblock *current_block[NPOOLS];
 static void *next_yield[NPOOLS];
 static int yield_length[NPOOLS];
+static unsigned store_block_order[NPOOLS];
 
 /* pool_malloc holds the amount of memory used by the store pools; this goes up
 and down as store is reset or released. nonpool_malloc is the total got by
@@ -183,7 +195,12 @@ static initialisers. */
 void
 store_init(void)
 {
-for (int i = 0; i < NPOOLS; i++) yield_length[i] = -1;
+for (int i = 0; i < NPOOLS; i++)
+  {
+  yield_length[i] = -1;
+  store_block_order[i] = 12; /* log2(allocation_size) ie. 4kB */
+  }
+store_block_order[POOL_MAIN] = 13;
 }
 
 /******************************************************************************/
@@ -265,7 +282,7 @@ these functions are mostly called for small amounts of store. */
 
 if (size > yield_length[pool])
   {
-  int length = size <= STORE_BLOCK_SIZE ? STORE_BLOCK_SIZE : size;
+  int length = MAX(STORE_BLOCK_SIZE(store_block_order[pool]), size);
   int mlength = length + ALIGNED_SIZEOF_STOREBLOCK;
   storeblock * newblock;
 
@@ -297,6 +314,9 @@ if (size > yield_length[pool])
     newblock = internal_store_malloc(mlength, func, linenumber);
     newblock->next = NULL;
     newblock->length = length;
+#ifndef RESTRICTED_MEMORY
+    store_block_order[pool]++;
+#endif
 
     if (!chainbase[pool])
       chainbase[pool] = newblock;
@@ -426,6 +446,14 @@ return TRUE;
 
 
 
+static BOOL
+is_pwr2_size(int len)
+{
+unsigned x = len;
+return (x & (x - 1)) == 0;
+}
+
+
 /*************************************************
 *    Back up to a previous point on the stack    *
 *************************************************/
@@ -497,11 +525,11 @@ current_block[pool] = b;
 /* Free any subsequent block. Do NOT free the first
 successor, if our current block has less than 256 bytes left. This should
 prevent us from flapping memory. However, keep this block only when it has
-the default size. */
+a power-of-two size so probably is not a custom inflated one. */
 
 if (  yield_length[pool] < STOREPOOL_MIN_SIZE
    && b->next
-   && b->next->length == STORE_BLOCK_SIZE)
+   && is_pwr2_size(b->next->length + ALIGNED_SIZEOF_STOREBLOCK))
   {
   b = b->next;
 #ifndef COMPILE_UTILITY
@@ -515,6 +543,12 @@ if (  yield_length[pool] < STOREPOOL_MIN_SIZE
 
 bb = b->next;
 b->next = NULL;
+
+/* If there will be only one block left in the pool, drop one
+most-recent allocation size increase, ensuring it does not increase
+forever. */
+
+if (!bb && store_block_order[pool] > 12) store_block_order[pool]--;
 
 while ((b = bb))
   {
@@ -536,7 +570,7 @@ giving warnings. */
 
 #ifndef COMPILE_UTILITY
 DEBUG(D_memory)
-  debug_printf("---%d Rst %6p %5d %-14s %4d %d\n", pool, ptr,
+  debug_printf("---%d Rst %6p %5d %-14s %4d\tpool %d\n", pool, ptr,
     count + oldmalloc - pool_malloc,
     func, linenumber, pool_malloc);
 #endif  /* COMPILE_UTILITY */
@@ -620,7 +654,7 @@ for (int pool = 0; pool < nelem(current_block); pool++)
 
 #ifndef COMPILE_UTILITY
   DEBUG(D_memory)
-    debug_printf("---%d Rel %6p %5d %-14s %4d %d\n", pool, ptr, count,
+    debug_printf("---%d Rel %6p %5d %-14s %4d\tpool %d\n", pool, ptr, count,
       func, linenumber, pool_malloc);
 #endif
   return;
@@ -637,6 +671,12 @@ rmark
 store_mark_3(const char *func, int linenumber)
 {
 void ** p;
+
+#ifndef COMPILE_UTILITY
+DEBUG(D_memory)
+  debug_printf("---%d Mrk                    %-14s %4d\tpool %d\n",
+    store_pool, func, linenumber, pool_malloc);
+#endif  /* COMPILE_UTILITY */
 
 if (store_pool >= POOL_TAINT_BASE)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
