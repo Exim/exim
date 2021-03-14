@@ -1922,6 +1922,7 @@ if (dot_stuffing) ctx->flags = PDKIM_DOT_TERM;
 /* The line-buffer is for message data, hence tainted */
 ctx->linebuf = store_get(PDKIM_MAX_BODY_LINE_LEN, TRUE);
 ctx->dns_txt_callback = dns_txt_callback;
+ctx->cur_header = string_get_tainted(36, TRUE);
 
 return ctx;
 }
