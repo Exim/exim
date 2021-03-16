@@ -1052,7 +1052,7 @@ len = offsetof(struct sockaddr_un, sun_path) + 1
 DEBUG(D_any) debug_printf(" @%s\n", sa_un.sun_path+1);
 #else			/* filesystem-visible and persistent; will neeed removal */
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s", 
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
 	      expand_string(notifier_socket));
 DEBUG(D_any) debug_printf(" %s\n", sa_un.sun_path);
 #endif
@@ -2385,27 +2385,23 @@ for (;;)
           accept_retry_errno = errno;
           accept_retry_select_failed = select_failed;
           }
-        else
-          {
-          if (errno != accept_retry_errno ||
-              select_failed != accept_retry_select_failed ||
-              accept_retry_count >= 50)
+        else if (  errno != accept_retry_errno
+		|| select_failed != accept_retry_select_failed
+		|| accept_retry_count >= 50)
             {
-            log_write(0, LOG_MAIN | ((accept_retry_count >= 50)? LOG_PANIC : 0),
+            log_write(0, LOG_MAIN | (accept_retry_count >= 50? LOG_PANIC : 0),
               "%d %s() failure%s: %s",
               accept_retry_count,
               accept_retry_select_failed? "select" : "accept",
-              (accept_retry_count == 1)? "" : "s",
+              accept_retry_count == 1 ? "" : "s",
               strerror(accept_retry_errno));
             log_close_all();
             accept_retry_count = 0;
             accept_retry_errno = errno;
             accept_retry_select_failed = select_failed;
             }
-          }
         accept_retry_count++;
         }
-
       else
         {
         if (accept_retry_count > 0)
