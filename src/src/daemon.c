@@ -1058,7 +1058,7 @@ len = offsetof(struct sockaddr_un, sun_path) + 1
 DEBUG(D_any) debug_printf(" @%s\n", sa_un.sun_path+1);
 #else			/* filesystem-visible and persistent; will neeed removal */
 len = offsetof(struct sockaddr_un, sun_path)
-  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s", 
+  + snprintf(sa_un.sun_path, sizeof(sa_un.sun_path), "%s",
 	      expand_string(notifier_socket));
 DEBUG(D_any) debug_printf(" %s\n", sa_un.sun_path);
 #endif
@@ -2415,7 +2415,7 @@ for (;;)
           accept_retry_errno = errno;
           accept_retry_select_failed = select_failed;
           }
-        else if (  errno != accept_retry_errno 
+        else if (  errno != accept_retry_errno
 		|| select_failed != accept_retry_select_failed
 		|| accept_retry_count >= 50)
             {
