@@ -815,7 +815,7 @@ host_find_interfaces(void)
 {
 ip_address_item *running_interfaces = NULL;
 
-if (local_interface_data == NULL)
+if (!local_interface_data)
   {
   void *reset_item = store_mark();
   ip_address_item *dlist = host_build_ifacelist(CUS local_interfaces,

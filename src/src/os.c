@@ -495,9 +495,11 @@ if (getifaddrs(&ifalist) != 0)
 
 for (struct ifaddrs * ifa = ifalist; ifa; ifa = ifa->ifa_next)
   {
-  if (ifa->ifa_addr->sa_family != AF_INET
+  struct sockaddr * ifa_addr = ifa->ifa_addr;
+  if (!ifa_addr) continue;
+  if (ifa_addr->sa_family != AF_INET
 #if HAVE_IPV6
-    && ifa->ifa_addr->sa_family != AF_INET6
+    && ifa_addr->sa_family != AF_INET6
 #endif /* HAVE_IPV6 */
     )
     continue;
@@ -511,9 +513,9 @@ for (struct ifaddrs * ifa = ifalist; ifa; ifa = ifa->ifa_next)
   next = store_get(sizeof(ip_address_item), FALSE);
   next->next = NULL;
   next->port = 0;
-  (void)host_ntoa(-1, ifa->ifa_addr, next->address, NULL);
+  (void)host_ntoa(-1, ifa_addr, next->address, NULL);
 
-  if (yield == NULL)
+  if (!yield)
     yield = last = next;
   else
     {

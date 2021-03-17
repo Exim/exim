@@ -16,6 +16,7 @@ with the issue. */
 #define HAVE_MMAP
 #define HAVE_BSD_GETLOADAVG
 #define HAVE_SYS_STATVFS_H
+#define HAVE_GETIFADDRS
 #define NO_IP_VAR_H
 #define SIG_IGN_WORKS
 
