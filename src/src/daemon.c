@@ -939,6 +939,9 @@ if (override_pid_file_path)
 
 if (!*pid_file_path)
   pid_file_path = string_sprintf("%s/exim-daemon.pid", spool_directory);
+
+if (pid_file_path[0] != '/')
+  log_write(0, LOG_PANIC_DIE, "pid file path %s must be absolute\n", pid_file_path);
 }
 
 
