@@ -474,6 +474,7 @@ if (pid == 0)
   signal(SIGCHLD, SIG_IGN);
   #endif
   signal(SIGTERM, SIG_DFL);
+  signal(SIGINT, SIG_DFL);
 
   /* Attempt to get an id from the sending machine via the RFC 1413
   protocol. We do this in the sub-process in order not to hold up the
@@ -700,6 +701,7 @@ if (pid == 0)
         signal(SIGHUP,  SIG_DFL);
         signal(SIGCHLD, SIG_DFL);
         signal(SIGTERM, SIG_DFL);
+        signal(SIGINT, SIG_DFL);
 
         if (geteuid() != root_uid && !deliver_drop_privilege)
           {
@@ -988,6 +990,11 @@ static void
 daemon_die(void)
 {
 int pid;
+
+DEBUG(D_any) debug_printf("SIGTERM/SIGINT seen\n");
+#if !defined(DISABLE_TLS) && (defined(EXIM_HAVE_INOTIFY) || defined(EXIM_HAVE_KEVENT))
+tls_watch_invalidate();
+#endif
 
 if (daemon_notifier_fd >= 0)
   {
@@ -1885,6 +1892,7 @@ os_non_restarting_signal(SIGCHLD, main_sigchld_handler);
 
 sigterm_seen = FALSE;
 os_non_restarting_signal(SIGTERM, main_sigterm_handler);
+os_non_restarting_signal(SIGINT, main_sigterm_handler);
 
 /* If we are to run the queue periodically, pretend the alarm has just gone
 off. This will cause the first queue-runner to get kicked off straight away. */
@@ -2169,6 +2177,7 @@ for (;;)
           signal(SIGHUP,  SIG_DFL);
           signal(SIGCHLD, SIG_DFL);
           signal(SIGTERM, SIG_DFL);
+          signal(SIGINT, SIG_DFL);
 
           /* Re-exec if privilege has been given up, unless deliver_drop_
           privilege is set. Reset SIGALRM before exec(). */
