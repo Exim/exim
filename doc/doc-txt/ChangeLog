@@ -254,6 +254,8 @@ JH/53 Bug 2743: fix immediate-delivery via named queue.  Previously this would
 
 HS/01 Enforce absolute PID file path name.
 
+HS/02 Handle SIGINT as we handle SIGTERM: terminate the Exim process.
+
 
 Exim version 4.94
 -----------------

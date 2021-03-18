@@ -235,5 +235,5 @@ ppppp child ppppp ended: status=0x0
 ppppp   normal exit, 0
 ppppp 0 SMTP accept processes now running
 ppppp Listening...
-ppppp SIGTERM seen
+ppppp SIGTERM/SIGINT seen
 ppppp >>>>>>>>>>>>>>>> Exim pid=pppp (daemon) terminating with rc=0 >>>>>>>>>>>>>>>>
