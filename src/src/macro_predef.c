@@ -286,6 +286,32 @@ features_malware();
 features_crypto();
 }
 
+static void
+exp_features(void)
+{
+#ifdef EXPERIMENTAL_ARC
+  builtin_macro_create(US"_EXP_ARC");
+#endif
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  builtin_macro_create(US"_EXP_BMI");
+#endif
+#ifdef EXPERIMENTAL_DCC
+  builtin_macro_create(US"_EXP_DCC");
+#endif
+#ifdef EXPERIMENTAL_DSN_INFO
+  builtin_macro_create(US"_EXP_DSNI");
+#endif
+#ifdef EXPERIMENTAL_ESMTP_LIMITS
+  builtin_macro_create(US"_EXP_LIMITS");
+#endif
+#ifdef EXPERIMENTAL_QUEUEFILE
+  builtin_macro_create(US"_EXP_QUEUEFILE");
+#endif
+#if defined(EXPERIMENTAL_SRS_ALT)
+  builtin_macro_create(US"_EXP_SRS");
+#endif
+}
+
 
 static void
 options(void)
@@ -314,6 +340,7 @@ main(void)
 {
 printf("#include \"exim.h\"\n");
 features();
+exp_features();
 options();
 params();
 
