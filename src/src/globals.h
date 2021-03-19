@@ -926,7 +926,7 @@ extern BOOL    smtp_accept_keepalive;  /* Set keepalive on incoming */
 extern int     smtp_accept_max;        /* Max SMTP connections */
 extern int     smtp_accept_max_nonmail;/* Max non-mail commands in one con */
 extern uschar *smtp_accept_max_nonmail_hosts; /* Limit non-mail cmds from these hosts */
-extern int     smtp_accept_max_per_connection; /* Max msgs per connection */
+extern uschar *smtp_accept_max_per_connection; /* Max msgs per connection */
 extern uschar *smtp_accept_max_per_host; /* Max SMTP cons from one IP addr */
 extern int     smtp_accept_queue;      /* Queue after so many connections */
 extern int     smtp_accept_queue_per_connection; /* Queue after so many msgs */

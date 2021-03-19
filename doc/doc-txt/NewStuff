@@ -46,6 +46,8 @@ Version 4.95
 12. Proxy Protocol Timeout is configurable via "proxy_protocol_timeout"
     main config option.
 
+13. Option "smtp_accept_msx_per_connection" is now expanded.
+
 Version 4.94
 ------------
 

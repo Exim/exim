@@ -17575,7 +17575,7 @@ live with.
 . searchable.  NM changed this occurrence for bug 1197 to no longer allow
 . the option name to split.
 
-.option "smtp_accept_max_per_connection" main integer 1000 &&&
+.option "smtp_accept_max_per_connection" main integer&!! 1000 &&&
          smtp_accept_max_per_connection
 .cindex "SMTP" "limiting incoming message count"
 .cindex "limit" "messages per SMTP connection"
@@ -17585,6 +17585,11 @@ results in the transfer of a message. After the limit is reached, a 421
 response is given to subsequent MAIL commands. This limit is a safety
 precaution against a client that goes mad (incidents of this type have been
 seen).
+.new
+The option is expanded after the HELO or EHLO is received
+and may depend on values available at that time.
+An empty or zero value after expansion removes the limit.
+.wen
 
 
 .option smtp_accept_max_per_host main string&!! unset

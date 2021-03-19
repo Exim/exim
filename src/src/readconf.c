@@ -300,7 +300,7 @@ static optionlist optionlist_config[] = {
   { "smtp_accept_max",          opt_int,         {&smtp_accept_max} },
   { "smtp_accept_max_nonmail",  opt_int,         {&smtp_accept_max_nonmail} },
   { "smtp_accept_max_nonmail_hosts", opt_stringptr, {&smtp_accept_max_nonmail_hosts} },
-  { "smtp_accept_max_per_connection", opt_int,   {&smtp_accept_max_per_connection} },
+  { "smtp_accept_max_per_connection", opt_stringptr,   {&smtp_accept_max_per_connection} },
   { "smtp_accept_max_per_host", opt_stringptr,   {&smtp_accept_max_per_host} },
   { "smtp_accept_queue",        opt_int,         {&smtp_accept_queue} },
   { "smtp_accept_queue_per_connection", opt_int, {&smtp_accept_queue_per_connection} },

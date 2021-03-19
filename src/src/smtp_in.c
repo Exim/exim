@@ -3879,6 +3879,13 @@ cmd_list[CMD_LIST_RSET].is_mail_cmd = FALSE;
 }
 
 
+static int
+expand_mailmax(const uschar * s)
+{
+if (!(s = expand_cstring(s)))
+  log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand smtp_accept_max_per_connection");
+return *s ? Uatoi(s) : 0;
+}
 
 /*************************************************
 *       Initialize for SMTP incoming message     *
@@ -3909,6 +3916,7 @@ int
 smtp_setup_msg(void)
 {
 int done = 0;
+int mailmax = -1;
 BOOL toomany = FALSE;
 BOOL discarded = FALSE;
 BOOL last_was_rej_mail = FALSE;
@@ -4266,6 +4274,9 @@ while (done <= 0)
       fl.smtputf8_advertised = FALSE;
 #endif
 
+      /* Expand the per-connection message count limit option */
+      mailmax = expand_mailmax(smtp_accept_max_per_connection);
+
       smtp_code = US"250 ";        /* Default response code plus space*/
       if (!user_msg)
 	{
@@ -4541,13 +4552,16 @@ while (done <= 0)
       was_rej_mail = TRUE;               /* Reset if accepted */
       env_mail_type_t * mail_args;       /* Sanity check & validate args */
 
-      if (fl.helo_required && !fl.helo_seen)
-	{
-	smtp_printf("503 HELO or EHLO required\r\n", FALSE);
-	log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL from %s: no "
-	  "HELO/EHLO given", host_and_ident(FALSE));
-	break;
-	}
+      if (!fl.helo_seen)
+	if (fl.helo_required)
+	  {
+	  smtp_printf("503 HELO or EHLO required\r\n", FALSE);
+	  log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL from %s: no "
+	    "HELO/EHLO given", host_and_ident(FALSE));
+	  break;
+	  }
+	else if (mailmax < 0)
+	  mailmax = expand_mailmax(smtp_accept_max_per_connection);
 
       if (sender_address)
 	{
@@ -4566,8 +4580,7 @@ while (done <= 0)
       /* Check to see if the limit for messages per connection would be
       exceeded by accepting further messages. */
 
-      if (smtp_accept_max_per_connection > 0 &&
-	  smtp_mailcmd_count > smtp_accept_max_per_connection)
+      if (mailmax > 0 && smtp_mailcmd_count > mailmax)
 	{
 	smtp_printf("421 too many messages in this connection\r\n", FALSE);
 	log_write(0, LOG_MAIN|LOG_REJECT, "rejected MAIL command %s: too many "
