@@ -154,6 +154,7 @@ static int nbytes[NPOOLS];	/* current bytes allocated */
 static int maxbytes[NPOOLS];	/* max number reached */
 static int nblocks[NPOOLS];	/* current number of blocks allocated */
 static int maxblocks[NPOOLS];
+static unsigned maxorder[NPOOLS];
 static int n_nonpool_blocks;	/* current number of direct store_malloc() blocks */
 static int max_nonpool_blocks;
 static int max_pool_malloc;	/* max value for pool_malloc */
@@ -315,7 +316,8 @@ if (size > yield_length[pool])
     newblock->next = NULL;
     newblock->length = length;
 #ifndef RESTRICTED_MEMORY
-    store_block_order[pool]++;
+    if (store_block_order[pool]++ > maxorder[pool])
+      maxorder[pool] = store_block_order[pool];
 #endif
 
     if (!chainbase[pool])
@@ -812,11 +814,19 @@ internal_store_malloc(int size, const char *func, int line)
 {
 void * yield;
 
+#ifndef COMPILE_UTILITY
+DEBUG(D_memory) size += sizeof(int);	/* space to store the size */
+#endif
+
 if (size < 16) size = 16;
 
 if (!(yield = malloc((size_t)size)))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to malloc %d bytes of memory: "
     "called from line %d in %s", size, line, func);
+
+#ifndef COMPILE_UTILITY
+DEBUG(D_memory) { *(int *)yield = size; yield = US yield + sizeof(int); }
+#endif
 
 if ((nonpool_malloc += size) > max_nonpool_malloc)
   max_nonpool_malloc = nonpool_malloc;
@@ -829,8 +839,8 @@ giving warnings. */
 is not filled with zeros so as to catch problems. */
 
 if (f.running_in_test_harness)
-  memset(yield, 0xF0, (size_t)size);
-DEBUG(D_memory) debug_printf("--Malloc %6p %5d bytes\t%-14s %4d\tpool %5d  nonpool %5d\n",
+  memset(yield, 0xF0, (size_t)size - sizeof(int));
+DEBUG(D_memory) debug_printf("--Malloc %6p %5d bytes\t%-20s %4d\tpool %5d  nonpool %5d\n",
   yield, size, func, line, pool_malloc, nonpool_malloc);
 #endif  /* COMPILE_UTILITY */
 
@@ -863,11 +873,12 @@ Returns:      nothing
 static void
 internal_store_free(void * block, const char * func, int linenumber)
 {
+uschar * p = block;
 #ifndef COMPILE_UTILITY
-DEBUG(D_memory)
-  debug_printf("----Free %6p %-20s %4d\n", block, func, linenumber);
-#endif  /* COMPILE_UTILITY */
-free(block);
+DEBUG(D_memory) { p -= sizeof(int); nonpool_malloc -= *(int *)p; }
+DEBUG(D_memory) debug_printf("----Free %6p %5d bytes\t%-20s %4d\n", block, *(int *)p, func, linenumber);
+#endif
+free(p);
 }
 
 void
@@ -889,8 +900,9 @@ DEBUG(D_memory)
   (max_nonpool_malloc+1023)/1024, max_nonpool_blocks);
  debug_printf("----Exit npools  max: %3d kB\n", max_pool_malloc/1024);
  for (int i = 0; i < NPOOLS; i++)
-  debug_printf("----Exit  pool %d max: %3d kB in %d blocks\t%s %s\n",
-    i, maxbytes[i]/1024, maxblocks[i], poolclass[i], pooluse[i]);
+  debug_printf("----Exit  pool %d max: %3d kB in %d blocks at order %u\t%s %s\n",
+    i, maxbytes[i]/1024, maxblocks[i], maxorder[i],
+    poolclass[i], pooluse[i]);
  }
 #endif
 }
