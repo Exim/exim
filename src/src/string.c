@@ -575,7 +575,7 @@ uschar *
 string_copy_dnsdomain(uschar *s)
 {
 uschar *yield;
-uschar *ss = yield = store_get(Ustrlen(s) + 1, is_tainted(s));
+uschar *ss = yield = store_get(Ustrlen(s) + 1, TRUE);	/* always treat as tainted */
 
 while (*s != 0)
   {

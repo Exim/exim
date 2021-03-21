@@ -222,7 +222,8 @@ if ((ipa = string_is_ip_address(lname, NULL)) != 0)
   else
     {
     *error_num = HOST_NOT_FOUND;
-    return NULL;
+    yield = NULL;
+    goto out;
     }
 
 /* Handle a host name */
@@ -238,11 +239,11 @@ else
   switch(rc)
     {
     case DNS_SUCCEED: break;
-    case DNS_NOMATCH: *error_num = HOST_NOT_FOUND; return NULL;
-    case DNS_NODATA:  *error_num = NO_DATA; return NULL;
-    case DNS_AGAIN:   *error_num = TRY_AGAIN; return NULL;
+    case DNS_NOMATCH: *error_num = HOST_NOT_FOUND; yield = NULL; goto out;
+    case DNS_NODATA:  *error_num = NO_DATA; yield = NULL; goto out;
+    case DNS_AGAIN:   *error_num = TRY_AGAIN; yield = NULL; goto out;
     default:
-    case DNS_FAIL:    *error_num = NO_RECOVERY; return NULL;
+    case DNS_FAIL:    *error_num = NO_RECOVERY; yield = NULL; goto out;
     }
 
   for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
@@ -280,6 +281,9 @@ else
   *alist = NULL;
   }
 
+out:
+
+store_free_dns_answer(dnsa);
 return yield;
 }
 
@@ -2262,6 +2266,7 @@ host_item *thishostlast = NULL;    /* Indicates not yet filled in anything */
 BOOL v6_find_again = FALSE;
 BOOL dnssec_fail = FALSE;
 int i;
+dns_answer * dnsa;
 
 #ifndef DISABLE_TLS
 /* Copy the host name at this point to the value which is used for
@@ -2286,6 +2291,8 @@ if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   host->address = host->name;
   return HOST_FOUND;
   }
+
+dnsa = store_get_dns_answer();
 
 /* On an IPv6 system, unless IPv6 is disabled, go round the loop up to twice,
 looking for AAAA records the first time. However, unless doing standalone
@@ -2318,7 +2325,6 @@ for (; i >= 0; i--)
   int type = types[i];
   int randoffset = i == (whichrrs & HOST_FIND_IPV4_FIRST ? 1 : 0)
     ? 500 : 0;  /* Ensures v6/4 sort order */
-  dns_answer * dnsa = store_get_dns_answer();
   dns_scan dnss;
 
   int rc = dns_lookup_timerwrap(dnsa, host->name, type, fully_qualified_name);
@@ -2341,10 +2347,13 @@ for (; i >= 0; i--)
     {
     if (i == 0)  /* Just tried for an A record, i.e. end of loop */
       {
-      if (host->address != NULL) return HOST_FOUND;  /* AAAA was found */
-      if (rc == DNS_AGAIN || rc == DNS_FAIL || v6_find_again)
-        return HOST_FIND_AGAIN;
-      return HOST_FIND_FAILED;    /* DNS_NOMATCH or DNS_NODATA */
+      if (host->address != NULL)
+        i = HOST_FOUND;  /* AAAA was found */
+      else if (rc == DNS_AGAIN || rc == DNS_FAIL || v6_find_again)
+        i = HOST_FIND_AGAIN;
+      else
+	i = HOST_FIND_FAILED;    /* DNS_NOMATCH or DNS_NODATA */
+      goto out;
       }
 
     /* Tried for an AAAA record: remember if this was a temporary
@@ -2489,11 +2498,15 @@ for (; i >= 0; i--)
 /* Control gets here only if the second lookup (the A record) succeeded.
 However, the address may not be filled in if it was ignored. */
 
-return host->address
+i = host->address
   ? HOST_FOUND
   : dnssec_fail
   ? HOST_FIND_SECURITY
   : HOST_IGNORED;
+
+out:
+  store_free_dns_answer(dnsa);
+  return i;
 }
 
 
@@ -3162,6 +3175,7 @@ DEBUG(D_host_lookup)
 out:
 
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
+store_free_dns_answer(dnsa);
 return yield;
 }
 

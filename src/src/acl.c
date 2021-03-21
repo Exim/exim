@@ -1313,11 +1313,12 @@ acl_verify_csa(const uschar *domain)
 tree_node *t;
 const uschar *found;
 int priority, weight, port;
-dns_answer * dnsa = store_get_dns_answer();
+dns_answer * dnsa;
 dns_scan dnss;
 dns_record *rr;
-int rc, type;
-uschar target[256];
+int rc, type, yield;
+#define TARGET_SIZE 256
+uschar * target = store_get(TARGET_SIZE, TRUE);
 
 /* Work out the domain we are using for the CSA lookup. The default is the
 client's HELO domain. If the client has not said HELO, use its IP address
@@ -1325,8 +1326,8 @@ instead. If it's a local client (exim -bs), CSA isn't applicable. */
 
 while (isspace(*domain) && *domain != '\0') ++domain;
 if (*domain == '\0') domain = sender_helo_name;
-if (domain == NULL) domain = sender_host_address;
-if (sender_host_address == NULL) return CSA_UNKNOWN;
+if (!domain) domain = sender_host_address;
+if (!sender_host_address) return CSA_UNKNOWN;
 
 /* If we have an address literal, strip off the framing ready for turning it
 into a domain. The framing consists of matched square brackets possibly
@@ -1356,8 +1357,8 @@ return the same result again. Otherwise build a new cached result structure
 for this domain. The name is filled in now, and the value is filled in when
 we return from this function. */
 
-t = tree_search(csa_cache, domain);
-if (t != NULL) return t->data.val;
+if ((t = tree_search(csa_cache, domain)))
+  return t->data.val;
 
 t = store_get_perm(sizeof(tree_node) + Ustrlen(domain), is_tainted(domain));
 Ustrcpy(t->name, domain);
@@ -1366,18 +1367,21 @@ Ustrcpy(t->name, domain);
 /* Now we are ready to do the actual DNS lookup(s). */
 
 found = domain;
+dnsa = store_get_dns_answer();
 switch (dns_special_lookup(dnsa, domain, T_CSA, &found))
   {
   /* If something bad happened (most commonly DNS_AGAIN), defer. */
 
   default:
-    return t->data.val = CSA_DEFER_SRV;
+    yield = CSA_DEFER_SRV;
+    goto out;
 
   /* If we found nothing, the client's authorization is unknown. */
 
   case DNS_NOMATCH:
   case DNS_NODATA:
-    return t->data.val = CSA_UNKNOWN;
+    yield = CSA_UNKNOWN;
+    goto out;
 
   /* We got something! Go on to look at the reply in more detail. */
 
@@ -1413,7 +1417,10 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   SRV records of their own. */
 
   if (Ustrcmp(found, domain) != 0)
-    return t->data.val = port & 1 ? CSA_FAIL_EXPLICIT : CSA_UNKNOWN;
+    {
+    yield = port & 1 ? CSA_FAIL_EXPLICIT : CSA_UNKNOWN;
+    goto out;
+    }
 
   /* This CSA SRV record refers directly to our domain, so we check the value
   in the weight field to work out the domain's authorization. 0 and 1 are
@@ -1421,7 +1428,11 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   address in order to authenticate it, so we treat it as unknown; values
   greater than 3 are undefined. */
 
-  if (weight < 2) return t->data.val = CSA_FAIL_DOMAIN;
+  if (weight < 2)
+    {
+    yield = CSA_FAIL_DOMAIN;
+    goto out;
+    }
 
   if (weight > 2) continue;
 
@@ -1430,7 +1441,7 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
   target hostname then break to scan the additional data for its addresses. */
 
   (void)dn_expand(dnsa->answer, dnsa->answer + dnsa->answerlen, p,
-    (DN_EXPAND_ARG4_TYPE)target, sizeof(target));
+    (DN_EXPAND_ARG4_TYPE)target, TARGET_SIZE);
 
   DEBUG(D_acl) debug_printf_indent("CSA target is %s\n", target);
 
@@ -1439,7 +1450,11 @@ for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 
 /* If we didn't break the loop then no appropriate records were found. */
 
-if (!rr) return t->data.val = CSA_UNKNOWN;
+if (!rr)
+  {
+  yield = CSA_UNKNOWN;
+  goto out;
+  }
 
 /* Do not check addresses if the target is ".", in accordance with RFC 2782.
 A target of "." indicates there are no valid addresses, so the client cannot
@@ -1447,7 +1462,11 @@ be authorized. (This is an odd configuration because weight=2 target=. is
 equivalent to weight=1, but we check for it in order to keep load off the
 root name servers.) Note that dn_expand() turns "." into "". */
 
-if (Ustrcmp(target, "") == 0) return t->data.val = CSA_FAIL_NOADDR;
+if (Ustrcmp(target, "") == 0)
+  {
+  yield = CSA_FAIL_NOADDR;
+  goto out;
+  }
 
 /* Scan the additional section of the CSA SRV reply for addresses belonging
 to the target. If the name server didn't return any additional data (e.g.
@@ -1455,7 +1474,11 @@ because it does not fully support SRV records), we need to do another lookup
 to obtain the target addresses; otherwise we have a definitive result. */
 
 rc = acl_verify_csa_address(dnsa, &dnss, RESET_ADDITIONAL, target);
-if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
+if (rc != CSA_FAIL_NOADDR)
+  {
+  yield = rc;
+  goto out;
+  }
 
 /* The DNS lookup type corresponds to the IP version used by the client. */
 
@@ -1473,13 +1496,18 @@ switch (dns_lookup(dnsa, target, type, NULL))
   /* If something bad happened (most commonly DNS_AGAIN), defer. */
 
   default:
-    return t->data.val = CSA_DEFER_ADDR;
+    yield = CSA_DEFER_ADDR;
+    break;
 
   /* If the query succeeded, scan the addresses and return the result. */
 
   case DNS_SUCCEED:
     rc = acl_verify_csa_address(dnsa, &dnss, RESET_ANSWERS, target);
-    if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
+    if (rc != CSA_FAIL_NOADDR)
+      {
+      yield = rc;
+      break;
+      }
     /* else fall through */
 
   /* If the target has no IP addresses, the client cannot have an authorized
@@ -1488,8 +1516,14 @@ switch (dns_lookup(dnsa, target, type, NULL))
 
   case DNS_NOMATCH:
   case DNS_NODATA:
-    return t->data.val = CSA_FAIL_NOADDR;
+    yield = CSA_FAIL_NOADDR;
+    break;
   }
+
+out:
+
+store_free_dns_answer(dnsa);
+return t->data.val = yield;
 }
 
 

@@ -74,7 +74,7 @@ tree_node *t;
 dnsbl_cache_block *cb;
 int old_pool = store_pool;
 uschar * query;
-int qlen;
+int qlen, yield;
 
 /* Construct the specific query domainname */
 
@@ -83,7 +83,8 @@ if ((qlen = Ustrlen(query)) >= 256)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
     "(ignored): %s...", query);
-  return FAIL;
+  yield = FAIL;
+  goto out;
   }
 
 /* Look for this query in the cache. */
@@ -305,7 +306,8 @@ if (cb->rc == DNS_SUCCEED)
           match_type & MT_ALL ? "=" : "",
           bitmask ? '&' : '=', iplist);
         }
-      return FAIL;
+      yield = FAIL;
+      goto out;
       }
     }
 
@@ -329,7 +331,11 @@ if (cb->rc == DNS_SUCCEED)
 	    " not in 127.0/8 and discarded",
 	    keydomain, domain, da->address);
       }
-    if (!ok) return FAIL;
+    if (!ok)
+      {
+      yield = FAIL;
+      goto out;
+      }
     }
 
   /* Either there was no IP list, or the record matched, implying that the
@@ -339,8 +345,11 @@ if (cb->rc == DNS_SUCCEED)
   there is indeed an A record at the alternate domain. */
 
   if (domain_txt != domain)
-    return one_check_dnsbl(domain_txt, domain_txt, keydomain, prepend, NULL,
+    {
+    yield = one_check_dnsbl(domain_txt, domain_txt, keydomain, prepend, NULL,
       FALSE, match_type, defer_return);
+    goto out;
+    }
 
   /* If there is no alternate domain, look up a TXT record in the main domain
   if it has not previously been cached. */
@@ -356,7 +365,7 @@ if (cb->rc == DNS_SUCCEED)
 	  int len = (rr->data)[0];
 	  if (len > 511) len = 127;
 	  store_pool = POOL_PERM;
-	  cb->text = string_sprintf("%.*s", len, CUS (rr->data+1));
+	  cb->text = string_copyn_taint(CUS (rr->data+1), len, TRUE);
 	  store_pool = old_pool;
 	  break;
 	  }
@@ -364,7 +373,8 @@ if (cb->rc == DNS_SUCCEED)
 
   dnslist_value = addlist;
   dnslist_text = cb->text;
-  return OK;
+  yield = OK;
+  goto out;
   }
 
 /* There was a problem with the DNS lookup */
@@ -376,7 +386,8 @@ if (cb->rc != DNS_NOMATCH && cb->rc != DNS_NODATA)
     defer_return == OK ?   US"assumed in list" :
     defer_return == FAIL ? US"assumed not in list" :
                             US"returned DEFER");
-  return defer_return;
+  yield = defer_return;
+  goto out;
   }
 
 /* No entry was found in the DNS; continue for next domain */
@@ -388,7 +399,12 @@ HDEBUG(D_dnsbl)
      keydomain, domain);
   }
 
-return FAIL;
+yield = FAIL;
+
+out:
+
+store_free_dns_answer(dnsa);
+return yield;
 }
 
 

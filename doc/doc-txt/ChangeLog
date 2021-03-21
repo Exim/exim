@@ -223,6 +223,10 @@ JH/46 Use an exponentially-increasing block size when malloc'ing store.  Do it
       was used which resulted in O(n^2) behaviour; now we get O(n log n) making
       DOS attacks harder.  The cost is wasted memory use in the larger blocks.
 
+JH/47 Use explicit alloc/free for DNS lookup workspace.  This permits using the
+      same space repeatedly, and a smaller process footprint.
+
+
 
 
 Exim version 4.94

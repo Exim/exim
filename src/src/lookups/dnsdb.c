@@ -190,7 +190,8 @@ for (;;)
     else
       {
       *errmsg = US"unsupported dnsdb defer behaviour";
-      return DEFER;
+      rc = DEFER;
+      goto out;
       }
     }
   else if (strncmpic(keystring, US"dnssec_", 7) == 0)
@@ -205,7 +206,8 @@ for (;;)
     else
       {
       *errmsg = US"unsupported dnsdb dnssec behaviour";
-      return DEFER;
+      rc = DEFER;
+      goto out;
       }
     }
   else if (strncmpic(keystring, US"retrans_", 8) == 0)
@@ -214,7 +216,8 @@ for (;;)
     if ((timeout_sec = readconf_readtime(keystring += 8, ',', FALSE)) <= 0)
       {
       *errmsg = US"unsupported dnsdb timeout value";
-      return DEFER;
+      rc = DEFER;
+      goto out;
       }
     dns_retrans = timeout_sec;
     while (*keystring != ',') keystring++;
@@ -225,7 +228,8 @@ for (;;)
     if ((retries = (int)strtol(CCS keystring + 6, CSS &keystring, 0)) < 0)
       {
       *errmsg = US"unsupported dnsdb retry count";
-      return DEFER;
+      rc = DEFER;
+      goto out;
       }
     dns_retry = retries;
     }
@@ -236,7 +240,8 @@ for (;;)
   if (*keystring++ != ',')
     {
     *errmsg = US"dnsdb modifier syntax error";
-    return DEFER;
+    rc = DEFER;
+    goto out;
     }
   while (isspace(*keystring)) keystring++;
   }
@@ -264,7 +269,8 @@ if ((equals = Ustrchr(keystring, '=')) != NULL)
   if (i >= nelem(type_names))
     {
     *errmsg = US"unsupported DNS record type";
-    return DEFER;
+    rc = DEFER;
+    goto out;
     }
 
   keystring = equals + 1;
@@ -359,7 +365,8 @@ while ((domain = string_nextinlist(&keystring, &sep, NULL, 0)))
 	dns_retrans = save_retrans;
 	dns_retry = save_retry;
 	dns_init(FALSE, FALSE, FALSE);			/* clr dnssec bit */
-	return DEFER;					/* always defer */
+	rc = DEFER;					/* always defer */
+	goto out;
 	}
       if (defer_mode == PASS) failrc = DEFER;         /* defer only if all do */
       continue;                                       /* treat defer as fail */
@@ -549,10 +556,18 @@ dns_retrans = save_retrans;
 dns_retry = save_retry;
 dns_init(FALSE, FALSE, FALSE);	/* clear the dnssec bit for getaddrbyname */
 
-if (!yield || !yield->ptr) return failrc;
+if (!yield || !yield->ptr)
+  rc = failrc;
+else
+  {
+  *result = string_from_gstring(yield);
+  rc = OK;
+  }
 
-*result = string_from_gstring(yield);
-return OK;
+out:
+
+store_free_dns_answer(dnsa);
+return rc;
 }
 
 

@@ -80,6 +80,7 @@ if (rr_type == T_SPF)
   HDEBUG(D_host_lookup) debug_printf("faking NO_DATA for SPF RR(99) lookup\n");
   srr.herrno = NO_DATA;
   SPF_dns_rr_dup(&spfrr, &srr);
+  store_free_dns_answer(dnsa);
   return spfrr;
   }
 
@@ -100,6 +101,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS); rr;
 if (found == 0)
   {
   SPF_dns_rr_dup(&spfrr, &srr);
+  store_free_dns_answer(dnsa);
   return spfrr;
   }
 
@@ -171,6 +173,7 @@ if (!(srr.num_rr = found))
 
 /* spfrr->rr must have been malloc()d for this */
 SPF_dns_rr_dup(&spfrr, &srr);
+store_free_dns_answer(dnsa);
 return spfrr;
 }
 

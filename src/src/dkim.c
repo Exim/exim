@@ -50,11 +50,14 @@ dkim_exim_query_dns_txt(const uschar * name)
 dns_answer * dnsa = store_get_dns_answer();
 dns_scan dnss;
 rmark reset_point = store_mark();
-gstring * g = NULL;
+gstring * g = string_get_tainted(256, TRUE);
 
 lookup_dnssec_authenticated = NULL;
 if (dns_lookup(dnsa, name, T_TXT, NULL) != DNS_SUCCEED)
+  {
+  store_free_dns_answer(dnsa);
   return NULL;	/*XXX better error detail?  logging? */
+  }
 
 /* Search for TXT record */
 
@@ -81,6 +84,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
     /* check if this looks like a DKIM record */
     if (Ustrncmp(g->s, "v=", 2) != 0 || strncasecmp(CS g->s, "v=dkim", 6) == 0)
       {
+      store_free_dns_answer(dnsa);
       gstring_release_unused(g);
       return string_from_gstring(g);
       }
@@ -90,6 +94,7 @@ for (dns_record * rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
 
 bad:
 store_reset(reset_point);
+store_free_dns_answer(dnsa);
 return NULL;	/*XXX better error detail?  logging? */
 }
 
