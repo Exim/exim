@@ -8416,7 +8416,7 @@ else if (addr_defer != (address_item *)(+1))
   /* If this was a first delivery attempt, unset the first time flag, and
   ensure that the spool gets updated. */
 
-  if (f.deliver_firsttime)
+  if (f.deliver_firsttime && !f.queue_2stage)
     {
     f.deliver_firsttime = FALSE;
     update_spool = TRUE;
