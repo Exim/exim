@@ -966,6 +966,7 @@ g->s = s;
 }
 
 
+# ifndef COMPILE_UTILITY
 /******************************************************************************/
 /* Use store_malloc for DNSA structs, and explicit frees. Using the same pool
 for them as the strings we proceed to copy from them meant they could not be
@@ -993,7 +994,6 @@ store_free_3(dnsa, CCS func, line);
 /******************************************************************************/
 /* Routines with knowledge of spool layout */
 
-# ifndef COMPILE_UTILITY
 static inline void
 spool_pname_buf(uschar * buf, int len)
 {
