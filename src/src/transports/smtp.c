@@ -3790,6 +3790,7 @@ else
   - not ok to send quit
   - errors in amtp transation responses
   - more addrs to send for this message or this host
+  - this message was being retried
   - more messages for this host
   If we can, we want the message-write to not flush (the tail end of) its data out.  */
 
@@ -3797,6 +3798,7 @@ else
      && (sx->ok && sx->completed_addr || sx->peer_offered & OPTION_CHUNKING)
      && sx->send_quit
      && !(sx->first_addr || f.continue_more)
+     && f.deliver_firsttime
      )
     {
     smtp_compare_t t_compare =
@@ -3861,10 +3863,11 @@ else
     close-notify.  Under TLS 1.3, violating RFC.
     However, TLS 1.2 does not have half-close semantics. */
 
-    if (  sx->cctx.tls_ctx
+    if (     sx->cctx.tls_ctx
 #if 0 && !defined(DISABLE_TLS)
-       && Ustrcmp(tls_out.ver, "TLS1.3") != 0
+          && Ustrcmp(tls_out.ver, "TLS1.3") != 0
 #endif
+       || !f.deliver_firsttime
        )
       {				/* Send QUIT now and not later */
       (void)smtp_write_command(sx, SCMD_FLUSH, "QUIT\r\n");
