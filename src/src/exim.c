@@ -3044,8 +3044,16 @@ for (i = 1; i < argc; i++)
 
     /* -oP <name>: set pid file path for daemon */
 
-    else if (Ustrcmp(argrest, "P") == 0)
-      override_pid_file_path = argv[++i];
+    else if (*argrest == 'P')
+      {
+	if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid)
+	  exim_fail("exim: only uid=%d or uid=%d can use -oP and -oPX "
+                    "(uid=%d euid=%d | %d)\n",
+                    root_uid, exim_uid, getuid(), geteuid(), real_uid);
+	if (Ustrcmp(argrest, "P") == 0) override_pid_file_path = argv[++i];
+	else if (Ustrcmp(argrest, "PX") == 0) delete_pid_file();
+	else badarg = TRUE;
+      }
 
     /* -or <n>: set timeout for non-SMTP acceptance
        -os <n>: set timeout for SMTP acceptance */
