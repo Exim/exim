@@ -3207,6 +3207,10 @@ on the second character (the one after '-'), to save some effort. */
 	 -oPX:       delete pid file of daemon */
 
       case 'P':
+	if (!f.running_in_test_harness && real_uid != root_uid && real_uid != exim_uid)
+	  exim_fail("exim: only uid=%d or uid=%d can use -oP and -oPX "
+                    "(uid=%d euid=%d | %d)\n",
+                    root_uid, exim_uid, getuid(), geteuid(), real_uid);
 	if (!*argrest) override_pid_file_path = argv[++i];
 	else if (Ustrcmp(argrest, "X") == 0) delete_pid_file();
 	else badarg = TRUE;
