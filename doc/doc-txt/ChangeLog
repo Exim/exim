@@ -296,8 +296,11 @@ PP/11 Fix security issue in BDAT state confusion.
 
 HS/03 Die on "/../" in msglog file names
 
-QS/01 Creation of (database) files in $spool_dir: only uid=0 or the euid of
+QS/01 Creation of (database) files in $spool_dir: only uid=0 or the uid of
       the Exim runtime user are allowed to create files.
+
+QS/02 PID file creation/deletion: only possible if uid=0 or uid is the Exim
+      runtime user.
 
 
 Exim version 4.94
