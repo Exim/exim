@@ -201,7 +201,6 @@ for (int i = 0; i < NPOOLS; i++)
   yield_length[i] = -1;
   store_block_order[i] = 12; /* log2(allocation_size) ie. 4kB */
   }
-store_block_order[POOL_MAIN] = 13;
 }
 
 /******************************************************************************/
@@ -814,10 +813,7 @@ internal_store_malloc(int size, const char *func, int line)
 {
 void * yield;
 
-#ifndef COMPILE_UTILITY
-DEBUG(D_memory) size += sizeof(int);	/* space to store the size */
-#endif
-
+size += sizeof(int);	/* space to store the size, used under debug */
 if (size < 16) size = 16;
 
 if (!(yield = malloc((size_t)size)))
@@ -825,8 +821,9 @@ if (!(yield = malloc((size_t)size)))
     "called from line %d in %s", size, line, func);
 
 #ifndef COMPILE_UTILITY
-DEBUG(D_memory) { *(int *)yield = size; yield = US yield + sizeof(int); }
+DEBUG(D_any) *(int *)yield = size;
 #endif
+yield = US yield + sizeof(int);
 
 if ((nonpool_malloc += size) > max_nonpool_malloc)
   max_nonpool_malloc = nonpool_malloc;
@@ -873,9 +870,9 @@ Returns:      nothing
 static void
 internal_store_free(void * block, const char * func, int linenumber)
 {
-uschar * p = block;
+uschar * p = US block - sizeof(int);
 #ifndef COMPILE_UTILITY
-DEBUG(D_memory) { p -= sizeof(int); nonpool_malloc -= *(int *)p; }
+DEBUG(D_any) nonpool_malloc -= *(int *)p;
 DEBUG(D_memory) debug_printf("----Free %6p %5d bytes\t%-20s %4d\n", block, *(int *)p, func, linenumber);
 #endif
 free(p);
