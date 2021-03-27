@@ -851,7 +851,7 @@ if (rc < 0)
     return tls_error(US"Filename too long to generate replacement",
         filename, NULL, errstr);
 
-  temp_fn = string_copy(US"%s.XXXXXXX");
+  temp_fn = string_copy(US"exim-dh.XXXXXXX");
   if ((fd = mkstemp(CS temp_fn)) < 0)	/* modifies temp_fn */
     return tls_error_sys(US"Unable to open temp file", errno, NULL, errstr);
   (void)exim_chown(temp_fn, exim_uid, exim_gid);   /* Probably not necessary */

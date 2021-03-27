@@ -226,6 +226,10 @@ JH/46 Use an exponentially-increasing block size when malloc'ing store.  Do it
 JH/47 Use explicit alloc/free for DNS lookup workspace.  This permits using the
       same space repeatedly, and a smaller process footprint.
 
+JH/48 Use a less bogus-looking filename for a temporary used for DH-parameters
+      for GnuTLS.  Previously the name started "%s" which, while not a bug,
+      looked as if if might be one.
+
 
 
 
