@@ -29,6 +29,7 @@ use File::Basename;
 use Pod::Usage;
 use Getopt::Long;
 use FindBin qw'$RealBin';
+use File::Copy;
 
 use lib "$RealBin/lib";
 use Exim::Runtest;
@@ -1795,7 +1796,7 @@ if (-e $sf_current)
 if (-s $mf)
   {
     my $sf = /^u/i ? $sf_current : $sf_flavour;
-    tests_exit(-1, "Failed to cp $mf $sf") if system("cp '$mf' '$sf'") != 0;
+    copy($mf, $sf) or tests_exit(-1, "Failed to copy $mf $sf");
   }
 else
   {
@@ -2158,7 +2159,7 @@ if ($debug)
   $prcmd =~ s/; /;\n>> /;
   print ">> $prcmd\n";
   }
-system("$cmd");
+system($cmd);
 }
 
 
@@ -3744,37 +3745,18 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
 ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
 $dbm_build_deleted = 0;
-if (defined $parm_lookups{dbm} &&
-    system("cp $parm_exim_dir/exim_dbmbuild eximdir") != 0)
+if (defined $parm_lookups{dbm} && not copy("$parm_exim_dir/exim_dbmbuild", "eximdir"))
   {
   delete $parm_lookups{dbm};
   $dbm_build_deleted = 1;
   }
 
-if (system("cp $parm_exim_dir/exim_dumpdb eximdir") != 0)
-  {
-  tests_exit(-1, "Failed to make a copy of exim_dumpdb: $!");
-  }
-
-if (system("cp $parm_exim_dir/exim_lock eximdir") != 0)
-  {
-  tests_exit(-1, "Failed to make a copy of exim_lock: $!");
-  }
-
-if (system("cp $parm_exim_dir/exinext eximdir") != 0)
-  {
-  tests_exit(-1, "Failed to make a copy of exinext: $!");
-  }
-
-if (system("cp $parm_exim_dir/exigrep eximdir") != 0)
-  {
-  tests_exit(-1, "Failed to make a copy of exigrep: $!");
-  }
-
-if (system("cp $parm_exim_dir/eximstats eximdir") != 0)
-  {
-  tests_exit(-1, "Failed to make a copy of eximstats: $!");
-  }
+foreach my $tool (qw(exim_dumpdb exim_lock exinext exigrep eximstats)) {
+  copy("$parm_exim_dir/$tool" => "eximdir/")
+    or tests_exit(-1, "Failed to make a copy of $tool: $!");
+  chmod((stat "$parm_exim_dir/$tool")[2]&07777, "eximdir/$tool")
+    or tests_exit(-1, "Failed to chmod $tool: $!\n");
+}
 
 # Collect some version information
 print '-' x 78, "\n";
@@ -4213,15 +4195,15 @@ foreach $test (@test_list)
   # the test-mail directory for appendfile deliveries.
 
   system "sudo /bin/rm -rf spool test-*";
-  system "mkdir test-mail 2>/dev/null";
+  mkdir "test-mail";
 
   # A privileged Exim will normally make its own spool directory, but some of
   # the tests run in unprivileged modes that don't always work if the spool
   # directory isn't already there. What is more, we want anybody to be able
   # to read it in order to find the daemon's pid.
 
-  system "mkdir spool; " .
-         "sudo chown $parm_eximuser:$parm_eximgroup spool; " .
+  mkdir "spool";
+  system "sudo chown $parm_eximuser:$parm_eximgroup spool; " .
          "sudo chmod 0755 spool";
 
   # Empty the cache that keeps track of things like message id mappings, and
@@ -4456,7 +4438,7 @@ foreach $test (@test_list)
         {
         if (($? & 0xff) == 0)
           { printf("Server return code %d for test %d starting line %d", $?/256,
-	       	$testno, $subtest_startline); }
+                $testno, $subtest_startline); }
         elsif (($? & 0xff00) == 0)
           { printf("Server killed by signal %d", $? & 255); }
         else
