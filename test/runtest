@@ -4149,6 +4149,7 @@ if (not $force_continue) {
 }
 
 
+my $failures = 0;
 foreach $test (@test_list)
   {
   state $lasttestdir = '';
@@ -4382,10 +4383,12 @@ foreach $test (@test_list)
         print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
         $_ = $force_continue ? "c" : <T>;
         tests_exit(1) if /^q?$/i;
-	if (/^c$/ && $force_continue) {
-	  log_failure($log_failed_filename, $testno, "exit code unexpected");
-	  log_test($log_summary_filename, $testno, 'F')
-	}
+        if (/^c$/ && $force_continue)
+          {
+          log_failure($log_failed_filename, $testno, "exit code unexpected");
+          log_test($log_summary_filename, $testno, 'F');
+          $failures++;
+          }
         if ($force_continue)
           {
           print "\nstdout tail:\n";
@@ -4449,10 +4452,12 @@ foreach $test (@test_list)
           print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
           $_ = $force_continue ? "c" : <T>;
           tests_exit(1) if /^q?$/i;
-	  if (/^c$/ && $force_continue) {
-	    log_failure($log_failed_filename, $testno, "exit code unexpected");
-	    log_test($log_summary_filename, $testno, 'F')
-	  }
+          if (/^c$/ && $force_continue)
+            {
+            log_failure($log_failed_filename, $testno, "exit code unexpected");
+            log_test($log_summary_filename, $testno, 'F');
+            $failures++;
+            }
           print "... continue forced\n" if $force_continue;
           last if /^[rc]$/i;
 
@@ -4487,7 +4492,14 @@ foreach $test (@test_list)
     {
     sleep 1 if $slow;
     my $rc = check_output($TEST_STATE->{munge});
-    log_test($log_summary_filename, $testno, 'P') if ($rc == 0);
+    if ($rc == 0)
+      {
+      log_test($log_summary_filename, $testno, 'P');
+      }
+    else
+      {
+      $failures++;
+      }
     if ($rc < 2)
       {
       print ("  Script completed\n");
@@ -4506,7 +4518,7 @@ foreach $test (@test_list)
 ##################################################
 
 tests_exit(-1, "No runnable tests selected") if not @test_list;
-tests_exit(0);
+tests_exit($failures);
 
 __END__
 
