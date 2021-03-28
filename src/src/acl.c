@@ -480,7 +480,7 @@ static control_def controls_list[] = {
   { US"no_delay_flush",          FALSE,
 	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
   },
-  
+
 [CONTROL_NO_ENFORCE_SYNC] =
   { US"no_enforce_sync",         FALSE,
 	  ACL_BIT_NOTSMTP | ACL_BIT_NOTSMTP_START
@@ -3598,20 +3598,22 @@ for (; cb; cb = cb->next)
     #endif
 
     case ACLC_QUEUE:
-    if (is_tainted(arg))
       {
-      *log_msgptr = string_sprintf("Tainted name '%s' for queue not permitted",
-				    arg);
-      return ERROR;
+      uschar *m;
+      if (m = is_tainted2(arg, 0, "Tainted name '%s' for queue not permitted", arg))
+        {
+        *log_msgptr = m;
+        return ERROR;
+        }
+      if (Ustrchr(arg, '/'))
+        {
+        *log_msgptr = string_sprintf(
+                "Directory separator not permitted in queue name: '%s'", arg);
+        return ERROR;
+        }
+      queue_name = string_copy_perm(arg, FALSE);
+      break;
       }
-    if (Ustrchr(arg, '/'))
-      {
-      *log_msgptr = string_sprintf(
-	      "Directory separator not permitted in queue name: '%s'", arg);
-      return ERROR;
-      }
-    queue_name = string_copy_perm(arg, FALSE);
-    break;
 
     case ACLC_RATELIMIT:
     rc = acl_ratelimit(arg, where, log_msgptr);
@@ -4007,10 +4009,8 @@ if (Ustrchr(ss, ' ') == NULL)
   else if (*ss == '/')
     {
     struct stat statbuf;
-    if (is_tainted(ss))
+    if (is_tainted2(ss, LOG_MAIN|LOG_PANIC, "Tainted ACL file name '%s'", ss))
       {
-      log_write(0, LOG_MAIN|LOG_PANIC,
-	"attempt to open tainted ACL file name \"%s\"", ss);
       /* Avoid leaking info to an attacker */
       *log_msgptr = US"internal configuration error";
       return ERROR;
