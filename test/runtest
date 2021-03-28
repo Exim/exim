@@ -2942,6 +2942,7 @@ GetOptions(
     'valgrind' => \$valgrind,
     'range=s{2}'       => \my @range_wanted,
     'test=i@'          => \my @tests_wanted,
+    'fail-any!'        => \my $fail_any,
     'flavor|flavour=s' => \$flavour,
     'help'             => sub { pod2usage(-exit => 0) },
     'man'              => sub {
@@ -4518,7 +4519,7 @@ foreach $test (@test_list)
 ##################################################
 
 tests_exit(-1, "No runnable tests selected") if not @test_list;
-tests_exit($failures);
+tests_exit($fail_any ? $failures : 0);
 
 __END__
 
