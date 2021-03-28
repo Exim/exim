@@ -282,7 +282,9 @@ these functions are mostly called for small amounts of store. */
 
 if (size > yield_length[pool])
   {
-  int length = MAX(STORE_BLOCK_SIZE(store_block_order[pool]), size);
+  int length = MAX(
+	  STORE_BLOCK_SIZE(store_block_order[pool]) - ALIGNED_SIZEOF_STOREBLOCK,
+	  size);
   int mlength = length + ALIGNED_SIZEOF_STOREBLOCK;
   storeblock * newblock;
 
@@ -545,15 +547,10 @@ if (  yield_length[pool] < STOREPOOL_MIN_SIZE
 bb = b->next;
 b->next = NULL;
 
-/* If there will be only one block left in the pool, drop one
-most-recent allocation size increase, ensuring it does not increase
-forever. */
-
-if (!bb && store_block_order[pool] > 12) store_block_order[pool]--;
-
 while ((b = bb))
   {
   int siz = b->length + ALIGNED_SIZEOF_STOREBLOCK;
+
 #ifndef COMPILE_UTILITY
   if (debug_store)
     assert_no_variables(b, b->length + ALIGNED_SIZEOF_STOREBLOCK,
@@ -564,6 +561,10 @@ while ((b = bb))
   pool_malloc -= siz;
   nblocks[pool]--;
   internal_store_free(b, func, linenumber);
+
+#ifndef RESTRICTED_MEMORY
+  if (store_block_order[pool] > 13) store_block_order[pool]--;
+#endif
   }
 
 /* Cut out the debugging stuff for utilities, but stop picky compilers from
@@ -739,7 +740,7 @@ for (storeblock * b = chainbase[pool]; b; b = b->next)
       memset(bb, 0xF0, bb->length+ALIGNED_SIZEOF_STOREBLOCK);
 #endif  /* COMPILE_UTILITY */
 
-    free(bb);
+    internal_store_free(bb, func, linenumber);
     return;
     }
   }
@@ -898,7 +899,7 @@ DEBUG(D_memory)
  debug_printf("----Exit npools  max: %3d kB\n", max_pool_malloc/1024);
  for (int i = 0; i < NPOOLS; i++)
   debug_printf("----Exit  pool %d max: %3d kB in %d blocks at order %u\t%s %s\n",
-    i, maxbytes[i]/1024, maxblocks[i], maxorder[i],
+    i, (maxbytes[i]+1023)/1024, maxblocks[i], maxorder[i],
     poolclass[i], pooluse[i]);
  }
 #endif
