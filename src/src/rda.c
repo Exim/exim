@@ -179,10 +179,8 @@ struct stat statbuf;
 /* Reading a file is a form of expansion; we wish to deny attackers the
 capability to specify the file name. */
 
-if (is_tainted(filename))
+if (*error = is_tainted2(filename, 0, "Tainted name '%s' for file read not permitted\n", filename))
   {
-  *error = string_sprintf("Tainted name '%s' for file read not permitted\n",
-			filename);
   *yield = FF_ERROR;
   return NULL;
   }
