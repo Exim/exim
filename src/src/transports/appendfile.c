@@ -1286,12 +1286,14 @@ if (!(path = expand_string(fdname)))
     expand_string_message);
   goto ret_panic;
   }
-if (is_tainted(path))
+{ uschar *m;
+if (m = is_tainted2(path, 0, "Tainted '%s' (file or directory "
+          "name for %s transport) not permitted", path, tblock->name))
   {
-  addr->message = string_sprintf("Tainted '%s' (file or directory "
-    "name for %s transport) not permitted", path, tblock->name);
+  addr->message = m;
   goto ret_panic;
   }
+}
 
 if (path[0] != '/')
   {
