@@ -1415,12 +1415,8 @@ for (;;)
       return FF_ERROR;
       }
 
-    if (is_tainted(filename))
-      {
-      *error = string_sprintf("Tainted name '%s' for included file  not permitted\n",
-       filename);
+    if (*error = is_tainted2(filename, 0, "Tainted name '%s' for included file not permitted\n", filename))
       return FF_ERROR;
-      }
 
     /* Check file name if required */
 
