@@ -1134,12 +1134,7 @@ while (s < end)
             {
             if (ss >= end) ss--;
             *t++ = '(';
-            if (ss < s)
-              {
-              /* Someone has ended the string with "<punct>(". */
-              ss = s;
-              }
-            else
+            if (ss > s)
               {
               Ustrncpy(t, s, ss-s);
               t += ss-s;
