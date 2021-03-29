@@ -3881,7 +3881,6 @@ during readconf_main() some expansion takes place already. */
 
 /* Store the initial cwd before we change directories.  Can be NULL if the
 dir has already been unlinked. */
-errno = 0;
 initial_cwd = os_getcwd(NULL, 0);
 if (!initial_cwd && errno)
   exim_fail("exim: getting initial cwd failed: %s\n", strerror(errno));
@@ -4175,11 +4174,9 @@ if (  (debug_selector & D_any  ||  LOGGING(arguments))
     p += 13;
   else
     {
-    Ustrncpy(p + 4, initial_cwd, big_buffer_size-5);
-    p += 4 + Ustrlen(initial_cwd);
-    /* in case p is near the end and we don't provide enough space for
-     * string_format to be willing to write. */
-    *p = '\0';
+    p += 4;
+    snprintf(CS p, big_buffer_size - (p - big_buffer), "%s", CCS initial_cwd);
+    p += Ustrlen(CCS p);
     }
 
   (void)string_format(p, big_buffer_size - (p - big_buffer), " %d args:", argc);
