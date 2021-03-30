@@ -425,7 +425,7 @@ if (ob->socks_proxy)
   {
   int sock = socks_sock_connect(sc->host, sc->host_af, port, sc->interface,
 				sc->tblock, ob->connect_timeout);
-
+  
   if (sock >= 0)
     {
     if (early_data && early_data->data && early_data->len)
@@ -710,6 +710,7 @@ for (;;)
 /* Get here if there has been some kind of recv() error; errno is set, but we
 ensure that the result buffer is empty before returning. */
 
+inblock->ptr = inblock->ptrend = inblock->buffer;
 *buffer = 0;
 return -1;
 }
