@@ -5550,10 +5550,11 @@ FILE * fp = NULL;
 if (!s || !*s)
   log_write(0, LOG_MAIN|LOG_PANIC,
     "Failed to expand %s: '%s'\n", varname, filename);
-else if (*s != '/' || is_tainted(s))
-  log_write(0, LOG_MAIN|LOG_PANIC,
-    "%s is not %s after expansion: '%s'\n",
-    varname, *s == '/' ? "untainted" : "absolute", s);
+else if (*s != '/')
+  log_write(0, LOG_MAIN|LOG_PANIC, "%s is not absolute after expansion: '%s'\n",
+    varname, s);
+else if (is_tainted2(s, LOG_MAIN|LOG_PANIC, "Tainted %s after expansion: '%s'\n", varname, s))
+  ;
 else if (!(fp = Ufopen(s, "rb")))
   log_write(0, LOG_MAIN|LOG_PANIC, "Failed to open %s for %s "
     "message texts: %s", s, reason, strerror(errno));
@@ -6160,12 +6161,13 @@ else if (system_filter && process_recipients != RECIP_FAIL_TIMEOUT)
           {
           uschar *tmp = expand_string(tpname);
           address_file = address_pipe = NULL;
+          uschar *m;
           if (!tmp)
             p->message = string_sprintf("failed to expand \"%s\" as a "
               "system filter transport name", tpname);
-	  if (is_tainted(tmp))
-            p->message = string_sprintf("attempt to used tainted value '%s' for"
-	      "transport '%s' as a system filter", tmp, tpname);
+	  if (is_tainted2(tmp, 0, m = string_sprintf("Tainted values '%s' "
+              "for transport '%s' as a system filter", tmp, tpname)))
+            p->message = m;
           tpname = tmp;
           }
         else
