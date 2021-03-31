@@ -29,7 +29,7 @@ use File::Basename;
 use Pod::Usage;
 use Getopt::Long;
 use FindBin qw'$RealBin';
-use File::Copy;
+use File::Copy qw(cp);
 
 use lib "$RealBin/lib";
 use Exim::Runtest;
@@ -3746,17 +3746,15 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
 ($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
 $dbm_build_deleted = 0;
-if (defined $parm_lookups{dbm} && not copy("$parm_exim_dir/exim_dbmbuild", "eximdir"))
+if (defined $parm_lookups{dbm} && not cp("$parm_exim_dir/exim_dbmbuild", "eximdir/exim_dbmbuild"))
   {
   delete $parm_lookups{dbm};
   $dbm_build_deleted = 1;
   }
 
 foreach my $tool (qw(exim_dumpdb exim_lock exinext exigrep eximstats)) {
-  copy("$parm_exim_dir/$tool" => "eximdir/")
+  cp("$parm_exim_dir/$tool" => "eximdir/$tool")
     or tests_exit(-1, "Failed to make a copy of $tool: $!");
-  chmod((stat "$parm_exim_dir/$tool")[2]&07777, "eximdir/$tool")
-    or tests_exit(-1, "Failed to chmod $tool: $!\n");
 }
 
 # Collect some version information
