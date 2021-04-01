@@ -53,11 +53,8 @@ if (!(expint = expand_string(istring)))
   return FALSE;
   }
 
-if (is_tainted(expint))
+if (is_tainted2(expint, LOG_MAIN|LOG_PANIC, "Tainted value '%s' from '%s' for interface", expint, istring))
   {
-  log_write(0, LOG_MAIN|LOG_PANIC,
-    "attempt to use tainted value '%s' from '%s' for interface",
-    expint, istring);
   addr->transport_return = PANIC;
   addr->message = string_sprintf("failed to expand \"interface\" "
       "option for %s: configuration error", msg);
@@ -425,7 +422,7 @@ if (ob->socks_proxy)
   {
   int sock = socks_sock_connect(sc->host, sc->host_af, port, sc->interface,
 				sc->tblock, ob->connect_timeout);
-  
+
   if (sock >= 0)
     {
     if (early_data && early_data->data && early_data->len)
