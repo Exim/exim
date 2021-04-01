@@ -29,11 +29,10 @@ use File::Basename;
 use Pod::Usage;
 use Getopt::Long;
 use FindBin qw'$RealBin';
-use File::Copy qw(cp);
 
 use lib "$RealBin/lib";
 use Exim::Runtest;
-use Exim::Utils qw(uniq numerically);
+use Exim::Utils qw(uniq numerically cp);
 
 use if $ENV{DEBUG} && scalar($ENV{DEBUG} =~ /\bruntest\b/) => 'Smart::Comments' => '####';
 use if $ENV{DEBUG} && scalar($ENV{DEBUG} =~ /\bruntest\b/) => 'Data::Dumper';
