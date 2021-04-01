@@ -77,6 +77,10 @@ extern int     sqlite_lock_timeout;    /* Internal lock waiting timeout */
 extern BOOL    move_frozen_messages;   /* Get them out of the normal directory */
 #endif
 
+#ifdef ALLOW_INSECURE_TAINTED_DATA
+extern BOOL    allow_insecure_tainted_data;
+#endif
+
 /* These variables are outside the #ifdef because it keeps the code less
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */

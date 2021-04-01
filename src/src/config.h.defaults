@@ -17,6 +17,8 @@ Do not put spaces between # and the 'define'.
 #define ALT_CONFIG_PREFIX
 #define TRUSTED_CONFIG_LIST
 
+#define ALLOW_INSECURE_TAINTED_DATA
+
 #define APPENDFILE_MODE            0600
 #define APPENDFILE_DIRECTORY_MODE  0700
 #define APPENDFILE_LOCKFILE_MODE   0600
