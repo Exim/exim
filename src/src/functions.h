@@ -1125,20 +1125,50 @@ if (f.running_in_test_harness && f.testsuite_delays) millisleep(millisec);
 
 /******************************************************************************/
 /* Taint-checked file opens */
+static inline uschar *
+is_tainted2(const void *p, int lflags, const uschar* fmt, ...)
+{
+va_list ap;
+uschar *msg;
+rmark mark;
+
+if (!is_tainted(p))
+  return NULL;
+
+mark = store_mark();
+va_start(ap, fmt);
+msg = string_from_gstring(string_vformat(NULL, SVFMT_TAINT_NOCHK|SVFMT_EXTEND, fmt, ap));
+va_end(ap);
+
+#ifdef ALLOW_INSECURE_TAINTED_DATA
+if (allow_insecure_tainted_data)
+  {
+  if LOGGING(tainted) log_write(0, LOG_MAIN, "Warning: %s", msg);
+  store_reset(mark);
+  return NULL;
+  }
+#endif
+
+if (lflags) log_write(0, lflags, "%s", msg);
+return msg; /* no store_reset(), as the message might be used afterwards and Exim
+            is expected to exit anyway, so we do not care about the leaked
+            storage */
+}
 
 static inline int
 exim_open2(const char *pathname, int flags)
 {
-if (!is_tainted(pathname)) return open(pathname, flags);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
+if (!is_tainted2(pathname, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname))
+  return open(pathname, flags);
 errno = EACCES;
 return -1;
 }
+
 static inline int
 exim_open(const char *pathname, int flags, mode_t mode)
 {
-if (!is_tainted(pathname)) return open(pathname, flags, mode);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
+if (!is_tainted2(pathname, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname))
+  return open(pathname, flags, mode);
 errno = EACCES;
 return -1;
 }
@@ -1146,16 +1176,16 @@ return -1;
 static inline int
 exim_openat(int dirfd, const char *pathname, int flags)
 {
-if (!is_tainted(pathname)) return openat(dirfd, pathname, flags);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
+if (!is_tainted2(pathname, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname))
+  return openat(dirfd, pathname, flags);
 errno = EACCES;
 return -1;
 }
 static inline int
 exim_openat4(int dirfd, const char *pathname, int flags, mode_t mode)
 {
-if (!is_tainted(pathname)) return openat(dirfd, pathname, flags, mode);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
+if (!is_tainted2(pathname, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname))
+  return openat(dirfd, pathname, flags, mode);
 errno = EACCES;
 return -1;
 }
@@ -1164,8 +1194,8 @@ return -1;
 static inline FILE *
 exim_fopen(const char *pathname, const char *mode)
 {
-if (!is_tainted(pathname)) return fopen(pathname, mode);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname);
+if (!is_tainted2(pathname, LOG_MAIN|LOG_PANIC, "Tainted filename '%s'", pathname))
+  return fopen(pathname, mode);
 errno = EACCES;
 return NULL;
 }
@@ -1173,8 +1203,8 @@ return NULL;
 static inline DIR *
 exim_opendir(const uschar * name)
 {
-if (!is_tainted(name)) return opendir(CCS name);
-log_write(0, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", name);
+if (!is_tainted2(name, LOG_MAIN|LOG_PANIC, "Tainted dirname '%s'", name))
+  return opendir(CCS name);
 errno = EACCES;
 return NULL;
 }
