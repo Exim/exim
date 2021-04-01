@@ -44,8 +44,8 @@ uschar c = 1;
 struct stat statbuf;
 uschar * path;
 
-if (is_tainted(name)) 
-  { p = US"create"; path = US name; errno = ERRNO_TAINT; goto bad; }
+if (is_tainted2(name, LOG_MAIN|LOG_PANIC, "Tainted path '%s' for new directory", name))
+  { p = US"create"; path = US name; errno = EACCES; goto bad; }
 
 if (parent)
   {
