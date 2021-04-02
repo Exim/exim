@@ -5489,8 +5489,8 @@ local_interfaces = 127.0.0.1 : ::::1
 contains two IP addresses, the IPv4 address 127.0.0.1 and the IPv6 address ::1.
 
 &*Note*&: Although leading and trailing white space is ignored in individual
-list items, it is not ignored when parsing the list. The space after the first
-colon in the example above is necessary. If it were not there, the list would
+list items, it is not ignored when parsing the list. The spaces around the first
+colon in the example above are necessary. If they were not there, the list would
 be interpreted as the two items 127.0.0.1:: and 1.
 
 .section "Changing list separators" "SECTlistsepchange"
