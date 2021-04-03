@@ -3368,11 +3368,15 @@ for (int fd_bits = 3; fd_bits; )
       goto done;
       }
 
+    /* For errors where not readable, bomb out */
+
     if (FD_ISSET(tls_out.active.sock, &efds) || FD_ISSET(pfd[0], &efds))
       {
       DEBUG(D_transport) debug_printf("select: exceptional cond on %s fd\n",
 	FD_ISSET(pfd[0], &efds) ? "proxy" : "tls");
-      goto done;
+      if (!(FD_ISSET(tls_out.active.sock, &rfds) || FD_ISSET(pfd[0], &rfds)))
+	goto done;
+      DEBUG(D_transport) debug_printf("- but also readable; no exit yet\n");
       }
     }
   while (rc < 0 || !(FD_ISSET(tls_out.active.sock, &rfds) || FD_ISSET(pfd[0], &rfds)));
