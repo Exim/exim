@@ -229,6 +229,14 @@
   <see><emphasis>bounce message</emphasis></see>
 </indexterm>
 <indexterm role="concept">
+  <primary>de-tainting</primary>
+  <see><emphasis>tainting, de-tainting</emphasis></see>
+</indexterm>
+<indexterm role="concept">
+  <primary>detainting</primary>
+  <see><emphasis>tainting, de-tainting</emphasis></see>
+</indexterm>
+<indexterm role="concept">
   <primary>dialup</primary>
   <see><emphasis>intermittently connected hosts</emphasis></see>
 </indexterm>
@@ -9474,7 +9482,22 @@ reasons,
 .cindex "tainted data" expansion
 .cindex expansion "tainted data"
 and expansion of data deriving from the sender (&"tainted data"&)
-is not permitted.
+.new
+is not permitted (including acessing a file using a tainted name).
+The main config option &%allow_insecure_tainted_data%& can be used as
+mitigation during uprades to more secure configurations.
+.wen
+
+.new
+Common ways of obtaining untainted equivalents of variables with
+tainted values
+.cindex "tainted data" "de-tainting"
+come down to using the tainted value as a lookup key in a trusted database.
+This database could be the filesystem structure,
+or the password file,
+or accessed via a DBMS.
+Specific methods are indexed under &"de-tainting"&.
+.wen
 
 
 
@@ -14410,6 +14433,8 @@ listed in more than one group.
 
 .section "Miscellaneous" "SECID96"
 .table2
+.row &%add_environment%&             "environment variables"
+.row &%allow_insecure_tainted_data%& "turn taint errors into warnings"
 .row &%bi_command%&                  "to run for &%-bi%& command line option"
 .row &%debug_store%&                 "do extra internal checks"
 .row &%disable_ipv6%&                "do no IPv6 processing"
@@ -15016,6 +15041,18 @@ addressed to your hosts by IP address, you need to set
 domains (defined in the named domain list &%local_domains%& in the default
 configuration). This &"magic string"& matches the domain literal form of all
 the local host's IP addresses.
+
+.new
+.option allow_insecure_tainted_data main boolean false
+.cindex "de-tainting"
+.oindex "allow_insecure_tainted_data"
+The handling of tainted data may break older (pre 4.94) configurations.
+Setting this option to "true" turns taint errors (which result in a temporary
+message rejection) into warnings. This option is meant as mitigation only
+and deprecated already today. Future releases of Exim may ignore it.
+The &%taint%& log selector can be used to suppress even the warnings.
+.wen
+
 
 
 .option allow_mx_to_ip main boolean false
@@ -38159,6 +38196,7 @@ selection marked by asterisks:
 &` smtp_protocol_error        `&  SMTP protocol errors
 &` smtp_syntax_error          `&  SMTP syntax errors
 &` subject                    `&  contents of &'Subject:'& on <= lines
+&`*taint                      `&  taint errors or warnings
 &`*tls_certificate_verified   `&  certificate verification status
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
@@ -38551,6 +38589,11 @@ verified
 using a CA trust anchor,
 &`CA=dane`& if using a DNS trust anchor,
 and &`CV=no`& if not.
+.next
+.cindex "log" "Taint warnings"
+&%taint%&: Log warnings about tainted data. This selector can't be
+turned of if &%allow_insecure_tainted_data%& is false (which is the
+default).
 .next
 .cindex "log" "TLS cipher"
 .cindex "TLS" "logging cipher"
