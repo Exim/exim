@@ -29,6 +29,7 @@ use File::Basename;
 use Pod::Usage;
 use Getopt::Long;
 use FindBin qw'$RealBin';
+use File::Copy;
 
 use lib "$RealBin/lib";
 use Exim::Runtest;
