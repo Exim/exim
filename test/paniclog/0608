@@ -3,6 +3,6 @@
 
 2017-07-30 18:51:05.712 10HmaZ-0005vi-00 Failed to expand bounce_message_file: '$acl_m_unset'
 
-2017-07-30 18:51:05.712 10HmbA-0005vi-00 bounce_message_file is not untainted after expansion: 'TESTSUITE/aux-fixed/0608.CALLER@myhost.test.ex'
+2017-07-30 18:51:05.712 10HmbA-0005vi-00 Tainted bounce_message_file after expansion: 'TESTSUITE/aux-fixed/0608.CALLER@myhost.test.ex'
 
 2017-07-30 18:51:05.712 10HmbB-0005vi-00 Failed to open TESTSUITE/aux-fixed/0608.nonexist.tmpl for warning message texts: No such file or directory
