@@ -1,0 +1,2 @@
+# this is the default
+allow_insecure_tainted_data = ALLOW_TAINTED
