@@ -56,4 +56,9 @@ in "man 2 getgroups". */
 rather than a modified sendto() */
 #define EXIM_TFO_CONNECTX
 
+/* MacOS, at least on the buildfarm animal, does not seem to push out
+the SMTP response to QUIT with our usual handling which is trying to get
+the client to FIN first so that the server does not get the TIME_WAIT */
+#define SERVERSIDE_CLOSE_NOWAIT
+
 /* End */

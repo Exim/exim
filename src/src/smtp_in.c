@@ -3847,9 +3847,18 @@ if (*user_msgp)
 else
   smtp_printf("221 %s closing connection\r\n", FALSE, smtp_active_hostname);
 
-#ifndef DISABLE_TLS
+#ifdef SERVERSIDE_CLOSE_NOWAIT
+# ifndef DISABLE_TLS
+tls_close(NULL, TLS_SHUTDOWN_NOWAIT);
+# endif
+
+log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
+  smtp_get_connection_info());
+#else
+
+# ifndef DISABLE_TLS
 tls_close(NULL, TLS_SHUTDOWN_WAIT);
-#endif
+# endif
 
 log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
   smtp_get_connection_info());
@@ -3866,6 +3875,7 @@ The socket should become readble (though with no data) */
   FD_SET(fd, &fds);
   (void) select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &t_limit);
   }
+#endif	/*!DAEMON_CLOSE_NOWAIT*/
 }
 
 
