@@ -14556,9 +14556,11 @@ listed in more than one group.
 
 .section "Miscellaneous" "SECID96"
 .table2
+.row &%add_environment%&             "environment variables"
 .row &%bi_command%&                  "to run for &%-bi%& command line option"
 .row &%debug_store%&                 "do extra internal checks"
 .row &%disable_ipv6%&                "do no IPv6 processing"
+.row &%keep_environment%&            "environment variables"
 .row &%keep_malformed%&              "for broken files &-- should not happen"
 .row &%localhost_number%&            "for unique message ids in clusters"
 .row &%message_body_newlines%&       "retain newlines in &$message_body$&"
