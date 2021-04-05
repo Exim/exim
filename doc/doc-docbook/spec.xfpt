@@ -11174,6 +11174,10 @@ If the optional type is given it must be one of "a", "d", "h" or "l"
 and selects address-, domain-, host- or localpart- lists to search among respectively.
 Otherwise all types are searched in an undefined order and the first
 matching list is returned.
+.new
+&*Note*&: Neither string-expansion of lists referenced by named-list syntax elements,
+nor expansion of lookup elements, is done by the &%listnamed%& operator.
+.wen
 
 
 .vitem &*${local_part:*&<&'string'&>&*}*&
