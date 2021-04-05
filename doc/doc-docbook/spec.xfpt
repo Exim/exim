@@ -41119,6 +41119,15 @@ option along with &%$dkim_domain%&.
 If the option is empty after expansion, DKIM signing is not done for this domain,
 and no error will result even if &%dkim_strict%& is set.
 
+.new
+To do, for example, dual-signing with RSA and EC keys
+this could be be used:
+.code
+dkim_selector = ec_sel : rsa_sel
+dkim_private_key = KEYS_DIR/$dkim_selector
+.endd
+.wen
+
 .option dkim_private_key smtp string&!! unset
 This sets the private key to use.
 You can use the &%$dkim_domain%& and
