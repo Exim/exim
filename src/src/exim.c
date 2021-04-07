@@ -2793,6 +2793,26 @@ on the second character (the one after '-'), to save some effort. */
 
 	case 'P': smtp_peer_options |= OPTION_PIPE; break;
 
+#ifdef SUPPORT_SOCKS
+    /* -MCp: Socks proxy in use; nearside IP, port, external IP, port */
+	case 'p': proxy_session = TRUE;
+		  if (++i < argc)
+		    {
+		    proxy_local_address = string_copy_taint(argv[i], TRUE);
+		    if (++i < argc)
+		      {
+		      proxy_local_port = Uatoi(argv[i]);
+		      if (++i < argc)
+			{
+			proxy_external_address = string_copy_taint(argv[i], TRUE);
+			if (++i < argc)
+			  {
+			  proxy_external_port = Uatoi(argv[i]);
+			  break;
+		    } } } }
+		  badarg = TRUE;
+		  break;
+#endif
     /* -MCQ: pass on the pid of the queue-running process that started
     this chain of deliveries and the fd of its synchronizing pipe; this
     is useful only when it precedes -MC (see above) */

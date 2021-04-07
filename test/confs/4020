@@ -5,6 +5,7 @@ OPT =
 .include DIR/aux-var/std_conf_prefix
 
 primary_hostname = myhost.test.ex
+queue_run_in_order
 
 # ----- Main settings -----
 
@@ -13,6 +14,13 @@ log_selector = +proxy +outgoing_port
 domainlist local_domains = test.ex : *.test.ex
 acl_smtp_rcpt = accept
 
+
+# ----- ACL -----
+
+begin acl
+
+logger:
+  accept	logwrite = pla $proxy_local_address plp $proxy_local_port pea $proxy_external_address pep $proxy_external_port
 
 # ----- Routers -----
 
@@ -35,9 +43,10 @@ my_smtp:
   driver =		smtp
   interface =		HOSTIPV4
   port =		PORT_S
-  hide socks_proxy =	127.0.0.1 port=PORT_D OPT
+  hide socks_proxy =	HOSTIPV4 port=PORT_D OPT
   hosts_try_fastopen =	${if eq {$local_part}{user_tfo} {*}}
   debug_print =		transport_name <$transport_name>
+  event_action =	${if eq {smtp:connect}{$event_name} {${acl {logger}}} {}}
 
 
 # End

@@ -1,6 +1,8 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
-1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1]:PORT_S PRX=[127.0.0.1]:PORT_D C="250 accepted OK"
+1999-03-02 09:44:33 10HmaX-0005vi-00 pla ip4.ip4.ip4.ip4 plp 1225 pea 127.0.0.1 pep 48879
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1]:PORT_S PRX=[ip4.ip4.ip4.ip4]:PORT_D C="250 accepted OK"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
-1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1]:PORT_S PRX=[127.0.0.1]:PORT_D C="250 accepted OK"
+1999-03-02 09:44:33 10HmaY-0005vi-00 pla ip4.ip4.ip4.ip4 plp 1225 pea 127.0.0.1 pep 48879
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=my_main_router T=my_smtp H=127.0.0.1 [127.0.0.1]:PORT_S PRX=[ip4.ip4.ip4.ip4]:PORT_D C="250 accepted OK"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

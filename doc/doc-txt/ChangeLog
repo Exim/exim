@@ -230,6 +230,11 @@ JH/48 Use a less bogus-looking filename for a temporary used for DH-parameters
       for GnuTLS.  Previously the name started "%s" which, while not a bug,
       looked as if if might be one.
 
+JH/49 Bug 2710: when using SOCKS for additional messages after the first (a
+      "continued connection") make the $proxy_* variables available.  Previously
+      the information was not passed across the exec() call for subsequent
+      transport executions.  This also mean that the log lines for the
+      messages can show the proxy information.
 
 
 

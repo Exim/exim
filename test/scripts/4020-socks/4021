@@ -1,0 +1,68 @@
+# socks5 proxy on smtp transport, continued-connection
+#
+munge loopback
+#
+exim -odq -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be queued
+
+Queued body
+.
+quit
+****
+exim -odq -bs -DOPT=
+ehlo test.ex
+mail from:<>
+rcpt to:<usery@test.ex>
+data
+Date: Fri, 17 Dec 2004 14:35:01 +0100
+Subject: message should be queud
+
+via null-auth proxy
+.
+quit
+****
+#
+#
+#
+# auth: null
+server PORT_D
+<<\x05\x01\x00
+>>\x05\x00
+<<\x05\x01\x00\x01\x7f\x00\x00\x01\x04\xc8
+>>\x05\x00\x00\x01\x7f\x00\x00\x01\xbe\xef
+220 Connected OK
+EHLO
+250-server id
+250
+MAIL FROM
+250 mail cmd ok
+RCPT TO
+250 rcpt cmd ok
+DATA
+354 hit me
+.
+250 message accepted OK
+MAIL FROM
+250 second mail cmd ok
+RCPT TO
+250 second rcpt cmd ok
+DATA
+354 hit me one more time
+.
+250 second message accepted OK
+QUIT
+220 bye
+****
+#
+#
+#
+exim -DOPT= -qq
+****
+#
+#
+# Ends
