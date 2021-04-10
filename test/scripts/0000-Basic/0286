@@ -24,13 +24,13 @@ RCPT TO:
 DATA
 354 Send data
 .
-250 OK
+250 OK message 1
 MAIL FROM:
 250 Sender OK
 RCPT TO:
 550 Recipient not OK
 QUIT
-250 OK
+252 OK
 *eof
 220 ESMTP
 EHLO
@@ -45,7 +45,7 @@ RCPT TO:
 DATA
 354 Send data
 .
-250 OK
+250 OK message 2
 MAIL FROM:
 250 Sender OK
 RCPT TO:
@@ -53,9 +53,9 @@ RCPT TO:
 DATA
 354 Send data
 .
-250 OK
+250 OK message 3
 QUIT
-250 OK
+252 OK
 ****
 exim -q
 ****
@@ -86,9 +86,9 @@ RCPT TO:
 DATA
 354 Send data
 .
-250 OK
+250 OK message 4
 QUIT
-250 OK
+252 OK
 *eof
 220 ESMTP
 EHLO
@@ -111,7 +111,7 @@ RCPT TO:
 DATA
 354 Send data
 .
-250 OK
+250 OK message 5
 QUIT
 250 OK
 ****

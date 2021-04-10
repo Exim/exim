@@ -1827,15 +1827,13 @@ return OK;
 
 
 
-
-
 /*************************************************
 *       Make connection for given message        *
 *************************************************/
 
 /*
 Arguments:
-  ctx		  connection context
+  sx		  connection context
   suppress_tls    if TRUE, don't attempt a TLS connection - this is set for
                     a second attempt after TLS initialization fails
 
@@ -2026,6 +2024,11 @@ if (!continue_hostname)
   {
   if (sx->verify)
     HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", sx->conn_args.interface, sx->port);
+
+  /* Arrange to report to calling process this is a new connection */
+
+  clearflag(sx->first_addr, af_cont_conn);
+  setflag(sx->first_addr, af_new_conn);
 
   /* Get the actual port the connection will use, into sx->conn_args.host */
 
@@ -3223,7 +3226,7 @@ that max_rcpt will be large, so all addresses will be done at once.
 For verify we flush the pipeline after any (the only) rcpt address. */
 
 for (addr = sx->first_addr, address_count = 0, pipe_limit = 100;
-     addr  &&  address_count < sx->max_rcpt;
+     addr &&  address_count < sx->max_rcpt;
      addr = addr->next) if (addr->transport_return == PENDING_DEFER)
   {
   int cmds_sent;
@@ -4385,7 +4388,9 @@ if (sx->completed_addr && sx->ok && sx->send_quit)
 
       if (sx->first_addr)		/* More addresses still to be sent */
         {				/*   for this message              */
-        continue_sequence++;		/* Causes * in logging */
+        continue_sequence++;			/* for consistency */
+        clearflag(sx->first_addr, af_new_conn);
+        setflag(sx->first_addr, af_cont_conn);	/* Causes * in logging */
 	pipelining_active = sx->pipelining_used;    /* was cleared at DATA */
         goto SEND_MESSAGE;
         }
@@ -4580,6 +4585,9 @@ if (sx->send_quit || tcw_done && !tcw)
   }
 HDEBUG(D_transport|D_acl|D_v) debug_printf_indent("  SMTP(close)>>\n");
 (void)close(sx->cctx.sock);
+sx->cctx.sock = -1;
+continue_transport = NULL;
+continue_hostname = NULL;
 
 #ifndef DISABLE_EVENT
 (void) event_raise(tblock->event_action, US"tcp:close", NULL);
@@ -4599,9 +4607,12 @@ if (dane_held)
 	to get the domain string for SNI */
 
 	sx->first_addr = a;
+	clearflag(a, af_cont_conn);
+	setflag(a, af_new_conn);		/* clear * from logging */
 	DEBUG(D_transport) debug_printf("DANE: go-around for %s\n", a->domain);
 	}
       }
+  continue_sequence = 1;			/* for consistency */
   goto DANE_DOMAINS;
   }
 #endif

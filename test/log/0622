@@ -1,10 +1,10 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for A@test.ex B@test.ex C@test.ex D@test.ex E@test.ex F@test.ex
 1999-03-02 09:44:33 10HmaX-0005vi-00 => a@test.ex <A@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaY-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => b@test.ex <B@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 => c@test.ex <C@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> d@test.ex <D@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmbA-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> e@test.ex <E@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaZ-0005vi-00"
-1999-03-02 09:44:33 10HmaX-0005vi-00 -> f@test.ex <F@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] L C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => b@test.ex <B@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => c@test.ex <C@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> d@test.ex <D@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK id=10HmbA-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> e@test.ex <E@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK id=10HmaZ-0005vi-00"
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> f@test.ex <F@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* L C="250 OK id=10HmaZ-0005vi-00"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss for A@test.ex B@test.ex C@test.ex D@test.ex E@test.ex F@test.ex
 1999-03-02 09:44:33 10HmbB-0005vi-00 => a@test.ex <A@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1] C="250 OK id=10HmbC-0005vi-00"

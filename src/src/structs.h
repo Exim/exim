@@ -626,6 +626,8 @@ typedef struct address_item {
     BOOL af_verify_routed:1;		/* for cached sender verify: routed OK */
     BOOL af_verify_callout:1;		/* for cached sender verify: callout was specified */
     BOOL af_include_affixes:1;		/* delivered with affixes in RCPT */
+    BOOL af_new_conn:1;			/* delivered on an fresh TCP conn */
+    BOOL af_cont_conn:1;		/* delivered (with new MAIL cmd) on an existing TCP conn */
     BOOL af_cert_verified:1;		/* delivered with verified TLS cert */
     BOOL af_pass_message:1;		/* pass message in bounces */
     BOOL af_bad_reply:1;		/* filter could not generate autoreply */

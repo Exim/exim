@@ -1580,6 +1580,12 @@ if (addr->return_file >= 0 && addr->return_filename)
   (void)close(addr->return_file);
   }
 
+/* Check if the transport notifed continue-conn status explicitly, and
+update our knowlege. */
+
+if (testflag(addr, af_new_conn))       continue_sequence = 1;
+else if (testflag(addr, af_cont_conn)) continue_sequence++;
+
 /* The success case happens only after delivery by a transport. */
 
 if (result == OK)
@@ -3571,7 +3577,13 @@ while (!done)
 
       switch (*subid)
 	{
-  #ifdef SUPPORT_SOCKS
+	case 3:		/* explicit notification of continued-connection (non)use;
+			overrides caller's knowlege. */
+	  if (*ptr & BIT(1))      setflag(addr, af_new_conn);
+	  else if (*ptr & BIT(2)) setflag(addr, af_cont_conn);
+	  break;
+
+#ifdef SUPPORT_SOCKS
 	case '2':	/* proxy information; must arrive before A0 and applies to that addr XXX oops*/
 	  proxy_session = TRUE;	/*XXX should this be cleared somewhere? */
 	  if (*ptr == 0)
@@ -3584,9 +3596,9 @@ while (!done)
 	    ptr += sizeof(proxy_local_port);
 	    }
 	  break;
-  #endif
+#endif
 
-  #ifdef EXPERIMENTAL_DSN_INFO
+#ifdef EXPERIMENTAL_DSN_INFO
 	case '1':	/* must arrive before A0, and applies to that addr */
 			/* Two strings: smtp_greeting and helo_response */
 	  addr->smtp_greeting = string_copy(ptr);
@@ -3594,7 +3606,7 @@ while (!done)
 	  addr->helo_response = string_copy(ptr);
 	  while(*ptr++);
 	  break;
-  #endif
+#endif
 
 	case '0':
 	  DEBUG(D_deliver) debug_printf("A0 %s tret %d\n", addr->address, *ptr);
@@ -4884,6 +4896,14 @@ all pipes, so I do not see a reason to use non-blocking IO here
           }
         rmt_dlv_checked_write(fd, 'R', '0', big_buffer, ptr - big_buffer);
         }
+
+      if (testflag(addr, af_new_conn) || testflag(addr, af_cont_conn))
+	{
+	DEBUG(D_deliver) debug_printf("%scontinued-connection\n",
+	  testflag(addr, af_new_conn) ? "non-" : "");
+	big_buffer[0] = testflag(addr, af_new_conn) ? BIT(1) : BIT(2);
+        rmt_dlv_checked_write(fd, 'A', '3', big_buffer, 1);
+	}
 
 #ifdef SUPPORT_SOCKS
       if (LOGGING(proxy) && proxy_session)

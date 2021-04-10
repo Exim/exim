@@ -2247,12 +2247,12 @@ if (expand_arguments)
         }
 
       /* If we are not just able to replace the slot that contained
-       * $address_pipe (address_pipe_argcount == 1)
-       * We have to move the existing argv by address_pipe_argcount - 1
-       * Visually if address_pipe_argcount == 2:
-       * [argv 0][argv 1][argv 2($address_pipe)][argv 3][0]
-       * [argv 0][argv 1][ap_arg0][ap_arg1][old argv 3][0]
-       */
+      $address_pipe (address_pipe_argcount == 1)
+      We have to move the existing argv by address_pipe_argcount - 1
+      Visually if address_pipe_argcount == 2:
+      [argv 0][argv 1][argv 2($address_pipe)][argv 3][0]
+      [argv 0][argv 1][ap_arg0][ap_arg1][old argv 3][0] */
+
       if (address_pipe_argcount > 1)
         memmove(
           /* current position + additional args */
@@ -2264,15 +2264,12 @@ if (expand_arguments)
         );
 
       /* Now we fill in the slots we just moved argv out of
-       * [argv 0][argv 1][argv 2=pipeargv[0]][argv 3=pipeargv[1]][old argv 3][0]
-       */
+      [argv 0][argv 1][argv 2=pipeargv[0]][argv 3=pipeargv[1]][old argv 3][0] */
+
       for (int address_pipe_i = 0;
            address_pipe_argv[address_pipe_i] != US 0;
-           address_pipe_i++)
-        {
+           address_pipe_i++, argcount++)
         argv[i++] = address_pipe_argv[address_pipe_i];
-        argcount++;
-        }
 
       /* Subtract one since we replace $address_pipe */
       argcount--;
