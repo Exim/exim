@@ -156,6 +156,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <username@myhost.test.ex>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -184,6 +185,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -210,6 +212,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -236,6 +239,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1
@@ -262,6 +266,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -host_auth au1

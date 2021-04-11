@@ -196,6 +196,7 @@ uschar *queue_name             = US"";
 int     received_count         = 0;
 uschar *received_protocol      = NULL;
 struct timeval received_time   = { 0, 0 };
+struct timeval received_time_complete = { 0, 0 };
 int     recipients_count       = 0;
 recipient_item *recipients_list = NULL;
 int     recipients_list_max    = 0;

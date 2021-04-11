@@ -48,6 +48,9 @@ Version 4.95
 
 13. Option "smtp_accept_msx_per_connection" is now expanded.
 
+14. Log selector "queue_size_exclusive", enabled by default, to exclude the
+    time taken for reception from QT log elements.
+
 Version 4.94
 ------------
 

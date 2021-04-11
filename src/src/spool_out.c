@@ -162,6 +162,8 @@ fprintf(fp, "<%s>\n", sender_address);
 fprintf(fp, "%d %d\n", (int)received_time.tv_sec, warning_count);
 
 fprintf(fp, "-received_time_usec .%06d\n", (int)received_time.tv_usec);
+fprintf(fp, "-received_time_complete %d.%06d\n",
+  (int)received_time_complete.tv_sec, (int)received_time_complete.tv_usec);
 
 /* If there is information about a sending host, remember it. The HELO
 data can be set for local SMTP as well as remote. */

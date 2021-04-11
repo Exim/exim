@@ -236,6 +236,11 @@ JH/49 Bug 2710: when using SOCKS for additional messages after the first (a
       transport executions.  This also mean that the log lines for the
       messages can show the proxy information.
 
+JH/50 Bug 2672: QT elements in log lines, unless disabled, now exclude the 
+      receive time.  With modern systems the difference is significant.
+      The historical behaviour can be restored by disabling (a new) log_selector
+      "queue_time_exclusive".
+
 
 
 Exim version 4.94

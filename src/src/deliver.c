@@ -1269,8 +1269,8 @@ if (  LOGGING(smtp_confirmation)
 /* Time on queue and actual time taken to deliver */
 
 if (LOGGING(queue_time))
-  g = string_append(g, 2, US" QT=",
-    string_timesince(&received_time));
+  g = string_append(g, 2, US" QT=", string_timesince(
+    LOGGING(queue_time_exclusive) ? &received_time_complete : &received_time));
 
 if (LOGGING(deliver_time))
   g = string_append(g, 2, US" DT=", string_timediff(&addr->delivery_time));

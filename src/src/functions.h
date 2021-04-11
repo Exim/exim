@@ -1059,16 +1059,23 @@ subdir_str[1] = '\0';
 /******************************************************************************/
 /* Time calculations */
 
+/* Diff two times (later, earlier) returning diff in 1st arg */
+static inline void
+timediff(struct timeval * later, const struct timeval * earlier)
+{
+later->tv_sec -= earlier->tv_sec;
+if ((later->tv_usec -= earlier->tv_usec) < 0)
+  {
+  later->tv_sec--;
+  later->tv_usec += 1000*1000;
+  }
+}
+
 static inline void
 timesince(struct timeval * diff, const struct timeval * then)
 {
 gettimeofday(diff, NULL);
-diff->tv_sec -= then->tv_sec;
-if ((diff->tv_usec -= then->tv_usec) < 0)
-  {
-  diff->tv_sec--;
-  diff->tv_usec += 1000*1000;
-  }
+timediff(diff, then);
 }
 
 static inline uschar *

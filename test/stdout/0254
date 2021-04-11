@@ -3,6 +3,7 @@ CALLER UID GID
 <CALLER@myhost.test.ex>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 0
@@ -40,6 +41,7 @@ CALLER UID GID
 <CALLER@myhost.test.ex>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 0
@@ -70,6 +72,7 @@ CALLER UID GID
 <CALLER@myhost.test.ex>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 -ident CALLER
 -received_protocol local
 -body_linecount 0

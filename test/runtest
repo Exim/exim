@@ -1007,7 +1007,8 @@ RESET_AFTER_EXTRA_LINE_READ:
     s/conversion: german.xn--strae-oqa.de/conversion: german.straße.de/;
 
     # subsecond timstamp info in reported header-files
-    s/^(-received_time_usec \.)\d{6}$/$1uuuuuu/;
+    s/^-received_time_usec \.\K\d{6}$/uuuuuu/;
+    s/^-received_time_complete \K\d+\.\d{6}$/tttt.uuuuuu/;
 
     # Postgres server takes varible time to shut down; lives in various places
     s/^waiting for server to shut down\.+ done$/waiting for server to shut down.... done/;

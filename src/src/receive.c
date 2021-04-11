@@ -3272,7 +3272,7 @@ if (fflush(spool_data_file) == EOF || ferror(spool_data_file) ||
 /* No I/O errors were encountered while writing the data file. */
 
 DEBUG(D_receive) debug_printf("Data file written for message %s\n", message_id);
-if (LOGGING(receive_time)) timesince(&received_time_taken, &received_time);
+gettimeofday(&received_time_complete, NULL);
 
 
 /* If there were any bad addresses extracted by -t, or there were no recipients
@@ -4050,7 +4050,11 @@ if (LOGGING(dkim) && arc_state && Ustrcmp(arc_state, "pass") == 0)
 #endif
 
 if (LOGGING(receive_time))
-  g = string_append(g, 2, US" RT=", string_timediff(&received_time_taken));
+  {
+  struct timeval diff = received_time_complete;
+  timediff(&diff, &received_time);
+  g = string_append(g, 2, US" RT=", string_timediff(&diff));
+  }
 
 if (*queue_name)
   g = string_append(g, 2, US" Q=", queue_name);

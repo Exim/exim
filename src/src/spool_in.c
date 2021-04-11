@@ -422,6 +422,8 @@ if (Ufgets(big_buffer, big_buffer_size, fp) == NULL) goto SPOOL_READ_ERROR;
 if (sscanf(CS big_buffer, TIME_T_FMT " %d", &received_time.tv_sec, &warning_count) != 2)
   goto SPOOL_FORMAT_ERROR;
 received_time.tv_usec = 0;
+received_time_complete = received_time;
+
 
 message_age = time(NULL) - received_time.tv_sec;
 #ifndef COMPILE_UTILITY
@@ -639,7 +641,19 @@ for (;;)
       {
       unsigned usec;
       if (sscanf(CS var + 20, "%u", &usec) == 1)
+	{
 	received_time.tv_usec = usec;
+	if (!received_time_complete.tv_sec) received_time_complete.tv_usec = usec;
+	}
+      }
+    else if (Ustrncmp(p, "eceived_time_complete", 21) == 0)
+      {
+      unsigned sec, usec;
+      if (sscanf(CS var + 23, "%u.%u", &sec, &usec) == 2)
+	{
+	received_time_complete.tv_sec = sec;
+	received_time_complete.tv_usec = usec;
+	}
       }
     break;
 

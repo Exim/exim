@@ -480,6 +480,7 @@ enum logbit {
   Li_protocol_detail,
   Li_proxy,
   Li_queue_time,
+  Li_queue_time_exclusive,
   Li_queue_time_overall,
   Li_receive_time,
   Li_received_sender,

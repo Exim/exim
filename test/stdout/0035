@@ -145,6 +145,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <notsubmit@y>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
@@ -166,6 +167,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
@@ -190,6 +192,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
@@ -212,6 +215,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <notsubmit@y>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
@@ -234,6 +238,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
@@ -259,6 +264,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
@@ -284,6 +290,7 @@ EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -received_time_usec .uuuuuu
+-received_time_complete tttt.uuuuuu
 --helo_name rhu.barb
 -host_address 127.0.0.1.9999
 -interface_address 127.0.0.1.1225
