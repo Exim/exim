@@ -403,18 +403,20 @@ it gets statted to see if it has been cycled. With a datestamp, the datestamp
 will be compared. The static slot for saving it is the same size as buffer,
 and the text has been checked above to fit, so this use of strcpy() is OK. */
 
-if (type == lt_main && string_datestamp_offset >= 0)
+if (type == lt_main)
   {
   Ustrcpy(mainlog_name, buffer);
-  mainlog_datestamp = mainlog_name + string_datestamp_offset;
+  if (string_datestamp_offset > 0)
+    mainlog_datestamp = mainlog_name + string_datestamp_offset;
   }
 
 /* Ditto for the reject log */
 
-else if (type == lt_reject && string_datestamp_offset >= 0)
+else if (type == lt_reject)
   {
   Ustrcpy(rejectlog_name, buffer);
-  rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
+  if (string_datestamp_offset > 0)
+    rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
   }
 
 /* and deal with the debug log (which keeps the datestamp, but does not
