@@ -984,12 +984,12 @@ if (i < len)
 
 /* No non-printers; use the RFC 822 quoting rules */
 
-if (!len)
+if (len <= 0 || len >= INT_MAX/4)
   {
-  return string_copy_taint(US"", is_tainted(phrase));
+  return string_copy_taint(CUS"", is_tainted(phrase));
   }
 
-buffer = store_get(len*4, is_tainted(phrase));
+buffer = store_get((len+1)*4, is_tainted(phrase));
 
 s = phrase;
 end = s + len;
