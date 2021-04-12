@@ -397,62 +397,53 @@ people want, I hope. */
 
 ok = string_format(buffer, sizeof(buffer), CS file_path, log_names[type]);
 
-/* Save the name of the mainlog for rollover processing. Without a datestamp,
-it gets statted to see if it has been cycled. With a datestamp, the datestamp
-will be compared. The static slot for saving it is the same size as buffer,
-and the text has been checked above to fit, so this use of strcpy() is OK. */
-
-if (type == lt_main)
+switch (type)
   {
-  Ustrcpy(mainlog_name, buffer);
-  if (string_datestamp_offset > 0)
-    mainlog_datestamp = mainlog_name + string_datestamp_offset;
-  }
+  case lt_main:
+    /* Save the name of the mainlog for rollover processing. Without a datestamp,
+    it gets statted to see if it has been cycled. With a datestamp, the datestamp
+    will be compared. The static slot for saving it is the same size as buffer,
+    and the text has been checked above to fit, so this use of strcpy() is OK. */
+    Ustrcpy(mainlog_name, buffer);
+    if (string_datestamp_offset > 0)
+      mainlog_datestamp = mainlog_name + string_datestamp_offset;
+  case lt_reject:
+    /* Ditto for the reject log */
+    Ustrcpy(rejectlog_name, buffer);
+    if (string_datestamp_offset > 0)
+      rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
+  case lt_debug:
+    /* and deal with the debug log (which keeps the datestamp, but does not
+    update it) */
+    Ustrcpy(debuglog_name, buffer);
+    if (tag)
+      {
+      /* this won't change the offset of the datestamp */
+      ok2 = string_format(buffer, sizeof(buffer), "%s%s",
+        debuglog_name, tag);
+      if (ok2)
+        Ustrcpy(debuglog_name, buffer);
+      }
+  default:
+    /* Remove any datestamp if this is the panic log. This is rare, so there's no
+  need to optimize getting the datestamp length. We remove one non-alphanumeric
+  char afterwards if at the start, otherwise one before. */
+    if (string_datestamp_offset >= 0)
+      {
+      uschar * from = buffer + string_datestamp_offset;
+      uschar * to = from + string_datestamp_length;
 
-/* Ditto for the reject log */
+      if (from == buffer || from[-1] == '/')
+        {
+        if (!isalnum(*to)) to++;
+        }
+      else
+        if (!isalnum(from[-1])) from--;
 
-else if (type == lt_reject)
-  {
-  Ustrcpy(rejectlog_name, buffer);
-  if (string_datestamp_offset > 0)
-    rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
-  }
-
-/* and deal with the debug log (which keeps the datestamp, but does not
-update it) */
-
-else if (type == lt_debug)
-  {
-  Ustrcpy(debuglog_name, buffer);
-  if (tag)
-    {
-    /* this won't change the offset of the datestamp */
-    ok2 = string_format(buffer, sizeof(buffer), "%s%s",
-      debuglog_name, tag);
-    if (ok2)
-      Ustrcpy(debuglog_name, buffer);
-    }
-  }
-
-/* Remove any datestamp if this is the panic log. This is rare, so there's no
-need to optimize getting the datestamp length. We remove one non-alphanumeric
-char afterwards if at the start, otherwise one before. */
-
-else if (string_datestamp_offset >= 0)
-  {
-  uschar * from = buffer + string_datestamp_offset;
-  uschar * to = from + string_datestamp_length;
-
-  if (from == buffer || from[-1] == '/')
-    {
-    if (!isalnum(*to)) to++;
-    }
-  else
-    if (!isalnum(from[-1])) from--;
-
-  /* This copy is ok, because we know that to is a substring of from. But
-  due to overlap we must use memmove() not Ustrcpy(). */
-  memmove(from, to, Ustrlen(to)+1);
+      /* This copy is ok, because we know that to is a substring of from. But
+      due to overlap we must use memmove() not Ustrcpy(). */
+      memmove(from, to, Ustrlen(to)+1);
+      }
   }
 
 /* If the file name is too long, it is an unrecoverable disaster */
